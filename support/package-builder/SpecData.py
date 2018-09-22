@@ -39,6 +39,7 @@ class SpecObjectsUtils(object):
     def __init__(self, logPath):
         self.mapSpecObjects = {}
         self.mapPackageToSpec = {}
+        self.mapSpecFileNameToSpecObj = {}
         self.logger = Logger.getLogger("Serializable Spec objects", logPath)
 
     def readSpecsAndConvertToSerializableObjects(self, specFilesPath):
@@ -76,6 +77,7 @@ class SpecObjectsUtils(object):
                 self.mapSpecObjects[specName].append(specObj)
             else:
                 self.mapSpecObjects[specName]=[specObj]
+            self.mapSpecFileNameToSpecObj[os.path.basename(specFile)]=specObj
         for key, value in self.mapSpecObjects.items():
             if len(value) > 1:
                 self.mapSpecObjects[key] = sorted(value,
@@ -97,25 +99,29 @@ class SpecObjectsUtils(object):
         if (depPkg.compare == ""):
             return self.getHighestVersion(depPkg.package)
         specObjs=self.getSpecObj(depPkg.package)
-        for obj in specObjs:
+        try:
+            for obj in specObjs:
                 verrel=obj.version+"-"+obj.release
                 if depPkg.compare == ">=":
-                       if LooseVersion(verrel) >= LooseVersion(depPkg.version):
-                                return obj.version
+                    if LooseVersion(verrel) >= LooseVersion(depPkg.version):
+                        return obj.version
                 elif depPkg.compare == "<=":
-                        if LooseVersion(verrel) <= LooseVersion(depPkg.version):
-                                return obj.version
+                    if LooseVersion(verrel) <= LooseVersion(depPkg.version):
+                        return obj.version
                 elif depPkg.compare == "=":
-                        if LooseVersion(verrel) == LooseVersion(depPkg.version):
-                                return obj.version
-                        if LooseVersion(obj.version) == LooseVersion(depPkg.version):
-                                return obj.version
+                    if LooseVersion(verrel) == LooseVersion(depPkg.version):
+                        return obj.version
+                    if LooseVersion(obj.version) == LooseVersion(depPkg.version):
+                        return obj.version
                 elif depPkg.compare == "<":
-                        if LooseVersion(verrel) < LooseVersion(depPkg.version):
-                                return obj.version
+                    if LooseVersion(verrel) < LooseVersion(depPkg.version):
+                        return obj.version
                 elif depPkg.compare == ">":
-                        if LooseVersion(verrel) > LooseVersion(depPkg.version):
-                                return obj.version
+                    if LooseVersion(verrel) > LooseVersion(depPkg.version):
+                        return obj.version
+        except Exception as e:
+            self.logger.error("Exception happened while searching for: " + depPkg.package + depPkg.compare + depPkg.version)
+            raise e
 
         # about to throw exception
         availableVersions=""
@@ -139,10 +145,6 @@ class SpecObjectsUtils(object):
             properVersion = self._getProperVersion(pkg)
             buildRequiresList.append(pkg.package+"-"+properVersion)
         return buildRequiresList
-
-    def getBuildRequiresForPkg(self, pkg):
-        package, version = StringUtils.splitPackageNameAndVersion(pkg)
-        return self.getBuildRequiresForPackage(package, version)
 
     def getBuildRequiresForPkg(self, pkg):
         package, version = StringUtils.splitPackageNameAndVersion(pkg)
@@ -284,33 +286,24 @@ class SpecObjectsUtils(object):
     def printAllObjects(self):
         listSpecs = self.mapSpecObjects.keys()
         for spec in listSpecs:
-            specObj = self.mapSpecObjects[spec]
-            self.logger.info("-----------Spec:"+specObj.name+"--------------")
-            self.logger.info("Version:"+specObj.version)
-            self.logger.info("Release:"+specObj.release)
-            self.logger.info("SpecFile:"+specObj.specFile)
-            self.logger.info(" ")
-            self.logger.info("Source Files")
-            self.logger.info(specObj.listSources)
-            self.logger.info(" ")
-            self.logger.info("Patch Files")
-            self.logger.info(specObj.listPatches)
-            self.logger.info(" ")
-            self.logger.info(" ")
-            self.logger.info("List RPM packages")
-            self.logger.info(specObj.listPackages)
-            self.logger.info(" ")
-            self.logger.info(" ")
-            self.logger.info("Build require packages")
-            self.logger.info(self.getPkgNamesFromObj(specObj.buildRequirePackages))
-            self.logger.info(" ")
-            self.logger.info(" ")
-            self.logger.info("install require packages")
-            self.logger.info(self.getPkgNamesFromObj(specObj.installRequiresAllPackages))
-            self.logger.info(" ")
-            self.logger.info(specObj.installRequiresPackages)
-            self.logger.info("security_hardening: " + specObj.securityHardening)
-            self.logger.info("------------------------------------------------")
+            for specObj in self.mapSpecObjects[spec]:
+                self.logger.info("-----------Spec:"+specObj.name+"--------------")
+                self.logger.info("Version:"+specObj.version)
+                self.logger.info("Release:"+specObj.release)
+                self.logger.info("SpecFile:"+specObj.specFile)
+                self.logger.info("Source Files")
+                self.logger.info(specObj.listSources)
+                self.logger.info("Patch Files")
+                self.logger.info(specObj.listPatches)
+                self.logger.info("List RPM packages")
+                self.logger.info(specObj.listPackages)
+                self.logger.info("Build require packages")
+                self.logger.info(self.getPkgNamesFromObj(specObj.buildRequirePackages))
+                self.logger.info("install require packages")
+                self.logger.info(self.getPkgNamesFromObj(specObj.installRequiresAllPackages))
+                self.logger.info(specObj.installRequiresPackages)
+                self.logger.info("security_hardening: " + specObj.securityHardening)
+                self.logger.info("------------------------------------------------")
 
 
 class SPECS(object):
@@ -411,6 +404,17 @@ class SpecDependencyGenerator(object):
                     whoNeedsBuild.append(depSpecPkg)
                     depQue.put(depSpecPkg)
 
+    def findTotalWhoNeeds(self, depQue, whoNeeds):
+        while not depQue.empty():
+            specPkg = depQue.get()
+            listPackagesRequired = SPECS.getData().getBuildRequiresForPkg(specPkg)
+            listPackagesRequired.extend(SPECS.getData().getRequiresAllForPkg(specPkg))
+            for depPkg in listPackagesRequired:
+                depSpecPkg = SPECS.getData().getBasePkg(depPkg)
+                if depSpecPkg not in whoNeeds:
+                    whoNeeds.append(depSpecPkg)
+                    depQue.put(depSpecPkg)
+
     def printTree(self, children, curParent, depth):
         if curParent in children:
             for child in children[curParent]:
@@ -500,11 +504,25 @@ class SpecDependencyGenerator(object):
                 return self.displayDependencies(displayOption, inputType, outputFile, mapDependencies, parent)
             else:
                 return self.displayDependencies(displayOption, inputType, inputValue, mapDependencies, parent)
+        elif inputType == "remove-upward-deps":
+            depQue = queue.Queue()
+            for specFile in inputValue.split(":"):
+                if specFile in SPECS.getData().mapSpecFileNameToSpecObj:
+                    specObj = SPECS.getData().mapSpecFileNameToSpecObj[specFile]
+                    whoNeedsList.append(specObj.name+"-"+specObj.version)
+                    for package in specObj.listPackages:
+                        depQue.put(package+"-"+specObj.version)
+            self.findTotalWhoNeeds(depQue, whoNeedsList)
+            return whoNeedsList
+
         elif inputType == "who-needs":
-            for depPkg in SPECS.getData().mapPackageToSpec:
+            for depPackage in SPECS.getData().mapPackageToSpec:
                 pkg=inputValue+"-"+SPECS.getData().getHighestVersion(inputValue)
-                if pkg in SPECS.getData().getRequiresForPkg(depPkg):
-                    whoNeedsList.append(depPkg)
+                for version in SPECS.getData().getVersions(depPackage):
+                    depPkg = depPackage+"-"+version
+                    print (depPkg)
+                    if pkg in SPECS.getData().getRequiresForPkg(depPkg):
+                        whoNeedsList.append(depPkg)
             print (whoNeedsList)
             return whoNeedsList
         elif inputType == "who-needs-build":
