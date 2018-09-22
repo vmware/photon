@@ -8,10 +8,11 @@ import os
 from argparse import ArgumentParser
 import shutil
 import traceback
-from SpecData import SpecDependencyGenerator
+from SpecData import SpecDependencyGenerator, SPECS
 from jsonwrapper import JsonWrapper
 from constants import constants
 from CommandUtils import CommandUtils
+from StringUtils import StringUtils
 
 DEFAULT_INPUT_TYPE = "pkg"
 DEFAULT_DISPLAY_OPTION = "tree"
@@ -47,8 +48,17 @@ def main():
     try:
         specDeps = SpecDependencyGenerator()
 
+        if options.input_type == "remove-upward-deps":
+            whoNeedsList = specDeps.process(options.input_type, options.pkg, options.display_option)
+            print ("Removing upward dependencies: " + str(whoNeedsList))
+            for pkg in whoNeedsList:
+                package, version = StringUtils.splitPackageNameAndVersion(pkg)
+                release = SPECS.getData().getRelease(package, version)
+                buildarch=SPECS.getData().getBuildArch(package, version)
+                rpmFile = "stage/RPMS/" + buildarch + "/" +package + "-" + version + "-" + release + ".*" + buildarch+".rpm"
+                cmdUtils.runCommandInShell2("rm -f "+rpmFile)
         # To display/print package dependencies on console
-        if (options.input_type == "pkg" or
+        elif (options.input_type == "pkg" or
                 options.input_type == "who-needs" or
                 options.input_type == "who-needs-build"):
             specDeps.process(options.input_type, options.pkg, options.display_option)
@@ -76,7 +86,6 @@ def main():
         sys.stderr.write("Failed to generate dependency lists from spec files\n")
         sys.exit(1)
 
-    sys.stderr.write("Successfully generated dependency lists from spec files\n")
     sys.exit(0)
 
 
