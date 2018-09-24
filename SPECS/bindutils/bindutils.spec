@@ -1,11 +1,11 @@
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.10.6
+Version:        9.13.3
 Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
-Source0:        ftp://ftp.isc.org/isc/bind9/%{version}-P1/bind-%{version}-P1.tar.gz
-%define sha1    bind=adb06033d5538f2412c8f61ffca123e293ca393a
+Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.gz
+%define sha1    bind=eed41fd32887bd163935fe14b94afad4a8b287c2
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,12 +13,13 @@ Requires:       openssl
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 BuildRequires:  openssl-devel
+BuildRequires:	libcap-devel
 %description
 BIND is open source software that implements the Domain Name System (DNS) protocols 
 for the Internet. It is a reference implementation of those protocols, but it is 
 also production-grade software, suitable for use in high-volume and high-reliability applications.
 %prep
-%setup -qn bind-%{version}-P1
+%setup -qn bind-%{version}
 %build
 ./configure \
     --prefix=%{_prefix}
@@ -26,7 +27,7 @@ make -C lib/dns %{?_smp_mflags}
 make -C lib/isc %{?_smp_mflags}
 make -C lib/bind9 %{?_smp_mflags}
 make -C lib/isccfg %{?_smp_mflags}
-make -C lib/lwres %{?_smp_mflags}
+make -C lib/irs %{?_smp_mflags}
 make -C bin/dig %{?_smp_mflags}
 %install
 make -C bin/dig DESTDIR=%{buildroot} install
@@ -51,7 +52,7 @@ if ! getent passwd named >/dev/null; then
 fi
 %post -p /sbin/ldconfig
 
-%postun 
+%postun
 /sbin/ldconfig
 if getent passwd named >/dev/null; then
     userdel named
@@ -68,6 +69,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Sun Sep 23 2018 Sujay G <gsujay@vmware.com> 9.13.3-1
+-   Bump bindutils version to 9.13.3
 *   Mon Feb 12 2018 Xiaolin Li <xiaolinl@vmware.com> 9.10.6-1
 -   Upgrading version to 9.10.6-P1, fix CVE-2017-3145
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 9.10.4-4
