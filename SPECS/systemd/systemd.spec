@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          3%{?dist}
+Release:          4%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -54,6 +54,7 @@ Systemd is an init replacement with better process control and security
 %package devel
 Summary:        Development headers for systemd
 Requires:       %{name} = %{version}-%{release}
+Requires:    glib-devel
 
 %description devel
 Development headers for developing applications linking to libsystemd
@@ -243,6 +244,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Mon Oct 08 2018 Srinidhi Rao <srinidhir@vmware.com> 239-4
+-    Add glib-devel as a Requirement to systemd-devel
 *    Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 239-3
 -    Fix compilation issue against glibc-2.28
 *    Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 239-2
