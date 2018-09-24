@@ -5,18 +5,18 @@
 
 Summary:        Build and install Perl modules
 Name:           perl-Module-Build
-Version:        0.4222
+Version:        0.4224
 Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Build/
-Source0:        http://search.cpan.org/CPAN/authors/id/L/LE/LEONT/Module-Build-%{version}.tar.gz
-%define sha1 Module-Build=af7fb66a2706a714e8180c82b662170e7a6cb9c8
+Source0:        https://cpan.metacpan.org/authors/id/L/LE/LEONT/Module-Build-%{version}.tar.gz
+%define sha1 Module-Build=4f78f28187d6525a59cc2e1887e4788964c8029c
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch
-BuildRequires:  perl
-Requires:	perl
+BuildRequires:  perl >= 5.28.0
+Requires:	perl >= 5.28.0
 
 %description
 Module::Build is a system for building, testing, and installing Perl
@@ -45,6 +45,8 @@ LANG=C TEST_SIGNATURE=1 MB_TEST_EXPERIMENTAL=1 ./Build test
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 0.4224-1
+-   Update to version 0.4224
 *   Wed Apr 05 2017 Robert Qi <qij@vmware.com> 0.4222-1
 -   Update version to 0.4222.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.4216-2
