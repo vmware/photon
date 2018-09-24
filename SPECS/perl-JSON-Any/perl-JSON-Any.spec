@@ -1,7 +1,7 @@
 Summary:        Wrapper Class for the various JSON classes
 Name:           perl-JSON-Any
 Version:        1.39
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~ether/JSON-Any-1.39/lib/JSON/Any.pm
@@ -10,8 +10,8 @@ Source:         http://search.cpan.org/CPAN/authors/id/E/ET/ETHER/JSON-Any-%{ver
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-Requires:       perl
-BuildRequires:  perl
+Requires:       perl >= 5.28.0
+BuildRequires:  perl >= 5.28.0
 
 %description
 This module tries to provide a coherent API to bring together the various JSON modules currently on CPAN. This module will allow you to code to any JSON API and have it work regardless of which JSON module is actually installed.
@@ -40,6 +40,8 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*	Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.39-4
+-	Consuming perl version upgrade of 5.28.0
 *	Tue Aug 08 2017 Chang Lee <Chang Lee@vmware.com> 1.39-3
 -	Adding dependencies for %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.39-2

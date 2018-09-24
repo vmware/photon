@@ -1,18 +1,18 @@
 # Got the intial spec from Fedora and modified it
 Summary:        A module for reading .ini-style configuration files
 Name:           perl-Config-IniFiles
-Version:        2.94
-Release:        2%{?dist}
+Version:        3.000000
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        GPL+ or Artistic
 URL:            http://search.cpan.org/dist/Config-IniFiles/
-Source0:        http://www.cpan.org/authors/id/S/SH/SHLOMIF/Config-IniFiles-%{version}.tar.gz
-%define sha1 Config-IniFiles=df7e1a9244dd60623ffc004e9302daabb46e35d0
+Source0:        https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/Config-IniFiles-%{version}.tar.gz
+%define sha1 Config-IniFiles=ccc71991bc63043927594b95c0513d397c01650b
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch
-BuildRequires:	perl
-Requires:	perl
+BuildRequires:	perl >= 5.28.0
+Requires:	perl >= 5.28.0
 BuildRequires:	perl-List-MoreUtils
 BuildRequires:	perl-Module-Build
 Requires:	perl-List-MoreUtils
@@ -48,6 +48,8 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 3.000000-1
+-   Update to version 3.000000
 *   Tue Aug 8 2017 Chang Lee <changlee@vmware.com> 2.94-2
 -   Remove 34trailing-comments-double-delimeter test in a chrooted environment
 *   Mon Apr 3 2017 Robert Qi <qij@vmware.com> 2.94-1
