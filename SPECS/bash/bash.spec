@@ -1,29 +1,16 @@
 Summary:        Bourne-Again SHell
 Name:           bash
-Version:        4.4.12
-Release:        3%{?dist}
+Version:        4.4.18
+Release:        1%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/bash/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://ftp.gnu.org/gnu/bash/%{name}-4.4.tar.gz
-%define sha1    bash=8de012df1e4f3e91f571c3eb8ec45b43d7c747eb
+Source0:        http://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
+%define sha1    bash=6cf9b3c23930ba8a721fee177d1558e5b7cb6104
 Source1:        bash_completion
 Patch0:         bash-4.4.patch
-#Upstream patches
-Patch001:       bash44-001
-Patch002:       bash44-002
-Patch003:       bash44-003
-Patch004:       bash44-004
-Patch005:       bash44-005
-Patch006:       bash44-006
-Patch007:       bash44-007
-Patch008:       bash44-008
-Patch009:       bash44-009
-Patch010:       bash44-010
-Patch011:       bash44-011
-Patch012:       bash44-012
 Provides:       /bin/sh
 Provides:       /bin/bash
 BuildRequires:  readline
@@ -49,28 +36,15 @@ Requires: bash >= 4.4
 These are the additional language files of bash.
 
 %prep
-%setup -q -n bash-4.4
+%setup -q -n bash-4.4.18
 %patch0 -p1
-%patch001 -p0
-%patch002 -p0
-%patch003 -p0
-%patch004 -p0
-%patch005 -p0
-%patch006 -p0
-%patch007 -p0
-%patch008 -p0
-%patch009 -p0
-%patch010 -p0
-%patch011 -p0
-%patch012 -p0
 %build
-./configure \
+%configure \
     "CFLAGS=-fPIC" \
-    --prefix=%{_prefix} \
     --bindir=/bin \
     --htmldir=%{_defaultdocdir}/%{name}-%{version} \
     --without-bash-malloc \
-    --with-installed-readline 
+    --with-installed-readline
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -348,6 +322,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Mon Sep 24 2018 Sujay G <gsujay@vmware.com> 4.4.18-1
+-   Bump bash version to 4.4.18
 *   Fri Jan 26 2018 Alexey Makhalov <amakhalov@vmware.com> 4.4.12-3
 -   Run bash_completion only for bash interactive shell
 *   Mon Dec 11 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.12-2
