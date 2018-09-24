@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        17.06.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -39,7 +39,7 @@ BuildRequires:  libltdl-devel
 BuildRequires:  libgcc-devel
 BuildRequires:  glibc-devel
 BuildRequires:  unzip
-BuildRequires:  go
+BuildRequires:  go = 1.9.4
 BuildRequires:  sed
 BuildRequires:  cmake
 BuildRequires:  findutils
@@ -225,6 +225,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Tue Sep 25 2018 Tapas Kundu <tkundu@vmware.com> 17.06.0-7
+-   Use go 1.9 rather than latest go toolchain
 *   Thu Sep 20 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 17.06.0-6
 -   Fix AppArmor not being applied to exec processes.
 *   Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 17.06.0-5
@@ -256,7 +258,7 @@ rm -rf %{buildroot}/*
 *   Tue Jun 28 2016 Anish Swaminathan <anishs@vmware.com> 1.11.2-1
 -   Upgraded to version 1.11.2
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  1.11.0-6
--   Fixed logic to restart the active services after upgrade 
+-   Fixed logic to restart the active services after upgrade
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.0-5
 -   GA - Bump release of all rpms
 *   Tue May 10 2016 Anish Swaminathan <anishs@vmware.com> 1.11.0-4
