@@ -1,7 +1,7 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
 Version:        1.19.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
@@ -12,7 +12,7 @@ Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.gz
 Requires:       openssl
 BuildRequires:  openssl-devel
 %if %{with_check}
-BuildRequires:  perl
+BuildRequires:  perl >= 5.28.0
 %endif
 
 %description
@@ -55,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_mandir}/man1/*
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.19.5-2
+-   Consuming perl version upgrade of 5.28.0
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 1.19.5-1
 -   Updated to latest version
 *   Tue Dec 19 2017 Xiaolin Li <xiaolinl@vmware.com> 1.19.1-4

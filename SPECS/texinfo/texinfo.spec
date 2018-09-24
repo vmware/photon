@@ -1,7 +1,7 @@
 Summary:        Reading, writing, and converting info pages
 Name:           texinfo
 Version:        6.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            http://ftp.gnu.org/gnu/texinfo/texinfo-%{version}.tar.xz
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
 %define sha1    texinfo=72a06b48862911c638787cc3307871b990a59726
-BuildRequires:  perl
+BuildRequires:  perl >= 5.28.0
 
 %description
 The Texinfo package contains programs for reading, writing,
@@ -54,6 +54,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/texinfo/*
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 6.5-2
+-   Consuming perl version upgrade of 5.28.0
 *   Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 6.5-1
 -   Update version to 6.5.
 *   Fri May 05 2017 Xiaolin Li <xiaolinl@vmware.com> 6.3-3
