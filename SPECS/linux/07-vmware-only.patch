@@ -11,21 +11,21 @@ Subject: [PATCH] vmware only
  4 files changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 4eece91ada37..5b8e45f48bf3 100644
+index 1ee8ea36..d72e63f 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1089,7 +1089,9 @@ static void identify_cpu(struct cpuinfo_x86 *c)
+@@ -1370,7 +1370,9 @@ static void identify_cpu(struct cpuinfo_x86 *c)
  	detect_ht(c);
  #endif
  
-+#if 0 /* disable rdrand probbing */
++#if 0 /* disable rdrand probing */
  	x86_init_rdrand(c);
 +#endif
  	x86_init_cache_qos(c);
  	setup_pku(c);
  
 diff --git a/arch/x86/kernel/cpu/rdrand.c b/arch/x86/kernel/cpu/rdrand.c
-index cfa97ff67bda..e31cfe683da2 100644
+index cfa97ff..e31cfe6 100644
 --- a/arch/x86/kernel/cpu/rdrand.c
 +++ b/arch/x86/kernel/cpu/rdrand.c
 @@ -32,6 +32,7 @@ static int __init x86_rdrand_setup(char *s)
@@ -42,18 +42,18 @@ index cfa97ff67bda..e31cfe683da2 100644
  #endif
 +#endif
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 0e1fc6e17efc..59e2cc6a70d2 100644
+index e299357..38c14f5 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -30,6 +30,7 @@
+@@ -32,6 +32,7 @@
  #include <asm/hypervisor.h>
  #include <asm/timer.h>
  #include <asm/apic.h>
 +#include <asm/pci_x86.h>
- #include <linux/sched.h>
- #include <linux/cpu.h>
  #include <linux/kmsg_dump.h>
-@@ -378,6 +379,10 @@ static void __init vmware_platform_setup(void)
+ #include <linux/frame.h>
+ 
+@@ -435,6 +436,10 @@ static void __init vmware_platform_setup(void)
  	vmware_set_capabilities();
  
  	kmsg_dump_register(&kmsg_dumper);
@@ -65,10 +65,10 @@ index 0e1fc6e17efc..59e2cc6a70d2 100644
  
  /*
 diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
-index 36171bcd91f8..f7f3d0b4b882 100644
+index f02ecaf..98dc183 100644
 --- a/arch/x86/kernel/smpboot.c
 +++ b/arch/x86/kernel/smpboot.c
-@@ -683,7 +683,7 @@ wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
+@@ -706,7 +706,7 @@ wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
  	/*
  	 * Give the other CPU some time to accept the IPI.
  	 */
@@ -77,6 +77,3 @@ index 36171bcd91f8..f7f3d0b4b882 100644
  	if (APIC_INTEGRATED(boot_cpu_apic_version)) {
  		maxlvt = lapic_get_maxlvt();
  		if (maxlvt > 3)			/* Due to the Pentium erratum 3AP.  */
--- 
-2.11.0
-
