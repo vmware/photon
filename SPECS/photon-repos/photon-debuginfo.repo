@@ -1,5 +1,5 @@
 [photon-debuginfo]
-name=VMware Photon Linux debuginfo 2.0(x86_64)
+name=VMware Photon Linux debuginfo 3.0(x86_64)
 baseurl=https://dl.bintray.com/vmware/photon_debuginfo_$releasever_$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
