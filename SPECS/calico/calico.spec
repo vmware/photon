@@ -1,7 +1,7 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        2.6.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/calico
 Source0:        %{name}-%{version}.tar.gz
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  git
 BuildRequires:  glide
-BuildRequires:  go >= 1.7
+BuildRequires:  go = 1.9.4
 BuildRequires:  make
 
 %description
@@ -50,6 +50,8 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
+*   Mon Sep 24 2018 Tapas Kundu <tkundu@vmware.com> 2.6.7-2
+-   Build using go version 1.9
 *   Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.6.7-1
 -   Calico Node v2.6.7.
 *   Tue Dec 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.3-1
