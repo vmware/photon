@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        17.06.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -39,7 +39,7 @@ BuildRequires:  libltdl-devel
 BuildRequires:  libgcc-devel
 BuildRequires:  glibc-devel
 BuildRequires:  unzip
-BuildRequires:  go
+BuildRequires:  go = 1.9.4
 BuildRequires:  sed
 BuildRequires:  cmake
 BuildRequires:  findutils
@@ -225,6 +225,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Tue Sep 25 2018 Tapas Kundu <tkundu@vmware.com> 17.06.0-7
+-   Use go 1.9.4 rather than latest go toolchain
 *   Thu Sep 20 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 17.06.0-6
 -   Fix AppArmor not being applied to exec processes.
 *   Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 17.06.0-5
