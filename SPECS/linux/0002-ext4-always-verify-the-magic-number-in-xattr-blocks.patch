@@ -1,0 +1,53 @@
+From b1c76346e194bf9390efec9bc00088650c2552e9 Mon Sep 17 00:00:00 2001
+From: Theodore Ts'o <tytso@mit.edu>
+Date: Wed, 13 Jun 2018 00:51:28 -0400
+Subject: [PATCH 2/2] ext4: always verify the magic number in xattr blocks
+
+commit 513f86d73855ce556ea9522b6bfd79f87356dc3a upstream.
+
+If there an inode points to a block which is also some other type of
+metadata block (such as a block allocation bitmap), the
+buffer_verified flag can be set when it was validated as that other
+metadata block type; however, it would make a really terrible external
+attribute block.  The reason why we use the verified flag is to avoid
+constantly reverifying the block.  However, it doesn't take much
+overhead to make sure the magic number of the xattr block is correct,
+and this will avoid potential crashes.
+
+This addresses CVE-2018-10879.
+
+https://bugzilla.kernel.org/show_bug.cgi?id=200001
+
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Andreas Dilger <adilger@dilger.ca>
+Cc: stable@kernel.org
+[ Srivatsa: Backported to 4.4.y ]
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ fs/ext4/xattr.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/fs/ext4/xattr.c b/fs/ext4/xattr.c
+index eff07b9..7293f0b 100644
+--- a/fs/ext4/xattr.c
++++ b/fs/ext4/xattr.c
+@@ -220,12 +220,13 @@ ext4_xattr_check_block(struct inode *inode, struct buffer_head *bh)
+ {
+ 	int error;
+ 
+-	if (buffer_verified(bh))
+-		return 0;
+-
+ 	if (BHDR(bh)->h_magic != cpu_to_le32(EXT4_XATTR_MAGIC) ||
+ 	    BHDR(bh)->h_blocks != cpu_to_le32(1))
+ 		return -EFSCORRUPTED;
++
++	if (buffer_verified(bh))
++		return 0;
++
+ 	if (!ext4_xattr_block_csum_verify(inode, bh->b_blocknr, BHDR(bh)))
+ 		return -EFSBADCRC;
+ 	error = ext4_xattr_check_names(BFIRST(bh), bh->b_data + bh->b_size,
+-- 
+2.7.4
+
