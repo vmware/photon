@@ -1,7 +1,7 @@
 Summary:        Vendor Package Management for Goland
 Name:           glide
 Version:        0.13.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/Masterminds/glide
 Source0:        %{name}-%{version}.tar.gz
@@ -10,7 +10,7 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  git
-BuildRequires:  go >= 1.7
+BuildRequires:  go = 1.9.4
 BuildRequires:  perl
 
 %description
@@ -36,6 +36,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ ./glide
 %{_bindir}/glide
 
 %changelog
+*   Mon Sep 24 2018 Tapas Kundu <tkundu@vmware.com> 0.13.1-2
+-   Build using go version 1.9.4
 *   Thu Sep 13 2018 Michelle Wang <michellew@vmware.com> 0.13.1-1
 -   Update version to 0.13.1.
 *   Mon Aug 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.12.3-1
