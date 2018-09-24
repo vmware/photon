@@ -13,6 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
 BuildRequires:  python3
+BuildRequires:  perl
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  swig

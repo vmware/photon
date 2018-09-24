@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.19.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
@@ -14,6 +14,7 @@ BuildRequires:  python2
 Requires:       openssl
 Requires:       curl
 Requires:       expat
+Requires:       perl
 Requires:       perl-YAML
 Requires:       perl-DBI
 Requires:       perl-CGI
@@ -39,12 +40,9 @@ These are the additional language files of git.
 %prep
 %setup -q
 %build
-./configure \
+%configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
     --libexec=%{_libexecdir} \
     --with-gitconfig=/etc/gitconfig
 make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
@@ -85,12 +83,14 @@ rm -rf %{buildroot}/*
 %exclude %{_libexecdir}/git-core/*svn*
 %exclude %{perl_sitelib}/Git/SVN
 %exclude %{perl_sitelib}/Git/SVN.pm
-%exclude /usr/lib/perl5/5.24.1/*/perllocal.pod
+%exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+*   Thu Oct 04 2018 Dweep Advani <dadvani@vmware.com> 2.19.0-2
+-   Using %configure and changing for perl upgrade
 *   Tue Oct 02 2018 Siju Maliakkal <smaliakkal@vmware.com> 2.19.0-1
 -   Update to latest version
 *   Tue Jul 31 2018 Ajay Kaher <akaher@vmware.com> 2.14.2-2
