@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -32,7 +32,7 @@ NTP protocol.
 %package        perl
 Summary:        Perl scripts for ntp
 Group:          Utilities
-Requires:       ntp = %{version}-%{release}, perl >= 5
+Requires:       ntp = %{version}-%{release}, perl >= 5.28.0
 Requires:       perl-Net-SSLeay
 Requires:       perl-IO-Socket-SSL
 %description    perl
@@ -173,6 +173,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 4.2.8p12-2
+-   Consuming perl version upgrade of 5.28.0
 *   Fri Aug 24 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p12-1
 -   Upgrade version to 4.2.8p12.
 *   Mon Mar 05 2018 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p11-1
