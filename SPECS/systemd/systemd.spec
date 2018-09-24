@@ -54,6 +54,7 @@ Systemd is an init replacement with better process control and security
 %package devel
 Summary:        Development headers for systemd
 Requires:       %{name} = %{version}-%{release}
+Requires:    glib-devel
 
 %description devel
 Development headers for developing applications linking to libsystemd
