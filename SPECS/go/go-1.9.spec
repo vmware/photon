@@ -11,7 +11,7 @@
 %define _use_internal_dependency_generator 0
 %define __find_requires %{nil}
 
-Summary:        Go 
+Summary:        Go
 Name:           go
 Version:        1.9.4
 Release:        2%{?dist}
@@ -27,7 +27,7 @@ Patch1:         CVE-2018-7187.patch
 Requires:       glibc
 
 %description
-Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.  
+Go is an open source programming language that makes it easy to build simple, reliable, and efficient software
 
 %prep
 %setup -qn %{name}
@@ -42,7 +42,7 @@ export GOROOT_BOOTSTRAP=%{goroot}
 export GOROOT="`pwd`"
 export GOPATH=%{gopath}
 export GOROOT_FINAL=%{_bindir}/go
-rm -f  %{gopath}/src/runtime/*.c 
+rm -f  %{gopath}/src/runtime/*.c
 pushd src
 ./make.bash --no-clean
 popd
@@ -135,7 +135,7 @@ rm -rf %{buildroot}/*
 *   Fri Jul 8 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.2-1
 -   Updated the Golang to version 1.6.2
 *   Thu Jun 2 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.2-5
--   Fix script syntax 
+-   Fix script syntax
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.2-4
 -   GA - Bump release of all rpms
 *   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.4.2-3
