@@ -3,7 +3,7 @@
 Summary:        Interface to create per object accessors
 Name:           perl-Object-Accessor
 Version:        0.48
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 License:        GPL+ or Artistic
 URL:            http://search.cpan.org/dist/Object-Accessor/
@@ -12,8 +12,8 @@ Source0:        http://www.cpan.org/authors/id/B/BI/BINGOS/Object-Accessor-%{ver
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch
-BuildRequires:  perl
-Requires:	perl
+BuildRequires:  perl >= 5.28.0
+Requires:	perl >= 5.28.0
 
 %description
 Object::Accessor provides an interface to create per object accessors (as
@@ -40,7 +40,9 @@ make test
 %{_mandir}/man3/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.48-2
--	GA - Bump release of all rpms
-*	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 0.48-1
--	Initial version.
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 0.48-3
+-   Consuming perl version upgrade of 5.28.0
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.48-2
+-   GA - Bump release of all rpms
+*   Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 0.48-1
+-   Initial version.

@@ -5,7 +5,7 @@
 Summary:        iPXE open source boot firmware
 Name:           ipxe
 Version:        d2063b7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://ipxe.org
 Group:          System Environment/Daemons
@@ -21,7 +21,7 @@ BuildRequires:  gcc
 BuildRequires:  libgcc
 BuildRequires:  libgcc-devel
 BuildRequires:  make
-BuildRequires:  perl
+BuildRequires:  perl >= 5.28.0
 BuildRequires:  xz
 BuildRequires:  xz-devel
 BuildRequires:  zlib
@@ -62,6 +62,8 @@ install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}/usr/share/ipxe/
 /usr/share/ipxe/rtl8139.rom
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> d2063b7-2
+-   Consuming perl version upgrade of 5.28.0
 *   Wed Aug 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> d2063b7-1
 -   Update version to get it to build with gcc 7.3
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  553f485-2
