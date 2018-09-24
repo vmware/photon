@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.14.67
+Version:        4.18.9
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=4a6aa8d8a5190dbf1a835a5171609f02b27809e1
+%define sha1 linux=229ed4bedc5b8256bdd761845b1d7e20e1df12d7
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -20,7 +20,7 @@ Patch1:         double-tcp_mem-limits.patch
 Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
-Patch6:         x86-vmware-STA-support.patch
+Patch6:         4.18-x86-vmware-STA-support.patch
 
 # -esx
 Patch13:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
@@ -31,11 +31,10 @@ Patch17:        04-quiet-boot.patch
 Patch18:        05-pv-ops-clocksource.patch
 Patch19:        06-pv-ops-boot_clock.patch
 Patch20:        07-vmware-only.patch
-Patch21:        vmware-balloon-late-initcall.patch
-Patch22:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+Patch22:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
-Patch25:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch25:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 
 
 BuildRequires: bc
@@ -88,7 +87,6 @@ The Linux package contains the Linux kernel doc files
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
-%patch21 -p1
 %patch22 -p1
 %patch24 -p1
 %patch25 -p1
@@ -188,6 +186,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Sep 24 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.18.9-1
+-   Update to version 4.18.9
 *   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
 -   Update to version 4.14.67
 *   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-3
@@ -198,7 +198,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   Update to version 4.14.54
 *   Fri Feb 02 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-1
 -   Version update
-*   Mon Dec 19 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-2
+*   Tue Dec 19 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-2
 -   Enable audit support (CONFIG_AUDIT=y)
 *   Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-1
 -   Version update
