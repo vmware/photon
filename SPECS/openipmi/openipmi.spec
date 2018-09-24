@@ -1,7 +1,7 @@
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
 Version:        2.0.25
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://sourceforge.net/projects/openipmi/
 License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
@@ -12,7 +12,7 @@ Source0:        https://sourceforge.net/projects/openipmi/files/latest/download/
 Source1:        openipmi-helper
 Source2:        ipmi.service
 BuildRequires:  systemd
-BuildRequires:  perl
+BuildRequires:  perl >= 5.28.0
 BuildRequires:  popt-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
@@ -36,7 +36,7 @@ and/or middleware that depends on libOpenIPMI
 %package        perl
 Summary:        Perl interface for OpenIPMI
 Group:          Utilities
-Requires:       openipmi = %{version}-%{release}, perl >= 5
+Requires:       openipmi = %{version}-%{release}, perl >= 5.28.0
 
 %description    perl
 A Perl interface for OpenIPMI.
@@ -178,6 +178,8 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadavni@vmware.com> 2.0.25-2
+-   Consuming perl version upgrade of 5.28.0
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.0.25-1
 -   Upgrade to 2.0.25
 *   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-2

@@ -1,7 +1,7 @@
 Summary:	The package automatically configure source code
 Name:		autoconf
 Version:	2.69
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv2
 URL:		http://www.gnu.org/software/autoconf
 Group:		System Environment/Base
@@ -11,7 +11,7 @@ Source0:	http://ftp.gnu.org/gnu/autoconf/%{name}-%{version}.tar.xz
 %define sha1 autoconf=e891c3193029775e83e0534ac0ee0c4c711f6d23
 Patch0:		autoconf-make-check.patch
 
-Requires:	perl
+Requires:	perl >= 5.28.0
 BuildRequires:	m4
 Requires:	m4
 BuildArch:      noarch
@@ -40,6 +40,8 @@ make -k check %{?_smp_mflags}  TESTSUITEFLAGS="1-500"
 %{_mandir}/*/*
 %{_datarootdir}/autoconf/*
 %changelog
+*	Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 2.69-7
+-	Consuming perl version upgrade of 5.28.0
 *	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.69-6
 -	Fix arch
 *	Tue Dec 6 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.69-5

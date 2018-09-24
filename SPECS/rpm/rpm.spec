@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -53,7 +53,7 @@ Requires:       xz-libs
 Shared libraries librpm and librpmio
 
 %package build
-Requires:       perl
+Requires:       perl >= 5.28.0
 Requires:       %{name}-devel = %{version}-%{release}
 Requires:       elfutils-libelf
 Summary: Binaries, scripts and libraries needed to build rpms.
@@ -257,6 +257,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 4.14.2-2
+-   Consuming perl version upgrade of 5.28.0
 *   Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 4.14.2-1
 -   Update to version 4.14.2
 *   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-7
