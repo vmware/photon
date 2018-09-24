@@ -1,7 +1,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.2.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
@@ -36,7 +36,7 @@ Header files for doing development with openscap.
 
 %package perl
 Summary: openscap perl scripts
-Requires: perl
+Requires: perl >= 5.28.0
 Requires: openscap = %{version}-%{release}
 %description perl
 Perl scripts.
@@ -45,7 +45,6 @@ Perl scripts.
 Summary: openscap python
 Group: Development/Libraries
 Requires: openscap = %{version}-%{release}
-BuildRequires:  python2-devel
 %description python
 Python bindings.
 
@@ -53,7 +52,7 @@ Python bindings.
 %prep
 %setup -q
 %build
-./configure --prefix=/usr \
+%configure --prefix=/usr \
             --sysconfdir=/etc \
             --enable-sce \
             --enable-perl
@@ -95,6 +94,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/python2.7/*
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.2.17-2
+-   Consuming perl version upgrade of 5.28.0
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.2.17-1
 -   Update to 1.2.17
 *   Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 1.2.14-3
