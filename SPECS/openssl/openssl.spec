@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.0.2p
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -21,7 +21,7 @@ Requires:       bash glibc libgcc
 
 %description
 The OpenSSL package contains management tools and libraries relating
-to cryptography. These are useful for providing cryptography 
+to cryptography. These are useful for providing cryptography
 functions to other packages, such as OpenSSH, email applications and
 web browsers (for accessing HTTPS sites).
 
@@ -35,7 +35,7 @@ Header files for doing development with openssl.
 %package perl
 Summary: openssl perl scripts
 Group: Applications/Internet
-Requires: perl
+Requires: perl >= 5.28.0
 Requires: openssl = %{version}-%{release}
 %description perl
 Perl scripts that convert certificates and keys to various formats.
@@ -43,7 +43,7 @@ Perl scripts that convert certificates and keys to various formats.
 %package c_rehash
 Summary: openssl perl scripts
 Group: Applications/Internet
-Requires: perl
+Requires: perl >= 5.28.0
 Requires: perl-DBI
 Requires: perl-DBIx-Simple
 Requires: perl-DBD-SQLite
@@ -118,6 +118,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.0.2p-2
+-   Consuming perl version upgrade of 5.28.0
 *   Fri Aug 17 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.0.2p-1
 -   Upgrade to 1.0.2p
 *   Wed Mar 21 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.0.2n-2

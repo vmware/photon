@@ -1,18 +1,18 @@
 Summary:        Crypt::SSLeay - OpenSSL support for LWP
 Name:           perl-Crypt-SSLeay
-Version:        0.72
-Release:        3%{?dist}
+Version:        0.73_06
+Release:        1%{?dist}
 URL:            http://search.cpan.org/dist/Crypt-SSLeay/
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source:         http://search.cpan.org/CPAN/authors/id/N/NA/NANIS/Crypt-SSLeay-%{version}.tar.gz
-%define sha1    Crypt-SSLeay=1b39920947c33a88b19a9c8e61ccb135b56091f8
+%define sha1    Crypt-SSLeay=039f15040c05559d7f8d693de6ec6aa82531c297
 
-Requires:       perl
+Requires:       perl >= 5.28.0
 Requires:       openssl
-BuildRequires:  perl
+BuildRequires:  perl >= 5.28.0
 BuildRequires:  openssl-devel
 BuildRequires:  perl-Path-Class
 BuildRequires:  perl-Try-Tiny
@@ -33,7 +33,7 @@ Work on Crypt::SSLeay has been continued only to provide https support for the L
 %setup -q -n Crypt-SSLeay-%{version}
 
 %build
-env PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
+PERL5LIB=$(pwd) env PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
 sed -i 's/CCCDLFLAGS = /CCCDLFLAGS = -g /' Makefile
 make %{?_smp_mflags}
 
@@ -50,10 +50,11 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 0.73_06-1
+-   Update version to 0.73_06
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.72-3
 -   Remove BuildArch
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.72-2
 -   Fix arch
 *   Wed Apr 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.72-1
 -   Initial version.
-
