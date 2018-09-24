@@ -1,6 +1,6 @@
 Summary:    Photon release files
 Name:       photon-release
-Version:    2.0
+Version:    3.0
 Release:    1%{?dist}
 License:    Apache License
 Group:      System Environment/Base
@@ -64,6 +64,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/issue.net
 
 %changelog
+*       Mon Sep 24 2018 Anish Swaminathan <anishs@vmware.com> 3.0-1
+-       Update to 3.0
 *       Thu Jul 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0-1
 -       update to 2.0
 *       Wed Nov 30 2016 Anish Swaminathan <anishs@vmware.com> 1.0-7
