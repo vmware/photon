@@ -11,10 +11,10 @@ Added pci=scan_all cmdline parameter to verify hardcodded pci values
  3 files changed, 377 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 6922964e3dff..e4db16e7c1d2 100644
+index 0abe286..22f1449 100644
 --- a/drivers/pci/pci.c
 +++ b/drivers/pci/pci.c
-@@ -5303,6 +5303,8 @@ static int __init pci_setup(char *str)
+@@ -5907,6 +5907,8 @@ static int __init pci_setup(char *str)
  				pcie_bus_config = PCIE_BUS_PEER2PEER;
  			} else if (!strncmp(str, "pcie_scan_all", 13)) {
  				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
@@ -24,10 +24,10 @@ index 6922964e3dff..e4db16e7c1d2 100644
  				printk(KERN_ERR "PCI: Unknown option `%s'\n",
  						str);
 diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index a5d37f6a9fb5..aaa456c9bf95 100644
+index 0881725..562de76 100644
 --- a/drivers/pci/pci.h
 +++ b/drivers/pci/pci.h
-@@ -163,6 +163,8 @@ void pci_no_msi(void);
+@@ -145,6 +145,8 @@ void pci_no_msi(void);
  static inline void pci_no_msi(void) { }
  #endif
  
@@ -37,10 +37,10 @@ index a5d37f6a9fb5..aaa456c9bf95 100644
  {
  	u16 control;
 diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index d266d800f246..11544ddd6e5c 100644
+index a1a243e..0f4172d 100644
 --- a/drivers/pci/probe.c
 +++ b/drivers/pci/probe.c
-@@ -163,6 +163,346 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+@@ -169,6 +169,346 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
  
  #define PCI_COMMAND_DECODE_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_IO)
  
@@ -385,9 +385,9 @@ index d266d800f246..11544ddd6e5c 100644
 +}
 +
  /**
-  * pci_read_base - read a PCI BAR
+  * pci_read_base - Read a PCI BAR
   * @dev: the PCI device
-@@ -175,13 +515,20 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+@@ -181,13 +521,20 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
  int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		    struct resource *res, unsigned int pos)
  {
@@ -409,7 +409,7 @@ index d266d800f246..11544ddd6e5c 100644
  	/* No printks while decoding is disabled! */
  	if (!dev->mmio_always_on) {
  		pci_read_config_word(dev, PCI_COMMAND, &orig_cmd);
-@@ -191,7 +538,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -197,7 +544,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		}
  	}
  
@@ -417,7 +417,7 @@ index d266d800f246..11544ddd6e5c 100644
  
  	pci_read_config_dword(dev, pos, &l);
  	pci_write_config_dword(dev, pos, l | mask);
-@@ -207,6 +553,11 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -213,6 +559,11 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  	if (sz == 0xffffffff)
  		sz = 0;
  
@@ -429,13 +429,13 @@ index d266d800f246..11544ddd6e5c 100644
  	/*
  	 * I don't know how l can have all bits set.  Copied from old code.
  	 * Maybe it fixes a bug on some ancient platform.
-@@ -311,8 +662,19 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -317,8 +668,19 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  fail:
  	res->flags = 0;
  out:
 -	if (res->flags)
 +	if (res->flags) {
- 		dev_printk(KERN_DEBUG, &dev->dev, "reg 0x%x: %pR\n", pos, res);
+ 		pci_printk(KERN_DEBUG, dev, "reg 0x%x: %pR\n", pos, res);
 +		if (pci_scan_and_verify) {
 +			int bar = (pos - PCI_BASE_ADDRESS_0) >> 2;
 +			int maxbar = guess_bar_count(dev->class);
@@ -450,7 +450,7 @@ index d266d800f246..11544ddd6e5c 100644
  
  	return (res->flags & IORESOURCE_MEM_64) ? 1 : 0;
  }
-@@ -1265,7 +1627,14 @@ int pci_setup_device(struct pci_dev *dev)
+@@ -1630,7 +1992,13 @@ int pci_setup_device(struct pci_dev *dev)
  		if (class == PCI_CLASS_BRIDGE_PCI)
  			goto bad;
  		pci_read_irq(dev);
@@ -462,10 +462,6 @@ index d266d800f246..11544ddd6e5c 100644
 +			pci_read_bases(dev,
 +			guess_bar_count(dev->class),
 +			has_rom(dev->class, PCI_ROM_ADDRESS));
-+
- 		pci_read_config_word(dev, PCI_SUBSYSTEM_VENDOR_ID, &dev->subsystem_vendor);
- 		pci_read_config_word(dev, PCI_SUBSYSTEM_ID, &dev->subsystem_device);
  
--- 
-2.11.0
-
+ 		pci_subsystem_ids(dev, &dev->subsystem_vendor, &dev->subsystem_device);
+ 
