@@ -2,7 +2,7 @@
 Summary:	Simple data types for common serialization formats
 Name:		perl-Types-Serialiser
 Version:	1.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPL+ or Artistic
 Group:		Development/Libraries
 URL:		http://search.cpan.org/dist/Types-Serialiser/
@@ -11,8 +11,8 @@ Source0:	http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/Types-Serialiser-%
 Vendor:		VMware, Inc.
 Distribution:	Photon 
 BuildArch:	noarch
-BuildRequires:	perl
-Requires:	perl
+BuildRequires:	perl >= 5.28.0
+Requires:	perl >= 5.28.0
 BuildRequires:	perl-common-sense
 Requires:	perl-common-sense
 
@@ -53,6 +53,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/*
 
 %changelog
+*	Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.0-3
+-	Consuming perl version upgrade of 5.28.0
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-2
 -	GA - Bump release of all rpms
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.0-1
