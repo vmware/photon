@@ -1,7 +1,7 @@
 Summary:        Cross-platform path specification manipulation for Perl
 Name:           perl-Path-Class
 Version:        0.37
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://search.cpan.org/~kwilliams/Path-Class-0.37/
 License:        The Perl 5 License (Artistic 1 & GPL 1)
 Group:          Development/Libraries
@@ -11,8 +11,8 @@ Source:         http://search.cpan.org/CPAN/authors/id/K/KW/KWILLIAMS/Path-Class
 %define sha1    Path-Class=448cc1089add95d6a616a8e22adbde83dcb8f562
 
 BuildArch:      noarch
-Requires:       perl
-BuildRequires:  perl
+Requires:       perl >= 5.28.0
+BuildRequires:  perl >= 5.28.0
 
 %description
 Path::Class is a module for manipulation of file and directory specifications (strings describing their locations, like '/home/ken/foo.txt' or 'C:\Windows\Foo.txt') in a cross-platform manner. It supports pretty much every platform Perl runs on, including Unix, Windows, Mac, VMS, Epoc, Cygwin, OS/2, and NetWare.
@@ -38,6 +38,8 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 0.37-3
+-   Consuming perl version upgrade of 5.28.0
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.37-2
 -   Fix arch
 *   Wed Apr 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.37-1
