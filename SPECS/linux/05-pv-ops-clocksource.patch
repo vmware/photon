@@ -8,12 +8,12 @@ Subject: [PATCH] x86/vmware: pv-ops clocksource
  1 file changed, 21 insertions(+)
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 70b8c4614e22..987ac571d16c 100644
+index 1f22ed3..1eb5631 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -155,6 +155,27 @@ static void __init vmware_cyc2ns_setup(void)
- 	pr_info("using clock offset of %llu ns\n", d->cyc2ns_offset);
- }
+@@ -90,6 +90,27 @@ static int vmw_sched_clock __initdata = 1;
+ static DEFINE_PER_CPU_DECRYPTED(struct vmware_steal_time, steal_time) __aligned(64);
+ static int has_steal_clock = 0;
  
 +static u64 vmware_clock_get_cycles(struct clocksource *cs)
 +{
@@ -36,10 +36,10 @@ index 70b8c4614e22..987ac571d16c 100644
 +	return &clocksource_vmware;
 +}
 +
- static uint64_t vmware_steal_clock(int cpu)
+ static __init int setup_vmw_sched_clock(char *s)
  {
- 	struct vmware_steal_time *steal;
-@@ -290,6 +310,7 @@ static void __init vmware_paravirt_ops_setup(void)
+ 	vmw_sched_clock = 0;
+@@ -313,6 +334,7 @@ static void __init vmware_paravirt_ops_setup(void)
  		vmware_guest_cpu_init();
  #endif
  	}
@@ -47,6 +47,3 @@ index 70b8c4614e22..987ac571d16c 100644
  }
  #else
  #define vmware_paravirt_ops_setup() do {} while (0)
--- 
-2.11.0
-
