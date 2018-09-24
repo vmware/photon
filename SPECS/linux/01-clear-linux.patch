@@ -11,10 +11,10 @@ Subject: [PATCH] Patch from Clear Linux
  4 files changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index 4db10d7990c9..1f84959cc87e 100644
+index c910e74..59e1c7c 100644
 --- a/drivers/video/fbdev/core/fbcon.c
 +++ b/drivers/video/fbdev/core/fbcon.c
-@@ -146,7 +146,7 @@ static const struct consw fb_con;
+@@ -148,7 +148,7 @@ static const struct consw fb_con;
  
  static int fbcon_set_origin(struct vc_data *);
  
@@ -24,20 +24,20 @@ index 4db10d7990c9..1f84959cc87e 100644
  #define divides(a, b)	((!(a) || (b)%(a)) ? 0 : 1)
  
 diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index f6a816129856..f4fb458a91dd 100644
+index 79226ca..9ae142f 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
-@@ -39,7 +39,7 @@ struct blk_flush_queue;
+@@ -47,7 +47,7 @@ struct blk_queue_stats;
  struct blk_stat_callback;
  
  #define BLKDEV_MIN_RQ	4
 -#define BLKDEV_MAX_RQ	128	/* Default maximum */
 +#define BLKDEV_MAX_RQ	4096	/* Default maximum */
  
- /* Must be consisitent with blk_mq_poll_stats_bkt() */
+ /* Must be consistent with blk_mq_poll_stats_bkt() */
  #define BLK_MQ_POLL_STATS_BKTS 16
 diff --git a/init/do_mounts.c b/init/do_mounts.c
-index dea5de95c2dd..da840946d90b 100644
+index 2c71dab..7f01625 100644
 --- a/init/do_mounts.c
 +++ b/init/do_mounts.c
 @@ -28,6 +28,7 @@
@@ -48,7 +48,7 @@ index dea5de95c2dd..da840946d90b 100644
  
  #include <linux/nfs_fs.h>
  #include <linux/nfs_fs_sb.h>
-@@ -563,7 +564,8 @@ void __init prepare_namespace(void)
+@@ -562,7 +563,8 @@ void __init prepare_namespace(void)
  	 * For example, it is not atypical to wait 5 seconds here
  	 * for the touchpad of a laptop to initialize.
  	 */
@@ -59,10 +59,10 @@ index dea5de95c2dd..da840946d90b 100644
  	md_run_setup();
  
 diff --git a/mm/vmstat.c b/mm/vmstat.c
-index 604f26a4f696..bfbbcd76df57 100644
+index 8ba0870..0c32523 100644
 --- a/mm/vmstat.c
 +++ b/mm/vmstat.c
-@@ -1549,7 +1549,7 @@ static const struct file_operations proc_vmstat_file_operations = {
+@@ -1730,7 +1730,7 @@ static const struct seq_operations vmstat_op = {
  
  #ifdef CONFIG_SMP
  static DEFINE_PER_CPU(struct delayed_work, vmstat_work);
@@ -71,6 +71,3 @@ index 604f26a4f696..bfbbcd76df57 100644
  
  #ifdef CONFIG_PROC_FS
  static void refresh_vm_stats(struct work_struct *work)
--- 
-2.11.0
-
