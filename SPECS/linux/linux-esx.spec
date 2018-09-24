@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.153
-Release:       3%{?dist}
+Version:       4.4.157
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=fad45d4f6016373ee19e702517640e5c43610bd7
+%define sha1 linux=6ba64a589f986cc8353794e5ead36892e5da7a40
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -64,6 +64,9 @@ Patch47:        0007-xfs-move-inode-fork-verifiers-to-xfs_dinode_verify.patch
 Patch48:        0008-xfs-enhance-dinode-verifier.patch
 # Fix for CVE-2018-13053
 Patch49:        0001-alarmtimer-Prevent-overflow-for-relative-nanosleep.patch
+# Fix for CVE-2018-10879
+Patch50:        0001-ext4-add-corruption-check-in-ext4_xattr_set_entry.patch
+Patch51:        0002-ext4-always-verify-the-magic-number-in-xattr-blocks.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -148,6 +151,8 @@ The Linux package contains the Linux kernel doc files
 %patch47 -p1
 %patch48 -p1
 %patch49 -p1
+%patch50 -p1
+%patch51 -p1
 
 %patch67 -p1
 
@@ -238,6 +243,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Sep 24 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.157-1
+-   Update to version 4.4.157 and fix CVE-2018-10879
 *   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.153-3
 -   Improve error-handling of rdrand-rng kernel driver.
 *   Fri Sep 07 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.153-2
