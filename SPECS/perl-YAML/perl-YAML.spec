@@ -1,18 +1,18 @@
 # Got the intial spec from Fedora and modified it
 Summary:        YAML Ain't Markup Language (tm)
 Name:           perl-YAML
-Version:        1.23
+Version:        1.26
 Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML/
-Source0:        http://search.cpan.org/CPAN/authors/id/I/IN/INGY/YAML-%{version}.tar.gz
-%define sha1 YAML=2071a4bf5ec67daed81148d3671a3f8022bc04f2
+Source0:        https://cpan.metacpan.org/authors/id/T/TI/TINITA/YAML-%{version}.tar.gz
+%define sha1 YAML=61ea2e31ed1828fb2acebe97cf5c8231fe64b8eb
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch
-BuildRequires:	perl
-Requires:	perl
+BuildRequires:	perl >= 5.28.0
+Requires:	perl >= 5.28.0
 
 # Filter private provides:
 # perl(yaml_mapping) perl(yaml_scalar) perl(yaml_sequence)
@@ -83,6 +83,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/YAML::Types.3*
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.26-1
+-   Update to version 1.26
 *   Wed Apr 05 2017 Robert Qi <qij@vmware.com> 1.23-1
 -   Update version to 1.23
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.15-3
@@ -95,6 +97,3 @@ make %{?_smp_mflags} test
 -	Fix for multithreaded perl
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.14-1
 -	Initial version.
-
-
-

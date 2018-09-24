@@ -2,7 +2,7 @@
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
@@ -12,8 +12,11 @@ Source0:        http://sourceforge.net/projects/%{name}/files/%{name}/%{version}
 %define sha1 net-snmp=78f70731df9dcdb13fe8f60eb7d80d7583da4d2c
 Source1:        snmpd.service
 Source2:        snmptrapd.service
-BuildRequires:  openssl-devel perl systemd
-Requires:       perl systemd
+BuildRequires:  openssl-devel
+BuildRequires:  perl >= 5.28.0
+BuildRequires:  systemd
+Requires:       perl >= 5.28.0
+Requires:       systemd
 %description
  Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 
@@ -87,10 +90,11 @@ rm -rf %{buildroot}/*
 %{_libdir}/perl5
 %{_libdir}/*.so
 %{_datadir}
-%exclude /usr/lib/perl5/5.22.1/*/perllocal.pod
-%exclude /usr/lib/perl5/5.24.1/*/perllocal.pod
+%exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 5.8-2
+-   Consuming perl version upgrade of 5.28.0
 *   Wed Sep 19 2018 Keerthana K <keerthanak@vmware.com> 5.8-1
 -   Update to version 5.8
 *   Tue Jul 31 2018 Ajay Kaher <akaher@vmware.com> 5.7.3-9
