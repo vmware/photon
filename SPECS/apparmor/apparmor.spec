@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        2.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -14,7 +14,6 @@ Group:          Productivity/Security
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-BuildRequires:  ruby
 BuildRequires:  swig
 BuildRequires:  make
 BuildRequires:  gawk
@@ -150,17 +149,6 @@ Requires:   libapparmor = %{version}-%{release}
 %description -n perl-apparmor
 This package contains the AppArmor module for perl.
 
-%package -n ruby-apparmor
-Summary:    Ruby interface for libapparmor functions
-License:    GNU LGPL v2.1
-Group:      Development/Languages/Ruby
-Requires:   libapparmor = %{version}-%{release}
-Requires:   ruby
-
-%description -n ruby-apparmor
-This package provides the ruby interface to AppArmor. It is used for ruby
-applications interfacing with AppArmor.
-
 %prep
 %setup -q -n %{name}-%{version}
 %patch0 -p1
@@ -182,8 +170,7 @@ sh ./autogen.sh
     --libdir=%{_libdir} \
     --sysconfdir=/etc   \
     --with-perl         \
-    --with-python       \
-    --with-ruby
+    --with-python
 make %{?_smp_mflags}
 #Building Binutils
 cd ../../binutils/
@@ -366,13 +353,12 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{perl_vendorarch}/auto/LibAppArmor/
 %{perl_vendorarch}/LibAppArmor.pm
-%exclude %{_libdir}/perl5/5.24.1/x86_64-linux-thread-multi/perllocal.pod
-
-%files -n ruby-apparmor
-%defattr(-,root,root)
-%{_libdir}/ruby/site_ruby/*
+%{perl_archlib}/perllocal.pod
 
 %changelog
+*   Tue Sep 25 2018 Keerthana K <keerthanak@vmware.com> 2.13-3
+-   Depcrecated ruby apparmor package.
+-   Modified the perl path to generic.
 *   Thu Sep 20 2018 Keerthana K <keerthanak@vmware.com> 2.13-2
 -   Updated the ruby packagefor latest version.
 *   Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 2.13-1
