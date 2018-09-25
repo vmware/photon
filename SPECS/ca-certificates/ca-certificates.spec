@@ -1,9 +1,10 @@
 Summary:	Certificate Authority certificates 
 Name:		ca-certificates
-Version:	20160109
-Release:	5%{?dist}
+Version:	20180919
+Release:	1%{?dist}
 License:	Custom
-URL:		http://mxr.mozilla.org/mozilla/source/security/nss/lib/ckfw/builtins/
+# http://anduin.linuxfromscratch.org/BLFS/other/certdata.txt
+URL:            http://anduin.linuxfromscratch.org/BLFS/other/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -16,9 +17,10 @@ The Public Key Inrastructure is used for many security issues in a
 Linux system. In order for a certificate to be trusted, it must be
 signed by a trusted agent called a Certificate Authority (CA). The
 certificates loaded by this section are from the list on the Mozilla
-version control system and formats it into a form used by 
+version control system and formats it into a form used by
 OpenSSL-1.0.1e. The certificates can also be used by other applications
 either directly of indirectly through openssl.
+
 %prep -p exit
 %build
 [ %{builddir} != "/"] && rm -rf %{builddir}/*
@@ -219,7 +221,7 @@ install -Dm644 bin/make-ca.sh %{buildroot}/bin/make-ca.sh
 install -Dm644 bin/make-cert.pl %{buildroot}/bin/make-cert.pl
 install -Dm644 bin/remove-expired-certs.sh %{buildroot}/bin/remove-expired-certs.sh
 %{_fixperms} %{buildroot}/*
-%post 
+%post
 cd /etc/ssl/certs;
 for file in *.pem; do ln -sf $file `openssl x509 -hash -noout -in $file`.0; done
 exit 0
@@ -231,7 +233,10 @@ exit 0
 /bin/make-ca.sh
 /bin/remove-expired-certs.sh
 /bin/make-cert.pl
+
 %changelog
+*       Wed Oct 03 2018 Ankit Jain <ankitja@vmware.com> 20180919-1
+-       Updating mozilla certdata.txt to latest rev.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 20160109-5
 -	GA - Bump release of all rpms
 *	Wed Feb 10 2016 Anish Swaminathan <anishs@vmware.com> 20160109-4
