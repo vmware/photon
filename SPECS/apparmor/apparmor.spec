@@ -1,6 +1,7 @@
+%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           apparmor
 Version:        2.13
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -14,7 +15,6 @@ Group:          Productivity/Security
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-BuildRequires:  ruby
 BuildRequires:  swig
 BuildRequires:  make
 BuildRequires:  gawk
@@ -150,17 +150,6 @@ Requires:   libapparmor = %{version}-%{release}
 %description -n perl-apparmor
 This package contains the AppArmor module for perl.
 
-%package -n ruby-apparmor
-Summary:    Ruby interface for libapparmor functions
-License:    GNU LGPL v2.1
-Group:      Development/Languages/Ruby
-Requires:   libapparmor = %{version}-%{release}
-Requires:   ruby
-
-%description -n ruby-apparmor
-This package provides the ruby interface to AppArmor. It is used for ruby
-applications interfacing with AppArmor.
-
 %prep
 %setup -q -n %{name}-%{version}
 %patch0 -p1
@@ -176,14 +165,9 @@ cd ./libraries/libapparmor
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 /sbin/ldconfig
 sh ./autogen.sh
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=/etc   \
-    --with-perl         \
-    --with-python       \
-    --with-ruby
+%configure \
+ --with-perl \
+ --with-python
 make %{?_smp_mflags}
 #Building Binutils
 cd ../../binutils/
@@ -350,29 +334,18 @@ make DESTDIR=%{buildroot} install
 
 %files -n python3-apparmor
 %defattr(-,root,root)
-%dir %{_libdir}/python3.6/site-packages/LibAppArmor
-%dir %{_libdir}/python3.6/site-packages/LibAppArmor/__pycache__
-%{_libdir}/python3.6/site-packages/LibAppArmor/_LibAppArmor.cpython-*.so
-%{_libdir}/python3.6/site-packages/LibAppArmor/__pycache__/__init__.cpython-*.pyc
-%{_libdir}/python3.6/site-packages/LibAppArmor/__pycache__/LibAppArmor.cpython-*.pyc
-%{_libdir}/python3.6/site-packages/LibAppArmor/__init__.py
-%{_libdir}/python3.6/site-packages/LibAppArmor/LibAppArmor.py
-%{_libdir}/python3.6/site-packages/LibAppArmor-%{version}-py*.egg-info
-%{_libdir}/python3.6/site-packages/apparmor-%{version}-py*.egg-info
-%dir %{_libdir}/python3.6/site-packages/apparmor
-%{_libdir}/python3.6/site-packages/apparmor/*
+%{python3_sitelib}/*
 
 %files -n perl-apparmor
 %defattr(-,root,root)
 %{perl_vendorarch}/auto/LibAppArmor/
 %{perl_vendorarch}/LibAppArmor.pm
-%exclude %{_libdir}/perl5/5.24.1/%{_arch}-linux-thread-multi/perllocal.pod
-
-%files -n ruby-apparmor
-%defattr(-,root,root)
-%{_libdir}/ruby/site_ruby/*
+%{perl_archlib}/perllocal.pod
 
 %changelog
+*   Wed Oct 03 2018 Keerthana K <keerthanak@vmware.com> 2.13-4
+-   Depcrecated ruby apparmor package.
+-   Modified the perl and python path to generic.
 *   Wed Sep 26 2018 Ajay Kaher <akaher@vmware.com> 2.13-3
 -   Fix for aarch64
 *   Thu Sep 20 2018 Keerthana K <keerthanak@vmware.com> 2.13-2
