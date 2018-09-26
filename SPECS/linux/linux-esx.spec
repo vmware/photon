@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.161
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -64,6 +64,7 @@ Patch47:        0007-xfs-move-inode-fork-verifiers-to-xfs_dinode_verify.patch
 Patch48:        0008-xfs-enhance-dinode-verifier.patch
 # Fix for CVE-2018-10879
 Patch50:        0001-ext4-add-corruption-check-in-ext4_xattr_set_entry.patch
+Patch51:        net-9p-vdfs-zerocopy.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -148,6 +149,7 @@ The Linux package contains the Linux kernel doc files
 %patch47 -p1
 %patch48 -p1
 %patch50 -p1
+%patch51 -p1
 
 %patch67 -p1
 
@@ -238,6 +240,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 06 2018 Kamal Charan <kcharan@vmware.com> 4.4.161-2
+-   Add 9p zero copy data path for vdfs
 *   Mon Oct 15 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.161-1
 -   Update to version 4.4.161
 *   Mon Sep 24 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.157-1
