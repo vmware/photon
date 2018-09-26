@@ -140,12 +140,10 @@ class PackageBuildDataGenerator(object):
             nextPackagesToConstructGraph.update(dependentPackages)
 
         if addRunTimeGraph:
-            packageName, packageVersion = StringUtils.splitPackageNameAndVersion(basePackage)
-            rpmPackages = SPECS.getData().getPackages(packageName, packageVersion)
             dependentPackages = set()
-            for rpmPkg in rpmPackages:
-                dependentRpmPackages = SPECS.getData().getRequiresAllForPackage(rpmPkg, packageVersion)
-                self.__runTimeDependencyGraph[rpmPkg+"-"+packageVersion] = copy.copy(set(dependentRpmPackages))
+            for rpmPkg in SPECS.getData().getPackagesForPkg(basePackage):
+                dependentRpmPackages = SPECS.getData().getRequiresAllForPkg(rpmPkg)
+                self.__runTimeDependencyGraph[rpmPkg] = copy.copy(set(dependentRpmPackages))
                 for pkg in dependentRpmPackages:
                     dependentPackages.add(SPECS.getData().getBasePkg(pkg))
             nextPackagesToConstructGraph.update(dependentPackages)

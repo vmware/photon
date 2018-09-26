@@ -234,8 +234,11 @@ class SpecObjectsUtils(object):
         return self._getSpecObjField(package, version, field=lambda x : x.listPackages)
 
     def getPackagesForPkg(self, pkg):
+        pkgs=[]
         package, version = StringUtils.splitPackageNameAndVersion(pkg)
-        return self.getPackages(package, version)
+        for p in self.getPackages(package, version):
+            pkgs.append(p+"-"+version)
+        return pkgs
 
     def getRPMPackages(self, package, version):
         return self._getSpecObjField(package, version, field=lambda x : x.listRPMPackages)
@@ -394,26 +397,29 @@ class SpecDependencyGenerator(object):
                     parent[depPkg] = specPkg
                     depQue.put(depPkg)
 
-    def findTotalWhoNeedsToBuild(self, depQue, whoNeedsBuild):
-        while not depQue.empty():
-            specPkg = depQue.get()
-            listPackagesRequiredToBuild = SPECS.getData().getBuildRequiresForPkg(specPkg)
-            for depPkg in listPackagesRequiredToBuild:
-                depSpecPkg = SPECS.getData().getBasePkg(depPkg)
-                if depSpecPkg not in whoNeedsBuild:
-                    whoNeedsBuild.append(depSpecPkg)
-                    depQue.put(depSpecPkg)
+    def getBasePackagesRequired(self, pkg):
+        listBasePackagesRequired=[]
+        listPackagesRequired = SPECS.getData().getBuildRequiresForPkg(pkg)
+        listPackagesRequired.extend(SPECS.getData().getRequiresAllForPkg(pkg))
+        for p in listPackagesRequired:
+            basePkg = SPECS.getData().getBasePkg(p)
+            if basePkg not in listBasePackagesRequired:
+                listBasePackagesRequired.append(basePkg)
+        return listBasePackagesRequired
 
-    def findTotalWhoNeeds(self, depQue, whoNeeds):
-        while not depQue.empty():
-            specPkg = depQue.get()
-            listPackagesRequired = SPECS.getData().getBuildRequiresForPkg(specPkg)
-            listPackagesRequired.extend(SPECS.getData().getRequiresAllForPkg(specPkg))
-            for depPkg in listPackagesRequired:
-                depSpecPkg = SPECS.getData().getBasePkg(depPkg)
-                if depSpecPkg not in whoNeeds:
-                    whoNeeds.append(depSpecPkg)
-                    depQue.put(depSpecPkg)
+
+    def findTotalWhoNeeds(self, depList, whoNeeds):
+        while depList:
+            pkg = depList.pop(0)
+            for depPackage in SPECS.getData().getListPackages():
+                for version in SPECS.getData().getVersions(depPackage):
+                    depBasePkg = depPackage+"-"+version
+                    if depBasePkg in whoNeeds:
+                        continue
+                    if pkg in self.getBasePackagesRequired(depBasePkg):
+                        whoNeeds.append(depBasePkg)
+                        if depBasePkg not in depList:
+                            depList.append(depBasePkg)
 
     def printTree(self, children, curParent, depth):
         if curParent in children:
@@ -430,8 +436,7 @@ class SpecDependencyGenerator(object):
     def updateLevels(self, mapDependencies, inPkg, parent, level):
         listPackages = SPECS.getData().getPackagesForPkg(inPkg)
         for depPkg in SPECS.getData().getRequiresForPkg(inPkg):
-            package, version = StringUtils.splitPackageNameAndVersion(depPkg)
-            if package in listPackages:
+            if depPkg in listPackages:
                 continue
             if depPkg in mapDependencies and mapDependencies[depPkg] < level + 1:
                 mapDependencies[depPkg] = level + 1
@@ -490,7 +495,7 @@ class SpecDependencyGenerator(object):
     def process(self, inputType, inputValue, displayOption, outputFile=None):
         whoNeedsList = []
         inputPackages = []
-        whoNeedsBuild = []
+        whatNeedsBuild = []
         mapDependencies = {}
         parent = {}
         if inputType == "pkg" or inputType == "json":
@@ -505,14 +510,13 @@ class SpecDependencyGenerator(object):
             else:
                 return self.displayDependencies(displayOption, inputType, inputValue, mapDependencies, parent)
         elif inputType == "remove-upward-deps":
-            depQue = queue.Queue()
+            depList = []
             for specFile in inputValue.split(":"):
                 if specFile in SPECS.getData().mapSpecFileNameToSpecObj:
                     specObj = SPECS.getData().mapSpecFileNameToSpecObj[specFile]
                     whoNeedsList.append(specObj.name+"-"+specObj.version)
-                    for package in specObj.listPackages:
-                        depQue.put(package+"-"+specObj.version)
-            self.findTotalWhoNeeds(depQue, whoNeedsList)
+                    depList.append(specObj.name+"-"+specObj.version)
+            self.findTotalWhoNeeds(depList, whoNeedsList)
             return whoNeedsList
 
         elif inputType == "who-needs":
@@ -525,10 +529,3 @@ class SpecDependencyGenerator(object):
                         whoNeedsList.append(depPkg)
             print (whoNeedsList)
             return whoNeedsList
-        elif inputType == "who-needs-build":
-            depQue = queue.Queue()
-            depQue.put(inputValue)
-            self.findTotalWhoNeedsToBuild(depQue, whoNeedsBuild)
-            print ("Following specs need to be build again")
-            print (whoNeedsBuild)
-            return whoNeedsBuild

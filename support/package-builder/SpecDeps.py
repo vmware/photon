@@ -59,8 +59,7 @@ def main():
                 cmdUtils.runCommandInShell2("rm -f "+rpmFile)
         # To display/print package dependencies on console
         elif (options.input_type == "pkg" or
-                options.input_type == "who-needs" or
-                options.input_type == "who-needs-build"):
+                options.input_type == "who-needs"):
             specDeps.process(options.input_type, options.pkg, options.display_option)
 
         elif options.input_type == "json":
