@@ -1,14 +1,14 @@
 Name:         erlang
 Summary:      erlang
-Version:      19.3
-Release:      2%{?dist}
+Version:      21.0
+Release:      1%{?dist}
 Group:        Development/Languages
 Vendor:       VMware, Inc.
 Distribution: Photon
 License:      ASL2.0
 URL:          http://erlang.com
-Source0:      otp_src_%{version}.tar.gz
-%define sha1 otp_src=a3be29bff2d258399b1e2fddfc76cf2f6f1efba8
+Source0:      http://%{name}.org/download/otp_src_%{version}.tar.gz
+%define sha1 otp_src=b9ba0909aef16f038b8c75e4d7fd0993ae4e3beb
 %description
 erlang programming language
 
@@ -36,6 +36,8 @@ make install DESTDIR=$RPM_BUILD_ROOT
 %exclude %{_libdir}/debug
 
 %changelog
+* Mon Sep 24 2018 Dweep Advani <dadvani@vmware.com> 21.0-1
+- Update to version 21.0
 * Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 19.3-2
 - Remove BuildArch
 * Thu Apr 06 2017 Chang Lee <changlee@vmware.com> 19.3-1
