@@ -1,0 +1,326 @@
+diff -ru orig/include/net/9p/9p.h fix/include/net/9p/9p.h
+--- orig/include/net/9p/9p.h	2017-01-09 12:38:10.000000000 +0530
++++ fix/include/net/9p/9p.h	2018-08-23 15:17:16.860812877 +0530
+@@ -168,6 +168,10 @@
+ 	P9_RRENAMEAT,
+ 	P9_TUNLINKAT = 76,
+ 	P9_RUNLINKAT,
++	P9_TREADX = 96,
++	P9_RREADX,
++	P9_TWRITEX = 98,
++	P9_RWRITEX,
+ 	P9_TVERSION = 100,
+ 	P9_RVERSION,
+ 	P9_TAUTH = 102,
+diff -ru orig/net/9p/client.c fix/net/9p/client.c
+--- orig/net/9p/client.c	2017-01-09 12:38:10.000000000 +0530
++++ fix/net/9p/client.c	2018-08-31 14:40:16.046786981 +0530
+@@ -44,6 +44,8 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/9p.h>
+ 
++#define VDFS_ZC_MAXPAGES 1024
++
+ /*
+   * Client Option Parsing (code inspired by NFS code)
+   *  - a little lazy - parse all client options
+@@ -1536,11 +1538,21 @@
+ EXPORT_SYMBOL(p9_client_unlinkat);
+ 
+ int
++iov_iter_can_zc(struct iov_iter *i)
++{
++	return (iter_is_iovec(i) && iov_iter_count(i) > PAGE_SIZE); // only for mutiple page io, for now
++}
++
++int
+ p9_client_read(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err)
+ {
+ 	struct p9_client *clnt = fid->clnt;
+ 	struct p9_req_t *req;
+ 	int total = 0;
++	int i, npages;
++	struct page **pages = NULL;
++	unsigned long *ppns = NULL;
++
+ 	*err = 0;
+ 
+ 	p9_debug(P9_DEBUG_9P, ">>> TREAD fid %d offset %llu %d\n",
+@@ -1548,15 +1560,40 @@
+ 
+ 	while (iov_iter_count(to)) {
+ 		int count = iov_iter_count(to);
+-		int rsize, non_zc = 0;
++		int rsize, non_zc = 0, vdfs_zc = 0, end = 0;
+ 		char *dataptr;
++		size_t off;
+ 			
+-		rsize = fid->iounit;
+-		if (!rsize || rsize > clnt->msize-P9_IOHDRSZ)
+-			rsize = clnt->msize - P9_IOHDRSZ;
++		if (iov_iter_can_zc(to)) {
++			ssize_t n;
+ 
+-		if (count < rsize)
+-			rsize = count;
++			vdfs_zc = 1;
++			
++			if (!pages) {
++				pages = kmalloc(sizeof(struct page *) * VDFS_ZC_MAXPAGES, GFP_KERNEL);
++				ppns = kmalloc(sizeof(unsigned long) * VDFS_ZC_MAXPAGES, GFP_KERNEL);
++			}
++			n = iov_iter_get_pages(to, pages, iov_iter_count(to),
++								   VDFS_ZC_MAXPAGES, &off);
++			npages = (off + n + PAGE_SIZE - 1) >> PAGE_SHIFT;
++
++			p9_debug(P9_DEBUG_9P, "    TREADX off=%llu len=%ld start=%lu np=%d\n",
++					 offset, n, off, npages);
++			for (i = 0; i < npages; i++) {
++				ppns[i] = page_to_pfn(pages[i]);
++				p9_debug(P9_DEBUG_9P, "               pa %2d %p\n",
++						 i, (void *) ppns[i]);
++			}
++			rsize = n;
++		} else {
++			rsize = fid->iounit;
++			if (!rsize || rsize > clnt->msize-P9_IOHDRSZ)
++				rsize = clnt->msize - P9_IOHDRSZ;
++
++			if (count < rsize)
++				rsize = count;
++		}
++		p9_debug(P9_DEBUG_9P, "          iter rsize %d \n", rsize);
+ 
+ 		/* Don't bother zerocopy for small IO (< 1024) */
+ 		if (clnt->trans_mod->zc_request && rsize > 1024) {
+@@ -1568,31 +1605,47 @@
+ 					       0, 11, "dqd", fid->fid,
+ 					       offset, rsize);
+ 		} else {
+-			non_zc = 1;
+-			req = p9_client_rpc(clnt, P9_TREAD, "dqd", fid->fid, offset,
+-					    rsize);
++			if (vdfs_zc) {
++				req = p9_client_rpc(clnt, P9_TREADX, "dqddp", fid->fid, offset,
++						    rsize, (unsigned int) off, npages, ppns);
++			} else {
++				non_zc = 1;
++				req = p9_client_rpc(clnt, P9_TREAD, "dqd", fid->fid, offset,
++						    rsize);
++			}
+ 		}
+ 		if (IS_ERR(req)) {
++			p9_debug(P9_DEBUG_9P, "          rpc error\n");
+ 			*err = PTR_ERR(req);
+-			break;
++			end = 1;
++			goto endloop;
+ 		}
+ 
+-		*err = p9pdu_readf(req->rc, clnt->proto_version,
+-				   "D", &count, &dataptr);
++		if (vdfs_zc) {
++			*err = p9pdu_readf(req->rc, clnt->proto_version,
++					   "d", &count);
++		} else {
++			*err = p9pdu_readf(req->rc, clnt->proto_version,
++					   "D", &count, &dataptr);
++		}
+ 		if (*err) {
++			p9_debug(P9_DEBUG_9P, "          ret err %d \n", *err);
+ 			trace_9p_protocol_dump(clnt, req->rc);
+-			p9_free_req(clnt, req);
+-			break;
++			end = 1;
++			goto endloop;
+ 		}
+-		if (rsize < count) {
++		if (count > rsize) {
+ 			pr_err("bogus RREAD count (%d > %d)\n", count, rsize);
+ 			count = rsize;
+ 		}
+ 
+ 		p9_debug(P9_DEBUG_9P, "<<< RREAD count %d\n", count);
++		if (vdfs_zc && count != rsize) {
++			p9_debug(P9_DEBUG_9P, "short RREAD \n"); //EOF only;
++		}
+ 		if (!count) {
+-			p9_free_req(clnt, req);
+-			break;
++			end = 1;
++			goto endloop;
+ 		}
+ 
+ 		if (non_zc) {
+@@ -1601,15 +1654,29 @@
+ 			offset += n;
+ 			if (n != count) {
+ 				*err = -EFAULT;
+-				p9_free_req(clnt, req);
+-				break;
++				end = 1;
++				goto endloop;
+ 			}
+ 		} else {
+ 			iov_iter_advance(to, count);
+ 			total += count;
+ 			offset += count;
+ 		}
+-		p9_free_req(clnt, req);
++endloop:
++		if (vdfs_zc) {
++			for (i = 0; i < npages; i++) {
++				put_page(pages[i]);
++			}
++		}
++		if (!IS_ERR(req)) {
++			p9_free_req(clnt, req);
++		}
++		if (end)
++			break;
++	}
++	if (pages) {
++		kfree(pages);
++		kfree(ppns);
+ 	}
+ 	return total;
+ }
+@@ -1621,6 +1688,10 @@
+ 	struct p9_client *clnt = fid->clnt;
+ 	struct p9_req_t *req;
+ 	int total = 0;
++	int i, npages;
++	struct page **pages = NULL;
++	unsigned long *ppns = NULL;
++
+ 	*err = 0;
+ 
+ 	p9_debug(P9_DEBUG_9P, ">>> TWRITE fid %d offset %llu count %zd\n",
+@@ -1629,12 +1700,38 @@
+ 
+ 	while (iov_iter_count(from)) {
+ 		int count = iov_iter_count(from);
+-		int rsize = fid->iounit;
+-		if (!rsize || rsize > clnt->msize-P9_IOHDRSZ)
+-			rsize = clnt->msize - P9_IOHDRSZ;
++		int rsize, vdfs_zc = 0, end = 0;
++		size_t off;
++
++		if (iov_iter_can_zc(from)) {
++			ssize_t n;
+ 
+-		if (count < rsize)
+-			rsize = count;
++			vdfs_zc = 1;
++			if (!pages) {
++				pages = kmalloc(sizeof(struct page *) * VDFS_ZC_MAXPAGES, GFP_KERNEL);
++				ppns = kmalloc(sizeof(unsigned long) * VDFS_ZC_MAXPAGES, GFP_KERNEL);
++			}
++			n = iov_iter_get_pages(from, pages, iov_iter_count(from),
++								   VDFS_ZC_MAXPAGES, &off);
++			npages = (off + n + PAGE_SIZE - 1) >> PAGE_SHIFT;
++
++			p9_debug(P9_DEBUG_9P, "    TWRITEX off=%llu len=%ld start=%lu np=%d\n",
++					 offset, n, off, npages);
++			for (i = 0; i < npages; i++) {
++				ppns[i] = page_to_pfn(pages[i]);
++				p9_debug(P9_DEBUG_9P, "               pa %2d %p\n",
++						 i, (void *) ppns[i]);
++			}
++			rsize = n;
++		} else {
++			rsize = fid->iounit;
++			if (!rsize || rsize > clnt->msize-P9_IOHDRSZ)
++				rsize = clnt->msize - P9_IOHDRSZ;
++
++			if (count < rsize)
++				rsize = count;
++		}
++		p9_debug(P9_DEBUG_9P, "          iter rsize %d \n", rsize);
+ 
+ 		/* Don't bother zerocopy for small IO (< 1024) */
+ 		if (clnt->trans_mod->zc_request && rsize > 1024) {
+@@ -1642,31 +1739,54 @@
+ 					       rsize, P9_ZC_HDR_SZ, "dqd",
+ 					       fid->fid, offset, rsize);
+ 		} else {
+-			req = p9_client_rpc(clnt, P9_TWRITE, "dqV", fid->fid,
+-						    offset, rsize, from);
++			if (vdfs_zc) {
++				req = p9_client_rpc(clnt, P9_TWRITEX, "dqddp", fid->fid,
++							    offset, rsize, (unsigned int) off, npages, ppns);
++			} else {
++				req = p9_client_rpc(clnt, P9_TWRITE, "dqV", fid->fid,
++							    offset, rsize, from);
++			}
+ 		}
+ 		if (IS_ERR(req)) {
++			p9_debug(P9_DEBUG_9P, "          rpc error\n");
+ 			*err = PTR_ERR(req);
+-			break;
++			end = 1;
++			goto endloop;
+ 		}
+ 
+ 		*err = p9pdu_readf(req->rc, clnt->proto_version, "d", &count);
+ 		if (*err) {
++			p9_debug(P9_DEBUG_9P, "          ret err %d \n", *err);
+ 			trace_9p_protocol_dump(clnt, req->rc);
+-			p9_free_req(clnt, req);
+-			break;
++			end = 1;
++			goto endloop;
+ 		}
+-		if (rsize < count) {
++		if (count > rsize) {
+ 			pr_err("bogus RWRITE count (%d > %d)\n", count, rsize);
+ 			count = rsize;
+ 		}
+ 
+ 		p9_debug(P9_DEBUG_9P, "<<< RWRITE count %d\n", count);
+ 
+-		p9_free_req(clnt, req);
+ 		iov_iter_advance(from, count);
+ 		total += count;
+ 		offset += count;
++endloop:
++		if (vdfs_zc) {
++			for (i = 0; i < npages; i++) {
++				put_page(pages[i]);
++			}
++		}
++		if (!IS_ERR(req)) {
++			p9_free_req(clnt, req);
++		}
++		if (end)
++			break;
++
++	}
++	if (pages) {
++		kfree(pages);
++		kfree(ppns);
+ 	}
+ 	return total;
+ }
+diff -ru orig/net/9p/protocol.c fix/net/9p/protocol.c
+--- orig/net/9p/protocol.c	2017-01-09 12:38:10.000000000 +0530
++++ fix/net/9p/protocol.c	2018-08-24 20:57:32.247158841 +0530
+@@ -449,6 +449,18 @@
+ 					errcode = -EFAULT;
+ 			}
+ 			break;
++		case 'p':{
++				int j;
++				uint32_t npages = va_arg(ap, uint32_t);
++				uint64_t *ppns = va_arg(ap, uint64_t *);
++				errcode =
++				    p9pdu_writef(pdu, proto_version, "d", npages);
++				for (j = 0; !errcode && j < npages; j++) {
++					errcode =
++					    p9pdu_writef(pdu, proto_version, "q", ppns[j]);
++				}
++			}
++			break;
+ 		case 'T':{
+ 				uint16_t nwname = va_arg(ap, int);
+ 				const char **wnames = va_arg(ap, const char **);
