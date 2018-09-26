@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.161
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -64,6 +64,7 @@ Patch40:        0007-xfs-move-inode-fork-verifiers-to-xfs_dinode_verify.patch
 Patch41:        0008-xfs-enhance-dinode-verifier.patch
 # Fix for CVE-2018-10879
 Patch43:        0001-ext4-add-corruption-check-in-ext4_xattr_set_entry.patch
+Patch44:        net-9p-vdfs-zerocopy.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -181,6 +182,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch40 -p1
 %patch41 -p1
 %patch43 -p1
+%patch44 -p1
 
 %patch67 -p1
 
@@ -339,6 +341,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Nov 06 2018 Kamal Charan <kcharan@vmware.com> 4.4.161-2
+-   Add 9p zero copy data path for vdfs
 *   Mon Oct 15 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.161-1
 -   Update to version 4.4.161
 *   Mon Sep 24 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.157-1

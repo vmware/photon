@@ -1,0 +1,583 @@
+From 31b5c204e56aa9a904c8cbb134a4c2f638a104c1 Mon Sep 17 00:00:00 2001
+From: Kamal Charan <kcharan@vmware.com>
+Date: Tue, 6 Nov 2018 04:13:51 -0800
+Subject: [PATCH] Add 9p zero copy data path for vdfs
+
+---
+ include/net/9p/9p.h     |   4 +
+ include/net/9p/client.h |   1 +
+ net/9p/client.c         | 417 +++++++++++++++++++++++++++++++++++++-----------
+ net/9p/protocol.c       |  14 ++
+ 4 files changed, 345 insertions(+), 91 deletions(-)
+
+diff --git a/include/net/9p/9p.h b/include/net/9p/9p.h
+index 27dfe85..2265b97 100644
+--- a/include/net/9p/9p.h
++++ b/include/net/9p/9p.h
+@@ -168,6 +168,10 @@ enum p9_msg_t {
+ 	P9_RRENAMEAT,
+ 	P9_TUNLINKAT = 76,
+ 	P9_RUNLINKAT,
++	P9_TREADX = 96,
++	P9_RREADX,
++	P9_TWRITEX = 98,
++	P9_RWRITEX,
+ 	P9_TVERSION = 100,
+ 	P9_RVERSION,
+ 	P9_TAUTH = 102,
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index c6b97e5..b15efd2 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -152,6 +152,7 @@ struct p9_req_t {
+ struct p9_client {
+ 	spinlock_t lock; /* protect client structure */
+ 	unsigned int msize;
++	unsigned int is_crossfd;
+ 	unsigned char proto_version;
+ 	struct p9_trans_module *trans_mod;
+ 	enum p9_trans_status status;
+diff --git a/net/9p/client.c b/net/9p/client.c
+index ed8738c4..d1fda28 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -44,6 +44,9 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/9p.h>
+ 
++#define CROSSFD_ZC_MAXPAGES 1024
++#define CROSSFD_ZC_TRANSPORT "vsock"
++
+ /*
+   * Client Option Parsing (code inspired by NFS code)
+   *  - a little lazy - parse all client options
+@@ -54,6 +57,7 @@ enum {
+ 	Opt_trans,
+ 	Opt_legacy,
+ 	Opt_version,
++	Opt_crossfd,
+ 	Opt_err,
+ };
+ 
+@@ -62,6 +66,7 @@ static const match_table_t tokens = {
+ 	{Opt_legacy, "noextend"},
+ 	{Opt_trans, "trans=%s"},
+ 	{Opt_version, "version=%s"},
++	{Opt_crossfd, "crossfd"},
+ 	{Opt_err, NULL},
+ };
+ 
+@@ -77,6 +82,12 @@ inline int p9_is_proto_dotu(struct p9_client *clnt)
+ }
+ EXPORT_SYMBOL(p9_is_proto_dotu);
+ 
++inline int p9_is_option_crossfd(struct p9_client *clnt)
++{
++	return clnt->is_crossfd != 0;
++}
++EXPORT_SYMBOL(p9_is_option_crossfd);
++
+ /*
+  * Some error codes are taken directly from the server replies,
+  * make sure they are valid.
+@@ -179,6 +190,9 @@ static int parse_opts(char *opts, struct p9_client *clnt)
+ 		case Opt_legacy:
+ 			clnt->proto_version = p9_proto_legacy;
+ 			break;
++		case Opt_crossfd:
++			clnt->is_crossfd = 1;
++			break;
+ 		case Opt_version:
+ 			s = match_strdup(&args[0]);
+ 			if (!s) {
+@@ -199,6 +213,16 @@ static int parse_opts(char *opts, struct p9_client *clnt)
+ 			continue;
+ 		}
+ 	}
++	if (clnt->is_crossfd &&
++	    (!clnt->trans_mod ||
++	     strcmp(clnt->trans_mod->name, CROSSFD_ZC_TRANSPORT))) {
++		p9_debug(P9_DEBUG_ERROR,
++			 "crossfd option requires %s transport",
++			 CROSSFD_ZC_TRANSPORT);
++		ret = -EINVAL;
++		goto free_and_return;
++	}
++
+ 
+ free_and_return:
+ 	kfree(tmp_options);
+@@ -999,6 +1023,7 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 
+ 	clnt->trans_mod = NULL;
+ 	clnt->trans = NULL;
++	clnt->is_crossfd = 0;
+ 
+ 	client_id = utsname()->nodename;
+ 	memcpy(clnt->name, client_id, strlen(client_id) + 1);
+@@ -1534,136 +1559,346 @@ error:
+ }
+ EXPORT_SYMBOL(p9_client_unlinkat);
+ 
++static int
++crossfd_can_zc(const struct iov_iter *iter)
++{
++	return iter_is_iovec(iter) && iov_iter_count(iter) > PAGE_SIZE;
++}
++
++static int
++p9_client_read_nocrossfd(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err)
++{
++	struct p9_client *clnt = fid->clnt;
++	struct p9_req_t *req;
++	int total = 0;
++	int count = iov_iter_count(to);
++	int rsize, non_zc = 0;
++	char *dataptr;
++
++	*err = 0;
++
++	rsize = fid->iounit;
++	if (!rsize || rsize > clnt->msize-P9_IOHDRSZ)
++		rsize = clnt->msize - P9_IOHDRSZ;
++
++	if (count < rsize)
++		rsize = count;
++
++	/* Don't bother zerocopy for small IO (< 1024) */
++	if (clnt->trans_mod->zc_request && rsize > 1024) {
++		/*
++		 * response header len is 11
++		 * PDU Header(7) + IO Size (4)
++		 */
++		req = p9_client_zc_rpc(clnt, P9_TREAD, to, NULL, rsize,
++				       0, 11, "dqd", fid->fid, offset, rsize);
++	} else {
++		non_zc = 1;
++		req = p9_client_rpc(clnt, P9_TREAD, "dqd", fid->fid, offset,
++				    rsize);
++	}
++
++	if (IS_ERR(req)) {
++		p9_debug(P9_DEBUG_9P, "          rpc error\n");
++		*err = PTR_ERR(req);
++		return 0;
++	}
++
++	*err = p9pdu_readf(req->rc, clnt->proto_version, "D", &count, &dataptr);
++	if (*err) {
++		p9_debug(P9_DEBUG_9P, "          ret err %d \n", *err);
++		trace_9p_protocol_dump(clnt, req->rc);
++		goto error;
++	}
++	if (rsize < count) {
++		pr_err("bogus RREAD count (%d > %d)\n", count, rsize);
++		count = rsize;
++	}
++
++	if (count == 0)
++		goto error;
++
++	if (non_zc) {
++		int n = copy_to_iter(dataptr, count, to);
++		if (n != count) {
++			*err = -EFAULT;
++			total = n;
++			goto error;
++		}
++	} else {
++		iov_iter_advance(to, count);
++	}
++	total = count;
++
++error:
++	p9_free_req(clnt, req);
++	return total;
++}
++
++static int
++p9_client_read_crossfdzc(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err)
++{
++	struct p9_client *clnt = fid->clnt;
++	struct p9_req_t *req = NULL;
++	int total = 0;
++	int count = iov_iter_count(to);
++	int rsize;
++	size_t off;
++
++	int i, maxpages, npages = 0;
++	struct page **pages = NULL;
++	unsigned long *ppns = NULL;
++
++	*err = 0;
++
++	maxpages = DIV_ROUND_UP(count, PAGE_SIZE);
++	maxpages = min(CROSSFD_ZC_MAXPAGES, maxpages);
++
++	pages = kmalloc(sizeof(struct page *) * maxpages, GFP_KERNEL);
++	if (!pages) {
++		*err = -ENOMEM;
++		goto error;
++	}
++	ppns = kmalloc(sizeof(unsigned long) * maxpages, GFP_KERNEL);
++	if (!ppns) {
++		*err = -ENOMEM;
++		goto error;
++	}
++
++	rsize = iov_iter_get_pages(to, pages, count, maxpages, &off);
++	if (rsize < 0) {
++		*err = rsize;
++		goto error;
++	}
++
++	npages = DIV_ROUND_UP(off + rsize, PAGE_SIZE);
++	for (i = 0; i < npages; i++) {
++		ppns[i] = page_to_pfn(pages[i]);
++	}
++
++	req = p9_client_rpc(clnt, P9_TREADX, "dqddp", fid->fid, offset, rsize,
++			    (unsigned int) off, npages, ppns);
++	if (IS_ERR(req)) {
++		p9_debug(P9_DEBUG_9P, "          rpc error\n");
++		*err = PTR_ERR(req);
++		goto error;
++	}
++
++	*err = p9pdu_readf(req->rc, clnt->proto_version, "d", &count);
++	if (*err) {
++		p9_debug(P9_DEBUG_9P, "          ret err %d \n", *err);
++		trace_9p_protocol_dump(clnt, req->rc);
++		goto error;
++	}
++	if (rsize < count) {
++		pr_err("bogus RREADX count (%d > %d)\n", count, rsize);
++		goto error;
++	}
++
++	if (count == 0)
++		goto error;
++
++	iov_iter_advance(to, count);
++	total = count;
++
++error:
++	if (req && !IS_ERR(req))
++		p9_free_req(clnt, req);
++
++	for (i = 0; i < npages; i++) {
++		put_page(pages[i]);
++	}
++
++	kfree(pages);
++	kfree(ppns);
++
++	return total;
++}
++
+ int
+ p9_client_read(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err)
+ {
+-	struct p9_client *clnt = fid->clnt;
+-	struct p9_req_t *req;
+ 	int total = 0;
++	int is_crossfd = p9_is_option_crossfd(fid->clnt);
++
+ 	*err = 0;
+ 
+ 	p9_debug(P9_DEBUG_9P, ">>> TREAD fid %d offset %llu %d\n",
+-		   fid->fid, (unsigned long long) offset, (int)iov_iter_count(to));
++		 fid->fid, (unsigned long long) offset, (int)iov_iter_count(to));
+ 
+ 	while (iov_iter_count(to)) {
+-		int count = iov_iter_count(to);
+-		int rsize, non_zc = 0;
+-		char *dataptr;
+-			
+-		rsize = fid->iounit;
+-		if (!rsize || rsize > clnt->msize-P9_IOHDRSZ)
+-			rsize = clnt->msize - P9_IOHDRSZ;
++		int count;
+ 
+-		if (count < rsize)
+-			rsize = count;
+-
+-		/* Don't bother zerocopy for small IO (< 1024) */
+-		if (clnt->trans_mod->zc_request && rsize > 1024) {
+-			/*
+-			 * response header len is 11
+-			 * PDU Header(7) + IO Size (4)
+-			 */
+-			req = p9_client_zc_rpc(clnt, P9_TREAD, to, NULL, rsize,
+-					       0, 11, "dqd", fid->fid,
+-					       offset, rsize);
++		if (is_crossfd && crossfd_can_zc(to)) {
++			count = p9_client_read_crossfdzc(fid, offset, to, err);
+ 		} else {
+-			non_zc = 1;
+-			req = p9_client_rpc(clnt, P9_TREAD, "dqd", fid->fid, offset,
+-					    rsize);
+-		}
+-		if (IS_ERR(req)) {
+-			*err = PTR_ERR(req);
+-			break;
++			count = p9_client_read_nocrossfd(fid, offset, to, err);
+ 		}
+ 
+-		*err = p9pdu_readf(req->rc, clnt->proto_version,
+-				   "D", &count, &dataptr);
+-		if (*err) {
+-			trace_9p_protocol_dump(clnt, req->rc);
+-			p9_free_req(clnt, req);
++		if (*err || count == 0)
+ 			break;
+-		}
+-		if (rsize < count) {
+-			pr_err("bogus RREAD count (%d > %d)\n", count, rsize);
+-			count = rsize;
+-		}
+ 
+ 		p9_debug(P9_DEBUG_9P, "<<< RREAD count %d\n", count);
+-		if (!count) {
+-			p9_free_req(clnt, req);
+-			break;
+-		}
+ 
+-		if (non_zc) {
+-			int n = copy_to_iter(dataptr, count, to);
+-			total += n;
+-			offset += n;
+-			if (n != count) {
+-				*err = -EFAULT;
+-				p9_free_req(clnt, req);
+-				break;
+-			}
+-		} else {
+-			iov_iter_advance(to, count);
+-			total += count;
+-			offset += count;
+-		}
+-		p9_free_req(clnt, req);
++		total += count;
++		offset += count;
+ 	}
+ 	return total;
+ }
+ EXPORT_SYMBOL(p9_client_read);
+ 
++static int
++p9_client_write_nocrossfd(struct p9_fid *fid, u64 offset, struct iov_iter *from, int *err)
++{
++	struct p9_client *clnt = fid->clnt;
++	struct p9_req_t *req;
++	int total = 0;
++	int count = iov_iter_count(from);
++	int rsize;
++
++	*err = 0;
++
++	rsize = fid->iounit;
++	if (!rsize || rsize > clnt->msize-P9_IOHDRSZ)
++		rsize = clnt->msize - P9_IOHDRSZ;
++
++	if (count < rsize)
++		rsize = count;
++
++	/* Don't bother zerocopy for small IO (< 1024) */
++	if (clnt->trans_mod->zc_request && rsize > 1024) {
++		req = p9_client_zc_rpc(clnt, P9_TWRITE, NULL, from, 0, rsize,
++				       P9_ZC_HDR_SZ, "dqd", fid->fid, offset,
++				       rsize);
++	} else {
++		req = p9_client_rpc(clnt, P9_TWRITE, "dqV", fid->fid, offset,
++				    rsize, from);
++	}
++	if (IS_ERR(req)) {
++		p9_debug(P9_DEBUG_9P, "          rpc error\n");
++		*err = PTR_ERR(req);
++		return 0;
++	}
++
++	*err = p9pdu_readf(req->rc, clnt->proto_version, "d", &count);
++	if (*err) {
++		p9_debug(P9_DEBUG_9P, "          ret err %d \n", *err);
++		trace_9p_protocol_dump(clnt, req->rc);
++		goto error;
++	}
++	if (rsize < count) {
++		pr_err("bogus RWRITE count (%d > %d)\n", count, rsize);
++		count = rsize;
++	}
++
++	iov_iter_advance(from, count);
++	total = count;
++error:
++	p9_free_req(clnt, req);
++
++	return total;
++}
++
++static int
++p9_client_write_crossfdzc(struct p9_fid *fid, u64 offset, struct iov_iter *from, int *err)
++{
++	struct p9_client *clnt = fid->clnt;
++	struct p9_req_t *req = NULL;
++	int total = 0;
++	int count = iov_iter_count(from);
++	int rsize;
++	size_t off;
++
++	int i, maxpages, npages = 0;
++	struct page **pages = NULL;
++	unsigned long *ppns = NULL;
++
++	*err = 0;
++
++	maxpages = DIV_ROUND_UP(count, PAGE_SIZE);
++	maxpages = min(CROSSFD_ZC_MAXPAGES, maxpages);
++
++	pages = kmalloc(sizeof(struct page *) * maxpages, GFP_KERNEL);
++	if (!pages) {
++		*err = -ENOMEM;
++		goto error;
++	}
++	ppns = kmalloc(sizeof(unsigned long) * maxpages, GFP_KERNEL);
++	if (!ppns) {
++		*err = -ENOMEM;
++		goto error;
++	}
++	rsize = iov_iter_get_pages(from, pages, count, maxpages, &off);
++	if (rsize < 0) {
++		*err = rsize;
++		goto error;
++	}
++
++	npages = DIV_ROUND_UP(off + rsize, PAGE_SIZE);
++	for (i = 0; i < npages; i++) {
++		ppns[i] = page_to_pfn(pages[i]);
++	}
++
++	req = p9_client_rpc(clnt, P9_TWRITEX, "dqddp", fid->fid, offset, rsize,
++			    (unsigned int) off, npages, ppns);
++	if (IS_ERR(req)) {
++		p9_debug(P9_DEBUG_9P, "          rpc error\n");
++		*err = PTR_ERR(req);
++		goto error;
++	}
++
++	*err = p9pdu_readf(req->rc, clnt->proto_version, "d", &count);
++	if (*err) {
++		p9_debug(P9_DEBUG_9P, "          ret err %d \n", *err);
++		trace_9p_protocol_dump(clnt, req->rc);
++		goto error;
++	}
++	if (rsize < count) {
++		pr_err("bogus RWRITEX count (%d > %d)\n", count, rsize);
++		goto error;
++	}
++
++	iov_iter_advance(from, count);
++	total = count;
++error:
++	if (req && !IS_ERR(req))
++		p9_free_req(clnt, req);
++
++	for (i = 0; i < npages; i++) {
++		put_page(pages[i]);
++	}
++
++	kfree(pages);
++	kfree(ppns);
++
++	return total;
++}
++
+ int
+ p9_client_write(struct p9_fid *fid, u64 offset, struct iov_iter *from, int *err)
+ {
+-	struct p9_client *clnt = fid->clnt;
+-	struct p9_req_t *req;
+ 	int total = 0;
++	int is_crossfd = p9_is_option_crossfd(fid->clnt);
++
+ 	*err = 0;
+ 
+ 	p9_debug(P9_DEBUG_9P, ">>> TWRITE fid %d offset %llu count %zd\n",
+-				fid->fid, (unsigned long long) offset,
+-				iov_iter_count(from));
++		 fid->fid, (unsigned long long) offset, iov_iter_count(from));
+ 
+ 	while (iov_iter_count(from)) {
+-		int count = iov_iter_count(from);
+-		int rsize = fid->iounit;
+-		if (!rsize || rsize > clnt->msize-P9_IOHDRSZ)
+-			rsize = clnt->msize - P9_IOHDRSZ;
++		int count;
+ 
+-		if (count < rsize)
+-			rsize = count;
+-
+-		/* Don't bother zerocopy for small IO (< 1024) */
+-		if (clnt->trans_mod->zc_request && rsize > 1024) {
+-			req = p9_client_zc_rpc(clnt, P9_TWRITE, NULL, from, 0,
+-					       rsize, P9_ZC_HDR_SZ, "dqd",
+-					       fid->fid, offset, rsize);
++		if (is_crossfd && crossfd_can_zc(from)) {
++			count = p9_client_write_crossfdzc(fid, offset, from, err);
+ 		} else {
+-			req = p9_client_rpc(clnt, P9_TWRITE, "dqV", fid->fid,
+-						    offset, rsize, from);
+-		}
+-		if (IS_ERR(req)) {
+-			*err = PTR_ERR(req);
+-			break;
++			count = p9_client_write_nocrossfd(fid, offset, from, err);
+ 		}
+ 
+-		*err = p9pdu_readf(req->rc, clnt->proto_version, "d", &count);
+-		if (*err) {
+-			trace_9p_protocol_dump(clnt, req->rc);
+-			p9_free_req(clnt, req);
++		if (*err || count == 0)
+ 			break;
+-		}
+-		if (rsize < count) {
+-			pr_err("bogus RWRITE count (%d > %d)\n", count, rsize);
+-			count = rsize;
+-		}
+ 
+ 		p9_debug(P9_DEBUG_9P, "<<< RWRITE count %d\n", count);
+ 
+-		p9_free_req(clnt, req);
+-		iov_iter_advance(from, count);
+ 		total += count;
+ 		offset += count;
+ 	}
+diff --git a/net/9p/protocol.c b/net/9p/protocol.c
+index 16d2875..ebf324e 100644
+--- a/net/9p/protocol.c
++++ b/net/9p/protocol.c
+@@ -449,6 +449,20 @@ p9pdu_vwritef(struct p9_fcall *pdu, int proto_version, const char *fmt,
+ 					errcode = -EFAULT;
+ 			}
+ 			break;
++		case 'p':{
++				int j;
++				uint32_t npages = va_arg(ap, uint32_t);
++				uint64_t *ppns = va_arg(ap, uint64_t *);
++				errcode =
++				    p9pdu_writef(pdu, proto_version, "d",
++								 npages);
++				for (j = 0; !errcode && j < npages; j++) {
++					errcode =
++					    p9pdu_writef(pdu, proto_version,
++							 "q", ppns[j]);
++				}
++			}
++			break;
+ 		case 'T':{
+ 				uint16_t nwname = va_arg(ap, int);
+ 				const char **wnames = va_arg(ap, const char **);
+-- 
+2.6.2
+
