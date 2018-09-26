@@ -9,7 +9,6 @@ Source0:    multipath-tools-a0e0752.tar.gz
 %define git_commit_short a0e0752
 %define sha1 multipath-tools=56c171d5ed567654a10996b6d9892944d9d0cb48
 BuildRequires:  userspace-rcu-devel
-BuildRequires:  librados-devel
 BuildRequires:  libaio-devel
 BuildRequires:  device-mapper-devel
 BuildRequires:  readline-devel
@@ -17,7 +16,6 @@ BuildRequires:  ncurses-devel
 BuildRequires:  systemd-devel
 BuildRequires:  json-c-devel
 Requires:   userspace-rcu
-Requires:   librados2
 Requires:   libaio
 Requires:   device-mapper
 Requires:   libselinux
@@ -95,6 +93,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+*   Wed Sep 26 2018 Anish Swaminathan <anishs@vmware.com>  0.7.3-2
+-   Remove rados dependency
 *   Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.3-1
 -   Update to 0.7.3
 *   Tue May 9  2017 Bo Gan <ganb@vmware.com> 0.7.1-1
