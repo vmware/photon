@@ -235,13 +235,19 @@ who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
 		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg)
 
-# This target analyzes top git commit and removes staged RPMS that can be affected
-# by this change and should be rebuilt as part of incremental build support
+# Input args: BASE_COMMIT= (optional)
+#
+# This target removes staged RPMS that can be affected by change(s) and should
+# be rebuilt as part of incremental build support
 # For every spec file touched - remove all upward dependent packages (rpms)
 # If support folder was touched - do full build
+#
+# The analyzed changes are:
+# - commits from BASE_COMMIT to HEAD (if BASE_COMMIT= parameter is specified)
+# - local changes (if no commits specified)
 clean-stage-for-incremental-build:
-	@test -n "$$(git show @ SPECS)" && $(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i remove-upward-deps -p $$(echo `git show --pretty="format:" --name-only @ | grep .spec | xargs -n1 basename 2>/dev/null` | tr ' ' :)
-	@test -n "$$(git show @ support)" && $(RM) -rf $(PHOTON_RPMS_DIR)
+	@test -n "$$(git diff --name-only $(BASE_COMMIT) @ | grep SPECS)" && $(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i remove-upward-deps -p $$(echo `git diff --name-only $(BASE_COMMIT) @ | grep .spec | xargs -n1 basename 2>/dev/null` | tr ' ' :) ||:
+	@test -n "$$(git diff --name-only $(BASE_COMMIT) @ | grep support)" && $(RM) -rf $(PHOTON_RPMS_DIR) ||:
 
 packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."

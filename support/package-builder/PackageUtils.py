@@ -412,26 +412,6 @@ class PackageUtils(object):
         rpmDestDir = rpmDir + "/" + arch
         return rpmDestDir
 
-    def _getProperVersion(self,package,parseSpecObj):
-        listOfVersionObjs=SPECS.getData().getSpecObj(package)
-        for num in listOfVersionObjs:
-                if parseSpecObj.compare == ">=":
-                       if LooseVersion(num.version) >= LooseVersion(parseSpecObj.version):
-                                return num.version
-                elif parseSpecObj.compare == "<=":
-                        if LooseVersion(num.version) <= LooseVersion(parseSpecObj.version):
-                                return num.version
-                elif parseSpecObj.compare == "=":
-                        if LooseVersion(num.version) == LooseVersion(parseSpecObj.version):
-                                return num.version
-                elif parseSpecObj.compare == "<":
-                        if LooseVersion(num.version) < LooseVersion(parseSpecObj.version):
-                                return num.version
-                elif parseSpecObj.compare == ">":
-                        if LooseVersion(num.version) > LooseVersion(parseSpecObj.version):
-                                return num.version
-        return "*"
-
     def _copyRPM(self, rpmFile, destDir):
         cmdUtils = CommandUtils()
         rpmName = os.path.basename(rpmFile)
