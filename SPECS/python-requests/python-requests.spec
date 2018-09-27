@@ -4,7 +4,7 @@
 Summary:        Awesome Python HTTP Library That's Actually Usable
 Name:           python-requests
 Version:        2.19.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,6 +18,11 @@ BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 Requires:       python2
 Requires:       python2-libs
+Requires:       python-urllib3
+Requires:       python-chardet
+Requires:       python-pyOpenSSL
+Requires:       python-certifi
+Requires:       python-idna
 
 BuildArch:      noarch
 
@@ -53,6 +58,12 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-urllib3
+Requires:       python3-chardet
+Requires:       python3-pyOpenSSL
+Requires:       python3-certifi
+Requires:       python3-idna
+
 %description -n python3-requests
 Python 3 version.
 
@@ -87,6 +98,9 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Sep 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.19.1-2
+-   Add a few missing runtime dependencies (urllib3, chardet,
+-   pyOpenSSL, certifi, idna).
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.19.1-1
 -   Update to version 2.19.1
 *   Mon Aug 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.13.0-3
