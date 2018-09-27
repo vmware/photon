@@ -49,7 +49,7 @@ make %{?_smp_mflags} check
 %{_mandir}/man*/*
 %{_infodir}/%{name}-%{version}/*
 %{_datadir}/nano/*
-%{_datadir}/doc/%{name}-%{version}/*
+%{_datadir}/dbreak
 
 %changelog
 *   Wed Sep 12 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.0-1
