@@ -1,6 +1,6 @@
 Name:           ddclient
 Version:        3.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://sourceforge.net/p/ddclient/wiki/Home/
 Summary:        Perl client used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider
 License:        GPLv2
@@ -11,6 +11,7 @@ Source0:        http://downloads.sourceforge.net/project/ddclient/ddclient/ddcli
 Requires:       perl
 Requires:       perl-IO-Socket-SSL
 Requires:       perl-JSON-Any
+Requires:       perl-Data-Validate-IP
 
 %description
 DDclient is a Perl client used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider. It was originally written by Paul Burry and is now mostly by wimpunk. It has the capability to update more than just dyndns and it can fetch your WAN-ipaddress in a few different ways.
@@ -52,6 +53,8 @@ EOF
 %dir /var/cache/ddclient
 
 %changelog
+* Thu Sep 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 3.9.0-2
+- Add perl-Data-Validate-IP as a runtime dependency.
 * Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 3.9.0-1
 - Upgraded to version 3.9.0
 * Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 3.8.3-3

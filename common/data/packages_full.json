@@ -178,6 +178,7 @@
         "cifs-utils",
         "c-ares",
         "dnsmasq",
+        "ddclient",
         "netmgmt",
         "motd"
     ]
