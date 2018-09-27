@@ -4,6 +4,6 @@ FROM scratch
 
 MAINTAINER kulkarniv@vmware.com
 
-ADD photon-rootfs-2.0.tar.bz2 /
+ADD photon-rootfs-3.0.tar.bz2 /
 
 CMD ["/bin/sh"]
