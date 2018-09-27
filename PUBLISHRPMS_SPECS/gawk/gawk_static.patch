@@ -1,0 +1,21 @@
+diff -ur gawk-4.1.4/Makefile.in gawk-4.1.4-new/Makefile.in
+--- gawk-4.1.4/Makefile.in	2016-08-24 20:15:45.000000000 -0700
++++ gawk-4.1.4-new/Makefile.in	2018-09-19 13:07:14.628910234 -0700
+@@ -541,7 +541,7 @@
+ gawk_SOURCES = $(base_sources)
+ 
+ # Get extra libs as needed, Automake will supply LIBINTL and SOCKET_LIBS.
+-LDADD = $(LIBSIGSEGV) $(LIBINTL) $(SOCKET_LIBS) $(LIBREADLINE) $(LIBMPFR)
++LDADD = $(LIBSIGSEGV) $(LIBINTL) $(SOCKET_LIBS) $(LIBREADLINE)
+ 
+ # stuff for compiling gawk/pgawk
+ DEFPATH = '".$(PATH_SEPARATOR)$(pkgdatadir)"'
+@@ -656,7 +656,7 @@
+ 
+ gawk$(EXEEXT): $(gawk_OBJECTS) $(gawk_DEPENDENCIES) $(EXTRA_gawk_DEPENDENCIES) 
+ 	@rm -f gawk$(EXEEXT)
+-	$(AM_V_CCLD)$(LINK) $(gawk_OBJECTS) $(gawk_LDADD) $(LIBS)
++	$(AM_V_CCLD)$(LINK) $(gawk_OBJECTS) $(gawk_LDADD) $(LIBS) /lib/libmpfr.a /lib/libgmp.a
+ 
+ mostlyclean-compile:
+ 	-rm -f *.$(OBJEXT)
