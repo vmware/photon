@@ -4,7 +4,7 @@
 
 Name: rubygem-ffi
 Version:        1.9.25
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Ruby FFI library
 Group:          Development/Languages
 License:        BSD-2-Clause
@@ -27,9 +27,11 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %files
 %defattr(-,root,root,-)
 %{gemdir}
-%exclude /usr/lib/ruby/gems/2.5.0/gems/ffi-1.9.25/ext/ffi_c/libffi-x86_64-linux/include/ffitarget.h
+%exclude /usr/lib/ruby/gems/2.5.0/gems/ffi-1.9.25/ext/ffi_c/libffi-%{_arch}-linux/include/ffitarget.h
 
 %changelog
+*   Tue Sep 25 2018 Ajay Kaher <akaher@vmware.com> 1.9.25-3
+-   Adding aarch64 support.
 *   Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 1.9.25-2
 -   Remove Provides itself and BuildArch
 *   Mon Aug 13 2018 Srinidhi Rao <srinidhir@vmware.com> 1.9.25-1
