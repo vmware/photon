@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        2.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -366,13 +366,15 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{perl_vendorarch}/auto/LibAppArmor/
 %{perl_vendorarch}/LibAppArmor.pm
-%exclude %{_libdir}/perl5/5.24.1/x86_64-linux-thread-multi/perllocal.pod
+%exclude %{_libdir}/perl5/5.24.1/%{_arch}-linux-thread-multi/perllocal.pod
 
 %files -n ruby-apparmor
 %defattr(-,root,root)
 %{_libdir}/ruby/site_ruby/*
 
 %changelog
+*   Wed Sep 26 2018 Ajay Kaher <akaher@vmware.com> 2.13-3
+-   Fix for aarch64
 *   Thu Sep 20 2018 Keerthana K <keerthanak@vmware.com> 2.13-2
 -   Updated the ruby packagefor latest version.
 *   Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 2.13-1
