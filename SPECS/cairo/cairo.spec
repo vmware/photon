@@ -1,7 +1,7 @@
 Summary:	A 2D graphics library.
 Name:		cairo
 Version:	1.14.12
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2 or MPLv1.1
 URL:		http://cairographics.org
 Group:		System Environment/Libraries
@@ -30,6 +30,7 @@ Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
 Requires:	freetype2-devel
 Requires:	pixman-devel
+Provides:       pkgconfig(cairo)
 
 %description	devel
 It contains the libraries and header files to create applications 
@@ -72,6 +73,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Fri Sep 28 2018 Tapas Kundu <tkundu@vmware.com> 1.14.12-2
+-       Added provides pkgconfig(cairo) for devel pkg.
 *       Tue Sep 11 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.14.12-1
 -       Update to version 1.14.12
 *       Tue Oct 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.14.8-3
