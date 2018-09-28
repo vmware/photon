@@ -2,25 +2,33 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           pygobject
-Version:        3.24.1
-Release:        3%{?dist}
+Version:        3.30.1
+Release:        1%{?dist}
 Summary:        Python Bindings for GObject
 Group:          Development/Languages
 License:        LGPLv2+
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:            ftp://ftp.gnome.org
-Source0:        ftp://ftp.gnome.org/pub/GNOME/sources/pygobject/3.24/pygobject-3.24.1.tar.xz
-Patch0:         pygobject-makecheck-fixes.patch
-%define sha1    pygobject=acdb1958e7f9785d92888a423afffd7164502f87
+URL:            https://pypi.org/project/PyGObject
+Source0:        https://pypi.org/project/PyGObject/#files/PyGObject-%{version}.tar.gz
+#Patch0:         pygobject-makecheck-fixes.patch
+%define sha1    PyGObject=d5a369f15dfd415dba7fad4c0f9811b56c597e10
 Requires:       python2
 Requires:       gobject-introspection
-Requires:       glib
+BuildRequires:  glib-devel
+BuildRequires:  libffi
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  gobject-introspection-devel
+BuildRequires:  fontconfig-devel
+BuildRequires:  libpng-devel
 BuildRequires:  glib-devel
 BuildRequires:  which
+BuildRequires:  pycairo
+BuildRequires:  pkg-config
+BuildRequires:  cairo
+BuildRequires:  python-pytest
+BuildRequires:  python-pyinstaller
 %if %{with_check}
 BuildRequires:  gobject-introspection-python
 BuildRequires:  python3-test
@@ -34,9 +42,17 @@ Python bindings for GLib and GObject.
 
 %package -n     python3-pygobject
 Summary:        python-pygobject
+BuildRequires:  glib-devel
+BuildRequires:  libpng-devel
+BuildRequires:  fontconfig-devel
+BuildRequires:  pycairo
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  pkg-config
+BuildRequires:  cairo
+BuildRequires:  python-pytest
+BuildRequires:  python-pyinstaller
 Requires:       python3
 Requires:       python3-libs
 Requires:       gobject-introspection
@@ -54,38 +70,48 @@ Requires:       python3-pygobject = %{version}-%{release}
 Development files for pygobject.
 
 %prep
-%setup -q -n pygobject-%{version}
-%patch0 -p1
+%setup -q -n PyGObject-%{version}
+#%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --disable-cairo     \
-    --without-cairo     \
-    --with-python=/usr/bin/python2
-make
+#./configure \
+#    --prefix=%{_prefix} \
+#    --disable-cairo     \
+#    --without-cairo     \
+#    --with-python=/usr/bin/python2
+#make
+#python2 setup.py build
+python2 setup.py build_ext --inplace
 pushd ../p3dir
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --disable-cairo     \
-    --without-cairo     \
-    --with-python=/usr/bin/python3
-make
+#python3 setup.py build
+python3 setup.py build_ext --inplace
+#./configure \
+#    --prefix=%{_prefix} \
+#    --bindir=%{_bindir} \
+#    --disable-cairo     \
+#    --without-cairo     \
+#    --with-python=/usr/bin/python3
+#make
 popd
+
+python2 setup.py test
+pushd ../p3dir
+python3 setup.py test
+popd
+
 
 %install
-make install DESTDIR=%{buildroot}
 pushd ../p3dir
-make install DESTDIR=%{buildroot}
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-make %{?_smp_mflags} check
+python2 setup.py test
 pushd ../p3dir
-make %{?_smp_mflags} check
+python3 setup.py test
 popd
 
 %clean
@@ -104,6 +130,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+*   Thu Sep 27 2018 Tapas Kundu <tkundu@vmware.com> 3.30.1-1
+-   Updated to release 3.30.1
 *   Tue Sep 19 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.24.1-3
 -   Skip some ui make check paths that failed.
 *   Thu Aug 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.24.1-2
