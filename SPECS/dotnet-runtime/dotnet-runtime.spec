@@ -1,7 +1,7 @@
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
 Version:        2.0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -54,6 +54,9 @@ ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
 %postun
 
     /sbin/ldconfig
+    rm -rf %{_libdir}/debug/.build-id
+    rm -rf %{_libdir}/.build-id
+
 
     # First argument is 0 => Uninstall
     # First argument is 1 => Upgrade
@@ -66,5 +69,7 @@ ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
     %{_libdir}/*
 
 %changelog
+*   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 2.0.5-2
+-   Fix install conflict with powershell.
 *   Wed Jan 31 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.5-1
 -   Initial build for photon
