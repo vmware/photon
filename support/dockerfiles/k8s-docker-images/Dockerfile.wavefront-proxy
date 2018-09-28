@@ -1,4 +1,4 @@
-FROM k8s-base-image:2.0
+FROM k8s-base-image:3.0
 
 # This script may automatically configure wavefront without prompting, based on
 # these variables:
