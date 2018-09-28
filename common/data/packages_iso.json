@@ -5,6 +5,5 @@
                   "libffi","expat","linux","cpio","Linux-PAM","attr","libcap", "systemd","dbus",
                   "gzip", "sqlite","nspr","nss","popt","lua","rpm","gptfdisk","tar",
                   "hawkey", "python3","python3-libs","pcre","glib", "tdnf", "python3-requests",
-                  "python3-urllib3", "python3-chardet", "python3-pyOpenSSL", "python3-certifi", "python3-idna",
                   "grub2-pc", "grub2-efi", "efivar", "efibootmgr", "dracut", "curl", "dosfstools"]
 }
