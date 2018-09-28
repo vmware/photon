@@ -61,6 +61,8 @@ ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
 %files
     %defattr(-,root,root,0755)
     %exclude %{_libdir}/debug
+    rm -rf %{_libdir}/debug/.build-id
+    rm -rf %{_libdir}/.build-id
     %{_docdir}/*
     %{_bindir}/dotnet
     %{_libdir}/*

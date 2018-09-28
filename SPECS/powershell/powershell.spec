@@ -45,6 +45,8 @@ ln -sf %{_libdir}/powershell/pwsh %{buildroot}%{_bindir}/pwsh
 %files
     %defattr(-,root,root,0755)
     %exclude %{_libdir}/debug
+    rm -rf %{_libdir}/debug/.build-id
+    rm -rf %{_libdir}/.build-id
     %{_libdir}/*
     %{_bindir}/pwsh
     %{_docdir}/*
