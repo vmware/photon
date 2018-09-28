@@ -1,7 +1,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        6.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -40,7 +40,8 @@ mv src/powershell-unix/bin/license_thirdparty_proprietary.txt %{buildroot}%{_doc
 cp -r src/powershell-unix/bin/* %{buildroot}/%{_libdir}/powershell
 mkdir -p %{buildroot}%{_bindir}
 ln -sf %{_libdir}/powershell/pwsh %{buildroot}%{_bindir}/pwsh
-
+rm -rf %{_libdir}/debug/.build-id
+rm -rf %{_libdir}/.build-id
 
 %files
     %defattr(-,root,root,0755)
@@ -50,5 +51,7 @@ ln -sf %{_libdir}/powershell/pwsh %{buildroot}%{_bindir}/pwsh
     %{_docdir}/*
 
 %changelog
+*   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 6.0.1-2
+-   Fix install conflict with dotnet-runtime.
 *   Wed Jan 31 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0.1-1
 -   Initial build for photon
