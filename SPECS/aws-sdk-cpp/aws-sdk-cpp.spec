@@ -3,7 +3,7 @@ Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
 Version:        1.4.33
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -65,6 +65,23 @@ Group:          Development/Libraries
 Requires:       aws-sdk-core = %{version}-%{release}
 Requires:       aws-s3-libs = %{version}-%{release}
 
+%package -n     aws-sdk-kms
+Summary:        aws sdk kms
+Group:          Development/Libraries
+Requires:       aws-sdk-core = %{version}-%{release}
+Requires:       aws-kms-libs = %{version}-%{release}
+
+%description -n aws-sdk-kms
+aws sdk cpp for kms
+
+%package -n     aws-kms-libs
+Summary:        aws kms libs
+Group:          Development/Libraries
+Requires:       aws-core-libs = %{version}-%{release}
+
+%description -n aws-kms-libs
+aws sdk cpp libs for kms
+
 %description -n aws-sdk-s3
 aws sdk cpp for s3
 
@@ -85,7 +102,7 @@ cd build
 cmake \
 -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
 -DCMAKE_BUILD_TYPE=Release ..
-for component in "core" "kinesis" "s3"; do
+for component in "core" "kinesis" "kms" "s3"; do
   cd aws-cpp-sdk-$component
   make %{?_smp_mflags}
   cd ..
@@ -94,7 +111,7 @@ done
 
 %install
 cd build
-for component in "core" "kinesis" "s3"; do
+for component in "core" "kinesis" "kms" "s3"; do
   cd aws-cpp-sdk-$component
   make DESTDIR=%{buildroot} install
   cd ..
@@ -136,12 +153,14 @@ rm -rf %{buildroot}/*
     %defattr(-,root,root,0755)
     %exclude %{_includedir}/aws/core
     %exclude %{_includedir}/aws/kinesis
+    %exclude %{_includedir}/aws/kms
     %exclude %{_includedir}/aws/s3
     %exclude %{_lib64dir}/pkgconfig/aws-cpp-sdk-core.pc
     %exclude %{_lib64dir}/pkgconfig/aws-cpp-sdk-kinesis.pc
     %exclude %{_lib64dir}/pkgconfig/aws-cpp-sdk-s3.pc
     %exclude %{_lib64dir}/libaws-cpp-sdk-core.so
     %exclude %{_lib64dir}/libaws-cpp-sdk-kinesis.so
+    %exclude %{_lib64dir}/libaws-cpp-sdk-kms.so
     %exclude %{_lib64dir}/libaws-cpp-sdk-s3.so
 
 %files -n aws-sdk-core
@@ -162,6 +181,15 @@ rm -rf %{buildroot}/*
     %defattr(-,root,root,0755)
     %{_lib64dir}/libaws-cpp-sdk-kinesis.so
 
+%files -n aws-sdk-kms
+    %defattr(-,root,root,0755)
+    %{_includedir}/aws/kms/*
+    %{_lib64dir}/pkgconfig/aws-cpp-sdk-kms.pc
+
+%files -n aws-kms-libs
+    %defattr(-,root,root,0755)
+    %{_lib64dir}/libaws-cpp-sdk-kms.so
+
 %files -n aws-sdk-s3
     %defattr(-,root,root,0755)
     %{_includedir}/aws/s3/*
@@ -172,6 +200,8 @@ rm -rf %{buildroot}/*
     %{_lib64dir}/libaws-cpp-sdk-s3.so
 
 %changelog
+*   Thu Sep 27 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.33-4
+-   Add kms libraries
 *   Thu May 03 2018 Anish Swaminathan <anishs@vmware.com> 1.4.33-3
 -   Add s3 and only build the core, kinesis and s3
 *   Thu Apr 12 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.33-2
