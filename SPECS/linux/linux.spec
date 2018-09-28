@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.14.67
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -367,6 +367,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Sep 25 2018 Ajay Kaher <akaher@vmware.com> 4.14.67-2
+-   Build hang (at make oldconfig) fix in config_aarch64
 *   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
 -   Update to version 4.14.67
 *   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-7
