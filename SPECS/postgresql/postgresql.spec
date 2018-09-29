@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        9.6.8
+Version:        10.5
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=8e610dd8dbaab69982d12324971b0c6b5225142f
+%define sha1    postgresql=8c7b4406b0ba2987f4170657f89908ad47947429
 # Common libraries needed
 BuildRequires:  krb5-devel
 BuildRequires:  libxml2-devel
@@ -73,6 +73,11 @@ cd contrib && make %{?_smp_mflags}
 make install DESTDIR=%{buildroot}
 cd contrib && make install DESTDIR=%{buildroot}
 
+# For postgresql 10+, commands are renamed
+# Ref: https://wiki.postgresql.org/wiki/New_in_postgres_10
+ln -sf pg_receivewal %{buildroot}%{_bindir}/pg_receivexlog
+ln -sf pg_resetwal %{buildroot}%{_bindir}/pg_resetxlog
+ln -sf  pg_waldump %{buildroot}%{_bindir}/pg_xlogdump
 %{_fixperms} %{buildroot}/*
 
 %check
@@ -93,14 +98,17 @@ rm -rf %{buildroot}/*
 %{_bindir}/pg_basebackup
 %{_bindir}/pg_controldata
 %{_bindir}/pg_ctl
+%{_bindir}/pg_receivewal
 %{_bindir}/pg_receivexlog
 %{_bindir}/pg_recvlogical
+%{_bindir}/pg_resetwal
 %{_bindir}/pg_resetxlog
 %{_bindir}/pg_rewind
 %{_bindir}/pg_standby
 %{_bindir}/pg_test_fsync
 %{_bindir}/pg_test_timing
 %{_bindir}/pg_upgrade
+%{_bindir}/pg_waldump
 %{_bindir}/pg_xlogdump
 %{_bindir}/pgbench
 %{_bindir}/postgres
@@ -115,10 +123,8 @@ rm -rf %{buildroot}/*
 %files libs
 %{_bindir}/clusterdb
 %{_bindir}/createdb
-%{_bindir}/createlang
 %{_bindir}/createuser
 %{_bindir}/dropdb
-%{_bindir}/droplang
 %{_bindir}/dropuser
 %{_bindir}/ecpg
 %{_bindir}/pg_config
@@ -151,6 +157,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 10.5-1
+-   Updated to version 10.5
 *   Tue Mar 27 2018 Dheeraj Shetty <dheerajs@vmware.com> 9.6.8-1
 -   Updated to version 9.6.8 to fix CVE-2018-1058
 *   Mon Feb 12 2018 Dheeraj Shetty <dheerajs@vmware.com> 9.6.7-1
