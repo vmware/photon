@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -257,6 +257,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 28 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-2
+-   macros: set _build_id_links to alldebug
 *   Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 4.14.2-1
 -   Update to version 4.14.2
 *   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-7
