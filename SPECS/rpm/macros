@@ -35,6 +35,7 @@
 %_enable_debug_packages 1
 %_include_minidebuginfo 1
 %_use_internal_dependency_generator 1
+%_build_id_links alldebug
 
 %__os_install_post    \
     %{_rpmconfigdir}/brp-compress \
