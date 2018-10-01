@@ -1,12 +1,14 @@
-%define python3_sitelib /usr/lib/python3.6/site-packages
+%define python3_sitelib /usr/lib/python3.7/site-packages
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
 URL:            http://launchpad.net/cloud-init
+Vendor:         VMware, Inc
+Distribution:   Photon
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
 %define sha1 cloud-init=3b4345267e72e28b877e2e3f0735c1f672674cfc
 Source1:        cloud-photon.cfg
@@ -138,6 +140,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Sun Oct 07 2018 Tapas Kundu <tkundu@vmware.com> 0.7.9-15
+-   Updated using python 3.7 lib
 *   Wed Feb 28 2018 Anish Swaminathan <anishs@vmware.com> 0.7.9-14
 -   Add support for systemd constructs for azure DS
 *   Mon Oct 16 2017 Vinay Kulkarni <kulakrniv@vmware.com> 0.7.9-13
@@ -160,7 +164,7 @@ rm -rf $RPM_BUILD_ROOT
 -   Enable OVF datasource by default
 *   Mon May 22 2017 Kumar Kaushik <kaushikk@vmware.com> 0.7.9-4
 -   Making cloud-init to use python3.
-*   Thu May 15 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-3
+*   Mon May 15 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-3
 -   Disable networking config by cloud-init
 *   Thu May 04 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-2
 -   Support userdata in vmx guestinfo
@@ -182,7 +186,7 @@ rm -rf $RPM_BUILD_ROOT
 *   Mon Oct 24 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-11
 -   Enabled ssh module in cloud-init
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-10
--   Fixed logic to restart the active services after upgrade 
+-   Fixed logic to restart the active services after upgrade
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.6-9
 -   GA - Bump release of all rpms
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-8
