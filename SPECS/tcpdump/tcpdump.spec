@@ -9,7 +9,7 @@ Source0:	http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
 Group:		Networking
 Vendor:		VMware, Inc.
 Distribution:	Photon
-BuildRequires: 	libpcap
+BuildRequires: 	libpcap-devel
 Requires:	libpcap
 %description
 Tcpdump is a common packet analyzer that runs under the command line. 
