@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.124
-Release:        2%{?dist}
+Version:        4.9.130
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=8ec9a8969df8d37c6e716c264a23c818eed98780
+%define sha1 linux=59621537cc8891aa3d0d77b2892db7828a0098f9
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -35,7 +35,6 @@ Patch17:        04-quiet-boot.patch
 Patch18:        05-pv-ops-clocksource.patch
 Patch19:        06-pv-ops-boot_clock.patch
 Patch20:        07-vmware-only.patch
-Patch21:        vmware-balloon-late-initcall.patch
 Patch22:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
@@ -123,7 +122,6 @@ The Linux package contains the Linux kernel doc files
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
-%patch21 -p1
 %patch22 -p1
 %patch24 -p1
 %patch25 -p1
@@ -146,8 +144,6 @@ The Linux package contains the Linux kernel doc files
 
 
 %build
-# patch vmw_balloon driver
-sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
 
 make mrproper
 cp %{SOURCE1} .config
@@ -240,6 +236,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 01 2018 srinidhira0 <srinidhir@vmware.com> 4.9.130-1
+-   Update to version 4.9.130
 *   Mon Sep 10 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.124-2
 -   Fix for CVE-2018-13053
 *   Fri Aug 24 2018 Bo Gan <ganb@vmware.com> 4.9.124-1

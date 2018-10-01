@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.124
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.130
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=8ec9a8969df8d37c6e716c264a23c818eed98780
+%define sha1 linux=59621537cc8891aa3d0d77b2892db7828a0098f9
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -219,8 +219,6 @@ popd
 %endif
 
 %build
-# patch vmw_balloon driver
-sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
 
 make mrproper
 cp %{SOURCE1} .config
@@ -336,6 +334,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 01 2018 srinidhira0 <srinidhir@vmware.com> 4.9.130-1
+-   Update to version 4.9.130
 *   Mon Sep 10 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.124-2
 -   Fix for CVE-2018-13053
 *   Fri Aug 24 2018 Bo Gan <ganb@vmware.com> 4.9.124-1
