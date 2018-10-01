@@ -1,6 +1,6 @@
 Name:           toybox
-Version:        0.7.3
-Release:        6%{?dist}
+Version:        0.7.7
+Release:        1%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox/
@@ -8,9 +8,8 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
-%define sha1 toybox=f3d9f5396a210fb2ad7d6309acb237751c50812f
-Source1:	config-%{version}
-Patch0:         config2help_use_after_free_fix.patch
+%define sha1 toybox=5475bc98a0dd807061a4fc4ebad57f323b328dbc
+Source1:	config-toybox
 %description
 Toybox combines common Linux command line utilities together into a single
 BSD-licensed executable that's simple, small, fast, reasonably
@@ -19,7 +18,6 @@ environment.
 
 %prep
 %setup -q -n toybox-%{version}
-%patch0 -p1
 
 %build
 # Move sed to /bin
@@ -50,6 +48,8 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %{_sbindir}/*
 
 %changelog
+*   Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 0.7.7-1
+-   Version update
 *   Mon Oct 01 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-6
 -   remove strings and usleep to avoid conflict with binutils and initscripts
 *   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-5
