@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           apparmor
 Version:        2.13
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -156,9 +156,9 @@ This package contains the AppArmor module for perl.
 %patch1 -p1
 
 %build
-export PYTHONPATH=/usr/lib/python3.6/site-packages
+export PYTHONPATH=/usr/lib/python3.7/site-packages
 export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=3.6
+export PYTHON_VERSION=3.7
 export PYTHON_VERSIONS=python3
 #Building libapparmor
 cd ./libraries/libapparmor
@@ -203,9 +203,9 @@ make check -C pam_apparmor
 make check -C profiles
 
 %install
-export PYTHONPATH=/usr/lib/python3.6/site-packages
+export PYTHONPATH=/usr/lib/python3.7/site-packages
 export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=3.6
+export PYTHON_VERSION=3.7
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 cd libraries/libapparmor
@@ -343,6 +343,8 @@ make DESTDIR=%{buildroot} install
 %{perl_archlib}/perllocal.pod
 
 %changelog
+*   Wed Sep 26 2018 Tapas Kundu <tkundu@vmware.com> 2.13-5
+-   Updated using python 3.7 libs
 *   Wed Oct 03 2018 Keerthana K <keerthanak@vmware.com> 2.13-4
 -   Depcrecated ruby apparmor package.
 -   Modified the perl and python path to generic.
