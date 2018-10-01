@@ -13,6 +13,7 @@
   %{?__global_ldflags:LDFLAGS="${LDFLAGS:-%__global_ldflags}" ; export LDFLAGS ;} \
   %__cmake \\\
 	-DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \\\
+	-DCMAKE_INSTALL_LIBDIR:PATH=lib \\\
 	-DINCLUDE_INSTALL_DIR:PATH=%{_includedir} \\\
 	-DLIB_INSTALL_DIR:PATH=%{_libdir} \\\
 	-DSYSCONF_INSTALL_DIR:PATH=%{_sysconfdir} \\\
