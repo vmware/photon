@@ -1,13 +1,13 @@
 # -*- rpm-spec-*-
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
-Version:	0.169
-Release:	2%{?dist}
+Version:	0.174
+Release:	1%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 URL:    	https://sourceware.org/elfutils
 Source0:	https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 elfutils=4977019aece471362dbdd28a27ef1030471dff84
+%define sha1 elfutils=95899ce5fa55002e46bf4e02d01a249516e296fd
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -195,6 +195,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root)
 
 %changelog
+* Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 0.174-1
+- Version update
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 0.169-2
 - Requires bzip2-libs
 * Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 0.169-1
