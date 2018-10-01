@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -89,6 +89,10 @@ Python3 rpm.
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
+# pass -L opts to gcc as well to prioritize it over standard libs
+sed -i 's/-Wl,-L//g' python/setup.py.in
+sed -i '/library_dirs/d' python/setup.py.in
+sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 
 ./autogen.sh --noconfigure
 ./configure \
@@ -257,6 +261,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-3
+-   Fix python libs dependencies to use current libs version (regression)
 *   Fri Sep 28 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-2
 -   macros: set _build_id_links to alldebug
 *   Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 4.14.2-1
@@ -284,7 +290,7 @@ rm -rf %{buildroot}
 -   rpm-libs requires nss-libs, xz-libs and bzip2-libs.
 *   Tue Mar 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-20
 -   Added python3 packages and moved python2 site packages from devel to python-rpm.
-*   Mon Jan 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-19
+*   Tue Jan 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-19
 -   added buildrequires for xz-devel for PayloadIsLzma cap
 *   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-18
 -   Moved some files from rpm to rpm-build.
@@ -313,7 +319,7 @@ rm -rf %{buildroot}
 -   Update rpm version in lock-step with lua update to 5.3.2
 *   Fri Apr 08 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.11.2-7
 -   Build rpm with capabilities.
-*   Thu Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
+*   Wed Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
 -   Moving build utils to a different package.
 *   Sat Jun 27 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-5
 -   Update rpm-system-configuring-scripts. Use tar --no-same-owner for rpmbuild.
