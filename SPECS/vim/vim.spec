@@ -3,7 +3,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.1.0388
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -20,6 +20,7 @@ The Vim package contains a powerful text editor.
 Summary:    Extra files for Vim text editor
 Group:      Applications/Editors
 Requires:   tcsh
+Conflicts:  toybox
 
 %description extra
 The vim extra package contains a extra files for powerful text editor.
@@ -29,9 +30,7 @@ The vim extra package contains a extra files for powerful text editor.
 
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --enable-multibyte
+%configure --prefix=%{_prefix} --enable-multibyte
 make VERBOSE=1 %{?_smp_mflags}
 %install
 #cd %{_builddir}/%{name}74
@@ -172,28 +171,30 @@ make test
 %{_bindir}/vimdiff
 
 %changelog
+*   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 8.1.0388-2
+-   Add conflicts toybox for vim-extra.
 *   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 8.1.0388-1
--   Update to version 8.1.0388
+-   Update to version 8.1.0388.
 *   Tue Jul 10 2018 Tapas Kundu <tkundu@vmware.com> 8.0.0533-4
 -   Fix for CVE-2017-17087 and CVE-2017-1000382.
 *   Mon Aug 14 2017 Chang Lee <changlee@vmware.com>  8.0.0533-3
--   Disabled Test_recover_root_dir in %check
+-   Disabled Test_recover_root_dir in %check.
 *   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com>  8.0.0533-2
--   Remove tcsh requires
+-   Remove tcsh requires.
 *   Fri Apr 14 2017 Xiaolin Li <xiaolinl@vmware.com> 8.0.0533-1
 -   Updated to version 8.0.0533.
 *   Tue Feb 28 2017 Anish Swaminathan <anishs@vmware.com>  7.4-10
--   Fix for CVE-2017-6349 and CVE-2017-6350
+-   Fix for CVE-2017-6349 and CVE-2017-6350.
 *   Fri Feb 17 2017 Anish Swaminathan <anishs@vmware.com>  7.4-9
--   Fix for CVE-2017-5953
+-   Fix for CVE-2017-5953.
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  7.4-8
--   Fix for CVE-2016-1248
+-   Fix for CVE-2016-1248.
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 7.4-7
--   Modified %check
+-   Modified %check.
 *   Wed Aug 24 2016 Alexey Makhalov <amakhalov@vmware.com> 7.4-6
--   vimrc: Added tags search, tab->spaces and some bindings
+-   vimrc: Added tags search, tab->spaces and some bindings.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.4-5
--   GA - Bump release of all rpms
+-   GA - Bump release of all rpms.
 *   Thu Jul 16 2015 Touseef Liaqat <tliaqat@vmware.com> 7.4-3
 -   Added profile related files in minimal vim package.
 *   Tue Jun 30 2015 Touseef Liaqat <tliaqat@vmware.com> 7.4-3
@@ -201,4 +202,4 @@ make test
 *   Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 7.4-2
 -   Disable debug package. Use 'desert' colorscheme.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 7.4-1
--   Initial build. First version
+-   Initial build First version.
