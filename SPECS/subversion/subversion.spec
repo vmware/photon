@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.10.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
@@ -21,6 +21,7 @@ BuildRequires:  expat-devel
 BuildRequires:  serf-devel
 BuildRequires:  lz4
 BuildRequires:  utf8proc-devel
+BuildRequires:  swig
 Requires:       utf8proc
 
 %description
@@ -31,6 +32,14 @@ Summary:    Header and development files for mesos
 Requires:   %{name} = %{version}
 %description    devel
  subversion-devel package contains header files, libraries.
+
+%package    perl
+Summary:    Allows Perl scripts to directly use Subversion repositories.
+Requires:   perl
+Requires:   %{name} = %{version}
+%description    perl
+Provides Perl (SWIG) support for Subversion version control system.
+
 
 %prep
 %setup -q
@@ -44,9 +53,15 @@ Requires:   %{name} = %{version}
 
 make %{?_smp_mflags}
 
+# For Perl bindings
+make  %{?_smp_mflags} swig-pl
+
 %install
-make -j1 DESTDIR=%{buildroot} install 
+make -j1 DESTDIR=%{buildroot} install
 %find_lang %{name}
+
+# For Perl bindings
+make -j1 DESTDIR=%{buildroot} install-swig-pl
 
 %check
 # subversion expect nonroot user to run tests
@@ -68,7 +83,18 @@ sudo -u test make check && userdel test -r -f
 %{_datadir}/pkgconfig/*.pc
 %exclude %{_libdir}/debug/
 
+%files perl
+%defattr(-,root,root)
+%{perl_sitearch}/SVN
+%{perl_sitearch}/auto/SVN
+%{_libdir}/libsvn_swig_perl*so*
+%{_libdir}/perl5/*
+%{_mandir}/man3/SVN*
+
+
 %changelog
+*   Tue Oct 02 2018 Siju Maliakkal <smaliakkal@vmware.com> 1.10.2-3
+-   Added Perl bindings
 *   Fri Sep 21 2018 Ankit Jain <ankitja@vmware.com> 1.10.2-2
 -   Added utf8proc as Requires.
 *   Wed Sep 19 2018 Ankit Jain <ankitja@vmware.com> 1.10.2-1
