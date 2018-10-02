@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.130
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -366,6 +366,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Oct 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.130-2
+-   Improve error-handling of rdrand-rng kernel driver.
 *   Mon Oct 01 2018 srinidhira0 <srinidhir@vmware.com> 4.9.130-1
 -   Update to version 4.9.130
 *   Mon Sep 10 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.124-2

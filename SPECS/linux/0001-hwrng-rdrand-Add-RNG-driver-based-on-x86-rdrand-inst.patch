@@ -12,14 +12,15 @@ entropy-starved virtual machines.
 
 Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
 ---
- drivers/char/hw_random/Kconfig      | 14 +++++++++
+
+ drivers/char/hw_random/Kconfig      | 14 ++++++++
  drivers/char/hw_random/Makefile     |  1 +
- drivers/char/hw_random/rdrand-rng.c | 61 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 76 insertions(+)
+ drivers/char/hw_random/rdrand-rng.c | 72 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 87 insertions(+)
  create mode 100644 drivers/char/hw_random/rdrand-rng.c
 
 diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
-index 200dab5..cc3a67d 100644
+index 200dab5..8b6d236 100644
 --- a/drivers/char/hw_random/Kconfig
 +++ b/drivers/char/hw_random/Kconfig
 @@ -62,6 +62,20 @@ config HW_RANDOM_AMD
@@ -32,7 +33,7 @@ index 200dab5..cc3a67d 100644
 +	default HW_RANDOM
 +	---help---
 +	  This driver provides kernel-side support for a Random Number
-+	  Generator that uses the 'rdrand' instruction on modern Intel
++	  Generator that uses the RDRAND/RDSEED instructions on modern Intel
 +	  and AMD CPUs.
 +
 +	  To compile this driver as a module, choose M here: the
@@ -57,13 +58,13 @@ index 5f52b1e..5b92c8e 100644
  obj-$(CONFIG_HW_RANDOM_GEODE) += geode-rng.o
 diff --git a/drivers/char/hw_random/rdrand-rng.c b/drivers/char/hw_random/rdrand-rng.c
 new file mode 100644
-index 0000000..e1cf7f3
+index 0000000..ba017f3
 --- /dev/null
 +++ b/drivers/char/hw_random/rdrand-rng.c
-@@ -0,0 +1,61 @@
+@@ -0,0 +1,72 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * RNG driver that uses the 'rdrand' instruction (found on modern
++ * RNG driver that uses the RDRAND/RDSEED instructions (found on modern
 + * Intel and AMD CPUs).
 + *
 + * Author: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
@@ -77,18 +78,27 @@ index 0000000..e1cf7f3
 +
 +#define PFX	KBUILD_MODNAME ": "
 +
-+static int rdrand_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
++static int rdrand_rng_read(struct hwrng *rng, void *buf, size_t max_bytes, bool wait)
 +{
-+	unsigned long *data = buf;
-+	size_t read = 0;
++	char *p = buf;
++	size_t read_bytes = 0;
 +
-+	while (read < max) {
-+		arch_get_random_long(data);
-+		data++;
-+		read += sizeof(unsigned long);
++	while (max_bytes) {
++		unsigned long v;
++		size_t chunk = min(max_bytes, (int)sizeof(unsigned long));
++
++		if (unlikely(!arch_get_random_seed_long(&v)) &&
++		    unlikely(!arch_get_random_long(&v))) {
++			break;
++		}
++
++		memcpy(p, &v, chunk);
++		p += chunk;
++		max_bytes -= chunk;
++		read_bytes += chunk;
 +	}
 +
-+	return read;
++	return read_bytes;
 +}
 +
 +static struct hwrng rdrand_rng = {
@@ -101,8 +111,10 @@ index 0000000..e1cf7f3
 +{
 +	int err = -ENODEV;
 +
-+	if (!arch_has_random())
-+		return err; /* rdrand not available. */
++	if (!arch_has_random_seed() && !arch_has_random()) {
++		pr_err(PFX "Neither RDSEED nor RDRAND is available.\n");
++		return err;
++	}
 +
 +	err = hwrng_register(&rdrand_rng);
 +	if (err)
@@ -120,7 +132,7 @@ index 0000000..e1cf7f3
 +module_exit(mod_exit);
 +
 +MODULE_AUTHOR("Srivatsa S. Bhat <srivatsa@csail.mit.edu>");
-+MODULE_DESCRIPTION("H/W RNG driver for x86 CPUs that support rdrand");
++MODULE_DESCRIPTION("H/W RNG driver for x86 CPUs that support RDRAND/RDSEED");
 +MODULE_LICENSE("GPL");
 -- 
 2.7.4
