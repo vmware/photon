@@ -1,7 +1,7 @@
-Summary:        Fast incremental file transfer. 
+Summary:        Fast incremental file transfer.
 Name:           rsync
 Version:        3.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org/
 Source0:        https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
@@ -21,7 +21,7 @@ make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
-mkdir -p %{buildroot}/%{_sysconfdir} 
+mkdir -p %{buildroot}/%{_sysconfdir}
 touch %{buildroot}/%{_sysconfdir}/rsyncd.conf
 
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
@@ -51,6 +51,8 @@ EOF
 %{_libdir}/systemd/system/rsyncd.service
 %{_sysconfdir}/rsyncd.conf
 %changelog
+*   Thu Oct 04 2018 Ankit Jain <ankitja@vmware.com> 3.1.3-2
+-   Bump up spec release
 *   Tue May 01 2018 Xiaolin Li <xiaolinl@vmware.com> 3.1.3-1
 -   Updated to version 3.1.3, fix CVE-2018-5764
 *   Wed Dec 27 2017 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-4
