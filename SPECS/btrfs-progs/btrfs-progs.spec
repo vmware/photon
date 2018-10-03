@@ -1,18 +1,21 @@
 Name:       btrfs-progs
-Version:    4.10.2
-Release:    2%{?dist}
+Version:    4.19
+Release:    1%{?dist}
 Summary:    Userspace programs for btrfs
 Group:      System Environment/Base
 License:    GPLv2+
 URL:        http://btrfs.wiki.kernel.org/index.php/Main_Page
-Source0:    https://www.kernel.org/pub/linux/kernel/people/kdave/%{name}/%{name}-v%{version}.tar.xz
-%define sha1 btrfs-progs=c75d4ca843232a0da44e9a05aa073435ad9e4fdd
-# e2fsprogs-1.44 compatibility
-Patch0:     3a07b07b1a56f7d97390f66c01a5829abb2c5b70.patch
+Source0:    https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/%{name}-v%{version}.tar.xz
+%define sha1 btrfs-progs=df4d34b8ecf5eaac177a0b121b41e67fce9612e1
 Vendor:     VMware, Inc.
 Distribution:   Photon
 BuildRequires:  lzo-devel
 BuildRequires:  e2fsprogs-devel,libacl-devel
+BuildRequires:  xmlto
+BuildRequires:  asciidoc
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:   e2fsprogs, lzo
 
 %description
@@ -33,16 +36,16 @@ btrfs filesystem-specific programs.
 
 %prep
 %setup -q -n %{name}-v%{version}
-%patch0 -p1
 
 %build
 ./autogen.sh
-%configure
+%configure \
+	--disable-zstd
 make DISABLE_DOCUMENTATION=1 %{?_smp_mflags}
 
 %install
 #disabled the documentation
-make DISABLE_DOCUMENTATION=1 mandir=%{_mandir} bindir=%{_sbindir} libdir=%{_libdir} incdir=%{_includedir}/btrfs install DESTDIR=%{buildroot}
+make DISABLE_DOCUMENTATION=1 mandir=%{_mandir} bindir=%{_sbindir} libdir=%{_libdir} incdir=%{_includedir} install DESTDIR=%{buildroot}
 
 %clean
 rm -rf %{buildroot}
@@ -51,25 +54,28 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %doc COPYING
 %{_libdir}/libbtrfs.so.0*
+%{_libdir}/libbtrfsutil.so.1*
 %{_sbindir}/btrfsck
 %{_sbindir}/fsck.btrfs
 %{_sbindir}/mkfs.btrfs
-%{_sbindir}/btrfs-debug-tree
 %{_sbindir}/btrfs-image
 %{_sbindir}/btrfs-convert
 %{_sbindir}/btrfstune
 %{_sbindir}/btrfs
 %{_sbindir}/btrfs-map-logical
-%{_sbindir}/btrfs-zero-log
 %{_sbindir}/btrfs-find-root
 %{_sbindir}/btrfs-select-super
 
 %files devel
 %{_includedir}/*
-%{_libdir}/libbtrfs.so
 %{_libdir}/libbtrfs.a
+%{_libdir}/libbtrfsutil.a
+%{_libdir}/libbtrfs.so
+%{_libdir}/libbtrfsutil.so
 
 %changelog
+*   Mon Nov 19 2018 Sujay G <gsujay@vmware.com> 4.19-1
+-   Bump btrfs-progs version to 4.19
 *   Wed Sep 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.10.2-2
 -   Fix compilation issue againts e2fsprogs-1.44
 *   Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com>  4.10.2-1
