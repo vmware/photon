@@ -1,18 +1,21 @@
 Name:       btrfs-progs
-Version:    4.10.2
-Release:    2%{?dist}
+Version:    4.17.1
+Release:    1%{?dist}
 Summary:    Userspace programs for btrfs
 Group:      System Environment/Base
 License:    GPLv2+
 URL:        http://btrfs.wiki.kernel.org/index.php/Main_Page
-Source0:    https://www.kernel.org/pub/linux/kernel/people/kdave/%{name}/%{name}-v%{version}.tar.xz
-%define sha1 btrfs-progs=c75d4ca843232a0da44e9a05aa073435ad9e4fdd
-# e2fsprogs-1.44 compatibility
-Patch0:     3a07b07b1a56f7d97390f66c01a5829abb2c5b70.patch
+Source0:    http://ftp.ntu.edu.tw/pub/linux/kernel/people/kdave/btrfs-progs/%{name}-v%{version}.tar.xz
+%define sha1 btrfs-progs=6be18f21eb6cd00f9826c598f5a482e9be2eb9b2
 Vendor:     VMware, Inc.
 Distribution:   Photon
 BuildRequires:  lzo-devel
 BuildRequires:  e2fsprogs-devel,libacl-devel
+BuildRequires:  xmlto
+BuildRequires:  asciidoc
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:   e2fsprogs, lzo
 
 %description
@@ -33,11 +36,11 @@ btrfs filesystem-specific programs.
 
 %prep
 %setup -q -n %{name}-v%{version}
-%patch0 -p1
 
 %build
 ./autogen.sh
-%configure
+%configure \
+	--disable-zstd
 make DISABLE_DOCUMENTATION=1 %{?_smp_mflags}
 
 %install
@@ -54,13 +57,11 @@ rm -rf %{buildroot}
 %{_sbindir}/btrfsck
 %{_sbindir}/fsck.btrfs
 %{_sbindir}/mkfs.btrfs
-%{_sbindir}/btrfs-debug-tree
 %{_sbindir}/btrfs-image
 %{_sbindir}/btrfs-convert
 %{_sbindir}/btrfstune
 %{_sbindir}/btrfs
 %{_sbindir}/btrfs-map-logical
-%{_sbindir}/btrfs-zero-log
 %{_sbindir}/btrfs-find-root
 %{_sbindir}/btrfs-select-super
 
@@ -68,8 +69,11 @@ rm -rf %{buildroot}
 %{_includedir}/*
 %{_libdir}/libbtrfs.so
 %{_libdir}/libbtrfs.a
+%{_libdir}/libbtrfsutil.*
 
 %changelog
+*   Wed Oct 03 2018 Sujay G <gsujay@vmware.com> 4.17.1-1
+-   Bump btrfs-progs version to 4.17.1
 *   Wed Sep 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.10.2-2
 -   Fix compilation issue againts e2fsprogs-1.44
 *   Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com>  4.10.2-1
