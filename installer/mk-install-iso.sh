@@ -61,6 +61,9 @@ cp EFI_$(uname -m)/BOOT/* ${BUILDROOT}/installer/EFI/BOOT/
 # grubx64.efi is generated on Photon OS by using grub2-efi >= 2.02-7:
 # # grub2-efi-mkimage -o grubx64.efi -p /boot/grub2 -O x86_64-efi  fat iso9660 part_gpt part_msdos  normal boot linux configfile loopback chain  efifwsetup efi_gop efi_uga  ls search search_label search_fs_uuid search_fs_file  gfxterm gfxterm_background gfxterm_menu test all_video loadenv  exfat ext2 udf halt gfxmenu png tga lsefi help linuxefi probe echo
 
+# grubaa64.efi is generated on Photon OS by using grub2-efi >= 2.02-7:
+#grub2-mkimage -o bootaa64.efi -p /boot/grub2 -O arm64-efi  fat iso9660 part_gpt part_msdos  normal boot linux configfile loopback chain efifwsetup efi_gop efinet ls search search_label search_fs_uuid search_fs_file  gfxterm gfxterm_background gfxterm_menu test all_video loadenv  exfat ext2 udf halt gfxmenu png tga lsefi help all_video probe echo
+
 # both bootx64.efi and grubx64.efi are signed with VMware key
 EFI_IMAGE=boot/grub2/efiboot.img
 EFI_FOLDER=`readlink -f ${STAGE_PATH}/efiboot`
