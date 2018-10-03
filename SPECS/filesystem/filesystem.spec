@@ -1,12 +1,14 @@
-Summary:	Default file system
-Name:		filesystem
-Version:	1.1
-Release:	1%{?dist}
-License:	GPLv3
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
-URL:		http://www.linuxfromscratch.org
-Distribution:	Photon
+Summary:        Default file system
+Name:           filesystem
+Version:        1.1
+Release:        2%{?dist}
+License:        GPLv3
+Group:          System Environment/Base
+Source:         %{name}-%{version}.tar.gz
+%define sha1 filesystem=049c5d858f2cab6298ebdb83571cedd47741433a
+Vendor:         VMware, Inc.
+URL:            http://www.linuxfromscratch.org
+Distribution:   Photon
 
 %description
 The filesystem package is one of the basic packages that is installed
@@ -540,35 +542,38 @@ EOF
 /usr/lib/debug/lib64
 /usr/lib/debug/usr/lib64
 %endif
+
 %changelog
+*   Wed Oct 3 2018 Michelle Wang <michellew@vmware.com>  1.1-2
+-   Add source for filesystem in order to file OSSTP ticket.
 *   Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  1.1-1
--   Move network file from filesystem package
+-   Move network file from filesystem package.
 *   Fri Apr 21 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0-13
--   make /var/run symlink to /run and keep it in rpm
+-   make /var/run symlink to /run and keep it in rpm.
 *   Thu Apr 20 2017 Bo Gan <ganb@vmware.com> 1.0-12
--   Fix /usr/local/lib64 symlink
+-   Fix /usr/local/lib64 symlink.
 *   Wed Mar 08 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0-11
--   Create default DHCP net config in 99-dhcp-en.network instead of 10-dhcp-en.network
+-   Create default DHCP net config in 99-dhcp-en.network instead of 10-dhcp-en.network.
 *   Wed Aug 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-10
--   /etc/inputrc PgUp/PgDown for history search
+-   /etc/inputrc PgUp/PgDown for history search.
 *   Tue Jul 12 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-9
--   Added filesystem for debug libraries and binaries
+-   Added filesystem for debug libraries and binaries.
 *   Fri Jul 8 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-8
--   Removing multiple entries of localhost in /etc/hosts file
+-   Removing multiple entries of localhost in /etc/hosts file.
 *   Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-7
--   Fixed nobody user uid and group gid
+-   Fixed nobody user uid and group gid.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-6
--   GA - Bump release of all rpms
+-   GA - Bump release of all rpms.
 *   Wed May 4 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-5
--   Removing non-existent users from /etc/group file
+-   Removing non-existent users from /etc/group file.
 *   Fri Apr 29 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 1.0-4
--   Updating the /etc/hosts file
+-   Updating the /etc/hosts file.
 *   Fri Apr 22 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-3
--   Setting default umask value to 027
+-   Setting default umask value to 027.
 *   Thu Apr 21 2016 Anish Swaminathan <anishs@vmware.com> 1.0-2
--   Version update for network file change
+-   Version update for network file change.
 *   Mon Jan 18 2016 Anish Swaminathan <anishs@vmware.com> 1.0-1
--   Reset version to match with Photon version
+-   Reset version to match with Photon version.
 *   Wed Jan 13 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 7.5-13
 -   Support to set proxy configuration file - SLES proxy configuration implementation.
 *   Thu Jan 7 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 7.5-12
@@ -580,13 +585,13 @@ EOF
 *   Fri Oct 02 2015 Vinay Kulkarni <kulkarniv@vmware.com> 7.5-9
 -   Dump build-number and release version from macros.
 *   Fri Aug 14 2015 Sharath George <sharathg@vmware.com> 7.5-8
--   upgrading release to TP2
+-   upgrading release to TP2.
 *   Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 7.5-7
--   /etc/profile.d permission fix
+-   /etc/profile.d permission fix.
 *   Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 7.5-6
--   Adding group dip
+-   Adding group dip.
 *   Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 7.5-5
--   Fixing lsb-release file
+-   Fixing lsb-release file.
 *   Tue Jun 16 2015 Alexey Makhalov <amakhalov@vmware.com> 7.5-4
 -   Change users group id to 100.
 -   Add audio group to users group.
@@ -595,4 +600,4 @@ EOF
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 7.5-2
 -   Update according to UsrMove.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 7.5-1
--   Initial build. First version
+-   Initial build First version.
