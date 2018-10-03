@@ -1,6 +1,6 @@
 Summary:        Google RPC
 Name:           grpc
-Version:        1.10.0
+Version:        1.15.1
 Release:        1%{?dist}
 License:        Apache License, Version 2.0
 URL:            https://grpc.io
@@ -8,12 +8,14 @@ Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/grpc/grpc/archive/%{name}-%{version}.tar.gz
-%define sha1 grpc=0755317f82455f79228d3d30e306dc3c9e44de3c
+%define sha1 grpc=0c5ab74d3f64800dbf6005ec337e4291f04df438
 BuildRequires:  build-essential
 BuildRequires:  which
 BuildRequires:  c-ares-devel
 BuildRequires:  zlib-devel
 BuildRequires:  gperftools-devel
+BuildRequires:  protobuf-devel >= 3.6.0
+Requires:       protobuf >= 3.6.0
 Requires:       protobuf-c
 Requires:       c-ares-devel
 Requires:       zlib-devel
@@ -61,5 +63,7 @@ ln -sf libgrpc++_error_details.so.6 %{buildroot}%{_libdir}/libgrpc++_error_detai
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Tue Oct 02 2018 Siju Maliakkal <smaliakkal@vmware.com> 1.15.1-1
+- Updated to latest version
 * Tue Mar 27 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.10.0-1
 - initial version
