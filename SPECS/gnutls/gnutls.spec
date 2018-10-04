@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.6.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.5/%{name}-%{version}.tar.xz
@@ -46,8 +46,7 @@ developing applications that use gnutls.
 # check for trust store file presence
 [ -f %{_sysconfdir}/pki/tls/certs/ca-bundle.crt ] || exit 1
 
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --without-p11-kit \
     --disable-openssl-compatibility \
     --with-included-unistring \
@@ -59,11 +58,16 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 rm %{buildroot}%{_infodir}/*
 find %{buildroot}%{_libdir} -name '*.la' -delete
+mkdir -p %{buildroot}/etc/%{name}
+chmod 755 %{buildroot}/etc/%{name}
+cat > %{buildroot}/etc/%{name}/default-priorities << "EOF"
+SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
+EOF
 
 %check
 make %{?_smp_mflags} check
 
-%post 
+%post
 /sbin/ldconfig
 
 %postun
@@ -79,6 +83,7 @@ make %{?_smp_mflags} check
 %{_libdir}/guile/2.0/*.so*
 %{_libdir}/guile/2.0/site-ccache/gnutls*
 %{_datadir}/guile/site/2.0/gnutls*
+%config(noreplace) %{_sysconfdir}/gnutls/default-priorities
 
 %files devel
 %defattr(-,root,root)
@@ -88,6 +93,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Oct 03 2018 Tapas Kundu <tkundu@vmware.com> 3.6.3-2
+-   Including default-priority in the RPM packaging.
 *   Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 3.6.3-1
 -   Update version to 3.6.3
 *   Fri Feb 09 2018 Xiaolin Li <xiaolinl@vmware.com> 3.5.15-2
