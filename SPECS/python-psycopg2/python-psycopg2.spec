@@ -4,7 +4,7 @@
 Summary:        Python-PostgreSQL Database Adapter
 Name:           python-psycopg2
 Version:        2.7.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/psycopg2
 License:        LGPL with exceptions or ZPL
 Group:          Development/Languages/Python
@@ -17,10 +17,10 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
-BuildRequires:  postgresql-devel
+BuildRequires:  postgresql-devel >= 10.5
 Requires:       python2
 Requires:       python2-libs
-Requires:       postgresql
+Requires:       postgresql >= 10.5
 
 %description
 Psycopg is the most popular PostgreSQL database adapter for the Python programming language. Its main features are the complete implementation of the Python DB API 2.0 specification and the thread safety (several threads can share the same connection). It was designed for heavily multi-threaded applications that create and destroy lots of cursors and make a large number of concurrent “INSERT”s or “UPDATE”s.
@@ -34,10 +34,10 @@ Summary:        python-psycopg2
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-BuildRequires:  postgresql-devel
+BuildRequires:  postgresql-devel >= 10.5
 Requires:       python3
 Requires:       python3-libs
-Requires:       postgresql
+Requires:       postgresql >= 10.5
 
 %description -n python3-psycopg2
 Python 3 version.
@@ -94,6 +94,8 @@ rm -r /home/postgres/data &>/dev/null ||:
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 2.7.5-2
+-   Consuming postgresql 10.5 version
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.7.5-1
 -   Update to version 2.7.5
 *   Wed Aug 09 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.1-3
