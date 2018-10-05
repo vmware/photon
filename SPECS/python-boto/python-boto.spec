@@ -10,7 +10,7 @@ License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/boto/2.48.0
+URL:            https://pypi.python.org/pypi/boto/2.48.0
 Source0:        https://files.pythonhosted.org/packages/source/b/boto/boto-%{version}.tar.gz
 %define sha1    boto=300e6b7abd04a77a94f769e6cad6fb9e6e84ffbb
 BuildRequires:  python2

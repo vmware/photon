@@ -5,7 +5,7 @@ Summary:        A Universal Character Encoding Detector in Python
 Name:           python-chardet
 Version:        3.0.4
 Release:        1%{?dist}
-Url:            https://pypi.org/project/chardet/
+URL:            https://pypi.org/project/chardet/
 License:        LGPL v2.1
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

@@ -8,6 +8,7 @@ Version:        2.3.0
 Release:        1%{?dist}
 Group:          Development/Languages
 License:        MIT
+URL:            https://github.com/flavorjones/mini_portile
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://rubygems.org/downloads/mini_portile2-%{version}.gem

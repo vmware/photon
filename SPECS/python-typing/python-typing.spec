@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Type Hints for Python
 License:        PSF
 Group:          Development/Tools
-Url:            https://docs.python.org/3/library/typing.html
+URL:            https://docs.python.org/3/library/typing.html
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/17/75/3698d7992a828ad6d7be99c0a888b75ed173a9280e53dbae67326029b60e/typing-%{version}.tar.gz

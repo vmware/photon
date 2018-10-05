@@ -6,7 +6,7 @@ Release:        1%{?dist}
 Summary:        Backported python ssl_match_hostname
 License:        PSFL
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/backports.ssl_match_hostname/%{version}
+URL:            https://pypi.python.org/pypi/backports.ssl_match_hostname/%{version}
 Source0:        https://pypi.python.org/packages/76/21/2dc61178a2038a5cb35d14b61467c6ac632791ed05131dda72c20e7b9e23/backports.ssl_match_hostname-%{version}.tar.gz
 %define sha1    backports.ssl_match_hostname=0567c136707a5f53b95aa793b79cc8d5c61d8e22
 

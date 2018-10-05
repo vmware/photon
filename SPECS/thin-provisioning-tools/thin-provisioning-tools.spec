@@ -8,8 +8,11 @@ URL:            https://github.com/jthornber/thin-provisioning-tools
 Source0:        thin-provisioning-tools-%{version}.tar.gz
 %define sha1    thin-provisioning-tools=618dd1e11d34ba99ce2eb3880303283ade5b708e
 Patch0:         thin-provisioning-tools-fix-for-gcc-6.3.patch
-BuildRequires:  expat-devel, libaio-devel, boost-devel
-Requires:       expat, libaio
+BuildRequires:  expat-devel
+BuildRequires:  libaio-devel
+BuildRequires:  boost-devel
+Requires:       expat
+Requires:       libaio
 Vendor:         VMware, Inc.
 Distribution:   Photon
 

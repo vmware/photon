@@ -3,7 +3,7 @@ Version:        0.7.7
 Release:        1%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
-Url:            http://landley.net/toybox/
+URL:            http://landley.net/toybox/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon

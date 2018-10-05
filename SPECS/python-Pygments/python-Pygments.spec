@@ -9,7 +9,7 @@ License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/Pygments
+URL:            https://pypi.python.org/pypi/Pygments
 Source0:        https://files.pythonhosted.org/packages/source/P/Pygments/Pygments-%{version}.tar.gz
 %define         sha1 Pygments=5c6714bd6fd950c1478889f7b72fc7f6771d5163
 

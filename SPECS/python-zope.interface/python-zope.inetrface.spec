@@ -4,7 +4,7 @@
 Name:           python-zope.interface
 Version:        4.5.0
 Release:        1%{?dist}
-Url:            https://github.com/zopefoundation/zope.interface
+URL:            https://github.com/zopefoundation/zope.interface
 Summary:        Interfaces for Python
 License:        ZPL 2.1
 Group:          Development/Languages/Python

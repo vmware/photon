@@ -10,7 +10,7 @@ License:        BSD 2-Clause License.
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/vmware/liota
+URL:            https://github.com/vmware/liota
 Source0:        https://github.com/vmware/liota/archive/%{name}-%{version}.tar.gz
 %define         sha1 liota=c20239309086753e0dcc9cfa5e88e09ce63203f5
 Patch0:         fix_for_building_liota_with_pip_gr_10.patch

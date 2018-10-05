@@ -7,7 +7,7 @@ License:        BSD
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Url:            http://smarden.org/runit/
+URL:            http://smarden.org/runit/
 Source0:        http://smarden.org/runit/runit-%{version}.tar.gz
 %define sha1 runit=398f7bf995acd58797c1d4a7bcd75cc1fc83aa66
 Source1:	runit.service

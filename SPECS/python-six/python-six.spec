@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/source/s/six/six-%{version}.tar.gz
+URL:            https://pypi.python.org/packages/source/s/six/six-%{version}.tar.gz
 Source0:        six-%{version}.tar.gz
 %define sha1    six=3647372a0e104e7b53bd477762392024e1083ac0
 

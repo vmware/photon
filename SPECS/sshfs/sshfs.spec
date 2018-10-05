@@ -3,7 +3,7 @@ Name:           sshfs
 Version:        2.9
 Release:        1%{?dist}
 License:        GPLv2
-Url:		https://github.com/libfuse/sshfs
+URL:		https://github.com/libfuse/sshfs
 Group:		Filesystemd tools
 Vendor:		VMware, Inc.
 Distribution:	Photon

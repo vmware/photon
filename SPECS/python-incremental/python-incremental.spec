@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/incremental
+URL:            https://pypi.python.org/pypi/incremental
 Source0:        incremental-%{version}.tar.gz
 %define sha1    incremental=ec60b72cf95a092931f1e83807f5d641d80ae924
 

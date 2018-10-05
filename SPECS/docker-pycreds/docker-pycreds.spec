@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Python API for docker credentials store
 License:        ASL2.0
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/95/2e/3c99b8707a397153bc78870eb140c580628d7897276960da25d8a83c4719/%{name}-%{version}.tar.gz
+URL:            https://pypi.python.org/packages/95/2e/3c99b8707a397153bc78870eb140c580628d7897276960da25d8a83c4719/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    docker-pycreds=f6f9d96037a3befc7b5647f9bc09882bc130e52d
 

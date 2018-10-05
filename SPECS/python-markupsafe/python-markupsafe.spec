@@ -9,7 +9,7 @@ License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/MarkupSafe
+URL:            https://pypi.python.org/pypi/MarkupSafe
 Source0:        https://pypi.python.org/packages/4d/de/32d741db316d8fdb7680822dd37001ef7a448255de9699ab4bfcbdf4172b/MarkupSafe-%{version}.tar.gz 
 %define sha1    MarkupSafe=9072e80a7faa0f49805737a48f3d871eb1c48728
 

@@ -3,7 +3,7 @@ Name:           fuse
 Version:        2.9.7
 Release:        3%{?dist}
 License:        GPL+
-Url:            http://fuse.sourceforge.net/
+URL:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon

@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/graphviz
+URL:            https://pypi.python.org/pypi/graphviz
 #wget https://github.com/xflr6/graphviz/archive/0.8.tar.gz -O graphviz-0.8.tar.gz
 Source0:        graphviz-%{version}.zip
 %define sha1    graphviz=6864163a3647609bc517ee5d5acbf2c302954161

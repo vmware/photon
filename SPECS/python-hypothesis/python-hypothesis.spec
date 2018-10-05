@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Python library for creating unit tests which are simpler to write and more powerful
 License:        MPLv2.0
 Group:          Development/Languages/Python
-Url:            https://github.com/HypothesisWorks/hypothesis-python
+URL:            https://github.com/HypothesisWorks/hypothesis-python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/cf/d5/b3d491e4b5094be0ef69b910d637096c8e23f84a9bdc4eba0b869220d1f0/hypothesis-%{version}.tar.gz

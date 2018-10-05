@@ -7,7 +7,7 @@ Summary:        A modern, feature-rich and highly-tunable Python client library 
 Name:           python-cassandra-driver
 Version:        3.15.1
 Release:        1%{?dist}
-Url:            https://github.com/datastax/python-driver#datastax-python-driver-for-apache-cassandra
+URL:            https://github.com/datastax/python-driver#datastax-python-driver-for-apache-cassandra
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

@@ -5,7 +5,7 @@ Summary:        PyInstaller bundles a Python application and all its dependencie
 Name:           python-pyinstaller
 Version:        3.4
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/PyInstaller
+URL:            https://pypi.python.org/pypi/PyInstaller
 License:        GPLv2+
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

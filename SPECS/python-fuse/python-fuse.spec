@@ -6,7 +6,7 @@ Release:        1%{?dist}
 Summary:        Python interface to libfuse
 License:        LGPL
 Group:          Development/Languages/Python
-Url:            https://github.com/libfuse/%{name}/archive/%{version}.tar.gz
+URL:            https://github.com/libfuse/%{name}/archive/%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    python-fuse=9ffaf925866cdca337e42248232fa20ab8ff57be
 Vendor:         VMware, Inc.

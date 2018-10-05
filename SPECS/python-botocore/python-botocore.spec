@@ -10,7 +10,7 @@ License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/boto/botocore
+URL:            https://github.com/boto/botocore
 Source0:        https://github.com/boto/botocore/archive/botocore-%{version}.tar.gz
 %define sha1    botocore=e11850563bd1beaf8aa1756e03398358c057d606
 BuildRequires:  python2

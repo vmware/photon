@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/setuptools_scm
+URL:            https://pypi.python.org/pypi/setuptools_scm
 Source0:        https://files.pythonhosted.org/packages/source/s/setuptools_scm/setuptools_scm-%{version}.tar.gz
 %define sha1    setuptools_scm=cffffd63429761edece3957321a50fbdb364f043
 

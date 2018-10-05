@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Python client for the Prometheus monitoring system.
 License:        Apache-2.0
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/prometheus_client
+URL:            https://pypi.python.org/pypi/prometheus_client
 Source0:        prometheus_client-%{version}.tar.gz
 %define sha1    prometheus_client=43aed68fa484883fa53be38f1bf19790ea9a4438
 Vendor:         VMware, Inc.

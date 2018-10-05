@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Enhanced HTTPS support for httplib and urllib2 using PyOpenSSL.
 License:        BSD
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/ndg-httpsclient
+URL:            https://pypi.python.org/pypi/ndg-httpsclient
 Source0:        ndg_httpsclient-%{version}.tar.gz
 %define sha1    ndg_httpsclient=aa0b3c2d8ada61fa3f4e82ed307056b14cc63cb9
 Vendor:         VMware, Inc.

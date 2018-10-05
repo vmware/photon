@@ -7,7 +7,7 @@ Release:        5%{?dist}
 Summary:        A network address manipulation library for Python
 License:        BSD
 Group:          Development/Languages/Python
-Url:            https://files.pythonhosted.org/packages/source/n/netaddr/netaddr-%{version}.tar.gz
+URL:            https://files.pythonhosted.org/packages/source/n/netaddr/netaddr-%{version}.tar.gz
 Source0:        netaddr-%{version}.tar.gz
 %define sha1    netaddr=00e0ce7d7ebc1d6e7943e884aa51ccb7becdc9ea
 Patch0:         0001-fixed-broken-tests-in-issue-149-python-3-regression.patch

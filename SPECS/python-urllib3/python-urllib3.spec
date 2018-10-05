@@ -5,7 +5,7 @@ Summary:        A powerful, sanity-friendly HTTP client for Python.
 Name:           python-urllib3
 Version:        1.23
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/urllib3
+URL:            https://pypi.python.org/pypi/urllib3
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

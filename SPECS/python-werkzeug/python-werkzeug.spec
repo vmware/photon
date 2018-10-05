@@ -9,7 +9,7 @@ License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/Werkzeug
+URL:            https://pypi.python.org/pypi/Werkzeug
 Source0:        https://pypi.python.org/packages/ab/65/d3f1edd1109cb1beb6b82f4139addad482df5b5ea113bdc98242383bf402/Werkzeug-%{version}.tar.gz
 %define sha1    Werkzeug=4b979fb960c5b5507ccb8a705931fa217013483d
 

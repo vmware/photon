@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 # Note that the upstream site is dead.
 Source0:        http://www.pangalactic.org/PyPAM/PyPAM-%{version}.tar.gz
-Url:            http://www.pangalactic.org/PyPAM
+URL:            http://www.pangalactic.org/PyPAM
 %define sha1    PyPAM=fac6c2958fffc38454b1104d2d0f1f28563eff42
 Patch0:         PyPAM-dlopen.patch
 Patch1:         PyPAM-0.5.0-dealloc.patch

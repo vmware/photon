@@ -13,7 +13,8 @@ Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassa
 %define sha1    apache-cassandra=6860ef5a085429e7bd5783551304c7922d4efbc1
 Source1:        cassandra.service
 BuildRequires:  apache-ant
-BuildRequires:  unzip zip
+BuildRequires:  unzip
+BuildRequires:  zip
 BuildRequires:  openjdk8
 BuildRequires:  wget
 Requires:       openjre8

@@ -4,7 +4,7 @@ Version:        2.2.14
 Release:        3%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
-Url:            https://github.com/Azure/WALinuxAgent
+URL:            https://github.com/Azure/WALinuxAgent
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         photondistroadd.patch
 %define sha1 WALinuxAgent=f417009479ea7168ee0f2daa38328c167b4f874b

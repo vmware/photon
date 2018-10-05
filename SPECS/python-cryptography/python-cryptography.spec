@@ -5,7 +5,7 @@ Summary:        Python cryptography library
 Name:           python-cryptography
 Version:        2.3.1
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/cryptography
+URL:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

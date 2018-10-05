@@ -3,6 +3,7 @@ Name:		libaio
 Version:	0.3.110
 Release: 	2%{?dist}
 License:	LGPLv2+
+URL:        https://github.com/crossbuild/libaio
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon

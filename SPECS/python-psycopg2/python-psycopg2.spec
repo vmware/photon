@@ -5,7 +5,7 @@ Summary:        Python-PostgreSQL Database Adapter
 Name:           python-psycopg2
 Version:        2.7.5
 Release:        2%{?dist}
-Url:            https://pypi.python.org/pypi/psycopg2
+URL:            https://pypi.python.org/pypi/psycopg2
 License:        LGPL with exceptions or ZPL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

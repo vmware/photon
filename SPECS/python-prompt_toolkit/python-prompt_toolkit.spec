@@ -9,7 +9,7 @@ License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/prompt_toolkit
+URL:            https://pypi.python.org/pypi/prompt_toolkit
 Source0:        https://files.pythonhosted.org/packages/source/p/prompt_toolkit/prompt_toolkit-%{version}.tar.gz
 %define sha1    prompt_toolkit=5ac2c31dd9f443da4aa143dde56a8b5c44a254c5
 

@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/configparser
+URL:            https://pypi.python.org/pypi/configparser
 Source0:        configparser-%{version}.tar.gz
 %define sha1    configparser=8ee6b29c6a11977c0e094da1d4f5f71e7e7ac78b
 

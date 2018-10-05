@@ -3,6 +3,7 @@ Name:		dbus-glib
 Version:	0.110
 Release:	1%{?dist}
 License: 	AFL and GPLv2+
+URL:        https://www.freedesktop.org/wiki/Software/dbus
 Group: 		System Environment/Libraries
 Source0:	http://dbus.freedesktop.org/releases/dbus-glib/%{name}-%{version}.tar.gz
 %define sha1 dbus-glib=998b7c762c8f18c906f19fc393bb8712eabe8c97

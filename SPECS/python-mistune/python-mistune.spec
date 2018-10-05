@@ -9,7 +9,7 @@ License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/mistune/
+URL:            https://pypi.python.org/pypi/mistune/
 Source0:        https://files.pythonhosted.org/packages/source/m/mistune/mistune-%{version}.tar.gz
 %define sha1    mistune=993c67443f393f9645d5f969492a8a107d9edc5f
 

@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/python-hyper/hyperlink
+URL:            https://github.com/python-hyper/hyperlink
 Source0:        https://github.com/python-hyper/hyperlink/archive/hyperlink-%{version}.tar.gz
 %define sha1    hyperlink=f51f4495795e51ae9468a13dd79ff26b3f457f40
 

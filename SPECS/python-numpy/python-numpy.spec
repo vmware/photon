@@ -9,7 +9,7 @@ License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/numpy
+URL:            https://pypi.python.org/pypi/numpy
 Source0:        https://pypi.python.org/packages/a5/16/8a678404411842fe02d780b5f0a676ff4d79cd58f0f22acddab1b392e230/numpy-%{version}.zip 
 %define sha1    numpy=2e7548d4972e5366dd8b30ca3639e243dae96af9
 

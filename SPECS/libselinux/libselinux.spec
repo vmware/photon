@@ -8,11 +8,12 @@ License:        Public Domain
 Group:          System Environment/Libraries
 Source0:        https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}.tar.gz
 %define sha1    libselinux=d45f2db91dbec82ef5a153aca247acc04234e8af
-Url:            https://github.com/SELinuxProject/selinux/wiki
+URL:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libsepol-devel
-BuildRequires:  pcre-devel, swig
+BuildRequires:  pcre-devel
+BuildRequires:  swig
 BuildRequires:  python3-devel
 Requires:       pcre-libs
 Requires:       libsepol
@@ -35,7 +36,7 @@ decisions.  Required for any applications that use the SELinux API.
 %package        utils
 Summary:        SELinux libselinux utilies
 Group:          Development/Libraries
-Requires:       libselinux = %{version}-%{release} 
+Requires:       libselinux = %{version}-%{release}
 
 %description    utils
 The libselinux-utils package contains the utilities
@@ -50,7 +51,7 @@ Provides:       pkgconfig(libselinux)
 
 %description    devel
 The libselinux-devel package contains the libraries and header files
-needed for developing SELinux applications. 
+needed for developing SELinux applications.
 
 %package        python
 Summary:        SELinux python2 bindings for libselinux

@@ -3,7 +3,7 @@ Name:           fuse3
 Version:        3.0.1
 Release:        2%{?dist}
 License:        GPL+
-Url:            http://fuse.sourceforge.net/
+URL:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon

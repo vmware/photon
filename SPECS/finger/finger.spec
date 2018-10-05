@@ -3,6 +3,7 @@ Name:		finger
 Version:	0.17
 Release:	2%{?dist}
 License:	BSD/
+URL:        https://github.com/Distrotech/bsd-finger
 Group:		Applications/Internet
 Vendor:		VMware, Inc.
 Distribution:   Photon

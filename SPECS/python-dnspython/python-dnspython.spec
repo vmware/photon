@@ -5,7 +5,7 @@ Summary:        A DNS toolkit for Python
 Name:           python-dnspython
 Version:        1.15.0
 Release:        3%{?dist}
-Url:            https://pypi.python.org/pypi/dnspython
+URL:            https://pypi.python.org/pypi/dnspython
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

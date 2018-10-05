@@ -5,7 +5,7 @@ Summary:        Python PAM module using ctypes, py3/py2
 Name:           python-pam
 Version:        1.8.2
 Release:        2%{?dist}
-Url:            https://pypi.python.org/pypi/python-pam/
+URL:            https://pypi.python.org/pypi/python-pam/
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

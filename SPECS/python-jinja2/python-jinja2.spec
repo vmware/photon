@@ -5,7 +5,7 @@
 Name:           python-jinja2
 Version:        2.10
 Release:        1%{?dist}
-Url:            http://jinja.pocoo.org/
+URL:            http://jinja.pocoo.org/
 Summary:        A fast and easy to use template engine written in pure Python
 License:        BSD
 Group:          Development/Languages/Python

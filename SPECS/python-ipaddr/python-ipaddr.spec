@@ -4,7 +4,7 @@
 Name:           python-ipaddr
 Version:        2.2.0
 Release:        1%{?dist}
-Url:            https://github.com/google/ipaddr-py
+URL:            https://github.com/google/ipaddr-py
 Summary:        Google's Python IP address manipulation library
 License:        Apache2
 Group:          Development/Languages/Python

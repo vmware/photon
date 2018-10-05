@@ -10,7 +10,7 @@ License:        Apache License 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/GoogleCloudPlatform/compute-image-packages/
+URL:            https://github.com/GoogleCloudPlatform/compute-image-packages/
 Source0:        https://github.com/GoogleCloudPlatform/compute-image-packages/archive/compute-image-packages-%{version}.tar.gz
 %define sha1    compute-image-packages=6852588ecae9cc39bac7683f1e21f88a5d41e831
 Patch0:         remove-boto.patch

@@ -3,7 +3,7 @@ Name:		gc
 Version:	8.0.0
 Release:	1%{?dist}
 License:	BSD
-Url:		http://www.hboehm.info/gc/
+URL:		http://www.hboehm.info/gc/
 Source0:	http://www.hboehm.info/gc/gc_source/%{name}-%{version}.tar.gz
 %define sha1 gc=bfb22367b95c796f2248b41405d37388027fe382
 Source1:       http://www.ivmaisoft.com/_bin/atomic_ops/libatomic_ops-7.6.6.tar.gz

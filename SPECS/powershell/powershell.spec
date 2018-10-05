@@ -5,7 +5,7 @@ Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
-Url:            https://microsoft.com/powershell
+URL:            https://microsoft.com/powershell
 Group:          shells
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    powershell=2aac40c972f45d1abb3a8b3a4d8a87fcbe91b889

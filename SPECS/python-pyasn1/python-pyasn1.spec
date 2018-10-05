@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Implementation of ASN.1 types and codecs in Python programming language
 License:        BSD
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/source/p/pyasn1/pyasn1-%{version}.tar.gz
+URL:            https://pypi.python.org/packages/source/p/pyasn1/pyasn1-%{version}.tar.gz
 Source0:        pyasn1-%{version}.tar.gz
 %define sha1    pyasn1=10f67e61e30c064301c826c6e5e461ff7bf5827d
 

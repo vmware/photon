@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/untitaker/python-atomicwrites
+URL:            https://github.com/untitaker/python-atomicwrites
 Source0:        https://pypi.python.org/packages/a1/e1/2d9bc76838e6e6667fde5814aa25d7feb93d6fa471bf6816daac2596e8b2/atomicwrites-%{version}.tar.gz
 %define sha1    atomicwrites=fec341b1028177784ac97436c479a397ffeb20d7
 

@@ -11,7 +11,7 @@ Distribution:	Photon
 Source0:	libedit-%{libedit_release}-%{libedit_version}.tar.gz
 %define sha1    libedit=cf6eb4f32c0336f0f3de68afbcdbeaa4d70b42b6
 License:	BSD
-Url:		http://www.thrysoee.dk/editline/
+URL:		http://www.thrysoee.dk/editline/
 Group:		Applications/Libraries
 Requires:       ncurses
 BuildRequires:  ncurses-devel

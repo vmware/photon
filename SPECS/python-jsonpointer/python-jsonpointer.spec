@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/source/j/jsonpointer/jsonpointer-%{version}.tar.gz
+URL:            https://pypi.python.org/packages/source/j/jsonpointer/jsonpointer-%{version}.tar.gz
 Source0:        jsonpointer-%{version}.tar.gz
 %define sha1    jsonpointer=f0733349a44b0c777ef9b8e0256d628e2530624b
 

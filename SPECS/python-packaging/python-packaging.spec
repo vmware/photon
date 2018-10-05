@@ -5,7 +5,7 @@ Summary:        Core utilities for Python packages
 Name:           python-packaging
 Version:        17.1
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/packaging
+URL:            https://pypi.python.org/pypi/packaging
 License:        BSD or ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

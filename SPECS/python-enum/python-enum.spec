@@ -6,7 +6,7 @@ Release:        2%{?dist}
 Summary:        Robust enumerated type support in Python
 License:        GNU General Public License (GPL) (GPL-3.0+)
 Group:          Development/Languages/Python
-Url:            http://pypi.python.org/packages/source/e/enum/enum-%{version}.tar.gz
+URL:            http://pypi.python.org/packages/source/e/enum/enum-%{version}.tar.gz
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:        enum-%{version}.tar.gz

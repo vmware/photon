@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/wcwidth
+URL:            https://pypi.python.org/pypi/wcwidth
 Source0:        https://files.pythonhosted.org/packages/source/w/wcwidth/wcwidth-%{version}.tar.gz
 %define         sha1 wcwidth=28df2f5e8cd67ec182d822350252fea9bc3a91c8
 

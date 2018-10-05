@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Virtual Python Environment builder
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/virtualenv
+URL:            https://pypi.python.org/pypi/virtualenv
 Source0:        virtualenv-%{version}.tar.gz
 %define sha1    virtualenv=33831525c360459671d25f9e5abac931c414d2f7
 Vendor:         VMware, Inc.

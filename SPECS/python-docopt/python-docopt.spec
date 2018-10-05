@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Pythonic argument parser to create command line interfaces.
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/docopt
+URL:            https://pypi.python.org/pypi/docopt
 Source0:        docopt-%{version}.tar.gz
 %define sha1    docopt=224a3ec08b56445a1bd1583aad06b00692671e04
 Vendor:         VMware, Inc.

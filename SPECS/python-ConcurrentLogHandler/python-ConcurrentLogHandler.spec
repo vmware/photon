@@ -7,7 +7,7 @@ Release:        2%{?dist}
 Summary:        Concurrent logging handler (drop-in replacement for RotatingFileHandler) Python 2.6+
 License:        Apache-2.0
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/ConcurrentLogHandler/0.9.1
+URL:            https://pypi.python.org/pypi/ConcurrentLogHandler/0.9.1
 Source0:        ConcurrentLogHandler-%{version}.tar.gz
 %define sha1    ConcurrentLogHandler=9afcd87b6eb0f37f65b8d7eb928c6d20415692ab
 Vendor:         VMware, Inc.

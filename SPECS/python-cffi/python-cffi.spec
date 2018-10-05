@@ -5,7 +5,7 @@ Summary:        Interface for Python to call C code
 Name:           python-cffi
 Version:        1.11.5
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/cffi
+URL:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

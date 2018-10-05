@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        A configurable sidebar-enabled Sphinx theme
 License:        BSD
 Group:          Development/Languages/Python
-Url:            https://github.com/bitprophet/alabaster/
+URL:            https://github.com/bitprophet/alabaster/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/d0/a5/e3a9ad3ee86aceeff71908ae562580643b955ea1b1d4f08ed6f7e8396bd7/alabaster-%{version}.tar.gz

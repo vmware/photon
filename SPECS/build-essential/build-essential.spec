@@ -3,8 +3,17 @@ Summary:        Metapackage to install all build tools
 Version:        0.1
 Release:        2%{?dist}
 License:        GPLv2
-Requires:       gcc, binutils, make, glibc-devel, linux-api-headers, automake
-Requires:       autoconf, libtool, gawk, diffutils
+URL:            https://github.com/vmware/photon
+Requires:       gcc
+Requires:       binutils
+Requires:       make
+Requires:       glibc-devel
+Requires:       linux-api-headers
+Requires:       automake
+Requires:       autoconf
+Requires:       libtool
+Requires:       gawk
+Requires:       diffutils
 
 %description
 Metapackage to install all build tools

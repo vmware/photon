@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        an integrated collection of utilities that assist in internationalizing and localizing Python applications
 License:        BSD3
 Group:          Development/Languages/Python
-Url:            http://babel.pocoo.org
+URL:            http://babel.pocoo.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/92/22/643f3b75f75e0220c5ef9f5b72b619ccffe9266170143a4821d4885198de/Babel-%{version}.tar.gz

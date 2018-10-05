@@ -4,7 +4,7 @@ Version:        2.0.17
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/System
-Url:            https://www.kernel.org/doc/Documentation/kdump/kdump.txt
+URL:            https://www.kernel.org/doc/Documentation/kdump/kdump.txt
 Source0:        https://www.kernel.org/pub/linux/utils/kernel/kexec/%{name}-%{version}.tar.xz
 %define sha1 kexec-tools=8936b2e0eea3334c656a0004d514ed9795691393
 Patch0:		kexec-tools-disable-test.patch

@@ -6,7 +6,7 @@ Name:           python-oauthlib
 Version:        2.1.0
 Release:        1%{?dist}
 License:        BSD
-Url:            https://pypi.python.org/pypi/python-oauthlib/
+URL:            https://pypi.python.org/pypi/python-oauthlib/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon

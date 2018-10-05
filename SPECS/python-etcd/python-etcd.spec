@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Python API for etcd
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/python-etcd
+URL:            https://pypi.python.org/pypi/python-etcd
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    python-etcd=9e79ae82429cf2ffbe2b5647e14bc29571afd766
 Vendor:         VMware, Inc.

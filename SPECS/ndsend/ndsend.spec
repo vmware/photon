@@ -5,6 +5,7 @@ Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Public Domain
+URL:           https://github.com/blueboxgroup/vzctl
 Source0:       %{name}-%{version}.tar.gz
 Distribution:  Photon
 %define sha1 ndsend=05493e1b8e920959fdf72dc6ab4517504d6ebec3

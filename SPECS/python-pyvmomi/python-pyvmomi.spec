@@ -9,7 +9,7 @@ License:        OSI Approved :: Apache Software License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/pyvmomi
+URL:            https://pypi.python.org/pypi/pyvmomi
 Source0:        pyvmomi-%{version}.tar.gz
 %define sha1    pyvmomi=83932e0751c565db9438ee86002b72dd19282fca
 

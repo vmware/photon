@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/service_identity
+URL:            https://pypi.python.org/pypi/service_identity
 Source0:        service_identity-%{version}.tar.gz
 %define sha1    service_identity=63408ac8b2cfd70f3b31fdcfefc1414b5b965cbc
 

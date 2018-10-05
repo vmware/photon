@@ -6,7 +6,7 @@ License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            http://www.mysql.com
+URL:            http://www.mysql.com
 Source0:        https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-boost-%{version}.tar.gz
 %define         sha1 mysql-boost=c144d6c1350a9897da31ebbd3b5492ab1f152352
 

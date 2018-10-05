@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
-Url:		https://pypi.python.org/pypi/jsonpatch
+URL:		https://pypi.python.org/pypi/jsonpatch
 Source0:        https://pypi.python.org/packages/be/c1/947048a839120acefc13a614280be3289db404901d1a2d49b6310c6d5757/jsonpatch-%{version}.tar.gz
 %define sha1    jsonpatch=6097861e88b94fd42fcc9713aa81d5f97b4cc350
 

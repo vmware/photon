@@ -5,7 +5,7 @@ Summary:        XML bomb protection for Python stdlib modules
 Name:           python-defusedxml
 Version:        0.5.0
 Release:        3%{?dist}
-Url:            https://pypi.python.org/pypi/defusedxml
+URL:            https://pypi.python.org/pypi/defusedxml
 License:        PSFL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

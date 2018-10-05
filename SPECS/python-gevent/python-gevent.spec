@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/gevent
+URL:            https://pypi.python.org/pypi/gevent
 Source0:        gevent-%{version}.tar.gz
 %define sha1    gevent=686dbb43474bf80efd9af3c07ba2dbd242aa123e
 Patch0:         python-gevent-makecheck.patch

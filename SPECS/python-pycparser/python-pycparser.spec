@@ -4,7 +4,7 @@ Summary:        Python C parser
 Name:           python-pycparser
 Version:        2.18
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/pycparser
+URL:            https://pypi.python.org/pypi/pycparser
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

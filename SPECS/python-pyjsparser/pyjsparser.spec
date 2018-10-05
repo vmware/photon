@@ -9,7 +9,7 @@ License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/pyjsparser/2.5.2
+URL:            https://pypi.python.org/pypi/pyjsparser/2.5.2
 Source0:        https://files.pythonhosted.org/packages/source/p/pyjsparser/pyjsparser-%{version}.tar.gz
 %define         sha1 pyjsparser=5a03ca6042b2f5bb2226158c8e7f15210f4eb38e
 BuildRequires:  python2

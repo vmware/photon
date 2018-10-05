@@ -7,7 +7,7 @@ Release:        2%{?dist}
 Summary:        Python stemming library
 License:        BSD
 Group:          Development/Languages/Python
-Url:            https://github.com/shibukawa/snowball_py
+URL:            https://github.com/shibukawa/snowball_py
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/20/6b/d2a7cb176d4d664d94a6debf52cd8dbae1f7203c8e42426daa077051d59c/snowballstemmer-%{version}.tar.gz

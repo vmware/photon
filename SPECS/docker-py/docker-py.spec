@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Python API for docker
 License:        ASL2.0
 Group:          Development/Languages/Python
-Url:            https://github.com/docker/docker-py
+URL:            https://github.com/docker/docker-py
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    docker-py=d742bfa49b86502150a9cffe2e066a39eb8ab778
 

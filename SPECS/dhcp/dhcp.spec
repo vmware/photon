@@ -3,7 +3,7 @@ Name:		dhcp
 Version:	4.3.5
 Release:	4%{?dist}
 License:	ISC
-Url:      	http://isc.org/products/DHCP/
+URL:      	http://isc.org/products/DHCP/
 Source0:  	ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
 %define sha1 dhcp=6140a0cf6b3385057d76c14278294284ba19e5a5
 Group:		System Environment/Base

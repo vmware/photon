@@ -5,7 +5,7 @@ Release:        1%{?dist}
 Summary:        Backport of the concurrent.futures package to Python 2.6 and 2.7
 License:        PSF
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/futures
+URL:            https://pypi.python.org/pypi/futures
 Source0:        https://pypi.python.org/packages/cc/26/b61e3a4eb50653e8a7339d84eeaa46d1e93b92951978873c220ae64d0733/futures-%{version}.tar.gz
 %define sha1    futures=ca2da8b80e81095ded372c0b545ae0fdae6027c4
 Vendor:         VMware, Inc.

@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://twistedmatrix.com
+URL:            https://twistedmatrix.com
 Source0:        https://pypi.python.org/packages/source/T/Twisted/Twisted-%{version}.tar.bz2
 %define sha1 Twisted=949c75da0426ca139a3128fecb484eeb7513087e
 Patch0:        extra_dependency.patch 

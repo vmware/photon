@@ -9,7 +9,7 @@ License:        Apache Software License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/ionrock/cachecontrol/archive/v%{version}.tar.gz
+URL:            https://github.com/ionrock/cachecontrol/archive/v%{version}.tar.gz
 Source0:        CacheControl-%{version}.tar.gz
 %define sha1    CacheControl=ccc7d5ff074b5c1a5ea96db1fcd322e9d2f67668
 

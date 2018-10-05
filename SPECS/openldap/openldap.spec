@@ -12,7 +12,8 @@ Source0:	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}
 %define sha1 openldap=a9ae2273eb9bdd70090dafe0d018a3132606bef6
 Patch0:         openldap-2.4.40-gssapi-1.patch
 Patch1:		openldap-2.4.44-consolidated-2.patch
-Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
+Requires:       openssl >= 1.0.1
+Requires:       cyrus-sasl >= 2.1
 BuildRequires:  cyrus-sasl >= 2.1
 BuildRequires:  openssl-devel >= 1.0.1
 BuildRequires:	groff

@@ -9,7 +9,7 @@ License:        public domain, Python, 2-Clause BSD, GPL 3 (see COPYING.txt)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/docutils
+URL:            https://pypi.python.org/pypi/docutils
 Source0:        https://files.pythonhosted.org/packages/source/d/docutils/docutils-%{version}.tar.gz
 %define sha1    docutils=32cefb69ac3dab5b04c4d150776f35419cc4c863
 

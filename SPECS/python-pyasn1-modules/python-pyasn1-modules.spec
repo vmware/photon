@@ -5,7 +5,7 @@ Summary:        A collection of ASN.1-based protocols modules.
 Name:           python-pyasn1-modules
 Version:        0.2.2
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/pyasn1-modules
+URL:            https://pypi.python.org/pypi/pyasn1-modules
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Python Lex & Yacc
 License:        BSD-3-Clause
 Group:          Development/Languages/Python
-Url:            http://www.dabeaz.com/ply/
+URL:            http://www.dabeaz.com/ply/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/dabeaz/ply/archive/ply-%{version}.tar.gz 

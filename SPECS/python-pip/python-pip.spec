@@ -2,7 +2,7 @@
 Name:           python-pip
 Version:        18.0
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/pip
+URL:            https://pypi.python.org/pypi/pip
 Summary:        The PyPA recommended tool for installing Python packages.
 License:        MIT
 Group:          Development/Languages/Python

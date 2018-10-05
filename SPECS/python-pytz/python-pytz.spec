@@ -7,7 +7,7 @@ Summary:        World timezone definitions, modern and historical
 Name:           python-pytz
 Version:        2018.5
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/pytz
+URL:            https://pypi.python.org/pypi/pytz
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

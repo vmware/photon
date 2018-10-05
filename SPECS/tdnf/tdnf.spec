@@ -8,7 +8,7 @@ Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
-Url:            http://www.vmware.com
+URL:            http://www.vmware.com
 Group:          Applications/RPM
 Requires:       rpm-libs
 Requires:       curl

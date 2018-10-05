@@ -9,7 +9,7 @@ License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://docs.openstack.org/developer/pbr/
+URL:            https://docs.openstack.org/developer/pbr/
 Source0:        https://pypi.io/packages/source/p/pbr/pbr-%{version}.tar.gz
 %define sha1    pbr=10165d4998cbe252676ee95306d8f2c843ad2fe6
 Patch0:         disable-test-wsgi.patch

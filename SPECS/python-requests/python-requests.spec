@@ -9,7 +9,7 @@ License:        Apache2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            http://python-requests.org
+URL:            http://python-requests.org
 Source0:        http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
 %define sha1    requests=b6e6ed992c86835aa1a7d7a81fec2aee0d385416
 

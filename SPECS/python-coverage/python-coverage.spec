@@ -11,7 +11,7 @@ License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/coverage
+URL:            https://pypi.python.org/pypi/coverage
 Source0:        https://files.pythonhosted.org/packages/source/c/coverage/coverage-%{version}.tar.gz
 %define         sha1 coverage=ec7c2ee6eae78708bee08af8b85e03dd8d673ef2
 

@@ -9,7 +9,7 @@ License:        Apache Software License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            http://msgpack.org/
+URL:            http://msgpack.org/
 Source0:        https://pypi.io/packages/source/m/msgpack-python/msgpack-%{version}.tar.gz
 %define sha1    msgpack=916c234864a5eaae179982dcd4b20efaa3677a30
 

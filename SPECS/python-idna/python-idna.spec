@@ -5,7 +5,7 @@ Summary:        Internationalized Domain Names in Applications (IDNA).
 Name:           python-idna
 Version:        2.7
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/idna
+URL:            https://pypi.python.org/pypi/idna
 License:        BSD-like
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

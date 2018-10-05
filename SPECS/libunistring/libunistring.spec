@@ -3,7 +3,7 @@ Name:		libunistring
 Version:	0.9.10
 Release: 	1%{?dist}
 License:	LGPLv3+
-Url:		http://www.gnu.org/software/libunistring/
+URL:		http://www.gnu.org/software/libunistring/
 Source0:	http://ftp.gnu.org/gnu/libunistring/%{name}-%{version}.tar.xz
 %define sha1 libunistring=16dc423d3ebd23f365b0ffe7d584428b427f4bde
 Group:		System Environment/Libraries

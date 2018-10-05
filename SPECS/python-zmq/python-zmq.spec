@@ -9,7 +9,7 @@ License:        LGPLv3+ and BSD3
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.org/project/pyzmq
+URL:            https://pypi.org/project/pyzmq
 Source0:        https://pypi.python.org/packages/af/37/8e0bf3800823bc247c36715a52e924e8f8fd5d1432f04b44b8cd7a5d7e55/pyzmq-%{version}.tar.gz
 %define sha1	pyzmq=d0e5d7dd59f2398345fc4bacf5ee91241d857f0d
 

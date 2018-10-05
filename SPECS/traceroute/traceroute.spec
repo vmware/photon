@@ -4,7 +4,7 @@ Version:        2.1.0
 Release:        2%{?dist}
 License:        GPLv2+
 Group:          Applications/Internet
-Url:            http://traceroute.sourceforge.net
+URL:            http://traceroute.sourceforge.net
 Source0:        http://downloads.sourceforge.net/project/traceroute/traceroute/traceroute-%{version}/traceroute-%{version}.tar.gz
 %define sha1    traceroute=bc5c6c8022187511be5665b3818d919be5987dcc
 Vendor:         VMware, Inc.

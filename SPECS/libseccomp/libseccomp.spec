@@ -6,7 +6,7 @@ License:      LGPLv2
 Group:        System Environment/Libraries
 Source0:      https://github.com/seccomp/libseccomp/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %define sha1 libseccomp=89b1f35447b1891a3051de979dc92ad9f7258b60
-Url:          https://github.com/seccomp/libseccomp/wiki
+URL:          https://github.com/seccomp/libseccomp/wiki
 Vendor:       VMware, Inc.
 Distribution: Photon
 

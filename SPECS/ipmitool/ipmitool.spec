@@ -4,6 +4,7 @@ Name:           ipmitool
 Version:        1.8.18
 Release:        1%{?dist}
 License:        BSD
+URL:            https://github.com/ipmitool/ipmitool
 
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.

@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        A fast, pure Python library for parsing and serializing ASN.1 structures.
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/67/14/5d66588868c4304f804ebaff9397255f6ec5559e46724c2496e0f26e68d6/asn1crypto-0.22.0.tar.gz
+URL:            https://pypi.python.org/packages/67/14/5d66588868c4304f804ebaff9397255f6ec5559e46724c2496e0f26e68d6/asn1crypto-0.22.0.tar.gz
 Source0:        asn1crypto-%{version}.tar.gz
 %define sha1    asn1crypto=c8f64e99bc01d90c412891cdad97675d8fe79cc7
 

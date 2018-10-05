@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/simplejson
+URL:            https://pypi.python.org/pypi/simplejson
 Source0:        simplejson-%{version}.tar.gz
 %define sha1    simplejson=4c829f221e1941bfbc0732eb386b99c74f211296
 

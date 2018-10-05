@@ -10,7 +10,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/jmespath
+URL:            https://pypi.python.org/pypi/jmespath
 Source0:        https://pypi.python.org/packages/e5/21/795b7549397735e911b032f255cff5fb0de58f96da794274660bca4f58ef/jmespath-%{version}.tar.gz
 %define         sha1 jmespath=eca7ba2e8d4fc50239973b59e07f9f527e0c0839
 BuildRequires:  python2

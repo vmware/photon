@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/ntplib/
+URL:            https://pypi.python.org/pypi/ntplib/
 Source0:        ntplib-%{version}.tar.gz
 %define         sha1 ntplib=403ac0cc01398bacdf608d4aa35e74e36f5ad64d
 

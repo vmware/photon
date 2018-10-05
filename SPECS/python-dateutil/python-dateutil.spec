@@ -10,7 +10,7 @@ License:        Apache Software License, BSD License (Dual License)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/python-dateutil
+URL:            https://pypi.python.org/pypi/python-dateutil
 Source0:        https://pypi.python.org/packages/54/bb/f1db86504f7a49e1d9b9301531181b00a1c7325dc85a29160ee3eaa73a54/python-dateutil-%{version}.tar.gz
 %define         sha1 python-dateutil=b1aeb913996fc6660ea42a7b31b1331d41a8a13c
 BuildRequires:  python2

@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        WebSocket client for python
 License:        LGPL
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/websocket-client
+URL:            https://pypi.python.org/pypi/websocket-client
 Source0:        websocket_client-%{version}.tar.gz
 %define sha1    websocket_client=09bd8914944646fde9d2672392579a982ea0f031
 

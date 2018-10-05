@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/openstack/pylockfile
+URL:            https://github.com/openstack/pylockfile
 Source0:        https://pypi.python.org/packages/source/l/lockfile/lockfile-%{version}.tar.gz
 %define sha1    lockfile=c2ac46e48585e5f8f8d57ccc55ca83faa8b53b86
 

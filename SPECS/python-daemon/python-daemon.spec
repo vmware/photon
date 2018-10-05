@@ -6,7 +6,7 @@ Name:           python-daemon
 Version:        2.2.0
 Release:        1%{?dist}
 License:        Apache-2
-Url:            https://pypi.python.org/pypi/python-daemon/
+URL:            https://pypi.python.org/pypi/python-daemon/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon

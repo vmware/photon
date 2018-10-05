@@ -6,7 +6,7 @@ Name:           python-pexpect
 Version:        4.6.0
 Release:        1%{?dist}
 License:        ISC
-Url:            https://github.com/pexpect/pexpect
+URL:            https://github.com/pexpect/pexpect
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon

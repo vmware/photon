@@ -6,7 +6,7 @@ Summary:        A library for retrieving information onrunning processes and sys
 Name:           python-psutil
 Version:        5.4.7
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/psutil
+URL:            https://pypi.python.org/pypi/psutil
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

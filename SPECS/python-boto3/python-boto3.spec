@@ -10,7 +10,7 @@ License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/boto/boto3
+URL:            https://github.com/boto/boto3
 Source0:        https://github.com/boto/boto3/archive/boto3-%{version}.tar.gz
 %define sha1    boto3=2c5174711d2a5c73a8dcc569734bbd94a9b63281
 BuildRequires:  python2

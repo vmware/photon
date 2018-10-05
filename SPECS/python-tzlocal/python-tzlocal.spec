@@ -9,7 +9,7 @@ License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/tzlocal/1.4
+URL:            https://pypi.python.org/pypi/tzlocal/1.4
 Source0:        https://files.pythonhosted.org/packages/source/t/tzlocal/tzlocal-%{version}.tar.gz
 %define sha1    tzlocal=98dc51724f3201f66f4ec36f22b99bd03f3059bd
 BuildRequires:  python2

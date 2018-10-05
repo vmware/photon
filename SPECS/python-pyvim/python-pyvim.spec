@@ -9,7 +9,7 @@ License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/service_identity
+URL:            https://pypi.python.org/pypi/service_identity
 Source0:        pyvim-%{version}.tar.gz
 %define sha1    pyvim=b44c9e78755b1f13ee45a2903758386425e9a2ba
 # To get tests:

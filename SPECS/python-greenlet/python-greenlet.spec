@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/greenlet
+URL:            https://pypi.python.org/pypi/greenlet
 Source0:        greenlet-%{version}.tar.gz
 %define sha1    greenlet=0da9c069c38bf297923a1da0c601ef71c07ffb6d
 

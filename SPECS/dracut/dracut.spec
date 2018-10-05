@@ -19,7 +19,8 @@ Patch2:         fix-initrd-naming-for-photon.patch
 Summary:        dracut to create initramfs
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  bash git
+BuildRequires:  bash
+BuildRequires:  git
 BuildRequires:  pkg-config
 BuildRequires:  kmod-devel
 BuildRequires:  asciidoc
@@ -181,7 +182,7 @@ rm -rf -- $RPM_BUILD_ROOT
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 044-3
 -   GA - Bump release of all rpms
-*   Thu Apr 25 2016 Gengsheng Liu <gengshengl@vmware.com> 044-2
+*   Mon Apr 25 2016 Gengsheng Liu <gengshengl@vmware.com> 044-2
 -   Fix incorrect systemd directory.
 *   Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 044-1
 -   Updating Version.

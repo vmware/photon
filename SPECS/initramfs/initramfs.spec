@@ -4,6 +4,7 @@ Version:	2.0
 Release:	4%{?dist}
 Source0:	fscks.conf
 License:	Apache License
+URL:        https://github.com/vmware/photon
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon

@@ -5,7 +5,7 @@ Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
-Url:            https://github.com/dotnet/core
+URL:            https://github.com/dotnet/core
 Group:          Development/Tools
 Source0:        https://download.microsoft.com/download/1/1/0/11046135-4207-40D3-A795-13ECEA741B32/dotnet-runtime-2.0.5-linux-x64.tar.gz
 %define sha1    dotnet-runtime=631b1f4a4c07a4488e846fc2142ce74c1b8b84a8

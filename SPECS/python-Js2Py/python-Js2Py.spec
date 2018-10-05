@@ -9,7 +9,7 @@ License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/Js2Py
+URL:            https://pypi.python.org/pypi/Js2Py
 Source0:        https://files.pythonhosted.org/packages/source/J/Js2Py/Js2Py-%{version}.tar.gz
 %define         sha1 Js2Py=828ee742021299ee7cecccb52502288b7a4fc5fe
 Patch0:         js2py-python3-print.patch

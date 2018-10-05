@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/Automat
+URL:            https://pypi.python.org/pypi/Automat
 Source0:        https://files.pythonhosted.org/packages/source/A/Automat/Automat-%{version}.tar.gz
 %define sha1    Automat=b96a67647f5c1650f0e4cc39bed762fdc2ac90b4
 

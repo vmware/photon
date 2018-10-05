@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Python templating language
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/56/4b/cb75836863a6382199aefb3d3809937e21fa4cb0db15a4f4ba0ecc2e7e8e/Mako-%{version}.tar.gz
+URL:            https://pypi.python.org/packages/56/4b/cb75836863a6382199aefb3d3809937e21fa4cb0db15a4f4ba0ecc2e7e8e/Mako-%{version}.tar.gz
 Source0:        Mako-%{version}.tar.gz
 %define sha1    Mako=bf0c1f4cdfca4dd37bc0c9f83e984a0558268b42
 

@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/WebOb
+URL:            https://pypi.python.org/pypi/WebOb
 Source0:        https://pypi.python.org/packages/1a/2b/322d6e01ba19c1e28349efe46dab1bd480c81a55af0658d63dc48ed62ee6/WebOb-%{version}.tar.gz
 %define sha1    WebOb=6f23a2eec1510ceee66efd51d3a2b7025c4cdc2b
 

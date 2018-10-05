@@ -6,7 +6,7 @@ License:        LGPL
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            http://log4cpp.sourceforge.net/
+URL:            http://log4cpp.sourceforge.net/
 Source:         ftp://download.sourceforge.net/pub/sourceforge/log4cpp/%{name}-%{version}.tar.gz
 %define sha1    log4cpp=74f0fea7931dc1bc4e5cd34a6318cd2a51322041
 

@@ -9,7 +9,7 @@ Release:        3%{?dist}
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://docs.pytest.org
+URL:            https://docs.pytest.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/00/e9/f77dcd80bdb2e52760f38dbd904016da018ab4373898945da744e5e892e9/pytest-%{version}.tar.gz

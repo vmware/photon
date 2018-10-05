@@ -5,7 +5,7 @@ Summary:        Symbolic constants in Python.
 Name:           python-constantly
 Version:        15.1.0
 Release:        2%{?dist}
-Url:            https://pypi.python.org/pypi/constantly
+URL:            https://pypi.python.org/pypi/constantly
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
