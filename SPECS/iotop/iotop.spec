@@ -1,24 +1,25 @@
 %{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
-Summary:	Iotop is a Python program with a top like UI used to show the processes and their corresponding IO activity. 
-Name:		iotop  
+Summary:	Iotop is a Python program with a top like UI used to show the processes and their corresponding IO activity.
+Name:		iotop
 Version:	0.6
 Release:	5%{?dist}
-License:	GPLv2 
+License:	GPLv2
 URL:		http://guichaz.free.fr/iotop/
 Group:		System/Monitoring
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://guichaz.free.fr/iotop/files/%{name}-%{version}.tar.gz
 %define sha1 iotop=71a0e7043d83673a40d7ddc57f5b50adab7fff2a
-BuildRequires: python2 python2-libs
+BuildRequires: python2
+BuildRequires: python2-libs
 Requires:       python2
 Requires:       python2-libs
 
 BuildArch:      noarch
 
 %description
- Iotop is a Python program with a top like UI used to show the processes and their corresponding IO activity. 
+ Iotop is a Python program with a top like UI used to show the processes and their corresponding IO activity.
 
 %prep
 %setup -q
@@ -39,7 +40,7 @@ echo "%dir %{python2_sitelib}/iotop" >> INSTALLED_FILES
 
 %clean
 rm -rf %{buildroot}/*
- 
+
 %files -f INSTALLED_FILES
 %defattr(-,root,root)
 %doc COPYING NEWS THANKS
