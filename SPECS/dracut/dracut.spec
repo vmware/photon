@@ -19,7 +19,8 @@ Patch2:         fix-initrd-naming-for-photon.patch
 Summary:        dracut to create initramfs
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  bash git
+BuildRequires:  bash
+BuildRequires:  git
 BuildRequires:  pkg-config
 BuildRequires:  kmod-devel
 BuildRequires:  asciidoc

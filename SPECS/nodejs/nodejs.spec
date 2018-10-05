@@ -10,7 +10,8 @@ URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
 %define         sha1 node=4b1a5582afc298cf77fe47fa61ffc8c7f32f074d
 
-BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
+BuildRequires:  coreutils >= 8.22
+BuildRequires:  openssl-devel >= 1.0.1
 Requires:       (coreutils >= 8.22 or toybox)
 Requires:       openssl >= 1.0.1
 
