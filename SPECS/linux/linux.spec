@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.18.9
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -282,6 +282,10 @@ cp .config %{buildroot}/usr/src/%{name}-headers-%{uname_r} # copy .config manual
 ln -sf "/usr/src/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
+%ifarch aarch64
+cp arch/arm64/kernel/module.lds %{buildroot}/usr/src/%{name}-headers-%{uname_r}/arch/arm64/kernel/
+%endif
+
 # disable (JOBS=1) parallel build to fix this issue:
 # fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
 # Linux version that was affected is 4.4.26
@@ -369,6 +373,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Oct 5 2018 Ajay Kaher <akaher@vmware.com> 4.18.9-3
+-   Fix config_aarch64 for 4.18.9
+-   Add module.lds for aarch64
 *   Wed Oct 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.18.9-2
 -   Use updated steal time accounting patch.
 -   .config: Enable CONFIG_CPU_ISOLATION and a few networking options
