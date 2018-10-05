@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.14.67
+Version:        4.18.9
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=4a6aa8d8a5190dbf1a835a5171609f02b27809e1
+%define sha1 linux=229ed4bedc5b8256bdd761845b1d7e20e1df12d7
 Source1:        config-secure
 Source2:        initramfs.trigger
 # common
@@ -22,20 +22,22 @@ Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         x86-vmware-STA-support.patch
 # secure
+Patch7:         0001-bpf-ext4-bonding-Fix-compilation-errors.patch
 Patch13:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
 Patch14:        0002-Added-PAX_RANDKSTACK.patch
 Patch15:        0003-Added-rap_plugin.patch
 # HyperV Patches
 Patch16:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 #FIPS patches - allow some algorithms
-Patch24:        Allow-some-algo-tests-for-FIPS.patch
-Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
+Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
-Patch32:        0001-apparmor-add-base-infastructure-for-socket-mediation.patch
-Patch33:        0002-apparmor-af_unix-mediation.patch
-Patch34:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch32:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch33:        4.17-0002-apparmor-af_unix-mediation.patch
+Patch34:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+Patch35:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
 
@@ -92,6 +94,7 @@ The Linux package contains the Linux kernel doc files
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
@@ -102,6 +105,7 @@ The Linux package contains the Linux kernel doc files
 %patch32 -p1
 %patch33 -p1
 %patch34 -p1
+%patch35 -p1
 
 pushd ..
 %patch99 -p0
@@ -229,6 +233,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 25 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.18.9-1
+-   Update to version 4.18.9
 *   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
 -   Update to version 4.14.67
 *   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-4
@@ -296,7 +302,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Tue Jul 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-1
 -   Fix CVE-2017-11176 and CVE-2017-10911
 *   Fri Jul 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-3
--   Remove aufs source tarballs from git repo 
+-   Remove aufs source tarballs from git repo
 *   Mon Jul 03 2017 Xiaolin Li <xiaolinl@vmware.com> 4.9.34-2
 -   Add libdnet-devel, kmod-devel and libmspack-devel to BuildRequires
 *   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-1
@@ -333,7 +339,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Wed Feb 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-2
 -   rap_plugin improvement: throw error on function type casting
     function signatures were cleaned up using this feature.
--   Added RAP_ENTRY for asm functions. 
+-   Added RAP_ENTRY for asm functions.
 *   Thu Feb 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-1
 -   Update to linux-4.9.9 to fix CVE-2016-10153, CVE-2017-5546,
     CVE-2017-5547, CVE-2017-5548 and CVE-2017-5576.
@@ -361,5 +367,4 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   .config: add netfilter_xt_match_{cgroup,ipvs} support
 -   .config: disable /dev/mem
 *   Mon Oct 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-1
-    Initial commit. 
-
+    Initial commit.
