@@ -448,6 +448,9 @@ class constants(object):
             "irqbalance.spec",
             # openjdk8.spec is for x86_64 arch
             "openjdk8.spec",
+            "openjdk9.spec",
+            "openjdk10.spec",
+            "elasticsearch.spec",
             # dashboard failed to build libxslt during `npm install`
             "kubernetes-dashboard.spec",
             # test issue (java null pointer exception) before compilation
