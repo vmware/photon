@@ -12,7 +12,9 @@ Source0:        http://sourceforge.net/projects/%{name}/files/%{name}/%{version}
 %define sha1 net-snmp=78f70731df9dcdb13fe8f60eb7d80d7583da4d2c
 Source1:        snmpd.service
 Source2:        snmptrapd.service
-BuildRequires:  openssl-devel perl systemd
+BuildRequires:  openssl-devel
+BuildRequires:  perl
+BuildRequires:  systemd
 Requires:       perl systemd
 %description
  Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
@@ -70,7 +72,7 @@ make %{?_smp_mflags} test
 
 %clean
 rm -rf %{buildroot}/*
- 
+
 %files
 %doc COPYING NEWS README ChangeLog
 %defattr(-,root,root)
@@ -78,7 +80,7 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/snmptrapd.service
 %{_bindir}
 %{_libdir}/*.so.*
-/sbin/*  
+/sbin/*
 
 %files devel
 %defattr(-,root,root)

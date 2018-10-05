@@ -18,7 +18,10 @@ BuildRequires:	unzip
 BuildRequires:  zlib-devel
 BuildRequires:	ca-certificates
 BuildRequires:	chkconfig
-BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel
+BuildRequires:  fontconfig-devel
+BuildRequires:  freetype2-devel
+BuildRequires:  glib-devel
+BuildRequires:  harfbuzz-devel
 Requires:       openjre10 = %{version}-%{release}
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
@@ -83,7 +86,7 @@ make \
 
 %install
 unset JAVA_HOME &&
-make install 
+make install
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}

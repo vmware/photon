@@ -9,8 +9,9 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 #https://github.com/iputils/iputils/archive/s20180629.tar.gz
 Source0:          %{name}-s%{version}.tar.gz
-BuildRequires:    libcap-devel libgcrypt-devel
-Requires:         libcap 
+BuildRequires:    libcap-devel
+BuildRequires:    libgcrypt-devel
+Requires:         libcap
 Requires:         libgcrypt
 Obsoletes:        inetutils
 %define sha1 iputils=353df20691bf027ad35fcaaf6894b122c39d8f2d
@@ -23,8 +24,8 @@ The Iputils package contains programs for basic networking.
 make %{?_smp_mflags} USE_IDN=no USE_GCRYPT=yes
 (
 cd ninfod
-./configure --prefix=%{_prefix} 
-make %{?_smp_mflags} 
+./configure --prefix=%{_prefix}
+make %{?_smp_mflags}
 )
 #make html
 #make man
