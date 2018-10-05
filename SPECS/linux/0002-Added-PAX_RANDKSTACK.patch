@@ -89,7 +89,7 @@ Signed-off-by: Him Kalyan Bordoloi<bordoloih@vmware.com>
  3 files changed, 48 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index f7bfa70..dedcbe2 100644
+index 8ae7ffd..9c1daeb 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
 @@ -53,6 +53,14 @@ ENTRY(native_usergs_sysret64)
@@ -104,22 +104,33 @@ index f7bfa70..dedcbe2 100644
 +#endif
 +.endm
 +
- .macro TRACE_IRQS_IRETQ
+ .macro TRACE_IRQS_FLAGS flags:req
  #ifdef CONFIG_TRACE_IRQFLAGS
- 	bt	$9, EFLAGS(%rsp)		/* interrupts off? */
-@@ -229,8 +237,10 @@ GLOBAL(entry_SYSCALL_64_after_hwframe)
+ 	btl	$9, \flags		/* interrupts off? */
+@@ -233,9 +241,20 @@ GLOBAL(entry_SYSCALL_64_after_hwframe)
  	TRACE_IRQS_OFF
  
  	/* IRQs are off. */
--	movq	%rsp, %rdi
-+	pax_rand_kstack
-+	pushq	%rdi
+-	movq	%rax, %rdi
+-	movq	%rsp, %rsi
++
++	/*
++	 * do_syscall_64 expects syscall-nr (pt_regs->orig_ax) as the first
++	 * argument (%rdi) and pointer to pt_regs as the second argument (%rsi).
++	 */
++	pushq	%rax
++	call	pax_randomize_kstack
++	popq	%rdi
++	movq    %rsp, %rsi
++	movq    %rax, %rsp
++
++	pushq	%rsi
  	call	do_syscall_64		/* returns with IRQs disabled */
 +	popq	%rsp
  
  	TRACE_IRQS_IRETQ		/* we're about to change IF */
  
-@@ -391,8 +401,11 @@ ENTRY(ret_from_fork)
+@@ -401,8 +420,11 @@ ENTRY(ret_from_fork)
  
  2:
  	UNWIND_HINT_REGS
@@ -133,7 +144,7 @@ index f7bfa70..dedcbe2 100644
  	jmp	swapgs_restore_regs_and_return_to_usermode
  
 diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
-index 9eb448c..a6fe370 100644
+index 0091a73..a73aab3 100644
 --- a/arch/x86/kernel/process_64.c
 +++ b/arch/x86/kernel/process_64.c
 @@ -61,6 +61,23 @@
@@ -158,10 +169,10 @@ index 9eb448c..a6fe370 100644
 +#endif
 +
  /* Prints also some state that isn't saved in the pt_regs */
- void __show_regs(struct pt_regs *regs, int all)
+ void __show_regs(struct pt_regs *regs, enum show_regs_mode mode)
  {
 diff --git a/security/Kconfig b/security/Kconfig
-index f506b6b..a94f2f1 100644
+index 564e975..7ef4ec8 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -80,6 +80,22 @@ config PAX_MPROTECT
