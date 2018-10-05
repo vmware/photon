@@ -7,7 +7,9 @@ Release:        1%{?dist}
 Summary:        Python templating language
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/56/4b/cb75836863a6382199aefb3d3809937e21fa4cb0db15a4f4ba0ecc2e7e8e/Mako-%{version}.tar.gz
+URL:            https://pypi.python.org/packages/56/4b/cb75836863a6382199aefb3d3809937e21fa4cb0db15a4f4ba0ecc2e7e8e/Mako-%{version}.tar.gz
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        Mako-%{version}.tar.gz
 %define sha1    Mako=bf0c1f4cdfca4dd37bc0c9f83e984a0558268b42
 
@@ -15,6 +17,12 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-pytest
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-pytest
 
 Requires:       python2
 Requires:       python2-libs
@@ -26,12 +34,6 @@ A super-fast templating language that borrows the best ideas from the existing t
 
 %package -n     python3-mako
 Summary:        python-mako
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-pytest
 Requires:       python3
 Requires:       python3-libs
 

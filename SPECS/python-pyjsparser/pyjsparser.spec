@@ -9,7 +9,7 @@ License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/pyjsparser/2.5.2
+URL:            https://pypi.python.org/pypi/pyjsparser/2.5.2
 Source0:        https://files.pythonhosted.org/packages/source/p/pyjsparser/pyjsparser-%{version}.tar.gz
 %define         sha1 pyjsparser=5a03ca6042b2f5bb2226158c8e7f15210f4eb38e
 BuildRequires:  python2
@@ -17,6 +17,10 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-six
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-six
+BuildRequires:  python3-setuptools
 
 Requires:       python2
 Requires:       python2-libs
@@ -28,10 +32,6 @@ Fast javascript parser (based on esprima.js).
 
 %package -n     python3-pyjsparser
 Summary:        python-pyjsparser
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-six
-BuildRequires:  python3-setuptools
 
 Requires:       python3
 Requires:       python3-libs

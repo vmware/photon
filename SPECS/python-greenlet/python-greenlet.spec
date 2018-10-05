@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/greenlet
+URL:            https://pypi.python.org/pypi/greenlet
 Source0:        greenlet-%{version}.tar.gz
 %define sha1    greenlet=0da9c069c38bf297923a1da0c601ef71c07ffb6d
 
@@ -17,6 +17,9 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 
 Requires:       python2
 Requires:       python2-libs
@@ -28,9 +31,6 @@ A “greenlet”, on the other hand, is a still more primitive notion of micro-t
 
 %package -n     python3-greenlet
 Summary:        python-greenlet
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 Requires:       python3
 Requires:       python3-libs
 

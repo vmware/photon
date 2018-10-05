@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 # Note that the upstream site is dead.
 Source0:        http://www.pangalactic.org/PyPAM/PyPAM-%{version}.tar.gz
-Url:            http://www.pangalactic.org/PyPAM
+URL:            http://www.pangalactic.org/PyPAM
 %define sha1    PyPAM=fac6c2958fffc38454b1104d2d0f1f28563eff42
 Patch0:         PyPAM-dlopen.patch
 Patch1:         PyPAM-0.5.0-dealloc.patch
@@ -25,6 +25,9 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  Linux-PAM-devel
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 
 Requires:       python2
 Requires:       python2-libs
@@ -34,9 +37,6 @@ Python bindings for PAM (Pluggable Authentication Modules).
 
 %package -n     python3-PyPAM
 Summary:        python-PyPAM
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 Requires:       python3
 Requires:       python3-libs
 

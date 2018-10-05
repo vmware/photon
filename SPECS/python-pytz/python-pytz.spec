@@ -7,7 +7,7 @@ Summary:        World timezone definitions, modern and historical
 Name:           python-pytz
 Version:        2018.5
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/pytz
+URL:            https://pypi.python.org/pypi/pytz
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -22,6 +22,14 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  unzip
 BuildRequires:  python-pytest
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-pytest
+%if %{with_check}
+BuildRequires: python3-setuptools
+BuildRequires: python3-xml
+%endif
 Requires:       python2
 Requires:       python2-libs
 Requires:       tzdata
@@ -35,14 +43,6 @@ Library Reference (``datetime.tzinfo``).
 
 %package -n     python3-pytz
 Summary:        python-pytz
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-pytest
-%if %{with_check}
-BuildRequires: python3-setuptools
-BuildRequires: python3-xml
-%endif
 
 Requires:       python3
 Requires:       python3-libs

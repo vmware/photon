@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Python development support library
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://github.com/pytest-dev/py
+URL:            https://github.com/pytest-dev/py
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/53/72/6c6f1e787d9cab2cc733cf042f125abec07209a58308831c9f292504e826/py-%{version}.tar.gz
@@ -18,6 +18,11 @@ BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-setuptools_scm
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 
@@ -33,11 +38,6 @@ py.code: dynamic code generation and introspection
 
 %package -n     python3-py
 Summary:        Python development support library
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-setuptools_scm
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs

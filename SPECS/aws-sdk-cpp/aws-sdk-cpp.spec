@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
-Url:            https://github.com/aws/aws-sdk-cpp
+URL:            https://github.com/aws/aws-sdk-cpp
 Source0:        aws-sdk-cpp-%{version}.tar.gz
 %define sha1    aws-sdk-cpp=5db6bed30cb85c59c7a3a58034f222007e6a9e49
 Requires:       openssl-devel

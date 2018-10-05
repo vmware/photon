@@ -9,7 +9,7 @@ License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/service_identity
+URL:            https://pypi.python.org/pypi/service_identity
 Source0:        pyvim-%{version}.tar.gz
 %define sha1    pyvim=b44c9e78755b1f13ee45a2903758386425e9a2ba
 # To get tests:
@@ -22,9 +22,15 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  python-pytest
 BuildRequires:  python-prompt_toolkit
+BuildRequires:  python3-pytest
+BuildRequires:  python3-prompt_toolkit
 %endif
 
 Requires:       python2
@@ -38,14 +44,6 @@ An implementation of Vim in Python.
 
 %package -n     python3-pyvim
 Summary:        python-pyvim
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-pytest
-BuildRequires:  python3-prompt_toolkit
-%endif
 
 Requires:       python3
 Requires:       python3-libs

@@ -6,7 +6,7 @@ License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            http://www.aleksey.com/xmlsec/
+URL:            http://www.aleksey.com/xmlsec/
 Source0:        http://www.aleksey.com/xmlsec/download/%{name}-%{version}.tar.gz
 %define sha1 xmlsec1=d55d5be05eac1114e1d9b8655b602ce26f9f4a11
 BuildRequires: libxml2-devel

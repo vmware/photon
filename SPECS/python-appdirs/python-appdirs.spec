@@ -7,12 +7,17 @@ Release:        3%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/appdirs
+URL:            https://pypi.python.org/pypi/appdirs
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        https://pypi.python.org/packages/48/69/d87c60746b393309ca30761f8e2b49473d43450b150cb08f3c6df5c11be5/appdirs-%{version}.tar.gz
 %define sha1    appdirs=9ad09395ed489ad66e9688e49087ce1814c64276
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 
 Requires:       python2
 Requires:       python2-libs
@@ -24,9 +29,6 @@ A small Python module for determining appropriate platform-specific dirs, e.g. a
 
 %package -n     python3-appdirs
 Summary:        python-appdirs
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 Requires:       python3
 Requires:       python3-libs
 

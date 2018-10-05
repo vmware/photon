@@ -5,7 +5,7 @@ Summary:        A DNS toolkit for Python
 Name:           python-dnspython
 Version:        1.15.0
 Release:        3%{?dist}
-Url:            https://pypi.python.org/pypi/dnspython
+URL:            https://pypi.python.org/pypi/dnspython
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -20,6 +20,11 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  unzip
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 
@@ -32,11 +37,6 @@ dnspython originated at Nominum where it was developed to facilitate the testing
 
 %package -n     python3-dnspython
 Summary:        python3-dnspython
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 

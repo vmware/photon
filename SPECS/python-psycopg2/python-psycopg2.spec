@@ -5,7 +5,7 @@ Summary:        Python-PostgreSQL Database Adapter
 Name:           python-psycopg2
 Version:        2.7.5
 Release:        2%{?dist}
-Url:            https://pypi.python.org/pypi/psycopg2
+URL:            https://pypi.python.org/pypi/psycopg2
 License:        LGPL with exceptions or ZPL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -17,6 +17,10 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  postgresql-devel >= 10.5
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 BuildRequires:  postgresql-devel >= 10.5
 Requires:       python2
 Requires:       python2-libs
@@ -31,10 +35,6 @@ Psycopg 2 is both Unicode and Python 3 friendly.
 
 %package -n     python3-psycopg2
 Summary:        python-psycopg2
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  postgresql-devel >= 10.5
 Requires:       python3
 Requires:       python3-libs
 Requires:       postgresql >= 10.5

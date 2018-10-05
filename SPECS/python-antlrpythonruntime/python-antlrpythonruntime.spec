@@ -8,7 +8,7 @@ License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            http://www.antlr3.org/download/Python/antlr_python_runtime-%{version}.tar.gz
+URL:            http://www.antlr3.org/download/Python/antlr_python_runtime-%{version}.tar.gz
 Source0:        antlr_python_runtime-%{version}.tar.gz
 %define sha1    antlr_python_runtime=dc095863a254cdf9606784dbd6efb43cf56a6804
 

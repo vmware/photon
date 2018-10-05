@@ -10,7 +10,7 @@ License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/boto/2.48.0
+URL:            https://pypi.python.org/pypi/boto/2.48.0
 Source0:        https://files.pythonhosted.org/packages/source/b/boto/boto-%{version}.tar.gz
 %define sha1    boto=300e6b7abd04a77a94f769e6cad6fb9e6e84ffbb
 BuildRequires:  python2
@@ -19,8 +19,13 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-six
 BuildRequires:  python-xml
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  python-requests
+BuildRequires:  python3-requests
 %endif
 Requires:       python2
 Requires:       python2-libs
@@ -33,13 +38,6 @@ Boto is a Python package that provides interfaces to Amazon Web Services. Curren
 
 %package -n     python3-boto
 Summary:        python-boto
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-requests
-%endif
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-requests

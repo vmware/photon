@@ -7,7 +7,7 @@ Release:        2%{?dist}
 Summary:        Python stemming library
 License:        BSD
 Group:          Development/Languages/Python
-Url:            https://github.com/shibukawa/snowball_py
+URL:            https://github.com/shibukawa/snowball_py
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/20/6b/d2a7cb176d4d664d94a6debf52cd8dbae1f7203c8e42426daa077051d59c/snowballstemmer-%{version}.tar.gz
@@ -16,6 +16,8 @@ Source0:        https://pypi.python.org/packages/20/6b/d2a7cb176d4d664d94a6debf5
 BuildRequires:  python2
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
+BuildRequires:  python3
+BuildRequires:  python3-devel
 
 Requires:       python2
 Requires:       python2-libs
@@ -23,7 +25,7 @@ Requires:       python2-libs
 BuildArch:      noarch
 
 %description
-This package provides 16 stemmer algorithms (15 + Poerter English stemmer) generated from Snowball algorithms. 
+This package provides 16 stemmer algorithms (15 + Poerter English stemmer) generated from Snowball algorithms.
 It includes following language algorithms:
 
 * Danish
@@ -44,8 +46,6 @@ It includes following language algorithms:
 
 %package -n     python3-snowballstemmer
 Summary:        Python stemming library
-BuildRequires:  python3
-BuildRequires:  python3-devel
 Requires:       python3
 Requires:       python3-libs
 

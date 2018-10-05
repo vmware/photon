@@ -5,7 +5,7 @@ Summary:        Internationalized Domain Names in Applications (IDNA).
 Name:           python-idna
 Version:        2.7
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/idna
+URL:            https://pypi.python.org/pypi/idna
 License:        BSD-like
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,6 +19,11 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -32,11 +37,6 @@ This acts as a suitable replacement for the “encodings.idna” module that com
 
 %package -n     python3-idna
 Summary:        python3-idna
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs

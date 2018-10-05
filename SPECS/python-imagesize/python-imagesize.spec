@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        python module to analyze jpeg/jpeg2000/png/gif image header and return image size.
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://github.com/shibukawa/imagesize_py
+URL:            https://github.com/shibukawa/imagesize_py
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/53/72/6c6f1e787d9cab2cc733cf042f125abec07209a58308831c9f292504e826/imagesize-%{version}.tar.gz
@@ -18,6 +18,11 @@ BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-pytest
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-pytest
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 
@@ -28,11 +33,6 @@ python module to analyze jpeg/jpeg2000/png/gif image header and return image siz
 
 %package -n     python3-imagesize
 Summary:        python module to analyze jpeg/jpeg2000/png/gif image header and return image size.
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-pytest
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 

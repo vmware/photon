@@ -9,12 +9,16 @@ Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  swig libxml2-devel libxslt-devel XML-Parser
+BuildRequires:  swig
+BuildRequires:  libxml2-devel
+BuildRequires:  libxslt-devel
+BuildRequires:  XML-Parser
 BuildRequires:  rpm-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  pcre-devel
 BuildRequires:  libacl-devel
-BuildRequires:  libselinux-devel libcap-devel
+BuildRequires:  libselinux-devel
+BuildRequires:  libcap-devel
 BuildRequires:  util-linux-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  curl-devel
@@ -45,7 +49,6 @@ Perl scripts.
 Summary: openscap python
 Group: Development/Libraries
 Requires: openscap = %{version}-%{release}
-BuildRequires:  python2-devel
 %description python
 Python bindings.
 
@@ -53,7 +56,7 @@ Python bindings.
 %prep
 %setup -q
 %build
-./configure --prefix=/usr \
+%configure --prefix=/usr \
             --sysconfdir=/etc \
             --enable-sce \
             --enable-perl

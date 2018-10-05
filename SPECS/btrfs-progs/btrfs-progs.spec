@@ -12,8 +12,10 @@ Patch0:     3a07b07b1a56f7d97390f66c01a5829abb2c5b70.patch
 Vendor:     VMware, Inc.
 Distribution:   Photon
 BuildRequires:  lzo-devel
-BuildRequires:  e2fsprogs-devel,libacl-devel
-Requires:   e2fsprogs, lzo
+BuildRequires:  e2fsprogs-devel
+BuildRequires:  libacl-devel
+Requires:   e2fsprogs
+Requires:   lzo
 
 %description
 The btrfs-progs package provides all the userspace programs needed to create,

@@ -5,7 +5,7 @@ Summary:        A powerful, sanity-friendly HTTP client for Python.
 Name:           python-urllib3
 Version:        1.23
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/urllib3
+URL:            https://pypi.python.org/pypi/urllib3
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -17,9 +17,16 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:	python-pytest
 BuildRequires:	python-psutil
+BuildRequires:	python3-pytest
+BuildRequires:	python3-psutil
 %endif
 
 Requires:       python2
@@ -32,15 +39,6 @@ urllib3 is a powerful, sanity-friendly HTTP client for Python. Much of the Pytho
 
 %package -n     python3-urllib3
 Summary:        python-urllib3
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:	python3-pytest
-BuildRequires:	python3-psutil
-%endif
 Requires:       python3
 Requires:       python3-libs
 

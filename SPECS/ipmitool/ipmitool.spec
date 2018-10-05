@@ -4,6 +4,7 @@ Name:           ipmitool
 Version:        1.8.18
 Release:        1%{?dist}
 License:        BSD
+URL:            https://github.com/ipmitool/ipmitool
 
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.
@@ -30,16 +31,8 @@ setting LAN configuration, and chassis power control.
 %setup -q
 
 %build
-./configure --with-kerneldir \
-    --with-rpm-distro= \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --sbindir=%{_sbindir} \
-    --datadir=%{_datadir} \
-    --includedir=%{_includedir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
-    --sysconfdir=%{_sysconfdir}
+%configure --with-kerneldir \
+    --with-rpm-distro=
 make
 
 %install

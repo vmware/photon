@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Python library for creating unit tests which are simpler to write and more powerful
 License:        MPLv2.0
 Group:          Development/Languages/Python
-Url:            https://github.com/HypothesisWorks/hypothesis-python
+URL:            https://github.com/HypothesisWorks/hypothesis-python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/cf/d5/b3d491e4b5094be0ef69b910d637096c8e23f84a9bdc4eba0b869220d1f0/hypothesis-%{version}.tar.gz
@@ -18,6 +18,10 @@ BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-enum34
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -31,10 +35,6 @@ and then generates simple and comprehensible examples that make your tests fail.
 
 %package -n     python3-hypothesis
 Summary:        Python library for creating unit tests which are simpler to write and more powerful
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs

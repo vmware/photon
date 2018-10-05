@@ -6,7 +6,7 @@ Release:        2%{?dist}
 Summary:        Port of the 3.3+ ipaddress module to 2.6, 2.7, 3.2
 License:        Python Software Foundation License (Python Software Foundation License)
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/ipaddress
+URL:            https://pypi.python.org/pypi/ipaddress
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:        ipaddress-%{version}.tar.gz

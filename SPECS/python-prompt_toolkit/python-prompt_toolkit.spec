@@ -9,7 +9,7 @@ License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/prompt_toolkit
+URL:            https://pypi.python.org/pypi/prompt_toolkit
 Source0:        https://files.pythonhosted.org/packages/source/p/prompt_toolkit/prompt_toolkit-%{version}.tar.gz
 %define sha1    prompt_toolkit=5ac2c31dd9f443da4aa143dde56a8b5c44a254c5
 
@@ -20,8 +20,16 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-Pygments
 BuildRequires:  python-wcwidth
 BuildRequires:  python-six
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-Pygments
+BuildRequires:  python3-wcwidth
+BuildRequires:  python3-six
 %if %{with_check}
 BuildRequires:  python-pytest
+BuildRequires:  python3-pytest
 %endif
 
 Requires:       python2
@@ -37,16 +45,6 @@ prompt_toolkit is a library for building powerful interactive command lines and 
 
 %package -n     python3-prompt_toolkit
 Summary:        python-prompt_toolkit
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-Pygments
-BuildRequires:  python3-wcwidth
-BuildRequires:  python3-six
-%if %{with_check}
-BuildRequires:  python3-pytest
-%endif
 
 Requires:       python3
 Requires:       python3-libs

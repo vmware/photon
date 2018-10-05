@@ -4,7 +4,7 @@ Summary:        The Python SQL Toolkit and Object Relational Mapper
 Name:           python-sqlalchemy
 Version:        1.2.11
 Release:        1%{?dist}
-Url:            http://www.sqlalchemy.org
+URL:            http://www.sqlalchemy.org
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.

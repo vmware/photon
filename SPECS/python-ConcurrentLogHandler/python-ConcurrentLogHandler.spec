@@ -7,7 +7,7 @@ Release:        2%{?dist}
 Summary:        Concurrent logging handler (drop-in replacement for RotatingFileHandler) Python 2.6+
 License:        Apache-2.0
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/ConcurrentLogHandler/0.9.1
+URL:            https://pypi.python.org/pypi/ConcurrentLogHandler/0.9.1
 Source0:        ConcurrentLogHandler-%{version}.tar.gz
 %define sha1    ConcurrentLogHandler=9afcd87b6eb0f37f65b8d7eb928c6d20415692ab
 Vendor:         VMware, Inc.
@@ -17,6 +17,12 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-pytest
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-pytest
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-setuptools
@@ -28,12 +34,6 @@ ConcurrentLogHandler is a module that provides an additional log handler for Pyt
 
 %package -n     python3-ConcurrentLogHandler
 Summary:        python-ConcurrentLogHandler
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-pytest
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-setuptools

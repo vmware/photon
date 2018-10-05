@@ -6,7 +6,7 @@ Name:           python-daemon
 Version:        2.2.0
 Release:        1%{?dist}
 License:        Apache-2
-Url:            https://pypi.python.org/pypi/python-daemon/
+URL:            https://pypi.python.org/pypi/python-daemon/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,6 +17,11 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-docutils
 BuildRequires:  python-lockfile
+BuildRequires:  python3-devel
+BuildRequires:  python3-docutils
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-lockfile
 Requires:       python2
 Requires:       python-lockfile
 
@@ -29,11 +34,6 @@ A well-behaved Unix daemon process is tricky to get right, but the required step
 
 %package -n python3-daemon
 Summary:        Python3-daemon
-BuildRequires:  python3-devel
-BuildRequires:  python3-docutils
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-lockfile
 Requires:       python3
 Requires:       python3-lockfile
 
@@ -87,7 +87,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
-*   Sat Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.2.0-1
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.2.0-1
 -   Updated to 2.2.0
 *   Mon Jul 17 2017 Divya Thaluru <dthaluru@vmware.com> 2.1.2-4
 -   Fixed check command to run unit tests

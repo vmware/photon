@@ -3,6 +3,7 @@ Name:		libaio
 Version:	0.3.110
 Release: 	2%{?dist}
 License:	LGPLv2+
+URL:        https://github.com/crossbuild/libaio
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -66,9 +67,7 @@ make %{?_smp_mflags} -k check
 %attr(0755,root,root) %{_libdir}/libaio.a
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.3.110-2
--	GA - Bump release of all rpms
-* Tue Mar 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.3.110-1
-- Initial version
-
-
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.3.110-2
+-   GA - Bump release of all rpms
+*   Tue Mar 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.3.110-1
+-   Initial version

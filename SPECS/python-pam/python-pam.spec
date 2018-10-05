@@ -5,7 +5,7 @@ Summary:        Python PAM module using ctypes, py3/py2
 Name:           python-pam
 Version:        1.8.2
 Release:        2%{?dist}
-Url:            https://pypi.python.org/pypi/python-pam/
+URL:            https://pypi.python.org/pypi/python-pam/
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,6 +19,11 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -28,11 +33,6 @@ Python PAM module using ctypes, py3/py2.
 
 %package -n     python3-pam
 Summary:        python-pam
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs

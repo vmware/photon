@@ -7,13 +7,18 @@ Release:        4%{?dist}
 Summary:        Config file reading, writing and validation
 License:        BSD
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/source/c/configobj/configobj-%{version}.tar.gz
+URL:            https://pypi.python.org/packages/source/c/configobj/configobj-%{version}.tar.gz
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        configobj-%{version}.tar.gz
 %define sha1 configobj=add3ae15e3f0d2d28d37370dcad930243cb4145c
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 
 Requires:       python-six
 
@@ -25,9 +30,6 @@ ConfigObj is a simple but powerful config file reader and writer: an ini file ro
 %package -n     python3-configobj
 Summary:        python-configobj
 
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 
 Requires:       python3-six
 

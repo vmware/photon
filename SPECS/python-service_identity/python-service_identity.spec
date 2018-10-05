@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/service_identity
+URL:            https://pypi.python.org/pypi/service_identity
 Source0:        service_identity-%{version}.tar.gz
 %define sha1    service_identity=63408ac8b2cfd70f3b31fdcfefc1414b5b965cbc
 
@@ -18,6 +18,10 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-incremental
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:	python-pytest
 BuildRequires:	python-pyasn1-modules
@@ -25,6 +29,12 @@ BuildRequires:	python-pyasn1
 BuildRequires:	python-attrs
 BuildRequires:	python-pyOpenSSL
 BuildRequires:	python-idna
+BuildRequires:  python3-pytest
+BuildRequires:  python3-pyasn1-modules
+BuildRequires:  python3-pyasn1
+BuildRequires:  python3-attrs
+BuildRequires:  python3-pyOpenSSL
+BuildRequires:  python3-idna
 %endif
 
 Requires:       python2
@@ -43,18 +53,6 @@ In the simplest case, this means host name verification. However, service_identi
 
 %package -n     python3-service_identity
 Summary:        python-service_identity
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:	python3-pytest
-BuildRequires:	python3-pyasn1-modules
-BuildRequires:	python3-pyasn1
-BuildRequires:	python3-attrs
-BuildRequires:	python3-pyOpenSSL
-BuildRequires:	python3-idna
-%endif
 
 Requires:       python3
 Requires:       python3-libs

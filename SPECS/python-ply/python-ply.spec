@@ -7,12 +7,13 @@ Release:        1%{?dist}
 Summary:        Python Lex & Yacc
 License:        BSD-3-Clause
 Group:          Development/Languages/Python
-Url:            http://www.dabeaz.com/ply/
+URL:            http://www.dabeaz.com/ply/
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/dabeaz/ply/archive/ply-%{version}.tar.gz 
+Source0:        https://github.com/dabeaz/ply/archive/ply-%{version}.tar.gz
 %define sha1    ply=10a555a32095991fbc7f7ed10c677a14e21fad1d
 BuildRequires:  python2-devel
+BuildRequires:  python3-devel
 Requires:       python2
 BuildArch:      noarch
 
@@ -29,7 +30,6 @@ It is compatible with both Python 2 and Python 3.
 
 %package -n     python3-ply
 Summary:        python3 version
-BuildRequires:  python3-devel
 Requires:       python3
 
 %description -n python3-ply

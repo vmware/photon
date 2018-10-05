@@ -7,13 +7,18 @@ Release:        1%{?dist}
 Summary:        Implementation of ASN.1 types and codecs in Python programming language
 License:        BSD
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/source/p/pyasn1/pyasn1-%{version}.tar.gz
+URL:            https://pypi.python.org/packages/source/p/pyasn1/pyasn1-%{version}.tar.gz
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        pyasn1-%{version}.tar.gz
 %define sha1    pyasn1=10f67e61e30c064301c826c6e5e461ff7bf5827d
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 
 Requires:       python2
 Requires:       python2-libs
@@ -25,9 +30,6 @@ This is an implementation of ASN.1 types and codecs in Python programming langua
 
 %package -n     python3-pyasn1
 Summary:        python-pyasn1
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 
 Requires:       python3
 Requires:       python3-libs
@@ -72,7 +74,7 @@ popd
 -   Update to version 0.4.4
 *   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 0.2.3-1
 -   Updated to version 0.2.3.
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 0.1.9-3
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 0.1.9-3
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.1.9-2
 -   GA - Bump release of all rpms

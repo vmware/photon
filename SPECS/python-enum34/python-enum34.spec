@@ -6,7 +6,7 @@ Release:        2%{?dist}
 Summary:        Robust enumerated type support in Python
 License:        BSD
 Group:          Development/Libraries
-Url:            https://bitbucket.org/stoneleaf/enum34
+URL:            https://bitbucket.org/stoneleaf/enum34
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:        https://pypi.python.org/packages/bf/3e/31d502c25302814a7c2f1d3959d2a3b3f78e509002ba91aea64993936876/enum34-%{version}.tar.gz
@@ -23,7 +23,7 @@ Requires:       python2-libs
 BuildArch:      noarch
 
 %description
-An enumeration is a set of symbolic names (members) bound to unique, constant values. Within an enumeration, the members can be compared by identity, and the enumeration itself can be iterated over. 
+An enumeration is a set of symbolic names (members) bound to unique, constant values. Within an enumeration, the members can be compared by identity, and the enumeration itself can be iterated over.
 
 %prep
 %setup -n enum34-%{version}

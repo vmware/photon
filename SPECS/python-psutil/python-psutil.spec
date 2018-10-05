@@ -6,7 +6,7 @@ Summary:        A library for retrieving information onrunning processes and sys
 Name:           python-psutil
 Version:        5.4.7
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/psutil
+URL:            https://pypi.python.org/pypi/psutil
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,6 +18,9 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 %if %{with_check}
 BuildRequires:  python-pytest
 BuildRequires:  python-six
@@ -27,6 +30,12 @@ BuildRequires:  python-ipaddress
 BuildRequires:  python-enum
 BuildRequires:  ncurses-terminfo
 BuildRequires:  coreutils
+BuildRequires:  python3-pytest
+BuildRequires:  python3-six
+BuildRequires:  python3-test
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-pbr
 %endif
 Requires:       python2
 Requires:       python2-libs
@@ -36,17 +45,6 @@ psutil (process and system utilities) is a cross-platform library for retrieving
 
 %package -n     python3-psutil
 Summary:        python-psutil
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-%if %{with_check}
-BuildRequires:  python3-pytest
-BuildRequires:  python3-six
-BuildRequires:  python3-test
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-pbr
-%endif
 Requires:       python3
 Requires:       python3-libs
 
@@ -97,7 +95,7 @@ popd
 %changelog
 *   Wed Sep 12 2018 Tapas Kundu <tkundu@vmware.com> 5.4.7-1
 -   Updated to version 5.4.7
-*   Fri Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 5.2.2-2
+*   Thu Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 5.2.2-2
 -   Fixed make check error.
 *   Wed Apr 26 2017 Xialin Li <xiaolinl@vmware.com> 5.2.2-1
 -   Initial packaging for Photon

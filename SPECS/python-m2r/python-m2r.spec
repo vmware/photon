@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/m2r
+URL:            https://pypi.python.org/pypi/m2r
 Source0:        https://github.com/miyakogi/m2r/archive/v%{version}/m2r-%{version}.tar.gz
 %define sha1    m2r=a8da99cfb8d964fbd1404eff8fe3782dfa2ff3a6
 
@@ -19,8 +19,15 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-mistune
 BuildRequires:  python-docutils
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-mistune
+BuildRequires:  python3-docutils
 %if %{with_check}
 BuildRequires:  python-Pygments
+BuildRequires:  python3-Pygments
 %endif
 
 Requires:       python2
@@ -39,15 +46,6 @@ I wanted to write sphinx document in markdown, since it’s widely used now and 
 
 %package -n     python3-m2r
 Summary:        python-m2r
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-mistune
-BuildRequires:  python3-docutils
-%if %{with_check}
-BuildRequires:  python3-Pygments
-%endif
 
 Requires:       python3
 Requires:       python3-libs

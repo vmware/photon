@@ -9,7 +9,7 @@ License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/Werkzeug
+URL:            https://pypi.python.org/pypi/Werkzeug
 Source0:        https://pypi.python.org/packages/ab/65/d3f1edd1109cb1beb6b82f4139addad482df5b5ea113bdc98242383bf402/Werkzeug-%{version}.tar.gz
 %define sha1    Werkzeug=4b979fb960c5b5507ccb8a705931fa217013483d
 
@@ -18,9 +18,15 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-incremental
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  python-pytest
 BuildRequires:  python-requests
+BuildRequires:  python3-pytest
+BuildRequires:  python3-requests
 %endif
 
 Requires:       python2
@@ -33,14 +39,6 @@ Werkzeug started as simple collection of various utilities for WSGI applications
 
 %package -n     python3-werkzeug
 Summary:        python-werkzeug
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-pytest
-BuildRequires:  python3-requests
-%endif
 
 Requires:       python3
 Requires:       python3-libs

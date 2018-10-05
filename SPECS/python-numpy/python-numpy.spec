@@ -9,8 +9,8 @@ License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/numpy
-Source0:        https://pypi.python.org/packages/a5/16/8a678404411842fe02d780b5f0a676ff4d79cd58f0f22acddab1b392e230/numpy-%{version}.zip 
+URL:            https://pypi.python.org/pypi/numpy
+Source0:        https://pypi.python.org/packages/a5/16/8a678404411842fe02d780b5f0a676ff4d79cd58f0f22acddab1b392e230/numpy-%{version}.zip
 %define sha1    numpy=2e7548d4972e5366dd8b30ca3639e243dae96af9
 
 BuildRequires:  python2
@@ -19,6 +19,10 @@ BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
 BuildRequires:  lapack-devel
 BuildRequires:  unzip
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -28,10 +32,6 @@ NumPy is a general-purpose array-processing package designed to efficiently mani
 
 %package -n     python3-numpy
 Summary:        python-numpy
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 

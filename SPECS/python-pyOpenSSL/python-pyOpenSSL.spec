@@ -4,7 +4,7 @@ Summary:        Python wrapper module around the OpenSSL library
 Name:           python-pyOpenSSL
 Version:        18.0.0
 Release:        1%{?dist}
-Url:            https://github.com/pyca/pyopenssl
+URL:            https://github.com/pyca/pyopenssl
 License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -15,6 +15,11 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  python-pytest
 BuildRequires:  python-cryptography
@@ -30,6 +35,16 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-packaging
 BuildRequires:  python-enum34
 BuildRequires:  python-asn1crypto
+BuildRequires:  python3-pytest
+BuildRequires:  python3-cryptography
+BuildRequires:  python3-six
+BuildRequires:  python3-pycparser
+BuildRequires:  python3-cffi
+BuildRequires:  python3-idna
+BuildRequires:  python3-pyasn1
+BuildRequires:  python3-six
+BuildRequires:  python3-packaging
+BuildRequires:  python3-asn1crypto
 %endif
 Requires:       python2
 Requires:       python2-libs
@@ -45,23 +60,6 @@ High-level wrapper around a subset of the OpenSSL library.
 
 %package -n     python3-pyOpenSSL
 Summary:        Python 3 version
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-pytest
-BuildRequires:  python3-cryptography
-BuildRequires:  python3-six
-BuildRequires:  python3-pycparser
-BuildRequires:  python3-cffi
-BuildRequires:  python3-idna
-BuildRequires:  python3-pyasn1
-BuildRequires:  python3-six
-BuildRequires:  python3-packaging
-BuildRequires:  python3-asn1crypto
-%endif
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-cryptography

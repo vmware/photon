@@ -3,7 +3,7 @@ Name:           fuse
 Version:        2.9.7
 Release:        3%{?dist}
 License:        GPL+
-Url:            http://fuse.sourceforge.net/
+URL:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -28,7 +28,7 @@ It contains the libraries and header files to create fuse applications.
 %patch0 -p1
 %endif
 %build
-./configure --prefix=%{_prefix} --disable-static INIT_D_PATH=/tmp/init.d &&
+%configure --disable-static INIT_D_PATH=/tmp/init.d &&
 make %{?_smp_mflags}
 
 %install

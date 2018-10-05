@@ -10,7 +10,10 @@ Distribution:   Photon
 Source0:        https://security.appspot.com/downloads/%{name}-%{version}.tar.gz
 %define sha1    vsftpd=d5f5a180dbecd0fbcdc92bf0ba2fc001c962b55a
 Patch0:         vsftpd-gen-debuginfo.patch
-BuildRequires:  libcap-devel Linux-PAM-devel openssl-devel libnsl-devel
+BuildRequires:  libcap-devel
+BuildRequires:  Linux-PAM-devel
+BuildRequires:  openssl-devel
+BuildRequires:  libnsl-devel
 Requires:       libcap Linux-PAM openssl libnsl
 %description
 Very secure and very small FTP daemon.
@@ -40,7 +43,7 @@ pasv_min_port=40000
 pasv_max_port=40100
 #allow_writeable_chroot=YES
 #write_enable=YES
-#local_umask=022 
+#local_umask=022
 #anon_upload_enable=YES
 #anon_mkdir_write_enable=YES
 EOF

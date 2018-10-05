@@ -10,7 +10,7 @@ License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/boto/boto3
+URL:            https://github.com/boto/boto3
 Source0:        https://github.com/boto/boto3/archive/boto3-%{version}.tar.gz
 %define sha1    boto3=2c5174711d2a5c73a8dcc569734bbd94a9b63281
 BuildRequires:  python2
@@ -18,6 +18,10 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-xml
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-botocore
@@ -26,16 +30,12 @@ Requires:       python-dateutil
 BuildArch:      noarch
 
 %description
-Boto3 is the Amazon Web Services (AWS) Software Development Kit (SDK) for Python, 
-which allows Python developers to write software that makes use of services like 
+Boto3 is the Amazon Web Services (AWS) Software Development Kit (SDK) for Python,
+which allows Python developers to write software that makes use of services like
 Amazon S3 and Amazon EC2
 
 %package -n     python3-boto3
 Summary:        python3-boto3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-botocore

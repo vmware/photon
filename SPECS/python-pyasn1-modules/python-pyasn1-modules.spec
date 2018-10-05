@@ -5,7 +5,7 @@ Summary:        A collection of ASN.1-based protocols modules.
 Name:           python-pyasn1-modules
 Version:        0.2.2
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/pyasn1-modules
+URL:            https://pypi.python.org/pypi/pyasn1-modules
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,8 +19,12 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 %if %{with_check}
 BuildRequires:  python-pyasn1
+BuildRequires:  python3-pyasn1
 %endif
 Requires:       python-pyasn1
 Requires:       python2
@@ -39,12 +43,6 @@ Written by Ilya Etingof <ilya@glas.net>.
 
 %package -n     python3-pyasn1-modules
 Summary:        python-pyasn1-modules
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-%if %{with_check}
-BuildRequires:  python3-pyasn1
-%endif
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-pyasn1

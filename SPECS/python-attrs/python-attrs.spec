@@ -5,7 +5,7 @@ Summary:        Attributes without boilerplate.
 Name:           python-attrs
 Version:        18.2.0
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/attrs
+URL:            https://pypi.python.org/pypi/attrs
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,6 +19,11 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -28,11 +33,6 @@ Attributes without boilerplate.
 
 %package -n     python3-attrs
 Summary:        python-attrs
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs

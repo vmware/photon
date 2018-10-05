@@ -7,13 +7,20 @@ Release:        6%{?dist}
 Summary:        Library for displaying tabular data in a visually appealing ASCII format
 License:        BSD-2-Clause
 Group:          Development/Languages/Python
-Url:            http://code.google.com/p/prettytable/
+URL:            http://code.google.com/p/prettytable/
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        prettytable-%{version}.tar.gz
 %define sha1 prettytable=b7d0bf0feee0d23108a044ffae44aff5c5935250
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -32,11 +39,6 @@ specifying a row range.
 %package -n     python3-prettytable
 Summary:        python-prettytable
 
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -83,7 +85,7 @@ popd
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Tue May 16 2017 Kumar Kaushik <kaushikk@vmware.com> 0.7.2-4
 -   Adding python3 support.
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 0.7.2-3
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 0.7.2-3
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.2-2
 -   GA - Bump release of all rpms

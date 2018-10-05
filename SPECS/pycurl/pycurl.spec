@@ -18,8 +18,15 @@ BuildRequires:  openssl-devel
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  curl-devel
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 %if %{with_check}
-BuildRequires: python-setuptools, vsftpd, curl-libs
+BuildRequires: python-setuptools
+BuildRequires: vsftpd
+BuildRequires: curl-libs
+BuildRequires: vsftpd
+BuildRequires: python3-xml
 %endif
 Requires:       curl
 Requires:       python2
@@ -31,16 +38,8 @@ of features.
 
 %package -n     pycurl3
 Summary:        python3 pycurl
-BuildRequires:  openssl-devel
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 Requires:       python3
 Requires:       python3-libs
-BuildRequires:  curl-devel
-%if %{with_check}
-BuildRequires: python3-setuptools, vsftpd, curl-libs, python3-xml
-%endif
 Requires:       curl
 
 %description -n pycurl3

@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Python API for etcd
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/python-etcd
+URL:            https://pypi.python.org/pypi/python-etcd
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    python-etcd=9e79ae82429cf2ffbe2b5647e14bc29571afd766
 Vendor:         VMware, Inc.
@@ -18,6 +18,11 @@ BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  python-pip
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-pip
+BuildRequires:  python3-setuptools
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-setuptools
@@ -28,11 +33,6 @@ Python API for etcd
 
 %package -n     python3-etcd
 Summary:        Python3 API for etcd
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-pip
-BuildRequires:  python3-setuptools
 
 %description -n python3-etcd
 Python3 API for etcd

@@ -9,19 +9,19 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://downloads.sourceforge.net/project/strace/strace/%{version}/%{name}-%{version}.tar.xz
 %define sha1 strace=b780a8cd2e60ea836cfd3468e0f81623a346d180
-BuildRequires:	libacl-devel, libaio-devel
+BuildRequires:	libacl-devel
+BuildRequires:  libaio-devel
 %global __requires_exclude ^/usr/bin/perl$
 
 %description
-The strace program intercepts and displays the system calls made by a running process. strace also records 
-all the arugments and return values from the system calls. This is useful in debugging a process. 
+The strace program intercepts and displays the system calls made by a running process. strace also records
+all the arugments and return values from the system calls. This is useful in debugging a process.
 
 %prep
 %setup -q
 
 %build
-./configure \
-	--prefix=%{_prefix} \
+%configure
 
 # to resolve build issue with glibc-2.26
 sed -i 's/struct ucontext/ucontext_t/g' linux/x86_64/arch_sigreturn.c
@@ -34,12 +34,12 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot}
 
 %check
-make -k check 
+make -k check
 
 %clean
 rm -rf %{buildroot}/*
 
-%files 
+%files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/man1/*

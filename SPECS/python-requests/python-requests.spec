@@ -9,13 +9,17 @@ License:        Apache2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            http://python-requests.org
+URL:            http://python-requests.org
 Source0:        http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
 %define sha1    requests=b6e6ed992c86835aa1a7d7a81fec2aee0d385416
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-urllib3
@@ -52,10 +56,6 @@ Features:
 
 %package -n     python3-requests
 Summary:        python-requests
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-urllib3
@@ -111,7 +111,7 @@ popd
 -   Updated to version 2.13.0.
 *   Wed Mar 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.1-4
 -   Added python3 package.
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 2.9.1-3
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 2.9.1-3
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.1-2
 -   GA - Bump release of all rpms

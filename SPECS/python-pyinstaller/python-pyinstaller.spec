@@ -5,7 +5,7 @@ Summary:        PyInstaller bundles a Python application and all its dependencie
 Name:           python-pyinstaller
 Version:        3.4
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/PyInstaller
+URL:            https://pypi.python.org/pypi/PyInstaller
 License:        GPLv2+
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -16,11 +16,18 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  zlib-devel
 %if %{with_check}
 BuildRequires:  python-six
 BuildRequires:  python-pytest
 BuildRequires:  python-psutil
 BuildRequires:  python-pip
+BuildRequires:  python3-pytest
 %endif
 Requires:       python2
 Requires:       python2-libs
@@ -34,15 +41,6 @@ PyInstaller reads a Python script written by you. It analyzes your code to disco
 PyInstaller is tested against Windows, Mac OS X, and Linux. However, it is not a cross-compiler: to make a Windows app you run PyInstaller in Windows; to make a Linux app you run it in Linux, etc. PyInstaller has been used successfully with AIX, Solaris, and FreeBSD, but is not tested against them.
 %package -n     python3-pyinstaller
 Summary:        Python 3 version
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  zlib-devel
-%if %{with_check}
-BuildRequires:  python3-pytest
-%endif
 Requires:       python3
 Requires:       python3-libs
 Requires:       zlib

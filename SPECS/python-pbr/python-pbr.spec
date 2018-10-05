@@ -9,17 +9,21 @@ License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://docs.openstack.org/developer/pbr/
+URL:            https://docs.openstack.org/developer/pbr/
 Source0:        https://pypi.io/packages/source/p/pbr/pbr-%{version}.tar.gz
 %define sha1    pbr=10165d4998cbe252676ee95306d8f2c843ad2fe6
 Patch0:         disable-test-wsgi.patch
 BuildRequires:  python-docutils
 BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  python-sphinx
 BuildRequires:  git
 BuildRequires:  gnupg
+BuildRequires:  python3-sphinx
 %endif
 Requires:       python2
 BuildArch:      noarch
@@ -28,13 +32,6 @@ A library for managing setuptools packaging needs in a consistent manner.
 
 %package -n     python3-pbr
 Summary:        Python Build Reasonableness
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-sphinx
-BuildRequires:  git
-%endif
 Requires:       python3
 
 %description -n python3-pbr

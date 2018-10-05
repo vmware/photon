@@ -10,12 +10,16 @@ License:        Apache License 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/GoogleCloudPlatform/compute-image-packages/
+URL:            https://github.com/GoogleCloudPlatform/compute-image-packages/
 Source0:        https://github.com/GoogleCloudPlatform/compute-image-packages/archive/compute-image-packages-%{version}.tar.gz
 %define sha1    compute-image-packages=6852588ecae9cc39bac7683f1e21f88a5d41e831
 Patch0:         remove-boto.patch
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python-setuptools
 Requires:       python2-libs
@@ -28,10 +32,6 @@ Collection of packages installed on Google supported Compute Engine images.
 
 %package -n     python3-%{name}
 Summary:        Python3 bindings for Google Compute Engine Linux images package
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-setuptools
 Requires:       python3-libs
@@ -86,7 +86,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{_bindir}/google_instance_setup3
 %{_bindir}/google_ip_forwarding_daemon3
 %{_bindir}/google_metadata_script_runner3
-%{_bindir}/google_network_setup3 
+%{_bindir}/google_network_setup3
 %{_bindir}/optimize_local_ssd3
 %{_bindir}/set_multiqueue3
 
@@ -97,4 +97,3 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Fri Apr 28 2017 Anish Swaminathan <anishs@vmware.com> 20170426-1
 -   Initial packaging for Photon
-

@@ -9,11 +9,11 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://twistedmatrix.com
+URL:            https://twistedmatrix.com
 Source0:        https://pypi.python.org/packages/source/T/Twisted/Twisted-%{version}.tar.bz2
 %define sha1 Twisted=949c75da0426ca139a3128fecb484eeb7513087e
-Patch0:        extra_dependency.patch 
-Patch1:        no_packet.patch 
+Patch0:        extra_dependency.patch
+Patch1:        no_packet.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -24,6 +24,12 @@ BuildRequires:  python-zope.interface
 BuildRequires:  python-cryptography
 BuildRequires:  python-pyOpenSSL
 BuildRequires:  python-six
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-incremental
+BuildRequires:  python3-zope.interface
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -34,18 +40,12 @@ Requires:       python-constantly
 Requires:       python-hyperlink
 
 %description
-Twisted is an event-driven networking engine written in Python and licensed under the open source ​MIT license. Twisted runs on Python 2 and an ever growing subset also works with Python 3. 
+Twisted is an event-driven networking engine written in Python and licensed under the open source ​MIT license. Twisted runs on Python 2 and an ever growing subset also works with Python 3.
 
 Twisted also supports many common network protocols, including SMTP, POP3, IMAP, SSHv2, and DNS.
 
 %package -n     python3-Twisted
 Summary:        python-Twisted
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-incremental
-BuildRequires:  python3-zope.interface
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs

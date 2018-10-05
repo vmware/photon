@@ -9,13 +9,17 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/openstack/pylockfile
+URL:            https://github.com/openstack/pylockfile
 Source0:        https://pypi.python.org/packages/source/l/lockfile/lockfile-%{version}.tar.gz
 %define sha1    lockfile=c2ac46e48585e5f8f8d57ccc55ca83faa8b53b86
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-pbr
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-pbr
 BuildArch:      noarch
 
 %description
@@ -28,10 +32,6 @@ as a demonstration of the possibilities it provides than as production-quality c
 
 %package -n     python3-lockfile
 Summary:        Python Build Reasonableness
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-pbr
 
 %description -n python3-lockfile
 The lockfile package exports a LockFile class which provides a simple API for locking files.

@@ -12,7 +12,9 @@ Source0:        http://sourceforge.net/projects/%{name}/files/%{name}/%{version}
 %define sha1 net-snmp=78f70731df9dcdb13fe8f60eb7d80d7583da4d2c
 Source1:        snmpd.service
 Source2:        snmptrapd.service
-BuildRequires:  openssl-devel perl systemd
+BuildRequires:  openssl-devel
+BuildRequires:  perl
+BuildRequires:  systemd
 Requires:       perl systemd
 %description
  Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
@@ -29,20 +31,20 @@ The net-snmp-devel package contains headers and libraries for building SNMP appl
 %setup -q
 
 %build
-./configure --prefix=%{_prefix} \
-                --host=ia64-linux \
-                --build=i686 \
-                --target=ia64-linux \
-                --sbindir=/sbin \
-                --with-sys-location="unknown" \
-                --with-logfile=/var/log/net-snmpd.log \
-                --with-persistent-directory=/var/lib/net-snmp \
-                --with-sys-contact="root@localhost" \
-                --with-defaults \
-                --with-systemd \
-                --disable-static \
-                --with-x=no \
-                --enable-as-needed
+%configure \
+    --host=ia64-linux \
+    --build=i686 \
+    --target=ia64-linux \
+    --sbindir=/sbin \
+    --with-sys-location="unknown" \
+    --with-logfile=/var/log/net-snmpd.log \
+    --with-persistent-directory=/var/lib/net-snmp \
+    --with-sys-contact="root@localhost" \
+    --with-defaults \
+    --with-systemd \
+    --disable-static \
+    --with-x=no \
+    --enable-as-needed
 make
 
 %install
@@ -70,7 +72,7 @@ make %{?_smp_mflags} test
 
 %clean
 rm -rf %{buildroot}/*
- 
+
 %files
 %doc COPYING NEWS README ChangeLog
 %defattr(-,root,root)
@@ -78,7 +80,7 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/snmptrapd.service
 %{_bindir}
 %{_libdir}/*.so.*
-/sbin/*  
+/sbin/*
 
 %files devel
 %defattr(-,root,root)
@@ -101,7 +103,7 @@ rm -rf %{buildroot}/*
 -   Make service file a different source
 *   Tue Apr 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.7.3-6
 -   Patch to remove U64 typedef
-*   Mon Oct 04 2016 ChangLee <changLee@vmware.com> 5.7.3-5
+*   Tue Oct 04 2016 ChangLee <changLee@vmware.com> 5.7.3-5
 -   Modified %check
 *   Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 5.7.3-4
 -   Excluded the perllocal.pod log.

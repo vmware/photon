@@ -9,13 +9,18 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/configparser
+URL:            https://pypi.python.org/pypi/configparser
 Source0:        configparser-%{version}.tar.gz
 %define sha1    configparser=8ee6b29c6a11977c0e094da1d4f5f71e7e7ac78b
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -27,11 +32,6 @@ The ancient ConfigParser module available in the standard library 2.x has seen a
 
 %package -n     python3-configparser
 Summary:        python-configparser
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 

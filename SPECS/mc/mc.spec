@@ -11,7 +11,9 @@ Source0:	http://ftp.midnight-commander.orgtar/%{name}-%{version}.tar.xz
 %define sha1 mc=f66fec68e6e3e284b6e8f26d96001aa47c23b2d9
 Patch0:		disable-extfs-test.patch
 Requires:	glib pcre slang
-BuildRequires:	glib-devel pcre-devel slang-devel
+BuildRequires:	glib-devel
+BuildRequires:  pcre-devel
+BuildRequires:  slang-devel
 
 %description
 MC (Midnight Commander) is a text-mode full-screen file manager and visual shell
@@ -20,8 +22,7 @@ MC (Midnight Commander) is a text-mode full-screen file manager and visual shell
 %setup -q
 %patch0 -p1
 %build
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--sysconfdir=/etc
 make %{?_smp_mflags}
 

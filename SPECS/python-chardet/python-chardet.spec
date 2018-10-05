@@ -5,7 +5,7 @@ Summary:        A Universal Character Encoding Detector in Python
 Name:           python-chardet
 Version:        3.0.4
 Release:        1%{?dist}
-Url:            https://pypi.org/project/chardet/
+URL:            https://pypi.org/project/chardet/
 License:        LGPL v2.1
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -17,8 +17,14 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:	python-pytest
+BuildRequires:	python3-pytest
 %endif
 
 Requires:       python2
@@ -32,14 +38,6 @@ chardet is a universal character encoding detector in Python.
 %package -n     python3-chardet
 Summary:        python3-chardet
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:	python3-pytest
-%endif
 
 Requires:       python3
 Requires:       python3-libs

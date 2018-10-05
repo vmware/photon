@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/WebOb
+URL:            https://pypi.python.org/pypi/WebOb
 Source0:        https://pypi.python.org/packages/1a/2b/322d6e01ba19c1e28349efe46dab1bd480c81a55af0658d63dc48ed62ee6/WebOb-%{version}.tar.gz
 %define sha1    WebOb=6f23a2eec1510ceee66efd51d3a2b7025c4cdc2b
 
@@ -18,8 +18,14 @@ BuildArch:      noarch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  python-pytest
+BuildRequires:  python3-pytest
 %endif
 
 Requires:       python2
@@ -32,14 +38,6 @@ The request and response objects provide many conveniences for parsing HTTP requ
 
 %package -n     python3-webob
 Summary:        python-webob
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-pytest
-%endif
 Requires:       python3
 Requires:       python3-libs
 

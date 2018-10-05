@@ -5,7 +5,7 @@
 Name:           python-jinja2
 Version:        2.10
 Release:        1%{?dist}
-Url:            http://jinja.pocoo.org/
+URL:            http://jinja.pocoo.org/
 Summary:        A fast and easy to use template engine written in pure Python
 License:        BSD
 Group:          Development/Languages/Python
@@ -17,6 +17,11 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-markupsafe
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-markupsafe
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-markupsafe
@@ -29,11 +34,6 @@ sandboxed environment.
 
 %package -n     python3-jinja2
 Summary:        A fast and easy to use template engine written in pure Python
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-markupsafe
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-markupsafe
@@ -92,6 +92,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.5-2
 -   Fix arch
 *   Mon Mar 27 2017 Sarah Choi <sarahc@vmware.com> 2.9.5-1
--   Upgrade version to 2.9.5 
+-   Upgrade version to 2.9.5
 *   Tue Dec 13 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.8-1
 -   Initial packaging for Photon

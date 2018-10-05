@@ -5,7 +5,7 @@ Summary:        Core utilities for Python packages
 Name:           python-packaging
 Version:        17.1
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/packaging
+URL:            https://pypi.python.org/pypi/packaging
 License:        BSD or ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -15,10 +15,18 @@ Source0:        pypi.python.org/packages/source/p/packaging/packaging-%{version}
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 %if %{with_check}
 BuildRequires:  python-pytest
 BuildRequires:  python-pyparsing
 BuildRequires:  python-six
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-pytest
+BuildRequires:  python3-pyparsing
+BuildRequires:  python3-six
 %endif
 
 Requires:       python2
@@ -33,16 +41,6 @@ Cryptography is a Python library which exposes cryptographic recipes and primiti
 
 %package -n     python3-packaging
 Summary:        python-packaging
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-%if %{with_check}
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-pytest
-BuildRequires:  python3-pyparsing
-BuildRequires:  python3-six
-%endif
 
 Requires:       python3
 Requires:       python3-libs

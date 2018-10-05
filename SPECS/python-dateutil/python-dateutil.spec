@@ -10,7 +10,7 @@ License:        Apache Software License, BSD License (Dual License)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/python-dateutil
+URL:            https://pypi.python.org/pypi/python-dateutil
 Source0:        https://pypi.python.org/packages/54/bb/f1db86504f7a49e1d9b9301531181b00a1c7325dc85a29160ee3eaa73a54/python-dateutil-%{version}.tar.gz
 %define         sha1 python-dateutil=b1aeb913996fc6660ea42a7b31b1331d41a8a13c
 BuildRequires:  python2
@@ -20,6 +20,11 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-setuptools_scm
 BuildRequires:  python-six
 BuildRequires:  python-xml
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-six
@@ -30,11 +35,6 @@ The dateutil module provides powerful extensions to the datetime module availabl
 
 %package -n     python3-dateutil
 Summary:        python3-dateutil
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-setuptools_scm
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-six

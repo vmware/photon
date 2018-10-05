@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Virtual Python Environment builder
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/virtualenv
+URL:            https://pypi.python.org/pypi/virtualenv
 Source0:        virtualenv-%{version}.tar.gz
 %define sha1    virtualenv=33831525c360459671d25f9e5abac931c414d2f7
 Vendor:         VMware, Inc.
@@ -17,6 +17,13 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-pytest
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-pytest
+BuildRequires:  python3-setuptools
 Requires:       python2
 Requires:       python2-libs
 BuildRequires:  python-setuptools
@@ -28,15 +35,8 @@ virtualenv is a tool to create isolated Python environment.
 
 %package -n     python3-virtualenv
 Summary:        Virtual Python Environment builder
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-pytest
 Requires:       python3
 Requires:       python3-libs
-BuildRequires:  python3-setuptools
 
 %description -n python3-virtualenv
 Python 3 version.

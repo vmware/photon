@@ -9,7 +9,7 @@ License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/tzlocal/1.4
+URL:            https://pypi.python.org/pypi/tzlocal/1.4
 Source0:        https://files.pythonhosted.org/packages/source/t/tzlocal/tzlocal-%{version}.tar.gz
 %define sha1    tzlocal=98dc51724f3201f66f4ec36f22b99bd03f3059bd
 BuildRequires:  python2
@@ -17,6 +17,11 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-six
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-six
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -34,11 +39,6 @@ With tzlocal you only need to call get_localzone() and you will get a tzinfo obj
 
 %package -n     python3-tzlocal
 Summary:        python-tzlocal
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-six
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs

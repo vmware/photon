@@ -5,7 +5,7 @@ Name:		u-boot-rpi3
 Version:	2018.09
 Release:	1%{?dist}
 License:	GPLv2
-Url:            http://www.denx.de/wiki/U-Boot
+URL:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        ftp://ftp.denx.de/pub/u-boot/u-boot-%{version}.tar.bz2

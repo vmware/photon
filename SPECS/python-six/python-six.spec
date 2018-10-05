@@ -7,13 +7,20 @@ Release:        1%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/source/s/six/six-%{version}.tar.gz
+URL:            https://pypi.python.org/packages/source/s/six/six-%{version}.tar.gz
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        six-%{version}.tar.gz
 %define sha1    six=3647372a0e104e7b53bd477762392024e1083ac0
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -21,15 +28,10 @@ Requires:       python2-libs
 BuildArch:      noarch
 
 %description
-Six is a Python 2 and 3 compatibility library. It provides utility functions for smoothing over the differences between the Python versions with the goal of writing Python code that is compatible on both Python versions. 
+Six is a Python 2 and 3 compatibility library. It provides utility functions for smoothing over the differences between the Python versions with the goal of writing Python code that is compatible on both Python versions.
 
 %package -n     python3-six
 Summary:        python-six
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -65,7 +67,7 @@ python3 test_six.py
 %changelog
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.11.0-1
 -   Update to version 1.11.0
-*   Tue Jun 23 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.10.0-8
+*   Fri Jun 23 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.10.0-8
 -   Add python-setuptools to BuildRequires to avoid Update issues
 *   Wed Jun 21 2017 Xiaolin Li <xiaolinl@vmware.com> 1.10.0-7
 -   Fix make check.

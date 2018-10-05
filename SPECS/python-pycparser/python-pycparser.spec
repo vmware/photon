@@ -4,7 +4,7 @@ Summary:        Python C parser
 Name:           python-pycparser
 Version:        2.18
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/pycparser
+URL:            https://pypi.python.org/pypi/pycparser
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -16,6 +16,9 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 
 Requires:       python2
 Requires:       python2-libs
@@ -23,13 +26,10 @@ BuildArch:      noarch
 
 
 %description
-pycparser is a complete parser of the C language, written in pure Python using the PLY parsing library. It parses C code into an AST and can serve as a front-end for C compilers or analysis tools. 
+pycparser is a complete parser of the C language, written in pure Python using the PLY parsing library. It parses C code into an AST and can serve as a front-end for C compilers or analysis tools.
 
 %package -n     python3-pycparser
 Summary:        python-pycparser
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 Requires:       python3
 Requires:       python3-libs
 
@@ -70,7 +70,7 @@ python2 all_tests.py
 -   Updated to version 2.17.
 *   Thu Feb 02 2017 Xiaolin Li <xiaolinl@vmware.com> 2.14-4
 -   Added python3 site-packages.
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 2.14-3
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 2.14-3
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.14-2
 -   GA - Bump release of all rpms

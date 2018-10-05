@@ -9,7 +9,7 @@ Release:        3%{?dist}
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://docs.pytest.org
+URL:            https://docs.pytest.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/00/e9/f77dcd80bdb2e52760f38dbd904016da018ab4373898945da744e5e892e9/pytest-%{version}.tar.gz
@@ -23,6 +23,13 @@ BuildRequires:  python-py
 BuildRequires:  python-xml
 BuildRequires:  python-hypothesis
 BuildRequires:  python-Twisted
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-py
+BuildRequires:  python3-hypothesis
+BuildRequires:  python3-Twisted
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-py
@@ -34,13 +41,6 @@ pytest framework makes it easy to write small tests, yet scales to support compl
 
 %package -n     python3-pytest
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-py
-BuildRequires:  python3-hypothesis
-BuildRequires:  python3-Twisted
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs

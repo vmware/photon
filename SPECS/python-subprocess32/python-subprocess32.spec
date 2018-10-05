@@ -6,7 +6,7 @@ Release:        1%{?dist}
 Summary:        A backport of the subprocess module from Python 3.2/3.3 for use on 2.x
 License:        PSF
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/subprocess32
+URL:            https://pypi.python.org/pypi/subprocess32
 Source0:        subprocess32-%{version}.tar.gz
 %define sha1    subprocess32=d01a5a57c94a655992b6fc0172a6ab19f813bf70
 Vendor:         VMware, Inc.

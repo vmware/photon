@@ -1,8 +1,8 @@
 Summary:        A tool that inspect which pages of a file or files are being cached by the Linux kernel
-Name:           pcstat 
+Name:           pcstat
 Version:        1
 Release:        6%{?dist}
-License:        Apache 
+License:        Apache
 URL:            https://github.com/tobert/pcstat
 Group:          Development/Debuggers
 Vendor:         VMware, Inc.
@@ -12,7 +12,10 @@ Source0:        https://github.com/tobert/pcstat/archive/pcstat-1.zip
 Source1:        https://github.com/golang/sys/golang-sys-08-02-2017.zip
 %define sha1    golang-sys=7f713451011d127755448c6603c15dc907bc47bc
 Patch0:         pcstat-aarch64-support.patch
-BuildRequires:  unzip go audit git
+BuildRequires:  unzip
+BuildRequires:  go
+BuildRequires:  audit
+BuildRequires:  git
 Requires:       go
 %description
 A tool that inspect which pages of a file or files are being cached by the Linux kernel

@@ -6,7 +6,7 @@ License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://mariadb.org/
+URL:            https://mariadb.org/
 Source0:        https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz
 %define         sha1 mariadb=51e9870847daa76f1e82ade97d9cf60a31df7656
 

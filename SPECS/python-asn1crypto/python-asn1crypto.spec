@@ -7,13 +7,20 @@ Release:        1%{?dist}
 Summary:        A fast, pure Python library for parsing and serializing ASN.1 structures.
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/67/14/5d66588868c4304f804ebaff9397255f6ec5559e46724c2496e0f26e68d6/asn1crypto-0.22.0.tar.gz
+URL:            https://pypi.python.org/packages/67/14/5d66588868c4304f804ebaff9397255f6ec5559e46724c2496e0f26e68d6/asn1crypto-0.22.0.tar.gz
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        asn1crypto-%{version}.tar.gz
 %define sha1    asn1crypto=c8f64e99bc01d90c412891cdad97675d8fe79cc7
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -25,11 +32,6 @@ A fast, pure Python library for parsing and serializing ASN.1 structures.
 
 %package -n     python3-asn1crypto
 Summary:        A fast, pure Python library for parsing and serializing ASN.1 structures.
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 

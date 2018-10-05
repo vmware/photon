@@ -6,7 +6,7 @@ Name:           python-oauthlib
 Version:        2.1.0
 Release:        1%{?dist}
 License:        BSD
-Url:            https://pypi.python.org/pypi/python-oauthlib/
+URL:            https://pypi.python.org/pypi/python-oauthlib/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,6 +16,9 @@ Source0:        https://pypi.python.org/packages/fa/2e/25f25e6c69d97cf921f0a8f7d
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  libffi-devel
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 
@@ -26,9 +29,6 @@ OAuthLib is a generic utility which implements the logic of OAuth without assumi
 
 %package -n python3-oauthlib
 Summary:        Python3 package for oauthlib
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 

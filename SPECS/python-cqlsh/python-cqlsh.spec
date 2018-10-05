@@ -8,7 +8,7 @@ License:        Apache License Version 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/cqlsh
+URL:            https://pypi.python.org/pypi/cqlsh
 Source0:        https://files.pythonhosted.org/packages/source/c/cqlsh/cqlsh-%{version}.tar.gz
 %define         sha1 cqlsh=d34344538b17e28a3547c571d2bcb50019d6c94f
 

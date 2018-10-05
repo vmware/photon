@@ -7,7 +7,7 @@ License:        BSD
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Url:            http://smarden.org/runit/
+URL:            http://smarden.org/runit/
 Source0:        http://smarden.org/runit/runit-%{version}.tar.gz
 %define sha1 runit=398f7bf995acd58797c1d4a7bcd75cc1fc83aa66
 Source1:	runit.service
@@ -54,13 +54,13 @@ rm -rf %{buildroot}
 %dir /etc/service
 
 %changelog
-*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-4
--	Ensure non empty debuginfo
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.1.2-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-2
--	GA - Bump release of all rpms
-*	Tue Aug 4 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.2-1
--	Initial build
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-4
+-   Ensure non empty debuginfo
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.1.2-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-2
+-   GA - Bump release of all rpms
+*   Tue Aug 4 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.2-1
+-   Initial build
 
 

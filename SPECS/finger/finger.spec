@@ -3,6 +3,7 @@ Name:		finger
 Version:	0.17
 Release:	2%{?dist}
 License:	BSD/
+URL:        https://github.com/Distrotech/bsd-finger
 Group:		Applications/Internet
 Vendor:		VMware, Inc.
 Distribution:   Photon
@@ -43,8 +44,7 @@ system at the moment or a person.
 %build
 sed -i 's/install -s/install/' finger/Makefile
 sed -i 's/install -s/install/' fingerd/Makefile
-./configure \
-	--prefix=%{_prefix}
+%configure
 
 make %{?_smp_mflags}
 
@@ -85,7 +85,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/fingerd.8*
 
 %changelog
-*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.17-2
--	Apply patch to generate debuginfo
-*	Wed Dec 7 2016 Dheeraj Shetty <dheerajs@vmware.com> 0.17-1
--	initial version
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.17-2
+-      Apply patch to generate debuginfo
+*   Wed Dec 7 2016 Dheeraj Shetty <dheerajs@vmware.com> 0.17-1
+-      initial version

@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Pythonic argument parser to create command line interfaces.
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/docopt
+URL:            https://pypi.python.org/pypi/docopt
 Source0:        docopt-%{version}.tar.gz
 %define sha1    docopt=224a3ec08b56445a1bd1583aad06b00692671e04
 Vendor:         VMware, Inc.
@@ -17,6 +17,12 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-pytest
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-pytest
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-setuptools
@@ -28,12 +34,6 @@ docopt helps easily create most beautiful command-line interfaces.
 
 %package -n     python3-docopt
 Summary:        python-docopt
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-pytest
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-setuptools

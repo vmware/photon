@@ -6,7 +6,7 @@ License:      LGPLv2
 Group:        System Environment/Libraries
 Source0:      https://github.com/seccomp/libseccomp/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %define sha1 libseccomp=89b1f35447b1891a3051de979dc92ad9f7258b60
-Url:          https://github.com/seccomp/libseccomp/wiki
+URL:          https://github.com/seccomp/libseccomp/wiki
 Vendor:       VMware, Inc.
 Distribution: Photon
 
@@ -61,11 +61,11 @@ make check
 %{_mandir}/man3/*
 
 %changelog
-*       Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 2.3.3-1
--       Updated to version 2.3.3
-*	Tue Apr 11 2017 Harish Udaiya KUmar <hudaiyakumar@vmware.com> 2.3.2-1
--	Updated to version 2.3.2
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.3-2
--	GA - Bump release of all rpms
-* Sat Jan 16 2016 Fabio Rapposelli <fabio@vmware.com> - 2.2.3-1
-- First release of the package
+*   Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 2.3.3-1
+-   Updated to version 2.3.3
+*   Tue Apr 11 2017 Harish Udaiya KUmar <hudaiyakumar@vmware.com> 2.3.2-1
+-   Updated to version 2.3.2
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.3-2
+-   GA - Bump release of all rpms
+*   Sat Jan 16 2016 Fabio Rapposelli <fabio@vmware.com> - 2.2.3-1
+-   First release of the package

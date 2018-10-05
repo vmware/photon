@@ -4,10 +4,12 @@
 Name:           python-ipaddr
 Version:        2.2.0
 Release:        1%{?dist}
-Url:            https://github.com/google/ipaddr-py
+URL:            https://github.com/google/ipaddr-py
 Summary:        Google's Python IP address manipulation library
 License:        Apache2
 Group:          Development/Languages/Python
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/i/ipaddr/ipaddr-%{version}.tar.gz
 %define sha1    ipaddr=d2acca0d7eee9c21d103d11ddc1bd7a8cc9a5a27
 #Patch0:         ipaddr-python3-compatibility.patch
@@ -15,6 +17,9 @@ Source0:        https://pypi.python.org/packages/source/i/ipaddr/ipaddr-%{versio
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 
 Requires:       python2
 Requires:	python2-libs
@@ -26,9 +31,6 @@ ipaddr.py is a library for working with IP addresses, both IPv4 and IPv6. It was
 
 %package -n     python3-ipaddr
 Summary:        python-ipaddr
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 
 Requires:       python3
 Requires:       python3-libs

@@ -5,7 +5,7 @@ Summary:        XML bomb protection for Python stdlib modules
 Name:           python-defusedxml
 Version:        0.5.0
 Release:        3%{?dist}
-Url:            https://pypi.python.org/pypi/defusedxml
+URL:            https://pypi.python.org/pypi/defusedxml
 License:        PSFL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,6 +19,11 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -33,11 +38,6 @@ None of the issues is new. They have been known for a long time. Billion laughs 
 
 %package -n     python3-defusedxml
 Summary:        python-defusedxml
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs

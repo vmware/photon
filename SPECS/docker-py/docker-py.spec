@@ -7,7 +7,9 @@ Release:        1%{?dist}
 Summary:        Python API for docker
 License:        ASL2.0
 Group:          Development/Languages/Python
-Url:            https://github.com/docker/docker-py
+URL:            https://github.com/docker/docker-py
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    docker-py=d742bfa49b86502150a9cffe2e066a39eb8ab778
 
@@ -19,6 +21,10 @@ BuildRequires:  python-requests
 BuildRequires:  python-setuptools
 BuildRequires:  python-six
 BuildRequires:  python-xml
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-pip
 Requires:       python2
 Requires:       python2-libs
 Requires:       docker-pycreds
@@ -35,10 +41,6 @@ Python API for docker
 
 %package -n     docker-py3
 Summary:        Python3 API for docker
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-pip
 
 Requires:       python3
 Requires:       python3-libs

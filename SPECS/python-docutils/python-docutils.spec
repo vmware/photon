@@ -9,7 +9,7 @@ License:        public domain, Python, 2-Clause BSD, GPL 3 (see COPYING.txt)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/docutils
+URL:            https://pypi.python.org/pypi/docutils
 Source0:        https://files.pythonhosted.org/packages/source/d/docutils/docutils-%{version}.tar.gz
 %define sha1    docutils=32cefb69ac3dab5b04c4d150776f35419cc4c863
 
@@ -18,6 +18,9 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-xml
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -29,9 +32,6 @@ Docutils is a modular system for processing documentation into useful formats, s
 
 %package -n     python3-docutils
 Summary:        python-docutils
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs

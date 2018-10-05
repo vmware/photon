@@ -7,13 +7,18 @@ Release:        1%{?dist}
 Summary:        WebSocket client for python
 License:        LGPL
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/websocket-client
+URL:            https://pypi.python.org/pypi/websocket-client
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        websocket_client-%{version}.tar.gz
 %define sha1    websocket_client=09bd8914944646fde9d2672392579a982ea0f031
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 
@@ -24,9 +29,6 @@ WebSocket client for python
 
 %package -n     python3-websocket-client
 Summary:        WebSocket client for python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 %description -n python3-websocket-client
 WebSocket client for python3

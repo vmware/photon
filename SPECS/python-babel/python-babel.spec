@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        an integrated collection of utilities that assist in internationalizing and localizing Python applications
 License:        BSD3
 Group:          Development/Languages/Python
-Url:            http://babel.pocoo.org
+URL:            http://babel.pocoo.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/92/22/643f3b75f75e0220c5ef9f5b72b619ccffe9266170143a4821d4885198de/Babel-%{version}.tar.gz
@@ -19,6 +19,12 @@ BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-pytz
 BuildRequires:  python-pytest
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-pytz
+BuildRequires:  python3-pytest
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-pytz
@@ -34,12 +40,6 @@ The functionality Babel provides for internationalization (I18n) and localizatio
 
 %package -n     python3-babel
 Summary:        an integrated collection of utilities that assist in internationalizing and localizing Python applications
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-pytz
-BuildRequires:  python3-pytest
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-pytz

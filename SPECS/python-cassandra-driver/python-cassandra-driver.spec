@@ -7,7 +7,7 @@ Summary:        A modern, feature-rich and highly-tunable Python client library 
 Name:           python-cassandra-driver
 Version:        3.15.1
 Release:        1%{?dist}
-Url:            https://github.com/datastax/python-driver#datastax-python-driver-for-apache-cassandra
+URL:            https://github.com/datastax/python-driver#datastax-python-driver-for-apache-cassandra
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -23,6 +23,14 @@ BuildRequires:  python-pip
 BuildRequires:  python-pytest
 BuildRequires:  libev-devel
 BuildRequires:  libev
+BuildRequires:  python3
+BuildRequires:  cython3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-pip
+BuildRequires:  python3-pytest
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 
@@ -32,14 +40,6 @@ The driver supports Python 2.7, 3.3, 3.4, 3.5, and 3.6.
 
 %package -n     python3-cassandra-driver
 Summary:        python3-cassandra-driver
-BuildRequires:  python3
-BuildRequires:  cython3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-pip
-BuildRequires:  python3-pytest
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 

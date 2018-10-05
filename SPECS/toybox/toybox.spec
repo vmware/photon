@@ -3,7 +3,7 @@ Version:        0.7.7
 Release:        1%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
-Url:            http://landley.net/toybox/
+URL:            http://landley.net/toybox/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -50,7 +50,7 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %changelog
 *   Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 0.7.7-1
 -   Version update
-*   Mon Oct 01 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-6
+*   Sun Oct 01 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-6
 -   remove strings and usleep to avoid conflict with binutils and initscripts
 *   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-5
 -   Move sed to /bin

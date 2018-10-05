@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Type Hints for Python
 License:        PSF
 Group:          Development/Tools
-Url:            https://docs.python.org/3/library/typing.html
+URL:            https://docs.python.org/3/library/typing.html
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/17/75/3698d7992a828ad6d7be99c0a888b75ed173a9280e53dbae67326029b60e/typing-%{version}.tar.gz
@@ -17,6 +17,11 @@ BuildRequires:  python2
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 
@@ -28,11 +33,6 @@ standard format, and it has been designed to also be used by static and runtime 
 
 %package -n     python3-typing
 Summary:        python3 version
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 

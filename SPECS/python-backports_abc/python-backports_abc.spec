@@ -6,7 +6,7 @@ Release:        1%{?dist}
 Summary:        A backport of recent additions to the 'collections.abc' module.
 License:        PSFL
 Group:          Development/Languages/Python
-Url:            https://github.com/cython/backports_abc
+URL:            https://github.com/cython/backports_abc
 Source0:        https://pypi.python.org/packages/68/3c/1317a9113c377d1e33711ca8de1e80afbaf4a3c950dd0edfaf61f9bfe6d8/backports_abc-0.5.tar.gz
 %define sha1 backports_abc=91c000d7f18066f428b015caf5308ca34d492f77
 

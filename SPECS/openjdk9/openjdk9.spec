@@ -18,7 +18,10 @@ BuildRequires:	unzip
 BuildRequires:  zlib-devel
 BuildRequires:	ca-certificates
 BuildRequires:	chkconfig
-BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel
+BuildRequires:  fontconfig-devel
+BuildRequires:  freetype2-devel
+BuildRequires:  glib-devel
+BuildRequires:  harfbuzz-devel
 Requires:       openjre9 = %{version}-%{release}
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
@@ -57,19 +60,19 @@ This package provides the runtime library class sources.
 %setup -qn openjdk-%{version}
 
 %build
-chmod a+x ./configure
+chmod a+x configure
 unset JAVA_HOME &&
 ENABLE_HEADLESS_ONLY="true" &&
-./configure \
+%configure \
 	--with-target-bits=64 \
 	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
 	--enable-headless-only \
-        --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
+    --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
 	--with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
 	--with-freetype-include=/usr/include/freetype2 \
 	--with-freetype-lib=/usr/lib \
 	--with-stdc++lib=dynamic \
-        --disable-warnings-as-errors
+    --disable-warnings-as-errors
 
 mkdir /usr/share/java -p
 make \

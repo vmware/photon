@@ -5,7 +5,7 @@ Version:        62
 Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Base
-Url:            https://github.com/pmem/ndctl
+URL:            https://github.com/pmem/ndctl
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/pmem/%{name}/archive/%{name}-%{version}.tar.gz

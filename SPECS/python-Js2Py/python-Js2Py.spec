@@ -9,7 +9,7 @@ License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/Js2Py
+URL:            https://pypi.python.org/pypi/Js2Py
 Source0:        https://files.pythonhosted.org/packages/source/J/Js2Py/Js2Py-%{version}.tar.gz
 %define         sha1 Js2Py=828ee742021299ee7cecccb52502288b7a4fc5fe
 Patch0:         js2py-python3-print.patch
@@ -20,8 +20,14 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-setuptools_scm
 BuildRequires:  python-six
 BuildRequires:  python-py
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-py
 %if %{with_check}
 BuildRequires:  python-pyjsparser
+BuildRequires:  python3-pyjsparser
 %endif
 Requires:       python2
 Requires:       python2-libs
@@ -37,21 +43,12 @@ Everything is done in 100% pure Python so it's extremely easy to install and use
 
 %package -n     python3-Js2Py
 Summary:        python-Js2Py
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-six
 
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-six
 Requires:       python3-tzlocal
 Requires:       python3-pyjsparser
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-setuptools_scm
-BuildRequires:  python3-py
-%if %{with_check}
-BuildRequires:  python3-pyjsparser
-%endif
 
 %description -n python3-Js2Py
 Python 3 version.

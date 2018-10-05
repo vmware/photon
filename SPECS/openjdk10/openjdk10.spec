@@ -18,7 +18,10 @@ BuildRequires:	unzip
 BuildRequires:  zlib-devel
 BuildRequires:	ca-certificates
 BuildRequires:	chkconfig
-BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel
+BuildRequires:  fontconfig-devel
+BuildRequires:  freetype2-devel
+BuildRequires:  glib-devel
+BuildRequires:  harfbuzz-devel
 Requires:       openjre10 = %{version}-%{release}
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
@@ -57,19 +60,19 @@ This package provides the runtime library class sources.
 %setup -qn openjdk-%{version}
 
 %build
-chmod a+x ./configure
+chmod a+x configure
 unset JAVA_HOME &&
 ENABLE_HEADLESS_ONLY="true" &&
-./configure \
+%configure \
 	--with-target-bits=64 \
 	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
 	--enable-headless-only \
-        --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
+    --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
 	--with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
 	--with-freetype-include=/usr/include/freetype2 \
 	--with-freetype-lib=/usr/lib \
 	--with-stdc++lib=dynamic \
-        --disable-warnings-as-errors
+    --disable-warnings-as-errors
 
 mkdir /usr/share/java -p
 make \
@@ -83,7 +86,7 @@ make \
 
 %install
 unset JAVA_HOME &&
-make install 
+make install
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
@@ -219,5 +222,5 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/lib/src.zip
 
 %changelog
-*   Thu Apr 23 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.0.23-1
+*   Mon Apr 23 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.0.23-1
 -   Initial build. First version

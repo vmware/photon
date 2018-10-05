@@ -6,7 +6,7 @@ Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
-Url:            https://github.com/dotnet/core
+URL:            https://github.com/dotnet/core
 Group:          Development/Tools
 Source0:        https://download.microsoft.com/download/1/1/5/115B762D-2B41-4AF3-9A63-92D9680B9409/dotnet-sdk-2.1.4-linux-x64.tar.gz
 %define sha1    dotnet-sdk=0201b2f073dea70abfc00383f8093f8dafa802ea

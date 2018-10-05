@@ -7,13 +7,19 @@ Release:        1%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/source/j/jsonpointer/jsonpointer-%{version}.tar.gz
+URL:            https://pypi.python.org/packages/source/j/jsonpointer/jsonpointer-%{version}.tar.gz
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        jsonpointer-%{version}.tar.gz
 %define sha1    jsonpointer=f0733349a44b0c777ef9b8e0256d628e2530624b
 
 BuildRequires: python2
 BuildRequires: python2-libs
 BuildRequires: python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires: python2
 Requires: python2-libs
@@ -25,10 +31,6 @@ Library to apply JSON Patches according to RFC 6902.
 
 %package -n     python3-jsonpointer
 Summary:        python-jsonpointer
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs

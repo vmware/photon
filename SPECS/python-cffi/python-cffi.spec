@@ -5,7 +5,7 @@ Summary:        Interface for Python to call C code
 Name:           python-cffi
 Version:        1.11.5
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/cffi
+URL:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,9 +19,17 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  libffi-devel
 BuildRequires:  python-pycparser
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-pycparser
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:	python-py
 BuildRequires:	python-pytest
+BuildRequires:	python3-py
+BuildRequires:	python3-pytest
 %endif
 Requires:       python2
 Requires:       python2-libs
@@ -32,16 +40,6 @@ Foreign Function Interface for Python, providing a convenient and reliable way o
 
 %package -n     python3-cffi
 Summary:        python-cffi
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-pycparser
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:	python3-py
-BuildRequires:	python3-pytest
-%endif
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-pycparser

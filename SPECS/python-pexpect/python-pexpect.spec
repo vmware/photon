@@ -6,7 +6,7 @@ Name:           python-pexpect
 Version:        4.6.0
 Release:        1%{?dist}
 License:        ISC
-Url:            https://github.com/pexpect/pexpect
+URL:            https://github.com/pexpect/pexpect
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,6 +15,7 @@ Source0:        https://github.com/pexpect/pexpect/archive/pexpect-%{version}.ta
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3-devel
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-ptyprocess
@@ -24,12 +25,11 @@ BuildArch:      noarch
 %description
 Pexpect is a pure Python module for spawning child applications; controlling them;
 and responding to expected patterns in their output. Pexpect works like Don Libes Expect.
-Pexpect allows your script to spawn a child application and control it as if a human 
+Pexpect allows your script to spawn a child application and control it as if a human
 were typing commands.
 
 %package -n python3-pexpect
 Summary:        Python3 package for pexpect
-BuildRequires:  python3-devel
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-ptyprocess
@@ -72,4 +72,3 @@ popd
 -   Adding requires on ptyprocess
 *   Mon Sep 11 2017 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-1
 -   Initial packaging for Photon
-

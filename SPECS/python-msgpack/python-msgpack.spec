@@ -9,12 +9,15 @@ License:        Apache Software License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            http://msgpack.org/
+URL:            http://msgpack.org/
 Source0:        https://pypi.io/packages/source/m/msgpack-python/msgpack-%{version}.tar.gz
 %define sha1    msgpack=916c234864a5eaae179982dcd4b20efaa3677a30
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 
 %description
@@ -22,9 +25,6 @@ MessagePack is a fast, compact binary serialization format, suitable for similar
 
 %package -n     python3-msgpack
 Summary:        Python3 msgpack
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 
 %description -n python3-msgpack

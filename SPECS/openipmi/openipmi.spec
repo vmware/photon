@@ -36,7 +36,8 @@ and/or middleware that depends on libOpenIPMI
 %package        perl
 Summary:        Perl interface for OpenIPMI
 Group:          Utilities
-Requires:       openipmi = %{version}-%{release}, perl >= 5
+Requires:       openipmi = %{version}-%{release}
+Requires:       perl >= 5
 
 %description    perl
 A Perl interface for OpenIPMI.
@@ -44,7 +45,8 @@ A Perl interface for OpenIPMI.
 %package        python
 Summary:        Python interface for OpenIPMI
 Group:          Utilities
-Requires:       openipmi = %{version}-%{release}, python2
+Requires:       openipmi = %{version}-%{release}
+Requires:       python2
 
 %description    python
 A Python interface for OpenIPMI.
@@ -72,15 +74,13 @@ This package contains a network IPMI listener.
 # USERFIX: Things you might have to add to configure:
 #  --with-tclcflags='-I /usr/include/tclN.M' --with-tcllibs=-ltclN.M
 #    Obviously, replace N.M with the version of tcl on your system.
-./configure                                 \
-    --prefix=/usr                           \
+%configure                                 \
     --with-tcl=no                           \
     --disable-static                        \
     --with-tkinter=no                       \
     --docdir=%{_docdir}/%{name}-%{version}  \
     --with-perl=yes                         \
-    --with-perlinstall=%{perl_vendorarch}   \
-    --sysconfdir=%{_sysconfdir}
+    --with-perlinstall=%{perl_vendorarch}
 make
 
 %install

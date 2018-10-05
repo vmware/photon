@@ -7,7 +7,9 @@ Release:        5%{?dist}
 Summary:        A network address manipulation library for Python
 License:        BSD
 Group:          Development/Languages/Python
-Url:            https://files.pythonhosted.org/packages/source/n/netaddr/netaddr-%{version}.tar.gz
+URL:            https://files.pythonhosted.org/packages/source/n/netaddr/netaddr-%{version}.tar.gz
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        netaddr-%{version}.tar.gz
 %define sha1    netaddr=00e0ce7d7ebc1d6e7943e884aa51ccb7becdc9ea
 Patch0:         0001-fixed-broken-tests-in-issue-149-python-3-regression.patch
@@ -15,8 +17,13 @@ Patch0:         0001-fixed-broken-tests-in-issue-149-python-3-regression.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  python-pytest
+BuildRequires:  python3-pytest
 %endif
 
 Requires:       python2
@@ -29,13 +36,6 @@ A network address manipulation library for Python
 
 %package -n python3-netaddr
 Summary:        Python3-netaddr
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-pytest
-%endif
 %description -n python3-netaddr
 Python 3 version.
 

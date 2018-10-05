@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/Automat
+URL:            https://pypi.python.org/pypi/Automat
 Source0:        https://files.pythonhosted.org/packages/source/A/Automat/Automat-%{version}.tar.gz
 %define sha1    Automat=b96a67647f5c1650f0e4cc39bed762fdc2ac90b4
 
@@ -25,6 +25,18 @@ BuildRequires:  python-docutils
 BuildRequires:  python-mistune
 BuildRequires:  python-graphviz
 BuildRequires:  python-Twisted
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-m2r
+BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-attrs
+BuildRequires:  python3-six
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-docutils
+BuildRequires:  python3-mistune
+BuildRequires:  python3-graphviz
+BuildRequires:  python3-Twisted
 
 
 Requires:       python2
@@ -43,18 +55,6 @@ Automat is a library for concise, idiomatic Python expression of finite-state au
 
 %package -n     python3-automat
 Summary:        python-automat
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-m2r
-BuildRequires:  python3-setuptools_scm
-BuildRequires:  python3-attrs
-BuildRequires:  python3-six
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-docutils
-BuildRequires:  python3-mistune
-BuildRequires:  python3-graphviz
-BuildRequires:  python3-Twisted
 
 Requires:       python3
 Requires:       python3-libs

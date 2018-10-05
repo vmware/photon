@@ -9,7 +9,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/gevent
+URL:            https://pypi.python.org/pypi/gevent
 Source0:        gevent-%{version}.tar.gz
 %define sha1    gevent=686dbb43474bf80efd9af3c07ba2dbd242aa123e
 Patch0:         python-gevent-makecheck.patch
@@ -18,9 +18,15 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires: lsof
 BuildRequires: python2-test
+BuildRequires: python3-test
 %endif
 
 Requires:       python2
@@ -39,15 +45,6 @@ Features include:
 
 %package -n     python3-gevent
 Summary:        python-gevent
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires: lsof
-BuildRequires: python3-test
-%endif
 
 Requires:       python3
 Requires:       python3-libs

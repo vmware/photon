@@ -10,7 +10,7 @@ License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/boto/botocore
+URL:            https://github.com/boto/botocore
 Source0:        https://github.com/boto/botocore/archive/botocore-%{version}.tar.gz
 %define sha1    botocore=e11850563bd1beaf8aa1756e03398358c057d606
 BuildRequires:  python2
@@ -18,6 +18,10 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-xml
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 BuildArch:      noarch
@@ -27,10 +31,6 @@ A low-level interface to a growing number of Amazon Web Services. The botocore p
 
 %package -n     python3-botocore
 Summary:        python3-botocore
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 

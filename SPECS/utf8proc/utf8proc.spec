@@ -4,7 +4,7 @@ Version:        2.2.0
 Release:        1%{?dist}
 License:        MIT
 Group:          System Environment/Libraries
-Url:            https://github.com/JuliaStrings/utf8proc
+URL:            https://github.com/JuliaStrings/utf8proc
 # Source0:  https://github.com/JuliaStrings/utf8proc/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
 %define sha1 %{name}-%{version}=476efd08dbff38c63f01bb9176905edb09384e63

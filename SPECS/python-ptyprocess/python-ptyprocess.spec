@@ -6,7 +6,7 @@ Name:           python-ptyprocess
 Version:        0.6.0
 Release:        1%{?dist}
 License:        ISC
-Url:            https://github.com/pexpect/ptyprocess
+URL:            https://github.com/pexpect/ptyprocess
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,6 +15,7 @@ Source0:        https://files.pythonhosted.org/packages/source/p/ptyprocess/ptyp
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3-devel
 Requires:       python2
 Requires:       python2-libs
 
@@ -26,7 +27,6 @@ process and its pty.
 
 %package -n python3-ptyprocess
 Summary:        Python3 package for ptyprocess
-BuildRequires:  python3-devel
 Requires:       python3
 Requires:       python3-libs
 

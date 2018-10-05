@@ -9,15 +9,19 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://github.com/untitaker/python-atomicwrites
+URL:            https://github.com/untitaker/python-atomicwrites
 Source0:        https://pypi.python.org/packages/a1/e1/2d9bc76838e6e6667fde5814aa25d7feb93d6fa471bf6816daac2596e8b2/atomicwrites-%{version}.tar.gz
 %define sha1    atomicwrites=fec341b1028177784ac97436c479a397ffeb20d7
 
 BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
 BuildRequires:  python-xml
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  python-pytest
+BuildRequires:  python3-pytest
 %endif
 Requires:       python2
 BuildArch:      noarch
@@ -27,12 +31,6 @@ Python Atomic file writes
 
 %package -n     python3-atomicwrites
 Summary:        Python Atomic file writes
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-pytest
-%endif
 Requires:       python3
 
 %description -n python3-atomicwrites

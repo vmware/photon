@@ -20,19 +20,21 @@ BuildRequires:  unzip
 BuildRequires:  systemd
 BuildRequires:  openssl-devel
 Requires:       systemd
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires(pre):  /usr/sbin/useradd
+Requires(pre):  /usr/sbin/groupadd
 Requires:       openssl
 Requires:       libcap >= 2.24
 %description
-The ntp package contains a client and server to keep the time 
-synchronized between various computers over a network. This 
-package is the official reference implementation of the 
+The ntp package contains a client and server to keep the time
+synchronized between various computers over a network. This
+package is the official reference implementation of the
 NTP protocol.
 
 %package        perl
 Summary:        Perl scripts for ntp
 Group:          Utilities
-Requires:       ntp = %{version}-%{release}, perl >= 5
+Requires:       ntp = %{version}-%{release}
+Requires:       perl >= 5
 Requires:       perl-Net-SSLeay
 Requires:       perl-IO-Socket-SSL
 %description    perl
@@ -50,14 +52,10 @@ state of the NTP daemon running on the local machine.
 %setup -q -a 1
 
 %build
-./configure \
+%configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --disable-silent-rules \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
     --sysconfdir=/etc \
     --with-binsubdir=sbin \
     --enable-linuxcaps
@@ -120,7 +118,7 @@ if ! getent passwd ntp >/dev/null; then
     useradd -c "Network Time Protocol" -d /var/lib/ntp -u 87 -g ntp -s /bin/false ntp
 fi
 %post
-%{_sbindir}/ldconfig 
+%{_sbindir}/ldconfig
 %systemd_post ntpd.service
 
 %preun

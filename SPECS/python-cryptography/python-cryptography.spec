@@ -5,7 +5,7 @@ Summary:        Python cryptography library
 Name:           python-cryptography
 Version:        2.3.1
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/cryptography
+URL:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,6 +18,12 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-cffi
 BuildRequires:  openssl-devel
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-cffi
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python-cffi
 Requires:       openssl
@@ -37,12 +43,6 @@ Cryptography is a Python library which exposes cryptographic recipes and primiti
 
 %package -n     python3-cryptography
 Summary:        python-cryptography
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-cffi
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs

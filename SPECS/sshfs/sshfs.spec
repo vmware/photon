@@ -3,7 +3,7 @@ Name:           sshfs
 Version:        2.9
 Release:        1%{?dist}
 License:        GPLv2
-Url:		https://github.com/libfuse/sshfs
+URL:		https://github.com/libfuse/sshfs
 Group:		Filesystemd tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -20,7 +20,7 @@ This is a usermode fuse client to mount remote filesystems through SSH File Tran
 %setup -q
 %build
 autoreconf -i
-./configure --prefix=%{_prefix}
+%configure
 make %{?_smp_mflags}
 
 %install
@@ -33,8 +33,7 @@ make install prefix=%{buildroot}%{_prefix}
 
 
 %changelog
-*	Mon Apr 17 2017 Danut Moraru <dmoraru@vmware.com> 2.9-1
--	Updated to version 2.9
-*	Fri Nov 04 2016 Sharath George <sharathg@vmware.com> 2.8-1
--	Initial commit.
-
+*   Mon Apr 17 2017 Danut Moraru <dmoraru@vmware.com> 2.9-1
+-   Updated to version 2.9
+*   Fri Nov 04 2016 Sharath George <sharathg@vmware.com> 2.8-1
+-   Initial commit.

@@ -5,7 +5,7 @@ Summary:        Python parsing module.
 Name:           python-pyparsing
 Version:        2.2.0
 Release:        3%{?dist}
-Url:            https://pypi.python.org/pypi/pyparsing/%{version}
+URL:            https://pypi.python.org/pypi/pyparsing/%{version}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,6 +19,9 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 
 Requires:       python2
 Requires:       python2-libs
@@ -28,9 +31,6 @@ Python parsing module.
 
 %package -n     python3-pyparsing
 Summary:        python-pyparsing
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 
 Requires:       python3
 Requires:       python3-libs

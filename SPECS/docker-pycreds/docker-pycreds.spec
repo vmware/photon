@@ -7,13 +7,18 @@ Release:        1%{?dist}
 Summary:        Python API for docker credentials store
 License:        ASL2.0
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/95/2e/3c99b8707a397153bc78870eb140c580628d7897276960da25d8a83c4719/%{name}-%{version}.tar.gz
+URL:            https://pypi.python.org/packages/95/2e/3c99b8707a397153bc78870eb140c580628d7897276960da25d8a83c4719/%{name}-%{version}.tar.gz
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    docker-pycreds=f6f9d96037a3befc7b5647f9bc09882bc130e52d
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 
@@ -24,9 +29,6 @@ Python API for docker credentials store
 
 %package -n     docker-pycreds3
 Summary:        Python3 API for docker credentials store
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 %description -n docker-pycreds3
 Python3 API for docker credentials store

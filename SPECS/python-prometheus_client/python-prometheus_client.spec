@@ -7,7 +7,7 @@ Release:        1%{?dist}
 Summary:        Python client for the Prometheus monitoring system.
 License:        Apache-2.0
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/pypi/prometheus_client
+URL:            https://pypi.python.org/pypi/prometheus_client
 Source0:        prometheus_client-%{version}.tar.gz
 %define sha1    prometheus_client=43aed68fa484883fa53be38f1bf19790ea9a4438
 Vendor:         VMware, Inc.
@@ -17,6 +17,12 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-pytest
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-pytest
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-setuptools
@@ -27,12 +33,6 @@ Python client for the Prometheus monitoring system.
 
 %package -n     python3-prometheus_client
 Summary:        python-prometheus_client
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-pytest
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-setuptools
