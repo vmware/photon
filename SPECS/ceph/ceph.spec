@@ -14,7 +14,7 @@
 #################################################################################
 Name:       ceph
 Version:    12.2.4
-Release:    1%{?dist}
+Release:    2%{?dist}
 Epoch:      1
 Summary:    User space components of the Ceph file system
 License:    LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
@@ -24,6 +24,8 @@ Source0:    http://ceph.com/download/%{name}-%{version}.tar.gz
 %define sha1 ceph=df93bc3fac55249f5f0d30caa567962b387693dd
 Vendor:     VMware, Inc.
 Distribution:   Photon
+Patch0:     CVE-2018-10861.patch
+Patch1:     build_fix_CVE-2018-10861.patch
 #################################################################################
 # dependencies that apply across all distro families
 #################################################################################
@@ -458,6 +460,8 @@ python-rbd, python-rgw or python-cephfs instead.
 #################################################################################
 %prep
 %setup -n ceph-%{version}
+%patch0 -p1
+%patch1 -p1
 
 %build
 %if %{with lowmem_builder}
@@ -1022,6 +1026,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+*   Mon Oct 08 2018 Ankit Jain <ankitja@vmware.com> 12.2.4-2
+-   fix CVE-2018-10861
 *   Thu Apr 19 2018 Xiaolin Li <xiaolinl@vmware.com> 12.2.4-1
 -   Updated to version 12.2.4, fix CVE-2018-7262
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 11.2.0-10
