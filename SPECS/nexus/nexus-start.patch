@@ -1,0 +1,31 @@
+diff -Naur nexus-public-release-3.13.0-01/assemblies/nexus-base-template/src/main/resources/overlay/bin/nexus nexus-public-release-3.13.0-01-mod/assemblies/nexus-base-template/src/main/resources/overlay/bin/nexus
+--- nexus-public-release-3.13.0-01/assemblies/nexus-base-template/src/main/resources/overlay/bin/nexus	2018-07-20 04:11:53.000000000 +0530
++++ nexus-public-release-3.13.0-01-mod/assemblies/nexus-base-template/src/main/resources/overlay/bin/nexus	2018-10-08 23:53:07.499397139 +0530
+@@ -352,7 +352,7 @@
+ }
+ 
+ run() {
+-    OPTS="-Dkaraf.startLocalConsole=true -Dkaraf.startRemoteShell=true"
++    OPTS="-Dkaraf.startLocalConsole=true -Dkaraf.startRemoteShell=true -Dnexus.vmCheck=false"
+     MAIN=org.sonatype.nexus.karaf.NexusMain
+     while [ "$1" != "" ]; do
+         case $1 in
+@@ -380,15 +380,15 @@
+                 ;;
+             'start')
+                 NOHUP="true"
+-                OPTS="-Dkaraf.startLocalConsole=false -Dkaraf.startRemoteShell=true"
++                OPTS="-Dkaraf.startLocalConsole=false -Dkaraf.startRemoteShell=true -Dnexus.vmCheck=false"
+                 shift
+                 ;;
+             'server')
+-                OPTS="-Dkaraf.startLocalConsole=false -Dkaraf.startRemoteShell=true"
++                OPTS="-Dkaraf.startLocalConsole=false -Dkaraf.startRemoteShell=true -Dnexus.vmCheck=false"
+                 shift
+                 ;;
+             'client')
+-                OPTS="-Dkaraf.startLocalConsole=true -Dkaraf.startRemoteShell=false"
++                OPTS="-Dkaraf.startLocalConsole=true -Dkaraf.startRemoteShell=false -Dnexus.vmCheck=false"
+                 shift
+                 ;;
+             *)
