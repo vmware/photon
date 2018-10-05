@@ -1,6 +1,6 @@
 %{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-Summary:        Userland logical volume management tools 
+Summary:        Userland logical volume management tools
 Name:           lvm2
 Version:        2.02.181
 Release:        1%{?dist}
@@ -13,7 +13,8 @@ Source0:        ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
 %define sha1    LVM2=2802799c60ef4f61534df1e40bcc29e4e043b29b
 Source1:        lvm2-activate.service
 Patch0:         lvm2-set-default-preferred_names.patch
-BuildRequires:  libselinux-devel, libsepol-devel
+BuildRequires:  libselinux-devel
+BuildRequires:  libsepol-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
 BuildRequires:  systemd-devel
@@ -118,7 +119,7 @@ Requires:   systemd
 %description -n device-mapper-libs
 This package contains the device-mapper shared library, libdevmapper.
 
-%post -n device-mapper-libs 
+%post -n device-mapper-libs
 /sbin/ldconfig
 
 %postun -n device-mapper-libs
@@ -136,7 +137,7 @@ This package contains the dmeventd daemon for monitoring the state
 of device-mapper devices.
 
 %post -n device-mapper-event
-%systemd_post dm-event.service dm-event.socket 
+%systemd_post dm-event.service dm-event.socket
 if [ $1 -eq 1 ];then
     # This is initial installation
     systemctl start dm-event.socket
@@ -363,9 +364,9 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 -   GA - Bump release of all rpms
 *   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.02.141-4
 -   Adding upgrade support in pre/post/un scripts.
-*   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-3 
+*   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-3
 -   Fix post scripts for lvm
-*   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-2 
+*   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-2
 -   Adding device mapper event to Requires
 *   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.02.116-4
 -   Change config file attributes.

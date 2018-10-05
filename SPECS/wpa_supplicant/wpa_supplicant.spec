@@ -9,7 +9,8 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          https://w1.fi/releases/%{name}-%{version}.tar.gz
 %define sha1 wpa=8189704e257c3e9f8300c49dc6e49a381b1d6299
-BuildRequires:    libnl-devel openssl-devel
+BuildRequires:    libnl-devel
+BuildRequires:    openssl-devel
 Requires:         libnl
 Requires:         openssl
 Patch0:           wpa_supplicant-2.6-upstream_fixes-1.patch
