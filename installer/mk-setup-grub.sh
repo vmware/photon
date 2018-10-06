@@ -36,11 +36,11 @@ grub_efi_install()
     if [ $(uname -m) == "aarch64" ]
     then
         cp EFI_aarch64/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
-        local EXE_NAME="bootaa64.efi"
+        #skip creating firmware boot entry at the moment
     elif [ $(uname -m) == "x86_64" ]
     then
         cp EFI_x86_64/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
-        local EXE_NAME="bootx64.efi"
+        efibootmgr --create --remove-dups --disk "$HDD" --part 1 --loader "/EFI/Boot/bootx64.efi" --label Photon --verbose >&2
     fi
 
     mkdir -p $BUILDROOT/boot/efi/boot/grub2
@@ -48,7 +48,6 @@ grub_efi_install()
 search -n -u ${BOOT_UUID} -s
 configfile ${BOOT_DIRECTORY}grub2/grub.cfg
 EOF
-    efibootmgr --create --remove-dups --disk "$HDD" --part 1 --loader "/EFI/Boot/$EXE_NAME" --label Photon --verbose >&2
     umount $BUILDROOT/boot/efi
 }
 
