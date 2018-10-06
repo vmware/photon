@@ -2,7 +2,7 @@
 
 function check-for-header()
 {
-  for n in Summary Name Version Release License URL Group Vendor Distribution ; do
+  for n in Summary Name Version Release License Group Vendor Distribution ; do
     grep -e "^$n:" $1 > /dev/null
     if [ $? -ne 0 ] ; then
       echo "ERROR in $1: $n: must present in the header"
