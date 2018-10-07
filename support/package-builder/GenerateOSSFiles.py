@@ -162,7 +162,7 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
             yamlFile.write("vmwsource:" + ossname + ":" + version + ":\n")
             yamlFile.write("  repository: VMWsource\n")
             yamlFile.write("  name: '" + ossname + "'\n")
-            yamlFile.write("  version: '" + ossversion + "'\n")
+            yamlFile.write("  version: '" + version + "'\n")
             yamlFile.write("  url: " + str(url) + "\n")
             yamlFile.write("  license: UNKNOWN\n")
             if sourceName is not None:
