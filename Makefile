@@ -16,11 +16,9 @@ export PHOTON_BUILD_NUM=$(PHOTON_BUILD_NUMBER)
 export PHOTON_RELEASE_VER=$(PHOTON_RELEASE_VERSION)
 
 ifdef PHOTON_CACHE_PATH
-PHOTON_PACKAGES_MICRO := packages-cached
 PHOTON_PACKAGES_MINIMAL := packages-cached
 PHOTON_PACKAGES := packages-cached
 else
-PHOTON_PACKAGES_MICRO := packages-micro
 PHOTON_PACKAGES_MINIMAL := packages-minimal
 PHOTON_PACKAGES := packages
 endif
@@ -31,7 +29,6 @@ else
 PHOTON_SOURCES ?= sources
 endif
 
-MICRO_PACKAGE_LIST_FILE := build_install_options_micro.json
 FULL_PACKAGE_LIST_FILE := build_install_options_all.json
 
 ifdef PHOTON_PUBLISH_RPMS_PATH
@@ -90,72 +87,33 @@ VIXDISKUTIL :=
 IMGCONVERTER :=
 endif
 
-.PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
-check-tools check-docker check-bison check-g++ check-gawk check-repo-tool check-kpartx check-vagrant check-packer check-packer-ovf-plugin check-sanity \
+$(TOOLS_BIN):
+	mkdir -p $(TOOLS_BIN)
+
+$(CONTAIN): $(TOOLS_BIN)
+	gcc -O2 -std=gnu99 -Wall -Wextra $(SRCROOT)/tools/src/contain/*.c -o $@_unpriv
+	sudo install -o root -g root -m 4755 $@_unpriv $@
+
+$(VIXDISKUTIL): $(TOOLS_BIN)
+	@cd $(SRCROOT)/tools/src/vixDiskUtil && \
+	make
+
+$(IMGCONVERTER): $(TOOLS_BIN)
+	@cd $(SRCROOT)/tools/src/imgconverter && \
+	make
+
+.PHONY : all iso clean cloud-image \
+check-tools check-docker check-bison check-g++ check-gawk check-repo-tool check-kpartx check-sanity \
 clean-install clean-chroot build-updated-packages check generate-yaml-files
 
 THREADS?=1
+LOGLEVEL?=info
 
-all: iso photon-docker-image k8s-docker-images live-iso cloud-image-all src-iso
-
-micro: micro-iso
-	@:
-
-micro-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
-	@echo "Building Photon Micro ISO..."
-	@cd $(PHOTON_INSTALLER_DIR) && \
-        $(PHOTON_INSTALLER) \
-                -i $(PHOTON_STAGE)/photon-micro-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
-                -k $(PHOTON_STAGE)/photon-micro-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
-                -w $(PHOTON_STAGE)/photon_iso \
-                -l $(PHOTON_STAGE)/LOGS \
-                -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_GENERATED_DATA_DIR)/$(MICRO_PACKAGE_LIST_FILE) \
-                -c $(PHOTON_GENERATED_DATA_DIR)/$(MICRO_PACKAGE_LIST_FILE) \
-                -o $(PHOTON_STAGE)/common/data \
-                -d $(PHOTON_STAGE)/pkg_info.json \
-                -s $(PHOTON_DATA_DIR) \
-                -f > \
-                $(PHOTON_LOGS_DIR)/installer.log 2>&1
-
-packages-micro: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
-	@echo "Building all Micro RPMS..."
-	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-        $(PHOTON_PACKAGE_BUILDER) \
-                -s $(PHOTON_SPECS_DIR) \
-                -r $(PHOTON_RPMS_DIR) \
-                -x $(PHOTON_SRCS_DIR) \
-                -b $(PHOTON_CHROOT_PATH) \
-                -l $(PHOTON_LOGS_DIR) \
-                -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -c $(PHOTON_PULLSOURCES_CONFIG) \
-                -d $(PHOTON_DIST_TAG) \
-                -n $(PHOTON_BUILD_NUMBER) \
-                -v $(PHOTON_RELEASE_VERSION) \
-                $(PHOTON_RPMCHECK_FLAGS) \
-		$(PUBLISH_BUILD_DEPENDENCIES) \
-		$(PACKAGE_WEIGHTS_PATH) \
-                -t ${THREADS}
-
-live-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
-	@echo "Building Photon Minimal LIVE ISO..."
-	@cd $(PHOTON_INSTALLER_DIR) && \
-        $(PHOTON_INSTALLER) \
-                -i $(PHOTON_STAGE)/photon-live-iso-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
-                -k $(PHOTON_STAGE)/photon-live-iso-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
-                -w $(PHOTON_STAGE)/photon_iso \
-                -l $(PHOTON_STAGE)/LOGS \
-                -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_GENERATED_DATA_DIR)/build_install_options_livecd.json \
-                -c $(PHOTON_GENERATED_DATA_DIR)/build_install_options_livecd.json \
-                -o $(PHOTON_STAGE)/common/data \
-                -d $(PHOTON_STAGE)/pkg_info.json \
-                -s $(PHOTON_DATA_DIR) \
-                -f > \
-                $(PHOTON_LOGS_DIR)/installer.log 2>&1
-
+# Build targets for rpm build
+#-------------------------------------------------------------------------------
 packages-minimal: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
-	@echo "Building all RPMS..."
+	@echo "Building all minimal RPMS..."
+	@echo ""
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
                 -s $(PHOTON_SPECS_DIR) \
@@ -163,6 +121,7 @@ packages-minimal: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SO
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
+                -y $(LOGLEVEL) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -c $(PHOTON_PULLSOURCES_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
@@ -172,88 +131,10 @@ packages-minimal: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SO
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
-
-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
-	@echo "Building Photon Full ISO..."
-	@cd $(PHOTON_INSTALLER_DIR) && \
-        sudo $(PHOTON_INSTALLER) \
-                -i $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
-                -k $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
-                -w $(PHOTON_STAGE)/photon_iso \
-                -l $(PHOTON_STAGE)/LOGS \
-                -r $(PHOTON_STAGE)/RPMS \
-                -x $(PHOTON_STAGE)/SRPMS \
-                -p $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
-                -o $(PHOTON_STAGE)/common/data \
-                -d $(PHOTON_STAGE)/pkg_info.json \
-                -s $(PHOTON_DATA_DIR) \
-                -f > \
-                $(PHOTON_LOGS_DIR)/installer.log 2>&1
-
-custom-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
-	@echo "Building Photon custom ISO..."
-	@cd $(PHOTON_INSTALLER_DIR) && \
-        sudo $(PHOTON_INSTALLER) \
-                -i $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER)-custom.iso \
-                -k $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER)-custom.debug.iso \
-                -w $(PHOTON_STAGE)/photon_iso \
-                -l $(PHOTON_STAGE)/LOGS \
-                -r $(PHOTON_STAGE)/RPMS \
-                -x $(PHOTON_STAGE)/SRPMS \
-                -p $(PHOTON_GENERATED_DATA_DIR)/build_install_options_custom.json \
-                -o $(PHOTON_STAGE)/common/data \
-                -d $(PHOTON_STAGE)/pkg_info.json \
-                -s $(PHOTON_DATA_DIR) \
-                -f > \
-                $(PHOTON_LOGS_DIR)/installer.log 2>&1
-
-src-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
-	@echo "Building Photon Full Source ISO..."
-	@cd $(PHOTON_INSTALLER_DIR) && \
-        sudo $(PHOTON_INSTALLER) \
-                -j $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).src.iso \
-                -w $(PHOTON_STAGE)/photon_iso \
-                -l $(PHOTON_STAGE)/LOGS \
-                -r $(PHOTON_STAGE)/RPMS \
-                -x $(PHOTON_STAGE)/SRPMS \
-                -p $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
-                -o $(PHOTON_STAGE)/common/data \
-                -d $(PHOTON_STAGE)/pkg_info.json \
-                -s $(PHOTON_DATA_DIR) \
-                -f > \
-                $(PHOTON_LOGS_DIR)/sourceiso-installer.log 2>&1
-
-pkgtree:
-	@cd $(PHOTON_SPECDEPS_DIR) && \
-		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i pkg -p $(pkg)
-
-imgtree:
-	@cd $(PHOTON_SPECDEPS_DIR) && \
-		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i json -f $(PHOTON_DATA_DIR)/build_install_options_$(img).json
-
-who-needs:
-	@cd $(PHOTON_SPECDEPS_DIR) && \
-		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg)
-
-# Input args: BASE_COMMIT= (optional)
-#
-# This target removes staged RPMS that can be affected by change(s) and should
-# be rebuilt as part of incremental build support
-# For every spec file touched - remove all upward dependent packages (rpms)
-# If support folder was touched - do full build
-#
-# The analyzed changes are:
-# - commits from BASE_COMMIT to HEAD (if BASE_COMMIT= parameter is specified)
-# - local changes (if no commits specified)
-clean-stage-for-incremental-build:
-	@test -n "$$(git diff --name-only $(BASE_COMMIT) @ | grep SPECS)" && $(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i remove-upward-deps -p $$(echo `git diff --name-only $(BASE_COMMIT) @ | grep .spec | xargs -n1 basename 2>/dev/null` | tr ' ' :) ||:
-	@test -n "$$(git diff --name-only $(BASE_COMMIT) @ | grep support)" && $(RM) -rf $(PHOTON_RPMS_DIR) ||:
-
-check-spec-files:
-	@./tools/scripts/check_spec_files.sh $(BASE_COMMIT)
 
 packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) check-spec-files generate-dep-lists
 	@echo "Building all RPMS..."
+	@echo ""
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
                 -bt $(PHOTON_BUILD_TYPE) \
@@ -263,6 +144,7 @@ packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
+                -y $(LOGLEVEL) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                 -c $(PHOTON_PULLSOURCES_CONFIG) \
@@ -279,6 +161,7 @@ packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(
 
 packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
+	@echo ""
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
                 -bt $(PHOTON_BUILD_TYPE) \
@@ -288,6 +171,7 @@ packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
+                -y $(LOGLEVEL) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                 -c $(PHOTON_PULLSOURCES_CONFIG) \
@@ -303,6 +187,7 @@ packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE
 
 updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building only updated RPMS..."
+	@echo ""
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
                 -s $(PHOTON_SPECS_DIR) \
@@ -310,6 +195,7 @@ updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_P
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
+                -y $(LOGLEVEL) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                 -c $(PHOTON_PULLSOURCES_CONFIG) \
@@ -325,6 +211,7 @@ updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_P
 
 tool-chain-stage1: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
+	@echo ""
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
                 -s $(PHOTON_SPECS_DIR) \
@@ -333,6 +220,7 @@ tool-chain-stage1: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_S
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
+                -y $(LOGLEVEL) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -t ${THREADS} \
                 -c $(PHOTON_PULLSOURCES_CONFIG) \
@@ -344,6 +232,7 @@ tool-chain-stage1: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_S
 
 tool-chain-stage2: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
+	@echo ""
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
                 -s $(PHOTON_SPECS_DIR) \
@@ -352,6 +241,7 @@ tool-chain-stage2: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_S
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
+                -y $(LOGLEVEL) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -t ${THREADS} \
                 -c $(PHOTON_PULLSOURCES_CONFIG) \
@@ -361,7 +251,119 @@ tool-chain-stage2: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_S
                 $(PHOTON_RPMCHECK_FLAGS) \
                 -m stage2
 
+%: check-tools $(PHOTON_PUBLISH_RPMS) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_SOURCES) $(CONTAIN) check-spec-files $(eval PKG_NAME = $@)
+	$(eval PKG_NAME = $@)
+	@echo ""
+	@echo "Building package $(PKG_NAME) ..."
+	@echo ""
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+        $(PHOTON_PACKAGE_BUILDER) -i $(PKG_NAME)\
+                              -bt $(PHOTON_BUILD_TYPE) \
+                              -b $(PHOTON_CHROOT_PATH) \
+                              -s $(PHOTON_SPECS_DIR) \
+                              -r $(PHOTON_RPMS_DIR) \
+                              -a $(PHOTON_SRPMS_DIR) \
+                              -x $(PHOTON_SRCS_DIR) \
+                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                              -e $(PHOTON_PUBLISH_XRPMS_DIR) \
+                              -c $(PHOTON_PULLSOURCES_CONFIG) \
+                              -y $(LOGLEVEL) \
+                              -d $(PHOTON_DIST_TAG) \
+                              -n $(PHOTON_BUILD_NUMBER) \
+                              -v $(PHOTON_RELEASE_VERSION) \
+                              -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
+                              $(PHOTON_RPMCHECK_FLAGS) \
+				$(PHOTON_KAT_BUILD_FLAGS) \
+                              -l $(PHOTON_LOGS_DIR) \
+			      -t ${THREADS}
+#-------------------------------------------------------------------------------
 
+# The targets listed under "all" are the installer built artifacts
+#===============================================================================
+all: iso photon-docker-image k8s-docker-images cloud-image-all src-iso
+
+iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+	@echo "Building Photon Full ISO..."
+	@cd $(PHOTON_INSTALLER_DIR) && \
+        sudo $(PHOTON_INSTALLER) \
+                -i $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
+                -k $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
+                -w $(PHOTON_STAGE)/photon_iso \
+                -l $(PHOTON_STAGE)/LOGS \
+                -y $(LOGLEVEL) \
+                -r $(PHOTON_STAGE)/RPMS \
+                -x $(PHOTON_STAGE)/SRPMS \
+                -p $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
+                -o $(PHOTON_STAGE)/common/data \
+                -d $(PHOTON_STAGE)/pkg_info.json \
+                -s $(PHOTON_DATA_DIR) \
+                -f > \
+                $(PHOTON_LOGS_DIR)/installer.log 2>&1
+
+src-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+	@echo "Building Photon Full Source ISO..."
+	@cd $(PHOTON_INSTALLER_DIR) && \
+        sudo $(PHOTON_INSTALLER) \
+                -j $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).src.iso \
+                -w $(PHOTON_STAGE)/photon_iso \
+                -l $(PHOTON_STAGE)/LOGS \
+                -y $(LOGLEVEL) \
+                -r $(PHOTON_STAGE)/RPMS \
+                -x $(PHOTON_STAGE)/SRPMS \
+                -p $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
+                -o $(PHOTON_STAGE)/common/data \
+                -d $(PHOTON_STAGE)/pkg_info.json \
+                -s $(PHOTON_DATA_DIR) \
+                -f > \
+                $(PHOTON_LOGS_DIR)/sourceiso-installer.log 2>&1
+
+cloud-image: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(IMGCONVERTER) $(PHOTON_PACKAGES)
+	@echo "Building cloud image $(IMG_NAME)..."
+	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
+	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
+
+
+cloud-image-all: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(IMGCONVERTER) $(PHOTON_PACKAGES)
+	@echo "Building cloud images - gce, ami, azure and ova..."
+	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
+	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) gce $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
+	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ami $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
+	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) azure $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
+	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
+	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova_micro $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
+
+photon-docker-image:
+	$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)
+	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon
+	sudo docker run \
+		-it \
+		--rm \
+		--privileged \
+		--net=host \
+		-e PHOTON_BUILD_NUMBER=$(PHOTON_BUILD_NUMBER) \
+		-e PHOTON_RELEASE_VERSION=$(PHOTON_RELEASE_VERSION) \
+		-v `pwd`:/workspace \
+		photon-build \
+		./support/dockerfiles/photon/make-docker-image.sh tdnf
+
+k8s-docker-images: start-docker photon-docker-image
+	mkdir -p $(PHOTON_STAGE)/docker_images && \
+	cd ./support/dockerfiles/k8s-docker-images && \
+	./build-k8s-base-image.sh $(PHOTON_RELEASE_VERSION) $(PHOTON_BUILD_NUMBER) $(PHOTON_STAGE)  && \
+	./build-k8s-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
+	./build-k8s-metrics-server-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)  && \
+	./build-k8s-coredns-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)  && \
+	./build-k8s-dns-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
+	./build-k8s-dashboard-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
+	./build-flannel-docker-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
+	./build-calico-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
+	./build-k8s-heapster-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
+	./build-k8s-nginx-ingress.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)  && \
+	./build-wavefront-proxy-docker-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)
+#===============================================================================
+
+# Set up Build environment
+#_______________________________________________________________________________
 packages-cached:
 	@echo "Using cached RPMS..."
 	@$(RM) -f $(PHOTON_RPMS_DIR_NOARCH)/* && \
@@ -377,12 +379,12 @@ sources-cached:
 	@ln -sf $(PHOTON_SOURCES_PATH) $(PHOTON_SRCS_DIR)
 
 publish-rpms:
-	@echo "Pulling publish rpms from bintray..."
+	@echo "Pulling toolchain rpms from bintray..."
 	@cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
 	$(PHOTON_PULL_PUBLISH_RPMS) $(PHOTON_PUBLISH_RPMS_DIR)
 
 publish-x-rpms:
-	@echo "Pulling publish X rpms from bintray..."
+	@echo "Pulling X toolchain rpms from bintray..."
 	@cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
 	$(PHOTON_PULL_PUBLISH_X_RPMS) $(PHOTON_PUBLISH_XRPMS_DIR)
 
@@ -421,57 +423,10 @@ $(PHOTON_STAGE):
 	install -m 444 $(SRCROOT)/installer/open_source_license.txt $(PHOTON_STAGE)/open_source_license.txt
 	@echo "Creating NOTICE file..."
 	install -m 444 $(SRCROOT)/NOTICE $(PHOTON_STAGE)/NOTICE
+#_______________________________________________________________________________
 
-
-generate-dep-lists:
-	$(RMDIR) $(PHOTON_GENERATED_DATA_DIR)
-	$(MKDIR) -p $(PHOTON_GENERATED_DATA_DIR)
-	cd $(PHOTON_SPECDEPS_DIR) && \
-	$(PHOTON_SPECDEPS) \
-		-s $(PHOTON_SPECS_DIR) \
-		-t $(PHOTON_STAGE) \
-		-l $(PHOTON_LOGS_DIR) \
-		-p $(PHOTON_GENERATED_DATA_DIR) \
-		--input-type=json \
-		--file "$$(ls $(PHOTON_DATA_DIR)/build_install_options*.json)" \
-		-d json \
-		-a $(PHOTON_DATA_DIR)
-
-photon-docker-image:
-	$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)
-	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon
-	sudo docker run \
-		-it \
-		--rm \
-		--privileged \
-		--net=host \
-		-e PHOTON_BUILD_NUMBER=$(PHOTON_BUILD_NUMBER) \
-		-e PHOTON_RELEASE_VERSION=$(PHOTON_RELEASE_VERSION) \
-		-v `pwd`:/workspace \
-		photon-build \
-		./support/dockerfiles/photon/make-docker-image.sh tdnf
-
-start-docker: check-docker
-	systemctl start docker
-
-k8s-docker-images: start-docker photon-docker-image
-	mkdir -p $(PHOTON_STAGE)/docker_images && \
-	cd ./support/dockerfiles/k8s-docker-images && \
-	./build-k8s-base-image.sh $(PHOTON_RELEASE_VERSION) $(PHOTON_BUILD_NUMBER) $(PHOTON_STAGE)  && \
-	./build-k8s-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
-	./build-k8s-metrics-server-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)  && \
-	./build-k8s-coredns-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)  && \
-	./build-k8s-dns-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
-	./build-k8s-dashboard-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
-	./build-flannel-docker-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
-	./build-calico-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
-	./build-k8s-heapster-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
-	./build-k8s-nginx-ingress.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)  && \
-	./build-wavefront-proxy-docker-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)
-
-install-photon-docker-image: photon-docker-image
-	sudo docker build -t photon:tdnf .
-
+# Clean build environment
+#==================================================================
 clean: clean-install clean-chroot
 	@echo "Deleting Photon ISO..."
 	@$(RM) -f $(PHOTON_STAGE)/photon-*.iso
@@ -494,55 +449,10 @@ clean-chroot:
 		$(PHOTON_CHROOT_CLEANER) $(PHOTON_CHROOT_PATH); \
 	fi
 
-photon-build-machine: check-packer check-vagrant
-	@echo "Building photon-build-machine with Packer..."
-	@cd $(PHOTON_PACKER_TEMPLATES) && \
-	$(PACKER) build photon-build-machine.json
-	@echo "Adding box to Vagrant boxes..."
-	@$(VAGRANT) box add $(PHOTON_PACKER_TEMPLATES)/photon-build-machine.box --name photon-build-machine --force && \
-	$(RM) $(PHOTON_PACKER_TEMPLATES)/photon-build-machine.box
+#==================================================================
 
-photon-vagrant-build: check-vagrant
-	@echo "Starting Photon build using Vagrant..."
-	@cd $(SRCROOT) && \
-	$(VAGRANT) up && \
-	$(VAGRANT) destroy -f
-
-ifeq ($(VAGRANT_BUILD),all)
-PACKER_ARGS=""
-else
-PACKER_ARGS="-only=$(VAGRANT_BUILD)"
-endif
-
-photon-vagrant-local: check-packer check-vagrant
-	@echo "Building a Photon Vagrant box with Packer..."
-	@if [ -e $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso ]; then \
-		cd $(PHOTON_PACKER_TEMPLATES) && \
-		$(SED) -i "" -e "s#\"iso_checksum_value\":.*#\"iso_checksum_value\": \"$$($(SHASUM) ../../stage/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso | cut -f 1 -d ' ')\",#" photon.json && \
-		$(PACKER) build $(PACKER_ARGS) photon.json && \
-		$(SED) -i "" -e "s#\"iso_checksum_value\":.*#\"iso_checksum_value\": \"\",#" photon.json; \
-		echo "Moving boxes to $(PHOTON_STAGE)..." && \
-		$(MV) *.box $(PHOTON_STAGE); \
-	else \
-		echo "Unable to find $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso ... aborting build"; \
-	fi
-
-cloud-image: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(IMGCONVERTER) $(PHOTON_PACKAGES)
-	@echo "Building cloud image $(IMG_NAME)..."
-	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
-	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
-
-
-cloud-image-all: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(IMGCONVERTER) $(PHOTON_PACKAGES)
-	@echo "Building cloud images - gce, ami, azure and ova..."
-	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
-	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) gce $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
-	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ami $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
-	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) azure $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
-	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
-	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova_micro $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
-
-
+# Targets to check for tools support in build environment
+#__________________________________________________________________________________
 check-tools: check-bison check-g++ check-gawk check-repo-tool check-texinfo check-sanity check-docker
 
 check-docker:
@@ -572,23 +482,16 @@ check-repo-tool:
 check-kpartx:
 	@command -v kpartx >/dev/null 2>&1 || { echo "Package kpartx not installed. Aborting." >&2; exit 1; }
 
-check-vagrant: check-packer
-	@command -v $(VAGRANT) >/dev/null 2>&1 || { echo "Vagrant not installed or wrong path, expecting $(VAGRANT). Aborting" >&2; exit 1; }
-
 check-sanity:
-	$(SRCROOT)/support/sanity_check.sh
+	@$(SRCROOT)/support/sanity_check.sh
+	@echo ""
 
-ifeq ($(VAGRANT_BUILD),vcloudair)
-check-packer: check-packer-ovf-plugin
-else ifeq ($(VAGRANT_BUILD),all)
-check-packer: check-packer-ovf-plugin
-else
-check-packer:
-endif
-	@command -v $(PACKER) >/dev/null 2>&1 || { echo "Packer not installed or wrong path, expecting $(PACKER). Aborting" >&2; exit 1; }
+start-docker: check-docker
+	systemctl start docker
 
-check-packer-ovf-plugin:
-	@[[ -e ~/.packer.d/plugins/packer-post-processor-vagrant-vmware-ovf ]] || { echo "Packer OVF post processor not installed. Aborting" >&2; exit 1; }
+install-photon-docker-image: photon-docker-image
+	sudo docker build -t photon:tdnf .
+#__________________________________________________________________________________
 
 check: packages
     ifeq ($(RPMCHECK),enable_stop_on_error)
@@ -604,6 +507,7 @@ check: packages
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
+                -y $(LOGLEVEL) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                 -c $(PHOTON_PULLSOURCES_CONFIG) \
@@ -616,28 +520,45 @@ check: packages
                 $(rpmcheck_stop_on_error) \
                 -t ${THREADS}
 
-%: check-tools $(PHOTON_PUBLISH_RPMS) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_SOURCES) $(CONTAIN) check-spec-files $(eval PKG_NAME = $@)
-	$(eval PKG_NAME = $@)
-	@echo "Building package $(PKG_NAME) ..."
-	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-        $(PHOTON_PACKAGE_BUILDER) -i $(PKG_NAME)\
-                              -bt $(PHOTON_BUILD_TYPE) \
-                              -b $(PHOTON_CHROOT_PATH) \
-                              -s $(PHOTON_SPECS_DIR) \
-                              -r $(PHOTON_RPMS_DIR) \
-                              -a $(PHOTON_SRPMS_DIR) \
-                              -x $(PHOTON_SRCS_DIR) \
-                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                              -e $(PHOTON_PUBLISH_XRPMS_DIR) \
-                              -c $(PHOTON_PULLSOURCES_CONFIG) \
-                              -d $(PHOTON_DIST_TAG) \
-                              -n $(PHOTON_BUILD_NUMBER) \
-                              -v $(PHOTON_RELEASE_VERSION) \
-                              -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
-                              $(PHOTON_RPMCHECK_FLAGS) \
-				$(PHOTON_KAT_BUILD_FLAGS) \
-                              -l $(PHOTON_LOGS_DIR) \
-			      -t ${THREADS}
+# Spec file checker and utilities
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+check-spec-files:
+	@echo ""
+	@./tools/scripts/check_spec_files.sh $(BASE_COMMIT)
+
+generate-dep-lists:
+	@echo ""
+	@$(RMDIR) $(PHOTON_GENERATED_DATA_DIR)
+	@$(MKDIR) -p $(PHOTON_GENERATED_DATA_DIR)
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+	$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		-l $(PHOTON_LOGS_DIR) \
+	        -y $(LOGLEVEL) \
+		-p $(PHOTON_GENERATED_DATA_DIR) \
+		--input-type=json \
+		--file "$$(ls $(PHOTON_DATA_DIR)/build_install_options*.json)" \
+		-d json \
+		-a $(PHOTON_DATA_DIR)
+	@echo ""
+pkgtree:
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -y $(LOGLEVEL) -i pkg -p $(pkg)
+
+imgtree:
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -y $(LOGLEVEL) -i json -f $(PHOTON_DATA_DIR)/build_install_options_$(img).json
+
+who-needs:
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -y $(LOGLEVEL) -i who-needs -p $(pkg)
+
+print-upward-deps:
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i print-upward-deps -p $(pkg)
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 generate-yaml-files: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Generating yaml files for packages ..."
@@ -646,20 +567,22 @@ generate-yaml-files: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
                               -s $(PHOTON_SPECS_DIR) \
                               -a $(PHOTON_SRPMS_DIR) \
                               -l $(PHOTON_LOGS_DIR) \
+                              -d $(PHOTON_DIST_TAG) \
+                              -z $(LOGLEVEL) \
                               -c $(PHOTON_PULLSOURCES_CONFIG) \
                               -f $(PHOTON_PKG_BLACKLIST_FILE)
 
-$(TOOLS_BIN):
-	mkdir -p $(TOOLS_BIN)
+# Input args: BASE_COMMIT= (optional)
+#
+# This target removes staged RPMS that can be affected by change(s) and should
+# be rebuilt as part of incremental build support
+# For every spec file touched - remove all upward dependent packages (rpms)
+# If support folder was touched - do full build
+#
+# The analyzed changes are:
+# - commits from BASE_COMMIT to HEAD (if BASE_COMMIT= parameter is specified)
+# - local changes (if no commits specified)
+clean-stage-for-incremental-build:
+	@test -n "$$(git diff --name-only $(BASE_COMMIT) @ | grep SPECS)" && $(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i remove-upward-deps -p $$(echo `git diff --name-only $(BASE_COMMIT) @ | grep .spec | xargs -n1 basename 2>/dev/null` | tr ' ' :) ||:
+	@test -n "$$(git diff --name-only $(BASE_COMMIT) @ | grep support)" && $(RM) -rf $(PHOTON_RPMS_DIR) ||:
 
-$(CONTAIN): $(TOOLS_BIN)
-	gcc -O2 -std=gnu99 -Wall -Wextra $(SRCROOT)/tools/src/contain/*.c -o $@_unpriv
-	sudo install -o root -g root -m 4755 $@_unpriv $@
-
-$(VIXDISKUTIL): $(TOOLS_BIN)
-	@cd $(SRCROOT)/tools/src/vixDiskUtil && \
-	make
-
-$(IMGCONVERTER): $(TOOLS_BIN)
-	@cd $(SRCROOT)/tools/src/imgconverter && \
-	make
