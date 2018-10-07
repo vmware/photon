@@ -646,6 +646,7 @@ generate-yaml-files: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
                               -s $(PHOTON_SPECS_DIR) \
                               -a $(PHOTON_SRPMS_DIR) \
                               -l $(PHOTON_LOGS_DIR) \
+                              -d $(PHOTON_DIST_TAG) \
                               -c $(PHOTON_PULLSOURCES_CONFIG) \
                               -f $(PHOTON_PKG_BLACKLIST_FILE)
 
