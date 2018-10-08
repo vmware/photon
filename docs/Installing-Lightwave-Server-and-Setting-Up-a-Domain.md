@@ -1,14 +1,14 @@
-# Installing the Lightwave Server and Configuring It as a Domain Controller on a Photon Image
+**Installing the Lightwave Server and Configuring It as a Domain Controller on a Photon Image**
 
 You can configure Lightwave server as domain controller on a Photon client. You install the Lightwave server first. After the server is installed, you configure a new domain. 
 
-## Prerequisites
+**Prerequisites**
 
 - Prepare a Photon OS client for the Lightwave server installation.
 - Verify that the hostname of the client can be resolved.
 - Verify that you have 500 MB free for the Lightwave server installation.
 
-## Procedure
+**Procedure**
 
 1. Log in to your Photon OS client over SSH as an administrator.
 2. Install the Lightwave server by running the following command. 

@@ -1,9 +1,7 @@
-# Running Photon OS on Amazon Elastic Cloud Compute
-
 This guide describes how to get Photon OS up and running on Amazon Web Services Elastic Cloud Compute (EC2), customize Photon with cloud-init, connect to it with SSH, and run a containerized application.
  
 ## About Photon OS?
-Photon OSâ„¢ is an open source Linux container host optimized for cloud-native applications, cloud platforms, and VMware infrastructure. Photon OS provides a secure run-time environment for efficiently running containers. For an overview, see [https://vmware.github.io/photon/](#https://vmware.github.io/photon/).
+Photon OS™ is an open source Linux container host optimized for cloud-native applications, cloud platforms, and VMware infrastructure. Photon OS provides a secure run-time environment for efficiently running containers. For an overview, see [https://vmware.github.io/photon/](#https://vmware.github.io/photon/).
 
 ## Prerequisites
 
@@ -19,7 +17,7 @@ This article uses an Ubuntu 14.04 workstation to generate the keys and certifica
 
 VMware packages Photon OS as a cloud-ready Amazon machine image (AMI) that you can download for free from [Bintray](https://bintray.com/vmware/photon).
 
-Download the Photon OS AMI now and save it on your workstation. For instructions, see [Downloading Photon OS](Downloading-Photon-OS.md).
+Download the Photon OS AMI now and save it on your workstation. For instructions, see [Downloading Photon OS](#https://github.com/vmware/photon/wiki/Downloading-Photon-OS).
 
 **Note**: The AMI version of Photon is a virtual appliance with the information and packages that Amazon needs to launch an instance of Photon in the cloud. To build the AMI version, VMware starts with the minimal version of Photon OS and adds the sudo and tar packages to it. 
 

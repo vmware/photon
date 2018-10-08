@@ -1,14 +1,14 @@
-# Installing the Photon Management Daemon on a Lightwave Client 
+**Installing the Photon Management Daemon on a Lightwave Client**
 
 After you have installed and configured a domain on Lightwave, and joined a client to the domain, you can install the Photon Management Daemon on that client so that you can remotely manage it.
 
-## Prerequisites
+**Prerequisites**
 
 - Have an installed Lightwave server with configured domain controller on it.
 - Have an installed Lightwave client that is joined to the domain.
 - Verify that you have 100 MB free for the daemon installation on the client.
 
-## Procedure
+**Procedure**
 
 1. Log in to a machine with installed Lightwave client over SSH as an administrator.
 2. Install the Photon Management Daemon.

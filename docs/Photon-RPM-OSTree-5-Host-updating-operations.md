@@ -1,6 +1,4 @@
-# Host Updating Operations 
-
-## 5.1 Is it an update or an upgrade?
+### 5.1 Is it an update or an upgrade?
 If you've used yum, dnf (and now tdnf for Photon) in RPM systems or apt-get in Debian based Unix, you understand what "install" is for packages and the subtle difference between "update" and "upgrade".
 
 OSTree and RPM-OSTree don't distringuish between them and the term "upgrade" has a slightly different meaning - to bring the system in sync with the remote repo, to the top of the Refspec (branch), just like in Git, by pulling the latest changes.
@@ -12,7 +10,7 @@ The reverse operation of an upgrade is a "rollback" and fortunately it's not nam
 As we'll see in a future chapter, a jump to a different Refspec (branch) is also supported and it's named "rebase".
 
 
-## 5.2 Incremental upgrade
+### 5.2 Incremental upgrade
 To check if there are any updates available, one would execute:
 ```
 root@photon-host-def [ ~ ]# rpm-ostree upgrade
@@ -97,7 +95,7 @@ root@photon-host-def [ ~ ]# ostree admin config-diff --print-current-dir
 ```
 A fresh upgrade for a new version will delete the older, original image and bring a new one, that will become the new default image. The previous 'default' image will move down one position as the backup image.
 
-## 5.3 Listing file differences   
+### 5.3 Listing file differences   
 Now we can look at what files have been **A**dded, **M**odified, **D**eleted due to the addition of those three packages and switching of the boot directories, by comparing the two commits.
 ```
 root@photon-host-def [ ~ ]# ostree diff 2940 82bc
@@ -345,7 +343,7 @@ A    /usr/share/awk/walkarray.awk
 A    /usr/share/awk/zerofile.awk
 ```
  
-## 5.4 Listing package differences
+### 5.4 Listing package differences
 We can also look at package differences, as you expect, using the right tool for the job.
 ```
 root@photon-host-def [ ~ ]# rpm-ostree db diff 2940 82bc    
@@ -357,7 +355,7 @@ Added:
  wget-1.15-1.ph1.x86_64
 ```
 
-## 5.5 Rollback
+### 5.5 Rollback
 If we want to go back to the previous image, we can rollback. The order of the images will be changed, so the old filetree will become the default bootable image. If -r option is passed, the rollback will continue with a reboot.
 ```
 root@photon-host-def [ ~ ]# rpm-ostree rollback
@@ -386,7 +384,7 @@ root@photon-host-def [ ~ ]# ostree admin config-diff --print-current-dir
 /ostree/deploy/photon/deploy/2940e10c4d90ce6da572cbaeeff7b511cab4a64c280bd5969333dd2fca57cfa8.0 
 ```
 
-## 5.6 Deleting a deployed filetree
+### 5.6 Deleting a deployed filetree
 It is possible to delete a deployed tree. You won't need to do that normally, as upgrading to a new image will delete the old one, but if for some reason deploying failed (loss of power, networking issues), you'll want to delete the partially deployed image.  
 The only supported index is 1. (If multiple bootable images will be supported in the future, a larger than one, zero-based index of the image to delete will be supported).  
 You cannot delete the default bootable filetree, so passing 0 will result in an error.  
@@ -436,7 +434,7 @@ Updating from: photon:photon/1.0/x86_64/minimal
 +wget-1.15-1.ph1.x86_64
 ```
 
-## 5.7 Version skipping upgrade
+### 5.7 Version skipping upgrade
 
 Let's assume that after a while, VMware releases version 2 that removes **sudo** and adds **bison** and **tar**. Now, an upgrade will skip version 1 and go directly to 2. Let's first look at what packages are pulled (notice sudo missing, as expected), then upgrade with reboot option.
 ```
@@ -481,7 +479,7 @@ error: Refspec '82bc' not found
 ```
 Interesting fact: The metadata for commit 82bc has been removed from the local repo!  
 
-## 5.8 Tracking parent commits
+### 5.8 Tracking parent commits
 OSTree will display limited commit history - maximum 2 levels, so if you want to traverse the history even though it may not find a commitment by its ID, you can refer to its parent using '^' suffix, grandfather via '^^' and so on. We know that 82bc is the parent of 092e:
 ```
 root@photon-host-def [ ~ ]# rpm-ostree db diff  092e^ 092e
@@ -492,7 +490,7 @@ error: No such metadata object 82bca728eadb7292d568404484ad6889c3f6303600ca8c743
 ````
 So commit 092e knows who its parent is, but its metadata is no longer in the local repo, so it cannot traverse further to its parent to find an existing grandfather.
 
-## 5.9 Resetting a branch to a previous commit
+### 5.9 Resetting a branch to a previous commit
 We can reset the head of a branch in a local repo to a previous commit, for example corresponding to version 0 (1.0_minimal).
 ```
 root@photon-host-def [ ~ ]# ostree reset photon:photon/1.0/x86_64/minimal 2940

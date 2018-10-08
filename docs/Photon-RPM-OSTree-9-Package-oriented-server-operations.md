@@ -1,6 +1,4 @@
-# Package Oriented Server Operations
-
-Now that we have a Photon RPM-OSTree server up and running (if not, see how to [install](Photon-RPM-OSTree-6-Installing-a-server.md)), we will learn how to provide the desired set of packages as input and instruct rpm-ostree to compose a filetree, that will result in creation (or update) of an OSTree repo.   
+Now that we have a Photon RPM-OSTree server up and running (if not, see how to [[install|Photon-RPM-OSTree:-6-Installing-a-server]] one), we will learn how to provide the desired set of packages as input and instruct rpm-ostree to compose a filetree, that will result in creation (or update) of an OSTree repo.   
 The simplest way to explain is to take a look at the files installed by the Photon RPM-OSTree server during setup.  
 ```  
 root [ ~ ]# cd /srv/rpm-ostree/
@@ -15,7 +13,7 @@ lrwxrwxrwx 1 root root   28 Aug 28 19:06 photon-ostree.repo -> /etc/yum.repos.d/
 lrwxrwxrwx 1 root root   36 Aug 28 19:06 photon-updates-ostree.repo -> /etc/yum.repos.d/photon-updates.repo
 drwxr-xr-x 7 root root 4096 Aug 20 22:27 repo
 ```
-## 9.1 JSON configuration file
+### 9.1 JSON configuration file
 How can we tell rpm-ostree what packages we want to include, where to get them from and how to compose the filetree? There is JSON file for that. Let's take a look at photon-base.json used by the Photon OS team.  
 ```
 root [ /srv/rpm-ostree ]# cat photon-base.json 
@@ -52,15 +50,15 @@ root [ /srv/rpm-ostree ]# cat photon-base.json
 }
 ``` 
 There are some mandatory settings, some optional. I'm only going to explain the most important ones for our use case.  
-**osname** and **ref** should be familiar, they have been explained in previous sections [OSname](Photon-RPM-OStree-3-Concepts-in-action.md#34-osname) and [Refspec](Photon-RPM-OStree-3-Concepts-in-action.md#35-refspec). Basicaly, we are asking `rpm-ostree` to compose a tree for photon OS and photon/1.0/x86_64/minimal branch.
+**osname** and **ref** should be familiar, they have been explained in previous sections [[OSname|Photon-RPM-OStree:-3-Concepts-in-action#34-osname]] and [[Refspec|Photon-RPM-OStree:-3-Concepts-in-action#35-refspec]]. Basicaly, we are asking `rpm-ostree` to compose a tree for photon OS and photon/1.0/x86_64/minimal branch.
 
-## 9.2 Package addition, removal, upgrade 
+### 9.2 Package addition, removal, upgrade 
 **packages** is the list of packages that are to be added, in this case, in the "minimal" installation profile, on top of the packages already included by default. This is not quite the identical set of RPMS you get when you select the minimal profile in the ISO installer, but it's pretty close and that's why it's been named the same. 
 Let's add to the list three new packages: gawk, sudo and wget using `vim photon-base.json`
 
 **!!!Warning: do not remove any packages from the default list, even an "innocent" one, as it may bring the system to an unstable condition.  During my testing, I've removed "which"; it turns out it was used to figure out the grub booting roots: on reboot, the system was left hanging at grub prompt.**
 
-## 9.3 RPMS repository
+### 9.3 RPMS repository
 But where are these packages located? RPM-OStree uses the same standard RPMS repositories, that yum installs from.
 ``` 
 root [ /srv/rpm-ostree ]# ls /etc/yum.repos.d/
@@ -92,7 +90,7 @@ noarch  repodata  x86_64
 ```
 All you have to do now is to replace the `"repos": ["photon"]` entry by `"repos": ["photon-iso"]`, which will point to the RPMS repo on CD-ROM, rather than the online repo. This way, composing saves time, bandwidth and reduces to zero the risk of failure because of a networking issue. 
 
-_**Note**_: Check from time to time if the [known issue](Photon-RPM-OSTree-Appendix-A:-Known-issues.md#error-composing-when-photon-iso-repo-is-selected) has been fixed.
+_**Note**_: Check from time to time if the [[known issue|Photon-RPM-OSTree:-Appendix-A:-Known-issues#error-composing-when-photon-iso-repo-is-selected]] has been fixed.
 ```
 root [ /srv/rpm-ostree ]# cat /etc/yum.repos.d/photon-iso.repo 
 [photon-iso]
@@ -107,7 +105,7 @@ skip_if_unavailable=True
 There are already in current directory links created to all repositories in /etc/yum.repos.d, so they are found when tree compose command is invoked. You may add any other repo to the list and include packages found in that repo to be part of the image. 
 
 
-## 9.4 Composing a tree
+### 9.4 Composing a tree
 After so much preparation, it's time to execute a tree compose. We've only added 3 new packages and changed the RPMS repo source. Assuming you've already edited the JSON file, let's do it.
 ```
 root [ /srv/rpm-ostree ]# rpm-ostree compose tree --repo=repo photon-base.json
@@ -224,13 +222,13 @@ No apparent changes since previous commit; use --force-nocache to override
 This takes several minutes. Then why is the RPM-OSTree server installing so fast, in 45 seconds on my SSD? The server doesn't compose the tree, it uses a pre-created OSTree repo that is stored on the CD-ROM. It comes of course at the expense of larger CD-ROM size. This OSTree repo is created from the same set of RPMS on the CD-ROM, so if you compose fresh, you will get the same exact tree, with same commit ID for the "minimal" ref. 
 
 
-## 9.5 Automatic version prefix
+### 9.5 Automatic version prefix
 If you recall the filetree version explained earlier, this is where it comes into play. When a tree is composed from scratch, the first version (0) associated to the initial commit is going to get that human readable value. Any subsequent compose operation will auto-increment to .1, .2, .3 and so on.  
 It's a good idea to start a versionning scheme of your own, so that your customized Photon builds that may get different packages of your choice don't get the same version numbers as the official Photon team builds, coming from VMware's bintray OSTree repository. There is no conflict, it's just confusing to have same name for different commits coming from different repos!  
 So if you work for a company named Big Data Inc., you may want to switch to a new versioning scheme `"automatic_version_prefix": "1.0_bigdata"`.
 
 
-## 9.6 Installing package updates
+### 9.6 Installing package updates
 If you want to provide hosts with the package updates that VMware periodically releases, all that you need to do is to add the photon-updates.repo to the list of repos in photon-base.json and then re-compose the usual way. 
 ```
 "repos": ["photon", "photon-updates"],
@@ -316,6 +314,9 @@ Added:
  libssh2-1.8.0-1.ph1.x86_64
 ``` 
 
-## 9.7 Composing for a different branch
+### 9.7 Composing for a different branch
 RPM-OSTree makes it very easy to create and update new branches, by composing using json config files that include the Refspec as the new branch name, the list of packages and the other settings we are now familiar with.  Photon OS 2.0 RPM-OSTRee Server installer adds two extra files photon-minimal.json and photon-full.json in addition to photon-base.json, that correspond almost identically to the minimal and full profiles installed via tdnf. It also makes 'photon-base' a smaller set of starter branch.  
-Of course, you can create your own config files for your branches with desired lists of packages. You may compose on top of the existing tree, or you can [start fresh your own OSTRee repo](Photon-RPM-OSTree-8-File-oriented-server-operations.md#81-starting-a-fresh-ostree-repo), using your own customized versioning.
+Of course, you can create your own config files for your branches with desired lists of packages. You may compose on top of the existing tree, or you can [[start fresh your own OSTRee repo|Photon-RPM-OSTree:-8-File-oriented-server-operations#81-starting-a-fresh-ostree-repo]], using your own customized versioning.
+
+
+[[Back to main page|Photon-RPM-OSTree:-a-simple-guide]] | [[Previous page|Photon-RPM-OSTree:-8-File-oriented-server-operations]]  | [[Next page >|Photon RPM-OSTree:-10-Remotes]]
