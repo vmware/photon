@@ -4,11 +4,11 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        2.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
-Url:            http://www.vmware.com
+URL:            http://www.vmware.com
 Group:          Applications/RPM
 Requires:       rpm-libs
 Requires:       curl
@@ -28,6 +28,7 @@ Source2:        cache-updateinfo.service
 Source3:        cache-updateinfo.timer
 Source4:        updateinfo.sh
 Patch0:         tdnf-epoch-and-perm.patch
+Patch1:         tdnf-crash.patch
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
@@ -51,14 +52,11 @@ Library providing cli libs for tdnf like clients.
 %prep
 %setup -qn %{name}-%{version}-alpha.1
 %patch0 -p1
+%patch1 -p1
 
 %build
 autoreconf -i
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=/etc   \
+%configure \
     --disable-static
 make %{?_smp_mflags}
 
@@ -152,6 +150,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Mon Oct 08 2018 Keerthana K <keerthanak@vmware.com> 2.0.0-2
+-   Fix bug on tdnf crash when photon-iso repo only enabled without mounting cdrom.
 *   Fri Feb 09 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.0-1
 -   update to 2.0.0
 *   Tue Jan 30 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.2-3
