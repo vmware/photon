@@ -29,7 +29,7 @@ You can download the Photon OS image for GCE from the following URL:
 
 [https://bintray.com/vmware/photon](https://bintray.com/vmware/photon)
 
-For instructions, see [Downloading Photon OS](Downloading-Photon-OS.md).
+For instructions, see [Downloading Photon OS](https://github.com/vmware/photon/wiki/Downloading-Photon-OS).
 
 # Installing Photon OS on Google Compute Engine
 

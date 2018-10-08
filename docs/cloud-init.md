@@ -1,4 +1,4 @@
-# Overview
+Overview
 =================
 ```cloud-init``` is a multi-distribution package that handles early initialization of a cloud instance.
 

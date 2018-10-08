@@ -1,4 +1,4 @@
-# Compatible Cloud Images
+#Compatible Cloud Images
 
 The [Bintray website](https://bintray.com/vmware/photon/) contains the following cloud-ready images of Photon OS: 
 
@@ -63,7 +63,7 @@ The tar file can be uploaded to Google's cloud storage and an instance can be cr
 
 (You can also create instances from the Google developer console.)
 
-For more information, see [Running a Photon OS Machine on GCE](photon-admin-guide.md#running-a-photon-os-machine-on-gce). 
+For more information, see [Running a Photon OS Machine on GCE](https://github.com/vmware/photon/blob/master/docs/photon-admin-guide.md#running-a-photon-os-machine-on-gce). 
 
 ### AWS EC2
 
@@ -83,7 +83,7 @@ Install the [AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/installing
 
 You can now launch instances using the AWS console.
 
-For more information, see [Customizing a Photon OS Machine on EC2](photon-admin-guide.md#customizing-a-photon-os-machine-on-ec2).
+For more information, see [Customizing a Photon OS Machine on EC2](https://github.com/vmware/photon/blob/master/docs/photon-admin-guide.md#customizing-a-photon-os-machine-on-ec2).
 
 
 <!--

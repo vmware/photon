@@ -22,7 +22,7 @@ Photon OS™ is an open source Linux container host optimized for cloud-native a
 
 # Downloading and Extracting the Photon OS VHD File
 
-VMware packages Photon OS as a cloud-ready virtual hard disk (VHD file) that you can download for free from  [Bintray](https://bintray.com/vmware/photon). This VHD file is a virtual appliance with the information and packages that Azure needs to launch an instance of Photon in the cloud. After you have downloaded the distribution archive, extract the VHD file from it. You will later need to upload this VHD file to Azure, where it will be stored in an Azure storage account. For download instructions, see [Downloading Photon OS](Downloading-Photon-OS.md).
+VMware packages Photon OS as a cloud-ready virtual hard disk (VHD file) that you can download for free from  [Bintray](https://bintray.com/vmware/photon). This VHD file is a virtual appliance with the information and packages that Azure needs to launch an instance of Photon in the cloud. After you have downloaded the distribution archive, extract the VHD file from it. You will later need to upload this VHD file to Azure, where it will be stored in an Azure storage account. For download instructions, see [Downloading Photon OS](https://github.com/vmware/photon/wiki/Downloading-Photon-OS).
 
 # Setting Up Azure Storage and Uploading the VHD
 

@@ -1,17 +1,17 @@
-## Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Photon Management Daemon Installed
+**Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Photon Management Daemon Installed**
 
 After you have a configured the Photon Management Daemon on a machine, you can remotely upgrade any installed package on that machine. You can use the `root` user credentials.
 
 Upgrade process uses `pmd-cli` that is supported from both Lightwave and Photon Management Daemon. You can initiate the upgrade process from any machine that has Photon Management Daemon CLI installed.
 
-## Prerequisites
+**Prerequisites**
 
 - Have an installed Lightwave server with configured domain controller on it.
 - Have an installed Lightwave client that is joined to the domain.
 - Have an installed Photon Management Daemon on the client.
 - Have in installed Photon Management Daemon CLI (pmd-cli) on a machine from which you perform the updates.
 
-## Procedure
+**Procedure**
 
 1. To initiate remote upgrade, log in to a machine that has Photon Management Daemon CLI installed over SSH.
 2. Identify packages that can be upgraded on the client machine.

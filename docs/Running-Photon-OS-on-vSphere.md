@@ -8,7 +8,7 @@ This guide describes how to get started using Photon OS as a virtual machine wit
 - [Deploying a Containerized Application in Photon OS](#deploying-a-containerized-application-in-photon-os)
 - [Installing Photon OS v1.0](#installing-photon-os-10)
 
-**Note**: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in [Upgrading to Photon OS 2.0](Upgrading-to-Photon-OS-2.0.md). 
+**Note**: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in [Upgrading to Photon OS 2.0](https://github.com/vmware/photon/wiki/Upgrading-to-Photon-OS-2.0). 
 
 # About Photon OS
 
@@ -44,7 +44,7 @@ Once you&#39;ve decided which way to install, you&#39;ll need to download the co
 
 [https://bintray.com/vmware/photon/](https://bintray.com/vmware/photon/)
 
-For instructions, see [Downloading Photon OS](Downloading-Photon-OS.md).
+For instructions, see [Downloading Photon OS](https://github.com/vmware/photon/wiki/Downloading-Photon-OS).
 
 **Note:** For ISO installation, you will need to upload to a datashare that is attached to the ESXi host, or mount the file share (where the ISO resides) as a data store.
 

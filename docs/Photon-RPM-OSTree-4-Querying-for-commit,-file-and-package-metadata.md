@@ -1,8 +1,6 @@
-# Querying For Commit File and Package Metadata
-
 There are several ostree and rpm-ostree commands that list file or package data based on either the Commit ID, or Refspec. If Refspec is passed as a parameter, it's the same as passing the most recent commit ID (head) for that branch.
 
-## 4.1 Commit history
+### 4.1 Commit history
 For a host that is freshly installed, there is only one commit in the history for the only branch.
 ```
 root@photon-host [ ~ ]# ostree log photon/1.0/x86_64/minimal
@@ -23,7 +21,7 @@ commit 56ef687f1319604b7900a232715718d26ca407de7e1dc89251b206f8e255dcb4
 ({'version': <'1.0_minimal'>, 'rpmostree.inputhash': <'40ae75453cf7f00b163848676c4b5716511e7515b95fb7b9168004aa97f05dd9'>}, @ay [], @a(say) [], '', '', uint64 1465308377, [byte 0x3c, 0x6b, 0x71, 0x44, 0x07, 0xd0, 0x5e, 0xd5, 0x9d, 0xfc, 0x4a, 0x1c, 0x33, 0x74, 0x96, 0x1d, 0x50, 0xa3, 0x53, 0xd5, 0xf1, 0x20, 0xb4, 0x40, 0xd0, 0x60, 0x35, 0xf2, 0xf8, 0x29, 0xcf, 0x5f], [byte 0x44, 0x6a, 0x0e, 0xf1, 0x1b, 0x7c, 0xc1, 0x67, 0xf3, 0xb6, 0x03, 0xe5, 0x85, 0xc7, 0xee, 0xee, 0xb6, 0x75, 0xfa, 0xa4, 0x12, 0xd5, 0xec, 0x73, 0xf6, 0x29, 0x88, 0xeb, 0x0b, 0x6c, 0x54, 0x88])
 ```
 
-## 4.2 Listing file mappings
+### 4.2 Listing file mappings
 This command lists the file relations between the original source Linux Photon filetree and the deployed filetree. The normal columns include file type type (regular file, directory, link), permissions in chmod octal format, userID, groupID, file size, file name. 
 ```
 root@photon-host [ ~ ]# ostree ls photon/1.0/x86_64/minimal
@@ -97,7 +95,7 @@ total 0
 ```
 
 
-## 4.3 Listing configuration changes
+### 4.3 Listing configuration changes
 
 To diff the current /etc configuration versus default /etc (from the base image), this command will show the **M**odified, **A**dded and **D**eleted files:
 ```
@@ -126,7 +124,7 @@ A    localtime
 A    .updated
 ```
 
-## 4.4 Listing packages
+### 4.4 Listing packages
 As expected, there is an rpm-ostree command that lists all the packages for that branch, extracted from RPM database.   
 ```
 root@photon-host [ ~ ]# rpm-ostree db list photon/1.0/x86_64/minimal
@@ -233,7 +231,7 @@ ostree commit: photon/1.0/x86_64/minimal (56ef687f1319604b7900a232715718d26ca407
  zlib-1.2.8-3.ph1.x86_64
 ```
 
-## 4.5 Querying for package details
+### 4.5 Querying for package details
 We are able to use the query option of rpm to make sure any package have been installed properly. The files list should match the previous file mappings in 4.2, so let's check package **rpm-ostree**. As we've seen, manual files listed here are actually missing, they were not installed.
 ```
 root@photon-host [ /usr/share/man/man1 ]# rpm -ql  rpm-ostree
@@ -247,10 +245,12 @@ root@photon-host [ /usr/share/man/man1 ]# rpm -ql  rpm-ostree
 /usr/share/man/man1/atomic.1.gz
 /usr/share/man/man1/rpm-ostree.1.gz
 ```
-## 4.6 Why am I unable to install, update or delete packages?
+### 4.6 Why am I unable to install, update or delete packages?
 
 All the commands executed so far operated in read-only mode. But what if you want to erase or install a package using our old friend rpm?
 The RPM database is not writable any longer and the file system itself is read-only (except for /var and /etc directories). The idea is that preparing the packages should be done via server tree composition and deployment at host should bring them installed into a new bootable tree that is read-only, recorded into the read-only RPM database. This will insure that all systems deployed are brought into a predictable state and no one could mess with them.
 In fact, tdnf and yum commands are not even available to install new packages at the host. Even if you bring them over, adding a new package via **tdnf install** will return an error.
 But don't get sad. Installing, updating and deleting files & packages the RPM-OSTree way - from the server - that's exactly the topic of next chapters.
+
+[[Back to main page|Photon-RPM-OSTree:-a-simple-guide]] | [[Previous page|Photon-RPM-OStree:-3-Concepts-in-action]]  | [[Next page >|Photon-RPM-OSTree:-5-Host-updating-operations]] 
 
