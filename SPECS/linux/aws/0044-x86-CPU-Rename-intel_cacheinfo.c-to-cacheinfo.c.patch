@@ -1,0 +1,44 @@
+From 218cdd0fb39599e8c2652711ebc803e807cb46af Mon Sep 17 00:00:00 2001
+From: Borislav Petkov <bp@suse.de>
+Date: Fri, 27 Apr 2018 16:34:36 -0500
+Subject: x86/CPU: Rename intel_cacheinfo.c to cacheinfo.c
+
+[upstream 1d200c078d0e3e49e2995b9d25fef8926d491f4f]
+
+Since this file contains general cache-related information for x86,
+rename the file to a more generic name.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: http://lkml.kernel.org/r/1524864877-111962-4-git-send-email-suravee.suthikulpanit@amd.com
+
+Signed-off-by: Balbir Singh <sblbir@amazon.com>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kernel/cpu/Makefile                           | 2 +-
+ arch/x86/kernel/cpu/{intel_cacheinfo.c => cacheinfo.c} | 0
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+ rename arch/x86/kernel/cpu/{intel_cacheinfo.c => cacheinfo.c} (100%)
+
+diff --git a/arch/x86/kernel/cpu/Makefile b/arch/x86/kernel/cpu/Makefile
+index 570e8bb1f386..32591f21fb28 100644
+--- a/arch/x86/kernel/cpu/Makefile
++++ b/arch/x86/kernel/cpu/Makefile
+@@ -17,7 +17,7 @@ KCOV_INSTRUMENT_perf_event.o := n
+ nostackp := $(call cc-option, -fno-stack-protector)
+ CFLAGS_common.o		:= $(nostackp)
+ 
+-obj-y			:= intel_cacheinfo.o scattered.o topology.o
++obj-y			:= cacheinfo.o scattered.o topology.o
+ obj-y			+= common.o
+ obj-y			+= rdrand.o
+ obj-y			+= match.o
+diff --git a/arch/x86/kernel/cpu/intel_cacheinfo.c b/arch/x86/kernel/cpu/cacheinfo.c
+similarity index 100%
+rename from arch/x86/kernel/cpu/intel_cacheinfo.c
+rename to arch/x86/kernel/cpu/cacheinfo.c
+-- 
+2.14.4
+

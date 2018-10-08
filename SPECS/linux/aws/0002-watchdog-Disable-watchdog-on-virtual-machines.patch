@@ -1,0 +1,91 @@
+From 21058f53273634eb52cc93d7401061a1a308315c Mon Sep 17 00:00:00 2001
+From: Dave Jones <davej@redhat.com>
+Date: Tue, 24 Jun 2014 08:43:34 -0400
+Subject: watchdog: Disable watchdog on virtual machines.
+
+For various reasons, VMs seem to trigger the soft lockup detector a lot,
+in cases where it's just not possible for a lockup to occur.
+(Example: https://bugzilla.redhat.com/show_bug.cgi?id=971139)
+
+In some cases it seems that the host just never scheduled the app running
+the VM for a very long time (Could be the host was under heavy load).
+
+Just disable the detector on VMs.
+
+Bugzilla: 971139
+Upstream-status: Fedora mustard for now
+
+Signed-off-by: Dave Jones <davej@redhat.com>
+(cherry picked from commit 3fb899354090dbb381b253ec6deb9bdf6ae37bb5)
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/6834769/
+
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Frederick Lefebvre <fredlef@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
+CR: https://cr.amazon.com/r/8209723/
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ kernel/watchdog.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/kernel/watchdog.c b/kernel/watchdog.c
+index c8e06703e44c..2e4362e7ff1b 100644
+--- a/kernel/watchdog.c
++++ b/kernel/watchdog.c
+@@ -25,6 +25,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/sched/clock.h>
+ #include <linux/sched/debug.h>
++#include <linux/dmi.h>
+ 
+ #include <asm/irq_regs.h>
+ #include <linux/kvm_para.h>
+@@ -97,6 +98,31 @@ __setup("hardlockup_all_cpu_backtrace=", hardlockup_all_cpu_backtrace_setup);
+ # endif /* CONFIG_SMP */
+ #endif /* CONFIG_HARDLOCKUP_DETECTOR */
+ 
++static int disable_watchdog(const struct dmi_system_id *d)
++{
++	printk(KERN_INFO "watchdog: disabled (inside virtual machine)\n");
++	watchdog_user_enabled = 0;
++	return 0;
++}
++
++static const struct dmi_system_id watchdog_virt_dmi_table[] = {
++	{
++		.callback = disable_watchdog,
++		.ident = "VMware",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "VMware, Inc."),
++		},
++	},
++	{
++		.callback = disable_watchdog,
++		.ident = "Bochs",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Bochs"),
++		},
++	},
++	{}
++};
++
+ /*
+  * These functions can be overridden if an architecture implements its
+  * own hardlockup detector.
+@@ -774,6 +800,8 @@ int proc_watchdog_cpumask(struct ctl_table *table, int write,
+ 
+ void __init lockup_detector_init(void)
+ {
++	dmi_check_system(watchdog_virt_dmi_table);
++
+ #ifdef CONFIG_NO_HZ_FULL
+ 	if (tick_nohz_full_enabled()) {
+ 		pr_info("Disabling watchdog on nohz_full cores by default\n");
+-- 
+2.14.4
+
