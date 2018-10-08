@@ -247,7 +247,7 @@ who-needs:
 # - local changes (if no commits specified)
 clean-stage-for-incremental-build:
 	@test -n "$$(git diff --name-only $(BASE_COMMIT) @ | grep SPECS)" && $(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i remove-upward-deps -p $$(echo `git diff --name-only $(BASE_COMMIT) @ | grep .spec | xargs -n1 basename 2>/dev/null` | tr ' ' :) ||:
-	@test -n "$$(git diff --name-only $(BASE_COMMIT) @ | grep support)" && $(RM) -rf $(PHOTON_RPMS_DIR) ||:
+	@test -n "$$(git diff --name-only $(BASE_COMMIT) @ | grep '^support')" && $(RM) -rf $(PHOTON_RPMS_DIR) ||:
 
 check-spec-files:
 	@./tools/scripts/check_spec_files.sh $(BASE_COMMIT)
