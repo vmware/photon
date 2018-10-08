@@ -1,7 +1,9 @@
+# Running container applications between bootable images
+
 In this chapter, we want to test a docker application and make sure that all the settings and downloads done in one bootable filetree are going to be saved into writable folders and be available in the other image, in other words after reboot from the other image, everything is available exactly the same way.   
 We are going to do this twice: first, to verify an existing bootable image installed in parallel and then create a new one.
 
-### 11.1 Downloading a docker container appliance
+## 11.1 Downloading a docker container appliance
 Photon OS comes with docker package installed and configured, but we expect that the docker daemon is inactive (not started). Configuration file /usr/lib/systemd/system/docker.service is read-only (remember /usr is bound as read-only). 
 ```
 root@sample-host-def [ ~ ]# systemctl status docker
@@ -128,7 +130,7 @@ CONTAINER ID    IMAGE   COMMAND       CREATED         STATUS                    
 d07ebca78051    ubuntu  "/bin/bash"   16 minutes ago  Up 5 seconds                        kickass_hodgkin
 ```
 
-### 11.2 Rebooting into an existing image
+## 11.2 Rebooting into an existing image
 Now let's reboot the machine and select the other image. First, we'll verify that the docker daemon is automaically started.
 ```
 root@photon-host-cus1 [ ~ ]# systemctl status docker
@@ -154,7 +156,7 @@ Ubuntu file
 root@57dcac5d0490:/# echo "booted into existing image" >> /home/myfile
 root@57dcac5d0490:/# exit
 ```
-### 11.3 Reboot into a newly created image
+## 11.3 Reboot into a newly created image
 Let's upgrade and replace the .0 image by a .3 build that contains git and also perl_YAML (because it is a dependency of git).
 ```
 root@photon-host-cus1 [ ~ ]# rpm-ostree status
@@ -207,5 +209,3 @@ Ubuntu file
 booted into existing image
 root@57dcac5d0490:/# echo "booted into new image" >> /home/myfile
 ```
-
-[[Back to main page|Photon-RPM-OSTree:-a-simple-guide]] | [[Previous page|Photon RPM-OSTree:-10-Remotes]] | [[ Next page >|Photon-RPM-OSTree:-Install-or-rebase-to-Photon-OS-2.0]]

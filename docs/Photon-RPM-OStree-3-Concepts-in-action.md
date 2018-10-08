@@ -1,16 +1,17 @@
+# Concepts in Action
 
 Now that we have a fresh installed host (either as [[default|Photon-RPM-OSTree:-2-Installing-a-host-against-default-server-repository]] or [[custom|Photon-RPM-OSTree:-7-Installing-a-host-against-a-custom-server-repository]]), I can explain better the OStree concepts and see them in action.  
-### 3.1 Querying the deployed filetrees
+## 3.1 Querying the deployed filetrees
 The first thing to do is to run a command that tells us what is installed on the machine and when. Since it's a fresh install from the CD, there is only one bootable filetree image deployed.
 ``` 
 root@photon-host [ ~ ]# rpm-ostree status
   TIMESTAMP (UTC)       VERSION       ID           OSNAME  REFSPEC               
 * 2016-06-07 14:06:17   1.0_minimal   56ef687f13   photon  photon:photon/1.0/x86_64/minimal
 ```  
-### 3.2 Bootable filetree version
+## 3.2 Bootable filetree version
 **1.0_minimal** is not the Linux Photon OS release version, nor daily build, but rather a human readable, self-incrementing version associated with every commit that brings file/package updates. Think of this as version 0. The following versions are going to be 1.0_minimal.1, 1.0_minimal.2, 1.0_minimal.3 and so on.
 
-### 3.3 Commit ID
+## 3.3 Commit ID
 The ID listed is actually the first 5 bytes (10 hex digits) of the commit hash. If you want to see the entire 32 bytes hex number, just add the 'pretty' formatting option. The .0 at the end means that this is the default bootable deployment. This will change to 1 when another deployment will take its place as the default.
 ```
 root@photon-host [ ~ ]# rpm-ostree status -p
@@ -24,11 +25,11 @@ root@photon-host [ ~ ]# rpm-ostree status -p
   refspec    photon:photon/1.0/x86_64/minimal
 ============================================================
 ```
-### 3.4 OSname
+## 3.4 OSname
 The OS Name identifies the operating system installed. All bootable filetrees for the same OS will share the /var directory, in other words applications installed in one booted image into this directory will be available in all other images.  
 If a new set of images are created for a different OS, they will receive a fresh copy of /var that is not shared with the previous OS images for the initial OS. In other words, if a machine is dual boot for different operating systems, they will not share each other's /var content, however they will still merge 3-way /etc.
 
-### 3.5 Refspec
+## 3.5 Refspec
 The **Refspec** is a branch inside the repo, expressed in a hierarchical way. In this case, it's the default branch that will receive package updates for the Photon OS 1.0 Minimal installation profile on Intel platforms. There could be other branches in the future, for example photon/1.0/x86_64/full that will match the Full installation profile (full set of packages installed).  
 Think of Refspec as the head of the minimal branch (just like in git) at the origin repo. On the replicated, local repo at the host, **minimal** is a file that contains the latest commit ID known for that branch.  
 ```
@@ -37,7 +38,7 @@ root@photon-host [ ~ ]# cat /ostree/repo/refs/remotes/photon/photon/1.0/x86_64/m
 ```
 Why are there two 'photon' directory levels in the remotes path? The **photon:** prefix in the Refspec listed by `rpm-ostree status` corresponds to the first **photon** directory in the remotes path and is actually the name given to the remote that the host is connected to, which points to an http or https URL. We'll talk about remotes later, but for now think of it as a namespace qualifier.  The second **photon** is part of the Refspec path itself.
 
-### 3.6 Deployments
+## 3.6 Deployments
 We've used so far `rpm-ostree`. The same information can be obtained running an `ostree` command:
 ```
 root@photon-host [ ~ ]# ostree admin status
@@ -110,7 +111,5 @@ drwxr-xr-x  2 root root 4096 Jun  9 18:26 srv
 drwxrwxrwt  4 root root 4096 Jun 12 23:04 tmp
 drwxr-xr-x 11 root root 4096 Jun  9 18:26 usrlocal
 ```
-
-[[Back to main page|Photon-RPM-OSTree:-a-simple-guide]] | [[Previous page|Photon-RPM-OSTree:-2-Installing-a-host-against-default-server-repository]] | [[Next page >|Photon-RPM-OSTree:-4-Querying-for-commit,-file-and-package-metadata]] 
 
 

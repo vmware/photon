@@ -1,28 +1,30 @@
+# Install or rebase to Photon OS 2.0
+
 Photon OS 2.0 release has a different focus and while it provides full RPM-OSTree functionality (updated to 2017), it lets the user drive it, rather than provide a pre-defined solution as part of the installation.  
 
 The number of packages included in the RPMS repo in Photon OS 2.0 increased significantly, compared to 1.0. To keep the ISO at reasonable size, Photon OS 2.0 no longer includes the compressed ostree.repo file, that helped optimize both the server and host install in 1.0 or 1.0 Rev2. That decision affected the OSTree features we ship out of the box. Customer could achieve the same results by several additional simple steps, that will be explained in this chapter. In addition, there is a new way to create a host raw image at server.
 
-### 12.1 Installing an RPM-OSTree server
+## 12.1 Installing an RPM-OSTree server
 Photon OS 2.0 installer contains an option to install an OSTree server, just like Photon 1.0 OS does. It will not run, however, the server 'compose tree' as part of installation, as most users will want to start from scratch to create their own image anyway, using different package set and customized settings.
-In addition to starter photon-base.json, we provide photon-minimal.json and photon-full.json, updated with a 2.0 Refspec. We still fire up an Apache web server, that will point to an empty site initially at the repo directory. Assuming you've customized photon-base.json to you liking, all you need to do is to run the commands you are already familiar with from [[Chapter 9|Photon-RPM-OSTree:-9-Package-oriented-server-operations]].
+In addition to starter photon-base.json, we provide photon-minimal.json and photon-full.json, updated with a 2.0 Refspec. We still fire up an Apache web server, that will point to an empty site initially at the repo directory. Assuming you've customized photon-base.json to you liking, all you need to do is to run the commands you are already familiar with from [Chapter 9](Photon-RPM-OSTree-9-Package-oriented-server-operations.md).
 ```
 root [ /srv/rpm-ostree ]# ostree --repo=repo init --mode=archive-z2
 root [ /srv/rpm-ostree ]# rpm-ostree compose tree --repo=repo photon-base.json
 ```
 Now if you point a browser to http://<server_IP_address>, you should see the familiar directory structure of an OSTree repo.
 
-### 12.2 Installing an RPM-OSTree host
+## 12.2 Installing an RPM-OSTree host
 Photon OS 2.0 installer no longer includes a UI option to deploy a host manually - either against a default or a custom server repo, and also there is no official online Photon OS 2.0 OSTree repo published. This is now completely customer driven.  
-Automated host install is supported, as explained in [[Chapter 7.2 Automated install of a custom host via kickstart|Photon-RPM-OSTree:-7-Installing-a-host-against-a-custom-server-repository#72-automated-install-of-a-custom-host-via-kickstart]].  
+Automated host install is supported, as explained in [Chapter 7.2 Automated install of a custom host via kickstart](Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.md#72-automated-install-of-a-custom-host-via-kickstart).  
 
-### 12.3 Rebasing a host from Photon 1.0 to 2.0
+## 12.3 Rebasing a host from Photon 1.0 to 2.0
 If kickstart sounds too complicated and we still want to go the UI way like in 1.0, fortunately, there is a workaround that requires an extra step. Also, if you have an installed Photon 1.0 or 1.0 Rev2 that you want to carry to 2.0, you need to rebase it. Notice that I didn't say "upgrade".   
 
 Basically the OSTree repo will switch to a different branch on a different server, following the new server's branch versioning scheme. The net result is that the lots of packages will get changed to newer versions from newer OSTree repo, that has been composed from a newer Photon OS 2.0 RPMS repo. Again, I didn't say "upgraded", neither the rebase command output, that lists "changed" packages. Some obsolete packages will be removed, new packages will be added, either because they didn't exist in 1.0 repo, or because the new config file includes them.  
 The OS name is the same (Photon), so the content in /var and /etc will be transferred over.  
 
-1. To install fresh, deploy a Photon 1.0 Rev2 host default, as described in [[Chapter 2|Photon-RPM-OSTree:-2-Installing-a-host-against-default-server-repository]]. Of course, if you already have an existing Photon OS 1.0 host that you want to move to 2.0, skip this step.
-2. Edit /ostree/repo/config and substitute the url, providing the IP address for the Photon OS 2.0 RPM-OSTree server installed above. This was explained in [[Chapter 10|Photon-RPM-OSTree:-10-Remotes#102-switching-repositories]].  
+1. To install fresh, deploy a Photon 1.0 Rev2 host default, as described in [Chapter 2](Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.md). Of course, if you already have an existing Photon OS 1.0 host that you want to move to 2.0, skip this step.
+2. Edit /ostree/repo/config and substitute the url, providing the IP address for the Photon OS 2.0 RPM-OSTree server installed above. This was explained in [Chapter 10](Photon-RPM-OSTree-10-Remotes.md#102-switching-repositories).  
 ostree should confirm that is the updated server IP for the "photon" remote.
 ```
 root@ostree-host [ ~ ]# ostree remote show-url photon
@@ -186,7 +188,6 @@ Deployments:
 
 There are some side effects of installing Photon OS 2.0 based on the skeleton of a 1.0. For one, the custom disk partitioning is not available in 1.0. There could be others, I cannot think of now.
 
-### 12.4 Creating a host raw image
+## 12.4 Creating a host raw image
 It is now possible to run at server a script that is part of RPM-OStree package, to create a host raw mage.
 
-[[Back to main page|Photon-RPM-OSTree:-a-simple-guide]] | [[Previous page|Photon-RPM-OSTree:-11-Running-container-applications-between-bootable-images]] | [[ Next page >|Photon-RPM-OSTree:-Appendix-A:-Known-issues]]

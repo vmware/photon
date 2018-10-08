@@ -1,4 +1,6 @@
-You can upgrade your existing Photon OS 1.0 VMs to take advantage of security and functionality enhancements in Photon OS 2.0. For details, see [What is New in Photon OS 2.0](https://github.com/vmware/photon/wiki/What-is-New-in-Photon-OS-2.0).
+# Upgrading to Photon OS 2.0
+
+You can upgrade your existing Photon OS 1.0 VMs to take advantage of security and functionality enhancements in Photon OS 2.0. For details, see [What is New in Photon OS 2.0](What-is-New-in-Photon-OS-2.0.md).
 
 Photon OS 2.0 provides a seamless, in-place upgrade path for Photon OS 1.0 implementations. You simply download an upgrade package, run a script, and reboot the VM. The upgrade script will update your packages and retain your 1.0 customizations in your new OS 2.0 VM.
 

@@ -1,14 +1,14 @@
-**Installing the Lightwave Client on a Photon Image and Joining the Client to a Domain**
+# Installing the Lightwave Client on a Photon Image and Joining the Client to a Domain
 
 After you have set up a Lightwave domain controller, you can join Photon clients to that domain. You install the Lightwave client first. After the client is installed, you join the client to the domain.
 
-**Prerequisites**
+## Prerequisites
 
 - Prepare a Photon OS client for the Lightwave client installation.
 - Verify that the hostname of the client can be resolved.
 - Verify that you have 184 MB free for the Lightwave client installation.
 
-**Procedure**
+## Procedure
 
 1. Log in to your Photon OS client over SSH.
 2. Install the Lightwave client by running the following command. 

@@ -1,3 +1,5 @@
+# Running Photon OS on Workstation 
+
 This guide describes how to get started using Photon OS as a virtual machine within VMware Workstation. It provides instructions for downloading Photon OS (as an OVA or ISO file), describes the various installation options, and walks through the steps of installing the Photon OS distribution on Workstation. Once Photon OS is installed, this document shows how to deploy a containerized application in Docker with a single command.
 
 - [About Photon OS](#about-photon-os)
@@ -9,11 +11,11 @@ This guide describes how to get started using Photon OS as a virtual machine wit
 - [Deploying a Containerized Application in Photon OS](#deploying-a-containerized-application-in-photon-os)
 - [Installing Photon OS 1.0](#installing-photon-os-10)
 
-**Note**: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in [Upgrading to Photon OS 2.0](https://github.com/vmware/photon/wiki/Upgrading-to-Photon-OS-2.0). 
+**Note**: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in [Upgrading to Photon OS 2.0](Upgrading-to-Photon-OS-2.0.md). 
 
 # About Photon OS
 
-Photon OS™ is an open source Linux container host optimized for cloud-native applications, cloud platforms, and VMware infrastructure. Photon OS provides a secure run-time environment for efficiently running containers. For an overview, see  [https://vmware.github.io/photon/](https://vmware.github.io/photon/).
+Photon OSâ„¢ is an open source Linux container host optimized for cloud-native applications, cloud platforms, and VMware infrastructure. Photon OS provides a secure run-time environment for efficiently running containers. For an overview, see  [https://vmware.github.io/photon/](https://vmware.github.io/photon/).
 
 # Requirements
 
@@ -47,7 +49,7 @@ Once you&#39;ve decided which way to install, you&#39;ll need to download the co
 
 [https://bintray.com/vmware/photon/](https://bintray.com/vmware/photon/)
 
-For instructions, see  [Downloading Photon OS](https://github.com/vmware/photon/wiki/Downloading-Photon-OS).
+For instructions, see  [Downloading Photon OS](Downloading-Photon-OS.md).
 
 # Importing the OVA for Photon OS 2.0
 
@@ -354,4 +356,4 @@ You can now run any other containerized application from Docker Hub or your own 
 
 # Installing Photon OS 1.0
 
-Refer to the Photon OS 1.0 installation instructions in [Running Photon OS on Fusion](https://github.com/vmware/photon/wiki/Running-Project-Photon-on-Fusion).
+Refer to the Photon OS 1.0 installation instructions in [Running Photon OS on Fusion](Running-Project-Photon-on-Fusion.md).
