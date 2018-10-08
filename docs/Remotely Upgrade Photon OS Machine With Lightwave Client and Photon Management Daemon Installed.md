@@ -1,16 +1,16 @@
-**Remotely Upgrade Multiple Photon OS Machines With Lightwave Client and Photon Management Daemon Installed**
+# Remotely Upgrade Multiple Photon OS Machines With Lightwave Client and Photon Management Daemon Installed
 
 After you have a configured the Photon Management Daemon (PMD) on multiple machines, you can remotely upgrade any installed package on these machines.
 
 Upgrade process uses `copenapi_cli` that is supported from both Lightwave and Photon Management Daemon. You can initiate the upgrade process from any machine that has Photon Management Daemon installed.   
 
-**Prerequisites**
+## Prerequisites
 
 - Have an installed Lightwave server with configured domain controller on it.
 - Have installed Lightwave clients that are joined to the domain.
 - Have installed Photon Management Daemon on the clients.
 
-**Procedure**
+## Procedure
 
 1. To initiate remote upgrade, log in to a Photon OS machine over SSH to install the Photon Management Daemon CLI.
 

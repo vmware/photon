@@ -44,4 +44,4 @@ List enabled repositories:
 
 Tdnf implements a subset of the dnf commands as listed in the [dnf guide](http://dnf.readthedocs.org/en/latest/).
 
-For a description of the tdnf commands and options, including examples, see the [Photon OS Administration Guide](https://github.com/vmware/photon/blob/master/docs/photon-admin-guide.md).
+For a description of the tdnf commands and options, including examples, see the [Photon OS Administration Guide](photon-admin-guide.md).
