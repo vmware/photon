@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -28,6 +28,8 @@ BuildRequires:  elfutils-devel
 BuildRequires:  libcap-devel
 BuildRequires:  xz-devel
 BuildRequires:  file-devel
+BuildRequires:  python2-devel
+BuildRequires:  python3-devel
 
 %description
 RPM package manager
@@ -70,14 +72,12 @@ These are the additional language files of rpm.
 %package -n     python-rpm
 Summary:        Python 2 bindings for rpm.
 Group:          Development/Libraries
-BuildRequires:  python2-devel
 Requires:       python2
 %description -n python-rpm
 
 %package -n     python3-rpm
 Summary:        Python 3 bindings for rpm.
 Group:          Development/Libraries
-BuildRequires:  python3-devel
 Requires:       python3
 
 %description -n python3-rpm
@@ -95,22 +95,9 @@ sed -i '/library_dirs/d' python/setup.py.in
 sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 
 ./autogen.sh --noconfigure
-./configure \
+%configure \
     CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
         --program-prefix= \
-        --prefix=%{_prefix} \
-        --exec-prefix=%{_prefix} \
-        --bindir=%{_bindir} \
-        --sbindir=%{_sbindir} \
-        --sysconfdir=%{_sysconfdir} \
-        --datadir=%{_datadir} \
-        --includedir=%{_includedir} \
-        --libdir=%{_libdir} \
-        --libexecdir=%{_libexecdir} \
-        --localstatedir=%{_var} \
-        --sharedstatedir=%{_sharedstatedir} \
-        --mandir=%{_mandir} \
-        --infodir=%{_infodir} \
         --disable-dependency-tracking \
         --disable-static \
         --enable-python \
@@ -261,6 +248,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Oct 03 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-4
+-   Clean up the file in accordance to spec file checker
 *   Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-3
 -   Fix python libs dependencies to use current libs version (regression)
 *   Fri Sep 28 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-2
@@ -310,7 +299,7 @@ rm -rf %{buildroot}
 -   Modified %check
 *   Fri Aug 26 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-11
 -   find-debuginfo...patch: exclude non existing .build-id from packaging
--   Move all files from rpm-system-configuring-scripts tarball to here 
+-   Move all files from rpm-system-configuring-scripts tarball to here
 *   Wed May 25 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-10
 -   Exclude .build-id/.1 and .build-id/.1.debug from debuginfo pkg
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-9
