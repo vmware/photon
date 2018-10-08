@@ -1,4 +1,4 @@
-# Photon OS How-To Guides
+# Photon OS User Guides
 
 - [Setting Up a Swarm Cluster with DNS](Install-and-Configure-a-Swarm-Cluster-with-DNS-Service-on-PhotonOS.md)
 - [Setting Up a Mesos Cluster](Install-and-Configure-a-Production-Ready-Mesos-Cluster-on-Photon-OS.md)

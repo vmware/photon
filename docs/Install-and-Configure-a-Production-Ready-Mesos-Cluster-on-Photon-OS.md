@@ -1,4 +1,5 @@
-== Overview ==
+# Install and Configure a Production Ready Mesos Cluster on Photon OS #
+
 For this setup I will use 3 Mesos masters and 3 slaves. On each Mesos master I will run a Zookeeper, meaning that we will have 3 Zookeepers as well. The Mesos cluster will be configured with a quorum of 2. For networking Mesos use Mesos-DNS. I tried to run Mesos-DNS as container, but got into some resolving issues, so in my next How-To I will explain how to configure Mesos-DNS and run it through Marathon. Photon hosts will be used for masters and slaves.<br />
 <br />
 ''' Masters: '''<br />
@@ -30,7 +31,7 @@ For this setup I will use 3 Mesos masters and 3 slaves. On each Mesos master I w
 | 192.168.0.6
 |}
 <br />
-== Masters Installation and Configuration ==
+## Masters Installation and Configuration ##
 First of all we will install Zookeeper. Since currently there is a bug in Photon related to the Zookeeper installation I will use the tarball. Do the following for each master:
 <source lang="bash" enclose="div">
 root@pt-mesos-master1 [ ~ ]# mkdir -p /opt/mesosphere && cd /opt/mesosphere && wget http://apache.mivzakim.net/zookeeper/stable/zookeeper-3.4.7.tar.gz
@@ -109,7 +110,7 @@ root     11543     1  7 12:09 ?        00:00:01 /opt/OpenJDK-1.8.0.51-bin/bin/ja
 root     11581     1  0 12:09 ?        00:00:00 /usr/sbin/mesos-master --ip=192.168.0.1 --work_dir=/var/lib/mesos --log_dir=/var/lob/mesos --cluster=EXAMPLE --zk=zk://192.168.0.2:2181,192.168.0.1:2181,192.168.0.3:2181/mesos --quorum=2
 root     11601  9117  0 12:09 pts/0    00:00:00 grep --color=auto mesos
 </source><br />
-== Slaves Installation and Configuration ==
+## Slaves Installation and Configuration ##
 The steps for configuring a Mesos slave are very simple and not very different from master installation. The difference is that we won't install zookeeper on each slave. We will also start the Mesos slaves in slave mode and will tell the daemon to join the Mesos masters. Do the following for each slave:
 <source lang="bash" enclose="div">
 root@pt-mesos-node1 [ ~ ]# cat /etc/systemd/system/mesos-slave.service

@@ -1,17 +1,15 @@
-<sub>Posted on January 13, 2016 by [https://il.linkedin.com/in/tgabay '''Tal Gabay''']</sub>
-
-= Overview =
+# Install and Configure a Swarm Cluster with DNS Service on PhotonOS
 
 In this How-To, the steps for installing and configuring a Docker Swarm cluster, alongside DNS and Zookeeper, will be presented.
 The cluster that will be set up will be on VMware Photon hosts. <br />
 <br />
 A prerequisite to using this guide is to be familiar with Docker Swarm - information can be found [https://docs.docker.com/swarm/ here].
 
-== Cluster description ==
+## Cluster description ##
 
 The cluster will have 2 Swarm Managers and 3 Swarm Agents:
 
-=== Masters ===
+###  Masters ###
 
 {| class="wikitable"
 ! style="text-align: center; font-weight: bold;" | Hostname
@@ -24,7 +22,7 @@ The cluster will have 2 Swarm Managers and 3 Swarm Agents:
 | 192.168.0.2
 |}
 
-=== Agents ===
+###  Agents ###
 
 {| class="wikitable"
 ! style="text-align: center; font-weight: bold; font-size: 0.100em;" | Hostname
@@ -42,7 +40,7 @@ The cluster will have 2 Swarm Managers and 3 Swarm Agents:
 
 = Docker Swarm Installation and Configuration =
 
-== Setting Up the Managers ==
+## Setting Up the Managers ##
 
 The following steps should be done on both managers.<br />
 Docker Swarm supports multiple methods of using service discovery, but in order to use failover, Consul, etcd or Zookeeper must be used. In this guide, Zookeeper will be used.<br />
@@ -50,7 +48,7 @@ Download the latest stable version of Zookeeper and create the '' zoo.cfg '' fil
 <br />
 <br />
 
-=== Zookeeper installation ===
+###  Zookeeper installation ###
 
 <source lang="bash" enclose="div">
 root@pt-swarm-master1 [ ~ ]# mkdir -p /opt/swarm && cd /opt/swarm && wget http://apache.mivzakim.net/zookeeper/stable/zookeeper-3.4.6.tar.gz
@@ -166,7 +164,7 @@ Role: as expected, this is the replicated manager.
 Primary: contains the primary manager.<br />
 <br />
 
-== Setting Up the Agents ==
+## Setting Up the Agents ##
 
 In Swarm, in order for a node to become a part of the cluster, it should "join" that said cluster - do the following for each of the agents.
 Edit the '' /usr/lib/systemd/system/docker.service '' file so that each agent will be able to join the cluster:
@@ -223,29 +221,29 @@ Strategy: spread
 Filters: health, port, dependency, affinity, constraint
 Nodes: 3
  pt-swarm-agent1.example.com: 192.168.0.3:2375
-  └ Status: Healthy
-  └ Containers: 1
-  └ Reserved CPUs: 0 / 1
-  └ Reserved Memory: 0 B / 2.055 GiB
-  └ Labels: executiondriver=native-0.2, kernelversion=4.1.3-esx, operatingsystem=VMware Photon/Linux, storagedriver=overlay
+  ??? Status: Healthy
+  ??? Containers: 1
+  ??? Reserved CPUs: 0 / 1
+  ??? Reserved Memory: 0 B / 2.055 GiB
+  ??? Labels: executiondriver=native-0.2, kernelversion=4.1.3-esx, operatingsystem=VMware Photon/Linux, storagedriver=overlay
  pt-swarm-agent2.example.com: 192.168.0.4:2375
-  └ Status: Healthy
-  └ Containers: 1
-  └ Reserved CPUs: 0 / 1
-  └ Reserved Memory: 0 B / 2.055 GiB
-  └ Labels: executiondriver=native-0.2, kernelversion=4.1.3-esx, operatingsystem=VMware Photon/Linux, storagedriver=overlay
+  ??? Status: Healthy
+  ??? Containers: 1
+  ??? Reserved CPUs: 0 / 1
+  ??? Reserved Memory: 0 B / 2.055 GiB
+  ??? Labels: executiondriver=native-0.2, kernelversion=4.1.3-esx, operatingsystem=VMware Photon/Linux, storagedriver=overlay
  pt-swarm-agent3.example.com: 192.168.0.5:2375
-  └ Status: Healthy
-  └ Containers: 1
-  └ Reserved CPUs: 0 / 1
-  └ Reserved Memory: 0 B / 2.055 GiB
-  └ Labels: executiondriver=native-0.2, kernelversion=4.1.3-esx, operatingsystem=VMware Photon/Linux, storagedriver=overlay
+  ??? Status: Healthy
+  ??? Containers: 1
+  ??? Reserved CPUs: 0 / 1
+  ??? Reserved Memory: 0 B / 2.055 GiB
+  ??? Labels: executiondriver=native-0.2, kernelversion=4.1.3-esx, operatingsystem=VMware Photon/Linux, storagedriver=overlay
 CPUs: 3
 Total Memory: 6.166 GiB
 Name: 82b8516efb7c
 </source>
 
-== Setting Up DNS ==
+## Setting Up DNS ##
 
 Docker does not have its own self-provided DNS so we use a [https://github.com/ahmetalpbalkan/wagl wagl] DNS.
 Setting it up is very simple. In this case, one of the masters will also be the DNS. Simply execute:
@@ -258,7 +256,7 @@ That's it, DNS is up and running.
 
 = Test Your Cluster =
 
-== Running Nginx ==
+## Running Nginx ##
 
 Execute the following commands from any docker client:
 <source lang="bash" enclose="div">

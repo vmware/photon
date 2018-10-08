@@ -4,7 +4,7 @@ Project Lightwave is an open-sourced project that provides enterprise-grade iden
 
 ## Procedure
 
-1. [Installing the Lightwave Server and Configuring It as a Domain Controller on a Photon Image](Installing-Lightwave-Server-and-Setting-Up-a-Domain.md)
+1. [Installing the Lightwave Server and Configuring It as a Domain Controller on a Photon age](Installing-Lightwave-Server-and-Setting-Up-a-Domain.md)
 2. [Installing the Lightwave Client on a Photon Image and Joining the Client to a Domain](Installing-Lightwave-Client-and-Joining-a-Domain.md)
 3. [Installing the Photon Management Daemon on a Lightwave Client](Installing-the-Photon-Management-Daemon-on-a-Lightwave-Client.md)
 4. [Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Photon Management Daemon Installed](Remotely-Upgrade-a-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.md)

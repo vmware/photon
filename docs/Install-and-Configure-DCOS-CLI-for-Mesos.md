@@ -1,4 +1,4 @@
-<sub>Posted on January 13, 2016 by [https://il.linkedin.com/in/knesenko '''Kiril Nesenko''']</sub><br />
+# Install and Configure DCOS CLI for Mesos
 
 To install the DCOS CLI:
 Install virtualenv. The Python tool virtualenv is used to manage the DCOS CLI’s environment.

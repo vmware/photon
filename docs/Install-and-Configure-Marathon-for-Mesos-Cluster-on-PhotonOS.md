@@ -1,5 +1,6 @@
-<sub>Posted on January 13, 2016 by [https://il.linkedin.com/in/knesenko '''Kiril Nesenko''']</sub><br />
-<br />
+# Install and Configure Marathon for Mesos Cluster on PhotonOS
+
+
 In my previous How-To [[Install and Configure a Production Ready Mesos Cluster on PhotonOS]]. In this How-To I am going to explain how to install and configure Marathon for Mesos cluster. All the following steps should be done on each Mesos master.
 First, download Marathon:
 <source lang="bash" enclose="div">

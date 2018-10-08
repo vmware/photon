@@ -1,5 +1,6 @@
-<sub>Posted on January 13, 2016 by [https://il.linkedin.com/in/knesenko '''Kiril Nesenko''']</sub><br />
-= Overview =<br />
+
+# Install and Configure Mesos DNS on a Mesos Cluster
+
 Before you read this How-To, please read: [[Install and Configure a Production-Ready Mesos Cluster on PhotonOS]] , [[Install and Configure Marathon for Mesos Cluster on PhotonOS]] and [[Install and Configure DCOS CLI for Mesos]].
 After you have fully installed and configured the Mesos cluster, you can execute jobs on it. However, if you want a service discovery and load balancing capabilities you will need to use Mesos-DNS and Haproxy. In this How-To I will explain how to install and configure Mesos-DNS for your Mesos cluster.
 Mesos-DNS supports service discovery in Apache Mesos clusters. It allows applications and services running on Mesos to find each other through the domain name system (DNS), similarly to how services discover each other throughout the Internet. Applications launched by Marathon are assigned names like search.marathon.mesos. Mesos-DNS translates these names to the IP address and port on the machine currently running each application. To connect to an application in the Mesos datacenter, all you need to know is its name. Every time a connection is initiated, the DNS translation will point to the right machine in the datacenter.

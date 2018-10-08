@@ -199,7 +199,7 @@ This guide assumes that you are logged in to Photon OS with the root account and
 
 ## Getting Started with Photon OS 2.0
 
-**NOTE:** This section applies to Photon OS w.0 only.
+**NOTE:** This section applies to Photon OS 2.0 only.
 
 To get started with Photon OS 2.0, refer to the installation instructions for your target environment:
 - [Running Photon OS on VMware vSphere](Running-Photon-OS-on-vSphere.md)
