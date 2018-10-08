@@ -1,0 +1,56 @@
+From 648922c3a6ddef5fe5ce2677fa3d762574f0a446 Mon Sep 17 00:00:00 2001
+From: Wanpeng Li <wanpengli@tencent.com>
+Date: Tue, 13 Feb 2018 09:05:41 +0800
+Subject: KVM: X86: Choose qspinlock when dedicated physical CPUs are available
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Waiman Long mentioned that:
+> Generally speaking, unfair lock performs well for VMs with a small
+> number of vCPUs. Native qspinlock may perform better than pvqspinlock
+> if there is vCPU pinning and there is no vCPU over-commitment.
+
+This patch uses the KVM_HINTS_DEDICATED performance hint, which is
+provided by the hypervisor admin, to choose the qspinlock algorithm
+when a dedicated physical CPU is available.
+
+PV_DEDICATED = 1, PV_UNHALT = anything: default is qspinlock
+PV_DEDICATED = 0, PV_UNHALT = 1: default is Hybrid PV queued/unfair lock
+PV_DEDICATED = 0, PV_UNHALT = 0: default is tas
+
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Radim Krčmář <rkrcmar@redhat.com>
+Cc: Eduardo Habkost <ehabkost@redhat.com>
+Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Radim Krčmář <rkrcmar@redhat.com>
+Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
+Reviewed-by: Frank van der Linden <fllinden@amazon.com>
+Signed-off-by: Eduardo Valentin <eduval@amazon.com>
+
+CR: https://cr.amazon.com/r/8321913/
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kernel/kvm.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+index 7997f2a0d5f8..98f6201b816e 100644
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -651,6 +651,11 @@ void __init kvm_spinlock_init(void)
+ 	if (!kvm_para_has_feature(KVM_FEATURE_PV_UNHALT))
+ 		return;
+ 
++	if (kvm_para_has_hint(KVM_HINTS_DEDICATED)) {
++		static_branch_disable(&virt_spin_lock_key);
++		return;
++	}
++
+ 	__pv_init_lock_hash();
+ 	pv_lock_ops.queued_spin_lock_slowpath = __pv_queued_spin_lock_slowpath;
+ 	pv_lock_ops.queued_spin_unlock = PV_CALLEE_SAVE(__pv_queued_spin_unlock);
+-- 
+2.14.4
+

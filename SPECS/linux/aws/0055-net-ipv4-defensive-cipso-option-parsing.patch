@@ -1,0 +1,62 @@
+From 15541c4d514bb189c3e4dbad9bd9f3b957d7c4d0 Mon Sep 17 00:00:00 2001
+From: Frank van der Linden <fllinden@amazon.com>
+Date: Fri, 31 Aug 2018 18:34:53 +0000
+Subject: net/ipv4: defensive cipso option parsing
+
+commit 40413955ee265a5e42f710940ec78f5450d49149 fixed a possible
+infinite loop in the IP option parsing of CIPSO. The fix assumes
+that ip_option_compile filtered out all zero length options and
+that no other one-byte options beside IPOPT_END and IPOPT_NOOP
+exist.
+While this assumption currently holds true, add explicit checks
+for zero length and invalid length options to be safe for the
+future. Even though ip_options_compile should have validated the
+options, the introduction of new one-byte options can still
+confuse this code without the additional checks.
+
+Signed-off-by: Stefan Nuernberger <snu@amazon.com>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ net/ipv4/cipso_ipv4.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/cipso_ipv4.c b/net/ipv4/cipso_ipv4.c
+index 82178cc69c96..f291b57b8474 100644
+--- a/net/ipv4/cipso_ipv4.c
++++ b/net/ipv4/cipso_ipv4.c
+@@ -1512,7 +1512,7 @@ static int cipso_v4_parsetag_loc(const struct cipso_v4_doi *doi_def,
+  *
+  * Description:
+  * Parse the packet's IP header looking for a CIPSO option.  Returns a pointer
+- * to the start of the CIPSO option on success, NULL if one if not found.
++ * to the start of the CIPSO option on success, NULL if one is not found.
+  *
+  */
+ unsigned char *cipso_v4_optptr(const struct sk_buff *skb)
+@@ -1522,9 +1522,11 @@ unsigned char *cipso_v4_optptr(const struct sk_buff *skb)
+ 	int optlen;
+ 	int taglen;
+ 
+-	for (optlen = iph->ihl*4 - sizeof(struct iphdr); optlen > 0; ) {
++	for (optlen = iph->ihl*4 - sizeof(struct iphdr); optlen > 1; ) {
+ 		switch (optptr[0]) {
+ 		case IPOPT_CIPSO:
++			if (!optptr[1] || optptr[1] > optlen)
++				return NULL;
+ 			return optptr;
+ 		case IPOPT_END:
+ 			return NULL;
+@@ -1534,6 +1536,10 @@ unsigned char *cipso_v4_optptr(const struct sk_buff *skb)
+ 		default:
+ 			taglen = optptr[1];
+ 		}
++
++		if (!taglen || taglen > optlen)
++			break;
++
+ 		optlen -= taglen;
+ 		optptr += taglen;
+ 	}
+-- 
+2.14.4
+
