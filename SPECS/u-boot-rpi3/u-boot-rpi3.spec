@@ -3,15 +3,17 @@
 Summary:        U-Boot EFI firmware for the rpi3
 Name:		u-boot-rpi3
 Version:	2018.09
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        ftp://ftp.denx.de/pub/u-boot/u-boot-%{version}.tar.bz2
 %define sha1 u-boot=e43d4fc09395f8cde29d655d35b2bb773e89b444
+Source1:        rpi_3_photon_defconfig
 Patch0:		0001-XXX-openSUSE-XXX-Load-dtb-from-part.patch
 Patch1:		0004-Fix-MMC1-external-SD-slot-on-Samsun.patch
+Patch2:		0005-Fix-no-usb.patch
 BuildRequires:  bc
 BuildRequires:  openssl-devel
 BuildRequires:  python2-devel
@@ -32,10 +34,12 @@ Embedded PowerPC, ARM, MIPS and x86 processors.
 %setup -q -n u-boot-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
-make %{?_smp_mflags} CROSS_COMPILE= HOSTCFLAGS="$RPM_OPT_FLAGS" rpi_3_defconfig
-echo "CONFIG_OF_LIBFDT_OVERLAY=y" >> .config
+cp %{SOURCE1} configs/
+make %{?_smp_mflags} CROSS_COMPILE= HOSTCFLAGS="$RPM_OPT_FLAGS" rpi_3_photon_defconfig
+# echo "CONFIG_OF_LIBFDT_OVERLAY=y" >> .config
 make %{?_smp_mflags} CROSS_COMPILE= HOSTCFLAGS="$RPM_OPT_FLAGS" USE_PRIVATE_LIBGG=yes
 
 %install
@@ -60,6 +64,8 @@ install -D -m 0644 u-boot.bin %{buildroot}/boot/esp/u-boot.bin
 %doc doc/README.ARM-memory-map
 
 %changelog
+*   Mon Oct 08 2018 Ajay Kaher <akaher@vmware.com> 2018.09-2
+-   Disable USB to improve boot time.
 *   Thu Sep 13 2018 Michelle Wang <michellew@vmware.com> 2018.09-1
 -   Version update to 2018.09
 *   Wed Jul 25 2018 Ajay Kaher <akaher@vmware.com> 2018.07-1
