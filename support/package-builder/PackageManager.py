@@ -23,7 +23,8 @@ class PackageManager(object):
             logPath = constants.logPath
         self.logName = logName
         self.logPath = logPath
-        self.logger = Logger.getLogger(logName, logPath)
+        self.logLevel = constants.logLevel
+        self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
         self.mapCyclesToPackageList = {}
         self.mapPackageToCycle = {}
         self.sortedPackageList = []
@@ -99,8 +100,8 @@ class PackageManager(object):
                 if packageIsAlreadyBuilt:
                     listAvailablePackages.add(package+"-"+version)
 
-        self.logger.info("List of Already built packages")
-        self.logger.info(listAvailablePackages)
+        self.logger.debug("List of Already built packages")
+        self.logger.debug(listAvailablePackages)
         return listAvailablePackages
 
     def _calculateParams(self, listPackages):
@@ -147,7 +148,7 @@ class PackageManager(object):
         ThreadPool.pkgBuildType = self.pkgBuildType
 
     def _initializeScheduler(self, statusEvent):
-        Scheduler.setLog(self.logName, self.logPath)
+        Scheduler.setLog(self.logName, self.logPath, self.logLevel)
         Scheduler.setParams(self.sortedPackageList, set(self.listOfPackagesAlreadyBuilt))
         Scheduler.setEvent(statusEvent)
         Scheduler.stopScheduling = False
@@ -183,7 +184,7 @@ class PackageManager(object):
 
         statusEvent.wait()
         Scheduler.stopScheduling = True
-        self.logger.info("Waiting for all remaining worker threads")
+        self.logger.debug("Waiting for all remaining worker threads")
         ThreadPool.join_all()
 
         setFailFlag = False
@@ -206,10 +207,8 @@ class PackageManager(object):
                 self.logger.error("Build stopped unexpectedly.Unknown error.")
                 raise Exception("Unknown error")
 
-        self.logger.info("Terminated")
-
     def _createBuildContainer(self):
-        self.logger.info("Generating photon build container..")
+        self.logger.debug("Generating photon build container..")
         try:
             #TODO image name constants.buildContainerImageName
             self.dockerClient.images.remove("photon_build_container:latest", force=True)
@@ -233,7 +232,7 @@ class PackageManager(object):
                 self.logger.debug("Deleting chroot: " + chrootID)
                 chrUtils.destroyChroot(chrootID)
             raise e
-        self.logger.info("VDBG-PU-createBuildContainer: chrootID: " + chrootID)
+        self.logger.debug("createBuildContainer: chrootID: " + chrootID)
 
         # Create photon build container using toolchain chroot
         #TODO: Coalesce logging
@@ -254,4 +253,4 @@ class PackageManager(object):
         cmd = "rm -f ./tcroot.tar.gz"
         cmdUtils.runCommandInShell(cmd, self.logPath + "/toolchain-chroot4.log")
         chrUtils.destroyChroot(chrootID)
-        self.logger.info("Photon build container successfully created.")
+        self.logger.debug("Photon build container successfully created.")

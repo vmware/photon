@@ -40,7 +40,7 @@ class SpecObjectsUtils(object):
         self.mapSpecObjects = {}
         self.mapPackageToSpec = {}
         self.mapSpecFileNameToSpecObj = {}
-        self.logger = Logger.getLogger("Serializable Spec objects", logPath)
+        self.logger = Logger.getLogger("Serializable Spec objects", logPath, constants.logLevel)
 
     def readSpecsAndConvertToSerializableObjects(self, specFilesPath):
         listSpecFiles = []
@@ -290,23 +290,23 @@ class SpecObjectsUtils(object):
         listSpecs = self.mapSpecObjects.keys()
         for spec in listSpecs:
             for specObj in self.mapSpecObjects[spec]:
-                self.logger.info("-----------Spec:"+specObj.name+"--------------")
-                self.logger.info("Version:"+specObj.version)
-                self.logger.info("Release:"+specObj.release)
-                self.logger.info("SpecFile:"+specObj.specFile)
-                self.logger.info("Source Files")
-                self.logger.info(specObj.listSources)
-                self.logger.info("Patch Files")
-                self.logger.info(specObj.listPatches)
-                self.logger.info("List RPM packages")
-                self.logger.info(specObj.listPackages)
-                self.logger.info("Build require packages")
-                self.logger.info(self.getPkgNamesFromObj(specObj.buildRequirePackages))
-                self.logger.info("install require packages")
-                self.logger.info(self.getPkgNamesFromObj(specObj.installRequiresAllPackages))
-                self.logger.info(specObj.installRequiresPackages)
-                self.logger.info("security_hardening: " + specObj.securityHardening)
-                self.logger.info("------------------------------------------------")
+                self.logger.debug("-----------Spec:"+specObj.name+"--------------")
+                self.logger.debug("Version:"+specObj.version)
+                self.logger.debug("Release:"+specObj.release)
+                self.logger.debug("SpecFile:"+specObj.specFile)
+                self.logger.debug("Source Files")
+                self.logger.debug(specObj.listSources)
+                self.logger.debug("Patch Files")
+                self.logger.debug(specObj.listPatches)
+                self.logger.debug("List RPM packages")
+                self.logger.debug(specObj.listPackages)
+                self.logger.debug("Build require packages")
+                self.logger.debug(self.getPkgNamesFromObj(specObj.buildRequirePackages))
+                self.logger.debug("install require packages")
+                self.logger.debug(self.getPkgNamesFromObj(specObj.installRequiresAllPackages))
+                self.logger.debug(specObj.installRequiresPackages)
+                self.logger.debug("security_hardening: " + specObj.securityHardening)
+                self.logger.debug("------------------------------------------------")
 
 
 class SPECS(object):
