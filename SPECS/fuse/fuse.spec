@@ -1,9 +1,9 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse
 Version:        2.9.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL+
-Url:            http://fuse.sourceforge.net/
+URL:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -28,13 +28,13 @@ It contains the libraries and header files to create fuse applications.
 %patch0 -p1
 %endif
 %build
-./configure --prefix=%{_prefix} --disable-static INIT_D_PATH=/tmp/init.d &&
+%configure --disable-static INIT_D_PATH=/tmp/init.d &&
 make %{?_smp_mflags}
 
 %install
 mkdir -p %{buildroot}%{_libdir}/%{name}
 make install \
-    prefix=%{buildroot}%{_prefix}
+    DESTDIR=%{buildroot}
 
 install -v -m755 -d /usr/share/doc/%{name}-%{version} &&
 install -v -m644    doc/{how-fuse-works,kernel.txt} \
@@ -43,11 +43,14 @@ find %{buildroot} -name '*.la' -delete
 
 %files
 %defattr(-, root, root)
+/sbin/mount.fuse
 %{_libdir}/libfuse.so.*
 %{_libdir}/libulockmgr.so.*
 %{_bindir}/*
 %{_mandir}/man1/*
 %exclude %{_mandir}/man8/*
+%exclude /tmp/init.d/fuse
+%exclude %{_sysconfdir}/udev/rules.d/99-fuse.rules
 
 %files devel
 %doc ChangeLog
@@ -57,6 +60,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/fuse.pc
 
 %changelog
+*   Mon Oct 7 2018 Sriram Nambakam <snambakam@vmware.com> 2.9.7-4
+-   Use %configure and set DESTDIR
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.9.7-3
 -   Aarch64 support
 *   Wed Jul 05 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.7-2
