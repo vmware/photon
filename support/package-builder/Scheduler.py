@@ -28,8 +28,8 @@ class Scheduler(object):
         Scheduler.event = event
 
     @staticmethod
-    def setLog(logName, logPath):
-        Scheduler.logger = Logger.getLogger(logName, logPath)
+    def setLog(logName, logPath, logLevel):
+        Scheduler.logger = Logger.getLogger(logName, logPath, logLevel)
 
     @staticmethod
     def setParams(sortedList, listOfAlreadyBuiltPackages):
@@ -182,12 +182,12 @@ class Scheduler(object):
     @staticmethod
     def _setPriorities():
         if constants.packageWeightsPath is None:
-            Scheduler.logger.info("Priority Scheduler disabled")
+            Scheduler.logger.debug("Priority Scheduler disabled")
             if constants.publishBuildDependencies:
-                Scheduler.logger.info("Publishing Build dependencies")
+                Scheduler.logger.debug("Publishing Build dependencies")
                 Scheduler._makeGraph()
         else:
-            Scheduler.logger.info("Priority Scheduler enabled")
+            Scheduler.logger.debug("Priority Scheduler enabled")
             Scheduler._parseWeights()
 
             Scheduler._makeGraph()
@@ -201,8 +201,8 @@ class Scheduler(object):
                         Scheduler.priorityMap[child_pkg]
                         + (Scheduler.dependencyGraph[package][child_pkg]
                         * (Scheduler._getWeight(package))))
-            Scheduler.logger.info("set Priorities: Priority of all packages")
-            Scheduler.logger.info(Scheduler.priorityMap)
+            Scheduler.logger.debug("set Priorities: Priority of all packages")
+            Scheduler.logger.debug(Scheduler.priorityMap)
 
 
     @staticmethod
@@ -233,4 +233,4 @@ class Scheduler(object):
                     break
             if canBuild:
                 Scheduler.listOfPackagesNextToBuild.put((-Scheduler._getPriority(pkg), pkg))
-#                Scheduler.logger.info("Adding " + pkg + " to the schedule list")
+                Scheduler.logger.debug("Adding " + pkg + " to the schedule list")

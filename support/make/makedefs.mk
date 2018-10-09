@@ -11,9 +11,6 @@ TAR=/bin/tar
 RPMBUILD=/usr/bin/rpmbuild
 SED=/usr/bin/sed
 SHASUM=/usr/bin/shasum
-PACKER=/usr/local/bin/packer
-VAGRANT=/usr/bin/vagrant
-VAGRANT_BUILD=vagrant
 ARCH?=$(shell uname -m)
 
 SRCROOT := $(realpath $(SRCROOT))
@@ -57,7 +54,6 @@ PHOTON_RPMS_DIR_NOARCH=$(PHOTON_RPMS_DIR)/noarch
 PHOTON_RPMS_DIR_ARCH=$(PHOTON_RPMS_DIR)/$(ARCH)
 PHOTON_UPDATED_RPMS_DIR_NOARCH?=$(PHOTON_UPDATED_RPMS_DIR)/noarch
 PHOTON_UPDATED_RPMS_DIR_ARCH?=$(PHOTON_UPDATED_RPMS_DIR)/$(ARCH)
-PHOTON_PACKER_TEMPLATES=$(SRCROOT)/support/packer-templates
 
 PHOTON_CHROOT_PATH:=$(PHOTON_STAGE)/photonroot
 PHOTON_FS_ROOT=/usr/src/photon

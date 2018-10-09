@@ -5,6 +5,7 @@ class constants(object):
     sourcePath = ""
     rpmPath = ""
     logPath = ""
+    logLevel = "info"
     topDirPath = ""
     buildRootPath = "/mnt"
     prevPublishRPMRepo = ""
@@ -514,6 +515,10 @@ class constants(object):
         constants.topDirPath = topDirPath
 
     @staticmethod
+    def setLogLevel(logLevel):
+        constants.logLevel = logLevel
+
+    @staticmethod
     def setLogPath(logPath):
         constants.logPath = logPath
 
@@ -572,7 +577,8 @@ class constants(object):
     @staticmethod
     def initialize():
         if constants.rpmCheck:
-            constants.testLogger = Logger.getLogger("MakeCheckTest", constants.logPath)
+            constants.testLogger = Logger.getLogger("MakeCheckTest",
+                                                    constants.logPath, constants.logLevel)
             constants.addMacro("with_check", "1")
         else:
             constants.addMacro("with_check", "0")
