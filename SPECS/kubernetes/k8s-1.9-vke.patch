@@ -1,7 +1,7 @@
-From 73dd46ef2f0ddd1ccf93b0d2d339a38e08b84c20 Mon Sep 17 00:00:00 2001
+From 2683eb21c7c52d3eacbeb190d0a27b2a2ebca708 Mon Sep 17 00:00:00 2001
 From: DheerajSShetty <dheerajs@vmware.com>
-Date: Tue, 11 Sep 2018 12:05:49 -0700
-Subject: [PATCH] VKE patch for k8s 1.9.6 (8033c471)
+Date: Mon, 8 Oct 2018 17:02:50 -0700
+Subject: [PATCH] VKE patch for k8s 1.9.10 (48fc708e)
 
 ---
  api/swagger-spec/apps_v1alpha1.json                | Bin 135734 -> 136495 bytes
@@ -28,7 +28,7 @@ Subject: [PATCH] VKE patch for k8s 1.9.6 (8033c471)
  pkg/cloudprovider/providers/cascade/auth.go        | 145 ++++
  pkg/cloudprovider/providers/cascade/cascade.go     | 219 +++++
  .../providers/cascade/cascade_disks.go             | 226 +++++
- .../providers/cascade/cascade_instances.go         |  91 ++
+ .../providers/cascade/cascade_instances.go         | 124 +++
  .../providers/cascade/cascade_instances_test.go    |  43 +
  .../providers/cascade/cascade_loadbalancer.go      | 284 ++++++
  pkg/cloudprovider/providers/cascade/client.go      | 399 +++++++++
@@ -49,15 +49,15 @@ Subject: [PATCH] VKE patch for k8s 1.9.6 (8033c471)
  pkg/volume/cascade_disk/cascade_util.go            | 201 +++++
  .../admission/persistentvolume/label/admission.go  |  54 ++
  plugin/pkg/admission/vke/BUILD                     |  61 ++
- plugin/pkg/admission/vke/admission.go              | 587 +++++++++++++
- plugin/pkg/admission/vke/admission_test.go         | 952 +++++++++++++++++++++
+ plugin/pkg/admission/vke/admission.go              | 618 +++++++++++++
+ plugin/pkg/admission/vke/admission_test.go         | 960 +++++++++++++++++++++
  plugin/pkg/auth/authorizer/vke/BUILD               |  40 +
  plugin/pkg/auth/authorizer/vke/OWNERS              |   3 +
  plugin/pkg/auth/authorizer/vke/vke_authorizer.go   | 123 +++
  .../pkg/auth/authorizer/vke/vke_authorizer_test.go | 230 +++++
  staging/src/k8s.io/api/core/v1/generated.pb.go     | Bin 1241955 -> 1248240 bytes
  staging/src/k8s.io/api/core/v1/types.go            |  26 +-
- 53 files changed, 5473 insertions(+), 8 deletions(-)
+ 53 files changed, 5545 insertions(+), 8 deletions(-)
 
 diff --git a/api/swagger-spec/apps_v1alpha1.json b/api/swagger-spec/apps_v1alpha1.json
 index aa3fbdc..0189f38 100644
@@ -559,7 +559,7 @@ index b6b570b..1d9db5e 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 diff --git a/pkg/apis/core/validation/validation.go b/pkg/apis/core/validation/validation.go
-index f6ab55f..2fa447d 100644
+index 5dd08c0..eb66cc9 100644
 --- a/pkg/apis/core/validation/validation.go
 +++ b/pkg/apis/core/validation/validation.go
 @@ -681,6 +681,14 @@ func validateVolumeSource(source *core.VolumeSource, fldPath *field.Path, volNam
@@ -1558,17 +1558,21 @@ index 0000000..4df1ab9
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_instances.go b/pkg/cloudprovider/providers/cascade/cascade_instances.go
 new file mode 100644
-index 0000000..0172151
+index 0000000..4494542
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_instances.go
-@@ -0,0 +1,91 @@
+@@ -0,0 +1,124 @@
 +package cascade
 +
 +import (
++	"errors"
++	"github.com/golang/glog"
++	"os"
++	"strings"
++
 +	"k8s.io/api/core/v1"
 +	k8stypes "k8s.io/apimachinery/pkg/types"
-+	"errors"
-+	"strings"
++	"k8s.io/kubernetes/pkg/cloudprovider"
 +)
 +
 +// NodeAddresses is an implementation of Instances.NodeAddresses. In the future, private IP address, external IP, etc.
@@ -1613,12 +1617,11 @@ index 0000000..0172151
 +}
 +
 +// ExternalID returns the cloud provider ID of the specified instance (deprecated).
-+// Note: We do not call Cascade Controller here to check if the instance is alive or not because that requires the
-+// worker nodes to also login to Cascade Controller. That check is used by Kubernetes to proactively remove nodes that
-+// the cloud provider believes is no longer available. Even otherwise, Kubernetes will remove those nodes eventually.
-+// So we are not losing much by not doing that check.
++// Note: We call Cascade Controller here to check if the instance is alive or not. That check is used by Kubernetes
++// to proactively remove nodes that the cloud provider believes is no longer available. Even otherwise, Kubernetes
++// will remove those nodes eventually.
 +func (cc *CascadeCloud) ExternalID(nodeName k8stypes.NodeName) (string, error) {
-+	return getInstanceIDFromNodeName(nodeName)
++	return getInstanceIDAndLivelinessFromNodeName(cc, nodeName)
 +}
 +
 +// InstanceExistsByProviderID returns true if the instance with the given provider id still exists and is running.
@@ -1641,6 +1644,36 @@ index 0000000..0172151
 +		return "", errors.New("Cascade cloud provider: Invalid node name. Cannot fetch instance ID.")
 +	}
 +	return nodeParts[1], nil
++}
++
++// This gets the Cascade VM ID and its liveliness from the Kubernetes node name.
++func getInstanceIDAndLivelinessFromNodeName(cc *CascadeCloud, nodeName k8stypes.NodeName) (string, error) {
++	instanceID, err := getInstanceIDFromNodeName(nodeName)
++	if err != nil {
++		return "", err
++	}
++	// Get local hostname. We need to do this check to make sure we call VKE controller only from master nodes
++	// because worker nodes cannot login to VKE controller.
++	hostname, err := os.Hostname()
++	if err != nil {
++		glog.Errorf("Cascade Cloud Provider: get hostname failed. Error[%v]", err)
++		return "", err
++	}
++	// Note: Kubelet running on the worker node do not need to call VKE.
++	if strings.HasPrefix(hostname, MasterPrefix) {
++		_, err := cc.apiClient.GetVM(instanceID)
++		if err != nil {
++			switch err.(type) {
++			case APIError:
++				if err.(APIError).ErrorCode == VMNotFoundError {
++					// If instance no longer exists, we will return instance not found error
++					glog.Warningf("Cascade Cloud Provider: VM %s does not exist", instanceID)
++					return "", cloudprovider.InstanceNotFound
++				}
++			}
++		}
++	}
++	return instanceID, nil
 +}
 +
 +// InstanceTypeByProviderID returns the cloudprovider instance type of the node with the specified unique providerID
@@ -4354,10 +4387,10 @@ index 0000000..7d66036
 \ No newline at end of file
 diff --git a/plugin/pkg/admission/vke/admission.go b/plugin/pkg/admission/vke/admission.go
 new file mode 100644
-index 0000000..a5403d0
+index 0000000..a9ec9df
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission.go
-@@ -0,0 +1,587 @@
+@@ -0,0 +1,618 @@
 +package vke
 +
 +import (
@@ -4385,8 +4418,9 @@ index 0000000..a5403d0
 +	// PluginName indicates name of admission plugin.
 +	PluginName = "VMwareAdmissionController"
 +
-+	systemUnsecuredUser      = "system:unsecured"
 +	systemNodesGroup         = "system:nodes"
++	systemMastersGroup       = "system:masters"
++	systemWorkerGroup        = "system:worker"
 +	privilegedNamespace      = "vke-system"
 +	privilegedServiceAccount = "system:serviceaccount:" + privilegedNamespace + ":"
 +	reservedPrefix           = "vke"
@@ -4438,12 +4472,12 @@ index 0000000..a5403d0
 +		return nil
 +	}
 +
-+	if isSystemUnsecuredUser(a) {
-+		return validateSystemUnsecuredUser(vac, a)
++	if isCertificateFromMaster(a) {
++		return validateCertificateFromMaster(vac, a)
 +	}
 +
-+	if isCertificateFromNode(a) {
-+		return validateCertificateFromNode(a)
++	if isCertificateFromWorker(a) {
++		return validateCertificateFromWorker(a)
 +	}
 +
 +	if isPrivilegedServiceAccount(a) {
@@ -4597,17 +4631,19 @@ index 0000000..a5403d0
 +	return false
 +}
 +
-+func isSystemUnsecuredUser(a admission.Attributes) bool {
-+	return a.GetUserInfo().GetName() == systemUnsecuredUser
++func isCertificateFromMaster(a admission.Attributes) bool {
++	groups := a.GetUserInfo().GetGroups()
++	for _, group := range groups {
++		if group == systemMastersGroup {
++			return true
++		}
++	}
++	return false
 +}
 +
-+func validateSystemUnsecuredUser(vac *vmwareAdmissionController, a admission.Attributes) (err error) {
-+	// Currently the insecure port 8080 is exposed to only localhost inside the Kubernetes master VMs. So it can be used
-+	// only by kube-controller-manager, kube-scheduler and cloud-init script which creates our pods and other resources.
-+	// When a call comes on insecure port 8080, Kubernetes assigns them system:unsecured user name. We need to allow
-+	// this so that our master components can be started successfully and kube-controller-manager and kube-scheduler can
-+	// work as expected.
-+	// But this needs to be allowed only inside our privileged namespace. If the request comes to any other namespace,
++func validateCertificateFromMaster(vac *vmwareAdmissionController, a admission.Attributes) (err error) {
++	// kube-controller-manager, kube-scheduler and cloud-init script which creates our pods and other resources can use
++	// the master certificate to create pods in privileged namespace. If the request comes to any other namespace,
 +	// we need to make it go through our pod validation. This is needed because a user can create a deployment or
 +	// replica set which has a privileged pod. Since our admission controller does not look at deployments or replica
 +	// sets, we will allow it. The actual pod inside the deployment or replica set will be created by the
@@ -4621,26 +4657,47 @@ index 0000000..a5403d0
 +	return nil
 +}
 +
-+func isCertificateFromNode(a admission.Attributes) bool {
-+	// If the request came from a user with group = systemNodesGroup, then we assume that the request comes from a node
-+	// which uses a certificate for authentication.
++func isCertificateFromWorker(a admission.Attributes) bool {
 +	groups := a.GetUserInfo().GetGroups()
 +	for _, group := range groups {
-+		if group == systemNodesGroup {
++		if group == systemWorkerGroup {
 +			return true
 +		}
 +	}
 +	return false
 +}
 +
-+func validateCertificateFromNode(a admission.Attributes) error {
-+	// Block exec operations into pods for nodes. This is needed to block someone from using Kubelet's certificate to
++func isCreatingPodsThroughControllerManager(resource string) bool {
++	// If the resource is one of the following, it means the controller manager will create a pod for them and not the
++	// user directly. So, we need to identify these cases and block them in certain scenarios.
++	if resource == "deployments" ||
++		resource == "replicasets" ||
++		resource == "replicationcontrollers" ||
++		resource == "statefulsets" ||
++		resource == "daemonsets" ||
++		resource == "jobs" ||
++		resource == "cronjobs" {
++		return true
++	}
++	return false
++}
++
++func validateCertificateFromWorker(a admission.Attributes) error {
++	// Block exec operations into pods for workers. This is needed to block someone from using Kubelet's certificate to
 +	// exec into privileged pods running on the master. Other operations with the node certificate like modifying master
 +	// node, creating pods on master node, etc. are blocked by the node restriction admission controller.
-+	if a.GetResource().GroupResource() == api.Resource("pods") && a.GetOperation() == admission.Connect {
++	resource := a.GetResource().GroupResource()
++	if resource == api.Resource("pods") && a.GetOperation() == admission.Connect {
 +		return admission.NewForbidden(a,
 +			fmt.Errorf("%s validation failed: cannot modify pods in namespace %s", PluginName, a.GetNamespace()))
 +	}
++
++	// Block creation of pods indirectly by going through the controller manager.
++	if isCreatingPodsThroughControllerManager(resource.Resource) {
++		return admission.NewForbidden(a,
++			fmt.Errorf("%s validation failed: cannot modify %s in namespace %s", PluginName, resource.Resource, a.GetNamespace()))
++	}
++
 +	return nil
 +}
 +
@@ -4674,7 +4731,8 @@ index 0000000..a5403d0
 +	// we block it. This is needed so that we can block exec access into privileged pods running on the master. Also,
 +	// privileged service account does not need to perform these operations. So, just to be extra cautious we also block
 +	// off create and update pods.
-+	if a.GetResource().GroupResource() == api.Resource("pods") {
++	resource := a.GetResource().GroupResource()
++	if resource == api.Resource("pods") {
 +		// Allow Delete operation on pods
 +		if a.GetOperation() == admission.Delete {
 +			return nil
@@ -4690,9 +4748,9 @@ index 0000000..a5403d0
 +		}
 +	}
 +
-+	// If the privileged service account tries to update taints on a node, we block. We need to do this so that a user
-+	// cannot use a privileged service account to untaint the node and run pods on a master.
-+	if a.GetResource().GroupResource() == api.Resource("nodes") {
++	// If the privileged service account tries to update taints on the master node, we block. We need to do this so that
++	// a user cannot use a privileged service account to untaint the node and run pods on a master.
++	if resource == api.Resource("nodes") {
 +		if a.GetOperation() == admission.Update && strings.HasPrefix(a.GetName(), masterNodePrefix) {
 +			node, ok := a.GetObject().(*api.Node)
 +			if !ok {
@@ -4710,6 +4768,12 @@ index 0000000..a5403d0
 +					fmt.Errorf("%s validation failed: cannot modify taints on a node", PluginName))
 +			}
 +		}
++	}
++
++	// Block creation of pods indirectly by going through the controller manager.
++	if isCreatingPodsThroughControllerManager(resource.Resource) {
++		return admission.NewForbidden(a,
++			fmt.Errorf("%s validation failed: cannot modify %s in namespace %s", PluginName, resource.Resource, a.GetNamespace()))
 +	}
 +
 +	return nil
@@ -4947,10 +5011,10 @@ index 0000000..a5403d0
 +}
 diff --git a/plugin/pkg/admission/vke/admission_test.go b/plugin/pkg/admission/vke/admission_test.go
 new file mode 100644
-index 0000000..c597663
+index 0000000..684fad4
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission_test.go
-@@ -0,0 +1,952 @@
+@@ -0,0 +1,960 @@
 +package vke
 +
 +import (
@@ -5311,16 +5375,10 @@ index 0000000..c597663
 +			userInfo:           newTestUserBuilder().withGroup(testServiceAccountsGroup).build(),
 +			shouldPassValidate: true,
 +		},
-+		"allowed: systemUnsecuredUser creates pod in vke-system namespace": {
++		"allowed: systemMasters group creates pod in vke-system namespace": {
 +			operation:          kadmission.Create,
 +			pod:                newTestPodBuilder().withNamespace(privilegedNamespace).build(),
-+			userInfo:           newTestUserBuilder().withName(systemUnsecuredUser).build(),
-+			shouldPassValidate: true,
-+		},
-+		"allowed: kubelet group creates pod in vke-system namespace": {
-+			operation:          kadmission.Create,
-+			pod:                newTestPodBuilder().withNamespace(privilegedNamespace).build(),
-+			userInfo:           newTestUserBuilder().withGroup(systemNodesGroup).withName("system:node:worker").build(),
++			userInfo:           newTestUserBuilder().withGroup(systemMastersGroup).build(),
 +			shouldPassValidate: true,
 +		},
 +		"denied: regular lightwave group does not grant privileged access": {
@@ -5335,10 +5393,10 @@ index 0000000..c597663
 +			userInfo:           newTestUserBuilder().withGroup("test1\\group1").withGroup(testServiceAccountsGroup).build(),
 +			shouldPassValidate: true,
 +		},
-+		"denied: kubelet exec into pod": {
++		"denied: worker kubelet exec into pod": {
 +			operation:          kadmission.Connect,
 +			pod:                newTestPodBuilder().build(),
-+			userInfo:           newTestUserBuilder().withGroup("system:nodes").build(),
++			userInfo:           newTestUserBuilder().withGroup("system:worker").build(),
 +			shouldPassValidate: false,
 +		},
 +	}
@@ -5475,12 +5533,12 @@ index 0000000..c597663
 +			userInfo:           newTestUserBuilder().build(),
 +			shouldPassValidate: false,
 +		},
-+		"allowed: systemUnsecuredUser update clusterroles with vke: prefix": {
++		"allowed: systemMasters group update clusterroles with vke: prefix": {
 +			operation:          kadmission.Update,
 +			resource:           "clusterroles",
 +			name:               "vke:clusterrole",
 +			namespace:          "",
-+			userInfo:           newTestUserBuilder().withName(systemUnsecuredUser).build(),
++			userInfo:           newTestUserBuilder().withGroup(systemMastersGroup).build(),
 +			shouldPassValidate: true,
 +		},
 +		"allowed: regular lightwave user create clusterrolebindings": {
@@ -5507,12 +5565,12 @@ index 0000000..c597663
 +			userInfo:           newTestUserBuilder().build(),
 +			shouldPassValidate: false,
 +		},
-+		"allowed: systemUnsecuredUser update clusterrolebindings with vke: prefix": {
++		"allowed: systemMastersGroup update clusterrolebindings with vke: prefix": {
 +			operation:          kadmission.Update,
 +			resource:           "clusterrolebindings",
 +			name:               "vke:clusterrolebinding",
 +			namespace:          "",
-+			userInfo:           newTestUserBuilder().withName(systemUnsecuredUser).build(),
++			userInfo:           newTestUserBuilder().withGroup(systemMastersGroup).build(),
 +			shouldPassValidate: true,
 +		},
 +		"allowed: regular lightwave user update worker nodes": {
@@ -5601,11 +5659,11 @@ index 0000000..c597663
 +			userInfo:           newTestUserBuilder().build(),
 +			shouldPassValidate: false,
 +		},
-+		"allowed: systemUnsecuredUser update nodes": {
++		"allowed: systemMasters group update nodes": {
 +			operation:          kadmission.Update,
 +			resource:           "nodes",
 +			namespace:          "",
-+			userInfo:           newTestUserBuilder().withName(systemUnsecuredUser).build(),
++			userInfo:           newTestUserBuilder().withGroup(systemMastersGroup).build(),
 +			shouldPassValidate: true,
 +		},
 +		"allowed: kubelet update node": {
@@ -5633,6 +5691,20 @@ index 0000000..c597663
 +			oldObject:          newTestNodeBuilder().build(),
 +			object:             newTestNodeBuilder().withTaint(nil).build(),
 +			userInfo:           newTestUserBuilder().withName(privilegedServiceAccount + "default").build(),
++			shouldPassValidate: false,
++		},
++		"denied: privileged service account create a deployment": {
++			operation:          kadmission.Create,
++			resource:           "deployments",
++			namespace:          "vke-system",
++			userInfo:           newTestUserBuilder().withName(privilegedServiceAccount + "default").build(),
++			shouldPassValidate: false,
++		},
++		"denied: worker kubelet create a deployment": {
++			operation:          kadmission.Create,
++			resource:           "deployments",
++			namespace:          "vke-system",
++			userInfo:           newTestUserBuilder().withGroup(systemWorkerGroup).build(),
 +			shouldPassValidate: false,
 +		},
 +	}
