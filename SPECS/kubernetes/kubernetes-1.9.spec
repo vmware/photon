@@ -1,11 +1,11 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.9.6
-Release:        11%{?dist}
+Version:        1.9.10
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
-%define sha1    kubernetes-v%{version}.tar.gz=6996c0690a38cda1ae5479a4dde7ebfeb590e5fb
+%define sha1    kubernetes-v%{version}.tar.gz=a0146f84867f8fee4fb59b52fe96262e4bb76983
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         k8s-1.9-vke.patch
@@ -185,6 +185,8 @@ fi
 %{_bindir}/pause-amd64
 
 %changelog
+*   Mon Oct 08 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.10-1
+-   Update to k8s version 1.9.10 and vke patch (48fc708e)
 *   Tue Sep 11 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.6-11
 -   Update vke patch (8033c471)
 *   Mon Aug 22 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.6-10
