@@ -29,11 +29,12 @@ class Installer(object):
     unmount_disk_command = "./mk-unmount-disk.sh"
 
     def __init__(self, install_config, maxy=0, maxx=0, iso_installer=False,
-                 rpm_path="../stage/RPMS", log_path="../stage/LOGS"):
+                 rpm_path="../stage/RPMS", log_path="../stage/LOGS", log_level="info"):
         self.install_config = install_config
         self.install_config['iso_installer'] = iso_installer
         self.rpm_path = rpm_path
         self.log_path = log_path
+        self.log_level = log_level
 
         if 'working_directory' in self.install_config:
             self.working_directory = self.install_config['working_directory']

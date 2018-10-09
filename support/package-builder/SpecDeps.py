@@ -13,6 +13,7 @@ from jsonwrapper import JsonWrapper
 from constants import constants
 from CommandUtils import CommandUtils
 from StringUtils import StringUtils
+from Logger import Logger
 
 DEFAULT_INPUT_TYPE = "pkg"
 DEFAULT_DISPLAY_OPTION = "tree"
@@ -29,6 +30,7 @@ def main():
     parser.add_argument("-d", "--disp", dest="display_option", default=DEFAULT_DISPLAY_OPTION)
     parser.add_argument("-s", "--spec-dir", dest="spec_dir", default=SPEC_FILE_DIR)
     parser.add_argument("-l", "--log-dir", dest="log_dir", default=LOG_FILE_DIR)
+    parser.add_argument("-y", "--log-level", dest="log_level", default="info")
     parser.add_argument("-t", "--stage-dir", dest="stage_dir", default="../../stage")
     parser.add_argument("-a", "--input-data-dir", dest="input_data_dir", default="../../common/data/")
     parser.add_argument("-o", "--output-dir", dest="output_dir", default="../../stage/common/data")
@@ -36,9 +38,11 @@ def main():
 
     constants.setSpecPath(options.spec_dir)
     constants.setLogPath(options.log_dir)
+    constants.setLogLevel(options.log_level)
     constants.initialize()
 
     cmdUtils = CommandUtils()
+    logger = Logger.getLogger("SpecDeps", options.log_dir, options.log_level)
 
     if not os.path.isdir(options.output_dir):
         cmdUtils.runCommandInShell2("mkdir -p "+options.output_dir)
@@ -46,11 +50,11 @@ def main():
     if not options.input_data_dir.endswith('/'):
         options.input_data_dir += '/'
     try:
-        specDeps = SpecDependencyGenerator()
+        specDeps = SpecDependencyGenerator(options.log_dir, options.log_level)
 
         if options.input_type == "remove-upward-deps":
             whoNeedsList = specDeps.process(options.input_type, options.pkg, options.display_option)
-            print ("Removing upward dependencies: " + str(whoNeedsList))
+            logger.info("Removing upward dependencies: " + str(whoNeedsList))
             for pkg in whoNeedsList:
                 package, version = StringUtils.splitPackageNameAndVersion(pkg)
                 release = SPECS.getData().getRelease(package, version)
@@ -65,6 +69,7 @@ def main():
         elif options.input_type == "json":
             list_json_files = options.json_file.split("\n")
             # Generate the expanded package dependencies json file based on package_list_file
+            logger.info("Generating the install time dependency list for all json files")
             for json_file in list_json_files:
                 shutil.copy2(json_file, options.output_dir)
                 json_wrapper_option_list = JsonWrapper(json_file)
@@ -77,7 +82,6 @@ def main():
                         continue
                     if options.display_option == "json":
                         output_file = os.path.join(options.output_dir, install_option[1]["file"])
-                    print ("Generating the install time dependency list for " + json_file)
                     specDeps.process(options.input_type, input_value, options.display_option, output_file)
     except Exception as e:
         traceback.print_exc()
