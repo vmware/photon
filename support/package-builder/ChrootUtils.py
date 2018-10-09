@@ -13,7 +13,7 @@ class ChrootUtils(object):
             logPath = constants.logPath
         self.logName = logName
         self.logPath = logPath
-        self.logger = Logger.getLogger(logName, logPath)
+        self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
 
     def createChroot(self, chrootName):
         chrootID = constants.buildRootPath + "/" + chrootName

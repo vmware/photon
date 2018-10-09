@@ -189,6 +189,7 @@ if __name__ == '__main__':
                         default="/mnt/photon-root")
     parser.add_argument("-l", "--log-path", dest="log_path",
                         default="../stage/LOGS")
+    parser.add_argument("-y", "--log-level", dest="log_level")
     parser.add_argument("-r", "--rpm-path", dest="rpm_path", default="../stage/RPMS")
     parser.add_argument("-x", "--srpm-path", dest="srpm_path", default="../stage/SRPMS")
     parser.add_argument("-o", "--output-data-path", dest="output_data_path",
@@ -287,7 +288,7 @@ if __name__ == '__main__':
 
         # Run the installer
         package_installer = Installer(config, rpm_path=options.rpm_path,
-                                      log_path=options.log_path)
+                                      log_path=options.log_path, log_level=options.log_level)
         package_installer.install(None)
 
         # Making the iso if needed

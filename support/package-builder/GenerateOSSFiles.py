@@ -23,6 +23,8 @@ def main():
                         default="../../stage/SRPMS")
     parser.add_argument("-j", "--output-dir", dest="outputDirPath",
                         default="../../stage/")
+    parser.add_argument("-z", "--log-level", dest="logLevel",
+                        default="info")
     parser.add_argument("-c", "--pullsources-config", dest="pullsourcesConfig",
                         default="pullsources.conf")
     parser.add_argument("-f", "--pkg-blacklist-file", dest="pkgBlacklistFile",
@@ -39,7 +41,8 @@ def main():
     try:
         if not os.path.isdir(options.logPath):
             cmdUtils.runCommandInShell("mkdir -p " + options.logPath)
-        logger = Logger.getLogger(options.logPath + "/generateYamlFiles")
+        logger = Logger.getLogger(options.logPath + "/generateYamlFiles",
+                                  options.logPath, options.logLevel)
 
         if options.generateYamlFiles:
             if (options.pkgBlacklistFile is not None and
@@ -73,6 +76,7 @@ def main():
         constants.setSpecPath(options.specPath)
         constants.setSourceRpmPath(options.sourceRpmPath)
         constants.setLogPath(options.logPath)
+        constants.setLogLevel(options.logLevel)
         constants.setPullSourcesConfig(options.pullsourcesConfig)
         constants.initialize()
 
@@ -175,7 +179,7 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
 
     if singleFile:
         yamlFile.close()
-    logger.info("Generated source yaml files for all packages")
+    logger.debug("Generated source yaml files for all packages")
 
 
 def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
@@ -226,7 +230,7 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
 
     if singleFile:
         yamlFile.close()
-    logger.info("Generated SRPM yaml files for all packages")
+    logger.debug("Generated SRPM yaml files for all packages")
 
 
 if __name__ == "__main__":
