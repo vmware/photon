@@ -29,6 +29,7 @@ def main():
     parser.add_argument("-d", "--disp", dest="display_option", default=DEFAULT_DISPLAY_OPTION)
     parser.add_argument("-s", "--spec-dir", dest="spec_dir", default=SPEC_FILE_DIR)
     parser.add_argument("-l", "--log-dir", dest="log_dir", default=LOG_FILE_DIR)
+    parser.add_argument("-y", "--log-level", dest="log_level", default="info")
     parser.add_argument("-t", "--stage-dir", dest="stage_dir", default="../../stage")
     parser.add_argument("-a", "--input-data-dir", dest="input_data_dir", default="../../common/data/")
     parser.add_argument("-o", "--output-dir", dest="output_dir", default="../../stage/common/data")
@@ -36,6 +37,7 @@ def main():
 
     constants.setSpecPath(options.spec_dir)
     constants.setLogPath(options.log_dir)
+    constants.setLogLevel(options.log_level)
     constants.initialize()
 
     cmdUtils = CommandUtils()
@@ -65,6 +67,7 @@ def main():
         elif options.input_type == "json":
             list_json_files = options.json_file.split("\n")
             # Generate the expanded package dependencies json file based on package_list_file
+            print ("Generating the install time dependency list for all json files")
             for json_file in list_json_files:
                 shutil.copy2(json_file, options.output_dir)
                 json_wrapper_option_list = JsonWrapper(json_file)
@@ -77,7 +80,6 @@ def main():
                         continue
                     if options.display_option == "json":
                         output_file = os.path.join(options.output_dir, install_option[1]["file"])
-                    print ("Generating the install time dependency list for " + json_file)
                     specDeps.process(options.input_type, input_value, options.display_option, output_file)
     except Exception as e:
         traceback.print_exc()

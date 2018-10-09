@@ -52,7 +52,7 @@ class PackageBuilderBase(object):
         if not os.path.isdir(self.logPath):
             cmdUtils = CommandUtils()
             cmdUtils.runCommandInShell("mkdir -p " + self.logPath)
-        self.logger = Logger.getLogger(self.logName, self.logPath)
+        self.logger = Logger.getLogger(self.logName, self.logPath, constants.logLevel)
 
     def _findPackageNameAndVersionFromRPMFile(self, rpmfile):
         rpmfile = os.path.basename(rpmfile)
@@ -137,7 +137,7 @@ class PackageBuilderBase(object):
 
     def _findDependentPackagesAndInstalledRPM(self, instanceID):
         listInstalledPackages, listInstalledRPMs = self._findInstalledPackages(instanceID)
-        self.logger.info(listInstalledPackages)
+        self.logger.debug(listInstalledPackages)
         listDependentPackages = self._findBuildTimeRequiredPackages()
         listTestPackages=[]
         if constants.rpmCheck and self.package in constants.testForceRPMS:
@@ -203,7 +203,7 @@ class PackageBuilderContainer(PackageBuilderBase):
                 pass
 
         try:
-            self.logger.info("BuildContainer-prepareBuildContainer: " +
+            self.logger.debug("BuildContainer-prepareBuildContainer: " +
                              "Starting build container: " + containerName)
             #TODO: Is init=True equivalent of --sig-proxy?
             privilegedDocker = False
@@ -257,9 +257,9 @@ class PackageBuilderContainer(PackageBuilderBase):
 
             pkgUtils = PackageUtils(self.logName, self.logPath)
             if listDependentPackages:
-                self.logger.info("BuildContainer-buildPackage: " +
+                self.logger.debug("BuildContainer-buildPackage: " +
                                  "Installing dependent packages..")
-                self.logger.info(listDependentPackages)
+                self.logger.debug(listDependentPackages)
                 for pkg in listDependentPackages:
                     packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
                     self._installPackage(pkgUtils, packageName, packageVersion, containerID, destLogPath,listInstalledPackages, listInstalledRPMs)
@@ -274,9 +274,9 @@ class PackageBuilderContainer(PackageBuilderBase):
                     if flag == False:
                         self._installPackage(pkgUtils, packageName,packageVersion, containerID, destLogPath,listInstalledPackages, listInstalledRPMs)
                 pkgUtils.installRPMSInAOneShotInContainer(containerID, destLogPath)
-                self.logger.info("Finished installing the build time dependent packages....")
+                self.logger.debug("Finished installing the build time dependent packages....")
 
-            self.logger.info("BuildContainer-buildPackage: Start building the package: " +
+            self.logger.debug("BuildContainer-buildPackage: Start building the package: " +
                              self.package)
             pkgUtils.adjustGCCSpecsInContainer(self.package, self.version, containerID, destLogPath)
             pkgUtils.buildRPMSForGivenPackageInContainer(
@@ -284,7 +284,7 @@ class PackageBuilderContainer(PackageBuilderBase):
                 self.version,
                 containerID,
                 destLogPath)
-            self.logger.info("BuildContainer-buildPackage: Successfully built the package: " +
+            self.logger.debug("BuildContainer-buildPackage: Successfully built the package: " +
                              self.package)
         except Exception as e:
             self.logger.error("Failed while building package:" + self.package)
@@ -337,7 +337,7 @@ class PackageBuilderChroot(PackageBuilderBase):
             pkgUtils = PackageUtils(self.logName, self.logPath)
 
             if listDependentPackages:
-                self.logger.info("Installing the build time dependent packages......")
+                self.logger.debug("Installing the build time dependent packages......")
                 for pkg in listDependentPackages:
                     packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
                     self._installPackage(pkgUtils, packageName, packageVersion, chrootID, self.logPath,listInstalledPackages, listInstalledRPMs)
@@ -352,7 +352,7 @@ class PackageBuilderChroot(PackageBuilderBase):
                     if flag == False:
                         self._installPackage(pkgUtils, packageName,packageVersion, chrootID, self.logPath,listInstalledPackages, listInstalledRPMs)
                 pkgUtils.installRPMSInAOneShot(chrootID, self.logPath)
-                self.logger.info("Finished installing the build time dependent packages....")
+                self.logger.debug("Finished installing the build time dependent packages....")
 
             pkgUtils.adjustGCCSpecs(self.package, self.version, chrootID, self.logPath)
             pkgUtils.buildRPMSForGivenPackage(self.package, self.version, chrootID,
