@@ -509,7 +509,7 @@ class SpecDependencyGenerator(object):
                 return self.displayDependencies(displayOption, inputType, outputFile, mapDependencies, parent)
             else:
                 return self.displayDependencies(displayOption, inputType, inputValue, mapDependencies, parent)
-        elif inputType == "remove-upward-deps":
+        elif inputType == "get-upward-deps":
             depList = []
             for specFile in inputValue.split(":"):
                 if specFile in SPECS.getData().mapSpecFileNameToSpecObj:

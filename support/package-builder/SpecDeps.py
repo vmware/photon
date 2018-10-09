@@ -49,14 +49,18 @@ def main():
         specDeps = SpecDependencyGenerator()
 
         if options.input_type == "remove-upward-deps":
-            whoNeedsList = specDeps.process(options.input_type, options.pkg, options.display_option)
+            whoNeedsList = specDeps.process("get-upward-deps", options.pkg, options.display_option)
             print ("Removing upward dependencies: " + str(whoNeedsList))
             for pkg in whoNeedsList:
                 package, version = StringUtils.splitPackageNameAndVersion(pkg)
                 release = SPECS.getData().getRelease(package, version)
-                buildarch=SPECS.getData().getBuildArch(package, version)
-                rpmFile = "stage/RPMS/" + buildarch + "/" +package + "-" + version + "-" + release + ".*" + buildarch+".rpm"
-                cmdUtils.runCommandInShell2("rm -f "+rpmFile)
+                for p in SPECS.getData().getPackages(package,version):
+                    buildarch=SPECS.getData().getBuildArch(p, version)
+                    rpmFile = "stage/RPMS/" + buildarch + "/" + p + "-" + version + "-" + release + ".*" + buildarch+".rpm"
+                    cmdUtils.runCommandInShell2("rm -f "+rpmFile)
+        elif options.input_type == "print-upward-deps":
+            whoNeedsList = specDeps.process("get-upward-deps", options.pkg, options.display_option)
+            print ("Upward dependencies: " + str(whoNeedsList))
         # To display/print package dependencies on console
         elif (options.input_type == "pkg" or
                 options.input_type == "who-needs"):

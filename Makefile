@@ -235,6 +235,10 @@ who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
 		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg)
 
+print-upward-deps:
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i print-upward-deps -p $(pkg)
+
 # Input args: BASE_COMMIT= (optional)
 #
 # This target removes staged RPMS that can be affected by change(s) and should
