@@ -19,7 +19,7 @@ class PackageBuildDataGenerator(object):
             logName = "PackageBuildDataGenerator"
         if logPath is None:
             logPath = constants.logPath
-        self.logger = Logger.getLogger(logName, logPath)
+        self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
         self.__mapCyclesToPackageList = {}
         self.__mapPackageToCycle = {}
         self.__buildDependencyGraph = {}
@@ -110,16 +110,16 @@ class PackageBuildDataGenerator(object):
 
             # Remove duplicate entries in sorted list in intervals
             if (len(sortedList) - prevSortListLen) > 100:
-                self.logger.info("Removing duplicates in sortedList")
+                self.logger.debug("Removing duplicates in sortedList")
                 sortedList = removeDuplicateEntries(sortedList)
             else:
                 prevSortListLen = len(sortedList)
 
-        self.logger.info("Removing duplicates in sorted list")
+        self.logger.debug("Removing duplicates in sorted list")
         sortedList = removeDuplicateEntries(sortedList)
 
-        self.logger.info("Sorted list: ")
-        self.logger.info(sortedList)
+        self.logger.debug("Sorted list: ")
+        self.logger.debug(sortedList)
         self.__sortedPackageList = sortedList
 
     def _constructBuildAndRunTimeDependencyGraph(self, basePackage):
@@ -129,7 +129,7 @@ class PackageBuildDataGenerator(object):
             addBuildTimeGraph = False
         if basePackage in self.__runTimeDependencyGraph:
             addRunTimeGraph = False
-        
+
         nextPackagesToConstructGraph = set()
         if addBuildTimeGraph:
             dependentRpmPackages = SPECS.getData().getBuildRequiresForPkg(basePackage)
@@ -152,7 +152,7 @@ class PackageBuildDataGenerator(object):
             self._constructBuildAndRunTimeDependencyGraph(pkg)
 
     def _readDependencyGraphAndCyclesForGivenPackages(self, basePackages):
-        self.logger.info("Reading dependency graph to check for cycles")
+        self.logger.debug("Reading dependency graph to check for cycles")
 
         for pkg in basePackages:
             self._constructBuildAndRunTimeDependencyGraph(pkg)
@@ -235,7 +235,7 @@ class PackageBuildDataGenerator(object):
         return sortedPackageList, circularDependencyGraph
 
     def _constructDependencyMap(self, cyclicDependencyGraph):
-        self.logger.info("Constructing dependency map from circular dependency graph.....")
+        self.logger.debug("Constructing dependency map from circular dependency graph.....")
         constructDependencyMap = {}
         for node in cyclicDependencyGraph.keys():
             tmpDepNodeList = set()
@@ -253,19 +253,19 @@ class PackageBuildDataGenerator(object):
                             tmpDepNodeList.add(depNode)
             depNodeList.remove(node)
             constructDependencyMap[node] = depNodeList
-        self.logger.info("Dependency Map:")
-        self.logger.info(constructDependencyMap)
+        self.logger.debug("Dependency Map:")
+        self.logger.debug(constructDependencyMap)
         return constructDependencyMap
 
     def _findCircularDependencies(self, cyclicDependencyGraph):
-        self.logger.info("Looking for circular dependencies")
+        self.logger.debug("Looking for circular dependencies")
         if not cyclicDependencyGraph:
             return
         #step1: construct dependency map from dependency graph
         constructDependencyMap = self._constructDependencyMap(cyclicDependencyGraph)
 
         #step2: find cycles in dependency map
-        self.logger.info("Finding and adding cycles using constructed dependency map......")
+        self.logger.debug("Finding and adding cycles using constructed dependency map......")
         cycleCount = 0
         for node in cyclicDependencyGraph.keys():
             listDepPkg = constructDependencyMap[node]
@@ -283,12 +283,12 @@ class PackageBuildDataGenerator(object):
                     for x in cycPkgs:
                         self.__mapPackageToCycle[x] = cycleName
                     self.__mapCyclesToPackageList[cycleName] = cycPkgs
-                    self.logger.info("New circular dependency found:")
-                    self.logger.info(cycleName + " " + ",".join(cycPkgs))
+                    self.logger.debug("New circular dependency found:")
+                    self.logger.debug(cycleName + " " + ",".join(cycPkgs))
                     cycleCount += 1
 
         if cycleCount > 0:
-            self.logger.info("Found " + str(cycleCount) + " cycles.")
-            self.logger.info("Successfully added all detected circular dependencies to list.")
+            self.logger.debug("Found " + str(cycleCount) + " cycles.")
+            self.logger.debug("Successfully added all detected circular dependencies to list.")
         else:
-            self.logger.info("No circular dependencies found.")
+            self.logger.debug("No circular dependencies found.")
