@@ -1,5 +1,5 @@
 Name:          emqttd
-Version:       2.1.2
+Version:       2.3.11
 Release:       1%{?dist}
 Summary:       emqttd
 License:       Apache License Version 2.0
@@ -7,8 +7,8 @@ Group:	       System Environment/Daemons
 Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:	       http://www.emqtt.io
-Source0:       emq-relx-%{version}.tar.gz
-%define sha1   emq-relx=c6ca7460a3b40d09ca65a9430ff1702574333222
+Source0:       emqx-rel-%{version}.tar.gz
+%define sha1   emqx-rel=3992706d8c0c48565d582cbc536fa34a68b39fde
 Source1:       emqttd.service
 Patch0:        vars.config.patch
 BuildRequires: erlang
@@ -19,7 +19,7 @@ Requires:      shadow gawk sed
 (Erlang MQTT Broker) is a distributed, massively scalable, highly extensible MQTT message broker written in Erlang/OTP.
 
 %prep
-%setup -qn emq-relx-%{version}
+%setup -qn emqx-rel-%{version}
 %patch0 -p0
 
 %build
@@ -112,5 +112,7 @@ exit 0
 rm -rf %{buildroot}
 
 %changelog
+*   Wed Sep 19 2018 Vinothkumar D <vinothkumard@vmware.com> 2.3.11-1
+-   Upgraded to version 2.3.11 
 *   Thu Dec 07 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-1
 -   Initial - modified from https://github.com/emqtt/emq-package
