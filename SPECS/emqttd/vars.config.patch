@@ -19,7 +19,7 @@
 -{runner_root_dir,    ""}.
 +{runner_root_dir,    "/lib/emqttd"}.
  {runner_base_dir,    ""}.
--{runner_bin_dir,     "$RUNNER_ROOT_DIR/bin/"}.
+-{runner_bin_dir,     "$RUNNER_ROOT_DIR/bin"}.
 -{runner_etc_dir,     "$RUNNER_ROOT_DIR/etc"}.
 +{runner_bin_dir,     "/usr/sbin/"}.
 +{runner_etc_dir,     "/etc/emqttd"}.
