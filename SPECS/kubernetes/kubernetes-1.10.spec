@@ -8,7 +8,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.10.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -70,15 +70,21 @@ mkdir -p bin
 gcc -Os -Wall -Werror -static -o bin/pause-%{archname} pause.c
 strip bin/pause-%{archname}
 popd
+
+%ifarch x86_64
 make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/%{archname} windows/%{archname}"
+%endif
 
 %install
 install -vdm644 %{buildroot}/etc/profile.d
 install -m 755 -d %{buildroot}%{_bindir}
 install -m 755 -d %{buildroot}/opt/vmware/kubernetes
-install -m 755 -d %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}
 install -m 755 -d %{buildroot}/opt/vmware/kubernetes/linux/%{archname}
+
+%ifarch x86_64
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}
 install -m 755 -d %{buildroot}/opt/vmware/kubernetes/windows/%{archname}
+%endif
 
 binaries=(cloud-controller-manager hyperkube kube-aggregator kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
 for bin in "${binaries[@]}"; do
@@ -88,9 +94,11 @@ done
 install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-%{archname}
 
 # kubectl-extras
-install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}/ _output/local/bin/darwin/%{archname}/kubectl
 install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/linux/%{archname}/ _output/local/bin/linux/%{archname}/kubectl
+%ifarch x86_64
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}/ _output/local/bin/darwin/%{archname}/kubectl
 install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/windows/%{archname}/ _output/local/bin/windows/%{archname}/kubectl.exe
+%endif
 
 # kubeadm install
 install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
@@ -209,11 +217,15 @@ fi
 
 %files kubectl-extras
 %defattr(-,root,root)
-/opt/vmware/kubernetes/darwin/%{archname}/kubectl
 /opt/vmware/kubernetes/linux/%{archname}/kubectl
+%ifarch x86_64
+/opt/vmware/kubernetes/darwin/%{archname}/kubectl
 /opt/vmware/kubernetes/windows/%{archname}/kubectl.exe
+%endif
 
 %changelog
+*   Wed Oct 10 2018 Ajay Kaher <akaher@vmware.com> 1.10.7-2
+-   For aarch64 excluded drawin/arm64 and windows/arm64
 *   Wed Aug 29 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.10.7-1
 -   Update to k8s version 1.10.7 with VKE patch (fbdcc5c) and add
 -   kubectl-extras package
