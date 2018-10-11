@@ -42,22 +42,28 @@ function check-for-correct-version()
 # Changelog should have:
 # - correct day of week for the date
 # - descending chronological order
+# - whitespaces are ignored while validating dates
 function check-for-bogus-dates()
 {
-  local IFS=$'\n'
-  local prev_epoch_seconds=`date +%s`
-  for entry in `sed -e '1,/%changelog/d' $i | grep '<' | grep '>' | grep '*' | sed 's/^*//g' | sed 's/ \+/ /g'` ; do
-    IFS=$' ' read D m d y s <<< $entry
-    day=`date --date "$m $d $y" +%a`
+  local prev_epoch_seconds=$(date +%s)
+  local D=''
+  local m=''
+  local d=''
+  local y=''
+  local epoch_seconds=''
+  
+  sed -e '1,/%changelog/d' "$1" | grep -v '^[[:space:]]*-' | awk '{printf "%s %s %02d %04d\n", $2, $3, $4, $5}' | \
+  while read D m d y
+  do
+    day=$(date --date="$m $d $y" '+%a')
     if [ "${D}" != "${day}" ]; then
-      echo "ERROR in $1: bogus date in $entry"
-      echo "$m $d $y is $day"
+      echo "ERROR in $1: bogus date $m $d $y found - actual day is $D, but found $day"
       exit 1
     fi
-    epoch_seconds=`date --date "$m $d $y" +%s`
+    epoch_seconds=$(date --date "$m $d $y" +%s)
     if [ $prev_epoch_seconds -lt $epoch_seconds ]; then
       echo "ERROR in $1: %changelog not in descending chronological order"
-      echo "Ascending order starts with $entry"
+      echo "Date validation failed at $D $m $d $y"
       exit 1
     fi
     prev_epoch_seconds=$epoch_seconds

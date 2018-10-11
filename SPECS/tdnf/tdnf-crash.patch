@@ -1,0 +1,31 @@
+From c0f2278a681f8d27c88a9e5b16d92f5433133a74 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Mon, 08 Oct 2018 11:35:11 +0000
+Subject: [PATCH] Bug 2210743: fix crash when no repos enabled.
+
+SIGSEGV is observed when photon-iso repo is only enabled
+and cdrom is not mounted. This is due to a NULL pointer
+dereference in libsolv library which is called from tdnf code.
+When photon-iso is enabled with other repos disabled and cdrom
+unmounted, tdnf init code disables the photon-iso repo due to
+which some of the Pool objects for repo are not initialized.
+
+Change-Id: Iee09bcbf8a3aa2a785ccf174c267e3f556d23d2d
+---
+
+diff --git a/solv/tdnfquery.c b/solv/tdnfquery.c
+index 8aeaed1..5e1f8d8 100644
+--- a/solv/tdnfquery.c
++++ b/solv/tdnfquery.c
+@@ -426,6 +426,11 @@
+             nRetFlags = 0;
+ 
+             queue_empty(&queueJob);
++            if (!pPool || !pPool->solvables || !pPool->whatprovides)
++            {
++                dwError = ERROR_TDNF_INVALID_PARAMETER;
++                BAIL_ON_TDNF_LIBSOLV_ERROR(dwError);
++            }
+ 
+             nRetFlags = selection_make(
+                          pPool,
