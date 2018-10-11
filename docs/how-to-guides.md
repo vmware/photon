@@ -1,0 +1,18 @@
+# Photon OS How-To Guides
+
+- [Setting Up a Swarm Cluster with DNS](Install-and-Configure-a-Swarm-Cluster-with-DNS-Service-on-PhotonOS.md)
+- [Setting Up a Mesos Cluster](Install-and-Configure-a-Production-Ready-Mesos-Cluster-on-Photon-OS.md)
+- [Setting Up Marathon for a Mesos Cluster](Install-and-Configure-Marathon-for-Mesos-Cluster-on-PhotonOS.md)
+- [Setting Up DCOS CLI for Mesos](Install-and-Configure-DCOS-CLI-for-Mesos.md)
+- [Setting Up Mesos DNS on a Mesos Cluster](Install-and-Configure-Mesos-DNS-on-a-Mesos-Cluster.md)
+- [Setting Up a Network PXE Boot Server](PXE-boot.md)
+- [Working with Kickstart](kickstart.md)
+- [Running Kubernetes](kubernetes.md)
+- [Mounting Remote File Systems](nfs-utils.md)
+- [Building Photon OS from the Source Code](build-photon.md)
+- [Installing and Using Lightwave on Photon OS](Installing-and-Using-Lightwave-on-Photon-OS.md)
+    - [Installing the Lightwave Server and Configuring It as a Domain Controller on a Photon Image](Installing-Lightwave-Server-and-Setting-Up-a-Domain.md) 
+    - [Installing the Lightwave Client on a Photon Image and Joining the Client to a Domain](Installing-Lightwave-Client-and-Joining-a-Domain.md)
+    - [Installing the Photon Management Daemon on a Lightwave Client](Installing-the-Photon-Management-Daemon-on-a-Lightwave-Client.md)
+    - [Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Photon Management Daemon Installed](Remotely-Upgrade-a-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.md)
+    - [Remotely Upgrade Multiple Photon OS Machines With Lightwave Client and Photon Management Daemon Installed](Remotely-Upgrade-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.md)

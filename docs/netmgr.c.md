@@ -117,7 +117,7 @@ Link state. Available settings:
 Link information. Includes the following information:
 
 - ``pszInterfaceName`` - interface name
-- ``pszMacAddress`` - interface hardware address specified in a colon-separated format (for example: &quot;00:0c:29:99:a5:7b&quot;)
+- ``pszMacAddress`` - interface hardware address specified in a colon-separated format (for example: "00:0c:29:99:a5:7b")
 - ``mtu`` - maximum transmission unit (MTU)
 - ``mode`` - link mode (see above)
 - ``state`` - link state (see above)
@@ -153,7 +153,7 @@ nm_set_link_mac_addr(
 **Arguments**
 
 - ``pszInterfaceName`` - interface name
-- ``pszMacAddress`` - interface hardware address specified in a colon-separated format (for example: &quot;00:0c:29:99:a5:7b&quot;)
+- ``pszMacAddress`` - interface hardware address specified in a colon-separated format (for example: "00:0c:29:99:a5:7b")
 
 **Returns**
 
@@ -177,7 +177,7 @@ uint32_t
 **Arguments**
 
 - ``pszInterfaceName`` - interface name
-- ``ppszMacAddress`` - interface hardware address specified in a colon-separated format (for example: &quot;00:0c:29:99:a5:7b&quot;)
+- ``ppszMacAddress`` - interface hardware address specified in a colon-separated format (for example: "00:0c:29:99:a5:7b")
 
 **Returns**
 
@@ -404,7 +404,7 @@ uint32_t
 - ``pszInterfaceName`` - interface name
 - ``ppLinkInfo``, which includes the following information:
   - \*``pszInterfaceName`` - interface name
-  - \*``pszMacAddress`` - interface hardware address specified in a colon-separated format (for example: &quot;00:0c:29:99:a5:7b&quot;)
+  - \*``pszMacAddress`` - interface hardware address specified in a colon-separated format (for example: "00:0c:29:99:a5:7b")
   - ``mtu`` - maximum transmission unit (MTU)
   - ``mode`` - One of the following values:
     - ``LINK_AUTO`` - the specified interface is managed and configured by systemd network manager
@@ -437,7 +437,7 @@ void
 
 - ``pNetLinkInfo``, which includes the following information:
   - \*``pszInterfaceName`` - interface name
-  - \*``pszMacAddress`` - interface hardware address specified in a colon-separated format (for example: &quot;00:0c:29:99:a5:7b&quot;)
+  - \*``pszMacAddress`` - interface hardware address specified in a colon-separated format (for example: "00:0c:29:99:a5:7b")
   - ``mtu`` - maximum transmission unit (MTU)
   - ``mode`` - One of the following values:
     - ``LINK_AUTO`` - the specified interface is managed and configured by systemd network manager
@@ -1451,11 +1451,11 @@ uint32_t
 ~~~~
 **Arguments**
 
-- ``pszObjectName`` - an interface name (for example, &quot;eth0&quot;) or a file name (for example, /etc/systemd/resolved.conf)
+- ``pszObjectName`` - an interface name (for example, "eth0") or a file name (for example, /etc/systemd/resolved.conf)
 - ``pszParamName`` - name of a parameter associated with the object; specified in the format SectionName_KeyName (for example, Link_MTUBytes represents the MtuBytes key in [Link] section in [https://www.freedesktop.org/software/systemd/man/systemd.network.html](https://www.freedesktop.org/software/systemd/man/systemd.network.html))
 - ``pszParamValue`` - points to the parameter value to set; you can add (+) or remove (-) a parameter by prepending the parameter name with + or -. For example:
 
-netmgr net_info --set --object eth1 --paramname +Network_Address --paramvalue &quot;10.10.10.1/24&quot;
+netmgr net_info --set --object eth1 --paramname +Network_Address --paramvalue "10.10.10.1/24"
 
 **Returns**
 
@@ -1479,7 +1479,7 @@ Get the value of a network parameter associated with an object.
 ~~~~
 **Arguments**
 
-- ``pszObjectName`` - an interface name (for example, &quot;eth0&quot;) or a file name (for example, /etc/systemd/resolved.conf)
+- ``pszObjectName`` - an interface name (for example, "eth0") or a file name (for example, /etc/systemd/resolved.conf)
 - ``pszParamName`` - name of a parameter associated with the object; returned in the format SectionName_KeyName (for example, Link_MTUBytes represents the MtuBytes key in [Link] section in  [https://www.freedesktop.org/software/systemd/man/systemd.network.html](https://www.freedesktop.org/software/systemd/man/systemd.network.html))
 - ``ppszParamValue`` - parameter value
 
