@@ -451,6 +451,9 @@ class constants(object):
             "openjdk9.spec",
             "openjdk10.spec",
             "elasticsearch.spec",
+            # dotnet-runtime source has dep on libcurl.so.4(CURL_OPENSSL_3)(64bit)
+            "dotnet-runtime.spec",
+            "powershell.spec",
             # dashboard failed to build libxslt during `npm install`
             "kubernetes-dashboard.spec",
             # test issue (java null pointer exception) before compilation
