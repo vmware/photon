@@ -75,9 +75,9 @@ PUBLISH_BUILD_DEPENDENCIES :=
 endif
 
 ifdef WEIGHTS
-PACKAGE_WEIGHTS_PATH = -pw $(WEIGHTS)
+PACKAGE_WEIGHTS = -pw $(SRCROOT)/common/data/packageWeights.json
 else
-PACKAGE_WEIGHTS_PATH =
+PACKAGE_WEIGHTS =
 endif
 
 TOOLS_BIN := $(SRCROOT)/tools/bin
@@ -129,7 +129,7 @@ packages-micro: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOUR
                 -v $(PHOTON_RELEASE_VERSION) \
                 $(PHOTON_RPMCHECK_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
-		$(PACKAGE_WEIGHTS_PATH) \
+		$(PACKAGE_WEIGHTS) \
                 -t ${THREADS}
 
 live-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
@@ -165,7 +165,7 @@ packages-minimal: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SO
                 -v $(PHOTON_RELEASE_VERSION) \
                 $(PHOTON_RPMCHECK_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
-		$(PACKAGE_WEIGHTS_PATH) \
+		$(PACKAGE_WEIGHTS) \
                 -t ${THREADS}
 
 iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
@@ -252,7 +252,7 @@ packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(
                 $(PHOTON_RPMCHECK_FLAGS) \
 		$(PHOTON_KAT_BUILD_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
-		$(PACKAGE_WEIGHTS_PATH) \
+		$(PACKAGE_WEIGHTS) \
                 -t ${THREADS}
 
 packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
@@ -276,7 +276,7 @@ packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE
                 -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                 $(PHOTON_RPMCHECK_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
-		$(PACKAGE_WEIGHTS_PATH) \
+		$(PACKAGE_WEIGHTS) \
                 -t ${THREADS}
 
 updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
@@ -298,7 +298,7 @@ updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_P
 		$(PHOTON_KAT_BUILD_FLAGS) \
                 $(PHOTON_RPMCHECK_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
-		$(PACKAGE_WEIGHTS_PATH) \
+		$(PACKAGE_WEIGHTS) \
                 -t ${THREADS}
 
 tool-chain-stage1: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
