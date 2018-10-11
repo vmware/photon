@@ -81,7 +81,7 @@ def main():
         constants.setSourceRpmPath(options.sourceRpmPath)
         constants.setLogPath(options.logPath)
         constants.setLogLevel(options.logLevel)
-        constants.setPullSourcesConfig(options.pullsourcesConfig)
+        constants.setPullSourcesURL(get_baseurl(options.pullsourcesConfig))
         constants.initialize()
 
         # parse SPECS folder
@@ -101,6 +101,11 @@ def main():
 
     sys.exit(0)
 
+
+def get_baseurl(self, conf_file):
+    with open(conf_file) as jsonFile:
+        config = json.load(jsonFile)
+    return config['baseurl']
 
 def buildPackagesList(csvFilename):
     with open(csvFilename, "w") as csvFile:
@@ -163,7 +168,7 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
                 sha1 = SPECS.getData().getSHA1(package, version, sourceName)
                 if sha1 is not None:
                     PullSources.get(package, sourceName, sha1, yamlSourceDir,
-                                    constants.pullsourcesConfig, logger)
+                                    constants.getPullSourcesURLs(), logger)
 
             if not singleFile:
                 yamlFile = open(yamlSourceDir + "/" + ossname + "-" + version + ".yaml", "w")

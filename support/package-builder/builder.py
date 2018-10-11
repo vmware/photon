@@ -161,7 +161,7 @@ def main():
         constants.setPrevPublishRPMRepo(options.publishRPMSPath)
         constants.setPrevPublishXRPMRepo(options.publishXRPMSPath)
         constants.setBuildRootPath(options.buildRootPath)
-        constants.setPullSourcesConfig(options.pullsourcesConfig)
+        constants.setPullSourcesURL(get_baseurl(options.pullsourcesConfig))
         constants.setInputRPMSPath(options.inputRPMSPath)
         constants.setRPMCheck(options.rpmCheck)
         constants.setRpmCheckStopOnError(options.rpmCheckStopOnError)
@@ -237,6 +237,11 @@ def get_packages_with_build_options(pkg_build_options_file):
         with open(pkg_build_options_file) as jsonData:
             pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
             constants.setBuildOptions(pkg_build_option_json)
+
+def get_baseurl(conf_file):
+    with open(conf_file) as jsonFile:
+        config = json.load(jsonFile)
+    return config['baseurl']
 
 def get_all_package_names(build_install_option):
     base_path = os.path.dirname(build_install_option)
