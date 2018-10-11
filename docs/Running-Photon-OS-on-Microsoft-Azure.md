@@ -50,40 +50,41 @@ You can use the Azure CLI 2.0 to set up Photon OS. You must first  [Install Azur
 ### Step 1: Create a Resource Group
 
 From the Azure CLI, create a resource group.
-~~~~
+````
 az group create \
  --name &lt;your_resource_group&gt; \
  --location westus
-~~~~
+````
+
 ### Step 2: Create a Storage Account
 
 Create a storage account associated with this resource group.
-~~~~
+````
 az storage account create \
     --resource-group &lt;your_resource_group&gt; \
     --location westus \
     --name &lt;your_account_name&gt; \
     --kind Storage \
     --sku Standard_LRS
-~~~~
+````
 ### Step 3: List the Keys for the Storage Account
 
 Retrieve the keys associated with your newly created storage account.
-~~~~
+````
 az storage account keys list \
     --resource-group &lt;your_resource_group&gt; \
     --account-name &lt;your_account_name&gt;
-~~~~
+````
 ### Step 4: Create the Storage Container
 
 Create a storage container associated with your newly created storage account.
 
 **Note:** The sample create.sh script, described below, does this for you programmatically.
-~~~~
+````
 az storage container create \
     --account-name &lt;your_account_name&gt; \
     --name &lt;your_container_name&gt;
-~~~~
+````
 ### Step 5: Verify Your Setup in the Azure Portal
 
 1. Log into the Azure portal using your account credentials.
@@ -94,7 +95,7 @@ az storage container create \
 ### Step 6: Upload the Photon OS Distribution to Your Storage Container
 
 The Photon OS distribution for Azure is 16GB. You can download it locally or to a mounted, shared location.
-~~~~
+````
 az storage blob upload \
     --account-name &lt;your_account_name&gt; \
     --account-key &lt;your_account_key&gt; \
@@ -102,7 +103,7 @@ az storage blob upload \
     --type page \
     --file &lt;vhd_path&gt; \
     --name &lt;vm_name&gt;.vhd
-~~~~
+````
 ### Example Setup Script
 
 You can use the following script (create.sh) to upload your VHD file programmatically and create the VM. Before you run it, specify the following settings:
@@ -115,7 +116,7 @@ You can use the following script (create.sh) to upload your VHD file programmati
 - vhd_path and and vm_name of the Photon OS VHD distribution file
 
 This script returns the complete IP address of the newly created VM.
-~~~~
+````
 #!/bin/bash
 vhd_path=$1
 vm_name=$2
@@ -145,8 +146,8 @@ echo &quot;#   Create vm    #&quot;
 echo &quot;##################&quot;
 echo &quot;az vm create --resource-group ${resource_group} --location westus --name ${vm_name} --storage-account ${account_name} --os-type linux --admin-username michellew --ssh-key-value ${public_key_file} --image ${url} --use-unmanaged-disk ... ...&quot;
 /root/azure_new/bin/az vm create --resource-group ${resource_group} --location westus --name ${vm_name} --storage-account ${account_name} --os-type linux --admin-username michellew --ssh-key-value ${public_key_file} --image ${url} --use-unmanaged-disk
-~~~~
-## Removing Photon OS from Azure
+````
+### Removing Photon OS from Azure
 
 You can use the following delete.sh script to programmatically (and silently) remove the VM instance, VHD file, and container.
 
@@ -163,7 +164,7 @@ Before you run it, specify the following settings:
 
 **delete.sh**
 
-~~~~
+````
 #!/bin/bash
 vm_name=$1
 resource_group=&quot;&quot;
@@ -203,41 +204,43 @@ echo &quot;########################&quot;
 /root/azure_new/bin/az storage container delete --account-name ${account_name} --name ${container_name}
 /root/azure_new/bin/az storage container delete --account-name ${account_name} --name vhds
 exit ${exit_code}
-~~~~
-# Deploying a Containerized Application in Photon OS
+````
+
+## Deploying a Containerized Application in Photon OS
 
 Now that you have your container runtime environment up and running, you can easily deploy a containerized application. For this example, you will deploy the popular open source Web Server Nginx. The Nginx application has a customized VMware package that is published as a dockerfile and can be downloaded, directly, through the Docker module from the Docker Hub.
 
-## Step 1: Run Docker
+### Step 1: Run Docker
 
 To run Docker from the command prompt, enter the following command, which initializes the docker engine:
-~~~~
+````
 systemctl start docker
-~~~~
+````
 To ensure Docker daemon service runs on every subsequent VM reboot, enter the following command:
-~~~~
+````
 systemctl enable docker
-~~~~
-## Step 2: Run the Nginx Web Server
+````
+### Step 2: Run the Nginx Web Server
 
 Now the Docker daemon service is running, it is a simple task to &quot;pull&quot; and start the Nginx Web Server container from Docker Hub. To do this, type the following command:
-~~~~
+````
 docker run -d -p 80:80 vmwarecna/nginx
-~~~~
+````
+
 This pulls the Nginx Web Server files and appropriate dependent container filesystem layers required for this containerized application to run.
 
-[[/images/azure-docker-run.png]]
+![Azure docker run](images/azure-docker-run.png)
 
-After the &quot;docker run&quot; process completes, you return to the command prompt. You now have a fully active website up and running in a container.
+After the "docker run" process completes, you return to the command prompt. You now have a fully active website up and running in a container.
 
-## Step 3: Test the Web Server
+### Step 3: Test the Web Server
 
 **Note** : Please make sure that the proper security policies have been enabled on the Microsoft Azure side to enable traffic to port 80 on the VM.
 
 To test that your Web Server is active:
 
 1. Run the ifconfig command to get the IP address of the Photon OS Virtual Machine.
-The output displays a list of adapters that are connected to the virtual machine. Typically, the web server daemon will be bound on &quot;eth0.&quot;
+The output displays a list of adapters that are connected to the virtual machine. Typically, the web server daemon will be bound on "eth0."
 2. Start a browser on your host machine and enter the IP address of your Photon OS Virtual Machine.
 3. You should see a screen confirming that the nginx web server is successfully installed and working.
 

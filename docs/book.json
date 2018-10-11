@@ -1,6 +1,6 @@
 {
 
-	"title": "VMware Photon OS 3.0 Documentation",
+	"title": "VMware Photon OS 1.0 and 2.0 Documentation",
         "gitbook": "3.x.x",
         "plugins": ["insert-logo", "chapter-fold", "edit-link", "noembed"],
         "pluginsConfig": {

@@ -23,17 +23,17 @@ With the TP2 release, Photon OS is published in the vCloud Air catalog. Therefor
 ## Creating a Photon OS Instance
 Begin by logging into your vCloud Air account and selecting the Service into which you'd like to deploy your Photon OS instance. In this example, we'll use the Virtual Private Cloud OnDemand Service. 
 
-![](https://cloud.githubusercontent.com/assets/11306358/9573923/4fdf11f4-4f76-11e5-9706-ed10437dad4d.png)
+![Photon OS Instance](images/photon-os-instance.png)
  
 Once you've selected the Service for your instance, you'll need to specify the Location for your virtual datacenter from the list of vCloud Air locations. Clicking "Continue" will start the process of creating your virtual datacenter, an associated gateway and a routed network. 
 
 After vCloud Air is finished creating your virtual datacenter, you're ready to click the "Create your first virtual machine" button to create your Photon OS instance. 
 
-![](https://cloud.githubusercontent.com/assets/11306358/9573922/4fcfa37c-4f76-11e5-9e6c-f96cdf9a9b91.png)
+![Create virtual machine](images/create-virtual-machine.png)
  
 When you click the "Create your first virtual machine" button, you'll be presented the list of templates available in vCloud Air. Select the "64 Bit" option of VMware Photon OS - Tech Preview 2 and click the "Continue" button.
 
-![](https://cloud.githubusercontent.com/assets/11306358/9573917/4fce6430-4f76-11e5-9a76-6cb99f5badfb.png)
+![64-bit option](images/64-bit-option.png)
  
 Before vCloud Air can create your Photon OS VM, you need to confirm the hardware configuration. The defaults presented are the recommended values; adjust as necessary to accommodate the container workloads that you expect to run in this Photon OS instance. Once you're satisfied with the hardware configuration, click "Create Virtual Machine" Once complete, you should see your powered-on Photon OS instance ready to start the Docker engine and run a container workload.
  
@@ -64,5 +64,5 @@ Start a browser on your host machine and enter the IP address of your Photon OS 
  
 You can now run any other containerized application from Docker Hub or your own containerized application within Photon OS.
 
-We hope you enjoy using Photon OS as much as we enjoy creating it!
+
 

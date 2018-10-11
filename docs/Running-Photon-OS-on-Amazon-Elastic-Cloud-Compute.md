@@ -211,7 +211,7 @@ The Nginx web server should be bound to the public DNS value for  the instance o
 
 On your local workstation, open a web browser and go to the the public address of the Photon OS instance running Docker. The following screen should appear, showing that the web server is active:
 
-![Nginx](https://cloud.githubusercontent.com/assets/11306358/9568169/a6d4b140-4f07-11e5-934d-acda0bf505e8.jpg)
+![Nginx](images/Nginx.jpg)
 
 When you're done, halt the Docker container by typing `Ctrl+c` in the SSH console where you are connected to EC2. 
 

@@ -1,4 +1,4 @@
-## Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Photon Management Daemon Installed
+# Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Photon Management Daemon Installed
 
 After you have a configured the Photon Management Daemon on a machine, you can remotely upgrade any installed package on that machine. You can use the `root` user credentials.
 

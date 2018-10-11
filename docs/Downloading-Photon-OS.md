@@ -1,10 +1,14 @@
+# Downloading Photon OS
+
 Download the Photon OS version that’s right for you. Click one of the links below.
 
-**Selecting a Download Format**
+## Selecting a Download Format
 ----------------
 
 Photon OS is available in the following pre-packaged, binary formats.
-#### Download Formats ####
+
+### Download Formats ####
+
 | Format | Description |
 | --- | --- |
 | ISO Image | Contains everything needed to install either the minimal or full installation of Photon OS. The bootable ISO has a manual installer or can be used with PXE/kickstart environments for automated installations. |
@@ -13,11 +17,13 @@ Photon OS is available in the following pre-packaged, binary formats.
 | Google GCE Image | Pre-packaged and tested Google GCE image that is ready to deploy in your Google Compute Engine Environment, with all modifications and package requirements for running Photon OS in GCE. | 
 | Azure VHD | Pre-packaged and tested Azure HD image that is ready to deploy in your Microsoft Azure Cloud, with all modifications and package requirements for running Photon OS in Azure. |
 
-**Downloading Photon OS 2.0 GA**
+## Downloading Photon OS 2.0 GA
 ------------------------------
 
 Photon OS 2.0 GA is available now! Choose the download that’s right for you and click one of the links below. Refer to the associated sha1sums and md5sums.
-#### Photon OS 2.0 GA Binaries ####
+
+### Photon OS 2.0 GA Binaries
+
 | Download | Size | sha1 checksum | md5 checksum |
 | --- | --- | --- | --- |
 | [Full ISO](http://dl.bintray.com/vmware/photon/2.0/GA/iso/photon-2.0-304b817.iso) | 2.3GB | 68ec892a66e659b18917a12738176bd510cde829 | 6ce66c763589cf1ee49f0144ff7182dc |
@@ -29,7 +35,7 @@ Photon OS 2.0 GA is available now! Choose the download that’s right for you an
 | [Azure VHD - gz file](http://dl.bintray.com/vmware/photon/2.0/GA/azure/photon-azure-2.0-304b817.vhd.gz) | 170MB | a77d54351cca43eefcf289a907ec751c32372930 | 86d281f033f3584b11e5721a5cbda2d3 |
 | [Azure VHD - gz file - cloud-init provisioning](http://dl.bintray.com/vmware/photon/2.0/GA/azure/photon-azure-2.0-3146fa6.tar.gz) | 172MB | d7709a7b781dad03db55c4999bfa5ef6606efd8b | ee95bffe2c924d9cb2d47a94ecbbea2c |
 
-***Photon OS 2.0 AMI ID (Update: November 7th, 2017)***
+## Photon OS 2.0 AMI ID (Update: November 7th, 2017)
 -------------------------
 | Region | AMI ID|
 | --- | --- |
@@ -38,10 +44,12 @@ Photon OS 2.0 GA is available now! Choose the download that’s right for you an
 | N.California | ami-065f6166 |
 | Oregon | ami-f6ab7f8e |
 
-**Downloading Photon OS 2.0 RC**
+## Downloading Photon OS 2.0 RC
 ------------------------------
 Photon OS 2.0 RC is available now! Choose the download that’s right for you and click one of the links below. Refer to the associated sha1sums and md5sums.
-#### Photon OS 2.0 RC Binaries ####
+
+### Photon OS 2.0 RC Binaries
+
 | Download | Size | sha1 checksum | md5 checksum |
 | --- | --- | --- | --- |
 | [Full ISO](https://bintray.com/vmware/photon/download_file?file_path=2.0%2FRC%2Fiso%2Fphoton-2.0-31bb961.iso) | 2.2GB | 5c049d5ff40c8f22ae5e969eabd1ee8cd6b834e7 | 88cc8ecf2a7f6ae5ac8eb15f54e4a821 |
@@ -51,10 +59,11 @@ Photon OS 2.0 RC is available now! Choose the download that’s right for you an
 | [Google GCE](https://bintray.com/vmware/photon/download_file?file_path=2.0%2FRC%2Fgce%2Fphoton-gce-2.0-31bb961.tar.gz) | 704MB | c65bcc0cbda061c6305f968646be2d72a4283227 | 2dff057540e37a161520ec86e39b17aa |
 | [Azure VHD - gz file](https://bintray.com/vmware/photon/download_file?file_path=2.0%2FRC%2Fazure%2Fphoton-azure-2.0-31bb961.vhd.gz) | 169MB | b43a746fead931ae2bb43e9108cde35913b23715 | 3485c7a31741cca07cc11cbf374ec1a5 |
 
-**Downloading Photon OS 2.0 Beta**
+## Downloading Photon OS 2.0 Beta 
 ------------------------------
 Photon OS 2.0 Beta is here! Choose the download that’s right for you and click one of the links below. Refer to the associated sha1sums and md5sums.
-#### Photon OS 2.0 Beta Binaries ####
+
+### Photon OS 2.0 Beta Binaries
 | Download | Size | sha1 checksum | md5 checksum |
 | --- | --- | --- | --- |
 | [Full ISO](https://bintray.com/vmware/photon/download_file?file_path=2.0%2FBeta%2Fiso%2Fphoton-2.0-8553d58.iso) | 2.1GB | 7a0e837061805b7aa2649f9ba6652afb2d4591fc | a52c50240726cb3c4219c5c608f9acf3 |
@@ -63,11 +72,11 @@ Photon OS 2.0 Beta is here! Choose the download that’s right for you and click
 | [Google GCE](https://bintray.com/vmware/photon/download_file?file_path=2.0%2FBeta%2Fgce%2Fphoton-gce-2.0-8553d58.tar.gz) | 705MB | c042d46971fa3b642e599b7761c18f4005fc70a7 | 03b873bbd2f0dd1401a334681c59bbf6 |
 | [Azure VHD](https://bintray.com/vmware/photon/download_file?file_path=2.0%2FBeta%2Fazure%2Fphoton-azure-2.0-8553d58.vhd) | 17GB | 20cfc506a2425510e68a9d12ea48218676008ffe | 6a531eab9e1f8cba89b1f150d344ecab |
 
-**Downloading Photon OS 1.0**
+## Downloading Photon OS 1.0
 -------------------------
 
+### Photon OS 1.0 AMI ID (Update: September 28th, 2017)
 
-***Photon OS 1.0 AMI ID (Update: September 28th, 2017)***
 -------------------------
 | Region | AMI ID|
 | --- | --- |
@@ -76,12 +85,15 @@ Photon OS 2.0 Beta is here! Choose the download that’s right for you and click
 | N.California | ami-37360657 |
 | Oregon | ami-66b74f1e |
 
-***Photon OS 1.0, Revision 2 Binaries (Update: January 19th, 2017)***
+### Photon OS 1.0, Revision 2 Binaries (Update: January 19th, 2017)
+
 -------------------------------------------------------------
 We've been busy updating RPMs in our repository for months, now, to address both functional and security issues. However, our binaries have remained fixed since their release back in September 2015. In order to make it faster and easier to get a up-to-date Photon OS system, we've repackaged all of our binaries to include all of these RPM updates. For clarity, we'll call these updated binaries, which are still backed by the 1.0 repos - **1.0, Revision 2**.
 
 Choose the download that’s right for you and click one of the links below.
-#### Photon OS 1.0, Revision 2 Binaries ####
+
+#### Photon OS 1.0, Revision 2 Binaries
+
 | Download | Size | sha1 checksum | md5 checksum |
 | --- | --- | --- | --- |
 | [Full ISO](https://bintray.com/vmware/photon/download_file?file_path=photon-1.0-62c543d.iso) | 2.4GB | c4c6cb94c261b162e7dac60fdffa96ddb5836d66| 69500c07d25ce9caa9b211a8b6eefd61|
@@ -92,10 +104,11 @@ Choose the download that’s right for you and click one of the links below.
 
 There are a few other ways that you could create a Photon OS instance – either making the ISO from source that’s been cloned from the [GitHub Photon OS repository](https://github.com/vmware/photon), using the [instructions](https://github.com/vmware/photon/blob/master/docs/build-photon.md) found on the GitHub repo, using the [scripted installation](https://github.com/vmware/photon/blob/master/docs/kickstart.md), or [boot Photon OS over a network](https://github.com/vmware/photon/blob/master/docs/PXE-boot.md), using PXE. These options are beyond the scope of this document. If you’re interested in these methods, follow the links provided above. 
 
-***Photon OS 1.0, Original Binaries***
+### Photon OS 1.0, Original Binaries
 --------------------------------
 
 If you're looking for the original Photon OS, version 1.0 binaries, they can still be found here:
+
 #### Photon OS 1.0, Original Binaries ####
 | Download | Size | sha1 checksum | md5 checksum |
 | --- | --- | --- | --- |

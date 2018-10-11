@@ -10,3 +10,5 @@
 -   [Running Photon OS on AWS EC2](Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.md)
 -   [Running Photon OS on Microsoft Azure](Running-Photon-OS-on-Microsoft-Azure.md)
 -   [Running Photon OS on Google Compute Engine](Running-Photon-OS-on-Google-Compute-Engine.md)
+    - [Photon OS on GCE](gce.md)
+- [Running Project Photon on vCloud Air](Running-Project-Photon-on-vCloud-Air.md) 
