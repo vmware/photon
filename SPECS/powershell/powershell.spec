@@ -1,7 +1,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        6.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -12,7 +12,7 @@ Source0:        %{name}-%{version}.tar.gz
 Source1:        build.sh
 BuildArch:      x86_64
 BuildRequires:  dotnet-sdk = 2.1.4
-BuildRequires:  dotnet-runtime = 2.0.5
+BuildRequires:  dotnet-runtime = 2.1.4
 BuildRequires:  cmake
 BuildRequires:  clang
 BuildRequires:  git
@@ -50,5 +50,7 @@ ln -sf %{_libdir}/powershell/pwsh %{buildroot}%{_bindir}/pwsh
     %{_docdir}/*
 
 %changelog
+*   Thu Sep 27 2018 Ajay Kaher <akaher@vmware.com> 6.0.1-2
+-   upgrade version of dotnet-runtime
 *   Wed Jan 31 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0.1-1
 -   Initial build for photon
