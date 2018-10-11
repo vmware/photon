@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.0.2p
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -10,6 +10,10 @@ Distribution:   Photon
 Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
 %define sha1    openssl=f34b5322e92415755c7d58bf5d0d5cf37666382c
 Source1:        rehash_ca_certificates.sh
+%if 0%{?with_fips:1}
+Source100:      openssl-fips-2.0.9-lin64.tar.gz
+%define sha1    openssl-fips=e834d3678fb190f9483f48f037fb17041abba6a1
+%endif
 Patch0:         c_rehash.patch
 Patch1:         openssl-ipv6apps.patch
 Patch2:         openssl-init-conslidate.patch
@@ -21,7 +25,7 @@ Requires:       bash glibc libgcc
 
 %description
 The OpenSSL package contains management tools and libraries relating
-to cryptography. These are useful for providing cryptography 
+to cryptography. These are useful for providing cryptography
 functions to other packages, such as OpenSSH, email applications and
 web browsers (for accessing HTTPS sites).
 
@@ -59,19 +63,26 @@ Perl scripts that convert certificates and keys to various formats.
 %patch3 -p1
 
 %build
+%if 0%{?with_fips:1}
+tar xf %{SOURCE100} --no-same-owner -C ..
+# Do not package it to src.rpm
+:> %{SOURCE100}
+%endif
 export CFLAGS="%{optflags}"
 ./config \
-    --prefix=%{_prefix} \
+    --prefix=/usr \
     --libdir=lib \
     --openssldir=/%{_sysconfdir}/ssl \
     shared \
     zlib-dynamic \
-    %{?_with_fips} \
+%if 0%{?with_fips:1}
+    fips --with-fipsdir=%{_builddir}/openssl-fips-2.0.9 \
+%endif
     -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
 # does not support -j yet
 make
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make INSTALL_PREFIX=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
 ln -sf libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
@@ -118,6 +129,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Wed Oct 17 2018 Alexey Makhalov <amakhalov@vmware.com> 1.0.2p-2
+-   Move fips logic to spec file
 *   Fri Aug 17 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.0.2p-1
 -   Upgrade to 1.0.2p
 *   Wed Mar 21 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.0.2n-2
