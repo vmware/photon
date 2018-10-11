@@ -129,13 +129,16 @@ class SpecParser(object):
             raise Exception("Given string is not a conditional macro")
 
         def _is_macro_defined(macro):
-            return (macro in self.defs.keys()) or (macro in constants.userDefinedMacros.keys())
+            return (macro in self.defs.keys()) or (macro in constants.userDefinedMacros.keys()) \
+                or (macro in constants.getAdditionalMacros(self.packages["default"].name).keys())
 
         def _get_macro(macro):
             if macro in self.defs.keys():
                 return self.defs[macro]
             elif macro in constants.userDefinedMacros.keys():
                 return constants.userDefinedMacros[macro]
+            elif macro in constants.getAdditionalMacros(self.packages["default"].name).keys():
+                return constants.getAdditionalMacros(self.packages["default"].name)[macro]
             raise Exception("Unknown macro: " + macro)
 
         def _macro_repl(match):
