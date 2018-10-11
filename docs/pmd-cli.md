@@ -13,11 +13,11 @@ Photon OS 2.0 provides the Photon Management Daemon command line interface (pmd-
 
 The pmd-cli utility is included with your Photon OS 2.0 distribution. To make sure that you have the latest version, you can run:
 ~~~~
-tndf install pmd-cli
+tdnf install pmd-cli
 ~~~~
 # Syntax
 ~~~~
-pmd-cli [connection_auth_options] &lt;component&gt; &lt;command&gt; [command_options]
+pmd-cli [connection_auth_options] <component> <command> [command_options]
 ~~~~
 Passed-in parameter values can be enclosed in single (&#39;) or double-quotes (&quot;) as long as you use matching characters to denote the beginning and end of the value. Unless a parameter value contains special characters or spaces, you can also omit quotes altogether.
 
@@ -27,7 +27,7 @@ Passed-in parameter values can be enclosed in single (&#39;) or double-quotes (&
 
 For local connections, you omit the connection and authorization options:
 ~~~~
-pmd-cli &lt;component&gt; &lt;cmd&gt; &lt;options&gt;
+pmd-cli <component> <cmd> <options>
 ~~~~
 Permissions for the currently logged-in user apply when executing commands. This is the same as specifying --servername localhost.
 
@@ -44,23 +44,23 @@ What follows are three options for remote connections.
 
 **System User**
 ~~~~
-pmd-cli --servername &lt;server&gt; --user &lt;username&gt;
+pmd-cli --servername <server> --user <username>
 ~~~~
 **Lightwave User**
 
 Before using this method, the pmd server must be joined or should be part of embedded Lightwave.
 ~~~~
-pmd-cli --servername &lt;server&gt; --user &lt;username&gt; --domain &lt;lightwave_domain&gt;
+pmd-cli --servername <server> --user <username> --domain <lightwave_domain>
 ~~~~
 **Kerberos spn**
 
 Before using this method, the client must run kinit successfully.
 ~~~~
-pmd-cli --servername &lt;server&gt; --spn &lt;service_principal_name&gt;
+pmd-cli --servername <server> --spn <service_principal_name>
 ~~~~
 ## Component
 
-``&lt;component&gt;`` is one of the following values:
+``<component>`` is one of the following values:
 
 - ``firewall``
 - ``net``
@@ -73,7 +73,7 @@ The Photon Management Daemon provides CLI commands to help you get information a
 
 ## Syntax
 ~~~~
-pmd-cli [connection_auth_options] firewall &lt;command&gt; [command_options]
+pmd-cli [connection_auth_options] firewall <command> [command_options]
 ~~~~
 ## firewall help
 
@@ -91,19 +91,24 @@ This command returns information about each firewall rule, such as the chain to 
 
 Add a new firewall rule.
 ~~~~
-pmd-cli firewall rules --chain &lt;chain_name&gt; --add &lt;rule_specification&gt;
+pmd-cli firewall rules --chain <chain_name> --add <rule_specification>
 ~~~~
 Example:
 ~~~~
-pmd-cli firewall rules --chain INPUT --add &quot;-p tcp -m tcp --dport 21 -j ACCEPT&quot;
+pmd-cli firewall rules --chain INPUT --add "-p tcp -m tcp --dport 21 -j ACCEPT"
 ~~~~
 **Note:** To confirm that the firewall rule was added, run iptables -S. Running pmd-cli firewall rules lists only persistent rules.
 
 Delete a new firewall rule.
 ~~~~
-pmd-cli firewall rules --chain &lt;chain_name&gt; --delete &lt;rule_specification&gt;
+pmd-cli firewall rules --chain <chain_name> --delete <rule_specification>
 ~~~~
 **Note:**  To confirm that the firewall rule was removed, run iptables -S. Running pmd-cli firewall rules lists only persistent rules.
+
+Make firewall rule changes peristent (add --persist flag)
+~~~~
+pmd-cli firewall rules --chain <chain_name> --add <rule_specification> --persist
+~~~~
 
 ## firewall version
 
@@ -117,61 +122,61 @@ The Photon Management Daemon provides CLI commands to help you manage network in
 
 ## Syntax
 ~~~~
-pmd-cli [connection_auth_options] net &lt;command&gt; [command_options]
+pmd-cli [connection_auth_options] net <command> [command_options]
 ~~~~
-Many of these commands require the interface name (–interface &lt;ifname&gt;). IP addresses can be specified in dot-decimal notation or as prefixes. Other command options are described below.
+Many of these commands require the interface name (–interface &lt;ifname&gt;). Command options are described below.
 
 ## net link_info
 
 Get the mac address, mtu, link state, and link mode for the specified interface.
 ~~~~
-pmd-cli net link_info --get --interface &lt;ifame&gt;
+pmd-cli net link_info --get --interface <ifname>
 ~~~~
 Set the MAC address, mode (manual or auto), link state (up or down), link mode (manual or auto), and MTU for the specified interface.
 ~~~~
-pmd-cli net link_info --set --interface &lt;ifname&gt; --macaddr &lt;mac_address&gt; --mode &lt;manual|auto&gt; --state &lt;up|down&gt; --mtu &lt;mtu&gt;
+pmd-cli net link_info --set --interface <ifname> --macaddr <mac_address> --mode <manual|auto> --state <up|down> --mtu <mtu>
 ~~~~
 ## net ip4_address
 
 Get the IPv4 address for the specified interface.
 ~~~~
-pmd-cli net ip4_address --get --interface &lt;ifame&gt;
+pmd-cli net ip4_address --get --interface <ifname>
 ~~~~
-Set the IPv4 address (dot-decimal or prefix notation), mode (dhcp, static, or none), and (optionally) the default gateway for the specified interface.
+Set the IPv4 address (dot-decimal/prefix notation), mode (dhcp, static, or none), and (optionally) the default gateway for the specified interface.
 ~~~~
-pmd-cli net ip4_address --set --interface &lt;ifname&gt; --mode &lt;dhcp|static|none&gt; --addr &lt;IPv4Address/prefix&gt; --gateway &lt;gateway_address&gt;
+pmd-cli net ip4_address --set --interface <ifname> --mode <dhcp|static|none> --addr <IPv4Address/prefix> --gateway <gateway_address>
 ~~~~
 ## net ip6_address
 
 Get IPv6 address(es) for the specified interface.
 ~~~~
-pmd-cli net ip6_address --get --interface &lt;ifame&gt;
+pmd-cli net ip6_address --get --interface <ifname>
 ~~~~
-Add one or more IPv6 addresses (comma-separated list in dot-decimal or prefix notation) to the specified interface.
+Add one or more IPv6 addresses (comma-separated list in colon-separated/prefix notation) to the specified interface.
 ~~~~
-pmd-cli net ip6_address --add --interface &lt;ifame&gt; --addrlist &lt;IPv6Addr1/prefix,IPv6Addr2/prefix,...&gt;
+pmd-cli net ip6_address --add --interface <ifname> --addrlist <IPv6Addr1/prefix,IPv6Addr2/prefix,...>
 ~~~~
-Delete one or more IPv6 addresses (comma-separated list in dot-decimal or prefix notation) from the specified interface.
+Delete one or more IPv6 addresses (comma-separated list in colon-separated/prefix notation) from the specified interface.
 ~~~~
-pmd-cli net ip6_address --del --interface &lt;ifame&gt; --addrlist &lt;IPv6Addr1/prefix,IPv6Addr2/prefix,...&gt;
+pmd-cli net ip6_address --del --interface <ifname> --addrlist <IPv6Addr1/prefix,IPv6Addr2/prefix,...>
 ~~~~
 Set the DHCP mode (1=enable, 0=disable) and autoconfigure settings (1=enable, 0=disable) for the specified interface.
 ~~~~
-pmd-cli net ip6_address --set --interface &lt;ifname&gt; --dhcp &lt;1|0&gt; --autoconf &lt;1|0&gt;
+pmd-cli net ip6_address --set --interface <ifname> --dhcp <1|0> --autoconf <1|0>
 ~~~~
 ## net ip_route
 
 Get the static IP route for the specified interface.
 ~~~~
-pmd-cli net ip_route --get --interface &lt;ifame&gt;
+pmd-cli net ip_route --get --interface <ifname>
 ~~~~
 Add the static IP route (gateway IP, destination network, and metric) to the specified interface.
 ~~~~
-pmd-cli net ip_route --add --interface &lt;ifname&gt; --gateway &lt;GatewayIP&gt; --destination &lt;DestinationNetwork/prefix&gt; --metric &lt;N&gt;
+pmd-cli net ip_route --add --interface <ifname> --gateway <GatewayIP> --destination <DestinationNetwork/prefix> --metric <N>
 ~~~~
 Delete the specified static IP route from the specified interface.
 ~~~~
-pmd-cli net ip_route --del --interface &lt;ifname&gt; --destination &lt;DestIP/N&gt;
+pmd-cli net ip_route --del --interface <ifname> --destination <DestinationNetwork/prefix>
 ~~~~
 ## net dns_servers
 
@@ -181,15 +186,15 @@ pmd-cli net dns_servers --get
 ~~~~
 Set the DNS mode (dhcp or static) for one or more DNS servers (comma-separated list).
 ~~~~
-pmd-cli net dns_servers --set --mode &lt;dhcp|static&gt; --servers &lt;server1,server2,...&gt;
+pmd-cli net dns_servers --set --mode <dhcp|static> --servers <server1,server2,...>
 ~~~~
 Add a DNS server to the list of DNS servers.
 ~~~~
-pmd-cli net dns_servers --add --servers &lt;server&gt;
+pmd-cli net dns_servers --add --servers <server>
 ~~~~
 Remove the specified DNS server from the list of DNS servers.
 ~~~~
-pmd-cli net dns_servers --del --servers &lt;server&gt;
+pmd-cli net dns_servers --del --servers <server>
 ~~~~
 ## net dns_domains
 
@@ -199,35 +204,35 @@ pmd-cli net dns_domains --get
 ~~~~
 Set the list of DNS domains (one or more DNS domains in a comma-separated list).
 ~~~~
-pmd-cli net dns_domains --set --domains &lt;domain1,domain2,...&gt;
+pmd-cli net dns_domains --set --domains <domain1,domain2,...>
 ~~~~
 Add a DNS domain to the list of DNS domains.
 ~~~~
-pmd-cli net dns_domains --add --domains &lt;domain1&gt;
+pmd-cli net dns_domains --add --domains <domain1>
 ~~~~
 Delete a DNS domain from the list of DNS domains.
 ~~~~
-pmd-cli net dns_domains --del --domains &lt;domain1&gt;
+pmd-cli net dns_domains --del --domains <domain1>
 ~~~~
 ## net dhcp_duid
 
-Get the DHCP DUID per interface for all interfaces in the system.
+Get the DHCP DUID (optionally interface-specific DUID) for the system.
 ~~~~
 pmd-cli net dhcp_duid --get
 ~~~~
-Set the DHCP DUID for all interfaces in the system.
+Set the DHCP DUID for the system, optionally per-interface if the interface is specified.
 ~~~~
-pmd-cli net dhcp_duid --set --duid &lt;duid&gt;
+pmd-cli net dhcp_duid --set --duid <duid>
 ~~~~
 ## net if_iaid
 
 Get the IAID for the specified interface.
 ~~~~
-pmd-cli net if_iaid --get --interface &lt;ifname&gt;
+pmd-cli net if_iaid --get --interface <ifname>
 ~~~~
 Set the IAID for the specified interface.
 ~~~~
-pmd-cli net if_iaid --set --interface &lt;ifname&gt; --iaid &lt;iaid&gt;
+pmd-cli net if_iaid --set --interface <ifname> --iaid <iaid>
 ~~~~
 ## net ntp_servers
 
@@ -237,15 +242,15 @@ pmd-cli net ntp_servers --get
 ~~~~
 Set the NTP servers list.
 ~~~~
-pmd-cli net ntp_servers --set --servers &lt;server1,server2,...&gt;
+pmd-cli net ntp_servers --set --servers <server1,server2,...>
 ~~~~
 Add the specified server to the NTP servers list.
 ~~~~
-pmd-cli net ntp_servers --add --servers &lt;server&gt;
+pmd-cli net ntp_servers --add --servers <server>
 ~~~~
 Delete the specified server from the NTP servers list.
 ~~~~
-pmd-cli net ntp_servers --del --servers &lt;server&gt;
+pmd-cli net ntp_servers --del --servers <server>
 ~~~~
 ## net hostname
 
@@ -255,13 +260,13 @@ pmd-cli net hostname --get
 ~~~~
 Set the system hostname.
 ~~~~
-pmd-cli net hostname --set --name &lt;hostname&gt;
+pmd-cli net hostname --set --name <hostname>
 ~~~~
 ## net wait_for_link
 
 Wait for the specified network interface to be up and usable (it can send and receive packets).
 ~~~~
-pmd-cli net wait_for_link --interface &lt;ifname&gt; --timeout &lt;timeout&gt;
+pmd-cli net wait_for_link --interface <ifname> --timeout <timeout>
 ~~~~
 The timeout (in seconds) specifies the maximum time to wait. Specify 0 for no timeout (wait indefinitely).
 
@@ -271,7 +276,7 @@ The timeout (in seconds) specifies the maximum time to wait. Specify 0 for no ti
 
 Wait for the specified interface to acquire a valid IP address for the specified address type.
 ~~~~
-pmd-cli net wait_for_ip --interface &lt;ifname&gt; --timeout &lt;timeout&gt; --addrtype &lt;ipv4,ipv6,static_ipv4,static_ipv6,dhcp_ipv4,dhcp_ipv6,auto_ipv6,link_local_ipv6&gt;
+pmd-cli net wait_for_ip --interface <ifname> --timeout <timeout> --addrtype <ipv4,ipv6,static_ipv4,static_ipv6,dhcp_ipv4,dhcp_ipv6,auto_ipv6,link_local_ipv6>
 ~~~~
 The timeout (in seconds) specifies the maximum time to wait. Specify 0 for no timeout (wait indefinitely).
 
@@ -279,7 +284,7 @@ The timeout (in seconds) specifies the maximum time to wait. Specify 0 for no ti
 
 Get error information about the specified error code.
 ~~~~
-pmd-cli net error_info --errcode &lt;error_code&gt;
+pmd-cli net error_info --errcode <error_code>
 ~~~~
 Here is a list of error codes:
 
@@ -299,13 +304,13 @@ Here is a list of error codes:
 
 Get the specified network configuration parameter for the specified object.
 ~~~~
-pmd-cli net net_info --get --object &lt;ifname or filename&gt; --paramname &lt;param_name&gt;
+pmd-cli net net_info --get --object <ifname or filename> --paramname <param_name>
 ~~~~
 **Note:** The object can be an interface name (for example, &quot;eth0&quot;) or a file name (for example, /etc/systemd/resolved.conf).
 
 Set the value of the specified network configuration parameter for the specified object (interface or file).
 ~~~~
-pmd-cli net net_info --set --object &lt;ifname or filename&gt; --paramname &lt;param_name&gt; --paramvalue &lt;param_value&gt;
+pmd-cli net net_info --set --object <ifname or filename> --paramname <param_name> --paramvalue <param_value>
 ~~~~
 **Note** : You can add (+) or remove (-) a parameter by prepending the parameter name with + or -.
 
@@ -315,11 +320,11 @@ The Photon Management Daemon provides CLI commands to help you manage packages a
 
 ## Syntax
 ~~~~
-pmd-cli [connection options] pkg &lt;command&gt; [command options]
+pmd-cli [connection options] pkg <command> [command options]
 ~~~~
 If a command allows for multiple package names, simply specify on the command line, separated by spaces.
 ~~~~
-pmd-cli pkg info &lt;package_name_1&gt; &lt;package_name_2&gt; &lt;package_name_3&gt; ...
+pmd-cli pkg info <package_name_1> <package_name_2> <package_name_3> ...
 ~~~~
 ## pkg help
 
@@ -343,19 +348,19 @@ pmd-cli pkg distro-sync
 
 Downgrade the specified package(s). If no packages are specified, then all available packages are downgraded.
 ~~~~
-pmd-cli pkg downgrade &lt;package_name&gt;
+pmd-cli pkg downgrade <package_name>
 ~~~~
 ## pkg erase
 
 Remove the specified package(s).
 ~~~~
-pmd-cli pkg erase &lt;package_name&gt;
+pmd-cli pkg erase <package_name>
 ~~~~
 ## pkg info
 
 Get general information about the specified package(s),  such as name, version, release, repository, install size, and so on.
 ~~~~
-pmd-cli pkg info &lt;package_name&gt;
+pmd-cli pkg info <package_name>
 ~~~~
 If no packages are specified, then this command returns information about all packages.
 ~~~~
@@ -363,7 +368,7 @@ If no packages are specified, then this command returns information about all pa
 ~~~~
 Install the specified package(s). Update the package if an update is available.
 ~~~~
-pmd-cli pkg install &lt;package_name&gt;
+pmd-cli pkg install <package_name>
 ~~~~
 ## pkg list
 
@@ -383,7 +388,7 @@ pmd-cli pkg list ph\*
 
 Reinstall the specified package(s).
 ~~~~
-pmd-cli pkg reinstall &lt;package_name&gt;
+pmd-cli pkg reinstall <package_name>
 ~~~~
 ## pkg repolist
 
@@ -397,7 +402,7 @@ This command returns a list of the configured software repositories, including t
 
 Update the specified package(s).
 ~~~~
-pmd-cli pkg update &lt;package_name&gt;
+pmd-cli pkg update <package_name>
 ~~~~
 If no parameters are specified, then all available packages are updated.
 
@@ -413,7 +418,7 @@ The Photon Management Daemon provides CLI commands to help you manage users and 
 
 ## Syntax
 ~~~~
-pmd-cli [connection options] usr &lt;command&gt; [command options]
+pmd-cli [connection options] usr <command> [command options]
 ~~~~
 ## usr help
 
@@ -431,7 +436,7 @@ pmd-cli usr users
 
 Add a new user. Specify the username.
 ~~~~
-pmd-cli usr useradd &lt;username&gt;
+pmd-cli usr useradd <username>
 ~~~~
 The system assigns a user ID, home directory, and default shell to the new user. The user group is unspecified.
 
@@ -439,13 +444,13 @@ The system assigns a user ID, home directory, and default shell to the new user.
 
 Delete the specified user.
 ~~~~
-pmd-cli usr userdel &lt;username&gt;
+pmd-cli usr userdel <username>
 ~~~~
 ## usr userid
 
 Get the user ID of the specified user (by name). Used to determine whether the specified user exists.
 ~~~~
-pmd-cli usr userid &lt;username&gt;
+pmd-cli usr userid <username>
 ~~~~
 ## usr groups
 
@@ -457,7 +462,7 @@ pmd-cli usr groups
 
 Add a new user group.
 ~~~~
-pmd-cli usr groupadd &lt;user_group_name&gt;
+pmd-cli usr groupadd <user_group_name>
 ~~~~
 The system assigns a group ID to the new user group.
 
@@ -465,13 +470,13 @@ The system assigns a group ID to the new user group.
 
 Delete the specified user group.
 ~~~~
-pmd-cli usr groupdel &lt;user_group_name&gt;
+pmd-cli usr groupdel <user_group_name>
 ~~~~
 ## usr groupid
 
 Get the group ID for the specified user group (by name). Used to determine whether the specified user group exists.
 ~~~~
-pmd-cli usr groupid &lt;user_group_name&gt;
+pmd-cli usr groupid <user_group_name>
 ~~~~
 ## usr version
 

@@ -1,7 +1,5 @@
-Running Kubernetes on Photon OS
+# Running Kubernetes on Photon OS
 -----------------------------------------------------
-
-**Table of Contents**
 
 - [Prerequisites](#prerequisites)
 - [Instructions](#instructions)
@@ -18,7 +16,7 @@ The Kubernetes package provides several services: kube-apiserver, kube-scheduler
 
 The following instructions break the services up between the hosts.  The first host, `photon-master`, will be the Kubernetes master.  This host will run the kube-apiserver, kube-controller-manager, and kube-scheduler.  In addition, the master will also run `etcd`. Although `etcd` is not needed on the master if `etcd` runs on a different host, this guide assumes that `etcd` and the Kubernetes master run on the same host.  The remaining host, `photon-node`, will be the node; it will run kubelet, proxy, and docker.
 
-**System Information**
+### System Information
 
 Hosts:
 
@@ -27,25 +25,38 @@ photon-master = 192.168.121.9
 photon-node = 192.168.121.65
 ```
 
-**Prepare the hosts**
+### Prepare the hosts
 
 The following packages should already be installed on the full version of Photon OS, but you might have to install them on the minimal version of Photon OS. If the `tdnf` command returns "Nothing to do," the package is already installed.
     
 * Install Kubernetes on all hosts--both `photon-master` and `photon-node`.
 
-```sh
+```
 tdnf install kubernetes
 ``` 
 
-* Install iptables on photon-master:
+* Install iptables on photon-master and photon-node:
 
-```sh
+```
 tdnf install iptables
 ```
 
+* Open the tcp port 8080 (api service) on the photon-master in the firewall
+
+```
+iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+```
+
+* Open the tcp port 10250 (api service) on the photon-node in the firewall
+
+```
+iptables -A INPUT -p tcp --dport 10250 -j ACCEPT
+```
+
+
 * Install Docker on photon-node:
 
-```sh
+```
 tdnf install docker
 ```
 
@@ -58,7 +69,7 @@ echo "192.168.121.9	photon-master
 
 * Edit /etc/kubernetes/config, which will be the same on all the hosts (master and node), so that it contains the following lines:
 
-```sh
+```
 # Comma separated list of nodes in the etcd cluster
 KUBE_MASTER="--master=http://photon-master:8080"
 
@@ -72,11 +83,11 @@ KUBE_LOG_LEVEL="--v=0"
 KUBE_ALLOW_PRIV="--allow_privileged=false"
 ```
 
-**Configure the Kubernetes services on the master**
+### Configure the Kubernetes services on the master
 
 * Edit /etc/kubernetes/apiserver to appear as such.  The service_cluster_ip_range IP addresses must be an unused block of addresses, not used anywhere else.  They do not need to be routed or assigned to anything.
 
-```sh
+```
 # The address on the local server to listen to.
 KUBE_API_ADDRESS="--address=0.0.0.0"
 
@@ -92,7 +103,7 @@ KUBE_API_ARGS=""
 
 * Start the appropriate services on master:
 
-```sh
+```
 for SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler; do
 	systemctl restart $SERVICES
 	systemctl enable $SERVICES
@@ -116,7 +127,7 @@ done
 }
 ```
 
-Now create a node object internally in your Kubernetes cluster by running the following command:
+* Now create a node object internally in your Kubernetes cluster by running the following command:
 
 ```console
 $ kubectl create -f ./node.json
@@ -132,13 +143,13 @@ is assumed that _photon-node_ (as specified in `name`) can be resolved and is
 reachable from the Kubernetes master node. How to provision
 a Kubernetes node (photon-node) is shown in a later section.
 
-**Configure the Kubernetes services on the node**
+### Configure the Kubernetes services on the node
 
 You configure the kubelet on the node as follows. 
 
 * Edit /etc/kubernetes/kubelet to appear like this:
 
-```sh
+```
 ###
 # Kubernetes kubelet (node) config
 
