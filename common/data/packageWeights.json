@@ -1,0 +1,13 @@
+{
+  "ceph": 83.7,
+  "mesos": 75,
+  "linux": 41.2,
+  "linux-secure": 32,
+  "openjdk8": 21.55,
+  "kubernetes": 21.3,
+  "llvm": 20.267,
+  "linux-esx": 16.73,
+  "falco": 13.85,
+  "guile": 11.52,
+  "clang": 11.3
+}
