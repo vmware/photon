@@ -65,9 +65,9 @@ PUBLISH_BUILD_DEPENDENCIES :=
 endif
 
 ifdef WEIGHTS
-PACKAGE_WEIGHTS_PATH = -W $(WEIGHTS)
+PACKAGE_WEIGHTS = -W $(SRCROOT)/common/data/packageWeights.json
 else
-PACKAGE_WEIGHTS_PATH =
+PACKAGE_WEIGHTS =
 endif
 
 TOOLS_BIN := $(SRCROOT)/tools/bin
@@ -119,7 +119,7 @@ packages-micro: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) g
                 -v $(PHOTON_RELEASE_VERSION) \
                 $(PHOTON_RPMCHECK_OPTION) \
                 $(PUBLISH_BUILD_DEPENDENCIES) \
-                $(PACKAGE_WEIGHTS_PATH) \
+                $(PACKAGE_WEIGHTS) \
                 -t ${THREADS}
 
 minimal: minimal-iso
@@ -190,7 +190,7 @@ packages-minimal: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -v $(PHOTON_RELEASE_VERSION) \
                 $(PHOTON_RPMCHECK_OPTION) \
                 $(PUBLISH_BUILD_DEPENDENCIES) \
-                $(PACKAGE_WEIGHTS_PATH) \
+                $(PACKAGE_WEIGHTS) \
                 -t ${THREADS}
 
 iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
@@ -276,7 +276,7 @@ packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $
 		$(PHOTON_KAT_BUILD_FLAGS) \
                 $(PHOTON_RPMCHECK_OPTION) \
                 $(PUBLISH_BUILD_DEPENDENCIES) \
-                $(PACKAGE_WEIGHTS_PATH) \
+                $(PACKAGE_WEIGHTS) \
                 -t ${THREADS}
 
 
@@ -299,7 +299,7 @@ updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH
 		$(PHOTON_KAT_BUILD_FLAGS) \
                 $(PHOTON_RPMCHECK_OPTION) \
                 $(PUBLISH_BUILD_DEPENDENCIES) \
-                $(PACKAGE_WEIGHTS_PATH) \
+                $(PACKAGE_WEIGHTS) \
                 -t ${THREADS}
 
 tool-chain-stage1: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
