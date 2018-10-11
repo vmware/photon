@@ -1,10 +1,10 @@
 %global security_hardening none
-%global commit          553f4857346faa8c5f6ddf9eced4180924890bfc.tar.bz2
+%global commit          d2063b7693e0e35db97b2264aa987eb6341ae779
 %define debug_package %{nil}
 
 Summary:        iPXE open source boot firmware
 Name:           ipxe
-Version:        d2063b7
+Version:        20180717
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://ipxe.org
@@ -62,6 +62,8 @@ install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}/usr/share/ipxe/
 /usr/share/ipxe/rtl8139.rom
 
 %changelog
+*   Thu Oct 11 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 20180717-1
+-   Use commit date instead of commit id as the package version.
 *   Wed Aug 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> d2063b7-1
 -   Update version to get it to build with gcc 7.3
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  553f485-2
