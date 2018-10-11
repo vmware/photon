@@ -10,7 +10,8 @@ class constants(object):
     buildRootPath = "/mnt"
     prevPublishRPMRepo = ""
     prevPublishXRPMRepo = ""
-    pullsourcesConfig = ""
+    pullsourcesURL = ""
+    extrasourcesURLs = []
     buildPatch = False
     inputRPMSPath = ""
     rpmCheck = False
@@ -537,8 +538,19 @@ class constants(object):
         constants.buildRootPath = buildRootPath
 
     @staticmethod
-    def setPullSourcesConfig(pullSourcesConfig):
-        constants.pullsourcesConfig = pullSourcesConfig
+    def setPullSourcesURL(url):
+        constants.pullsourcesURL = url
+
+    @staticmethod
+    def setExtraSourcesURLs(urls):
+        constants.extrasourcesURLs = urls
+
+    @staticmethod
+    def getPullSourcesURLs():
+        urls=[]
+        urls.append(constants.pullsourcesURL)
+        urls.extend(constants.extrasourcesURLs)
+        return urls
 
     @staticmethod
     def setInputRPMSPath(inputRPMSPath):
@@ -611,3 +623,13 @@ class constants(object):
     @staticmethod
     def setBuildOptions(options):
         constants.buildOptions = options
+
+    @staticmethod
+    def getAdditionalMacros(package):
+        macros = {}
+        if package in constants.buildOptions.keys():
+            pkg = constants.buildOptions[package]
+            for m in pkg["macros"]:
+                k, v = m.split(' ', 1)
+            macros[k] = v
+        return macros
