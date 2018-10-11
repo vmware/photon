@@ -101,10 +101,9 @@ class PackageUtils(object):
         #        if os.geteuid()==0:
         self._copySourcesTobuildroot(listSourcesFiles, package, version, chrootSourcePath)
         self._copySourcesTobuildroot(listPatchFiles, package, version, chrootSourcePath)
-        macros = []
 
-        listAdditionalFiles, macros = self._getAdditionalBuildFiles(package)
-        self._copyAdditionalBuildFiles(listAdditionalFiles, chrootID)
+        sources_urls, macros = self._getAdditionalBuildOptions(package)
+        constants.setExtraSourcesURLs(sources_urls)
 
         #Adding rpm macros
         listRPMMacros = constants.userDefinedMacros
@@ -345,8 +344,8 @@ class PackageUtils(object):
         self._copySourcesToContainer(listSourcesFiles, package, version, containerID, sourcePath)
         #TODO: mount it in, don't copy
         self._copySourcesToContainer(listPatchFiles, package, version, containerID, sourcePath)
-        listAdditionalFiles, macros = self._getAdditionalBuildFiles(package)
-        self._copyAdditionalBuildFilesToContainer(listAdditionalFiles, containerID)
+        sources_urls, macros = self._getAdditionalBuildOptions(package)
+        constants.setExtraSourcesURLs(sources_urls)
 
         # Add rpm macros
         listRPMMacros = constants.userDefinedMacros
@@ -437,7 +436,7 @@ class PackageUtils(object):
         sha1 = SPECS.getData().getSHA1(package, version, source)
         if sha1 is not None:
             PullSources.get(package, source, sha1, constants.sourcePath,
-                            constants.pullsourcesConfig, self.logger)
+                            constants.getPullSourcesURLs(), self.logger)
 
         sourcePath = cmdUtils.findFile(source, constants.sourcePath)
         if not sourcePath:
@@ -467,30 +466,14 @@ class PackageUtils(object):
                              " Source filename: " + sourcePath[0])
             shutil.copy2(sourcePath[0], destDir)
 
-    def _copyAdditionalBuildFiles(self, listAdditionalFiles, chrootID):
-        cmdUtils = CommandUtils()
-        for additionalFile in listAdditionalFiles:
-            source = additionalFile["src"]
-            destDir = chrootID + additionalFile["dst"]
-            self.logger.debug("Copying additional Source build files :" + source)
-            if os.path.exists(source):
-                if os.path.isfile(source):
-                    shutil.copy(source, destDir)
-                else:
-                    shutil.copytree(source, destDir)
-
-    def _getAdditionalBuildFiles(self, package):
-        listAdditionalFiles = []
+    def _getAdditionalBuildOptions(self, package):
+        pullsources_urls = []
         macros = []
         if package in constants.buildOptions.keys():
             pkg = constants.buildOptions[package]
-            filelist = pkg["files"]
-            for f in filelist:
-                listAdditionalFiles.append(f)
-            macrolist = pkg["macros"]
-            for macro in macrolist:
-                macros.append(macro)
-        return listAdditionalFiles, macros
+            pullsources_urls.extend(pkg["pullsources"])
+            macros.extend(pkg["macros"])
+        return pullsources_urls, macros
 
 
     def _buildRPM(self, specFile, logFile, chrootCmd, package, macros):
@@ -564,28 +547,6 @@ class PackageUtils(object):
             self.logger.debug("Copying source file: " + sourcePath[0])
             copyCmd = "docker cp " + sourcePath[0] + " " + containerID.short_id + ":" + destDir
             cmdUtils.runCommandInShell(copyCmd)
-
-    def _copyAdditionalBuildFilesToContainer(self, listAdditionalFiles, containerID):
-        cmdUtils = CommandUtils()
-        #self.logger.debug("VDBG-PU-copyAdditionalBuildFilesToContainer id: " +
-        #                  containerID.short_id)
-        #self.logger.debug(listAdditionalFiles)
-        for additionalFile in listAdditionalFiles:
-            source = additionalFile["src"]
-            destDir = additionalFile["dst"]
-            destPath = containerID.short_id + ":" + destDir
-            #TODO: exit status of exec_run
-            containerID.exec_run("mkdir -p " + destDir)
-            if os.path.exists(source):
-                copyCmd = "docker cp " + source
-                if os.path.isfile(source):
-                    self.logger.debug("Copying additional source file: " + source)
-                    copyCmd += " " + destPath
-                else:
-                    self.logger.debug("Copying additional source file tree: " + source)
-                    copyCmd += "/. " + destPath
-                #TODO: cmd error code
-                cmdUtils.runCommandInShell(copyCmd)
 
     def _getRPMPathInContainer(self, rpmFile, containerID):
         rpmName = os.path.basename(rpmFile)
