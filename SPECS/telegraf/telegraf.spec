@@ -56,6 +56,7 @@ popd
 pushd ${GOPATH}/src/github.com/influxdata/telegraf
 sed -i '/import (/ a \\t_ "github.com/wavefronthq/telegraf/plugins/outputs/wavefront"' ${GOPATH}/src/github.com/influxdata/telegraf/plugins/outputs/all/all.go
 sed -i 's/m.UnixNano()/m.Time().UnixNano()/g' ${GOPATH}/src/github.com/wavefronthq/telegraf/plugins/outputs/wavefront/wavefront.go
+sed -i 's/github.com\/golang\/lint\/golint/golang.org\/x\/lint\/golint/g' ${GOPATH}/src/github.com/influxdata/telegraf/Makefile
 make
 popd
 
