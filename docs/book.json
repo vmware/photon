@@ -5,7 +5,7 @@
         "plugins": ["insert-logo", "chapter-fold", "edit-link", "noembed"],
         "pluginsConfig": {
             "insert-logo": {
-                "url": "VMW_logo.png",
+                "url": "images/photonos-logo-sm.png",
                 "style": "background: none"
         },
             "edit-link": {
