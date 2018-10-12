@@ -33,6 +33,8 @@ def main():
                         default=False, action="store_true")
     parser.add_argument("-y", "--generate-yaml-files", dest="generateYamlFiles",
                         default=False, action="store_true")
+    parser.add_argument("-d",  "--dist", dest="dist",
+                        default="")
 
     options = parser.parse_args()
     errorFlag = False
@@ -65,6 +67,10 @@ def main():
                          + options.pullsourcesConfig)
             errorFlag = True
 
+        if options.dist:
+           dist_tag = options.dist
+           logger.info("release tag is %s" % (dist_tag))
+
         if errorFlag:
             logger.error("Found some errors. Please fix input options and re-run it.")
             sys.exit(1)
@@ -88,7 +94,7 @@ def main():
         elif options.generateYamlFiles:
             blackListPkgs = readBlackListPackages(options.pkgBlacklistFile)
             buildSourcesList(options.outputDirPath, blackListPkgs, logger)
-            buildSRPMList(options.sourceRpmPath, options.outputDirPath, blackListPkgs, logger)
+            buildSRPMList(options.sourceRpmPath, options.outputDirPath, blackListPkgs, dist_tag, logger)
 
     except Exception as e:
         print("Caught Exception: " + str(e))
@@ -166,7 +172,7 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
             yamlFile.write("vmwsource:" + ossname + ":" + version + ":\n")
             yamlFile.write("  repository: VMWsource\n")
             yamlFile.write("  name: '" + ossname + "'\n")
-            yamlFile.write("  version: '" + ossversion + "'\n")
+            yamlFile.write("  version: '" + version + "'\n")
             yamlFile.write("  url: " + str(url) + "\n")
             yamlFile.write("  license: UNKNOWN\n")
             if sourceName is not None:
@@ -182,7 +188,7 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
     logger.debug("Generated source yaml files for all packages")
 
 
-def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
+def buildSRPMList(srpmPath, yamlDir, blackListPkgs, dist_tag, logger, singleFile=True):
     cmdUtils = CommandUtils()
     yamlSrpmDir = os.path.join(yamlDir, "yaml_srpms")
     if not os.path.isdir(yamlSrpmDir):
@@ -197,10 +203,10 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
         ossname = package
         for ossversion in SPECS.getData().getVersions(package):
             ossrelease = SPECS.getData().getRelease(package, ossversion)
+            srpm_file_name = "%s-%s-%s%s.src.rpm" % (ossname, ossversion, ossrelease, dist_tag)
+            logger.info("srpm name is %s" % (srpm_file_name))
+            listFoundSRPMFiles = cmdUtils.findFile(srpm_file_name, srpmPath)
 
-            listFoundSRPMFiles = cmdUtils.findFile(ossname + "-" + ossversion + "-" + ossrelease
-                                                   + ".src.rpm",
-                                                   srpmPath)
             srpmName = None
             if len(listFoundSRPMFiles) == 1:
                 srpmFullPath = listFoundSRPMFiles[0]
