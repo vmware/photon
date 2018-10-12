@@ -41,10 +41,8 @@ def main():
     cmdUtils = CommandUtils()
 
     try:
-        if not os.path.isdir(options.logPath):
-            cmdUtils.runCommandInShell("mkdir -p " + options.logPath)
-        logger = Logger.getLogger(options.logPath + "/generateYamlFiles",
-                                  options.logPath, options.logLevel)
+        logName = "GenerateYamlFiles"
+        logger = Logger.getLogger(logName, options.logPath, options.logLevel)
 
         if options.generateYamlFiles:
             if (options.pkgBlacklistFile is not None and
