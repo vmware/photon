@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.18.9
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -373,6 +373,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Oct 12 2018 Ajay Kaher <akaher@vmware.com> 4.18.9-3
+-   Enable LAN78xx for aarch64 rpi3
 *   Fri Oct 5 2018 Ajay Kaher <akaher@vmware.com> 4.18.9-2
 -   Fix config_aarch64 for 4.18.9
 -   Add module.lds for aarch64
