@@ -98,7 +98,6 @@
             1. [Creating a host raw image](Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.md#124-creating-a-host-raw-image)
     
             [Appendix A: Known issues](Photon-RPM-OSTree-Appendix-A-Known-issues.md)  
-- [Troubleshooting](photon-os-troubleshooting-guide.md)
 - [How-To Guides](how-to-guides.md)
     - [Setting Up a Swarm Cluster with DNS](Install-and-Configure-a-Swarm-Cluster-with-DNS-Service-on-PhotonOS.md)
     - [Setting Up a Mesos Cluster](Install-and-Configure-a-Production-Ready-Mesos-Cluster-on-Photon-OS.md)
@@ -116,5 +115,6 @@
         - [Installing the Photon Management Daemon on a Lightwave Client](Installing-the-Photon-Management-Daemon-on-a-Lightwave-Client.md)
         - [Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Photon Management Daemon Installed](Remotely-Upgrade-a-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.md)
         - [Remotely Upgrade Multiple Photon OS Machines With Lightwave Client and Photon Management Daemon Installed](Remotely-Upgrade-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.md)
+- [Troubleshooting](photon-os-troubleshooting-guide.md)
 - [Frequently Asked Questions](Frequently-Asked-Questions.md)
-* [Security](https://github.com/vmware/photon/wiki/Security-Advisories)
+* [Security Advisories](https://github.com/vmware/photon/wiki/Security-Advisories)
