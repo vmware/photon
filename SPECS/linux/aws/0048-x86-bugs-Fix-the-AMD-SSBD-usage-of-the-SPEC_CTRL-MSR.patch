@@ -1,0 +1,61 @@
+From 8863c3ae3e94cab32a3393af35e0b6d2f1058faf Mon Sep 17 00:00:00 2001
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Date: Mon, 2 Jul 2018 16:36:02 -0500
+Subject: x86/bugs: Fix the AMD SSBD usage of the SPEC_CTRL MSR
+
+[upstream 612bc3b3d4be749f73a513a17d9b3ee1330d3487]
+
+On AMD, the presence of the MSR_SPEC_CTRL feature does not imply that the
+SSBD mitigation support should use the SPEC_CTRL MSR. Other features could
+have caused the MSR_SPEC_CTRL feature to be set, while a different SSBD
+mitigation option is in place.
+
+Update the SSBD support to check for the actual SSBD features that will
+use the SPEC_CTRL MSR.
+
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: Borislav Petkov <bpetkov@suse.de>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Fixes: 6ac2f49edb1e ("x86/bugs: Add AMD's SPEC_CTRL MSR usage")
+Link: http://lkml.kernel.org/r/20180702213602.29202.33151.stgit@tlendack-t1.amdoffice.net
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Balbir Singh <sblbir@amazon.com>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kernel/cpu/bugs.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index d97a79cb3edf..79ac182c9170 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -165,7 +165,8 @@ x86_virt_spec_ctrl(u64 guest_spec_ctrl, u64 guest_virt_spec_ctrl, bool setguest)
+ 		guestval |= guest_spec_ctrl & x86_spec_ctrl_mask;
+ 
+ 		/* SSBD controlled in MSR_SPEC_CTRL */
+-		if (static_cpu_has(X86_FEATURE_SPEC_CTRL_SSBD))
++		if (static_cpu_has(X86_FEATURE_SPEC_CTRL_SSBD) ||
++		    static_cpu_has(X86_FEATURE_AMD_SSBD))
+ 			hostval |= ssbd_tif_to_spec_ctrl(ti->flags);
+ 
+ 		if (hostval != guestval) {
+@@ -519,9 +520,10 @@ static enum ssb_mitigation __init __ssb_select_mitigation(void)
+ 		 * Intel uses the SPEC CTRL MSR Bit(2) for this, while AMD may
+ 		 * use a completely different MSR and bit dependent on family.
+ 		 */
+-		if (!static_cpu_has(X86_FEATURE_MSR_SPEC_CTRL))
++		if (!static_cpu_has(X86_FEATURE_SPEC_CTRL_SSBD) &&
++		    !static_cpu_has(X86_FEATURE_AMD_SSBD)) {
+ 			x86_amd_ssb_disable();
+-		else {
++		} else {
+ 			x86_spec_ctrl_base |= SPEC_CTRL_SSBD;
+ 			x86_spec_ctrl_mask |= SPEC_CTRL_SSBD;
+ 			wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
+-- 
+2.14.4
+
