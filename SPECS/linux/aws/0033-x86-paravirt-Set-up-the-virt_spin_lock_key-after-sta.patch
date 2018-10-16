@@ -1,0 +1,87 @@
+From 792a78c330d5869020a050c5e8f7b072658a8ebd Mon Sep 17 00:00:00 2001
+From: Dou Liyang <douly.fnst@cn.fujitsu.com>
+Date: Sat, 28 Oct 2017 14:06:44 +0800
+Subject: x86/paravirt: Set up the virt_spin_lock_key after static keys get
+ initialized
+
+Commit:
+
+  9043442b43b1 ("locking/paravirt: Use new static key for controlling call of virt_spin_lock()")
+
+sets the static virt_spin_lock_key to a value before jump_label_init()
+has been called, which will result in a WARN().
+
+Reorder the initialization sequence:
+
+ - Move the native_pv_lock_init() into native_smp_prepare_cpus()
+ - set the value in xen_init_lock_cpu()
+
+to avoid calling into the not yet initialized static keys subsystem.
+
+Suggested-by: Juergen Gross <jgross@suse.com>
+Reported-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Dou Liyang <douly.fnst@cn.fujitsu.com>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Acked-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: boris.ostrovsky@oracle.com
+Cc: bp@suse.de
+Cc: luto@kernel.org
+Cc: vkuznets@redhat.com
+Cc: xen-devel@lists.xenproject.org
+Link: http://lkml.kernel.org/r/1509170804-3813-1-git-send-email-douly.fnst@cn.fujitsu.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+(cherry picked from commit ca5d376e17072c1b60c3fee66f3be58ef018952d)
+Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
+Reviewed-by: Anchal Agarwal <anchalag@amazon.com>
+Signed-off-by: Eduardo Valentin <eduval@amazon.com>
+
+CR: https://cr.amazon.com/r/8420107/
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kernel/smpboot.c | 3 ++-
+ arch/x86/xen/spinlock.c   | 5 ++++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
+index 9143f280f302..6103b14d423a 100644
+--- a/arch/x86/kernel/smpboot.c
++++ b/arch/x86/kernel/smpboot.c
+@@ -1364,6 +1364,8 @@ void __init native_smp_prepare_cpus(unsigned int max_cpus)
+ 	pr_info("CPU0: ");
+ 	print_cpu_info(&cpu_data(0));
+ 
++	native_pv_lock_init();
++
+ 	uv_system_init();
+ 
+ 	set_mtrr_aps_delayed_init();
+@@ -1393,7 +1395,6 @@ void __init native_smp_prepare_boot_cpu(void)
+ 	/* already set me in cpu_online_mask in boot_cpu_init() */
+ 	cpumask_set_cpu(me, cpu_callout_mask);
+ 	cpu_set_state_online(me);
+-	native_pv_lock_init();
+ }
+ 
+ void __init native_smp_cpus_done(unsigned int max_cpus)
+diff --git a/arch/x86/xen/spinlock.c b/arch/x86/xen/spinlock.c
+index 08324c64005d..247b99cb7ae0 100644
+--- a/arch/x86/xen/spinlock.c
++++ b/arch/x86/xen/spinlock.c
+@@ -81,8 +81,11 @@ void xen_init_lock_cpu(int cpu)
+ 	int irq;
+ 	char *name;
+ 
+-	if (!xen_pvspin)
++	if (!xen_pvspin) {
++		if (cpu == 0)
++			static_branch_disable(&virt_spin_lock_key);
+ 		return;
++	}
+ 
+ 	WARN(per_cpu(lock_kicker_irq, cpu) >= 0, "spinlock on CPU%d exists on IRQ%d!\n",
+ 	     cpu, per_cpu(lock_kicker_irq, cpu));
+-- 
+2.14.4
+
