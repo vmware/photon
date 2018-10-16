@@ -1,0 +1,150 @@
+From 56486a44540225079c4cd789bdf32b97f38e2a9d Mon Sep 17 00:00:00 2001
+From: Anchal Agarwal <anchalag@amazon.com>
+Date: Wed, 15 Aug 2018 21:42:48 +0000
+Subject: blk-wbt: Avoid lock contention and thundering herd issue in wbt_wait
+
+This patch modifies commit e34cbd307477a (blk-wbt: add general
+throttling mechanism)
+In the original patch, wbt_done is waking up all the exclusive
+processes in the wait queue, which can cause a thundering herd
+if there is a large number of writer threads in the queue. The
+original intention of the code seems to be to wake up one thread
+only however, it uses wake_up_all() in __wbt_done(), and then
+uses the following check in __wbt_wait to have only one thread
+actually get out of the wait loop:
+
+if (waitqueue_active(&rqw->wait) &&
+            rqw->wait.head.next != &wait->entry)
+                return false;
+
+The problem with this is that the wait entry in wbt_wait is
+define with DEFINE_WAIT, which uses the autoremove wakeup function.
+That means that the above check is invalid - the wait entry will
+have been removed from the queue already by the time we hit the
+check in the loop.
+
+Secondly, auto-removing the wait entries also means that the wait
+queue essentially gets reordered "randomly" (e.g. threads re-add
+themselves in the order they got to run after being woken up).
+Additionally, new requests entering wbt_wait might overtake requests
+that were queued earlier, because the wait queue will be
+(temporarily) empty after the wake_up_all, so the waitqueue_active
+check will not stop them. This can cause certain threads to starve
+under high load.
+
+The fix is to leave the woken up requests in the queue and remove
+them in finish_wait() once the current thread breaks out of the
+wait loop in __wbt_wait. This will ensure new requests always
+end up at the back of the queue, and they won't overtake requests
+that are already in the wait queue. With that change, the loop
+in wbt_wait is also in line with many other wait loops in the kernel.
+Waking up just one thread drastically reduces lock contention, as
+does moving the wait queue add/remove out of the loop.
+
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
+Reviewed-by: Balbir Singh <sblbir@amazon.com>
+Reviewed-by: Frank van der Linden <fllinden@amazon.com>
+
+CR: https://cr.amazon.com/r/8514427/
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ block/blk-wbt.c | 57 +++++++++++++++++++++++++--------------------------------
+ 1 file changed, 25 insertions(+), 32 deletions(-)
+
+diff --git a/block/blk-wbt.c b/block/blk-wbt.c
+index 5c105514bca7..99f55ad2dd49 100644
+--- a/block/blk-wbt.c
++++ b/block/blk-wbt.c
+@@ -157,7 +157,7 @@ void __wbt_done(struct rq_wb *rwb, enum wbt_flags wb_acct)
+ 		int diff = limit - inflight;
+ 
+ 		if (!inflight || diff >= rwb->wb_background / 2)
+-			wake_up_all(&rqw->wait);
++			wake_up(&rqw->wait);
+ 	}
+ }
+ 
+@@ -502,30 +502,6 @@ static inline unsigned int get_limit(struct rq_wb *rwb, unsigned long rw)
+ 	return limit;
+ }
+ 
+-static inline bool may_queue(struct rq_wb *rwb, struct rq_wait *rqw,
+-			     wait_queue_entry_t *wait, unsigned long rw)
+-{
+-	/*
+-	 * inc it here even if disabled, since we'll dec it at completion.
+-	 * this only happens if the task was sleeping in __wbt_wait(),
+-	 * and someone turned it off at the same time.
+-	 */
+-	if (!rwb_enabled(rwb)) {
+-		atomic_inc(&rqw->inflight);
+-		return true;
+-	}
+-
+-	/*
+-	 * If the waitqueue is already active and we are not the next
+-	 * in line to be woken up, wait for our turn.
+-	 */
+-	if (waitqueue_active(&rqw->wait) &&
+-	    rqw->wait.head.next != &wait->entry)
+-		return false;
+-
+-	return atomic_inc_below(&rqw->inflight, get_limit(rwb, rw));
+-}
+-
+ /*
+  * Block if we will exceed our limit, or if we are currently waiting for
+  * the timer to kick off queuing again.
+@@ -535,16 +511,32 @@ static void __wbt_wait(struct rq_wb *rwb, unsigned long rw, spinlock_t *lock)
+ 	__acquires(lock)
+ {
+ 	struct rq_wait *rqw = get_rq_wait(rwb, current_is_kswapd());
+-	DEFINE_WAIT(wait);
++	DECLARE_WAITQUEUE(wait, current);
+ 
+-	if (may_queue(rwb, rqw, &wait, rw))
++	/*
++	 * inc it here even if disabled, since we'll dec it at completion.
++	 * this only happens if the task was sleeping in __wbt_wait(),
++	 * and someone turned it off at the same time.
++	 */
++	if (!rwb_enabled(rwb)) {
++		atomic_inc(&rqw->inflight);
+ 		return;
+-
++	}
++	
++	if (!waitqueue_active(&rqw->wait)
++		&& atomic_inc_below(&rqw->inflight, get_limit(rwb, rw)))
++		return;
++	
++	add_wait_queue_exclusive(&rqw->wait, &wait);
+ 	do {
+-		prepare_to_wait_exclusive(&rqw->wait, &wait,
+-						TASK_UNINTERRUPTIBLE);
++		set_current_state(TASK_UNINTERRUPTIBLE);
++
++		if (!rwb_enabled(rwb)) {
++			atomic_inc(&rqw->inflight);
++			break;
++		}
+ 
+-		if (may_queue(rwb, rqw, &wait, rw))
++		if (atomic_inc_below(&rqw->inflight, get_limit(rwb, rw)))
+ 			break;
+ 
+ 		if (lock) {
+@@ -555,7 +547,8 @@ static void __wbt_wait(struct rq_wb *rwb, unsigned long rw, spinlock_t *lock)
+ 			io_schedule();
+ 	} while (1);
+ 
+-	finish_wait(&rqw->wait, &wait);
++	__set_current_state(TASK_RUNNING);
++	remove_wait_queue(&rqw->wait, &wait);
+ }
+ 
+ static inline bool wbt_should_throttle(struct rq_wb *rwb, struct bio *bio)
+-- 
+2.14.4
+

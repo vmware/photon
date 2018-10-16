@@ -1,0 +1,67 @@
+From 89163fb0943fd749de8e42ca13567d9810a7e5d0 Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Thu, 13 Jul 2017 00:12:32 +0000
+Subject: xen/manage: introduce helper function to know the on-going suspend
+ mode
+
+Introduce simple functions which help to know the on-going suspend mode
+so that other Xen-related code can behave differently according to the
+current suspend mode.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+Reviewed-by: Alakesh Haloi <alakeshh@amazon.com>
+Reviewed-by: Sebastian Biemueller <sbiemue@amazon.com>
+Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+CR: https://cr.amazon.com/r/8273190/
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ drivers/xen/manage.c  | 15 +++++++++++++++
+ include/xen/xen-ops.h |  4 ++++
+ 2 files changed, 19 insertions(+)
+
+diff --git a/drivers/xen/manage.c b/drivers/xen/manage.c
+index 1c9750fefa64..1720225eecb6 100644
+--- a/drivers/xen/manage.c
++++ b/drivers/xen/manage.c
+@@ -50,6 +50,21 @@ enum suspend_modes {
+ /* Protected by pm_mutex */
+ static enum suspend_modes suspend_mode = NO_SUSPEND;
+ 
++bool xen_suspend_mode_is_xen_suspend(void)
++{
++	return suspend_mode == XEN_SUSPEND;
++}
++
++bool xen_suspend_mode_is_pm_suspend(void)
++{
++	return suspend_mode == PM_SUSPEND;
++}
++
++bool xen_suspend_mode_is_pm_hibernation(void)
++{
++	return suspend_mode == PM_HIBERNATION;
++}
++
+ struct suspend_info {
+ 	int cancelled;
+ };
+diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
+index a95e65ec83c3..2e4b476b516c 100644
+--- a/include/xen/xen-ops.h
++++ b/include/xen/xen-ops.h
+@@ -38,6 +38,10 @@ u64 xen_steal_clock(int cpu);
+ 
+ int xen_setup_shutdown_event(void);
+ 
++bool xen_suspend_mode_is_xen_suspend(void);
++bool xen_suspend_mode_is_pm_suspend(void);
++bool xen_suspend_mode_is_pm_hibernation(void);
++
+ extern unsigned long *xen_contiguous_bitmap;
+ 
+ #ifdef CONFIG_XEN_PV
+-- 
+2.14.4
+

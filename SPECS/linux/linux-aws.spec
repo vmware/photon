@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.14.67
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,9 +12,6 @@ Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar
 %define sha1 linux=4a6aa8d8a5190dbf1a835a5171609f02b27809e1
 Source1:	config-aws
 Source2:	initramfs.trigger
-%define ena_version 1.5.0
-Source3:       https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
-%define sha1 ena_linux=cbbbe8a3bbab6d01a4e38417cb0ead2f7cb8b2ee
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -37,6 +34,59 @@ Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 Patch29:        0001-apparmor-add-base-infastructure-for-socket-mediation.patch
 Patch30:        0002-apparmor-af_unix-mediation.patch
 Patch31:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+
+# Amazon AWS
+Patch101: 0002-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch102: 0004-bump-the-default-TTL-to-255.patch
+Patch103: 0005-bump-default-tcp_wmem-from-16KB-to-20KB.patch
+Patch104: 0007-nvme-update-timeout-module-parameter-type.patch
+Patch105: 0009-drivers-introduce-AMAZON_DRIVER_UPDATES.patch
+Patch106: 0010-drivers-amazon-add-network-device-drivers-support.patch
+Patch107: 0011-drivers-amazon-introduce-AMAZON_ENA_ETHERNET.patch
+Patch108: 0012-Importing-Amazon-ENA-driver-1.5.0-into-amazon-4.14.y.patch
+Patch109: 0013-xen-manage-keep-track-of-the-on-going-suspend-mode.patch
+Patch110: 0014-xen-manage-introduce-helper-function-to-know-the-on-.patch
+Patch111: 0015-xenbus-add-freeze-thaw-restore-callbacks-support.patch
+Patch112: 0016-x86-xen-Introduce-new-function-to-map-HYPERVISOR_sha.patch
+Patch113: 0017-x86-xen-add-system-core-suspend-and-resume-callbacks.patch
+Patch114: 0018-xen-blkfront-add-callbacks-for-PM-suspend-and-hibern.patch
+Patch115: 0019-xen-netfront-add-callbacks-for-PM-suspend-and-hibern.patch
+Patch116: 0020-xen-time-introduce-xen_-save-restore-_steal_clock.patch
+Patch117: 0021-x86-xen-save-and-restore-steal-clock.patch
+Patch118: 0022-xen-events-add-xen_shutdown_pirqs-helper-function.patch
+Patch119: 0023-x86-xen-close-event-channels-for-PIRQs-in-system-cor.patch
+Patch120: 0024-PM-hibernate-update-the-resume-offset-on-SNAPSHOT_SE.patch
+Patch121: 0025-Not-for-upstream-PM-hibernate-Speed-up-hibernation-b.patch
+Patch122: 0026-xen-blkfront-resurrect-request-based-mode.patch
+Patch123: 0027-xen-blkfront-add-persistent_grants-parameter.patch
+Patch124: 0028-ACPI-SPCR-Make-SPCR-available-to-x86.patch
+Patch125: 0029-Revert-xen-dont-fiddle-with-event-channel-masking-in.patch
+Patch126: 0030-locking-paravirt-Use-new-static-key-for-controlling-.patch
+Patch127: 0031-KVM-Introduce-paravirtualization-hints-and-KVM_HINTS.patch
+Patch128: 0032-KVM-X86-Choose-qspinlock-when-dedicated-physical-CPU.patch
+Patch129: 0033-x86-paravirt-Set-up-the-virt_spin_lock_key-after-sta.patch
+Patch130: 0034-KVM-X86-Fix-setup-the-virt_spin_lock_key-before-stat.patch
+Patch131: 0035-xen-blkfront-Fixed-blkfront_restore-to-remove-a-call.patch
+Patch132: 0036-xen-netfront-Update-features-after-registering-netde.patch
+Patch133: 0037-x86-tsc-avoid-system-instability-in-hibernation.patch
+Patch134: 0038-blk-mq-simplify-queue-mapping-schedule-with-each-pos.patch
+Patch135: 0039-blk-wbt-Avoid-lock-contention-and-thundering-herd-is.patch
+Patch136: 0040-x86-MCE-AMD-Read-MCx_MISC-block-addresses-on-any-CPU.patch
+Patch137: 0041-x86-bugs-Add-AMD-s-variant-of-SSB_NO.patch
+Patch138: 0042-x86-bugs-Add-AMD-s-SPEC_CTRL-MSR-usage.patch
+Patch139: 0043-x86-bugs-Switch-the-selection-of-mitigation-from-CPU.patch
+Patch140: 0044-x86-CPU-Rename-intel_cacheinfo.c-to-cacheinfo.c.patch
+Patch141: 0045-x86-CPU-AMD-Calculate-last-level-cache-ID-from-numbe.patch
+Patch142: 0046-x86-CPU-AMD-Fix-LLC-ID-bit-shift-calculation.patch
+Patch143: 0047-x86-bugs-Update-when-to-check-for-the-LS_CFG-SSBD-mi.patch
+Patch144: 0048-x86-bugs-Fix-the-AMD-SSBD-usage-of-the-SPEC_CTRL-MSR.patch
+Patch145: 0049-tools-power-turbostat-Read-extended-processor-family.patch
+Patch146: 0050-sched-topology-Introduce-NUMA-identity-node-sched-do.patch
+Patch147: 0051-x86-CPU-AMD-Derive-CPU-topology-from-CPUID-function-.patch
+Patch148: 0052-vmxnet3-increase-default-rx-ring-sizes.patch
+Patch149: 0053-Revert-e1000e-Separate-signaling-for-link-check-link.patch
+Patch150: 0054-e1000e-Fix-link-check-race-condition.patch
+Patch151: 0055-net-ipv4-defensive-cipso-option-parsing.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -110,9 +160,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 
 %prep
 %setup -q -n linux-%{version}
-%ifarch x86_64
-%setup -D -b 3 -n linux-%{version}
-%endif
+
 %patch0 -p1
 %patch1 -p1
 %patch3 -p1
@@ -126,6 +174,58 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch29 -p1
 %patch30 -p1
 %patch31 -p1
+
+%patch101 -p1
+%patch102 -p1
+%patch103 -p1
+%patch104 -p1
+%patch105 -p1
+%patch106 -p1
+%patch107 -p1
+%patch108 -p1
+%patch109 -p1
+%patch110 -p1
+%patch111 -p1
+%patch112 -p1
+%patch113 -p1
+%patch114 -p1
+%patch115 -p1
+%patch116 -p1
+%patch117 -p1
+%patch118 -p1
+%patch119 -p1
+%patch120 -p1
+%patch121 -p1
+%patch122 -p1
+%patch123 -p1
+%patch124 -p1
+%patch125 -p1
+%patch126 -p1
+%patch127 -p1
+%patch128 -p1
+%patch129 -p1
+%patch130 -p1
+%patch131 -p1
+%patch132 -p1
+%patch133 -p1
+%patch134 -p1
+%patch135 -p1
+%patch136 -p1
+%patch137 -p1
+%patch138 -p1
+%patch139 -p1
+%patch140 -p1
+%patch141 -p1
+%patch142 -p1
+%patch143 -p1
+%patch144 -p1
+%patch145 -p1
+%patch146 -p1
+%patch147 -p1
+%patch148 -p1
+%patch149 -p1
+%patch150 -p1
+%patch151 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -144,13 +244,6 @@ sed -i 's/CONFIG_LOCALVERSION="-aws"/CONFIG_LOCALVERSION="-%{release}-aws"/' .co
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
 make -C tools perf
-%ifarch x86_64
-# build ENA module
-bldroot=`pwd`
-pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
-popd
-%endif
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
@@ -178,11 +271,6 @@ install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
-# install ENA module
-bldroot=`pwd`
-pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
-popd
 
 # Verify for build-id match
 # We observe different IDs sometimes
@@ -313,6 +401,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Oct 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-2
+-   Add enhancements from Amazon.
 *   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
 -   Update to version 4.14.67
 *   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-4
