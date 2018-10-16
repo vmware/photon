@@ -1,0 +1,74 @@
+From ffa1ec740566614caf9dc9110bd8fe01b260d745 Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Fri, 21 Jul 2017 06:06:12 +0000
+Subject: x86/xen: save and restore steal clock
+
+Save steal clock values of all present CPUs in the system core ops
+suspend callbacks. Also, restore a boot CPU's steal clock in the system
+core resume callback. For non-boot CPUs, restore after they're brought
+up, because runstate info for non-boot CPUs are not active until then.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+CR: https://cr.amazon.com/r/8273212/
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/xen/suspend.c | 13 ++++++++++++-
+ arch/x86/xen/time.c    |  3 +++
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
+index 5e542b7e5802..a50d399309fe 100644
+--- a/arch/x86/xen/suspend.c
++++ b/arch/x86/xen/suspend.c
+@@ -87,12 +87,20 @@ void xen_arch_suspend(void)
+ static int xen_syscore_suspend(void)
+ {
+ 	struct xen_remove_from_physmap xrfp;
+-	int ret;
++	int cpu, ret;
+ 
+ 	/* Xen suspend does similar stuffs in its own logic */
+ 	if (xen_suspend_mode_is_xen_suspend())
+ 		return 0;
+ 
++	for_each_present_cpu(cpu) {
++		/*
++		 * Nonboot CPUs are already offline, but the last copy of
++		 * runstate info is still accessible.
++		 */
++		xen_save_steal_clock(cpu);
++	}
++
+ 	xrfp.domid = DOMID_SELF;
+ 	xrfp.gpfn = __pa(HYPERVISOR_shared_info) >> PAGE_SHIFT;
+ 
+@@ -114,6 +122,9 @@ static void xen_syscore_resume(void)
+ 
+ 	pvclock_resume();
+ 
++	/* Nonboot CPUs will be resumed when they're brought up */
++	xen_restore_steal_clock(smp_processor_id());
++
+ 	gnttab_resume();
+ }
+ 
+diff --git a/arch/x86/xen/time.c b/arch/x86/xen/time.c
+index 80c2a4bdf230..a70d3f00b258 100644
+--- a/arch/x86/xen/time.c
++++ b/arch/x86/xen/time.c
+@@ -426,6 +426,9 @@ static void xen_hvm_setup_cpu_clockevents(void)
+ {
+ 	int cpu = smp_processor_id();
+ 	xen_setup_runstate_info(cpu);
++	if (cpu)
++		xen_restore_steal_clock(cpu);
++
+ 	/*
+ 	 * xen_setup_timer(cpu) - snprintf is bad in atomic context. Hence
+ 	 * doing it xen_hvm_cpu_notify (which gets called by smp_init during
+-- 
+2.14.4
+

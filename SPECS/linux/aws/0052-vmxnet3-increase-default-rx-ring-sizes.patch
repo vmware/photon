@@ -1,0 +1,78 @@
+From 24d9badf7fa725ed95711fda1d04d9349a8f8262 Mon Sep 17 00:00:00 2001
+From: Shrikrishna Khare <skhare@vmware.com>
+Date: Thu, 30 Nov 2017 10:29:51 -0800
+Subject: vmxnet3: increase default rx ring sizes
+
+There are several reasons for increasing the receive ring sizes:
+
+1. The original ring size of 256 was chosen about 10 years ago when
+vmxnet3 was first created. At that time, 10Gbps Ethernet was not prevalent
+and servers were dominated by 1Gbps Ethernet. Now 10Gbps is common place,
+and higher bandwidth links -- 25Gbps, 40Gbps, 50Gbps -- are starting
+to appear. 256 Rx ring entries are simply not enough to keep up with
+higher link speed when there is a burst of network frames coming from
+these high speed links. Even with full MTU size frames, they are gone
+in a short time. It is also more common to have a mix of frame sizes,
+and more likely bi-modal distribution of frame sizes so the average frame
+size is not close to full MTU. If we consider average frame size of 800B,
+1024 frames that come in a burst takes ~0.65 ms to arrive at 10Gbps. With
+256 entires, it takes ~0.16 ms to arrive at 10Gbps.  At 25Gbps or 40Gbps,
+this time is reduced accordingly.
+
+2. On a hypervisor where there are many VMs and CPU is over committed,
+i.e. the number of VCPUs is more than the number of VCPUs, each PCPU is
+in effect time shared between multiple VMs/VCPUs. The time granularity at
+which this multiplexing occurs is typically coarser than between processes
+on a guest OS. Trying to time slice more finely is not efficient, for
+example, if memory cache is barely warmed up when switching from one VM
+to another occurs. This CPU overcommit adds delay to when the driver
+in a VM can service incoming packets. Whether CPU is over committed
+really depends on customer workloads. For certain situations, it is very
+common. For example, workloads of desktop VMs and product testing setups.
+Consolidation and sharing is what drives efficiency of a customer setup
+for such workloads. In these situations, the raw network bandwidth may
+not be very high, but the delays between when a VM is running or not
+running can also be relatively long.
+
+Signed-off-by: Shrikrishna Khare <skhare@vmware.com>
+Acked-by: Jin Heo <heoj@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+Acked-by: Boon Ang <bang@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Balbir Singh <sblbir@amazon.com>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ drivers/net/vmxnet3/vmxnet3_int.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index 9c51b8be0038..5ba222920e80 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -69,10 +69,10 @@
+ /*
+  * Version numbers
+  */
+-#define VMXNET3_DRIVER_VERSION_STRING   "1.4.a.0-k"
++#define VMXNET3_DRIVER_VERSION_STRING   "1.4.11.0-k"
+ 
+ /* a 32-bit int, each byte encode a verion number in VMXNET3_DRIVER_VERSION */
+-#define VMXNET3_DRIVER_VERSION_NUM      0x01040a00
++#define VMXNET3_DRIVER_VERSION_NUM      0x01040b00
+ 
+ #if defined(CONFIG_PCI_MSI)
+ 	/* RSS only makes sense if MSI-X is supported. */
+@@ -416,8 +416,8 @@ struct vmxnet3_adapter {
+ 
+ /* must be a multiple of VMXNET3_RING_SIZE_ALIGN */
+ #define VMXNET3_DEF_TX_RING_SIZE    512
+-#define VMXNET3_DEF_RX_RING_SIZE    256
+-#define VMXNET3_DEF_RX_RING2_SIZE   128
++#define VMXNET3_DEF_RX_RING_SIZE    1024
++#define VMXNET3_DEF_RX_RING2_SIZE   256
+ 
+ #define VMXNET3_DEF_RXDATA_DESC_SIZE 128
+ 
+-- 
+2.14.4
+
