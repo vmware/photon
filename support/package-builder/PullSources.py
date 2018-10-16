@@ -67,7 +67,7 @@ class pullSources:
         #form url: https://dl.bintray.com/vmware/photon_sources/1.0/<filename>.
         url = '%s/%s' % (self._config['baseurl'], filename)
 
-        self.logger.info("Downloading: " + url)
+        self.logger.debug("Downloading: " + url)
 
         # We need to provide atomicity for file downloads. That is,
         # the file should be visible in its canonical location only

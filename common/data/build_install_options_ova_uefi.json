@@ -4,5 +4,11 @@
         "file" : "packages_minimal_ova.json",
         "visible" : true,
         "include" : []
+    },
+    "uefi" : {
+        "title" : "Photon UEFI packages",
+        "file" : "packages_uefi.json",
+        "visible" : false,
+        "include" : ["minimal"]
     }
 }

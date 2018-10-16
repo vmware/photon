@@ -15,7 +15,7 @@ class PackageInfo(object):
             logPath = constants.logPath
         self.logName = logName
         self.logPath = logPath
-        self.logger = Logger.getLogger(logName, logPath)
+        self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
         self.pkgList = {}
 
     def loadPackagesData(self):
@@ -50,7 +50,7 @@ class PackageInfo(object):
                         self.logger.error("Missing rpm file for package:" + rpmPkg)
 
     def writePkgListToFile(self, fileName):
-        self.logger.info("Writing package list to the json file")
+        self.logger.debug("Writing package list to the json file")
         cmdUtils = CommandUtils()
         dirPath = os.path.basename(fileName)
         if not os.path.isdir(dirPath):

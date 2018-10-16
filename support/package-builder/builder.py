@@ -30,6 +30,7 @@ def main():
     parser.add_argument("-e", "--publish-XRPMS-path", dest="publishXRPMSPath",
                         default="../../stage/PUBLISHXRPMS")
     parser.add_argument("-l", "--log-path", dest="logPath", default="../../stage/LOGS")
+    parser.add_argument("-y", "--log-level", dest="logLevel", default="error")
     parser.add_argument("-z", "--top-dir-path", dest="topDirPath", default="/usr/src/photon")
     parser.add_argument("-b", "--build-root-path", dest="buildRootPath", default="/mnt")
     parser.add_argument("-t", "--threads", dest="buildThreads",
@@ -62,7 +63,7 @@ def main():
     if not os.path.isdir(options.logPath):
         cmdUtils.runCommandInShell("mkdir -p " + options.logPath)
 
-    logger = Logger.getLogger(options.logPath + "/Main")
+    logger = Logger.getLogger("Main", options.logPath, options.logLevel)
     errorFlag = False
     package = None
     pkgInfoJsonFile = options.pkgInfoFile
@@ -126,16 +127,17 @@ def main():
     if not os.path.isdir(options.buildRootPath):
         cmdUtils.runCommandInShell("mkdir -p " + options.buildRootPath)
 
-    logger.info("Source Path :"+options.sourcePath)
-    logger.info("Spec Path :" + options.specPath)
-    logger.info("Rpm Path :" + options.rpmPath)
-    logger.info("Log Path :" + options.logPath)
-    logger.info("Top Dir Path :" + options.topDirPath)
-    logger.info("Publish RPMS Path :" + options.publishRPMSPath)
-    logger.info("Publish X RPMS Path :" + options.publishXRPMSPath)
+    logger.debug("Source Path :"+options.sourcePath)
+    logger.debug("Spec Path :" + options.specPath)
+    logger.debug("Rpm Path :" + options.rpmPath)
+    logger.debug("Log Path :" + options.logPath)
+    logger.debug("Log Level :" + options.logLevel)
+    logger.debug("Top Dir Path :" + options.topDirPath)
+    logger.debug("Publish RPMS Path :" + options.publishRPMSPath)
+    logger.debug("Publish X RPMS Path :" + options.publishXRPMSPath)
 
     if options.installPackage:
-        logger.info("Package to build:" + package)
+        logger.debug("Package to build:" + package)
 
     get_packages_with_build_options(options.pkgBuildOptionFile)
 
@@ -147,6 +149,7 @@ def main():
         constants.setSourceRpmPath(options.sourceRpmPath)
         constants.setTopDirPath(options.topDirPath)
         constants.setLogPath(options.logPath)
+        constants.setLogLevel(options.logLevel)
         constants.setDist(options.dist)
         constants.setBuildNumber(options.buildNumber)
         constants.setReleaseVersion(options.releaseVersion)
@@ -195,15 +198,16 @@ def buildAPackage(package, buildThreads, pkgBuildType):
 def buildPackagesForAllSpecs(logger, buildThreads, pkgInfoJsonFile, pkgBuildType):
     listPackages = SPECS.getData().getListPackages()
 
-    logger.info("List of packages to build:")
-    logger.info(listPackages)
+    logger.debug("List of all packages :")
+    logger.debug(listPackages)
+    logger.info("")
     if constants.rpmCheck:
         constants.setTestForceRPMS(copy.copy(listPackages))
     pkgManager = PackageManager(pkgBuildType=pkgBuildType)
     pkgManager.buildPackages(listPackages, buildThreads, pkgBuildType)
 
     # Generating package info file which is required by installer
-    logger.info("Writing Package info to the file:" + pkgInfoJsonFile)
+    logger.debug("Writing Package info to the file:" + pkgInfoJsonFile)
     pkgInfo = PackageInfo()
     pkgInfo.loadPackagesData()
     pkgInfo.writePkgListToFile(pkgInfoJsonFile)

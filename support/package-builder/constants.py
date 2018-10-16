@@ -5,6 +5,7 @@ class constants(object):
     sourcePath = ""
     rpmPath = ""
     logPath = ""
+    logLevel = "info"
     topDirPath = ""
     buildRootPath = "/mnt"
     prevPublishRPMRepo = ""
@@ -416,7 +417,8 @@ class constants(object):
         "x86_64":[
             "u-boot-rpi3.spec",
             "openjdk8_aarch64.spec",
-            "librpcsecgss.spec"
+            "librpcsecgss.spec",
+            "telegraf.spec"
             ],
         "aarch64":[
             # fakeroot-ng does not support aarch64
@@ -492,7 +494,8 @@ class constants(object):
             "thunderbird.spec",
             #
             "open-vm-tools-vivace.spec",
-            "librpcsecgss.spec"
+            "librpcsecgss.spec",
+            "telegraf.spec"
         ]
     }
 
@@ -515,6 +518,10 @@ class constants(object):
     @staticmethod
     def setTopDirPath(topDirPath):
         constants.topDirPath = topDirPath
+
+    @staticmethod
+    def setLogLevel(logLevel):
+        constants.logLevel = logLevel
 
     @staticmethod
     def setLogPath(logPath):
@@ -575,7 +582,8 @@ class constants(object):
     @staticmethod
     def initialize():
         if constants.rpmCheck:
-            constants.testLogger = Logger.getLogger("MakeCheckTest", constants.logPath)
+            constants.testLogger = Logger.getLogger("MakeCheckTest",
+                                                    constants.logPath, constants.logLevel)
             constants.addMacro("with_check", "1")
         else:
             constants.addMacro("with_check", "0")

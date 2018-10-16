@@ -40,7 +40,7 @@ class SpecObjectsUtils(object):
         self.mapSpecObjects = {}
         self.mapPackageToSpec = {}
         self.mapSpecFileNameToSpecObj = {}
-        self.logger = Logger.getLogger("Serializable Spec objects", logPath)
+        self.logger = Logger.getLogger("Serializable Spec objects", logPath, constants.logLevel)
 
     def readSpecsAndConvertToSerializableObjects(self, specFilesPath):
         listSpecFiles = []
@@ -252,7 +252,7 @@ class SpecObjectsUtils(object):
             specName = self.mapPackageToSpec[package]
             if specName in self.mapSpecObjects:
                 return specName
-        self.logger.error("Could not able to find " + package + " package from specs")
+        self.logger.error("Could not find " + package + " package from specs")
         raise Exception("Invalid package:" + package)
 
     def isRPMPackage(self, package):
@@ -290,23 +290,23 @@ class SpecObjectsUtils(object):
         listSpecs = self.mapSpecObjects.keys()
         for spec in listSpecs:
             for specObj in self.mapSpecObjects[spec]:
-                self.logger.info("-----------Spec:"+specObj.name+"--------------")
-                self.logger.info("Version:"+specObj.version)
-                self.logger.info("Release:"+specObj.release)
-                self.logger.info("SpecFile:"+specObj.specFile)
-                self.logger.info("Source Files")
-                self.logger.info(specObj.listSources)
-                self.logger.info("Patch Files")
-                self.logger.info(specObj.listPatches)
-                self.logger.info("List RPM packages")
-                self.logger.info(specObj.listPackages)
-                self.logger.info("Build require packages")
-                self.logger.info(self.getPkgNamesFromObj(specObj.buildRequirePackages))
-                self.logger.info("install require packages")
-                self.logger.info(self.getPkgNamesFromObj(specObj.installRequiresAllPackages))
-                self.logger.info(specObj.installRequiresPackages)
-                self.logger.info("security_hardening: " + specObj.securityHardening)
-                self.logger.info("------------------------------------------------")
+                self.logger.debug("-----------Spec:"+specObj.name+"--------------")
+                self.logger.debug("Version:"+specObj.version)
+                self.logger.debug("Release:"+specObj.release)
+                self.logger.debug("SpecFile:"+specObj.specFile)
+                self.logger.debug("Source Files")
+                self.logger.debug(specObj.listSources)
+                self.logger.debug("Patch Files")
+                self.logger.debug(specObj.listPatches)
+                self.logger.debug("List RPM packages")
+                self.logger.debug(specObj.listPackages)
+                self.logger.debug("Build require packages")
+                self.logger.debug(self.getPkgNamesFromObj(specObj.buildRequirePackages))
+                self.logger.debug("install require packages")
+                self.logger.debug(self.getPkgNamesFromObj(specObj.installRequiresAllPackages))
+                self.logger.debug(specObj.installRequiresPackages)
+                self.logger.debug("security_hardening: " + specObj.securityHardening)
+                self.logger.debug("------------------------------------------------")
 
 
 class SPECS(object):
@@ -376,14 +376,17 @@ class SPECS(object):
 
 class SpecDependencyGenerator(object):
 
+    def __init__(self, logPath, logLevel):
+        self.logger = Logger.getLogger("Serializable Spec objects", logPath, logLevel)
+
     def findTotalRequires(self, mapDependencies, depQue, parent):
         while not depQue.empty():
             specPkg = depQue.get()
             try:
                 listRequiredPackages = SPECS.getData().getRequiresForPkg(specPkg)
             except Exception as e:
-                print("Caught Exception:"+str(e))
-                print(specPkg + " is missing")
+                self.logger.info("Caught Exception:"+str(e))
+                self.logger.info(specPkg + " is missing")
                 raise e
 
             for depPkg in listRequiredPackages:
@@ -424,7 +427,7 @@ class SpecDependencyGenerator(object):
     def printTree(self, children, curParent, depth):
         if curParent in children:
             for child in children[curParent]:
-                print ("\t" * depth + child)
+                self.logger.info("\t" * depth + child)
                 self.printTree(children, child, depth + 1)
 
     def getAllPackageNames(self, jsonFilePath):
@@ -455,7 +458,7 @@ class SpecDependencyGenerator(object):
                         depQue.put(pkg)
                         self.findTotalRequires(mapDependencies, depQue, parent)
             else:
-                print("Could not find spec for "+pkg)
+                self.logger.info("Could not find spec for " + package)
 
     def displayDependencies(self, displayOption, inputType, inputValue, allDeps, parent):
         children = {}
@@ -467,22 +470,22 @@ class SpecDependencyGenerator(object):
             for k, v in parent.iteritems():
                 children.setdefault(v, []).append(k)
             if inputType == "json":
-                print("Dependency Mappings for {}".format(inputValue) + " :")
-                print("-" * 52 + " {}".format(children))
-                print("-" * 52)
+                self.logger.info("Dependency Mappings for {}".format(inputValue) + " :")
+                self.logger.info("-" * 52 + " {}".format(children))
+                self.logger.info("-" * 52)
             if "" in children:
                 for child in children[""]:
-                    print(child)
+                    self.logger.info(child)
                     self.printTree(children, child, 1)
-                print("*" * 18 + " {} ".format(len(sortedList)) +
+                self.logger.info("*" * 18 + " {} ".format(len(sortedList)) +
                       "packages in total " + "*" * 18)
             else:
                 if inputType == "pkg" and len(children) > 0:
-                    print ("cyclic dependency detected, mappings: \n", children)
+                    self.logger.info("cyclic dependency detected, mappings: \n", children)
 
         # To display a flat list of all packages
         elif displayOption == "list":
-            print (sortedList)
+            self.logger.info(sortedList)
 
         # To generate a new JSON file based on given input json file
         elif displayOption == "json" and inputType == "json":
@@ -509,7 +512,7 @@ class SpecDependencyGenerator(object):
                 return self.displayDependencies(displayOption, inputType, outputFile, mapDependencies, parent)
             else:
                 return self.displayDependencies(displayOption, inputType, inputValue, mapDependencies, parent)
-        elif inputType == "remove-upward-deps":
+        elif inputType == "get-upward-deps":
             depList = []
             for specFile in inputValue.split(":"):
                 if specFile in SPECS.getData().mapSpecFileNameToSpecObj:
@@ -524,8 +527,8 @@ class SpecDependencyGenerator(object):
                 pkg=inputValue+"-"+SPECS.getData().getHighestVersion(inputValue)
                 for version in SPECS.getData().getVersions(depPackage):
                     depPkg = depPackage+"-"+version
-                    print (depPkg)
+                    self.logger.info(depPkg)
                     if pkg in SPECS.getData().getRequiresForPkg(depPkg):
                         whoNeedsList.append(depPkg)
-            print (whoNeedsList)
+            self.logger.info(whoNeedsList)
             return whoNeedsList
