@@ -1,0 +1,58 @@
+From 1727c9e846c6643481877728ff9c14e329582124 Mon Sep 17 00:00:00 2001
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Date: Fri, 1 Jun 2018 10:59:21 -0400
+Subject: x86/bugs: Switch the selection of mitigation from CPU vendor to CPU
+ features
+
+[Upstream 108fab4b5c8f12064ef86e02cb0459992affb30f]
+
+Both AMD and Intel can have SPEC_CTRL_MSR for SSBD.
+
+However AMD also has two more other ways of doing it - which
+are !SPEC_CTRL MSR ways.
+
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: kvm@vger.kernel.org
+Cc: KarimAllah Ahmed <karahmed@amazon.de>
+Cc: andrew.cooper3@citrix.com
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+Link: https://lkml.kernel.org/r/20180601145921.9500-4-konrad.wilk@oracle.com
+
+Signed-off-by: Balbir Singh <sblbir@amazon.com>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kernel/cpu/bugs.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index 4a8a441d9aa4..d97a79cb3edf 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -519,17 +519,12 @@ static enum ssb_mitigation __init __ssb_select_mitigation(void)
+ 		 * Intel uses the SPEC CTRL MSR Bit(2) for this, while AMD may
+ 		 * use a completely different MSR and bit dependent on family.
+ 		 */
+-		switch (boot_cpu_data.x86_vendor) {
+-		case X86_VENDOR_INTEL:
+-		case X86_VENDOR_AMD:
+-			if (!static_cpu_has(X86_FEATURE_MSR_SPEC_CTRL)) {
+-				x86_amd_ssb_disable();
+-				break;
+-			}
++		if (!static_cpu_has(X86_FEATURE_MSR_SPEC_CTRL))
++			x86_amd_ssb_disable();
++		else {
+ 			x86_spec_ctrl_base |= SPEC_CTRL_SSBD;
+ 			x86_spec_ctrl_mask |= SPEC_CTRL_SSBD;
+ 			wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
+-			break;
+ 		}
+ 	}
+ 
+-- 
+2.14.4
+

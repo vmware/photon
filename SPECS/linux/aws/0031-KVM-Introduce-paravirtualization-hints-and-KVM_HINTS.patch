@@ -1,0 +1,215 @@
+From a634a2708266c0e80fbfa04f7596dd9959286ff8 Mon Sep 17 00:00:00 2001
+From: Wanpeng Li <wanpengli@tencent.com>
+Date: Tue, 13 Feb 2018 09:05:40 +0800
+Subject: KVM: Introduce paravirtualization hints and KVM_HINTS_DEDICATED
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This patch introduces kvm_para_has_hint() to query for hints about
+the configuration of the guests.  The first hint KVM_HINTS_DEDICATED,
+is set if the guest has dedicated physical CPUs for each vCPU (i.e.
+pinning and no over-commitment).  This allows optimizing spinlocks
+and tells the guest to avoid PV TLB flush.
+
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Radim Krčmář <rkrcmar@redhat.com>
+Cc: Eduardo Habkost <ehabkost@redhat.com>
+Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Radim Krčmář <rkrcmar@redhat.com>
+Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
+Reviewed-by: Frank van der Linden <fllinden@amazon.com>
+Signed-off-by: Eduardo Valentin <eduval@amazon.com>
+
+CR: https://cr.amazon.com/r/8321912/
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ Documentation/virtual/kvm/cpuid.txt  | 15 +++++++++++++--
+ arch/mips/include/asm/kvm_para.h     |  5 +++++
+ arch/powerpc/include/asm/kvm_para.h  |  5 +++++
+ arch/s390/include/asm/kvm_para.h     |  5 +++++
+ arch/x86/include/asm/kvm_para.h      |  6 ++++++
+ arch/x86/include/uapi/asm/kvm_para.h |  8 ++++++--
+ arch/x86/kernel/kvm.c                |  5 +++++
+ include/asm-generic/kvm_para.h       |  5 +++++
+ include/linux/kvm_para.h             |  5 +++++
+ 9 files changed, 55 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/virtual/kvm/cpuid.txt b/Documentation/virtual/kvm/cpuid.txt
+index a81c97a4b4a5..f86dbbc4b423 100644
+--- a/Documentation/virtual/kvm/cpuid.txt
++++ b/Documentation/virtual/kvm/cpuid.txt
+@@ -23,8 +23,8 @@ This function queries the presence of KVM cpuid leafs.
+ 
+ 
+ function: define KVM_CPUID_FEATURES (0x40000001)
+-returns : ebx, ecx, edx = 0
+-          eax = and OR'ed group of (1 << flag), where each flags is:
++returns : ebx, ecx
++          eax = an OR'ed group of (1 << flag), where each flags is:
+ 
+ 
+ flag                               || value || meaning
+@@ -62,3 +62,14 @@ KVM_FEATURE_CLOCKSOURCE_STABLE_BIT ||    24 || host will warn if no guest-side
+                                    ||       || per-cpu warps are expected in
+                                    ||       || kvmclock.
+ ------------------------------------------------------------------------------
++
++          edx = an OR'ed group of (1 << flag), where each flags is:
++
++
++flag                               || value || meaning
++==================================================================================
++KVM_HINTS_DEDICATED                ||     0 || guest checks this feature bit to
++                                   ||       || determine if there is vCPU pinning
++                                   ||       || and there is no vCPU over-commitment,
++                                   ||       || allowing optimizations
++----------------------------------------------------------------------------------
+diff --git a/arch/mips/include/asm/kvm_para.h b/arch/mips/include/asm/kvm_para.h
+index 60b1aa0b7014..b57e978b0946 100644
+--- a/arch/mips/include/asm/kvm_para.h
++++ b/arch/mips/include/asm/kvm_para.h
+@@ -94,6 +94,11 @@ static inline unsigned int kvm_arch_para_features(void)
+ 	return 0;
+ }
+ 
++static inline unsigned int kvm_arch_para_hints(void)
++{
++	return 0;
++}
++
+ #ifdef CONFIG_MIPS_PARAVIRT
+ static inline bool kvm_para_available(void)
+ {
+diff --git a/arch/powerpc/include/asm/kvm_para.h b/arch/powerpc/include/asm/kvm_para.h
+index 336a91acb8b1..5ceb4efca65f 100644
+--- a/arch/powerpc/include/asm/kvm_para.h
++++ b/arch/powerpc/include/asm/kvm_para.h
+@@ -61,6 +61,11 @@ static inline unsigned int kvm_arch_para_features(void)
+ 	return r;
+ }
+ 
++static inline unsigned int kvm_arch_para_hints(void)
++{
++	return 0;
++}
++
+ static inline bool kvm_check_and_clear_guest_paused(void)
+ {
+ 	return false;
+diff --git a/arch/s390/include/asm/kvm_para.h b/arch/s390/include/asm/kvm_para.h
+index 41393052ac57..8c183c7f1e1b 100644
+--- a/arch/s390/include/asm/kvm_para.h
++++ b/arch/s390/include/asm/kvm_para.h
+@@ -198,6 +198,11 @@ static inline unsigned int kvm_arch_para_features(void)
+ 	return 0;
+ }
+ 
++static inline unsigned int kvm_arch_para_hints(void)
++{
++	return 0;
++}
++
+ static inline bool kvm_check_and_clear_guest_paused(void)
+ {
+ 	return false;
+diff --git a/arch/x86/include/asm/kvm_para.h b/arch/x86/include/asm/kvm_para.h
+index c373e44049b1..f3191f2908a7 100644
+--- a/arch/x86/include/asm/kvm_para.h
++++ b/arch/x86/include/asm/kvm_para.h
+@@ -88,6 +88,7 @@ static inline long kvm_hypercall4(unsigned int nr, unsigned long p1,
+ #ifdef CONFIG_KVM_GUEST
+ bool kvm_para_available(void);
+ unsigned int kvm_arch_para_features(void);
++unsigned int kvm_arch_para_hints(void);
+ void __init kvm_guest_init(void);
+ void kvm_async_pf_task_wait(u32 token, int interrupt_kernel);
+ void kvm_async_pf_task_wake(u32 token);
+@@ -117,6 +118,11 @@ static inline unsigned int kvm_arch_para_features(void)
+ 	return 0;
+ }
+ 
++static inline unsigned int kvm_arch_para_hints(void)
++{
++	return 0;
++}
++
+ static inline u32 kvm_read_and_reset_pf_reason(void)
+ {
+ 	return 0;
+diff --git a/arch/x86/include/uapi/asm/kvm_para.h b/arch/x86/include/uapi/asm/kvm_para.h
+index 341db0462b85..745f25a3926b 100644
+--- a/arch/x86/include/uapi/asm/kvm_para.h
++++ b/arch/x86/include/uapi/asm/kvm_para.h
+@@ -10,8 +10,10 @@
+  */
+ #define KVM_CPUID_SIGNATURE	0x40000000
+ 
+-/* This CPUID returns a feature bitmap in eax.  Before enabling a particular
+- * paravirtualization, the appropriate feature bit should be checked.
++/* This CPUID returns two feature bitmaps in eax, edx. Before enabling
++ * a particular paravirtualization, the appropriate feature bit should
++ * be checked in eax. The performance hint feature bit should be checked
++ * in edx.
+  */
+ #define KVM_CPUID_FEATURES	0x40000001
+ #define KVM_FEATURE_CLOCKSOURCE		0
+@@ -27,6 +29,8 @@
+ #define KVM_FEATURE_PV_UNHALT		7
+ #define KVM_FEATURE_ASYNC_PF_VMEXIT	10
+ 
++#define KVM_HINTS_DEDICATED      0
++
+ /* The last 8 bits are used to indicate how to interpret the flags field
+  * in pvclock structure. If no bits are set, all flags are ignored.
+  */
+diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+index 652bdd867782..7997f2a0d5f8 100644
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -539,6 +539,11 @@ unsigned int kvm_arch_para_features(void)
+ 	return cpuid_eax(kvm_cpuid_base() | KVM_CPUID_FEATURES);
+ }
+ 
++unsigned int kvm_arch_para_hints(void)
++{
++	return cpuid_edx(kvm_cpuid_base() | KVM_CPUID_FEATURES);
++}
++
+ static uint32_t __init kvm_detect(void)
+ {
+ 	return kvm_cpuid_base();
+diff --git a/include/asm-generic/kvm_para.h b/include/asm-generic/kvm_para.h
+index 18c6abe81fbd..728e5c5706c4 100644
+--- a/include/asm-generic/kvm_para.h
++++ b/include/asm-generic/kvm_para.h
+@@ -19,6 +19,11 @@ static inline unsigned int kvm_arch_para_features(void)
+ 	return 0;
+ }
+ 
++static inline unsigned int kvm_arch_para_hints(void)
++{
++	return 0;
++}
++
+ static inline bool kvm_para_available(void)
+ {
+ 	return false;
+diff --git a/include/linux/kvm_para.h b/include/linux/kvm_para.h
+index 51f6ef2c2ff4..f23b90b02898 100644
+--- a/include/linux/kvm_para.h
++++ b/include/linux/kvm_para.h
+@@ -9,4 +9,9 @@ static inline bool kvm_para_has_feature(unsigned int feature)
+ {
+ 	return !!(kvm_arch_para_features() & (1UL << feature));
+ }
++
++static inline bool kvm_para_has_hint(unsigned int feature)
++{
++	return !!(kvm_arch_para_hints() & (1UL << feature));
++}
+ #endif /* __LINUX_KVM_PARA_H */
+-- 
+2.14.4
+

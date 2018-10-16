@@ -1,0 +1,64 @@
+From 310c6f808e8c40afb84c8959a489aacc22fdf768 Mon Sep 17 00:00:00 2001
+From: Vallish Vaidyeshwara <vallish@amazon.com>
+Date: Tue, 19 Sep 2017 17:47:37 +0000
+Subject: nvme: update timeout module parameter type
+
+The underlying blk_mq_tag_set, and request timeout parameters support an
+unsigned int. Extend the size of the nvme module parameters for io and
+admin commands to match.
+
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Frederick Lefebvre <fredlef@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+Signed-off-by: Marc Olson <marcolso@amazon.com>
+Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
+CR: https://cr.amazon.com/r/8209723/
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ drivers/nvme/host/core.c | 8 ++++----
+ drivers/nvme/host/nvme.h | 4 ++--
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 3a63d58d2ca9..4ff673a8d95f 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -34,13 +34,13 @@
+ 
+ #define NVME_MINORS		(1U << MINORBITS)
+ 
+-unsigned char admin_timeout = 60;
+-module_param(admin_timeout, byte, 0644);
++unsigned int admin_timeout = 60;
++module_param(admin_timeout, uint, 0644);
+ MODULE_PARM_DESC(admin_timeout, "timeout in seconds for admin commands");
+ EXPORT_SYMBOL_GPL(admin_timeout);
+ 
+-unsigned char nvme_io_timeout = 30;
+-module_param_named(io_timeout, nvme_io_timeout, byte, 0644);
++unsigned int nvme_io_timeout = 30;
++module_param_named(io_timeout, nvme_io_timeout, uint, 0644);
+ MODULE_PARM_DESC(io_timeout, "timeout in seconds for I/O");
+ EXPORT_SYMBOL_GPL(nvme_io_timeout);
+ 
+diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
+index 7ef0a8e1c3e8..5b7ea2f07e7b 100644
+--- a/drivers/nvme/host/nvme.h
++++ b/drivers/nvme/host/nvme.h
+@@ -21,10 +21,10 @@
+ #include <linux/lightnvm.h>
+ #include <linux/sed-opal.h>
+ 
+-extern unsigned char nvme_io_timeout;
++extern unsigned int nvme_io_timeout;
+ #define NVME_IO_TIMEOUT	(nvme_io_timeout * HZ)
+ 
+-extern unsigned char admin_timeout;
++extern unsigned int admin_timeout;
+ #define ADMIN_TIMEOUT	(admin_timeout * HZ)
+ 
+ #define NVME_DEFAULT_KATO	5
+-- 
+2.14.4
+

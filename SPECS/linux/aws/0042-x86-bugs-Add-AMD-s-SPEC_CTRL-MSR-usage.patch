@@ -1,0 +1,171 @@
+From 9e2dec84e79230156a2b515e2400edd9a9fdcf8a Mon Sep 17 00:00:00 2001
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Date: Fri, 1 Jun 2018 10:59:20 -0400
+Subject: x86/bugs: Add AMD's SPEC_CTRL MSR usage
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+[upstream 6ac2f49edb1ef5446089c7c660017732886d62d6]
+
+The AMD document outlining the SSBD handling
+124441_AMD64_SpeculativeStoreBypassDisable_Whitepaper_final.pdf
+mentions that if CPUID 8000_0008.EBX[24] is set we should be using
+the SPEC_CTRL MSR (0x48) over the VIRT SPEC_CTRL MSR (0xC001_011f)
+for speculative store bypass disable.
+
+This in effect means we should clear the X86_FEATURE_VIRT_SSBD
+flag so that we would prefer the SPEC_CTRL MSR.
+
+See the document titled:
+   124441_AMD64_SpeculativeStoreBypassDisable_Whitepaper_final.pdf
+
+A copy of this document is available at
+   https://bugzilla.kernel.org/show_bug.cgi?id=199889
+
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: Janakarajan Natarajan <Janakarajan.Natarajan@amd.com>
+Cc: kvm@vger.kernel.org
+Cc: KarimAllah Ahmed <karahmed@amazon.de>
+Cc: andrew.cooper3@citrix.com
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Radim Krčmář <rkrcmar@redhat.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+Cc: Kees Cook <keescook@chromium.org>
+Link: https://lkml.kernel.org/r/20180601145921.9500-3-konrad.wilk@oracle.com
+
+Signed-off-by: Balbir Singh <sblbir@amazon.com>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/cpufeatures.h |  1 +
+ arch/x86/kernel/cpu/bugs.c         | 12 +++++++-----
+ arch/x86/kernel/cpu/common.c       |  6 ++++++
+ arch/x86/kvm/cpuid.c               | 10 ++++++++--
+ arch/x86/kvm/svm.c                 |  8 +++++---
+ 5 files changed, 27 insertions(+), 10 deletions(-)
+
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 4c1d67c31bd4..6396d0f048b1 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -283,6 +283,7 @@
+ #define X86_FEATURE_AMD_IBPB		(13*32+12) /* "" Indirect Branch Prediction Barrier */
+ #define X86_FEATURE_AMD_IBRS		(13*32+14) /* "" Indirect Branch Restricted Speculation */
+ #define X86_FEATURE_AMD_STIBP		(13*32+15) /* "" Single Thread Indirect Branch Predictors */
++#define X86_FEATURE_AMD_SSBD		(13*32+24) /* "" Speculative Store Bypass Disable */
+ #define X86_FEATURE_VIRT_SSBD		(13*32+25) /* Virtualized Speculative Store Bypass Disable */
+ #define X86_FEATURE_AMD_SSB_NO		(13*32+26) /* "" Speculative Store Bypass is fixed in hardware. */
+ 
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index d07addb99b71..4a8a441d9aa4 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -516,18 +516,20 @@ static enum ssb_mitigation __init __ssb_select_mitigation(void)
+ 	if (mode == SPEC_STORE_BYPASS_DISABLE) {
+ 		setup_force_cpu_cap(X86_FEATURE_SPEC_STORE_BYPASS_DISABLE);
+ 		/*
+-		 * Intel uses the SPEC CTRL MSR Bit(2) for this, while AMD uses
+-		 * a completely different MSR and bit dependent on family.
++		 * Intel uses the SPEC CTRL MSR Bit(2) for this, while AMD may
++		 * use a completely different MSR and bit dependent on family.
+ 		 */
+ 		switch (boot_cpu_data.x86_vendor) {
+ 		case X86_VENDOR_INTEL:
++		case X86_VENDOR_AMD:
++			if (!static_cpu_has(X86_FEATURE_MSR_SPEC_CTRL)) {
++				x86_amd_ssb_disable();
++				break;
++			}
+ 			x86_spec_ctrl_base |= SPEC_CTRL_SSBD;
+ 			x86_spec_ctrl_mask |= SPEC_CTRL_SSBD;
+ 			wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
+ 			break;
+-		case X86_VENDOR_AMD:
+-			x86_amd_ssb_disable();
+-			break;
+ 		}
+ 	}
+ 
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 1673a95bdced..b8de3d545d9a 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -760,6 +760,12 @@ static void init_speculation_control(struct cpuinfo_x86 *c)
+ 		set_cpu_cap(c, X86_FEATURE_STIBP);
+ 		set_cpu_cap(c, X86_FEATURE_MSR_SPEC_CTRL);
+ 	}
++
++	if (cpu_has(c, X86_FEATURE_AMD_SSBD)) {
++		set_cpu_cap(c, X86_FEATURE_SSBD);
++		set_cpu_cap(c, X86_FEATURE_MSR_SPEC_CTRL);
++		clear_cpu_cap(c, X86_FEATURE_VIRT_SSBD);
++	}
+ }
+ 
+ void get_cpu_cap(struct cpuinfo_x86 *c)
+diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+index 95a98397beca..bbcd69c76d96 100644
+--- a/arch/x86/kvm/cpuid.c
++++ b/arch/x86/kvm/cpuid.c
+@@ -367,7 +367,8 @@ static inline int __do_cpuid_ent(struct kvm_cpuid_entry2 *entry, u32 function,
+ 
+ 	/* cpuid 0x80000008.ebx */
+ 	const u32 kvm_cpuid_8000_0008_ebx_x86_features =
+-		F(AMD_IBPB) | F(AMD_IBRS) | F(VIRT_SSBD) | F(AMD_SSB_NO);
++		F(AMD_IBPB) | F(AMD_IBRS) | F(AMD_SSBD) | F(VIRT_SSBD) |
++		F(AMD_SSB_NO);
+ 
+ 	/* cpuid 0xC0000001.edx */
+ 	const u32 kvm_cpuid_C000_0001_edx_x86_features =
+@@ -649,7 +650,12 @@ static inline int __do_cpuid_ent(struct kvm_cpuid_entry2 *entry, u32 function,
+ 			entry->ebx |= F(VIRT_SSBD);
+ 		entry->ebx &= kvm_cpuid_8000_0008_ebx_x86_features;
+ 		cpuid_mask(&entry->ebx, CPUID_8000_0008_EBX);
+-		if (boot_cpu_has(X86_FEATURE_LS_CFG_SSBD))
++		/*
++		 * The preference is to use SPEC CTRL MSR instead of the
++		 * VIRT_SPEC MSR.
++		 */
++		if (boot_cpu_has(X86_FEATURE_LS_CFG_SSBD) &&
++		    !boot_cpu_has(X86_FEATURE_AMD_SSBD))
+ 			entry->ebx |= F(VIRT_SSBD);
+ 		break;
+ 	}
+diff --git a/arch/x86/kvm/svm.c b/arch/x86/kvm/svm.c
+index 282bbcbf3b6a..6fa8e94b5208 100644
+--- a/arch/x86/kvm/svm.c
++++ b/arch/x86/kvm/svm.c
+@@ -3644,7 +3644,8 @@ static int svm_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 		break;
+ 	case MSR_IA32_SPEC_CTRL:
+ 		if (!msr_info->host_initiated &&
+-		    !guest_cpuid_has(vcpu, X86_FEATURE_AMD_IBRS))
++		    !guest_cpuid_has(vcpu, X86_FEATURE_AMD_IBRS) &&
++		    !guest_cpuid_has(vcpu, X86_FEATURE_AMD_SSBD))
+ 			return 1;
+ 
+ 		msr_info->data = svm->spec_ctrl;
+@@ -3749,11 +3750,12 @@ static int svm_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr)
+ 		break;
+ 	case MSR_IA32_SPEC_CTRL:
+ 		if (!msr->host_initiated &&
+-		    !guest_cpuid_has(vcpu, X86_FEATURE_AMD_IBRS))
++		    !guest_cpuid_has(vcpu, X86_FEATURE_AMD_IBRS) &&
++		    !guest_cpuid_has(vcpu, X86_FEATURE_AMD_SSBD))
+ 			return 1;
+ 
+ 		/* The STIBP bit doesn't fault even if it's not advertised */
+-		if (data & ~(SPEC_CTRL_IBRS | SPEC_CTRL_STIBP))
++		if (data & ~(SPEC_CTRL_IBRS | SPEC_CTRL_STIBP | SPEC_CTRL_SSBD))
+ 			return 1;
+ 
+ 		svm->spec_ctrl = data;
+-- 
+2.14.4
+

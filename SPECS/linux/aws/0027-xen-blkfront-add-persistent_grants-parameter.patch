@@ -1,0 +1,86 @@
+From 9e24b4a79e5acca9db3e43c2e0280bf0e789b953 Mon Sep 17 00:00:00 2001
+From: Anthony Liguori <aliguori@amazon.com>
+Date: Tue, 26 Apr 2016 22:04:13 +0000
+Subject: xen-blkfront: add 'persistent_grants' parameter
+
+Persistent grants make it far more likely to exhaust domain-0's grant
+table entries particularily with a high number of devices across a
+high number of domains.
+
+It is useful for an instance to be able to control disabling this
+feature to help mitigate against grant starvation.
+
+Forward port: For 4.14.y linux kernel, we are no longer using out
+of tree xen blockfront driver. This patch has been ported on intree
+xen blockfront driver.
+For reference:
+Original CR: https://cr.amazon.com/r/5182736/
+
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Anchal Agarwal <anchalag@amazon.com>
+Signed-off-by: Anthony Liguori <aliguori@amazon.com>
+Signed-off-by: Cristian Gafton <gafton@amazon.com>
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
+
+CR: https://cr.amazon.com/r/8309443
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ drivers/block/xen-blkfront.c | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
+index a5d0266ee1ba..cdbc2baa67d5 100644
+--- a/drivers/block/xen-blkfront.c
++++ b/drivers/block/xen-blkfront.c
+@@ -142,6 +142,10 @@ static unsigned int xen_blkif_max_queues = 4;
+ module_param_named(max_queues, xen_blkif_max_queues, uint, S_IRUGO);
+ MODULE_PARM_DESC(max_queues, "Maximum number of hardware queues/rings used per virtual disk");
+ 
++static unsigned int xen_blkif_feature_persistent = 1;
++module_param_named(persistent_grants, xen_blkif_feature_persistent, int, S_IRUGO);
++MODULE_PARM_DESC(persistent_grants, "Enable persistent grant table references (default is 1)");
++
+ /*
+  * Maximum order of pages to be used for the shared ring between front and
+  * backend, 4KB page granularity is used.
+@@ -2009,11 +2013,14 @@ static int talk_to_blkback(struct xenbus_device *dev,
+ 		message = "writing protocol";
+ 		goto abort_transaction;
+ 	}
+-	err = xenbus_printf(xbt, dev->nodename,
+-			    "feature-persistent", "%u", 1);
+-	if (err)
+-		dev_warn(&dev->dev,
+-			 "writing persistent grants feature to xenbus");
++
++	if (xen_blkif_feature_persistent) {
++		err = xenbus_printf(xbt, dev->nodename,
++				"feature-persistent", "%u", 1);
++		if (err)
++			dev_warn(&dev->dev,
++				"writing persistent grants feature to xenbus");
++	}
+ 
+ 	err = xenbus_transaction_end(xbt, 0);
+ 	if (err) {
+@@ -2506,9 +2513,12 @@ static void blkfront_gather_backend_features(struct blkfront_info *info)
+ 	if (xenbus_read_unsigned(info->xbdev->otherend, "feature-discard", 0))
+ 		blkfront_setup_discard(info);
+ 
+-	info->feature_persistent =
+-		!!xenbus_read_unsigned(info->xbdev->otherend,
+-				       "feature-persistent", 0);
++	if (xen_blkif_feature_persistent)
++		info->feature_persistent =
++			!!xenbus_read_unsigned(info->xbdev->otherend,
++					       "feature-persistent", 0);
++	else
++		info->feature_persistent = 0;
+ 
+ 	indirect_segments = xenbus_read_unsigned(info->xbdev->otherend,
+ 					"feature-max-indirect-segments", 0);
+-- 
+2.14.4
+
