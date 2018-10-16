@@ -37,8 +37,8 @@ The Common Vulnerabilities and Exposures project (cve.mitre.org) has assigned th
 | Download | Size | sha1 checksum | md5 checksum |
 | --- | --- | --- | --- |
 | [Full ISO](https://bintray.com/artifact/download/vmware/photon/photon-1.0-13c08b6.iso) | 2.1GB | a3acb6922c93e2b0cdc186abd5352bb0e61b986b | 60225fb97e6a702864795743db197335 |
-| [OVA with virtual hardware v10](https://bintray.com/artifact/download/vmware/photon/photon-custom-hw10-1.0-13c08b6-GA.ova) | 199.8MB | 91760496427b277942fb9492fd48938cfc374edd | d8d02667a869c973ef7aa5c25d207748 |
-| [OVA with virtual hardware v11](https://bintray.com/artifact/download/vmware/photon/photon-custom-hw11-1.0-13c08b6-GA.ova) | 199.8MB | 2cd6e4ff31f901f1b97aca279404d7ddaf42f44d | d30309abb4bec167d8c79daee6045dd4 |
+| [OVA with virtual hardware v10](https://bintray.com/vmware/photon/download_file?file_path=photon-custom-hw10-1.0-62c543d.ova) | 159MB | 6e9087ed25394e1bbc56496ae368b8c77efb21cb | 3e4b1a5f24ab463677e3edebd1ecd218 |
+| [OVA with virtual hardware v11](https://bintray.com/vmware/photon/download_file?file_path=photon-custom-hw11-1.0-62c543d.ova) | 159MB | 18c1a6d31545b757d897c61a0c3cc0e54d8aeeba | be9961a232ad5052b746fccbb5a9672d |
 | [Amazon AMI] (https://bintray.com/artifact/download/vmware/photon/photon-ami-1.0-13c08b6.tar.gz) | 148.5MB | e111281baabe82beaafcb6a3e17e6aec86c4acf6 | 0d2b86deca6d29323dc4877cf05c6bcc |
 | [Google GCE] (https://bintray.com/artifact/download/vmware/photon/photon-gce-1.0-13c08b6.tar.gz) | 411.7MB | 6d0e6f52379fedeb22b744aabaf681e8cc5e4fbe | af9d0e8e44c4d0a031b694885acde540 |
 
