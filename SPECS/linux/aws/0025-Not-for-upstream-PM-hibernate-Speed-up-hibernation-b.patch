@@ -1,0 +1,375 @@
+From 65facfe3fa04b7244d2c3f1fce3845e6771af6c5 Mon Sep 17 00:00:00 2001
+From: Aleksei Besogonov <cyberax@amazon.com>
+Date: Thu, 2 Nov 2017 02:55:51 +0000
+Subject: Not-for-upstream: PM / hibernate: Speed up hibernation by batching
+ requests
+
+Hibernate file reading and writing submits individual IO requests for
+each page of the data. This normally is not a big issue, however some
+cloud computing providers meter IO by the number of requests and not by
+their size. So one 4KB request counts as much as a 256KB request
+towards the IOPS quota.
+
+With this patch we opportunistically batch the requests together,
+increasing performance by 20-30%.
+
+TODO:
+- Add ability to turn off this option using kernel command line with
+Kconfig for the default value.
+- Test the code with error injection to simulate hardware and memory
+allocation failure.
+
+NU: Because this is specific to AWS EBS
+Signed-off-by: Aleksei Besogonov <cyberax@amazon.com>
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+CR: https://cr.amazon.com/r/8297651/
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ kernel/power/swap.c | 238 ++++++++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 203 insertions(+), 35 deletions(-)
+
+diff --git a/kernel/power/swap.c b/kernel/power/swap.c
+index d7cdc426ee38..e21d587a8b16 100644
+--- a/kernel/power/swap.c
++++ b/kernel/power/swap.c
+@@ -60,6 +60,11 @@ static bool clean_pages_on_decompress;
+ 
+ #define MAP_PAGE_ENTRIES	(PAGE_SIZE / sizeof(sector_t) - 1)
+ 
++/*
++ * The number of pages in each BIO request
++ */
++#define HIB_BIO_BATCH_SIZE 63u
++
+ /*
+  * Number of free pages that are not high.
+  */
+@@ -226,6 +231,7 @@ struct hib_bio_batch {
+ 	atomic_t		count;
+ 	wait_queue_head_t	wait;
+ 	blk_status_t		error;
++	struct bio *current_bio;
+ };
+ 
+ static void hib_init_batch(struct hib_bio_batch *hb)
+@@ -233,25 +239,30 @@ static void hib_init_batch(struct hib_bio_batch *hb)
+ 	atomic_set(&hb->count, 0);
+ 	init_waitqueue_head(&hb->wait);
+ 	hb->error = BLK_STS_OK;
++	hb->current_bio = 0;
+ }
+ 
+ static void hib_end_io(struct bio *bio)
+ {
+ 	struct hib_bio_batch *hb = bio->bi_private;
+-	struct page *page = bio->bi_io_vec[0].bv_page;
+-
++	size_t i;
++
++        for (i = 0; i < bio->bi_vcnt; ++i) {
++                struct page *page = bio->bi_io_vec[i].bv_page;
++
++                if (bio_data_dir(bio) == WRITE)
++                        put_page(page);
++                else if (clean_pages_on_read)
++                        flush_icache_range(
++                                        (unsigned long)page_address(page),
++                                        (unsigned long)page_address(page) + PAGE_SIZE);
++        }
+ 	if (bio->bi_status) {
+ 		printk(KERN_ALERT "Read-error on swap-device (%u:%u:%Lu)\n",
+ 				MAJOR(bio_dev(bio)), MINOR(bio_dev(bio)),
+ 				(unsigned long long)bio->bi_iter.bi_sector);
+ 	}
+-
+-	if (bio_data_dir(bio) == WRITE)
+-		put_page(page);
+-	else if (clean_pages_on_read)
+-		flush_icache_range((unsigned long)page_address(page),
+-				   (unsigned long)page_address(page) + PAGE_SIZE);
+-
++	
+ 	if (bio->bi_status && !hb->error)
+ 		hb->error = bio->bi_status;
+ 	if (atomic_dec_and_test(&hb->count))
+@@ -260,6 +271,66 @@ static void hib_end_io(struct bio *bio)
+ 	bio_put(bio);
+ }
+ 
++static void send_bio(struct hib_bio_batch *hb, struct bio *bio)
++{
++	bio->bi_end_io = hib_end_io;
++	bio->bi_private = hb;
++	atomic_inc(&hb->count);
++	submit_bio(bio);
++}
++
++static int hib_submit_batch_write(pgoff_t page_off, void *addr,
++				  struct hib_bio_batch *hb)
++{
++	struct page *page = virt_to_page(addr);
++	struct bio *bio = hb->current_bio;
++
++	/*
++	 * Check if we're continuing to write the same batch
++	 */
++	if (bio) {
++		sector_t expected_location = bio->bi_iter.bi_sector +
++			bio->bi_vcnt * (PAGE_SIZE>>9);
++		if (page_off * (PAGE_SIZE>>9) != expected_location) {
++			/*
++			 * Nope, the requested page location is not a
++			 * continuation of the current iovec. So send
++			 * the current batch and start a new one.
++			 */
++			send_bio(hb, bio);
++			hb->current_bio = bio = NULL;
++		}
++	}
++
++	if (!bio) {
++		bio = bio_alloc(__GFP_RECLAIM | __GFP_HIGH, HIB_BIO_BATCH_SIZE);
++		if (!bio)
++			return -ENOMEM;
++		bio->bi_iter.bi_sector = page_off * (PAGE_SIZE >> 9);
++		bio_set_dev(bio, hib_resume_bdev);
++		bio_set_op_attrs(bio, REQ_OP_WRITE, 0);
++		hb->current_bio = bio;
++	}
++
++	if (bio_add_page(bio, page, PAGE_SIZE, 0) < PAGE_SIZE) {
++		printk(KERN_ERR "PM: Adding page to bio failed at %llu\n",
++		       (unsigned long long)bio->bi_iter.bi_sector);
++		bio_put(bio);
++		hb->current_bio = 0;
++		return -EFAULT;
++	}
++
++	/*
++	 * Check if the batch is filled and is ready to be submitted
++	 */
++	if (bio->bi_vcnt >= bio->bi_max_vecs) {
++		send_bio(hb, bio);
++		hb->current_bio = 0;
++	}
++
++	return 0;
++}
++
+ static int hib_submit_io(int op, int op_flags, pgoff_t page_off, void *addr,
+ 		struct hib_bio_batch *hb)
+ {
+@@ -268,6 +339,8 @@ static int hib_submit_io(int op, int op_flags, pgoff_t page_off, void *addr,
+ 	int error = 0;
+ 
+ 	bio = bio_alloc(__GFP_RECLAIM | __GFP_HIGH, 1);
++	if (!bio)
++		return -ENOMEM;
+ 	bio->bi_iter.bi_sector = page_off * (PAGE_SIZE >> 9);
+ 	bio_set_dev(bio, hib_resume_bdev);
+ 	bio_set_op_attrs(bio, op, op_flags);
+@@ -280,10 +353,7 @@ static int hib_submit_io(int op, int op_flags, pgoff_t page_off, void *addr,
+ 	}
+ 
+ 	if (hb) {
+-		bio->bi_end_io = hib_end_io;
+-		bio->bi_private = hb;
+-		atomic_inc(&hb->count);
+-		submit_bio(bio);
++		send_bio(hb, bio);
+ 	} else {
+ 		error = submit_bio_wait(bio);
+ 		bio_put(bio);
+@@ -294,6 +364,10 @@ static int hib_submit_io(int op, int op_flags, pgoff_t page_off, void *addr,
+ 
+ static blk_status_t hib_wait_io(struct hib_bio_batch *hb)
+ {
++	if (hb->current_bio) {
++		send_bio(hb, hb->current_bio);
++		hb->current_bio = 0;
++	}
+ 	wait_event(hb->wait, atomic_read(&hb->count) == 0);
+ 	return blk_status_to_errno(hb->error);
+ }
+@@ -396,6 +470,21 @@ static int write_page(void *buf, sector_t offset, struct hib_bio_batch *hb)
+ 	} else {
+ 		src = buf;
+ 	}
++	if (hb) {
++                ret = hib_submit_batch_write(offset, src, hb);
++                /* We can only recover from ENOMEM that can happen
++ 		* during bio_alloc by switching to (slow) sync
++ 		* request submission. 
++ 		* In all other cases we just propagate the error.
++                */
++		if (ret == -ENOMEM) {
++                        WARN_ON_ONCE(1); /* Go synchronous */
++                        hb = NULL;
++                        src = buf;
++                } else {
++                        return ret;
++                }
++        }
+ 	return hib_submit_io(REQ_OP_WRITE, REQ_SYNC, offset, src, hb);
+ }
+ 
+@@ -1011,35 +1100,106 @@ static int get_swap_reader(struct swap_map_handle *handle,
+ 	return 0;
+ }
+ 
+-static int swap_read_page(struct swap_map_handle *handle, void *buf,
+-		struct hib_bio_batch *hb)
++static int swap_read_pages(struct swap_map_handle *handle, void **buf, unsigned int num_pages, unsigned int *num_read, struct hib_bio_batch *hb)
+ {
+-	sector_t offset;
+-	int error;
++	
++	sector_t expected_offset;
++        unsigned int i = 0;
++	int error = 0;
+ 	struct swap_map_page_list *tmp;
++	struct bio *bio; 
+ 
+ 	if (!handle->cur)
+ 		return -EINVAL;
+-	offset = handle->cur->entries[handle->k];
+-	if (!offset)
++	expected_offset = handle->cur->entries[handle->k];
++	if (!expected_offset)
+ 		return -EFAULT;
+-	error = hib_submit_io(REQ_OP_READ, 0, offset, buf, hb);
+-	if (error)
+-		return error;
+-	if (++handle->k >= MAP_PAGE_ENTRIES) {
+-		handle->k = 0;
+-		free_page((unsigned long)handle->maps->map);
+-		tmp = handle->maps;
+-		handle->maps = handle->maps->next;
+-		kfree(tmp);
+-		if (!handle->maps)
+-			release_swap_reader(handle);
+-		else
+-			handle->cur = handle->maps->map;
++	bio = bio_alloc(__GFP_RECLAIM | __GFP_HIGH,
++			min(HIB_BIO_BATCH_SIZE, num_pages));
++	if (!bio) {
++		if (hb) {
++			error = hib_wait_io(hb);
++			if (error)
++				return error;
++		}
++
++		bio = bio_alloc(__GFP_RECLAIM | __GFP_HIGH,
++				min(HIB_BIO_BATCH_SIZE, num_pages));
++		if (!bio)
++			return -ENOMEM;
++	}
++
++	bio->bi_iter.bi_sector = expected_offset * (PAGE_SIZE >> 9);
++	bio_set_dev(bio, hib_resume_bdev);
++	bio_set_op_attrs(bio, REQ_OP_READ, 0);
++
++	/* Get the consecutive pages and put them all into a bio */
++	while (1) {
++		struct page *page;
++		sector_t cur_offset;
++
++		cur_offset = handle->cur->entries[handle->k];
++		if (!cur_offset)
++			break; /* EOF - send the possibly accumulated data */
++
++		/* A non-consecutive block - submit the currently
++		 * accumulated BIO and exit
++		 */
++		if (expected_offset != cur_offset)
++			break;
++
++		page = virt_to_page(buf[i]);
++		if (bio_add_page(bio, page, PAGE_SIZE, 0) == 0) {
++			printk(KERN_ERR "PM: Failed to add a page to BIO\n");
++			bio_put(bio);
++			return -EFAULT;
++		}
++		++i;
++		++handle->k;
++		/* Update expected offset for the next page */
++		++expected_offset;
++
++		if (handle->k >= MAP_PAGE_ENTRIES) {
++			/* We've reached the end of the metadata page */
++			handle->k = 0;
++			free_page((unsigned long)handle->maps->map);
++			tmp = handle->maps;
++			handle->maps = handle->maps->next;
++			kfree(tmp);
++			if (!handle->maps)
++				release_swap_reader(handle);
++			else
++				handle->cur = handle->maps->map;
++		}
++
++		if (i >= HIB_BIO_BATCH_SIZE || i >= num_pages)
++			break;
++	}
++
++	if (num_read != NULL)
++		*num_read = i;
++
++	if (i == 0) {
++		printk(KERN_ERR "PM: Failed to write even one page\n");
++		bio_put(bio);
++		return -EFAULT;
++	}
++
++	if (hb) {
++		send_bio(hb, bio);
++	} else {
++		error = submit_bio_wait(bio);
++		bio_put(bio);
+ 	}
+ 	return error;
+ }
+ 
++static int swap_read_page(struct swap_map_handle *handle, void *buf,
++                          struct hib_bio_batch *hb)
++{
++        return swap_read_pages(handle, &buf, 1, NULL, hb);
++}
++
+ static int swap_reader_finish(struct swap_map_handle *handle)
+ {
+ 	release_swap_reader(handle);
+@@ -1300,8 +1460,13 @@ static int load_image_lzo(struct swap_map_handle *handle,
+ 		goto out_finish;
+ 
+ 	for(;;) {
+-		for (i = 0; !eof && i < want; i++) {
+-			ret = swap_read_page(handle, page[ring], &hb);
++		for (i = 0; !eof && i < want; ) {
++			unsigned int cur_read = 0;
++
++			ret = swap_read_pages(
++				handle, (void **)(page + ring),
++				min(want - i, ring_size - ring),
++				&cur_read, &hb);
+ 			if (ret) {
+ 				/*
+ 				 * On real read error, finish. On end of data,
+@@ -1315,7 +1480,10 @@ static int load_image_lzo(struct swap_map_handle *handle,
+ 					break;
+ 				}
+ 			}
+-			if (++ring >= ring_size)
++
++			ring += cur_read;
++			i += cur_read;
++			if (ring >= ring_size)
+ 				ring = 0;
+ 		}
+ 		asked += i;
+-- 
+2.14.4
+

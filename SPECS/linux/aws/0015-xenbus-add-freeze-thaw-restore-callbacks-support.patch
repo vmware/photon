@@ -1,0 +1,206 @@
+From a6942c8360d560ecdd1c240014581e71e232fad7 Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Thu, 13 Jul 2017 02:00:31 +0000
+Subject: xenbus: add freeze/thaw/restore callbacks support
+
+Since commit b3e96c0c7562 ("xen: use freeze/restore/thaw PM events for
+suspend/resume/chkpt"), xenbus uses PMSG_FREEZE, PMSG_THAW and
+PMSG_RESTORE events for Xen suspend. However, they're actually assigned
+to xenbus_dev_suspend(), xenbus_dev_cancel() and xenbus_dev_resume()
+respectively, and only suspend and resume callbacks are supported at
+driver level. To support PM suspend and PM hibernation, modify the bus
+level PM callbacks to invoke not only device driver's suspend/resume but
+also freeze/thaw/restore.
+
+Note that we'll use freeze/restore callbacks even for PM suspend whereas
+suspend/resume callbacks are normally used in the case, becausae the
+existing xenbus device drivers already have suspend/resume callbacks
+specifically designed for Xen suspend. So we can allow the device
+drivers to keep the existing callbacks wihtout modification.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+CR: https://cr.amazon.com/r/8273200/
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ drivers/xen/xenbus/xenbus_probe.c | 102 ++++++++++++++++++++++++++++++++------
+ include/xen/xenbus.h              |   3 ++
+ 2 files changed, 89 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/xen/xenbus/xenbus_probe.c b/drivers/xen/xenbus/xenbus_probe.c
+index ec9eb4fba59c..95b0a6d0acce 100644
+--- a/drivers/xen/xenbus/xenbus_probe.c
++++ b/drivers/xen/xenbus/xenbus_probe.c
+@@ -49,6 +49,7 @@
+ #include <linux/io.h>
+ #include <linux/slab.h>
+ #include <linux/module.h>
++#include <linux/suspend.h>
+ 
+ #include <asm/page.h>
+ #include <asm/pgtable.h>
+@@ -588,26 +589,47 @@ int xenbus_dev_suspend(struct device *dev)
+ 	struct xenbus_driver *drv;
+ 	struct xenbus_device *xdev
+ 		= container_of(dev, struct xenbus_device, dev);
++	int (*cb)(struct xenbus_device *) = NULL;
++	bool xen_suspend = xen_suspend_mode_is_xen_suspend();
+ 
+ 	DPRINTK("%s", xdev->nodename);
+ 
+ 	if (dev->driver == NULL)
+ 		return 0;
+ 	drv = to_xenbus_driver(dev->driver);
+-	if (drv->suspend)
+-		err = drv->suspend(xdev);
+-	if (err)
+-		pr_warn("suspend %s failed: %i\n", dev_name(dev), err);
++
++	if (xen_suspend)
++		cb = drv->suspend;
++	else
++		cb = drv->freeze;
++
++	if (cb)
++		err = cb(xdev);
++
++	if (err) {
++		pr_warn("%s %s failed: %i\n", xen_suspend ?
++			"suspend" : "freeze", dev_name(dev), err);
++		return err;
++	}
++
++	if (!xen_suspend) {
++		/* Forget otherend since this can become stale after restore */
++		free_otherend_watch(xdev);
++		free_otherend_details(xdev);
++	}
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(xenbus_dev_suspend);
+ 
+ int xenbus_dev_resume(struct device *dev)
+ {
+-	int err;
++	int err = 0;
+ 	struct xenbus_driver *drv;
+ 	struct xenbus_device *xdev
+ 		= container_of(dev, struct xenbus_device, dev);
++	int (*cb)(struct xenbus_device *) = NULL;
++	bool xen_suspend = xen_suspend_mode_is_xen_suspend();
+ 
+ 	DPRINTK("%s", xdev->nodename);
+ 
+@@ -616,24 +638,34 @@ int xenbus_dev_resume(struct device *dev)
+ 	drv = to_xenbus_driver(dev->driver);
+ 	err = talk_to_otherend(xdev);
+ 	if (err) {
+-		pr_warn("resume (talk_to_otherend) %s failed: %i\n",
++		pr_warn("%s (talk_to_otherend) %s failed: %i\n",
++			xen_suspend ? "resume" : "restore",
+ 			dev_name(dev), err);
+ 		return err;
+ 	}
+ 
+-	xdev->state = XenbusStateInitialising;
++	if (xen_suspend)
++		xdev->state = XenbusStateInitialising;
+ 
+-	if (drv->resume) {
+-		err = drv->resume(xdev);
+-		if (err) {
+-			pr_warn("resume %s failed: %i\n", dev_name(dev), err);
+-			return err;
+-		}
++	if (xen_suspend)
++		cb = drv->resume;
++	else
++		cb = drv->restore;
++
++	if (cb)
++		err = cb(xdev);
++
++	if (err) {
++		pr_warn("%s %s failed: %i\n",
++			xen_suspend ? "resume" : "restore",
++			dev_name(dev), err);
++		return err;
+ 	}
+ 
+ 	err = watch_otherend(xdev);
+ 	if (err) {
+-		pr_warn("resume (watch_otherend) %s failed: %d.\n",
++		pr_warn("%s (watch_otherend) %s failed: %d.\n",
++			xen_suspend ? "resume" : "restore",
+ 			dev_name(dev), err);
+ 		return err;
+ 	}
+@@ -644,8 +676,46 @@ EXPORT_SYMBOL_GPL(xenbus_dev_resume);
+ 
+ int xenbus_dev_cancel(struct device *dev)
+ {
+-	/* Do nothing */
+-	DPRINTK("cancel");
++	int err = 0;
++	struct xenbus_driver *drv;
++	struct xenbus_device *xdev
++		= container_of(dev, struct xenbus_device, dev);
++	bool xen_suspend = xen_suspend_mode_is_xen_suspend();
++
++	if (xen_suspend) {
++		/* Do nothing */
++		DPRINTK("cancel");
++		return 0;
++	}
++
++	DPRINTK("%s", xdev->nodename);
++
++	if (dev->driver == NULL)
++		return 0;
++	drv = to_xenbus_driver(dev->driver);
++
++	err = talk_to_otherend(xdev);
++	if (err) {
++		pr_warn("thaw (talk_to_otherend) %s failed: %d.\n",
++			dev_name(dev), err);
++		return err;
++	}
++
++	if (drv->thaw) {
++		err = drv->thaw(xdev);
++		if (err) {
++			pr_warn("thaw %s failed: %i\n", dev_name(dev), err);
++			return err;
++		}
++	}
++
++	err = watch_otherend(xdev);
++	if (err) {
++		pr_warn("thaw (watch_otherend) %s failed: %d.\n",
++			dev_name(dev), err);
++		return err;
++	}
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(xenbus_dev_cancel);
+diff --git a/include/xen/xenbus.h b/include/xen/xenbus.h
+index 869c816d5f8c..20261d5f4e78 100644
+--- a/include/xen/xenbus.h
++++ b/include/xen/xenbus.h
+@@ -100,6 +100,9 @@ struct xenbus_driver {
+ 	int (*remove)(struct xenbus_device *dev);
+ 	int (*suspend)(struct xenbus_device *dev);
+ 	int (*resume)(struct xenbus_device *dev);
++	int (*freeze)(struct xenbus_device *dev);
++	int (*thaw)(struct xenbus_device *dev);
++	int (*restore)(struct xenbus_device *dev);
+ 	int (*uevent)(struct xenbus_device *, struct kobj_uevent_env *);
+ 	struct device_driver driver;
+ 	int (*read_otherend_details)(struct xenbus_device *dev);
+-- 
+2.14.4
+

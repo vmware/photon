@@ -1,0 +1,63 @@
+From 0ff745ce7c426aae4892f596224d664ab816e14b Mon Sep 17 00:00:00 2001
+From: Anchal Agarwal <anchalag@amazon.com>
+Date: Tue, 5 Jun 2018 20:51:31 +0000
+Subject: xen-blkfront: Fixed blkfront_restore to remove a call to negotiate_mq
+
+The code for talk_to_blkback API changed in kernel-4.14.45 to include a call to
+negotiate_mq. Subsequent calls causes kernel panic
+[   84.440105] Call Trace:
+[   84.443707]  talk_to_blkback+0x6d/0x8b0 [xen_blkfront]
+[   84.449147]  blkfront_restore+0x33/0x60 [xen_blkfront]
+[   84.453336]  ? xenbus_read_otherend_details+0x50/0xb0
+[   84.457804]  xenbus_dev_cancel+0x5f/0x160
+[   84.463286]  ? xenbus_dev_resume+0x170/0x170
+[   84.466891]  dpm_run_callback+0x3b/0x100
+[   84.470516]  device_resume+0x10d/0x420
+[   84.473844]  dpm_resume+0xfd/0x2f0
+[   84.476984]  hibernation_snapshot+0x218/0x410
+[   84.480794]  hibernate+0x14b/0x270
+[   84.484030]  state_store+0x50/0x60
+[   84.487443]  kernfs_fop_write+0x105/0x180
+[   84.492695]  __vfs_write+0x36/0x160
+[   84.496672]  ? __audit_syscall_entry+0xbc/0x110
+[   84.502123]  vfs_write+0xad/0x1a0
+[   84.506857]  SyS_write+0x52/0xc0
+[   84.511420]  do_syscall_64+0x67/0x100
+[   84.516365]  entry_SYSCALL_64_after_hwframe+0x3d/0xa2
+[   84.522571] RIP: 0033:0x7f44a03407e4
+[   84.526210] RSP: 002b:00007ffd5e0ec3c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+[   84.534041] RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 00007f44a03407e4
+[   84.542571] RDX: 0000000000000004 RSI: 0000000001e94990 RDI: 0000000000000001
+[   84.549142] RBP: 0000000001e94990 R08: 00007f44a060c8c0 R09: 00007f44a0c57740
+[   84.554658] R10: 00007f44a03cd320 R11: 0000000000000246 R12: 0000000000000004
+[   84.560411] R13: 0000000000000001 R14: 00007f44a060b760 R15: 0000000000000004
+[   84.565744] Code: 39 ab e8 00 00 00 77 8a 31 c0 5b 5d c3 44 8b 05 50 57 00 00 45 85 c0 0f 84 2f ff ff ff 89 c0 48 69 f8 e0 40 01 00 e9 30 ff ff ff <0f> 0b 48 8b 7b 28 48 c7 c2 78 58 16 a0 be f4 ff ff ff e8 7e 37
+[   84.580594] RIP: negotiate_mq+0x12b/0x150 [xen_blkfront] RSP: ffffc90000ebbc70
+
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+Reviewed-by: Frank van der Linden <fllinden@amazon.com>
+Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ drivers/block/xen-blkfront.c | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
+index cdbc2baa67d5..0f00c81e2d39 100644
+--- a/drivers/block/xen-blkfront.c
++++ b/drivers/block/xen-blkfront.c
+@@ -2936,11 +2936,6 @@ static int blkfront_restore(struct xenbus_device *dev)
+ {
+ 	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
+ 	int err = 0;
+-
+-	err = negotiate_mq(info);
+-	if (err)
+-		goto out;
+-
+ 	err = talk_to_blkback(dev, info);
+ 	if (err)
+ 		goto out;
+-- 
+2.14.4
+

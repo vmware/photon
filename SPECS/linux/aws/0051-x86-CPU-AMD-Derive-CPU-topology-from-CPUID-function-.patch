@@ -1,0 +1,125 @@
+From 872e2b4ee94397d174d6b184c687f088d2079773 Mon Sep 17 00:00:00 2001
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Date: Fri, 27 Apr 2018 16:48:01 -0500
+Subject: x86/CPU/AMD: Derive CPU topology from CPUID function 0xB when
+ available
+
+[upstream 3986a0a805e668a63fac0ca2cdfa8db951f87c4b with changes
+after 4.14.62 rebase and backport of 95f3d39ccf7aaea79d1ffdac1c887c2e100ec1b6
+was broken for this patch series]
+
+Derive topology information from Extended Topology Enumeration (CPUID
+function 0xB) when the information is available.
+
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: http://lkml.kernel.org/r/1524865681-112110-3-git-send-email-suravee.suthikulpanit@amd.com
+
+Signed-off-by: Balbir Singh <sblbir@amazon.com>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/processor.h |  1 -
+ arch/x86/kernel/cpu/amd.c        | 11 ++++++++++-
+ arch/x86/kernel/cpu/cpu.h        |  1 +
+ arch/x86/kernel/cpu/topology.c   |  5 +++--
+ 4 files changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
+index 0e856c0628b3..eabee637dcd5 100644
+--- a/arch/x86/include/asm/processor.h
++++ b/arch/x86/include/asm/processor.h
+@@ -197,7 +197,6 @@ extern u32 get_scattered_cpuid_leaf(unsigned int level,
+ extern unsigned int init_intel_cacheinfo(struct cpuinfo_x86 *c);
+ extern void init_amd_cacheinfo(struct cpuinfo_x86 *c);
+ 
+-extern void detect_extended_topology(struct cpuinfo_x86 *c);
+ extern void detect_ht(struct cpuinfo_x86 *c);
+ 
+ #ifdef CONFIG_X86_32
+diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
+index f7b82a1da693..3d7fa07b69bb 100644
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -335,6 +335,7 @@ static void amd_get_topology(struct cpuinfo_x86 *c)
+ 
+ 	/* get information required for multi-node processors */
+ 	if (boot_cpu_has(X86_FEATURE_TOPOEXT)) {
++		int err;
+ 		u32 eax, ebx, ecx, edx;
+ 
+ 		cpuid(0x8000001e, &eax, &ebx, &ecx, &edx);
+@@ -351,6 +352,14 @@ static void amd_get_topology(struct cpuinfo_x86 *c)
+ 				c->x86_max_cores /= smp_num_siblings;
+ 		}
+ 
++		/*
++		 * In case leaf B is available, use it to derive
++		 * topology information.
++		 */
++		err = detect_extended_topology(c);
++		if (!err)
++			c->x86_coreid_bits = get_count_order(c->x86_max_cores);
++
+ 		cacheinfo_amd_init_llc_id(c, cpu, node_id);
+ 
+ 	} else if (cpu_has(c, X86_FEATURE_NODEID_MSR)) {
+@@ -385,7 +394,6 @@ static void amd_detect_cmp(struct cpuinfo_x86 *c)
+ 	c->phys_proc_id = c->initial_apicid >> bits;
+ 	/* use socket ID also for last level cache */
+ 	per_cpu(cpu_llc_id, cpu) = c->phys_proc_id;
+-	amd_get_topology(c);
+ }
+ 
+ u16 amd_get_nb_id(int cpu)
+@@ -827,6 +835,7 @@ static void init_amd(struct cpuinfo_x86 *c)
+ 	cpu_detect_cache_sizes(c);
+ 
+ 	amd_detect_cmp(c);
++	amd_get_topology(c);
+ 	srat_detect_node(c);
+ 
+ 	init_amd_cacheinfo(c);
+diff --git a/arch/x86/kernel/cpu/cpu.h b/arch/x86/kernel/cpu/cpu.h
+index cca588407dca..e62e851cae69 100644
+--- a/arch/x86/kernel/cpu/cpu.h
++++ b/arch/x86/kernel/cpu/cpu.h
+@@ -48,6 +48,7 @@ extern const struct cpu_dev *const __x86_cpu_dev_start[],
+ extern void get_cpu_cap(struct cpuinfo_x86 *c);
+ extern void cpu_detect_cache_sizes(struct cpuinfo_x86 *c);
+ extern int detect_extended_topology_early(struct cpuinfo_x86 *c);
++extern int detect_extended_topology(struct cpuinfo_x86 *c);
+ extern int detect_ht_early(struct cpuinfo_x86 *c);
+ 
+ unsigned int aperfmperf_get_khz(int cpu);
+diff --git a/arch/x86/kernel/cpu/topology.c b/arch/x86/kernel/cpu/topology.c
+index 19c6e800e816..99312d144419 100644
+--- a/arch/x86/kernel/cpu/topology.c
++++ b/arch/x86/kernel/cpu/topology.c
+@@ -59,7 +59,7 @@ int detect_extended_topology_early(struct cpuinfo_x86 *c)
+  * exists, use it for populating initial_apicid and cpu topology
+  * detection.
+  */
+-void detect_extended_topology(struct cpuinfo_x86 *c)
++int detect_extended_topology(struct cpuinfo_x86 *c)
+ {
+ #ifdef CONFIG_SMP
+ 	unsigned int eax, ebx, ecx, edx, sub_index;
+@@ -67,7 +67,7 @@ void detect_extended_topology(struct cpuinfo_x86 *c)
+ 	unsigned int core_select_mask, core_level_siblings;
+ 
+ 	if (detect_extended_topology_early(c) < 0)
+-		return;
++		return -1;
+ 
+ 	/*
+ 	 * Populate HT related information from sub-leaf level 0.
+@@ -104,4 +104,5 @@ void detect_extended_topology(struct cpuinfo_x86 *c)
+ 
+ 	c->x86_max_cores = (core_level_siblings / smp_num_siblings);
+ #endif
++	return 0;
+ }
+-- 
+2.14.4
+
