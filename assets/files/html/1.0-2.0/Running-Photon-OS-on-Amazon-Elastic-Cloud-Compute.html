@@ -1,0 +1,1967 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Running Photon OS on AWS EC2 · VMware Photon OS 1.0 and 2.0 Documentation</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-insert-logo/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-chapter-fold/chapter-fold.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-noembed/style.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="Running-Photon-OS-on-Microsoft-Azure.html" />
+    
+    
+    <link rel="prev" href="Running-Photon-OS-on-Workstation.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        <li class="header">Photon OS 1.0 and 2.0</li>
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="getting-started-guides.html">
+            
+                <a href="getting-started-guides.html">
+            
+                    
+                    Getting Started Guides
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="Downloading-Photon-OS.html">
+            
+                <a href="Downloading-Photon-OS.html">
+            
+                    
+                    Downloading Photon OS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="photon-admin-guide.html">
+            
+                <a href="photon-admin-guide.html#getting-started-with-photon-os-20">
+            
+                    
+                    Quick Start
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="Upgrading-to-Photon-OS-2.0.html">
+            
+                <a href="Upgrading-to-Photon-OS-2.0.html">
+            
+                    
+                    Upgrading to Photon OS 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="What-is-New-in-Photon-OS-2.0.html">
+            
+                <a href="What-is-New-in-Photon-OS-2.0.html">
+            
+                    
+                    What is New in Photon OS 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.5" data-path="Running-Photon-OS-on-vSphere.html">
+            
+                <a href="Running-Photon-OS-on-vSphere.html">
+            
+                    
+                    Running Photon OS on vSphere
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6" data-path="Running-Project-Photon-on-Fusion.html">
+            
+                <a href="Running-Project-Photon-on-Fusion.html">
+            
+                    
+                    Running Photon OS on Fusion
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.7" data-path="Running-Photon-OS-on-Workstation.html">
+            
+                <a href="Running-Photon-OS-on-Workstation.html">
+            
+                    
+                    Running Photon OS on Workstation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2.8" data-path="Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.html">
+            
+                <a href="Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.html">
+            
+                    
+                    Running Photon OS on AWS EC2
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.9" data-path="Running-Photon-OS-on-Microsoft-Azure.html">
+            
+                <a href="Running-Photon-OS-on-Microsoft-Azure.html">
+            
+                    
+                    Running Photon OS on Microsoft Azure
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.10" data-path="Running-Photon-OS-on-Google-Compute-Engine.html">
+            
+                <a href="Running-Photon-OS-on-Google-Compute-Engine.html">
+            
+                    
+                    Running Photon OS on Google Compute Engine
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.10.1" data-path="gce.html">
+            
+                <a href="gce.html">
+            
+                    
+                    Photon OS on GCE
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.11" data-path="Running-Project-Photon-on-vCloud-Air.html">
+            
+                <a href="Running-Project-Photon-on-vCloud-Air.html">
+            
+                    
+                    Running Project Photon on vCloud Air
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="admin-guides.html">
+            
+                <a href="admin-guides.html">
+            
+                    
+                    Administration Guides
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="photon-admin-guide.html">
+            
+                <a href="photon-admin-guide.html">
+            
+                    
+                    Photon OS Administration Guide
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1.1" data-path="pmd-cli.html">
+            
+                <a href="pmd-cli.html">
+            
+                    
+                    Photon Management Daemon Command-line Interface (pmd-cli)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.2" data-path="netmgr.c.html">
+            
+                <a href="netmgr.c.html">
+            
+                    
+                    Network Configuration Manager - C API
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.3" data-path="netmgr-cli.html">
+            
+                <a href="netmgr-cli.html">
+            
+                    
+                    Photon Network Manager Command-line Interface (netmgr)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.4" data-path="netmgr.python.html">
+            
+                <a href="netmgr.python.html">
+            
+                    
+                    Network Configuration Manager - Python API
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.5" data-path="pmd-cli.html">
+            
+                <a href="pmd-cli.html">
+            
+                    
+                    How to use Photon Management Daemon
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.6" data-path="tdnf.html">
+            
+                <a href="tdnf.html">
+            
+                    
+                    Managing Packages in Photon OS with tdnf
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="Photon-RPM-OSTree-a-simple-guide.html">
+            
+                <a href="Photon-RPM-OSTree-a-simple-guide.html">
+            
+                    
+                    Photon RPM OSTree
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.1" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.1.1" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#11-what-is-ostree-how-about-rpm-ostree">
+            
+                    
+                    What is OSTree? How about   RPM-OSTree?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.2" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#12-why-use-rpm-ostree-in-photon">
+            
+                    
+                    Why use RPM-OSTree in Photon?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.3" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#13-photon-with-rpm-ostree-installation-profiles">
+            
+                    
+                    Photon with RPM-OSTree installation profiles
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.4" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#14-terminology">
+            
+                    
+                    Terminology
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.5" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#15-sample-code">
+            
+                    
+                    Sample code
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.6" >
+            
+                <a target="_blank" href="Photon-RPM-OSTree:-1-Introduction#16-how-to-read-this-book">
+            
+                    
+                    How to read this book
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.7" >
+            
+                <a target="_blank" href="Photon-RPM-OSTree:-1-Introduction#17-rpm-ostree-in-photon-os-20">
+            
+                    
+                    RPM-OSTree in Photon OS 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.2" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                    
+                    Installing a Photon RPM-OSTree host against default server repository
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.2.1" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html#21-who-is-this-for">
+            
+                    
+                    Who is this for?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.2.2" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html#22-installing-the-iso-step-by-step">
+            
+                    
+                    Installing the ISO, step by step
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                    
+                    Concepts in action
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.3.1" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#31-querying-the-deployed-filetrees">
+            
+                    
+                    Querying the deployed   filetrees
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.2" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#32-bootable-filetree-version">
+            
+                    
+                    Bootable filetree version
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.3" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#33-commit-id">
+            
+                    
+                    Commit ID
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.4" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#34-osname">
+            
+                    
+                    OSname
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.5" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#35-refspec">
+            
+                    
+                    Refspec
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.6" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#36-deployments">
+            
+                    
+                    Deployments
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                    
+                    Querying for commit, file and package metadata
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.4.1" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#41-commit-history">
+            
+                    
+                    Commit history
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.2" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#42-listing-file-mappings">
+            
+                    
+                    Listing file mappings
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.3" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#43-listing-configuration-changes">
+            
+                    
+                    Listing configuration changes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.4" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#44-listing-packages">
+            
+                    
+                    Listing packages
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.5" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#45-querying-for-package-details">
+            
+                    
+                    Querying for package details
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.6" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#46-why-am-i-unable-to-install-update-or-delete-packages">
+            
+                    
+                    Why am I unable to install, update or delete packages?
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                    
+                    Host updating operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.5.1" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#51-is-it-an-update-or-an-upgrade">
+            
+                    
+                    Is it an update or an upgrade?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.2" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#52-incremental-upgrade">
+            
+                    
+                    Incremental upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.3" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#52-listing-file-differences">
+            
+                    
+                    Listing file differences
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.4" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#52-listing-package-differences">
+            
+                    
+                    Listing package differences
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.5" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#55-rollback">
+            
+                    
+                    Rollback
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.6" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#56-deleting-a-deployed-filetree">
+            
+                    
+                    Deleting a deployed filetree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.7" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#57-version-skipping-upgrade">
+            
+                    
+                    Version skipping upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.8" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#58-tracking-parent-commits">
+            
+                    
+                    Tracking parent commits
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.9" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#59-resetting-a-branch-to-a-previous-commit">
+            
+                    
+                    Resetting a branch to a previous commit
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.6" data-path="Photon-RPM-OSTree-6-Installing-a-server.html">
+            
+                <a href="Photon-RPM-OSTree-6-Installing-a-server.html">
+            
+                    
+                    Installing a Photon RPM-OSTree server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.7" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                    
+                    Installing a Photon RPM-OStree host against a custom server repository
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.7.1" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html#71-manual-install-of-a-custom-host">
+            
+                    
+                    Manual install of a custom host
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.7.2" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html#72-automated-install-of-a-custom-host-via-kickstart">
+            
+                    
+                    Automated install of a custom host via kickstart
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                    
+                    File oriented server operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.8.1" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#81-starting-a-fresh-ostree-repo">
+            
+                    
+                    Starting a fresh OSTree repo
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.2" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#82-checking-out-a-filetree">
+            
+                    
+                    Checking out a filetree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.3" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#83-committing-changes-to-a-filetree">
+            
+                    
+                    Committing changes to a filetree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.4" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#84-downloading-the-changes-at-the-host">
+            
+                    
+                    Downloading the changes at the host
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.5" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#85-creating-summary-metadata">
+            
+                    
+                    Creating summary metadata
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                    
+                    Package oriented server operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.9.1" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#91-json-configuration-file">
+            
+                    
+                    JSON configuration file
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.2" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#92-package-addition-removal-upgrade">
+            
+                    
+                    Package addition, removal, upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.3" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#93-rpms-repository">
+            
+                    
+                    RPMS repository
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.4" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#94-composing-a-tree">
+            
+                    
+                    Composing a tree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.5" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#95-automatic-version-prefix">
+            
+                    
+                    Automatic version prefix
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.6" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#96-installing-package-updates">
+            
+                    
+                    Installing package updates
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.7" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#97-creating-server-metadata">
+            
+                    
+                    Creating server metadata
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.8" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#98-starting-a-fresh-ostree-repo">
+            
+                    
+                    Starting a fresh OSTree repo
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html">
+            
+                    
+                    Remotes
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.10.1" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#101-listing-remotes">
+            
+                    
+                    Listing remotes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.2" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#102-gpg-signature-verification">
+            
+                    
+                    GPG signature verification
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.3" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#103-switching-repositories">
+            
+                    
+                    Switching repositories
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.4" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#104-adding-and-removing-remotes">
+            
+                    
+                    Adding and removing remotes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.5" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#105-list-available-branches">
+            
+                    
+                    List available branches
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.11" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                    
+                    Running container applications between bootable images
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.11.1" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#111-downloading-a-docker-container-appliance">
+            
+                    
+                    Downloading a docker container appliance
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.11.2" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#112-rebooting-into-an-existing-image">
+            
+                    
+                    Rebooting into an existing image
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.11.3" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#113-reboot-into-a-newly-created-image">
+            
+                    
+                    Reboot into a newly created image
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                    
+                    Install or rebase to Photon OS 2.0
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.12.1" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#121-installing-an-rpm-ostree-server">
+            
+                    
+                    Installing an RPM-OSTree server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12.2" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#122-installing-an-rpm-ostree-host">
+            
+                    
+                    Installing an RPM-OSTree host
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12.3" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#123-rebasing-a-host-from-photon-10-to-20">
+            
+                    
+                    Rebasing a host from Photon 1.0 to 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12.4" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#124-creating-a-host-raw-image">
+            
+                    
+                    Creating a host raw image
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="how-to-guides.html">
+            
+                <a href="how-to-guides.html">
+            
+                    
+                    How-To Guides
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="Install-and-Configure-a-Swarm-Cluster-with-DNS-Service-on-PhotonOS.html">
+            
+                <a href="Install-and-Configure-a-Swarm-Cluster-with-DNS-Service-on-PhotonOS.html">
+            
+                    
+                    Setting Up a Swarm Cluster with DNS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="Install-and-Configure-a-Production-Ready-Mesos-Cluster-on-Photon-OS.html">
+            
+                <a href="Install-and-Configure-a-Production-Ready-Mesos-Cluster-on-Photon-OS.html">
+            
+                    
+                    Setting Up a Mesos Cluster
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="Install-and-Configure-Marathon-for-Mesos-Cluster-on-PhotonOS.html">
+            
+                <a href="Install-and-Configure-Marathon-for-Mesos-Cluster-on-PhotonOS.html">
+            
+                    
+                    Setting Up Marathon for a Mesos Cluster
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="Install-and-Configure-DCOS-CLI-for-Mesos.html">
+            
+                <a href="Install-and-Configure-DCOS-CLI-for-Mesos.html">
+            
+                    
+                    Setting Up DCOS CLI for Mesos
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="Install-and-Configure-Mesos-DNS-on-a-Mesos-Cluster.html">
+            
+                <a href="Install-and-Configure-Mesos-DNS-on-a-Mesos-Cluster.html">
+            
+                    
+                    Setting Up Mesos DNS on a Mesos Cluster
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="PXE-boot.html">
+            
+                <a href="PXE-boot.html">
+            
+                    
+                    Setting Up a Network PXE Boot Server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7" data-path="kickstart.html">
+            
+                <a href="kickstart.html">
+            
+                    
+                    Working with Kickstart
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8" data-path="kubernetes.html">
+            
+                <a href="kubernetes.html">
+            
+                    
+                    Running Kubernetes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.9" data-path="nfs-utils.html">
+            
+                <a href="nfs-utils.html">
+            
+                    
+                    Mounting Remote File Systems
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.10" data-path="build-photon.html">
+            
+                <a href="build-photon.html">
+            
+                    
+                    Building Photon OS from the Source Code
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11" data-path="Installing-and-Using-Lightwave-on-Photon-OS.html">
+            
+                <a href="Installing-and-Using-Lightwave-on-Photon-OS.html">
+            
+                    
+                    Installing and Using Lightwave on Photon OS
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.1" data-path="Installing-Lightwave-Server-and-Setting-Up-a-Domain.html">
+            
+                <a href="Installing-Lightwave-Server-and-Setting-Up-a-Domain.html">
+            
+                    
+                    Installing the Lightwave Server and Configuring It as a Domain Controller on a Photon Image
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.2" data-path="Installing-Lightwave-Client-and-Joining-a-Domain.html">
+            
+                <a href="Installing-Lightwave-Client-and-Joining-a-Domain.html">
+            
+                    
+                    Installing the Lightwave Client on a Photon Image and Joining the Client to a Domain
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.3" data-path="Installing-the-Photon-Management-Daemon-on-a-Lightwave-Client.html">
+            
+                <a href="Installing-the-Photon-Management-Daemon-on-a-Lightwave-Client.html">
+            
+                    
+                    Installing the Photon Management Daemon on a Lightwave Client
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.4" data-path="Remotely-Upgrade-a-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                <a href="Remotely-Upgrade-a-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                    
+                    Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Photon Management Daemon Installed
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5" data-path="Remotely-Upgrade-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                <a href="Remotely-Upgrade-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                    
+                    Remotely Upgrade Multiple Photon OS Machines With Lightwave Client and Photon Management Daemon Installed
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="photon-os-troubleshooting-guide.html">
+            
+                <a href="photon-os-troubleshooting-guide.html">
+            
+                    
+                    Troubleshooting
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="Frequently-Asked-Questions.html">
+            
+                <a href="Frequently-Asked-Questions.html">
+            
+                    
+                    Frequently Asked Questions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" >
+            
+                <a target="_blank" href="https://github.com/vmware/photon/wiki/Security-Advisories">
+            
+                    
+                    Security Advisories
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Running Photon OS on AWS EC2</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="running-photon-os-on-amazon-elastic-cloud-compute">Running Photon OS on Amazon Elastic Cloud Compute</h1>
+<p>This guide describes how to get Photon OS up and running on Amazon Web Services Elastic Cloud Compute (EC2), customize Photon with cloud-init, connect to it with SSH, and run a containerized application.</p>
+<h2 id="about-photon-os">About Photon OS?</h2>
+<p>Photon OS&#x2122; is an open source Linux container host optimized for cloud-native applications, cloud platforms, and VMware infrastructure. Photon OS provides a secure run-time environment for efficiently running containers. For an overview, see <a href="#https://vmware.github.io/photon/">https://vmware.github.io/photon/</a>.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>Using Photon OS within AWS EC2 requires the following resources:</p>
+<ul>
+<li><strong>AWS account</strong>. Working with EC2 requires an Amazon account for AWS with valid payment information. Keep in mind that, if you try the examples in this document, you will be charged by Amazon. See <a href="#http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/get-set-up-for-amazon-ec2.html">Setting Up with Amazon EC2</a>.</li>
+<li><strong>Amazon tools</strong>. The following examples also assume that you have installed and configured the Amazon AWS CLI and the EC2 CLI and AMI tools, including ec2-ami-tools.</li>
+</ul>
+<p>See <a href="#http://docs.aws.amazon.com/cli/latest/userguide/installing.html">Installing the AWS Command Line Interface</a>, <a href="#http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/set-up-ec2-cli-linux.html">Setting Up the Amazon EC2 Command Line Interface Tools on Linux</a>, and <a href="#http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html">Configuring AWS Command-Line Interface</a>. Also see <a href="#http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html">Setting Up the AMI Tools</a>.
+This article uses an Ubuntu 14.04 workstation to generate the keys and certificates that AWS requires.</p>
+<h2 id="downloading-the-photon-os-image-for-amazon">Downloading the Photon OS Image for Amazon</h2>
+<p>VMware packages Photon OS as a cloud-ready Amazon machine image (AMI) that you can download for free from <a href="https://bintray.com/vmware/photon" target="_blank">Bintray</a>.</p>
+<p>Download the Photon OS AMI now and save it on your workstation. For instructions, see <a href="Downloading-Photon-OS.html">Downloading Photon OS</a>.</p>
+<p><strong>Note</strong>: The AMI version of Photon is a virtual appliance with the information and packages that Amazon needs to launch an instance of Photon in the cloud. To build the AMI version, VMware starts with the minimal version of Photon OS and adds the sudo and tar packages to it. </p>
+<h2 id="getting-photon-os-up-and-running-on-ec2">Getting Photon OS Up and Running on EC2</h2>
+<p>To run Photon OS on EC2, you must use cloud-init with an EC2 data source. The cloud-init service configures the cloud instance of a Linux image. An <em>instance</em> is a virtual server in the Amazon cloud. </p>
+<p>The examples in this article show how to generate SSH and RSA keys for your Photon instance, upload the Photon OS <code>.ami</code> image to the Amazon cloud, and configure it with cloud-init. In many of the examples, you must replace information with your own paths, account details, or other information from Amazon. </p>
+<h3 id="step-1-create-a-key-pair">Step 1: Create a Key Pair</h3>
+<p>The first step is to generate SSH keys on, for instance, an Ubuntu workstation: </p>
+<pre><code>ssh-keygen -f ~/.ssh/mykeypair
+</code></pre><p>The command generates a public key in the file with a <code>.pub</code> extension and a private key in a file with no extension. Keep the private key file and remember the name of your key pair; the name is the file name of the two files without an extension. You&apos;ll need the name later to connect to the Photon instance.</p>
+<p>Change the mode bits of the public key pair file to protect its security. In the command, include the path to the file if you need to. </p>
+<pre><code>chown 600 mykeypair.pub
+</code></pre><p>Change the mode bits on your private key pair file so that only you can view it:</p>
+<pre><code>chmod 400 mykeypair
+</code></pre><p>To import your public key pair file (but not your private key pair file), connect to the EC2 console at <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a> and select the region for the key pair. A key pair works in only one region, and the instance of Photon that will be uploaded later must be in the same region as the key pair. Select <code>key pairs</code> under <code>Network &amp; Security</code>, and then import the public key pair file that you generated earlier. </p>
+<p>For more information, see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#how-to-generate-your-own-key-and-import-it-to-aws" target="_blank">Importing Your Own Key Pair to Amazon EC2</a>.</p>
+<h3 id="step-2-generate-a-certificate">Step 2: Generate a Certificate</h3>
+<p>When you bundle up an image for EC2, Amazon requires an RSA user signing certificate. You create the certificate by using openssl to first generate a private RSA key and then to generate the RSA certificate that references the private RSA key. Amazon uses the pairing of the private key and the user signing certificate for  handshake verification. </p>
+<p>First, on Ubuntu 14.04 or another workstation that includes openssl, run the following command to generate a private key. If you change the name of the key, keep in mind that you will need to include the name of the key in the next command, which generates the certificate. </p>
+<pre><code>openssl genrsa 2048 &gt; myprivatersakey.pem
+</code></pre><p>Remember where you store your private key locally; you&apos;ll need it again later. </p>
+<p>Second, run the following command to generate the certificate. The command prompts you to provide more information, but because you are generating a user signing certificate, not a server certificate, you can just type <code>Enter</code> for each prompt to leave all the fields blank. </p>
+<pre><code>openssl req -new -x509 -nodes -sha256 -days 365 -key myprivatersakey.pem -outform PEM -out certificate.pem
+</code></pre><p>For more information, see the Create a Private Key and the Create the User Signing Certificate sections of <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html#ami-upload-bundle" target="_blank">Setting Up the AMI Tools</a>.</p>
+<p>Third, upload to AWS the certificate value from the <code>certificate.pem</code> file that you created in the previous command. Go to the Identity and Access Management console at <a href="https://console.aws.amazon.com/iam/" target="_blank">https://console.aws.amazon.com/iam/</a>, navigate to the name of your user, open the <code>Security Credentials</code> section, click <code>Manage Signing Certificates</code>, and then click <code>Upload Signing Certificate</code>. Open <code>certificate.pem</code> in a text editor, copy and paste the contents of the file into the <code>Certificate Body</code> field, and then click <code>Upload Signing Certificate</code>.</p>
+<p>For more information, see the Upload the User Signing Certificate section of <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html#ami-upload-bundle" target="_blank">Setting Up the AMI Tools</a>.</p>
+<h3 id="step-3-create-a-security-group">Step 3: Create a Security Group</h3>
+<p>The next prerequisite is to create a security group and set it to allow SSH, HTTP, and HTTPS connections over ports 22, 80, and 443, respectively. Connect to the EC2 command-line interface and run the following commands: </p>
+<pre><code>aws ec2 create-security-group --group-name photon-sg --description &quot;My Photon security group&quot;
+{
+    &quot;GroupId&quot;: &quot;sg-d027efb4&quot;
+}
+aws ec2 authorize-security-group-ingress --group-name photon-sg --protocol tcp --port 22 --cidr 0.0.0.0/0
+</code></pre><p>The <code>GroupId</code> is returned by EC2. Write it down; you&apos;ll need it later.</p>
+<p>By using <code>0.0.0.0/0</code> for SSH ingress on Port 22, you are opening the port to all IP addresses--which is not a security best practice but a convenience for the examples in this article. For a production instance or other instances that are anything more than temporary machines, you should authorize only a specific IP address or range of addresses. See Amazon&apos;s document on <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html" target="_blank">Authorizing Inbound Traffic for Linux Instances</a>.</p>
+<p>Repeat the command to allow incoming traffic on Port 80 and on Port 443: </p>
+<pre><code>aws ec2 authorize-security-group-ingress --group-name photon-sg --protocol tcp --port 80 --cidr 0.0.0.0/0
+
+aws ec2 authorize-security-group-ingress --group-name photon-sg --protocol tcp --port 443 --cidr 0.0.0.0/0
+</code></pre><p>Check your work: </p>
+<pre><code>aws ec2 describe-security-groups --group-names photon-sg
+</code></pre><h3 id="step-4-extract-the-tarball">Step 4: Extract the Tarball</h3>
+<p>Next, make a directory to store the image, and then extract the Photon OS image from its archive by running the following <code>tar</code> command. (You might have to change the file name to match the version you have.)    </p>
+<pre><code>mkdir bundled
+tar -zxvf ./photon-ami.tar.gz
+</code></pre><h3 id="step-5-bundle-the-image">Step 5: Bundle the Image</h3>
+<p>The next step is to run the <code>ec2-bundle-image</code> command to create an instance store-backed Linux AMI from the Photon OS image that you extracted in the previous step. The result of the <code>ec2-bundle-image</code> command is a manifest that describes the machine in an XML file. </p>
+<p>The command uses the certificate path to your PEM-encoded RSA public key certificate file; the path to your PEM-encoded RSA private key file; your EC2 user account ID; the correct architecture for Photon OS; the path to the Photon OS AMI image extracted from its tar file; and the <code>bundled</code> directory from the previous step. </p>
+<p>You must replace the values of the certificate path, the private key, and the user account with your own values.</p>
+<pre><code>$ ec2-bundle-image --cert certificate.pem --privatekey myprivatersakey.pem --user &lt;EC2 account id&gt;  --arch x86_64 --image photon-ami.raw --destination ./bundled/
+</code></pre><h3 id="step-6-put-the-bundle-in-a-bucket">Step 6: Put the Bundle in a Bucket</h3>
+<p>Next, make an S3 bucket, replacing <code>&lt;bucket-name&gt;</code> with the name that you want. The command creates the bucket in the region specified in your Amazon configuration file, which should be the same region in which you are using your key pair file: </p>
+<pre><code>$ aws s3 mb s3://&lt;bucket-name&gt;
+</code></pre><p>Now upload the bundle to the Amazon S3 cloud. The following command includes the path to the XML file containing the manifest for the Photon OS machine created during the previous step, though you might have to change the file name to match the version you have. The manifest file is typically located in the same directory as the bundle. </p>
+<p>The command also includes the name of the Amazon S3 bucket in which the bundle is to be stored; your AWS access key ID; and your AWS secret access key.</p>
+<pre><code>$ ec2-upload-bundle --manifest ./bundled/photon-ami.manifest.xml --bucket &lt;bucket-name&gt; --access-key &lt;Account Access Key&gt; --secret-key &lt;Account Secret key&gt;
+</code></pre><h3 id="step-7-register-the-image">Step 7: Register the Image</h3>
+<p>The final step in creating an AMI before you can launch it is to register it. The following command includes a name for the AMI, its architecture, and its virtualization type. The virtualization type for Photon OS is <code>hvm</code>.</p>
+<pre><code>$ ec2-register &lt;bucket-name&gt;/photon-ami.manifest.xml --name photon-ami --architecture x86_64 --virtualization-type hvm
+</code></pre><p>Once registered, you can launch as many new instances as you want.</p>
+<h3 id="step-8-run-an-instance-of-the-image-with-cloud-init">Step 8: Run an Instance of the Image with Cloud-Init</h3>
+<p>Now things get a little tricky. In the following command, the <code>user-data-file</code> option instructs cloud-init to import the cloud-config data in <code>user-data.txt</code>.  </p>
+<p>The command also includes the ID of the AMI, which you can obtain by running <code>ec2-describe-images</code>; the instance type of <code>m3.medium</code>, which is a general purpose instance type; and the name of key pair, which should be replaced with your own--otherwise, you won&apos;t be able to connect to the instance. </p>
+<p>Before you run the command, change directories to the directory containing the <code>mykeypair</code> file and add the path to the <code>user-data.txt</code>. </p>
+<pre><code>$ ec2-run-instances &lt;ami-ID&gt; --instance-type m3.medium -g photon-sg --key mykeypair --user-data-file user-data.txt
+</code></pre><p>Here are the contents of the <code>user-data.txt</code> file that cloud-init applies to the machine the first time it boots up in the cloud.  </p>
+<pre><code>#cloud-config
+hostname: photon-on-01
+groups:
+- cloud-admins
+- cloud-users
+users:
+- default
+- name: photonadmin
+   gecos: photon test admin user
+   primary-group: cloud-admins
+   groups: cloud-users
+   lock-passwd: false
+   passwd: vmware
+- name: photonuser
+   gecos: photon test user
+   primary-group: cloud-users
+   groups: users
+   passwd: vmware
+packages:
+- vim
+</code></pre><h3 id="step-9-get-the-ip-address-of-your-image">Step 9: Get the IP Address of Your Image</h3>
+<p>Now run the following command to check on the state of the instance that you launched: </p>
+<pre><code>$ ec2-describe-instances
+</code></pre><p>Finally, you can obtain the external IP address of the instance by running the following query: </p>
+<pre><code>$ aws ec2 describe-instances --instance-ids &lt;instance-id&gt; --query &apos;Reservations[*].Instances[*].PublicIpAddress&apos; --output=text
+</code></pre><p>If need be, check the cloud-init output log file on EC2 at <code>/var/log/cloud-init-output.log</code> to see how EC2 handled the settings in the cloud-init data file. </p>
+<p>For more information on using cloud-init user data on EC2, see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html" target="_blank">Running Commands on Your Linux Instance at Launch</a>.</p>
+<h2 id="deploy-a-containerized-application-in-photon-os">Deploy a Containerized Application in Photon OS</h2>
+<p>This section shows you how to connect to the Photon instance by using SSH and to launch a web server by running it in Docker.</p>
+<h3 id="step-1-connect-with-ssh">Step 1: Connect with SSH</h3>
+<p>Connect to the instance over SSH by specifying the private key (.pem) file and the user name for the Photon machine, which is <code>root</code>:</p>
+<pre><code>ssh -i ~/.ssh/mykeypair root@&lt;public-ip-address-of-instance&gt;
+</code></pre><p>For complete instructions, see <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html" target="_blank">Connecting to Your Linux Instance Using SSH</a>. </p>
+<h3 id="step-2-run-docker">Step 2: Run Docker</h3>
+<p>On the minimal version of Photon OS, the docker engine is enabled and running by default, which you can see by running the following command: </p>
+<pre><code>systemctl status docker
+</code></pre><h3 id="step-3-start-the-web-server">Step 3: Start the Web Server</h3>
+<p><strong>Note</strong>: Please make sure that the proper security policies have been enabled on the Amazon AWS side to enable traffic to port 80 on the VM. </p>
+<p>Since Docker is running, you can run an application in a container--for example, the Nginx Web Server. This example uses the popular open source web server Nginx. The Nginx application has a customized VMware package that the Docker engine can download directly from the Docker Hub.</p>
+<p>To pull Nginx from its Docker Hub and start it, run the following command: </p>
+<pre><code>docker run -p 80:80 vmwarecna/nginx
+</code></pre><p>The Nginx web server should be bound to the public DNS value for  the instance of Photon OS--that is, the same address with which you connected over SSH. </p>
+<h3 id="step-4-test-the-web-server">Step 4: Test the Web Server</h3>
+<p>On your local workstation, open a web browser and go to the the public address of the Photon OS instance running Docker. The following screen should appear, showing that the web server is active:</p>
+<p><img src="images/Nginx.jpg" alt="Nginx"></p>
+<p>When you&apos;re done, halt the Docker container by typing <code>Ctrl+c</code> in the SSH console where you are connected to EC2. </p>
+<p>You can now run other containerized applications from the Docker Hub or your own containerized application on Photon OS in the Amazon cloud. </p>
+<h2 id="launching-the-web-server-with-cloud-init">Launching the Web Server with Cloud-Init</h2>
+<p>To eliminate the manual effort of running Docker, you can add <code>docker run</code> and its arguments to the cloud-init user data file by using <code>runcmd</code>: </p>
+<pre><code>#cloud-config
+hostname: photon-on-01
+groups:
+- cloud-admins
+- cloud-users
+users:
+- default
+- name: photonadmin
+   gecos: photon test admin user
+   primary-group: cloud-admins
+   groups: cloud-users
+   lock-passwd: false
+   passwd: vmware
+- name: photonuser
+   gecos: photon test user
+   primary-group: cloud-users
+   groups: users
+   passwd: vmware
+packages:
+- vim
+runcmd:
+- docker run -p 80:80 vmwarecna/nginx
+</code></pre><p>To try this addition, you&apos;ll have to run another instance with this new cloud-init data source and then get the instance&apos;s public IP address to check that the Nginx web server is running. </p>
+<h2 id="terminating-the-ami-instance">Terminating the AMI Instance</h2>
+<p>Because Amazon charges you while the instance is running, make sure to shut it down when you&apos;re done.  </p>
+<p>First, get the ID of the AMI so you can terminate it: </p>
+<pre><code>$ ec2-describe-instances
+</code></pre><p>Finally, terminate the Photon OS instance by running the following command, replacing the placeholder with the ID that the <code>ec2-describe-images</code> command returned. If you ran a second instance of Photon OS with the cloud-init file that runs docker, terminate that instance, too. </p>
+<pre><code>$ ec2-terminate-instances &lt;instance-id&gt;
+</code></pre>
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="Running-Photon-OS-on-Workstation.html" class="navigation navigation-prev " aria-label="Previous page: Running Photon OS on Workstation">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="Running-Photon-OS-on-Microsoft-Azure.html" class="navigation navigation-next " aria-label="Next page: Running Photon OS on Microsoft Azure">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Running Photon OS on AWS EC2","level":"1.2.8","depth":2,"next":{"title":"Running Photon OS on Microsoft Azure","level":"1.2.9","depth":2,"path":"Running-Photon-OS-on-Microsoft-Azure.md","ref":"Running-Photon-OS-on-Microsoft-Azure.md","articles":[]},"previous":{"title":"Running Photon OS on Workstation","level":"1.2.7","depth":2,"path":"Running-Photon-OS-on-Workstation.md","ref":"Running-Photon-OS-on-Workstation.md","articles":[]},"dir":"ltr"},"config":{"plugins":["insert-logo","chapter-fold","edit-link","noembed"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"noembed":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit this Page","base":"https://github.com/vmware/photon/tree/master/docs"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"insert-logo":{"style":"background: none","url":"images/photonos-logo-sm.png"}},"theme":"default","pdf":{"pageBreaksBefore":"/","headerTemplate":"_TITLE_","paperSize":"letter","margin":{"right":62,"left":62,"top":56,"bottom":56},"fontSize":12,"fontFamily":"Arial","footerTemplate":"_PAGENUM_","chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"VMware Photon OS 1.0 and 2.0 Documentation","gitbook":"3.x.x"},"file":{"path":"Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.md","mtime":"2018-10-12T07:02:53.508Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-10-16T08:29:51.824Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-insert-logo/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-chapter-fold/chapter-fold.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-edit-link/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-noembed/scripts.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

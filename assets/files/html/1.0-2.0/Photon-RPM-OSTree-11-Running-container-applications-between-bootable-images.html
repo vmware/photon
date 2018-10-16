@@ -1,0 +1,1990 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Running container applications between bootable images · VMware Photon OS 1.0 and 2.0 Documentation</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-insert-logo/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-chapter-fold/chapter-fold.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-noembed/style.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html" />
+    
+    
+    <link rel="prev" href="Photon-RPM-OSTree-10-Remotes.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        <li class="header">Photon OS 1.0 and 2.0</li>
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="getting-started-guides.html">
+            
+                <a href="getting-started-guides.html">
+            
+                    
+                    Getting Started Guides
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="Downloading-Photon-OS.html">
+            
+                <a href="Downloading-Photon-OS.html">
+            
+                    
+                    Downloading Photon OS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="photon-admin-guide.html">
+            
+                <a href="photon-admin-guide.html#getting-started-with-photon-os-20">
+            
+                    
+                    Quick Start
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="Upgrading-to-Photon-OS-2.0.html">
+            
+                <a href="Upgrading-to-Photon-OS-2.0.html">
+            
+                    
+                    Upgrading to Photon OS 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="What-is-New-in-Photon-OS-2.0.html">
+            
+                <a href="What-is-New-in-Photon-OS-2.0.html">
+            
+                    
+                    What is New in Photon OS 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.5" data-path="Running-Photon-OS-on-vSphere.html">
+            
+                <a href="Running-Photon-OS-on-vSphere.html">
+            
+                    
+                    Running Photon OS on vSphere
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6" data-path="Running-Project-Photon-on-Fusion.html">
+            
+                <a href="Running-Project-Photon-on-Fusion.html">
+            
+                    
+                    Running Photon OS on Fusion
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.7" data-path="Running-Photon-OS-on-Workstation.html">
+            
+                <a href="Running-Photon-OS-on-Workstation.html">
+            
+                    
+                    Running Photon OS on Workstation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.8" data-path="Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.html">
+            
+                <a href="Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.html">
+            
+                    
+                    Running Photon OS on AWS EC2
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.9" data-path="Running-Photon-OS-on-Microsoft-Azure.html">
+            
+                <a href="Running-Photon-OS-on-Microsoft-Azure.html">
+            
+                    
+                    Running Photon OS on Microsoft Azure
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.10" data-path="Running-Photon-OS-on-Google-Compute-Engine.html">
+            
+                <a href="Running-Photon-OS-on-Google-Compute-Engine.html">
+            
+                    
+                    Running Photon OS on Google Compute Engine
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.10.1" data-path="gce.html">
+            
+                <a href="gce.html">
+            
+                    
+                    Photon OS on GCE
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.11" data-path="Running-Project-Photon-on-vCloud-Air.html">
+            
+                <a href="Running-Project-Photon-on-vCloud-Air.html">
+            
+                    
+                    Running Project Photon on vCloud Air
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="admin-guides.html">
+            
+                <a href="admin-guides.html">
+            
+                    
+                    Administration Guides
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="photon-admin-guide.html">
+            
+                <a href="photon-admin-guide.html">
+            
+                    
+                    Photon OS Administration Guide
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1.1" data-path="pmd-cli.html">
+            
+                <a href="pmd-cli.html">
+            
+                    
+                    Photon Management Daemon Command-line Interface (pmd-cli)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.2" data-path="netmgr.c.html">
+            
+                <a href="netmgr.c.html">
+            
+                    
+                    Network Configuration Manager - C API
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.3" data-path="netmgr-cli.html">
+            
+                <a href="netmgr-cli.html">
+            
+                    
+                    Photon Network Manager Command-line Interface (netmgr)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.4" data-path="netmgr.python.html">
+            
+                <a href="netmgr.python.html">
+            
+                    
+                    Network Configuration Manager - Python API
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.5" data-path="pmd-cli.html">
+            
+                <a href="pmd-cli.html">
+            
+                    
+                    How to use Photon Management Daemon
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.6" data-path="tdnf.html">
+            
+                <a href="tdnf.html">
+            
+                    
+                    Managing Packages in Photon OS with tdnf
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="Photon-RPM-OSTree-a-simple-guide.html">
+            
+                <a href="Photon-RPM-OSTree-a-simple-guide.html">
+            
+                    
+                    Photon RPM OSTree
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.1" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.1.1" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#11-what-is-ostree-how-about-rpm-ostree">
+            
+                    
+                    What is OSTree? How about   RPM-OSTree?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.2" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#12-why-use-rpm-ostree-in-photon">
+            
+                    
+                    Why use RPM-OSTree in Photon?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.3" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#13-photon-with-rpm-ostree-installation-profiles">
+            
+                    
+                    Photon with RPM-OSTree installation profiles
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.4" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#14-terminology">
+            
+                    
+                    Terminology
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.5" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#15-sample-code">
+            
+                    
+                    Sample code
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.6" >
+            
+                <a target="_blank" href="Photon-RPM-OSTree:-1-Introduction#16-how-to-read-this-book">
+            
+                    
+                    How to read this book
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.7" >
+            
+                <a target="_blank" href="Photon-RPM-OSTree:-1-Introduction#17-rpm-ostree-in-photon-os-20">
+            
+                    
+                    RPM-OSTree in Photon OS 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.2" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                    
+                    Installing a Photon RPM-OSTree host against default server repository
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.2.1" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html#21-who-is-this-for">
+            
+                    
+                    Who is this for?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.2.2" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html#22-installing-the-iso-step-by-step">
+            
+                    
+                    Installing the ISO, step by step
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                    
+                    Concepts in action
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.3.1" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#31-querying-the-deployed-filetrees">
+            
+                    
+                    Querying the deployed   filetrees
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.2" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#32-bootable-filetree-version">
+            
+                    
+                    Bootable filetree version
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.3" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#33-commit-id">
+            
+                    
+                    Commit ID
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.4" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#34-osname">
+            
+                    
+                    OSname
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.5" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#35-refspec">
+            
+                    
+                    Refspec
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.6" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#36-deployments">
+            
+                    
+                    Deployments
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                    
+                    Querying for commit, file and package metadata
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.4.1" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#41-commit-history">
+            
+                    
+                    Commit history
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.2" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#42-listing-file-mappings">
+            
+                    
+                    Listing file mappings
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.3" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#43-listing-configuration-changes">
+            
+                    
+                    Listing configuration changes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.4" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#44-listing-packages">
+            
+                    
+                    Listing packages
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.5" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#45-querying-for-package-details">
+            
+                    
+                    Querying for package details
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.6" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#46-why-am-i-unable-to-install-update-or-delete-packages">
+            
+                    
+                    Why am I unable to install, update or delete packages?
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                    
+                    Host updating operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.5.1" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#51-is-it-an-update-or-an-upgrade">
+            
+                    
+                    Is it an update or an upgrade?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.2" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#52-incremental-upgrade">
+            
+                    
+                    Incremental upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.3" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#52-listing-file-differences">
+            
+                    
+                    Listing file differences
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.4" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#52-listing-package-differences">
+            
+                    
+                    Listing package differences
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.5" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#55-rollback">
+            
+                    
+                    Rollback
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.6" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#56-deleting-a-deployed-filetree">
+            
+                    
+                    Deleting a deployed filetree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.7" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#57-version-skipping-upgrade">
+            
+                    
+                    Version skipping upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.8" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#58-tracking-parent-commits">
+            
+                    
+                    Tracking parent commits
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.9" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#59-resetting-a-branch-to-a-previous-commit">
+            
+                    
+                    Resetting a branch to a previous commit
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.6" data-path="Photon-RPM-OSTree-6-Installing-a-server.html">
+            
+                <a href="Photon-RPM-OSTree-6-Installing-a-server.html">
+            
+                    
+                    Installing a Photon RPM-OSTree server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.7" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                    
+                    Installing a Photon RPM-OStree host against a custom server repository
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.7.1" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html#71-manual-install-of-a-custom-host">
+            
+                    
+                    Manual install of a custom host
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.7.2" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html#72-automated-install-of-a-custom-host-via-kickstart">
+            
+                    
+                    Automated install of a custom host via kickstart
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                    
+                    File oriented server operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.8.1" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#81-starting-a-fresh-ostree-repo">
+            
+                    
+                    Starting a fresh OSTree repo
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.2" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#82-checking-out-a-filetree">
+            
+                    
+                    Checking out a filetree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.3" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#83-committing-changes-to-a-filetree">
+            
+                    
+                    Committing changes to a filetree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.4" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#84-downloading-the-changes-at-the-host">
+            
+                    
+                    Downloading the changes at the host
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.5" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#85-creating-summary-metadata">
+            
+                    
+                    Creating summary metadata
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                    
+                    Package oriented server operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.9.1" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#91-json-configuration-file">
+            
+                    
+                    JSON configuration file
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.2" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#92-package-addition-removal-upgrade">
+            
+                    
+                    Package addition, removal, upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.3" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#93-rpms-repository">
+            
+                    
+                    RPMS repository
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.4" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#94-composing-a-tree">
+            
+                    
+                    Composing a tree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.5" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#95-automatic-version-prefix">
+            
+                    
+                    Automatic version prefix
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.6" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#96-installing-package-updates">
+            
+                    
+                    Installing package updates
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.7" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#97-creating-server-metadata">
+            
+                    
+                    Creating server metadata
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.8" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#98-starting-a-fresh-ostree-repo">
+            
+                    
+                    Starting a fresh OSTree repo
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html">
+            
+                    
+                    Remotes
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.10.1" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#101-listing-remotes">
+            
+                    
+                    Listing remotes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.2" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#102-gpg-signature-verification">
+            
+                    
+                    GPG signature verification
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.3" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#103-switching-repositories">
+            
+                    
+                    Switching repositories
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.4" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#104-adding-and-removing-remotes">
+            
+                    
+                    Adding and removing remotes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.5" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#105-list-available-branches">
+            
+                    
+                    List available branches
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.3.2.11" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                    
+                    Running container applications between bootable images
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.11.1" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#111-downloading-a-docker-container-appliance">
+            
+                    
+                    Downloading a docker container appliance
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.11.2" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#112-rebooting-into-an-existing-image">
+            
+                    
+                    Rebooting into an existing image
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.11.3" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#113-reboot-into-a-newly-created-image">
+            
+                    
+                    Reboot into a newly created image
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                    
+                    Install or rebase to Photon OS 2.0
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.12.1" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#121-installing-an-rpm-ostree-server">
+            
+                    
+                    Installing an RPM-OSTree server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12.2" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#122-installing-an-rpm-ostree-host">
+            
+                    
+                    Installing an RPM-OSTree host
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12.3" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#123-rebasing-a-host-from-photon-10-to-20">
+            
+                    
+                    Rebasing a host from Photon 1.0 to 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12.4" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#124-creating-a-host-raw-image">
+            
+                    
+                    Creating a host raw image
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="how-to-guides.html">
+            
+                <a href="how-to-guides.html">
+            
+                    
+                    How-To Guides
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="Install-and-Configure-a-Swarm-Cluster-with-DNS-Service-on-PhotonOS.html">
+            
+                <a href="Install-and-Configure-a-Swarm-Cluster-with-DNS-Service-on-PhotonOS.html">
+            
+                    
+                    Setting Up a Swarm Cluster with DNS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="Install-and-Configure-a-Production-Ready-Mesos-Cluster-on-Photon-OS.html">
+            
+                <a href="Install-and-Configure-a-Production-Ready-Mesos-Cluster-on-Photon-OS.html">
+            
+                    
+                    Setting Up a Mesos Cluster
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="Install-and-Configure-Marathon-for-Mesos-Cluster-on-PhotonOS.html">
+            
+                <a href="Install-and-Configure-Marathon-for-Mesos-Cluster-on-PhotonOS.html">
+            
+                    
+                    Setting Up Marathon for a Mesos Cluster
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="Install-and-Configure-DCOS-CLI-for-Mesos.html">
+            
+                <a href="Install-and-Configure-DCOS-CLI-for-Mesos.html">
+            
+                    
+                    Setting Up DCOS CLI for Mesos
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="Install-and-Configure-Mesos-DNS-on-a-Mesos-Cluster.html">
+            
+                <a href="Install-and-Configure-Mesos-DNS-on-a-Mesos-Cluster.html">
+            
+                    
+                    Setting Up Mesos DNS on a Mesos Cluster
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="PXE-boot.html">
+            
+                <a href="PXE-boot.html">
+            
+                    
+                    Setting Up a Network PXE Boot Server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7" data-path="kickstart.html">
+            
+                <a href="kickstart.html">
+            
+                    
+                    Working with Kickstart
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8" data-path="kubernetes.html">
+            
+                <a href="kubernetes.html">
+            
+                    
+                    Running Kubernetes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.9" data-path="nfs-utils.html">
+            
+                <a href="nfs-utils.html">
+            
+                    
+                    Mounting Remote File Systems
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.10" data-path="build-photon.html">
+            
+                <a href="build-photon.html">
+            
+                    
+                    Building Photon OS from the Source Code
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11" data-path="Installing-and-Using-Lightwave-on-Photon-OS.html">
+            
+                <a href="Installing-and-Using-Lightwave-on-Photon-OS.html">
+            
+                    
+                    Installing and Using Lightwave on Photon OS
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.1" data-path="Installing-Lightwave-Server-and-Setting-Up-a-Domain.html">
+            
+                <a href="Installing-Lightwave-Server-and-Setting-Up-a-Domain.html">
+            
+                    
+                    Installing the Lightwave Server and Configuring It as a Domain Controller on a Photon Image
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.2" data-path="Installing-Lightwave-Client-and-Joining-a-Domain.html">
+            
+                <a href="Installing-Lightwave-Client-and-Joining-a-Domain.html">
+            
+                    
+                    Installing the Lightwave Client on a Photon Image and Joining the Client to a Domain
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.3" data-path="Installing-the-Photon-Management-Daemon-on-a-Lightwave-Client.html">
+            
+                <a href="Installing-the-Photon-Management-Daemon-on-a-Lightwave-Client.html">
+            
+                    
+                    Installing the Photon Management Daemon on a Lightwave Client
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.4" data-path="Remotely-Upgrade-a-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                <a href="Remotely-Upgrade-a-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                    
+                    Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Photon Management Daemon Installed
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5" data-path="Remotely-Upgrade-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                <a href="Remotely-Upgrade-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                    
+                    Remotely Upgrade Multiple Photon OS Machines With Lightwave Client and Photon Management Daemon Installed
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="photon-os-troubleshooting-guide.html">
+            
+                <a href="photon-os-troubleshooting-guide.html">
+            
+                    
+                    Troubleshooting
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="Frequently-Asked-Questions.html">
+            
+                <a href="Frequently-Asked-Questions.html">
+            
+                    
+                    Frequently Asked Questions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" >
+            
+                <a target="_blank" href="https://github.com/vmware/photon/wiki/Security-Advisories">
+            
+                    
+                    Security Advisories
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Running container applications between bootable images</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="running-container-applications-between-bootable-images">Running container applications between bootable images</h1>
+<p>In this chapter, we want to test a docker application and make sure that all the settings and downloads done in one bootable filetree are going to be saved into writable folders and be available in the other image, in other words after reboot from the other image, everything is available exactly the same way.<br>We are going to do this twice: first, to verify an existing bootable image installed in parallel and then create a new one.</p>
+<h2 id="111-downloading-a-docker-container-appliance">11.1 Downloading a docker container appliance</h2>
+<p>Photon OS comes with docker package installed and configured, but we expect that the docker daemon is inactive (not started). Configuration file /usr/lib/systemd/system/docker.service is read-only (remember /usr is bound as read-only). </p>
+<pre><code>root@sample-host-def [ ~ ]# systemctl status docker
+* docker.service - Docker Daemon
+   Loaded: loaded (/usr/lib/systemd/system/docker.service; disabled)
+   Active: inactive (dead)
+
+root@sample-host-def [ ~ ]# cat /usr/lib/systemd/system/docker.service
+[Unit]
+Description=Docker Daemon
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/bin/docker -d -s overlay
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=always
+MountFlags=slave
+LimitNOFILE=1048576
+LimitNPROC=1048576
+LimitCORE=infinity
+
+[Install]
+WantedBy=multi-user.target
+</code></pre><p>Now let&apos;s enable docker daemon to start at boot time - this will create a symbolic link into writable folder /etc/systemd/system/multi-user.target.wants to its systemd configuration, as with all other systemd controlled services. </p>
+<pre><code>root@sample-host-def [ ~ ]# systemctl enable docker
+Created symlink from /etc/systemd/system/multi-user.target.wants/docker.service to /usr/lib/systemd/system/docker.service.
+
+root@sample-host-def [ ~ ]# ls -l /etc/systemd/system/multi-user.target.wants
+total 0
+lrwxrwxrwx 1 root root 38 Sep  6 08:38 docker.service -&gt; /usr/lib/systemd/system/docker.service
+lrwxrwxrwx 1 root root 47 Aug 28 20:21 iptables.service -&gt; ../../../../lib/systemd/system/iptables.service
+lrwxrwxrwx 1 root root 47 Aug 28 20:21 remote-fs.target -&gt; ../../../../lib/systemd/system/remote-fs.target
+lrwxrwxrwx 1 root root 50 Aug 28 20:21 sshd-keygen.service -&gt; ../../../../lib/systemd/system/sshd-keygen.service
+lrwxrwxrwx 1 root root 43 Aug 28 20:21 sshd.service -&gt; ../../../../lib/systemd/system/sshd.service
+lrwxrwxrwx 1 root root 55 Aug 28 20:21 systemd-networkd.service -&gt; ../../../../lib/systemd/system/systemd-networkd.service
+lrwxrwxrwx 1 root root 55 Aug 28 20:21 systemd-resolved.service -&gt; ../../../../lib/systemd/system/systemd-resolved.service
+</code></pre><p>To verify that the symbolic link points to a file in a read-only directory, try to make a change in this file using vim and save. you&apos;ll get an error: &quot;/usr/lib/systemd/system/docker.service&quot; E166: Can&apos;t open linked file for writing&quot;.<br>Finally, let&apos;s start the daemon, check again that is active. </p>
+<pre><code>root@sample-host-def [ ~ ]# systemctl start docker
+
+root@sample-host-def [ ~ ]# systemctl status -l docker
+* docker.service - Docker Daemon
+   Loaded: loaded (/usr/lib/systemd/system/docker.service; enabled)
+   Active: active (running) since Sun 2015-09-06 08:56:30 UTC; 42s ago
+ Main PID: 349 (docker)
+   CGroup: /system.slice/docker.service
+           `-349 /bin/docker -d -s overlay
+
+Sep 06 08:56:30 sample-host-def docker[349]: Warning: &apos;-d&apos; is deprecated, it will be removed soon. See usage.
+Sep 06 08:56:30 sample-host-def docker[349]: time=&quot;2015-09-06T08:56:30Z&quot; level=warning msg=&quot;please use &apos;docker daemon&apos; instead.&quot;
+Sep 06 08:56:30 sample-host-def docker[349]: time=&quot;2015-09-06T08:56:30.617969465Z&quot; level=info msg=&quot;Option DefaultDriver: bridge&quot;
+Sep 06 08:56:30 sample-host-def docker[349]: time=&quot;2015-09-06T08:56:30.618264109Z&quot; level=info msg=&quot;Option DefaultNetwork: bridge&quot;
+Sep 06 08:56:30 sample-host-def docker[349]: time=&quot;2015-09-06T08:56:30.632397533Z&quot; level=info msg=&quot;Listening for HTTP on unix (/var/run/docker.sock)&quot;
+Sep 06 08:56:30 sample-host-def docker[349]: time=&quot;2015-09-06T08:56:30.637516253Z&quot; level=info msg=&quot;Firewalld running: false&quot;
+Sep 06 08:56:30 sample-host-def docker[349]: time=&quot;2015-09-06T08:56:30.786748372Z&quot; level=info msg=&quot;Loading containers: start.&quot;
+Sep 06 08:56:30 sample-host-def docker[349]: time=&quot;2015-09-06T08:56:30.787252697Z&quot; level=info msg=&quot;Loading containers: done.&quot;
+Sep 06 08:56:30 sample-host-def docker[349]: time=&quot;2015-09-06T08:56:30.787410576Z&quot; level=info msg=&quot;Daemon has completed initialization&quot;
+Sep 06 08:56:30 sample-host-def docker[349]: time=&quot;2015-09-06T08:56:30.787610148Z&quot; level=info msg=&quot;Docker daemon&quot; commit=d12ea79 execdriver=native-0.2 graphdriver=overlay version=1.8.1
+</code></pre><p>We&apos;ll ask docker to run Ubuntu Linux in a container. Since it&apos;s not present locally, it&apos;s going to be downloaded first from the official docker repository <a href="https://hub.docker.com/_/ubuntu/" target="_blank">https://hub.docker.com/_/ubuntu/</a>.</p>
+<pre><code>root@sample-host-def [ ~ ]# docker ps -a
+CONTAINER ID        IMAGE            COMMAND      CREATED           STATUS              PORTS       NAMES
+
+root@sample-host-def [ ~ ]# docker run -it ubuntu
+Unable to find image &apos;ubuntu:latest&apos; locally
+latest: Pulling from library/ubuntu
+d3a1f33e8a5a: Downloading [=========================================&gt;         ] 54.55 MB/65.79 MB
+c22013c84729: Download complete 
+d74508fb6632: Download complete 
+91e54dfb1179: Download complete
+</code></pre><p>When downloading is complete, it comes to Ubuntu root prompt with assigned host name d07ebca78051, that is actually the Container ID. Let&apos;s verify it&apos;s indeed the expected OS.</p>
+<pre><code>root@sample-host-def [ ~ ]# docker run -it ubuntu
+Unable to find image &apos;ubuntu:latest&apos; locally
+latest: Pulling from library/ubuntu
+d3a1f33e8a5a: Pull complete 
+c22013c84729: Pull complete 
+d74508fb6632: Pull complete 
+91e54dfb1179: Already exists 
+library/ubuntu:latest: The image you are pulling has been verified. Important: image verification is a tech preview feature and should not be relied on to provide security.
+Digest: sha256:fde8a8814702c18bb1f39b3bd91a2f82a8e428b1b4e39d1963c5d14418da8fba
+Status: Downloaded newer image for ubuntu:latest
+
+root@d07ebca78051:/# cat /etc/os-release
+NAME=&quot;Ubuntu&quot;
+VERSION=&quot;14.04.3 LTS, Trusty Tahr&quot;
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME=&quot;Ubuntu 14.04.3 LTS&quot;
+VERSION_ID=&quot;14.04&quot;
+HOME_URL=&quot;http://www.ubuntu.com/&quot;
+SUPPORT_URL=&quot;http://help.ubuntu.com/&quot;
+BUG_REPORT_URL=&quot;http://bugs.launchpad.net/ubuntu/&quot;
+root@d07ebca78051:/#
+</code></pre><p>Now let&apos;s write a file into Ubuntu home directory</p>
+<pre><code>echo &quot;Ubuntu file&quot; &gt; /home/myfile
+root@d07ebca78051:/home# cat /home/myfile
+Ubuntu file
+</code></pre><p>We&apos;ll exit back to the Photon prompt and if it&apos;s stopped, we will re-start it.</p>
+<pre><code>root@d07ebca78051:/# exit
+exit
+
+root@sample-host-def [ ~ ]# docker ps -a
+CONTAINER ID    IMAGE   COMMAND       CREATED         STATUS                      PORTS   NAMES
+d07ebca78051    ubuntu  &quot;/bin/bash&quot;   3 minutes ago   Exited (0) 13 seconds ago           kickass_hodgkin
+
+root@photon-host-cus1 [ ~ ]# docker start  d07ebca78051
+d07ebca78051
+
+root@photon-host-cus1 [ ~ ]# docker ps -a
+CONTAINER ID    IMAGE   COMMAND       CREATED         STATUS                      PORTS   NAMES
+d07ebca78051    ubuntu  &quot;/bin/bash&quot;   16 minutes ago  Up 5 seconds                        kickass_hodgkin
+</code></pre><h2 id="112-rebooting-into-an-existing-image">11.2 Rebooting into an existing image</h2>
+<p>Now let&apos;s reboot the machine and select the other image. First, we&apos;ll verify that the docker daemon is automaically started.</p>
+<pre><code>root@photon-host-cus1 [ ~ ]# systemctl status docker
+* docker.service - Docker Daemon
+   Loaded: loaded (/usr/lib/systemd/system/docker.service; enabled)
+   Active: active (running) since Sun 2015-09-06 11:19:05 UTC; 2min 9s ago
+ Main PID: 292 (docker)
+   CGroup: /system.slice/docker.service
+           `-292 /bin/docker -d -s overlay
+   ...
+</code></pre><p>Next, is the Ubuntu OS container still there?</p>
+<pre><code>root@photon-host-cus1 [ ~ ]# docker ps -a 
+CONTAINER ID    IMAGE     COMMAND      CREATED          STATUS                     PORTS   NAMES
+57dcac5d0490    ubuntu    &quot;/bin/bash&quot;  25 minutes ago   Exited (137) 5 minutes ago         sad_banach
+</code></pre><p>It is, so let&apos;s start it, attach and verify that our file is persisted, then add another line to it and save, exit.</p>
+<pre><code>root@photon-host-cus1 [ ~ ]# docker start -i  57dcac5d0490
+root@57dcac5d0490:/# cat /home/myfile 
+Ubuntu file
+root@57dcac5d0490:/# echo &quot;booted into existing image&quot; &gt;&gt; /home/myfile
+root@57dcac5d0490:/# exit
+</code></pre><h2 id="113-reboot-into-a-newly-created-image">11.3 Reboot into a newly created image</h2>
+<p>Let&apos;s upgrade and replace the .0 image by a .3 build that contains git and also perl_YAML (because it is a dependency of git).</p>
+<pre><code>root@photon-host-cus1 [ ~ ]# rpm-ostree status
+  TIMESTAMP (UTC)         VERSION               ID             OSNAME     REFSPEC                              
+* 2015-09-04 00:36:37     1.0_tp2_minimal.2     092e21d292     photon     photon:photon/tp2/x86_64/minimal     
+  2015-08-20 22:27:43     1.0_tp2_minimal       2940e10c4d     photon     photon:photon/tp2/x86_64/minimal     
+
+root@photon-host-cus1 [ ~ ]# rpm-ostree upgrade
+Updating from: photon:photon/tp2/x86_64/minimal
+
+43 metadata, 209 content objects fetched; 19992 KiB transferred in 0 seconds
+Copying /etc changes: 5 modified, 0 removed, 19 added
+Transaction complete; bootconfig swap: yes deployment count change: 0
+Freed objects: 16.2 MB
+Added:
+  git-2.1.2-1.ph1tp2.x86_64
+  perl-YAML-1.14-1.ph1tp2.noarch
+Upgrade prepared for next boot; run &quot;systemctl reboot&quot; to start a reboot
+
+root@photon-host-cus1 [ ~ ]# rpm-ostree status
+  TIMESTAMP (UTC)         VERSION               ID             OSNAME     REFSPEC                              
+  2015-09-06 18:12:08     1.0_tp2_minimal.3     d16aebd803     photon     photon:photon/tp2/x86_64/minimal     
+* 2015-09-04 00:36:37     1.0_tp2_minimal.2     092e21d292     photon     photon:photon/tp2/x86_64/minimal
+</code></pre><p>After reboot from 1.0_tp2_minimal.3 build, let&apos;s check that the 3-way /etc merge succeeded as expected. The docker.service slink is still there, and docker demon restarted at boot.</p>
+<pre><code>root@photon-host-cus1 [ ~ ]# ls -l /etc/systemd/system/multi-user.target.wants/docker.service 
+lrwxrwxrwx 1 root root 38 Sep  6 12:50 /etc/systemd/system/multi-user.target.wants/docker.service -&gt; /usr/lib/systemd/system/docker.service
+
+root@photon-host-cus1 [ ~ ]# systemctl status docker
+* docker.service - Docker Daemon
+   Loaded: loaded (/usr/lib/systemd/system/docker.service; enabled)
+   Active: active (running) since Sun 2015-09-06 12:56:33 UTC; 1min 27s ago
+ Main PID: 292 (docker)
+   CGroup: /system.slice/docker.service
+           `-292 /bin/docker -d -s overlay
+
+   ...
+</code></pre><p>Let&apos;s revisit the Ubuntu container. Is the container still there? is myfile persisted?</p>
+<pre><code>root@photon-host-cus1 [ ~ ]# docker ps -a
+CONTAINER ID   IMAGE       COMMAND      CREATED       STATUS                        PORTS   NAMES
+57dcac5d0490   ubuntu      &quot;/bin/bash&quot;  2 hours ago   Exited (0) About an hour ago          sad_banach
+
+root@photon-host-cus1 [ ~ ]# docker start 57dcac5d0490
+
+root@57dcac5d0490:/# cat /home/myfile
+Ubuntu file
+booted into existing image
+root@57dcac5d0490:/# echo &quot;booted into new image&quot; &gt;&gt; /home/myfile
+</code></pre>
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="Photon-RPM-OSTree-10-Remotes.html#105-list-available-branches" class="navigation navigation-prev " aria-label="Previous page: List available branches">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#111-downloading-a-docker-container-appliance" class="navigation navigation-next " aria-label="Next page: Downloading a docker container appliance">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Running container applications between bootable images","level":"1.3.2.11","depth":3,"next":{"title":"Downloading a docker container appliance","level":"1.3.2.11.1","depth":4,"anchor":"#111-downloading-a-docker-container-appliance","path":"Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.md","ref":"Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.md#111-downloading-a-docker-container-appliance","articles":[]},"previous":{"title":"List available branches","level":"1.3.2.10.5","depth":4,"anchor":"#105-list-available-branches","path":"Photon-RPM-OSTree-10-Remotes.md","ref":"Photon-RPM-OSTree-10-Remotes.md#105-list-available-branches","articles":[]},"dir":"ltr"},"config":{"plugins":["insert-logo","chapter-fold","edit-link","noembed"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"noembed":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit this Page","base":"https://github.com/vmware/photon/tree/master/docs"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"insert-logo":{"style":"background: none","url":"images/photonos-logo-sm.png"}},"theme":"default","pdf":{"pageBreaksBefore":"/","headerTemplate":"_TITLE_","paperSize":"letter","margin":{"right":62,"left":62,"top":56,"bottom":56},"fontSize":12,"fontFamily":"Arial","footerTemplate":"_PAGENUM_","chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"VMware Photon OS 1.0 and 2.0 Documentation","gitbook":"3.x.x"},"file":{"path":"Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.md","mtime":"2018-10-12T07:02:53.476Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-10-16T08:29:51.824Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-insert-logo/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-chapter-fold/chapter-fold.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-edit-link/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-noembed/scripts.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

@@ -1,0 +1,2149 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Running Photon OS on vSphere · VMware Photon OS 1.0 and 2.0 Documentation</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-insert-logo/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-chapter-fold/chapter-fold.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-noembed/style.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="Running-Project-Photon-on-Fusion.html" />
+    
+    
+    <link rel="prev" href="What-is-New-in-Photon-OS-2.0.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        <li class="header">Photon OS 1.0 and 2.0</li>
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="getting-started-guides.html">
+            
+                <a href="getting-started-guides.html">
+            
+                    
+                    Getting Started Guides
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="Downloading-Photon-OS.html">
+            
+                <a href="Downloading-Photon-OS.html">
+            
+                    
+                    Downloading Photon OS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="photon-admin-guide.html">
+            
+                <a href="photon-admin-guide.html#getting-started-with-photon-os-20">
+            
+                    
+                    Quick Start
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="Upgrading-to-Photon-OS-2.0.html">
+            
+                <a href="Upgrading-to-Photon-OS-2.0.html">
+            
+                    
+                    Upgrading to Photon OS 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="What-is-New-in-Photon-OS-2.0.html">
+            
+                <a href="What-is-New-in-Photon-OS-2.0.html">
+            
+                    
+                    What is New in Photon OS 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2.5" data-path="Running-Photon-OS-on-vSphere.html">
+            
+                <a href="Running-Photon-OS-on-vSphere.html">
+            
+                    
+                    Running Photon OS on vSphere
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6" data-path="Running-Project-Photon-on-Fusion.html">
+            
+                <a href="Running-Project-Photon-on-Fusion.html">
+            
+                    
+                    Running Photon OS on Fusion
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.7" data-path="Running-Photon-OS-on-Workstation.html">
+            
+                <a href="Running-Photon-OS-on-Workstation.html">
+            
+                    
+                    Running Photon OS on Workstation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.8" data-path="Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.html">
+            
+                <a href="Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.html">
+            
+                    
+                    Running Photon OS on AWS EC2
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.9" data-path="Running-Photon-OS-on-Microsoft-Azure.html">
+            
+                <a href="Running-Photon-OS-on-Microsoft-Azure.html">
+            
+                    
+                    Running Photon OS on Microsoft Azure
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.10" data-path="Running-Photon-OS-on-Google-Compute-Engine.html">
+            
+                <a href="Running-Photon-OS-on-Google-Compute-Engine.html">
+            
+                    
+                    Running Photon OS on Google Compute Engine
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.10.1" data-path="gce.html">
+            
+                <a href="gce.html">
+            
+                    
+                    Photon OS on GCE
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.11" data-path="Running-Project-Photon-on-vCloud-Air.html">
+            
+                <a href="Running-Project-Photon-on-vCloud-Air.html">
+            
+                    
+                    Running Project Photon on vCloud Air
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="admin-guides.html">
+            
+                <a href="admin-guides.html">
+            
+                    
+                    Administration Guides
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="photon-admin-guide.html">
+            
+                <a href="photon-admin-guide.html">
+            
+                    
+                    Photon OS Administration Guide
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1.1" data-path="pmd-cli.html">
+            
+                <a href="pmd-cli.html">
+            
+                    
+                    Photon Management Daemon Command-line Interface (pmd-cli)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.2" data-path="netmgr.c.html">
+            
+                <a href="netmgr.c.html">
+            
+                    
+                    Network Configuration Manager - C API
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.3" data-path="netmgr-cli.html">
+            
+                <a href="netmgr-cli.html">
+            
+                    
+                    Photon Network Manager Command-line Interface (netmgr)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.4" data-path="netmgr.python.html">
+            
+                <a href="netmgr.python.html">
+            
+                    
+                    Network Configuration Manager - Python API
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.5" data-path="pmd-cli.html">
+            
+                <a href="pmd-cli.html">
+            
+                    
+                    How to use Photon Management Daemon
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.6" data-path="tdnf.html">
+            
+                <a href="tdnf.html">
+            
+                    
+                    Managing Packages in Photon OS with tdnf
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="Photon-RPM-OSTree-a-simple-guide.html">
+            
+                <a href="Photon-RPM-OSTree-a-simple-guide.html">
+            
+                    
+                    Photon RPM OSTree
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.1" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.1.1" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#11-what-is-ostree-how-about-rpm-ostree">
+            
+                    
+                    What is OSTree? How about   RPM-OSTree?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.2" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#12-why-use-rpm-ostree-in-photon">
+            
+                    
+                    Why use RPM-OSTree in Photon?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.3" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#13-photon-with-rpm-ostree-installation-profiles">
+            
+                    
+                    Photon with RPM-OSTree installation profiles
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.4" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#14-terminology">
+            
+                    
+                    Terminology
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.5" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#15-sample-code">
+            
+                    
+                    Sample code
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.6" >
+            
+                <a target="_blank" href="Photon-RPM-OSTree:-1-Introduction#16-how-to-read-this-book">
+            
+                    
+                    How to read this book
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.7" >
+            
+                <a target="_blank" href="Photon-RPM-OSTree:-1-Introduction#17-rpm-ostree-in-photon-os-20">
+            
+                    
+                    RPM-OSTree in Photon OS 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.2" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                    
+                    Installing a Photon RPM-OSTree host against default server repository
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.2.1" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html#21-who-is-this-for">
+            
+                    
+                    Who is this for?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.2.2" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html#22-installing-the-iso-step-by-step">
+            
+                    
+                    Installing the ISO, step by step
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                    
+                    Concepts in action
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.3.1" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#31-querying-the-deployed-filetrees">
+            
+                    
+                    Querying the deployed   filetrees
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.2" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#32-bootable-filetree-version">
+            
+                    
+                    Bootable filetree version
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.3" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#33-commit-id">
+            
+                    
+                    Commit ID
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.4" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#34-osname">
+            
+                    
+                    OSname
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.5" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#35-refspec">
+            
+                    
+                    Refspec
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.6" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#36-deployments">
+            
+                    
+                    Deployments
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                    
+                    Querying for commit, file and package metadata
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.4.1" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#41-commit-history">
+            
+                    
+                    Commit history
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.2" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#42-listing-file-mappings">
+            
+                    
+                    Listing file mappings
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.3" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#43-listing-configuration-changes">
+            
+                    
+                    Listing configuration changes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.4" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#44-listing-packages">
+            
+                    
+                    Listing packages
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.5" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#45-querying-for-package-details">
+            
+                    
+                    Querying for package details
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.6" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#46-why-am-i-unable-to-install-update-or-delete-packages">
+            
+                    
+                    Why am I unable to install, update or delete packages?
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                    
+                    Host updating operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.5.1" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#51-is-it-an-update-or-an-upgrade">
+            
+                    
+                    Is it an update or an upgrade?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.2" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#52-incremental-upgrade">
+            
+                    
+                    Incremental upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.3" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#52-listing-file-differences">
+            
+                    
+                    Listing file differences
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.4" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#52-listing-package-differences">
+            
+                    
+                    Listing package differences
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.5" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#55-rollback">
+            
+                    
+                    Rollback
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.6" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#56-deleting-a-deployed-filetree">
+            
+                    
+                    Deleting a deployed filetree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.7" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#57-version-skipping-upgrade">
+            
+                    
+                    Version skipping upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.8" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#58-tracking-parent-commits">
+            
+                    
+                    Tracking parent commits
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.9" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#59-resetting-a-branch-to-a-previous-commit">
+            
+                    
+                    Resetting a branch to a previous commit
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.6" data-path="Photon-RPM-OSTree-6-Installing-a-server.html">
+            
+                <a href="Photon-RPM-OSTree-6-Installing-a-server.html">
+            
+                    
+                    Installing a Photon RPM-OSTree server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.7" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                    
+                    Installing a Photon RPM-OStree host against a custom server repository
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.7.1" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html#71-manual-install-of-a-custom-host">
+            
+                    
+                    Manual install of a custom host
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.7.2" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html#72-automated-install-of-a-custom-host-via-kickstart">
+            
+                    
+                    Automated install of a custom host via kickstart
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                    
+                    File oriented server operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.8.1" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#81-starting-a-fresh-ostree-repo">
+            
+                    
+                    Starting a fresh OSTree repo
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.2" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#82-checking-out-a-filetree">
+            
+                    
+                    Checking out a filetree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.3" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#83-committing-changes-to-a-filetree">
+            
+                    
+                    Committing changes to a filetree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.4" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#84-downloading-the-changes-at-the-host">
+            
+                    
+                    Downloading the changes at the host
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.5" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#85-creating-summary-metadata">
+            
+                    
+                    Creating summary metadata
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                    
+                    Package oriented server operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.9.1" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#91-json-configuration-file">
+            
+                    
+                    JSON configuration file
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.2" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#92-package-addition-removal-upgrade">
+            
+                    
+                    Package addition, removal, upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.3" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#93-rpms-repository">
+            
+                    
+                    RPMS repository
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.4" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#94-composing-a-tree">
+            
+                    
+                    Composing a tree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.5" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#95-automatic-version-prefix">
+            
+                    
+                    Automatic version prefix
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.6" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#96-installing-package-updates">
+            
+                    
+                    Installing package updates
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.7" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#97-creating-server-metadata">
+            
+                    
+                    Creating server metadata
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.8" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#98-starting-a-fresh-ostree-repo">
+            
+                    
+                    Starting a fresh OSTree repo
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html">
+            
+                    
+                    Remotes
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.10.1" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#101-listing-remotes">
+            
+                    
+                    Listing remotes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.2" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#102-gpg-signature-verification">
+            
+                    
+                    GPG signature verification
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.3" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#103-switching-repositories">
+            
+                    
+                    Switching repositories
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.4" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#104-adding-and-removing-remotes">
+            
+                    
+                    Adding and removing remotes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.5" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#105-list-available-branches">
+            
+                    
+                    List available branches
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.11" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                    
+                    Running container applications between bootable images
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.11.1" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#111-downloading-a-docker-container-appliance">
+            
+                    
+                    Downloading a docker container appliance
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.11.2" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#112-rebooting-into-an-existing-image">
+            
+                    
+                    Rebooting into an existing image
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.11.3" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#113-reboot-into-a-newly-created-image">
+            
+                    
+                    Reboot into a newly created image
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                    
+                    Install or rebase to Photon OS 2.0
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.12.1" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#121-installing-an-rpm-ostree-server">
+            
+                    
+                    Installing an RPM-OSTree server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12.2" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#122-installing-an-rpm-ostree-host">
+            
+                    
+                    Installing an RPM-OSTree host
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12.3" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#123-rebasing-a-host-from-photon-10-to-20">
+            
+                    
+                    Rebasing a host from Photon 1.0 to 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12.4" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#124-creating-a-host-raw-image">
+            
+                    
+                    Creating a host raw image
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="how-to-guides.html">
+            
+                <a href="how-to-guides.html">
+            
+                    
+                    How-To Guides
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="Install-and-Configure-a-Swarm-Cluster-with-DNS-Service-on-PhotonOS.html">
+            
+                <a href="Install-and-Configure-a-Swarm-Cluster-with-DNS-Service-on-PhotonOS.html">
+            
+                    
+                    Setting Up a Swarm Cluster with DNS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="Install-and-Configure-a-Production-Ready-Mesos-Cluster-on-Photon-OS.html">
+            
+                <a href="Install-and-Configure-a-Production-Ready-Mesos-Cluster-on-Photon-OS.html">
+            
+                    
+                    Setting Up a Mesos Cluster
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="Install-and-Configure-Marathon-for-Mesos-Cluster-on-PhotonOS.html">
+            
+                <a href="Install-and-Configure-Marathon-for-Mesos-Cluster-on-PhotonOS.html">
+            
+                    
+                    Setting Up Marathon for a Mesos Cluster
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="Install-and-Configure-DCOS-CLI-for-Mesos.html">
+            
+                <a href="Install-and-Configure-DCOS-CLI-for-Mesos.html">
+            
+                    
+                    Setting Up DCOS CLI for Mesos
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="Install-and-Configure-Mesos-DNS-on-a-Mesos-Cluster.html">
+            
+                <a href="Install-and-Configure-Mesos-DNS-on-a-Mesos-Cluster.html">
+            
+                    
+                    Setting Up Mesos DNS on a Mesos Cluster
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="PXE-boot.html">
+            
+                <a href="PXE-boot.html">
+            
+                    
+                    Setting Up a Network PXE Boot Server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7" data-path="kickstart.html">
+            
+                <a href="kickstart.html">
+            
+                    
+                    Working with Kickstart
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8" data-path="kubernetes.html">
+            
+                <a href="kubernetes.html">
+            
+                    
+                    Running Kubernetes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.9" data-path="nfs-utils.html">
+            
+                <a href="nfs-utils.html">
+            
+                    
+                    Mounting Remote File Systems
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.10" data-path="build-photon.html">
+            
+                <a href="build-photon.html">
+            
+                    
+                    Building Photon OS from the Source Code
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11" data-path="Installing-and-Using-Lightwave-on-Photon-OS.html">
+            
+                <a href="Installing-and-Using-Lightwave-on-Photon-OS.html">
+            
+                    
+                    Installing and Using Lightwave on Photon OS
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.1" data-path="Installing-Lightwave-Server-and-Setting-Up-a-Domain.html">
+            
+                <a href="Installing-Lightwave-Server-and-Setting-Up-a-Domain.html">
+            
+                    
+                    Installing the Lightwave Server and Configuring It as a Domain Controller on a Photon Image
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.2" data-path="Installing-Lightwave-Client-and-Joining-a-Domain.html">
+            
+                <a href="Installing-Lightwave-Client-and-Joining-a-Domain.html">
+            
+                    
+                    Installing the Lightwave Client on a Photon Image and Joining the Client to a Domain
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.3" data-path="Installing-the-Photon-Management-Daemon-on-a-Lightwave-Client.html">
+            
+                <a href="Installing-the-Photon-Management-Daemon-on-a-Lightwave-Client.html">
+            
+                    
+                    Installing the Photon Management Daemon on a Lightwave Client
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.4" data-path="Remotely-Upgrade-a-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                <a href="Remotely-Upgrade-a-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                    
+                    Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Photon Management Daemon Installed
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5" data-path="Remotely-Upgrade-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                <a href="Remotely-Upgrade-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                    
+                    Remotely Upgrade Multiple Photon OS Machines With Lightwave Client and Photon Management Daemon Installed
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="photon-os-troubleshooting-guide.html">
+            
+                <a href="photon-os-troubleshooting-guide.html">
+            
+                    
+                    Troubleshooting
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="Frequently-Asked-Questions.html">
+            
+                <a href="Frequently-Asked-Questions.html">
+            
+                    
+                    Frequently Asked Questions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" >
+            
+                <a target="_blank" href="https://github.com/vmware/photon/wiki/Security-Advisories">
+            
+                    
+                    Security Advisories
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Running Photon OS on vSphere</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="running-photon-os-on-vsphere">Running Photon OS on vSphere</h1>
+<p>This guide describes how to get started using Photon OS as a virtual machine within VMware vSphere. It provides instructions for downloading Photon OS (as an OVA or ISO file), describes the various installation options, and walks through the steps of installing the Photon OS distribution on vSphere. Once Photon OS is installed, this document highlights how to deploy a containerized application in Docker with a single command.</p>
+<ul>
+<li><a href="#about-photon-os">About Photon OS</a></li>
+<li><a href="#deciding-whether-to-use-ova-or-iso">Deciding Whether to Use OVA or ISO</a></li>
+<li><a href="#downloading-photon-os">Downloading Photon OS</a></li>
+<li><a href="#importing-the-ova-for-photon-os-20">Importing the OVA for Photon OS 2.0</a></li>
+<li><a href="#installing-the-iso-image-for-photon-os-20">Installing the ISO Image for Photon OS 2.0</a></li>
+<li><a href="#deploying-a-containerized-application-in-photon-os">Deploying a Containerized Application in Photon OS</a></li>
+<li><a href="#installing-photon-os-10">Installing Photon OS v1.0</a></li>
+</ul>
+<p><strong>Note</strong>: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in <a href="Upgrading-to-Photon-OS-2.0.html">Upgrading to Photon OS 2.0</a>. </p>
+<h2 id="about-photon-os">About Photon OS</h2>
+<p>Photon OS&#x2122; is an open source Linux container host optimized for cloud-native applications, cloud platforms, and VMware infrastructure. Photon OS provides a secure run-time environment for efficiently running containers. For an overview, see  <a href="https://vmware.github.io/photon/" target="_blank">https://vmware.github.io/photon/</a>.</p>
+<h2 id="requirements">Requirements</h2>
+<p>Using Photon OS within VMware vSphere requires the following resources:</p>
+<table>
+<thead>
+<tr>
+<th><strong>Resources</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VMware vSphere installed</td>
+<td>VMware web client (v6.5) for ESXi hosts (recommended) <strong>Note:</strong> vSphere 6 and vSphere 5.5 (these clients provide limited support; not all features are available).</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>ESXi host with 2GB of free RAM (recommended)</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td><strong>Minimal Photon install</strong> : ESXi host with at least 512MB of free space (minimum); <strong>Full Photon install</strong> : ESXi host with at least 4GB of free space (minimum); 16GB is recommended</td>
+</tr>
+<tr>
+<td>Distribution File</td>
+<td>Photon OS ISO or OVA file downloaded from Bintray</td>
+</tr>
+</tbody>
+</table>
+<p>Resource requirements and recommendations vary depending on several factors, including the host environment (for example, VMware vSphere and VMware Fusion), the distribution file used (ISO or OVA), and the selected installation settings (for example, full or basic installation).</p>
+<p><strong>Note:</strong> The setup instructions in this guide use VMware vSphere 6 and the vSphere web client.</p>
+<h2 id="deciding-whether-to-use-ova-or-iso">Deciding Whether to Use OVA or ISO</h2>
+<p>The first step is decide whether to use the OVA or ISO distribution to set up Photon OS.</p>
+<ul>
+<li><strong>OVA import</strong> : Because of the nature of an OVA, you&apos;re getting a pre-installed version of Photon OS. You can choose the hardware version you want (OVA with hardware version 13 or 11). The OVA benefits from a simple import process and some kernel tuning for VMware environments. However, because it&apos;s a pre-installed version, the set of packages that are installed are predetermined. Any additional packages that you need can be installed using tdnf.</li>
+<li><strong>ISO install</strong> : The ISO, on the other hand, allows for a more complete installation or automated installation via kickstart.</li>
+</ul>
+<p>If you&apos;re just looking for the fastest way to get up and running, start with the OVA.</p>
+<h2 id="downloading-photon-os">Downloading Photon OS</h2>
+<p>Once you&apos;ve decided which way to install, you&apos;ll need to download the correct binaries. Go to the following Bintray URL and download the latest release of Photon OS:</p>
+<p><a href="https://bintray.com/vmware/photon/" target="_blank">https://bintray.com/vmware/photon/</a></p>
+<p>For instructions, see <a href="Downloading-Photon-OS.html">Downloading Photon OS</a>.</p>
+<p><strong>Note:</strong> For ISO installation, you will need to upload to a datashare that is attached to the ESXi host, or mount the file share (where the ISO resides) as a data store.</p>
+<h2 id="importing-the-ova-for-photon-os-20">Importing the OVA for Photon OS 2.0</h2>
+<p>Using the OVA is a fast and easy way to create a Photon OS VM on VMware vSphere.</p>
+<p>After you&apos;ve downloaded the OVA, log in to your vSphere environment.</p>
+<h3 id="step-1-start-the-import-process">Step 1: Start the Import Process</h3>
+<p>From the Actions pull-down menu, choose <strong>Create/Register VM</strong>.</p>
+<p><img src="images/vs-ova-new-vm.png" alt="Create/Register VM"></p>
+<p>In the Select creation type window, choose  <strong>Deploy a virtual machine from an OVF or OVA file</strong>.</p>
+<p>(images/vs-ova-new-vm-ova.png)</p>
+<p>Choose <strong>Next</strong>.</p>
+<h3 id="step-2-select-the-ova-file">Step 2: Select the OVA File</h3>
+<p>Enter a name for the virtual machine, and select the OVA file.</p>
+<p><img src="images/vs-ova-name-selected.png" alt="OVA file"></p>
+<p>Choose <strong>Next</strong>.</p>
+<h3 id="step-3-specify-the-target-datastore">Step 3: Specify the Target Datastore</h3>
+<p>From the Select storage screen, select the target datastore for your VM.</p>
+<p><img src="images/vs-ova-storage.png" alt="Target datastore"></p>
+<p>Choose  <strong>Next</strong>.</p>
+<h3 id="step-4-accept-the-license-agreement">Step 4: Accept the License Agreement</h3>
+<p>Read through the Photon OS License Agreement, and then choose <strong>I Agree</strong>.</p>
+<p><img src="images/vs-ova-license.png" alt="License"></p>
+<p>Choose <strong>Next</strong>.</p>
+<h3 id="step-5-select-deployment-options">Step 5: Select Deployment Options</h3>
+<p>Select deployment options.</p>
+<p><img src="images/vs-ova-deployment-options.png" alt="Deployment Options"></p>
+<p>Photon OS is provisioned with a maximum disk size. By default, Photon OS uses only the portion of disk space that it needs, usually much less that the entire disk size ( <strong>Thin</strong> client). If you want to pre-allocate the entire disk size (reserving it entirely for Photon OS instead), select <strong>Thick</strong>  instead.</p>
+<p>Choose <strong>Next</strong>.</p>
+<h3 id="step-6-verify-deployment-settings">Step 6: Verify Deployment Settings</h3>
+<p>Verify your deployment settings.</p>
+<p><img src="images/vs-ova-settings.png" alt="Deployment settings"></p>
+<p>Click <strong>Finish</strong>. vSphere uploads and validates your OVA. Depending on bandwidth, this operation might take a while.</p>
+<p>When finished, vShield powers up a new VM based on your selections.</p>
+<h3 id="step-7-change-login-settings">Step 7: Change Login Settings</h3>
+<p><img src="images/vs-ova-splash.png" alt="Login settings"></p>
+<p>After the VM is booted, open the command window. vSphere prompts you to log in.</p>
+<p><strong>Note</strong>: Because of limitations within OVA support on vSphere, it was necessary to specify a default password for the OVA option. However, all Photon OS instances that are created by importing the OVA will require an immediate password change upon login. The default account credentials are:</p>
+<table>
+<thead>
+<tr>
+<th><strong>Setting</strong></th>
+<th><strong>Value</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Username</td>
+<td><code>root</code></td>
+</tr>
+<tr>
+<td>Password</td>
+<td><code>changeme</code></td>
+</tr>
+</tbody>
+</table>
+<p>After you provide these credentials, vSphere prompts you to create a new password and type it a second time to verify it.</p>
+<p><strong>Note:</strong> For security, Photon OS forbids common dictionary words for the root password. &#x2003;</p>
+<p>Once logged in, you will see the shell prompt.</p>
+<p><img src="images/vs-ova-login.png" alt="Shell prompt"></p>
+<p>Once complete, proceed to <a href="#deploying-a-containerized-application-in-photon-os">Deploying a Containerized Application in Photon OS</a>.</p>
+<h3 id="step-9-export-the-vm-as-a-template-optional">Step 9: Export the VM as a Template (Optional)</h3>
+<p>Consider converting this imported VM into a template (from the Actions menu, choose <strong>Export</strong> ) so that you have a master Photon OS instance that can be combined with vSphere Guest Customization to enable rapid provisioning of Photon OS instances.</p>
+<h2 id="installing-the-iso-image-for-photon-os-20">Installing the ISO Image for Photon OS 2.0</h2>
+<p>After you have downloaded the Photon OS ISO image into a folder of your choice, complete the following steps.</p>
+<h3 id="step-1-upload-the-iso-image">Step 1: Upload the ISO Image</h3>
+<p>Upload the ISO image to a datastore that is attached to the host on which you&apos;ll create the Photon OS virtual machine.</p>
+<h3 id="step-2-create-a-new-vm">Step 2: Create a New VM</h3>
+<p>Log in to your vSphere environment. In the Virtual Machines window, choose <strong>Create/Register VM</strong>.</p>
+<p>On the Select creation type screen, select <strong>Create a new virtual machine</strong>.</p>
+<p><img src="images/vs-iso-new.png" alt="Create new virtual machine"></p>
+<p>Choose <strong>Next</strong>.</p>
+<h3 id="step-3-configure-vm-settings">Step 3: Configure VM Settings</h3>
+<p>Specify a VM name.</p>
+<p><img src="images/vs-iso-name.png" alt="VM name"></p>
+<p>Specify a guest operating system.</p>
+<ul>
+<li>For Compatibility, select <strong>ESXi 6.5</strong>.</li>
+<li>For Guest OS family, select <strong>Linux</strong>.</li>
+<li>For Guest OS version, select <strong>VMware Photon OS (64-bit)</strong>.</li>
+</ul>
+<p><img src="images/vs-iso-os.png" alt="Guest operating system"></p>
+<p>Choose  <strong>Next</strong>.</p>
+<h3 id="step-4-select-the-target-datastore">Step 4: Select the Target Datastore</h3>
+<p>Select the datastore where you want to store the VM.</p>
+<p><img src="images/vs-iso-datastore.png" alt="Target datastore"></p>
+<p>Click <strong>Next</strong>.</p>
+<h3 id="step-5-customize-vm-settings">Step 5: Customize VM Settings</h3>
+<p>Customize the virtual machine settings.</p>
+<p><img src="images/vs-iso-customize.png" alt="v"></p>
+<p>For CD/DVD Drive 1, click the drop-down and select <strong>Datastore ISO file</strong>.</p>
+<p>In the Datastore browser, select the ISO that you want to import.</p>
+<p>Change other settings as applicable.</p>
+<ul>
+<li>The recommended virtual hardware settings for your Photon VM are heavily dependent upon the container load you intend to run within Photon OS &#x2013; more containers or more intensive containers will require you to adjust these settings for your application load. VMware suggests 2 vCPU, 1024MB memory, 20GB hard disk. Any unwanted devices should be removed. Be sure to mount the Photon OS ISO on the CD/DVD Drive and put a check in the box next to, Connect At Power On.</li>
+<li>If you want to configure a secure boot for the Photon OS VM you created, choose the VM Options tab, expand Boot Options, and select EFI from the firmware drop-down.  An EFI boot ensures that the ISO content is signed by VMware and that the entire stack is secure.</li>
+</ul>
+<p>Choose <strong>Next</strong>.</p>
+<h3 id="step-6-verify-vm-settings">Step 6: Verify VM Settings</h3>
+<p>The installer displays a summary of your selected settings.</p>
+<p><img src="images/vs-iso-ready.png" alt="Summary"></p>
+<p>Click <strong>Finish</strong>. vSphere creates the VM.</p>
+<h3 id="step-7-power-on-the-vm">Step 7: Power on the VM</h3>
+<p>Select the VM and power it on.</p>
+<p><img src="images/vs-iso-install.png" alt="Power on VM"></p>
+<p>When you see the Photon Installer boot menu, press Enter on your keyboard to start installing.</p>
+<h3 id="step-8-accept-the-license-agreement">Step 8: Accept the License Agreement</h3>
+<p>Read the License Agreement and press the Enter key to accept.</p>
+<p><img src="images/vs-iso-license.png" alt="License Agreement"></p>
+<h3 id="step-9-configure-the-partition">Step 9: Configure the Partition</h3>
+<p>The installer will detect one disk, which should be the 16GB volume configured as part of the virtual machine creation. Choose <strong>Auto</strong>  to have the installer automatically allocate the partition, or choose <strong>Custom</strong>  if you want to configure individual partitions, and then press the Enter key.</p>
+<p><img src="images/vs-iso-partition.png" alt="Partition"></p>
+<p><strong>Note:</strong>  If you choose Custom, the installer displays the following screen.</p>
+<p><img src="images/vs-iso-partition-custom.png" alt="Custom Partition"></p>
+<p>For each custom partition, choose <strong>Create New</strong>  and specify the following information:</p>
+<p><img src="images/vs-iso-partition-new.png" alt="New Partition"></p>
+<p><strong>Size</strong> - Preallocated size of this partition, in MB.</p>
+<p><strong>Type</strong> - One of the following options:</p>
+<ul>
+<li><strong>ext3</strong> - ext3 file system</li>
+<li><strong>ext4</strong> - ext4 file system</li>
+<li><strong>swap</strong> - swap partition</li>
+</ul>
+<p><strong>Mountpoint</strong> - Mount point for this partition.</p>
+<p>Choose <strong>OK</strong> and press the Enter key. When you are done defining custom partitions, choose <strong>Next</strong> and press the Enter key.</p>
+<p>The installer prompts you to confirm that you want to erase the entire disk.</p>
+<p><img src="images/vs-iso-erase.png" alt="Erase disk"></p>
+<p>Choose <strong>Yes</strong> and press the Enter key.</p>
+<h3 id="step-10-select-an-installation-option">Step 10: Select an Installation Option</h3>
+<p>After partitioning the disk, the installer will prompt you to select an installation option.</p>
+<p><img src="images/vs-iso-install-option.png" alt="Installation Option"></p>
+<p>Each install option provides a different run-time environment, depending on your requirements.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Option</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Photon Minimal</strong></td>
+<td>Photon Minimum is a very lightweight version of the container host runtime that is best suited for container management and hosting. There is sufficient packaging and functionality to allow most common operations around modifying existing containers, as well as being a highly performant and full-featured runtime.</td>
+</tr>
+<tr>
+<td><strong>Photon Full</strong></td>
+<td>Photon Full includes several additional packages to enhance the authoring and packaging of containerized applications and/or system customization. For simply running containers, Photon Full will be overkill. Use Photon Full for developing and packaging the application that will be run as a container, as well as authoring the container, itself. For testing and validation purposes, Photon Full will include all components necessary to run containers.</td>
+</tr>
+<tr>
+<td><strong>Photon OSTree Server</strong></td>
+<td>This installation profile will create the server instance that will host the filesystem tree and managed definitions for rpm-ostree managed hosts created with the &quot;Photon OSTree Host&quot; installation profile. Most environments should need only one Photon OSTree Server instance to manage the state of the Photon OSTree Hosts. Use Photon OSTree Server when you are establishing a new repository and management node for Photon OS hosts.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong>  The option you choose determines the disk and memory resources required for your installation.</p>
+<p>Select the option you want and press the Enter key.</p>
+<h3 id="step-11-select-the-linux-kernel">Step 11: Select the Linux Kernel</h3>
+<p>Select a Linux kernel to install.</p>
+<p><img src="images/vs-iso-kernel.png" alt="Linux Kernel"></p>
+<ul>
+<li><strong>Hypervisor</strong>  optimized means that any components that are not needed for running under a VMware hypervisor have been removed for faster boot times.</li>
+<li><strong>Generic</strong>  means that all components are included.</li>
+</ul>
+<p>Choose <strong>Next</strong> and press the Enter key.</p>
+<h3 id="step-12-specify-the-hostname">Step 12: Specify the Hostname</h3>
+<p>The installer prompts you for a hostname and suggest a randomly generated, unique hostname that you can change if you want.</p>
+<p><img src="images/vs-iso-hostname.png" alt="Hostname"></p>
+<p>Press the Enter key.</p>
+<h3 id="step-13-specify-the-system-root-password">Step 13: Specify the System root Password</h3>
+<p>The installer prompts you to enter the system root password.</p>
+<p><em>Note: Photon OS will not permit commonly used dictionary words to be set as a root password.</em></p>
+<p><img src="images/vs-iso-root-password.png" alt="Root password"></p>
+<p>Type a password and press the Enter key.</p>
+<p>The installer prompts you to confirm your root password by typing it a second time.</p>
+<p><img src="images/vs-iso-root-password-confirm.png" alt="Password confirmation"></p>
+<p><strong>Note:</strong> If you have trouble with unintentional repeated characters in the Remote Console, follow VMware KB 196 ( <a href="http://kb.vmware.com/kb/196" target="_blank">http://kb.vmware.com/kb/196</a>) for a setting to apply to the virtual machine.</p>
+<p>Press the Enter key. The installer proceeds to install the software. Installation times will vary based on the system hardware and installation options you selected. Most installations complete in less than one minute.</p>
+<h3 id="step-14-reboot-the-vm-and-log-in">Step 14: Reboot the VM and Log In</h3>
+<p>Once finished, the installer displays a confirmation message (which includes how long it took to install Photon OS) and prompts you to press a key on your keyboard to boot the new VM.</p>
+<p><img src="images/vs-iso-installed.png" alt="Boot VM"></p>
+<p>As the initial boot process begins, the installer displays the Photon splash screen, and then a login prompt.</p>
+<p><img src="images/vs-iso-splash.png" alt="Login prompt"></p>
+<p>At the login prompt, type <strong>root</strong>  as the username and provide the password chosen during the installation.</p>
+<p><img src="images/vs-iso-login.png" alt="Password"></p>
+<p>You have now successfully setup Photon OS and are ready to use your container runtime environment. Proceed to the next section to deploy a containerized application.</p>
+<h2 id="deploying-a-containerized-application-in-photon-os">Deploying a Containerized Application in Photon OS</h2>
+<p>Now that you have your container runtime environment up and running, you can easily deploy a containerized application. For this example, you will deploy the popular open source Web Server Nginx. The Nginx application has a customized VMware package that is published as a dockerfile and can be downloaded, directly, through the Docker module from the Docker Hub.</p>
+<h3 id="step-1-run-docker">Step 1: Run Docker</h3>
+<p>To run Docker from the command prompt, enter the following command, which initializes the docker engine:</p>
+<pre><code>systemctl start docker
+</code></pre><p>To ensure Docker daemon service runs on every subsequent VM reboot, enter the following command:</p>
+<pre><code>systemctl enable docker
+</code></pre><h3 id="step-2-run-the-nginx-web-server">Step 2: Run the Nginx Web Server</h3>
+<p>Now the Docker daemon service is running, it is a simple task to &quot;pull&quot; and start the Nginx Web Server container from Docker Hub. To do this, type the following command:</p>
+<pre><code>docker run -d -p 80:80 vmwarecna/nginx
+</code></pre><p>This pulls the Nginx Web Server files and appropriate dependent container filesystem layers required for this containerized application to run.</p>
+<p><img src="images/vs-docker-run.png" alt="Docker run"></p>
+<p>After the <strong>docker run</strong>  process completes, you return to the command prompt. You now have a fully active website up and running in a container!</p>
+<h3 id="step-3-test-the-web-server">Step 3: Test the Web Server</h3>
+<p>To test that your Web Server is active, run the ifconfig command to get the IP address of the Photon OS Virtual Machine.</p>
+<p><img src="images/vs-docker-ifconfig.png" alt="IP address"></p>
+<p>The output displays a list of adapters that are connected to the virtual machine. Typically, the web server daemon will be bound on <strong>eth0</strong>.</p>
+<p>Start a browser on your host machine and enter the IP address of your Photon OS Virtual Machine. You should see a screen similar to the following example as confirmation that your web server is active.</p>
+<p><img src="images/vs-docker-confirm.png" alt="Docker confirmation"></p>
+<p>You can now run any other containerized application from Docker Hub or your own containerized application within Photon OS.</p>
+<h2 id="installing-photon-os-v10">Installing Photon OS v1.0</h2>
+<p>This section provides installation instructions for Photon OS v1.0.</p>
+<h3 id="photon-os-10-prerequisites">Photon OS 1.0 Prerequisites</h3>
+<p>In order to install and start using Photon OS with VMware vSphere, the following pre-requisites must be satisfied: </p>
+<ul>
+<li>VMware vSphere 5.5 or VMware vSphere 6.0 installed </li>
+<li>ESXi host with recommended 2GB of free RAM</li>
+<li>ESXi host with recommended 8GB of free disk space</li>
+<li>The Photon OS ISO downloaded from Bintray</li>
+</ul>
+<p>This document uses VMware vSphere 6. VMware recommends that you use the latest version, though vSphere 5.5 or later should work as well. </p>
+<h3 id="importing-the-photon-os-10-ova">Importing the Photon OS 1.0 OVA</h3>
+<p>Using the OVA is a fast and easy way to create a Photon OS VM. Once you&#x2019;ve downloaded the OVA, log in to your vSphere environment and, from the <code>Actions</code> pull-down menu, select, <code>Deploy OVF Template &#x2026;</code> On the popup window, point vSphere to the OVA file that you&#x2019;ve downloaded. </p>
+<p><img src="images/vsphere1.jpg" alt="vsphere1"></p>
+<p>Click the <code>Next</code> button at the bottom of the window and vSphere will upload and validate your OVA. Depending on bandwidth, this operation might take a while. </p>
+<p>After validating the image, vSphere will present a summary of the details of the OVA. Click the <code>Next</code> button to proceed to selecting a location to store the imported Photon OS instance.</p>
+<p>Click <code>Finish</code></p>
+<p>At this point, you&#x2019;ve got a Photon OS instance ready to go; but before you power on that Photon OS instance, consider first converting this VM into a template. By converting this imported VM to a template, you have a master Photon OS instance that can be combined with vSphere Guest Customization to enable rapid provisioning of Photon OS instances. </p>
+<p>The OVA contains a default password of &quot;changeme&quot; for the root account that must be changed upon initial login. For security, Photon OS forbids common dictionary words for the root password.
+&#x2003;</p>
+<h3 id="installing-the-photon-os-10-iso-image">Installing the Photon OS 1.0 ISO Image</h3>
+<p>Once the ISO image has been uploaded to a datastore that is attached to the host on which you&#x2019;ll create the Photon OS virtual machine, start the installation process by creating a new virtual machine.
+When creating a new VM, the first thing you&#x2019;ll need to specify is the compatibility of that VM with ESXi versions. Select a compatibility level for your VM, as shown below. Photon OS shouldn&#x2019;t require any particular compatibility, but VMware recommends that you choose the latest available option for your release of vSphere.</p>
+<p><img src="images/vsphere2.jpg" alt="vsphere2"></p>
+<p>When prompted for the <code>Guest OS Family,</code> choose <code>Linux</code> and, for Guest OS Version, choose <code>Other 3.x Linux (64-bit)</code>. </p>
+<p><img src="images/vsphere3.jpg" alt="vsphere3"></p>
+<p>The recommended virtual hardware settings for your Photon VM are heavily dependent upon the container load you intend to run within Photon OS &#x2013; more containers or more intensive containers will require you to adjust these settings for your application load. VMware suggests 2 vCPU, 1024MB memory, 20GB hard disk. Any unwanted devices should be removed.  Be sure to mount the Photon OS ISO on the CD/DVD Drive and put a check in the box next to, <code>Connect At Power On.</code></p>
+<p><img src="images/vsphere4.jpg" alt="vsphere4"></p>
+<p>To summarize, these are the settings we recommend as a starting point for your Photon OS container runtime host: Thin provisioned, hardware compatibility: ESXi 6.0 and later (VM version 11).</p>
+<p>Power on the Photon OS virtual machine and, within a few seconds, the Photon Installer Boot Menu will appear.  Download and install the Remote Console if you do not have it already; otherwise, click <code>Launch Remote Console</code> to interact with the installer.</p>
+<p><img src="images/vsphere5.jpg" alt="vsphere5"></p>
+<p>Once connected to the remote console, select <code>Install</code> to proceed.</p>
+<p><img src="images/vsphere6.png" alt="vsphere6"></p>
+<p>After you accept the EULA, the installer will detect one disk, which should be the 20GB volume configured as part of the virtual machine creation. Select the disk and press enter.  When you are prompted to confirm that it is okay to erase the entire disk, select <code>Yes</code> to accept and proceed with the installation.</p>
+<p><img src="images/vsphere7.jpg" alt="vsphere7"></p>
+<p>You will now be presented with several installation options:</p>
+<p><img src="images/vsphere8.png" alt="vsphere8"></p>
+<p>Each install option provides a different runtime environment:</p>
+<ul>
+<li><p>Photon Minimal: Photon Minimum is a very lightweight version of the container host runtime that is best suited for container management and hosting. There is sufficient packaging and functionality to allow most common operations around modifying existing containers, as well as being a highly performant and full-featured runtime. </p>
+</li>
+<li><p>Photon Full: Photon Full includes several additional packages to enhance the authoring and packaging of containerized applications and system customization. For simply running containers, Photon Full will be overkill. Use Photon Full for developing and packaging the application that will be run as a container, as well as authoring the container itself. For testing and validation purposes, Photon Full will include all components necessary to run containers. </p>
+</li>
+<li><p>Photon OSTree Host: This installation profile creates a Photon OS instance that will source its packages from a central rpm-ostree server and continue to have the library and state of packages managed by the definition that is maintained on the central rpm-ostree server. Use Photon OStree Hosts when you are interested in experimenting with the concept of a centrally authored and maintained OS version. This concept of treating the OS as a versioned, atomic entity can simplify lifecycle management and security at scale. </p>
+</li>
+<li><p>Photon OSTree Server: This installation profile will create the server instance that will host the filesystem tree and managed definitions for rpm-ostree managed hosts created with the Photon OSTree Host installation profile. Most environments should need only one Photon OSTree Server instance to manage the state of the Photon OSTree Hosts. Use Photon OSTree Server when you are establishing a new repository and management node for Photon OS hosts.  </p>
+</li>
+</ul>
+<p>For the purposes of this how-to guide, select the option to install Photon Minimal. Once <code>Photon Minimal</code> is highlighted, press the Enter key on your keyboard.</p>
+<p>You will now be prompted for a hostname. Photon OS will prepopulate a randomly generated, unique hostname; you can either use this suggestion or enter your own hostname, as shown in the screenshot below:</p>
+<p><img src="images/vsphere9.jpg" alt="vsphere9"></p>
+<p>After selecting a hostname and pressing Enter, you will be prompted to first type and, then, confirm the system root password. If you have trouble with unintentional repeated characters in the Remote Console, follow VMware KB 196 (<a href="http://kb.vmware.com/kb/196" target="_blank">http://kb.vmware.com/kb/196</a>) for a setting to apply to the virtual machine.</p>
+<p><em>Note: Photon OS will not permit commonly used dictionary words to be set as a root password.</em></p>
+<p>After confirming the password, the installation process should begin.</p>
+<p>Installation times will vary based on system hardware and installation options, but most installations complete in less than a minute. Once the installation completes, press any key and the virtual machine will reboot into Photon OS.</p>
+<p>As the initial boot process begins, you will see the Photon splash screen before you are taken to a login prompt.</p>
+<p>At the login prompt, enter <code>root</code> as the username and provide the password chosen during the installation. </p>
+<p>You have now successfully setup Photon OS and are ready to use your container runtime environment.
+&#x2003;</p>
+<h3 id="installing-a-containerized-application-in-photon-os-10">Installing a Containerized Application in Photon OS 1.0</h3>
+<p>Now that you have your container runtime environment up and running, you may be wondering, &#x201C;what can I do now?&#x201D; A command prompt is not the most exciting thing. To help demonstrate the ease with which you can deploy a containerized application, this section showcases how you can quickly get a web server up and running.</p>
+<p>For this example, we will use the popular open source web server Nginx. The Nginx application has a customized VMware package  published as a dockerfile that can be downloaded directly in Docker from the Docker Hub.</p>
+<p>To run Docker from the command prompt, enter the command below to initialize the docker engine:</p>
+<p><code>systemctl start docker</code></p>
+<p>To ensure the docker daemon service runs on every subsequent VM reboot, enter:</p>
+<p><code>systemctl enable docker</code></p>
+<p>Now that the docker daemon service is running, it is a simple task to pull and start the Nginx Web Server container from Docker Hub.  To do this, enter the following command:</p>
+<p><code>docker run -d -p 80:80 vmwarecna/nginx</code></p>
+<p>This will then pull the Nginx Web Server files and appropriate dependent containers to ensure this containerized application can run.  You will see a screenshot similar to below, as the container and dependencies are downloaded and the container is prepared to run: </p>
+<p><img src="images/vsphere12.jpg" alt="vsphere12"></p>
+<p>Once the <code>docker run</code> process is completed, you will be returned to the command prompt.  You now have a fully active web server up and running through typing just a single command within Photon OS using containers.</p>
+<p>To test that your web server is active, we need to get the IP address of the Photon OS Virtual Machine. To get the IP address, enter the following command: </p>
+<pre><code>ifconfig
+</code></pre><p>This will now display a list of adapters connected to the virtual machine.  Typically, the web server daemon will be bound to <code>eth0.</code>  </p>
+<p>Start a browser on your host machine and enter the IP address of your Photon OS Virtual Machine.  The following screen will appear showing that your web server is active:</p>
+<p><img src="images/vsphere13.jpg" alt="vsphere13"></p>
+<p>You can now run any other containerized application from Docker Hub or your own containerized application within Photon OS.</p>
+<p>If you are having trouble viewing the screen that shows the web server is active, you might have to add an iptables rule to your container VM to allow traffic on Port 80:</p>
+<p><code>iptables -I INPUT 1 -p tcp --dport 80 -j ACCEPT</code></p>
+<p>In addition, you might have to modify /etc/httpd/httpd.conf to listen on Port 80 by adding the following line:  </p>
+<p><code>Listen 0.0.0.0:80</code></p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="What-is-New-in-Photon-OS-2.0.html" class="navigation navigation-prev " aria-label="Previous page: What is New in Photon OS 2.0">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="Running-Project-Photon-on-Fusion.html" class="navigation navigation-next " aria-label="Next page: Running Photon OS on Fusion">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Running Photon OS on vSphere","level":"1.2.5","depth":2,"next":{"title":"Running Photon OS on Fusion","level":"1.2.6","depth":2,"path":"Running-Project-Photon-on-Fusion.md","ref":"Running-Project-Photon-on-Fusion.md","articles":[]},"previous":{"title":"What is New in Photon OS 2.0","level":"1.2.4","depth":2,"path":"What-is-New-in-Photon-OS-2.0.md","ref":"What-is-New-in-Photon-OS-2.0.md","articles":[]},"dir":"ltr"},"config":{"plugins":["insert-logo","chapter-fold","edit-link","noembed"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"noembed":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit this Page","base":"https://github.com/vmware/photon/tree/master/docs"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"insert-logo":{"style":"background: none","url":"images/photonos-logo-sm.png"}},"theme":"default","pdf":{"pageBreaksBefore":"/","headerTemplate":"_TITLE_","paperSize":"letter","margin":{"right":62,"left":62,"top":56,"bottom":56},"fontSize":12,"fontFamily":"Arial","footerTemplate":"_PAGENUM_","chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"VMware Photon OS 1.0 and 2.0 Documentation","gitbook":"3.x.x"},"file":{"path":"Running-Photon-OS-on-vSphere.md","mtime":"2018-10-12T07:02:53.523Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-10-16T08:29:51.824Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-insert-logo/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-chapter-fold/chapter-fold.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-edit-link/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-noembed/scripts.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
