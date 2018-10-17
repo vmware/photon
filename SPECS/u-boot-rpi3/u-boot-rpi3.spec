@@ -3,7 +3,7 @@
 Summary:        U-Boot EFI firmware for the rpi3
 Name:		u-boot-rpi3
 Version:	2018.09
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
@@ -14,6 +14,7 @@ Source1:        rpi_3_photon_defconfig
 Patch0:		0001-XXX-openSUSE-XXX-Load-dtb-from-part.patch
 Patch1:		0004-Fix-MMC1-external-SD-slot-on-Samsun.patch
 Patch2:		0005-Fix-no-usb.patch
+BuildArch:      aarch64
 
 %description
 U-Boot is Open Source Firmware.
@@ -37,11 +38,13 @@ install -D -m 0644 u-boot.bin %{buildroot}/boot/esp/u-boot.bin
 /boot/esp/*
 
 %changelog
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 2018.09-5
+-   Adding BuildArch
 *   Mon Oct 22 2018 Alexey Makhalov <amakhalov@vmware.com> 2018.09-4
 -   Remove bc, swig, python, openssl buildrequires.
 -   Remove doc subpackage.
 *   Mon Oct 15 2018 Ajay Kaher <akaher@vmware.com> 2018.09-3
--   Set bootdelay to zero.
+-   Set bootdelay to zero in rpi_3_photon_defconfig
 *   Mon Oct 08 2018 Ajay Kaher <akaher@vmware.com> 2018.09-2
 -   Disable USB to improve boot time.
 *   Thu Sep 13 2018 Michelle Wang <michellew@vmware.com> 2018.09-1
