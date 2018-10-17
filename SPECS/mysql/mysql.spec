@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -10,6 +10,7 @@ Url:            http://www.mysql.com
 Source0:        https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-boost-%{version}.tar.gz
 %define         sha1 mysql-boost=c144d6c1350a9897da31ebbd3b5492ab1f152352
 
+BuildArch:      x86_64
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
@@ -71,6 +72,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 8.0.12-3
+-   Adding BuildArch
 *   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 8.0.12-2
 -   Use libtirpc instead obsoleted rpc from glibc.
 *   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 8.0.12-1

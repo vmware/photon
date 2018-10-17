@@ -2,7 +2,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.23.1
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/
 Group:          Applications/System
@@ -10,6 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
 %define sha1    sysdig=8d1ce894c8fcd8a1939c28adbfb661ad82110bde
+BuildArch:      x86_64
 BuildRequires:  cmake 
 BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:  openssl-devel
@@ -74,6 +75,8 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/sysdig-probe.ko
 
 %changelog
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 0.23.1-2
+-   Adding BuildArch
 *   Wed Sep 19 2018 Ajay Kaher <akaher@vmware.com> 0.23.1-1
 -   Update to version 0.23.1
 *   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 0.19.1-1

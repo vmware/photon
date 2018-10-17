@@ -32,6 +32,7 @@ class SpecObject(object):
         self.sourceurl = ""
         self.license = ""
         self.specDefs = {}
+        self.skipMeForCurrArch = "true"
 
 
 class SpecObjectsUtils(object):
@@ -71,14 +72,19 @@ class SpecObjectsUtils(object):
                 specObj.installRequiresPackages[specPkg] = spec.getRequires(specPkg)
                 specObj.buildarch[specPkg] = spec.getBuildArch(specPkg)
                 # TODO add multiversioning support
-                self.mapPackageToSpec[specPkg] = specName
-                if spec.getIsRPMPackage(specPkg):
-                    specObj.listRPMPackages.append(specPkg)
-            if specName in self.mapSpecObjects:
-                self.mapSpecObjects[specName].append(specObj)
-            else:
-                self.mapSpecObjects[specName]=[specObj]
-            self.mapSpecFileNameToSpecObj[os.path.basename(specFile)]=specObj
+                if (specObj.buildarch[specPkg] == "noarch" or 
+                    platform.machine() == specObj.buildarch[specPkg]):
+                    specObj.skipMeForCurrArch = "false"
+                    self.mapPackageToSpec[specPkg] = specName
+                    if spec.getIsRPMPackage(specPkg):
+                        specObj.listRPMPackages.append(specPkg)
+
+            if specObj.skipMeForCurrArch == "false":
+                if specName in self.mapSpecObjects:
+                    self.mapSpecObjects[specName].append(specObj)
+                else:
+                    self.mapSpecObjects[specName]=[specObj]
+                self.mapSpecFileNameToSpecObj[os.path.basename(specFile)]=specObj
         for key, value in self.mapSpecObjects.items():
             if len(value) > 1:
                 self.mapSpecObjects[key] = sorted(value,
@@ -89,9 +95,9 @@ class SpecObjectsUtils(object):
         for dirEntry in os.listdir(path):
             dirEntryPath = os.path.join(path, dirEntry)
             if (os.path.isfile(dirEntryPath) and
-                    dirEntryPath.endswith(".spec") and
-                    os.path.basename(dirEntryPath) not in
-                    constants.skipSpecsForArch.get(platform.machine(), [])):
+                    dirEntryPath.endswith(".spec")):
+#                    os.path.basename(dirEntryPath) not in
+#                    constants.skipSpecsForArch.get(platform.machine(), [])):
                 listSpecFiles.append(dirEntryPath)
             elif os.path.isdir(dirEntryPath):
                 self.getListSpecFiles(listSpecFiles, dirEntryPath)
