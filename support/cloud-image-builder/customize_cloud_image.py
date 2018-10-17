@@ -8,6 +8,7 @@ import fileinput
 from argparse import ArgumentParser
 import json
 from utils import Utils
+import platform
 
 def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
     output_path = os.path.dirname(os.path.realpath(raw_image_name))
@@ -19,14 +20,24 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
             os.remove(os.path.join(output_path, file))
 
     vmx_path = output_path + '/photon-ova.vmx'
-    utils.replaceandsaveasnewfile(build_scripts_path + '/vmx-template',
+    if machine_arch == "aarch64":
+        utils.replaceandsaveasnewfile(build_scripts_path + '/vmx-template-aarch64',
                                   vmx_path, 'VMDK_IMAGE',
                                   output_path + '/photon-ova.vmdk')
+    else:
+        utils.replaceandsaveasnewfile(build_scripts_path + '/vmx-template',
+                                  vmx_path, 'VMDK_IMAGE',
+                                  output_path + '/photon-ova.vmdk')
+
     vixdiskutil_path = tools_path + 'vixdiskutil'
     vmdk_path = output_path + '/photon-ova.vmdk'
     ovf_path = output_path + '/photon-ova.ovf'
     mf_path = output_path + '/photon-ova.mf'
-    ovfinfo_path = build_scripts_path + '/ovfinfo.txt'
+    if machine_arch == "aarch64":
+        ovfinfo_path = build_scripts_path + '/ovfinfo_aarch64.txt'
+    else:
+        ovfinfo_path = build_scripts_path + '/ovfinfo.txt'
+
     vmdk_capacity = (int(config['size']['root']) +
                      int(config['size']['swap'])) * 1024
     utils.runshellcommand(
@@ -118,6 +129,8 @@ if __name__ == '__main__':
     config = utils.jsonread(options.vmdk_config_path)
     print(options)
 
+    machine_arch = platform.machine()
+
     disk_device = (utils.runshellcommand(
         "losetup --show -f {}".format(options.raw_image_path))).rstrip('\n')
     disk_partitions = utils.runshellcommand("kpartx -as {}".format(disk_device))
@@ -125,14 +138,24 @@ if __name__ == '__main__':
 
     if not os.path.exists(options.mount_path):
         os.mkdir(options.mount_path)
+
     loop_device_path = "/dev/mapper/{}p2".format(device_name)
+    if machine_arch == "aarch64":
+      loop_vfat = "/dev/mapper/{}p1".format(device_name)
 
     try:
         print("Generating PARTUUID for the loop device ...")
-        partuuidval = (utils.runshellcommand(
-            "blkid -s PARTUUID -o value {}".format(loop_device_path))).rstrip('\n')
-        uuidval = (utils.runshellcommand(
-            "blkid -s UUID -o value {}".format(loop_device_path))).rstrip('\n')
+        if machine_arch == "aarch64":
+            partuuidval = (utils.runshellcommand(
+                "blkid -s PARTUUID -o value {}".format(loop_vfat))).rstrip('\n')
+            uuidval = (utils.runshellcommand(
+                "blkid -s UUID -o value {}".format(loop_vfat))).rstrip('\n')
+        else:
+            partuuidval = (utils.runshellcommand(
+                "blkid -s PARTUUID -o value {}".format(loop_device_path))).rstrip('\n')
+            uuidval = (utils.runshellcommand(
+                "blkid -s UUID -o value {}".format(loop_device_path))).rstrip('\n')
+
         if partuuidval == '':
             sgdiskout = utils.runshellcommand(
                 "sgdisk -i 2 {} ".format(disk_device))
@@ -162,9 +185,18 @@ if __name__ == '__main__':
         else:
             f.write("PARTUUID={}    /    ext4    defaults 1 1\n".format(partuuidval))
         f.close()
-        utils.replaceinfile(options.mount_path + "/boot/grub/grub.cfg",
-                            "rootpartition=PARTUUID=.*$",
-                            "rootpartition=PARTUUID={}".format(partuuidval))
+        if machine_arch == "aarch64":
+            utils.runshellcommand(
+                "mount -t vfat {} {}".format(loop_vfat, options.mount_path + "/boot"))
+            utils.replaceinfile(options.mount_path + "/boot/boot/grub2/grub.cfg",
+                                "rootpartition=PARTUUID=.*$",
+                                "rootpartition=PARTUUID={}".format(partuuidval))
+
+        else:
+            utils.replaceinfile(options.mount_path + "/boot/grub/grub.cfg",
+                                "rootpartition=PARTUUID=.*$",
+                                "rootpartition=PARTUUID={}".format(partuuidval))
+
 
         if os.path.exists(options.additional_rpms_path):
             print("Installing additional rpms")
@@ -220,8 +252,11 @@ if __name__ == '__main__':
         utils.runshellcommand("umount -l {}".format(options.mount_path + "/dev"))
         utils.runshellcommand("umount -l {}".format(options.mount_path + "/proc"))
 
+        if machine_arch == "aarch64":
+          utils.runshellcommand("umount -f {}".format(loop_vfat, options.mount_path + "/boot"))
         utils.runshellcommand("sync")
         utils.runshellcommand("umount -l {}".format(options.mount_path))
+        utils.runshellcommand("sync")
 
         mount_out = utils.runshellcommand("mount")
         print("List of mounted devices:")
@@ -287,8 +322,10 @@ if __name__ == '__main__':
                 "vpc -o subformat=fixed,force_size {}"
                 .format(options.src_root, '/mnt/' + relrawpath, '/mnt/' + vhdname))
         elif config['artifacttype'] == 'ova':
-            create_ova_image(raw_image, options.tools_bin_path,
-                             options.build_scripts_path + '/' + options.image_name, config)
+            if not machine_arch == "aarch64":
+                create_ova_image(raw_image, options.tools_bin_path,
+                                 options.build_scripts_path + '/' + options.image_name, config)
+
             if 'customartifacts' in config:
                 if 'postinstallscripts' in config['customartifacts']:
                     custom_path = img_path + '/photon-custom'
@@ -309,6 +346,7 @@ if __name__ == '__main__':
                         disk_device = (
                             utils.runshellcommand(
                                 "losetup --show -f {}".format(raw_image_custom))).rstrip('\n')
+
                         disk_partitions = utils.runshellcommand(
                             "kpartx -as {}".format(disk_device))
                         device_name = disk_device.split('/')[2]
@@ -333,9 +371,11 @@ if __name__ == '__main__':
 
                         utils.runshellcommand("kpartx -d {}".format(disk_device))
                         utils.runshellcommand("losetup -d {}".format(disk_device))
-                        create_ova_image(raw_image_custom, options.tools_bin_path,
-                                         options.build_scripts_path + '/' + options.image_name,
-                                         config)
+                        if not machine_arch == "aarch64":
+                            create_ova_image(raw_image_custom, options.tools_bin_path,
+                                             options.build_scripts_path + '/' + options.image_name,
+                                             config)
+
                         raw_image = raw_image_custom
                         index = index + 1
 
@@ -344,5 +384,13 @@ if __name__ == '__main__':
         else:
             raise ValueError("Unknown output format")
 
-        if config['keeprawdisk'] == 'false':
-            os.remove(raw_image)
+        if not machine_arch == "aarch64":
+            if config['keeprawdisk'] == 'false':
+                os.remove(raw_image)
+        else:
+            raw_image_tar = raw_image + ".tar.gz"
+            raw_tar = tarfile.open(raw_image_tar, "w:gz")
+            raw_tar.add(raw_image, arcname=os.path.basename(raw_image))
+            raw_tar.close()
+            if config['keeprawdisk'] == 'false':
+                os.remove(raw_image)

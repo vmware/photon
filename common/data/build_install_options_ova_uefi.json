@@ -1,7 +1,7 @@
 {
     "minimal" : {
         "title" : "Photon Minimal",
-        "file" : "packages_minimal_ova.json",
+        "file" : "packages_minimal_ova_uefi_aarch64.json",
         "visible" : true,
         "include" : []
     },
