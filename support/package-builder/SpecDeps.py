@@ -61,6 +61,7 @@ def main():
                 for p in SPECS.getData().getPackages(package,version):
                     buildarch=SPECS.getData().getBuildArch(p, version)
                     rpmFile = "stage/RPMS/" + buildarch + "/" + p + "-" + version + "-" + release + ".*" + buildarch+".rpm"
+                    logger.info("*** rm -f %s" % (rpmFile))
                     cmdUtils.runCommandInShell2("rm -f "+rpmFile)
         elif options.input_type == "print-upward-deps":
             whoNeedsList = specDeps.process("get-upward-deps", options.pkg, options.display_option)
