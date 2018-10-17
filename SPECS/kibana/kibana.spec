@@ -1,7 +1,7 @@
 Name:            kibana
 Summary:         Browser-based analytics and search dashboard for Elasticsearch.
 Version:         6.4.0
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         Apache License Version 2.0
 URL:             https://www.elastic.co/products/kibana
 Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}.tar.gz
@@ -9,6 +9,7 @@ Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Daemons
 %define sha1     kibana=41879947d7de83d4d1c00bd91182574c0034b6f3
+BuildArch:       x86_64
 BuildRequires:   git
 BuildRequires:   yarn
 BuildRequires:   nodejs = 8.11.4
@@ -114,5 +115,7 @@ exit
 %{_datadir}/%{name}
 
 %changelog
+*   Mon Oct 29 2018 Ajay Kaher <akaher@vmware.com> 6.4.0-2
+-   Add BuildArch
 *   Wed Oct 24 2018 Keerthana K <keerthanak@vmware.com> 6.4.0-1
 -   Initial kibana package for PhotonOS.
