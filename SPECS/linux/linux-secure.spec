@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.1
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -44,6 +44,7 @@ Patch99:        LKCM.patch
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
 %endif
+BuildArch:      x86_64
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
@@ -233,6 +234,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Nov 15 2018 Ajay Kaher <akaher@vmware.com> 4.19.1-2
+-   Adding BuildArch
 *   Thu Nov 08 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.1-1
 -   Update to version 4.19.1
 *   Tue Oct 30 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.18.9-3
