@@ -5,7 +5,7 @@
 Summary:        iPXE open source boot firmware
 Name:           ipxe
 Version:        20180717
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://ipxe.org
 Group:          System Environment/Daemons
@@ -14,6 +14,7 @@ Distribution:   Photon
 #Download URL:  https://git.ipxe.org/ipxe.git/snapshot/%{commit}.tar.bz2
 Source0:        %{name}-%{version}.tar.bz2
 %define sha1 ipxe=66c8cdfa6411702f4e0fd62ed375a043d5b36360
+BuildArch:      x86_64
 BuildRequires:  binutils
 BuildRequires:  binutils-devel
 BuildRequires:  cdrkit
@@ -62,6 +63,8 @@ install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}/usr/share/ipxe/
 /usr/share/ipxe/rtl8139.rom
 
 %changelog
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 20180717-2
+-   Adding BuildArch
 *   Thu Oct 11 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 20180717-1
 -   Use commit date instead of commit id as the package version.
 *   Wed Aug 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> d2063b7-1
