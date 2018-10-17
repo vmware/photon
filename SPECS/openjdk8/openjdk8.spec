@@ -3,7 +3,7 @@
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	1.8.0.192
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -13,6 +13,7 @@ Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{versi
 %define sha1 openjdk=e8df20e8bb8fad4ed08867cbc42202039b356b2d
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
+BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -241,6 +242,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Mon Oct 29 2018 Ajay Kaher <akaher@vmware.com> 1.8.0.192-3
+-   Adding BuildArch
 *   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.192-2
 -   Use ExtraBuildRequires
 *   Thu Oct 18 2018 Tapas Kundu <tkundu@vmware.com> 1.8.0.192-1

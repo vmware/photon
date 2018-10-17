@@ -48,6 +48,12 @@ class SpecObjectsUtils(object):
         for specFile in listSpecFiles:
             spec = Specutils(specFile)
             specName = spec.getBasePackageName()
+
+            if (spec.getBuildArch(specName) != "noarch" and
+                    platform.machine() != spec.getBuildArch(specName)):
+                self.logger.info("skipping spec file: "+str(specFile))
+                continue
+
             specObj = SpecObject()
             specObj.name = specName
             specObj.buildRequiresAllPackages = spec.getBuildRequiresAllPackages()
@@ -79,6 +85,7 @@ class SpecObjectsUtils(object):
             else:
                 self.mapSpecObjects[specName]=[specObj]
             self.mapSpecFileNameToSpecObj[os.path.basename(specFile)]=specObj
+
         for key, value in self.mapSpecObjects.items():
             if len(value) > 1:
                 self.mapSpecObjects[key] = sorted(value,
@@ -89,9 +96,7 @@ class SpecObjectsUtils(object):
         for dirEntry in os.listdir(path):
             dirEntryPath = os.path.join(path, dirEntry)
             if (os.path.isfile(dirEntryPath) and
-                    dirEntryPath.endswith(".spec") and
-                    os.path.basename(dirEntryPath) not in
-                    constants.skipSpecsForArch.get(platform.machine(), [])):
+                    dirEntryPath.endswith(".spec")):
                 listSpecFiles.append(dirEntryPath)
             elif os.path.isdir(dirEntryPath):
                 self.getListSpecFiles(listSpecFiles, dirEntryPath)
