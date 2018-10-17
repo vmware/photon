@@ -12,7 +12,7 @@ Installation steps are the same to all Photon OS versions, except that under the
 * Photon 2.0 does not set up a file tree, so there are several steps needed post-install to have a completely functional server that host can deploy from; they will be explained in detail in Chapter 8 and 9, but a quick setup is provided for you later in this chapter.  
 
 ## 6.1 Manual install of a server
-First, create a new VM in Fusion, Workstation or ESXi box, and go through the [steps common to all installation profiles](Running-Project-Photon-on-Fusion), then select the "Photon OSTree Server" option.
+First, create a new VM in Fusion, Workstation or ESXi box, and go through the [steps common to all installation profiles](Running-Project-Photon-on-Fusion.md), then select the "Photon OSTree Server" option.
 
 ![PhotonChooseServer](https://cloud.githubusercontent.com/assets/13158414/14802949/1c5f92b8-0b0a-11e6-8d69-96e62218dfcb.png)
 
@@ -30,7 +30,7 @@ You may ask your network administrator for a static IP, registered to your compa
 
 Having the server configured, you may advance to next chapter to [install your own host from this server's repository](Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.md). That's a way to verify right away that all components (server, network) are running correctly and test the 'minimal' server filetree image by downloading and installing it at the host.
 
-## 6.2 Composing your first OSTree repo  
+## 6.2 Composing your first OSTree repo
 If you've installed Photon 2.0 OSTree server, the server did not setup a tree as part of an installation, but configuration files for starter 'base', 'minimal' and 'full' tree are there for you. To create a 'minimal' tree, you only need two commands - one to initialize a new repo, the other one to compose it.
 ```
 root [ ~ ]# cd /srv/rpm-ostree
@@ -39,7 +39,7 @@ root [ /srv/rpm-ostree ]# rpm-ostree compose tree --repo=repo photon-base.json
 ```
 You are now ready to deploy a host, explained in next chapter. Skip to [Chapter 8: File oriented server operations](Photon-RPM-OStree-8-File-oriented-server-operations.md) and [Chapter 9: Package oriented server operations](Photon-RPM-OSTree-9-Package-oriented-server-operations.md) to learn create your own customized file tree.   
 
-## 6.2 Automated install of a server via kickstart
+## 6.3 Automated install of a server via kickstart
 All Photon OS versions support unattended install, in other words installer will display its progress, but will not prompt for any keys to be clicked, and will boot at the end of installation. This will create an identical server as installing via UI.
 
 If not familiar with the way kickstart works, visit [Kickstart Support in Photon OS](kickstart.md). The kickstart json config for OSTree is similar to minimal or full, except for this setting:  

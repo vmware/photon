@@ -1,6 +1,6 @@
 # Host Updating Operations 
 
-## 5.1 Is it an update or an upgrade?
+## 5.1 Is it an update or an upgrade? 
 If you've used yum, dnf (and now tdnf for Photon) in RPM systems or apt-get in Debian based Unix, you understand what "install" is for packages and the subtle difference between "update" and "upgrade".
 
 OSTree and RPM-OSTree don't distringuish between them and the term "upgrade" has a slightly different meaning - to bring the system in sync with the remote repo, to the top of the Refspec (branch), just like in Git, by pulling the latest changes.
@@ -12,7 +12,7 @@ The reverse operation of an upgrade is a "rollback" and fortunately it's not nam
 As we'll see in a future chapter, a jump to a different Refspec (branch) is also supported and it's named "rebase".
 
 
-## 5.2 Incremental upgrade
+## 5.2 Incremental upgrade 
 To check if there are any updates available, one would execute:
 ```
 root@photon-host-def [ ~ ]# rpm-ostree upgrade
@@ -504,5 +504,3 @@ commit 2940e10c4d90ce6da572cbaeeff7b511cab4a64c280bd5969333dd2fca57cfa8
 Date:  2015-08-20 22:27:43 +0000
 Version: 1.0_minimal
 ```
-
-[[Back to main page|Photon-RPM-OSTree:-a-simple-guide]] | [[Previous page|Photon-RPM-OSTree:-4-Querying-for-commit,-file-and-package-metadata]] | [[ Next page >|Photon-RPM-OSTree:-6-Installing-a-server]]
