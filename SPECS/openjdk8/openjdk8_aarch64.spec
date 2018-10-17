@@ -8,7 +8,7 @@
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	1.8.0.151
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GNU GPL
 URL:		http://hg.openjdk.java.net/aarch64-port/jdk8u/
 Group:		Development/Tools
@@ -32,6 +32,7 @@ Source7:	%{_url_src}/nashorn/archive/nashorn-%{_repo_ver}.tar.bz2
 %define sha1 nashorn=aaf4d057bb3e5d8700f6b6d11d38fb9519c2ab29
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
+BuildArch:      aarch64
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -261,6 +262,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Mon Oct 29 2018 Ajay Kaher <akaher@vmware.com> 1.8.0.151-3
+-   Adding BuildArch
 *   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.151-2
 -   Use ExtraBuildRequires
 *   Thu Dec 21 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.151-1

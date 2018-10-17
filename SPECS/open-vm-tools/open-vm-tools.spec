@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -19,6 +19,7 @@ Patch2:         PureIPv6-hosts.patch
 Patch3:         GOSC-libDeploy.patch
 Patch4:         timezoneCust.patch
 Patch5:         gosc-post-custom.patch
+BuildArch:      x86_64
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
@@ -120,6 +121,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 10.3.0-2
+-   Adding BuildArch
 *   Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 10.3.0-1
 -   Version update. Use rpcsvc-proto, libtirpc, xmlsec1
 *   Tue Jul 10 2018 Keerthana K <keerthanak@vmware.com> 10.2.0-4
