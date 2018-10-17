@@ -46,6 +46,8 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 /sbin/*
 %{_bindir}/*
 %{_sbindir}/*
+%exclude %{_bindir}/login
+%exclude %{_bindir}/su
 
 %changelog
 *   Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 0.7.7-1
