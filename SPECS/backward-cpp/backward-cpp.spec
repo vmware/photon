@@ -1,7 +1,7 @@
 Summary:        Pretty stack trace printer for C++.
 Name:           backward-cpp
 Version:        1.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/bombela/backward-cpp
 Source0:        %{name}-v%{version}.tar.gz
@@ -9,6 +9,7 @@ Source0:        %{name}-v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+BuildArch:      x86_64
 BuildRequires:  automake
 BuildRequires:  autoconf
 BuildRequires:  cmake
@@ -40,6 +41,8 @@ install -vm644 libbackward.so %{buildroot}%{_libdir}/
 %{_libdir}/libbackward.so
 
 %changelog
+*    Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.4-2
+-    Adding BuildArch
 *    Mon Sep 03 2018 Keerthana K <keerthanak@vmware.com> 1.4-1
 -    Updated to version 1.4.
 *    Wed Jul 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.3-1

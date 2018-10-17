@@ -1,7 +1,7 @@
 Name:           kexec-tools
 Summary:        The kexec kdump tools
 Version:        2.0.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/System
 Url:            https://www.kernel.org/doc/Documentation/kdump/kdump.txt
@@ -10,7 +10,7 @@ Source0:        https://www.kernel.org/pub/linux/utils/kernel/kexec/%{name}-%{ve
 Patch0:		kexec-tools-disable-test.patch
 Vendor:		VMware, Inc.
 Distribution:	Photon
-
+BuildArch:      x86_64
 BuildRequires:  zlib-devel
 BuildRequires:  zlib
 Requires:	zlib
@@ -37,6 +37,8 @@ make install DESTDIR=%{buildroot}
 %doc TODO
 
 %changelog
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 2.0.17-2
+-   Adding BuildArch
 *   Mon Sep 10 2018 Alexey Makhalov <amakhalov@vmware.com> 2.0.17-1
 -   Version update to fix compilation issue againts glibc-2.28
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 2.0.14-1
