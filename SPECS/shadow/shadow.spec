@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/shadow-maint/
 License:        BSD
 Group:          Applications/System
@@ -26,23 +26,25 @@ BuildRequires:  cracklib-devel
 Requires:       cracklib
 BuildRequires:  Linux-PAM-devel
 Requires:       Linux-PAM
-Requires:       (%{name}-tools = %{version}-%{release} or toybox)
+Requires:       %{name}-tools = %{version}-%{release}
+Conflicts:      toybox
 
 %description
 The Shadow package contains programs for handling passwords
 in a secure way.
 
 %package tools
-Summary: Contains subset of tools which might be replaced by toybox
-Group:      Applications/System
-Requires: %{name} = %{version}-%{release}
+Summary:     Contains subset of tools which might be replaced by toybox
+Group:       Applications/System
+Requires:    %{name} = %{version}-%{release}
+Conflicts:   toybox
 %description tools
 Contains subset of tools which might be replaced by toybox
 
 %package lang
-Summary: Additional language files for shadow
-Group:      Applications/System
-Requires: %{name} = %{version}-%{release}
+Summary:     Additional language files for shadow
+Group:       Applications/System
+Requires:    %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of shadow.
 
@@ -58,13 +60,10 @@ sed -i 's@DICTPATH.*@DICTPATH\t/usr/share/cracklib/pw_dict@' \
     etc/login.defs
 
 %build
-./configure \
-    --sysconfdir=/etc \
-    --with-libpam \
-        --with-libcrack \
-    --with-group-name-max-length=32
-
+%configure --sysconfdir=/etc --with-libpam \
+           --with-libcrack --with-group-name-max-length=32
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/bin
@@ -116,6 +115,7 @@ do
     install -v -m644 %{buildroot}%{_sysconfdir}/pam.d/chage %{buildroot}%{_sysconfdir}/pam.d/${PROGRAM}
     sed -i "s/chage/$PROGRAM/" %{buildroot}%{_sysconfdir}/pam.d/${PROGRAM}
 done
+
 %find_lang %{name}
 
 %check
@@ -131,7 +131,6 @@ make %{?_smp_mflags} check
 %config(noreplace) /etc/login.access
 %config(noreplace) /etc/default/useradd
 %config(noreplace) /etc/limits
-/sbin/nologin
 %{_bindir}/*
 %{_sbindir}/*
 %{_mandir}/man1
@@ -165,53 +164,55 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 4.6-2
+-   Add conflict toybox for shadow-tools.
 *   Wed Sep 19 2018 Srinidhi Rao <srinidhir@vmware.com> 4.6-1
--   Upgrading the version to 4.6
+-   Upgrading the version to 4.6.
 *   Mon Jul 30 2018 Tapas Kundu <tkundu@vmware.com> 4.2.1-16
--   Added fix for CVE-2018-7169
+-   Added fix for CVE-2018-7169.
 *   Fri Apr 20 2018 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-15
 -   Move pam.d config file to here for better tracking.
 -   Add pam_loginuid module as optional in a session.
 *   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-14
--   Added -tools subpackage
--   Main package requires -tools or toybox
+-   Added -tools subpackage.
+-   Main package requires -tools or toybox.
 *   Tue Aug 15 2017 Anish Swaminathan <anishs@vmware.com> 4.2.1-13
--   Added fix for CVE-2017-12424, CVE-2016-6252
+-   Added fix for CVE-2017-12424, CVE-2016-6252.
 *   Thu Apr 27 2017 Divya Thaluru <dthaluru@vmware.com> 4.2.1-12
--   Allow '.' in username
+-   Allow '.' in username.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.1-11
--   BuildRequires Linux-PAM-devel
+-   BuildRequires Linux-PAM-devel.
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-10
--   Added -lang subpackage
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 4.2.1-9
--   Modified %check
+-   Added -lang subpackage.
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 4.2.1-9
+-   Modified %check.
 *   Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-8
--   Added logic to not replace pam.d conf files in upgrade scenario
+-   Added logic to not replace pam.d conf files in upgrade scenario.
 *   Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-7
--   Adding pam_cracklib module as requisite to pam password configuration
+-   Adding pam_cracklib module as requisite to pam password configuration.
 *   Wed May 25 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-6
--   Modifying pam_systemd module as optional in a session
+-   Modifying pam_systemd module as optional in a session.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-5
--   GA - Bump release of all rpms
+-   GA Bump release of all rpms.
 *   Mon May 2 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.1-4
 -   Enabling pam_systemd module in a session.
 *   Fri Apr 29 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
--   Setting password aging limits to 90 days
+-   Setting password aging limits to 90 days.
 *   Wed Apr 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
--   Setting password aging limits to 365 days
+-   Setting password aging limits to 365 days.
 *   Wed Mar 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-2
--   Enabling pam_limits module in a session
+-   Enabling pam_limits module in a session.
 *   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 4.2.1-1
--   Update version
+-   Update version.
 *   Wed Dec 2 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-6
--   Fixed PAM Configuration file for passwd
+-   Fixed PAM Configuration file for passwd.
 *   Mon Oct 26 2015 Sharath George <sharathg@vmware.com> 4.1.5.1-5
 -   Allow mixed case in username.
 *   Mon Jun 29 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-4
--   Fixed PAM Configuration file for chpasswd
+-   Fixed PAM Configuration file for chpasswd.
 *   Tue Jun 16 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.5.1-3
--   Use group id 100(users) by default
+-   Use group id 100(users) by default.
 *   Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-2
--   Adding PAM support
+-   Adding PAM support.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-1
--   Initial build. First version
+-   Initial build First version.
