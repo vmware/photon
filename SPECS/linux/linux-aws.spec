@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.14.67
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -91,6 +91,7 @@ Patch151: 0055-net-ipv4-defensive-cipso-option-parsing.patch
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
 %endif
+BuildArch:      x86_64
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
@@ -401,6 +402,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 4.14.67-3
+-   Adding BuildArch
 *   Mon Oct 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-2
 -   Add enhancements from Amazon.
 *   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1

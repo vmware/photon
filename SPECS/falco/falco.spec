@@ -2,7 +2,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.12.1
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
@@ -14,6 +14,7 @@ Source1:        https://github.com/draios/sysdig/archive/sysdig-0.23.1.tar.gz
 %define sha1    sysdig=8d1ce894c8fcd8a1939c28adbfb661ad82110bde
 Source2:        http://libvirt.org/sources/libvirt-2.0.0.tar.xz
 %define sha1    libvirt=9a923b06df23f7a5526e4ec679cdadf4eb35a38f
+BuildArch:      x86_64
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
@@ -84,6 +85,8 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/falco-probe.ko
 
 %changelog
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 0.12.1-2
+-   Adding BuildArch
 *   Mon Sep 24 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.12.1-1
 -   Update falco and sysdig versions to fix build error with linux 4.18
 *   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 0.8.1-1

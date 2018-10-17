@@ -1,7 +1,7 @@
 Summary:        C++ L7 proxy and communication bus
 Name:           envoy
 Version:        1.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/lyft/envoy
 Source0:        %{name}-v%{version}.tar.gz
@@ -10,6 +10,7 @@ Source1:        cotire.cmake
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+BuildArch:      x86_64
 BuildRequires:  backward-cpp
 BuildRequires:  c-ares-devel >= 1.11.0
 BuildRequires:  cmake
@@ -116,7 +117,9 @@ cp ../configs/* %{buildroot}%{_sysconfdir}/envoy
 %{_bindir}/envoy.dbg
 
 %changelog
-* Mon Sep 24 2018 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-2
-- Fix compilation issue. Add test subpackage
-* Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-1
-- Initial version of envoy package for Photon.
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.2.0-3
+-   Adding BuildArch
+*   Mon Sep 24 2018 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-2
+-   Fix compilation issue. Add test subpackage
+*   Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-1
+-   Initial version of envoy package for Photon.

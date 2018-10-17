@@ -3,7 +3,7 @@
 Summary:        agent for collecting, processing, aggregating, and writing metrics.
 Name:           telegraf
 Version:        1.7.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/influxdata/telegraf
 Source0:        https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
@@ -14,6 +14,7 @@ Source2:        https://raw.githubusercontent.com/wavefrontHQ/integrations/maste
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+BuildArch:      x86_64
 BuildRequires:  go
 BuildRequires:  git
 BuildRequires:  systemd-devel
@@ -97,6 +98,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.7.4-2
+-   Adding BuildArch
 *   Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 1.7.4-1
 -   Update version to 1.7.4 and its plugin version to 1.4.0.
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.4-2

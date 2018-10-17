@@ -1,7 +1,7 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
 Version:        4.28
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz 
@@ -104,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/wavefront-proxy.service
 
 %changelog
+* Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 4.28-2
+- Adding BuildArch
 * Tue Sep 04 2018 Ankit Jain <ankitja@vmware.com> 4.28-1
 - Updated to latest version 4.28
 * Mon Oct 08 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-4
