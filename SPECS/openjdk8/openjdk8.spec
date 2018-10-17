@@ -3,7 +3,7 @@
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	1.8.0.181
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -13,6 +13,7 @@ Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{versi
 %define sha1 openjdk=c4b9a0d9820f58cd8aa9acd191727eabea62faf6
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
+BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -238,6 +239,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.8.0.181-2
+-   Adding BuildArch
 *   Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 1.8.0.181-1
 -   Upgraded to 1.8.0.181 version.
 *   Mon Apr 23 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.172-1

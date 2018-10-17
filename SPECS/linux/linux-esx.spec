@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.18.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -36,7 +36,7 @@ Patch22:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-defaul
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
 Patch25:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 
-
+BuildArch:     x86_64
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -186,6 +186,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 4.18.9-2
+-   Adding BuildArch
 *   Mon Sep 24 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.18.9-1
 -   Update to version 4.18.9
 *   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
