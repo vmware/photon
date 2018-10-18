@@ -43,8 +43,7 @@ def get(package, source, sha1, sourcesPath, configs, logger):
             p.downloadFileHelper(package, source, package_path, sha1)
             return
         except Exception as e:
-            logger.exception(e)
-    raise Exception("Missing source: " + source)
+            logger.debug(e)
 
 class pullSources:
 

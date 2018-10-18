@@ -41,8 +41,8 @@ class PackageBuilderBase(object):
             self._buildPackage()
         except Exception as e:
             # TODO: self.logger might be None
-            self.logger.exception(e)
-            raise e
+            self.logger.debug(e)
+            raise Exception("Unable to build package!")
 
     def _buildPackagePrepareFunction(self, package, version):
         self.package = package
@@ -292,8 +292,9 @@ class PackageBuilderContainer(PackageBuilderBase):
                 self.logger.debug("Container " + containerID.short_id +
                                   " retained for debugging.")
             logFileName = os.path.join(destLogPath, self.package + ".log")
-            fileLog = os.popen('tail -n 20 ' + logFileName).read()
-            self.logger.debug(fileLog)
+            if os.path.isfile(logFileName):
+                fileLog = os.popen('tail -n 20 ' + logFileName).read()
+                self.logger.info(fileLog)
             raise e
 
         # Remove the container
@@ -363,8 +364,9 @@ class PackageBuilderChroot(PackageBuilderBase):
             self.logger.debug("Chroot with ID: " + chrootID +
                               " not deleted for debugging.")
             logFileName = os.path.join(self.logPath, self.package + ".log")
-            fileLog = os.popen('tail -n 100 ' + logFileName).read()
-            self.logger.info(fileLog)
+            if os.path.isfile(logFileName):
+                fileLog = os.popen('tail -n 100 ' + logFileName).read()
+                self.logger.info(fileLog)
             raise e
         if chrootID is not None:
             chrUtils.destroyChroot(chrootID)
