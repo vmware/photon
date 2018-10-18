@@ -86,8 +86,8 @@ class PackageManager(object):
                 pkgBuildDataGen.getPackageBuildData(listPackages))
 
         except Exception as e:
-            self.logger.exception(e)
-            self.logger.error("unable to get sorted list")
+            self.logger.debug(e)
+            raise Exception("Unable to get sorted list")
             return False
         return True
 

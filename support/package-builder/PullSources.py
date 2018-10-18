@@ -51,8 +51,7 @@ def get(package, source, sha1, sourcesPath, URLs, logger):
             # on any HTTP errors - try next config
             continue
         except Exception as e:
-            logger.exception(e)
-    raise Exception("Missing source: " + source)
+            logger.debug(e)
 
 def downloadFile(url, destfile):
     # We need to provide atomicity for file downloads. That is,

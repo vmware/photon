@@ -32,7 +32,7 @@ class WorkerThread(threading.Thread):
             try:
                 pkgBuilder.buildPackageFunction(pkg)
             except Exception as e:
-                self.logger.exception(e)
+                self.logger.debug(e)
                 buildThreadFailed = True
                 Scheduler.Scheduler.notifyPackageBuildFailed(pkg)
                 self.logger.debug("Thread " + self.name + " stopped building package:" + pkg)
