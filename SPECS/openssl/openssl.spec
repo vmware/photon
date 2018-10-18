@@ -1,19 +1,18 @@
 Summary:    Management tools and libraries relating to cryptography
 Name:       openssl
-Version:    1.0.2o
-Release:    2%{?dist}
+Version:    1.0.2p
+Release:    1%{?dist}
 License:    OpenSSL
 URL:        http://www.openssl.org
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1 openssl=a47faaca57b47a0d9d5fb085545857cc92062691
+%define sha1 openssl=f34b5322e92415755c7d58bf5d0d5cf37666382c
 Patch0:     c_rehash.patch
-Patch1:     openssl-1.0.2n-ipv6apps.patch
+Patch1:     openssl-ipv6apps.patch
 Patch2:     openssl-init-conslidate.patch
 Patch3:     openssl-drbg-default-read-system-fips.patch
-Patch4:     CVE-2018-0737.patch
 Requires:   bash glibc libgcc 
 
 %description
@@ -54,7 +53,6 @@ Perl scripts that convert certificates and keys to various formats.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -114,6 +112,10 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Fri Aug 17 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.0.2p-1
+-   Upgrade to 1.0.2p
+*   Mon Aug 13 2018 Ankit Jain <ankitja@vmware.com> 1.0.2o-3
+-   Fix of CVE-2018-0732
 *   Wed Jun 13 2018 Dweep Advani <dadvani@vmware.com> 1.0.2o-2
 -   Fix of CVE CVE-2018-0737
 *   Tue Apr 03 2018 Anish Swaminathan <anishs@vmware.com> 1.0.2o-1

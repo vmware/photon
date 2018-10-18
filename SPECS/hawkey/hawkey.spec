@@ -1,7 +1,7 @@
 Summary:	Hawkey
 Name:		hawkey
 Version:	2014.1
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	LGPLv2+
 URL:		http://fedoraproject.org/wiki/Features/Hawkey
 Source0:	https://github.com/rpm-software-management/hawkey/archive/%{name}-%{version}.tar.gz
@@ -70,6 +70,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %exclude %{python_sitearch}/*
 
 %changelog
+*   Thu Sep 13 2018 Anish Swaminathan <anishs@vmware.com> 2014.1-6
+-   Bump up release of hawkey to consume libdb 5.x
 *   Thu Sep 14 2017 Xiaolin Li <xiaolinl@vmware.com> 2014.1-5
 -   Fix core dump caused by corrupt metadata (repomd.xml).
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2014.1-4

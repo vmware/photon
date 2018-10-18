@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.146
+Version:    	4.4.161
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=e1f85bb95eb77f49ec9e0fe680ee287732c0ab3b
+%define sha1 linux=9f1c41d4863a5322a0b2e3f527c96637b30c2cd0
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -62,11 +62,11 @@ Patch38:        0005-xfs-sanity-check-inode-di_mode.patch
 Patch39:        0006-xfs-verify-dinode-header-first.patch
 Patch40:        0007-xfs-move-inode-fork-verifiers-to-xfs_dinode_verify.patch
 Patch41:        0008-xfs-enhance-dinode-verifier.patch
+# Fix for CVE-2018-10879
+Patch43:        0001-ext4-add-corruption-check-in-ext4_xattr_set_entry.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
-
-Patch70: 0001-fork-unconditionally-clear-stack-on-fork.patch
 
 
 %if 0%{?kat_build:1}
@@ -180,10 +180,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch39 -p1
 %patch40 -p1
 %patch41 -p1
+%patch43 -p1
 
 %patch67 -p1
-
-%patch70 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -340,6 +339,22 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Oct 15 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.161-1
+-   Update to version 4.4.161
+*   Mon Sep 24 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.157-1
+-   Update to version 4.4.157 and fix CVE-2018-10879
+*   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.153-3
+-   Improve error-handling of rdrand-rng kernel driver.
+*   Fri Sep 07 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.153-2
+-   Fix CVE-2018-13053
+*   Tue Sep 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.153-1
+-   Update to version 4.4.153
+*   Fri Aug 24 2018 Bo Gan <ganb@vmware.com> 4.4.152-1
+-   Update to version 4.4.152
+*   Fri Aug 17 2018 Bo Gan <ganb@vmware.com> 4.4.148-1
+-   Update to version 4.4.148 (l1tf fixes)
+*   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.147-1
+-   Update to version 4.4.147 to fix CVE-2018-12233.
 *   Tue Aug 07 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.146-1
 -   Update to version 4.4.146
 *   Mon Jul 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.145-1

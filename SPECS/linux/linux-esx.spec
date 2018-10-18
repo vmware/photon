@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.146
+Version:       4.4.161
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=e1f85bb95eb77f49ec9e0fe680ee287732c0ab3b
+%define sha1 linux=9f1c41d4863a5322a0b2e3f527c96637b30c2cd0
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -62,12 +62,11 @@ Patch45:        0005-xfs-sanity-check-inode-di_mode.patch
 Patch46:        0006-xfs-verify-dinode-header-first.patch
 Patch47:        0007-xfs-move-inode-fork-verifiers-to-xfs_dinode_verify.patch
 Patch48:        0008-xfs-enhance-dinode-verifier.patch
+# Fix for CVE-2018-10879
+Patch50:        0001-ext4-add-corruption-check-in-ext4_xattr_set_entry.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
-
-Patch70: 0001-fork-unconditionally-clear-stack-on-fork.patch
-
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -148,10 +147,9 @@ The Linux package contains the Linux kernel doc files
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
+%patch50 -p1
 
 %patch67 -p1
-
-%patch70 -p1
 
 %build
 # patch vmw_balloon driver
@@ -240,6 +238,22 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 15 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.161-1
+-   Update to version 4.4.161
+*   Mon Sep 24 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.157-1
+-   Update to version 4.4.157 and fix CVE-2018-10879
+*   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.153-3
+-   Improve error-handling of rdrand-rng kernel driver.
+*   Fri Sep 07 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.153-2
+-   Fix CVE-2018-13053
+*   Tue Sep 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.153-1
+-   Update to version 4.4.153
+*   Fri Aug 24 2018 Bo Gan <ganb@vmware.com> 4.4.152-1
+-   Update to version 4.4.152
+*   Fri Aug 17 2018 Bo Gan <ganb@vmware.com> 4.4.148-1
+-   Update to version 4.4.148 (l1tf fixes)
+*   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.147-1
+-   Update to version 4.4.147 to fix CVE-2018-12233.
 *   Tue Aug 07 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.146-1
 -   Update to version 4.4.146
 *   Mon Jul 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.145-1

@@ -1,20 +1,16 @@
 Summary:        A high-level scripting language
 Name:           python2
-Version:        2.7.13
-Release:        5%{?dist}
+Version:        2.7.15
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=18a8f30a0356c751b8d0ea6f76e764cab13ee046
+%define sha1    Python=f99348a095ec4a6411c84c0d15343d11920c9724
 Patch0:         cgi.patch
-Patch1:         added-compiler-flags-for-curses-module.patch
-Patch2:         added-pyopenssl-ipaddress-certificate-validation.patch
-Patch3:         python2-CVE-2017-1000158.patch
-Patch4:         python2-CVE-2018-1000030-1.patch
-Patch5:         python2-CVE-2018-1000030-2.patch
+Patch1:         added-pyopenssl-ipaddress-certificate-validation.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
@@ -104,10 +100,6 @@ to build python programs.
 %setup -q -n Python-%{version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -183,6 +175,7 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/python2.7/bsddb/test
 %exclude %{_libdir}/python2.7/ctypes/test
 %exclude %{_libdir}/python2.7/distutils/tests
+%exclude %{_libdir}/python2.7/distutils/command/wininst*exe
 %exclude %{_libdir}/python2.7/email/test
 %exclude %{_libdir}/python2.7/json/tests
 %exclude %{_libdir}/python2.7/sqlite3/test
@@ -225,6 +218,10 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Mon Sep 17 2018 Dweep Advani <dadvani@vmware.com> 2.7.15-2
+-   Remove vulnerable Windows installers from python-libs rpm
+*   Fri Aug 17 2018 Dweep Advani <dadvani@vmware.com> 2.7.15-1
+-   Update to version 2.7.15
 *   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-5
 -   Fix CVE-2017-1000030
 *   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-4

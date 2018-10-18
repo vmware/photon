@@ -1,15 +1,14 @@
 Summary:	Programs for monitoring processes
 Name:		procps-ng
-Version:	3.3.11
-Release:	4%{?dist}
+Version:	3.3.15
+Release:	1%{?dist}
 License:	GPLv2
 URL:		http://procps.sourceforge.net/
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
-%define sha1 procps-ng=1bdca65547df9ed019bd83649b0f8b8eaa017e25
-Patch0:		Fixto-interpret-ascii-sequence.patch
+%define sha1 procps-ng=2929bc64f0cf7b2db997eef79b7187658e47230d
 BuildRequires:	ncurses-devel >= 6.0-3
 Requires:	ncurses >= 6.0-3
 %description
@@ -21,7 +20,6 @@ Requires:	%{name} = %{version}
 It contains the libraries and header files to create applications 
 %prep
 %setup -q
-%patch0 -p1
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -60,8 +58,8 @@ find %{buildroot} -name '*.la' -delete
 /bin/pkill
 %{_sbindir}/pidof
 %_datadir/locale/*
-%{_docdir}/procps-ng-3.3.11/FAQ
-%{_docdir}/procps-ng-3.3.11/bugs.md
+%{_docdir}/%{name}-%{version}/FAQ
+%{_docdir}/%{name}-%{version}/bugs.md
 %{_mandir}/man8/vmstat.8.gz
 %{_mandir}/man8/sysctl.8.gz
 %{_mandir}/man1/slabtop.1.gz
@@ -77,10 +75,11 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/man1/w.1.gz
 %{_mandir}/man1/watch.1.gz
 %{_mandir}/man1/ps.1.gz
+%{_mandir}/man1/procps.1.gz
 %{_mandir}/man3/*
 %{_mandir}/man5/sysctl.conf.5.gz
-%{_libdir}/libprocps.so.5
-%{_libdir}/libprocps.so.5.0.0
+%{_libdir}/libprocps.so.7
+%{_libdir}/libprocps.so.7.1.0
 /sbin/sysctl
 %files devel
 %{_includedir}/proc/sig.h
@@ -95,9 +94,14 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/proc/slab.h
 %{_includedir}/proc/alloc.h
 %{_includedir}/proc/whattime.h
+%{_includedir}/proc/numa.h
 %{_libdir}/pkgconfig/libprocps.pc
 %{_libdir}/libprocps.so
 %changelog
+*   Thu Aug 09 2018 Tapas Kundu <tkundu@vmware.com> 3.3.15-1
+-   Upgrade version to 3.3.15.
+-   Fix for CVE-2018-1122 CVE-2018-1123 CVE-2018-1124 CVE-2018-1125
+-   Fix for CVE-2018-1126
 *   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 3.3.11-4
 -   Use specified version of ncurses wich has long chtype and mmask_t
     (see ncurses changelog)

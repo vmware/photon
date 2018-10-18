@@ -1,7 +1,7 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
 Version:        2.76
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            http://www.thekelleys.org.uk/dnsmasq/
@@ -68,11 +68,15 @@ rm -rf %{buildroot}
 %exclude %{_libdir}/debug
 %{_sbindir}/*
 %{_mandir}/*
-%{_sysconfdir}/*
+%{_sysconfdir}/dnsmasq.d
+%config(noreplace) %{_sysconfdir}/dnsmasq.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/dnsmasq.conf
 %dir %{_sharedstatedir}
 %config  /usr/share/dnsmasq/trust-anchors.conf
 
 %changelog
+*   Fri Aug 31 2018 Dweep Advani <dadvani@vmware.com> 2.76-6
+-   Preserve configuration files during package upgrade
 *   Tue Feb 13 2018 Xiaolin Li <xiaolinl@vmware.com> 2.76-5
 -   Fix CVE-2017-15107
 *   Mon Nov 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.76-4
