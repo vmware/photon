@@ -38,7 +38,7 @@ def main():
     parser.add_argument("-m", "--tool-chain-stage", dest="toolChainStage", default="None")
     parser.add_argument("-c", "--pullsources-config", dest="pullsourcesConfig",
                         default="pullsources.conf")
-    parser.add_argument("-d", "--dist", dest="dist", default="")
+    parser.add_argument("-d", "--dist-tag", dest="dist", default="")
     parser.add_argument("-k", "--input-RPMS-path", dest="inputRPMSPath", default=None)
     parser.add_argument("-n", "--build-number", dest="buildNumber", default="0000000")
     parser.add_argument("-v", "--release-version", dest="releaseVersion", default="NNNnNNN")
@@ -57,6 +57,7 @@ def main():
     parser.add_argument("-pw", "--package-weights-path", dest="packageWeightsPath", default=None)
     parser.add_argument("-bt", "--build-type", dest="pkgBuildType", default="chroot")
     parser.add_argument("-F", "--kat-build", dest="katBuild", default=None)
+    parser.add_argument("-pj", "--packages-json-input", dest="pkgJsonInput", default=None)
     parser.add_argument("PackageName", nargs='?')
     options = parser.parse_args()
     cmdUtils = CommandUtils()
@@ -104,6 +105,10 @@ def main():
 
     if options.packageWeightsPath is not None and not os.path.isfile(options.packageWeightsPath):
         logger.error("Given input Weights file is not a file:"+options.packageWeightsPath)
+        errorFlag = True
+
+    if options.pkgJsonInput is not None and not os.path.isfile(options.pkgJsonInput):
+        logger.error("Given input packages file is not a file:"+options.pkgJsonInput)
         errorFlag = True
 
     if options.installPackage:
@@ -175,6 +180,9 @@ def main():
             pkgManager.buildToolChainPackages(options.buildThreads)
         elif options.installPackage:
             buildAPackage(package, options.buildThreads, options.pkgBuildType)
+        elif options.pkgJsonInput:
+            buildPackagesInJson(logger, options.buildThreads, pkgInfoJsonFile,
+                                     options.pkgJsonInput, options.pkgBuildType)
         else:
             buildPackagesForAllSpecs(logger, options.buildThreads, pkgInfoJsonFile,
                                      options.pkgBuildType)
@@ -194,13 +202,24 @@ def buildAPackage(package, buildThreads, pkgBuildType):
         constants.setTestForceRPMS(copy.copy(listPackages))
     pkgManager.buildPackages(listPackages, buildThreads, pkgBuildType)
 
+def buildPackagesInJson(logger, buildThreads, pkgInfoJsonFile, pkgJsonInput, pkgBuildType):
+    listPackages = []
+    with open(pkgJsonInput) as jsonData:
+        pkg_list_json = json.load(jsonData)
+        listPackages = pkg_list_json["packages"]
+    if constants.rpmCheck:
+        constants.setTestForceRPMS(copy.copy(listPackages))
+    pkgManager = PackageManager(pkgBuildType=pkgBuildType)
+    pkgManager.buildPackages(listPackages, buildThreads, pkgBuildType)
+
+    # Generating package info file which is required by installer
+    logger.debug("Writing Package info to the file:" + pkgInfoJsonFile)
+    pkgInfo = PackageInfo()
+    pkgInfo.loadPackagesData()
+    pkgInfo.writePkgListToFile(pkgInfoJsonFile)
 
 def buildPackagesForAllSpecs(logger, buildThreads, pkgInfoJsonFile, pkgBuildType):
     listPackages = SPECS.getData().getListPackages()
-
-    logger.debug("List of all packages :")
-    logger.debug(listPackages)
-    logger.info("")
     if constants.rpmCheck:
         constants.setTestForceRPMS(copy.copy(listPackages))
     pkgManager = PackageManager(pkgBuildType=pkgBuildType)
@@ -217,7 +236,7 @@ def get_packages_with_build_options(pkg_build_options_file):
     if os.path.exists(pkg_build_options_file):
         with open(pkg_build_options_file) as jsonData:
             pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
-            constants.setBuidOptions(pkg_build_option_json)
+            constants.setBuildOptions(pkg_build_option_json)
 
 def get_all_package_names(build_install_option):
     base_path = os.path.dirname(build_install_option)

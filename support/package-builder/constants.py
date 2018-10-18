@@ -609,5 +609,5 @@ class constants(object):
         constants.userDefinedMacros[macroName] = macroValue
 
     @staticmethod
-    def setBuidOptions(options):
+    def setBuildOptions(options):
         constants.buildOptions = options
