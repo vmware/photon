@@ -79,6 +79,7 @@ class ToolChainUtils(object):
 
     def buildCoreToolChainPackages(self):
         self.logger.info("Step 1 : Building the core toolchain packages.....")
+        self.logger.info(constants.listCoreToolChainPackages)
         self.logger.info("")
         chrootID = None
         pkgCount = 0

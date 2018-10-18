@@ -26,7 +26,10 @@ class Logger(object):
             # create console handler
             ch = logging.StreamHandler()
             fhformatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
-            chformatter = logging.Formatter('%(message)s')
+            if loglevel=="debug":
+                chformatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
+            else:
+                chformatter = logging.Formatter('%(message)s')
             # add formatter to handler
             fhandler.setFormatter(fhformatter)
             #fhandler.setLevel(logging.DEBUG)

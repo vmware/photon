@@ -51,7 +51,13 @@ class PackageManager(object):
             #TODO image name constants.buildContainerImageName
             if pkgCount > 0 or not self.dockerClient.images.list("photon_build_container:latest"):
                 self._createBuildContainer()
+        self.logger.info("Step 2 : Building stage 2 of the toolchain...")
+        self.logger.info(constants.listToolChainPackages)
+        self.logger.info("")
         self._buildGivenPackages(constants.listToolChainPackages, buildThreads)
+        self.logger.info("The entire toolchain is now available")
+        self.logger.info(45 * '-')
+        self.logger.info("")
         if self.pkgBuildType == "container":
             # Stage 2 build container
             #TODO: rebuild container only if anything in listToolChainPackages was built
@@ -67,6 +73,9 @@ class PackageManager(object):
             self._buildGivenPackages(listPackages, buildThreads)
         else:
             self.buildToolChainPackages(buildThreads)
+            self.logger.info("Step 3 : Building the following package(s) and dependencies...")
+            self.logger.info(listPackages)
+            self.logger.info("")
             self._buildGivenPackages(listPackages, buildThreads)
         self.logger.info("Package build has been completed")
         self.logger.info("")
@@ -133,7 +142,6 @@ class PackageManager(object):
             if (pkg in self.listOfPackagesAlreadyBuilt and
                     not constants.rpmCheck):
                 listPackagesToBuild.remove(pkg)
-
         if not self._readPackageBuildData(listPackagesToBuild):
             return False
         return True
@@ -178,6 +186,12 @@ class PackageManager(object):
             self.logger.error("Unable to set paramaters. Terminating the package manager.")
             raise Exception("Unable to set paramaters")
 
+        listBasePackageNamesAndVersions = list(map(lambda x:SPECS.getData().getBasePkg(x), listPackageNamesAndVersions))
+        listPackagesToBuild = list((set(listBasePackageNamesAndVersions) - set(alreadyBuiltRPMS)))
+        if listPackagesToBuild:
+            self.logger.info("List of packages yet to be built...")
+            self.logger.info(listPackagesToBuild)
+            self.logger.info("")
         statusEvent = threading.Event()
         self._initializeScheduler(statusEvent)
         self._initializeThreadPool(statusEvent)

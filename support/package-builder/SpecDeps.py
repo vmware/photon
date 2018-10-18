@@ -27,22 +27,22 @@ def main():
     parser.add_argument("-i", "--input-type", dest="input_type", default=DEFAULT_INPUT_TYPE)
     parser.add_argument("-p", "--pkg", dest="pkg")
     parser.add_argument("-f", "--file", dest="json_file", default="packages_minimal.json")
-    parser.add_argument("-d", "--disp", dest="display_option", default=DEFAULT_DISPLAY_OPTION)
-    parser.add_argument("-s", "--spec-dir", dest="spec_dir", default=SPEC_FILE_DIR)
-    parser.add_argument("-l", "--log-dir", dest="log_dir", default=LOG_FILE_DIR)
+    parser.add_argument("-d", "--display-option", dest="display_option", default=DEFAULT_DISPLAY_OPTION)
+    parser.add_argument("-s", "--spec-path", dest="spec_path", default=SPEC_FILE_DIR)
+    parser.add_argument("-l", "--log-path", dest="log_path", default=LOG_FILE_DIR)
     parser.add_argument("-y", "--log-level", dest="log_level", default="info")
     parser.add_argument("-t", "--stage-dir", dest="stage_dir", default="../../stage")
     parser.add_argument("-a", "--input-data-dir", dest="input_data_dir", default="../../common/data/")
     parser.add_argument("-o", "--output-dir", dest="output_dir", default="../../stage/common/data")
     options = parser.parse_args()
 
-    constants.setSpecPath(options.spec_dir)
-    constants.setLogPath(options.log_dir)
+    constants.setSpecPath(options.spec_path)
+    constants.setLogPath(options.log_path)
     constants.setLogLevel(options.log_level)
     constants.initialize()
 
     cmdUtils = CommandUtils()
-    logger = Logger.getLogger("SpecDeps", options.log_dir, options.log_level)
+    logger = Logger.getLogger("SpecDeps", options.log_path, options.log_level)
 
     if not os.path.isdir(options.output_dir):
         cmdUtils.runCommandInShell2("mkdir -p "+options.output_dir)
@@ -50,7 +50,7 @@ def main():
     if not options.input_data_dir.endswith('/'):
         options.input_data_dir += '/'
     try:
-        specDeps = SpecDependencyGenerator(options.log_dir, options.log_level)
+        specDeps = SpecDependencyGenerator(options.log_path, options.log_level)
 
         if options.input_type == "remove-upward-deps":
             whoNeedsList = specDeps.process("get-upward-deps", options.pkg, options.display_option)

@@ -47,7 +47,7 @@ class PackageInfo(object):
                         self.pkgList[rpmPkg] = listPkgAttributes
                         self.logger.debug("Added " + rpmPkg + " rpm package to the list")
                     else:
-                        self.logger.error("Missing rpm file for package:" + rpmPkg)
+                        self.logger.debug("Missing rpm file for package:" + rpmPkg)
 
     def writePkgListToFile(self, fileName):
         self.logger.debug("Writing package list to the json file")

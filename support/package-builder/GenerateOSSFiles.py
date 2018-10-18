@@ -33,7 +33,7 @@ def main():
                         default=False, action="store_true")
     parser.add_argument("-y", "--generate-yaml-files", dest="generateYamlFiles",
                         default=False, action="store_true")
-    parser.add_argument("-d",  "--dist", dest="dist",
+    parser.add_argument("-d",  "--dist-tag", dest="dist",
                         default="")
 
     options = parser.parse_args()
