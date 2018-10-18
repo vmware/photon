@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.18.9
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -373,6 +373,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Oct 16 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.18.9-5
+-   Change in config to enable drivers for zigbee and GPS
 *   Fri Oct 12 2018 Ajay Kaher <akaher@vmware.com> 4.18.9-4
 -   Enable LAN78xx for aarch64 rpi3
 *   Fri Oct 5 2018 Ajay Kaher <akaher@vmware.com> 4.18.9-3
