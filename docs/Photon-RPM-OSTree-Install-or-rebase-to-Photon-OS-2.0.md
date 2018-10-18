@@ -26,14 +26,15 @@ The OS name is the same (Photon), so the content in /var and /etc will be transf
 1. To install fresh, deploy a Photon 1.0 Rev2 host default, as described in [Chapter 2](Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.md). Of course, if you already have an existing Photon OS 1.0 host that you want to move to 2.0, skip this step.
 2. Edit /ostree/repo/config and substitute the url, providing the IP address for the Photon OS 2.0 RPM-OSTree server installed above. This was explained in [Chapter 10](Photon-RPM-OSTree-10-Remotes.md#102-switching-repositories).  
 ostree should confirm that is the updated server IP for the "photon" remote.
-```
-root@ostree-host [ ~ ]# ostree remote show-url photon
-http://10.118.101.180
-```
+
+    ```
+    root@ostree-host [ ~ ]# ostree remote show-url photon
+    http://10.118.101.180
+    ```
 3. Rebase your host to the new 2.0 server and Refspec.
+ 
 ```
 root@ostree-host [ ~ ]# rpm-ostree rebase photon/2.0/x86_64/minimal
-
 549 metadata, 2654 content objects fetched; 119853 KiB transferred in 17 seconds
 Copying /etc changes: 6 modified, 0 removed, 14 added
 Transaction complete; bootconfig swap: yes deployment count change: 1
@@ -172,7 +173,9 @@ root@ostree-host [ ~ ]# rpm-ostree status
   2017-08-31 18:19:36     2.0_minimal       f4497b1948     photon     photon:photon/2.0/x86_64/minimal
 * 2017-01-11 02:18:42     1.0_minimal.1     4a21972b29     photon     photon:photon/1.0/x86_64/minimal
 ```
+
 That's it! You may now reboot to the new Photon OS 2.0 image. The updated ostree and rpm-ostree packages have a slightly changed output format:
+
 ```
 root@ph2-ostree-host [ ~ ]# rpm-ostree status
 State: idle
