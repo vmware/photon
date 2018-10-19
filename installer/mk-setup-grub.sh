@@ -50,7 +50,6 @@ configfile ${BOOT_DIRECTORY}grub2/grub.cfg
 EOF
     efibootmgr --create --remove-dups --disk "$HDD" --part 1 --loader "/EFI/Boot/$EXE_NAME" --label Photon --verbose >&2
     umount $BUILDROOT/boot/efi
-    umount -f $BUILDROOT/boot/efi
 }
 
 grub_mbr_install()
@@ -92,6 +91,17 @@ ln -sfv grub2 $BUILDROOT/boot/grub
 command -v grub-install >/dev/null 2>&1 && grubInstallCmd="grub-install" && { echo >&2 "Found grub-install"; }
 command -v grub2-install >/dev/null 2>&1 && grubInstallCmd="grub2-install" && { echo >&2 "Found grub2-install"; }
 
+if [ "$BOOTMODE" == "bios" ]; then
+    if [ -z $grubInstallCmd ]; then
+        echo "Unable to find grub install command"
+        exit 1
+    fi
+    grub_mbr_install
+fi
+if [ "$BOOTMODE" == "efi" ]; then
+    grub_efi_install
+fi
+
 rm -rf ${BUILDROOT}/boot/grub2/fonts
 cp boot/ascii.pf2 ${BUILDROOT}/boot/grub2/
 mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
@@ -103,19 +113,6 @@ cp boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
 EXTRA_PARAMS=""
 if [[ $HDD == *"nvme"* ]]; then
     EXTRA_PARAMS=rootwait
-fi
-
-if [ $ARCH != "aarch64" ]; then
-    if [ "$BOOTMODE" == "bios" ]; then
-        if [ -z $grubInstallCmd ]; then
-            echo "Unable to find grub install command"
-            exit 1
-        fi
-        grub_mbr_install
-    fi
-    if [ "$BOOTMODE" == "efi" ]; then
-        grub_efi_install
-    fi
 fi
 
 cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
@@ -160,8 +157,3 @@ EOF
 rm -rf "$BUILDROOT"/tools
 rm -rf "$BUILDROOT"/RPMS
 
-if [ $ARCH == "aarch64" ]; then
-    if [ "$BOOTMODE" == "efi" ]; then
-        grub_efi_install
-    fi
-fi
