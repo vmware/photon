@@ -22,6 +22,8 @@ all the arugments and return values from the system calls. This is useful in deb
 %build
 %configure \
 	--prefix=%{_prefix} \
+	--enable-mpers=no  \
+	--enable-arm-oabi \
 
 # to resolve build issue with glibc-2.26
 sed -i 's/struct ucontext/ucontext_t/g' linux/x86_64/arch_sigreturn.c
