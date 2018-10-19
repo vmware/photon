@@ -1,7 +1,7 @@
-%define sourcever 3220000
+%define sourcever 3250100
 Summary:    A portable, high level programming interface to various calling conventions
 Name:           sqlite
-Version:        3.22.0
+Version:        3.25.1
 Release:        1%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
@@ -9,13 +9,13 @@ Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sqlite.org/2018/%{name}-autoconf-%{sourcever}.tar.gz
-%define sha1    sqlite=2fb24ec12001926d5209d2da90d252b9825366ac
+%define sha1    sqlite=1d494ca2355ffe8ddbeea7cf615ef61122fe421e
 Obsoletes:      sqlite-autoconf
 Requires:       sqlite-libs = %{version}-%{release}
 Provides:       sqlite3
 %description
 This package contains most of the static files that comprise the
-www.sqlite.org website including all of the SQL Syntax and the 
+www.sqlite.org website including all of the SQL Syntax and the
 C/C++ interface specs and other miscellaneous documentation.
 
 %package devel
@@ -39,16 +39,13 @@ The sqlite3 library.
 %setup -q -n %{name}-autoconf-%{sourcever}
 
 %build
-./configure \
+%configure \
     CFLAGS="%{optflags}"                \
     CXXFLAGS="%{optflags}               \
     -DSQLITE_ENABLE_FTS3=1              \
     -DSQLITE_ENABLE_COLUMN_METADATA=1   \
     -DSQLITE_ENABLE_UNLOCK_NOTIFY=1     \
     -DSQLITE_SECURE_DELETE=1"           \
-    --prefix=%{_prefix}                 \
-    --bindir=%{_bindir}                 \
-    --libdir=%{_libdir}                 \
     --disable-static
 make
 %install
@@ -88,6 +85,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0.8.6
 
 %changelog
+*   Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 3.25.1-1
+-   Upgrade to version 3.25.1
 *   Tue Feb 20 2018 Xiaolin Li <xiaolinl@vmware.com> 3.22.0-1
 -   Upgrade to version 3.22.0
 *   Fri Nov 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.21.0-1
@@ -101,7 +100,7 @@ rm -rf %{buildroot}/*
 -   Package rename: sqlite-autoconf -> sqlite
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.11.0-4
 -   Added -devel and -libs subpackages
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 3.11.0-3
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 3.11.0-3
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.11.0-2
 -   GA - Bump release of all rpms
@@ -109,5 +108,5 @@ rm -rf %{buildroot}/*
 -   Updated to version 3.11.0
 *   Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> - 3.8.3.1-2
 -   Fix versioning
-*   Mon Oct 7 2014 Divya Thaluru <dthaluru@vmware.com> 3080301-1
+*   Tue Oct 7 2014 Divya Thaluru <dthaluru@vmware.com> 3080301-1
 -   Initial build. First version
