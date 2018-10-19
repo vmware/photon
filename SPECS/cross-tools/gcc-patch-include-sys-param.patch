@@ -1,0 +1,10 @@
+--- a/libmpx/mpxrt/mpxrt-utils.c	2018-09-30 11:01:34.114661505 -0700
++++ b/libmpx/mpxrt/mpxrt-utils.c	2018-09-30 11:02:21.979466576 -0700
+@@ -46,6 +46,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <limits.h>
++#include <sys/param.h>
+ #include <pthread.h>
+ #include "mpxrt-utils.h"
+ 
