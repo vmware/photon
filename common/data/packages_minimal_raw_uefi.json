@@ -1,0 +1,15 @@
+{
+    "packages":["glibc", "zlib", "filesystem",
+                "pkg-config", "bash", "bzip2", "shadow", "procps-ng", "iana-etc", "coreutils", "bc", "libtool", "net-tools",
+                "findutils", "xz", "iproute2", "util-linux", "kmod", "linux", "ca-certificates", "curl", "iptables", "Linux-PAM",
+                "systemd", "dbus", "file", "e2fsprogs", "rpm","gawk","cloud-utils","gptfdisk",
+                "openssh", "gdbm",
+                "photon-release", "photon-repos",
+                "sed", "grep", "cpio", "gzip", "vim", "libdb", "tdnf",
+                "open-vm-tools",
+                "docker","bridge-utils",
+                "cloud-init",
+                "krb5", "which", "tzdata", "motd", "gdbm"]
+}
+
+

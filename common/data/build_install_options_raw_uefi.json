@@ -1,0 +1,14 @@
+{
+    "minimal" : {
+        "title" : "Photon Minimal raw generic uefi",
+        "file" : "packages_minimal_raw_uefi.json",
+        "visible" : true,
+        "include" : []
+    },
+    "uefi" : {
+        "title" : "Photon UEFI packages",
+        "file" : "packages_uefi.json",
+        "visible" : false,
+        "include" : ["minimal"]
+    }
+}
