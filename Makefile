@@ -332,7 +332,23 @@ cloud-image-all: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(IMGCONVERTER) $(P
 	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
 	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova_micro $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
 
+DOCKER_ARCH := $(shell uname -m)
 photon-docker-image:
+ifeq ($(DOCKER_ARCH), aarch64)
+	$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)
+	$(info For ARM)
+	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon-aarch64
+	sudo docker run \
+		-it \
+		--rm \
+		--privileged \
+		--net=host \
+		-e PHOTON_BUILD_NUMBER=$(PHOTON_BUILD_NUMBER) \
+		-e PHOTON_RELEASE_VERSION=$(PHOTON_RELEASE_VERSION) \
+		-v `pwd`:/workspace \
+		photon-build \
+		./support/dockerfiles/photon-aarch64/make-docker-image.sh tdnf
+else
 	$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)
 	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon
 	sudo docker run \
@@ -345,6 +361,7 @@ photon-docker-image:
 		-v `pwd`:/workspace \
 		photon-build \
 		./support/dockerfiles/photon/make-docker-image.sh tdnf
+endif
 
 k8s-docker-images: start-docker photon-docker-image
 	mkdir -p $(PHOTON_STAGE)/docker_images && \
