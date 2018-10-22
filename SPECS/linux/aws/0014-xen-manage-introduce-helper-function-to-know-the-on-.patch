@@ -15,7 +15,7 @@ Reviewed-by: Sebastian Biemueller <sbiemue@amazon.com>
 Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
 Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 CR: https://cr.amazon.com/r/8273190/
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/xen/manage.c  | 15 +++++++++++++++
  include/xen/xen-ops.h |  4 ++++

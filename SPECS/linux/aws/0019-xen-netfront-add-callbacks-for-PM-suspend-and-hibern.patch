@@ -24,7 +24,7 @@ Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
 CR: https://cr.amazon.com/r/8297632
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/net/xen-netfront.c | 97 +++++++++++++++++++++++++++++++++++++++++++++-
  1 file changed, 96 insertions(+), 1 deletion(-)

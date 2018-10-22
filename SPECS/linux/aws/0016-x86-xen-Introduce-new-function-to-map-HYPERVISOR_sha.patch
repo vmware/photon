@@ -22,7 +22,7 @@ Reviewed-by: Sebastian Biemueller <sbiemue@amazon.com>
 Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
 Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 CR: https://cr.amazon.com/r/8273203/
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  arch/x86/xen/enlighten_hvm.c | 7 +++++++
  arch/x86/xen/xen-ops.h       | 1 +

@@ -31,26 +31,27 @@ Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
 Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 CR: https://cr.amazon.com/r/8273209/
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/xen/time.c    | 28 +++++++++++++++++++++++++++-
  include/xen/xen-ops.h |  2 ++
  2 files changed, 29 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/xen/time.c b/drivers/xen/time.c
-index a63fedbdcbe9..94cc2b2733a6 100644
+index 3e741cd..896f231 100644
 --- a/drivers/xen/time.c
 +++ b/drivers/xen/time.c
-@@ -19,6 +19,8 @@
+@@ -23,6 +23,9 @@ static DEFINE_PER_CPU(struct vcpu_runstate_info, xen_runstate);
  
- /* runstate info updated by Xen */
- static DEFINE_PER_CPU(struct vcpu_runstate_info, xen_runstate);
+ static DEFINE_PER_CPU(u64[4], old_runstate_time);
+ 
 +static DEFINE_PER_CPU(u64, xen_prev_steal_clock);
 +static DEFINE_PER_CPU(u64, xen_steal_clock_offset);
- 
++
  /* return an consistent snapshot of 64-bit time/counter value */
  static u64 get64(const u64 *p)
-@@ -81,7 +83,7 @@ bool xen_vcpu_stolen(int vcpu)
+ {
+@@ -149,7 +152,7 @@ bool xen_vcpu_stolen(int vcpu)
  	return per_cpu(xen_runstate, vcpu).state == RUNSTATE_runnable;
  }
  
@@ -59,7 +60,7 @@ index a63fedbdcbe9..94cc2b2733a6 100644
  {
  	struct vcpu_runstate_info state;
  
-@@ -89,6 +91,30 @@ u64 xen_steal_clock(int cpu)
+@@ -157,6 +160,30 @@ u64 xen_steal_clock(int cpu)
  	return state.time[RUNSTATE_runnable] + state.time[RUNSTATE_offline];
  }
  
@@ -91,11 +92,11 @@ index a63fedbdcbe9..94cc2b2733a6 100644
  {
  	struct vcpu_register_runstate_memory_area area;
 diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
-index 90c2b41eb4f3..ad4100683cf4 100644
+index d7503ec..cb98070 100644
 --- a/include/xen/xen-ops.h
 +++ b/include/xen/xen-ops.h
-@@ -35,6 +35,8 @@ void xen_setup_runstate_info(int cpu);
- void xen_time_setup_guest(void);
+@@ -36,6 +36,8 @@ void xen_time_setup_guest(void);
+ void xen_manage_runstate_time(int action);
  void xen_get_runstate_snapshot(struct vcpu_runstate_info *res);
  u64 xen_steal_clock(int cpu);
 +void xen_save_steal_clock(int cpu);

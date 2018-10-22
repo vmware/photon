@@ -25,27 +25,27 @@ Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
 
 CR: https://cr.amazon.com/r/8309443
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/block/xen-blkfront.c | 26 ++++++++++++++++++--------
  1 file changed, 18 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-index a5d0266ee1ba..cdbc2baa67d5 100644
+index 792e7d2..23ebb7e 100644
 --- a/drivers/block/xen-blkfront.c
 +++ b/drivers/block/xen-blkfront.c
-@@ -142,6 +142,10 @@ static unsigned int xen_blkif_max_queues = 4;
- module_param_named(max_queues, xen_blkif_max_queues, uint, S_IRUGO);
+@@ -141,6 +141,10 @@ static unsigned int xen_blkif_max_queues = 4;
+ module_param_named(max_queues, xen_blkif_max_queues, uint, 0444);
  MODULE_PARM_DESC(max_queues, "Maximum number of hardware queues/rings used per virtual disk");
  
 +static unsigned int xen_blkif_feature_persistent = 1;
-+module_param_named(persistent_grants, xen_blkif_feature_persistent, int, S_IRUGO);
++module_param_named(persistent_grants, xen_blkif_feature_persistent, int, 0444);
 +MODULE_PARM_DESC(persistent_grants, "Enable persistent grant table references (default is 1)");
 +
  /*
   * Maximum order of pages to be used for the shared ring between front and
   * backend, 4KB page granularity is used.
-@@ -2009,11 +2013,14 @@ static int talk_to_blkback(struct xenbus_device *dev,
+@@ -2008,11 +2012,14 @@ static int talk_to_blkback(struct xenbus_device *dev,
  		message = "writing protocol";
  		goto abort_transaction;
  	}
@@ -65,7 +65,7 @@ index a5d0266ee1ba..cdbc2baa67d5 100644
  
  	err = xenbus_transaction_end(xbt, 0);
  	if (err) {
-@@ -2506,9 +2513,12 @@ static void blkfront_gather_backend_features(struct blkfront_info *info)
+@@ -2510,9 +2517,12 @@ static void blkfront_gather_backend_features(struct blkfront_info *info)
  	if (xenbus_read_unsigned(info->xbdev->otherend, "feature-discard", 0))
  		blkfront_setup_discard(info);
  
