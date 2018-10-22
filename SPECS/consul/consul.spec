@@ -1,14 +1,14 @@
 Summary:        Consul is a tool for service discovery and configuration.
 Name:           consul
-Version:        1.1.0
-Release:        2%{?dist}
+Version:        1.2.3
+Release:        1%{?dist}
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:		https://github.com/hashicorp/consul/archive/v%{version}.tar.gz
 Source0:	%{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}.tar.gz=e3a4f1047acb7c831bf772c3d26c4d5c0778df69
+%define sha1 %{name}-%{version}.tar.gz=c507e1c0b31fa02dd5ba3f8a3a981e6f7b0c464d
 Source1:        %{name}.service
 BuildRequires:  unzip
 BuildRequires:  systemd
@@ -101,6 +101,8 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/%{name}.d
 
 %changelog
+*  Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.2.3-1
+-  Upgraded to version 1.2.3
 *  Mon Jul 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
 -  Modify command line parameters in .service file.
 *  Thu Jun 28 2018 Ankit Jain <ankitja@vmware.com> 1.1.0-1
