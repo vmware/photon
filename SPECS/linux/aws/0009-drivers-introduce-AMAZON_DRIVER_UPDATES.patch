@@ -15,7 +15,7 @@ Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 Reviewed-by: Anchal Agarwal <anchalag@amazon.com>
 Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
 CR: https://cr.amazon.com/r/8244644/
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/Kconfig         |  2 ++
  drivers/Makefile        |  3 +++
@@ -26,30 +26,30 @@ Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
  create mode 100644 drivers/amazon/Makefile
 
 diff --git a/drivers/Kconfig b/drivers/Kconfig
-index 1d7af3c2ff27..3c5ebdcea0e8 100644
+index 95b9ccc..9553a18 100644
 --- a/drivers/Kconfig
 +++ b/drivers/Kconfig
-@@ -209,4 +209,6 @@ source "drivers/tee/Kconfig"
+@@ -217,4 +217,6 @@ source "drivers/siox/Kconfig"
  
- source "drivers/mux/Kconfig"
+ source "drivers/slimbus/Kconfig"
  
 +source "drivers/amazon/Kconfig"
 +
  endmenu
 diff --git a/drivers/Makefile b/drivers/Makefile
-index 5f5ccdbad21a..786e6c558881 100644
+index 24cd470..a7422af 100644
 --- a/drivers/Makefile
 +++ b/drivers/Makefile
-@@ -183,3 +183,6 @@ obj-$(CONFIG_FPGA)		+= fpga/
- obj-$(CONFIG_FSI)		+= fsi/
- obj-$(CONFIG_TEE)		+= tee/
+@@ -185,3 +185,6 @@ obj-$(CONFIG_TEE)		+= tee/
  obj-$(CONFIG_MULTIPLEXER)	+= mux/
+ obj-$(CONFIG_UNISYS_VISORBUS)	+= visorbus/
+ obj-$(CONFIG_SIOX)		+= siox/
 +
 +# Amazon driver updates
 +obj-$(CONFIG_AMAZON_DRIVER_UPDATES)	+= amazon/
 diff --git a/drivers/amazon/Kconfig b/drivers/amazon/Kconfig
 new file mode 100644
-index 000000000000..10ff3828e250
+index 0000000..10ff382
 --- /dev/null
 +++ b/drivers/amazon/Kconfig
 @@ -0,0 +1,15 @@
@@ -70,7 +70,7 @@ index 000000000000..10ff3828e250
 +endif # AMAZON_DRIVER_UPDATES
 diff --git a/drivers/amazon/Makefile b/drivers/amazon/Makefile
 new file mode 100644
-index 000000000000..6b4996dcbe52
+index 0000000..6b4996d
 --- /dev/null
 +++ b/drivers/amazon/Makefile
 @@ -0,0 +1,3 @@
