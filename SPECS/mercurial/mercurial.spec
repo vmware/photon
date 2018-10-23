@@ -3,7 +3,7 @@
 Summary:        A free, distributed source control management tool.
 Name:           mercurial
 Version:        4.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            https://www.mercurial-scm.org
 Group:          System Environment/Security
@@ -29,7 +29,7 @@ make %{?_smp_mflags} build
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 mkdir -p %{buildroot}/%{_bindir}
-python2 setup.py install --skip-build --root %{buildroot}
+python2 setup.py build_ext --no-zstd install --skip-build --root %{buildroot}
 
 cat >> %{buildroot}/.hgrc << "EOF"
 [ui]
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %{python2_sitelib}/*
 
 %changelog
+*   Tue Oct 23 2018 Tapas Kundu <tkundu@vmware.com> 4.7.1-2
+-   Control building zstd subpackage to build with mercurial.
 *   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.7.1-1
 -   Update to version 4.7.1
 *   Tue Oct 17 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
