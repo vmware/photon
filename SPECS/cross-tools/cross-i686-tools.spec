@@ -11,7 +11,7 @@
 Name:    cross-x86-tools
 Summary: VMware Photon Cross Compiler for X86
 Version: 1.0.0
-Release: 1%{?_dist}
+Release: 2%{?_dist}
 Group:   Compiler
 Vendor:  VMware, Inc.
 Distribution: Photon
@@ -100,7 +100,7 @@ Requires: xz-devel >= 5.2.3
 %define cross_prefix /opt/cross
 %define target_arch i686-linux-gnu
 %define target_linux_arch x86
-%define _sysroot /target
+%define sysroot /target
 %define _bindir %{cross_prefix}/bin
 %define _archdir %{cross_prefix}/%{target_arch}
 %define _includedir %{cross_prefix}/include
@@ -283,5 +283,7 @@ cp -av %{sysroot}/* %{buildroot}/%{sysroot}/
 %{sysroot}/*
 
 %changelog
+*    Mon Oct 22 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-2
+-    Replace _sysroot definition with sysroot
 *    Fri Oct 19 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0
 -    Initial build. First version
