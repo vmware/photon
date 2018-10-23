@@ -12,7 +12,7 @@ Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
 Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 CR: https://cr.amazon.com/r/8273214/
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/xen/events/events_base.c | 12 ++++++++++++
  include/xen/events.h             |  1 +

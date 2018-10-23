@@ -15,7 +15,7 @@ options, the introduction of new one-byte options can still
 confuse this code without the additional checks.
 
 Signed-off-by: Stefan Nuernberger <snu@amazon.com>
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  net/ipv4/cipso_ipv4.c | 10 ++++++++--
  1 file changed, 8 insertions(+), 2 deletions(-)

@@ -37,7 +37,7 @@ negotiate_mq. Subsequent calls causes kernel panic
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 Reviewed-by: Frank van der Linden <fllinden@amazon.com>
 Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/block/xen-blkfront.c | 5 -----
  1 file changed, 5 deletions(-)

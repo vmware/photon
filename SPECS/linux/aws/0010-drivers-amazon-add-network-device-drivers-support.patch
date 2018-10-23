@@ -14,7 +14,7 @@ Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 Reviewed-by: Anchal Agarwal <anchalag@amazon.com>
 Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
 CR: https://cr.amazon.com/r/8244644/
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/amazon/Makefile     | 1 +
  drivers/amazon/net/Makefile | 3 +++
