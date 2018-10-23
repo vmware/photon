@@ -3,7 +3,7 @@
 Summary:        U-Boot EFI firmware for the rpi3
 Name:		u-boot-rpi3
 Version:	2018.09
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
@@ -14,21 +14,9 @@ Source1:        rpi_3_photon_defconfig
 Patch0:		0001-XXX-openSUSE-XXX-Load-dtb-from-part.patch
 Patch1:		0004-Fix-MMC1-external-SD-slot-on-Samsun.patch
 Patch2:		0005-Fix-no-usb.patch
-BuildRequires:  bc
-BuildRequires:  openssl-devel
-BuildRequires:  python2-devel
-BuildRequires:  swig
 
 %description
-Das U-Boot (or just "U-Boot" for short) is Open Source Firmware for
-Embedded PowerPC, ARM, MIPS and x86 processors.
-
-%package doc
-Summary:        Documentation for the U-Boot Firmware
-Group:          Documentation/Other
-%description doc
-Das U-Boot (or just "U-Boot" for short) is Open Source Firmware for
-Embedded PowerPC, ARM, MIPS and x86 processors.
+U-Boot is Open Source Firmware.
 
 %prep
 %setup -q -n u-boot-%{version}
@@ -38,9 +26,8 @@ Embedded PowerPC, ARM, MIPS and x86 processors.
 
 %build
 cp %{SOURCE1} configs/
-make %{?_smp_mflags} CROSS_COMPILE= HOSTCFLAGS="$RPM_OPT_FLAGS" rpi_3_photon_defconfig
-# echo "CONFIG_OF_LIBFDT_OVERLAY=y" >> .config
-make %{?_smp_mflags} CROSS_COMPILE= HOSTCFLAGS="$RPM_OPT_FLAGS" USE_PRIVATE_LIBGG=yes
+make %{?_smp_mflags} CROSS_COMPILE= rpi_3_photon_defconfig
+make %{?_smp_mflags} CROSS_COMPILE= USE_PRIVATE_LIBGG=yes
 
 %install
 install -D -m 0644 u-boot.bin %{buildroot}/boot/esp/u-boot.bin
@@ -48,24 +35,13 @@ install -D -m 0644 u-boot.bin %{buildroot}/boot/esp/u-boot.bin
 %files
 %defattr(-,root,root)
 /boot/esp/*
-%doc Licenses/gpl-2.0.txt README
-
-%files doc
-%defattr(-,root,root)
-# Generic documents
-%doc doc/README.JFFS2 doc/README.JFFS2_NAND doc/README.commands
-%doc doc/README.autoboot doc/README.commands doc/README.console doc/README.dns
-%doc doc/README.hwconfig doc/README.nand doc/README.NetConsole doc/README.serial_multi
-%doc doc/README.SNTP doc/README.standalone doc/README.update doc/README.usb
-%doc doc/README.video doc/README.VLAN doc/README.silent doc/README.POST
-# Copy some useful kermit scripts as well
-%doc tools/kermit/dot.kermrc tools/kermit/flash_param tools/kermit/send_cmd tools/kermit/send_image
-# Now any h/w dependent Documentation
-%doc doc/README.ARM-memory-map
 
 %changelog
+*   Mon Oct 22 2018 Alexey Makhalov <amakhalov@vmware.com> 2018.09-4
+-   Remove bc, swig, python, openssl buildrequires.
+-   Remove doc subpackage.
 *   Mon Oct 15 2018 Ajay Kaher <akaher@vmware.com> 2018.09-3
--   Set bootdelay to zero in rpi_3_photon_defconfig
+-   Set bootdelay to zero.
 *   Mon Oct 08 2018 Ajay Kaher <akaher@vmware.com> 2018.09-2
 -   Disable USB to improve boot time.
 *   Thu Sep 13 2018 Michelle Wang <michellew@vmware.com> 2018.09-1
