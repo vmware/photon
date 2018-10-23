@@ -47,16 +47,16 @@ Reviewed-by: Balbir Singh <sblbir@amazon.com>
 Reviewed-by: Frank van der Linden <fllinden@amazon.com>
 
 CR: https://cr.amazon.com/r/8514427/
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  block/blk-wbt.c | 57 +++++++++++++++++++++++++--------------------------------
  1 file changed, 25 insertions(+), 32 deletions(-)
 
 diff --git a/block/blk-wbt.c b/block/blk-wbt.c
-index 5c105514bca7..99f55ad2dd49 100644
+index 4f89b28..91f7f56 100644
 --- a/block/blk-wbt.c
 +++ b/block/blk-wbt.c
-@@ -157,7 +157,7 @@ void __wbt_done(struct rq_wb *rwb, enum wbt_flags wb_acct)
+@@ -186,7 +186,7 @@ void __wbt_done(struct rq_wb *rwb, enum wbt_flags wb_acct)
  		int diff = limit - inflight;
  
  		if (!inflight || diff >= rwb->wb_background / 2)
@@ -65,7 +65,7 @@ index 5c105514bca7..99f55ad2dd49 100644
  	}
  }
  
-@@ -502,30 +502,6 @@ static inline unsigned int get_limit(struct rq_wb *rwb, unsigned long rw)
+@@ -533,30 +533,6 @@ static inline unsigned int get_limit(struct rq_wb *rwb, unsigned long rw)
  	return limit;
  }
  
@@ -96,10 +96,10 @@ index 5c105514bca7..99f55ad2dd49 100644
  /*
   * Block if we will exceed our limit, or if we are currently waiting for
   * the timer to kick off queuing again.
-@@ -535,16 +511,32 @@ static void __wbt_wait(struct rq_wb *rwb, unsigned long rw, spinlock_t *lock)
+@@ -567,16 +543,32 @@ static void __wbt_wait(struct rq_wb *rwb, enum wbt_flags wb_acct,
  	__acquires(lock)
  {
- 	struct rq_wait *rqw = get_rq_wait(rwb, current_is_kswapd());
+ 	struct rq_wait *rqw = get_rq_wait(rwb, wb_acct);
 -	DEFINE_WAIT(wait);
 +	DECLARE_WAITQUEUE(wait, current);
  
@@ -111,14 +111,13 @@ index 5c105514bca7..99f55ad2dd49 100644
 +	 */
 +	if (!rwb_enabled(rwb)) {
 +		atomic_inc(&rqw->inflight);
- 		return;
--
++		return;
 +	}
-+	
++
 +	if (!waitqueue_active(&rqw->wait)
 +		&& atomic_inc_below(&rqw->inflight, get_limit(rwb, rw)))
-+		return;
-+	
+ 		return;
+ 
 +	add_wait_queue_exclusive(&rqw->wait, &wait);
  	do {
 -		prepare_to_wait_exclusive(&rqw->wait, &wait,
@@ -135,7 +134,7 @@ index 5c105514bca7..99f55ad2dd49 100644
  			break;
  
  		if (lock) {
-@@ -555,7 +547,8 @@ static void __wbt_wait(struct rq_wb *rwb, unsigned long rw, spinlock_t *lock)
+@@ -587,7 +579,8 @@ static void __wbt_wait(struct rq_wb *rwb, enum wbt_flags wb_acct,
  			io_schedule();
  	} while (1);
  

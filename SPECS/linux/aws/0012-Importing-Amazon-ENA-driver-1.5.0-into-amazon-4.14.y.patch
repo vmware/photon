@@ -7,7 +7,7 @@ Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 Reviewed-by: Anchal Agarwal <anchalag@amazon.com>
 Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
 CR: https://cr.amazon.com/r/8244644/
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/amazon/net/ena/Makefile          |   11 +
  drivers/amazon/net/ena/ena_admin_defs.h  | 1018 ++++++++

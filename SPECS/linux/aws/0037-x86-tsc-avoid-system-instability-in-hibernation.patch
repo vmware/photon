@@ -45,7 +45,7 @@ Tested-by: Anchal Agarwal <anchalag@amazon.com>
 Signed-off-by: Eduardo Valentin <eduval@amazon.com>
 
 CR: https://cr.amazon.com/r/8440112/
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  arch/x86/kernel/tsc.c       | 29 +++++++++++++++++++++++++++++
  include/linux/sched/clock.h |  5 +++++

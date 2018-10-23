@@ -19,7 +19,7 @@ Reviewed-by: Frederick Lefebvre <fredlef@amazon.com>
 Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
 CR: https://cr.amazon.com/r/8209723/
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  include/uapi/linux/ip.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

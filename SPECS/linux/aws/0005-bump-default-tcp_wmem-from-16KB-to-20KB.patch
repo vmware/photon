@@ -18,24 +18,24 @@ Reviewed-by: Frederick Lefebvre <fredlef@amazon.com>
 Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
 CR: https://cr.amazon.com/r/8209723/
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  net/ipv4/tcp.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 7462ec7587ce..c6cce1517a50 100644
+index 238a5c3..975aae9 100644
 --- a/net/ipv4/tcp.c
 +++ b/net/ipv4/tcp.c
-@@ -3544,7 +3544,7 @@ void __init tcp_init(void)
+@@ -3857,7 +3857,7 @@ void __init tcp_init(void)
  	max_rshare = min(6UL*1024*1024, limit);
  
- 	sysctl_tcp_wmem[0] = SK_MEM_QUANTUM;
--	sysctl_tcp_wmem[1] = 16*1024;
-+	sysctl_tcp_wmem[1] = 20*1024;
- 	sysctl_tcp_wmem[2] = max(64*1024, max_wshare);
+ 	init_net.ipv4.sysctl_tcp_wmem[0] = SK_MEM_QUANTUM;
+-	init_net.ipv4.sysctl_tcp_wmem[1] = 16*1024;
++	init_net.ipv4.sysctl_tcp_wmem[1] = 20*1024;
+ 	init_net.ipv4.sysctl_tcp_wmem[2] = max(64*1024, max_wshare);
  
- 	sysctl_tcp_rmem[0] = SK_MEM_QUANTUM;
+ 	init_net.ipv4.sysctl_tcp_rmem[0] = SK_MEM_QUANTUM;
 -- 
 2.14.4
 

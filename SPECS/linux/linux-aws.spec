@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.14.67
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.18.9
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=4a6aa8d8a5190dbf1a835a5171609f02b27809e1
+%define sha1 linux=229ed4bedc5b8256bdd761845b1d7e20e1df12d7
 Source1:	config-aws
 Source2:	initramfs.trigger
 # common
@@ -20,26 +20,26 @@ Patch1:         double-tcp_mem-limits.patch
 Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
-Patch6:         x86-vmware-STA-support.patch
+Patch6:         4.18-x86-vmware-STA-support.patch
 #HyperV patches
 Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 #FIPS patches - allow some algorithms
-Patch24:        Allow-some-algo-tests-for-FIPS.patch
-Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
+Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
-Patch29:        0001-apparmor-add-base-infastructure-for-socket-mediation.patch
-Patch30:        0002-apparmor-af_unix-mediation.patch
-Patch31:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
+Patch31:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 
 # Amazon AWS
 Patch101: 0002-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch102: 0004-bump-the-default-TTL-to-255.patch
 Patch103: 0005-bump-default-tcp_wmem-from-16KB-to-20KB.patch
-Patch104: 0007-nvme-update-timeout-module-parameter-type.patch
 Patch105: 0009-drivers-introduce-AMAZON_DRIVER_UPDATES.patch
 Patch106: 0010-drivers-amazon-add-network-device-drivers-support.patch
 Patch107: 0011-drivers-amazon-introduce-AMAZON_ENA_ETHERNET.patch
@@ -59,34 +59,12 @@ Patch120: 0024-PM-hibernate-update-the-resume-offset-on-SNAPSHOT_SE.patch
 Patch121: 0025-Not-for-upstream-PM-hibernate-Speed-up-hibernation-b.patch
 Patch122: 0026-xen-blkfront-resurrect-request-based-mode.patch
 Patch123: 0027-xen-blkfront-add-persistent_grants-parameter.patch
-Patch124: 0028-ACPI-SPCR-Make-SPCR-available-to-x86.patch
 Patch125: 0029-Revert-xen-dont-fiddle-with-event-channel-masking-in.patch
-Patch126: 0030-locking-paravirt-Use-new-static-key-for-controlling-.patch
-Patch127: 0031-KVM-Introduce-paravirtualization-hints-and-KVM_HINTS.patch
-Patch128: 0032-KVM-X86-Choose-qspinlock-when-dedicated-physical-CPU.patch
-Patch129: 0033-x86-paravirt-Set-up-the-virt_spin_lock_key-after-sta.patch
-Patch130: 0034-KVM-X86-Fix-setup-the-virt_spin_lock_key-before-stat.patch
 Patch131: 0035-xen-blkfront-Fixed-blkfront_restore-to-remove-a-call.patch
-Patch132: 0036-xen-netfront-Update-features-after-registering-netde.patch
 Patch133: 0037-x86-tsc-avoid-system-instability-in-hibernation.patch
-Patch134: 0038-blk-mq-simplify-queue-mapping-schedule-with-each-pos.patch
 Patch135: 0039-blk-wbt-Avoid-lock-contention-and-thundering-herd-is.patch
-Patch136: 0040-x86-MCE-AMD-Read-MCx_MISC-block-addresses-on-any-CPU.patch
-Patch137: 0041-x86-bugs-Add-AMD-s-variant-of-SSB_NO.patch
-Patch138: 0042-x86-bugs-Add-AMD-s-SPEC_CTRL-MSR-usage.patch
-Patch139: 0043-x86-bugs-Switch-the-selection-of-mitigation-from-CPU.patch
-Patch140: 0044-x86-CPU-Rename-intel_cacheinfo.c-to-cacheinfo.c.patch
-Patch141: 0045-x86-CPU-AMD-Calculate-last-level-cache-ID-from-numbe.patch
-Patch142: 0046-x86-CPU-AMD-Fix-LLC-ID-bit-shift-calculation.patch
-Patch143: 0047-x86-bugs-Update-when-to-check-for-the-LS_CFG-SSBD-mi.patch
-Patch144: 0048-x86-bugs-Fix-the-AMD-SSBD-usage-of-the-SPEC_CTRL-MSR.patch
-Patch145: 0049-tools-power-turbostat-Read-extended-processor-family.patch
-Patch146: 0050-sched-topology-Introduce-NUMA-identity-node-sched-do.patch
-Patch147: 0051-x86-CPU-AMD-Derive-CPU-topology-from-CPUID-function-.patch
-Patch148: 0052-vmxnet3-increase-default-rx-ring-sizes.patch
-Patch149: 0053-Revert-e1000e-Separate-signaling-for-link-check-link.patch
-Patch150: 0054-e1000e-Fix-link-check-race-condition.patch
 Patch151: 0055-net-ipv4-defensive-cipso-option-parsing.patch
+Patch152: 0056-Amazon-ENA-driver-Update-to-version-1.6.0.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -115,7 +93,7 @@ The Linux package contains the Linux kernel.
 Summary:        Kernel Dev
 Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
-Requires:       python2 gawk
+Requires:       python3 gawk
 %description devel
 The Linux package contains the Linux kernel dev files
 
@@ -136,7 +114,7 @@ The Linux package contains the Linux kernel sound support
 %package docs
 Summary:        Kernel docs
 Group:          System Environment/Kernel
-Requires:       python2
+Requires:       python3
 %description docs
 The Linux package contains the Linux kernel doc files
 
@@ -174,11 +152,11 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch29 -p1
 %patch30 -p1
 %patch31 -p1
+%patch32 -p1
 
 %patch101 -p1
 %patch102 -p1
 %patch103 -p1
-%patch104 -p1
 %patch105 -p1
 %patch106 -p1
 %patch107 -p1
@@ -198,34 +176,12 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch121 -p1
 %patch122 -p1
 %patch123 -p1
-%patch124 -p1
 %patch125 -p1
-%patch126 -p1
-%patch127 -p1
-%patch128 -p1
-%patch129 -p1
-%patch130 -p1
 %patch131 -p1
-%patch132 -p1
 %patch133 -p1
-%patch134 -p1
 %patch135 -p1
-%patch136 -p1
-%patch137 -p1
-%patch138 -p1
-%patch139 -p1
-%patch140 -p1
-%patch141 -p1
-%patch142 -p1
-%patch143 -p1
-%patch144 -p1
-%patch145 -p1
-%patch146 -p1
-%patch147 -p1
-%patch148 -p1
-%patch149 -p1
-%patch150 -p1
 %patch151 -p1
+%patch152 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -399,8 +355,13 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /etc/bash_completion.d/*
 /usr/share/perf-core/strace/groups/file
 /usr/share/doc/*
+%{_libdir}/perf/examples/bpf/5sec.c
+%{_libdir}/perf/examples/bpf/empty.c
+%{_libdir}/perf/include/bpf/bpf.h
 
 %changelog
+*   Mon Oct 22 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.18.9-1
+-   Update to version 4.18.9
 *   Mon Oct 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-2
 -   Add enhancements from Amazon.
 *   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
