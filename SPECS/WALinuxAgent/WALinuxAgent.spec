@@ -1,13 +1,13 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
-Version:        2.2.14
-Release:        3%{?dist}
+Version:        2.2.22
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         photondistroadd.patch
-%define sha1 WALinuxAgent=f417009479ea7168ee0f2daa38328c167b4f874b
+%define sha1 WALinuxAgent=e8389d8f5982df5d8d59f7475df22d87c5f4d031
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -39,7 +39,7 @@ VMs in the Windows Azure cloud. This package should be installed on Linux disk
 images that are built to run in the Windows Azure environment.
 
 %prep
-%setup -q -n WALinuxAgent-2.2.14
+%setup -q -n %{name}-%{version}
 %patch0 -p1
 
 %pre -p /bin/sh
@@ -83,6 +83,8 @@ python2 setup.py check && python2 setup.py test
 /usr/lib/python2.7/site-packages/*
 
 %changelog
+* Tue Oct 23 2018 Anish Swaminathan <anishs@vmware.com> 2.2.22-1
+- Update to 2.2.22
 * Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  2.2.14-3
 - Fixed the log file directory structure
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.2.14-2

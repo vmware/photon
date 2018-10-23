@@ -1,6 +1,6 @@
-diff -rupN WALinuxAgent-2.2.14-old/azurelinuxagent/common/osutil/factory.py WALinuxAgent-2.2.14/azurelinuxagent/common/osutil/factory.py
---- WALinuxAgent-2.2.14-old/azurelinuxagent/common/osutil/factory.py	2017-06-22 16:00:39.000000000 -0700
-+++ WALinuxAgent-2.2.14/azurelinuxagent/common/osutil/factory.py	2017-07-18 13:22:05.614854350 -0700
+diff -rupN WALinuxAgent-2.2.22/azurelinuxagent/common/osutil/factory.py WALinuxAgent-2.2.22-new/azurelinuxagent/common/osutil/factory.py
+--- WALinuxAgent-2.2.22/azurelinuxagent/common/osutil/factory.py	2018-02-12 11:55:45.000000000 -0800
++++ WALinuxAgent-2.2.22-new/azurelinuxagent/common/osutil/factory.py	2018-02-28 17:24:49.320447232 -0800
 @@ -21,6 +21,7 @@ from azurelinuxagent.common.version impo
  from .default import DefaultOSUtil
  from .arch import ArchUtil
@@ -9,19 +9,19 @@ diff -rupN WALinuxAgent-2.2.14-old/azurelinuxagent/common/osutil/factory.py WALi
  from .coreos import CoreOSUtil
  from .debian import DebianOSUtil
  from .freebsd import FreeBSDOSUtil
-@@ -44,6 +45,9 @@ def get_osutil(distro_name=DISTRO_NAME,
-     if distro_name == "clear linux software for intel architecture":
+@@ -46,6 +47,9 @@ def get_osutil(distro_name=DISTRO_NAME,
+             or distro_name == "clear linux software for intel architecture":
          return ClearLinuxUtil()
-
+ 
 +    if distro_name == "photonos":
 +        return PhotonOSUtil()
 +
      if distro_name == "ubuntu":
-         if Version(distro_version) == Version("12.04") or Version(distro_version) == Version("12.10"):
+         if Version(distro_version) in [Version("12.04"), Version("12.10")]:
              return Ubuntu12OSUtil()
-diff -rupN WALinuxAgent-2.2.14-old/azurelinuxagent/common/osutil/photonos.py WALinuxAgent-2.2.14/azurelinuxagent/common/osutil/photonos.py
---- WALinuxAgent-2.2.14-old/azurelinuxagent/common/osutil/photonos.py	1969-12-31 16:00:00.000000000 -0800
-+++ WALinuxAgent-2.2.14/azurelinuxagent/common/osutil/photonos.py	2017-07-18 12:29:32.146925587 -0700
+diff -rupN WALinuxAgent-2.2.22/azurelinuxagent/common/osutil/photonos.py WALinuxAgent-2.2.22-new/azurelinuxagent/common/osutil/photonos.py
+--- WALinuxAgent-2.2.22/azurelinuxagent/common/osutil/photonos.py	1969-12-31 16:00:00.000000000 -0800
++++ WALinuxAgent-2.2.22-new/azurelinuxagent/common/osutil/photonos.py	2018-02-28 17:24:49.320447232 -0800
 @@ -0,0 +1,88 @@
 +#
 +# Copyright 2017 Microsoft Corporation
@@ -111,22 +111,22 @@ diff -rupN WALinuxAgent-2.2.14-old/azurelinuxagent/common/osutil/photonos.py WAL
 +        except IOError as e:
 +            raise OSUtilError("Failed to delete root password:{0}".format(e))
 +        pass
-diff -rupN WALinuxAgent-2.2.14-old/azurelinuxagent/common/version.py WALinuxAgent-2.2.14/azurelinuxagent/common/version.py
---- WALinuxAgent-2.2.14-old/azurelinuxagent/common/version.py	2017-06-22 16:00:39.000000000 -0700
-+++ WALinuxAgent-2.2.14/azurelinuxagent/common/version.py	2017-07-21 17:42:54.424578877 -0700
+diff -rupN WALinuxAgent-2.2.22/azurelinuxagent/common/version.py WALinuxAgent-2.2.22-new/azurelinuxagent/common/version.py
+--- WALinuxAgent-2.2.22/azurelinuxagent/common/version.py	2018-02-12 11:55:45.000000000 -0800
++++ WALinuxAgent-2.2.22-new/azurelinuxagent/common/version.py	2018-02-28 17:24:49.320447232 -0800
 @@ -98,6 +98,9 @@ def get_distro():
      if os.path.exists("/etc/euleros-release"):
          osinfo[0] = "euleros"
-
+ 
 +    if os.path.exists("/etc/photon-release"):
 +        osinfo[0] = "photonos"
 +
      # The platform.py lib has issue with detecting BIG-IP linux distribution.
      # Merge the following patch provided by F5.
      if os.path.exists("/shared/vadc"):
-diff -rupN WALinuxAgent-2.2.14-old/config/photonos/waagent.conf WALinuxAgent-2.2.14/config/photonos/waagent.conf
---- WALinuxAgent-2.2.14-old/config/photonos/waagent.conf	1969-12-31 16:00:00.000000000 -0800
-+++ WALinuxAgent-2.2.14/config/photonos/waagent.conf	2017-07-17 16:21:35.248562852 -0700
+diff -rupN WALinuxAgent-2.2.22/config/photonos/waagent.conf WALinuxAgent-2.2.22-new/config/photonos/waagent.conf
+--- WALinuxAgent-2.2.22/config/photonos/waagent.conf	1969-12-31 16:00:00.000000000 -0800
++++ WALinuxAgent-2.2.22-new/config/photonos/waagent.conf	2018-02-28 17:24:49.320447232 -0800
 @@ -0,0 +1,81 @@
 +#
 +# Microsoft Azure Linux Agent Configuration
@@ -144,10 +144,10 @@ diff -rupN WALinuxAgent-2.2.14-old/config/photonos/waagent.conf WALinuxAgent-2.2
 +Role.TopologyConsumer=None
 +
 +# Enable instance creation
-+Provisioning.Enabled=y
++Provisioning.Enabled=n
 +
 +# Rely on cloud-init to provision
-+Provisioning.UseCloudInit=n
++Provisioning.UseCloudInit=y
 +
 +# Password authentication for root account will be unavailable.
 +Provisioning.DeleteRootPassword=y
@@ -171,7 +171,7 @@ diff -rupN WALinuxAgent-2.2.14-old/config/photonos/waagent.conf WALinuxAgent-2.2
 +Provisioning.AllowResetSysUser=n
 +
 +# Format if unformatted. If 'n', resource disk will not be mounted.
-+ResourceDisk.Format=y
++ResourceDisk.Format=n
 +
 +# File system on the resource disk
 +# Typically ext3 or ext4. FreeBSD images should use 'ufs2' here.
@@ -209,14 +209,14 @@ diff -rupN WALinuxAgent-2.2.14-old/config/photonos/waagent.conf WALinuxAgent-2.2
 +# handling until inVMArtifactsProfile.OnHold is false.
 +# Default is disabled
 +# EnableOverProvisioning=n
-diff -rupN WALinuxAgent-2.2.14-old/init/photonos/waagent.service WALinuxAgent-2.2.14/init/photonos/waagent.service
---- WALinuxAgent-2.2.14-old/init/photonos/waagent.service	1969-12-31 16:00:00.000000000 -0800
-+++ WALinuxAgent-2.2.14/init/photonos/waagent.service	2017-07-21 17:44:11.849359536 -0700
+diff -rupN WALinuxAgent-2.2.22/init/photonos/waagent.service WALinuxAgent-2.2.22-new/init/photonos/waagent.service
+--- WALinuxAgent-2.2.22/init/photonos/waagent.service	1969-12-31 16:00:00.000000000 -0800
++++ WALinuxAgent-2.2.22-new/init/photonos/waagent.service	2018-02-28 17:24:49.320447232 -0800
 @@ -0,0 +1,16 @@
 +[Unit]
 +Description=Azure Linux Agent
-+Wants=network-online.target sshd.service sshd-keygen.service
-+After=network-online.target
++Wants=systemd-networkd-wait-online.service sshd.service sshd-keygen.service
++After=systemd-networkd-wait-online.service cloud-init.service
 +
 +ConditionFileIsExecutable=/usr/bin/waagent
 +ConditionPathExists=/etc/waagent.conf
@@ -229,10 +229,10 @@ diff -rupN WALinuxAgent-2.2.14-old/init/photonos/waagent.service WALinuxAgent-2.
 +
 +[Install]
 +WantedBy=multi-user.target
-diff -rupN WALinuxAgent-2.2.14-old/setup.py WALinuxAgent-2.2.14/setup.py
---- WALinuxAgent-2.2.14-old/setup.py	2017-06-22 16:00:39.000000000 -0700
-+++ WALinuxAgent-2.2.14/setup.py	2017-07-21 17:50:50.695661748 -0700
-@@ -112,6 +112,12 @@ def get_data_files(name, version, fullna
+diff -rupN WALinuxAgent-2.2.22/setup.py WALinuxAgent-2.2.22-new/setup.py
+--- WALinuxAgent-2.2.22/setup.py	2018-02-12 11:55:45.000000000 -0800
++++ WALinuxAgent-2.2.22-new/setup.py	2018-02-28 17:24:49.320447232 -0800
+@@ -113,6 +113,12 @@ def get_data_files(name, version, fullna
                         src=["config/clearlinux/waagent.conf"])
          set_systemd_files(data_files, dest='/usr/lib/systemd/system',
                            src=["init/clearlinux/waagent.service"])
