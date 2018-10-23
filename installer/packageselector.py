@@ -42,11 +42,6 @@ class PackageSelector(object):
                                                                      install_option[1]["file"]))
                 package_list_json = json_wrapper_package_list.read()
                 package_list = package_list + package_list_json["packages"]
-
-                if "remove" in install_option[1]:
-                    for package in install_option[1]["remove"]:
-                        package_list.remove(package)
-
                 break
         return package_list
 

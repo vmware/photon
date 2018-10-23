@@ -9,7 +9,6 @@
         "title" : "Photon AMI packages",
         "file" : "packages_ami.json",
         "visible" : false,
-        "include" : ["minimal"],
-        "remove" : ["linux"]
+        "include" : ["minimal"]
     }
 }
