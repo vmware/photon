@@ -28,24 +28,24 @@ Reviewed-by: Frederick Lefebvre <fredlef@amazon.com>
 Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
 CR: https://cr.amazon.com/r/8209723/
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  kernel/watchdog.c | 28 ++++++++++++++++++++++++++++
  1 file changed, 28 insertions(+)
 
 diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-index c8e06703e44c..2e4362e7ff1b 100644
+index 51f5a64..593d4dd 100644
 --- a/kernel/watchdog.c
 +++ b/kernel/watchdog.c
-@@ -25,6 +25,7 @@
- #include <linux/workqueue.h>
+@@ -26,6 +26,7 @@
  #include <linux/sched/clock.h>
  #include <linux/sched/debug.h>
+ #include <linux/sched/isolation.h>
 +#include <linux/dmi.h>
  
  #include <asm/irq_regs.h>
  #include <linux/kvm_para.h>
-@@ -97,6 +98,31 @@ __setup("hardlockup_all_cpu_backtrace=", hardlockup_all_cpu_backtrace_setup);
+@@ -98,6 +99,31 @@ __setup("hardlockup_all_cpu_backtrace=", hardlockup_all_cpu_backtrace_setup);
  # endif /* CONFIG_SMP */
  #endif /* CONFIG_HARDLOCKUP_DETECTOR */
  
@@ -77,15 +77,15 @@ index c8e06703e44c..2e4362e7ff1b 100644
  /*
   * These functions can be overridden if an architecture implements its
   * own hardlockup detector.
-@@ -774,6 +800,8 @@ int proc_watchdog_cpumask(struct ctl_table *table, int write,
+@@ -775,6 +801,8 @@ int proc_watchdog_cpumask(struct ctl_table *table, int write,
  
  void __init lockup_detector_init(void)
  {
 +	dmi_check_system(watchdog_virt_dmi_table);
 +
- #ifdef CONFIG_NO_HZ_FULL
- 	if (tick_nohz_full_enabled()) {
+ 	if (tick_nohz_full_enabled())
  		pr_info("Disabling watchdog on nohz_full cores by default\n");
+ 
 -- 
 2.14.4
 
