@@ -431,7 +431,6 @@ class constants(object):
             "tboot.spec",
             # backward-cpp does not support amd64
             "backward-cpp.spec",
-            "envoy.spec",
             # only generic linux is for arm64
             "linux-esx.spec",
             "linux-secure.spec",
