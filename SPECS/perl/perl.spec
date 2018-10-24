@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.28.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -19,6 +19,7 @@ Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.gz
 %define sha1    perl=0622f86160e8969633cbd21a2cca9e11ae1f8c5a
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
+Provides:       perl(s)
 Provides:       /bin/perl
 BuildRequires:  zlib-devel
 BuildRequires:  bzip2-devel
@@ -68,7 +69,10 @@ make test TEST_SKIP_VERSION_CHECK=1
 %dir %{_libdir}/perl5/%{version}
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
+
 %changelog
+*   Wed Oct 24 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.28.0-2
+-   Add provides perl(s)
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 5.28.0-1
 -   Upgrade to version 5.28.0
 *   Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 5.24.1-4
