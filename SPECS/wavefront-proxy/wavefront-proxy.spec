@@ -1,7 +1,7 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
 Version:        4.28
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz 
@@ -34,7 +34,7 @@ After=network.target
 
 [Service]
 PIDFile=/var/run/wavefront-proxy.pid
-ExecStart=/usr/bin/java -Xmx4G -Xms4G -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Dlog4j.configurationFile=/etc/wavefront/wavefront-proxy/log4j2.xml -jar "/opt/wavefront-push-agent.jar" -f /etc/wavefront/wavefront-proxy/wavefront.conf
+ExecStart=/usr/bin/java -Xmx4G -Xms1G -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Dlog4j.configurationFile=/etc/wavefront/wavefront-proxy/log4j2.xml -jar "/opt/wavefront-push-agent.jar" -f /etc/wavefront/wavefront-proxy/wavefront.conf
 ExecStop=/bin/kill -HUP \$MAINPID
 Restart=on-failure
 
@@ -104,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/wavefront-proxy.service
 
 %changelog
+* Wed Oct 24 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.28-2
+- Reduce memory needed for service to 1GB.
 * Tue Sep 04 2018 Ankit Jain <ankitja@vmware.com> 4.28-1
 - Updated to latest version 4.28
 * Mon Oct 08 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-4
