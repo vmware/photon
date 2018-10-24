@@ -48,7 +48,8 @@ grub_efi_install()
 search -n -u ${BOOT_UUID} -s
 configfile ${BOOT_DIRECTORY}grub2/grub.cfg
 EOF
-    efibootmgr --create --remove-dups --disk "$HDD" --part 1 --loader "/EFI/Boot/$EXE_NAME" --label Photon --verbose >&2
+    # Some platforms do not support adding boot entry. Thus, ignore failures.
+    efibootmgr --create --remove-dups --disk "$HDD" --part 1 --loader "/EFI/Boot/$EXE_NAME" --label Photon --verbose >&2 || :
     umount $BUILDROOT/boot/efi
 }
 
