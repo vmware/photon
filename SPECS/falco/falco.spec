@@ -2,7 +2,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.12.1
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
@@ -42,7 +42,7 @@ Requires:       sysdig
 Requires:       dkms
 
 %description
-Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules. 
+Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules.
 
 %prep
 %setup
@@ -60,7 +60,6 @@ make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
 make install KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build" DESTDIR=%{buildroot}
 mkdir -p %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra
 mv driver/falco-probe.ko %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra
-sed -i 's|/var/lib/dkms/$PACKAGE_NAME/$SYSDIG_VERSION/$KERNEL_RELEASE/$ARCH/module/$PROBE_NAME.ko|/lib/modules/$KERNEL_RELEASE/extra/$PROBE_NAME.ko|g' %{buildroot}/usr/bin/falco-probe-loader
 
 #falco requires docker instance and dpkg to pass make check.
 #%check
@@ -83,7 +82,15 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/falco-probe.ko
 
+%post
+/sbin/depmod -a
+
+%postun
+/sbin/depmod -a
+
 %changelog
+*   Wed Oct 24 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.12.1-2
+-   Add depmod for falco-probe.ko and removed patch from new falco-probe-loader
 *   Mon Sep 24 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.12.1-1
 -   Update falco and sysdig versions to fix build error with linux 4.18
 *   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 0.8.1-1
