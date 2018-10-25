@@ -19,6 +19,7 @@ class constants(object):
     publishBuildDependencies = False
     packageWeightsPath = None
     dockerUnixSocket = "/var/run/docker.sock"
+    buildContainerImage = "photon_build_container:latest"
     userDefinedMacros = {}
     dist = None
     buildNumber = None
@@ -97,7 +98,6 @@ class constants(object):
         "libtool",
         "flex",
         "bison",
-        "lua",
         "popt",
         "nspr",
         "nspr-devel",
@@ -183,8 +183,6 @@ class constants(object):
         "flex-devel",
         "bison",
         "readline-devel",
-        "lua",
-        "lua-devel",
         "popt",
         "popt-devel",
         "nspr",
@@ -221,103 +219,7 @@ class constants(object):
         "rpm-libs",
         "groff",
         "man-pages",
-        "cpio",
-        "go"]
-
-    perPackageToolChain = dict.fromkeys(
-        ["openjdk8",
-         "openjdk8-doc",
-         "openjdk8-src",
-         "openjdk8-sample",
-         "openjre8",
-         "openjdk9",
-         "openjdk9-doc",
-         "openjdk9-src",
-         "openjre9",
-         "openjdk10",
-         "openjdk10-doc",
-         "openjdk10-src",
-         "openjre10"],
-          {
-          "x86_64":[
-            "icu-devel",
-            "cups",
-            "cups-devel",
-            "xorg-proto-devel",
-            "libXtst",
-            "libXtst-devel",
-            "libXfixes",
-            "libXfixes-devel",
-            "libXi",
-            "libXi-devel",
-            "openjdk",
-            "openjre",
-            "icu",
-            "alsa-lib",
-            "alsa-lib-devel",
-            "xcb-proto",
-            "libXdmcp-devel",
-            "libXau-devel",
-            "util-macros",
-            "xtrans",
-            "libxcb-devel",
-            "proto",
-            "libXdmcp",
-            "libxcb",
-            "libXau",
-            "xtrans-devel",
-            "libX11",
-            "libX11-devel",
-            "libXext",
-            "libXext-devel",
-            "libICE-devel",
-            "libSM",
-            "libICE",
-            "libSM-devel",
-            "libXt",
-            "libXmu",
-            "libXt-devel",
-            "libXmu-devel",
-            "libXrender",
-            "libXrender-devel"],
-         "aarch64":[
-            "icu-devel",
-            "openjdk",
-            "openjre",
-            "icu",
-            "alsa-lib",
-            "alsa-lib-devel",
-            "xcb-proto",
-            "libXdmcp-devel",
-            "libXau-devel",
-            "util-macros",
-            "xtrans",
-            "libxcb-devel",
-            "proto",
-            "libXdmcp",
-            "libxcb",
-            "libXau",
-            "xtrans-devel",
-            "libX11",
-            "libX11-devel",
-            "libXext",
-            "libXext-devel",
-            "libICE-devel",
-            "libSM",
-            "libICE",
-            "libSM-devel",
-            "libXt",
-            "libXmu",
-            "libXt-devel",
-            "libXmu-devel",
-            "libXrender",
-            "libXrender-devel"]
-          })
-
-    perPackageToolChain["apache-maven"] = {
-          "x86_64":["apache-maven"],
-          "aarch64":["apache-maven"]
-          }
+        "cpio"]
 
     # List of RPMs which are not published. They will be created during the
     # build process
@@ -390,9 +292,6 @@ class constants(object):
         "systemd-devel",
         "gnupg",
         "ncurses-terminfo"]
-
-    listReInstallPackages = [
-        "go"]
 
     # List of packages that requires privileged docker
     # to run make check.

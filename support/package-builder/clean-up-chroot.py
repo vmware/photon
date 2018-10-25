@@ -21,7 +21,7 @@ def cleanUpChroot(chrootPath):
     return True
 
 def removeAllFilesFromChroot(chrootPath):
-    cmd = "rm -rf " + chrootPath + "/*"
+    cmd = "rm -rf " + chrootPath
     process = subprocess.Popen("%s" %cmd, shell=True,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)

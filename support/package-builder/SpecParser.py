@@ -81,6 +81,8 @@ class SpecParser(object):
                     self._readSecurityHardening(line)
                 elif self._isChecksum(line):
                     self._readChecksum(line, self.packages[currentPkg])
+                elif self._isExtraBuildRequires(line):
+                    self._readExtraBuildRequires(line, self.packages[currentPkg])
                 elif self._isDefinition(line):
                     self._readDefinition(line)
                 elif self._isConditionalCheckMacro(line):
@@ -263,6 +265,11 @@ class SpecParser(object):
             return True
         return False
 
+    def _isExtraBuildRequires(self, line):
+        if re.search('^%define *extrabuildrequires', line, flags=re.IGNORECASE):
+            return True
+        return False
+
     def _isChecksum(self, line):
         if re.search('^%define *sha1', line, flags=re.IGNORECASE):
             return True
@@ -415,6 +422,18 @@ class SpecParser(object):
             print("Error: Invalid security_hardening value: " + words[2])
             return False
         self.globalSecurityHardening = words[2]
+        return True
+
+    def _readExtraBuildRequires(self, line, pkg):
+        data = line.strip()
+        words = data.split(" ", 2)
+        if len(words) != 3:
+            print("Error: Unable to parse line: " + line)
+            return False
+        dpkg = self._readDependentPackageData(words[2])
+        if dpkg is None:
+            return False
+        pkg.extrabuildrequires.extend(dpkg)
         return True
 
     def _readChecksum(self, line, pkg):
