@@ -1,14 +1,14 @@
 Summary:	Logstash is a tool for managing events and logs.
 Name:           logstash
-Version:        6.3.0
-Release:        2%{?dist}
+Version:        6.4.0
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:		https://github.com/elastic/logstash/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}.tar.gz=4140da67b1609b8664122e331cb8820ae786b3a6
+%define sha1 %{name}-%{version}.tar.gz=d690f64a8d0fce9ccac04de4ee86f4b01bba5d3a
 Source1:        %{name}.service
 Source2:        %{name}.conf
 BuildRequires:	openjdk
@@ -121,6 +121,8 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+*   Thu Oct 25 2018 Ankit Jain <ankitja@vmware.com> 6.4.0-1
+-   Updated to release 6.4.0
 *   Mon Aug 06 2018 Ankit Jain <ankitja@vmware.com> 6.3.0-2
 -   Added logstash.service and logstash.conf
 *   Thu Jul 19 2018 Ankit Jain <ankitja@vmware.com> 6.3.0-1
