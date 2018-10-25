@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.6.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -205,6 +205,7 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/python3.6/site-packages/
 %exclude %{_libdir}/python3.6/ctypes/test
 %exclude %{_libdir}/python3.6/distutils/tests
+%exclude %{_libdir}/python3.6/distutils/command/wininst*exe
 %exclude %{_libdir}/python3.6/sqlite3/test
 %exclude %{_libdir}/python3.6/idlelib/idle_test
 %exclude %{_libdir}/python3.6/test
@@ -262,6 +263,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.6/test/*
 
 %changelog
+*   Thu Oct 25 2018 Sujay g <gsujay@vmware.com> 3.6.5-2
+-   Remove vulnerable Windows installers from python3-libs rpm
 *   Thu Apr 19 2018 Xiaolin Li <xiaolinl@vmware.com> 3.6.5-1
 -   Update to version 3.6.5 to fix CVE-2018-1000117
 -   Apply patch for CVE-2017-18207
