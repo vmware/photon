@@ -16,8 +16,7 @@ from SpecData import SPECS
 from PackageInfo import PackageInfo
 
 def main():
-    usage = "Usage: %prog [options] <package name>"
-    parser = ArgumentParser(usage)
+    parser = ArgumentParser()
     parser.add_argument("-s", "--spec-path", dest="specPath", default="../../SPECS")
     parser.add_argument("-x", "--source-path", dest="sourcePath",
                         default="../../stage/SOURCES")
@@ -55,7 +54,7 @@ def main():
     parser.add_argument("-bd", "--publish-build-dependencies", dest="publishBuildDependencies",
                         default=False)
     parser.add_argument("-pw", "--package-weights-path", dest="packageWeightsPath", default=None)
-    parser.add_argument("-bt", "--build-type", dest="pkgBuildType", default="chroot")
+    parser.add_argument("-bt", "--build-type", dest="pkgBuildType", choices=['chroot', 'container'], default="chroot")
     parser.add_argument("-F", "--kat-build", dest="katBuild", default=None)
     parser.add_argument("-pj", "--packages-json-input", dest="pkgJsonInput", default=None)
     parser.add_argument("PackageName", nargs='?')
@@ -96,8 +95,7 @@ def main():
         logger.error("Given X RPMS Path is missing noarch sub-directory:"+
                      options.publishXRPMSPath)
         errorFlag = True
-    if not os.path.isfile(options.pkgBuildOptionFile):
-        logger.warning("Given JSON File is not a file:"+options.pkgBuildOptionFile)
+
 
     if options.inputRPMSPath is not None and not os.path.isdir(options.inputRPMSPath):
         logger.error("Given input RPMS Path is not a directory:"+options.inputRPMSPath)

@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.5.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache License 2.0
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -15,6 +15,7 @@ BuildRequires: apache-ant
 BuildRequires: wget >= 1.15
 Requires: openjre8
 Requires: /usr/bin/which
+%define ExtraBuildRequires apache-maven
 
 %define _prefix /var/opt/%{name}
 %define _bindir %{_prefix}/bin
@@ -76,6 +77,8 @@ done
 %exclude %{_libdir}/jansi-native
 
 %changelog
+*   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 3.5.4-2
+-   Use ExtraBuildRequires
 *   Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 3.5.4-1
 -   Updated apache-maven to version 3.5.4
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.0-5
@@ -103,18 +106,18 @@ done
 *   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.9-3
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Tue Mar 01 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.9-2
--   Updated the apache-ant version to 1.9.6 
+-   Updated the apache-ant version to 1.9.6
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 3.3.9-2
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.3.9-1
 -   Updated to version 3.3.9
 *   Tue Jan 5 2016 Xiaolin Li <xiaolinl@vmware.com> 3.3.3-4
--   Increase build timeout from 600000 to 1200000 
+-   Increase build timeout from 600000 to 1200000
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 3.3.3-3
 -   Change path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.3-2
 -   Updated dependencies after repackaging openjdk.
 *   Thu Jul 9 2015 	Sarah Choi<sarahc@vmware.com> 3.3.3-1
--   Add a script to set environment variables for MAVEN 
+-   Add a script to set environment variables for MAVEN
 *   Fri May 22 2015 Sriram Nambakam <snambakam@vmware.com> 1.9.4
 -   Initial build.	First version

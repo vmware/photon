@@ -208,7 +208,7 @@ def main():
     logger = Logger.getLogger("SpecDeps", options.log_path, options.log_level)
 
     if not os.path.isdir(options.output_dir):
-        cmdUtils.runCommandInShell2("mkdir -p "+options.output_dir)
+        cmdUtils.runCommandInShell("mkdir -p "+options.output_dir)
 
     if not options.input_data_dir.endswith('/'):
         options.input_data_dir += '/'
@@ -224,7 +224,7 @@ def main():
                 for p in SPECS.getData().getPackages(package,version):
                     buildarch=SPECS.getData().getBuildArch(p, version)
                     rpmFile = "stage/RPMS/" + buildarch + "/" + p + "-" + version + "-" + release + ".*" + buildarch+".rpm"
-                    cmdUtils.runCommandInShell2("rm -f "+rpmFile)
+                    cmdUtils.runCommandInShell("rm -f "+rpmFile)
         elif options.input_type == "print-upward-deps":
             whoNeedsList = specDeps.process("get-upward-deps", options.pkg, options.display_option)
             logger.info("Upward dependencies: " + str(whoNeedsList))

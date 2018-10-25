@@ -51,6 +51,7 @@ class SpecObjectsUtils(object):
             specObj = SpecObject()
             specObj.name = specName
             specObj.buildRequiresAllPackages = spec.getBuildRequiresAllPackages()
+            specObj.extraBuildRequires = spec.getExtraBuildRequires()
             specObj.installRequiresAllPackages = spec.getRequiresAllPackages()
             specObj.checkBuildRequirePackages = spec.getCheckBuildRequiresAllPackages()
             specObj.listPackages = spec.getPackageNames()
@@ -140,11 +141,17 @@ class SpecObjectsUtils(object):
 
     def getBuildRequiresForPackage(self, package, version):
         buildRequiresList=[]
-        buildRequiresPackages = self._getSpecObjField(package, version, field=lambda x : x.buildRequiresAllPackages)
-        for pkg in buildRequiresPackages:
+        for pkg in self._getSpecObjField(package, version, field=lambda x : x.buildRequiresAllPackages):
             properVersion = self._getProperVersion(pkg)
             buildRequiresList.append(pkg.package+"-"+properVersion)
         return buildRequiresList
+
+    def getExtraBuildRequiresForPackage(self, package, version):
+        packages=[]
+        for pkg in self._getSpecObjField(package, version, field=lambda x : x.extraBuildRequires):
+            # no version deps for publishrpms - use just name
+            packages.append(pkg.package)
+        return packages
 
     def getBuildRequiresForPkg(self, pkg):
         package, version = StringUtils.splitPackageNameAndVersion(pkg)
@@ -153,8 +160,7 @@ class SpecObjectsUtils(object):
     # Returns list of [ "pkg1-vers1", "pkg2-vers2",.. ]
     def getRequiresAllForPackage(self, package, version):
         requiresList=[]
-        requiresPackages = self._getSpecObjField(package, version, field=lambda x : x.installRequiresAllPackages)
-        for pkg in requiresPackages:
+        for pkg in self._getSpecObjField(package, version, field=lambda x : x.installRequiresAllPackages):
             properVersion = self._getProperVersion(pkg)
             requiresList.append(pkg.package+"-"+properVersion)
         return requiresList

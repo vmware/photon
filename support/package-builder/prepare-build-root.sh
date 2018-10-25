@@ -20,15 +20,10 @@ fi
 BUILDROOT=$1
 PARENT=/usr/src/photon
 
-
 if mountpoint ${BUILDROOT}/run	>/dev/null 2>&1; then umount ${BUILDROOT}/run; fi
 if mountpoint ${BUILDROOT}/sys	>/dev/null 2>&1; then umount ${BUILDROOT}/sys; fi
 if mountpoint ${BUILDROOT}/proc	>/dev/null 2>&1; then umount ${BUILDROOT}/proc; fi
 if mountpoint ${BUILDROOT}/dev	>/dev/null 2>&1; then umount -R ${BUILDROOT}/dev; fi
-
-
-#copy localegen files.
-cp ./locale* ${BUILDROOT}${PARENT}/
 
 cp /etc/resolv.conf ${BUILDROOT}/etc/
 
