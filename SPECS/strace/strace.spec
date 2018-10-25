@@ -1,7 +1,7 @@
 Summary:	Tracks system calls that are made by a running process
 Name:		strace
 Version:	4.24
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		https://strace.io/
 Group:		Development/Debuggers
@@ -20,8 +20,14 @@ all the arugments and return values from the system calls. This is useful in deb
 %setup -q
 
 %build
+%ifarch aarch64
 %configure \
-	--prefix=%{_prefix} \
+	--disable-mpers \
+	--prefix=%{_prefix}
+%else
+%configure \
+	--prefix=%{_prefix}
+%endif
 
 # to resolve build issue with glibc-2.26
 sed -i 's/struct ucontext/ucontext_t/g' linux/x86_64/arch_sigreturn.c
@@ -45,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+*   Thu Oct 25 2018 Ajay Kaher <akaher@vmware.com> 4.24-2
+-   Fix 4.24 for aarch64
 *   Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 4.24-1
 -   Updating to version 4.24
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-3
