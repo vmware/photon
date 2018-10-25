@@ -1,13 +1,13 @@
 %define debug_package %{nil}
 
-Summary:        Elastic Serch
+Summary:        Elastic Search
 Name:           elasticsearch
-Version:        6.3.0
-Release:        2%{?dist}
+Version:        6.4.0
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 URL:            https://artifacts.elastic.co/downloads/elasticsearch/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}.tar.gz=3f356bf80bd31c0107622cf7213d0ee9f43536d8
+%define sha1    %{name}-%{version}.tar.gz=c2489e5b5fe84f48a07f2a7dd3bb4a98a30baf08
 Source1:        cacerts
 %define sha1    cacerts=f584c7c1f48c552f39acfb5560a300a657d9f3bb
 Group:          Development/Daemons
@@ -58,16 +58,16 @@ mkdir -p %{buildroot}/var/log/elasticsearch
 mkdir -p %{buildroot}/var/run/elasticsearch
 mkdir -p %{buildroot}%{_datadir}/%{name}/data
 
-tar -xvf distribution/archives/oss-tar/build/distributions/elasticsearch-oss-6.3.0-SNAPSHOT.tar.gz
-cp elasticsearch-6.3.0-SNAPSHOT/LICENSE.txt %{buildroot}%{_datadir}/%{name}/
-cp elasticsearch-6.3.0-SNAPSHOT/NOTICE.txt %{buildroot}%{_datadir}/%{name}/
-cp elasticsearch-6.3.0-SNAPSHOT/README.textile %{buildroot}%{_datadir}/%{name}/
-cp -r elasticsearch-6.3.0-SNAPSHOT/* %{buildroot}%{_datadir}/%{name}/
+tar -xvf distribution/archives/oss-tar/build/distributions/%{name}-oss-%{version}-SNAPSHOT.tar.gz
+cp %{name}-%{version}-SNAPSHOT/LICENSE.txt %{buildroot}%{_datadir}/%{name}/
+cp %{name}-%{version}-SNAPSHOT/NOTICE.txt %{buildroot}%{_datadir}/%{name}/
+cp %{name}-%{version}-SNAPSHOT/README.textile %{buildroot}%{_datadir}/%{name}/
+cp -r %{name}-%{version}-SNAPSHOT/* %{buildroot}%{_datadir}/%{name}/
 cp distribution/packages/build/packaging/oss-rpm/systemd/sysctl/elasticsearch.conf %{buildroot}/usr/lib/sysctl.d/
 cp distribution/packages/build/packaging/oss-rpm/systemd/elasticsearch.service %{buildroot}/usr/lib/systemd/system/
 cp distribution/packages/build/packaging/oss-rpm/systemd/elasticsearch.conf %{buildroot}/usr/lib/tmpfiles.d/
-cp elasticsearch-6.3.0-SNAPSHOT/config/log4j2.properties %{buildroot}/etc/%{name}/
-cp elasticsearch-6.3.0-SNAPSHOT/config/jvm.options %{buildroot}/etc/%{name}/
+cp %{name}-%{version}-SNAPSHOT/config/log4j2.properties %{buildroot}/etc/%{name}/
+cp %{name}-%{version}-SNAPSHOT/config/jvm.options %{buildroot}/etc/%{name}/
 
 chmod 755 %{buildroot}%{_datadir}/%{name}/
 chmod 755 %{buildroot}/etc/%{name}/
@@ -119,6 +119,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+*    Thu Oct 25 2018 Tapas Kundu <tkundu@vmware.com> 6.4.0-1
+-    Updated to 6.4.0 and corrected typo.
 *    Mon Aug 06 2018 Tapas Kundu <tkundu@vmware.com> 6.3.0-2
 -    Added permissions for elasticsearch service and removed hardcoded value for JDK10.
 *    Mon Jul 09 2018 Tapas Kundu <tkundu@vmware.com> 6.3.0-1
