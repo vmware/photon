@@ -2,14 +2,12 @@ import sys
 import os.path
 from PackageUtils import PackageUtils
 from Logger import Logger
-from ChrootUtils import ChrootUtils
 from ToolChainUtils import ToolChainUtils
 from CommandUtils import CommandUtils
 from constants import constants
 from SpecData import SPECS
-import docker
-from distutils.version import LooseVersion
 from StringUtils import StringUtils
+from Sandbox import Chroot, Container
 
 class PackageBuilderBase(object):
     def __init__(self, mapPackageToCycles, pkgBuildType):
@@ -63,12 +61,9 @@ class PackageBuilderBase(object):
         pkg = rpmfile[0:releaseindex]
         return pkg
 
-    def _findInstalledPackages(self, instanceID):
+    def _findInstalledPackages(self, sandbox):
         pkgUtils = PackageUtils(self.logName, self.logPath)
-        if self.pkgBuildType == "chroot":
-            listInstalledRPMs = pkgUtils.findInstalledRPMPackages(instanceID)
-        elif self.pkgBuildType == "container":
-            listInstalledRPMs = pkgUtils.findInstalledRPMPackagesInContainer(instanceID)
+        listInstalledRPMs = pkgUtils.findInstalledRPMPackages(sandbox)
         listInstalledPackages = []
         for installedRPM in listInstalledRPMs:
             pkg = self._findPackageNameAndVersionFromRPMFile(installedRPM)
@@ -96,7 +91,7 @@ class PackageBuilderBase(object):
     def _findBuildTimeCheckRequiredPackages(self):
         return SPECS.getData().getCheckBuildRequiresForPackage(self.package, self.version)
 
-    def _installPackage(self, pkgUtils, package,packageVersion, instanceID, destLogPath,
+    def _installPackage(self, pkgUtils, package, packageVersion, sandbox, destLogPath,
                         listInstalledPackages, listInstalledRPMs):
         rpmfile = pkgUtils.findRPMFileForGivenPackage(package,packageVersion);
         if rpmfile is None:
@@ -109,19 +104,16 @@ class PackageBuilderBase(object):
         # mark it as installed -  to avoid cyclic recursion
         listInstalledPackages.append(pkg)
         listInstalledRPMs.append(specificRPM)
-        self._installDependentRunTimePackages(pkgUtils, package, packageVersion, instanceID, destLogPath,
+        self._installDependentRunTimePackages(pkgUtils, package, packageVersion, sandbox, destLogPath,
                                               listInstalledPackages, listInstalledRPMs)
         noDeps = False
         if (package in self.mapPackageToCycles or
                 package in self.listNodepsPackages or
                 package in constants.noDepsPackageList):
             noDeps = True
-        if self.pkgBuildType == "chroot":
-            pkgUtils.installRPM(package, packageVersion,instanceID, noDeps, destLogPath)
-        elif self.pkgBuildType == "container":
-            pkgUtils.prepRPMforInstallInContainer(package,packageVersion, instanceID, noDeps, destLogPath)
+        pkgUtils.prepRPMforInstall(package,packageVersion, noDeps, destLogPath)
 
-    def _installDependentRunTimePackages(self, pkgUtils, package, packageVersion, instanceID, destLogPath,
+    def _installDependentRunTimePackages(self, pkgUtils, package, packageVersion, sandbox, destLogPath,
                                          listInstalledPackages, listInstalledRPMs):
         listRunTimeDependentPackages = self._findRunTimeRequiredRPMPackages(package, packageVersion)
         if listRunTimeDependentPackages:
@@ -133,10 +125,10 @@ class PackageBuilderBase(object):
                     pkgUtils.findRPMFileForGivenPackage(packageName, packageVersion)).replace(".rpm", "")
                 if pkg in listInstalledPackages and latestPkgRPM in listInstalledRPMs:
                     continue
-                self._installPackage(pkgUtils, packageName,packageVersion, instanceID, destLogPath,listInstalledPackages, listInstalledRPMs)
+                self._installPackage(pkgUtils, packageName,packageVersion, sandbox, destLogPath,listInstalledPackages, listInstalledRPMs)
 
-    def _findDependentPackagesAndInstalledRPM(self, instanceID):
-        listInstalledPackages, listInstalledRPMs = self._findInstalledPackages(instanceID)
+    def _findDependentPackagesAndInstalledRPM(self, sandbox):
+        listInstalledPackages, listInstalledRPMs = self._findInstalledPackages(sandbox)
         self.logger.debug(listInstalledPackages)
         listDependentPackages = self._findBuildTimeRequiredPackages()
         listTestPackages=[]
@@ -158,181 +150,21 @@ class PackageBuilderBase(object):
 
 class PackageBuilderContainer(PackageBuilderBase):
     def __init__(self, mapPackageToCycles, pkgBuildType):
-        self.buildContainerImage = "photon_build_container:latest"
-        self.dockerClient = docker.from_env(version="auto")
-
         PackageBuilderBase.__init__(self, mapPackageToCycles, pkgBuildType)
-
-    def _prepareBuildContainer(self, containerTaskName, packageName, packageVersion,
-                               isToolChainPackage=False):
-        # Prepare an empty chroot environment to let docker use the BUILD folder.
-        # This avoids docker using overlayFS which will cause make check failure.
-        chrootName = packageName + "-" + packageVersion
-        chrUtils = ChrootUtils(self.logName, self.logPath)
-        returnVal, chrootID = chrUtils.createChroot(chrootName)
-        if not returnVal:
-            raise Exception("Unable to prepare build root")
-        cmdUtils = CommandUtils()
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath)
-        cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath + "/BUILD")
-
-        containerID = None
-        mountVols = {
-            constants.prevPublishRPMRepo: {'bind': '/publishrpms', 'mode': 'ro'},
-            constants.prevPublishXRPMRepo: {'bind': '/publishxrpms', 'mode': 'ro'},
-            constants.tmpDirPath: {'bind': '/tmp', 'mode': 'rw'},
-            constants.rpmPath: {'bind': constants.topDirPath + "/RPMS", 'mode': 'rw'},
-            constants.sourceRpmPath: {'bind': constants.topDirPath + "/SRPMS", 'mode': 'rw'},
-            constants.logPath + "/" + self.logName: {'bind': constants.topDirPath + "/LOGS",
-                                                     'mode': 'rw'},
-            chrootID + constants.topDirPath + "/BUILD": {'bind': constants.topDirPath + "/BUILD",
-                                                         'mode': 'rw'},
-            constants.dockerUnixSocket: {'bind': constants.dockerUnixSocket, 'mode': 'rw'}
-            }
-
-        containerName = containerTaskName
-        containerName = containerName.replace("+", "p")
-        try:
-            oldContainerID = self.dockerClient.containers.get(containerName)
-            if oldContainerID is not None:
-                oldContainerID.remove(force=True)
-        except docker.errors.NotFound:
-            try:
-                sys.exc_clear()
-            except:
-                pass
-
-        try:
-            self.logger.debug("BuildContainer-prepareBuildContainer: " +
-                             "Starting build container: " + containerName)
-            #TODO: Is init=True equivalent of --sig-proxy?
-            privilegedDocker = False
-            cap_list = ['SYS_PTRACE']
-            if packageName in constants.listReqPrivilegedDockerForTest:
-                privilegedDocker = True
-
-            containerID = self.dockerClient.containers.run(self.buildContainerImage,
-                                                           detach=True,
-                                                           cap_add=cap_list,
-                                                           privileged=privilegedDocker,
-                                                           name=containerName,
-                                                           network_mode="host",
-                                                           volumes=mountVols,
-                                                           command="/bin/bash -l -c /wait.sh")
-
-            self.logger.debug("Started Photon build container for task " + containerTaskName +
-                              " ID: " + containerID.short_id)
-            if not containerID:
-                raise Exception("Unable to start Photon build container for task " +
-                                containerTaskName)
-        except Exception as e:
-            self.logger.debug("Unable to start Photon build container for task " +
-                              containerTaskName)
-            raise e
-        return containerID, chrootID
 
     def _buildPackage(self):
         #should initialize a logger based on package name
-        containerTaskName = "build-" + self.package
-        containerID = None
-        chrootID = None
-        isToolChainPackage = False
-        if self.package in constants.listToolChainPackages:
-            isToolChainPackage = True
-        destLogPath = constants.logPath + "/build-" + self.package
+        containerTaskName = "build-" + self.package + "-" + self.version
+        container = None
         try:
-            containerID, chrootID = self._prepareBuildContainer(
-                containerTaskName, self.package, self.version, isToolChainPackage)
+            container = Container(self.logger)
+            container.create(containerTaskName)
 
             tcUtils = ToolChainUtils(self.logName, self.logPath)
-            if self.package in constants.perPackageToolChain:
-                self.logger.debug(constants.perPackageToolChain[self.package])
-                tcUtils.installCustomToolChainRPMSinContainer(
-                    containerID,
-                    constants.perPackageToolChain[self.package].get(platform.machine(), []),
-                    self.package)
+            tcUtils.installCustomToolChainRPMS(container, self.package, self.version)
 
             listDependentPackages, listTestPackages, listInstalledPackages, listInstalledRPMs = (
-                self._findDependentPackagesAndInstalledRPM(containerID))
-
-            pkgUtils = PackageUtils(self.logName, self.logPath)
-            if listDependentPackages:
-                self.logger.debug("BuildContainer-buildPackage: " +
-                                 "Installing dependent packages..")
-                self.logger.debug(listDependentPackages)
-                for pkg in listDependentPackages:
-                    packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
-                    self._installPackage(pkgUtils, packageName, packageVersion, containerID, destLogPath,listInstalledPackages, listInstalledRPMs)
-                for pkg in listTestPackages:
-                    packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
-                    flag = False
-                    for depPkg in listDependentPackages:
-                        depPackageName, depPackageVersion = StringUtils.splitPackageNameAndVersion(depPkg)
-                        if depPackageName == packageName:
-                            flag = True
-                            break;
-                    if flag == False:
-                        self._installPackage(pkgUtils, packageName,packageVersion, containerID, destLogPath,listInstalledPackages, listInstalledRPMs)
-                pkgUtils.installRPMSInAOneShotInContainer(containerID, destLogPath)
-                self.logger.debug("Finished installing the build time dependent packages....")
-
-            self.logger.debug("BuildContainer-buildPackage: Start building the package: " +
-                             self.package)
-            pkgUtils.adjustGCCSpecsInContainer(self.package, self.version, containerID, destLogPath)
-            pkgUtils.buildRPMSForGivenPackageInContainer(
-                self.package,
-                self.version,
-                containerID,
-                destLogPath)
-            self.logger.debug("BuildContainer-buildPackage: Successfully built the package: " +
-                             self.package)
-        except Exception as e:
-            self.logger.error("Failed while building package:" + self.package)
-            if containerID is not None:
-                self.logger.debug("Container " + containerID.short_id +
-                                  " retained for debugging.")
-            logFileName = os.path.join(destLogPath, self.package + ".log")
-            fileLog = os.popen('tail -n 20 ' + logFileName).read()
-            self.logger.debug(fileLog)
-            raise e
-
-        # Remove the container
-        if containerID is not None:
-            containerID.remove(force=True)
-        # Remove the dummy chroot
-        if chrootID is not None:
-            chrUtils = ChrootUtils(self.logName, self.logPath)
-            chrUtils.destroyChroot(chrootID)
-
-class PackageBuilderChroot(PackageBuilderBase):
-    def __init__(self, mapPackageToCycles, pkgBuildType):
-        PackageBuilderBase.__init__(self, mapPackageToCycles, pkgBuildType)
-
-    def _prepareBuildRoot(self):
-        chrootID = None
-        chrootName = self.package + "-" + self.version
-        try:
-            chrUtils = ChrootUtils(self.logName, self.logPath)
-            returnVal, chrootID = chrUtils.createChroot(chrootName)
-            self.logger.debug("Created new chroot: " + chrootID)
-            if not returnVal:
-                raise Exception("Unable to prepare build root")
-            tUtils = ToolChainUtils(self.logName, self.logPath)
-            tUtils.installToolChainRPMS(self.package, self.version, chrootID, self.logPath)
-        except Exception as e:
-            if chrootID is not None:
-                self.logger.debug("Deleting chroot: " + chrootID)
-                chrUtils.destroyChroot(chrootID)
-            raise e
-        return chrootID
-
-    def _buildPackage(self):
-        chrUtils = ChrootUtils(self.logName, self.logPath)
-        chrootID = None
-        try:
-            chrootID = self._prepareBuildRoot()
-            listDependentPackages, listTestPackages, listInstalledPackages, listInstalledRPMs = (
-                self._findDependentPackagesAndInstalledRPM(chrootID))
+                self._findDependentPackagesAndInstalledRPM(container))
 
             pkgUtils = PackageUtils(self.logName, self.logPath)
 
@@ -340,31 +172,87 @@ class PackageBuilderChroot(PackageBuilderBase):
                 self.logger.debug("Installing the build time dependent packages......")
                 for pkg in listDependentPackages:
                     packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
-                    self._installPackage(pkgUtils, packageName, packageVersion, chrootID, self.logPath,listInstalledPackages, listInstalledRPMs)
+                    self._installPackage(pkgUtils, packageName, packageVersion, container, self.logPath,listInstalledPackages, listInstalledRPMs)
                 for pkg in listTestPackages:
                     flag = False
                     packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
                     for depPkg in listDependentPackages:
                         depPackageName, depPackageVersion = StringUtils.splitPackageNameAndVersion(depPkg)
                         if depPackageName == packageName:
-                                flag = True
-                                break;
+                            flag = True
+                            break;
                     if flag == False:
-                        self._installPackage(pkgUtils, packageName,packageVersion, chrootID, self.logPath,listInstalledPackages, listInstalledRPMs)
-                pkgUtils.installRPMSInAOneShot(chrootID, self.logPath)
+                        self._installPackage(pkgUtils, packageName,packageVersion, container, self.logPath,listInstalledPackages, listInstalledRPMs)
+                pkgUtils.installRPMSInOneShot(container)
                 self.logger.debug("Finished installing the build time dependent packages....")
 
-            pkgUtils.adjustGCCSpecs(self.package, self.version, chrootID, self.logPath)
-            pkgUtils.buildRPMSForGivenPackage(self.package, self.version, chrootID,
+            self.logger.debug("BuildContainer-buildPackage: Start building the package: " +
+                             self.package)
+            pkgUtils.adjustGCCSpecs(container, self.package, self.version)
+            pkgUtils.buildRPMSForGivenPackage(container, self.package, self.version, self.logPath)
+            self.logger.debug("BuildContainer-buildPackage: Successfully built the package: " +
+                             self.package)
+        except Exception as e:
+            self.logger.error("Failed while building package:" + self.package)
+            if container is not None:
+                self.logger.debug("Container " + container.getID() +
+                                  " retained for debugging.")
+            logFileName = os.path.join(self.logPath, self.package + ".log")
+            fileLog = os.popen('tail -n 20 ' + logFileName).read()
+            self.logger.debug(fileLog)
+            raise e
+
+        # Remove the container
+        if container:
+            container.destroy()
+
+class PackageBuilderChroot(PackageBuilderBase):
+    def __init__(self, mapPackageToCycles, pkgBuildType):
+        PackageBuilderBase.__init__(self, mapPackageToCycles, pkgBuildType)
+
+    def _buildPackage(self):
+        chroot = None
+        try:
+            chroot = Chroot(self.logger)
+            chroot.create(self.package + "-" + self.version)
+
+            tUtils = ToolChainUtils(self.logName, self.logPath)
+            tUtils.installToolChainRPMS(chroot, self.package, self.version, self.logPath)
+
+            listDependentPackages, listTestPackages, listInstalledPackages, listInstalledRPMs = (
+                self._findDependentPackagesAndInstalledRPM(chroot))
+
+            pkgUtils = PackageUtils(self.logName, self.logPath)
+
+            if listDependentPackages:
+                self.logger.debug("Installing the build time dependent packages......")
+                for pkg in listDependentPackages:
+                    packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
+                    self._installPackage(pkgUtils, packageName, packageVersion, chroot, self.logPath,listInstalledPackages, listInstalledRPMs)
+                for pkg in listTestPackages:
+                    flag = False
+                    packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
+                    for depPkg in listDependentPackages:
+                        depPackageName, depPackageVersion = StringUtils.splitPackageNameAndVersion(depPkg)
+                        if depPackageName == packageName:
+                            flag = True
+                            break;
+                    if flag == False:
+                        self._installPackage(pkgUtils, packageName,packageVersion, chroot, self.logPath,listInstalledPackages, listInstalledRPMs)
+                pkgUtils.installRPMSInOneShot(chroot)
+                self.logger.debug("Finished installing the build time dependent packages....")
+
+            pkgUtils.adjustGCCSpecs(chroot, self.package, self.version)
+            pkgUtils.buildRPMSForGivenPackage(chroot, self.package, self.version,
                                               self.logPath)
             self.logger.debug("Successfully built the package:" + self.package)
         except Exception as e:
             self.logger.error("Failed while building package:" + self.package)
-            self.logger.debug("Chroot with ID: " + chrootID +
+            self.logger.debug("Chroot: " + chroot.getPath() +
                               " not deleted for debugging.")
             logFileName = os.path.join(self.logPath, self.package + ".log")
             fileLog = os.popen('tail -n 100 ' + logFileName).read()
             self.logger.info(fileLog)
             raise e
-        if chrootID is not None:
-            chrUtils.destroyChroot(chrootID)
+        if chroot:
+            chroot.destroy()

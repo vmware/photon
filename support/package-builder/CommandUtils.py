@@ -2,12 +2,11 @@
 import subprocess
 import os
 
-class CommandUtils(object):
-    def __init__(self):
-        self.findBinary = "find"
+class CommandUtils:
 
-    def findFile(self, filename, sourcePath):
-        process = subprocess.Popen([self.findBinary, "-L", sourcePath, "-name", filename,
+    @staticmethod
+    def findFile(filename, sourcePath):
+        process = subprocess.Popen(["find", "-L", sourcePath, "-name", filename,
                                     "-not", "-type", "d"], stdout=subprocess.PIPE)
         # We don't check the return val here because find could return 1 but still be
         # able to find
@@ -26,23 +25,17 @@ class CommandUtils(object):
         return result.decode().split()
 
     @staticmethod
-    def runCommandInShell(cmd, logfilePath=None, chrootCmd=None):
-        if chrootCmd is not None:
-            cmd = chrootCmd + " " + cmd
-        if logfilePath is None:
-            logfilePath = os.devnull
-        with open(logfilePath, "w") as logfile:
-            process = subprocess.Popen("%s" %cmd, shell=True, stdout=logfile, stderr=logfile)
+    def runCommandInShell(cmd, logfile=None, logfn=None):
+        retval = 0
+        if logfn:
+            process = subprocess.Popen("%s" %cmd, shell=True, stdout=subprocess.PIPE)
             retval = process.wait()
-            if retval == 0:
-                return True
-        return False
-    @staticmethod
-    def runCommandInShell2(cmd, chrootCmd=None):
-        if chrootCmd is not None:
-            cmd = chrootCmd + " " + cmd
-        process = subprocess.Popen("%s" %cmd, shell=True, stdout=subprocess.PIPE)
-        retval = process.wait()
-        if retval != 0:
-            return None
-        return process.communicate()[0]
+            logfn(process.communicate()[0].decode())
+        else:
+            if logfile is None:
+                logfile = os.devnull
+            with open(logfile, "w") as f:
+                process = subprocess.Popen("%s" %cmd, shell=True, stdout=f, stderr=f)
+            retval = process.wait()
+        return retval
+

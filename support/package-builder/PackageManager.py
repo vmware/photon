@@ -5,7 +5,6 @@ from PackageBuildDataGenerator import PackageBuildDataGenerator
 from Logger import Logger
 from constants import constants
 import docker
-from ChrootUtils import ChrootUtils
 from CommandUtils import CommandUtils
 from PackageUtils import PackageUtils
 from ToolChainUtils import ToolChainUtils
@@ -13,6 +12,7 @@ from Scheduler import Scheduler
 from ThreadPool import ThreadPool
 from SpecData import SPECS
 from StringUtils import StringUtils
+from Sandbox import Chroot, Container
 
 class PackageManager(object):
 
@@ -49,7 +49,7 @@ class PackageManager(object):
         if self.pkgBuildType == "container":
             # Stage 1 build container
             #TODO image name constants.buildContainerImageName
-            if pkgCount > 0 or not self.dockerClient.images.list("photon_build_container:latest"):
+            if pkgCount > 0 or not self.dockerClient.images.list(constants.buildContainerImage):
                 self._createBuildContainer()
         self.logger.info("Step 2 : Building stage 2 of the toolchain...")
         self.logger.info(constants.listToolChainPackages)
@@ -229,46 +229,41 @@ class PackageManager(object):
         self.logger.debug("Generating photon build container..")
         try:
             #TODO image name constants.buildContainerImageName
-            self.dockerClient.images.remove("photon_build_container:latest", force=True)
+            self.dockerClient.images.remove(constants.buildContainerImage, force=True)
         except Exception as e:
             #TODO - better handling
             self.logger.debug("Photon build container image not found.")
 
         # Create toolchain chroot and install toolchain RPMs
-        chrootID = None
+        chroot = None
         try:
             #TODO: constants.tcrootname
-            chrUtils = ChrootUtils("toolchain-chroot", self.logPath)
-            returnVal, chrootID = chrUtils.createChroot("toolchain-chroot")
-            self.logger.debug("Created tool-chain chroot: " + chrootID)
-            if not returnVal:
-                raise Exception("Unable to prepare tool-chain chroot")
+            chroot = Chroot(self.logger)
+            chroot.create("toolchain-chroot")
             tcUtils = ToolChainUtils("toolchain-chroot", self.logPath)
-            tcUtils.installToolChainRPMS(chrootID, "dummy")
+            tcUtils.installToolChainRPMS(chroot)
         except Exception as e:
-            if chrootID is not None:
-                self.logger.debug("Deleting chroot: " + chrootID)
-                chrUtils.destroyChroot(chrootID)
+            if chroot:
+                chroot.destroy()
             raise e
-        self.logger.debug("createBuildContainer: chrootID: " + chrootID)
+        self.logger.debug("createBuildContainer: " + chroot.getPath())
 
         # Create photon build container using toolchain chroot
+        chroot.unmountAll()
         #TODO: Coalesce logging
         cmdUtils = CommandUtils()
-        cmd = "./umount-build-root.sh " + chrootID
-        cmdUtils.runCommandInShell(cmd, self.logPath + "/toolchain-chroot1.log")
-        cmd = "cd " + chrootID + " && tar -czvf ../tcroot.tar.gz ."
-        cmdUtils.runCommandInShell(cmd, self.logPath + "/toolchain-chroot2.log")
-        cmd = "mv " + chrootID + "/../tcroot.tar.gz ."
-        cmdUtils.runCommandInShell(cmd, self.logPath + "/toolchain-chroot3.log")
+        cmd = "cd " + chroot.getPath() + " && tar -czf ../tcroot.tar.gz ."
+        cmdUtils.runCommandInShell(cmd, logfn=self.logger.debug)
+        cmd = "mv " + chroot.getPath() + "/../tcroot.tar.gz ."
+        cmdUtils.runCommandInShell(cmd, logfn=self.logger.debug)
         #TODO: Container name, docker file name from constants.
-        self.dockerClient.images.build(tag="photon_build_container:latest",
+        self.dockerClient.images.build(tag=constants.buildContainerImage,
                                        path=".",
                                        rm=True,
                                        dockerfile="Dockerfile.photon_build_container")
 
         # Cleanup
         cmd = "rm -f ./tcroot.tar.gz"
-        cmdUtils.runCommandInShell(cmd, self.logPath + "/toolchain-chroot4.log")
-        chrUtils.destroyChroot(chrootID)
+        cmdUtils.runCommandInShell(cmd, logfn=self.logger.debug)
+        chroot.destroy()
         self.logger.debug("Photon build container successfully created.")

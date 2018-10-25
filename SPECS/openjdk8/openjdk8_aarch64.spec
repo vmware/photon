@@ -8,7 +8,7 @@
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	1.8.0.151
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		http://hg.openjdk.java.net/aarch64-port/jdk8u/
 Group:		Development/Tools
@@ -44,7 +44,9 @@ Requires:       openjre8 = %{version}-%{release}
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
 AutoReqProv: 	no
+%define ExtraBuildRequires icu-devel, openjdk8, openjre8, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel
 %define bootstrapjdk /usr/lib/jvm/OpenJDK-1.8.0.151
+
 %description
 The OpenJDK package installs java class library and javac java compiler.
 
@@ -95,9 +97,8 @@ sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeS
 sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJDK_TARGET_OS := linux\n&/' jdk/make/lib/Awt2dLibraries.gmk
 
 %build
-chmod a+x ./configure
 unset JAVA_HOME &&
-./configure \
+sh configure \
 	CUPS_NOT_NEEDED=yes \
 	--with-target-bits=64 \
 	--with-boot-jdk=%{bootstrapjdk} \
@@ -260,6 +261,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.151-2
+-   Use ExtraBuildRequires
 *   Thu Dec 21 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.151-1
 -   Initial version of OpenJDK for aarch64. SPEC file was forked from
     openjdk8-1.8.0.152-1 of x86_64

@@ -102,20 +102,16 @@ class Specutils(object):
     def _getRequiresTypeAllPackages(self, requiresType):
         dependentPackages = []
         for pkg in self.spec.packages.values():
-            pkgRequires = []
             if requiresType == "build":
-                pkgRequires = pkg.buildrequires
+                dependentPackages.extend(pkg.buildrequires)
             elif requiresType == "install":
-                pkgRequires = pkg.requires
-            for dpkg in pkgRequires:
-                dependentPackages.append(dpkg)
-        listDependentPackages = list(set(dependentPackages))
+                dependentPackages.extend(pkg.requires)
+        listDependentPackages = dependentPackages.copy()
         packageNames = self.getPackageNames()
         for pkgName in packageNames:
             for objName in listDependentPackages:
                 if objName.package == pkgName:
                         dependentPackages.remove(objName)
-        dependentPackages = list(set(dependentPackages))
         return dependentPackages
 
     def getBuildRequiresAllPackages(self):
@@ -127,17 +123,20 @@ class Specutils(object):
     def getCheckBuildRequiresAllPackages(self):
         dependentPackages = []
         for pkg in self.spec.packages.values():
-            for dpkg in pkg.checkbuildrequires:
-                dependentPackages.append(dpkg)
-        dependentPackages = list(set(dependentPackages))
+            dependentPackages.extend(pkg.checkbuildrequires)
+        return dependentPackages
+
+    def getExtraBuildRequires(self):
+        dependentPackages = []
+        for pkg in self.spec.packages.values():
+            dependentPackages.extend(pkg.extrabuildrequires)
         return dependentPackages
 
     def getRequires(self, pkgName):
         dependentPackages = []
         for pkg in self.spec.packages.values():
             if pkg.name == pkgName:
-                for dpkg in pkg.requires:
-                    dependentPackages.append(dpkg)
+                dependentPackages.extend(pkg.requires)
         return dependentPackages
 
     def getProvides(self, packageName):
