@@ -216,7 +216,7 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, dist_tag, logger, singleFile
                 srpmName = os.path.basename(srpmFullPath)
                 cpcmd = "cp " + srpmFullPath + " " + yamlSrpmDir + "/"
                 returnVal = cmdUtils.runCommandInShell(cpcmd)
-                if not returnVal:
+                if returnVal != 0:
                     logger.error("Copy SRPM File is failed for package:" + ossname)
             else:
                 logger.error("SRPM file is not found:" + ossname)

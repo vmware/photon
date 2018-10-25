@@ -3,7 +3,7 @@
 Summary:	OpenJDK
 Name:		openjdk9
 Version:	1.9.0.181
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -23,8 +23,10 @@ Requires:       openjre9 = %{version}-%{release}
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
 AutoReqProv: 	no
+%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel
 %define bootstrapjdkversion 1.8.0.112
 %define jdk_major_version 1.9.0
+
 %description
 The OpenJDK package installs java class library and javac java compiler.
 
@@ -57,10 +59,9 @@ This package provides the runtime library class sources.
 %setup -qn openjdk-%{version}
 
 %build
-chmod a+x ./configure
 unset JAVA_HOME &&
 ENABLE_HEADLESS_ONLY="true" &&
-./configure \
+sh configure \
 	--with-target-bits=64 \
 	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
 	--enable-headless-only \
@@ -223,5 +224,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/lib/src.zip
 
 %changelog
+*   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.9.0.181-2
+-   Use ExtraBuildRequires
 *   Thu Apr 19 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.0.181-1
 -   Initial build. First version

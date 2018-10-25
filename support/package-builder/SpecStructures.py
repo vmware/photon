@@ -45,6 +45,7 @@ class Package(object):
         self.buildrequires = []
         self.buildprovides = []
         self.checkbuildrequires = []
+        self.extrabuildrequires = []
 
         self.requires = []
         self.provides = []

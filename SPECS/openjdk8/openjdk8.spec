@@ -3,7 +3,7 @@
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	1.8.0.192
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -25,7 +25,9 @@ Requires:       openjre8 = %{version}-%{release}
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
 AutoReqProv: 	no
+%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel
 %define bootstrapjdkversion 1.8.0.112
+
 %description
 The OpenJDK package installs java class library and javac java compiler.
 
@@ -239,6 +241,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.192-2
+-   Use ExtraBuildRequires
 *   Thu Oct 18 2018 Tapas Kundu <tkundu@vmware.com> 1.8.0.192-1
 -   Upgraded to version 1.8.0.192
 *   Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 1.8.0.181-1
