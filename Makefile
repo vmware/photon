@@ -493,7 +493,7 @@ check-docker-service:
 	@docker ps >/dev/null 2>&1 || { echo "Docker service is not running. Aborting." >&2; exit 1; }
 
 check-docker-py:
-	@python3 -c "import docker; assert docker.__version__ == '$(PHOTON_DOCKER_PY_VER)'" >/dev/null 2>&1 || { echo "Error: Python3 package docker-py3 2.3.0 not installed.\nPlease use: pip3 install docker==2.3.0" >&2; exit 1; }
+	@python3 -c "import docker; assert docker.__version__ == '$(PHOTON_DOCKER_PY_VER)'" >/dev/null 2>&1 || { echo "Error: Python3 package docker-py3 $(PHOTON_DOCKER_PY_VER) not installed.\nPlease use: pip3 install docker==$(PHOTON_DOCKER_PY_VER)" >&2; exit 1; }
 
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }

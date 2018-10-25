@@ -57,7 +57,7 @@ function check-for-bogus-dates()
   do
     day=$(date --date="$m $d $y" '+%a')
     if [ "${D}" != "${day}" ]; then
-      echo "ERROR in $1: bogus date $m $d $y found - actual day is $D, but found $day"
+      echo "ERROR in $1: bogus date $m $d $y found - actual day is $day, but found $D"
       exit 1
     fi
     epoch_seconds=$(date --date "$m $d $y" +%s)

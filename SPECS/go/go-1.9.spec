@@ -14,7 +14,7 @@
 Summary:        Go
 Name:           go
 Version:        1.9.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -25,6 +25,8 @@ Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
 Patch0:         go_imports_fix.patch
 Patch1:         CVE-2018-7187.patch
 Requires:       glibc
+# to avoid cyclic dependency use prebuilt publish go rpm
+%define ExtraBuildRequires go
 
 %description
 Go is an open source programming language that makes it easy to build simple, reliable, and efficient software
@@ -114,6 +116,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Wed Oct 24 2018 Alexey Makhalov <amakhalov@vmware.com> 1.9.4-3
+-   Use extra build requires
 *   Mon Apr 02 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.4-2
 -   Fix for CVE-2018-7187
 *   Thu Mar 15 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-1

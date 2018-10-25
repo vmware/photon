@@ -13,7 +13,7 @@
 Summary:        Go
 Name:           go
 Version:        1.10.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -22,6 +22,7 @@ Distribution:   Photon
 Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
 %define sha1    go=adcd9d0bbbc764fa4ff20c08eb4a5a527fa95d96
 Requires:       glibc
+%define ExtraBuildRequires go
 
 %description
 Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.
@@ -109,5 +110,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.10.4-2
+-   Use ExtraBuildRequires
 *   Mon Sep 24 2018 Tapas Kundu <tkundu@vmware.com> 1.10.4-1
 -   Initial build for 1.10.4
