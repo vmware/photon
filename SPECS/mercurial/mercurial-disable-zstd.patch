@@ -1,0 +1,25 @@
+diff -Naur mercurial-4.7.1.orig/setup.py mercurial-4.7.1/setup.py
+--- mercurial-4.7.1.orig/setup.py	2018-09-04 21:29:06.000000000 +0530
++++ mercurial-4.7.1/setup.py	2018-10-25 11:31:11.557831626 +0530
+@@ -440,7 +440,7 @@
+     negative_opt = buildextnegops
+ 
+     def initialize_options(self):
+-        self.zstd = True
++        self.zstd = False
+         return build_ext.initialize_options(self)
+ 
+     def build_extensions(self):
+@@ -905,9 +905,9 @@
+               ['hgext/fsmonitor/pywatchman/bser.c']),
+     ]
+ 
+-sys.path.insert(0, 'contrib/python-zstandard')
+-import setup_zstd
+-extmodules.append(setup_zstd.get_c_extension(name='mercurial.zstd'))
++#sys.path.insert(0, 'contrib/python-zstandard')
++#import setup_zstd
++#extmodules.append(setup_zstd.get_c_extension(name='mercurial.zstd'))
+ 
+ try:
+     from distutils import cygwinccompiler
