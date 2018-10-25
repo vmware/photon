@@ -455,6 +455,7 @@ class constants(object):
             "elasticsearch.spec",
             # dotnet-runtime source has dep on libcurl.so.4(CURL_OPENSSL_3)(64bit)
             "dotnet-runtime.spec",
+            "dotnet-sdk.spec",
             "powershell.spec",
             # dashboard failed to build libxslt during `npm install`
             "kubernetes-dashboard.spec",
