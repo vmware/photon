@@ -4,7 +4,7 @@
 
 Summary:        Package for Google Compute Engine Linux images
 Name:           google-compute-engine
-Version:        2.8.4
+Version:        20180905
 Release:        1%{?dist}
 License:        Apache License 2.0
 Group:          Development/Languages/Python
@@ -129,8 +129,6 @@ systemctl --no-reload disable google-startup-scripts.service
 %{_libdir}/systemd/system/*.service
 
 %changelog
-*   Wed Oct 24 2018 Anish Swaminathan <anishs@vmware.com>  2.8.4-1
--   Rename version to 2.8.4
 *   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com>  20180905-1
 -   Upgrade to 20180905
 *   Wed Aug 23 2017 Anish Swaminathan <anishs@vmware.com> 20170426-3
