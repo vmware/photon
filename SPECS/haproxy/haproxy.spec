@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        1.8.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -33,7 +33,7 @@ Requires:       %{name} = %{version}-%{release}
 
 %build
 make %{?_smp_mflags} TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 \
-        USE_GETADDRINFO=1 USE_ZLIB=1
+        USE_GETADDRINFO=1 USE_ZLIB=1 USE_SYSTEMD=1
 make %{?_smp_mflags} -C contrib/systemd
 sed -i s/"local\/"/""/g contrib/systemd/haproxy.service
 sed -i "s/\/run/\/var\/run/g" contrib/systemd/haproxy.service
@@ -58,6 +58,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Thu Oct 25 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.8.13-2
+-   Build with USE_SYSTEMD=1 to fix service startup.
 *   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 1.8.13-1
 -   Update to version 1.8.13
 *   Tue Apr 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.6.12-1
@@ -72,4 +74,3 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 -   Updated to version 1.6.3
 *   Thu Oct 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.5.14-1
 -   Add haproxy v1.5 package.
-
