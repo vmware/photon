@@ -1,7 +1,7 @@
 Summary:        This library exports a gssapi interface
 Name:           libgssglue
 Version:        0.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            http://www.citi.umich.edu/projects/nfsv4/linux/
 Group:          System Environment/Libraries
@@ -17,7 +17,7 @@ This library exports a gssapi interface, but doesn't implement any gssapi mechan
 Summary:        Header and development files
 Requires:       %{name} = %{version}
 %description    devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
 %setup -q
@@ -43,6 +43,8 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Thu Oct 25 2018 Ajay Kaher <akaher@vmware.com> 0.4-3
+-   Corrected spec file name
 *   Thu Jul 26 2018 Ajay Kaher <akaher@vmware.com> 0.4-2
 -   Resolved compilation error for aarch64
 *   Mon Jan 22 2018 Xiaolin Li <xiaolinl@vmware.com> 0.4-1
