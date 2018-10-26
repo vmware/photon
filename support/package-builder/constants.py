@@ -452,6 +452,7 @@ class constants(object):
             "openjdk9.spec",
             "openjdk10.spec",
             "elasticsearch.spec",
+            "kibana.spec",
             # dotnet-runtime source has dep on libcurl.so.4(CURL_OPENSSL_3)(64bit)
             "dotnet-runtime.spec",
             "dotnet-sdk.spec",
