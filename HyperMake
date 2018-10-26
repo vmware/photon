@@ -1,0 +1,410 @@
+---
+format: hypermake.v0
+
+name: xcompile
+description: Photon Cross Compilation Toolchain
+
+targets:
+  build-toolchain-pre-[arch:i686,aarch64,arm]:
+    description: prepare stage/cross folder
+    cmds:
+      - rm -rf stage/cross/$[arch]-photon-linux-gnu
+      - mkdir -p stage/cross/$[arch]-photon-linux-gnu/opt/$[arch]-photon-linux-gnu
+    always: true
+
+  build-toolchain-[arch:i686,aarch64,arm]:
+    description: build and package photon toolchain for [arch:$arch]
+    after:
+      - build-toolchain-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-xc-toolchain.sh $[arch]
+    volumes:
+      - 'stage/cross/$[arch]-photon-linux-gnu/opt:/opt'
+    always: true
+
+  docker-xc-pre-[arch:i686,aarch64,arm]:
+    description: prepare cross compile base image
+    cmds:
+      - ./support/cross/docker/scripts/prep-container-build.sh $[arch]
+    always: true
+
+  docker-xc-[arch:i686,aarch64,arm]:
+    description: build cross compile base image
+    build: ./BUILD/docker
+    after:
+      - docker-xc-pre-$[arch]
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/post-container-build.sh $[arch]
+
+  bash-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/bash-$[arch]
+      - mkdir -p ./stage/cross/bash-target-$[arch]
+    always: true
+
+  bash-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - bash-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh bash $[arch]
+    volumes:
+      - ./stage/cross/bash-$[arch]:/usr/src/photon
+      - ./stage/cross/bash-target-$[arch]:/target
+
+  coreutils-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/coreutils-$[arch]
+    always: true
+
+  coreutils-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - coreutils-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh coreutils $[arch]
+    volumes:
+      - ./stage/cross/coreutils-$[arch]:/usr/src/photon
+
+  curl-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh curl $[arch]
+
+  curl-libs-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh curl-libs $[arch]
+
+  e2fsprogs-libs-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh e2fsprogs-libs $[arch]
+
+  elfutils-libelf-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh lefutils-libelf $[arch]
+
+  expat-libs-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh expat-libs $[arch]
+
+  file-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/file-$[arch]
+    always: true
+
+  file-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - file-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh file $[arch]
+    volumes:
+      - ./stage/cross/file-$[arch]:/usr/src/photon
+
+  filesystem-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/filesystem-$[arch]
+    always: true
+
+  filesystem-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - filesystem-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh filesystem $[arch]
+    volumes:
+      - ./stage/cross/filesystem-$[arch]:/usr/src/photon
+
+  glibc-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/glibc-$[arch]
+    always: true
+
+  glibc-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - glibc-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh glibc $[arch]
+    volumes:
+      - ./stage/cross/glibc-$[arch]:/usr/src/photon
+
+  gettext-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/gettext-$[arch]
+    always: true
+
+  gettext-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - gettext-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh gettext $[arch]
+    volumes:
+      - ./stage/cross/gettext-$[arch]:/usr/src/photon
+
+  gmp-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/gmp-$[arch]
+    always: true
+
+  gmp-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - gmp-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh gmp $[arch]
+    volumes:
+      - ./stage/cross/gmp-$[arch]:/usr/src/photon
+
+  grep-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/grep-$[arch]
+    always: true
+
+  grep-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - grep-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh grep $[arch]
+    volumes:
+      - ./stage/cross/grep-$[arch]:/usr/src/photon
+
+  krb5-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh krb5 $[arch]
+
+  libarchive-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/libarchive-$[arch]
+    always: true
+
+  libarchive-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - libarchive-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh libarchive $[arch]
+    volumes:
+      - ./stage/cross/libarchive-$[arch]:/usr/src/photon
+
+  libcap-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/libcap-$[arch]
+    always: true
+
+  libcap-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - libcap-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh libcap $[arch]
+    volumes:
+      - ./stage/cross/libcap-$[arch]:/usr/src/photon
+
+  libdb-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/libdb-$[arch]
+    always: true
+
+  libdb-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - libdb-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh libdb $[arch]
+    volumes:
+      - ./stage/cross/libdb-$[arch]:/usr/src/photon
+
+  libgcc-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh libgcc $[arch]
+
+  libsolv-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh libsolv $[arch]
+
+  libssh2-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh libssh2 $[arch]
+
+  ncurses-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/ncurses-$[arch]
+    always: true
+
+  ncurses-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - ncurses-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh ncurses $[arch]
+    volumes:
+      - ./stage/cross/ncurses-$[arch]:/usr/src/photon
+
+  nspr-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh nspr $[arch]
+
+  nss-libs-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh nss-libs $[arch]
+
+  openssl-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh openssl $[arch]
+
+  photon-release-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/photon-release-$[arch]
+    always: true
+
+  photon-release-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - photon-release-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh photon-release $[arch]
+    volumes:
+      - ./stage/cross/photon-release-$[arch]:/usr/src/photon
+
+  photon-repos-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/photon-repos-$[arch]
+    always: true
+
+  photon-repos-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - photon-repos-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh photon-repos $[arch]
+    volumes:
+      - ./stage/cross/photon-repos-$[arch]:/usr/src/photon
+
+  popt-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/popt-$[arch]
+    always: true
+
+  popt-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - popt-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh popt $[arch]
+    volumes:
+      - ./stage/cross/popt-$[arch]:/usr/src/photon
+
+  readline-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/readline-$[arch]
+      - mkdir -p ./stage/cross/readline-target-$[arch]
+    always: true
+
+  readline-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - readline-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh readline $[arch]
+    volumes:
+      - ./stage/cross/readline-$[arch]:/usr/src/photon
+      - ./stage/cross/readline-target-$[arch]:/target
+
+  rpm-libs-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh rpm-libs $[arch]
+
+  sqlite-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/sqlite-$[arch]
+    always: true
+
+  sqlite-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - sqlite-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh sqlite $[arch]
+    volumes:
+      - ./stage/cross/sqlite-$[arch]:/usr/src/photon
+
+  tdnf-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh tdnf $[arch]
+
+  tdnf-cli-libs-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh tdnf-cli $[arch]
+
+  xz-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/xz-$[arch]
+    always: true
+
+  xz-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - xz-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh xz $[arch]
+    volumes:
+      - ./stage/cross/xz-$[arch]:/usr/src/photon
+
+  zlib-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/zlib-$[arch]
+    always: true
+
+  zlib-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - zlib-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh zlib $[arch]
+    volumes:
+      - ./stage/cross/zlib-$[arch]:/usr/src/photon
+
+  clean:
+    description: clean photon toolchain
+    cmds:
+      - ./support/cross/docker/scripts/clean.sh
+    always: true
+
+  scrub:
+    description: scrub photon toolchain
+    cmds:
+      - ./support/cross/docker/scripts/scrub.sh
+    always: true
+
+  rebuild-toolchain-photon2:
+    description: build toolchain image for Photon OS 2.0
+    watches:
+      - support/cross/docker/toolchain/photon2
+    build: support/cross/docker/toolchain/photon2
+    cache: false
+
+  toolchain-[osver:photon2]:
+    description: place-holder for future dependencies
+
+settings:
+  docker:
+    user: root
+    image: 'vmware/xcompile-toolchain-photon2:1.0.0'

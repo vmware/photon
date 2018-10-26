@@ -1,0 +1,463 @@
+#!/bin/bash -xe
+
+PROJECT_ROOT=$(pwd)
+
+PKG_NAME=$1
+ARCH=$2
+
+function prepare_specs() {
+    local pkg_name=$1
+    rm -f /usr/src/photon/SPECS/*
+    cp -f $PROJECT_ROOT/SPECS/$pkg_name/* /usr/src/photon/SPECS/
+}
+
+function prepare_sources() {
+    local src_bundle=$1
+    if [ ! -f $PROJECT_ROOT/SOURCES/$src_bundle ]; then
+        mkdir -p $PROJECT_ROOT/SOURCES && \
+        cd $PROJECT_ROOT/SOURCES && \
+        wget http://photon-filer.eng.vmware.com/sources/1.0/$src_bundle
+    fi
+    cp -r $PROJECT_ROOT/SOURCES/$src_bundle /usr/src/photon/SOURCES/
+}
+
+function prepare_patches() {
+    local pkg_name=$1
+    cp -f $PROJECT_ROOT/SPECS/$pkg_name/*.patch /usr/src/photon/SOURCES/
+}
+
+function prepare_sources_from_specs() {
+    local pkg_name=$1
+    local src_bundle=$2
+    if [ ! -f $PROJECT_ROOT/SOURCES/$src_bundle ]; then
+        mkdir -p $PROJECT_ROOT/SOURCES && \
+        cp -r $PROJECT_ROOT/SPECS/$pkg_name/$src_bundle $PROJECT_ROOT/SOURCES/
+    fi
+    cp -r $PROJECT_ROOT/SOURCES/$src_bundle /usr/src/photon/SOURCES/
+}
+
+function build_bash_i686() {
+    prepare_specs bash
+
+    prepare_patches bash
+    prepare_sources_from_specs bash bash44-001
+    prepare_sources_from_specs bash bash44-002
+    prepare_sources_from_specs bash bash44-003
+    prepare_sources_from_specs bash bash44-004
+    prepare_sources_from_specs bash bash44-005
+    prepare_sources_from_specs bash bash44-006
+    prepare_sources_from_specs bash bash44-007
+    prepare_sources_from_specs bash bash44-008
+    prepare_sources_from_specs bash bash44-009
+    prepare_sources_from_specs bash bash44-010
+    prepare_sources_from_specs bash bash44-011
+    prepare_sources_from_specs bash bash44-012
+    prepare_sources_from_specs bash bash_completion
+
+    prepare_sources bash-4.4.tar.gz
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/ncurses-libs-*.rpm \
+        $PROJECT_ROOT/RPMS/i686/readline-*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/bash.spec
+}
+
+function build_coreutils_i686() {
+    prepare_specs coreutils
+
+    prepare_patches coreutils
+    prepare_sources_from_specs coreutils serial-console.sh
+
+    prepare_sources coreutils-8.30.tar.xz
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/gmp-*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/coreutils.spec
+}
+
+function build_file_i686() {
+    prepare_specs file
+
+    prepare_sources file-5.30.tar.gz
+    prepare_patches file
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "dist .ph2" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "sysroot /target" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/file.spec
+}
+
+function build_filesystem_i686() {
+    prepare_specs filesystem
+
+    prepare_sources filesystem-1.1.tar.gz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "dist .ph2" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/filesystem.spec
+}
+
+function build_glibc_i686() {
+    prepare_specs glibc
+
+    prepare_sources glibc-2.28.tar.xz
+    prepare_sources_from_specs glibc locale-gen.sh
+    prepare_sources_from_specs glibc locale-gen.conf
+    prepare_sources_from_specs glibc glibc-2.25-fhs-1.patch
+    prepare_sources_from_specs glibc glibc-2.24-bindrsvport-blacklist.patch
+    prepare_sources_from_specs glibc 0002-malloc-arena-fix.patch
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "dist .ph2" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/glibc.spec
+}
+
+function build_gmp_i686() {
+    prepare_specs gmp
+
+    prepare_sources gmp-6.1.2.tar.xz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "dist .ph2" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/gmp.spec
+}
+
+function build_ncurses_i686() {
+    prepare_specs ncurses
+
+    prepare_sources ncurses-6.1-20180908.tgz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "dist .ph2" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/ncurses.spec
+}
+
+function build_gettext_i686() {
+    prepare_specs gettext
+
+    prepare_sources gettext-0.19.8.1.tar.xz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/gettext.spec
+}
+
+function build_grep_i686() {
+    prepare_specs grep
+
+    prepare_sources grep-3.1.tar.xz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/grep.spec
+}
+
+function build_libarchive_i686() {
+    prepare_specs libarchive
+
+    prepare_sources libarchive-3.3.3.tar.gz
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/xz*.rpm
+
+    rpm -qa | grep xz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --define "sysroot /target" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/libarchive.spec
+}
+
+function build_libdb_i686() {
+    prepare_specs libdb
+
+    prepare_sources db-5.3.28.tar.gz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/libdb.spec
+}
+
+function build_photon_release_i686() {
+    prepare_specs photon-release
+
+    prepare_sources photon-release-2.0.tar.gz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --define "_arch i686" \
+       --define "photon_release_version 3.0" \
+       --define "photon_build_number 20" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/photon-release.spec
+}
+
+function build_photon_repos_i686() {
+    prepare_specs photon-repos
+
+    prepare_sources photon-repos-2.0.tar.gz
+    prepare_sources_from_specs photon-repos VMWARE-RPM-GPG-KEY
+    prepare_sources_from_specs photon-repos photon-iso.repo
+    prepare_sources_from_specs photon-repos photon.repo
+    prepare_sources_from_specs photon-repos photon-debuginfo.repo
+    prepare_sources_from_specs photon-repos photon-repos.spec
+    prepare_sources_from_specs photon-repos photon-extras.repo
+    prepare_sources_from_specs photon-repos photon-updates.repo
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/photon-repos.spec
+}
+
+function build_popt_i686() {
+    prepare_specs popt
+
+    prepare_sources popt-1.16.tar.gz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/popt.spec
+}
+
+function build_readline_i686() {
+    prepare_specs readline
+
+    prepare_sources readline-7.0.tar.gz
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/ncurses*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/readline.spec
+}
+
+function build_sqlite_i686() {
+    prepare_specs sqlite
+
+    prepare_sources sqlite-2.8.17.tar.gz
+    prepare_sources sqlite-autoconf-3220000.tar.gz
+    prepare_patches sqlite
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/sqlite.spec
+}
+
+function build_xz_i686() {
+    prepare_specs xz
+
+    prepare_sources xz-5.2.4.tar.xz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/xz.spec
+}
+
+function build_zlib_i686() {
+    prepare_specs zlib
+
+    prepare_sources zlib-1.2.11.tar.xz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/zlib.spec
+}
+
+case $ARCH in
+    i686)
+        mkdir -p $PROJECT_ROOT/RPMS/i686
+        ;;
+    *)
+        echo "Error: Unsupported architecture - $ARCH"
+        exit 1
+        ;;
+esac
+
+mkdir -p /usr/src/photon/BUILD && rm -rf /usr/src/photon/BUILD/*
+mkdir -p /usr/src/photon/BUILDROOT && rm -rf /usr/src/photon/BUILDROOT/*
+mkdir -p /usr/src/photon/RPMS
+mkdir -p /usr/src/photon/tmp && rm -rf /usr/src/photon/tmp/*
+mkdir -p /usr/src/photon/SOURCES
+mkdir -p /usr/src/photon/SPECS && rm -rf /usr/src/photon/SPECS/*
+
+case $PKG_NAME in
+    bash)
+        build_bash_$ARCH
+        ;; 
+    coreutils)
+        build_coreutils_$ARCH
+        ;; 
+    file)
+        build_file_$ARCH
+        ;;
+    filesystem)
+        build_filesystem_$ARCH
+        ;;
+    gettext)
+        build_gettext_$ARCH
+        ;;
+    glibc)
+        build_glibc_$ARCH
+        ;;
+    gmp)
+        build_gmp_$ARCH
+        ;;
+    grep)
+        build_grep_$ARCH
+        ;;
+    libarchive)
+        build_libarchive_$ARCH
+        ;;
+    libdb)
+        build_libdb_$ARCH
+        ;;
+    ncurses)
+        build_ncurses_$ARCH
+        ;;
+    photon-release)
+        build_photon_release_$ARCH
+        ;;
+    photon-repos)
+        build_photon_repos_$ARCH
+        ;;
+    popt)
+        build_popt_$ARCH
+        ;;
+    readline)
+        build_readline_$ARCH
+        ;;
+    sqlite)
+        build_sqlite_$ARCH
+        ;;
+    xz)
+        build_xz_$ARCH
+        ;;
+    zlib)
+        build_zlib_$ARCH
+        ;;
+    *)
+        echo "Error. Unrecognized package - $PKG_NAME"
+        ;;
+esac
+
+cp -r /usr/src/photon/RPMS/* $PROJECT_ROOT/RPMS/
