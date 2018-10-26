@@ -8,10 +8,10 @@
 %define isl_version 0.14
 %define cloog_version 0.18.1
 
-Name:    cross-x86-tools
+Name:    cross-i686-tools
 Summary: VMware Photon Cross Compiler for X86
 Version: 1.0.0
-Release: 2%{?_dist}
+Release: 3%{?_dist}
 Group:   Compiler
 Vendor:  VMware, Inc.
 Distribution: Photon
@@ -284,6 +284,8 @@ cp -av %{sysroot}/* %{buildroot}/%{sysroot}/
 %{sysroot}/*
 
 %changelog
+*    Thu Oct 25 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-3
+-    Changed name to cross-i686-tools
 *    Mon Oct 22 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-2
 -    Replace _sysroot definition with sysroot
 *    Fri Oct 19 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0
