@@ -5,13 +5,13 @@
 Summary:        Package for Google Compute Engine Linux images
 Name:           google-compute-engine
 Version:        2.8.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/GoogleCloudPlatform/compute-image-packages/
-Source0:        https://github.com/GoogleCloudPlatform/compute-image-packages/archive/compute-image-packages-%{version}.tar.gz
+Source0:        https://github.com/GoogleCloudPlatform/compute-image-packages/archive/compute-image-packages-20180905.tar.gz
 %define sha1    compute-image-packages=ef6a31ba42b0f9fcd7187e45bc953ef7df2b231e
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
@@ -49,7 +49,7 @@ Summary:        Service files for compute engine package
 Collection of service files for packages installed on Google supported Compute Engine images.
 
 %prep
-%setup -q -n compute-image-packages-%{version}
+%setup -q -n compute-image-packages-20180905
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -129,6 +129,8 @@ systemctl --no-reload disable google-startup-scripts.service
 %{_libdir}/systemd/system/*.service
 
 %changelog
+*   Thu Oct 25 2018 Tapas Kundu <tkundu@vmware.com> 2.8.4-2
+-   Corrected the source tar name
 *   Wed Oct 24 2018 Anish Swaminathan <anishs@vmware.com>  2.8.4-1
 -   Rename version to 2.8.4
 *   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com>  20180905-1
