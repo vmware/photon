@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          4%{?dist}
+Release:          5%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -138,7 +138,9 @@ rm %{buildroot}/lib/systemd/system/default.target
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
 install -dm 0755 %{buildroot}/%{_sysconfdir}/systemd/network
 install -m 0644 %{SOURCE4} %{buildroot}/%{_sysconfdir}/systemd/network
+%ifarch x86_64
 install -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/modules-load.d
+%endif
 %find_lang %{name} ../%{name}.lang
 
 %post
@@ -179,7 +181,9 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/systemd/coredump.conf
 %config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
 %config(noreplace) %{_sysconfdir}/pam.d/systemd-user
+%ifarch x86_64
 %config(noreplace) %{_sysconfdir}/modules-load.d/10-rdrand-rng.conf
+%endif
 %config(noreplace) %{_sysconfdir}/systemd/network/99-dhcp-en.network
 
 %dir %{_sysconfdir}/udev
@@ -244,6 +248,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Thu Oct 25 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 239-5
+-    Auto-load rdrand-rng kernel module only on x86.
 *    Mon Oct 08 2018 Srinidhi Rao <srinidhir@vmware.com> 239-4
 -    Add glib-devel as a Requirement to systemd-devel
 *    Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 239-3
