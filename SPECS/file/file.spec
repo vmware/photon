@@ -30,6 +30,9 @@ It contains the libraries and header files to create applications.
 %setup -q
 %build
 %configure \
+    --host=%{_host} \
+    --build=%{_build} \
+    --target=%{_target} \
     --disable-silent-rules
 make %{?_smp_mflags}
 %install

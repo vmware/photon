@@ -36,8 +36,10 @@ This package contains minimal set of shared xz libraries.
 %prep
 %setup -q
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
+    --host=%{_host} \
+    --build=%{_build} \
+    --target=%{_target} \
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
     --disable-static \
     --disable-silent-rules

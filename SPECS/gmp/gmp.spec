@@ -26,8 +26,9 @@ for handling compiled objects.
 %setup -q
 
 %build
-    ./configure \
-    --prefix=%{_prefix} \
+    %configure \
+    --host=%{_host} \
+    --build=%{_build} \
     --disable-silent-rules \
     --disable-static \
     --disable-assembly

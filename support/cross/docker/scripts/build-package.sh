@@ -108,9 +108,12 @@ function build_coreutils_i686() {
 function build_file_i686() {
     prepare_specs file
 
-    prepare_sources file-5.30.tar.gz
-    prepare_patches file
+    prepare_sources file-5.34.tar.gz
 
+    # Install/Update host RPMs
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/file-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/file-[0-9].*.rpm
+    # Install target RPMs
     mkdir -p /target/var/lib/rpm && \
     rpm --initdb --dbpath /target/var/lib/rpm && \
     rpm --root /target \

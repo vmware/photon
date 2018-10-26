@@ -31,6 +31,9 @@ These are the additional language files of popt.
 %setup -q
 %build
 %configure \
+    --host=%{_host} \
+    --build=%{_build} \
+    --target=%{_target} \
 	--disable-silent-rules
 make %{?_smp_mflags}
 %install
