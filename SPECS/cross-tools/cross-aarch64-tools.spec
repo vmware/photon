@@ -29,6 +29,7 @@ Source8: ftp://gcc.gnu.org/pub/gcc/infrastructure/cloog-%{cloog_version}.tar.gz
 Patch0:  gcc-patch-include-sys-param.patch
 Patch1:  gcc-patch-sanitizer-pr-81066.patch
 Patch2:  gcc-patch-fix-glibc-struct_ucontext_t.patch
+Patch3:  ubsan_use_new_style.patch
 BuildArch: x86_64
 Provides: libgcc_s.so.1
 Provides: libgcc_s.so.1(GCC_3.0)
@@ -55,7 +56,6 @@ BuildRequires: sed >= 4.4
 BuildRequires: tar >= 1.29
 BuildRequires: texinfo >= 6.3
 BuildRequires: unzip >= 6.0
-BuildRequires: vim >= 8.0.0533
 BuildRequires: wget >= 1.19.1
 BuildRequires: xz >= 5.2.3
 Requires: autoconf >= 2.69
@@ -128,6 +128,7 @@ cd gcc-%{gcc_version}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p0
+%patch3 -p1
 ln -sf `ls -1d ../mpfr-*/` mpfr
 ln -sf `ls -1d ../gmp-*/` gmp
 ln -sf `ls -1d ../mpc-*/` mpc
