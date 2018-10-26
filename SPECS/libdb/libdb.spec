@@ -32,7 +32,9 @@ The package contains the DB doc files
 %build
 cd build_unix
 ../dist/configure \
-	--host=%{_host} --build=%{_build} \
+	--host=%{_host} \
+    --build=%{_build} \
+    --target=%{_target} \
 	--prefix=%{_prefix} \
 	--enable-compat185 \
 	--enable-dbm       \

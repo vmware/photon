@@ -23,9 +23,11 @@ These are the additional language files of grep
 %prep
 %setup -q
 %build
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--bindir=/bin \
+    --host=%{_host} \
+    --build=%{_build} \
+    --target=%{_target} \
 	--disable-silent-rules
 make %{?_smp_mflags}
 

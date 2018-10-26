@@ -105,6 +105,9 @@ chmod +x find_requires.sh
 cd %{_builddir}/%{name}-build
 ../%{name}-%{version}/configure \
         --prefix=%{_prefix} \
+        --host=%{_host} \
+        --build=%{_build} \
+        --target=%{_target} \
         --disable-profile \
         --enable-kernel=3.2 \
         --enable-bind-now \
@@ -157,7 +160,12 @@ popd
 pushd localedata
 # Generate out of locale-archive an (en_US.) UTF-8 locale
 mkdir -p %{buildroot}/usr/lib/locale
-I18NPATH=. GCONV_PATH=../../glibc-build/iconvdata LC_ALL=C ../../glibc-build/locale/localedef --no-archive --prefix=%{buildroot} -A ../intl/locale.alias -i locales/en_US -c -f charmaps/UTF-8 en_US.UTF-8
+if [ %{_host} != %{_build} ]; then
+LOCALEDEF=localedef
+else
+LOCALEDEF=../../glibc-build/locale/localedef
+fi
+I18NPATH=. GCONV_PATH=../../glibc-build/iconvdata LC_ALL=C $LOCALEDEF --no-archive --prefix=%{buildroot} -A ../intl/locale.alias -i locales/en_US -c -f charmaps/UTF-8 en_US.UTF-8
 mv %{buildroot}/usr/lib/locale/en_US.utf8 %{buildroot}/usr/lib/locale/en_US.UTF-8
 popd
 # to do not depend on /bin/bash
@@ -198,14 +206,23 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %config(noreplace) %{_sysconfdir}/nsswitch.conf
 %config(noreplace) %{_sysconfdir}/ld.so.conf
 %config(noreplace) %{_sysconfdir}/rpc
+%ifnarch %{ix86}
 %config(missingok,noreplace) %{_sysconfdir}/ld.so.cache
-%config %{_sysconfdir}/locale-gen.conf
 /lib64/*
+%else
+/lib/*
+%endif
+%config %{_sysconfdir}/locale-gen.conf
 %ifarch aarch64
 %exclude /lib
 %endif
+%ifarch %{ix86}
+%exclude /lib/libpcprofile.so
+%{_libdir}/*.so
+%else
 %exclude /lib64/libpcprofile.so
 %{_lib64dir}/*.so
+%endif
 /sbin/ldconfig
 /sbin/locale-gen.sh
 %{_bindir}/*
@@ -226,7 +243,11 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 %files iconv
 %defattr(-,root,root)
+%ifnarch %{ix86}
 %{_lib64dir}/gconv/*
+%else
+%{_libdir}/gconv/*
+%endif
 /usr/bin/iconv
 /usr/sbin/iconvconfig
 
@@ -242,8 +263,13 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 /usr/sbin/zdump
 /usr/sbin/zic
 /sbin/sln
+%ifarch %{ix86}
+%{_libdir}/audit/*
+/lib/libpcprofile.so
+%else
 %{_lib64dir}/audit/*
 /lib64/libpcprofile.so
+%endif
 
 %files nscd
 %defattr(-,root,root)
@@ -264,8 +290,13 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %defattr(-,root,root)
 # TODO: Excluding for now to remove dependency on PERL
 # /usr/bin/mtrace
+%ifarch %{ix86}
+%{_libdir}/*.a
+%{_libdir}/*.o
+%else
 %{_lib64dir}/*.a
 %{_lib64dir}/*.o
+%endif
 %{_includedir}/*
 
 %files -f %{name}.lang lang

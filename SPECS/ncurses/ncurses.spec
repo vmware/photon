@@ -52,9 +52,10 @@ It contains all terminfo files
 mkdir v6
 pushd v6
 ln -s ../configure .
-./configure \
-    --prefix=%{_prefix} \
-    --mandir=%{_mandir} \
+%configure \
+    --host=%{_host} \
+    --build=%{_build} \
+    --target=%{_target} \
     --with-shared \
     --without-debug \
     --enable-pc-files \
@@ -68,9 +69,10 @@ popd
 mkdir v5
 pushd v5
 ln -s ../configure .
-./configure \
-    --prefix=%{_prefix} \
-    --mandir=%{_mandir} \
+%configure \
+    --host=%{_host} \
+    --build=%{_build} \
+    --target=%{_target} \
     --with-shared \
     --without-debug \
     --enable-pc-files \
@@ -91,9 +93,12 @@ for lib in ncurses form panel menu ; do \
     rm -vf %{buildroot}%{_libdir}/lib${lib}.so ; \
     echo "INPUT(-l${lib}w)" > %{buildroot}%{_libdir}/lib${lib}.so ; \
     ln -sfv lib${lib}w.a %{buildroot}%{_libdir}/lib${lib}.a ; \
-    ln -sfv /lib/pkgconfig/${lib}w.pc %{buildroot}/lib/pkgconfig/${lib}.pc
+    mkdir -p %{buildroot}/lib/pkgconfig ; \
+    ln -sfv /lib/pkgconfig/${lib}w.pc %{buildroot}/lib/pkgconfig/${lib}w.pc
+    ln -sfv /lib/pkgconfig/${lib}.pc %{buildroot}/lib/pkgconfig/${lib}.pc
 done
 ln -sfv libncurses++w.a %{buildroot}%{_libdir}/libncurses++.a
+ln -sfv /lib/pkgconfig/ncurses++w.pc %{buildroot}/lib/pkgconfig/ncurses++w.pc
 rm -vf %{buildroot}%{_libdir}/libcursesw.so
 echo "INPUT(-lncursesw)" > %{buildroot}%{_libdir}/libcursesw.so
 ln -sfv libncurses.so %{buildroot}%{_libdir}/libcurses.so
@@ -106,7 +111,10 @@ cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 
 %check
 cd test
-./configure
+%configure \
+    --host=%{_host} \
+    --build=%{_build} \
+    --target=%{_target}
 make
 
 %post libs -p /sbin/ldconfig
@@ -176,6 +184,9 @@ make
 %{_docdir}/ncurses-%{version}/html/*
 %{_docdir}/ncurses-%{version}/*.doc
 %{_mandir}/man3/*
+%ifarch %{ix86}
+%exclude %{_libdir}/pkgconfig/*.pc
+%endif
 
 %files terminfo
 %defattr(-,root,root)

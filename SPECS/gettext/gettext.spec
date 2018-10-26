@@ -19,8 +19,10 @@ messages in the user's native language.
 %setup -q
 
 %build
-./configure \
-	--prefix=%{_prefix} \
+%configure \
+    --host=%{_host} \
+    --build=%{_build} \
+    --target=%{_target} \
 	--docdir=%{_defaultdocdir}/%{name}-%{version} \
 	--disable-silent-rules
 make %{?_smp_mflags}

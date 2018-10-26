@@ -64,9 +64,11 @@ These are the additional language files of bash.
 %patch011 -p0
 %patch012 -p0
 %build
-./configure \
+%configure \
+    --host=%{_host} \
+    --build=%{_build} \
+    --target=%{_target} \
     "CFLAGS=-fPIC" \
-    --prefix=%{_prefix} \
     --bindir=/bin \
     --htmldir=%{_defaultdocdir}/%{name}-%{version} \
     --without-bash-malloc \
