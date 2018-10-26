@@ -1,7 +1,0 @@
-[photon-dev]
-name=VMware Photon Linux 2.0(aarch64)
-baseurl=https://dl.bintray.com/vmware/photon_dev_$basearch
-gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
-gpgcheck=0
-enabled=1
-skip_if_unavailable=True
