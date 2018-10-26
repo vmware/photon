@@ -362,7 +362,6 @@ photon-docker-image:
 	$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)
 	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon
 	sudo docker run \
-		-it \
 		--rm \
 		--privileged \
 		--net=host \
