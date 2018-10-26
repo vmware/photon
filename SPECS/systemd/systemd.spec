@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          5%{?dist}
+Release:          6%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -140,7 +140,9 @@ rm %{buildroot}/lib/systemd/system/default.target
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
 install -dm 0755 %{buildroot}/%{_sysconfdir}/systemd/network
 install -m 0644 %{SOURCE4} %{buildroot}/%{_sysconfdir}/systemd/network
+%ifarch x86_64
 install -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/modules-load.d
+%endif
 %find_lang %{name} ../%{name}.lang
 
 %post
@@ -181,7 +183,9 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/systemd/coredump.conf
 %config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
 %config(noreplace) %{_sysconfdir}/pam.d/systemd-user
+%ifarch x86_64
 %config(noreplace) %{_sysconfdir}/modules-load.d/10-rdrand-rng.conf
+%endif
 %config(noreplace) %{_sysconfdir}/systemd/network/99-dhcp-en.network
 
 %dir %{_sysconfdir}/udev
@@ -246,6 +250,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Fri Oct 26 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 239-6
+-    Auto-load rdrand-rng kernel module only on x86.
 *    Fri Oct 26 2018 Anish Swaminathan <anishs@vmware.com>  239-5
 -    Revert the commit that causes GCE networkd timeout
 -    https://github.com/systemd/systemd/commit/44b598a1c9d11c23420a5ef45ff11bcb0ed195eb
