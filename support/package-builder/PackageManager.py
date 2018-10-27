@@ -63,8 +63,7 @@ class PackageManager(object):
             #TODO: rebuild container only if anything in listToolChainPackages was built
             self._createBuildContainer()
 
-    def buildPackages(self, listPackages, buildThreads, pkgBuildType):
-        self.pkgBuildType = pkgBuildType
+    def buildPackages(self, listPackages, buildThreads):
         if constants.rpmCheck:
             constants.rpmCheck = False
             self.buildToolChainPackages(buildThreads)
