@@ -34,19 +34,20 @@ sed -e '/^includesdir/ s:$(libdir)/@PACKAGE_NAME@-@PACKAGE_VERSION@/include:$(in
 sed -e '/^includedir/ s:${libdir}/@PACKAGE_NAME@-@PACKAGE_VERSION@/include:@includedir@:' \
     -e 's/^Cflags: -I${includedir}/Cflags:/' \
     -i libffi.pc.in        &&
-./configure \
+%configure \
 	CFLAGS="%{optflags}" \
 	CXXFLAGS="%{optflags}" \
 	--prefix=%{_prefix} \
 	--bindir=%{_bindir} \
 	--libdir=%{_libdir} \
-	--disable-static
+	--disable-static \
+    --target=%{_target}
 make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 install -D -m644 LICENSE %{buildroot}/usr/share/licenses/%{name}/LICENSE
-find %{buildroot}/%{_lib64dir} -name '*.la' -delete
+find %{buildroot} -name '*.la' -delete
 rm -rf %{buildroot}/%{_infodir}
 %{_fixperms} %{buildroot}/*
 
@@ -60,7 +61,11 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
+%ifarch %{ix86}
+%{_libdir}/*.so*
+%else
 %{_lib64dir}/*.so*
+%endif
 
 %files devel
 %defattr(-,root,root)
