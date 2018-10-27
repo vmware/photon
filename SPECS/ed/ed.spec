@@ -19,8 +19,13 @@ GNU ed is a line-oriented text editor. It is used to create, display, modify and
 %prep
 %setup -q
 %build
-./configure \
-    --prefix=%{_prefix}
+BUILD_CC=gcc
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]; then
+BUILD_CC=i686-linux-gnu-gcc
+fi
+%configure \
+    CC=$BUILD_CC \
+    --target=%{_target}
 make V=1 %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
