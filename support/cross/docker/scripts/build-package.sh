@@ -131,6 +131,30 @@ function build_coreutils_i686() {
        /usr/src/photon/SPECS/coreutils.spec
 }
 
+function build_ed_i686() {
+    prepare_specs ed
+
+    prepare_sources ed-1.14.2.tar.gz
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/ed.spec
+}
+
 function build_file_i686() {
     prepare_specs file
 
@@ -276,6 +300,25 @@ function build_grep_i686() {
        --define "dist .ph2" \
        --target=i686-unknown-linux \
        /usr/src/photon/SPECS/grep.spec
+}
+
+function build_kbd_i686() {
+    prepare_specs kbd
+
+    prepare_sources kbd-2.0.4.tar.xz
+
+    prepare_patches kbd
+
+    # Install/Update host RPMs
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/check-[0-9].*.rpm
+    # Install target RPMs
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/kbd.spec
 }
 
 function build_libarchive_i686() {
@@ -468,6 +511,9 @@ case $PKG_NAME in
     coreutils)
         build_coreutils_$ARCH
         ;; 
+    ed)
+        build_ed_$ARCH
+        ;; 
     file)
         build_file_$ARCH
         ;;
@@ -485,6 +531,9 @@ case $PKG_NAME in
         ;;
     grep)
         build_grep_$ARCH
+        ;;
+    kbd)
+        build_kbd_$ARCH
         ;;
     libarchive)
         build_libarchive_$ARCH
