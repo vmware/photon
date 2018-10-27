@@ -89,10 +89,17 @@ targets:
     cmds:
       - ./support/cross/docker/scripts/build-package.sh curl-libs $[arch]
 
-  e2fsprogs-libs-[arch:i686]:
-    image: 'vmware/photon-xc-$[arch]-photon2'
+  e2fsprogs-pre-[arch:i686]:
     cmds:
-      - ./support/cross/docker/scripts/build-package.sh e2fsprogs-libs $[arch]
+      - mkdir -p ./stage/cross/e2fsprogs-$[arch]
+    always: true
+
+  e2fsprogs-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - e2fsprogs-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh e2fsprogs $[arch]
 
   ed-pre-[arch:i686]:
     cmds:
@@ -400,6 +407,20 @@ targets:
     image: 'vmware/photon-xc-$[arch]-photon2'
     cmds:
       - ./support/cross/docker/scripts/build-package.sh tdnf-cli $[arch]
+
+  util-linux-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/util-linux-$[arch]
+    always: true
+
+  util-linux-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - util-linux-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh util-linux $[arch]
+    volumes:
+      - ./stage/cross/util-linux-$[arch]:/usr/src/photon
 
   xz-pre-[arch:i686]:
     cmds:

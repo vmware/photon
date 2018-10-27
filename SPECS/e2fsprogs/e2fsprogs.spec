@@ -44,6 +44,9 @@ CFLAGS=-I/tools/include \
 PKG_CONFIG_PATH=/tools/lib/pkgconfig \
 ../configure \
     --prefix=%{_prefix} \
+    --host=%{_host} \
+    --build=%{_build} \
+    --target=%{_target} \
     --with-root-prefix='' \
     --enable-elf-shlibs \
     --disable-libblkid \

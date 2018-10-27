@@ -44,6 +44,9 @@ These are library files of util-linux.
 sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
 %build
 ./configure \
+    --build=%{_build} \
+    --host=%{_host} \
+    --target=%{_target} \
     --disable-nologin \
     --disable-silent-rules \
     --disable-static \

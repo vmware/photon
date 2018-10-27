@@ -131,6 +131,44 @@ function build_coreutils_i686() {
        /usr/src/photon/SPECS/coreutils.spec
 }
 
+function build_e2fsprogs_i686() {
+    prepare_specs e2fsprogs
+
+    prepare_sources e2fsprogs-1.44.3.tar.gz
+
+    # Install/Update host RPMs
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/e2fsprogs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/e2fsprogs-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/e2fsprogs-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-i18n-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-lang-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-iconv-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/util-linux-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/util-linux-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/util-linux-devel-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/util-linux*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/e2fsprogs.spec
+}
+
 function build_ed_i686() {
     prepare_specs ed
 
@@ -456,6 +494,20 @@ function build_sqlite_i686() {
        /usr/src/photon/SPECS/sqlite.spec
 }
 
+function build_util_linux_i686() {
+    prepare_specs util-linux
+
+    prepare_sources util-linux-2.32.tar.xz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/util-linux.spec
+}
+
 function build_xz_i686() {
     prepare_specs xz
 
@@ -514,6 +566,9 @@ case $PKG_NAME in
     ed)
         build_ed_$ARCH
         ;; 
+    e2fsprogs)
+        build_e2fsprogs_$ARCH
+        ;; 
     file)
         build_file_$ARCH
         ;;
@@ -561,6 +616,9 @@ case $PKG_NAME in
         ;;
     sqlite)
         build_sqlite_$ARCH
+        ;;
+    util-linux)
+        build_util_linux_$ARCH
         ;;
     xz)
         build_xz_$ARCH
