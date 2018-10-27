@@ -20,8 +20,16 @@ for handling compiled objects.
 %prep
 %setup -q
 %build
-./configure \
-    --prefix=%{_prefix}
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]; then
+export CC=i686-linux-gnu-gcc
+export CXX=i686-linux-gnu-g++
+export AR=i686-linux-gnu-ar
+export AS=i686-linux-gnu-as
+export RANLIB=i686-linux-gnu-ranlib
+export LD=i686-linux-gnu-ld
+export STRIP=i686-linux-gnu-strip
+fi
+./configure --prefix=/usr --shared
 make V=1 %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -35,7 +43,7 @@ make  %{?_smp_mflags} check
 %postun -p /sbin/ldconfig
 %files
 %defattr(-,root,root)
-%{_libdir}/libz.so.*
+%{_libdir}/libz.so*
 
 %files devel
 %{_includedir}/zconf.h
