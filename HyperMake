@@ -279,6 +279,20 @@ targets:
     volumes:
       - ./stage/cross/libdb-$[arch]:/usr/src/photon
 
+  libffi-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/libffi-$[arch]
+    always: true
+
+  libffi-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - libffi-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh libffi $[arch]
+    volumes:
+      - ./stage/cross/libffi-$[arch]:/usr/src/photon
+
   libgcc-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     cmds:

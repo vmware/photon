@@ -425,6 +425,20 @@ function build_libdb_i686() {
        /usr/src/photon/SPECS/libdb.spec
 }
 
+function build_libffi_i686() {
+    prepare_specs libffi
+
+    prepare_sources libffi-3.2.1.tar.gz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/libffi.spec
+}
+
 function build_photon_release_i686() {
     prepare_specs photon-release
 
@@ -649,6 +663,9 @@ case $PKG_NAME in
         ;;
     libdb)
         build_libdb_$ARCH
+        ;;
+    libffi)
+        build_libffi_$ARCH
         ;;
     ncurses)
         build_ncurses_$ARCH
