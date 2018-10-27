@@ -494,6 +494,33 @@ function build_sqlite_i686() {
        /usr/src/photon/SPECS/sqlite.spec
 }
 
+function build_unzip_i686() {
+    prepare_specs unzip
+
+    prepare_sources unzip60.tar.gz
+
+    prepare_patches unzip
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/bzip2*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/unzip.spec
+}
+
 function build_util_linux_i686() {
     prepare_specs util-linux
 
@@ -616,6 +643,9 @@ case $PKG_NAME in
         ;;
     sqlite)
         build_sqlite_$ARCH
+        ;;
+    unzip)
+        build_unzip_$ARCH
         ;;
     util-linux)
         build_util_linux_$ARCH
