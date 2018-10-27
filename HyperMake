@@ -53,6 +53,20 @@ targets:
       - ./stage/cross/bash-$[arch]:/usr/src/photon
       - ./stage/cross/bash-target-$[arch]:/target
 
+  bzip2-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/bzip2-$[arch]
+    always: true
+
+  bzip2-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - bzip2-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh bzip2 $[arch]
+    volumes:
+      - ./stage/cross/bzip2-$[arch]:/usr/src/photon
+
   coreutils-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/coreutils-$[arch]
@@ -252,10 +266,19 @@ targets:
     volumes:
       - ./stage/cross/ncurses-$[arch]:/usr/src/photon
 
+  nspr-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/nspr-$[arch]
+    always: true
+
   nspr-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - nspr-pre-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh nspr $[arch]
+    volumes:
+      - ./stage/cross/nspr-$[arch]:/usr/src/photon
 
   nss-libs-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
