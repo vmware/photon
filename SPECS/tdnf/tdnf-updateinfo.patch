@@ -1,0 +1,101 @@
+From 86689f5eb557e4a542661f306fecc621459af400 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Tue, 23 Oct 2018 06:02:22 +0000
+Subject: [PATCH] Bug 2219020: --sec-severity option updates
+
+Changes include:
+    1. tdnf --sec-severity [value] updateinfo and
+       tdnf --sec-severity [value] updateinfo summary commands to filter
+       the results based on the condition.
+    2. tdnf --sec-severity [value] update prints "No data available"
+       instead of Error message when there is no results.
+
+Change-Id: I34fb08be74a825236fc84bbe7f98b1715fec1f02
+---
+
+diff --git a/client/api.c b/client/api.c
+index 6b7e8ac..db16e4a 100644
+--- a/client/api.c
++++ b/client/api.c
+@@ -1173,6 +1173,7 @@
+     *ppUpdateInfo = pUpdateInfos;
+ 
+ cleanup:
++    TDNF_SAFE_FREE_MEMORY(pszSeverity);
+     if(hAdvList)
+     {
+         hy_advisorylist_free(hAdvList);
+diff --git a/client/updateinfo.c b/client/updateinfo.c
+index 2ec7ff6..f776870 100644
+--- a/client/updateinfo.c
++++ b/client/updateinfo.c
+@@ -41,6 +41,9 @@
+     HyAdvisory hAdv = NULL;
+     HyAdvisoryType nType = HY_ADVISORY_UNKNOWN;
+     int nTypeCount = HY_ADVISORY_ENHANCEMENT;
++    char*  pszSeverity = NULL;
++    uint32_t dwSecurity = 0;
++    const char* pszTemp = NULL;
+ 
+     if(!pTdnf || !ppszPackageNameSpecs || !ppSummary)
+     {
+@@ -69,6 +72,12 @@
+     pSummary[HY_ADVISORY_BUGFIX].nType = UPDATE_BUGFIX;
+     pSummary[HY_ADVISORY_ENHANCEMENT].nType = UPDATE_ENHANCEMENT;
+ 
++    dwError = TDNFGetSecuritySeverityOption(
++                  pTdnf,
++                  &dwSecurity,
++                  &pszSeverity);
++    BAIL_ON_TDNF_ERROR(dwError);
++
+     FOR_PACKAGELIST(hPkg, hPkgList, iPkg)
+     {
+         hAdvList = hy_package_get_advisories(hPkg, HY_GT);
+@@ -87,6 +96,21 @@
+                 BAIL_ON_TDNF_ERROR(dwError);
+             }
+             nType = hy_advisory_get_type(hAdv);
++            if (dwSecurity)
++            {
++                if (nType != HY_ADVISORY_SECURITY)
++                {
++                    continue;
++                }
++            }
++            else if (pszSeverity)
++            {
++                pszTemp = hy_advisory_get_severity(hAdv);
++                if (!pszTemp || atof(pszSeverity) > atof(pszTemp))
++                {
++                   continue;
++                }
++            }
+             if(nType < HY_ADVISORY_UNKNOWN || nType > HY_ADVISORY_ENHANCEMENT)
+             {
+                 dwError = ERROR_TDNF_INVALID_PARAMETER;
+@@ -102,6 +126,7 @@
+     *ppSummary = pSummary;
+ 
+ cleanup:
++    TDNF_SAFE_FREE_MEMORY(pszSeverity);
+     if(hAdv)
+     {
+         hy_advisory_free(hAdv);
+diff --git a/tools/cli/main.c b/tools/cli/main.c
+index c0a2b5f..798029f 100644
+--- a/tools/cli/main.c
++++ b/tools/cli/main.c
+@@ -182,7 +182,11 @@
+     {
+         dwErrorCode = 0;
+     }
+-    if(dwErrorCode)
++    if (dwErrorCode == ERROR_TDNF_NO_DATA)
++    {
++        printf("No data available\n");
++    }
++    else if(dwErrorCode)
+     {
+         fprintf(stderr, "Error(%d) : %s\n", dwErrorCode, pszError);
+     }
