@@ -408,6 +408,20 @@ targets:
     cmds:
       - ./support/cross/docker/scripts/build-package.sh tdnf-cli $[arch]
 
+  unzip-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/unzip-$[arch]
+    always: true
+
+  unzip-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - unzip-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh unzip $[arch]
+    volumes:
+      - ./stage/cross/unzip-$[arch]:/usr/src/photon
+
   util-linux-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/util-linux-$[arch]

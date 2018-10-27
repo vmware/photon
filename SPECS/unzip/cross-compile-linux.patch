@@ -1,0 +1,14 @@
+--- ./a/unix/Makefile	2009-01-18 14:41:18.000000000 -0800
++++ ./b/unix/Makefile	2018-10-27 13:38:57.599956365 -0700
+@@ -821,6 +821,11 @@
+ linux_noasm:	unix_make
+ 	$(MAKE) unzips CC=gcc LD=gcc CFLAGS="-O -Wall"
+ 
++# Linux Cross (Posix, approximately SysV):  virtually any version since before 0.96,
++# for any platform.  Change "-O" to "-O3" or whatever, as desired...
++linux_cross_noasm:	unix_make
++	$(MAKE) unzips CC=$(CROSS_CC) LD=$(CROSS_LD) CFLAGS="-O -Wall"
++
+ # Linux with lcc compiler:  __inline__ (stat.h) not recognized, and must edit
+ # /usr/include/gnu/types.h to get rid of "long long" if __LCC__ defined.  -O3
+ # (or -O2 or -O) is ignored.  [GRR 960828: test target only]

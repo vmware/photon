@@ -15,6 +15,7 @@ Patch1:         cve-2015-1315.patch
 Patch2:         CVE-2015-7696-CVE-2015-7697.patch
 Patch3:         unzip-CVE-2014-9844.patch
 Patch4:         unzip-CVE-2014-9913.patch
+Patch5:         cross-compile-linux.patch
 
 %description
 The UnZip package contains ZIP extraction utilities. These are useful 
@@ -28,8 +29,18 @@ with PKZIP or Info-ZIP utilities, primarily in a DOS environment.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p2
 
 %build
+CROSS_CC=
+CROSS_LD=
+CROSS_COMPILE=
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]
+then
+CROSS_CC=i686-linux-gnu-gcc
+CROSS_LD=i686-linux-gnu-gcc
+CROSS_COMPILE=1
+fi
 case `uname -m` in
   i?86)
     sed -i -e 's/DASM_CRC"/DASM_CRC -DNO_LCHMOD"/' unix/Makefile
@@ -40,7 +51,14 @@ case `uname -m` in
     sed -i 's/CFLAGS="-O -Wall/CFLAGS="-O -g -Wall/' unix/Makefile
     sed -i 's/LF2 = -s/LF2 =/' unix/Makefile
     sed -i 's|STRIP = strip|STRIP = /bin/true|' unix/Makefile
-    make -f unix/Makefile linux_noasm %{?_smp_mflags}
+    if test -n "$CROSS_COMPILE"
+    then
+        make -f unix/Makefile linux_cross_noasm %{?_smp_mflags} \
+            CROSS_CC="$CROSS_CC" \
+            CROSS_LD="$CROSS_LD"
+    else
+        make -f unix/Makefile linux_noasm %{?_smp_mflags}
+    fi
     ;;
 esac
 
