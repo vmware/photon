@@ -193,6 +193,30 @@ function build_ed_i686() {
        /usr/src/photon/SPECS/ed.spec
 }
 
+function build_expat_i686() {
+    prepare_specs expat
+
+    prepare_sources expat-2.2.6.tar.bz2
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/expat.spec
+}
+
 function build_file_i686() {
     prepare_specs file
 
@@ -595,6 +619,9 @@ case $PKG_NAME in
         ;; 
     e2fsprogs)
         build_e2fsprogs_$ARCH
+        ;; 
+    expat)
+        build_expat_$ARCH
         ;; 
     file)
         build_file_$ARCH

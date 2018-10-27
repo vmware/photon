@@ -33,7 +33,8 @@ This package contains minimal set of shared expat libraries.
 	CXXFLAGS="%{optflags}" \
 	--bindir=%{_bindir} \
 	--libdir=%{_libdir} \
-	--disable-static
+	--disable-static \
+    --target="%{_target}"
 make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
