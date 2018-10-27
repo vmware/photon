@@ -77,6 +77,32 @@ function build_bash_i686() {
        /usr/src/photon/SPECS/bash.spec
 }
 
+function build_bzip2_i686() {
+    prepare_specs bzip2
+
+    prepare_sources bzip2-1.0.6.tar.gz
+
+    prepare_patches bzip2
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/bzip2.spec
+}
+
 function build_coreutils_i686() {
     prepare_specs coreutils
 
@@ -193,6 +219,35 @@ function build_ncurses_i686() {
        --define "_build x86_64-linux-gnu" \
        --target=i686-unknown-linux \
        /usr/src/photon/SPECS/ncurses.spec
+}
+
+function build_nspr_i686() {
+    prepare_specs nspr
+
+    prepare_sources nspr-4.20.tar.gz
+
+    prepare_patches nspr
+
+    # Install/Update host RPMs
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/nspr-[0-9].*.rpm
+    # Install target RPMs
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "dist .ph2" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/nspr.spec
 }
 
 function build_gettext_i686() {
@@ -407,6 +462,9 @@ case $PKG_NAME in
     bash)
         build_bash_$ARCH
         ;; 
+    bzip2)
+        build_bzip2_$ARCH
+        ;; 
     coreutils)
         build_coreutils_$ARCH
         ;; 
@@ -436,6 +494,9 @@ case $PKG_NAME in
         ;;
     ncurses)
         build_ncurses_$ARCH
+        ;;
+    nspr)
+        build_nspr_$ARCH
         ;;
     photon-release)
         build_photon_release_$ARCH

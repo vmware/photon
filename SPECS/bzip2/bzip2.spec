@@ -36,10 +36,27 @@ This package contains minimal set of shared bzip2 libraries.
 %patch1 -p1
 sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
 sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile
+if [ %{_host} != %{_build} ]; then
+sed -i "/^all:/s/ test//" Makefile
+fi
 %build
-make VERBOSE=1 %{?_smp_mflags} -f Makefile-libbz2_so
+BUILD_CC=gcc
+BUILD_AR=ar
+BUILD_RANLIB=ranlib
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]; then
+BUILD_CC=i686-linux-gnu-gcc
+BUILD_AR=i686-linux-gnu-ar
+BUILD_RANLIB=i686-linux-gnu-ranlib
+fi
+make VERBOSE=1 %{?_smp_mflags} -f Makefile-libbz2_so \
+    CC=$BUILD_CC \
+    AR=$BUILD_AR \
+    RANLIB=$BUILD_RANLIB
 make clean
-make VERBOSE=1 %{?_smp_mflags}
+make VERBOSE=1 %{?_smp_mflags} \
+    CC=$BUILD_CC \
+    AR=$BUILD_AR \
+    RANLIB=$BUILD_RANLIB
 %install
 make PREFIX=%{buildroot}/usr install
 install -vdm 0755 %{buildroot}/%{_lib}
