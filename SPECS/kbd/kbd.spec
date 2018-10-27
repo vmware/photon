@@ -19,11 +19,24 @@ The Kbd package contains key-table files, console fonts, and keyboard utilities.
 sed -i 's/\(RESIZECONS_PROGS=\)yes/\1no/g' configure
 sed -i 's/resizecons.8 //'  docs/man/man8/Makefile.in
 %build
+CONFIG_CACHE=
+DISABLE_TESTS=
+if [ %{_host} != %{_build} ]; then
+cat > config.cache << EOF
+ac_cv_func_setpgrp_void=yes
+ac_cv_func_malloc_0_nonnull=yes
+ac_cv_func_realloc_0_nonnull=yes
+EOF
+CONFIG_CACHE=--cache-file=config.cache
+DISABLE_TESTS=--disable-tests
+fi
 PKG_CONFIG_PATH=/tools/lib/pkgconfig \
-./configure \
-	--prefix=%{_prefix} \
+%configure \
+    --target=%{_target} \
 	--disable-vlock \
-	--disable-silent-rules
+	--disable-silent-rules \
+    $CONFIG_CACHE \
+    $DISABLE_TESTS
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
