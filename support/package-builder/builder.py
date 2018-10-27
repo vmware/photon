@@ -179,13 +179,13 @@ def main():
             pkgManager = PackageManager()
             pkgManager.buildToolChainPackages(options.buildThreads)
         elif options.installPackage:
-            buildAPackage(package, options.buildThreads, options.pkgBuildType)
+            buildSpecifiedPackages([package], options.buildThreads, options.pkgBuildType)
         elif options.pkgJsonInput:
-            buildPackagesInJson(logger, options.buildThreads, pkgInfoJsonFile,
-                                     options.pkgJsonInput, options.pkgBuildType)
+            buildPackagesInJson(options.pkgJsonInput, options.buildThreads,
+                                options.pkgBuildType, pkgInfoJsonFile, logger)
         else:
-            buildPackagesForAllSpecs(logger, options.buildThreads, pkgInfoJsonFile,
-                                     options.pkgBuildType)
+            buildPackagesForAllSpecs(options.buildThreads, options.pkgBuildType,
+                                     pkgInfoJsonFile, logger)
     except Exception as e:
         logger.error("Caught an exception")
         logger.error(str(e))
@@ -195,41 +195,32 @@ def main():
     sys.exit(0)
 
 
-def buildAPackage(package, buildThreads, pkgBuildType):
-    listPackages = [package]
-    pkgManager = PackageManager(pkgBuildType=pkgBuildType)
+def buildSpecifiedPackages(listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile=None, logger=None):
     if constants.rpmCheck:
         constants.setTestForceRPMS(copy.copy(listPackages))
-    pkgManager.buildPackages(listPackages, buildThreads, pkgBuildType)
+    pkgManager = PackageManager(pkgBuildType=pkgBuildType)
+    pkgManager.buildPackages(listPackages, buildThreads)
 
-def buildPackagesInJson(logger, buildThreads, pkgInfoJsonFile, pkgJsonInput, pkgBuildType):
+    if pkgInfoJsonFile is not None:
+        # Generating package info file which is required by installer
+        if logger is not None:
+            logger.debug("Writing Package info to the file:" + pkgInfoJsonFile)
+        pkgInfo = PackageInfo()
+        pkgInfo.loadPackagesData()
+        pkgInfo.writePkgListToFile(pkgInfoJsonFile)
+
+
+def buildPackagesInJson(pkgJsonInput, buildThreads, pkgBuildType, pkgInfoJsonFile, logger):
     listPackages = []
     with open(pkgJsonInput) as jsonData:
         pkg_list_json = json.load(jsonData)
         listPackages = pkg_list_json["packages"]
-    if constants.rpmCheck:
-        constants.setTestForceRPMS(copy.copy(listPackages))
-    pkgManager = PackageManager(pkgBuildType=pkgBuildType)
-    pkgManager.buildPackages(listPackages, buildThreads, pkgBuildType)
+    buildSpecifiedPackages(listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile, logger)
 
-    # Generating package info file which is required by installer
-    logger.debug("Writing Package info to the file:" + pkgInfoJsonFile)
-    pkgInfo = PackageInfo()
-    pkgInfo.loadPackagesData()
-    pkgInfo.writePkgListToFile(pkgInfoJsonFile)
 
-def buildPackagesForAllSpecs(logger, buildThreads, pkgInfoJsonFile, pkgBuildType):
+def buildPackagesForAllSpecs(buildThreads, pkgBuildType, pkgInfoJsonFile, logger):
     listPackages = SPECS.getData().getListPackages()
-    if constants.rpmCheck:
-        constants.setTestForceRPMS(copy.copy(listPackages))
-    pkgManager = PackageManager(pkgBuildType=pkgBuildType)
-    pkgManager.buildPackages(listPackages, buildThreads, pkgBuildType)
-
-    # Generating package info file which is required by installer
-    logger.debug("Writing Package info to the file:" + pkgInfoJsonFile)
-    pkgInfo = PackageInfo()
-    pkgInfo.loadPackagesData()
-    pkgInfo.writePkgListToFile(pkgInfoJsonFile)
+    buildSpecifiedPackages(listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile, logger)
 
 
 def get_packages_with_build_options(pkg_build_options_file):
