@@ -120,10 +120,19 @@ targets:
     cmds:
       - ./support/cross/docker/scripts/build-package.sh lefutils-libelf $[arch]
 
-  expat-libs-[arch:i686]:
-    image: 'vmware/photon-xc-$[arch]-photon2'
+  expat-pre-[arch:i686]:
     cmds:
-      - ./support/cross/docker/scripts/build-package.sh expat-libs $[arch]
+      - mkdir -p ./stage/cross/expat-$[arch]
+    always: true
+
+  expat-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - expat-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh expat $[arch]
+    volumes:
+      - ./stage/cross/expat-$[arch]:/usr/src/photon
 
   file-pre-[arch:i686]:
     cmds:
