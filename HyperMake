@@ -359,10 +359,19 @@ targets:
     cmds:
       - ./support/cross/docker/scripts/build-package.sh libsolv $[arch]
 
+  libssh2-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/libssh2-$[arch]
+    always: true
+
   libssh2-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - libssh2-pre-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh libssh2 $[arch]
+    volumes:
+      - ./stage/cross/libssh2-$[arch]:/usr/src/photon
 
   ncurses-pre-[arch:i686]:
     cmds:

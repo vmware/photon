@@ -29,12 +29,18 @@ These are the header files of libssh2.
 %setup -q
 
 %build
-./configure --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
+WITH_LIBSSL_PREFIX=
+WITH_ZLIB_PREFIX=
+if [ %{_host} != %{_build} ]; then
+WITH_LIBSSL_PREFIX='--with-libssl-prefix=/target/usr'
+WITH_ZLIB_PREFIX='--with-libz-prefix=/target/usr'
+fi
+%configure \
+    --target=%{_target} \
     --disable-static \
-    --enable-shared
+    --enable-shared \
+    $WITH_LIBSSL_PREFIX \
+    $WITH_ZLIB_PREFIX
 make
 
 %install

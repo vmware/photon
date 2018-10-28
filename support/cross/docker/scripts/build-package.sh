@@ -558,6 +558,36 @@ function build_libffi_i686() {
        /usr/src/photon/SPECS/libffi.spec
 }
 
+function build_libssh2_i686() {
+    prepare_specs libssh2
+
+    prepare_sources libssh2-1.8.0.tar.gz
+
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/openssl-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/openssl-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/zlib-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/openssl*.rpm \
+        $PROJECT_ROOT/RPMS/i686/zlib*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/libssh2.spec
+}
+
 function build_openssl_release_i686() {
     prepare_specs openssl
 
@@ -847,6 +877,9 @@ case $PKG_NAME in
         ;;
     libffi)
         build_libffi_$ARCH
+        ;;
+    libssh2)
+        build_libssh2_$ARCH
         ;;
     ncurses)
         build_ncurses_$ARCH
