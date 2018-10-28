@@ -498,6 +498,22 @@ function build_libdb_i686() {
        /usr/src/photon/SPECS/libdb.spec
 }
 
+function build_libdnet_i686() {
+    prepare_specs libdnet
+
+    prepare_sources libdnet-1.11.tar.gz
+
+    prepare_patches libdnet
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/libdnet.spec
+}
+
 function build_libffi_i686() {
     prepare_specs libffi
 
@@ -789,6 +805,9 @@ case $PKG_NAME in
         ;;
     libdb)
         build_libdb_$ARCH
+        ;;
+    libdnet)
+        build_libdnet_$ARCH
         ;;
     libffi)
         build_libffi_$ARCH
