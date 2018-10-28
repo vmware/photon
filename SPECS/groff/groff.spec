@@ -24,10 +24,10 @@ and formatting text.
 %prep
 %setup -q
 %build
-PAGE=letter ./configure \
-	--prefix=%{_prefix} \
+PAGE=letter %configure \
+    --target=%{_target} \
 	--with-grofferdir=%{_datadir}/%{name}/%{version}/groffer
-make
+make TROFFBIN=troff GROFFBIN=groff GROFF_BIN_PATH=
 %install
 install -vdm 755 %{_defaultdocdir}/%{name}-1.22/pdf
 make DESTDIR=%{buildroot} install

@@ -218,6 +218,20 @@ targets:
     volumes:
       - ./stage/cross/grep-$[arch]:/usr/src/photon
 
+  groff-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/groff-$[arch]
+    always: true
+
+  groff-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - groff-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh groff $[arch]
+    volumes:
+      - ./stage/cross/groff-$[arch]:/usr/src/photon
+
   kbd-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/kbc-$[arch]
