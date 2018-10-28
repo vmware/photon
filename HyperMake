@@ -341,10 +341,19 @@ targets:
     cmds:
       - ./support/cross/docker/scripts/build-package.sh nss-libs $[arch]
 
+  openssl-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/openssl-$[arch]
+    always: true
+
   openssl-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - openssl-pre-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh openssl $[arch]
+    volumes:
+      - ./stage/cross/openssl-$[arch]:/usr/src/photon
 
   photon-release-pre-[arch:i686]:
     cmds:

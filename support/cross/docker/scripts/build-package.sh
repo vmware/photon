@@ -439,6 +439,53 @@ function build_libffi_i686() {
        /usr/src/photon/SPECS/libffi.spec
 }
 
+function build_openssl_release_i686() {
+    prepare_specs openssl
+
+    prepare_sources openssl-1.0.2p.tar.gz
+    prepare_sources_from_specs openssl rehash_ca_certificates.sh
+
+    prepare_patches openssl
+
+    # Install/Update host RPMs
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/e2fsprogs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/e2fsprogs-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/e2fsprogs-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-i18n-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-lang-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-iconv-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/util-linux-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/util-linux-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/util-linux-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/openssl-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/util-linux*.rpm \
+        $PROJECT_ROOT/RPMS/i686/expat*.rpm \
+        $PROJECT_ROOT/RPMS/i686/zlib*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --define "_arch i686" \
+       --define "photon_release_version 3.0" \
+       --define "photon_build_number 20" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/openssl.spec
+}
+
 function build_photon_release_i686() {
     prepare_specs photon-release
 
@@ -672,6 +719,9 @@ case $PKG_NAME in
         ;;
     nspr)
         build_nspr_$ARCH
+        ;;
+    openssl)
+        build_openssl_release_$ARCH
         ;;
     photon-release)
         build_photon_release_$ARCH
