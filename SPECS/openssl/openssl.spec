@@ -60,6 +60,18 @@ Perl scripts that convert certificates and keys to various formats.
 
 %build
 export CFLAGS="%{optflags}"
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]; then
+./Configure \
+    --prefix=%{_prefix} \
+    --libdir=lib \
+    --openssldir=/%{_sysconfdir}/ssl \
+    --cross-compile-prefix=i686-linux-gnu- \
+    shared \
+    zlib-dynamic \
+    %{?_with_fips} \
+    -Wa,--noexecstack \
+    linux-generic32
+else
 ./config \
     --prefix=%{_prefix} \
     --libdir=lib \
@@ -68,6 +80,7 @@ export CFLAGS="%{optflags}"
     zlib-dynamic \
     %{?_with_fips} \
     -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
+fi
 # does not support -j yet
 make
 %install
