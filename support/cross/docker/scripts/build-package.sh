@@ -484,6 +484,20 @@ function build_libarchive_i686() {
        /usr/src/photon/SPECS/libarchive.spec
 }
 
+function build_libcap_i686() {
+    prepare_specs libcap
+
+    prepare_sources libcap-2.25.tar.xz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/libcap.spec
+}
+
 function build_libdb_i686() {
     prepare_specs libdb
 
@@ -802,6 +816,9 @@ case $PKG_NAME in
         ;;
     libarchive)
         build_libarchive_$ARCH
+        ;;
+    libcap)
+        build_libcap_$ARCH
         ;;
     libdb)
         build_libdb_$ARCH
