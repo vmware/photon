@@ -24,15 +24,14 @@ It contains the libraries and header files to create applications.
 %prep
 %setup -q
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --bindir=/bin \
-    --sysconfdir=%{_sysconfdir} \
     --with-rootlibdir=%{_lib} \
     --disable-manpages \
     --with-xz \
     --with-zlib \
-    --disable-silent-rules
+    --disable-silent-rules \
+    --target=%{_target}
 make VERBOSE=1 %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} pkgconfigdir=%{_libdir}/pkgconfig install
