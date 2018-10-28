@@ -373,7 +373,7 @@ function build_kbd_i686() {
 
     # Install/Update host RPMs
     rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/check-[0-9].*.rpm
-    # Install target RPMs
+
     rpmbuild -ba --clean --nocheck \
        --define "with_check 0" \
        --define "_host i686-linux-gnu" \
@@ -381,6 +381,38 @@ function build_kbd_i686() {
        --define "dist .ph2" \
        --target=i686-unknown-linux \
        /usr/src/photon/SPECS/kbd.spec
+}
+
+function build_kmod_i686() {
+    prepare_specs kmod
+
+    prepare_sources kmod-25.tar.xz
+    prepare_patches kmod
+
+    # Install/Update host RPMs
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/xz-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/xz-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/xz-devel-[0-9].*.rpm
+    # Install target RPMs
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/xz*.rpm \
+        $PROJECT_ROOT/RPMS/i686/zlib*.rpm \
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/kmod.spec
 }
 
 function build_libarchive_i686() {
@@ -704,6 +736,9 @@ case $PKG_NAME in
         ;;
     kbd)
         build_kbd_$ARCH
+        ;;
+    kmod)
+        build_kmod_$ARCH
         ;;
     libarchive)
         build_libarchive_$ARCH
