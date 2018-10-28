@@ -27,7 +27,11 @@ for developing applications that use libcap.
 %setup -q
 %build
 sed -i 's:LIBDIR:PAM_&:g' pam_cap/Makefile
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]; then
+make %{?_smp_mflags} CC=i686-linux-gnu-gcc BUILD_CC=gcc
+else
 make %{?_smp_mflags}
+fi
 %install
 make prefix=%{_prefix}	SBINDIR=%{_sbindir} PAM_LIBDIR=%{_libdir} RAISE_SETFCAP=no DESTDIR=%{buildroot} install
 %ifarch aarch64
