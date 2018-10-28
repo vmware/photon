@@ -103,6 +103,22 @@ function build_bzip2_i686() {
        /usr/src/photon/SPECS/bzip2.spec
 }
 
+function build_ca_certificates_i686() {
+    prepare_specs ca-certificates
+
+    prepare_sources_from_specs ca-certificates certdata.txt
+
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/openssl-[0-9].*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "dist .ph2" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/ca-certificates.spec
+}
+
 function build_coreutils_i686() {
     prepare_specs coreutils
 
@@ -774,6 +790,9 @@ case $PKG_NAME in
         ;; 
     bzip2)
         build_bzip2_$ARCH
+        ;; 
+    ca-certificates)
+        build_ca_certificates_$ARCH
         ;; 
     coreutils)
         build_coreutils_$ARCH
