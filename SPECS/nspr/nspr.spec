@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.mozilla.org/pub/nspr/releases/v%{version}/src/%{name}-%{version}.tar.gz
 %define sha1    nspr=ef1e2ca3205fd1658a69ada2e0436266ca3065b5
+Patch0:         nspr-cross-compile.patch
 
 %description
 Netscape Portable Runtime (NSPR) provides a platform-neutral API
@@ -22,19 +23,29 @@ It contains the libraries and header files to create applications
 
 %prep
 %setup -q
+%patch0 -p1
 cd nspr
 sed -ri 's#^(RELEASE_BINS =).*#\1#' pr/src/misc/Makefile.in
 sed -i 's#$(LIBRARY) ##' config/rules.mk
 
 %build
+%ifarch %{ix86}
+ENABLE_64=--enable-64bit
+%else
+ENABLE_64=
+%endif
+if [ %{_host} != %{_build} ]; then
+export HOST_CC=gcc
+export HOST_CFLAGS=-m64
+fi
 cd nspr
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
+autoreconf -fi .
+%configure \
+    --target=%{_target} \
     --with-mozilla \
     --with-pthreads \
-    $([ $(uname -m) = x86_64 ] && echo --enable-64bit) \
-    --disable-silent-rules
+    --disable-silent-rules \
+    $ENABLE_64
 
 make %{?_smp_mflags}
 
