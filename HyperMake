@@ -65,6 +65,20 @@ targets:
     volumes:
       - ./stage/cross/bzip2-$[arch]:/usr/src/photon
 
+  ca-certificates-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/ca-certificates-$[arch]
+    always: true
+
+  ca-certificates-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - ca-certificates-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh ca-certificates $[arch]
+    volumes:
+      - ./stage/cross/ca-certificates-$[arch]:/usr/src/photon
+
   coreutils-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/coreutils-$[arch]
