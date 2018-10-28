@@ -1,0 +1,12 @@
+--- a/nspr/configure.in	2018-08-28 05:42:28.000000000 -0700
++++ b/nspr/configure.in	2018-10-28 15:17:30.290942224 -0700
+@@ -671,6 +671,9 @@
+         dnl translated environment, making a cross compiler appear native.
+         cross_compiling=yes
+         ;;
++    x86_64-linux-*:i?86-linux-*)
++        cross_compiling=yes
++        ;;
+ esac
+ 
+ if test "$cross_compiling"  = "yes"; then
