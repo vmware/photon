@@ -364,6 +364,47 @@ function build_grep_i686() {
        /usr/src/photon/SPECS/grep.spec
 }
 
+function build_groff_i686() {
+    prepare_specs groff
+
+    prepare_sources groff-1.22.3.tar.gz
+
+    # Install host RPMs
+    rpm -Uvh --force --nodeps \
+             $PROJECT_ROOT/stage/RPMS/x86_64/groff-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/perl-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/perl-DBD-SQLite-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/perl-DBI-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/noarch/perl-DBIx-Simple-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/noarch/perl-File-HomeDir-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/noarch/perl-File-Which-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/noarch/perl-Object-Accessor-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-i18n-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-lang-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-iconv-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/gdbm-[0-9].*.rpm
+    # Install target RPMs
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/groff.spec
+}
+
 function build_kbd_i686() {
     prepare_specs kbd
 
@@ -733,6 +774,9 @@ case $PKG_NAME in
         ;;
     grep)
         build_grep_$ARCH
+        ;;
+    groff)
+        build_groff_$ARCH
         ;;
     kbd)
         build_kbd_$ARCH
