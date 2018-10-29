@@ -558,6 +558,20 @@ function build_libffi_i686() {
        /usr/src/photon/SPECS/libffi.spec
 }
 
+function build_libmspack_i686() {
+    prepare_specs libmspack
+
+    prepare_sources libmspack-0.7.1alpha.tar.gz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/libmspack.spec
+}
+
 function build_libssh2_i686() {
     prepare_specs libssh2
 
@@ -877,6 +891,9 @@ case $PKG_NAME in
         ;;
     libffi)
         build_libffi_$ARCH
+        ;;
+    libmspack)
+        build_libmspack_$ARCH
         ;;
     libssh2)
         build_libssh2_$ARCH
