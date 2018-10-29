@@ -1043,6 +1043,31 @@ function build_psmisc_i686() {
        /usr/src/photon/SPECS/psmisc.spec
 }
 
+function build_procps_ng_i686() {
+    prepare_specs procps-ng
+
+    prepare_sources procps-ng-3.3.15.tar.xz
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/ncurses*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/procps-ng.spec
+}
+
 function build_readline_i686() {
     prepare_specs readline
 
@@ -1307,6 +1332,9 @@ case $PKG_NAME in
         ;;
     popt)
         build_popt_$ARCH
+        ;;
+    procps-ng)
+        build_procps_ng_$ARCH
         ;;
     psmisc)
         build_psmisc_$ARCH

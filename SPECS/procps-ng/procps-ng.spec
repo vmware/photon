@@ -30,14 +30,17 @@ These are the additional language files of procps-ng
 %prep
 %setup -q
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
+    --target=%{_target} \
+    --bindir=/bin \
+    --sbindir=/sbin \
     --exec-prefix= \
-    --libdir=%{_libdir} \
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
     --disable-static \
     --disable-kill \
-    --disable-silent-rules
+    --disable-silent-rules \
+    ac_cv_func_malloc_0_nonnull=yes \
+    ac_cv_func_realloc_0_nonnull=yes
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
