@@ -475,6 +475,31 @@ function build_gettext_i686() {
        /usr/src/photon/SPECS/gettext.spec
 }
 
+function build_gperf_i686() {
+    prepare_specs gperf
+
+    prepare_sources gperf-3.1.tar.gz
+
+    # Install target RPMs
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/gperf.spec
+}
+
 function build_grep_i686() {
     prepare_specs grep
 
@@ -1030,6 +1055,9 @@ case $PKG_NAME in
         ;;
     gmp)
         build_gmp_$ARCH
+        ;;
+    gperf)
+        build_gperf_$ARCH
         ;;
     grep)
         build_grep_$ARCH

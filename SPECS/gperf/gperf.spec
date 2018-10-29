@@ -17,8 +17,8 @@ Gperf generates a perfect hash function from a key set.
 %setup -q
 
 %build
-./configure \
-	--prefix=%{_prefix} \
+%configure \
+    --target=%{_target} \
 	--docdir=%{_defaultdocdir}/%{name}-%{version}
 make %{?_smp_mflags}
 
