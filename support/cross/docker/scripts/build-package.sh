@@ -756,6 +756,42 @@ function build_iproute2_i686() {
        /usr/src/photon/SPECS/iproute2.spec
 }
 
+function build_iputils_i686() {
+    prepare_specs iputils
+
+    prepare_sources iputils-s20180629.tar.gz
+
+    rpm -Uvh --force \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libcap-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libcap-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libgcrypt-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libgcrypt-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libgpg-error-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libgpg-error-devel-[0-9].*.rpm
+
+    # Install target RPMs
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/libcap*.rpm \
+        $PROJECT_ROOT/RPMS/i686/libgpg-error*.rpm \
+        $PROJECT_ROOT/RPMS/i686/libgcrypt*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/iputils.spec
+}
+
 function build_kbd_i686() {
     prepare_specs kbd
 
@@ -1528,6 +1564,9 @@ case $PKG_NAME in
         ;;
     iproute2)
         build_iproute2_$ARCH
+        ;;
+    iputils)
+        build_iputils_$ARCH
         ;;
     kbd)
         build_kbd_$ARCH

@@ -408,6 +408,20 @@ targets:
     volumes:
       - ./stage/cross/iproute2-$[arch]:/usr/src/photon
 
+  iputils-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/iputils-$[arch]
+    always: true
+
+  iputils-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - iputils-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh iputils $[arch]
+    volumes:
+      - ./stage/cross/iputils-$[arch]:/usr/src/photon
+
   kbd-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/kbc-$[arch]

@@ -10,7 +10,7 @@ Distribution:     Photon
 #https://github.com/iputils/iputils/archive/s20180629.tar.gz
 Source0:          %{name}-s%{version}.tar.gz
 BuildRequires:    libcap-devel libgcrypt-devel
-Requires:         libcap 
+Requires:         libcap
 Requires:         libgcrypt
 Obsoletes:        inetutils
 %define sha1 iputils=353df20691bf027ad35fcaaf6894b122c39d8f2d
@@ -20,11 +20,20 @@ The Iputils package contains programs for basic networking.
 %setup -q -n %{name}-s%{version}
 
 %build
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]; then
+export CC=i686-linux-gnu-gcc
+export CXX=i686-linux-gnu-g++
+export AR=i686-linux-gnu-ar
+export AS=i686-linux-gnu-as
+export RANLIB=i686-linux-gnu-ranlib
+export LD=i686-linux-gnu-ld
+export STRIP=i686-linux-gnu-strip
+fi
 make %{?_smp_mflags} USE_IDN=no USE_GCRYPT=yes
 (
 cd ninfod
-./configure --prefix=%{_prefix} 
-make %{?_smp_mflags} 
+%configure --target=%{_target}
+make %{?_smp_mflags}
 )
 #make html
 #make man
