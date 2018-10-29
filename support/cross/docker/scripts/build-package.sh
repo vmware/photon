@@ -147,6 +147,33 @@ function build_coreutils_i686() {
        /usr/src/photon/SPECS/coreutils.spec
 }
 
+function build_diffutils_i686() {
+    prepare_specs diffutils
+
+    prepare_sources diffutils-3.6.tar.xz
+
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/coreutils-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/coreutils*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/diffutils.spec
+}
+
 function build_e2fsprogs_i686() {
     prepare_specs e2fsprogs
 
@@ -885,6 +912,9 @@ case $PKG_NAME in
         ;; 
     coreutils)
         build_coreutils_$ARCH
+        ;; 
+    diffutils)
+        build_diffutils_$ARCH
         ;; 
     ed)
         build_ed_$ARCH

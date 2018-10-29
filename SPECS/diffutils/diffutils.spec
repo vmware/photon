@@ -17,9 +17,10 @@ differences between files or directories.
 %setup -q
 sed -i 's:= @mkdir_p@:= /bin/mkdir -p:' po/Makefile.in.in
 %build
-./configure \
-	--prefix=%{_prefix} \
-	--disable-silent-rules
+%configure \
+	--target=%{_target} \
+	--disable-silent-rules \
+    gl_cv_func_getopt_gnu=yes
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
