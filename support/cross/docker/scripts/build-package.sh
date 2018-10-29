@@ -403,6 +403,39 @@ function build_nspr_i686() {
        /usr/src/photon/SPECS/nspr.spec
 }
 
+function build_gawk_i686() {
+    prepare_specs gawk
+
+    prepare_sources gawk-4.2.1.tar.xz
+
+    # Install host RPMs
+    rpm -Uvh --force --nodeps \
+             $PROJECT_ROOT/stage/RPMS/x86_64/readline-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-i18n-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-lang-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-iconv-[0-9].*.rpm
+    # Install target RPMs
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/gawk.spec
+}
+
 function build_gettext_i686() {
     prepare_specs gettext
 
@@ -958,6 +991,9 @@ case $PKG_NAME in
     findutils)
         build_findutils_$ARCH
         ;; 
+    gawk)
+        build_gawk_$ARCH
+        ;;
     gettext)
         build_gettext_$ARCH
         ;;
