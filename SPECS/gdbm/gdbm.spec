@@ -33,8 +33,8 @@ It contains the libraries and header files to create applications.
 %setup -q
 
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
+    --target=%{_target} \
     --enable-libgdbm-compat \
     --disable-silent-rules
 make %{?_smp_mflags}
