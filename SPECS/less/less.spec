@@ -16,9 +16,8 @@ The Less package contains a text file viewer
 %prep
 %setup -q
 %build
-./configure \
-	--prefix=%{_prefix} \
-	--sysconfdir=%{_sysconfdir}
+%configure \
+	--target=%{_target}
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install

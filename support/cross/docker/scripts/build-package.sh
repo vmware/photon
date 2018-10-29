@@ -472,6 +472,37 @@ function build_kmod_i686() {
        /usr/src/photon/SPECS/kmod.spec
 }
 
+function build_less_i686() {
+    prepare_specs less
+
+    prepare_sources less-530.tar.gz
+
+    # Install/Update host RPMs
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/ncurses-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/ncurses-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/ncurses-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/ncurses-terminfo-[0-9].*.rpm
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/ncurses-*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --define "sysroot /target" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/less.spec
+}
+
 function build_libarchive_i686() {
     prepare_specs libarchive
 
@@ -890,6 +921,9 @@ case $PKG_NAME in
         ;;
     kmod)
         build_kmod_$ARCH
+        ;;
+    less)
+        build_less_$ARCH
         ;;
     libarchive)
         build_libarchive_$ARCH
