@@ -15,6 +15,15 @@ The Iana-Etc package provides data for network services and protocols.
 %prep
 %setup -q
 %build
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]; then
+export CC=i686-linux-gnu-gcc
+export CXX=i686-linux-gnu-g++
+export AR=i686-linux-gnu-ar
+export AS=i686-linux-gnu-as
+export RANLIB=i686-linux-gnu-ranlib
+export LD=i686-linux-gnu-ld
+export STRIP=i686-linux-gnu-strip
+fi
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
