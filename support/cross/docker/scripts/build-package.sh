@@ -236,6 +236,45 @@ function build_ed_i686() {
        /usr/src/photon/SPECS/ed.spec
 }
 
+function build_elfutils_i686() {
+    prepare_specs elfutils
+
+    prepare_sources elfutils-0.174.tar.bz2
+
+    prepare_patches elfutils
+
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/elfutils-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/elfutils-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/elfutils-libelf-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/elfutils-libelf-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/bzip2-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/bzip2-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/bzip2-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/zlib-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/zlib-devel-[0-9].*.rpm
+
+    # Install target RPMs
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/bzip2*.rpm \
+        $PROJECT_ROOT/RPMS/i686/zlib*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/elfutils.spec
+}
+
 function build_expat_i686() {
     prepare_specs expat
 
@@ -1078,6 +1117,9 @@ case $PKG_NAME in
         ;; 
     e2fsprogs)
         build_e2fsprogs_$ARCH
+        ;; 
+    elfutils)
+        build_elfutils_$ARCH
         ;; 
     expat)
         build_expat_$ARCH
