@@ -924,6 +924,36 @@ function build_libffi_i686() {
        /usr/src/photon/SPECS/libffi.spec
 }
 
+function build_libgcrypt_i686() {
+    prepare_specs libgcrypt
+
+    prepare_sources libgcrypt-1.8.3.tar.bz2
+
+    prepare_patches libgcrypt
+
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/libgpg-error-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libgpg-error-devel-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/libgpg-error*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/libgcrypt.spec
+}
+
 function build_libgpg_error_i686() {
     prepare_specs libgpg-error
 
@@ -1522,6 +1552,9 @@ case $PKG_NAME in
         ;;
     libffi)
         build_libffi_$ARCH
+        ;;
+    libgcrypt)
+        build_libgcrypt_$ARCH
         ;;
     libgpg-error)
         build_libgpg_error_$ARCH
