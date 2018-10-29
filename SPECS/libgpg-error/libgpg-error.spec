@@ -32,7 +32,7 @@ These are the additional language files of libgpg-error.
 %setup -q
 
 %build
-%configure
+%configure --target=%{_target}
 make %{?_smp_mflags}
 
 %install
