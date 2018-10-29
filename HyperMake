@@ -530,6 +530,20 @@ targets:
     cmds:
       - ./support/cross/docker/scripts/build-package.sh libgcc $[arch]
 
+  libgcrypt-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/libgcrypt-$[arch]
+    always: true
+
+  libgcrypt-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - libgcrypt-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh libgcrypt $[arch]
+    volumes:
+      - ./stage/cross/libgcrypt-$[arch]:/usr/src/photon
+
   libgpg-error-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/libgpg-error-$[arch]
