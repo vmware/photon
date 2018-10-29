@@ -19,7 +19,7 @@ class SpecObject(object):
         self.version = ""
         self.release = ""
         self.buildarch = {}
-        self.buildRequirePackages = []
+        self.buildRequiresAllPackages = []
         self.checkBuildRequirePackages = []
         self.installRequiresAllPackages = []
         self.installRequiresPackages = {}
@@ -50,7 +50,7 @@ class SpecObjectsUtils(object):
             specName = spec.getBasePackageName()
             specObj = SpecObject()
             specObj.name = specName
-            specObj.buildRequirePackages = spec.getBuildRequiresAllPackages()
+            specObj.buildRequiresAllPackages = spec.getBuildRequiresAllPackages()
             specObj.installRequiresAllPackages = spec.getRequiresAllPackages()
             specObj.checkBuildRequirePackages = spec.getCheckBuildRequiresAllPackages()
             specObj.listPackages = spec.getPackageNames()
@@ -140,7 +140,7 @@ class SpecObjectsUtils(object):
 
     def getBuildRequiresForPackage(self, package, version):
         buildRequiresList=[]
-        buildRequiresPackages = self._getSpecObjField(package, version, field=lambda x : x.buildRequirePackages)
+        buildRequiresPackages = self._getSpecObjField(package, version, field=lambda x : x.buildRequiresAllPackages)
         for pkg in buildRequiresPackages:
             properVersion = self._getProperVersion(pkg)
             buildRequiresList.append(pkg.package+"-"+properVersion)
@@ -301,7 +301,7 @@ class SpecObjectsUtils(object):
                 self.logger.debug("List RPM packages")
                 self.logger.debug(specObj.listPackages)
                 self.logger.debug("Build require packages")
-                self.logger.debug(self.getPkgNamesFromObj(specObj.buildRequirePackages))
+                self.logger.debug(self.getPkgNamesFromObj(specObj.buildRequiresAllPackages))
                 self.logger.debug("install require packages")
                 self.logger.debug(self.getPkgNamesFromObj(specObj.installRequiresAllPackages))
                 self.logger.debug(specObj.installRequiresPackages)
