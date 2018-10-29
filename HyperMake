@@ -652,6 +652,20 @@ targets:
     volumes:
       - ./stage/cross/psmisc-$[arch]:/usr/src/photon
 
+  procps-ng-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/procps-ng-$[arch]
+    always: true
+
+  procps-ng-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - procps-ng-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh procps-ng $[arch]
+    volumes:
+      - ./stage/cross/procps-ng-$[arch]:/usr/src/photon
+
   readline-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/readline-$[arch]
