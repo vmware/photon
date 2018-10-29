@@ -273,6 +273,20 @@ targets:
     volumes:
       - ./stage/cross/gmp-$[arch]:/usr/src/photon
 
+  gperf-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/gperf-$[arch]
+    always: true
+
+  gperf-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - gperf-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh gperf $[arch]
+    volumes:
+      - ./stage/cross/gperf-$[arch]:/usr/src/photon
+
   grep-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/grep-$[arch]
