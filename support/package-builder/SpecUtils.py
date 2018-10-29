@@ -97,10 +97,17 @@ class Specutils(object):
             return sourceURL
         return None
 
-    def getRequiresAllPackages(self):
+    # @requiresType: "build" for BuildRequires or
+    #                "install" for Requires dependencies.
+    def _getRequiresTypeAllPackages(self, requiresType):
         dependentPackages = []
         for pkg in self.spec.packages.values():
-            for dpkg in pkg.requires:
+            pkgRequires = []
+            if requiresType == "build":
+                pkgRequires = pkg.buildrequires
+            elif requiresType == "install":
+                pkgRequires = pkg.requires
+            for dpkg in pkgRequires:
                 dependentPackages.append(dpkg)
         listDependentPackages = list(set(dependentPackages))
         packageNames = self.getPackageNames()
@@ -112,18 +119,10 @@ class Specutils(object):
         return dependentPackages
 
     def getBuildRequiresAllPackages(self):
-        dependentPackages = []
-        for pkg in self.spec.packages.values():
-            for dpkg in pkg.buildrequires:
-                dependentPackages.append(dpkg)
-        listDependentPackages = list(set(dependentPackages))
-        packageNames = self.getPackageNames()
-        for pkgName in packageNames:
-            for objName in listDependentPackages:
-                if objName.package == pkgName:
-                        dependentPackages.remove(objName)
-        dependentPackages = list(set(dependentPackages))
-        return dependentPackages
+        return self._getRequiresTypeAllPackages("build")
+
+    def getRequiresAllPackages(self):
+        return self._getRequiresTypeAllPackages("install")
 
     def getCheckBuildRequiresAllPackages(self):
         dependentPackages = []
