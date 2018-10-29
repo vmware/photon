@@ -20,10 +20,19 @@ The Iputils package contains programs for basic networking.
 %setup -q -n %{name}-s%{version}
 
 %build
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]; then
+export CC=i686-linux-gnu-gcc
+export CXX=i686-linux-gnu-g++
+export AR=i686-linux-gnu-ar
+export AS=i686-linux-gnu-as
+export RANLIB=i686-linux-gnu-ranlib
+export LD=i686-linux-gnu-ld
+export STRIP=i686-linux-gnu-strip
+fi
 make %{?_smp_mflags} USE_IDN=no USE_GCRYPT=yes
 (
 cd ninfod
-./configure --prefix=%{_prefix} 
+%configure --target=%{_target}
 make %{?_smp_mflags} 
 )
 #make html
