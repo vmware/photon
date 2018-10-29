@@ -32,7 +32,19 @@ sed -i 's/m_ipt.o//' tc/Makefile
 %patch0 -p1
 
 %build
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]; then
+make VERBOSE=1 %{?_smp_mflags} DESTDIR= LIBDIR=%{_libdir} \
+HOSTCC=gcc \
+CC=i686-linux-gnu-gcc \
+CXX=i686-linux-gnu-g++ \
+AR=i686-linux-gnu-ar \
+AS=i686-linux-gnu-as \
+RANLIB=i686-linux-gnu-ranlib \
+LD=i686-linux-gnu-ld \
+STRIP=i686-linux-gnu-strip
+else
 make VERBOSE=1 %{?_smp_mflags} DESTDIR= LIBDIR=%{_libdir}
+fi
 %install
 make    DESTDIR=%{buildroot} \
     MANDIR=%{_mandir} \
