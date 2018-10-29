@@ -555,6 +555,31 @@ function build_groff_i686() {
        /usr/src/photon/SPECS/groff.spec
 }
 
+function build_gzip_i686() {
+    prepare_specs gzip
+
+    prepare_sources gzip-1.9.tar.xz
+
+    # Install target RPMs
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/gzip.spec
+}
+
 function build_kbd_i686() {
     prepare_specs kbd
 
@@ -1064,6 +1089,9 @@ case $PKG_NAME in
         ;;
     groff)
         build_groff_$ARCH
+        ;;
+    gzip)
+        build_gzip_$ARCH
         ;;
     kbd)
         build_kbd_$ARCH
