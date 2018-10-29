@@ -22,7 +22,7 @@ It contains the libraries and header files to create applications.
 %setup -q
 
 %build
-%configure
+%configure --target="%{_target}"
 #Package does not support parallel make
 make
 
