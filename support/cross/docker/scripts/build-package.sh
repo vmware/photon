@@ -303,6 +303,30 @@ function build_filesystem_i686() {
        /usr/src/photon/SPECS/filesystem.spec
 }
 
+function build_findutils_i686() {
+    prepare_specs findutils
+
+    prepare_sources findutils-4.6.0.tar.gz
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/findutils.spec
+}
+
 function build_glibc_i686() {
     prepare_specs glibc
 
@@ -931,6 +955,9 @@ case $PKG_NAME in
     filesystem)
         build_filesystem_$ARCH
         ;;
+    findutils)
+        build_findutils_$ARCH
+        ;; 
     gettext)
         build_gettext_$ARCH
         ;;
