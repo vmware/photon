@@ -558,6 +558,20 @@ function build_libffi_i686() {
        /usr/src/photon/SPECS/libffi.spec
 }
 
+function build_libgpg_error_i686() {
+    prepare_specs libgpg-error
+
+    prepare_sources libgpg-error-1.32.tar.bz2
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/libgpg-error.spec
+}
+
 function build_libmspack_i686() {
     prepare_specs libmspack
 
@@ -891,6 +905,9 @@ case $PKG_NAME in
         ;;
     libffi)
         build_libffi_$ARCH
+        ;;
+    libgpg-error)
+        build_libgpg_error_$ARCH
         ;;
     libmspack)
         build_libmspack_$ARCH
