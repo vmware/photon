@@ -231,6 +231,19 @@ targets:
       - ./support/cross/docker/scripts/build-package.sh glibc $[arch]
     volumes:
       - ./stage/cross/glibc-$[arch]:/usr/src/photon
+  gdbm-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/gdbm-$[arch]
+    always: true
+
+  gdbm-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - gdbm-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh gdbm $[arch]
+    volumes:
+      - ./stage/cross/gdbm-$[arch]:/usr/src/photon
 
   gettext-pre-[arch:i686]:
     cmds:

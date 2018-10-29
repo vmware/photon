@@ -436,6 +436,31 @@ function build_gawk_i686() {
        /usr/src/photon/SPECS/gawk.spec
 }
 
+function build_gdbm_i686() {
+    prepare_specs gdbm
+
+    prepare_sources gdbm-1.18.tar.gz
+
+    # Install target RPMs
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/gdbm.spec
+}
+
 function build_gettext_i686() {
     prepare_specs gettext
 
@@ -993,6 +1018,9 @@ case $PKG_NAME in
         ;; 
     gawk)
         build_gawk_$ARCH
+        ;;
+    gdbm)
+        build_gdbm_$ARCH
         ;;
     gettext)
         build_gettext_$ARCH
