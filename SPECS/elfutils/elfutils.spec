@@ -106,7 +106,7 @@ These are the additional language files of elfutils.
 %prep
 %setup -q
 %build
-%configure --program-prefix=%{_programprefix}
+%configure --target=%{_target} --program-prefix=%{_programprefix}
 make %{?_smp_mflags}
 
 %install

@@ -143,10 +143,19 @@ targets:
     volumes:
       - ./stage/cross/ed-$[arch]:/usr/src/photon
 
-  elfutils-libelf-[arch:i686]:
-    image: 'vmware/photon-xc-$[arch]-photon2'
+  elfutils-pre-[arch:i686]:
     cmds:
-      - ./support/cross/docker/scripts/build-package.sh lefutils-libelf $[arch]
+      - mkdir -p ./stage/cross/elfutils-$[arch]
+    always: true
+
+  elfutils-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - elfutils-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh elfutils $[arch]
+    volumes:
+      - ./stage/cross/elfutils-$[arch]:/usr/src/photon
 
   expat-pre-[arch:i686]:
     cmds:
