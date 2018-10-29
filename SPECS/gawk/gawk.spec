@@ -21,8 +21,7 @@ The Gawk package contains programs for manipulating text files.
 %setup -q
 %build
 %configure \
-	--prefix=%{_prefix} \
-	--sysconfdir=%{_sysconfdir } \
+    --target=%{_target} \
 	--disable-silent-rules
 make %{?_smp_mflags}
 %install

@@ -204,6 +204,20 @@ targets:
     volumes:
       - ./stage/cross/findutils-$[arch]:/usr/src/photon
 
+  gawk-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/gawk-$[arch]
+    always: true
+
+  gawk-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - gawk-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh gawk $[arch]
+    volumes:
+      - ./stage/cross/gawk-$[arch]:/usr/src/photon
+
   glibc-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/glibc-$[arch]
