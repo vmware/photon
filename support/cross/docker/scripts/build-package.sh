@@ -1025,6 +1025,55 @@ function build_linux_pam_i686() {
        /usr/src/photon/SPECS/Linux-PAM.spec
 }
 
+function build_man_db_i686() {
+    prepare_specs man-db
+
+    prepare_sources man-db-2.7.6.tar.xz
+
+    rpm -Uvh --nodeps \
+            $PROJECT_ROOT/stage/RPMS/x86_64/libpipeline-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/x86_64/libpipeline-devel-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/x86_64/gdbm-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/x86_64/gdbm-devel-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/x86_64/xz-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/x86_64/xz-libs-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/x86_64/groff-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/x86_64/perl-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/x86_64/perl-DBD-SQLite-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/x86_64/perl-DBI-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/noarch/perl-DBIx-Simple-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/noarch/perl-File-HomeDir-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/noarch/perl-File-Which-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/noarch/perl-Object-Accessor-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/x86_64/glibc-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/x86_64/glibc-devel-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/x86_64/glibc-i18n-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/x86_64/glibc-lang-[0-9].*.rpm \
+            $PROJECT_ROOT/stage/RPMS/x86_64/glibc-iconv-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/libpipeline*.rpm \
+        $PROJECT_ROOT/RPMS/i686/xz*.rpm \
+        $PROJECT_ROOT/RPMS/i686/gdbm*.rpm \
+        $PROJECT_ROOT/RPMS/i686/groff*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/man-db.spec
+}
+
 function build_openssl_release_i686() {
     prepare_specs openssl
 
@@ -1488,6 +1537,9 @@ case $PKG_NAME in
         ;;
     linux-pam)
         build_linux_pam_$ARCH
+        ;;
+    man-db)
+        build_man_db_$ARCH
         ;;
     ncurses)
         build_ncurses_$ARCH

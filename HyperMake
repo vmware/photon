@@ -605,6 +605,20 @@ targets:
     volumes:
       - ./stage/cross/linux-pam-$[arch]:/usr/src/photon
 
+  man-db-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/man-db-$[arch]
+    always: true
+
+  man-db-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - man-db-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh man-db $[arch]
+    volumes:
+      - ./stage/cross/man-db-$[arch]:/usr/src/photon
+
   ncurses-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/ncurses-$[arch]
