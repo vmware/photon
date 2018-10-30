@@ -269,6 +269,20 @@ targets:
     volumes:
       - ./stage/cross/gawk-$[arch]:/usr/src/photon
 
+  glib-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/glib-$[arch]
+    always: true
+
+  glib-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - glib-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh glib $[arch]
+    volumes:
+      - ./stage/cross/glib-$[arch]:/usr/src/photon
+
   glibc-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/glibc-$[arch]
@@ -282,6 +296,7 @@ targets:
       - ./support/cross/docker/scripts/build-package.sh glibc $[arch]
     volumes:
       - ./stage/cross/glibc-$[arch]:/usr/src/photon
+
   gdbm-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/gdbm-$[arch]
