@@ -52,7 +52,21 @@ Gsettings schemas compiling tool
 %setup -q
 %build
 ./autogen.sh
-./configure --prefix=/usr --with-pcre=system 
+if [ %{_host} != %{_build} ]
+then
+%configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --target=%{_target} \
+    --with-sysroot=/target \
+    glib_cv_stack_grows=no \
+    ac_cv_func_posix_getpwuid_r=yes \
+    glib_cv_uscore=yes
+else
+%configure \
+    --prefix=/usr \
+    --with-pcre=system
+fi
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install

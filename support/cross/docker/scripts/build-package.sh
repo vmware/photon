@@ -449,6 +449,59 @@ function build_findutils_i686() {
        /usr/src/photon/SPECS/findutils.spec
 }
 
+function build_glib_i686() {
+    prepare_specs glib
+
+    prepare_sources glib-2.58.0.tar.xz
+
+    # Install/Update host RPMs
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/pcre-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/pcre-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/pcre-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libffi-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libffi-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/pkg-config-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/cmake-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/which-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/gettext-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/util-linux-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/util-linux-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/util-linux-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/expat-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/expat-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/python2-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/python2-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/python-xml-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-i18n-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-lang-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-iconv-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/pcre*.rpm \
+        $PROJECT_ROOT/RPMS/i686/libffi*.rpm \
+        $PROJECT_ROOT/RPMS/i686/util-linux*.rpm \
+        $PROJECT_ROOT/RPMS/i686/elfutils*.rpm \
+        $PROJECT_ROOT/RPMS/i686/zlib*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "dist .ph2" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/glib.spec
+}
+
 function build_glibc_i686() {
     prepare_specs glibc
 
@@ -1615,6 +1668,9 @@ case $PKG_NAME in
         ;;
     gettext)
         build_gettext_$ARCH
+        ;;
+    glib)
+        build_glib_$ARCH
         ;;
     glibc)
         build_glibc_$ARCH
