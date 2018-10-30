@@ -516,6 +516,20 @@ targets:
     volumes:
       - ./stage/cross/libmspack-$[arch]:/usr/src/photon
 
+  libpipeline-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/libpipeline-$[arch]
+    always: true
+
+  libpipeline-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - libpipeline-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh libpipeline $[arch]
+    volumes:
+      - ./stage/cross/libpipeline-$[arch]:/usr/src/photon
+
   libsolv-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     cmds:

@@ -26,7 +26,7 @@ Development files for libpipeline
 %prep
 %setup -q
 %build
-%configure
+%configure --target=%{_target}
 
 make %{?_smp_mflags}
 %install
