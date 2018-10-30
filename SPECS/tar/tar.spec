@@ -14,8 +14,9 @@ Contains GNU archiving program
 %prep
 %setup -q
 %build
-FORCE_UNSAFE_CONFIGURE=1  ./configure \
-	--prefix=%{_prefix} \
+FORCE_UNSAFE_CONFIGURE=1  \
+%configure \
+	--target=%{_target} \
 	--bindir=/bin \
 	--disable-silent-rules
 make %{?_smp_mflags}
