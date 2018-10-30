@@ -1012,6 +1012,37 @@ function build_popt_i686() {
        /usr/src/photon/SPECS/popt.spec
 }
 
+function build_psmisc_i686() {
+    prepare_specs psmisc
+
+    prepare_sources psmisc-23.2.tar.xz
+
+    # Install/Update host RPMs
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/ncurses-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/ncurses-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/ncurses-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/ncurses-terminfo-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/ncurses*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/psmisc.spec
+}
+
 function build_readline_i686() {
     prepare_specs readline
 
@@ -1276,6 +1307,9 @@ case $PKG_NAME in
         ;;
     popt)
         build_popt_$ARCH
+        ;;
+    psmisc)
+        build_psmisc_$ARCH
         ;;
     readline)
         build_readline_$ARCH

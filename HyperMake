@@ -638,6 +638,20 @@ targets:
     volumes:
       - ./stage/cross/popt-$[arch]:/usr/src/photon
 
+  psmisc-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/psmisc-$[arch]
+    always: true
+
+  psmisc-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - psmisc-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh psmisc $[arch]
+    volumes:
+      - ./stage/cross/psmisc-$[arch]:/usr/src/photon
+
   readline-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/readline-$[arch]

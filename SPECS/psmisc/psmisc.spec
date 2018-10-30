@@ -17,8 +17,11 @@ about running processes.
 %prep
 %setup -q
 %build
-./configure \
-	--prefix=%{_prefix} 
+export LDFLAGS=-lssp
+%configure \
+	--target=%{_target} \
+    ac_cv_func_malloc_0_nonnull=yes \
+    ac_cv_func_realloc_0_nonnull=yes
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
