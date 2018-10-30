@@ -36,7 +36,12 @@ This package contains minimal set of shared pcre libraries.
 %prep
 %setup -q
 %build
-./configure --prefix=/usr                     \
+WITH_SYSROOT=
+if [ %{_host} != %{_build} ]
+then
+WITH_SYSROOT="--with-sysroot=/target"
+fi
+%configure --prefix=/usr                     \
             --docdir=/usr/share/doc/pcre-%{version} \
             --enable-unicode-properties       \
             --enable-pcre16                   \
@@ -45,7 +50,9 @@ This package contains minimal set of shared pcre libraries.
             --enable-pcregrep-libbz2          \
             --enable-pcretest-libreadline     \
             --with-match-limit-recursion=16000 \
-            --disable-static
+            --disable-static \
+            --target=%{_target} \
+            $WITH_SYSROOT
 make %{?_smp_mflags}
 
 %install
