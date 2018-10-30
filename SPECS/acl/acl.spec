@@ -43,9 +43,9 @@ defined in POSIX 1003.1e draft standard 17.
 %setup -q
 
 %build
-%configure
+%configure --target=%{_target}
 
-make %{?_smp_mflags} LIBTOOL="libtool --tag=CC"
+make %{?_smp_mflags}
 
 %install
 make install DESTDIR=%{buildroot}

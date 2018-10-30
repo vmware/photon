@@ -37,6 +37,34 @@ targets:
     cmds:
       - ./support/cross/docker/scripts/post-container-build.sh $[arch]
 
+  acl-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/acl-$[arch]
+    always: true
+
+  acl-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - acl-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh acl $[arch]
+    volumes:
+      - ./stage/cross/acl-$[arch]:/usr/src/photon
+
+  attr-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/attr-$[arch]
+    always: true
+
+  attr-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - attr-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh attr $[arch]
+    volumes:
+      - ./stage/cross/attr-$[arch]:/usr/src/photon
+
   bash-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/bash-$[arch]
