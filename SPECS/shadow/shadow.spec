@@ -58,11 +58,14 @@ sed -i 's@DICTPATH.*@DICTPATH\t/usr/share/cracklib/pw_dict@' \
     etc/login.defs
 
 %build
-./configure \
+%configure \
+    --sbindir=/sbin \
     --sysconfdir=/etc \
     --with-libpam \
-        --with-libcrack \
-    --with-group-name-max-length=32
+    --with-libcrack \
+    --with-group-name-max-length=32 \
+    --target=%{_target} \
+    --with-sysroot=/target
 
 make %{?_smp_mflags}
 %install
