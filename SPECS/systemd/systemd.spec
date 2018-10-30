@@ -86,6 +86,50 @@ EOF
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
 %build
+CROSS_COMPILE_CONFIG=
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]; then
+CROSS_TOOLCHAIN_PKG_CONFIG=`pwd`/i686-linux-gnu-pkg-config
+cat > $CROSS_TOOLCHAIN_PKG_CONFIG << "EOF"
+#!/bin/sh
+
+SYSROOT=/target
+
+export PKG_CONFIG_DIR=
+export PKG_CONFIG_LIBDIR=${SYSROOT}/usr/lib/pkgconfig:${SYSROOT}/usr/share/pkgconfig
+export PKG_CONFIG_SYSROOT_DIR=${SYSROOT}
+
+exec pkg-config "$@"
+EOF
+chmod +x $CROSS_TOOLCHAIN_PKG_CONFIG
+cat > i686-linux-cross-compile.txt << EOF
+[binaries]
+
+c = '/opt/cross/bin/i686-linux-gnu-gcc'
+cpp = '/opt/cross/bin/i686-linux-gnu-g++'
+ar = '/opt/cross/bin/i686-linux-gnu-ar'
+ld = '/opt/cross/bin/i686-linux-gnu-ld'
+ranlib = '/opt/cross/bin/i686-linux-gnu-ranlib'
+strip = '/opt/cross/bin/i686-linux-gnu-strip'
+pkgconfig = '$CROSS_TOOLCHAIN_PKG_CONFIG'
+
+[properties]
+needs_exe_wrapper = true
+root = '/opt/cross'
+c_args = ['--sysroot=/target']
+cpp_args = ['--sysroot=/target']
+c_link_args = ['-lssp']
+cpp_link_args = ['-lssp']
+
+[host_machine]
+system = 'linux'
+cpu_family = 'x86'
+cpu = 'i686'
+endian = 'little'
+EOF
+
+CROSS_COMPILE_CONFIG="--cross-file ./i686-linux-cross-compile.txt"
+fi
+
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 meson  --prefix %{_prefix}                                            \
@@ -108,7 +152,7 @@ meson  --prefix %{_prefix}                                            \
        -Ddbussystemservicedir=%{_prefix}/share/dbus-1/system-services \
        -Dsysvinit-path=/etc/rc.d/init.d                               \
        -Drc-local=/etc/rc.d/rc.local                                  \
-       $PWD build &&
+       $PWD build $CROSS_COMPILE_CONFIG &&
        cd build &&
        %ninja_build
 
