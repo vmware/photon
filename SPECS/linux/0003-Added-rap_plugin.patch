@@ -34,7 +34,7 @@ Subject: [PATCH 3/3] Added rap_plugin
  arch/x86/crypto/twofish-x86_64-asm_64-3way.S       |   2 +-
  arch/x86/crypto/twofish-x86_64-asm_64.S            |   4 +-
  arch/x86/entry/Makefile                            |   2 +
- arch/x86/entry/common.c                            |  61 +++
+ arch/x86/entry/common.c                            |  51 ++
  arch/x86/events/amd/iommu.h                        |   2 +-
  arch/x86/include/asm/e820/api.h                    |   2 +-
  arch/x86/include/asm/fixmap.h                      |   2 +-
@@ -104,7 +104,7 @@ Subject: [PATCH 3/3] Added rap_plugin
  kernel/sched/core.c                                |   4 +-
  kernel/sched/deadline.c                            |   4 +-
  kernel/sched/rt.c                                  |   4 +-
- kernel/sched/sched.h                               |   8 +-
+ kernel/sched/sched.h                               |   9 +-
  mm/filemap.c                                       |   6 +-
  mm/readahead.c                                     |   2 +-
  net/bridge/br_private.h                            |   3 +-
@@ -117,14 +117,13 @@ Subject: [PATCH 3/3] Added rap_plugin
  scripts/gcc-plugins/rap_plugin/rap_plugin.c        | 534 ++++++++++++++++++++
  scripts/gcc-plugins/rap_plugin/sip.c               |  96 ++++
  security/Kconfig                                   |  18 +
- 113 files changed, 2506 insertions(+), 750 deletions(-)
+ 113 files changed, 2496 insertions(+), 751 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/Makefile
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_hash.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_plugin.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/sip.c
-
 
 diff --git a/arch/x86/crypto/aesni-intel_asm.S b/arch/x86/crypto/aesni-intel_asm.S
 index d27a506..25fbe8f 100644
@@ -1094,39 +1093,28 @@ index 06fc70c..03f4755 100644
 +CFLAGS_REMOVE_syscall_32.o = $(RAP_PLUGIN_ABS_CFLAGS)
 +CFLAGS_REMOVE_syscall_64.o = $(RAP_PLUGIN_ABS_CFLAGS)
 diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-index 3b2490b..589aae7 100644
+index 3b2490b..0806da8 100644
 --- a/arch/x86/entry/common.c
 +++ b/arch/x86/entry/common.c
-@@ -286,8 +286,28 @@ __visible void do_syscall_64(unsigned long nr, struct pt_regs *regs)
- 	 */
+@@ -287,7 +287,17 @@ __visible void do_syscall_64(unsigned long nr, struct pt_regs *regs)
  	nr &= __SYSCALL_MASK;
  	if (likely(nr < NR_syscalls)) {
+ 		nr = array_index_nospec(nr, NR_syscalls);
 +#ifdef CONFIG_PAX_RAP
-+		asm volatile("movq %[param1],%%rdi\n\t"
-+			"movq %[param2],%%rsi\n\t"
-+			"movq %[param3],%%rdx\n\t"
-+			"movq %[param4],%%rcx\n\t"
-+			"movq %[param5],%%r8\n\t"
-+			"movq %[param6],%%r9\n\t"
++		asm volatile("movq %[param],%%rdi\n\t"
 +			"call *%P[syscall]\n\t"
 +			"mov %%rax,%[result]\n\t"
 +			: [result] "=m" (regs->ax)
 +			: [syscall] "m" (sys_call_table[nr]),
-+			[param1] "m" (regs->di),
-+			[param2] "m" (regs->si),
-+			[param3] "m" (regs->dx),
-+			[param4] "m" (regs->r10),
-+			[param5] "m" (regs->r8),
-+			[param6] "m" (regs->r9)
-+			: "ax", "di", "si", "dx", "cx", "r8", "r9", "r10", "r11", "memory");
++			[param] "m" (regs)
++			: "ax", "di", "memory");
 +#else
- 		nr = array_index_nospec(nr, NR_syscalls);
  		regs->ax = sys_call_table[nr](regs);
 +#endif
  	}
  
  	syscall_return_slowpath(regs);
-@@ -331,10 +351,51 @@ static __always_inline void do_syscall_32_irqs_on(struct pt_regs *regs)
+@@ -331,10 +341,51 @@ static __always_inline void do_syscall_32_irqs_on(struct pt_regs *regs)
  		 * the high bits are zero.  Make sure we zero-extend all
  		 * of the args.
  		 */
@@ -5527,7 +5515,7 @@ index c7742dc..39668dc 100644
  
  	unsigned char		idle_balance;
  
-@@ -1088,7 +1092,7 @@ init_numa_balancing(unsigned long clone_flags, struct task_struct *p)
+@@ -1088,7 +1091,7 @@ init_numa_balancing(unsigned long clone_flags, struct task_struct *p)
  
  static inline void
  queue_balance_callback(struct rq *rq,
@@ -5536,7 +5524,7 @@ index c7742dc..39668dc 100644
  		       void (*func)(struct rq *rq))
  {
  	lockdep_assert_held(&rq->lock);
-@@ -1096,7 +1100,7 @@ queue_balance_callback(struct rq *rq,
+@@ -1096,7 +1099,7 @@ queue_balance_callback(struct rq *rq,
  	if (unlikely(head->next))
  		return;
  

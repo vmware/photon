@@ -83,87 +83,97 @@ Subject: [PATCH 2/3] Added PAX_RANDKSTACK
 Signed-off-by: Him Kalyan Bordoloi<bordoloih@vmware.com>
 
 ---
- arch/x86/entry/entry_64.S    | 17 +++++++++++++++--
- arch/x86/kernel/process_64.c | 17 +++++++++++++++++
+ arch/x86/entry/entry_64.S    | 37 +++++++++++++++++++++++++++++++++++++
+ arch/x86/kernel/process_64.c | 15 +++++++++++++++
  security/Kconfig             | 16 ++++++++++++++++
- 3 files changed, 48 insertions(+), 2 deletions(-)
+ 3 files changed, 68 insertions(+)
 
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 8ae7ffd..9c1daeb 100644
+index 8ae7ffd..f7c721d 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -53,6 +53,14 @@ ENTRY(native_usergs_sysret64)
+@@ -53,6 +53,15 @@ ENTRY(native_usergs_sysret64)
  END(native_usergs_sysret64)
  #endif /* CONFIG_PARAVIRT */
  
-+.macro pax_rand_kstack
 +#ifdef CONFIG_PAX_RANDKSTACK
++.macro PAX_RAND_KSTACK
++	movq	%rsp, %rdi
 +	call	pax_randomize_kstack
 +	movq    %rsp, %rdi
 +	movq    %rax, %rsp
-+#endif
 +.endm
++#endif
 +
  .macro TRACE_IRQS_FLAGS flags:req
  #ifdef CONFIG_TRACE_IRQFLAGS
  	btl	$9, \flags		/* interrupts off? */
-@@ -233,9 +241,20 @@ GLOBAL(entry_SYSCALL_64_after_hwframe)
+@@ -233,9 +242,28 @@ GLOBAL(entry_SYSCALL_64_after_hwframe)
  	TRACE_IRQS_OFF
  
  	/* IRQs are off. */
--	movq	%rax, %rdi
--	movq	%rsp, %rsi
 +
 +	/*
 +	 * do_syscall_64 expects syscall-nr (pt_regs->orig_ax) as the first
 +	 * argument (%rdi) and pointer to pt_regs as the second argument (%rsi).
 +	 */
++#ifdef CONFIG_PAX_RANDKSTACK
 +	pushq	%rax
++	movq	%rsp, %rdi
 +	call	pax_randomize_kstack
 +	popq	%rdi
 +	movq    %rsp, %rsi
 +	movq    %rax, %rsp
 +
 +	pushq	%rsi
++#else
+ 	movq	%rax, %rdi
+ 	movq	%rsp, %rsi
++#endif
  	call	do_syscall_64		/* returns with IRQs disabled */
++#ifdef CONFIG_PAX_RANDKSTACK
 +	popq	%rsp
++#endif
  
  	TRACE_IRQS_IRETQ		/* we're about to change IF */
  
-@@ -401,8 +420,11 @@ ENTRY(ret_from_fork)
+@@ -401,8 +429,17 @@ ENTRY(ret_from_fork)
  
  2:
  	UNWIND_HINT_REGS
--	movq	%rsp, %rdi
-+	pax_rand_kstack
++#ifdef CONFIG_PAX_RANDKSTACK
++	PAX_RAND_KSTACK
 +	pushq	%rdi
++#else
+ 	movq	%rsp, %rdi
++#endif
  	call	syscall_return_slowpath	/* returns with IRQs disabled */
++#ifdef CONFIG_PAX_RANDKSTACK
 +	popq	%rsp
++#endif
 +
  	TRACE_IRQS_ON			/* user mode is traced as IRQS on */
  	jmp	swapgs_restore_regs_and_return_to_usermode
  
 diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
-index 0091a73..a73aab3 100644
+index 0091a73..31b697c 100644
 --- a/arch/x86/kernel/process_64.c
 +++ b/arch/x86/kernel/process_64.c
-@@ -61,6 +61,23 @@
+@@ -61,6 +61,21 @@
  
  __visible DEFINE_PER_CPU(unsigned long, rsp_scratch);
  
 +#ifdef CONFIG_PAX_RANDKSTACK
-+unsigned long pax_randomize_kstack(void)
++unsigned long pax_randomize_kstack(struct pt_regs *regs)
 +{
-+        struct task_struct *task = current;
-+        unsigned long time;
-+        unsigned long sp1;
++	unsigned long time;
++	unsigned long sp1;
 +
++	if (!randomize_va_space)
++		return (unsigned long)regs;
 +
-+        if (!randomize_va_space)
-+                return (unsigned long)task_pt_regs(task);
-+
-+        time = rdtsc() & 0xFUL;
-+        sp1 = (unsigned long)task_pt_regs(task) - (time << 4);
++	time = rdtsc() & 0xFUL;
++	sp1 = (unsigned long)regs - (time << 4);
 +	return sp1;
 +}
 +#endif
@@ -198,3 +208,5 @@ index 564e975..7ef4ec8 100644
  endif
  
  source security/keys/Kconfig
+-- 
+2.7.4
