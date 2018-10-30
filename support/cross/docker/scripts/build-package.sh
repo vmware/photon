@@ -189,6 +189,36 @@ function build_coreutils_i686() {
        /usr/src/photon/SPECS/coreutils.spec
 }
 
+function build_cracklib_i686() {
+    prepare_specs cracklib
+
+    prepare_sources cracklib-2.9.6.tar.gz
+    prepare_sources cracklib-words-2.9.6.gz
+
+    prepare_patches cracklib
+
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/gzip-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/cracklib-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/cracklib-dicts-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/cracklib.spec
+}
 function build_diffutils_i686() {
     prepare_specs diffutils
 
@@ -1269,6 +1299,9 @@ case $PKG_NAME in
         ;; 
     coreutils)
         build_coreutils_$ARCH
+        ;; 
+    cracklib)
+        build_cracklib_$ARCH
         ;; 
     diffutils)
         build_diffutils_$ARCH

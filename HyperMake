@@ -121,6 +121,20 @@ targets:
     volumes:
       - ./stage/cross/coreutils-$[arch]:/usr/src/photon
 
+  cracklib-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/cracklib-$[arch]
+    always: true
+
+  cracklib-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - cracklib-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh cracklib $[arch]
+    volumes:
+      - ./stage/cross/cracklib-$[arch]:/usr/src/photon
+
   curl-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     cmds:
