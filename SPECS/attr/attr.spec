@@ -28,7 +28,7 @@ These are the additional language files of attr.
 %prep
 %setup -q
 %build
-./configure --prefix=%{_prefix} --disable-static
+%configure --target=%{_target} --sysconfdir=%{_prefix}/etc --disable-static
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install

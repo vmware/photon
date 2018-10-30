@@ -36,6 +36,48 @@ function prepare_sources_from_specs() {
     cp -r $PROJECT_ROOT/SOURCES/$src_bundle /usr/src/photon/SOURCES/
 }
 
+function build_acl_i686() {
+    prepare_specs acl
+
+    prepare_sources acl-2.2.53.tar.gz
+
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/attr-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/attr-devel-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/attr*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "dist .ph2" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/acl.spec
+}
+
+function build_attr_i686() {
+    prepare_specs attr
+
+    prepare_sources attr-2.4.48.tar.gz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "dist .ph2" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/attr.spec
+}
+
 function build_bash_i686() {
     prepare_specs bash
 
@@ -1210,6 +1252,12 @@ mkdir -p /usr/src/photon/SOURCES
 mkdir -p /usr/src/photon/SPECS && rm -rf /usr/src/photon/SPECS/*
 
 case $PKG_NAME in
+    acl)
+        build_acl_$ARCH
+        ;; 
+    attr)
+        build_attr_$ARCH
+        ;; 
     bash)
         build_bash_$ARCH
         ;; 
