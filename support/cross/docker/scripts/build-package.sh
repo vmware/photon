@@ -985,6 +985,35 @@ function build_libssh2_i686() {
        /usr/src/photon/SPECS/libssh2.spec
 }
 
+function build_linux_pam_i686() {
+    prepare_specs Linux-PAM
+
+    prepare_sources Linux-PAM-1.3.0.tar.bz2
+
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/cracklib-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/cracklib-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/cracklib-dicts-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/cracklib*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/Linux-PAM.spec
+}
+
 function build_openssl_release_i686() {
     prepare_specs openssl
 
@@ -1395,6 +1424,9 @@ case $PKG_NAME in
         ;;
     libssh2)
         build_libssh2_$ARCH
+        ;;
+    linux-pam)
+        build_linux_pam_$ARCH
         ;;
     ncurses)
         build_ncurses_$ARCH

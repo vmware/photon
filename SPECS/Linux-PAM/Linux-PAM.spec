@@ -35,13 +35,13 @@ for developing applications that use Linux-PAM.
 %setup -q
 %build
 
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=/etc   \
+%configure \
+    --sbindir=/sbin \
+    --sysconfdir=/etc \
     --enable-securedir=/usr/lib/security \
-    --docdir=%{_docdir}/%{name}-%{version}
+    --docdir=%{_docdir}/%{name}-%{version} \
+    --target=%{_target} \
+    --with-sysroot=/target
 
 make %{?_smp_mflags}
 %install
