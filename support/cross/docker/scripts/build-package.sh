@@ -1053,6 +1053,20 @@ function build_sqlite_i686() {
        /usr/src/photon/SPECS/sqlite.spec
 }
 
+function build_tar_i686() {
+    prepare_specs tar
+
+    prepare_sources tar-1.30.tar.xz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/tar.spec
+}
+
 function build_unzip_i686() {
     prepare_specs unzip
 
@@ -1268,6 +1282,9 @@ case $PKG_NAME in
         ;;
     sqlite)
         build_sqlite_$ARCH
+        ;;
+    tar)
+        build_tar_$ARCH
         ;;
     unzip)
         build_unzip_$ARCH
