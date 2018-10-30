@@ -78,6 +78,15 @@ The Net-tools package is a collection of programs for controlling the network su
 %patch29 -p1
 %patch30 -p1
 %build
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]; then
+export CC=i686-linux-gnu-gcc
+export CXX=i686-linux-gnu-g++
+export AR=i686-linux-gnu-ar
+export AS=i686-linux-gnu-as
+export RANLIB=i686-linux-gnu-ranlib
+export LD=i686-linux-gnu-ld
+export STRIP=i686-linux-gnu-strip
+fi
 yes "" | make config
 sed -i -e 's|HAVE_IP_TOOLS 0|HAVE_IP_TOOLS 1|g' \
        -e 's|HAVE_AFINET6 0|HAVE_AFINET6 1|g' \
