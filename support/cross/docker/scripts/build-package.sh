@@ -1568,13 +1568,17 @@ function build_systemd_i686() {
     prepare_specs systemd
 
     prepare_sources systemd-239.tar.gz
+    #prepare_sources systemd-233.tar.gz
     prepare_sources_from_specs systemd 99-vmware-hotplug.rules
     prepare_sources_from_specs systemd 50-security-hardening.conf
     prepare_sources_from_specs systemd systemd.cfg
     prepare_sources_from_specs systemd 99-dhcp-en.network
     prepare_sources_from_specs systemd 10-rdrand-rng.conf
 
-    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/gzip-[0-9].*.rpm \
+    prepare_patches systemd
+
+    rpm -Uvh --force --nodeps \
+             $PROJECT_ROOT/stage/RPMS/x86_64/gzip-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/cracklib-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/cracklib-dicts-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/cracklib-devel-[0-9].*.rpm \
@@ -1582,30 +1586,55 @@ function build_systemd_i686() {
              $PROJECT_ROOT/stage/RPMS/x86_64/Linux-PAM-devel-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/libcap-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/libcap-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libgpg-error-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libgpg-error-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libxml2-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libxml2-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/XML-Parser-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/expat-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/expat-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/pcre-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/pcre-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/pcre-devel-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/xz-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/xz-libs-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/xz-devel-[0-9].*.rpm \
-             $PROJECT_ROOT/stage/RPMS/x86_64/kmod-[0-9].*.rpm \
-             $PROJECT_ROOT/stage/RPMS/x86_64/kmod-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/kmod-25-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/kmod-devel-25-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/kbd-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/util-linux-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/util-linux-libs-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/util-linux-devel-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/libxslt-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/libgcrypt-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/libgcrypt-devel-[0-9].*.rpm \
-             $PROJECT_ROOT/stage/RPMS/x86_64/docbook-xsl-[0-9].*.rpm \
-             $PROJECT_ROOT/stage/RPMS/x86_64/docbook-xml-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/noarch/docbook-xsl-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/noarch/docbook-xml-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/libgcrypt-[0-9].*.rpm \
-             $PROJECT_ROOT/stage/RPMS/x86_64/intltool-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/noarch/intltool-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/gperf-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/glib-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/glib-devel-[0-9].*.rpm \
-             $PROJECT_ROOT/stage/RPMS/x86_64/meson-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/noarch/meson-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/python2-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/python2-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/python3-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/python3-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/ninja-build-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/gettext-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libffi-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libffi-devel-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/shadow-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/shadow-tools-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/glibc-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/glibc-devel-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/glibc-i18n-[0-9].*.rpm \
              $PROJECT_ROOT/stage/RPMS/x86_64/glibc-lang-[0-9].*.rpm \
-             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-iconv-[0-9].*.rpm
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-iconv-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/pkg-config-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/perl-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/perl-libintl-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/gdbm-[0-9].*.rpm
 
     mkdir -p /target/var/lib/rpm && \
     rpm --initdb --dbpath /target/var/lib/rpm && \
@@ -1616,13 +1645,22 @@ function build_systemd_i686() {
         --nodeps \
         $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
         $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glib-[0-9].*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glib-devel-[0-9].*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glib-schemas-[0-9].*.rpm \
         $PROJECT_ROOT/RPMS/i686/cracklib*.rpm \
         $PROJECT_ROOT/RPMS/i686/Linux-PAM*.rpm \
-        $PROJECT_ROOT/RPMS/i686/util-linux*.rpm
+        $PROJECT_ROOT/RPMS/i686/util-linux*.rpm \
         $PROJECT_ROOT/RPMS/i686/libcap*.rpm \
         $PROJECT_ROOT/RPMS/i686/libgcrypt*.rpm \
         $PROJECT_ROOT/RPMS/i686/kmod*.rpm \
-        $PROJECT_ROOT/RPMS/i686/xz*.rpm
+        $PROJECT_ROOT/RPMS/i686/xz*.rpm \
+        $PROJECT_ROOT/RPMS/i686/zlib*.rpm \
+        $PROJECT_ROOT/RPMS/i686/bzip2*.rpm \
+        $PROJECT_ROOT/RPMS/i686/elfutils*.rpm \
+        $PROJECT_ROOT/RPMS/i686/pcre*.rpm \
+        $PROJECT_ROOT/RPMS/i686/libffi*.rpm \
+        $PROJECT_ROOT/RPMS/i686/pkg-config*.rpm
 
     rpmbuild -ba --clean --nocheck \
        --define "with_check 0" \
