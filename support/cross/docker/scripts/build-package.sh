@@ -1550,6 +1550,75 @@ function build_sqlite_i686() {
        /usr/src/photon/SPECS/sqlite.spec
 }
 
+function build_systemd_i686() {
+    prepare_specs systemd
+
+    prepare_sources systemd-239.tar.gz
+    prepare_sources_from_specs systemd 99-vmware-hotplug.rules
+    prepare_sources_from_specs systemd 50-security-hardening.conf
+    prepare_sources_from_specs systemd systemd.cfg
+    prepare_sources_from_specs systemd 99-dhcp-en.network
+    prepare_sources_from_specs systemd 10-rdrand-rng.conf
+
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/gzip-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/cracklib-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/cracklib-dicts-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/cracklib-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/Linux-PAM-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/Linux-PAM-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libcap-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libcap-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/xz-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/xz-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/kmod-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/kmod-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/kbd-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/util-linux-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libxslt-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libgcrypt-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libgcrypt-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/docbook-xsl-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/docbook-xml-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libgcrypt-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/intltool-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/gperf-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glib-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glib-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/meson-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/gettext-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/shadow-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-i18n-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-lang-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-iconv-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/cracklib*.rpm \
+        $PROJECT_ROOT/RPMS/i686/Linux-PAM*.rpm \
+        $PROJECT_ROOT/RPMS/i686/util-linux*.rpm
+        $PROJECT_ROOT/RPMS/i686/libcap*.rpm \
+        $PROJECT_ROOT/RPMS/i686/libgcrypt*.rpm \
+        $PROJECT_ROOT/RPMS/i686/kmod*.rpm \
+        $PROJECT_ROOT/RPMS/i686/xz*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/systemd.spec
+}
+
 function build_tar_i686() {
     prepare_specs tar
 
@@ -1821,6 +1890,9 @@ case $PKG_NAME in
         ;;
     sqlite)
         build_sqlite_$ARCH
+        ;;
+    systemd)
+        build_systemd_$ARCH
         ;;
     tar)
         build_tar_$ARCH
