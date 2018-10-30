@@ -29,15 +29,20 @@ The Man-DB package contains programs for finding and viewing man pages.
 %prep
 %setup -qn %{name}-%{version}.1
 %build
-./configure \
-    --prefix=%{_prefix} \
+WITH_SYSROOT=
+if [ %{_host} != %{_build} ]
+then
+WITH_SYSROOT="--with-sysroot=/target"
+fi
+%configure \
+    --target=%{_target} \
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
-    --sysconfdir=%{_sysconfdir} \
     --disable-setuid \
     --with-browser=%{_bindir}/lynx \
     --with-vgrind=%{_bindir}/vgrind \
     --with-grap=%{_bindir}/grap \
-    --disable-silent-rules
+    --disable-silent-rules \
+    $WITH_SYSROOT
 
 make %{?_smp_mflags}
 
