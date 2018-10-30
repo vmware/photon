@@ -840,6 +840,20 @@ function build_libmspack_i686() {
        /usr/src/photon/SPECS/libmspack.spec
 }
 
+function build_libpipeline_i686() {
+    prepare_specs libpipeline
+
+    prepare_sources libpipeline-1.5.0.tar.gz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/libpipeline.spec
+}
+
 function build_libssh2_i686() {
     prepare_specs libssh2
 
@@ -1192,6 +1206,9 @@ case $PKG_NAME in
         ;;
     libmspack)
         build_libmspack_$ARCH
+        ;;
+    libpipeline)
+        build_libpipeline_$ARCH
         ;;
     libssh2)
         build_libssh2_$ARCH
