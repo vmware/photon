@@ -38,6 +38,7 @@ for developing applications that use Linux-PAM.
 %configure \
     --sbindir=/sbin \
     --sysconfdir=/etc \
+    --includedir=/usr/include/security \
     --enable-securedir=/usr/lib/security \
     --docdir=%{_docdir}/%{name}-%{version} \
     --target=%{_target} \

@@ -8,7 +8,7 @@ ARCH=$2
 function prepare_specs() {
     local pkg_name=$1
     rm -f /usr/src/photon/SPECS/*
-    cp -f $PROJECT_ROOT/SPECS/$pkg_name/* /usr/src/photon/SPECS/
+    cp -f $PROJECT_ROOT/SPECS/$pkg_name/*.spec /usr/src/photon/SPECS/
 }
 
 function prepare_sources() {
@@ -32,6 +32,17 @@ function prepare_sources_from_specs() {
     if [ ! -f $PROJECT_ROOT/SOURCES/$src_bundle ]; then
         mkdir -p $PROJECT_ROOT/SOURCES && \
         cp -r $PROJECT_ROOT/SPECS/$pkg_name/$src_bundle $PROJECT_ROOT/SOURCES/
+    fi
+    cp -r $PROJECT_ROOT/SOURCES/$src_bundle /usr/src/photon/SOURCES/
+}
+
+function prepare_sources_from_specs_path() {
+    local pkg_name=$1
+    local path=$2
+    local src_bundle=$3
+    if [ ! -f $PROJECT_ROOT/SOURCES/$src_bundle ]; then
+        mkdir -p $PROJECT_ROOT/SOURCES && \
+        cp -r $PROJECT_ROOT/SPECS/$pkg_name/$path/$src_bundle $PROJECT_ROOT/SOURCES/
     fi
     cp -r $PROJECT_ROOT/SOURCES/$src_bundle /usr/src/photon/SOURCES/
 }
@@ -1194,6 +1205,56 @@ function build_readline_i686() {
        /usr/src/photon/SPECS/readline.spec
 }
 
+function build_shadow_i686() {
+    prepare_specs shadow
+
+    prepare_sources shadow-4.6.tar.xz
+    prepare_patches shadow
+    prepare_sources_from_specs_path shadow pam.d chage
+    prepare_sources_from_specs_path shadow pam.d chpasswd
+    prepare_sources_from_specs_path shadow pam.d login
+    prepare_sources_from_specs_path shadow pam.d other
+    prepare_sources_from_specs_path shadow pam.d passwd
+    prepare_sources_from_specs_path shadow pam.d sshd
+    prepare_sources_from_specs_path shadow pam.d su
+    prepare_sources_from_specs_path shadow pam.d system-account
+    prepare_sources_from_specs_path shadow pam.d system-auth
+    prepare_sources_from_specs_path shadow pam.d system-password
+    prepare_sources_from_specs_path shadow pam.d system-session
+
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/gzip-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/cracklib-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/cracklib-dicts-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/cracklib-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/Linux-PAM-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/Linux-PAM-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-i18n-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-lang-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-iconv-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/cracklib*.rpm \
+        $PROJECT_ROOT/RPMS/i686/Linux-PAM*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/shadow.spec
+}
+
 function build_sqlite_i686() {
     prepare_specs sqlite
 
@@ -1454,6 +1515,9 @@ case $PKG_NAME in
         ;;
     readline)
         build_readline_$ARCH
+        ;;
+    shadow)
+        build_shadow_$ARCH
         ;;
     sqlite)
         build_sqlite_$ARCH
