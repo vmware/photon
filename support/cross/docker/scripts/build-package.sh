@@ -496,6 +496,35 @@ function build_ncurses_i686() {
        /usr/src/photon/SPECS/ncurses.spec
 }
 
+function build_net_tools_i686() {
+    prepare_specs net-tools
+
+    prepare_sources net-tools-1.60.tar.bz2
+
+    prepare_patches net-tools
+
+    # Install/Update host RPMs
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/nspr-[0-9].*.rpm
+    # Install target RPMs
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "dist .ph2" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/net-tools.spec
+}
+
 function build_nspr_i686() {
     prepare_specs nspr
 
@@ -1612,6 +1641,9 @@ case $PKG_NAME in
         ;;
     man-db)
         build_man_db_$ARCH
+        ;;
+    net-tools)
+        build_net_tools_$ARCH
         ;;
     ncurses)
         build_ncurses_$ARCH
