@@ -708,6 +708,20 @@ targets:
     volumes:
       - ./stage/cross/openssl-$[arch]:/usr/src/photon
 
+  pcre-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/pcre-$[arch]
+    always: true
+
+  pcre-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - pcre-pre-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh pcre $[arch]
+    volumes:
+      - ./stage/cross/pcre-$[arch]:/usr/src/photon
+
   photon-release-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/photon-release-$[arch]

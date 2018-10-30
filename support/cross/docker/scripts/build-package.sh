@@ -1216,6 +1216,52 @@ function build_openssl_release_i686() {
        /usr/src/photon/SPECS/openssl.spec
 }
 
+function build_pcre_i686() {
+    prepare_specs pcre
+
+    prepare_sources pcre-8.42.tar.bz2
+
+    # Install/Update host RPMs
+    rpm -Uvh --force --nodeps \
+             $PROJECT_ROOT/stage/RPMS/x86_64/bzip2-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/bzip2-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/bzip2-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/readline-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/readline-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libgcc-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libgcc-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libgcc-atomic-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-i18n-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-lang-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/glibc-iconv-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libstdc++-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/libstdc++-devel-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/bzip2*.rpm \
+        $PROJECT_ROOT/RPMS/i686/zlib*.rpm \
+        $PROJECT_ROOT/RPMS/i686/readline*.rpm \
+        $PROJECT_ROOT/RPMS/i686/ncurses*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/pcre.spec
+}
+
 function build_photon_release_i686() {
     prepare_specs photon-release
 
@@ -1653,6 +1699,9 @@ case $PKG_NAME in
         ;;
     openssl)
         build_openssl_release_$ARCH
+        ;;
+    pcre)
+        build_pcre_$ARCH
         ;;
     photon-release)
         build_photon_release_$ARCH
