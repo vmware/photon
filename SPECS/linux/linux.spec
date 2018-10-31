@@ -10,57 +10,21 @@ Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=229ed4bedc5b8256bdd761845b1d7e20e1df12d7
-Source1:	config
-Source2:	initramfs.trigger
-%define ena_version 1.6.0
-Source3:	https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
-%define sha1 ena_linux=c8ec9094f9db8d324d68a13b0b3dcd2c5271cbc0
-Source4:	config_aarch64
-Source5:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
-%define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
-# common
-Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
-Patch1:         double-tcp_mem-limits.patch
-# TODO: disable this patch, check for regressions
-#Patch2:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch5:         vsock-transport-for-9p.patch
-Patch6:         4.18-x86-vmware-STA-support.patch
-# ttyXRUSB support
-Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
-#HyperV patches
-Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
-# TODO: Is CONFIG_HYPERV_VSOCKETS the same?
-#Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
-#FIPS patches - allow some algorithms
-Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
-Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2017-1000252
-Patch28:        kvm-dont-accept-wrong-gsi-values.patch
-# Out-of-tree patches from AppArmor:
-Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
-Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
-Patch31:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
-Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Source1:	config-i686
 
-
-%if 0%{?kat_build:1}
-Patch1000:	%{kat_build}.patch
-%endif
 BuildRequires:  bc
-BuildRequires:  kbd
-BuildRequires:  kmod-devel
-BuildRequires:  glib-devel
-BuildRequires:  xerces-c-devel
-BuildRequires:  xml-security-c-devel
-BuildRequires:  libdnet-devel
-BuildRequires:  libmspack-devel
-BuildRequires:  Linux-PAM-devel
+#BuildRequires:  kbd
+#BuildRequires:  kmod-devel
+#BuildRequires:  glib-devel
+#BuildRequires:  xerces-c-devel
+#BuildRequires:  xml-security-c-devel
+#BuildRequires:  libdnet-devel
+#BuildRequires:  libmspack-devel
+#BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
-BuildRequires:  procps-ng-devel
-BuildRequires:	audit-devel
-Requires:       filesystem kmod
+#BuildRequires:  procps-ng-devel
+#BuildRequires:	audit-devel
+#Requires:       filesystem kmod
 Requires(post):(coreutils or toybox)
 %define uname_r %{version}-%{release}
 
@@ -98,98 +62,30 @@ Requires:       python3
 %description docs
 The Linux package contains the Linux kernel doc files
 
-%ifarch x86_64
-%package oprofile
-Summary:        Kernel driver for oprofile, a statistical profiler for Linux systems
-Group:          System Environment/Kernel
-Requires:       %{name} = %{version}-%{release}
-%description oprofile
-Kernel driver for oprofile, a statistical profiler for Linux systems
-%endif
-
-%package tools
-Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
-Group:          System/Tools
-Requires:       %{name} = %{version}-%{release}
-Requires:       audit
-%description tools
-This package contains the 'perf' performance analysis tools for Linux kernel.
-
-%ifarch aarch64
-%package dtb-rpi3
-Summary:        Kernel Device Tree Blob files for Raspberry Pi3
-Group:          System Environment/Kernel
-Requires:       %{name} = %{version}-%{release}
-%description dtb-rpi3
-Kernel Device Tree Blob files for Raspberry Pi3
-%endif
-
-
 %prep
 %setup -q -n linux-%{version}
-%ifarch x86_64
-%setup -D -b 3 -n linux-%{version}
-%setup -D -b 5 -n linux-%{version}
-%endif
-%patch0 -p1
-%patch1 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch11 -p1
-%patch13 -p1
-%patch24 -p1
-%patch26 -p1
-%patch28 -p1
-%patch29 -p1
-%patch30 -p1
-%patch31 -p1
-%patch32 -p1
-
-%if 0%{?kat_build:1}
-%patch1000 -p1
-%endif
 
 %build
 make mrproper
 
-%ifarch x86_64
-cp %{SOURCE1} .config
-arch="x86_64"
-archdir="x86"
-%endif
+CROSS_COMPILE=
 
-%ifarch aarch64
-cp %{SOURCE4} .config
-arch="arm64"
-archdir="arm64"
-%endif
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]
+then
+cp %{SOURCE1} .config
+arch="i386"
+archdir="x86"
+CROSS_COMPILE="CROSS_COMPILE=i686-linux-gnu-"
+fi
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
-make LC_ALL= oldconfig
-make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
-make -C tools perf
-%ifarch x86_64
-# build ENA module
-bldroot=`pwd`
-pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
-popd
-# build XR module
-bldroot=`pwd`
-pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
-make KERNELDIR=$bldroot %{?_smp_mflags} all
-popd
-%endif
-
-%define __modules_install_post \
-for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
-    ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
-    rm -f $MODULE.{sig,dig} \
-    xz $MODULE \
-    done \
-%{nil}
+make ARCH=${arch} $CROSS_COMPILE LC_ALL= oldconfig
+make VERBOSE=1 \
+     KBUILD_BUILD_VERSION="1-photon" \
+     KBUILD_BUILD_HOST="photon" \
+     $CROSS_COMPILE \
+     ARCH=${arch} \
+     %{?_smp_mflags}
 
 # We want to compress modules after stripping. Extra step is added to
 # the default __spec_install_post.
@@ -197,51 +93,22 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
     %{?__debug_package:%{__debug_install_post}}\
     %{__arch_install_post}\
     %{__os_install_post}\
-    %{__modules_install_post}\
 %{nil}
 
 %install
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]
+then
+arch="i386"
+archdir="x86"
+fi
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
-make INSTALL_MOD_PATH=%{buildroot} modules_install
+make INSTALL_MOD_PATH=%{buildroot} ARCH=${arch} modules_install
 
-%ifarch x86_64
-# install ENA module
-bldroot=`pwd`
-pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
-popd
-
-# install XR module
-bldroot=`pwd`
-pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
-make KERNELDIR=$bldroot INSTALL_MOD_PATH=%{buildroot} modules_install
-popd
-
-# Verify for build-id match
-# We observe different IDs sometimes
-# TODO: debug it
-ID1=`readelf -n vmlinux | grep "Build ID"`
-./scripts/extract-vmlinux arch/x86/boot/bzImage > extracted-vmlinux
-ID2=`readelf -n extracted-vmlinux | grep "Build ID"`
-if [ "$ID1" != "$ID2" ] ; then
-	echo "Build IDs do not match"
-	echo $ID1
-	echo $ID2
-	exit 1
-fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
-%endif
-
-%ifarch aarch64
-install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
-# Install DTB files
-install -vdm 755 %{buildroot}/boot/dtb
-install -vm 640 arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dtb %{buildroot}/boot/dtb/
-%endif
 
 # Restrict the permission on System.map-X file
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
@@ -258,12 +125,6 @@ photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
 
-# Register myself to initramfs
-mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
-cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn"
-EOF
-
 #    Cleanup dangling symlinks
 rm -rf %{buildroot}/lib/modules/%{uname_r}/source
 rm -rf %{buildroot}/lib/modules/%{uname_r}/build
@@ -272,26 +133,15 @@ find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --pare
 find arch/${archdir}/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
 find $(find arch/${archdir} -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
 find arch/${archdir}/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-%ifarch x86_64
+#%ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
-install -vsm 755 tools/objtool/objtool %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
-install -vsm 755 tools/objtool/fixdep %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
-%endif
+#install -vsm 755 tools/objtool/objtool %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
+#install -vsm 755 tools/objtool/fixdep %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
+#%endif
 
 cp .config %{buildroot}/usr/src/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
 ln -sf "/usr/src/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
-
-%ifarch aarch64
-cp arch/arm64/kernel/module.lds %{buildroot}/usr/src/%{name}-headers-%{uname_r}/arch/arm64/kernel/
-%endif
-
-# disable (JOBS=1) parallel build to fix this issue:
-# fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
-# Linux version that was affected is 4.4.26
-make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
-
-%include %{SOURCE2}
 
 %post
 /sbin/depmod -aq %{uname_r}
@@ -303,26 +153,15 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %post sound
 /sbin/depmod -aq %{uname_r}
 
-%ifarch x86_64
-%post oprofile
-/sbin/depmod -aq %{uname_r}
-%endif
-
 %files
 %defattr(-,root,root)
 /boot/System.map-%{uname_r}
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/%{name}-%{uname_r}.cfg
-%config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 %defattr(0644,root,root)
 /lib/modules/%{uname_r}/*
 %exclude /lib/modules/%{uname_r}/build
-%exclude /lib/modules/%{uname_r}/kernel/drivers/gpu
-%exclude /lib/modules/%{uname_r}/kernel/sound
-%ifarch x86_64
-%exclude /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
-%endif
 
 %files docs
 %defattr(-,root,root)
@@ -335,42 +174,12 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 %files drivers-gpu
 %defattr(-,root,root)
-%exclude /lib/modules/%{uname_r}/kernel/drivers/gpu/drm/cirrus/
-/lib/modules/%{uname_r}/kernel/drivers/gpu
+#%exclude /lib/modules/%{uname_r}/kernel/drivers/gpu/drm/cirrus/
+#/lib/modules/%{uname_r}/kernel/drivers/gpu
 
 %files sound
 %defattr(-,root,root)
-/lib/modules/%{uname_r}/kernel/sound
-
-%ifarch x86_64
-%files oprofile
-%defattr(-,root,root)
-/lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
-%endif
-
-%files tools
-%defattr(-,root,root)
-/usr/libexec
-%exclude %{_libdir}/debug
-%ifarch x86_64
-/usr/lib64/traceevent
-%endif
-%ifarch aarch64
-/usr/lib/traceevent
-%endif
-%{_bindir}
-/etc/bash_completion.d/*
-/usr/share/perf-core/strace/groups/file
-/usr/share/doc/*
-%{_libdir}/perf/examples/bpf/5sec.c
-%{_libdir}/perf/examples/bpf/empty.c
-%{_libdir}/perf/include/bpf/bpf.h
-
-%ifarch aarch64
-%files dtb-rpi3
-%defattr(-,root,root)
-/boot/dtb/bcm2837-rpi-3-b.dtb
-%endif
+#/lib/modules/%{uname_r}/kernel/sound
 
 %changelog
 *   Fri Oct 12 2018 Ajay Kaher <akaher@vmware.com> 4.18.9-4
