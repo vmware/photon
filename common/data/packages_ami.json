@@ -1,3 +1,12 @@
 {
-    "packages":["sudo", "gawk", "cloud-utils", "gptfdisk", "tar", "linux-aws"]
+    "packages":[
+                "minimal",
+                "linux-aws",
+                "initramfs",
+                "sudo",
+                "gawk",
+                "cloud-utils",
+                "gptfdisk",
+                "tar"
+                ]
 }
