@@ -1,8 +1,0 @@
-{
-    "micro" : {
-        "title" : "Photon Micro",
-        "file" : "packages_micro.json",
-        "visible" : true,
-        "include" : []
-    }
-}

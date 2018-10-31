@@ -13,7 +13,8 @@
 set -o errexit      # exit if error...insurance ;
 set -o nounset      # exit if variable not initalized
 set +h          # disable hashall
-source config.inc
+SCRIPT_PATH=$(dirname $(realpath -s $0))
+source $SCRIPT_PATH/config.inc
 PRGNAME=${0##*/}    # script name minus the path
 LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
 #LOGFILE=/dev/null      #   uncomment to disable log file
