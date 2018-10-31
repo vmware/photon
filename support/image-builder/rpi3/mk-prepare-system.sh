@@ -14,8 +14,9 @@ set -o errexit      # exit if error...insurance ;
 set -o nounset      # exit if variable not initalized
 set +h          # disable hashall
 SCRIPT_PATH=$(dirname $(realpath -s $0))
-source $SCRIPT_PATH/config.inc
-source $SCRIPT_PATH/function.inc
+INSTALLER_PATH=$SCRIPT_PATH/../../../installer
+source $INSTALLER_PATH/config.inc
+source $INSTALLER_PATH/function.inc
 PRGNAME=${0##*/}    # script name minus the path
 
 LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
@@ -24,26 +25,17 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
 [ ${EUID} -eq 0 ]   || fail "${PRGNAME}: Need to be root user: FAILURE"
 [ -z ${BUILDROOT} ] && fail "${PRGNAME}: Build root not set: FAILURE"
 
-if mountpoint ${BUILDROOT}/run  >/dev/null 2>&1; then umount ${BUILDROOT}/run; fi
-if mountpoint ${BUILDROOT}/sys  >/dev/null 2>&1; then umount ${BUILDROOT}/sys; fi
-if mountpoint ${BUILDROOT}/proc >/dev/null 2>&1; then umount ${BUILDROOT}/proc; fi
-if mountpoint ${BUILDROOT}/dev  >/dev/null 2>&1; then umount -R ${BUILDROOT}/dev; fi
-[ ${EUID} -eq 0 ]   || fail "${PRGNAME}: Need to be root user: FAILURE"
-
 cd ${BUILDROOT} || fail "${PRGNAME}: Change directory: ${BUILDROOT}: FAILURE"
-echo "23333223"
+
+#
+#   Setup the filesystem for chapter 06
+#
 if [[   $# -gt 0 ]] && [[ $1 == 'install' ]]; then
     mkdir -p ${BUILDROOT}/var/lib/rpm
     mkdir -p ${BUILDROOT}/cache/tdnf
-    #Setup the disk
-    dd if=/dev/zero of=${BUILDROOT}/cache/swapfile bs=1M count=64
-    chmod 600 ${BUILDROOT}/cache/swapfile
-    mkswap -v1 ${BUILDROOT}/cache/swapfile
-    swapon ${BUILDROOT}/cache/swapfile
     rpm   --root ${BUILDROOT} --initdb
     tdnf install filesystem --installroot ${BUILDROOT} --nogpgcheck --assumeyes
 else
-echo "233dsadasd33223"
     RPMPKG="$(find RPMS -name 'filesystem-[0-9]*.rpm' -print)"
     [ -z ${RPMPKG} ] && fail "  Filesystem rpm package missing: Can not continue"
     run_command "   Installing filesystem" "rpm -Uvh --nodeps --root ${BUILDROOT} --dbpath /var/lib/rpm ${RPMPKG}" "${LOGFILE}"
@@ -59,13 +51,12 @@ if [[   $# -eq 0 ]] || [[ $1 != 'install' ]]; then
     chown -R 0:0 ${BUILDROOT}/* || :
 fi
 
-echo "233339790s223"
 #
 #   Mount kernel filesystem
 #
-if ! mountpoint ${BUILDROOT}/dev    >/dev/null 2>&1; then mount --rbind /dev ${BUILDROOT}/dev; mount --make-rslave ${BUILDROOT}/dev; fi
-if ! mountpoint ${BUILDROOT}/proc   >/dev/null 2>&1; then mount -t proc proc ${BUILDROOT}/proc; fi
-if ! mountpoint ${BUILDROOT}/sys    >/dev/null 2>&1; then mount -t sysfs sysfs ${BUILDROOT}/sys; fi
-if ! mountpoint ${BUILDROOT}/run    >/dev/null 2>&1; then mount -t tmpfs tmpfs ${BUILDROOT}/run; fi
-if [ -h ${BUILDROOT}/dev/shm ];          then mkdir -pv ${BUILDROOT}/$(readlink ${BUILDROOT}/dev/shm); fi
+#if ! mountpoint ${BUILDROOT}/dev    >/dev/null 2>&1; then mount --rbind /dev ${BUILDROOT}/dev; mount --make-rslave ${BUILDROOT}/dev; fi
+#if ! mountpoint ${BUILDROOT}/proc   >/dev/null 2>&1; then mount -t proc proc ${BUILDROOT}/proc; fi
+#if ! mountpoint ${BUILDROOT}/sys    >/dev/null 2>&1; then mount -t sysfs sysfs ${BUILDROOT}/sys; fi
+#if ! mountpoint ${BUILDROOT}/run    >/dev/null 2>&1; then mount -t tmpfs tmpfs ${BUILDROOT}/run; fi
+#if [ -h ${BUILDROOT}/dev/shm ];          then mkdir -pv ${BUILDROOT}/$(readlink ${BUILDROOT}/dev/shm); fi
 exit 0

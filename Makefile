@@ -81,10 +81,8 @@ TOOLS_BIN := $(SRCROOT)/tools/bin
 CONTAIN := $(TOOLS_BIN)/contain
 ifeq ($(ARCH),x86_64)
 VIXDISKUTIL := $(TOOLS_BIN)/vixdiskutil
-IMGCONVERTER := $(TOOLS_BIN)/imgconverter
 else
 VIXDISKUTIL :=
-IMGCONVERTER :=
 endif
 
 $(TOOLS_BIN):
@@ -98,11 +96,7 @@ $(VIXDISKUTIL): $(TOOLS_BIN)
 	@cd $(SRCROOT)/tools/src/vixDiskUtil && \
 	make
 
-$(IMGCONVERTER): $(TOOLS_BIN)
-	@cd $(SRCROOT)/tools/src/imgconverter && \
-	make
-
-.PHONY : all iso clean cloud-image \
+.PHONY : all iso clean image all-images \
 check-tools check-docker check-bison check-g++ check-gawk check-repo-tool check-kpartx check-sanity \
 clean-install clean-chroot build-updated-packages check generate-yaml-files
 
@@ -306,7 +300,7 @@ check: packages
 
 # The targets listed under "all" are the installer built artifacts
 #===============================================================================
-all: iso photon-docker-image k8s-docker-images cloud-image-all src-iso
+all: iso photon-docker-image k8s-docker-images all-images src-iso
 
 iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Building Photon Full ISO..."
@@ -343,20 +337,56 @@ src-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
                 --force > \
                 $(PHOTON_LOGS_DIR)/sourceiso-installer.log 2>&1
 
-cloud-image: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(IMGCONVERTER) $(PHOTON_PACKAGES)
-	@echo "Building cloud image $(IMG_NAME)..."
-	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
-	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
+image: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(PHOTON_PACKAGES)
+	@echo "Building image $(IMG_NAME)..."
+	@cd $(PHOTON_IMAGE_BUILDER_DIR)
+	$(PHOTON_IMAGE_BUILDER) \
+        --build-scripts-path=$(PHOTON_IMAGE_BUILDER_DIR) \
+        --img-name=$(IMG_NAME) \
+        --src-root=$(SRCROOT) \
+        --generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
+        --stage-path=$(PHOTON_STAGE) \
+        --additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
 
 
-cloud-image-all: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(IMGCONVERTER) $(PHOTON_PACKAGES)
-	@echo "Building cloud images - gce, ami, azure and ova..."
-	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
-	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) gce $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
-	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ami $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
-	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) azure $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
-	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
-	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova_micro $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
+all-images: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(PHOTON_PACKAGES)
+	@echo "Building all images - gce, ami, azure, ova..."
+	@cd $(PHOTON_IMAGE_BUILDER_DIR)
+	$(PHOTON_IMAGE_BUILDER) \
+        --build-scripts-path=$(PHOTON_IMAGE_BUILDER_DIR) \
+        --img-name=ami \
+        --src-root=$(SRCROOT) \
+        --generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
+        --stage-path=$(PHOTON_STAGE) \
+        --additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
+	$(PHOTON_IMAGE_BUILDER) \
+        --build-scripts-path=$(PHOTON_IMAGE_BUILDER_DIR) \
+        --img-name=azure \
+        --src-root=$(SRCROOT) \
+        --generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
+        --stage-path=$(PHOTON_STAGE) \
+        --additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
+	$(PHOTON_IMAGE_BUILDER) \
+        --build-scripts-path=$(PHOTON_IMAGE_BUILDER_DIR) \
+        --img-name=gce \
+        --src-root=$(SRCROOT) \
+        --generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
+        --stage-path=$(PHOTON_STAGE) \
+        --additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
+	$(PHOTON_IMAGE_BUILDER) \
+        --build-scripts-path=$(PHOTON_IMAGE_BUILDER_DIR) \
+        --img-name=ova \
+        --src-root=$(SRCROOT) \
+        --generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
+        --stage-path=$(PHOTON_STAGE) \
+        --additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
+	$(PHOTON_IMAGE_BUILDER) \
+        --build-scripts-path=$(PHOTON_IMAGE_BUILDER_DIR) \
+        --img-name=ova_uefi \
+        --src-root=$(SRCROOT) \
+        --generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
+        --stage-path=$(PHOTON_STAGE) \
+        --additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
 
 photon-docker-image:
 	$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)
@@ -443,11 +473,11 @@ $(PHOTON_STAGE):
 	@echo "Building LOGS folder..."
 	@test -d $(PHOTON_LOGS_DIR) || $(MKDIR) -p $(PHOTON_LOGS_DIR)
 	@echo "Creating COPYING file..."
-	install -m 444 $(SRCROOT)/COPYING $(PHOTON_STAGE)/COPYING
+	@install -m 444 $(SRCROOT)/COPYING $(PHOTON_STAGE)/COPYING
 	@echo "Creating open_source_license.txt file..."
-	install -m 444 $(SRCROOT)/installer/open_source_license.txt $(PHOTON_STAGE)/open_source_license.txt
+	@install -m 444 $(SRCROOT)/installer/open_source_license.txt $(PHOTON_STAGE)/open_source_license.txt
 	@echo "Creating NOTICE file..."
-	install -m 444 $(SRCROOT)/NOTICE $(PHOTON_STAGE)/NOTICE
+	@install -m 444 $(SRCROOT)/NOTICE $(PHOTON_STAGE)/NOTICE
 #_______________________________________________________________________________
 
 # Clean build environment
@@ -536,7 +566,7 @@ generate-dep-lists:
 		--log-level $(LOGLEVEL) \
 		--pkg $(PHOTON_GENERATED_DATA_DIR) \
 		--input-type=json \
-		--file "$$(ls $(PHOTON_DATA_DIR)/build_install_options*.json)" \
+		--file "$$(ls $(PHOTON_DATA_DIR)/packages_*.json)" \
 		--display-option json \
 		--input-data-dir $(PHOTON_DATA_DIR)
 	@echo ""
@@ -554,7 +584,7 @@ imgtree:
         --spec-path $(PHOTON_SPECS_DIR) \
         --log-level $(LOGLEVEL) \
         --input-type json \
-        --file $(PHOTON_DATA_DIR)/build_install_options_$(img).json
+        --file $(PHOTON_DATA_DIR)/packages_$(img).json
 
 who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \

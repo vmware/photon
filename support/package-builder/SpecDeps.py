@@ -74,19 +74,13 @@ def main():
             list_json_files = options.json_file.split("\n")
             # Generate the expanded package dependencies json file based on package_list_file
             logger.info("Generating the install time dependency list for all json files")
+            if list_json_files:
+                shutil.copy2(os.path.dirname(list_json_files[0]) + "/build_install_options_all.json", options.output_dir)
             for json_file in list_json_files:
-                shutil.copy2(json_file, options.output_dir)
-                json_wrapper_option_list = JsonWrapper(json_file)
-                option_list_json = json_wrapper_option_list.read()
-                options_sorted = option_list_json.items()
-                for install_option in options_sorted:
-                    output_file = None
-                    input_value = os.path.join(os.path.dirname(json_file), install_option[1]["file"])
-                    if options.display_option == "tree" and install_option[1]["title"] == "ISO Packages":
-                        continue
-                    if options.display_option == "json":
-                        output_file = os.path.join(options.output_dir, install_option[1]["file"])
-                    specDeps.process(options.input_type, input_value, options.display_option, output_file)
+                output_file = None
+                if options.display_option == "json":
+                    output_file = os.path.join(options.output_dir, os.path.basename(json_file))
+                    specDeps.process(options.input_type, json_file, options.display_option, output_file)
     except Exception as e:
         traceback.print_exc()
         sys.stderr.write(str(e))

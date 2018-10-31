@@ -506,7 +506,6 @@ class SpecDependencyGenerator(object):
                 inputPackages.append(inputValue)
             else:
                 inputPackages = self.getAllPackageNames(inputValue)
-
             self.calculateSpecDependency(inputPackages, mapDependencies, parent)
             if outputFile is not None:
                 return self.displayDependencies(displayOption, inputType, outputFile, mapDependencies, parent)
