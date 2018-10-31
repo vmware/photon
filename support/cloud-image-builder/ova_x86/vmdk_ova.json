@@ -1,0 +1,15 @@
+{
+    "hostname": "photon-machine",
+    "password": 
+        {
+            "crypted": false,
+            "text": "PASSWORD"
+        },
+    "type": "minimal",
+    "size": { "root": "16", "swap": "0" },
+    "public_key":"<ssh-key-here>",
+    "customartifacts": { "postinstallscripts": ["ova-custom-patch.sh"] },
+    "artifacttype": "ova",
+    "keeprawdisk": "false"
+}
+

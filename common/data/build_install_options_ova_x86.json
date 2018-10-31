@@ -1,0 +1,8 @@
+{
+    "minimal" : {
+        "title" : "Photon Minimal",
+        "file" : "packages_x86_ova.json",
+        "visible" : true,
+        "include" : []
+    }
+}
