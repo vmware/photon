@@ -29,7 +29,13 @@ Photon OS binaries are available in a number of formats, including ISO, OVA and 
 
 For download instructions and links to Photon OS binaries, go to the [Download Guide](https://github.com/vmware/photon/wiki/Downloading-Photon-OS).
 
-*Photon OS 2.0 is here!*
+*Photon OS 3.0 Beta is here!*
+--------------------------
+Photon OS 3.0 Beta introduces new devices support including ARM64 (Raspberry Pi 3), installer improvements and up-to-date OSS packages including linux kernel, systemd and glibc.
+
+For an overview of changes, see [What's New in Photon OS 3.0](https://github.com/vmware/photon/wiki/What-is-New-in-Photon-OS-3.0).
+
+Photon OS 2.0
 --------------------------
 Photon OS 2.0 introduces new security and OS management capabilities, along with new and updated packages for Cloud native applications and VMware appliances. 
 
