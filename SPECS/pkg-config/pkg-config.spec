@@ -15,12 +15,16 @@ to build tools during the configure and make file execution.
 %prep
 %setup -q
 %build
-./configure \
-	--prefix=%{_prefix} \
+%configure \
+	--target=%{_target} \
 	--with-internal-glib \
 	--disable-host-tool \
 	--docdir=%{_defaultdocdir}/%{name}-%{version} \
-	--disable-silent-rules
+	--disable-silent-rules \
+    glib_cv_stack_grows=no \
+    ac_cv_func_posix_getpwuid_r=yes \
+    ac_cv_func_posix_getgrgid_r=yes \
+    glib_cv_uscore=yes
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install

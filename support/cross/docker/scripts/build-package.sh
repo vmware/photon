@@ -1389,6 +1389,20 @@ function build_photon_repos_i686() {
        /usr/src/photon/SPECS/photon-repos.spec
 }
 
+function build_pkg_config_i686() {
+    prepare_specs pkg-config
+
+    prepare_sources pkg-config-0.29.2.tar.gz
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/pkg-config.spec
+}
+
 function build_popt_i686() {
     prepare_specs popt
 
@@ -1803,6 +1817,9 @@ case $PKG_NAME in
         ;;
     photon-repos)
         build_photon_repos_$ARCH
+        ;;
+    pkg-config)
+        build_pkg_config_$ARCH
         ;;
     popt)
         build_popt_$ARCH
