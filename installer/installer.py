@@ -21,15 +21,13 @@ class Installer(object):
     """
     Photon installer
     """
-    mount_command = "./mk-mount-disk.sh"
-    prepare_command = "./mk-prepare-system.sh"
+    mount_command = os.path.dirname(__file__)+"/mk-mount-disk.sh"
     finalize_command = "./mk-finalize-system.sh"
-    chroot_command = "./mk-run-chroot.sh"
-    setup_grub_command = "./mk-setup-grub.sh"
-    unmount_disk_command = "./mk-unmount-disk.sh"
+    chroot_command = os.path.dirname(__file__)+"/mk-run-chroot.sh"
+    unmount_disk_command = os.path.dirname(__file__)+"/mk-unmount-disk.sh"
 
     def __init__(self, install_config, maxy=0, maxx=0, iso_installer=False,
-                 rpm_path="../stage/RPMS", log_path="../stage/LOGS", log_level="info"):
+                 rpm_path=os.path.dirname(__file__)+"/../stage/RPMS", log_path=os.path.dirname(__file__)+"/../stage/LOGS", log_level="info"):
         self.install_config = install_config
         self.install_config['iso_installer'] = iso_installer
         self.rpm_path = rpm_path
@@ -40,7 +38,15 @@ class Installer(object):
             self.working_directory = self.install_config['working_directory']
         else:
             self.working_directory = "/mnt/photon-root"
+        if 'prepare_script' in self.install_config:
+            self.prepare_command = self.install_config['prepare_script']
+        else:
+            self.prepare_command = os.path.dirname(__file__)+"/mk-prepare-system.sh"
         self.photon_root = self.working_directory + "/photon-chroot"
+        if 'setup_grub_script' in self.install_config:
+            self.setup_grub_command = self.install_config['setup_grub_script']
+        else:
+            self.setup_grub_command = os.path.dirname(__file__)+"/mk-setup-grub.sh"
         self.rpms_tobeinstalled = None
 
         if self.install_config['iso_installer']:
@@ -164,7 +170,7 @@ class Installer(object):
             self.exit_gracefully(None, None)
 
         # Copy the installer files
-        process = subprocess.Popen(['cp', '-r', "../installer", self.photon_root],
+        process = subprocess.Popen(['cp', '-r', os.path.dirname(__file__), self.photon_root],
                                    stdout=self.output)
         retval = process.wait()
         if retval != 0:
@@ -304,7 +310,7 @@ class Installer(object):
         if self.install_config['iso_installer']:
             self._bind_installer()
             self._bind_repo_dir()
-            process = subprocess.Popen([Installer.prepare_command, '-w',
+            process = subprocess.Popen([self.prepare_command, '-w',
                                         self.photon_root, 'install'],
                                        stdout=self.output)
             retval = process.wait()
@@ -315,7 +321,7 @@ class Installer(object):
         else:
             self._copy_files()
             #Setup the filesystem basics
-            process = subprocess.Popen([Installer.prepare_command, '-w', self.photon_root],
+            process = subprocess.Popen([self.prepare_command, '-w', self.photon_root],
                                        stdout=self.output)
             retval = process.wait()
             if retval != 0:
@@ -334,7 +340,7 @@ class Installer(object):
         retval = process.wait()
         if retval != 0:
             modules.commons.log(modules.commons.LOG_ERROR,
-                                "Fail to setup th target system after the installation")
+                                "Fail to setup the target system after the installation")
 
         if self.install_config['iso_installer']:
 
@@ -374,7 +380,7 @@ class Installer(object):
             try:
                 if self.install_config['boot'] == 'bios':
                     process = subprocess.Popen(
-                        [Installer.setup_grub_command, '-w', self.photon_root,
+                        [self.setup_grub_command, '-w', self.photon_root,
                          "bios", self.install_config['disk']['disk'],
                          self.install_config['disk']['root'],
                          self.install_config['disk']['boot'],
@@ -383,7 +389,7 @@ class Installer(object):
                         stdout=self.output)
                 elif self.install_config['boot'] == 'efi':
                     process = subprocess.Popen(
-                        [Installer.setup_grub_command, '-w', self.photon_root,
+                        [self.setup_grub_command, '-w', self.photon_root,
                          "efi", self.install_config['disk']['disk'],
                          self.install_config['disk']['root'],
                          self.install_config['disk']['boot'],
@@ -393,7 +399,7 @@ class Installer(object):
             except:
                 #install bios if variable is not set.
                 process = subprocess.Popen(
-                    [Installer.setup_grub_command, '-w', self.photon_root,
+                    [self.setup_grub_command, '-w', self.photon_root,
                      "bios", self.install_config['disk']['disk'],
                      self.install_config['disk']['root'],
                      self.install_config['disk']['boot'],

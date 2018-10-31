@@ -159,16 +159,12 @@ class IsoConfig(object):
         if self.is_vmware_virtualization() and 'install_linux_esx' not in install_config:
             install_config['install_linux_esx'] = True
 
-        json_wrapper_option_list = JsonWrapper("build_install_options_all.json")
-        option_list_json = json_wrapper_option_list.read()
-        options_sorted = option_list_json.items()
-
         base_path = os.path.dirname("build_install_options_all.json")
         package_list = []
-
-        package_list = PackageSelector.get_packages_to_install(options_sorted,
-                                                               install_config['type'],
+        if 'packagelist_file' in config:
+            package_list = PackageSelector.get_packages_to_install(config['packagelist_file'],
                                                                base_path)
+
         if 'additional_packages' in install_config:
             package_list.extend(install_config['additional_packages'])
         install_config['packages'] = package_list
@@ -250,20 +246,12 @@ class IsoConfig(object):
                 index += 1
                 if index == len(items):
                     break
-                #Skip linux select screen for ostree installation.
-                if index == select_linux_index:
-                    if install_config['type'] == 'ostree_server':
-                        index += 1
             else:
                 index -= 1
                 while index >= 0 and items[index][1] is False:
                     index -= 1
                 if index < 0:
                     index = 0
-                #Skip linux select screen for ostree installation.
-                if index == select_linux_index:
-                    if install_config['type'] == 'ostree_server':
-                        index -= 1
         return install_config
     def add_ui_pages(self, options_file, maxy, maxx, install_config):
         items = []

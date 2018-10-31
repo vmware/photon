@@ -30,16 +30,15 @@ grub_efi_install()
     fi
     mkfs.fat $BOOT_PARTITION
     mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/efi
-    cp boot/unifont.pf2 /usr/share/grub/
-
+    cp $INSTALLER_PATH/boot/unifont.pf2 /usr/share/grub/
     mkdir -p $BUILDROOT/boot/efi/EFI/Boot/
     if [ $(uname -m) == "aarch64" ]
     then
-        cp EFI_aarch64/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
+        cp $INSTALLER_PATH/EFI_aarch64/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
         local EXE_NAME="bootaa64.efi"
     elif [ $(uname -m) == "x86_64" ]
     then
-        cp EFI_x86_64/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
+        cp $INSTALLER_PATH/EFI_x86_64/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
         local EXE_NAME="bootx64.efi"
     fi
 
@@ -57,13 +56,14 @@ grub_mbr_install()
 {
     $grubInstallCmd --target=i386-pc --force --boot-directory=$BUILDROOT/boot "$HDD"
 }
-
 set -o errexit        # exit if error...insurance ;)
 set -o nounset        # exit if variable not initalized
 set +h            # disable hashall
 PRGNAME=${0##*/}    # script name minus the path
-source config.inc        #    configuration parameters
-source function.inc        #    commonn functions
+SCRIPT_PATH=$(dirname $(realpath -s $0))
+INSTALLER_PATH=$SCRIPT_PATH
+source $SCRIPT_PATH/config.inc        #    configuration parameters
+source $SCRIPT_PATH/function.inc        #    commonn functions
 LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #    set log file name
 ARCH=$(uname -m)    # host architecture
 [ ${EUID} -eq 0 ]    || fail "${PRGNAME}: Need to be root user: FAILURE"
@@ -104,11 +104,11 @@ if [ "$BOOTMODE" == "efi" ]; then
 fi
 
 rm -rf ${BUILDROOT}/boot/grub2/fonts
-cp boot/ascii.pf2 ${BUILDROOT}/boot/grub2/
+cp $INSTALLER_PATH/boot/ascii.pf2 ${BUILDROOT}/boot/grub2/
 mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
-cp boot/splash.png ${BUILDROOT}/boot/grub2/themes/photon/photon.png
-cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
-cp boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
+cp $INSTALLER_PATH/boot/splash.png ${BUILDROOT}/boot/grub2/themes/photon/photon.png
+cp $INSTALLER_PATH/boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
+cp $INSTALLER_PATH/boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
 # linux-esx tries to mount rootfs even before nvme got initialized.
 # rootwait fixes this issue
 EXTRA_PARAMS=""
