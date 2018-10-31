@@ -38,14 +38,14 @@ def query_yes_no(question, default="no"):
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
 
-def create_vmdk_and_partition(config, vmdk_path):
+def create_vmdk_and_partition(config, vmdk_path, disk_setup_script):
     partitions_data = {}
 
     firmware = "bios"
     if 'boot' in config and config['boot'] == 'efi':
         firmware = "efi"
-    process = subprocess.Popen(['./mk-setup-vmdk.sh', '-rp', config['size']['root'], '-sp',
-                                config['size']['swap'], '-n', vmdk_path, '-fm', firmware, '-m'],
+    process = subprocess.Popen([disk_setup_script, '-rp', config['size']['root'], '-sp',
+                                config['size']['swap'], '-n', vmdk_path, '-fm', firmware],
                                stdout=subprocess.PIPE)
     count = 0
 
@@ -71,7 +71,6 @@ def create_vmdk_and_partition(config, vmdk_path):
             partitions_data['partitions'].append({'path': partitions_data['esp'], 'mountpoint': '/boot/esp',
                                           'filesystem': 'vfat'})
             count += 1
-
     return partitions_data, count == 2 or count == 3
 
 def get_file_name_with_last_folder(filename):
@@ -188,21 +187,29 @@ if __name__ == '__main__':
     parser.add_argument("-w", "--working-directory", dest="working_directory",
                         default="/mnt/photon-root")
     parser.add_argument("-l", "--log-path", dest="log_path",
-                        default="../stage/LOGS")
+                        default=os.path.dirname(__file__)+"/../stage/LOGS")
     parser.add_argument("-y", "--log-level", dest="log_level")
-    parser.add_argument("-r", "--rpm-path", dest="rpm_path", default="../stage/RPMS")
-    parser.add_argument("-x", "--srpm-path", dest="srpm_path", default="../stage/SRPMS")
+    parser.add_argument("-r", "--rpm-path", dest="rpm_path", default=os.path.dirname(__file__)+"/../stage/RPMS")
+    parser.add_argument("-x", "--srpm-path", dest="srpm_path", default=os.path.dirname(__file__)+"/../stage/SRPMS")
     parser.add_argument("-o", "--output-data-path", dest="output_data_path",
-                        default="../stage/common/data/")
+                        default=os.path.dirname(__file__)+"/../stage/common/data/")
     parser.add_argument("-f", "--force", action="store_true", dest="force", default=False)
     parser.add_argument("-p", "--package-list-file", dest="package_list_file",
-                        default="../common/data/build_install_options_all.json")
-    parser.add_argument("-m", "--stage-path", dest="stage_path", default="../stage")
+                        default=os.path.dirname(__file__)+"/../common/data/build_install_options_all.json")
+    parser.add_argument("-m", "--stage-path", dest="stage_path", default=os.path.dirname(__file__)+"../stage")
     parser.add_argument("-s", "--json-data-path", dest="json_data_path",
-                        default="../stage/common/data/")
+                        default=os.path.dirname(__file__)+"/../stage/common/data/")
     parser.add_argument("-d", "--pkg-to-rpm-map-file", dest="pkg_to_rpm_map_file",
-                        default="../stage/pkg_info.json")
+                        default=os.path.dirname(__file__)+"/../stage/pkg_info.json")
     parser.add_argument("-c", "--pkg-to-be-copied-conf-file", dest="pkg_to_be_copied_conf_file")
+    parser.add_argument("-ds", "--disk-setup-script", dest="disk_setup_script",
+                        default=os.path.dirname(__file__)+"/../support/image-builder/mk-setup-vmdk.sh")
+    parser.add_argument("-dc", "--disk-cleanup-script", dest="disk_cleanup_script",
+                        default=os.path.dirname(__file__)+"/../support/image-builder/mk-clean-vmdk.sh")
+    parser.add_argument("-ps", "--prepare-script", dest="prepare_system_script",
+                        default=os.path.dirname(__file__)+"/mk-prepare-system.sh")
+    parser.add_argument("-sg", "--setup-grub-script", dest="setup_grub_script",
+                        default=os.path.dirname(__file__)+"/mk-setup-grub.sh")
     parser.add_argument('configfile', nargs='?')
     options = parser.parse_args()
     # Cleanup the working directory
@@ -235,7 +242,7 @@ if __name__ == '__main__':
 
             # Read the conf file
             config = (JsonWrapper(options.configfile)).read()
-            config['disk'], success = create_vmdk_and_partition(config, options.vmdk_path)
+            config['disk'], success = create_vmdk_and_partition(config, options.vmdk_path, options.disk_setup_script)
             if not success:
                 print("Unexpected failure, please check the logs")
                 sys.exit(1)
@@ -271,8 +278,18 @@ if __name__ == '__main__':
         options_sorted = option_list_json.items()
 
         packages = []
-        packages = PackageSelector.get_packages_to_install(options_sorted, config['type'],
-                                                           options.output_data_path)
+        if 'type' in config:
+            for install_option in options_sorted:
+                if install_option[0] == config['type']:
+                    packages = PackageSelector.get_packages_to_install(install_option[1]['packagelist_file'],
+                                                                   options.output_data_path)
+                    break
+        else:
+            if 'packagelist_file' in config:
+                packages = PackageSelector.get_packages_to_install(config['packagelist_file'],
+                                                                   options.output_data_path)
+            if 'additional_packages' in config:
+                packages = packages.extend(config['additional_packages'])
 
         config['packages'] = packages
 
@@ -285,6 +302,8 @@ if __name__ == '__main__':
         retval = process.wait()
 
         config['working_directory'] = options.working_directory
+        config['prepare_script'] = options.prepare_system_script
+        config['setup_grub_script'] = options.setup_grub_script
 
         # Run the installer
         package_installer = Installer(config, rpm_path=options.rpm_path,
@@ -317,7 +336,7 @@ if __name__ == '__main__':
 
         # Cleaning up for vmdk
         if 'vmdk_install' in config and config['vmdk_install']:
-            process = subprocess.Popen(['./mk-clean-vmdk.sh', config['disk']['disk']])
+            process = subprocess.Popen([options.disk_cleanup_script, config['disk']['disk']])
             process.wait()
 
         #Clean up the working directories
