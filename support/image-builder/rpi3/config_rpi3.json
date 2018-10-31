@@ -1,0 +1,20 @@
+{
+	"hostname": "photon-machine",
+	"password":
+		{
+			"crypted": false,
+			"text": "PASSWORD"
+		},
+	"packagelist_file": "packages_rpi3.json",
+    "size": {"root": "1", "swap": "0"},
+    "boot":"efi",
+    "public_key":"<ssh-key-here>",
+    "postinstallscripts": ["rpi3-custom-patch.sh"],
+    "additionalfiles": [
+                            {"resizefs.sh": "/usr/local/bin/resizefs.sh"},
+                            {"resizefs.service": "/lib/systemd/system/resizefs.service"}
+                       ],
+    "artifacttype": "xz",
+    "keeprawdisk": "true"
+}
+
