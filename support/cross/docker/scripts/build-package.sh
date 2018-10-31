@@ -1144,6 +1144,42 @@ function build_libssh2_i686() {
        /usr/src/photon/SPECS/libssh2.spec
 }
 
+function build_linux_i686() {
+    prepare_specs linux
+
+    prepare_sources linux-4.18.9.tar.xz
+
+    prepare_sources_from_specs linux config-i686
+    #prepare_patches linux
+
+    rpm -Uvh $PROJECT_ROOT/stage/RPMS/x86_64/openssl-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/openssl-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/bc-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/xz-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/xz-libs-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/xz-devel-[0-9].*.rpm \
+             $PROJECT_ROOT/stage/RPMS/x86_64/coreutils-[0-9].*.rpm
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/openssl*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/linux.spec
+}
+
 function build_linux_pam_i686() {
     prepare_specs Linux-PAM
 
@@ -1737,6 +1773,9 @@ case $PKG_NAME in
         ;;
     libssh2)
         build_libssh2_$ARCH
+        ;;
+    linux)
+        build_linux_$ARCH
         ;;
     linux-pam)
         build_linux_pam_$ARCH
