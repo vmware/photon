@@ -14,8 +14,9 @@ set -o errexit		# exit if error...insurance ;
 set -o nounset		# exit if variable not initalized
 set +h			# disable hashall
 PRGNAME=${0##*/}	# script name minus the path
-source config.inc		#	configuration parameters
-source function.inc
+SCRIPT_PATH=$(dirname $(realpath -s $0))
+source $SCRIPT_PATH/config.inc		#	configuration parameters
+source $SCRIPT_PATH/function.inc
 LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 #LOGFILE=/dev/null		#	uncomment to disable log file
 [ ${EUID} -eq 0 ]	|| fail "${PRGNAME}: Need to be root user: FAILURE"

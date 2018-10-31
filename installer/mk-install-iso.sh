@@ -12,8 +12,9 @@
 #
 
 set +x                 # disable hashall
-source config.inc       #   configuration parameters
-source function.inc     #   commonn functions
+SCRIPT_PATH=$(dirname $(realpath -s $0))
+source $SCRIPT_PATH/config.inc       #   configuration parameters
+source $SCRIPT_PATH/function.inc     #   commonn functions
 PRGNAME=${0##*/}    # script name minus the path
 LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
 
