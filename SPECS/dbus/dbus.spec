@@ -28,12 +28,31 @@ It contains the libraries and header files to create applications
 %prep
 %setup -q
 %build
-./configure --prefix=%{_prefix}                 \
+DISABLE_TESTS=
+if [ %{_host} != %{_build} -a %{_target} = "i686-linux" ]; then
+CROSS_TOOLCHAIN_PKG_CONFIG=/opt/cross/bin/i686-linux-gnu-pkg-config
+cat > $CROSS_TOOLCHAIN_PKG_CONFIG << "EOF"
+#!/bin/sh
+
+SYSROOT=/target
+
+export PKG_CONFIG_DIR=
+export PKG_CONFIG_LIBDIR=${SYSROOT}/usr/lib/pkgconfig:${SYSROOT}/usr/share/pkgconfig
+export PKG_CONFIG_SYSROOT_DIR=${SYSROOT}
+
+exec pkg-config "$@"
+EOF
+chmod +x $CROSS_TOOLCHAIN_PKG_CONFIG
+export LDFLAGS="-lssp"
+DISABLE_TESTS="--disable-tests"
+fi
+%configure --target=%{_target}                 \
             --sysconfdir=%{_sysconfdir}         \
             --localstatedir=%{_var}             \
             --docdir=%{_datadir}/doc/dbus-1.11.12  \
             --enable-libaudit=no --enable-selinux=no \
-            --with-console-auth-dir=/run/console
+            --with-console-auth-dir=/run/console \
+            $DISABLE_TESTS
 
 make %{?_smp_mflags}
 %install
