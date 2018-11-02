@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          15%{?dist}
+Release:          16%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -32,6 +32,7 @@ Patch13:          systemd-228-CVE-2017-15908-dns-pkt-loop-fix.patch
 Patch14:          systemd-233-CVE-2017-18078.patch
 Patch15:          systemd-233-util-linux-build-failure.patch
 Patch16:          systemd-233-CVE-2018-1049.patch
+Patch17:          systemd-233-CVE-2018-15688.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -102,6 +103,7 @@ sed -i "/xlocale.h/d" src/basic/parse-util.c
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -252,6 +254,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Fri Nov 02 2018 Tapas Kundu <tkundu@vmware.com> 233-16
+-    Fix CVE-2018-15688
 *    Mon Jul 23 2018 Ankit Jain <ankitja@vmware.com>  233-15
 -    Fix CVE-2018-1049.
 *    Wed Jun 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu>  233-14
