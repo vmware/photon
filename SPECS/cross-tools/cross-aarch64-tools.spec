@@ -1,17 +1,17 @@
 %define binutils_version 2.28
-%define linux_kernel_version 4.18.11
-%define gcc_version 6.3.0
-%define glibc_version 2.26
+%define linux_kernel_version 4.18.9
+%define gcc_version 7.3.0
+%define glibc_version 2.28
 %define mpfr_version 3.1.5
 %define gmp_version 6.1.2
 %define mpc_version 1.0.3
-%define isl_version 0.14
+%define isl_version 0.16.1
 %define cloog_version 0.18.1
 
 Name:    cross-aarch64-tools
 Summary: VMware Photon Cross Compiler for AARCH64
 Version: 1.0.0
-Release: 2%{?_dist}
+Release: 3%{?_dist}
 Group:   Compiler
 Vendor:  VMware, Inc.
 Distribution: Photon
@@ -26,10 +26,8 @@ Source5: https://ftp.gnu.org/gnu/gmp/gmp-%{gmp_version}.tar.xz
 Source6: https://ftp.gnu.org/gnu/mpc/mpc-%{mpc_version}.tar.gz
 Source7: ftp://gcc.gnu.org/pub/gcc/infrastructure/isl-%{isl_version}.tar.bz2
 Source8: ftp://gcc.gnu.org/pub/gcc/infrastructure/cloog-%{cloog_version}.tar.gz
-Patch0:  gcc-patch-include-sys-param.patch
-Patch1:  gcc-patch-sanitizer-pr-81066.patch
-Patch2:  gcc-patch-fix-glibc-struct_ucontext_t.patch
-Patch3:  ubsan_use_new_style.patch
+Patch0:   libsanitizer-avoidustat.h-glibc-2.28.patch
+Patch1:   PLUGIN_TYPE_CAST.patch
 BuildArch: x86_64
 Provides: libgcc_s.so.1
 Provides: libgcc_s.so.1(GCC_3.0)
@@ -127,8 +125,6 @@ Photon Cross Compiler for ARM64
 cd gcc-%{gcc_version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p0
-%patch3 -p1
 ln -sf `ls -1d ../mpfr-*/` mpfr
 ln -sf `ls -1d ../gmp-*/` gmp
 ln -sf `ls -1d ../mpc-*/` mpc
@@ -181,6 +177,7 @@ $builddir/gcc-%{gcc_version}/configure \
     --prefix=%{cross_prefix} \
     --target=%{target_arch} \
     --with-sysroot=%{sysroot} \
+    --enable-plugins \
     --enable-languages=c \
     --enable-threads=posix \
     --enable-linker-build-id \
@@ -271,6 +268,22 @@ rm -rf %{sysroot}/sbin && ln -s %{sysroot}/usr/sbin %{sysroot}/sbin
 mkdir -p %{buildroot}%{sysroot}
 cp -av %{sysroot}/* %{buildroot}/%{sysroot}/
 
+CROSS_TOOLCHAIN_PKG_CONFIG=%{buildroot}%{_bindir}/%{target_arch}-pkg-config
+
+cat > $CROSS_TOOLCHAIN_PKG_CONFIG << EOF
+#!/bin/sh
+
+SYSROOT=%{sysroot}
+
+export PKG_CONFIG_DIR=
+export PKG_CONFIG_LIBDIR=\${SYSROOT}/usr/lib/pkgconfig:\${SYSROOT}/usr/share/pkgco
+nfig
+export PKG_CONFIG_SYSROOT_DIR=\${SYSROOT}
+
+exec pkg-config "$@"
+EOF
+chmod +x $CROSS_TOOLCHAIN_PKG_CONFIG
+
 %files
 
 %defattr(-,root,root)
@@ -284,6 +297,8 @@ cp -av %{sysroot}/* %{buildroot}/%{sysroot}/
 %{sysroot}/*
 
 %changelog
+*    Thu Nov 1 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-3
+-    Updated versions of cross toolchain components
 *    Mon Oct 22 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-2
 -    Replace _sysroot definition with sysroot
 *    Fri Oct 19 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0
