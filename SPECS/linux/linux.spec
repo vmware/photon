@@ -24,7 +24,7 @@ BuildRequires:  bc
 BuildRequires:  openssl-devel
 #BuildRequires:  procps-ng-devel
 #BuildRequires:	audit-devel
-#Requires:       filesystem kmod
+Requires:       filesystem kmod
 Requires(post):(coreutils or toybox)
 %define uname_r %{version}-%{release}
 
