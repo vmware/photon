@@ -3,22 +3,21 @@
 
 Summary:        Package manager
 Name:           rpm
-Version:        4.13.0.1
-Release:        4%{?dist}
+Version:        4.13.0.2
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
-%define sha1    rpm=2119489397d7e4da19320ef9330ab717ac05587d
+%define sha1    rpm=ea4fa30075519d37e04d6f54e89917042f5c55e0
 Source1:        http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
 %define sha1    db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
 Source2:        rpm-system-configuring-scripts-2.2.tar.gz
 %define sha1 rpm-system-configuring-scripts=9461cdc0b65f7ecc244bfa09886b4123e55ab5a8
 Patch1:         find-debuginfo-do-not-generate-non-existing-build-id.patch
 Patch2:         find-debuginfo-do-not-generate-dir-entries.patch
-Patch3:         rpm-CVE-2017-7501.patch
 #Requires:      nspr
 Requires:       nss 
 Requires:       popt
@@ -79,7 +78,6 @@ Python3 rpm.
 mv db-5.3.28 db
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -240,8 +238,10 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
-*   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-4
--   Fix CVE-2017-7501
+*    Fri Nov 02 2018 Siju Maliakkal <smaliakkal@vmware.com> 4.13.0.2-1
+-    Upgraded to 4.13.0.2 to fix CVE-2017-7500
+*    Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-4
+-    Fix CVE-2017-7501
 *    Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 4.13.0.1-3
 -    Release bump to use python 3.5.4.
 *    Tue Oct 03 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-2
