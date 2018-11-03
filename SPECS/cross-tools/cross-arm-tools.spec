@@ -11,7 +11,7 @@
 Name:    cross-arm-tools
 Summary: VMware Photon Cross Compiler for ARM
 Version: 1.0.0
-Release: 3%{?_dist}
+Release: 4%{?_dist}
 Group:   Compiler
 Vendor:  VMware, Inc.
 Distribution: Photon
@@ -35,6 +35,7 @@ Provides: libgcc_s.so.1(GCC_3.3)
 Provides: libgcc_s.so.1(GCC_3.5)
 Provides: libgcc_s.so.1(GCC_4.2.0)
 Provides: libgcc_s.so.1(GCC_4.3.0)
+Provides: libgcc_s.so.1(GCC_4.4.0)
 Provides: libgcc_s.so.1(GLIBC_2.0)
 BuildRequires: binutils >= 2.31
 BuildRequires: bison >= 3.0.4
@@ -232,7 +233,7 @@ $builddir/gcc-%{gcc_version}/configure \
     --target=%{target_arch} \
     --with-sysroot=%{sysroot} \
     --enable-shared \
-    --enable-languages=c,c++ \
+    --enable-languages=c,c++,fortran \
     --enable-threads=posix \
     --enable-linker-build-id \
     --enable-__cxa_atexit \
@@ -299,6 +300,8 @@ chmod +x $CROSS_TOOLCHAIN_PKG_CONFIG
 %{sysroot}/*
 
 %changelog
+*    Fri Nov 2 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-4
+-    Support fortran
 *    Thu Nov 1 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-3
 -    Updated versions of cross toolchain components
 *    Mon Oct 22 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-2
