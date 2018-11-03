@@ -29,6 +29,7 @@ for handling compiled objects.
             --disable-werror    \
             --with-system-zlib  \
 	    --enable-install-libiberty \
+            --target=%{_target} \
             --disable-silent-rules
 make %{?_smp_mflags} tooldir=%{_prefix}
 %install
@@ -100,7 +101,11 @@ make %{?_smp_mflags} check
 %{_libdir}/libopcodes.a
 %{_libdir}/libbfd.so
 %{_libdir}/libopcodes.so
+%ifarch %{ix86}
+%{_libdir}/libiberty.a
+%else
 %{_lib64dir}/libiberty.a
+%endif
 
 %changelog
 *   Fri Sep 21 2018 Keerthana K <keerthanak@vmware.com> 2.31.1-1

@@ -88,17 +88,18 @@ This package contains development headers and static library for libgomp
 %patch1 -p1
 
 # disable FORTIFY_SOURCE=2 from hardening
-sed -i '/*cpp:/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
-sed -i '/Ofast:-D_FORTIFY_SOURCE=2/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
+#sed -i '/*cpp:/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
+#sed -i '/Ofast:-D_FORTIFY_SOURCE=2/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
 # disable no-pie for gcc binaries
 sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
 
 install -vdm 755 ../gcc-build
 %build
 
+./contrib/download_prerequisites
 export glibcxx_cv_c99_math_cxx98=yes glibcxx_cv_c99_math_cxx11=yes
-
 cd ../gcc-build
+export gcc_cv_objdump="i686-linux-gnu-objdump"
 SED=sed \
 ../%{name}-%{version}/configure \
     --prefix=%{_prefix} \
@@ -111,7 +112,11 @@ SED=sed \
     --disable-bootstrap \
     --enable-linker-build-id \
     --enable-plugin \
-    --with-system-zlib
+    --with-system-zlib \
+    --host=%{_host} \
+    --build=%{_build} \
+    --target=i686-linux-gnu \
+    --with-sysroot=/target
 #   --disable-silent-rules
 make %{?_smp_mflags}
 %install
@@ -121,8 +126,13 @@ install -vdm 755 %{buildroot}/%_lib
 ln -sv %{_bindir}/cpp %{buildroot}/%{_lib}
 ln -sv gcc %{buildroot}%{_bindir}/cc
 install -vdm 755 %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
+%ifarch %{ix86}
+mv -v %{buildroot}%{_libdir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
+chmod 755 %{buildroot}/%{_libdir}/libgcc_s.so.1
+%else
 mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
 chmod 755 %{buildroot}/%{_lib64dir}/libgcc_s.so.1
+%endif
 rm -rf %{buildroot}%{_infodir}
 popd
 %find_lang %{name} --all-name
@@ -150,7 +160,11 @@ make %{?_smp_mflags} check-gcc
 %exclude %{_bindir}/*gfortran
 %{_bindir}/*
 #   Libraries
+%ifarch %{ix86}
+%{_libdir}/lib*
+%else
 %{_lib64dir}/*
+%endif
 %ifarch x86_64
 %exclude %{_libexecdir}/gcc/x86_64-pc-linux-gnu/%{version}/f951
 %endif
@@ -170,9 +184,15 @@ make %{?_smp_mflags} check-gcc
 %{_mandir}/man7/*.gz
 %{_datadir}/gdb/*
 
+%ifarch %{ix86}
+%exclude %{_libdir}/libgcc*
+%exclude %{_libdir}/libstdc++*
+%exclude %{_libdir}/libgomp*
+%else
 %exclude %{_lib64dir}/libgcc*
 %exclude %{_lib64dir}/libstdc++*
 %exclude %{_lib64dir}/libgomp*
+%endif
 
 %files -n     gfortran
 %defattr(-,root,root)
@@ -187,41 +207,74 @@ make %{?_smp_mflags} check-gcc
 
 %files -n libgcc
 %defattr(-,root,root)
+%ifarch %{ix86}
+%{_libdir}/libgcc_s.so.*
+%else
 %{_lib64dir}/libgcc_s.so.*
+%endif
 
 %files -n libgcc-atomic
 %defattr(-,root,root)
+%ifarch %{ix86}
+%{_libdir}/libatomic.so*
+%else
 %{_lib64dir}/libatomic.so*
+%endif
 
 %files -n libgcc-devel
 %defattr(-,root,root)
+%ifarch %{ix86}
+%{_libdir}/libgcc_s.so
+%else
 %{_lib64dir}/libgcc_s.so
+%endif
 
 
 %files -n libstdc++
 %defattr(-,root,root)
+%ifarch %{ix86}
+%{_libdir}/libstdc++.so.*
+%else
 %{_lib64dir}/libstdc++.so.*
+%endif
 %dir %{_datarootdir}/gcc-%{version}/python/libstdcxx
 %{_datarootdir}/gcc-%{version}/python/libstdcxx/*
 
 %files -n libstdc++-devel
 %defattr(-,root,root)
+%ifarch %{ix86}
+%{_libdir}/libstdc++.so
+%{_libdir}/libstdc++.la
+%{_libdir}/libstdc++.a
+%else
 %{_lib64dir}/libstdc++.so
 %{_lib64dir}/libstdc++.la
 %{_lib64dir}/libstdc++.a
+%endif
 
 %{_includedir}/c++/*
 
 %files -n libgomp
 %defattr(-,root,root)
+%ifarch %{ix86}
+%{_libdir}/libgomp*.so.*
+%else
 %{_lib64dir}/libgomp*.so.*
+%endif
 
 %files -n libgomp-devel
 %defattr(-,root,root)
+%ifarch %{ix86}
+%{_libdir}/libgomp.a
+%{_libdir}/libgomp.la
+%{_libdir}/libgomp.so
+%{_libdir}/libgomp.spec
+%else
 %{_lib64dir}/libgomp.a
 %{_lib64dir}/libgomp.la
 %{_lib64dir}/libgomp.so
 %{_lib64dir}/libgomp.spec
+%endif
 
 %changelog
 *   Wed Sep 19 2018 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-3

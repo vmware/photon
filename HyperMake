@@ -40,12 +40,61 @@ targets:
   acl-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/acl-$[arch]
-    always: true
+
+  packages-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - acl-$[arch]
+      - attr-$[arch]
+      - bash-$[arch]
+      - bzip2-$[arch]
+      - coreutils-$[arch]
+      - cracklib-$[arch]
+      - dbus-$[arch]
+      - diffutils-$[arch]
+      - e2fsprogs-$[arch]
+      - elfutils-$[arch]
+      - expat-$[arch]
+      - file-$[arch]
+      - findutils-$[arch]
+      - gawk-$[arch]
+      - gdbm-$[arch]
+      - gettext-$[arch]
+      - gperf-$[arch]
+      - grep-$[arch]
+      - groff-$[arch]
+      - gzip-$[arch]
+      - iana-etc-$[arch]
+      - iputils-$[arch]
+      - linux-$[arch]
+      - net-tools-$[arch]
+      - iproute2-$[arch]
+      - kbd-$[arch]
+      - kmod-$[arch]
+      - less-$[arch]
+      - libcap-$[arch]
+      - libffi-$[arch]
+      - libpipeline-$[arch]
+      - linux-pam-$[arch]
+      - man-db-$[arch]
+      - ncurses-$[arch]
+      - openssl-$[arch]
+      - procps-ng-$[arch]
+      - psmisc-$[arch]
+      - readline-$[arch]
+      - shadow-$[arch]
+      - systemd-$[arch]
+      - tar-$[arch]
+      - util-linux-$[arch]
+      - xz-$[arch]
+      - zlib-$[arch]
 
   acl-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - acl-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh acl $[arch]
     volumes:
@@ -54,12 +103,13 @@ targets:
   attr-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/attr-$[arch]
-    always: true
 
   attr-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - attr-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh attr $[arch]
     volumes:
@@ -68,26 +118,44 @@ targets:
   bash-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/bash-$[arch]
-    always: true
 
   bash-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - bash-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - readline-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh bash $[arch]
     volumes:
       - ./stage/cross/bash-$[arch]:/usr/src/photon
 
+  binutils-pre-[arch:i686]:
+    cmds:
+      - mkdir -p ./stage/cross/binutils-$[arch]
+
+  binutils-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - binutils-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh binutils $[arch]
+    volumes:
+      - ./stage/cross/binutils-$[arch]:/usr/src/photon
+
   bzip2-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/bzip2-$[arch]
-    always: true
 
   bzip2-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - bzip2-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh bzip2 $[arch]
     volumes:
@@ -96,12 +164,14 @@ targets:
   ca-certificates-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/ca-certificates-$[arch]
-    always: true
 
   ca-certificates-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - ca-certificates-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - openssl-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh ca-certificates $[arch]
     volumes:
@@ -110,12 +180,13 @@ targets:
   coreutils-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/coreutils-$[arch]
-    always: true
 
   coreutils-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - coreutils-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh coreutils $[arch]
     volumes:
@@ -124,36 +195,29 @@ targets:
   cracklib-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/cracklib-$[arch]
-    always: true
 
   cracklib-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - cracklib-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh cracklib $[arch]
     volumes:
       - ./stage/cross/cracklib-$[arch]:/usr/src/photon
 
-  curl-[arch:i686]:
-    image: 'vmware/photon-xc-$[arch]-photon2'
-    cmds:
-      - ./support/cross/docker/scripts/build-package.sh curl $[arch]
-
-  curl-libs-[arch:i686]:
-    image: 'vmware/photon-xc-$[arch]-photon2'
-    cmds:
-      - ./support/cross/docker/scripts/build-package.sh curl-libs $[arch]
-
   diffutils-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/diffutils-$[arch]
-    always: true
 
   diffutils-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - diffutils-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - coreutils-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh diffutils $[arch]
     volumes:
@@ -162,12 +226,29 @@ targets:
   dbus-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/dbus-$[arch]
-    always: true
 
   dbus-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - dbus-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - systemd-$[arch]
+      - expat-$[arch]
+      - xz-$[arch]
+      - glib-$[arch]
+      - cracklib-$[arch]
+      - linux-pam-$[arch]
+      - util-linux-$[arch]
+      - libcap-$[arch]
+      - libgcrypt-$[arch]
+      - kmod-$[arch]
+      - zlib-$[arch]
+      - bzip2-$[arch]
+      - elfutils-$[arch]
+      - pcre-$[arch]
+      - libffi-$[arch]
+      - pkg-config-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh dbus $[arch]
     volumes:
@@ -176,24 +257,27 @@ targets:
   e2fsprogs-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/e2fsprogs-$[arch]
-    always: true
 
   e2fsprogs-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - e2fsprogs-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - util-linux-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh e2fsprogs $[arch]
 
   ed-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/ed-$[arch]
-    always: true
 
   ed-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - ed-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh ed $[arch]
     volumes:
@@ -202,12 +286,15 @@ targets:
   elfutils-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/elfutils-$[arch]
-    always: true
 
   elfutils-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - elfutils-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - bzip2-$[arch]
+      - zlib-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh elfutils $[arch]
     volumes:
@@ -216,12 +303,13 @@ targets:
   expat-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/expat-$[arch]
-    always: true
 
   expat-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - expat-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh expat $[arch]
     volumes:
@@ -230,12 +318,13 @@ targets:
   file-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/file-$[arch]
-    always: true
 
   file-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - file-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh file $[arch]
     volumes:
@@ -244,7 +333,6 @@ targets:
   filesystem-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/filesystem-$[arch]
-    always: true
 
   filesystem-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
@@ -258,12 +346,13 @@ targets:
   findutils-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/findutils-$[arch]
-    always: true
 
   findutils-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - findutils-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh findutils $[arch]
     volumes:
@@ -272,12 +361,13 @@ targets:
   gawk-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/gawk-$[arch]
-    always: true
 
   gawk-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - gawk-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh gawk $[arch]
     volumes:
@@ -286,12 +376,18 @@ targets:
   glib-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/glib-$[arch]
-    always: true
 
   glib-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - glib-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - pcre-$[arch]
+      - libffi-$[arch]
+      - util-linux-$[arch]
+      - elfutils-$[arch]
+      - zlib-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh glib $[arch]
     volumes:
@@ -300,7 +396,6 @@ targets:
   glibc-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/glibc-$[arch]
-    always: true
 
   glibc-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
@@ -314,12 +409,13 @@ targets:
   gdbm-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/gdbm-$[arch]
-    always: true
 
   gdbm-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - gdbm-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh gdbm $[arch]
     volumes:
@@ -328,12 +424,13 @@ targets:
   gettext-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/gettext-$[arch]
-    always: true
 
   gettext-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - gettext-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh gettext $[arch]
     volumes:
@@ -342,12 +439,13 @@ targets:
   gmp-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/gmp-$[arch]
-    always: true
 
   gmp-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - gmp-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh gmp $[arch]
     volumes:
@@ -356,12 +454,13 @@ targets:
   gperf-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/gperf-$[arch]
-    always: true
 
   gperf-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - gperf-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh gperf $[arch]
     volumes:
@@ -370,12 +469,13 @@ targets:
   grep-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/grep-$[arch]
-    always: true
 
   grep-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - grep-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh grep $[arch]
     volumes:
@@ -384,12 +484,13 @@ targets:
   groff-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/groff-$[arch]
-    always: true
 
   groff-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - groff-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh groff $[arch]
     volumes:
@@ -398,12 +499,13 @@ targets:
   gzip-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/gzip-$[arch]
-    always: true
 
   gzip-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - gzip-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh gzip $[arch]
     volumes:
@@ -412,12 +514,13 @@ targets:
   iana-etc-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/iana-etc-$[arch]
-    always: true
 
   iana-etc-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - iana-etc-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh iana-etc $[arch]
     volumes:
@@ -426,12 +529,15 @@ targets:
   iproute2-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/iproute2-$[arch]
-    always: true
 
   iproute2-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - iproute2-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - elfutils-$[arch]
+      - zlib-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh iproute2 $[arch]
     volumes:
@@ -440,12 +546,16 @@ targets:
   iputils-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/iputils-$[arch]
-    always: true
 
   iputils-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - iputils-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - libcap-$[arch]
+      - libgpg-error-$[arch]
+      - libgcrypt-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh iputils $[arch]
     volumes:
@@ -454,31 +564,30 @@ targets:
   kbd-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/kbc-$[arch]
-    always: true
 
   kbd-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - kbd-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh kbd $[arch]
     volumes:
       - ./stage/cross/kbd-$[arch]:/usr/src/photon
 
-  krb5-[arch:i686]:
-    image: 'vmware/photon-xc-$[arch]-photon2'
-    cmds:
-      - ./support/cross/docker/scripts/build-package.sh krb5 $[arch]
-
   kmod-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/kmod-$[arch]
-    always: true
 
   kmod-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - kmod-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - xz-$[arch]
+      - zlib-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh kmod $[arch]
     volumes:
@@ -487,12 +596,14 @@ targets:
   less-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/less-$[arch]
-    always: true
 
   less-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - less-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - ncurses-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh less $[arch]
     volumes:
@@ -501,12 +612,14 @@ targets:
   libarchive-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/libarchive-$[arch]
-    always: true
 
   libarchive-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - libarchive-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - xz-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh libarchive $[arch]
     volumes:
@@ -515,12 +628,13 @@ targets:
   libcap-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/libcap-$[arch]
-    always: true
 
   libcap-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - libcap-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh libcap $[arch]
     volumes:
@@ -529,12 +643,13 @@ targets:
   libdb-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/libdb-$[arch]
-    always: true
 
   libdb-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - libdb-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh libdb $[arch]
     volumes:
@@ -543,12 +658,13 @@ targets:
   libdnet-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/libdnet-$[arch]
-    always: true
 
   libdnet-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - libdnet-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh libdnet $[arch]
     volumes:
@@ -557,31 +673,44 @@ targets:
   libffi-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/libffi-$[arch]
-    always: true
 
   libffi-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - libffi-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh libffi $[arch]
     volumes:
       - ./stage/cross/libffi-$[arch]:/usr/src/photon
 
-  libgcc-[arch:i686]:
-    image: 'vmware/photon-xc-$[arch]-photon2'
+  gcc-pre-[arch:i686]:
     cmds:
-      - ./support/cross/docker/scripts/build-package.sh libgcc $[arch]
+      - mkdir -p ./stage/cross/gcc-$[arch]
+
+  gcc-[arch:i686]:
+    image: 'vmware/photon-xc-$[arch]-photon2'
+    after:
+      - gcc-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+    cmds:
+      - ./support/cross/docker/scripts/build-package.sh gcc $[arch]
+    volumes:
+      - ./stage/cross/gcc-$[arch]:/usr/src/photon
 
   libgcrypt-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/libgcrypt-$[arch]
-    always: true
 
   libgcrypt-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - libgcrypt-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - libgpg-error-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh libgcrypt $[arch]
     volumes:
@@ -590,12 +719,13 @@ targets:
   libgpg-error-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/libgpg-error-$[arch]
-    always: true
 
   libgpg-error-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - libgpg-error-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh libgpg-error $[arch]
     volumes:
@@ -604,12 +734,13 @@ targets:
   libmspack-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/libmspack-$[arch]
-    always: true
 
   libmspack-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - libmspack-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh libmspack $[arch]
     volumes:
@@ -618,31 +749,30 @@ targets:
   libpipeline-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/libpipeline-$[arch]
-    always: true
 
   libpipeline-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - libpipeline-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh libpipeline $[arch]
     volumes:
       - ./stage/cross/libpipeline-$[arch]:/usr/src/photon
 
-  libsolv-[arch:i686]:
-    image: 'vmware/photon-xc-$[arch]-photon2'
-    cmds:
-      - ./support/cross/docker/scripts/build-package.sh libsolv $[arch]
-
   libssh2-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/libssh2-$[arch]
-    always: true
 
   libssh2-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - libssh2-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - openssl-$[arch]
+      - zlib-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh libssh2 $[arch]
     volumes:
@@ -651,12 +781,14 @@ targets:
   linux-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/linux-$[arch]
-    always: true
 
   linux-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - linux-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - openssl-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh linux $[arch]
     volumes:
@@ -665,12 +797,14 @@ targets:
   linux-pam-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/linux-pam-$[arch]
-    always: true
 
   linux-pam-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - linux-pam-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - cracklib-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh linux-pam $[arch]
     volumes:
@@ -679,12 +813,17 @@ targets:
   man-db-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/man-db-$[arch]
-    always: true
 
   man-db-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - man-db-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - libpipeline-$[arch]
+      - xz-$[arch]
+      - gdbm-$[arch]
+      - groff-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh man-db $[arch]
     volumes:
@@ -693,12 +832,13 @@ targets:
   net-tools-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/net-tools-$[arch]
-    always: true
 
   net-tools-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - net-tools-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh net-tools $[arch]
     volumes:
@@ -707,12 +847,13 @@ targets:
   ncurses-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/ncurses-$[arch]
-    always: true
 
   ncurses-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - ncurses-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh ncurses $[arch]
     volumes:
@@ -721,12 +862,13 @@ targets:
   nspr-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/nspr-$[arch]
-    always: true
 
   nspr-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - nspr-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh nspr $[arch]
     volumes:
@@ -740,12 +882,16 @@ targets:
   openssl-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/openssl-$[arch]
-    always: true
 
   openssl-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - openssl-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - util-linux-$[arch]
+      - expat-$[arch]
+      - zlib-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh openssl $[arch]
     volumes:
@@ -754,12 +900,17 @@ targets:
   pcre-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/pcre-$[arch]
-    always: true
 
   pcre-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - pcre-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - bzip2-$[arch]
+      - zlib-$[arch]
+      - readline-$[arch]
+      - ncurses-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh pcre $[arch]
     volumes:
@@ -768,7 +919,6 @@ targets:
   photon-release-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/photon-release-$[arch]
-    always: true
 
   photon-release-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
@@ -782,7 +932,6 @@ targets:
   photon-repos-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/photon-repos-$[arch]
-    always: true
 
   photon-repos-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
@@ -796,12 +945,13 @@ targets:
   pkg-config-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/pkg-config-$[arch]
-    always: true
 
   pkg-config-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - pkg-config-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh pkg-config $[arch]
     volumes:
@@ -810,12 +960,13 @@ targets:
   popt-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/popt-$[arch]
-    always: true
 
   popt-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - popt-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh popt $[arch]
     volumes:
@@ -824,12 +975,14 @@ targets:
   psmisc-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/psmisc-$[arch]
-    always: true
 
   psmisc-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - psmisc-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - ncurses-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh psmisc $[arch]
     volumes:
@@ -838,12 +991,14 @@ targets:
   procps-ng-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/procps-ng-$[arch]
-    always: true
 
   procps-ng-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - procps-ng-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - ncurses-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh procps-ng $[arch]
     volumes:
@@ -852,31 +1007,32 @@ targets:
   readline-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/readline-$[arch]
-    always: true
 
   readline-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - readline-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - ncurses-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh readline $[arch]
     volumes:
       - ./stage/cross/readline-$[arch]:/usr/src/photon
 
-  rpm-libs-[arch:i686]:
-    image: 'vmware/photon-xc-$[arch]-photon2'
-    cmds:
-      - ./support/cross/docker/scripts/build-package.sh rpm-libs $[arch]
-
   shadow-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/shadow-$[arch]
-    always: true
 
   shadow-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - shadow-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - cracklib-$[arch]
+      - linux-pam-$[arch]
+      - gzip-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh shadow $[arch]
     volumes:
@@ -885,12 +1041,13 @@ targets:
   sqlite-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/sqlite-$[arch]
-    always: true
 
   sqlite-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - sqlite-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh sqlite $[arch]
     volumes:
@@ -899,12 +1056,27 @@ targets:
   systemd-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/systemd-$[arch]
-    always: true
 
   systemd-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - systemd-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - glib-$[arch]
+      - cracklib-$[arch]
+      - linux-pam-$[arch]
+      - util-linux-$[arch]
+      - libcap-$[arch]
+      - libgcrypt-$[arch]
+      - kmod-$[arch]
+      - xz-$[arch]
+      - zlib-$[arch]
+      - bzip2-$[arch]
+      - elfutils-$[arch]
+      - pcre-$[arch]
+      - libffi-$[arch]
+      - pkg-config-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh systemd $[arch]
     volumes:
@@ -913,36 +1085,29 @@ targets:
   tar-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/tar-$[arch]
-    always: true
 
   tar-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - tar-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh tar $[arch]
     volumes:
       - ./stage/cross/tar-$[arch]:/usr/src/photon
 
-  tdnf-[arch:i686]:
-    image: 'vmware/photon-xc-$[arch]-photon2'
-    cmds:
-      - ./support/cross/docker/scripts/build-package.sh tdnf $[arch]
-
-  tdnf-cli-libs-[arch:i686]:
-    image: 'vmware/photon-xc-$[arch]-photon2'
-    cmds:
-      - ./support/cross/docker/scripts/build-package.sh tdnf-cli $[arch]
-
   unzip-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/unzip-$[arch]
-    always: true
 
   unzip-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - unzip-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
+      - bzip2-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh unzip $[arch]
     volumes:
@@ -951,12 +1116,13 @@ targets:
   util-linux-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/util-linux-$[arch]
-    always: true
 
   util-linux-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - util-linux-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh util-linux $[arch]
     volumes:
@@ -965,12 +1131,13 @@ targets:
   xz-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/xz-$[arch]
-    always: true
 
   xz-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - xz-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh xz $[arch]
     volumes:
@@ -979,12 +1146,13 @@ targets:
   zlib-pre-[arch:i686]:
     cmds:
       - mkdir -p ./stage/cross/zlib-$[arch]
-    always: true
 
   zlib-[arch:i686]:
     image: 'vmware/photon-xc-$[arch]-photon2'
     after:
       - zlib-pre-$[arch]
+      - glibc-$[arch]
+      - filesystem-$[arch]
     cmds:
       - ./support/cross/docker/scripts/build-package.sh zlib $[arch]
     volumes:
