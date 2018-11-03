@@ -16,6 +16,7 @@ rm -rf $DOCKER_ROOT/*
 case $1 in
     i686)
         cp -r $PROJECT_ROOT/RPMS/x86_64/cross-i686-tools-*.rpm $DOCKER_ROOT/
+        cp $DOCKER_SRC_ROOT/texinfo-6.5-2.ph3.x86_64.rpm $DOCKER_ROOT/
         ;;
     arm)
         cp -r $PROJECT_ROOT/RPMS/x86_64/cross-arm-tools-*.rpm $DOCKER_ROOT/

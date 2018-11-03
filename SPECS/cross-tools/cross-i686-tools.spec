@@ -11,7 +11,7 @@
 Name:    cross-i686-tools
 Summary: VMware Photon Cross Compiler for X86
 Version: 1.0.0
-Release: 4%{?_dist}
+Release: 5%{?_dist}
 Group:   Compiler
 Vendor:  VMware, Inc.
 Distribution: Photon
@@ -33,6 +33,7 @@ Provides: libgcc_s.so.1
 Provides: libgcc_s.so.1(GCC_3.0)
 Provides: libgcc_s.so.1(GCC_3.3)
 Provides: libgcc_s.so.1(GCC_4.2.0)
+Provides: libgcc_s.so.1(GCC_4.4.0)
 Provides: libgcc_s.so.1(GLIBC_2.0)
 BuildRequires: binutils >= 2.31
 BuildRequires: bison >= 3.0.4
@@ -230,7 +231,7 @@ $builddir/gcc-%{gcc_version}/configure \
     --target=%{target_arch} \
     --with-sysroot=%{sysroot} \
     --enable-shared \
-    --enable-languages=c,c++ \
+    --enable-languages=c,c++,fortran \
     --enable-threads=posix \
     --enable-linker-build-id \
     --enable-__cxa_atexit \
@@ -297,6 +298,8 @@ chmod +x $CROSS_TOOLCHAIN_PKG_CONFIG
 %{sysroot}/*
 
 %changelog
+*    Fri Nov 2 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-5
+-    Support fortran
 *    Thu Nov 1 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-4
 -    Updated versions of cross toolchain components
 *    Thu Oct 25 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-3
