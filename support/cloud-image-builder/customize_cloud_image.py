@@ -37,8 +37,8 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
     utils.runshellcommand(
         "{} -wmeta toolsVersion 2147483647 {}".format(vixdiskutil_path, vmdk_path))
 
-    utils.runshellcommand("ovftool {} {}".format(vmx_path, ovf_path))
-    utils.replaceinfile(ovf_path, 'otherGuest', 'other3xLinux64Guest')
+    utils.runshellcommand("/home/snambakam/tools/ovftool/ovftool {} {}".format(vmx_path, ovf_path))
+    utils.replaceinfile(ovf_path, 'otherGuest', 'other3xLinux32Guest')
 
     #Add product info
     if os.path.exists(ovfinfo_path):
@@ -223,17 +223,15 @@ if __name__ == '__main__':
         utils.runshellcommand("sync")
         utils.runshellcommand("umount -l {}".format(options.mount_path))
 
-        mount_out = utils.runshellcommand("mount")
-        print("List of mounted devices:")
-        print(mount_out)
-
         utils.runshellcommand("kpartx -d {}".format(disk_device))
         utils.runshellcommand("losetup -d {}".format(disk_device))
 
         shutil.rmtree(options.mount_path)
 
-        photon_release_ver = os.environ['PHOTON_RELEASE_VER']
-        photon_build_num = os.environ['PHOTON_BUILD_NUM']
+        #photon_release_ver = os.environ['PHOTON_RELEASE_VER']
+        #photon_build_num = os.environ['PHOTON_BUILD_NUM']
+        photon_release_ver = "2.0"
+        photon_build_num = "1000"
         raw_image = options.raw_image_path
         new_name = ""
         img_path = os.path.dirname(os.path.realpath(raw_image))
@@ -326,10 +324,8 @@ if __name__ == '__main__':
                                               .format(custom_path, script))
                         shutil.rmtree(custom_path + "/tempscripts", ignore_errors=True)
                         utils.runshellcommand("umount -l {}".format(custom_path))
+                        utils.runshellcommand("sync")
 
-                        mount_out = utils.runshellcommand("mount")
-                        print("List of mounted devices:")
-                        print(mount_out)
 
                         utils.runshellcommand("kpartx -d {}".format(disk_device))
                         utils.runshellcommand("losetup -d {}".format(disk_device))

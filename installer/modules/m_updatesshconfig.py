@@ -11,8 +11,6 @@ def execute(config, root):
 
     authorized_keys_dir = os.path.join(root, "root/.ssh")
     authorized_keys_filename = os.path.join(authorized_keys_dir, "authorized_keys")
-    sshd_config_filename = os.path.join(root, "etc/ssh/sshd_config")
-
     # Adding the authorized keys
     if not os.path.exists(authorized_keys_dir):
         os.makedirs(authorized_keys_dir)
@@ -20,7 +18,11 @@ def execute(config, root):
         destination.write(config['public_key'] + "\n")
     os.chmod(authorized_keys_filename, 0o600)
 
-    # Change the sshd config to allow root login
-    process = subprocess.Popen(["sed", "-i", "s/^\\s*PermitRootLogin\s\+no/PermitRootLogin yes/",
+    sshd_config_filename = os.path.join(root, "etc/ssh/sshd_config")
+    if os.path.exists(sshd_config_filename):
+        # Change the sshd config to allow root login
+        process = subprocess.Popen(["sed", "-i", "s/^\\s*PermitRootLogin\s\+no/PermitRootLogin yes/",
                                 sshd_config_filename])
-    return process.wait()
+        return process.wait()
+    else:
+        return 0
