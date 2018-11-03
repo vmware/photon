@@ -3,7 +3,7 @@ MAINTAINER "Sriram Nambakam" <snambakam@vmware.com>
 ENV container=docker
 ENV PATH /opt/cross/bin:$PATH
 
-COPY cross-i686-tools-1.0.0-4.ph2.x86_64.rpm /
+COPY cross-i686-tools-1.0.0-5.ph2.x86_64.rpm /
 
 RUN sed -i 's/^\(enabled=\).*/\10/' /etc/yum.repos.d/photon-extras.repo && \
     sed -i 's/^\(enabled=\).*/\10/' /etc/yum.repos.d/photon-updates.repo && \
