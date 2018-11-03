@@ -92,6 +92,8 @@ function build_attr_i686() {
 function build_bash_i686() {
     prepare_specs bash
 
+    prepare_sources bash-4.4.tar.gz
+
     prepare_patches bash
     prepare_sources_from_specs bash bash44-001
     prepare_sources_from_specs bash bash44-002
@@ -106,8 +108,6 @@ function build_bash_i686() {
     prepare_sources_from_specs bash bash44-011
     prepare_sources_from_specs bash bash44-012
     prepare_sources_from_specs bash bash_completion
-
-    prepare_sources bash-4.4.tar.gz
 
     mkdir -p /target/var/lib/rpm && \
     rpm --initdb --dbpath /target/var/lib/rpm && \
@@ -128,6 +128,32 @@ function build_bash_i686() {
        --define "dist .ph2" \
        --target=i686-unknown-linux \
        /usr/src/photon/SPECS/bash.spec
+}
+
+function build_binutils_i686() {
+    prepare_specs binutils
+
+    prepare_sources binutils-2.31.1.tar.xz
+    prepare_patches binutils
+
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/zlib*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-unknown-linux \
+       /usr/src/photon/SPECS/binutils.spec
 }
 
 function build_bzip2_i686() {
@@ -716,6 +742,38 @@ function build_gawk_i686() {
        --define "dist .ph2" \
        --target=i686-unknown-linux \
        /usr/src/photon/SPECS/gawk.spec
+}
+
+function build_gcc_i686() {
+    prepare_specs gcc
+
+    prepare_sources gcc-7.3.0.tar.xz
+
+    prepare_patches gcc
+
+    #Install host RPMs
+    rpm -Uvh --force --nodeps \
+             $PROJECT_ROOT/stage/RPMS/x86_64/pkg-config-[0-9].*.rpm
+    # Install target RPMs
+    mkdir -p /target/var/lib/rpm && \
+    rpm --initdb --dbpath /target/var/lib/rpm && \
+    rpm --root /target \
+        --define "_dbpath /var/lib/rpm" \
+        -i \
+        --force \
+        --nodeps \
+        $PROJECT_ROOT/RPMS/i686/filesystem*.rpm \
+        $PROJECT_ROOT/RPMS/i686/glibc*.rpm \
+        $PROJECT_ROOT/RPMS/i686/zlib*.rpm \
+        $PROJECT_ROOT/RPMS/i686/pkg-config*.rpm
+
+    rpmbuild -ba --clean --nocheck \
+       --define "with_check 0" \
+       --define "_host i686-linux-gnu" \
+       --define "_build x86_64-linux-gnu" \
+       --define "dist .ph2" \
+       --target=i686-linux-gnu \
+       /usr/src/photon/SPECS/gcc.spec
 }
 
 function build_gdbm_i686() {
@@ -1858,6 +1916,9 @@ case $PKG_NAME in
     bash)
         build_bash_$ARCH
         ;; 
+    binutils)
+        build_binutils_$ARCH
+        ;; 
     bzip2)
         build_bzip2_$ARCH
         ;; 
@@ -1899,6 +1960,9 @@ case $PKG_NAME in
         ;; 
     gawk)
         build_gawk_$ARCH
+        ;;
+    gcc)
+        build_gcc_$ARCH
         ;;
     gdbm)
         build_gdbm_$ARCH
