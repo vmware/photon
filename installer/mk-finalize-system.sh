@@ -22,12 +22,12 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
 /sbin/ldconfig
 /usr/sbin/pwconv
 /usr/sbin/grpconv
-/bin/systemd-machine-id-setup
+#/bin/systemd-machine-id-setup
 /usr/bin/touch /etc/locale.conf
 /bin/echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
 # Importing the pubkey
-rpm --import /etc/pki/rpm-gpg/*
+#rpm --import /etc/pki/rpm-gpg/*
 
 #locale-gen.sh needs /usr/share/locale/locale.alias which is shipped with
 #  glibc-lang rpm, in some photon installations glibc-lang rpm is not installed

@@ -28,9 +28,9 @@ image_list=`for i in $(ls -d */); do echo ${i%%/}; done`
 if ! [[ $image_list =~ (^|[[:space:]])$IMG_NAME($|[[:space:]]) ]] ; then
     echo "Input image name not supported. Aborting."; exit 1;
 fi
-if [[ $IMG_NAME == ova* ]] ; then
-    command -v ovftool >/dev/null 2>&1 || { echo "Ovftool not installed. Aborting." >&2; exit 1; }
-fi
+#if [[ $IMG_NAME == ova* ]] ; then
+#    command -v ovftool >/dev/null 2>&1 || { echo "Ovftool not installed. Aborting." >&2; exit 1; }
+#fi
 
 rm -rf $WORKING_DIR
 mkdir -p $WORKING_DIR/installer
