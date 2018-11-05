@@ -1,0 +1,8 @@
+Verified+1: gerrit-photon <photon-checkins@vmware.com>
+Code-Review+2: Anish Swaminathan <anishs@vmware.com>
+Code-Review+1: Srivatsa S. Bhat <srivatsab@vmware.com>
+Submitted-by: Alexey Makhalov <amakhalov@vmware.com>
+Submitted-at: Mon, 05 Nov 2018 13:13:10 -0800
+Reviewed-on: http://photon-jenkins.eng.vmware.com:8082/5911
+Project: photon
+Branch: refs/heads/dev
