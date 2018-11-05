@@ -117,12 +117,23 @@ do
   if [ ! -f $i ]; then
      echo "$i is removed by the current changeset."
   else
+    PKG_NAME=`cat $i | \
+              grep "^Name:" | \
+              awk 'BEGIN {FS=":"}{print $2;}' | \
+              sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'`
+    if [ -z "$PKG_NAME" ]; then
+      echo "Error: Failed to determine package name from spec $i"
+      exit 1
+    fi
     check-for-header $i
     check-for-dist-tag $i
     check-for-correct-version $i
     check-for-bogus-dates $i
     check-for-trailing-spaces $i
-    check-for-configure $i
+    if ! grep -Fxq "$PKG_NAME" tools/scripts/skip-configure.txt
+    then
+      check-for-configure $i
+    fi
     check-for-buildrequires $i
   fi
 done
