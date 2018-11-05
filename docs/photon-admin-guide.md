@@ -199,17 +199,17 @@ This guide assumes that you are logged in to Photon OS with the root account and
 
 ## Getting Started with Photon OS 2.0
 
-**NOTE:** This section applies to Photon OS w.0 only.
+**NOTE:** This section applies to Photon OS 2.0 only.
 
 To get started with Photon OS 2.0, refer to the installation instructions for your target environment:
-- [Running Photon OS on VMware vSphere](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-vSphere)
-- [Running Photon OS on VMware Fusion](https://github.com/vmware/photon/wiki/Running-Project-Photon-on-Fusion)
-- [Running Photon OS on VMware Workstation](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Workstation)
-- [Running Photon OS on Amazon EC2](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute)
-- [Running Photon OS on Google Compute Engine](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Google-Compute-Engine)
-- [Running Photon OS on Microsoft Azure](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Microsoft-Azure)
+- [Running Photon OS on VMware vSphere](Running-Photon-OS-on-vSphere.md)
+- [Running Photon OS on VMware Fusion](Running-Project-Photon-on-Fusion.md)
+- [Running Photon OS on VMware Workstation](Running-Photon-OS-on-Workstation.md)
+- [Running Photon OS on Amazon EC2](Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.md)
+- [Running Photon OS on Google Compute Engine](Running-Photon-OS-on-Google-Compute-Engine.md)
+- [Running Photon OS on Microsoft Azure](Running-Photon-OS-on-Microsoft-Azure.md)
 
-**Note**: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in [Upgrading to Photon OS 2.0](https://github.com/vmware/photon/wiki/Upgrading-to-Photon-OS-2.0). 
+**Note**: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in [Upgrading to Photon OS 2.0](Upgrading-to-Photon-OS-2.0.md). 
 
 ## Quick Start for Photon OS 1.0
 
@@ -225,7 +225,7 @@ This section helps you get Photon OS up and running quickly and easily. There ar
 
 The full version of Photon OS installs from an ISO in VMware Workstation and other hypervisors in a matter of minutes. Photon OS is a free download from the Bintray web site.
 
-This section demonstrates how to create a virtual machine running Photon OS in VMware Workstation 12 Pro. If you are using a different hypervisor, the example set by this section should help you install it in your system. For instructions on how to install Photon OS from an ISO in VMware vSphere, see [Installing Photon OS on VMware vSphere from an ISO Image](https://github.com/vmware/photon/wiki/Running-Project-Photon-on-vSphere).
+This section demonstrates how to create a virtual machine running Photon OS in VMware Workstation 12 Pro. If you are using a different hypervisor, the example set by this section should help you install it in your system. For instructions on how to install Photon OS from an ISO in VMware vSphere, see [Installing Photon OS on VMware vSphere from an ISO Image](Running-Project-Photon-on-vSphere.md).
 
 1. Go to the following Bintray URL and download the ISO for the general availability release of Photon OS:
 
@@ -257,7 +257,7 @@ The installation typically completes in about 150 seconds for the full version a
 
 To connect to Photon OS by SSH, see the section on permitting root login with SSH below.  
 
-You can also build an ISO containing Photon OS from its source code on GitHub by following the instructions in the document on [building Photon OS](https://github.com/vmware/photon/blob/master/docs/build-photon.md). 
+You can also build an ISO containing Photon OS from its source code on GitHub by following the instructions in the document on [building Photon OS](build-photon.md). 
 
 ### Installing the OVA for the Minimal Version in vSphere
 
@@ -273,7 +273,7 @@ In vSphere Client, turn on the power of the Photon OS virtual machine and open a
 
 The default password for the root account is `changeme`, and you must change it when you first login. For security, Photon OS forbids common dictionary words for the root password. 
 
-There are other options for installing Photon OS in vSphere, such as building an ISO from the source code. For more information about the versions of Photon and their installation options, see [Running Photon OS on vSphere](https://github.com/vmware/photon/wiki/Running-Project-Photon-on-vSphere).
+There are other options for installing Photon OS in vSphere, such as building an ISO from the source code. For more information about the versions of Photon and their installation options, see [Running Photon OS on vSphere](Running-Project-Photon-on-vSphere.md).
 
 ### Rapidly Deploying the Photon OS OVA in VMware Workstation 12 Pro
 
@@ -329,11 +329,11 @@ You can then connect to the Photon OS machine with the root account over SSH:
 
 ### PXE Boot
 
-Photon OS works with the Preboot Execution Environment, or PXE, to boot by retrieving software from a PXE server over a network connection. For instructions on how to set Photon OS to boot from a PXE server, see [Network PXE Boot](https://github.com/vmware/photon/blob/master/docs/PXE-boot.md).
+Photon OS works with the Preboot Execution Environment, or PXE, to boot by retrieving software from a PXE server over a network connection. For instructions on how to set Photon OS to boot from a PXE server, see [Network PXE Boot](PXE-boot.md).
 
 ### Kickstart
 
-Photon OS supports kickstart for unattended installations through a CD-ROM or an HTTP server. On Photon OS, kickstart can set the hostname, password, run post-installation scripts, and add public keys for SSH. See [Kickstart Support](https://github.com/vmware/photon/blob/master/docs/kickstart.md).
+Photon OS supports kickstart for unattended installations through a CD-ROM or an HTTP server. On Photon OS, kickstart can set the hostname, password, run post-installation scripts, and add public keys for SSH. See [Kickstart Support](kickstart.md).
 
 ### Checking the Version and Build Number
 
@@ -893,7 +893,7 @@ The pmd package is included with your Photon OS 2.0 distribution. To make sure t
 
 ##### pmd-cli
 
-The pmd-cli utility enables Photon customers to invoke API requests securely on local and remote servers. For details, see [Photon Management Daemon Command-line Interface (pmd-cli)](https://github.com/vmware/photon/blob/master/docs/pmd-cli.md).
+The pmd-cli utility enables Photon customers to invoke API requests securely on local and remote servers. For details, see [Photon Management Daemon Command-line Interface (pmd-cli)](pmd-cli.md).
 
 ##### PMD REST API
 
@@ -925,7 +925,7 @@ To show help text for individual interfaces:
 >>> help(pmd.server().firewall)
 >>> help(pmd.server().user)
 ~~~~
-For details about the network commands, see also the [Network Configuration Manager - Python API](https://github.com/vmware/photon/blob/master/docs/netmgr.python.md).
+For details about the network commands, see also the [Network Configuration Manager - Python API](netmgr.python.md).
 
 ##### PMD C Documentation
 
@@ -933,7 +933,7 @@ PMD C APIs are defined in the header files (pmd_fwmgmt.h, pmd_netmgr.h, pmd_pkgm
 ~~~~
 [https://github.com/vmware/pmd/tree/master/include](https://github.com/vmware/pmd/tree/master/include)
 ~~~~
-For details about the network commands, see also the [Network Configuration Manager - C API](https://github.com/vmware/photon/blob/master/docs/netmgr.c.md).
+For details about the network commands, see also the [Network Configuration Manager - C API](netmgr.c.md).
 
 ### Using the Network Configuration Manager
 
@@ -948,9 +948,9 @@ The Network Configuration Manager library that ships with Photon OS 2.0 provides
 - object parameters (interfaces and files)
 
 For additional details, see:
-- **CLI** - see the ``-net`` commands in the [Photon Management Daemon Command-line Interface (pmd-cli)](https://github.com/vmware/photon/blob/master/docs/pmd-cli.md)
-- **C APIs** - [Network Configuration Manager - C API](https://github.com/vmware/photon/blob/master/docs/netmgr.c.md)
-- **Python APIs** - [Network Configuration Manager - Python API](https://github.com/vmware/photon/blob/master/docs/netmgr.python.md)
+- **CLI** - see the ``-net`` commands in the [Photon Management Daemon Command-line Interface (pmd-cli)](pmd-cli.md)
+- **C APIs** - [Network Configuration Manager - C API](netmgr.c.md)
+- **Python APIs** - [Network Configuration Manager - Python API](netmgr.python.md)
 
 ### Use `ip` and `ss` Commands Instead of `ifconfig` and `netstat`
 
@@ -1352,7 +1352,7 @@ The nfs-utils package is installed by default in the full version of Photon OS b
 
 	tdnf install nfs-utils
 
-For instructions on how to use nfs-utils to share files over a network, see [Photon OS nfs-utils](https://github.com/vmware/photon/blob/master/docs/nfs-utils.md).
+For instructions on how to use nfs-utils to share files over a network, see [Photon OS nfs-utils](nfs-utils.md).
 
 ### Installing the Packages for tcpdump and netcat with tdnf
 
@@ -1511,9 +1511,9 @@ Now check the cloud-init output log file on EC2 at `/var/log/cloud-init-output.l
 
 For more information on using cloud-init user data on EC2, see [Running Commands on Your Linux Instance at Launch](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html).
 
-An article on the Photon OS GitHub wiki demonstrates how to get Photon OS up and running on EC2 and run a containerized application in the Docker engine. See [Running Photon OS on Amazon Elastic Cloud Compute](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute).
+An article on the Photon OS GitHub wiki demonstrates how to get Photon OS up and running on EC2 and run a containerized application in the Docker engine. See [Running Photon OS on Amazon Elastic Cloud Compute](Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.md).
 
-With Photon OS, you can also build cloud images on Google Compute Engine and other cloud providers; see [Compatible Cloud Images](https://github.com/vmware/photon/blob/master/docs/cloud-images.md).
+With Photon OS, you can also build cloud images on Google Compute Engine and other cloud providers; see [Compatible Cloud Images](cloud-images.md).
 
 ### Running a Photon OS Machine on GCE
 
@@ -1576,7 +1576,7 @@ Photon OS also enables you to run a docker container that, in turn, runs Photon 
 
 ## Kubernetes
 
-The full version of Photon OS includes Kubernetes so you can manage clusters of containers. For more information, see [Running Kubernetes on Photon OS](https://github.com/vmware/photon/blob/master/docs/kubernetes.md).
+The full version of Photon OS includes Kubernetes so you can manage clusters of containers. For more information, see [Running Kubernetes on Photon OS](kubernetes.md).
 
 ## Installing Sendmail
 
@@ -1958,15 +1958,6 @@ Here's the `tdnf` command to install these packages:
 
 ## References
 
-* [Photon OS Troubleshooting Guide](https://github.com/vmware/photon/blob/master/docs/photon-os-troubleshooting-guide.md).
-
-The following technical articles and guides appear in the [Photon OS wiki](https://github.com/vmware/photon/wiki): 
-
-* FAQ
-* Running Photon OS on vSphere
-* Running Photon OS on Fusion
-* Install and Configure a Swarm Cluster with DNS Service on Photon OS
-* Install and Configure a Production Ready Mesos Cluster on Photon OS
-* Install and Configure Marathon for Mesos Cluster on Photon OS
-* Install and Configure DCOS CLI for Mesos
-* Install and Configure Mesos DNS on a Mesos Cluster
+* [Photon OS Getting Started Guides](getting-started-guides.md)
+* [Photon OS Troubleshooting Guide](photon-os-troubleshooting-guide.md)
+* [FAQ](Frequently-Asked-Questions.md)
