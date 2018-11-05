@@ -2,7 +2,7 @@
 Summary:	OpenLdap-2.4.43
 Name:		openldap
 Version:	2.4.44
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	OpenLDAP
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -39,7 +39,8 @@ autoconf
 
 sed -i '/6.0.20/ a\\t__db_version_compat' configure
 
-CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H" \
+export CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H"
+
 %configure \
         --disable-static    \
         --disable-debug     \
@@ -76,14 +77,16 @@ rm -rf %{buildroot}/*
 /etc/openldap/*
 
 %changelog
+*   Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 2.4.44-4
+-   export CPPFLAGS before invoking configure
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.44-3
 -   Use standard configure macros
 *	Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.44-2
 -	Applied patch for CVE-2017-9287
 *	Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.44-1
 -	Update to 2.4.44
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.4.43-3
--       Modified %check
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.4.43-3
+-   Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.43-2
 -	GA - Bump release of all rpms
 * 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.43-1
