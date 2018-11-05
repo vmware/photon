@@ -163,8 +163,8 @@ class PackageManager(object):
 
         returnVal = self._calculateParams(listPackageNamesAndVersions)
         if not returnVal:
-            self.logger.error("Unable to set paramaters. Terminating the package manager.")
-            raise Exception("Unable to set paramaters")
+            self.logger.error("Unable to set parameters. Terminating the package manager.")
+            raise Exception("Unable to set parameters")
 
         statusEvent = threading.Event()
         self._initializeScheduler(statusEvent)
