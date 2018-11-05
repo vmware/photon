@@ -37,7 +37,8 @@ autoconf
 
 sed -i '/6.0.20/ a\\t__db_version_compat' configure
 
-CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H" \
+export CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H"
+
 %configure \
         --disable-static    \
         --disable-debug     \
