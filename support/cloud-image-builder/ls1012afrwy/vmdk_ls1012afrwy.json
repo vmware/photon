@@ -1,0 +1,16 @@
+{
+	"hostname": "photon-machine",
+	"password":
+		{
+			"crypted": false,
+			"text": "PASSWORD"
+		},
+	"type": "minimal",
+    "size": {"root": "1", "swap": "0"},
+    "boot":"efi",
+    "public_key":"<ssh-key-here>",
+    "postinstallscripts": ["ls1012afrwy-custom-patch.sh"],
+    "artifacttype": "xz",
+    "keeprawdisk": "true"
+}
+

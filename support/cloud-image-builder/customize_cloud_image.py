@@ -125,7 +125,11 @@ if __name__ == '__main__':
 
     if not os.path.exists(options.mount_path):
         os.mkdir(options.mount_path)
-    loop_device_path = "/dev/mapper/{}p2".format(device_name)
+
+    if options.image_name == 'ls1012afrwy':
+        loop_device_path = "/dev/mapper/{}p3".format(device_name)
+    else:
+        loop_device_path = "/dev/mapper/{}p2".format(device_name)
 
     try:
         print("Generating PARTUUID for the loop device ...")
@@ -144,6 +148,7 @@ if __name__ == '__main__':
 
         # Mount the loop device
         print("Mounting the loop device for customization ...")
+        print(loop_device_path)
         utils.runshellcommand(
             "mount -t ext4 {} {}".format(loop_device_path, options.mount_path))
         shutil.rmtree(options.mount_path + "/installer", ignore_errors=True)

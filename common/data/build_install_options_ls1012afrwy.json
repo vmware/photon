@@ -1,0 +1,8 @@
+{
+    "minimal" : {
+        "title" : "Photon Minimal",
+        "file" : "packages_minimal_ls1012afrwy.json",
+        "visible" : true,
+        "include" : []
+    }
+}
