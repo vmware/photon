@@ -1,13 +1,14 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
 Version: 	6.2.11.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group: 		Development/Libraries
-Vendor:         VMware, Inc.
+Vendor:     VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
 URL: 		https://github.com/vmware/likewise-open
 Source0:        %{name}-%{version}.tar.gz
 %define sha1 likewise-open=6aa4cf11de6747d5f8940666c21adc3e1f7b6a4b
+Patch0:         0002-likewise-domainjoin-recognize-photon.patch
 Distribution:   Photon
 Requires:       Linux-PAM
 Requires:       (coreutils >= 8.22 or toybox)
@@ -35,7 +36,7 @@ BuildRequires:  sqlite-devel
 %package devel
 Summary:        Likewise Open (development)
 Group:          Development/Libraries
-Requires:       likewise-open = %{version}-%{release} 
+Requires:       likewise-open = %{version}-%{release}
 
 %description
 Likewise Open 6.1 LWIS
@@ -45,6 +46,7 @@ This package provides files for developing against the Likewise APIs
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 # hack against glibc-2.26 to avoid getopt declaration mismatch
@@ -261,7 +263,7 @@ fi
 %clean
 rm -rf %{buildroot}/*
 
-%files 
+%files
 %defattr(-,root,root)
 %exclude /etc/krb5.conf.default
 /opt/likewise/bin/*
@@ -288,6 +290,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 6.2.11.4-4
+-   Change domain join to recognize Photon release and use systemctl
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-3
 -   Requires coreutils/procps-ng or toybox, /bin/grep, /bin/sed
 *   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-2
