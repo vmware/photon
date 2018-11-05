@@ -1,0 +1,22 @@
+--- a/domainjoin/libdomainjoin/src/djdistroinfo.c	2018-08-01 15:59:03.000000000 -0700
++++ b/domainjoin/libdomainjoin/src/djdistroinfo.c	2018-11-05 08:39:39.244135785 -0800
+@@ -142,6 +142,19 @@
+                 1
+             },
+             {
++                DISTRO_VMWARE_PHOTON,
++                "/etc/photon-release",
++                /*
++                # The format of the line is something like:
++                #   VMware Photon OS 1.0 (x86_64)
++                */
++                "^[[:space:]]*VMware Photon OS ([[:digit:]]+(\\.[[:digit:]]+)?)"
++                "( \\(\\S+\\))?",
++                1,
++                -1,
++                1
++            },
++            {
+                 DISTRO_RHEL,
+                 "/etc/redhat-release",
+                 /*
