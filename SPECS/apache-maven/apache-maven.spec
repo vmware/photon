@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.5.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache License 2.0
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -34,7 +34,7 @@ rm -rf %{buildroot}
 
 %build
 MAVEN_DIST_DIR=%{buildroot}%{_prefix}
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 
 sed -i 's/www.opensource/opensource/g' DEPENDENCIES
 
@@ -77,6 +77,8 @@ done
 %exclude %{_libdir}/jansi-native
 
 %changelog
+*   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 3.5.4-3
+-   Removed dependency on JAVA8_VERSION macro
 *   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 3.5.4-2
 -   Use ExtraBuildRequires
 *   Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 3.5.4-1

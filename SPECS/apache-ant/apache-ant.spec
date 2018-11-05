@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.10.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -46,7 +46,7 @@ rm -rf %{buildroot}
 %build
 ANT_DIST_DIR=%{buildroot}%{_prefix}
 cp -v ./hamcrest-1.3/hamcrest-core-1.3.jar ./lib/optional
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 mkdir -p -m 700 $ANT_DIST_DIR
 ./bootstrap.sh && ./build.sh -Ddist.dir=$ANT_DIST_DIR
 
@@ -106,6 +106,8 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_bindir}/runant.pl
 
 %changelog
+*   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 1.10.5-2
+-   Removed dependency on JAVA8_VERSION macro
 *   Mon Sep 17 2018 Ankit Jain <ankitja@vmware.com> 1.10.5-1
 -   Updated Apache Ant to 1.10.5
 *   Wed Jun 28 2017 Kumar Kaushik <kaushikk@vmware.com> 1.10.1-5
@@ -129,7 +131,7 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 -   GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.9.6-2
 -   Updated JAVA_HOME path to point to latest JDK.
-*   Tue Feb 29 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-1
+*   Mon Feb 29 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-1
 -   Updated to version 1.9.6
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.9.4-4
 -   Updated JAVA_HOME path to point to latest JDK.
