@@ -3,22 +3,21 @@
 
 Summary:        Package manager
 Name:           rpm
-Version:        4.13.0.1
-Release:        4%{?dist}
+Version:        4.13.0.2
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
-%define sha1    rpm=2119489397d7e4da19320ef9330ab717ac05587d
+Source0:        http://ftp.rpm.org/releases/rpm-4.13.x/%{name}-%{version}.tar.bz2
+%define sha1    rpm=9d6da0750184d8d077b4c28bb0ce171aef4da70b
 Source1:        http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
 %define sha1    db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
 Source2:        rpm-system-configuring-scripts-2.2.tar.gz
 %define sha1 rpm-system-configuring-scripts=9461cdc0b65f7ecc244bfa09886b4123e55ab5a8
 Patch1:         find-debuginfo-do-not-generate-non-existing-build-id.patch
 Patch2:         find-debuginfo-do-not-generate-dir-entries.patch
-Patch3:         rpm-CVE-2017-7501.patch
 #Requires:      nspr
 Requires:       nss 
 Requires:       popt
@@ -73,13 +72,12 @@ Requires:       python3
 Python3 rpm.
 
 %prep
-%setup -n rpm-%{name}-%{version}-release
-%setup -n rpm-%{name}-%{version}-release -T -D -a 1
-%setup -n rpm-%{name}-%{version}-release -T -D -a 2
+%setup -n %{name}-%{version}
+%setup -n %{name}-%{version} -T -D -a 1
+%setup -n %{name}-%{version} -T -D -a 2
 mv db-5.3.28 db
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -240,6 +238,9 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Sat Nov 03 2018 Tapas Kundu <tkundu@vmware.com> 4.13.0.2-1
+-   Updated to 4.13.0.2
+-   Fix CVE-2017-7501 and CVE-2017-7500
 *   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-4
 -   Fix CVE-2017-7501
 *    Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 4.13.0.1-3
