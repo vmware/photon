@@ -336,26 +336,6 @@ class SPECS(object):
 
     def initialize(self):
         # Preparse some files
-        # adding openjre8 version rpm macro
-        if platform.machine() == "x86_64":
-            spec = Specutils(constants.specPath + "/openjdk8/openjdk8.spec")
-        else:
-            spec = Specutils(constants.specPath + "/openjdk8/openjdk8_aarch64.spec")
-        java8version = spec.getVersion()
-        constants.addMacro("JAVA8_VERSION", java8version)
-
-        # adding openjre9 version rpm macro
-        if platform.machine() == "x86_64":
-            spec = Specutils(constants.specPath + "/openjdk9/openjdk9.spec")
-            java9version = spec.getVersion()
-            constants.addMacro("JAVA9_VERSION", java9version)
-
-
-        # adding openjre10 version rpm macro
-        if platform.machine() == "x86_64":
-            spec = Specutils(constants.specPath + "/openjdk10/openjdk10.spec")
-            java10version = spec.getVersion()
-            constants.addMacro("JAVA10_VERSION", java10version)
 
         # adding kernelversion rpm macro
         spec = Specutils(constants.specPath + "/linux/linux.spec")

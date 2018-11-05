@@ -1,7 +1,7 @@
 Summary:	Ant contrib
 Name:		ant-contrib
 Version:	1.0b3
-Release:	12%{?dist}
+Release:	13%{?dist}
 License:	Apache
 URL:		http://ant-contrib.sourceforget.net
 Group:		Applications/System
@@ -28,11 +28,11 @@ find . -name '*.jar' -or -name '*.class' -exec rm -rf {} +
 rm -rf %{buildroot}
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 ant -Ddist.dir="." -Dproject.version=%{version} dist
 
 %install
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 mkdir -p -m 700 %{buildroot}/var/opt
 cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.tar.gz --wildcards "*.jar"
 %files
@@ -43,6 +43,8 @@ cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.
 %{_prefix}/lib/*.jar
 
 %changelog
+*   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 1.0b3-13
+-   Removed dependency on JAVA8_VERSION macro
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 1.0b3-12
 -   Removed dependency on ANT_HOME
 *   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0b3-11
@@ -64,6 +66,6 @@ cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.0b3.0-2
 -   Change path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0b3.0-1
--   Updated dependencies after repackaging openjdk. 
+-   Updated dependencies after repackaging openjdk.
 *   Tue Jun 9 2015 Sriram Nambakam <snambakam@vmware.com> 1.0b3.0-0
 -   Initial commit

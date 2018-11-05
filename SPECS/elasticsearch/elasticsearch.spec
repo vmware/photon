@@ -3,7 +3,7 @@
 Summary:        Elastic Search
 Name:           elasticsearch
 Version:        6.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 URL:            https://artifacts.elastic.co/downloads/elasticsearch/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
@@ -38,10 +38,10 @@ Elasticsearch is a highly distributed RESTful search engine built for the cloud.
 %build
 export LANG="en_US.UTF-8"
 export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA10_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 export PATH=$JAVA_HOME/bin:$PATH
 export _JAVA_OPTIONS="-Xmx10g"
-cp %{SOURCE1} /usr/lib/jvm/OpenJDK-%{JAVA10_VERSION}/lib/security/
+cp %{SOURCE1} $JAVA_HOME/lib/security/
 ./gradlew assemble
 
 %install
@@ -117,7 +117,9 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
-*    Mon Sep 03 2018 Tapas Kundu <tkundu@vmware.com> 6.4.0-1
--    Updated to 6.4.0 and corrected typo.
-*    Mon Jul 09 2018 Tapas Kundu <tkundu@vmware.com> 6.3.0-1
--    Initial build added for Photon.
+* Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 6.4.0-2
+- Removed dependency on JAVA10_VERSION macro
+* Mon Sep 03 2018 Tapas Kundu <tkundu@vmware.com> 6.4.0-1
+- Updated to 6.4.0 and corrected typo.
+* Mon Jul 09 2018 Tapas Kundu <tkundu@vmware.com> 6.3.0-1
+- Initial build added for Photon.
