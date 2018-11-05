@@ -3,7 +3,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.11.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -33,7 +33,7 @@ wget http://central.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logbac
 wget http://central.maven.org/maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar -P lib
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 
 ant jar javadoc -Drelease=true
 
@@ -126,6 +126,8 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 3.11.3-2
+-   Removed dependency on JAVA8_VERSION macro
 *   Mon Sep 03 2018 Keerthana K <keerthanak@vmware.com> 3.11.3-1
 -   Updated to version 3.11.3.
 *   Tue Apr 24 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-8

@@ -4,7 +4,7 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        4.5.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            https://github.com/java-native-access/jna
 Group:          Applications/System
@@ -39,7 +39,7 @@ Sources for JNA
 rm -rf %{buildroot}
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 
 # Intermittent issue happens:
 #
@@ -52,7 +52,7 @@ ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelea
 ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
 
 %install
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 export JNA_DIST_DIR=%{buildroot}%{_prefix}
 
 mkdir -p -m 700 $JNA_DIST_DIR
@@ -83,6 +83,8 @@ ant
 %{_prefix}/*.aar
 
 %changelog
+*   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 4.5.2-3
+-   Removed dependency on JAVA8_VERSION macro
 *   Thu Oct 25 2018 Ankit Jain <ankitja@vmware.com> 4.5.2-2
 -   Removed clover.jar from jna-devel source-full.zip file
 *   Mon Sep 10 2018 Ankit Jain <ankitja@vmware.com> 4.5.2-1

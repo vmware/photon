@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.7
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -21,7 +21,7 @@ Requires:  e2fsprogs
 Requires:  gawk >= 4.1.3
 Requires:  krb5 >= 1.14
 Requires:  likewise-open >= 6.2.11.4
-Requires:  openjre8 >= %{JAVA8_VERSION}
+Requires:  openjre8
 Requires:  openssl >= 1.0.2
 Requires:  lightwave-client = %{version}
 
@@ -37,7 +37,7 @@ BuildRequires: e2fsprogs-devel
 BuildRequires: jansson-devel
 BuildRequires: krb5-devel >= 1.14
 BuildRequires: likewise-open-devel >= 6.2.10
-BuildRequires: openjdk8 >= %{JAVA8_VERSION}
+BuildRequires: openjdk8
 BuildRequires: openssl-devel >= 1.0.2
 BuildRequires: python2-devel >= 2.7.8
 BuildRequires: sqlite-devel >= 3.14
@@ -53,7 +53,6 @@ VMware Lightwave Server
 %define _servicedir /lib/systemd/system
 %define _commons_daemon_home /usr/share/java
 %define _tomcat_home /var/opt/apache-tomcat
-%define _java_home /usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
 %define _ant_home /var/opt/apache-ant
 %define _maven_home /var/opt/apache-maven
 
@@ -64,10 +63,6 @@ VMware Lightwave Server
 %define _likewise_open_bindir %{_likewise_open_prefix}/bin
 %define _likewise_open_sbindir %{_likewise_open_prefix}/sbin
 %define _lwisbindir %{_likewise_open_bindir}
-
-%if 0%{?_javahome:1} == 0
-%define _javahome %{_java_home}
-%endif
 
 %define _sasl2dir %{_libdir}/sasl2
 %define _krb5_lib_dir %{_libdir}
@@ -104,7 +99,7 @@ Requires: openssl >= 1.0.2
 Requires: jansson
 Requires: krb5 >= 1.14
 Requires: likewise-open >= 6.2.9
-Requires: openjdk8 >= %{JAVA8_VERSION}
+Requires: openjdk8
 Requires: boost = 1.66.0
 Requires: lightwave-client-libs = %{version}-%{release}
 
@@ -1143,6 +1138,8 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 1.3.1.7-4
+-   Removed dependency on JAVA8_VERSION macro
 *   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.3.1.7-3
 -   Use boost version 1.66.0
 *   Tue Dec 26 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.1.7-2

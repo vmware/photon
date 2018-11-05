@@ -90,6 +90,15 @@ function check-for-configure()
     exit 1
   fi
 
+  grep "%configure" $1 > /dev/null || exit 0
+
+  grep -Pzo ".*\\\\(\n)%configure.*" $1
+  if [ $? -eq 0 ] ; then
+    echo
+    echo "Trailing backslash before %configure found. Please use export instead"
+    exit 1
+  fi
+
   for param in prefix exec-prefix bindir sbindir libdir includedir sysconfdir datadir libexecdir sharedstatedir mandir infodir localstatedir; do
     grep -e "\(configure\|^\)[ \t]\+--$param=%{_$param}" $1
     if [ $? -eq 0 ] ; then
