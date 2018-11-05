@@ -13,7 +13,7 @@ done < <(find "${SCRIPTS_DIR}/../" \( -name '*stage*' \) -prune -o -name "*.json
 echo "Checking all python code is compilable..."
 while read f; do
 	if ! python3 -m py_compile "${f}"; then
-		echo "Please check:${f} for complitation errors"
+		echo "Please check:${f} for compilation errors"
 		exit 1
 	fi
 done < <(find "${SCRIPTS_DIR}/../" \( -name '*stage*' \) -prune -o -name "*.py" -type f | grep -v "/stage")

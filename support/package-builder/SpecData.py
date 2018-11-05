@@ -121,21 +121,24 @@ class SpecObjectsUtils(object):
                     if LooseVersion(verrel) > LooseVersion(depPkg.version):
                         return obj.version
         except Exception as e:
-            self.logger.error("Exception happened while searching for: " + depPkg.package + depPkg.compare + depPkg.version)
+            self.logger.error("Exception happened while searching for: " + \
+                              depPkg.package + depPkg.compare + depPkg.version)
             raise e
 
         # about to throw exception
         availableVersions=""
         for obj in specObjs:
             availableVersions+=" "+obj.name+"-"+obj.version+"-"+obj.release
-        raise Exception("Can not find package: " + depPkg.package + depPkg.compare + depPkg.version + " available specs:"+availableVersions)
+        raise Exception("Could not find package: " + depPkg.package + \
+                         depPkg.compare + depPkg.version + \
+                         " available specs:" + availableVersions)
 
     def _getSpecObjField(self, package, version, field):
         specName = self.getSpecName(package)
         for specObj in self.mapSpecObjects[specName]:
             if specObj.version == version:
                 return field(specObj)
-        self.logger.error("Could not able to find " + package +
+        self.logger.error("Could not find " + package +
                           "-" + version + " package from specs")
         raise Exception("Invalid package: " + package + "-" + version)
 
@@ -180,7 +183,7 @@ class SpecObjectsUtils(object):
                         properVersion = self._getProperVersion(pkg)
                         requiresList.append(pkg.package+"-"+properVersion)
                 return requiresList
-        self.logger.error("Could not able to find " + package +
+        self.logger.error("Could not find " + package +
                           "-" + version + " package from specs")
         raise Exception("Invalid package: " + package + "-" + version)
 
