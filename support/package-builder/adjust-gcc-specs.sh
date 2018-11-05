@@ -20,6 +20,9 @@ none)
   rm -f $SPECFILE
   exit 0
   ;;
+nofortify)
+  USE_FORTIFY_SOURCE=0
+  ;;
 nopie)
   USE_PIE=0
   ;;
