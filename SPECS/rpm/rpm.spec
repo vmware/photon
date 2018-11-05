@@ -3,21 +3,20 @@
 
 Summary:        Package manager
 Name:           rpm
-Version:        4.13.0.1
-Release:        7%{?dist}
+Version:        4.13.0.2
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
-%define sha1    rpm=2119489397d7e4da19320ef9330ab717ac05587d
+Source0:        http://ftp.rpm.org/releases/rpm-4.13.x/%{name}-%{version}.tar.bz2
+%define sha1    rpm=9d6da0750184d8d077b4c28bb0ce171aef4da70b
 Source1:        macros
 Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
 Patch0:         find-debuginfo-do-not-generate-non-existing-build-id.patch
 Patch1:         find-debuginfo-do-not-generate-dir-entries.patch
-Patch2:         rpm-CVE-2017-7501.patch
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
@@ -86,10 +85,9 @@ Requires:       python3
 Python3 rpm.
 
 %prep
-%setup -n rpm-%{name}-%{version}-release
+%setup -n %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -260,6 +258,9 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Sat Nov 03 2018 Tapas Kundu <tkundu@vmware.com> 4.13.0.2-1
+-   Updated to 4.13.0.2
+-   Fix CVE-2017-7501 and CVE-2017-7500
 *   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-7
 -   Fix CVE-2017-7501
 *   Wed Oct 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-6
