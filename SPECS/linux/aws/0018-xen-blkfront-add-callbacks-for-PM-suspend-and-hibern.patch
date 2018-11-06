@@ -55,19 +55,19 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  1 file changed, 156 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-index 7d23225f79ed..e410535540f4 100644
+index 429d201..0487e6a 100644
 --- a/drivers/block/xen-blkfront.c
 +++ b/drivers/block/xen-blkfront.c
-@@ -46,6 +46,8 @@
- #include <linux/scatterlist.h>
+@@ -47,6 +47,8 @@
  #include <linux/bitmap.h>
  #include <linux/list.h>
+ #include <linux/workqueue.h>
 +#include <linux/completion.h>
 +#include <linux/delay.h>
  
  #include <xen/xen.h>
  #include <xen/xenbus.h>
-@@ -78,6 +80,8 @@ enum blkif_state {
+@@ -79,6 +81,8 @@ enum blkif_state {
  	BLKIF_STATE_DISCONNECTED,
  	BLKIF_STATE_CONNECTED,
  	BLKIF_STATE_SUSPENDED,
@@ -76,15 +76,15 @@ index 7d23225f79ed..e410535540f4 100644
  };
  
  struct grant {
-@@ -217,6 +221,7 @@ struct blkfront_info
- 	/* Save uncomplete reqs and bios for migration. */
+@@ -220,6 +224,7 @@ struct blkfront_info
  	struct list_head requests;
  	struct bio_list bio_list;
+ 	struct list_head info_list;
 +	struct completion wait_backend_disconnected;
  };
  
  static unsigned int nr_minors;
-@@ -263,6 +268,16 @@ static DEFINE_SPINLOCK(minor_lock);
+@@ -261,6 +266,16 @@ static DEFINE_SPINLOCK(minor_lock);
  static int blkfront_setup_indirect(struct blkfront_ring_info *rinfo);
  static void blkfront_gather_backend_features(struct blkfront_info *info);
  static int negotiate_mq(struct blkfront_info *info);
@@ -101,7 +101,7 @@ index 7d23225f79ed..e410535540f4 100644
  
  static int get_id_from_freelist(struct blkfront_ring_info *rinfo)
  {
-@@ -997,6 +1012,7 @@ static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size,
+@@ -995,6 +1010,7 @@ static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size,
  	info->sector_size = sector_size;
  	info->physical_sector_size = physical_sector_size;
  	blkif_set_queue_limits(info);
@@ -109,7 +109,7 @@ index 7d23225f79ed..e410535540f4 100644
  
  	return 0;
  }
-@@ -1220,6 +1236,8 @@ static void xlvbd_release_gendisk(struct blkfront_info *info)
+@@ -1218,6 +1234,8 @@ static void xlvbd_release_gendisk(struct blkfront_info *info)
  /* Already hold rinfo->ring_lock. */
  static inline void kick_pending_request_queues_locked(struct blkfront_ring_info *rinfo)
  {
@@ -118,7 +118,7 @@ index 7d23225f79ed..e410535540f4 100644
  	if (!RING_FULL(&rinfo->ring))
  		blk_mq_start_stopped_hw_queues(rinfo->dev_info->rq, true);
  }
-@@ -1343,8 +1361,6 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
+@@ -1341,8 +1359,6 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
  
  static void blkif_free(struct blkfront_info *info, int suspend)
  {
@@ -127,7 +127,7 @@ index 7d23225f79ed..e410535540f4 100644
  	/* Prevent new requests being issued until we fix things up. */
  	info->connected = suspend ?
  		BLKIF_STATE_SUSPENDED : BLKIF_STATE_DISCONNECTED;
-@@ -1352,6 +1368,13 @@ static void blkif_free(struct blkfront_info *info, int suspend)
+@@ -1350,6 +1366,13 @@ static void blkif_free(struct blkfront_info *info, int suspend)
  	if (info->rq)
  		blk_mq_stop_hw_queues(info->rq);
  
@@ -141,7 +141,7 @@ index 7d23225f79ed..e410535540f4 100644
  	for (i = 0; i < info->nr_rings; i++)
  		blkif_free_ring(&info->rinfo[i]);
  
-@@ -1555,8 +1578,10 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+@@ -1553,8 +1576,10 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
  	struct blkfront_ring_info *rinfo = (struct blkfront_ring_info *)dev_id;
  	struct blkfront_info *info = rinfo->dev_info;
  
@@ -154,7 +154,7 @@ index 7d23225f79ed..e410535540f4 100644
  
  	spin_lock_irqsave(&rinfo->ring_lock, flags);
   again:
-@@ -2006,6 +2031,7 @@ static int blkif_recover(struct blkfront_info *info)
+@@ -2019,6 +2044,7 @@ static int blkif_recover(struct blkfront_info *info)
  	struct bio *bio;
  	unsigned int segs;
  
@@ -162,7 +162,7 @@ index 7d23225f79ed..e410535540f4 100644
  	blkfront_gather_backend_features(info);
  	/* Reset limits changed by blk_mq_update_nr_hw_queues(). */
  	blkif_set_queue_limits(info);
-@@ -2032,6 +2058,9 @@ static int blkif_recover(struct blkfront_info *info)
+@@ -2045,6 +2071,9 @@ static int blkif_recover(struct blkfront_info *info)
  		kick_pending_request_queues(rinfo);
  	}
  
@@ -172,7 +172,7 @@ index 7d23225f79ed..e410535540f4 100644
  	list_for_each_entry_safe(req, n, &info->requests, queuelist) {
  		/* Requeue pending requests (flush or discard) */
  		list_del_init(&req->queuelist);
-@@ -2336,6 +2365,7 @@ static void blkfront_connect(struct blkfront_info *info)
+@@ -2358,6 +2387,7 @@ static void blkfront_connect(struct blkfront_info *info)
  
  		return;
  	case BLKIF_STATE_SUSPENDED:
@@ -180,7 +180,7 @@ index 7d23225f79ed..e410535540f4 100644
  		/*
  		 * If we are recovering from suspension, we need to wait
  		 * for the backend to announce it's features before
-@@ -2453,13 +2483,38 @@ static void blkback_changed(struct xenbus_device *dev,
+@@ -2475,13 +2505,38 @@ static void blkback_changed(struct xenbus_device *dev,
  		break;
  
  	case XenbusStateClosed:
@@ -223,7 +223,7 @@ index 7d23225f79ed..e410535540f4 100644
  	}
  }
  
-@@ -2595,6 +2650,96 @@ static void blkif_release(struct gendisk *disk, fmode_t mode)
+@@ -2621,6 +2676,96 @@ static void blkif_release(struct gendisk *disk, fmode_t mode)
  	mutex_unlock(&blkfront_mutex);
  }
  
@@ -320,7 +320,7 @@ index 7d23225f79ed..e410535540f4 100644
  static const struct block_device_operations xlvbd_block_fops =
  {
  	.owner = THIS_MODULE,
-@@ -2617,6 +2762,9 @@ static struct xenbus_driver blkfront_driver = {
+@@ -2643,6 +2788,9 @@ static struct xenbus_driver blkfront_driver = {
  	.resume = blkfront_resume,
  	.otherend_changed = blkback_changed,
  	.is_ready = blkfront_is_ready,
@@ -329,7 +329,4 @@ index 7d23225f79ed..e410535540f4 100644
 +	.restore = blkfront_restore
  };
  
- static int __init xlblk_init(void)
--- 
-2.14.4
-
+ static void purge_persistent_grants(struct blkfront_info *info)
