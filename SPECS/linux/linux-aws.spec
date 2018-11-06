@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.18.9
+Version:        4.19.1
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=229ed4bedc5b8256bdd761845b1d7e20e1df12d7
+%define sha1 linux=5ece7a7149eeef06bba906eeabbc2f29a8ac3952
 Source1:	config-aws
 Source2:	initramfs.trigger
 # common
@@ -62,7 +62,6 @@ Patch123: 0027-xen-blkfront-add-persistent_grants-parameter.patch
 Patch125: 0029-Revert-xen-dont-fiddle-with-event-channel-masking-in.patch
 Patch131: 0035-xen-blkfront-Fixed-blkfront_restore-to-remove-a-call.patch
 Patch133: 0037-x86-tsc-avoid-system-instability-in-hibernation.patch
-Patch135: 0039-blk-wbt-Avoid-lock-contention-and-thundering-herd-is.patch
 Patch151: 0055-net-ipv4-defensive-cipso-option-parsing.patch
 Patch152: 0056-Amazon-ENA-driver-Update-to-version-1.6.0.patch
 
@@ -179,7 +178,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch125 -p1
 %patch131 -p1
 %patch133 -p1
-%patch135 -p1
 %patch151 -p1
 %patch152 -p1
 
@@ -355,11 +353,12 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /etc/bash_completion.d/*
 /usr/share/perf-core/strace/groups/file
 /usr/share/doc/*
-%{_libdir}/perf/examples/bpf/5sec.c
-%{_libdir}/perf/examples/bpf/empty.c
-%{_libdir}/perf/include/bpf/bpf.h
+%{_libdir}/perf/examples/bpf/*
+%{_libdir}/perf/include/bpf/*
 
 %changelog
+*   Tue Nov 06 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.1-1
+-   Update to version 4.19.1
 *   Mon Oct 22 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.18.9-1
 -   Update to version 4.18.9
 *   Mon Oct 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-2

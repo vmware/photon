@@ -26,10 +26,10 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  create mode 100644 drivers/amazon/Makefile
 
 diff --git a/drivers/Kconfig b/drivers/Kconfig
-index 95b9ccc..9553a18 100644
+index ab4d439..c9c374d 100644
 --- a/drivers/Kconfig
 +++ b/drivers/Kconfig
-@@ -217,4 +217,6 @@ source "drivers/siox/Kconfig"
+@@ -219,4 +219,6 @@ source "drivers/siox/Kconfig"
  
  source "drivers/slimbus/Kconfig"
  
@@ -37,13 +37,13 @@ index 95b9ccc..9553a18 100644
 +
  endmenu
 diff --git a/drivers/Makefile b/drivers/Makefile
-index 24cd470..a7422af 100644
+index 578f469..9cb2123 100644
 --- a/drivers/Makefile
 +++ b/drivers/Makefile
-@@ -185,3 +185,6 @@ obj-$(CONFIG_TEE)		+= tee/
- obj-$(CONFIG_MULTIPLEXER)	+= mux/
+@@ -186,3 +186,6 @@ obj-$(CONFIG_MULTIPLEXER)	+= mux/
  obj-$(CONFIG_UNISYS_VISORBUS)	+= visorbus/
  obj-$(CONFIG_SIOX)		+= siox/
+ obj-$(CONFIG_GNSS)		+= gnss/
 +
 +# Amazon driver updates
 +obj-$(CONFIG_AMAZON_DRIVER_UPDATES)	+= amazon/
@@ -77,6 +77,3 @@ index 0000000..6b4996d
 +#
 +# Amazon Driver Updates
 +#
--- 
-2.14.4
-
