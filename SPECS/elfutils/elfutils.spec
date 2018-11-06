@@ -2,12 +2,13 @@
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
 Version:	0.169
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 URL:    	https://sourceware.org/elfutils
 Source0:	https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
 %define sha1 elfutils=4977019aece471362dbdd28a27ef1030471dff84
+Patch0:		cve-2018-16402.patch
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -98,6 +99,8 @@ for libelf.
 
 %prep
 %setup -q
+%patch0 -p1
+
 %build
 %configure --program-prefix=%{_programprefix}
 make %{?_smp_mflags}
@@ -185,6 +188,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_libdir}/libelf.a
 
 %changelog
+*   Tue Nov 6 2018 Sujay G <gsujay@vmware.com> 0.169-2
+-   Added patch for CVE-2018-16402 Vulnerability
 *   Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 0.169-1
 -   Updated to version 0.169
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.165-2
