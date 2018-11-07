@@ -141,9 +141,9 @@ class Installer(object):
             if versionindex == -1:
                 raise Exception("Invalid pkg name: " + pkg)
             package = pkg[:versionindex]
-            if package in pkg_to_rpm_map:
-                if pkg_to_rpm_map[package]['rpm'] is not None:
-                    name = pkg_to_rpm_map[package]['rpm']
+            if pkg in pkg_to_rpm_map:
+                if pkg_to_rpm_map[pkg]['rpm'] is not None:
+                    name = pkg_to_rpm_map[pkg]['rpm']
                     basename = os.path.basename(name)
                     self.rpms_tobeinstalled.append({'filename': basename, 'path': name,
                                                     'package' : package})

@@ -21,7 +21,6 @@ class PackageInfo(object):
     def loadPackagesData(self):
         listPackages = SPECS.getData().getListPackages()
         listPackages.sort()
-        listRPMFiles = []
         cmdUtils = CommandUtils()
         for package in listPackages:
             for version in SPECS.getData().getVersions(package):
@@ -39,13 +38,12 @@ class PackageInfo(object):
                     debugrpmFile = debugrpmFiles[0]
                 pkgUtils = PackageUtils(self.logName, self.logPath)
                 for rpmPkg in listRPMPackages:
-                    rpmFile = pkgUtils.findRPMFileForGivenPackage(rpmPkg)
+                    rpmFile = pkgUtils.findRPMFileForGivenPackage(rpmPkg, version)
                     if rpmFile is not None:
-                        listRPMFiles.append(rpmFile)
                         listPkgAttributes = {"sourcerpm":srpmFile, "rpm":rpmFile,
                                              "debugrpm":debugrpmFile}
-                        self.pkgList[rpmPkg] = listPkgAttributes
-                        self.logger.debug("Added " + rpmPkg + " rpm package to the list")
+                        self.pkgList[rpmPkg+"-"+version] = listPkgAttributes
+                        self.logger.debug("Added " + rpmPkg + "-" + version + " to the package info json")
                     else:
                         self.logger.debug("Missing rpm file for package:" + rpmPkg)
 
