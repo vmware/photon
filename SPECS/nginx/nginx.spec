@@ -1,7 +1,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.13.8
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
@@ -54,12 +54,29 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/*
+%config(noreplace) %{_sysconfdir}/%{name}/fastcgi.conf
+%config(noreplace) %{_sysconfdir}/%{name}/fastcgi.conf.default
+%config(noreplace) %{_sysconfdir}/%{name}/fastcgi_params
+%config(noreplace) %{_sysconfdir}/%{name}/fastcgi_params.default
+%config(noreplace) %{_sysconfdir}/%{name}/koi-utf
+%config(noreplace) %{_sysconfdir}/%{name}/koi-win
+%config(noreplace) %{_sysconfdir}/%{name}/mime.types
+%config(noreplace) %{_sysconfdir}/%{name}/mime.types.default
+%config(noreplace) %{_sysconfdir}/%{name}/nginx.conf
+%config(noreplace) %{_sysconfdir}/%{name}/nginx.conf.default
+%config(noreplace) %{_sysconfdir}/%{name}/scgi_params
+%config(noreplace) %{_sysconfdir}/%{name}/scgi_params.default
+%config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params
+%config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params.default
+%{_sysconfdir}/%{name}/win-utf
+%{_sysconfdir}/%{name}/html/*
 %{_sbindir}/*
 %{_libdir}/systemd/system/nginx.service
 %dir %{_var}/log/nginx
 
 %changelog
+*   Wed Nov 07 2018 Ajay Kaher <akaher@vmware.com> 1.13.8-5
+-   mark config files as non replaceable on upgrade.
 *   Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 1.13.8-4
 -   Adding http_auth_request_module and http_sub_module.
 *   Fri Jul 20 2018 Keerthana K <keerthanak@vmware.com> 1.13.8-3
