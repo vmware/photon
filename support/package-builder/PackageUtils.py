@@ -313,13 +313,12 @@ class PackageUtils(object):
 
     def findRPMFileForGivenPackage(self, package, version = "*", index=0):
         cmdUtils = CommandUtils()
-        release = "*"
 
         # If no version is specified, use the latest from the source
         # code.
         if version == "*":
             version = SPECS.getData().getVersion(package,index)
-            release = SPECS.getData().getRelease(package,index)
+        release = SPECS.getData().getRelease(package,index)
         listFoundRPMFiles = sum([cmdUtils.findFile(package+"-"+version+"-"+release+"."+platform.machine()+".rpm",constants.rpmPath),
                             cmdUtils.findFile(package+"-"+version+"-"+release+".noarch.rpm",constants.rpmPath)], [])
         if constants.inputRPMSPath is not None:
