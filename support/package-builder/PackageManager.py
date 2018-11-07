@@ -104,7 +104,7 @@ class PackageManager(object):
                 packageIsAlreadyBuilt=True
                 listRPMPackages = SPECS.getData().getRPMPackages(package, version)
                 for rpmPkg in listRPMPackages:
-                    if pkgUtils.findRPMFileForGivenPackage(rpmPkg) is None:
+                    if pkgUtils.findRPMFileForGivenPackage(rpmPkg, version) is None:
                         packageIsAlreadyBuilt=False
                         break;
                 if packageIsAlreadyBuilt:
