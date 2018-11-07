@@ -99,9 +99,14 @@ class SpecObjectsUtils(object):
         specName=self.getSpecName(package)
         return self.mapSpecObjects[specName][index].checkBuildRequirePackages
 
-    def getRelease(self, package, index=0):
+    def getRelease(self, package, version=None):
         specName=self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].release
+        if not version:
+            return self.mapSpecObjects[specName][0].release
+        for p in self.mapSpecObjects[specName]:
+            if p.version == version:
+                return p.release
+        return None
 
     def getVersion(self, package, index=0):
         specName=self.getSpecName(package)
