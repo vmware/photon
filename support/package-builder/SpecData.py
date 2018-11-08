@@ -1,5 +1,4 @@
 import os
-import platform
 import queue
 import json
 import operator
@@ -36,7 +35,8 @@ class SpecObject(object):
 
 class SpecObjectsUtils(object):
 
-    def __init__(self, logPath):
+    def __init__(self, arch, logPath):
+        self.arch = arch
         self.mapSpecObjects = {}
         self.mapPackageToSpec = {}
         self.mapSpecFileNameToSpecObj = {}
@@ -46,12 +46,13 @@ class SpecObjectsUtils(object):
         listSpecFiles = []
         self.getListSpecFiles(listSpecFiles, specFilesPath)
         for specFile in listSpecFiles:
-            spec = Specutils(specFile)
+            spec = Specutils(specFile, self.arch)
             specName = spec.getBasePackageName()
             specObj = SpecObject()
             specObj.name = specName
             specObj.buildRequiresAllPackages = spec.getBuildRequiresAllPackages()
             specObj.extraBuildRequires = spec.getExtraBuildRequires()
+            specObj.buildRequiresNative = spec.getBuildRequiresNative()
             specObj.installRequiresAllPackages = spec.getRequiresAllPackages()
             specObj.checkBuildRequirePackages = spec.getCheckBuildRequiresAllPackages()
             specObj.listPackages = spec.getPackageNames()
@@ -91,7 +92,7 @@ class SpecObjectsUtils(object):
             if (os.path.isfile(dirEntryPath) and
                     dirEntryPath.endswith(".spec") and
                     os.path.basename(dirEntryPath) not in
-                    constants.skipSpecsForArch.get(platform.machine(), [])):
+                    constants.skipSpecsForArch.get(self.arch, [])):
                 listSpecFiles.append(dirEntryPath)
             elif os.path.isdir(dirEntryPath):
                 self.getListSpecFiles(listSpecFiles, dirEntryPath)
@@ -154,6 +155,13 @@ class SpecObjectsUtils(object):
         for pkg in self._getSpecObjField(package, version, field=lambda x : x.extraBuildRequires):
             # no version deps for publishrpms - use just name
             packages.append(pkg.package)
+        return packages
+
+    def getBuildRequiresNativeForPackage(self, package, version):
+        packages=[]
+        for pkg in self._getSpecObjField(package, version, field=lambda x : x.buildRequiresNative):
+            properVersion = self._getProperVersion(pkg)
+            packages.append(pkg.package+"-"+properVersion)
         return packages
 
     def getBuildRequiresForPkg(self, pkg):
@@ -300,34 +308,32 @@ class SpecObjectsUtils(object):
         for spec in listSpecs:
             for specObj in self.mapSpecObjects[spec]:
                 self.logger.debug("-----------Spec:"+specObj.name+"--------------")
-                self.logger.debug("Version:"+specObj.version)
-                self.logger.debug("Release:"+specObj.release)
-                self.logger.debug("SpecFile:"+specObj.specFile)
-                self.logger.debug("Source Files")
-                self.logger.debug(specObj.listSources)
-                self.logger.debug("Patch Files")
-                self.logger.debug(specObj.listPatches)
-                self.logger.debug("List RPM packages")
-                self.logger.debug(specObj.listPackages)
-                self.logger.debug("Build require packages")
-                self.logger.debug(self.getPkgNamesFromObj(specObj.buildRequiresAllPackages))
-                self.logger.debug("install require packages")
-                self.logger.debug(self.getPkgNamesFromObj(specObj.installRequiresAllPackages))
-                self.logger.debug(specObj.installRequiresPackages)
+                self.logger.debug("Version: "+specObj.version)
+                self.logger.debug("Release: "+specObj.release)
+                self.logger.debug("SpecFile: "+specObj.specFile)
+                self.logger.debug("Sources: "+str(specObj.listSources))
+                self.logger.debug("Patches: "+str(specObj.listPatches))
+                self.logger.debug("List packages: "+str(specObj.listPackages))
+                self.logger.debug("BuildRequires: "+str(self.getPkgNamesFromObj(specObj.buildRequiresAllPackages)))
+                self.logger.debug("Requires: "+str(self.getPkgNamesFromObj(specObj.installRequiresAllPackages)))
                 self.logger.debug("security_hardening: " + specObj.securityHardening)
+                self.logger.debug("BuildArch: " + str(specObj.buildarch))
                 self.logger.debug("------------------------------------------------")
 
 
 class SPECS(object):
     __instance = None
-    specData = None
+    specData = {}
 
     @staticmethod
-    def getData():
+    def getData(arch=None):
+        if not arch:
+            arch=constants.currentArch
+
         """ Static access method. """
         if SPECS.__instance is None:
             SPECS()
-        return SPECS.__instance.specData
+        return SPECS.__instance.specData[arch]
 
     def __init__(self):
         """ Virtually private constructor. """
@@ -341,7 +347,7 @@ class SPECS(object):
         # Preparse some files
 
         # adding kernelversion rpm macro
-        spec = Specutils(constants.specPath + "/linux/linux.spec")
+        spec = Specutils(constants.specPath + "/linux/linux.spec", constants.buildArch)
         kernelversion = spec.getVersion()
         constants.addMacro("KERNEL_VERSION", kernelversion)
 
@@ -359,6 +365,11 @@ class SPECS(object):
             constants.addMacro("kernelsubrelease", kernelsubrelease)
 
         # Full parsing
-        self.specData = SpecObjectsUtils(constants.logPath)
-        self.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
+        builddata = SpecObjectsUtils(constants.buildArch, constants.logPath)
+        builddata.readSpecsAndConvertToSerializableObjects(constants.specPath)
+        self.specData[constants.buildArch] = builddata
 
+        if constants.buildArch != constants.targetArch:
+            targetdata = SpecObjectsUtils(constants.targetArch, constants.logPath)
+            targetdata.readSpecsAndConvertToSerializableObjects(constants.specPath)
+            self.specData[constants.targetArch] = targetdata

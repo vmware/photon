@@ -49,33 +49,15 @@ class PackageBuilder(object):
 
             tUtils = ToolChainUtils(self.logName, self.logPath)
             if self.sandbox.hasToolchain():
-                tUtils.installCustomToolChainRPMS(self.sandbox, self.package, self.version)
+                tUtils.installExtraToolChainRPMS(self.sandbox, self.package, self.version)
             else:
                 tUtils.installToolChainRPMS(self.sandbox, self.package, self.version)
 
-            listDependentPackages, listTestPackages, listInstalledPackages, listInstalledRPMs = (
-                self._findDependentPackagesAndInstalledRPM(self.sandbox))
+            self._installDependencies(constants.buildArch)
+            if constants.crossCompiling:
+                self._installDependencies(constants.targetArch)
 
             pkgUtils = PackageUtils(self.logName, self.logPath)
-
-            if listDependentPackages:
-                self.logger.debug("Installing the build time dependent packages......")
-                for pkg in listDependentPackages:
-                    packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
-                    self._installPackage(pkgUtils, packageName, packageVersion, self.sandbox, self.logPath,listInstalledPackages, listInstalledRPMs)
-                for pkg in listTestPackages:
-                    flag = False
-                    packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
-                    for depPkg in listDependentPackages:
-                        depPackageName, depPackageVersion = StringUtils.splitPackageNameAndVersion(depPkg)
-                        if depPackageName == packageName:
-                            flag = True
-                            break;
-                    if flag == False:
-                        self._installPackage(pkgUtils, packageName,packageVersion, self.sandbox, self.logPath,listInstalledPackages, listInstalledRPMs)
-                pkgUtils.installRPMSInOneShot(self.sandbox)
-                self.logger.debug("Finished installing the build time dependent packages....")
-
             pkgUtils.adjustGCCSpecs(self.sandbox, self.package, self.version)
             pkgUtils.buildRPMSForGivenPackage(self.sandbox, self.package, self.version,
                                               self.logPath)
@@ -91,11 +73,37 @@ class PackageBuilder(object):
         if self.sandbox:
             self.sandbox.destroy()
 
+    def _installDependencies(self, arch, deps=[]):
+        listDependentPackages, listTestPackages, listInstalledPackages, listInstalledRPMs = (
+            self._findDependentPackagesAndInstalledRPM(self.sandbox, arch))
+
+        # PackageUtils should be initialized here - as per arch basis
+        # Do not move it to __init__
+        pkgUtils = PackageUtils(self.logName, self.logPath)
+
+        if listDependentPackages:
+            self.logger.debug("Installing the build time dependent packages for " + arch)
+            for pkg in listDependentPackages:
+                packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
+                self._installPackage(pkgUtils, packageName, packageVersion, self.sandbox, self.logPath,listInstalledPackages, listInstalledRPMs, arch)
+            for pkg in listTestPackages:
+                flag = False
+                packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
+                for depPkg in listDependentPackages:
+                    depPackageName, depPackageVersion = StringUtils.splitPackageNameAndVersion(depPkg)
+                    if depPackageName == packageName:
+                        flag = True
+                        break;
+                if flag == False:
+                    self._installPackage(pkgUtils, packageName,packageVersion, self.sandbox, self.logPath,listInstalledPackages, listInstalledRPMs, arch)
+            pkgUtils.installRPMSInOneShot(self.sandbox,arch)
+            self.logger.debug("Finished installing the build time dependent packages for " + arch)
+
     def _buildPackagePrepareFunction(self, package, version, doneList):
         self.package = package
         self.version = version
         self.logName = "build-" + package + "-" + version
-        self.logPath = constants.logPath + "/" + package + "-" + version
+        self.logPath = constants.logPath + "/" + package + "-" + version + "." + constants.currentArch
         if not os.path.isdir(self.logPath):
             cmdUtils = CommandUtils()
             cmdUtils.runCommandInShell("mkdir -p " + self.logPath)
@@ -120,9 +128,9 @@ class PackageBuilder(object):
         pkg = rpmfile[0:releaseindex]
         return pkg
 
-    def _findInstalledPackages(self, sandbox):
+    def _findInstalledPackages(self, sandbox, arch):
         pkgUtils = PackageUtils(self.logName, self.logPath)
-        listInstalledRPMs = pkgUtils.findInstalledRPMPackages(sandbox)
+        listInstalledRPMs = pkgUtils.findInstalledRPMPackages(sandbox, arch)
         listInstalledPackages = []
         for installedRPM in listInstalledRPMs:
             pkg = self._findPackageNameAndVersionFromRPMFile(installedRPM)
@@ -135,18 +143,24 @@ class PackageBuilder(object):
         return basePkg in doneList
 
 
-    def _findRunTimeRequiredRPMPackages(self, rpmPackage, version):
-        return SPECS.getData().getRequiresForPackage(rpmPackage, version)
+    def _findRunTimeRequiredRPMPackages(self, rpmPackage, version, arch):
+        return SPECS.getData(arch).getRequiresForPackage(rpmPackage, version)
 
-    def _findBuildTimeRequiredPackages(self):
-        return SPECS.getData().getBuildRequiresForPackage(self.package, self.version)
+    def _findBuildTimeRequiredPackages(self, arch):
+        deps = SPECS.getData(arch).getBuildRequiresForPackage(self.package, self.version)
+
+        # Add BuildRequiresNative list
+        if constants.crossCompiling and arch == constants.buildArch:
+            deps.extend(SPECS.getData(arch).getBuildRequiresNativeForPackage(self.package, self.version))
+
+        return deps
 
     def _findBuildTimeCheckRequiredPackages(self):
         return SPECS.getData().getCheckBuildRequiresForPackage(self.package, self.version)
 
     def _installPackage(self, pkgUtils, package, packageVersion, sandbox, destLogPath,
-                        listInstalledPackages, listInstalledRPMs):
-        rpmfile = pkgUtils.findRPMFile(package,packageVersion);
+                        listInstalledPackages, listInstalledRPMs, arch):
+        rpmfile = pkgUtils.findRPMFile(package,packageVersion,arch);
         if rpmfile is None:
             self.logger.error("No rpm file found for package: " + package + "-" + packageVersion)
             raise Exception("Missing rpm file")
@@ -158,39 +172,43 @@ class PackageBuilder(object):
         listInstalledPackages.append(pkg)
         listInstalledRPMs.append(specificRPM)
         self._installDependentRunTimePackages(pkgUtils, package, packageVersion, sandbox, destLogPath,
-                                              listInstalledPackages, listInstalledRPMs)
+                                              listInstalledPackages, listInstalledRPMs, arch)
         noDeps = False
         if (package in self.mapPackageToCycles or
                 package in self.listNodepsPackages or
                 package in constants.noDepsPackageList):
             noDeps = True
-        pkgUtils.prepRPMforInstall(package,packageVersion, noDeps, destLogPath)
+        pkgUtils.prepRPMforInstall(package,packageVersion, noDeps, destLogPath, arch)
 
     def _installDependentRunTimePackages(self, pkgUtils, package, packageVersion, sandbox, destLogPath,
-                                         listInstalledPackages, listInstalledRPMs):
-        listRunTimeDependentPackages = self._findRunTimeRequiredRPMPackages(package, packageVersion)
+                                         listInstalledPackages, listInstalledRPMs, arch):
+        listRunTimeDependentPackages = self._findRunTimeRequiredRPMPackages(package, packageVersion, arch)
         if listRunTimeDependentPackages:
             for pkg in listRunTimeDependentPackages:
                 if pkg in self.mapPackageToCycles:
                     continue
                 packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
                 latestPkgRPM = os.path.basename(
-                    pkgUtils.findRPMFile(packageName, packageVersion)).replace(".rpm", "")
+                    pkgUtils.findRPMFile(packageName, packageVersion, arch, True)).replace(".rpm", "")
                 if pkg in listInstalledPackages and latestPkgRPM in listInstalledRPMs:
                     continue
-                self._installPackage(pkgUtils, packageName,packageVersion, sandbox, destLogPath,listInstalledPackages, listInstalledRPMs)
+                self._installPackage(pkgUtils, packageName,packageVersion, sandbox, destLogPath,listInstalledPackages, listInstalledRPMs, arch)
 
-    def _findDependentPackagesAndInstalledRPM(self, sandbox):
-        listInstalledPackages, listInstalledRPMs = self._findInstalledPackages(sandbox)
+    def _findDependentPackagesAndInstalledRPM(self, sandbox, arch):
+        listInstalledPackages, listInstalledRPMs = self._findInstalledPackages(sandbox, arch)
         self.logger.debug(listInstalledPackages)
-        listDependentPackages = self._findBuildTimeRequiredPackages()
+        if constants.crossCompiling and arch == constants.buildArch:
+            listDependentPackages = self._findBuildTimeRequiredPackages(constants.targetArch)
+            # TODO remove unsupported by buildArch packages from this list
+        else:
+            listDependentPackages = self._findBuildTimeRequiredPackages(arch)
         listTestPackages=[]
         if constants.rpmCheck and self.package in constants.testForceRPMS:
             # One time optimization
             if constants.listMakeCheckRPMPkgWithVersionstoInstall is None:
                 constants.listMakeCheckRPMPkgWithVersionstoInstalli=[]
                 for package in constants.listMakeCheckRPMPkgtoInstall:
-                    version = SPECS.getData().getHighestVersion(package)
+                    version = SPECS.getData(arch).getHighestVersion(package)
                     constants.listMakeCheckRPMPkgWithVersionstoInstall.append(package+"-"+version)
 
             listDependentPackages.extend(self._findBuildTimeCheckRequiredPackages())

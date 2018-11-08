@@ -2,7 +2,6 @@
 
 from argparse import ArgumentParser
 import os.path
-import platform
 import collections
 import traceback
 import sys
@@ -57,6 +56,7 @@ def main():
                         default="../../common/data/packageWeights.json")
     parser.add_argument("-bt", "--build-type", dest="pkgBuildType", choices=['chroot', 'container'], default="chroot")
     parser.add_argument("-F", "--kat-build", dest="katBuild", default=None)
+    parser.add_argument("-ct", "--cross-target", dest="targetArch", choices=['x86_64', 'aarch64'], default=None)
     parser.add_argument("-pj", "--packages-json-input", dest="pkgJsonInput", default=None)
     parser.add_argument("PackageName", nargs='?')
     options = parser.parse_args()
@@ -80,12 +80,12 @@ def main():
     if not os.path.isdir(options.publishXRPMSPath):
         logger.error("Given X RPMS Path is not a directory:" + options.publishXRPMSPath)
         errorFlag = True
-    if not os.path.isdir(options.publishRPMSPath + "/" + platform.machine()):
-        logger.error("Given RPMS Path is missing " + platform.machine()+
+    if not os.path.isdir(options.publishRPMSPath + "/" + constants.buildArch):
+        logger.error("Given RPMS Path is missing " + constants.buildArch +
                      " sub-directory:"+options.publishRPMSPath)
         errorFlag = True
-    if not os.path.isdir(options.publishXRPMSPath+"/" + platform.machine()):
-        logger.error("Given X RPMS Path is missing "+platform.machine()+
+    if not os.path.isdir(options.publishXRPMSPath+"/" + constants.buildArch):
+        logger.error("Given X RPMS Path is missing "+ constants.buildArch +
                      " sub-directory:"+options.publishXRPMSPath)
         errorFlag = True
     if not os.path.isdir(options.publishRPMSPath+"/noarch"):
@@ -121,9 +121,14 @@ def main():
         logger.error("Found some errors. Please fix input options and re-run it.")
         return False
 
-    if not os.path.isdir(options.rpmPath):
-        cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/"+platform.machine())
-        cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/noarch")
+    if options.targetArch:
+        constants.targetArch = options.targetArch
+
+    cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/"+constants.buildArch)
+    cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/noarch")
+    if constants.buildArch != constants.targetArch:
+        cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/"+constants.targetArch)
+
 
     if not os.path.isdir(options.sourceRpmPath):
         cmdUtils.runCommandInShell("mkdir -p "+options.sourceRpmPath)
@@ -177,14 +182,25 @@ def main():
         elif options.toolChainStage == "stage2":
             pkgManager = PackageManager()
             pkgManager.buildToolChainPackages(options.buildThreads)
-        elif options.installPackage:
-            buildSpecifiedPackages([package], options.buildThreads, options.pkgBuildType)
-        elif options.pkgJsonInput:
-            buildPackagesInJson(options.pkgJsonInput, options.buildThreads,
-                                options.pkgBuildType, pkgInfoJsonFile, logger)
         else:
-            buildPackagesForAllSpecs(options.buildThreads, options.pkgBuildType,
-                                     pkgInfoJsonFile, logger)
+            if constants.buildArch != constants.targetArch:
+                # It is cross compilation.
+                # first build all native packages
+                buildPackagesForAllSpecs(options.buildThreads,
+                                         options.pkgBuildType,
+                                         pkgInfoJsonFile, logger)
+                # Then do the build to the target
+                constants.currentArch = constants.targetArch
+                constants.crossCompiling = True
+
+            if options.installPackage:
+                buildSpecifiedPackages([package], options.buildThreads, options.pkgBuildType)
+            elif options.pkgJsonInput:
+                buildPackagesInJson(options.pkgJsonInput, options.buildThreads,
+                                    options.pkgBuildType, pkgInfoJsonFile, logger)
+            else:
+                buildPackagesForAllSpecs(options.buildThreads, options.pkgBuildType,
+                                         pkgInfoJsonFile, logger)
     except Exception as e:
         logger.error("Caught an exception")
         logger.error(str(e))

@@ -1,4 +1,3 @@
-import platform
 
 class rpmMacro(object):
 
@@ -27,14 +26,14 @@ class dependentPackageData(object):
         self.compare = ""
 
 class Package(object):
-    def __init__(self, basePkg=None):
+    def __init__(self, buildarch, basePkg=None):
         self.summary = ""
         self.name = ""
         self.group = ""
         self.license = ""
         self.version = ""
         self.release = ""
-        self.buildarch = platform.machine()
+        self.buildarch = buildarch
         self.distribution = "Photon"
         self.basePkgName = ""
         self.URL = ""
@@ -46,6 +45,7 @@ class Package(object):
         self.buildprovides = []
         self.checkbuildrequires = []
         self.extrabuildrequires = []
+        self.buildrequiresnative = []
 
         self.requires = []
         self.provides = []

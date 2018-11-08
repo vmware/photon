@@ -1,3 +1,4 @@
+import platform
 from Logger import Logger
 
 class constants(object):
@@ -30,6 +31,10 @@ class constants(object):
     buildOptions = {}
     # will be extended later from listMakeCheckRPMPkgtoInstall
     listMakeCheckRPMPkgWithVersionstoInstall = None
+    buildArch = platform.machine()
+    targetArch = platform.machine()
+    crossCompiling = False
+    currentArch = buildArch
 
     noDepsPackageList = [
         "texinfo",
@@ -111,12 +116,8 @@ class constants(object):
         "automake",
         "openssl",
         "openssl-devel",
-        "python2",
         "libdb",
-        "rpm",
-        "groff",
-        "man-pages",
-        "cpio"]
+        "rpm"]
 
     # List or RPMS that will be installed in a chroot prior to build each
     # package. This list should be ordered by install order. On a stage1
@@ -204,9 +205,6 @@ class constants(object):
         "automake",
         "openssl",
         "openssl-devel",
-        "python2",
-        "python2-libs",
-        "python2-devel",
         "libcap",
         "libdb",
         "libdb-devel",
@@ -214,8 +212,6 @@ class constants(object):
         "rpm-build",
         "rpm-devel",
         "rpm-libs",
-        "groff",
-        "man-pages",
         "cpio"]
 
     # List of RPMs which are not published. They will be created during the
@@ -304,9 +300,32 @@ class constants(object):
     # Requires: shadow
     providedBy = {
         "/usr/sbin/useradd":"shadow",
+        "/usr/sbin/userdel":"shadow",
         "/usr/sbin/groupadd":"shadow",
+        "/sbin/service":"initscripts",
         "/usr/bin/which":"which",
-        "/bin/sed":"sed"
+        "/usr/bin/python":"python2",
+        "/bin/python":"python2",
+        "/bin/python2":"python2",
+        "/bin/python3":"python3",
+        "/bin/awk":"gawk",
+        "/bin/gawk":"gawk",
+        "/bin/sed":"sed",
+        "/bin/grep":"grep",
+        "/bin/sh":"bash",
+        "/bin/bash":"bash",
+        "/bin/zsh":"zsh",
+        "/bin/tcsh":"tcsh",
+        "/bin/csh":"csh",
+        "/bin/perl":"perl",
+        "/bin/mergerepo":"createrepo_c",
+        "/bin/modifyrepo":"createrepo_c",
+        "/bin/false":"coreutils",
+        "/bin/ln":"coreutils",
+        "/bin/chown":"coreutils",
+        "/bin/cp":"coreutils",
+        "/bin/rm":"coreutils",
+        "/bin/mv":"coreutils"
     }
 
     # list of spec files to skip for parsing for given arch

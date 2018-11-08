@@ -5,9 +5,9 @@ from StringUtils import StringUtils
 
 class Specutils(object):
 
-    def __init__(self, specfile):
+    def __init__(self, specfile, arch):
         self.specfile = ""
-        self.spec = SpecParser()
+        self.spec = SpecParser(arch)
         if Specutils._isSpecFile(specfile):
             self.specfile = specfile
             self.spec.parseSpecFile(self.specfile)
@@ -130,6 +130,12 @@ class Specutils(object):
         dependentPackages = []
         for pkg in self.spec.packages.values():
             dependentPackages.extend(pkg.extrabuildrequires)
+        return dependentPackages
+
+    def getBuildRequiresNative(self):
+        dependentPackages = []
+        for pkg in self.spec.packages.values():
+            dependentPackages.extend(pkg.buildrequiresnative)
         return dependentPackages
 
     def getRequires(self, pkgName):
