@@ -1,6 +1,5 @@
 import threading
-from PackageBuilder import PackageBuilderChroot
-from PackageBuilder import PackageBuilderContainer
+from PackageBuilder import PackageBuilder
 import Scheduler
 import ThreadPool
 
@@ -24,14 +23,10 @@ class WorkerThread(threading.Thread):
             doneList = Scheduler.Scheduler.getDoneList()
             if pkg is None:
                 break
-            if self.pkgBuildType == "chroot":
-                pkgBuilder = PackageBuilderChroot(self.mapPackageToCycle,
-                                                  self.pkgBuildType)
-            elif self.pkgBuildType == "container":
-                pkgBuilder = PackageBuilderContainer(self.mapPackageToCycle,
-                                                     self.pkgBuildType)
+            pkgBuilder = PackageBuilder(self.mapPackageToCycle,
+                                              self.pkgBuildType)
             try:
-                pkgBuilder.buildPackageFunction(pkg, doneList)
+                pkgBuilder.build(pkg, doneList)
             except Exception as e:
                 self.logger.exception(e)
                 buildThreadFailed = True

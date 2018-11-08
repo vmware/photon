@@ -156,13 +156,13 @@ class ToolChainUtils(object):
 
         self.logger.debug(packages)
         cmd = (self.rpmCommand + " -i -v --nodeps --noorder --force --root " +
-               chroot.getPath() +" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles)
+               chroot.getID() +" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles)
         retVal = CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug)
         if retVal != 0:
             self.logger.debug("Command Executed:" + cmd)
             self.logger.error("Installing tool chain  failed")
             raise Exception("RPM installation failed")
-        self.logger.debug("Successfully installed default Tool Chain RPMS in Chroot:" + chroot.getPath())
+        self.logger.debug("Successfully installed default toolchain RPMS in Chroot:" + chroot.getID())
         if packageName:
             self.installCustomToolChainRPMS(chroot, packageName, packageVersion)
 
@@ -197,4 +197,3 @@ class ToolChainUtils(object):
             self.logger.debug("Command Executed:" + cmd)
             self.logger.error("Installing custom toolchains failed")
             raise Exception("RPM installation failed")
-
