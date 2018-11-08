@@ -26,7 +26,7 @@ class ToolChainUtils(object):
         else:
             self.rpmCommand = "fakeroot-ng rpm"
 
-    def findRPMFileInGivenLocation(self, package, rpmdirPath):
+    def _findPublishedRPM(self, package, rpmdirPath):
         listFoundRPMFiles = CommandUtils.findFile(package + "-*.rpm", rpmdirPath)
         listFilterRPMFiles = []
         for f in listFoundRPMFiles:
@@ -55,7 +55,7 @@ class ToolChainUtils(object):
             coreToolChainYetToBuild = []
             for package in constants.listCoreToolChainPackages:
                 version = SPECS.getData().getHighestVersion(package)
-                rpmPkg = pkgUtils.findRPMFileForGivenPackage(package, version)
+                rpmPkg = pkgUtils.findRPMFile(package, version)
                 if rpmPkg is not None:
                     continue
                 else:
@@ -93,7 +93,7 @@ class ToolChainUtils(object):
         listBuildRequiresPkg.extend(SPECS.getData().getCheckBuildRequiresForPackage(package, version))
         return listBuildRequiresPkg
 
-    def installToolChainRPMS(self, chroot, packageName=None, packageVersion=None, logPath=None):
+    def installToolChainRPMS(self, chroot, packageName=None, packageVersion=None, logPath=None, usePublishedRPMS=True, availablePackages=None):
         if logPath is None:
             logPath = self.logPath
         self.logger.debug("Installing Tool Chain RPMS.......")
@@ -105,30 +105,51 @@ class ToolChainUtils(object):
         for package in constants.listToolChainRPMsToInstall:
             pkgUtils = PackageUtils(self.logName, self.logPath)
             rpmFile = None
-            version = "*"
+            version = None
+
+            # Get proper package version
             for depPkg in listBuildRequiresPackages:
                 depPkgName, depPkgVersion = StringUtils.splitPackageNameAndVersion(depPkg)
                 if depPkgName == package:
                         version=depPkgVersion
+                        break
+            if not version:
+                version = SPECS.getData().getHighestVersion(package)
+
+            basePkg = SPECS.getData().getSpecName(package)+"-"+version
+            isAvailable = (availablePackages and basePkg in availablePackages)
+
             if constants.rpmCheck:
-                rpmFile = pkgUtils.findRPMFileForGivenPackage(package, version)
-            elif (packageName is None or 
-                    packageName not in constants.listToolChainRPMsToInstall or
-                    constants.listToolChainRPMsToInstall.index(packageName) >
-                        constants.listToolChainRPMsToInstall.index(package)):
-                rpmFile = pkgUtils.findRPMFileForGivenPackage(package, version)
+                rpmFile = pkgUtils.findRPMFile(package, version)
+
             if rpmFile is None:
+                # Honor the toolchain list order.
+                # if index of depended package ('package') is more
+                # then index of the current package that we are
+                # building ('packageName'), then we _must_ use published
+                # `package` rpm.
+                if (packageName and
+                    packageName in constants.listToolChainRPMsToInstall and
+                    constants.listToolChainRPMsToInstall.index(packageName) <
+                        constants.listToolChainRPMsToInstall.index(package)):
+                    isAvailable = False
+                else:
+                    rpmFile = pkgUtils.findRPMFile(package, version)
+
+            if rpmFile is None:
+                if not usePublishedRPMS or isAvailable:
+                    raise Exception("%s-%s not found in available packages" % (package, version))
+
                 # sqlite-autoconf package was renamed, but it still published as sqlite-autoconf
                 if (package == "sqlite") and (platform.machine() == "x86_64"):
                     package = "sqlite-autoconf"
-                rpmFile = self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
+                rpmFile = self._findPublishedRPM(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
                     if package in constants.listOfRPMsProvidedAfterBuild:
                         self.logger.debug("No old version of " + package +
                                          " exists, skip until the new version is built")
                         continue
-                    self.logger.error("Unable to find rpm " + package +
-                                      " in current and previous versions")
+                    self.logger.error("Unable to find published rpm " + package)
                     raise Exception("Input Error")
             rpmFiles += " " + rpmFile
             packages += " " + package+"-"+version
@@ -161,7 +182,7 @@ class ToolChainUtils(object):
             else:
                 path = constants.prevPublishRPMRepo
                 sandboxPath = "/publishrpms"
-            rpmFile = self.findRPMFileInGivenLocation(package, path)
+            rpmFile = self._findPublishedRPM(package, path)
             if rpmFile is None:
                 self.logger.error("Unable to find rpm "+ package +
                                   " in current and previous versions")

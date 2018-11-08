@@ -17,24 +17,24 @@ class PackageBuilderBase(object):
         self.logger = None
         self.package = None
         self.version = None
+        self.doneList = None
         self.mapPackageToCycles = mapPackageToCycles
         self.listNodepsPackages = ["glibc", "gmp", "zlib", "file", "binutils", "mpfr",
                                    "mpc", "gcc", "ncurses", "util-linux", "groff", "perl",
                                    "texinfo", "rpm", "openssl", "go"]
         self.pkgBuildType = pkgBuildType
 
-    def buildPackageFunction(self, pkg):
+    def buildPackageFunction(self, pkg, doneList):
         packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
         #do not build if RPM is already built
         #test only if the package is in the testForceRPMS with rpmCheck
         #build only if the package is not in the testForceRPMS with rpmCheck
-        if self._checkIfPackageIsAlreadyBuilt(packageName, packageVersion):
-            if not constants.rpmCheck:
-                return
-            elif constants.rpmCheck and self.package not in constants.testForceRPMS:
+
+        if not constants.rpmCheck or packageName in constants.testForceRPMS:
+            if self._checkIfPackageIsAlreadyBuilt(packageName, packageVersion, doneList):
                 return
 
-        self._buildPackagePrepareFunction(packageName, packageVersion)
+        self._buildPackagePrepareFunction(packageName, packageVersion, doneList)
         try:
             self._buildPackage()
         except Exception as e:
@@ -42,7 +42,7 @@ class PackageBuilderBase(object):
             self.logger.exception(e)
             raise e
 
-    def _buildPackagePrepareFunction(self, package, version):
+    def _buildPackagePrepareFunction(self, package, version, doneList):
         self.package = package
         self.version = version
         self.logName = "build-" + package + "-" + version
@@ -51,6 +51,7 @@ class PackageBuilderBase(object):
             cmdUtils = CommandUtils()
             cmdUtils.runCommandInShell("mkdir -p " + self.logPath)
         self.logger = Logger.getLogger(self.logName, self.logPath, constants.logLevel)
+        self.doneList = doneList
 
     def _findPackageNameAndVersionFromRPMFile(self, rpmfile):
         rpmfile = os.path.basename(rpmfile)
@@ -71,16 +72,10 @@ class PackageBuilderBase(object):
                 listInstalledPackages.append(pkg)
         return listInstalledPackages, listInstalledRPMs
 
-    def _checkIfPackageIsAlreadyBuilt(self, package, version):
-        basePkg = SPECS.getData().getSpecName(package)
-        listRPMPackages = SPECS.getData().getRPMPackages(basePkg, version)
-        packageIsAlreadyBuilt = True
-        pkgUtils = PackageUtils()
-        for pkg in listRPMPackages:
-            if pkgUtils.findRPMFileForGivenPackage(pkg, version) is None:
-                packageIsAlreadyBuilt = False
-                break
-        return packageIsAlreadyBuilt
+    def _checkIfPackageIsAlreadyBuilt(self, package, version, doneList):
+        basePkg = SPECS.getData().getSpecName(package) + "-" + version
+        return basePkg in doneList
+
 
     def _findRunTimeRequiredRPMPackages(self, rpmPackage, version):
         return SPECS.getData().getRequiresForPackage(rpmPackage, version)
@@ -93,7 +88,7 @@ class PackageBuilderBase(object):
 
     def _installPackage(self, pkgUtils, package, packageVersion, sandbox, destLogPath,
                         listInstalledPackages, listInstalledRPMs):
-        rpmfile = pkgUtils.findRPMFileForGivenPackage(package,packageVersion);
+        rpmfile = pkgUtils.findRPMFile(package,packageVersion);
         if rpmfile is None:
             self.logger.error("No rpm file found for package: " + package + "-" + packageVersion)
             raise Exception("Missing rpm file")
@@ -122,7 +117,7 @@ class PackageBuilderBase(object):
                     continue
                 packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
                 latestPkgRPM = os.path.basename(
-                    pkgUtils.findRPMFileForGivenPackage(packageName, packageVersion)).replace(".rpm", "")
+                    pkgUtils.findRPMFile(packageName, packageVersion)).replace(".rpm", "")
                 if pkg in listInstalledPackages and latestPkgRPM in listInstalledRPMs:
                     continue
                 self._installPackage(pkgUtils, packageName,packageVersion, sandbox, destLogPath,listInstalledPackages, listInstalledRPMs)
@@ -217,7 +212,10 @@ class PackageBuilderChroot(PackageBuilderBase):
             chroot.create(self.package + "-" + self.version)
 
             tUtils = ToolChainUtils(self.logName, self.logPath)
-            tUtils.installToolChainRPMS(chroot, self.package, self.version, self.logPath)
+            tUtils.installToolChainRPMS(chroot, self.package,
+                                        self.version, self.logPath,
+                                        usePublishedRPMS=True,
+                                        availablePackages=self.doneList)
 
             listDependentPackages, listTestPackages, listInstalledPackages, listInstalledRPMs = (
                 self._findDependentPackagesAndInstalledRPM(chroot))

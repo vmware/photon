@@ -40,7 +40,7 @@ class PackageUtils(object):
         self.logfnvalue = None
 
     def prepRPMforInstall(self, package, version, noDeps=False, destLogPath=None):
-        rpmfile = self.findRPMFileForGivenPackage(package, version)
+        rpmfile = self.findRPMFile(package, version)
         if rpmfile is None:
             self.logger.error("No rpm file found for package: " + package)
             raise Exception("Missing rpm file")
@@ -51,8 +51,11 @@ class PackageUtils(object):
             rpmDestFile = "/publishrpms/"
         elif "PUBLISHXRPMS" in rpmfile:
             rpmDestFile = "/publishxrpms/"
+        elif constants.inputRPMSPath and constants.inputRPMSPath in rpmfile:
+            rpmDestFile = "/inputrpms/"
         else:
             rpmDestFile = constants.topDirPath + "/RPMS/"
+
         if "noarch" in rpmfile:
             rpmDestFile += "noarch/"
         else:
@@ -139,29 +142,24 @@ class PackageUtils(object):
                 CommandUtils().runCommandInShell(cmd, logfn=self.logger.debug)
         self.logger.debug("RPM build is successful")
 
-    def findRPMFileForGivenPackage(self, package,version="*"):
+    def findRPMFile(self, package,version="*"):
         cmdUtils = CommandUtils()
         if version == "*":
                 version = SPECS.getData().getHighestVersion(package)
         release = SPECS.getData().getRelease(package, version)
         buildarch=SPECS.getData().getBuildArch(package, version)
-        listFoundRPMFiles = sum([cmdUtils.findFile(package + "-" + version + "-" + release + "." +
-                                                   buildarch+".rpm",
-                                                   constants.rpmPath)], [])
+        filename= package + "-" + version + "-" + release + "." + buildarch+".rpm"
+
+        fullpath = constants.rpmPath + "/" + buildarch + "/" + filename
+        if os.path.isfile(fullpath):
+            return fullpath
+
         if constants.inputRPMSPath is not None:
-            listFoundRPMFiles = sum([cmdUtils.findFile(package + "-" + version + "-" + release +
-                                                       "." + buildarch+".rpm",
-                                                       constants.inputRPMSPath)],
-                                    listFoundRPMFiles)
-        if len(listFoundRPMFiles) == 1:
-            return listFoundRPMFiles[0]
-        if len(listFoundRPMFiles) == 0:
-            return None
-        if len(listFoundRPMFiles) > 1:
-            self.logger.error("Found multiple rpm files for given package in rpm directory." +
-                              "Unable to determine the rpm file for package:" + package +
-                              " : " + str(listFoundRPMFiles))
-            raise Exception("Multiple rpm files found")
+            fullpath = constants.inputRPMSPath + "/" + buildarch + "/" + filename
+        if os.path.isfile(fullpath):
+            return fullpath
+
+        return None
 
     def findInstalledRPMPackages(self, sandbox):
         rpms = None
