@@ -21,6 +21,7 @@ class WorkerThread(threading.Thread):
         self.logger.debug("Thread " + self.name + " is starting now")
         while True:
             pkg = Scheduler.Scheduler.getNextPackageToBuild()
+            doneList = Scheduler.Scheduler.getDoneList()
             if pkg is None:
                 break
             if self.pkgBuildType == "chroot":
@@ -30,7 +31,7 @@ class WorkerThread(threading.Thread):
                 pkgBuilder = PackageBuilderContainer(self.mapPackageToCycle,
                                                      self.pkgBuildType)
             try:
-                pkgBuilder.buildPackageFunction(pkg)
+                pkgBuilder.buildPackageFunction(pkg, doneList)
             except Exception as e:
                 self.logger.exception(e)
                 buildThreadFailed = True

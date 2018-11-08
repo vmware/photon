@@ -59,6 +59,7 @@ class Chroot(Sandbox):
         cmdUtils.runCommandInShell("mkdir -p " + chrootID + "/tmp")
         cmdUtils.runCommandInShell("mkdir -p " + chrootID + "/publishrpms")
         cmdUtils.runCommandInShell("mkdir -p " + chrootID + "/publishxrpms")
+        cmdUtils.runCommandInShell("mkdir -p " + chrootID + "/inputrpms")
         cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath)
         cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath + "/RPMS")
         cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath + "/SRPMS")
@@ -83,6 +84,9 @@ class Chroot(Sandbox):
                                         chrootID + "/publishrpms")
             cmdUtils.runCommandInShell("mount -o ro --bind " + constants.prevPublishXRPMRepo + " " +
                                         chrootID + "/publishxrpms")
+            if constants.inputRPMSPath:
+                cmdUtils.runCommandInShell("mount -o ro --bind " + constants.inputRPMSPath + " " +
+                                            chrootID + "/inputrpms")
 
         self.logger.debug("Successfully created chroot:" + chrootID)
 
@@ -179,6 +183,9 @@ class Container(Sandbox):
 #                                                         'mode': 'rw'},
             constants.dockerUnixSocket: {'bind': constants.dockerUnixSocket, 'mode': 'rw'}
             }
+
+        if constants.inputRPMSPath:
+            mountVols[constants.inputRPMSPath] = {'bind': '/inputrpms', 'mode': 'ro'}
 
         containerName = containerName.replace("+", "p")
         try:

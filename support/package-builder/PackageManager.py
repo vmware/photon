@@ -50,7 +50,7 @@ class PackageManager(object):
             # Stage 1 build container
             #TODO image name constants.buildContainerImageName
             if pkgCount > 0 or not self.dockerClient.images.list(constants.buildContainerImage):
-                self._createBuildContainer()
+                self._createBuildContainer(True)
         self.logger.info("Step 2 : Building stage 2 of the toolchain...")
         self.logger.info(constants.listToolChainPackages)
         self.logger.info("")
@@ -61,7 +61,7 @@ class PackageManager(object):
         if self.pkgBuildType == "container":
             # Stage 2 build container
             #TODO: rebuild container only if anything in listToolChainPackages was built
-            self._createBuildContainer()
+            self._createBuildContainer(False)
 
     def buildPackages(self, listPackages, buildThreads):
         if constants.rpmCheck:
@@ -91,7 +91,7 @@ class PackageManager(object):
             return False
         return True
 
-    # Returns list of package names which spec file has all subpackages built
+    # Returns list of base package names which spec file has all subpackages built
     # Returns set of package name and version like
     # ["name1-vers1", "name2-vers2",..]
     def _readAlreadyAvailablePackages(self):
@@ -104,14 +104,12 @@ class PackageManager(object):
                 packageIsAlreadyBuilt=True
                 listRPMPackages = SPECS.getData().getRPMPackages(package, version)
                 for rpmPkg in listRPMPackages:
-                    if pkgUtils.findRPMFileForGivenPackage(rpmPkg, version) is None:
+                    if pkgUtils.findRPMFile(rpmPkg, version) is None:
                         packageIsAlreadyBuilt=False
                         break;
                 if packageIsAlreadyBuilt:
                     listAvailablePackages.add(package+"-"+version)
 
-        self.logger.debug("List of Already built packages")
-        self.logger.debug(listAvailablePackages)
         return listAvailablePackages
 
     def _calculateParams(self, listPackages):
@@ -119,28 +117,21 @@ class PackageManager(object):
         self.mapPackageToCycle.clear()
         self.sortedPackageList = []
 
-        self.listOfPackagesAlreadyBuilt = list(self._readAlreadyAvailablePackages())
-
-        updateBuiltRPMSList = False
-        while not updateBuiltRPMSList:
-            updateBuiltRPMSList = True
-            listOfPackagesAlreadyBuilt = self.listOfPackagesAlreadyBuilt
-            for pkg in listOfPackagesAlreadyBuilt:
-                packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
-                listDependentRpmPackages = SPECS.getData().getRequiresAllForPackage(packageName, packageVersion)
-                needToRebuild = False
-                for dependentPkg in listDependentRpmPackages:
-                    if dependentPkg not in self.listOfPackagesAlreadyBuilt:
-                        needToRebuild = True
-                        updateBuiltRPMSList = False
-                if needToRebuild:
-                    self.listOfPackagesAlreadyBuilt.remove(pkg)
+        self.listOfPackagesAlreadyBuilt = self._readAlreadyAvailablePackages()
+        if self.listOfPackagesAlreadyBuilt:
+            self.logger.debug("List of already available packages:")
+            self.logger.debug(self.listOfPackagesAlreadyBuilt)
 
         listPackagesToBuild = copy.copy(listPackages)
         for pkg in listPackages:
             if (pkg in self.listOfPackagesAlreadyBuilt and
                     not constants.rpmCheck):
                 listPackagesToBuild.remove(pkg)
+
+        if listPackagesToBuild:
+            self.logger.info("List of packages yet to be built...")
+            self.logger.info(listPackagesToBuild)
+            self.logger.info("")
         if not self._readPackageBuildData(listPackagesToBuild):
             return False
         return True
@@ -158,39 +149,23 @@ class PackageManager(object):
 
     def _initializeScheduler(self, statusEvent):
         Scheduler.setLog(self.logName, self.logPath, self.logLevel)
-        Scheduler.setParams(self.sortedPackageList, set(self.listOfPackagesAlreadyBuilt))
+        Scheduler.setParams(self.sortedPackageList, self.listOfPackagesAlreadyBuilt)
         Scheduler.setEvent(statusEvent)
         Scheduler.stopScheduling = False
 
     def _buildGivenPackages(self, listPackages, buildThreads):
         # Extend listPackages from ["name1", "name2",..] to ["name1-vers1", "name2-vers2",..]
-        listPackageNamesAndVersions=[]
+        listPackageNamesAndVersions=set()
         for pkg in listPackages:
-            for version in SPECS.getData().getVersions(pkg):
-                listPackageNamesAndVersions.append(pkg+"-"+version)
-        alreadyBuiltRPMS = self._readAlreadyAvailablePackages()
-        if alreadyBuiltRPMS:
-            self.logger.debug("List of already available packages:")
-            self.logger.debug(alreadyBuiltRPMS)
-
-        if constants.rpmCheck:
-            listMakeCheckPackages=set()
-            for pkg in listPackages:
-                version = SPECS.getData().getHighestVersion(pkg)
-                listMakeCheckPackages.add(pkg+"-"+version)
-            listPackageNamesAndVersions = (list(set(listPackageNamesAndVersions)|(listMakeCheckPackages-alreadyBuiltRPMS)))
+            base = SPECS.getData().getSpecName(pkg)
+            for version in SPECS.getData().getVersions(base):
+                listPackageNamesAndVersions.add(base+"-"+version)
 
         returnVal = self._calculateParams(listPackageNamesAndVersions)
         if not returnVal:
             self.logger.error("Unable to set paramaters. Terminating the package manager.")
             raise Exception("Unable to set paramaters")
 
-        listBasePackageNamesAndVersions = list(map(lambda x:SPECS.getData().getBasePkg(x), listPackageNamesAndVersions))
-        listPackagesToBuild = list((set(listBasePackageNamesAndVersions) - set(alreadyBuiltRPMS)))
-        if listPackagesToBuild:
-            self.logger.info("List of packages yet to be built...")
-            self.logger.info(listPackagesToBuild)
-            self.logger.info("")
         statusEvent = threading.Event()
         self._initializeScheduler(statusEvent)
         self._initializeThreadPool(statusEvent)
@@ -225,7 +200,7 @@ class PackageManager(object):
                 self.logger.error("Build stopped unexpectedly.Unknown error.")
                 raise Exception("Unknown error")
 
-    def _createBuildContainer(self):
+    def _createBuildContainer(self, usePublishedRPMs):
         self.logger.debug("Generating photon build container..")
         try:
             #TODO image name constants.buildContainerImageName
@@ -241,7 +216,7 @@ class PackageManager(object):
             chroot = Chroot(self.logger)
             chroot.create("toolchain-chroot")
             tcUtils = ToolChainUtils("toolchain-chroot", self.logPath)
-            tcUtils.installToolChainRPMS(chroot)
+            tcUtils.installToolChainRPMS(chroot, usePublishedRPMS=usePublishedRPMs)
         except Exception as e:
             if chroot:
                 chroot.destroy()

@@ -38,7 +38,7 @@ class PackageInfo(object):
                     debugrpmFile = debugrpmFiles[0]
                 pkgUtils = PackageUtils(self.logName, self.logPath)
                 for rpmPkg in listRPMPackages:
-                    rpmFile = pkgUtils.findRPMFileForGivenPackage(rpmPkg, version)
+                    rpmFile = pkgUtils.findRPMFile(rpmPkg, version)
                     if rpmFile is not None:
                         listPkgAttributes = {"sourcerpm":srpmFile, "rpm":rpmFile,
                                              "debugrpm":debugrpmFile}

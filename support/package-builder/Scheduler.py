@@ -96,6 +96,10 @@ class Scheduler(object):
             return package
 
     @staticmethod
+    def getDoneList():
+        return list(Scheduler.listOfAlreadyBuiltPackages)
+
+    @staticmethod
     def _getBuildRequiredPackages(pkg):
         listRequiredRPMPackages = []
         listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPkg(pkg))
