@@ -10,24 +10,23 @@ Added pci=scan_all cmdline parameter to verify hardcodded pci values
  drivers/pci/probe.c | 377 +++++++++++++++++++++++++++++++++++++++++++++++++++-
  3 files changed, 377 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 0abe286..22f1449 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -5907,6 +5907,8 @@ static int __init pci_setup(char *str)
- 				pcie_bus_config = PCIE_BUS_PEER2PEER;
- 			} else if (!strncmp(str, "pcie_scan_all", 13)) {
+
+diff -ur linux-4.19.1/drivers/pci/pci.c linux-4.19.1_new/drivers/pci/pci.c
+--- linux-4.19.1/drivers/pci/pci.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/pci/pci.c	2018-11-08 01:59:21.813106907 +0000
+@@ -6116,6 +6116,8 @@
  				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
+ 			} else if (!strncmp(str, "disable_acs_redir=", 18)) {
+ 				disable_acs_redir_param = str + 18;
 +			} else if (!strncmp(str, "scan_all", 8)) {
 +				pci_scan_all();
  			} else {
  				printk(KERN_ERR "PCI: Unknown option `%s'\n",
  						str);
-diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index 0881725..562de76 100644
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -145,6 +145,8 @@ void pci_no_msi(void);
+diff -ur linux-4.19.1/drivers/pci/pci.h linux-4.19.1_new/drivers/pci/pci.h
+--- linux-4.19.1/drivers/pci/pci.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/pci/pci.h	2018-11-08 01:57:51.917110565 +0000
+@@ -147,6 +147,8 @@
  static inline void pci_no_msi(void) { }
  #endif
  
@@ -36,11 +35,10 @@ index 0881725..562de76 100644
  static inline void pci_msi_set_enable(struct pci_dev *dev, int enable)
  {
  	u16 control;
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index a1a243e..0f4172d 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -169,6 +169,346 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+diff -ur linux-4.19.1/drivers/pci/probe.c linux-4.19.1_new/drivers/pci/probe.c
+--- linux-4.19.1/drivers/pci/probe.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/pci/probe.c	2018-11-08 01:57:51.917110565 +0000
+@@ -168,6 +168,346 @@
  
  #define PCI_COMMAND_DECODE_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_IO)
  
@@ -387,7 +385,7 @@ index a1a243e..0f4172d 100644
  /**
   * pci_read_base - Read a PCI BAR
   * @dev: the PCI device
-@@ -181,13 +521,20 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+@@ -180,13 +520,20 @@
  int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		    struct resource *res, unsigned int pos)
  {
@@ -409,7 +407,7 @@ index a1a243e..0f4172d 100644
  	/* No printks while decoding is disabled! */
  	if (!dev->mmio_always_on) {
  		pci_read_config_word(dev, PCI_COMMAND, &orig_cmd);
-@@ -197,7 +544,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -196,7 +543,6 @@
  		}
  	}
  
@@ -417,7 +415,7 @@ index a1a243e..0f4172d 100644
  
  	pci_read_config_dword(dev, pos, &l);
  	pci_write_config_dword(dev, pos, l | mask);
-@@ -213,6 +559,11 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -212,6 +558,11 @@
  	if (sz == 0xffffffff)
  		sz = 0;
  
@@ -429,7 +427,7 @@ index a1a243e..0f4172d 100644
  	/*
  	 * I don't know how l can have all bits set.  Copied from old code.
  	 * Maybe it fixes a bug on some ancient platform.
-@@ -317,8 +668,19 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -316,8 +667,19 @@
  fail:
  	res->flags = 0;
  out:
@@ -450,7 +448,7 @@ index a1a243e..0f4172d 100644
  
  	return (res->flags & IORESOURCE_MEM_64) ? 1 : 0;
  }
-@@ -1630,7 +1992,13 @@ int pci_setup_device(struct pci_dev *dev)
+@@ -1646,7 +2008,13 @@
  		if (class == PCI_CLASS_BRIDGE_PCI)
  			goto bad;
  		pci_read_irq(dev);
