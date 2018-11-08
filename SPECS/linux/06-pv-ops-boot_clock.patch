@@ -32,12 +32,13 @@ diff --git a/arch/x86/include/asm/paravirt_types.h b/arch/x86/include/asm/paravi
 index 180bc0b..b6280a9 100644
 --- a/arch/x86/include/asm/paravirt_types.h
 +++ b/arch/x86/include/asm/paravirt_types.h
-@@ -53,6 +53,7 @@ struct mm_struct;
+@@ -53,7 +53,8 @@ struct mm_struct;
  struct desc_struct;
  struct task_struct;
  struct cpumask;
 +struct timespec64;
  struct flush_tlb_info;
+ struct mmu_gather;
  
  /*
 @@ -99,6 +100,7 @@ struct pv_lazy_ops {
