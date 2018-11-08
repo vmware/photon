@@ -1,6 +1,5 @@
 # pylint: disable=invalid-name,missing-docstring
 import re
-import platform
 from StringUtils import StringUtils
 from SpecStructures import dependentPackageData, Package, SpecObject
 from constants import constants
@@ -15,7 +14,8 @@ class SpecParser(object):
             self.position = -1
             self.endposition = -1
 
-    def __init__(self, specfile):
+    def __init__(self, specfile, arch):
+        self.arch = arch
         self.cleanMacro = None
         self.prepMacro = None
         self.buildMacro = None
@@ -26,6 +26,7 @@ class SpecParser(object):
         self.specAdditionalContent = ""
         self.globalSecurityHardening = ""
         self.defs = {}
+        self.defs["_arch"] = arch
         self.conditionalCheckMacroEnabled = False
         self.macro_pattern = re.compile(r'%{(\S+?)\}')
         self.specfile = specfile
@@ -33,7 +34,7 @@ class SpecParser(object):
         self._parseSpecFile()
 
     def _parseSpecFile(self):
-        self.packages["default"] = Package()
+        self.packages["default"] = Package(self.arch)
         currentPkg = "default"
         with open(self.specfile) as specFile:
             lines = specFile.readlines()
@@ -42,7 +43,7 @@ class SpecParser(object):
             while i < totalLines:
                 line = lines[i].strip()
                 if self._isConditionalArch(line):
-                    if platform.machine() != self._readConditionalArch(line):
+                    if self.arch != self._readConditionalArch(line):
                         # skip conditional body
                         deep = 1
                         while i < totalLines and deep != 0:
@@ -74,7 +75,7 @@ class SpecParser(object):
                     if not returnVal:
                         return False
                     if line.startswith('%package'):
-                        pkg = Package(defaultpkg)
+                        pkg = Package(self.arch, defaultpkg)
                         pkg.name = packageName
                         currentPkg = packageName
                         self.packages[pkg.name] = pkg
@@ -94,6 +95,8 @@ class SpecParser(object):
                     self._readChecksum(line, self.packages[currentPkg])
                 elif self._isExtraBuildRequires(line):
                     self._readExtraBuildRequires(line, self.packages[currentPkg])
+                elif self._isBuildRequiresNative(line):
+                    self._readBuildRequiresNative(line, self.packages[currentPkg])
                 elif self._isDefinition(line):
                     self._readDefinition(line)
                 elif self._isConditionalCheckMacro(line):
@@ -272,6 +275,11 @@ class SpecParser(object):
             return True
         return False
 
+    def _isBuildRequiresNative(self, line):
+        if re.search('^%define *buildrequiresnative', line, flags=re.IGNORECASE):
+            return True
+        return False
+
     def _isChecksum(self, line):
         if re.search('^%define *sha1', line, flags=re.IGNORECASE):
             return True
@@ -439,6 +447,18 @@ class SpecParser(object):
         pkg.extrabuildrequires.extend(dpkg)
         return True
 
+    def _readBuildRequiresNative(self, line, pkg):
+        data = line.strip()
+        words = data.split(" ", 2)
+        if len(words) != 3:
+            print("Error: Unable to parse line: " + line)
+            return False
+        dpkg = self._readDependentPackageData(words[2])
+        if dpkg is None:
+            return False
+        pkg.buildrequiresnative.extend(dpkg)
+        return True
+
     def _readChecksum(self, line, pkg):
         strUtils = StringUtils()
         line = self._replaceMacros(line)
@@ -532,6 +552,12 @@ class SpecParser(object):
             dependentPackages.extend(pkg.extrabuildrequires)
         return dependentPackages
 
+    def _getBuildRequiresNative(self):
+        dependentPackages = []
+        for pkg in self.packages.values():
+            dependentPackages.extend(pkg.buildrequiresnative)
+        return dependentPackages
+
     def _getPackageNames(self):
         packageNames = []
         for pkg in self.packages.values():
@@ -589,6 +615,7 @@ class SpecParser(object):
         specObj.installRequires = self._getRequiresTypeAllPackages("install")
         specObj.checkBuildRequires = self._getCheckBuildRequiresAllPackages()
         specObj.extraBuildRequires = self._getExtraBuildRequires()
+        specObj.buildRequiresNative = self._getBuildRequiresNative()
         specObj.listPackages = self._getPackageNames()
         specObj.listSources = self._getSourceNames()
         specObj.listPatches = self._getPatchNames()

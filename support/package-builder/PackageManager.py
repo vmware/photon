@@ -46,18 +46,20 @@ class PackageManager(object):
 
     def buildToolChainPackages(self, buildThreads):
         pkgCount = self.buildToolChain()
-        if self.pkgBuildType == "container":
-            # Stage 1 build container
-            #TODO image name constants.buildContainerImageName
-            if pkgCount > 0 or not self.dockerClient.images.list(constants.buildContainerImage):
-                self._createBuildContainer(True)
-        self.logger.info("Step 2 : Building stage 2 of the toolchain...")
-        self.logger.info(constants.listToolChainPackages)
-        self.logger.info("")
-        self._buildGivenPackages(constants.listToolChainPackages, buildThreads)
-        self.logger.info("The entire toolchain is now available")
-        self.logger.info(45 * '-')
-        self.logger.info("")
+        # Stage 2 makes sence only for native tools
+        if not constants.crossCompiling:
+            if self.pkgBuildType == "container":
+                # Stage 1 build container
+                #TODO image name constants.buildContainerImageName
+                if pkgCount > 0 or not self.dockerClient.images.list(constants.buildContainerImage):
+                    self._createBuildContainer(True)
+            self.logger.info("Step 2 : Building stage 2 of the toolchain...")
+            self.logger.info(constants.listToolChainPackages)
+            self.logger.info("")
+            self._buildGivenPackages(constants.listToolChainPackages, buildThreads)
+            self.logger.info("The entire toolchain is now available")
+            self.logger.info(45 * '-')
+            self.logger.info("")
         if self.pkgBuildType == "container":
             # Stage 2 build container
             #TODO: rebuild container only if anything in listToolChainPackages was built

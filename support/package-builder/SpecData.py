@@ -1,5 +1,4 @@
 import os
-import platform
 import queue
 import json
 import operator
@@ -13,8 +12,8 @@ from SpecParser import SpecParser
 
 class SpecData(object):
 
-    def __init__(self, logPath, specFilesPath):
-
+    def __init__(self, arch, logPath, specFilesPath):
+        self.arch = arch
         self.logger = Logger.getLogger("SpecData", logPath, constants.logLevel)
 
         # map default package name to list of SpecObjects. Usually it is just
@@ -36,12 +35,12 @@ class SpecData(object):
     # creates corresponding SpecObjects and put them in internal mappings.
     def _readSpecs(self, specFilesPath):
         for specFile in self._getListSpecFiles(specFilesPath):
-            spec = SpecParser(specFile)
+            spec = SpecParser(specFile, self.arch)
 
             # skip the specfile if buildarch differs
             buildarch = spec.packages.get('default').buildarch
             if (buildarch != "noarch" and
-                    platform.machine() != buildarch):
+                    buildarch != self.arch):
                 self.logger.info("skipping spec file: "+str(specFile))
                 continue
 
@@ -134,6 +133,13 @@ class SpecData(object):
         for pkg in self._getSpecObjField(package, version, field=lambda x : x.extraBuildRequires):
             # no version deps for publishrpms - use just name
             packages.append(pkg.package)
+        return packages
+
+    def getBuildRequiresNativeForPackage(self, package, version):
+        packages=[]
+        for pkg in self._getSpecObjField(package, version, field=lambda x : x.buildRequiresNative):
+            properVersion = self._getProperVersion(pkg)
+            packages.append(pkg.package+"-"+properVersion)
         return packages
 
     def getBuildRequiresForPkg(self, pkg):
@@ -293,19 +299,23 @@ class SpecData(object):
                 self.logger.debug(self.getPkgNamesFromObj(specObj.installRequires))
                 self.logger.debug(specObj.installRequiresPackages)
                 self.logger.debug("security_hardening: " + specObj.securityHardening)
+                self.logger.debug("BuildArch: " + str(specObj.buildarch))
                 self.logger.debug("------------------------------------------------")
 
 
 class SPECS(object):
     __instance = None
-    specData = None
+    specData = {}
 
     @staticmethod
-    def getData():
+    def getData(arch=None):
+        if not arch:
+            arch=constants.currentArch
+
         """ Static access method. """
         if SPECS.__instance is None:
             SPECS()
-        return SPECS.__instance.specData
+        return SPECS.__instance.specData[arch]
 
     def __init__(self):
         """ Virtually private constructor. """
@@ -319,7 +329,7 @@ class SPECS(object):
         # Preparse some files
 
         # adding kernelversion rpm macro
-        spec = SpecParser(constants.specPath + "/linux/linux.spec")
+        spec = SpecParser(constants.specPath + "/linux/linux.spec", constants.buildArch)
         defPkg = spec.packages.get('default')
         kernelversion = defPkg.version
         constants.addMacro("KERNEL_VERSION", kernelversion)
@@ -338,5 +348,11 @@ class SPECS(object):
             constants.addMacro("kernelsubrelease", kernelsubrelease)
 
         # Full parsing
-        self.specData = SpecData(constants.logPath, constants.specPath)
+        self.specData[constants.buildArch] = SpecData(constants.buildArch,
+                                                      constants.logPath,
+                                                      constants.specPath)
 
+        if constants.buildArch != constants.targetArch:
+            self.specData[constants.targetArch] = SpecData(constants.targetArch,
+                                                           constants.logPath,
+                                                           constants.specPath)

@@ -1,3 +1,4 @@
+import platform
 from Logger import Logger
 
 class constants(object):
@@ -30,6 +31,10 @@ class constants(object):
     buildOptions = {}
     # will be extended later from listMakeCheckRPMPkgtoInstall
     listMakeCheckRPMPkgWithVersionstoInstall = None
+    buildArch = platform.machine()
+    targetArch = platform.machine()
+    crossCompiling = False
+    currentArch = buildArch
 
     noDepsPackageList = [
         "texinfo",

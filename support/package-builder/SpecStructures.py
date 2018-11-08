@@ -1,4 +1,3 @@
-import platform
 
 class dependentPackageData(object):
 
@@ -8,14 +7,14 @@ class dependentPackageData(object):
         self.compare = ""
 
 class Package(object):
-    def __init__(self, basePkg=None):
+    def __init__(self, buildarch, basePkg=None):
         self.summary = ""
         self.name = ""
         self.group = ""
         self.license = ""
         self.version = ""
         self.release = ""
-        self.buildarch = platform.machine()
+        self.buildarch = buildarch
         self.distribution = "Photon"
         self.basePkgName = ""
         self.URL = ""
@@ -27,6 +26,7 @@ class Package(object):
         self.buildprovides = []
         self.checkbuildrequires = []
         self.extrabuildrequires = []
+        self.buildrequiresnative = []
 
         self.requires = []
         self.provides = []
@@ -70,11 +70,12 @@ class SpecObject(object):
         # list of subpackage names that have %files section
         self.listRPMPackages = []
 
-        # Next four lists store dependentPackageData objects
+        # Next five lists store dependentPackageData objects
         self.buildRequires = []
         self.installRequires = []
         self.checkBuildRequires = []
         self.extraBuildRequires = []
+        self.buildRequiresNative = []
         # map subpackage name to list of install requires
         # dependentPackageData objects
         self.installRequiresPackages = {}
