@@ -23,6 +23,12 @@ class Sandbox(object):
     def put(self, src, dest):
         pass
 
+    def getID(self):
+        pass
+
+    def hasToolchain(self):
+        return False
+
 class Chroot(Sandbox):
     def __init__(self, logger):
         Sandbox.__init__(self, logger)
@@ -32,7 +38,7 @@ class Chroot(Sandbox):
                                    " " + constants.rpmPath)
         self.chrootCmdPrefix = None
 
-    def getPath(self):
+    def getID(self):
         return self.chrootID
 
     def create(self, chrootName):
@@ -179,7 +185,7 @@ class Container(Sandbox):
         # Prepare an empty chroot environment to let docker use the BUILD folder.
         # This avoids docker using overlayFS which will cause make check failure.
 
-#            chroot.getPath() + constants.topDirPath + "/BUILD": {'bind': constants.topDirPath + "/BUILD",
+#            chroot.getID() + constants.topDirPath + "/BUILD": {'bind': constants.topDirPath + "/BUILD",
 #                                                         'mode': 'rw'},
             constants.dockerUnixSocket: {'bind': constants.dockerUnixSocket, 'mode': 'rw'}
             }
@@ -238,4 +244,7 @@ class Container(Sandbox):
     def put(self, src, dest):
         copyCmd = "docker cp " + src + " " + self.containerID.short_id + ":" + dest
         CommandUtils.runCommandInShell(copyCmd)
+
+    def hasToolchain(self):
+        return True
 
