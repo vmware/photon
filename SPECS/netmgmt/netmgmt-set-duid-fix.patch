@@ -1,0 +1,874 @@
+--- netmgmt-1.0.4-orig/common/defines.h	2016-07-28 12:22:38.000000000 -0700
++++ netmgmt-1.0.4/common/defines.h	2018-11-06 15:39:37.455023627 -0800
+@@ -20,3 +20,6 @@
+           goto error; \
+        } \
+     } while(0)
++
++#define IS_VALID_INTERFACE_NAME(_pstr) \
++    ((_pstr) && (*_pstr) && (strnlen(_pstr, IFNAMSIZ) < IFNAMSIZ))
+--- netmgmt-1.0.4-orig/common/includes.h	2016-07-28 12:22:38.000000000 -0700
++++ netmgmt-1.0.4/common/includes.h	2018-11-06 15:52:47.078930154 -0800
+@@ -17,6 +17,8 @@
+ #include <stdint.h>
+ #include <string.h>
+ #include <errno.h>
++#include <stdarg.h>
++#include <regex.h>
+ 
+ #include "defines.h"
+ #include "prototypes.h"
+--- netmgmt-1.0.4-orig/common/memory.c	2016-07-28 12:22:38.000000000 -0700
++++ netmgmt-1.0.4/common/memory.c	2018-11-06 15:37:32.443078010 -0800
+@@ -140,6 +140,64 @@
+     goto cleanup;
+ }
+ 
++uint32_t
++netmgr_alloc_string_printf(
++    char** ppszDst,
++    const char* pszFmt,
++    ...
++    )
++{
++    uint32_t err = 0;
++    size_t nSize = 0;
++    char* pszDst = NULL;
++    char chDstTest = '\0';
++    va_list argList;
++
++    if (!ppszDst || !pszFmt)
++    {
++        err = EINVAL;
++        bail_on_error(err);
++    }
++
++    //Find size
++    va_start(argList, pszFmt);
++    nSize = vsnprintf(&chDstTest, 1, pszFmt, argList);
++    va_end(argList);
++
++    if (nSize <= 0)
++    {
++        err = errno;
++        bail_on_error(err);
++    }
++    nSize = nSize + 1;
++
++    err = netmgr_alloc(nSize, (void**)&pszDst);
++    bail_on_error(err);
++
++    va_start(argList, pszFmt);
++    nSize = vsnprintf(pszDst, nSize, pszFmt, argList);
++    va_end(argList);
++
++    if (nSize <= 0)
++    {
++        err = errno;
++        bail_on_error(err);
++    }
++    *ppszDst = pszDst;
++
++cleanup:
++    return err;
++
++error:
++    if (ppszDst)
++    {
++        *ppszDst = NULL;
++    }
++    netmgr_free(pszDst);
++    goto cleanup;
++}
++
++
+ void
+ netmgr_free(
+     void* pMemory
+--- netmgmt-1.0.4-orig/common/prototypes.h	2016-07-28 12:22:38.000000000 -0700
++++ netmgmt-1.0.4/common/prototypes.h	2018-11-06 16:18:36.033573046 -0800
+@@ -14,6 +14,8 @@
+ 
+ // memory.c
+ 
++#define IS_NULL_OR_EMPTY(_pstr)  (!(_pstr) || !(*(_pstr)))
++
+ uint32_t
+ netmgr_alloc(
+     size_t size,
+@@ -38,3 +40,9 @@
+     void* pMemory
+     );
+ 
++uint32_t
++netmgr_alloc_string_printf(
++    char** ppszDst,
++    const char* pszFmt,
++    ...
++    );
+--- netmgmt-1.0.4-orig/include/public/netmgr.h	2016-07-28 12:22:38.000000000 -0700
++++ netmgmt-1.0.4/include/public/netmgr.h	2018-11-06 15:41:59.227552112 -0800
+@@ -15,6 +15,27 @@
+ #ifndef __NETMGR_H__
+ #define __NETMGR_H__
+ 
++/*
++ * Error codes
++ */
++#define NM_BASE_ERROR                          4096U
++#define NM_ERR_INVALID_PARAMETER               (NM_BASE_ERROR + 1)
++#define NM_ERR_NOT_SUPPORTED                   (NM_BASE_ERROR + 2)
++#define NM_ERR_OUT_OF_MEMORY                   (NM_BASE_ERROR + 3)
++#define NM_ERR_VALUE_NOT_FOUND                 (NM_BASE_ERROR + 4)
++#define NM_ERR_VALUE_EXISTS                    (NM_BASE_ERROR + 5)
++#define NM_ERR_INVALID_INTERFACE               (NM_BASE_ERROR + 6)
++#define NM_ERR_INVALID_ADDRESS                 (NM_BASE_ERROR + 7)
++#define NM_ERR_INVALID_MODE                    (NM_BASE_ERROR + 8)
++#define NM_ERR_BAD_CONFIG_FILE                 (NM_BASE_ERROR + 9)
++#define NM_ERR_WRITE_FAILED                    (NM_BASE_ERROR + 10)
++#define NM_ERR_TIME_OUT                        (NM_BASE_ERROR + 11)
++#define NM_ERR_DHCP_TIME_OUT                   (NM_BASE_ERROR + 12)
++#define NM_MAX_ERROR                           (NM_BASE_ERROR + 100)
++
++/*
++ * Interface configuration structs
++ */
+ typedef struct _NETMGR_INTERFACE
+ {
+     char* pszName;
+--- netmgmt-1.0.4-orig/src/defines.h	2016-07-28 12:22:38.000000000 -0700
++++ netmgmt-1.0.4/src/defines.h	2018-11-06 15:56:52.260219253 -0800
+@@ -26,13 +26,14 @@
+ #define SECTION_RESOLVE                "Resolve"
+ #define SECTION_NETWORK                "Network"
+ #define SECTION_DHCP                   "DHCP"
++#define SECTION_MATCH                  "Match"
+ 
+ #define KEY_IAID                       "IAID"
+ #define KEY_DUID_TYPE                  "DUIDType"
+ #define KEY_DUID_RAWDATA               "DUIDRawData"
+ #define KEY_DNS                        "DNS"
+ #define KEY_USE_DNS                    "UseDNS"
+-
++#define KEY_NAME                       "Name"
+ 
+ #define bail_on_error(errcode) \
+     do { \
+--- netmgmt-1.0.4-orig/src/includes.h	2016-07-28 12:22:38.000000000 -0700
++++ netmgmt-1.0.4/src/includes.h	2018-11-06 15:53:32.298923020 -0800
+@@ -26,6 +26,7 @@
+ #include <iniparser.h>
+ 
+ #include "../common/prototypes.h"
++#include "../common/includes.h"
+ #include "defines.h"
+ #include "structs.h"
+ #include "prototypes.h"
+--- netmgmt-1.0.4-orig/src/netmgr.c	2016-07-28 12:22:38.000000000 -0700
++++ netmgmt-1.0.4/src/netmgr.c	2018-11-06 16:28:46.766109486 -0800
+@@ -14,11 +14,308 @@
+ 
+ #include "includes.h"
+ 
++static uint32_t
++nm_regex_match_ifname(
++    const char *pszIfName,
++    const char *pszMatchName
++)
++{
++    uint32_t err = 0;
++    regex_t rx;
++    regmatch_t rm;
++    size_t patternLen, ifNameLen, n;
++    char *q, *pszPattern = NULL;
++    const char *p;
++
++    if (!IS_VALID_INTERFACE_NAME(pszIfName) ||
++        !IS_VALID_INTERFACE_NAME(pszMatchName))
++    {
++        err = NM_ERR_INVALID_INTERFACE;
++        bail_on_error(err);
++    }
++
++    ifNameLen = strlen(pszIfName);
++    patternLen = strlen(pszMatchName);
++    for (p = strchr(pszMatchName, '*'), n = 0; p; p = strchr(++p, '*'), n++);
++
++    err = netmgr_alloc(patternLen + n + 1, (void **)&pszPattern);
++    bail_on_error(err);
++
++    for (p = pszMatchName, q = pszPattern; *p; p++, q++)
++    {
++        if (*p == '*')
++        {
++            *q++ = '.';
++        }
++        *q = *p;
++    }
++
++    err = regcomp(&rx, pszPattern, 0);
++    bail_on_error(err);
++
++    err = regexec(&rx, pszIfName, 1, &rm, 0);
++    bail_on_error(err);
++    if ((rm.rm_eo - rm.rm_so) < ifNameLen)
++    {
++        err = NM_ERR_VALUE_NOT_FOUND;
++        bail_on_error(err);
++    }
++cleanup:
++    netmgr_free(pszPattern);
++    regfree(&rx);
++    return err;
++error:
++    goto cleanup;
++}
++
++static uint32_t
++nm_alloc_conf_filename(
++    char **ppszFilename,
++    const char *pszPath,
++    const char *pszFname
++)
++{
++    uint32_t err = 0;
++    size_t len = 0;
++    char *pszFilename = NULL;
++
++    if (!ppszFilename || !pszPath || !pszFname)
++    {
++        err = NM_ERR_INVALID_PARAMETER;
++        bail_on_error(err);
++    }
++
++    len = strlen(pszPath) + strlen (pszFname) + 1;
++    err = netmgr_alloc(len, (void **)&pszFilename);
++    bail_on_error(err);
++
++    sprintf(pszFilename, "%s%s", pszPath, pszFname);
++
++    *ppszFilename = pszFilename;
++
++cleanup:
++    return err;
++error:
++    netmgr_free(pszFilename);
++    if (ppszFilename != NULL)
++    {
++        *ppszFilename = NULL;
++    }
++    goto cleanup;
++}
++
++static uint32_t
++nm_get_network_conf_filename_match(
++    const char *pszIfName,
++    char **ppszFilename,
++    size_t *pMatchLen
++)
++{
++    uint32_t err = 0;
++    size_t matchLen = 0;
++    struct dirent *hFile;
++    DIR *dirFile = NULL;
++    char *p, *pszFileName = NULL, *pszMatchName = NULL, *pszCfgFileName = NULL;
++
++    dirFile = opendir(SYSTEMD_NET_PATH);
++    if (dirFile == NULL)
++    {
++        err = errno;
++        bail_on_error(err);
++    }
++
++    // TODO: Looks fine but closely vet this logic with systemd
++    errno = 0;
++    while ((hFile = readdir(dirFile)) != NULL)
++    {
++        if (!strcmp(hFile->d_name, ".")) continue;
++        if (!strcmp(hFile->d_name, "..")) continue;
++        if (hFile->d_name[0] == '.') continue;
++        if ((((p = strstr(hFile->d_name, ".network")) != NULL) &&
++             (strlen(p) == strlen(".network"))) ||
++            (((p = strstr(hFile->d_name, ".network.manual")) != NULL) &&
++             (strlen(p) == strlen(".network.manual"))))
++        {
++            err = nm_alloc_conf_filename(&pszFileName,
++                                         SYSTEMD_NET_PATH,
++                                         hFile->d_name);
++            bail_on_error(err);
++           err = nm_get_key_value(pszFileName,
++                                   SECTION_MATCH,
++                                   KEY_NAME,
++                                   &pszMatchName);
++            if ((err == NM_ERR_VALUE_NOT_FOUND) ||
++                (err == NM_ERR_BAD_CONFIG_FILE))
++            {
++                /* Ignore cfg file with invalid/missing Match section */
++                err = 0;
++            }
++            bail_on_error(err);
++
++            if (pszMatchName && !nm_regex_match_ifname(pszIfName, pszMatchName))
++            {
++                if (pszCfgFileName == NULL)
++                {
++                    pszCfgFileName = pszFileName;
++                    matchLen = strlen(pszMatchName);
++                    pszFileName = NULL;
++                    continue;
++                }
++                if (strcmp(pszCfgFileName, pszFileName) > 0)
++                {
++                    netmgr_free(pszCfgFileName);
++                    pszCfgFileName = pszFileName;
++                    matchLen = strlen(pszMatchName);
++                    pszFileName = NULL;
++                }
++            }
++
++            netmgr_free(pszMatchName);
++            pszMatchName = NULL;
++            netmgr_free(pszFileName);
++            pszFileName = NULL;
++        }
++    }
++
++    if (!pszCfgFileName)
++    {
++        err = NM_ERR_VALUE_NOT_FOUND;
++        bail_on_error(err);
++    }
++
++    *ppszFilename = pszCfgFileName;
++    if (pMatchLen)
++    {
++        *pMatchLen = matchLen;
++    }
++
++cleanup:
++    if (dirFile != NULL)
++    {
++        closedir(dirFile);
++    }
++    netmgr_free(pszMatchName);
++    netmgr_free(pszFileName);
++    return err;
++
++error:
++    if (ppszFilename)
++    {
++        *ppszFilename = NULL;
++    }
++    if (pMatchLen)
++    {
++        *pMatchLen = 0;
++    }
++    netmgr_free(pszCfgFileName);
++    goto cleanup;
++}
++
++static uint32_t
++nm_get_network_conf_filename_for_update(
++    const char *pszIfName,
++    char **ppszFilename
++)
++{
++    uint32_t err = 0;
++    size_t ifNameLen, matchLen = 0;
++    char fName[IFNAMSIZ+strlen(SYSTEMD_NET_PATH)+strlen("00-.network")+1];
++    char *pszFilename = NULL, *pszNewFilename = NULL, *pszCmd = NULL;
++
++    err = nm_get_network_conf_filename_match(pszIfName, &pszFilename, &matchLen);
++    if (err == NM_ERR_VALUE_NOT_FOUND)
++    {
++        err = 0;
++    }
++    bail_on_error(err);
++
++    ifNameLen = strlen(pszIfName);
++    if ((pszFilename == NULL) || (matchLen < ifNameLen))
++    {
++        sprintf(fName, "%s00-%s.network", SYSTEMD_NET_PATH, pszIfName);
++        if (access(fName, F_OK) == 0)
++        {
++            /* Designated conf file for this interface exists with bad match */
++            err = NM_ERR_BAD_CONFIG_FILE;
++            bail_on_error(err);
++        }
++
++        err = netmgr_alloc_string(fName, &pszNewFilename);
++        bail_on_error(err);
++
++        /* Create dedicated conf for interface based on best match conf file */
++        if (pszFilename != NULL)
++        {
++            err = netmgr_alloc_string_printf(&pszCmd,
++                                             "/usr/bin/cp -f -p %s %s",
++                                             pszFilename,
++                                             pszNewFilename);
++            bail_on_error(err);
++
++            err = nm_run_command(pszCmd);
++            bail_on_error(err);
++        }
++
++        err = nm_set_key_value(pszNewFilename,
++                               SECTION_MATCH,
++                               KEY_NAME,
++                               pszIfName,
++                               F_CREATE_CFG_FILE);
++        bail_on_error(err);
++    }
++    else
++    {
++        err = netmgr_alloc_string(pszFilename, &pszNewFilename);
++        bail_on_error(err);
++    }
++
++    *ppszFilename = pszNewFilename;
++
++cleanup:
++    netmgr_free(pszFilename);
++    netmgr_free(pszCmd);
++    return err;
++
++error:
++    if (ppszFilename)
++    {
++        *ppszFilename = NULL;
++    }
++    netmgr_free(pszNewFilename);
++    goto cleanup;
++}
++
++static uint32_t
++nm_get_network_conf_filename(
++    const char *pszIfName,
++    char **ppszFilename)
++{
++    return nm_get_network_conf_filename_match(pszIfName, ppszFilename, NULL);
++}
++
++/*
++ * Service management APIs
++ */
++uint32_t
++nm_restart_network_service()
++{
++    uint32_t err = 0;
++    const char command[] = "systemctl restart systemd-networkd";
++
++    err = nm_run_command(command);
++    bail_on_error(err);
++
++clean:
++    return err;
++error:
++    goto clean;
++}
++
+ uint32_t
+ enum_interfaces(
+     int nFamily,
+     PNETMGR_INTERFACE* ppInterfaces
+-    )
++)
+ {
+     uint32_t err = 0;
+     int fd = 0;
+@@ -836,30 +1133,31 @@
+ )
+ {
+     uint32_t err = 0;
+-    char cfgFileName[MAX_LINE];
++    char *pszCfgFileName = NULL;
+     const char *duidType;
+     uint16_t n1, n2;
+     char szDuid[MAX_LINE];
+ 
+-    if (pszInterfaceName != NULL)
++    if (!pszInterfaceName)
+     {
+-        /* TODO: Add support */
+-        err = ENOTSUP;
+-        bail_on_error(err);
++        err = EINVAL;
+     }
+     else
+     {
+-        sprintf(cfgFileName, "%snetworkd.conf", SYSTEMD_PATH);
++       err = nm_get_network_conf_filename_for_update(pszInterfaceName,
++                                                     &pszCfgFileName);
+     }
++    bail_on_error(err);
+ 
+     if ((pszDuid == NULL) || (strlen(pszDuid) == 0))
+     {
+-        err = set_key_value(cfgFileName, SECTION_DHCP, KEY_DUID_TYPE, NULL,
++        err = set_key_value(pszCfgFileName, SECTION_DHCP, KEY_DUID_TYPE, NULL,
+                             F_CREATE_CFG_FILE);
+         bail_on_error(err);
+ 
+-        err = set_key_value(cfgFileName, SECTION_DHCP, KEY_DUID_RAWDATA, NULL,
++        err = set_key_value(pszCfgFileName, SECTION_DHCP, KEY_DUID_RAWDATA, NULL,
+                             F_CREATE_CFG_FILE);
++        bail_on_error(err);
+     }
+     else
+     {
+@@ -877,16 +1175,19 @@
+         }
+         /* TODO: Validate DUID length and DUID bytes */
+ 
+-        err = set_key_value(cfgFileName, SECTION_DHCP, KEY_DUID_TYPE, duidType,
++        err = set_key_value(pszCfgFileName, SECTION_DHCP, KEY_DUID_TYPE, duidType,
+                             F_CREATE_CFG_FILE);
+         bail_on_error(err);
+ 
+-        err = set_key_value(cfgFileName, SECTION_DHCP, KEY_DUID_RAWDATA, szDuid,
++        err = set_key_value(pszCfgFileName, SECTION_DHCP, KEY_DUID_RAWDATA, szDuid,
+                             F_CREATE_CFG_FILE);
++        bail_on_error(err);
+     }
++    err = nm_restart_network_service();
+     bail_on_error(err);
+ 
+ error:
++    netmgr_free(pszCfgFileName);
+     return err;
+ }
+ 
+@@ -897,7 +1198,7 @@
+ )
+ {
+     uint32_t err = 0;
+-    char cfgFileName[MAX_LINE];
++    char *pszCfgFileName = NULL;
+     uint16_t duidType;
+     char *pszDuidType = NULL;
+     char *pszDuid = NULL;
+@@ -908,18 +1209,17 @@
+         bail_on_error(err);
+     }
+ 
+-    if (pszInterfaceName != NULL)
++    if (pszInterfaceName == NULL)
+     {
+-        /* TODO: Add support */
+-        err = ENOTSUP;
+-        bail_on_error(err);
++        err = EINVAL;
+     }
+     else
+     {
+-        sprintf(cfgFileName, "%snetworkd.conf", SYSTEMD_PATH);
++        err = nm_get_network_conf_filename(pszInterfaceName, &pszCfgFileName);
+     }
++    bail_on_error(err);
+ 
+-    err = get_key_value(cfgFileName, SECTION_DHCP, KEY_DUID_TYPE, &pszDuidType);
++    err = get_key_value(pszCfgFileName, SECTION_DHCP, KEY_DUID_TYPE, &pszDuidType);
+     bail_on_error(err);
+ 
+     duidType = duid_type_from_strtype(pszDuidType);
+@@ -929,7 +1229,7 @@
+         bail_on_error(err);
+     }
+ 
+-    err = get_key_value(cfgFileName, SECTION_DHCP, KEY_DUID_RAWDATA, &pszDuid);
++    err = get_key_value(pszCfgFileName, SECTION_DHCP, KEY_DUID_RAWDATA, &pszDuid);
+     bail_on_error(err);
+ 
+     err = netmgr_alloc((strlen(pszDuid) + 8), (void *)ppszDuid);
+@@ -945,6 +1245,7 @@
+     {
+         netmgr_free(pszDuidType);
+     }
++    netmgr_free(pszCfgFileName);
+     return err;
+ 
+ error:
+--- netmgmt-1.0.4-orig/src/utils.c	2016-07-28 12:22:38.000000000 -0700
++++ netmgmt-1.0.4/src/utils.c	2018-11-06 16:16:56.081230589 -0800
+@@ -169,3 +169,200 @@
+     return err;
+ }
+ 
++uint32_t
++nm_run_command(
++    const char *pszCommand
++)
++{
++    uint32_t err = 0;
++    FILE *pipe_fp = NULL;
++
++    if (pszCommand == NULL)
++    {
++        err = NM_ERR_INVALID_PARAMETER;
++        bail_on_error(err);
++    }
++
++    pipe_fp = popen(pszCommand, "r");
++    if (pipe_fp == NULL)
++    {
++        err = errno;
++        bail_on_error(err);
++    }
++
++clean:
++    if (pipe_fp != NULL)
++    {
++        if (pclose(pipe_fp) == -1)
++        {
++            err = errno;
++        }
++    }
++    return err;
++error:
++    goto clean;
++}
++
++uint32_t
++nm_get_key_value(
++    const char *pszConfigFileName,
++    const char *pszSection,
++    const char *pszKey,
++    char **ppszValue
++)
++{
++    uint32_t err = 0, dwNumSections = 0;
++    PCONFIG_INI pConfig = NULL;
++    PSECTION_INI *ppSections = NULL, pSection = NULL;
++    PKEYVALUE_INI pKeyValue = NULL;
++    *ppszValue = NULL;
++
++    if (IS_NULL_OR_EMPTY(pszConfigFileName) || IS_NULL_OR_EMPTY(pszSection) ||
++        IS_NULL_OR_EMPTY(pszKey))
++    {
++        err = NM_ERR_INVALID_PARAMETER;
++        bail_on_error(err);
++    }
++
++    err = ini_cfg_read(pszConfigFileName, &pConfig);
++    bail_on_error(err);
++
++    err = ini_cfg_find_sections(pConfig, pszSection, &ppSections, &dwNumSections);
++    bail_on_error(err);
++
++    if (dwNumSections > 1)
++    {
++        /* TODO: Log error */
++        err = NM_ERR_BAD_CONFIG_FILE;
++        bail_on_error(err);
++    }
++    else if (dwNumSections == 0)
++    {
++        err = NM_ERR_VALUE_NOT_FOUND;
++        bail_on_error(err);
++    }
++
++    pSection = ppSections[0];
++
++    pKeyValue = ini_cfg_find_key(pSection, pszKey);
++    if (pKeyValue == NULL)
++    {
++        err = NM_ERR_VALUE_NOT_FOUND;
++        bail_on_error(err);
++    }
++    /* malloc return memory - caller to free */
++    err = netmgr_alloc_string(pKeyValue->pszValue, ppszValue);
++
++error:
++    if (ppSections != NULL)
++    {
++        ini_cfg_free_sections(ppSections, dwNumSections);
++    }
++    if (pConfig != NULL)
++    {
++        ini_cfg_free_config(pConfig);
++    }
++    return err;
++}
++
++uint32_t
++nm_set_key_value(
++    const char *pszConfigFileName,
++    const char *pszSection,
++    const char *pszKey,
++    const char *pszValue,
++    uint32_t flags
++)
++{
++    uint32_t err = 0, dwNumSections = 0;
++    PCONFIG_INI pConfig = NULL;
++    PSECTION_INI *ppSections = NULL, pSection = NULL;
++    PKEYVALUE_INI pKeyValue = NULL;
++    FILE *fp;
++
++    if (IS_NULL_OR_EMPTY(pszConfigFileName) || IS_NULL_OR_EMPTY(pszSection) ||
++        IS_NULL_OR_EMPTY(pszKey))
++    {
++        err = NM_ERR_INVALID_PARAMETER;
++        bail_on_error(err);
++    }
++
++    if (TEST_FLAG(flags, F_CREATE_CFG_FILE))
++    {
++        /* 'touch' the file if it does't exist */
++        if ((fp = fopen(pszConfigFileName, "a+")) != NULL)
++        {
++            fclose(fp);
++        }
++        else
++        {
++            err = errno;
++            bail_on_error(err);
++        }
++    }
++
++    err = ini_cfg_read(pszConfigFileName, &pConfig);
++    bail_on_error(err);
++
++    err = ini_cfg_find_sections(pConfig, pszSection, &ppSections, &dwNumSections);
++    bail_on_error(err);
++
++    if (dwNumSections > 1)
++    {
++        err = NM_ERR_BAD_CONFIG_FILE;
++        bail_on_error(err);
++    }
++    else if (dwNumSections == 0)
++    {
++        if (pszValue != NULL)
++        {
++            err = ini_cfg_add_section(pConfig, pszSection, &pSection);
++            bail_on_error(err);
++        }
++        else
++        {
++            /* Bug out with success - nothing to set, no section found. */
++            err = 0;
++            goto error;
++        }
++    }
++    else
++    {
++        pSection = ppSections[0];
++    }
++
++    pKeyValue = ini_cfg_find_key(pSection, pszKey);
++    if (pKeyValue == NULL)
++    {
++        if (pszValue != NULL)
++        {
++            err = ini_cfg_add_key(pSection, pszKey, pszValue);
++        }
++    }
++    else
++    {
++        if (pszValue != NULL)
++        {
++            err = ini_cfg_set_value(pSection, pszKey, pszValue);
++        }
++        else
++        {
++            err = ini_cfg_delete_key(pSection, pszKey);
++        }
++    }
++    bail_on_error(err);
++
++    err = ini_cfg_save(pszConfigFileName, pConfig);
++    bail_on_error(err);
++
++error:
++    if (ppSections != NULL)
++    {
++        ini_cfg_free_sections(ppSections, dwNumSections);
++    }
++    if (pConfig != NULL)
++    {
++        ini_cfg_free_config(pConfig);
++    }
++    return err;
++}
+--- netmgmt-1.0.4-orig/src/utils.h	2016-07-28 12:22:38.000000000 -0700
++++ netmgmt-1.0.4/src/utils.h	2018-11-06 16:13:04.745741356 -0800
+@@ -34,4 +34,26 @@
+     char **ppszValue
+ );
+ 
++uint32_t
++nm_get_key_value(
++    const char *pszConfigFileName,
++    const char *pszSection,
++    const char *pszKey,
++    char **ppszValue
++);
++
++uint32_t
++nm_set_key_value(
++    const char *pszConfigFileName,
++    const char *pszSection,
++    const char *pszKey,
++    const char *pszValue,
++    uint32_t flags
++);
++
++uint32_t
++nm_run_command(
++    const char *pszCommand
++);
++
+ #endif /* __UTILS_H__ */
+--- netmgmt-1.0.4-orig/tools/netmgr/main.c	2016-07-28 12:22:38.000000000 -0700
++++ netmgmt-1.0.4/tools/netmgr/main.c	2018-11-06 16:40:29.936816688 -0800
+@@ -362,13 +362,13 @@
+         bail_on_error(err);
+     }
+ 
+-    if(pCmdArgs->nCmdCount < 2)
++    if(pCmdArgs->nCmdCount < 3)
+     {
+         err = EDOM;
+         bail_on_error(err);
+     }
+ 
+-    err = set_duid(NULL, pCmdArgs->ppszCmds[1]);
++    err = set_duid(pCmdArgs->ppszCmds[1], pCmdArgs->ppszCmds[2]);
+     bail_on_error(err);
+ 
+ cleanup:
+@@ -379,7 +379,7 @@
+     {
+         fprintf(
+                stderr,
+-               "Usage: set_duid <duid>\n");
++               "Usage: set_duid <ifname> <duid>\n");
+     }
+     goto cleanup;
+ }
+@@ -398,13 +398,13 @@
+         bail_on_error(err);
+     }
+ 
+-    if(pCmdArgs->nCmdCount < 1)
++    if(pCmdArgs->nCmdCount < 2)
+     {
+         err = EDOM;
+         bail_on_error(err);
+     }
+ 
+-    err = get_duid(NULL, &duid);
++    err = get_duid(pCmdArgs->ppszCmds[1], &duid);
+     bail_on_error(err);
+ 
+     fprintf(stdout, "DUID=%s\n", duid);
+@@ -421,7 +421,7 @@
+     {
+         fprintf(
+                stderr,
+-               "Usage: get_duid\n");
++               "Usage: get_duid <ifname> \n");
+     }
+     goto cleanup;
+ }
