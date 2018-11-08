@@ -1,7 +1,7 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.0.4
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
@@ -9,6 +9,7 @@ URL:           http://www.vmware.com
 Source0:       %{name}-%{version}.tar.gz
 Patch0:        netmgmt-v104-dns-buffer-overrun-fix.patch
 Patch1:        netmgmt-v104-allow-multiple-keys.patch
+Patch2:        netmgmt-set-duid-fix.patch
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: glib-devel
@@ -31,6 +32,7 @@ header files and libraries for netmgmt
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 autoreconf -mif
@@ -62,6 +64,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*       Wed Nov 7 2018 Michelle Wang <michellew@vmware.com> 1.0.4-4
+-       Fix set_duid for multi interface.
 *	Thu  Oct 27 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.4-3
 -	Fix to allow reading multiple keys in a config section.
 *	Tue  Aug 16 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.4-2
