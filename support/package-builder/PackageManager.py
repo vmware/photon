@@ -221,15 +221,15 @@ class PackageManager(object):
             if chroot:
                 chroot.destroy()
             raise e
-        self.logger.debug("createBuildContainer: " + chroot.getPath())
+        self.logger.debug("createBuildContainer: " + chroot.getID())
 
         # Create photon build container using toolchain chroot
         chroot.unmountAll()
         #TODO: Coalesce logging
         cmdUtils = CommandUtils()
-        cmd = "cd " + chroot.getPath() + " && tar -czf ../tcroot.tar.gz ."
+        cmd = "cd " + chroot.getID() + " && tar -czf ../tcroot.tar.gz ."
         cmdUtils.runCommandInShell(cmd, logfn=self.logger.debug)
-        cmd = "mv " + chroot.getPath() + "/../tcroot.tar.gz ."
+        cmd = "mv " + chroot.getID() + "/../tcroot.tar.gz ."
         cmdUtils.runCommandInShell(cmd, logfn=self.logger.debug)
         #TODO: Container name, docker file name from constants.
         self.dockerClient.images.build(tag=constants.buildContainerImage,
