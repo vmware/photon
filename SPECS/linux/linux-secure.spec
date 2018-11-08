@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.18.9
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.1
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=229ed4bedc5b8256bdd761845b1d7e20e1df12d7
+%define sha1 linux=5ece7a7149eeef06bba906eeabbc2f29a8ac3952
 Source1:        config-secure
 Source2:        initramfs.trigger
 # common
@@ -233,8 +233,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
-*   Tue Oct 30 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.18.9-3
--   Fix PAX randkstack and RAP plugin patches to avoid boot panic.
+*   Thu Nov 08 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.1-1
+-   Update to version 4.19.1
 *   Mon Oct 22 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.18.9-2
 -   Use updated steal time accounting patch.
 *   Tue Sep 25 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.18.9-1
@@ -264,7 +264,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   Version update
 *   Wed Oct 11 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-3
 -   Add patch "KVM: Don't accept obviously wrong gsi values via
--   KVM_IRQFD" to fix CVE-2017-1000252.
+    KVM_IRQFD" to fix CVE-2017-1000252.
 *   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.53-2
 -   Build hang (at make oldconfig) fix.
 *   Thu Oct 05 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-1
@@ -287,7 +287,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Wed Aug 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-2
 -   Fix CVE-2017-7542
 -   [bugfix] Added ccm,gcm,ghash,lzo crypto modules to avoid
--   panic on modprobe tcrypt
+    panic on modprobe tcrypt
 *   Mon Aug 07 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-1
 -   Version update
 *   Fri Aug 04 2017 Bo Gan <ganb@vmware.com> 4.9.38-6
@@ -315,7 +315,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   Fix CVE-2017-1000364 ("stack clash") and CVE-2017-9605
 *   Thu Jun 8 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.31-1
 -   Fix CVE-2017-8890, CVE-2017-9074, CVE-2017-9075, CVE-2017-9076
--   CVE-2017-9077 and CVE-2017-9242
+    CVE-2017-9077 and CVE-2017-9242
 -   [feature] IPV6 netfilter NAT table support
 *   Fri May 26 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.30-1
 -   Fix CVE-2017-7487 and CVE-2017-9059
@@ -342,11 +342,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   .config: disable XEN guest (needs rap_plugin verification)
 *   Wed Feb 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-2
 -   rap_plugin improvement: throw error on function type casting
--   function signatures were cleaned up using this feature.
+    function signatures were cleaned up using this feature.
 -   Added RAP_ENTRY for asm functions.
 *   Thu Feb 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-1
 -   Update to linux-4.9.9 to fix CVE-2016-10153, CVE-2017-5546,
--   CVE-2017-5547, CVE-2017-5548 and CVE-2017-5576.
+    CVE-2017-5547, CVE-2017-5548 and CVE-2017-5576.
 -   Added aufs support.
 -   Added PAX_RANDKSTACK feature.
 -   Extra func signatures cleanup to fix 1809717 and 1809722.
@@ -360,7 +360,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Mon Dec 12 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-1
 -   Update to linux-4.9.0
 -   Add paravirt stolen time accounting feature (from linux-esx),
--   but disable it by default (no-vmw-sta cmdline parameter)
+    but disable it by default (no-vmw-sta cmdline parameter)
 -   Use vmware_io_delay() to keep "void fn(void)" signature
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-2
 -   Expand `uname -r` with release number
@@ -371,4 +371,4 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   .config: add netfilter_xt_match_{cgroup,ipvs} support
 -   .config: disable /dev/mem
 *   Mon Oct 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-1
--   Initial commit.
+    Initial commit.

@@ -125,11 +125,10 @@ Subject: [PATCH 3/3] Added rap_plugin
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_plugin.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/sip.c
 
-diff --git a/arch/x86/crypto/aesni-intel_asm.S b/arch/x86/crypto/aesni-intel_asm.S
-index d27a506..25fbe8f 100644
---- a/arch/x86/crypto/aesni-intel_asm.S
-+++ b/arch/x86/crypto/aesni-intel_asm.S
-@@ -1596,7 +1596,7 @@ _esb_loop_\@:
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/aesni-intel_asm.S linux-4.19.1_new/arch/x86/crypto/aesni-intel_asm.S
+--- linux-4.19.1_old/arch/x86/crypto/aesni-intel_asm.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/aesni-intel_asm.S	2018-11-08 10:57:33.629566821 +0000
+@@ -1596,7 +1596,7 @@
  * poly = x^128 + x^127 + x^126 + x^121 + 1
  *
  *****************************************************************************/
@@ -138,7 +137,7 @@ index d27a506..25fbe8f 100644
  	FUNC_SAVE
  
  	GCM_INIT %arg6, arg7, arg8, arg9
-@@ -1684,7 +1684,7 @@ ENDPROC(aesni_gcm_dec)
+@@ -1684,7 +1684,7 @@
  *
  * poly = x^128 + x^127 + x^126 + x^121 + 1
  ***************************************************************************/
@@ -147,7 +146,7 @@ index d27a506..25fbe8f 100644
  	FUNC_SAVE
  
  	GCM_INIT %arg6, arg7, arg8, arg9
-@@ -1952,7 +1952,7 @@ ENDPROC(aesni_set_key)
+@@ -1952,7 +1952,7 @@
  /*
   * void aesni_enc(struct crypto_aes_ctx *ctx, u8 *dst, const u8 *src)
   */
@@ -156,7 +155,7 @@ index d27a506..25fbe8f 100644
  	FRAME_BEGIN
  #ifndef __x86_64__
  	pushl KEYP
-@@ -2143,7 +2143,7 @@ ENDPROC(_aesni_enc4)
+@@ -2143,7 +2143,7 @@
  /*
   * void aesni_dec (struct crypto_aes_ctx *ctx, u8 *dst, const u8 *src)
   */
@@ -165,7 +164,7 @@ index d27a506..25fbe8f 100644
  	FRAME_BEGIN
  #ifndef __x86_64__
  	pushl KEYP
-@@ -2652,7 +2652,7 @@ ENDPROC(_aesni_inc)
+@@ -2652,7 +2652,7 @@
   * void aesni_ctr_enc(struct crypto_aes_ctx *ctx, const u8 *dst, u8 *src,
   *		      size_t len, u8 *iv)
   */
@@ -174,11 +173,10 @@ index d27a506..25fbe8f 100644
  	FRAME_BEGIN
  	cmp $16, LEN
  	jb .Lctr_enc_just_ret
-diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
-index acbe7e8..8caeaee 100644
---- a/arch/x86/crypto/aesni-intel_glue.c
-+++ b/arch/x86/crypto/aesni-intel_glue.c
-@@ -89,9 +89,9 @@ struct gcm_context_data {
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/aesni-intel_glue.c linux-4.19.1_new/arch/x86/crypto/aesni-intel_glue.c
+--- linux-4.19.1_old/arch/x86/crypto/aesni-intel_glue.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/aesni-intel_glue.c	2018-11-08 10:57:33.629566821 +0000
+@@ -89,9 +89,9 @@
  
  asmlinkage int aesni_set_key(struct crypto_aes_ctx *ctx, const u8 *in_key,
  			     unsigned int key_len);
@@ -190,11 +188,10 @@ index acbe7e8..8caeaee 100644
  			  const u8 *in);
  asmlinkage void aesni_ecb_enc(struct crypto_aes_ctx *ctx, u8 *out,
  			      const u8 *in, unsigned int len);
-diff --git a/arch/x86/crypto/blowfish-x86_64-asm_64.S b/arch/x86/crypto/blowfish-x86_64-asm_64.S
-index 8c1fcb6..9c229bdd8 100644
---- a/arch/x86/crypto/blowfish-x86_64-asm_64.S
-+++ b/arch/x86/crypto/blowfish-x86_64-asm_64.S
-@@ -156,7 +156,7 @@ ENTRY(__blowfish_enc_blk)
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/blowfish-x86_64-asm_64.S linux-4.19.1_new/arch/x86/crypto/blowfish-x86_64-asm_64.S
+--- linux-4.19.1_old/arch/x86/crypto/blowfish-x86_64-asm_64.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/blowfish-x86_64-asm_64.S	2018-11-08 10:57:33.629566821 +0000
+@@ -156,7 +156,7 @@
  	ret;
  ENDPROC(__blowfish_enc_blk)
  
@@ -203,7 +200,7 @@ index 8c1fcb6..9c229bdd8 100644
  	/* input:
  	 *	%rdi: ctx
  	 *	%rsi: dst
-@@ -347,7 +347,7 @@ ENTRY(__blowfish_enc_blk_4way)
+@@ -347,7 +347,7 @@
  	ret;
  ENDPROC(__blowfish_enc_blk_4way)
  
@@ -212,69 +209,10 @@ index 8c1fcb6..9c229bdd8 100644
  	/* input:
  	 *	%rdi: ctx
  	 *	%rsi: dst
-diff --git a/arch/x86/crypto/camellia-aesni-avx-asm_64.S b/arch/x86/crypto/camellia-aesni-avx-asm_64.S
-index a14af6e..f24f291 100644
---- a/arch/x86/crypto/camellia-aesni-avx-asm_64.S
-+++ b/arch/x86/crypto/camellia-aesni-avx-asm_64.S
-@@ -893,7 +893,7 @@ __camellia_dec_blk16:
- 	jmp .Ldec_max24;
- ENDPROC(__camellia_dec_blk16)
- 
--ENTRY(camellia_ecb_enc_16way)
-+RAP_ENTRY(camellia_ecb_enc_16way)
- 	/* input:
- 	 *	%rdi: ctx, CTX
- 	 *	%rsi: dst (16 blocks)
-@@ -918,7 +918,7 @@ ENTRY(camellia_ecb_enc_16way)
- 	ret;
- ENDPROC(camellia_ecb_enc_16way)
- 
--ENTRY(camellia_ecb_dec_16way)
-+RAP_ENTRY(camellia_ecb_dec_16way)
- 	/* input:
- 	 *	%rdi: ctx, CTX
- 	 *	%rsi: dst (16 blocks)
-@@ -948,7 +948,7 @@ ENTRY(camellia_ecb_dec_16way)
- 	ret;
- ENDPROC(camellia_ecb_dec_16way)
- 
--ENTRY(camellia_cbc_dec_16way)
-+RAP_ENTRY(camellia_cbc_dec_16way)
- 	/* input:
- 	 *	%rdi: ctx, CTX
- 	 *	%rsi: dst (16 blocks)
-@@ -1005,7 +1005,7 @@ ENDPROC(camellia_cbc_dec_16way)
- 	vpslldq $8, tmp, tmp; \
- 	vpsubq tmp, x, x;
- 
--ENTRY(camellia_ctr_16way)
-+RAP_ENTRY(camellia_ctr_16way)
- 	/* input:
- 	 *	%rdi: ctx, CTX
- 	 *	%rsi: dst (16 blocks)
-@@ -1256,7 +1256,7 @@ camellia_xts_crypt_16way:
- 	ret;
- ENDPROC(camellia_xts_crypt_16way)
- 
--ENTRY(camellia_xts_enc_16way)
-+RAP_ENTRY(camellia_xts_enc_16way)
- 	/* input:
- 	 *	%rdi: ctx, CTX
- 	 *	%rsi: dst (16 blocks)
-@@ -1270,7 +1270,7 @@ ENTRY(camellia_xts_enc_16way)
- 	jmp camellia_xts_crypt_16way;
- ENDPROC(camellia_xts_enc_16way)
- 
--ENTRY(camellia_xts_dec_16way)
-+RAP_ENTRY(camellia_xts_dec_16way)
- 	/* input:
- 	 *	%rdi: ctx, CTX
- 	 *	%rsi: dst (16 blocks)
-diff --git a/arch/x86/crypto/camellia-aesni-avx2-asm_64.S b/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
-index b66bbfa..10093da 100644
---- a/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
-+++ b/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
-@@ -936,7 +936,7 @@ __camellia_dec_blk32:
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/camellia-aesni-avx2-asm_64.S linux-4.19.1_new/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
+--- linux-4.19.1_old/arch/x86/crypto/camellia-aesni-avx2-asm_64.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/camellia-aesni-avx2-asm_64.S	2018-11-08 10:57:33.633566779 +0000
+@@ -936,7 +936,7 @@
  	jmp .Ldec_max24;
  ENDPROC(__camellia_dec_blk32)
  
@@ -283,7 +221,7 @@ index b66bbfa..10093da 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
-@@ -965,7 +965,7 @@ ENTRY(camellia_ecb_enc_32way)
+@@ -965,7 +965,7 @@
  	ret;
  ENDPROC(camellia_ecb_enc_32way)
  
@@ -292,7 +230,7 @@ index b66bbfa..10093da 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
-@@ -999,7 +999,7 @@ ENTRY(camellia_ecb_dec_32way)
+@@ -999,7 +999,7 @@
  	ret;
  ENDPROC(camellia_ecb_dec_32way)
  
@@ -301,7 +239,7 @@ index b66bbfa..10093da 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
-@@ -1081,7 +1081,7 @@ ENDPROC(camellia_cbc_dec_32way)
+@@ -1081,7 +1081,7 @@
  	vpslldq $8, tmp1, tmp1; \
  	vpsubq tmp1, x, x;
  
@@ -310,7 +248,7 @@ index b66bbfa..10093da 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
-@@ -1374,7 +1374,7 @@ camellia_xts_crypt_32way:
+@@ -1374,7 +1374,7 @@
  	ret;
  ENDPROC(camellia_xts_crypt_32way)
  
@@ -319,7 +257,7 @@ index b66bbfa..10093da 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
-@@ -1389,7 +1389,7 @@ ENTRY(camellia_xts_enc_32way)
+@@ -1389,7 +1389,7 @@
  	jmp camellia_xts_crypt_32way;
  ENDPROC(camellia_xts_enc_32way)
  
@@ -328,11 +266,67 @@ index b66bbfa..10093da 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
-diff --git a/arch/x86/crypto/camellia-x86_64-asm_64.S b/arch/x86/crypto/camellia-x86_64-asm_64.S
-index 95ba695..3d6f034 100644
---- a/arch/x86/crypto/camellia-x86_64-asm_64.S
-+++ b/arch/x86/crypto/camellia-x86_64-asm_64.S
-@@ -237,7 +237,7 @@ ENTRY(__camellia_enc_blk)
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/camellia-aesni-avx-asm_64.S linux-4.19.1_new/arch/x86/crypto/camellia-aesni-avx-asm_64.S
+--- linux-4.19.1_old/arch/x86/crypto/camellia-aesni-avx-asm_64.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/camellia-aesni-avx-asm_64.S	2018-11-08 10:57:33.629566821 +0000
+@@ -893,7 +893,7 @@
+ 	jmp .Ldec_max24;
+ ENDPROC(__camellia_dec_blk16)
+ 
+-ENTRY(camellia_ecb_enc_16way)
++RAP_ENTRY(camellia_ecb_enc_16way)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+ 	 *	%rsi: dst (16 blocks)
+@@ -918,7 +918,7 @@
+ 	ret;
+ ENDPROC(camellia_ecb_enc_16way)
+ 
+-ENTRY(camellia_ecb_dec_16way)
++RAP_ENTRY(camellia_ecb_dec_16way)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+ 	 *	%rsi: dst (16 blocks)
+@@ -948,7 +948,7 @@
+ 	ret;
+ ENDPROC(camellia_ecb_dec_16way)
+ 
+-ENTRY(camellia_cbc_dec_16way)
++RAP_ENTRY(camellia_cbc_dec_16way)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+ 	 *	%rsi: dst (16 blocks)
+@@ -1005,7 +1005,7 @@
+ 	vpslldq $8, tmp, tmp; \
+ 	vpsubq tmp, x, x;
+ 
+-ENTRY(camellia_ctr_16way)
++RAP_ENTRY(camellia_ctr_16way)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+ 	 *	%rsi: dst (16 blocks)
+@@ -1256,7 +1256,7 @@
+ 	ret;
+ ENDPROC(camellia_xts_crypt_16way)
+ 
+-ENTRY(camellia_xts_enc_16way)
++RAP_ENTRY(camellia_xts_enc_16way)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+ 	 *	%rsi: dst (16 blocks)
+@@ -1270,7 +1270,7 @@
+ 	jmp camellia_xts_crypt_16way;
+ ENDPROC(camellia_xts_enc_16way)
+ 
+-ENTRY(camellia_xts_dec_16way)
++RAP_ENTRY(camellia_xts_dec_16way)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+ 	 *	%rsi: dst (16 blocks)
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/camellia-x86_64-asm_64.S linux-4.19.1_new/arch/x86/crypto/camellia-x86_64-asm_64.S
+--- linux-4.19.1_old/arch/x86/crypto/camellia-x86_64-asm_64.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/camellia-x86_64-asm_64.S	2018-11-08 10:57:33.633566779 +0000
+@@ -237,7 +237,7 @@
  	ret;
  ENDPROC(__camellia_enc_blk)
  
@@ -341,7 +335,7 @@ index 95ba695..3d6f034 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-@@ -473,7 +473,7 @@ ENTRY(__camellia_enc_blk_2way)
+@@ -473,7 +473,7 @@
  	ret;
  ENDPROC(__camellia_enc_blk_2way)
  
@@ -350,11 +344,10 @@ index 95ba695..3d6f034 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-diff --git a/arch/x86/crypto/cast5-avx-x86_64-asm_64.S b/arch/x86/crypto/cast5-avx-x86_64-asm_64.S
-index 86107c9..529710e 100644
---- a/arch/x86/crypto/cast5-avx-x86_64-asm_64.S
-+++ b/arch/x86/crypto/cast5-avx-x86_64-asm_64.S
-@@ -374,7 +374,7 @@ __cast5_dec_blk16:
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/cast5-avx-x86_64-asm_64.S linux-4.19.1_new/arch/x86/crypto/cast5-avx-x86_64-asm_64.S
+--- linux-4.19.1_old/arch/x86/crypto/cast5-avx-x86_64-asm_64.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/cast5-avx-x86_64-asm_64.S	2018-11-08 10:57:33.633566779 +0000
+@@ -374,7 +374,7 @@
  	jmp .L__dec_tail;
  ENDPROC(__cast5_dec_blk16)
  
@@ -363,7 +356,7 @@ index 86107c9..529710e 100644
  	/* input:
  	 *	%rdi: ctx
  	 *	%rsi: dst
-@@ -411,7 +411,7 @@ ENTRY(cast5_ecb_enc_16way)
+@@ -411,7 +411,7 @@
  	ret;
  ENDPROC(cast5_ecb_enc_16way)
  
@@ -372,11 +365,10 @@ index 86107c9..529710e 100644
  	/* input:
  	 *	%rdi: ctx
  	 *	%rsi: dst
-diff --git a/arch/x86/crypto/cast6-avx-x86_64-asm_64.S b/arch/x86/crypto/cast6-avx-x86_64-asm_64.S
-index 7f30b6f..ceea523 100644
---- a/arch/x86/crypto/cast6-avx-x86_64-asm_64.S
-+++ b/arch/x86/crypto/cast6-avx-x86_64-asm_64.S
-@@ -356,7 +356,7 @@ __cast6_dec_blk8:
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/cast6-avx-x86_64-asm_64.S linux-4.19.1_new/arch/x86/crypto/cast6-avx-x86_64-asm_64.S
+--- linux-4.19.1_old/arch/x86/crypto/cast6-avx-x86_64-asm_64.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/cast6-avx-x86_64-asm_64.S	2018-11-08 10:57:33.633566779 +0000
+@@ -356,7 +356,7 @@
  	ret;
  ENDPROC(__cast6_dec_blk8)
  
@@ -385,7 +377,7 @@ index 7f30b6f..ceea523 100644
  	/* input:
  	 *	%rdi: ctx
  	 *	%rsi: dst
-@@ -379,7 +379,7 @@ ENTRY(cast6_ecb_enc_8way)
+@@ -379,7 +379,7 @@
  	ret;
  ENDPROC(cast6_ecb_enc_8way)
  
@@ -394,7 +386,7 @@ index 7f30b6f..ceea523 100644
  	/* input:
  	 *	%rdi: ctx
  	 *	%rsi: dst
-@@ -402,7 +402,7 @@ ENTRY(cast6_ecb_dec_8way)
+@@ -402,7 +402,7 @@
  	ret;
  ENDPROC(cast6_ecb_dec_8way)
  
@@ -403,7 +395,7 @@ index 7f30b6f..ceea523 100644
  	/* input:
  	 *	%rdi: ctx
  	 *	%rsi: dst
-@@ -428,7 +428,7 @@ ENTRY(cast6_cbc_dec_8way)
+@@ -428,7 +428,7 @@
  	ret;
  ENDPROC(cast6_cbc_dec_8way)
  
@@ -412,7 +404,7 @@ index 7f30b6f..ceea523 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-@@ -456,7 +456,7 @@ ENTRY(cast6_ctr_8way)
+@@ -456,7 +456,7 @@
  	ret;
  ENDPROC(cast6_ctr_8way)
  
@@ -421,7 +413,7 @@ index 7f30b6f..ceea523 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-@@ -483,7 +483,7 @@ ENTRY(cast6_xts_enc_8way)
+@@ -483,7 +483,7 @@
  	ret;
  ENDPROC(cast6_xts_enc_8way)
  
@@ -430,69 +422,10 @@ index 7f30b6f..ceea523 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-diff --git a/arch/x86/crypto/serpent-avx-x86_64-asm_64.S b/arch/x86/crypto/serpent-avx-x86_64-asm_64.S
-index 2925077..38c62f8 100644
---- a/arch/x86/crypto/serpent-avx-x86_64-asm_64.S
-+++ b/arch/x86/crypto/serpent-avx-x86_64-asm_64.S
-@@ -677,7 +677,7 @@ __serpent_dec_blk8_avx:
- 	ret;
- ENDPROC(__serpent_dec_blk8_avx)
- 
--ENTRY(serpent_ecb_enc_8way_avx)
-+RAP_ENTRY(serpent_ecb_enc_8way_avx)
- 	/* input:
- 	 *	%rdi: ctx, CTX
- 	 *	%rsi: dst
-@@ -695,7 +695,7 @@ ENTRY(serpent_ecb_enc_8way_avx)
- 	ret;
- ENDPROC(serpent_ecb_enc_8way_avx)
- 
--ENTRY(serpent_ecb_dec_8way_avx)
-+RAP_ENTRY(serpent_ecb_dec_8way_avx)
- 	/* input:
- 	 *	%rdi: ctx, CTX
- 	 *	%rsi: dst
-@@ -713,7 +713,7 @@ ENTRY(serpent_ecb_dec_8way_avx)
- 	ret;
- ENDPROC(serpent_ecb_dec_8way_avx)
- 
--ENTRY(serpent_cbc_dec_8way_avx)
-+RAP_ENTRY(serpent_cbc_dec_8way_avx)
- 	/* input:
- 	 *	%rdi: ctx, CTX
- 	 *	%rsi: dst
-@@ -731,7 +731,7 @@ ENTRY(serpent_cbc_dec_8way_avx)
- 	ret;
- ENDPROC(serpent_cbc_dec_8way_avx)
- 
--ENTRY(serpent_ctr_8way_avx)
-+RAP_ENTRY(serpent_ctr_8way_avx)
- 	/* input:
- 	 *	%rdi: ctx, CTX
- 	 *	%rsi: dst
-@@ -751,7 +751,7 @@ ENTRY(serpent_ctr_8way_avx)
- 	ret;
- ENDPROC(serpent_ctr_8way_avx)
- 
--ENTRY(serpent_xts_enc_8way_avx)
-+RAP_ENTRY(serpent_xts_enc_8way_avx)
- 	/* input:
- 	 *	%rdi: ctx, CTX
- 	 *	%rsi: dst
-@@ -773,7 +773,7 @@ ENTRY(serpent_xts_enc_8way_avx)
- 	ret;
- ENDPROC(serpent_xts_enc_8way_avx)
- 
--ENTRY(serpent_xts_dec_8way_avx)
-+RAP_ENTRY(serpent_xts_dec_8way_avx)
- 	/* input:
- 	 *	%rdi: ctx, CTX
- 	 *	%rsi: dst
-diff --git a/arch/x86/crypto/serpent-avx2-asm_64.S b/arch/x86/crypto/serpent-avx2-asm_64.S
-index d67888f..1b8c6b4 100644
---- a/arch/x86/crypto/serpent-avx2-asm_64.S
-+++ b/arch/x86/crypto/serpent-avx2-asm_64.S
-@@ -673,7 +673,7 @@ __serpent_dec_blk16:
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/serpent-avx2-asm_64.S linux-4.19.1_new/arch/x86/crypto/serpent-avx2-asm_64.S
+--- linux-4.19.1_old/arch/x86/crypto/serpent-avx2-asm_64.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/serpent-avx2-asm_64.S	2018-11-08 10:57:33.633566779 +0000
+@@ -673,7 +673,7 @@
  	ret;
  ENDPROC(__serpent_dec_blk16)
  
@@ -501,7 +434,7 @@ index d67888f..1b8c6b4 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-@@ -695,7 +695,7 @@ ENTRY(serpent_ecb_enc_16way)
+@@ -695,7 +695,7 @@
  	ret;
  ENDPROC(serpent_ecb_enc_16way)
  
@@ -510,7 +443,7 @@ index d67888f..1b8c6b4 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-@@ -717,7 +717,7 @@ ENTRY(serpent_ecb_dec_16way)
+@@ -717,7 +717,7 @@
  	ret;
  ENDPROC(serpent_ecb_dec_16way)
  
@@ -519,7 +452,7 @@ index d67888f..1b8c6b4 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-@@ -740,7 +740,7 @@ ENTRY(serpent_cbc_dec_16way)
+@@ -740,7 +740,7 @@
  	ret;
  ENDPROC(serpent_cbc_dec_16way)
  
@@ -528,7 +461,7 @@ index d67888f..1b8c6b4 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
-@@ -765,7 +765,7 @@ ENTRY(serpent_ctr_16way)
+@@ -765,7 +765,7 @@
  	ret;
  ENDPROC(serpent_ctr_16way)
  
@@ -537,7 +470,7 @@ index d67888f..1b8c6b4 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
-@@ -791,7 +791,7 @@ ENTRY(serpent_xts_enc_16way)
+@@ -791,7 +791,7 @@
  	ret;
  ENDPROC(serpent_xts_enc_16way)
  
@@ -546,11 +479,67 @@ index d67888f..1b8c6b4 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
-diff --git a/arch/x86/crypto/sha1-mb/sha1_mb_mgr_flush_avx2.S b/arch/x86/crypto/sha1-mb/sha1_mb_mgr_flush_avx2.S
-index 7cfba73..e077bb6 100644
---- a/arch/x86/crypto/sha1-mb/sha1_mb_mgr_flush_avx2.S
-+++ b/arch/x86/crypto/sha1-mb/sha1_mb_mgr_flush_avx2.S
-@@ -103,7 +103,7 @@ offset = \_offset
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/serpent-avx-x86_64-asm_64.S linux-4.19.1_new/arch/x86/crypto/serpent-avx-x86_64-asm_64.S
+--- linux-4.19.1_old/arch/x86/crypto/serpent-avx-x86_64-asm_64.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/serpent-avx-x86_64-asm_64.S	2018-11-08 10:57:33.633566779 +0000
+@@ -677,7 +677,7 @@
+ 	ret;
+ ENDPROC(__serpent_dec_blk8_avx)
+ 
+-ENTRY(serpent_ecb_enc_8way_avx)
++RAP_ENTRY(serpent_ecb_enc_8way_avx)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+ 	 *	%rsi: dst
+@@ -695,7 +695,7 @@
+ 	ret;
+ ENDPROC(serpent_ecb_enc_8way_avx)
+ 
+-ENTRY(serpent_ecb_dec_8way_avx)
++RAP_ENTRY(serpent_ecb_dec_8way_avx)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+ 	 *	%rsi: dst
+@@ -713,7 +713,7 @@
+ 	ret;
+ ENDPROC(serpent_ecb_dec_8way_avx)
+ 
+-ENTRY(serpent_cbc_dec_8way_avx)
++RAP_ENTRY(serpent_cbc_dec_8way_avx)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+ 	 *	%rsi: dst
+@@ -731,7 +731,7 @@
+ 	ret;
+ ENDPROC(serpent_cbc_dec_8way_avx)
+ 
+-ENTRY(serpent_ctr_8way_avx)
++RAP_ENTRY(serpent_ctr_8way_avx)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+ 	 *	%rsi: dst
+@@ -751,7 +751,7 @@
+ 	ret;
+ ENDPROC(serpent_ctr_8way_avx)
+ 
+-ENTRY(serpent_xts_enc_8way_avx)
++RAP_ENTRY(serpent_xts_enc_8way_avx)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+ 	 *	%rsi: dst
+@@ -773,7 +773,7 @@
+ 	ret;
+ ENDPROC(serpent_xts_enc_8way_avx)
+ 
+-ENTRY(serpent_xts_dec_8way_avx)
++RAP_ENTRY(serpent_xts_dec_8way_avx)
+ 	/* input:
+ 	 *	%rdi: ctx, CTX
+ 	 *	%rsi: dst
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha1-mb/sha1_mb_mgr_flush_avx2.S linux-4.19.1_new/arch/x86/crypto/sha1-mb/sha1_mb_mgr_flush_avx2.S
+--- linux-4.19.1_old/arch/x86/crypto/sha1-mb/sha1_mb_mgr_flush_avx2.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha1-mb/sha1_mb_mgr_flush_avx2.S	2018-11-08 10:57:33.633566779 +0000
+@@ -103,7 +103,7 @@
  
  # JOB* sha1_mb_mgr_flush_avx2(MB_MGR *state)
  # arg 1 : rcx : state
@@ -559,7 +548,7 @@ index 7cfba73..e077bb6 100644
  	FRAME_BEGIN
  	push	%rbx
  
-@@ -226,7 +226,7 @@ ENDPROC(sha1_mb_mgr_flush_avx2)
+@@ -226,7 +226,7 @@
  #################################################################
  
  .align 16
@@ -568,11 +557,10 @@ index 7cfba73..e077bb6 100644
  	push    %rbx
  
  	## if bit 32+3 is set, then all lanes are empty
-diff --git a/arch/x86/crypto/sha1-mb/sha1_mb_mgr_submit_avx2.S b/arch/x86/crypto/sha1-mb/sha1_mb_mgr_submit_avx2.S
-index 7a93b1c..7c64e59 100644
---- a/arch/x86/crypto/sha1-mb/sha1_mb_mgr_submit_avx2.S
-+++ b/arch/x86/crypto/sha1-mb/sha1_mb_mgr_submit_avx2.S
-@@ -98,7 +98,7 @@ lane_data       = %r10
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha1-mb/sha1_mb_mgr_submit_avx2.S linux-4.19.1_new/arch/x86/crypto/sha1-mb/sha1_mb_mgr_submit_avx2.S
+--- linux-4.19.1_old/arch/x86/crypto/sha1-mb/sha1_mb_mgr_submit_avx2.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha1-mb/sha1_mb_mgr_submit_avx2.S	2018-11-08 10:57:33.633566779 +0000
+@@ -98,7 +98,7 @@
  # JOB* submit_mb_mgr_submit_avx2(MB_MGR *state, job_sha1 *job)
  # arg 1 : rcx : state
  # arg 2 : rdx : job
@@ -581,10 +569,9 @@ index 7a93b1c..7c64e59 100644
  	FRAME_BEGIN
  	push	%rbx
  	push	%r12
-diff --git a/arch/x86/crypto/sha1_ssse3_glue.c b/arch/x86/crypto/sha1_ssse3_glue.c
-index fc61739..03f7efe 100644
---- a/arch/x86/crypto/sha1_ssse3_glue.c
-+++ b/arch/x86/crypto/sha1_ssse3_glue.c
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha1_ssse3_glue.c linux-4.19.1_new/arch/x86/crypto/sha1_ssse3_glue.c
+--- linux-4.19.1_old/arch/x86/crypto/sha1_ssse3_glue.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha1_ssse3_glue.c	2018-11-08 10:57:33.633566779 +0000
 @@ -31,8 +31,8 @@
  #include <crypto/sha1_base.h>
  #include <asm/fpu/api.h>
@@ -596,7 +583,7 @@ index fc61739..03f7efe 100644
  
  static int sha1_update(struct shash_desc *desc, const u8 *data,
  			     unsigned int len, sha1_transform_fn *sha1_xform)
-@@ -47,8 +47,7 @@ static int sha1_update(struct shash_desc *desc, const u8 *data,
+@@ -47,8 +47,7 @@
  	BUILD_BUG_ON(offsetof(struct sha1_state, state) != 0);
  
  	kernel_fpu_begin();
@@ -606,7 +593,7 @@ index fc61739..03f7efe 100644
  	kernel_fpu_end();
  
  	return 0;
-@@ -62,29 +61,26 @@ static int sha1_finup(struct shash_desc *desc, const u8 *data,
+@@ -62,29 +61,26 @@
  
  	kernel_fpu_begin();
  	if (len)
@@ -642,7 +629,7 @@ index fc61739..03f7efe 100644
  }
  
  /* Add padding and return the message digest. */
-@@ -124,21 +120,19 @@ static void unregister_sha1_ssse3(void)
+@@ -123,21 +119,19 @@
  }
  
  #ifdef CONFIG_AS_AVX
@@ -668,7 +655,7 @@ index fc61739..03f7efe 100644
  }
  
  static int sha1_avx_final(struct shash_desc *desc, u8 *out)
-@@ -196,8 +190,8 @@ static inline void unregister_sha1_avx(void) { }
+@@ -194,8 +188,8 @@
  #if defined(CONFIG_AS_AVX2) && (CONFIG_AS_AVX)
  #define SHA1_AVX2_BLOCK_OPTSIZE	4	/* optimal 4*64 bytes of SHA1 blocks */
  
@@ -679,7 +666,7 @@ index fc61739..03f7efe 100644
  
  static bool avx2_usable(void)
  {
-@@ -209,8 +203,8 @@ static bool avx2_usable(void)
+@@ -207,8 +201,8 @@
  	return false;
  }
  
@@ -690,7 +677,7 @@ index fc61739..03f7efe 100644
  {
  	/* Select the optimal transform based on data block size */
  	if (rounds >= SHA1_AVX2_BLOCK_OPTSIZE)
-@@ -222,15 +216,13 @@ static void sha1_apply_transform_avx2(u32 *digest, const char *data,
+@@ -220,15 +214,13 @@
  static int sha1_avx2_update(struct shash_desc *desc, const u8 *data,
  			     unsigned int len)
  {
@@ -708,7 +695,7 @@ index fc61739..03f7efe 100644
  }
  
  static int sha1_avx2_final(struct shash_desc *desc, u8 *out)
-@@ -274,21 +266,19 @@ static inline void unregister_sha1_avx2(void) { }
+@@ -271,21 +263,19 @@
  #endif
  
  #ifdef CONFIG_AS_SHA1_NI
@@ -734,24 +721,10 @@ index fc61739..03f7efe 100644
  }
  
  static int sha1_ni_final(struct shash_desc *desc, u8 *out)
-diff --git a/arch/x86/crypto/sha256-avx-asm.S b/arch/x86/crypto/sha256-avx-asm.S
-index 001bbcf..8fa0448 100644
---- a/arch/x86/crypto/sha256-avx-asm.S
-+++ b/arch/x86/crypto/sha256-avx-asm.S
-@@ -347,7 +347,7 @@ a = TMP_
- ## arg 3 : Num blocks
- ########################################################################
- .text
--ENTRY(sha256_transform_avx)
-+RAP_ENTRY(sha256_transform_avx)
- .align 32
- 	pushq   %rbx
- 	pushq   %r12
-diff --git a/arch/x86/crypto/sha256-avx2-asm.S b/arch/x86/crypto/sha256-avx2-asm.S
-index 1420db1..e476cdf 100644
---- a/arch/x86/crypto/sha256-avx2-asm.S
-+++ b/arch/x86/crypto/sha256-avx2-asm.S
-@@ -526,7 +526,7 @@ STACK_SIZE	= _RSP      + _RSP_SIZE
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha256-avx2-asm.S linux-4.19.1_new/arch/x86/crypto/sha256-avx2-asm.S
+--- linux-4.19.1_old/arch/x86/crypto/sha256-avx2-asm.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha256-avx2-asm.S	2018-11-08 10:57:33.633566779 +0000
+@@ -526,7 +526,7 @@
  ## arg 3 : Num blocks
  ########################################################################
  .text
@@ -760,11 +733,22 @@ index 1420db1..e476cdf 100644
  .align 32
  	pushq	%rbx
  	pushq	%r12
-diff --git a/arch/x86/crypto/sha256-mb/sha256_mb_mgr_flush_avx2.S b/arch/x86/crypto/sha256-mb/sha256_mb_mgr_flush_avx2.S
-index d2364c5..c4e0b3a 100644
---- a/arch/x86/crypto/sha256-mb/sha256_mb_mgr_flush_avx2.S
-+++ b/arch/x86/crypto/sha256-mb/sha256_mb_mgr_flush_avx2.S
-@@ -101,7 +101,7 @@ offset = \_offset
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha256-avx-asm.S linux-4.19.1_new/arch/x86/crypto/sha256-avx-asm.S
+--- linux-4.19.1_old/arch/x86/crypto/sha256-avx-asm.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha256-avx-asm.S	2018-11-08 10:57:33.633566779 +0000
+@@ -347,7 +347,7 @@
+ ## arg 3 : Num blocks
+ ########################################################################
+ .text
+-ENTRY(sha256_transform_avx)
++RAP_ENTRY(sha256_transform_avx)
+ .align 32
+ 	pushq   %rbx
+ 	pushq   %r12
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha256-mb/sha256_mb_mgr_flush_avx2.S linux-4.19.1_new/arch/x86/crypto/sha256-mb/sha256_mb_mgr_flush_avx2.S
+--- linux-4.19.1_old/arch/x86/crypto/sha256-mb/sha256_mb_mgr_flush_avx2.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha256-mb/sha256_mb_mgr_flush_avx2.S	2018-11-08 10:57:33.633566779 +0000
+@@ -101,7 +101,7 @@
  
  # JOB_SHA256* sha256_mb_mgr_flush_avx2(MB_MGR *state)
  # arg 1 : rcx : state
@@ -773,7 +757,7 @@ index d2364c5..c4e0b3a 100644
  	FRAME_BEGIN
          push    %rbx
  
-@@ -225,7 +225,7 @@ ENDPROC(sha256_mb_mgr_flush_avx2)
+@@ -225,7 +225,7 @@
  ##############################################################################
  
  .align 16
@@ -782,11 +766,10 @@ index d2364c5..c4e0b3a 100644
  	push	%rbx
  
  	## if bit 32+3 is set, then all lanes are empty
-diff --git a/arch/x86/crypto/sha256-mb/sha256_mb_mgr_submit_avx2.S b/arch/x86/crypto/sha256-mb/sha256_mb_mgr_submit_avx2.S
-index b36ae74..1a0045b 100644
---- a/arch/x86/crypto/sha256-mb/sha256_mb_mgr_submit_avx2.S
-+++ b/arch/x86/crypto/sha256-mb/sha256_mb_mgr_submit_avx2.S
-@@ -96,7 +96,7 @@ lane_data	= %r10
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha256-mb/sha256_mb_mgr_submit_avx2.S linux-4.19.1_new/arch/x86/crypto/sha256-mb/sha256_mb_mgr_submit_avx2.S
+--- linux-4.19.1_old/arch/x86/crypto/sha256-mb/sha256_mb_mgr_submit_avx2.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha256-mb/sha256_mb_mgr_submit_avx2.S	2018-11-08 10:57:33.633566779 +0000
+@@ -96,7 +96,7 @@
  # JOB* sha256_mb_mgr_submit_avx2(MB_MGR *state, JOB_SHA256 *job)
  # arg 1 : rcx : state
  # arg 2 : rdx : job
@@ -795,23 +778,9 @@ index b36ae74..1a0045b 100644
  	FRAME_BEGIN
  	push	%rbx
  	push	%r12
-diff --git a/arch/x86/crypto/sha256-ssse3-asm.S b/arch/x86/crypto/sha256-ssse3-asm.S
-index c6c05ed..2557f7b 100644
---- a/arch/x86/crypto/sha256-ssse3-asm.S
-+++ b/arch/x86/crypto/sha256-ssse3-asm.S
-@@ -353,7 +353,7 @@ a = TMP_
- ## arg 3 : Num blocks
- ########################################################################
- .text
--ENTRY(sha256_transform_ssse3)
-+RAP_ENTRY(sha256_transform_ssse3)
- .align 32
- 	pushq   %rbx
- 	pushq   %r12
-diff --git a/arch/x86/crypto/sha256_ni_asm.S b/arch/x86/crypto/sha256_ni_asm.S
-index fb58f58..cf67f33 100644
---- a/arch/x86/crypto/sha256_ni_asm.S
-+++ b/arch/x86/crypto/sha256_ni_asm.S
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha256_ni_asm.S linux-4.19.1_new/arch/x86/crypto/sha256_ni_asm.S
+--- linux-4.19.1_old/arch/x86/crypto/sha256_ni_asm.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha256_ni_asm.S	2018-11-08 10:57:33.633566779 +0000
 @@ -97,7 +97,7 @@
  
  .text
@@ -821,10 +790,21 @@ index fb58f58..cf67f33 100644
  
  	shl		$6, NUM_BLKS		/*  convert to bytes */
  	jz		.Ldone_hash
-diff --git a/arch/x86/crypto/sha256_ssse3_glue.c b/arch/x86/crypto/sha256_ssse3_glue.c
-index 9e79baf..c5186c74 100644
---- a/arch/x86/crypto/sha256_ssse3_glue.c
-+++ b/arch/x86/crypto/sha256_ssse3_glue.c
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha256-ssse3-asm.S linux-4.19.1_new/arch/x86/crypto/sha256-ssse3-asm.S
+--- linux-4.19.1_old/arch/x86/crypto/sha256-ssse3-asm.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha256-ssse3-asm.S	2018-11-08 10:57:33.633566779 +0000
+@@ -353,7 +353,7 @@
+ ## arg 3 : Num blocks
+ ########################################################################
+ .text
+-ENTRY(sha256_transform_ssse3)
++RAP_ENTRY(sha256_transform_ssse3)
+ .align 32
+ 	pushq   %rbx
+ 	pushq   %r12
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha256_ssse3_glue.c linux-4.19.1_new/arch/x86/crypto/sha256_ssse3_glue.c
+--- linux-4.19.1_old/arch/x86/crypto/sha256_ssse3_glue.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha256_ssse3_glue.c	2018-11-08 10:57:33.633566779 +0000
 @@ -40,9 +40,9 @@
  #include <asm/fpu/api.h>
  #include <linux/string.h>
@@ -838,7 +818,7 @@ index 9e79baf..c5186c74 100644
  
  static int sha256_update(struct shash_desc *desc, const u8 *data,
  			 unsigned int len, sha256_transform_fn *sha256_xform)
-@@ -57,8 +57,7 @@ static int sha256_update(struct shash_desc *desc, const u8 *data,
+@@ -57,8 +57,7 @@
  	BUILD_BUG_ON(offsetof(struct sha256_state, state) != 0);
  
  	kernel_fpu_begin();
@@ -848,7 +828,7 @@ index 9e79baf..c5186c74 100644
  	kernel_fpu_end();
  
  	return 0;
-@@ -72,9 +71,8 @@ static int sha256_finup(struct shash_desc *desc, const u8 *data,
+@@ -72,9 +71,8 @@
  
  	kernel_fpu_begin();
  	if (len)
@@ -860,7 +840,7 @@ index 9e79baf..c5186c74 100644
  	kernel_fpu_end();
  
  	return sha256_base_finish(desc, out);
-@@ -146,8 +144,8 @@ static void unregister_sha256_ssse3(void)
+@@ -144,8 +142,8 @@
  }
  
  #ifdef CONFIG_AS_AVX
@@ -871,7 +851,7 @@ index 9e79baf..c5186c74 100644
  
  static int sha256_avx_update(struct shash_desc *desc, const u8 *data,
  			 unsigned int len)
-@@ -230,8 +228,8 @@ static inline void unregister_sha256_avx(void) { }
+@@ -226,8 +224,8 @@
  #endif
  
  #if defined(CONFIG_AS_AVX2) && defined(CONFIG_AS_AVX)
@@ -882,7 +862,7 @@ index 9e79baf..c5186c74 100644
  
  static int sha256_avx2_update(struct shash_desc *desc, const u8 *data,
  			 unsigned int len)
-@@ -312,8 +310,8 @@ static inline void unregister_sha256_avx2(void) { }
+@@ -306,8 +304,8 @@
  #endif
  
  #ifdef CONFIG_AS_SHA256_NI
@@ -893,24 +873,10 @@ index 9e79baf..c5186c74 100644
  
  static int sha256_ni_update(struct shash_desc *desc, const u8 *data,
  			 unsigned int len)
-diff --git a/arch/x86/crypto/sha512-avx-asm.S b/arch/x86/crypto/sha512-avx-asm.S
-index 39235fe..7e51f52 100644
---- a/arch/x86/crypto/sha512-avx-asm.S
-+++ b/arch/x86/crypto/sha512-avx-asm.S
-@@ -277,7 +277,7 @@ frame_size = frame_GPRSAVE + GPRSAVE_SIZE
- # message blocks.
- # L is the message length in SHA512 blocks
- ########################################################################
--ENTRY(sha512_transform_avx)
-+RAP_ENTRY(sha512_transform_avx)
- 	cmp $0, msglen
- 	je nowork
- 
-diff --git a/arch/x86/crypto/sha512-avx2-asm.S b/arch/x86/crypto/sha512-avx2-asm.S
-index b16d560..dbfb27b 100644
---- a/arch/x86/crypto/sha512-avx2-asm.S
-+++ b/arch/x86/crypto/sha512-avx2-asm.S
-@@ -569,7 +569,7 @@ frame_size = frame_GPRSAVE + GPRSAVE_SIZE
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha512-avx2-asm.S linux-4.19.1_new/arch/x86/crypto/sha512-avx2-asm.S
+--- linux-4.19.1_old/arch/x86/crypto/sha512-avx2-asm.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha512-avx2-asm.S	2018-11-08 10:57:33.633566779 +0000
+@@ -569,7 +569,7 @@
  #   message blocks.
  # L is the message length in SHA512 blocks
  ########################################################################
@@ -919,11 +885,22 @@ index b16d560..dbfb27b 100644
  	# Allocate Stack Space
  	mov	%rsp, %rax
  	sub	$frame_size, %rsp
-diff --git a/arch/x86/crypto/sha512-mb/sha512_mb_mgr_flush_avx2.S b/arch/x86/crypto/sha512-mb/sha512_mb_mgr_flush_avx2.S
-index 7c629ca..ebf3d77 100644
---- a/arch/x86/crypto/sha512-mb/sha512_mb_mgr_flush_avx2.S
-+++ b/arch/x86/crypto/sha512-mb/sha512_mb_mgr_flush_avx2.S
-@@ -107,7 +107,7 @@ offset = \_offset
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha512-avx-asm.S linux-4.19.1_new/arch/x86/crypto/sha512-avx-asm.S
+--- linux-4.19.1_old/arch/x86/crypto/sha512-avx-asm.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha512-avx-asm.S	2018-11-08 10:57:33.633566779 +0000
+@@ -277,7 +277,7 @@
+ # message blocks.
+ # L is the message length in SHA512 blocks
+ ########################################################################
+-ENTRY(sha512_transform_avx)
++RAP_ENTRY(sha512_transform_avx)
+ 	cmp $0, msglen
+ 	je nowork
+ 
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha512-mb/sha512_mb_mgr_flush_avx2.S linux-4.19.1_new/arch/x86/crypto/sha512-mb/sha512_mb_mgr_flush_avx2.S
+--- linux-4.19.1_old/arch/x86/crypto/sha512-mb/sha512_mb_mgr_flush_avx2.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha512-mb/sha512_mb_mgr_flush_avx2.S	2018-11-08 10:57:33.633566779 +0000
+@@ -107,7 +107,7 @@
  
  # JOB* sha512_mb_mgr_flush_avx2(MB_MGR *state)
  # arg 1 : rcx : state
@@ -932,7 +909,7 @@ index 7c629ca..ebf3d77 100644
  	FRAME_BEGIN
  	push	%rbx
  
-@@ -220,7 +220,7 @@ return_null:
+@@ -220,7 +220,7 @@
  ENDPROC(sha512_mb_mgr_flush_avx2)
  .align 16
  
@@ -941,10 +918,9 @@ index 7c629ca..ebf3d77 100644
          push    %rbx
  
  	mov     _unused_lanes(state), unused_lanes
-diff --git a/arch/x86/crypto/sha512-mb/sha512_mb_mgr_submit_avx2.S b/arch/x86/crypto/sha512-mb/sha512_mb_mgr_submit_avx2.S
-index 4ba709b..8730bfd 100644
---- a/arch/x86/crypto/sha512-mb/sha512_mb_mgr_submit_avx2.S
-+++ b/arch/x86/crypto/sha512-mb/sha512_mb_mgr_submit_avx2.S
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha512-mb/sha512_mb_mgr_submit_avx2.S linux-4.19.1_new/arch/x86/crypto/sha512-mb/sha512_mb_mgr_submit_avx2.S
+--- linux-4.19.1_old/arch/x86/crypto/sha512-mb/sha512_mb_mgr_submit_avx2.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha512-mb/sha512_mb_mgr_submit_avx2.S	2018-11-08 10:57:33.633566779 +0000
 @@ -98,7 +98,7 @@
  # JOB* sha512_mb_mgr_submit_avx2(MB_MGR *state, JOB *job)
  # arg 1 : rcx : state
@@ -954,11 +930,10 @@ index 4ba709b..8730bfd 100644
  	FRAME_BEGIN
  	push	%rbx
  	push	%r12
-diff --git a/arch/x86/crypto/sha512-ssse3-asm.S b/arch/x86/crypto/sha512-ssse3-asm.S
-index 66bbd90..4d2e909 100644
---- a/arch/x86/crypto/sha512-ssse3-asm.S
-+++ b/arch/x86/crypto/sha512-ssse3-asm.S
-@@ -275,7 +275,7 @@ frame_size = frame_GPRSAVE + GPRSAVE_SIZE
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/sha512-ssse3-asm.S linux-4.19.1_new/arch/x86/crypto/sha512-ssse3-asm.S
+--- linux-4.19.1_old/arch/x86/crypto/sha512-ssse3-asm.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/sha512-ssse3-asm.S	2018-11-08 10:57:33.633566779 +0000
+@@ -275,7 +275,7 @@
  #   message blocks.
  # L is the message length in SHA512 blocks.
  ########################################################################
@@ -967,11 +942,10 @@ index 66bbd90..4d2e909 100644
  
  	cmp $0, msglen
  	je nowork
-diff --git a/arch/x86/crypto/twofish-avx-x86_64-asm_64.S b/arch/x86/crypto/twofish-avx-x86_64-asm_64.S
-index 73b471d..eb9ca63 100644
---- a/arch/x86/crypto/twofish-avx-x86_64-asm_64.S
-+++ b/arch/x86/crypto/twofish-avx-x86_64-asm_64.S
-@@ -330,7 +330,7 @@ __twofish_dec_blk8:
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/twofish-avx-x86_64-asm_64.S linux-4.19.1_new/arch/x86/crypto/twofish-avx-x86_64-asm_64.S
+--- linux-4.19.1_old/arch/x86/crypto/twofish-avx-x86_64-asm_64.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/twofish-avx-x86_64-asm_64.S	2018-11-08 10:57:33.633566779 +0000
+@@ -330,7 +330,7 @@
  	ret;
  ENDPROC(__twofish_dec_blk8)
  
@@ -980,7 +954,7 @@ index 73b471d..eb9ca63 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-@@ -350,7 +350,7 @@ ENTRY(twofish_ecb_enc_8way)
+@@ -350,7 +350,7 @@
  	ret;
  ENDPROC(twofish_ecb_enc_8way)
  
@@ -989,7 +963,7 @@ index 73b471d..eb9ca63 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-@@ -370,7 +370,7 @@ ENTRY(twofish_ecb_dec_8way)
+@@ -370,7 +370,7 @@
  	ret;
  ENDPROC(twofish_ecb_dec_8way)
  
@@ -998,7 +972,7 @@ index 73b471d..eb9ca63 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-@@ -395,7 +395,7 @@ ENTRY(twofish_cbc_dec_8way)
+@@ -395,7 +395,7 @@
  	ret;
  ENDPROC(twofish_cbc_dec_8way)
  
@@ -1007,7 +981,7 @@ index 73b471d..eb9ca63 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-@@ -422,7 +422,7 @@ ENTRY(twofish_ctr_8way)
+@@ -422,7 +422,7 @@
  	ret;
  ENDPROC(twofish_ctr_8way)
  
@@ -1016,7 +990,7 @@ index 73b471d..eb9ca63 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-@@ -446,7 +446,7 @@ ENTRY(twofish_xts_enc_8way)
+@@ -446,7 +446,7 @@
  	ret;
  ENDPROC(twofish_xts_enc_8way)
  
@@ -1025,10 +999,9 @@ index 73b471d..eb9ca63 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-diff --git a/arch/x86/crypto/twofish-i586-asm_32.S b/arch/x86/crypto/twofish-i586-asm_32.S
-index 694ea45..f2c1418 100644
---- a/arch/x86/crypto/twofish-i586-asm_32.S
-+++ b/arch/x86/crypto/twofish-i586-asm_32.S
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/twofish-i586-asm_32.S linux-4.19.1_new/arch/x86/crypto/twofish-i586-asm_32.S
+--- linux-4.19.1_old/arch/x86/crypto/twofish-i586-asm_32.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/twofish-i586-asm_32.S	2018-11-08 10:57:33.633566779 +0000
 @@ -220,7 +220,7 @@
  	xor	%esi,		d ## D;\
  	ror	$1,		d ## D;
@@ -1038,7 +1011,7 @@ index 694ea45..f2c1418 100644
  	push	%ebp			/* save registers according to calling convention*/
  	push    %ebx
  	push    %esi
-@@ -276,7 +276,7 @@ ENTRY(twofish_enc_blk)
+@@ -276,7 +276,7 @@
  	ret
  ENDPROC(twofish_enc_blk)
  
@@ -1047,11 +1020,10 @@ index 694ea45..f2c1418 100644
  	push	%ebp			/* save registers according to calling convention*/
  	push    %ebx
  	push    %esi
-diff --git a/arch/x86/crypto/twofish-x86_64-asm_64-3way.S b/arch/x86/crypto/twofish-x86_64-asm_64-3way.S
-index e7273a6..dd44bac 100644
---- a/arch/x86/crypto/twofish-x86_64-asm_64-3way.S
-+++ b/arch/x86/crypto/twofish-x86_64-asm_64-3way.S
-@@ -284,7 +284,7 @@ ENTRY(__twofish_enc_blk_3way)
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/twofish-x86_64-asm_64-3way.S linux-4.19.1_new/arch/x86/crypto/twofish-x86_64-asm_64-3way.S
+--- linux-4.19.1_old/arch/x86/crypto/twofish-x86_64-asm_64-3way.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/twofish-x86_64-asm_64-3way.S	2018-11-08 10:57:33.633566779 +0000
+@@ -284,7 +284,7 @@
  	ret;
  ENDPROC(__twofish_enc_blk_3way)
  
@@ -1060,10 +1032,9 @@ index e7273a6..dd44bac 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst
-diff --git a/arch/x86/crypto/twofish-x86_64-asm_64.S b/arch/x86/crypto/twofish-x86_64-asm_64.S
-index a350c99..32a5e60 100644
---- a/arch/x86/crypto/twofish-x86_64-asm_64.S
-+++ b/arch/x86/crypto/twofish-x86_64-asm_64.S
+diff -ur --new-file linux-4.19.1_old/arch/x86/crypto/twofish-x86_64-asm_64.S linux-4.19.1_new/arch/x86/crypto/twofish-x86_64-asm_64.S
+--- linux-4.19.1_old/arch/x86/crypto/twofish-x86_64-asm_64.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/crypto/twofish-x86_64-asm_64.S	2018-11-08 10:57:33.633566779 +0000
 @@ -215,7 +215,7 @@
  	xor	%r8d,		d ## D;\
  	ror	$1,		d ## D;
@@ -1073,7 +1044,7 @@ index a350c99..32a5e60 100644
  	pushq    R1
  
  	/* %rdi contains the ctx address */
-@@ -268,7 +268,7 @@ ENTRY(twofish_enc_blk)
+@@ -268,7 +268,7 @@
  	ret
  ENDPROC(twofish_enc_blk)
  
@@ -1082,21 +1053,10 @@ index a350c99..32a5e60 100644
  	pushq    R1
  
  	/* %rdi contains the ctx address */
-diff --git a/arch/x86/entry/Makefile b/arch/x86/entry/Makefile
-index 06fc70c..03f4755 100644
---- a/arch/x86/entry/Makefile
-+++ b/arch/x86/entry/Makefile
-@@ -15,3 +15,5 @@ obj-y				+= vsyscall/
- 
- obj-$(CONFIG_IA32_EMULATION)	+= entry_64_compat.o syscall_32.o
- 
-+CFLAGS_REMOVE_syscall_32.o = $(RAP_PLUGIN_ABS_CFLAGS)
-+CFLAGS_REMOVE_syscall_64.o = $(RAP_PLUGIN_ABS_CFLAGS)
-diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-index 3b2490b..0806da8 100644
---- a/arch/x86/entry/common.c
-+++ b/arch/x86/entry/common.c
-@@ -287,7 +287,17 @@ __visible void do_syscall_64(unsigned long nr, struct pt_regs *regs)
+diff -ur --new-file linux-4.19.1_old/arch/x86/entry/common.c linux-4.19.1_new/arch/x86/entry/common.c
+--- linux-4.19.1_old/arch/x86/entry/common.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/entry/common.c	2018-11-08 10:57:33.633566779 +0000
+@@ -287,7 +287,17 @@
  	nr &= __SYSCALL_MASK;
  	if (likely(nr < NR_syscalls)) {
  		nr = array_index_nospec(nr, NR_syscalls);
@@ -1114,7 +1074,7 @@ index 3b2490b..0806da8 100644
  	}
  
  	syscall_return_slowpath(regs);
-@@ -331,10 +341,51 @@ static __always_inline void do_syscall_32_irqs_on(struct pt_regs *regs)
+@@ -331,10 +341,51 @@
  		 * the high bits are zero.  Make sure we zero-extend all
  		 * of the args.
  		 */
@@ -1166,11 +1126,19 @@ index 3b2490b..0806da8 100644
  #endif /* CONFIG_IA32_EMULATION */
  	}
  
-diff --git a/arch/x86/events/amd/iommu.h b/arch/x86/events/amd/iommu.h
-index 62e0702..bc87ec5 100644
---- a/arch/x86/events/amd/iommu.h
-+++ b/arch/x86/events/amd/iommu.h
-@@ -41,6 +41,6 @@ extern int amd_iommu_pc_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
+diff -ur --new-file linux-4.19.1_old/arch/x86/entry/Makefile linux-4.19.1_new/arch/x86/entry/Makefile
+--- linux-4.19.1_old/arch/x86/entry/Makefile	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/entry/Makefile	2018-11-08 10:57:33.633566779 +0000
+@@ -15,3 +15,5 @@
+ 
+ obj-$(CONFIG_IA32_EMULATION)	+= entry_64_compat.o syscall_32.o
+ 
++CFLAGS_REMOVE_syscall_32.o = $(RAP_PLUGIN_ABS_CFLAGS)
++CFLAGS_REMOVE_syscall_64.o = $(RAP_PLUGIN_ABS_CFLAGS)
+diff -ur --new-file linux-4.19.1_old/arch/x86/events/amd/iommu.h linux-4.19.1_new/arch/x86/events/amd/iommu.h
+--- linux-4.19.1_old/arch/x86/events/amd/iommu.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/events/amd/iommu.h	2018-11-08 10:57:33.633566779 +0000
+@@ -41,6 +41,6 @@
  extern int amd_iommu_pc_get_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
  				u8 fxn, u64 *value);
  
@@ -1178,11 +1146,10 @@ index 62e0702..bc87ec5 100644
 +extern struct amd_iommu *get_amd_iommu(unsigned int idx);
  
  #endif /*_PERF_EVENT_AMD_IOMMU_H_*/
-diff --git a/arch/x86/include/asm/e820/api.h b/arch/x86/include/asm/e820/api.h
-index 62be73b..4133797 100644
---- a/arch/x86/include/asm/e820/api.h
-+++ b/arch/x86/include/asm/e820/api.h
-@@ -11,7 +11,7 @@ extern struct e820_table *e820_table_firmware;
+diff -ur --new-file linux-4.19.1_old/arch/x86/include/asm/e820/api.h linux-4.19.1_new/arch/x86/include/asm/e820/api.h
+--- linux-4.19.1_old/arch/x86/include/asm/e820/api.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/include/asm/e820/api.h	2018-11-08 10:57:33.633566779 +0000
+@@ -11,7 +11,7 @@
  extern unsigned long pci_mem_start;
  
  extern bool e820__mapped_any(u64 start, u64 end, enum e820_type type);
@@ -1191,11 +1158,10 @@ index 62be73b..4133797 100644
  
  extern void e820__range_add   (u64 start, u64 size, enum e820_type type);
  extern u64  e820__range_update(u64 start, u64 size, enum e820_type old_type, enum e820_type new_type);
-diff --git a/arch/x86/include/asm/fixmap.h b/arch/x86/include/asm/fixmap.h
-index e203169..0ef405e 100644
---- a/arch/x86/include/asm/fixmap.h
-+++ b/arch/x86/include/asm/fixmap.h
-@@ -149,7 +149,7 @@ extern pte_t *kmap_pte;
+diff -ur --new-file linux-4.19.1_old/arch/x86/include/asm/fixmap.h linux-4.19.1_new/arch/x86/include/asm/fixmap.h
+--- linux-4.19.1_old/arch/x86/include/asm/fixmap.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/include/asm/fixmap.h	2018-11-08 10:57:33.633566779 +0000
+@@ -159,7 +159,7 @@
  extern pte_t *pkmap_page_table;
  
  void __native_set_fixmap(enum fixed_addresses idx, pte_t pte);
@@ -1204,11 +1170,10 @@ index e203169..0ef405e 100644
  		       phys_addr_t phys, pgprot_t flags);
  
  #ifndef CONFIG_PARAVIRT
-diff --git a/arch/x86/include/asm/module.h b/arch/x86/include/asm/module.h
-index 7948a17..bc2b010 100644
---- a/arch/x86/include/asm/module.h
-+++ b/arch/x86/include/asm/module.h
-@@ -15,6 +15,7 @@ struct mod_arch_specific {
+diff -ur --new-file linux-4.19.1_old/arch/x86/include/asm/module.h linux-4.19.1_new/arch/x86/include/asm/module.h
+--- linux-4.19.1_old/arch/x86/include/asm/module.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/include/asm/module.h	2018-11-08 10:57:33.633566779 +0000
+@@ -15,6 +15,7 @@
  
  #ifdef CONFIG_X86_64
  /* X86_64 does not define MODULE_PROC_FAMILY */
@@ -1216,7 +1181,7 @@ index 7948a17..bc2b010 100644
  #elif defined CONFIG_M486
  #define MODULE_PROC_FAMILY "486 "
  #elif defined CONFIG_M586
-@@ -67,8 +68,12 @@ struct mod_arch_specific {
+@@ -67,8 +68,12 @@
  #error unknown processor family
  #endif
  
@@ -1231,11 +1196,10 @@ index 7948a17..bc2b010 100644
 +#define MODULE_ARCH_VERMAGIC MODULE_PROC_FAMILY MODULE_PAX_RAP
 +
  #endif /* _ASM_X86_MODULE_H */
-diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 3aac91c..fb9d908 100644
---- a/arch/x86/kernel/cpu/vmware.c
-+++ b/arch/x86/kernel/cpu/vmware.c
-@@ -292,11 +292,17 @@ static __init int activate_jump_labels(void)
+diff -ur --new-file linux-4.19.1_old/arch/x86/kernel/cpu/vmware.c linux-4.19.1_new/arch/x86/kernel/cpu/vmware.c
+--- linux-4.19.1_old/arch/x86/kernel/cpu/vmware.c	2018-11-08 19:00:32.947255393 +0000
++++ linux-4.19.1_new/arch/x86/kernel/cpu/vmware.c	2018-11-08 10:57:33.633566779 +0000
+@@ -292,11 +292,17 @@
  }
  arch_initcall(activate_jump_labels);
  
@@ -1254,11 +1218,10 @@ index 3aac91c..fb9d908 100644
  
  	if (vmware_tsc_khz == 0)
  		return;
-diff --git a/arch/x86/kernel/e820.c b/arch/x86/kernel/e820.c
-index c88c23c..7a0b8f2 100644
---- a/arch/x86/kernel/e820.c
-+++ b/arch/x86/kernel/e820.c
-@@ -132,7 +132,7 @@ static struct e820_entry *__e820__mapped_all(u64 start, u64 end,
+diff -ur --new-file linux-4.19.1_old/arch/x86/kernel/e820.c linux-4.19.1_new/arch/x86/kernel/e820.c
+--- linux-4.19.1_old/arch/x86/kernel/e820.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/kernel/e820.c	2018-11-08 10:57:33.633566779 +0000
+@@ -132,7 +132,7 @@
  /*
   * This function checks if the entire range <start,end> is mapped with type.
   */
@@ -1267,11 +1230,10 @@ index c88c23c..7a0b8f2 100644
  {
  	return __e820__mapped_all(start, end, type);
  }
-diff --git a/arch/x86/kernel/ftrace_64.S b/arch/x86/kernel/ftrace_64.S
-index 91b2cff..7aeca3f 100644
---- a/arch/x86/kernel/ftrace_64.S
-+++ b/arch/x86/kernel/ftrace_64.S
-@@ -186,7 +186,7 @@ GLOBAL(ftrace_graph_call)
+diff -ur --new-file linux-4.19.1_old/arch/x86/kernel/ftrace_64.S linux-4.19.1_new/arch/x86/kernel/ftrace_64.S
+--- linux-4.19.1_old/arch/x86/kernel/ftrace_64.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/kernel/ftrace_64.S	2018-11-08 10:57:33.633566779 +0000
+@@ -186,7 +186,7 @@
  #endif
  
  /* This is weak to keep gas from relaxing the jumps */
@@ -1280,11 +1242,33 @@ index 91b2cff..7aeca3f 100644
  	retq
  ENDPROC(ftrace_caller)
  
-diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index e6db475..3be5161 100644
---- a/arch/x86/kernel/traps.c
-+++ b/arch/x86/kernel/traps.c
-@@ -211,6 +211,10 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, char *str,
+diff -ur --new-file linux-4.19.1_old/arch/x86/kernel/paravirt.c linux-4.19.1_new/arch/x86/kernel/paravirt.c
+--- linux-4.19.1_old/arch/x86/kernel/paravirt.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/kernel/paravirt.c	2018-11-10 00:06:40.881890826 +0000
+@@ -399,6 +399,10 @@
+ #define PTE_IDENT	__PV_IS_CALLEE_SAVE(_paravirt_ident_64)
+ #endif
+ 
++void tlb_remove_page_wrapper(struct mmu_gather *tlb, void *table) {
++	tlb_remove_page(tlb, (struct page *)table);
++}
++
+ struct pv_mmu_ops pv_mmu_ops __ro_after_init = {
+ 
+ 	.read_cr2 = native_read_cr2,
+@@ -410,7 +414,7 @@
+ 	.flush_tlb_kernel = native_flush_tlb_global,
+ 	.flush_tlb_one_user = native_flush_tlb_one_user,
+ 	.flush_tlb_others = native_flush_tlb_others,
+-	.tlb_remove_table = (void (*)(struct mmu_gather *, void *))tlb_remove_page,
++	.tlb_remove_table = tlb_remove_page_wrapper,
+ 
+ 	.pgd_alloc = __paravirt_pgd_alloc,
+ 	.pgd_free = paravirt_nop,
+diff -ur --new-file linux-4.19.1_old/arch/x86/kernel/traps.c linux-4.19.1_new/arch/x86/kernel/traps.c
+--- linux-4.19.1_old/arch/x86/kernel/traps.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/kernel/traps.c	2018-11-08 10:57:33.633566779 +0000
+@@ -211,6 +211,10 @@
  
  		tsk->thread.error_code = error_code;
  		tsk->thread.trap_nr = trapnr;
@@ -1295,11 +1279,10 @@ index e6db475..3be5161 100644
  		die(str, regs, error_code);
  	}
  
-diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-index e3deefb..3b375e1 100644
---- a/arch/x86/mm/pgtable.c
-+++ b/arch/x86/mm/pgtable.c
-@@ -585,7 +585,7 @@ void __native_set_fixmap(enum fixed_addresses idx, pte_t pte)
+diff -ur --new-file linux-4.19.1_old/arch/x86/mm/pgtable.c linux-4.19.1_new/arch/x86/mm/pgtable.c
+--- linux-4.19.1_old/arch/x86/mm/pgtable.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/mm/pgtable.c	2018-11-08 10:57:33.633566779 +0000
+@@ -660,7 +660,7 @@
  	fixmaps_set++;
  }
  
@@ -1308,10 +1291,9 @@ index e3deefb..3b375e1 100644
  		       pgprot_t flags)
  {
  	/* Sanitize 'prot' against any unsupported bits: */
-diff --git a/arch/x86/xen/xen-asm.S b/arch/x86/xen/xen-asm.S
-index 8019edd..1ce2907 100644
---- a/arch/x86/xen/xen-asm.S
-+++ b/arch/x86/xen/xen-asm.S
+diff -ur --new-file linux-4.19.1_old/arch/x86/xen/xen-asm.S linux-4.19.1_new/arch/x86/xen/xen-asm.S
+--- linux-4.19.1_old/arch/x86/xen/xen-asm.S	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/arch/x86/xen/xen-asm.S	2018-11-08 10:57:33.637566737 +0000
 @@ -18,7 +18,7 @@
   * event status with one and operation.  If there are pending events,
   * then enter the hypervisor to get them handled.
@@ -1321,7 +1303,7 @@ index 8019edd..1ce2907 100644
  	FRAME_BEGIN
  	/* Unmask events */
  	movb $0, PER_CPU_VAR(xen_vcpu_info) + XEN_vcpu_info_mask
-@@ -44,7 +44,7 @@ ENTRY(xen_irq_enable_direct)
+@@ -44,7 +44,7 @@
   * Disabling events is simply a matter of making the event mask
   * non-zero.
   */
@@ -1330,7 +1312,7 @@ index 8019edd..1ce2907 100644
  	movb $1, PER_CPU_VAR(xen_vcpu_info) + XEN_vcpu_info_mask
  	ret
  ENDPROC(xen_irq_disable_direct)
-@@ -58,7 +58,7 @@ ENDPROC(xen_irq_disable_direct)
+@@ -58,7 +58,7 @@
   * undefined.  We need to toggle the state of the bit, because Xen and
   * x86 use opposite senses (mask vs enable).
   */
@@ -1339,7 +1321,7 @@ index 8019edd..1ce2907 100644
  	testb $0xff, PER_CPU_VAR(xen_vcpu_info) + XEN_vcpu_info_mask
  	setz %ah
  	addb %ah, %ah
-@@ -73,7 +73,7 @@ ENTRY(xen_save_fl_direct)
+@@ -73,7 +73,7 @@
   * interrupt mask state, it checks for unmasked pending events and
   * enters the hypervisor to get them delivered if so.
   */
@@ -1348,11 +1330,10 @@ index 8019edd..1ce2907 100644
  	FRAME_BEGIN
  #ifdef CONFIG_X86_64
  	testw $X86_EFLAGS_IF, %di
-diff --git a/drivers/char/tpm/tpm-chip.c b/drivers/char/tpm/tpm-chip.c
-index 0a62c19..95a2708 100644
---- a/drivers/char/tpm/tpm-chip.c
-+++ b/drivers/char/tpm/tpm-chip.c
-@@ -272,6 +272,11 @@ struct tpm_chip *tpm_chip_alloc(struct device *pdev,
+diff -ur --new-file linux-4.19.1_old/drivers/char/tpm/tpm-chip.c linux-4.19.1_new/drivers/char/tpm/tpm-chip.c
+--- linux-4.19.1_old/drivers/char/tpm/tpm-chip.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/char/tpm/tpm-chip.c	2018-11-08 10:57:33.637566737 +0000
+@@ -296,6 +296,11 @@
  }
  EXPORT_SYMBOL_GPL(tpm_chip_alloc);
  
@@ -1364,7 +1345,7 @@ index 0a62c19..95a2708 100644
  /**
   * tpmm_chip_alloc() - allocate a new struct tpm_chip instance
   * @pdev: parent device to which the chip is associated
-@@ -289,9 +294,7 @@ struct tpm_chip *tpmm_chip_alloc(struct device *pdev,
+@@ -313,9 +318,7 @@
  	if (IS_ERR(chip))
  		return chip;
  
@@ -1375,11 +1356,10 @@ index 0a62c19..95a2708 100644
  	if (rc)
  		return ERR_PTR(rc);
  
-diff --git a/drivers/firmware/dmi-id.c b/drivers/firmware/dmi-id.c
-index 624a11c..3ddff56 100644
---- a/drivers/firmware/dmi-id.c
-+++ b/drivers/firmware/dmi-id.c
-@@ -161,9 +161,14 @@ static int dmi_dev_uevent(struct device *dev, struct kobj_uevent_env *env)
+diff -ur --new-file linux-4.19.1_old/drivers/firmware/dmi-id.c linux-4.19.1_new/drivers/firmware/dmi-id.c
+--- linux-4.19.1_old/drivers/firmware/dmi-id.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/firmware/dmi-id.c	2018-11-08 10:57:33.637566737 +0000
+@@ -161,9 +161,14 @@
  	return 0;
  }
  
@@ -1395,11 +1375,10 @@ index 624a11c..3ddff56 100644
  	.dev_uevent = dmi_dev_uevent,
  };
  
-diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadow.c b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadow.c
-index 7deb81b..bb22bc2 100644
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadow.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadow.c
-@@ -154,11 +154,16 @@ shadow_fw_init(struct nvkm_bios *bios, const char *name)
+diff -ur --new-file linux-4.19.1_old/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadow.c linux-4.19.1_new/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadow.c
+--- linux-4.19.1_old/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadow.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadow.c	2018-11-08 10:57:33.637566737 +0000
+@@ -154,11 +154,16 @@
  	return (void *)fw;
  }
  
@@ -1417,11 +1396,10 @@ index 7deb81b..bb22bc2 100644
  	.read = shadow_fw_read,
  	.rw = false,
  };
-diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowpci.c b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowpci.c
-index 9b91da0..b3fa90d 100644
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowpci.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowpci.c
-@@ -111,11 +111,16 @@ platform_init(struct nvkm_bios *bios, const char *name)
+diff -ur --new-file linux-4.19.1_old/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowpci.c linux-4.19.1_new/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowpci.c
+--- linux-4.19.1_old/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowpci.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowpci.c	2018-11-08 10:57:33.637566737 +0000
+@@ -111,11 +111,16 @@
  	return ERR_PTR(ret);
  }
  
@@ -1439,11 +1417,10 @@ index 9b91da0..b3fa90d 100644
  	.read = pcirom_read,
  	.rw = true,
  };
-diff --git a/drivers/gpu/drm/radeon/radeon_kms.c b/drivers/gpu/drm/radeon/radeon_kms.c
-index dec1e08..631f91c 100644
---- a/drivers/gpu/drm/radeon/radeon_kms.c
-+++ b/drivers/gpu/drm/radeon/radeon_kms.c
-@@ -833,7 +833,7 @@ u32 radeon_get_vblank_counter_kms(struct drm_device *dev, unsigned int pipe)
+diff -ur --new-file linux-4.19.1_old/drivers/gpu/drm/radeon/radeon_kms.c linux-4.19.1_new/drivers/gpu/drm/radeon/radeon_kms.c
+--- linux-4.19.1_old/drivers/gpu/drm/radeon/radeon_kms.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/gpu/drm/radeon/radeon_kms.c	2018-11-08 10:57:33.637566737 +0000
+@@ -833,7 +833,7 @@
   * Enable the interrupt on the requested crtc (all asics).
   * Returns 0 on success, -EINVAL on failure.
   */
@@ -1452,7 +1429,7 @@ index dec1e08..631f91c 100644
  {
  	struct radeon_device *rdev = dev->dev_private;
  	unsigned long irqflags;
-@@ -859,7 +859,7 @@ int radeon_enable_vblank_kms(struct drm_device *dev, int crtc)
+@@ -859,7 +859,7 @@
   *
   * Disable the interrupt on the requested crtc (all asics).
   */
@@ -1461,11 +1438,10 @@ index dec1e08..631f91c 100644
  {
  	struct radeon_device *rdev = dev->dev_private;
  	unsigned long irqflags;
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c
-index 22243c4..43dbdd5 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c
-@@ -5615,7 +5615,7 @@ static int bnx2x_get_link_speed_duplex(struct bnx2x_phy *phy,
+diff -ur --new-file linux-4.19.1_old/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c linux-4.19.1_new/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c
+--- linux-4.19.1_old/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c	2018-11-08 10:57:33.637566737 +0000
+@@ -5615,7 +5615,7 @@
  	return 0;
  }
  
@@ -1474,7 +1450,7 @@ index 22243c4..43dbdd5 100644
  				      struct link_params *params,
  				      struct link_vars *vars)
  {
-@@ -5689,7 +5689,7 @@ static int bnx2x_link_settings_status(struct bnx2x_phy *phy,
+@@ -5689,7 +5689,7 @@
  	return rc;
  }
  
@@ -1483,7 +1459,7 @@ index 22243c4..43dbdd5 100644
  				     struct link_params *params,
  				     struct link_vars *vars)
  {
-@@ -7367,7 +7367,7 @@ static void bnx2x_8073_specific_func(struct bnx2x_phy *phy,
+@@ -7368,7 +7368,7 @@
  	}
  }
  
@@ -1492,7 +1468,7 @@ index 22243c4..43dbdd5 100644
  				  struct link_params *params,
  				  struct link_vars *vars)
  {
-@@ -7430,7 +7430,7 @@ static int bnx2x_8073_config_init(struct bnx2x_phy *phy,
+@@ -7431,7 +7431,7 @@
  	if (params->loopback_mode == LOOPBACK_EXT) {
  		bnx2x_807x_force_10G(bp, phy);
  		DP(NETIF_MSG_LINK, "Forced speed 10G on 807X\n");
@@ -1501,7 +1477,7 @@ index 22243c4..43dbdd5 100644
  	} else {
  		bnx2x_cl45_write(bp, phy,
  				 MDIO_PMA_DEVAD, MDIO_PMA_REG_BCM_CTRL, 0x0002);
-@@ -7512,7 +7512,6 @@ static int bnx2x_8073_config_init(struct bnx2x_phy *phy,
+@@ -7513,7 +7513,6 @@
  	bnx2x_cl45_write(bp, phy, MDIO_AN_DEVAD, MDIO_AN_REG_CTRL, 0x1200);
  	DP(NETIF_MSG_LINK, "807x Autoneg Restart: Advertise 1G=%x, 10G=%x\n",
  		   ((val & (1<<5)) > 0), ((val & (1<<7)) > 0));
@@ -1509,7 +1485,7 @@ index 22243c4..43dbdd5 100644
  }
  
  static u8 bnx2x_8073_read_status(struct bnx2x_phy *phy,
-@@ -7679,7 +7678,7 @@ static void bnx2x_8073_link_reset(struct bnx2x_phy *phy,
+@@ -7680,7 +7679,7 @@
  /******************************************************************/
  /*			BCM8705 PHY SECTION			  */
  /******************************************************************/
@@ -1518,7 +1494,7 @@ index 22243c4..43dbdd5 100644
  				  struct link_params *params,
  				  struct link_vars *vars)
  {
-@@ -7703,7 +7702,6 @@ static int bnx2x_8705_config_init(struct bnx2x_phy *phy,
+@@ -7704,7 +7703,6 @@
  			 MDIO_WIS_DEVAD, MDIO_WIS_REG_LASI_CNTL, 0x1);
  	/* BCM8705 doesn't have microcode, hence the 0 */
  	bnx2x_save_spirom_version(bp, params->port, params->shmem_base, 0);
@@ -1526,7 +1502,7 @@ index 22243c4..43dbdd5 100644
  }
  
  static u8 bnx2x_8705_read_status(struct bnx2x_phy *phy,
-@@ -8890,7 +8888,7 @@ static u8 bnx2x_8706_8726_read_status(struct bnx2x_phy *phy,
+@@ -8891,7 +8889,7 @@
  /******************************************************************/
  /*			BCM8706 PHY SECTION			  */
  /******************************************************************/
@@ -1535,7 +1511,7 @@ index 22243c4..43dbdd5 100644
  				 struct link_params *params,
  				 struct link_vars *vars)
  {
-@@ -8992,11 +8990,9 @@ static u8 bnx2x_8706_config_init(struct bnx2x_phy *phy,
+@@ -8993,11 +8991,9 @@
  		bnx2x_cl45_write(bp, phy,
  			MDIO_PMA_DEVAD, MDIO_PMA_REG_DIGITAL_CTRL, tmp1);
  	}
@@ -1548,7 +1524,7 @@ index 22243c4..43dbdd5 100644
  				  struct link_params *params,
  				  struct link_vars *vars)
  {
-@@ -9073,7 +9069,7 @@ static u8 bnx2x_8726_read_status(struct bnx2x_phy *phy,
+@@ -9074,7 +9070,7 @@
  }
  
  
@@ -1557,7 +1533,7 @@ index 22243c4..43dbdd5 100644
  				  struct link_params *params,
  				  struct link_vars *vars)
  {
-@@ -9154,8 +9150,6 @@ static int bnx2x_8726_config_init(struct bnx2x_phy *phy,
+@@ -9155,8 +9151,6 @@
  				 phy->tx_preemphasis[1]);
  	}
  
@@ -1566,7 +1542,7 @@ index 22243c4..43dbdd5 100644
  }
  
  static void bnx2x_8726_link_reset(struct bnx2x_phy *phy,
-@@ -9291,7 +9285,7 @@ static void bnx2x_8727_config_speed(struct bnx2x_phy *phy,
+@@ -9292,7 +9286,7 @@
  	}
  }
  
@@ -1575,7 +1551,7 @@ index 22243c4..43dbdd5 100644
  				  struct link_params *params,
  				  struct link_vars *vars)
  {
-@@ -9373,8 +9367,6 @@ static int bnx2x_8727_config_init(struct bnx2x_phy *phy,
+@@ -9374,8 +9368,6 @@
  				 MDIO_PMA_DEVAD, MDIO_PMA_REG_PHY_IDENTIFIER,
  				 (tmp2 & 0x7fff));
  	}
@@ -1584,7 +1560,7 @@ index 22243c4..43dbdd5 100644
  }
  
  static void bnx2x_8727_handle_mod_abs(struct bnx2x_phy *phy,
-@@ -9949,7 +9941,7 @@ static int bnx2x_848xx_cmn_config_init(struct bnx2x_phy *phy,
+@@ -9950,7 +9942,7 @@
  	return 0;
  }
  
@@ -1593,7 +1569,7 @@ index 22243c4..43dbdd5 100644
  				  struct link_params *params,
  				  struct link_vars *vars)
  {
-@@ -9963,7 +9955,7 @@ static int bnx2x_8481_config_init(struct bnx2x_phy *phy,
+@@ -9964,7 +9956,7 @@
  	bnx2x_wait_reset_complete(bp, phy, params);
  
  	bnx2x_cl45_write(bp, phy, MDIO_PMA_DEVAD, MDIO_PMA_REG_CTRL, 1<<15);
@@ -1602,7 +1578,7 @@ index 22243c4..43dbdd5 100644
  }
  
  #define PHY848xx_CMDHDLR_WAIT 300
-@@ -10213,7 +10205,7 @@ static u8 bnx2x_84833_get_reset_gpios(struct bnx2x *bp,
+@@ -10214,7 +10206,7 @@
  	return reset_gpios;
  }
  
@@ -1611,7 +1587,7 @@ index 22243c4..43dbdd5 100644
  				struct link_params *params)
  {
  	struct bnx2x *bp = params->bp;
-@@ -10242,8 +10234,6 @@ static int bnx2x_84833_hw_reset_phy(struct bnx2x_phy *phy,
+@@ -10243,8 +10235,6 @@
  	udelay(10);
  	DP(NETIF_MSG_LINK, "84833 hw reset on pin values 0x%x\n",
  		reset_gpios);
@@ -1620,7 +1596,7 @@ index 22243c4..43dbdd5 100644
  }
  
  static int bnx2x_8483x_disable_eee(struct bnx2x_phy *phy,
-@@ -10286,7 +10276,7 @@ static int bnx2x_8483x_enable_eee(struct bnx2x_phy *phy,
+@@ -10287,7 +10277,7 @@
  }
  
  #define PHY84833_CONSTANT_LATENCY 1193
@@ -1629,7 +1605,7 @@ index 22243c4..43dbdd5 100644
  				   struct link_params *params,
  				   struct link_vars *vars)
  {
-@@ -10433,7 +10423,7 @@ static int bnx2x_848x3_config_init(struct bnx2x_phy *phy,
+@@ -10434,7 +10424,7 @@
  		if (rc) {
  			DP(NETIF_MSG_LINK, "Failed to configure EEE timers\n");
  			bnx2x_8483x_disable_eee(phy, params, vars);
@@ -1638,7 +1614,7 @@ index 22243c4..43dbdd5 100644
  		}
  
  		if ((phy->req_duplex == DUPLEX_FULL) &&
-@@ -10445,7 +10435,7 @@ static int bnx2x_848x3_config_init(struct bnx2x_phy *phy,
+@@ -10446,7 +10436,7 @@
  			rc = bnx2x_8483x_disable_eee(phy, params, vars);
  		if (rc) {
  			DP(NETIF_MSG_LINK, "Failed to set EEE advertisement\n");
@@ -1647,7 +1623,7 @@ index 22243c4..43dbdd5 100644
  		}
  	} else {
  		vars->eee_status &= ~SHMEM_EEE_SUPPORTED_MASK;
-@@ -10484,7 +10474,6 @@ static int bnx2x_848x3_config_init(struct bnx2x_phy *phy,
+@@ -10485,7 +10475,6 @@
  					  MDIO_84833_TOP_CFG_XGPHY_STRAP1,
  					  (u16)~MDIO_84833_SUPER_ISOLATE);
  	}
@@ -1655,7 +1631,7 @@ index 22243c4..43dbdd5 100644
  }
  
  static u8 bnx2x_848xx_read_status(struct bnx2x_phy *phy,
-@@ -11041,7 +11030,7 @@ static void bnx2x_54618se_specific_func(struct bnx2x_phy *phy,
+@@ -11042,7 +11031,7 @@
  	}
  }
  
@@ -1664,7 +1640,7 @@ index 22243c4..43dbdd5 100644
  					       struct link_params *params,
  					       struct link_vars *vars)
  {
-@@ -11243,8 +11232,6 @@ static int bnx2x_54618se_config_init(struct bnx2x_phy *phy,
+@@ -11244,8 +11233,6 @@
  
  	bnx2x_cl22_write(bp, phy,
  			MDIO_PMA_REG_CTRL, autoneg_val);
@@ -1673,7 +1649,7 @@ index 22243c4..43dbdd5 100644
  }
  
  
-@@ -11468,7 +11455,7 @@ static void bnx2x_7101_config_loopback(struct bnx2x_phy *phy,
+@@ -11469,7 +11456,7 @@
  			 MDIO_XS_DEVAD, MDIO_XS_SFX7101_XGXS_TEST1, 0x100);
  }
  
@@ -1682,7 +1658,7 @@ index 22243c4..43dbdd5 100644
  				  struct link_params *params,
  				  struct link_vars *vars)
  {
-@@ -11505,7 +11492,6 @@ static int bnx2x_7101_config_init(struct bnx2x_phy *phy,
+@@ -11506,7 +11493,6 @@
  			MDIO_PMA_DEVAD, MDIO_PMA_REG_7101_VER2, &fw_ver2);
  	bnx2x_save_spirom_version(bp, params->port,
  				  (u32)(fw_ver1<<16 | fw_ver2), phy->ver_addr);
@@ -1690,7 +1666,7 @@ index 22243c4..43dbdd5 100644
  }
  
  static u8 bnx2x_7101_read_status(struct bnx2x_phy *phy,
-@@ -11674,9 +11660,9 @@ static const struct bnx2x_phy phy_serdes = {
+@@ -11675,9 +11661,9 @@
  	.speed_cap_mask	= 0,
  	.req_duplex	= 0,
  	.rsrv		= 0,
@@ -1703,7 +1679,7 @@ index 22243c4..43dbdd5 100644
  	.config_loopback = (config_loopback_t)NULL,
  	.format_fw_ver	= (format_fw_ver_t)NULL,
  	.hw_reset	= (hw_reset_t)NULL,
-@@ -11710,14 +11696,14 @@ static const struct bnx2x_phy phy_xgxs = {
+@@ -11711,14 +11697,14 @@
  	.speed_cap_mask	= 0,
  	.req_duplex	= 0,
  	.rsrv		= 0,
@@ -1723,7 +1699,7 @@ index 22243c4..43dbdd5 100644
  };
  static const struct bnx2x_phy phy_warpcore = {
  	.type		= PORT_HW_CFG_XGXS_EXT_PHY_TYPE_DIRECT,
-@@ -11748,12 +11734,12 @@ static const struct bnx2x_phy phy_warpcore = {
+@@ -11749,12 +11735,12 @@
  	.speed_cap_mask	= 0,
  	/* req_duplex = */0,
  	/* rsrv = */0,
@@ -1741,7 +1717,7 @@ index 22243c4..43dbdd5 100644
  	.set_link_led	= (set_link_led_t)NULL,
  	.phy_specific_func = (phy_specific_func_t)NULL
  };
-@@ -11779,13 +11765,13 @@ static const struct bnx2x_phy phy_7101 = {
+@@ -11780,13 +11766,13 @@
  	.speed_cap_mask	= 0,
  	.req_duplex	= 0,
  	.rsrv		= 0,
@@ -1762,7 +1738,7 @@ index 22243c4..43dbdd5 100644
  	.phy_specific_func = (phy_specific_func_t)NULL
  };
  static const struct bnx2x_phy phy_8073 = {
-@@ -11810,14 +11796,14 @@ static const struct bnx2x_phy phy_8073 = {
+@@ -11811,14 +11797,14 @@
  	.speed_cap_mask	= 0,
  	.req_duplex	= 0,
  	.rsrv		= 0,
@@ -1782,7 +1758,7 @@ index 22243c4..43dbdd5 100644
  };
  static const struct bnx2x_phy phy_8705 = {
  	.type		= PORT_HW_CFG_XGXS_EXT_PHY_TYPE_BCM8705,
-@@ -11838,11 +11824,11 @@ static const struct bnx2x_phy phy_8705 = {
+@@ -11839,11 +11825,11 @@
  	.speed_cap_mask	= 0,
  	.req_duplex	= 0,
  	.rsrv		= 0,
@@ -1798,7 +1774,7 @@ index 22243c4..43dbdd5 100644
  	.hw_reset	= (hw_reset_t)NULL,
  	.set_link_led	= (set_link_led_t)NULL,
  	.phy_specific_func = (phy_specific_func_t)NULL
-@@ -11867,11 +11853,11 @@ static const struct bnx2x_phy phy_8706 = {
+@@ -11868,11 +11854,11 @@
  	.speed_cap_mask	= 0,
  	.req_duplex	= 0,
  	.rsrv		= 0,
@@ -1814,7 +1790,7 @@ index 22243c4..43dbdd5 100644
  	.hw_reset	= (hw_reset_t)NULL,
  	.set_link_led	= (set_link_led_t)NULL,
  	.phy_specific_func = (phy_specific_func_t)NULL
-@@ -11899,11 +11885,11 @@ static const struct bnx2x_phy phy_8726 = {
+@@ -11900,11 +11886,11 @@
  	.speed_cap_mask	= 0,
  	.req_duplex	= 0,
  	.rsrv		= 0,
@@ -1831,7 +1807,7 @@ index 22243c4..43dbdd5 100644
  	.hw_reset	= (hw_reset_t)NULL,
  	.set_link_led	= (set_link_led_t)NULL,
  	.phy_specific_func = (phy_specific_func_t)NULL
-@@ -11930,14 +11916,14 @@ static const struct bnx2x_phy phy_8727 = {
+@@ -11931,14 +11917,14 @@
  	.speed_cap_mask	= 0,
  	.req_duplex	= 0,
  	.rsrv		= 0,
@@ -1853,7 +1829,7 @@ index 22243c4..43dbdd5 100644
  };
  static const struct bnx2x_phy phy_8481 = {
  	.type		= PORT_HW_CFG_XGXS_EXT_PHY_TYPE_BCM8481,
-@@ -11965,13 +11951,13 @@ static const struct bnx2x_phy phy_8481 = {
+@@ -11966,13 +11952,13 @@
  	.speed_cap_mask	= 0,
  	.req_duplex	= 0,
  	.rsrv		= 0,
@@ -1873,7 +1849,7 @@ index 22243c4..43dbdd5 100644
  	.phy_specific_func = (phy_specific_func_t)NULL
  };
  
-@@ -12002,14 +11988,14 @@ static const struct bnx2x_phy phy_84823 = {
+@@ -12003,14 +11989,14 @@
  	.speed_cap_mask	= 0,
  	.req_duplex	= 0,
  	.rsrv		= 0,
@@ -1894,7 +1870,7 @@ index 22243c4..43dbdd5 100644
  };
  
  static const struct bnx2x_phy phy_84833 = {
-@@ -12037,14 +12023,14 @@ static const struct bnx2x_phy phy_84833 = {
+@@ -12038,14 +12024,14 @@
  	.speed_cap_mask	= 0,
  	.req_duplex	= 0,
  	.rsrv		= 0,
@@ -1916,7 +1892,7 @@ index 22243c4..43dbdd5 100644
  };
  
  static const struct bnx2x_phy phy_84834 = {
-@@ -12071,14 +12057,14 @@ static const struct bnx2x_phy phy_84834 = {
+@@ -12072,14 +12058,14 @@
  	.speed_cap_mask	= 0,
  	.req_duplex	= 0,
  	.rsrv		= 0,
@@ -1938,7 +1914,7 @@ index 22243c4..43dbdd5 100644
  };
  
  static const struct bnx2x_phy phy_84858 = {
-@@ -12105,14 +12091,14 @@ static const struct bnx2x_phy phy_84858 = {
+@@ -12106,14 +12092,14 @@
  	.speed_cap_mask	= 0,
  	.req_duplex	= 0,
  	.rsrv		= 0,
@@ -1960,7 +1936,7 @@ index 22243c4..43dbdd5 100644
  };
  
  static const struct bnx2x_phy phy_54618se = {
-@@ -12139,14 +12125,14 @@ static const struct bnx2x_phy phy_54618se = {
+@@ -12140,14 +12126,14 @@
  	.speed_cap_mask	= 0,
  	/* req_duplex = */0,
  	/* rsrv = */0,
@@ -1981,11 +1957,10 @@ index 22243c4..43dbdd5 100644
  };
  /*****************************************************************/
  /*                                                               */
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h
-index b7d2511..a625bae 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h
-@@ -126,7 +126,7 @@ struct link_vars;
+diff -ur --new-file linux-4.19.1_old/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h linux-4.19.1_new/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h
+--- linux-4.19.1_old/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h	2018-11-08 10:57:33.637566737 +0000
+@@ -126,7 +126,7 @@
  struct link_params;
  struct bnx2x_phy;
  
@@ -1994,7 +1969,7 @@ index b7d2511..a625bae 100644
  			    struct link_vars *vars);
  typedef u8 (*read_status_t)(struct bnx2x_phy *phy, struct link_params *params,
  			    struct link_vars *vars);
-@@ -134,7 +134,7 @@ typedef void (*link_reset_t)(struct bnx2x_phy *phy,
+@@ -134,7 +134,7 @@
  			     struct link_params *params);
  typedef void (*config_loopback_t)(struct bnx2x_phy *phy,
  				  struct link_params *params);
@@ -2003,11 +1978,10 @@ index b7d2511..a625bae 100644
  typedef void (*hw_reset_t)(struct bnx2x_phy *phy, struct link_params *params);
  typedef void (*set_link_led_t)(struct bnx2x_phy *phy,
  			       struct link_params *params, u8 mode);
-diff --git a/drivers/net/ethernet/brocade/bna/bfa_cs.h b/drivers/net/ethernet/brocade/bna/bfa_cs.h
-index 1d11d66..8f7a3cb 100644
---- a/drivers/net/ethernet/brocade/bna/bfa_cs.h
-+++ b/drivers/net/ethernet/brocade/bna/bfa_cs.h
-@@ -34,10 +34,19 @@ struct bfa_sm_table {
+diff -ur --new-file linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bfa_cs.h linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bfa_cs.h
+--- linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bfa_cs.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bfa_cs.h	2018-11-08 10:57:33.637566737 +0000
+@@ -34,10 +34,19 @@
  	int		state;	/*!< state machine encoding	*/
  	char		*name;	/*!< state name for display	*/
  };
@@ -2029,7 +2003,7 @@ index 1d11d66..8f7a3cb 100644
  
  /* oc - object class eg. bfa_ioc
   * st - state, eg. reset
-@@ -49,16 +58,37 @@ typedef void (*bfa_fsm_t)(void *fsm, int event);
+@@ -49,16 +58,37 @@
  	static void oc ## _sm_ ## st ## _entry(otype * fsm)
  
  #define bfa_fsm_set_state(_fsm, _state) do {				\
@@ -2071,11 +2045,10 @@ index 1d11d66..8f7a3cb 100644
  {
  	int	i = 0;
  
-diff --git a/drivers/net/ethernet/brocade/bna/bfa_ioc.c b/drivers/net/ethernet/brocade/bna/bfa_ioc.c
-index a36e386..725b042 100644
---- a/drivers/net/ethernet/brocade/bna/bfa_ioc.c
-+++ b/drivers/net/ethernet/brocade/bna/bfa_ioc.c
-@@ -122,7 +122,7 @@ bfa_fsm_state_decl(bfa_ioc, disabling, struct bfa_ioc, enum ioc_event);
+diff -ur --new-file linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bfa_ioc.c linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bfa_ioc.c
+--- linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bfa_ioc.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bfa_ioc.c	2018-11-08 10:57:33.637566737 +0000
+@@ -122,7 +122,7 @@
  bfa_fsm_state_decl(bfa_ioc, disabled, struct bfa_ioc, enum ioc_event);
  bfa_fsm_state_decl(bfa_ioc, hwfail, struct bfa_ioc, enum ioc_event);
  
@@ -2084,7 +2057,7 @@ index a36e386..725b042 100644
  	{BFA_SM(bfa_ioc_sm_uninit), BFA_IOC_UNINIT},
  	{BFA_SM(bfa_ioc_sm_reset), BFA_IOC_RESET},
  	{BFA_SM(bfa_ioc_sm_enabling), BFA_IOC_ENABLING},
-@@ -191,7 +191,7 @@ bfa_fsm_state_decl(bfa_iocpf, disabling_sync, struct bfa_iocpf,
+@@ -191,7 +191,7 @@
  						enum iocpf_event);
  bfa_fsm_state_decl(bfa_iocpf, disabled, struct bfa_iocpf, enum iocpf_event);
  
@@ -2093,7 +2066,7 @@ index a36e386..725b042 100644
  	{BFA_SM(bfa_iocpf_sm_reset), BFA_IOCPF_RESET},
  	{BFA_SM(bfa_iocpf_sm_fwcheck), BFA_IOCPF_FWMISMATCH},
  	{BFA_SM(bfa_iocpf_sm_mismatch), BFA_IOCPF_FWMISMATCH},
-@@ -2866,12 +2866,12 @@ static enum bfa_ioc_state
+@@ -2866,12 +2866,12 @@
  bfa_ioc_get_state(struct bfa_ioc *ioc)
  {
  	enum bfa_iocpf_state iocpf_st;
@@ -2108,7 +2081,7 @@ index a36e386..725b042 100644
  
  		switch (iocpf_st) {
  		case BFA_IOCPF_SEMWAIT:
-@@ -2989,7 +2989,7 @@ bfa_nw_iocpf_timeout(struct bfa_ioc *ioc)
+@@ -2989,7 +2989,7 @@
  {
  	enum bfa_iocpf_state iocpf_st;
  
@@ -2117,11 +2090,10 @@ index a36e386..725b042 100644
  
  	if (iocpf_st == BFA_IOCPF_HWINIT)
  		bfa_ioc_poll_fwinit(ioc);
-diff --git a/drivers/net/ethernet/brocade/bna/bfa_ioc.h b/drivers/net/ethernet/brocade/bna/bfa_ioc.h
-index 2c0b4c0..97873eb 100644
---- a/drivers/net/ethernet/brocade/bna/bfa_ioc.h
-+++ b/drivers/net/ethernet/brocade/bna/bfa_ioc.h
-@@ -156,7 +156,7 @@ struct bfa_ioc_notify {
+diff -ur --new-file linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bfa_ioc.h linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bfa_ioc.h
+--- linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bfa_ioc.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bfa_ioc.h	2018-11-08 10:57:33.637566737 +0000
+@@ -156,7 +156,7 @@
  } while (0)
  
  struct bfa_iocpf {
@@ -2130,7 +2102,7 @@ index 2c0b4c0..97873eb 100644
  	struct bfa_ioc		*ioc;
  	bool			fw_mismatch_notified;
  	bool			auto_recover;
-@@ -164,7 +164,7 @@ struct bfa_iocpf {
+@@ -164,7 +164,7 @@
  };
  
  struct bfa_ioc {
@@ -2139,11 +2111,10 @@ index 2c0b4c0..97873eb 100644
  	struct bfa		*bfa;
  	struct bfa_pcidev	pcidev;
  	struct timer_list	ioc_timer;
-diff --git a/drivers/net/ethernet/brocade/bna/bfa_msgq.h b/drivers/net/ethernet/brocade/bna/bfa_msgq.h
-index 66bc8b5..bf64466 100644
---- a/drivers/net/ethernet/brocade/bna/bfa_msgq.h
-+++ b/drivers/net/ethernet/brocade/bna/bfa_msgq.h
-@@ -63,8 +63,10 @@ enum bfa_msgq_cmdq_flags {
+diff -ur --new-file linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bfa_msgq.h linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bfa_msgq.h
+--- linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bfa_msgq.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bfa_msgq.h	2018-11-08 10:57:33.637566737 +0000
+@@ -63,8 +63,10 @@
  	BFA_MSGQ_CMDQ_F_DB_UPDATE	= 1,
  };
  
@@ -2155,7 +2126,7 @@ index 66bc8b5..bf64466 100644
  	enum bfa_msgq_cmdq_flags flags;
  
  	u16			producer_index;
-@@ -89,8 +91,10 @@ enum bfa_msgq_rspq_flags {
+@@ -89,8 +91,10 @@
  
  typedef void (*bfa_msgq_mcfunc_t)(void *cbarg, struct bfi_msgq_mhdr *mhdr);
  
@@ -2167,11 +2138,53 @@ index 66bc8b5..bf64466 100644
  	enum bfa_msgq_rspq_flags flags;
  
  	u16			producer_index;
-diff --git a/drivers/net/ethernet/brocade/bna/bna_enet.c b/drivers/net/ethernet/brocade/bna/bna_enet.c
-index bba8173..0791dab 100644
---- a/drivers/net/ethernet/brocade/bna/bna_enet.c
-+++ b/drivers/net/ethernet/brocade/bna/bna_enet.c
-@@ -1265,7 +1265,7 @@ bna_enet_mtu_get(struct bna_enet *enet)
+diff -ur --new-file linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bnad.c linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bnad.c
+--- linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bnad.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bnad.c	2018-11-08 10:57:33.641566694 +0000
+@@ -1100,8 +1100,9 @@
+  * Free all TxQs buffers and then notify TX_E_CLEANUP_DONE to Tx fsm.
+  */
+ static void
+-bnad_tx_cleanup(struct delayed_work *work)
++bnad_tx_cleanup(struct work_struct *_work)
+ {
++	struct delayed_work *work = (struct delayed_work *)_work;
+ 	struct bnad_tx_info *tx_info =
+ 		container_of(work, struct bnad_tx_info, tx_cleanup_work);
+ 	struct bnad *bnad = NULL;
+@@ -1179,7 +1180,7 @@
+  * Free all RxQs buffers and then notify RX_E_CLEANUP_DONE to Rx fsm.
+  */
+ static void
+-bnad_rx_cleanup(void *work)
++bnad_rx_cleanup(struct work_struct *work)
+ {
+ 	struct bnad_rx_info *rx_info =
+ 		container_of(work, struct bnad_rx_info, rx_cleanup_work);
+@@ -2001,8 +2002,7 @@
+ 	}
+ 	tx_info->tx = tx;
+ 
+-	INIT_DELAYED_WORK(&tx_info->tx_cleanup_work,
+-			(work_func_t)bnad_tx_cleanup);
++	INIT_DELAYED_WORK(&tx_info->tx_cleanup_work, bnad_tx_cleanup);
+ 
+ 	/* Register ISR for the Tx object */
+ 	if (intr_info->intr_type == BNA_INTR_T_MSIX) {
+@@ -2258,8 +2258,7 @@
+ 	rx_info->rx = rx;
+ 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
+ 
+-	INIT_WORK(&rx_info->rx_cleanup_work,
+-			(work_func_t)(bnad_rx_cleanup));
++	INIT_WORK(&rx_info->rx_cleanup_work, bnad_rx_cleanup);
+ 
+ 	/*
+ 	 * Init NAPI, so that state is set to NAPI_STATE_SCHED,
+diff -ur --new-file linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bna_enet.c linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bna_enet.c
+--- linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bna_enet.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bna_enet.c	2018-11-08 10:57:33.637566737 +0000
+@@ -1265,7 +1265,7 @@
  void
  bna_enet_enable(struct bna_enet *enet)
  {
@@ -2180,7 +2193,7 @@ index bba8173..0791dab 100644
  		return;
  
  	enet->flags |= BNA_ENET_F_ENABLED;
-@@ -1759,12 +1759,12 @@ bna_ioceth_uninit(struct bna_ioceth *ioceth)
+@@ -1759,12 +1759,12 @@
  void
  bna_ioceth_enable(struct bna_ioceth *ioceth)
  {
@@ -2195,11 +2208,10 @@ index bba8173..0791dab 100644
  		bfa_fsm_send_event(ioceth, IOCETH_E_ENABLE);
  }
  
-diff --git a/drivers/net/ethernet/brocade/bna/bna_tx_rx.c b/drivers/net/ethernet/brocade/bna/bna_tx_rx.c
-index 95bc470..c12be9f 100644
---- a/drivers/net/ethernet/brocade/bna/bna_tx_rx.c
-+++ b/drivers/net/ethernet/brocade/bna/bna_tx_rx.c
-@@ -1964,7 +1964,7 @@ static void
+diff -ur --new-file linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bna_tx_rx.c linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bna_tx_rx.c
+--- linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bna_tx_rx.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bna_tx_rx.c	2018-11-08 10:57:33.637566737 +0000
+@@ -1964,7 +1964,7 @@
  bna_rx_stop(struct bna_rx *rx)
  {
  	rx->rx_flags &= ~BNA_RX_F_ENET_STARTED;
@@ -2208,7 +2220,7 @@ index 95bc470..c12be9f 100644
  		bna_rx_mod_cb_rx_stopped(&rx->bna->rx_mod, rx);
  	else {
  		rx->stop_cbfn = bna_rx_mod_cb_rx_stopped;
-@@ -2543,7 +2543,7 @@ bna_rx_destroy(struct bna_rx *rx)
+@@ -2543,7 +2543,7 @@
  void
  bna_rx_enable(struct bna_rx *rx)
  {
@@ -2217,7 +2229,7 @@ index 95bc470..c12be9f 100644
  		return;
  
  	rx->rx_flags |= BNA_RX_F_ENABLED;
-@@ -3531,7 +3531,7 @@ bna_tx_destroy(struct bna_tx *tx)
+@@ -3531,7 +3531,7 @@
  void
  bna_tx_enable(struct bna_tx *tx)
  {
@@ -2226,11 +2238,10 @@ index 95bc470..c12be9f 100644
  		return;
  
  	tx->flags |= BNA_TX_F_ENABLED;
-diff --git a/drivers/net/ethernet/brocade/bna/bna_types.h b/drivers/net/ethernet/brocade/bna/bna_types.h
-index c438d03..4653f43 100644
---- a/drivers/net/ethernet/brocade/bna/bna_types.h
-+++ b/drivers/net/ethernet/brocade/bna/bna_types.h
-@@ -320,8 +320,10 @@ struct bna_attr {
+diff -ur --new-file linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bna_types.h linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bna_types.h
+--- linux-4.19.1_old/drivers/net/ethernet/brocade/bna/bna_types.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/net/ethernet/brocade/bna/bna_types.h	2018-11-08 10:57:33.637566737 +0000
+@@ -320,8 +320,10 @@
  
  /* IOCEth */
  
@@ -2242,7 +2253,7 @@ index c438d03..4653f43 100644
  	struct bfa_ioc ioc;
  
  	struct bna_attr attr;
-@@ -342,8 +344,10 @@ struct bna_pause_config {
+@@ -342,8 +344,10 @@
  	enum bna_status rx_pause;
  };
  
@@ -2254,7 +2265,7 @@ index c438d03..4653f43 100644
  	enum bna_enet_flags flags;
  
  	enum bna_enet_type type;
-@@ -368,8 +372,10 @@ struct bna_enet {
+@@ -368,8 +372,10 @@
  
  /* Ethport */
  
@@ -2266,7 +2277,7 @@ index c438d03..4653f43 100644
  	enum bna_ethport_flags flags;
  
  	enum bna_link_status link_status;
-@@ -462,13 +468,15 @@ struct bna_txq {
+@@ -462,13 +468,15 @@
  };
  
  /* Tx object */
@@ -2283,7 +2294,7 @@ index c438d03..4653f43 100644
  	enum bna_tx_flags flags;
  
  	enum bna_tx_type type;
-@@ -706,8 +714,10 @@ struct bna_rxp {
+@@ -706,8 +714,10 @@
  };
  
  /* RxF structure (hardware Rx Function) */
@@ -2295,7 +2306,7 @@ index c438d03..4653f43 100644
  
  	struct bfa_msgq_cmd_entry msgq_cmd;
  	union {
-@@ -777,13 +787,15 @@ struct bna_rxf {
+@@ -777,13 +787,15 @@
  };
  
  /* Rx object */
@@ -2312,54 +2323,9 @@ index c438d03..4653f43 100644
  
  	enum bna_rx_type type;
  
-diff --git a/drivers/net/ethernet/brocade/bna/bnad.c b/drivers/net/ethernet/brocade/bna/bnad.c
-index ea5f32e..fb703f1 100644
---- a/drivers/net/ethernet/brocade/bna/bnad.c
-+++ b/drivers/net/ethernet/brocade/bna/bnad.c
-@@ -1100,8 +1100,9 @@ bnad_cb_tx_resume(struct bnad *bnad, struct bna_tx *tx)
-  * Free all TxQs buffers and then notify TX_E_CLEANUP_DONE to Tx fsm.
-  */
- static void
--bnad_tx_cleanup(struct delayed_work *work)
-+bnad_tx_cleanup(struct work_struct *_work)
- {
-+	struct delayed_work *work = (struct delayed_work *)_work;
- 	struct bnad_tx_info *tx_info =
- 		container_of(work, struct bnad_tx_info, tx_cleanup_work);
- 	struct bnad *bnad = NULL;
-@@ -1179,7 +1180,7 @@ bnad_cb_rx_stall(struct bnad *bnad, struct bna_rx *rx)
-  * Free all RxQs buffers and then notify RX_E_CLEANUP_DONE to Rx fsm.
-  */
- static void
--bnad_rx_cleanup(void *work)
-+bnad_rx_cleanup(struct work_struct *work)
- {
- 	struct bnad_rx_info *rx_info =
- 		container_of(work, struct bnad_rx_info, rx_cleanup_work);
-@@ -2001,8 +2002,7 @@ bnad_setup_tx(struct bnad *bnad, u32 tx_id)
- 	}
- 	tx_info->tx = tx;
- 
--	INIT_DELAYED_WORK(&tx_info->tx_cleanup_work,
--			(work_func_t)bnad_tx_cleanup);
-+	INIT_DELAYED_WORK(&tx_info->tx_cleanup_work, bnad_tx_cleanup);
- 
- 	/* Register ISR for the Tx object */
- 	if (intr_info->intr_type == BNA_INTR_T_MSIX) {
-@@ -2258,8 +2258,7 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
- 	rx_info->rx = rx;
- 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
- 
--	INIT_WORK(&rx_info->rx_cleanup_work,
--			(work_func_t)(bnad_rx_cleanup));
-+	INIT_WORK(&rx_info->rx_cleanup_work, bnad_rx_cleanup);
- 
- 	/*
- 	 * Init NAPI, so that state is set to NAPI_STATE_SCHED,
-diff --git a/drivers/ras/ras.c b/drivers/ras/ras.c
-index 3f38907..95540ea 100644
---- a/drivers/ras/ras.c
-+++ b/drivers/ras/ras.c
+diff -ur --new-file linux-4.19.1_old/drivers/ras/ras.c linux-4.19.1_new/drivers/ras/ras.c
+--- linux-4.19.1_old/drivers/ras/ras.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/ras/ras.c	2018-11-08 10:57:33.641566694 +0000
 @@ -14,7 +14,7 @@
  #define TRACE_INCLUDE_PATH ../../include/ras
  #include <ras/ras_event.h>
@@ -2369,11 +2335,10 @@ index 3f38907..95540ea 100644
  			    const char *fru_text, const u8 sev, const u8 *err,
  			    const u32 len)
  {
-diff --git a/drivers/scsi/aacraid/aachba.c b/drivers/scsi/aacraid/aachba.c
-index a57f3a7..0fa3437 100644
---- a/drivers/scsi/aacraid/aachba.c
-+++ b/drivers/scsi/aacraid/aachba.c
-@@ -814,6 +814,11 @@ static int aac_probe_container_callback1(struct scsi_cmnd * scsicmd)
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/aacraid/aachba.c linux-4.19.1_new/drivers/scsi/aacraid/aachba.c
+--- linux-4.19.1_old/drivers/scsi/aacraid/aachba.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/aacraid/aachba.c	2018-11-08 10:57:33.641566694 +0000
+@@ -812,6 +812,11 @@
  	return 0;
  }
  
@@ -2385,7 +2350,7 @@ index a57f3a7..0fa3437 100644
  int aac_probe_container(struct aac_dev *dev, int cid)
  {
  	struct scsi_cmnd *scsicmd = kmalloc(sizeof(*scsicmd), GFP_KERNEL);
-@@ -826,7 +831,7 @@ int aac_probe_container(struct aac_dev *dev, int cid)
+@@ -824,7 +829,7 @@
  		return -ENOMEM;
  	}
  	scsicmd->list.next = NULL;
@@ -2394,27 +2359,10 @@ index a57f3a7..0fa3437 100644
  
  	scsicmd->device = scsidev;
  	scsidev->sdev_state = 0;
-diff --git a/drivers/scsi/bfa/bfa.h b/drivers/scsi/bfa/bfa.h
-index 0e119d8..1bf8a49 100644
---- a/drivers/scsi/bfa/bfa.h
-+++ b/drivers/scsi/bfa/bfa.h
-@@ -225,8 +225,10 @@ struct bfa_faa_args_s {
- 	bfa_boolean_t		busy;
- };
- 
-+enum iocfc_event;
-+
- struct bfa_iocfc_s {
--	bfa_fsm_t		fsm;
-+	void (*fsm)(struct bfa_iocfc_s *, enum iocfc_event);
- 	struct bfa_s		*bfa;
- 	struct bfa_iocfc_cfg_s	cfg;
- 	u32		req_cq_pi[BFI_IOC_MAX_CQS];
-diff --git a/drivers/scsi/bfa/bfa_core.c b/drivers/scsi/bfa/bfa_core.c
-index 10a63be..35d87b2 100644
---- a/drivers/scsi/bfa/bfa_core.c
-+++ b/drivers/scsi/bfa/bfa_core.c
-@@ -1915,15 +1915,13 @@ bfa_comp_process(struct bfa_s *bfa, struct list_head *comp_q)
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfa_core.c linux-4.19.1_new/drivers/scsi/bfa/bfa_core.c
+--- linux-4.19.1_old/drivers/scsi/bfa/bfa_core.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfa_core.c	2018-11-08 10:57:33.641566694 +0000
+@@ -1915,15 +1915,13 @@
  	struct list_head		*qe;
  	struct list_head		*qen;
  	struct bfa_cb_qe_s	*hcb_qe;
@@ -2431,11 +2379,10 @@ index 10a63be..35d87b2 100644
  		} else
  			hcb_qe->cbfn(hcb_qe->cbarg, BFA_TRUE);
  	}
-diff --git a/drivers/scsi/bfa/bfa_cs.h b/drivers/scsi/bfa/bfa_cs.h
-index 9685efc..94a62e4 100644
---- a/drivers/scsi/bfa/bfa_cs.h
-+++ b/drivers/scsi/bfa/bfa_cs.h
-@@ -184,8 +184,6 @@ bfa_q_is_on_q_func(struct list_head *q, struct list_head *qe)
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfa_cs.h linux-4.19.1_new/drivers/scsi/bfa/bfa_cs.h
+--- linux-4.19.1_old/drivers/scsi/bfa/bfa_cs.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfa_cs.h	2018-11-08 10:57:33.641566694 +0000
+@@ -184,8 +184,6 @@
   * @ BFA state machine interfaces
   */
  
@@ -2444,7 +2391,7 @@ index 9685efc..94a62e4 100644
  /*
   * oc - object class eg. bfa_ioc
   * st - state, eg. reset
-@@ -195,20 +193,75 @@ typedef void (*bfa_sm_t)(void *sm, int event);
+@@ -195,20 +193,75 @@
  #define bfa_sm_state_decl(oc, st, otype, etype)		\
  	static void oc ## _sm_ ## st(otype * fsm, etype event)
  
@@ -2476,10 +2423,9 @@ index 9685efc..94a62e4 100644
 +
 +struct ioc_sm_table_s {
 +	bfa_fsm_ioc_t sm;	/*  state machine function	*/
- 	int		state;	/*  state machine encoding	*/
- 	char		*name;	/*  state name for display	*/
- };
--#define BFA_SM(_sm)	((bfa_sm_t)(_sm))
++	int		state;	/*  state machine encoding	*/
++	char		*name;	/*  state name for display	*/
++};
 +
 +struct bfa_fcs_rport_s;
 +enum rport_event;
@@ -2517,15 +2463,16 @@ index 9685efc..94a62e4 100644
 +
 +struct fcport_sm_table_s {
 +	bfa_fcport_t sm;	/*  state machine function	*/
-+	int		state;	/*  state machine encoding	*/
-+	char		*name;	/*  state name for display	*/
-+};
+ 	int		state;	/*  state machine encoding	*/
+ 	char		*name;	/*  state name for display	*/
+ };
+-#define BFA_SM(_sm)	((bfa_sm_t)(_sm))
 +
 +#define BFA_SM(_sm)	(_sm)
  
  /*
   * State machine with entry actions.
-@@ -226,17 +279,66 @@ typedef void (*bfa_fsm_t)(void *fsm, int event);
+@@ -226,17 +279,66 @@
  	static void oc ## _sm_ ## st ## _entry(otype * fsm)
  
  #define bfa_fsm_set_state(_fsm, _state) do {	\
@@ -2596,11 +2543,101 @@ index 9685efc..94a62e4 100644
  {
  	int	i = 0;
  
-diff --git a/drivers/scsi/bfa/bfa_fcpim.h b/drivers/scsi/bfa/bfa_fcpim.h
-index ec8f863..84f2354 100644
---- a/drivers/scsi/bfa/bfa_fcpim.h
-+++ b/drivers/scsi/bfa/bfa_fcpim.h
-@@ -165,9 +165,11 @@ struct bfa_fcp_mod_s {
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfad_bsg.c linux-4.19.1_new/drivers/scsi/bfa/bfad_bsg.c
+--- linux-4.19.1_old/drivers/scsi/bfa/bfad_bsg.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfad_bsg.c	2018-11-08 10:57:33.645566652 +0000
+@@ -2143,7 +2143,7 @@
+ 	struct bfa_cb_pending_q_s cb_qe;
+ 
+ 	init_completion(&fcomp.comp);
+-	bfa_pending_q_init(&cb_qe, (bfa_cb_cbfn_t)bfad_hcb_comp,
++	bfa_pending_q_init(&cb_qe, bfad_stats_comp,
+ 			   &fcomp, &iocmd->stats);
+ 	spin_lock_irqsave(&bfad->bfad_lock, flags);
+ 	iocmd->status = bfa_fcport_get_stats(&bfad->bfa, &cb_qe);
+@@ -2167,7 +2167,7 @@
+ 	struct bfa_cb_pending_q_s cb_qe;
+ 
+ 	init_completion(&fcomp.comp);
+-	bfa_pending_q_init(&cb_qe, (bfa_cb_cbfn_t)bfad_hcb_comp, &fcomp, NULL);
++	bfa_pending_q_init(&cb_qe, bfad_stats_comp, &fcomp, NULL);
+ 
+ 	spin_lock_irqsave(&bfad->bfad_lock, flags);
+ 	iocmd->status = bfa_fcport_clear_stats(&bfad->bfa, &cb_qe);
+@@ -2451,7 +2451,7 @@
+ 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(&bfad->bfa);
+ 
+ 	init_completion(&fcomp.comp);
+-	bfa_pending_q_init(&cb_qe, (bfa_cb_cbfn_t)bfad_hcb_comp,
++	bfa_pending_q_init(&cb_qe, bfad_stats_comp,
+ 			   &fcomp, &iocmd->stats);
+ 
+ 	spin_lock_irqsave(&bfad->bfad_lock, flags);
+@@ -2482,7 +2482,7 @@
+ 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(&bfad->bfa);
+ 
+ 	init_completion(&fcomp.comp);
+-	bfa_pending_q_init(&cb_qe, (bfa_cb_cbfn_t)bfad_hcb_comp,
++	bfa_pending_q_init(&cb_qe, bfad_stats_comp,
+ 			   &fcomp, NULL);
+ 
+ 	spin_lock_irqsave(&bfad->bfad_lock, flags);
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfad.c linux-4.19.1_new/drivers/scsi/bfa/bfad.c
+--- linux-4.19.1_old/drivers/scsi/bfa/bfad.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfad.c	2018-11-08 10:57:33.645566652 +0000
+@@ -408,6 +408,16 @@
+ 	complete(&fcomp->comp);
+ }
+ 
++void
++bfad_stats_comp(void *arg, bfa_boolean_t _status)
++{
++	struct bfad_hal_comp *fcomp = (struct bfad_hal_comp *)arg;
++	bfa_status_t status = (bfa_status_t)_status;
++
++	fcomp->status = status;
++	complete(&fcomp->comp);
++}
++
+ /*
+  * bfa_init callback
+  */
+@@ -1439,7 +1449,7 @@
+  * PCI Error Recovery entry, error detected.
+  */
+ static pci_ers_result_t
+-bfad_pci_error_detected(struct pci_dev *pdev, pci_channel_state_t state)
++bfad_pci_error_detected(struct pci_dev *pdev, enum pci_channel_state state)
+ {
+ 	struct bfad_s *bfad = pci_get_drvdata(pdev);
+ 	unsigned long	flags;
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfad_drv.h linux-4.19.1_new/drivers/scsi/bfa/bfad_drv.h
+--- linux-4.19.1_old/drivers/scsi/bfa/bfad_drv.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfad_drv.h	2018-11-08 10:57:33.645566652 +0000
+@@ -187,8 +187,10 @@
+ /*
+  * BFAD (PCI function) data structure
+  */
++enum bfad_sm_event;
++
+ struct bfad_s {
+-	bfa_sm_t	sm;	/* state machine */
++	void (*sm)(struct bfad_s *, enum bfad_sm_event); /* state machine */
+ 	struct list_head list_entry;
+ 	struct bfa_s	bfa;
+ 	struct bfa_fcs_s bfa_fcs;
+@@ -309,6 +311,7 @@
+ void		bfad_remove_intr(struct bfad_s *bfad);
+ void		bfad_hal_mem_release(struct bfad_s *bfad);
+ void		bfad_hcb_comp(void *arg, bfa_status_t status);
++void		bfad_stats_comp(void *arg, bfa_boolean_t _status);
+ 
+ int		bfad_setup_intr(struct bfad_s *bfad);
+ void		bfad_remove_intr(struct bfad_s *bfad);
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfa_fcpim.h linux-4.19.1_new/drivers/scsi/bfa/bfa_fcpim.h
+--- linux-4.19.1_old/drivers/scsi/bfa/bfa_fcpim.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfa_fcpim.h	2018-11-08 10:57:33.641566694 +0000
+@@ -165,9 +165,11 @@
  /*
   * BFA IO (initiator mode)
   */
@@ -2613,7 +2650,7 @@ index ec8f863..84f2354 100644
  	struct bfa_s		*bfa;		/*  BFA module	*/
  	struct bfa_fcpim_s	*fcpim;		/*  parent fcpim module */
  	struct bfa_itnim_s	*itnim;		/*  i-t-n nexus for this IO  */
-@@ -197,9 +199,11 @@ struct bfa_ioim_sp_s {
+@@ -197,9 +199,11 @@
  /*
   * BFA Task management command (initiator mode)
   */
@@ -2626,7 +2663,7 @@ index ec8f863..84f2354 100644
  	struct bfa_s		*bfa;	/*  BFA module  */
  	struct bfa_fcpim_s	*fcpim;	/*  parent fcpim module	*/
  	struct bfa_itnim_s	*itnim;	/*  i-t-n nexus for this IO  */
-@@ -219,9 +223,11 @@ struct bfa_tskim_s {
+@@ -219,9 +223,11 @@
  /*
   * BFA i-t-n (initiator mode)
   */
@@ -2639,11 +2676,40 @@ index ec8f863..84f2354 100644
  	struct bfa_s		*bfa;	/*  bfa instance	*/
  	struct bfa_rport_s	*rport;	/*  bfa rport	*/
  	void			*ditn;	/*  driver i-t-n structure	*/
-diff --git a/drivers/scsi/bfa/bfa_fcs.h b/drivers/scsi/bfa/bfa_fcs.h
-index e60f72b..3606b00 100644
---- a/drivers/scsi/bfa/bfa_fcs.h
-+++ b/drivers/scsi/bfa/bfa_fcs.h
-@@ -67,8 +67,10 @@ struct bfa_fcs_s;
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfa_fcs_fcpim.c linux-4.19.1_new/drivers/scsi/bfa/bfa_fcs_fcpim.c
+--- linux-4.19.1_old/drivers/scsi/bfa/bfa_fcs_fcpim.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfa_fcs_fcpim.c	2018-11-08 10:57:33.641566694 +0000
+@@ -60,7 +60,7 @@
+ static void	bfa_fcs_itnim_sm_initiator(struct bfa_fcs_itnim_s *itnim,
+ 					   enum bfa_fcs_itnim_event event);
+ 
+-static struct bfa_sm_table_s itnim_sm_table[] = {
++static struct itnim_sm_table_s itnim_sm_table[] = {
+ 	{BFA_SM(bfa_fcs_itnim_sm_offline), BFA_ITNIM_OFFLINE},
+ 	{BFA_SM(bfa_fcs_itnim_sm_prli_send), BFA_ITNIM_PRLI_SEND},
+ 	{BFA_SM(bfa_fcs_itnim_sm_prli), BFA_ITNIM_PRLI_SENT},
+@@ -673,7 +673,7 @@
+ bfa_fcs_itnim_get_online_state(struct bfa_fcs_itnim_s *itnim)
+ {
+ 	bfa_trc(itnim->fcs, itnim->rport->pid);
+-	switch (bfa_sm_to_state(itnim_sm_table, itnim->sm)) {
++	switch (itnim_sm_to_state(itnim_sm_table, itnim->sm)) {
+ 	case BFA_ITNIM_ONLINE:
+ 	case BFA_ITNIM_INITIATIOR:
+ 		return BFA_STATUS_OK;
+@@ -773,7 +773,7 @@
+ 	if (itnim == NULL)
+ 		return BFA_STATUS_NO_FCPIM_NEXUS;
+ 
+-	attr->state	    = bfa_sm_to_state(itnim_sm_table, itnim->sm);
++	attr->state	    = itnim_sm_to_state(itnim_sm_table, itnim->sm);
+ 	attr->retry	    = itnim->seq_rec;
+ 	attr->rec_support   = itnim->rec_support;
+ 	attr->conf_comp	    = itnim->conf_comp;
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfa_fcs.h linux-4.19.1_new/drivers/scsi/bfa/bfa_fcs.h
+--- linux-4.19.1_old/drivers/scsi/bfa/bfa_fcs.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfa_fcs.h	2018-11-08 10:57:33.641566694 +0000
+@@ -67,8 +67,10 @@
  #define BFA_FCS_PID_IS_WKA(pid)  ((bfa_ntoh3b(pid) > 0xFFF000) ?  1 : 0)
  #define BFA_FCS_MAX_RPORT_LOGINS 1024
  
@@ -2655,7 +2721,7 @@ index e60f72b..3606b00 100644
  	struct bfa_timer_s timer;
  	struct bfa_fcs_lport_s *port;	/*  parent port */
  	struct bfa_fcxp_s *fcxp;
-@@ -77,18 +79,20 @@ struct bfa_fcs_lport_ns_s {
+@@ -77,18 +79,20 @@
  	u8	num_rsnn_nn_retries;
  };
  
@@ -2678,7 +2744,7 @@ index e60f72b..3606b00 100644
  	struct bfa_timer_s timer;
  	struct bfa_fcs_lport_ms_s *ms;	/*  parent ms */
  	struct bfa_fcxp_s *fcxp;
-@@ -97,9 +101,10 @@ struct bfa_fcs_lport_fdmi_s {
+@@ -97,9 +101,10 @@
  	u8	rsvd[3];
  };
  
@@ -2690,7 +2756,7 @@ index e60f72b..3606b00 100644
  	struct bfa_timer_s timer;
  	struct bfa_fcs_lport_s *port;	/*  parent port */
  	struct bfa_fcxp_s *fcxp;
-@@ -139,10 +144,11 @@ union bfa_fcs_lport_topo_u {
+@@ -139,10 +144,11 @@
  	struct bfa_fcs_lport_n2n_s pn2n;
  };
  
@@ -2703,7 +2769,7 @@ index e60f72b..3606b00 100644
  	struct bfa_fcs_fabric_s *fabric;	/*  parent fabric */
  	struct bfa_lport_cfg_s  port_cfg;	/*  port configuration */
  	struct bfa_timer_s link_timer;	/*  timer for link offline */
-@@ -179,10 +185,11 @@ enum bfa_fcs_fabric_type {
+@@ -179,10 +185,11 @@
  	BFA_FCS_FABRIC_LOOP = 3,
  };
  
@@ -2716,7 +2782,7 @@ index e60f72b..3606b00 100644
  	struct bfa_fcs_s *fcs;		/*  FCS instance */
  	struct bfa_fcs_lport_s  bport;	/*  base logical port */
  	enum bfa_fcs_fabric_type fab_type; /*  fabric type */
-@@ -355,9 +362,11 @@ void            bfa_fcs_lport_scn_process_rscn(struct bfa_fcs_lport_s *port,
+@@ -355,9 +362,11 @@
  					      struct fchs_s *rx_frame, u32 len);
  void		bfa_fcs_lport_lip_scn_online(bfa_fcs_lport_t *port);
  
@@ -2729,7 +2795,7 @@ index e60f72b..3606b00 100644
  	bfa_fcs_lport_t		lport;		/*  logical port	*/
  	struct bfa_timer_s	timer;
  	struct bfad_vport_s	*vport_drv;	/*  Driver private	*/
-@@ -409,8 +418,10 @@ struct bfa_fcs_tin_s;
+@@ -409,8 +418,10 @@
  struct bfa_fcs_iprp_s;
  
  /* Rport Features (RPF) */
@@ -2741,7 +2807,7 @@ index e60f72b..3606b00 100644
  	struct bfa_fcs_rport_s *rport;	/*  parent rport */
  	struct bfa_timer_s	timer;	/*  general purpose timer */
  	struct bfa_fcxp_s	*fcxp;	/*  FCXP needed for discarding */
-@@ -425,6 +436,8 @@ struct bfa_fcs_rpf_s {
+@@ -425,6 +436,8 @@
  	 */
  };
  
@@ -2750,7 +2816,7 @@ index e60f72b..3606b00 100644
  struct bfa_fcs_rport_s {
  	struct list_head	qe;	/*  used by port/vport */
  	struct bfa_fcs_lport_s *port;	/*  parent FCS port */
-@@ -441,7 +454,7 @@ struct bfa_fcs_rport_s {
+@@ -441,7 +454,7 @@
  	wwn_t	pwwn;	/*  port wwn of rport */
  	wwn_t	nwwn;	/*  node wwn of rport */
  	struct bfa_rport_symname_s psym_name; /*  port symbolic name  */
@@ -2759,7 +2825,7 @@ index e60f72b..3606b00 100644
  	struct bfa_timer_s timer;	/*  general purpose timer */
  	struct bfa_fcs_itnim_s *itnim;	/*  ITN initiator mode role */
  	struct bfa_fcs_tin_s *tin;	/*  ITN initiator mode role */
-@@ -502,9 +515,10 @@ void  bfa_fcs_rpf_rport_offline(struct bfa_fcs_rport_s *rport);
+@@ -502,9 +515,10 @@
   * forward declarations
   */
  struct bfad_itnim_s;
@@ -2771,42 +2837,10 @@ index e60f72b..3606b00 100644
  	struct bfa_fcs_rport_s	*rport;		/*  parent remote rport  */
  	struct bfad_itnim_s	*itnim_drv;	/*  driver peer instance */
  	struct bfa_fcs_s	*fcs;		/*  fcs instance	*/
-diff --git a/drivers/scsi/bfa/bfa_fcs_fcpim.c b/drivers/scsi/bfa/bfa_fcs_fcpim.c
-index 2e3b19e..7a9b729 100644
---- a/drivers/scsi/bfa/bfa_fcs_fcpim.c
-+++ b/drivers/scsi/bfa/bfa_fcs_fcpim.c
-@@ -60,7 +60,7 @@ static void	bfa_fcs_itnim_sm_hcb_offline(struct bfa_fcs_itnim_s *itnim,
- static void	bfa_fcs_itnim_sm_initiator(struct bfa_fcs_itnim_s *itnim,
- 					   enum bfa_fcs_itnim_event event);
- 
--static struct bfa_sm_table_s itnim_sm_table[] = {
-+static struct itnim_sm_table_s itnim_sm_table[] = {
- 	{BFA_SM(bfa_fcs_itnim_sm_offline), BFA_ITNIM_OFFLINE},
- 	{BFA_SM(bfa_fcs_itnim_sm_prli_send), BFA_ITNIM_PRLI_SEND},
- 	{BFA_SM(bfa_fcs_itnim_sm_prli), BFA_ITNIM_PRLI_SENT},
-@@ -673,7 +673,7 @@ bfa_status_t
- bfa_fcs_itnim_get_online_state(struct bfa_fcs_itnim_s *itnim)
- {
- 	bfa_trc(itnim->fcs, itnim->rport->pid);
--	switch (bfa_sm_to_state(itnim_sm_table, itnim->sm)) {
-+	switch (itnim_sm_to_state(itnim_sm_table, itnim->sm)) {
- 	case BFA_ITNIM_ONLINE:
- 	case BFA_ITNIM_INITIATIOR:
- 		return BFA_STATUS_OK;
-@@ -773,7 +773,7 @@ bfa_fcs_itnim_attr_get(struct bfa_fcs_lport_s *port, wwn_t rpwwn,
- 	if (itnim == NULL)
- 		return BFA_STATUS_NO_FCPIM_NEXUS;
- 
--	attr->state	    = bfa_sm_to_state(itnim_sm_table, itnim->sm);
-+	attr->state	    = itnim_sm_to_state(itnim_sm_table, itnim->sm);
- 	attr->retry	    = itnim->seq_rec;
- 	attr->rec_support   = itnim->rec_support;
- 	attr->conf_comp	    = itnim->conf_comp;
-diff --git a/drivers/scsi/bfa/bfa_fcs_lport.c b/drivers/scsi/bfa/bfa_fcs_lport.c
-index b4f2c1d..e28cce5 100644
---- a/drivers/scsi/bfa/bfa_fcs_lport.c
-+++ b/drivers/scsi/bfa/bfa_fcs_lport.c
-@@ -6037,7 +6037,7 @@ static void	bfa_fcs_vport_sm_stopping(struct bfa_fcs_vport_s *vport,
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfa_fcs_lport.c linux-4.19.1_new/drivers/scsi/bfa/bfa_fcs_lport.c
+--- linux-4.19.1_old/drivers/scsi/bfa/bfa_fcs_lport.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfa_fcs_lport.c	2018-11-08 10:57:33.641566694 +0000
+@@ -6037,7 +6037,7 @@
  static void	bfa_fcs_vport_sm_logo_for_stop(struct bfa_fcs_vport_s *vport,
  					enum bfa_fcs_vport_event event);
  
@@ -2815,7 +2849,7 @@ index b4f2c1d..e28cce5 100644
  	{BFA_SM(bfa_fcs_vport_sm_uninit), BFA_FCS_VPORT_UNINIT},
  	{BFA_SM(bfa_fcs_vport_sm_created), BFA_FCS_VPORT_CREATED},
  	{BFA_SM(bfa_fcs_vport_sm_offline), BFA_FCS_VPORT_OFFLINE},
-@@ -6868,7 +6868,7 @@ bfa_fcs_vport_get_attr(struct bfa_fcs_vport_s *vport,
+@@ -6868,7 +6868,7 @@
  	memset(attr, 0, sizeof(struct bfa_vport_attr_s));
  
  	bfa_fcs_lport_get_attr(&vport->lport, &attr->port_attr);
@@ -2824,11 +2858,10 @@ index b4f2c1d..e28cce5 100644
  }
  
  
-diff --git a/drivers/scsi/bfa/bfa_fcs_rport.c b/drivers/scsi/bfa/bfa_fcs_rport.c
-index de50349..6d676be 100644
---- a/drivers/scsi/bfa/bfa_fcs_rport.c
-+++ b/drivers/scsi/bfa/bfa_fcs_rport.c
-@@ -144,7 +144,7 @@ static void	bfa_fcs_rport_sm_fc4_off_delete(struct bfa_fcs_rport_s *rport,
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfa_fcs_rport.c linux-4.19.1_new/drivers/scsi/bfa/bfa_fcs_rport.c
+--- linux-4.19.1_old/drivers/scsi/bfa/bfa_fcs_rport.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfa_fcs_rport.c	2018-11-08 10:57:33.641566694 +0000
+@@ -144,7 +144,7 @@
  static void	bfa_fcs_rport_sm_delete_pending(struct bfa_fcs_rport_s *rport,
  						enum rport_event event);
  
@@ -2837,7 +2870,7 @@ index de50349..6d676be 100644
  	{BFA_SM(bfa_fcs_rport_sm_uninit), BFA_RPORT_UNINIT},
  	{BFA_SM(bfa_fcs_rport_sm_plogi_sending), BFA_RPORT_PLOGI},
  	{BFA_SM(bfa_fcs_rport_sm_plogiacc_sending), BFA_RPORT_ONLINE},
-@@ -2980,7 +2980,7 @@ bfa_fcs_rport_send_ls_rjt(struct bfa_fcs_rport_s *rport, struct fchs_s *rx_fchs,
+@@ -2980,7 +2980,7 @@
  int
  bfa_fcs_rport_get_state(struct bfa_fcs_rport_s *rport)
  {
@@ -2846,11 +2879,25 @@ index de50349..6d676be 100644
  }
  
  
-diff --git a/drivers/scsi/bfa/bfa_ioc.c b/drivers/scsi/bfa/bfa_ioc.c
-index 16d3aeb..43ac9ff 100644
---- a/drivers/scsi/bfa/bfa_ioc.c
-+++ b/drivers/scsi/bfa/bfa_ioc.c
-@@ -148,7 +148,7 @@ bfa_fsm_state_decl(bfa_ioc, disabling, struct bfa_ioc_s, enum ioc_event);
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfa.h linux-4.19.1_new/drivers/scsi/bfa/bfa.h
+--- linux-4.19.1_old/drivers/scsi/bfa/bfa.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfa.h	2018-11-08 10:57:33.641566694 +0000
+@@ -225,8 +225,10 @@
+ 	bfa_boolean_t		busy;
+ };
+ 
++enum iocfc_event;
++
+ struct bfa_iocfc_s {
+-	bfa_fsm_t		fsm;
++	void (*fsm)(struct bfa_iocfc_s *, enum iocfc_event);
+ 	struct bfa_s		*bfa;
+ 	struct bfa_iocfc_cfg_s	cfg;
+ 	u32		req_cq_pi[BFI_IOC_MAX_CQS];
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfa_ioc.c linux-4.19.1_new/drivers/scsi/bfa/bfa_ioc.c
+--- linux-4.19.1_old/drivers/scsi/bfa/bfa_ioc.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfa_ioc.c	2018-11-08 10:57:33.641566694 +0000
+@@ -148,7 +148,7 @@
  bfa_fsm_state_decl(bfa_ioc, disabled, struct bfa_ioc_s, enum ioc_event);
  bfa_fsm_state_decl(bfa_ioc, hwfail, struct bfa_ioc_s, enum ioc_event);
  
@@ -2859,7 +2906,7 @@ index 16d3aeb..43ac9ff 100644
  	{BFA_SM(bfa_ioc_sm_uninit), BFA_IOC_UNINIT},
  	{BFA_SM(bfa_ioc_sm_reset), BFA_IOC_RESET},
  	{BFA_SM(bfa_ioc_sm_enabling), BFA_IOC_ENABLING},
-@@ -236,7 +236,7 @@ bfa_fsm_state_decl(bfa_iocpf, disabling_sync, struct bfa_iocpf_s,
+@@ -236,7 +236,7 @@
  						enum iocpf_event);
  bfa_fsm_state_decl(bfa_iocpf, disabled, struct bfa_iocpf_s, enum iocpf_event);
  
@@ -2868,7 +2915,7 @@ index 16d3aeb..43ac9ff 100644
  	{BFA_SM(bfa_iocpf_sm_reset), BFA_IOCPF_RESET},
  	{BFA_SM(bfa_iocpf_sm_fwcheck), BFA_IOCPF_FWMISMATCH},
  	{BFA_SM(bfa_iocpf_sm_mismatch), BFA_IOCPF_FWMISMATCH},
-@@ -2832,12 +2832,12 @@ enum bfa_ioc_state
+@@ -2832,12 +2832,12 @@
  bfa_ioc_get_state(struct bfa_ioc_s *ioc)
  {
  	enum bfa_iocpf_state iocpf_st;
@@ -2883,11 +2930,10 @@ index 16d3aeb..43ac9ff 100644
  
  		switch (iocpf_st) {
  		case BFA_IOCPF_SEMWAIT:
-diff --git a/drivers/scsi/bfa/bfa_ioc.h b/drivers/scsi/bfa/bfa_ioc.h
-index 0f9fab7..51a3f75 100644
---- a/drivers/scsi/bfa/bfa_ioc.h
-+++ b/drivers/scsi/bfa/bfa_ioc.h
-@@ -290,16 +290,20 @@ struct bfa_ioc_notify_s {
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfa_ioc.h linux-4.19.1_new/drivers/scsi/bfa/bfa_ioc.h
+--- linux-4.19.1_old/drivers/scsi/bfa/bfa_ioc.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfa_ioc.h	2018-11-08 10:57:33.641566694 +0000
+@@ -290,16 +290,20 @@
  	(__notify)->cbarg = (__cbarg);      \
  } while (0)
  
@@ -2910,7 +2956,7 @@ index 0f9fab7..51a3f75 100644
  	struct bfa_s		*bfa;
  	struct bfa_pcidev_s	pcidev;
  	struct bfa_timer_mod_s	*timer_mod;
-@@ -783,8 +787,10 @@ struct bfa_dconf_s {
+@@ -783,8 +787,10 @@
  };
  #pragma pack()
  
@@ -2922,11 +2968,10 @@ index 0f9fab7..51a3f75 100644
  	u8			instance;
  	bfa_boolean_t		read_data_valid;
  	bfa_boolean_t		min_cfg;
-diff --git a/drivers/scsi/bfa/bfa_svc.c b/drivers/scsi/bfa/bfa_svc.c
-index 6fc34fb..ea61d9d 100644
---- a/drivers/scsi/bfa/bfa_svc.c
-+++ b/drivers/scsi/bfa/bfa_svc.c
-@@ -209,7 +209,7 @@ static void     bfa_fcport_ln_sm_up_dn_nf(struct bfa_fcport_ln_s *ln,
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfa_svc.c linux-4.19.1_new/drivers/scsi/bfa/bfa_svc.c
+--- linux-4.19.1_old/drivers/scsi/bfa/bfa_svc.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfa_svc.c	2018-11-08 10:57:33.645566652 +0000
+@@ -209,7 +209,7 @@
  static void     bfa_fcport_ln_sm_up_dn_up_nf(struct bfa_fcport_ln_s *ln,
  					enum bfa_fcport_ln_sm_event event);
  
@@ -2935,7 +2980,7 @@ index 6fc34fb..ea61d9d 100644
  	{BFA_SM(bfa_fcport_sm_uninit), BFA_PORT_ST_UNINIT},
  	{BFA_SM(bfa_fcport_sm_enabling_qwait), BFA_PORT_ST_ENABLING_QWAIT},
  	{BFA_SM(bfa_fcport_sm_enabling), BFA_PORT_ST_ENABLING},
-@@ -3559,7 +3559,7 @@ bfa_fcport_isr(struct bfa_s *bfa, struct bfi_msg_s *msg)
+@@ -3559,7 +3559,7 @@
  	fcport->event_arg.i2hmsg = i2hmsg;
  
  	bfa_trc(bfa, msg->mhdr.msg_id);
@@ -2944,7 +2989,7 @@ index 6fc34fb..ea61d9d 100644
  
  	switch (msg->mhdr.msg_id) {
  	case BFI_FCPORT_I2H_ENABLE_RSP:
-@@ -3994,7 +3994,7 @@ bfa_fcport_get_attr(struct bfa_s *bfa, struct bfa_port_attr_s *attr)
+@@ -3994,7 +3994,7 @@
  
  	attr->pport_cfg.path_tov  = bfa_fcpim_path_tov_get(bfa);
  	attr->pport_cfg.q_depth  = bfa_fcpim_qdepth_get(bfa);
@@ -2953,7 +2998,7 @@ index 6fc34fb..ea61d9d 100644
  
  	attr->fec_state = fcport->fec_state;
  
-@@ -4076,7 +4076,7 @@ bfa_fcport_is_disabled(struct bfa_s *bfa)
+@@ -4076,7 +4076,7 @@
  {
  	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
  
@@ -2962,7 +3007,7 @@ index 6fc34fb..ea61d9d 100644
  		BFA_PORT_ST_DISABLED;
  
  }
-@@ -4086,7 +4086,7 @@ bfa_fcport_is_dport(struct bfa_s *bfa)
+@@ -4086,7 +4086,7 @@
  {
  	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
  
@@ -2971,7 +3016,7 @@ index 6fc34fb..ea61d9d 100644
  		BFA_PORT_ST_DPORT);
  }
  
-@@ -4095,7 +4095,7 @@ bfa_fcport_is_ddport(struct bfa_s *bfa)
+@@ -4095,7 +4095,7 @@
  {
  	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
  
@@ -2980,11 +3025,10 @@ index 6fc34fb..ea61d9d 100644
  		BFA_PORT_ST_DDPORT);
  }
  
-diff --git a/drivers/scsi/bfa/bfa_svc.h b/drivers/scsi/bfa/bfa_svc.h
-index 7e8fb62..c8798e3 100644
---- a/drivers/scsi/bfa/bfa_svc.h
-+++ b/drivers/scsi/bfa/bfa_svc.h
-@@ -160,6 +160,8 @@ struct bfa_fcxp_rsp_info_s {
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/bfa/bfa_svc.h linux-4.19.1_new/drivers/scsi/bfa/bfa_svc.h
+--- linux-4.19.1_old/drivers/scsi/bfa/bfa_svc.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/bfa/bfa_svc.h	2018-11-08 10:57:33.645566652 +0000
+@@ -160,6 +160,8 @@
  	u32	rsp_maxlen;	/*  max response length expected */
  };
  
@@ -2993,7 +3037,7 @@ index 7e8fb62..c8798e3 100644
  struct bfa_fcxp_s {
  	struct list_head	qe;		/*  fcxp queue element */
  	bfa_sm_t	sm;		/*  state machine */
-@@ -295,9 +297,11 @@ struct bfa_rport_info_s {
+@@ -295,9 +297,11 @@
  /*
   * BFA rport data structure
   */
@@ -3006,7 +3050,7 @@ index 7e8fb62..c8798e3 100644
  	struct bfa_s	*bfa;		/*  backpointer to BFA		    */
  	void		*rport_drv;	/*  fcs/driver rport object	    */
  	u16	fw_handle;	/*  firmware rport handle	    */
-@@ -388,10 +392,12 @@ void	bfa_uf_res_recfg(struct bfa_s *bfa, u16 num_uf_fw);
+@@ -388,10 +392,12 @@
  /*
   * LPS - bfa lport login/logout service interface
   */
@@ -3020,7 +3064,7 @@ index 7e8fb62..c8798e3 100644
  	u8		bfa_tag;	/*  lport tag		*/
  	u8		fw_tag;		/*  lport fw tag                */
  	u8		reqq;		/*  lport request queue	*/
-@@ -450,9 +456,11 @@ void	bfa_lps_isr(struct bfa_s *bfa, struct bfi_msg_s *msg);
+@@ -450,9 +456,11 @@
  /*
   * Link notification data structure
   */
@@ -3033,7 +3077,7 @@ index 7e8fb62..c8798e3 100644
  	struct bfa_cb_qe_s	ln_qe;	/*  BFA callback queue elem for ln */
  	enum bfa_port_linkstate ln_event; /*  ln event for callback */
  };
-@@ -466,7 +474,7 @@ struct bfa_fcport_trunk_s {
+@@ -466,7 +474,7 @@
   */
  struct bfa_fcport_s {
  	struct bfa_s		*bfa;	/*  parent BFA instance */
@@ -3042,7 +3086,7 @@ index 7e8fb62..c8798e3 100644
  	wwn_t			nwwn;	/*  node wwn of physical port */
  	wwn_t			pwwn;	/*  port wwn of physical oprt */
  	enum bfa_port_speed speed_sup;
-@@ -714,9 +722,11 @@ struct bfa_fcdiag_lb_s {
+@@ -714,9 +722,11 @@
  	u32        status;
  };
  
@@ -3055,105 +3099,10 @@ index 7e8fb62..c8798e3 100644
  	struct bfa_reqq_wait_s reqq_wait;
  	bfa_cb_diag_t	cbfn;
  	void		*cbarg;
-diff --git a/drivers/scsi/bfa/bfad.c b/drivers/scsi/bfa/bfad.c
-index bd7e6a6f..f304faab 100644
---- a/drivers/scsi/bfa/bfad.c
-+++ b/drivers/scsi/bfa/bfad.c
-@@ -408,6 +408,16 @@ bfad_hcb_comp(void *arg, bfa_status_t status)
- 	complete(&fcomp->comp);
- }
- 
-+void
-+bfad_stats_comp(void *arg, bfa_boolean_t _status)
-+{
-+	struct bfad_hal_comp *fcomp = (struct bfad_hal_comp *)arg;
-+	bfa_status_t status = (bfa_status_t)_status;
-+
-+	fcomp->status = status;
-+	complete(&fcomp->comp);
-+}
-+
- /*
-  * bfa_init callback
-  */
-@@ -1439,7 +1449,7 @@ bfad_pci_remove(struct pci_dev *pdev)
-  * PCI Error Recovery entry, error detected.
-  */
- static pci_ers_result_t
--bfad_pci_error_detected(struct pci_dev *pdev, pci_channel_state_t state)
-+bfad_pci_error_detected(struct pci_dev *pdev, enum pci_channel_state state)
- {
- 	struct bfad_s *bfad = pci_get_drvdata(pdev);
- 	unsigned long	flags;
-diff --git a/drivers/scsi/bfa/bfad_bsg.c b/drivers/scsi/bfa/bfad_bsg.c
-index 5d163ca..621829c 100644
---- a/drivers/scsi/bfa/bfad_bsg.c
-+++ b/drivers/scsi/bfa/bfad_bsg.c
-@@ -2143,7 +2143,7 @@ bfad_iocmd_fcport_get_stats(struct bfad_s *bfad, void *cmd)
- 	struct bfa_cb_pending_q_s cb_qe;
- 
- 	init_completion(&fcomp.comp);
--	bfa_pending_q_init(&cb_qe, (bfa_cb_cbfn_t)bfad_hcb_comp,
-+	bfa_pending_q_init(&cb_qe, bfad_stats_comp,
- 			   &fcomp, &iocmd->stats);
- 	spin_lock_irqsave(&bfad->bfad_lock, flags);
- 	iocmd->status = bfa_fcport_get_stats(&bfad->bfa, &cb_qe);
-@@ -2167,7 +2167,7 @@ bfad_iocmd_fcport_reset_stats(struct bfad_s *bfad, void *cmd)
- 	struct bfa_cb_pending_q_s cb_qe;
- 
- 	init_completion(&fcomp.comp);
--	bfa_pending_q_init(&cb_qe, (bfa_cb_cbfn_t)bfad_hcb_comp, &fcomp, NULL);
-+	bfa_pending_q_init(&cb_qe, bfad_stats_comp, &fcomp, NULL);
- 
- 	spin_lock_irqsave(&bfad->bfad_lock, flags);
- 	iocmd->status = bfa_fcport_clear_stats(&bfad->bfa, &cb_qe);
-@@ -2451,7 +2451,7 @@ bfad_iocmd_qos_get_stats(struct bfad_s *bfad, void *cmd)
- 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(&bfad->bfa);
- 
- 	init_completion(&fcomp.comp);
--	bfa_pending_q_init(&cb_qe, (bfa_cb_cbfn_t)bfad_hcb_comp,
-+	bfa_pending_q_init(&cb_qe, bfad_stats_comp,
- 			   &fcomp, &iocmd->stats);
- 
- 	spin_lock_irqsave(&bfad->bfad_lock, flags);
-@@ -2482,7 +2482,7 @@ bfad_iocmd_qos_reset_stats(struct bfad_s *bfad, void *cmd)
- 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(&bfad->bfa);
- 
- 	init_completion(&fcomp.comp);
--	bfa_pending_q_init(&cb_qe, (bfa_cb_cbfn_t)bfad_hcb_comp,
-+	bfa_pending_q_init(&cb_qe, bfad_stats_comp,
- 			   &fcomp, NULL);
- 
- 	spin_lock_irqsave(&bfad->bfad_lock, flags);
-diff --git a/drivers/scsi/bfa/bfad_drv.h b/drivers/scsi/bfa/bfad_drv.h
-index 4fe980a..fb1ae8d 100644
---- a/drivers/scsi/bfa/bfad_drv.h
-+++ b/drivers/scsi/bfa/bfad_drv.h
-@@ -187,8 +187,10 @@ union bfad_tmp_buf {
- /*
-  * BFAD (PCI function) data structure
-  */
-+enum bfad_sm_event;
-+
- struct bfad_s {
--	bfa_sm_t	sm;	/* state machine */
-+	void (*sm)(struct bfad_s *, enum bfad_sm_event); /* state machine */
- 	struct list_head list_entry;
- 	struct bfa_s	bfa;
- 	struct bfa_fcs_s bfa_fcs;
-@@ -309,6 +311,7 @@ void		bfad_fcs_stop(struct bfad_s *bfad);
- void		bfad_remove_intr(struct bfad_s *bfad);
- void		bfad_hal_mem_release(struct bfad_s *bfad);
- void		bfad_hcb_comp(void *arg, bfa_status_t status);
-+void		bfad_stats_comp(void *arg, bfa_boolean_t _status);
- 
- int		bfad_setup_intr(struct bfad_s *bfad);
- void		bfad_remove_intr(struct bfad_s *bfad);
-diff --git a/drivers/scsi/csiostor/csio_defs.h b/drivers/scsi/csiostor/csio_defs.h
-index c38017b..3268e62 100644
---- a/drivers/scsi/csiostor/csio_defs.h
-+++ b/drivers/scsi/csiostor/csio_defs.h
-@@ -73,7 +73,8 @@ csio_list_deleted(struct list_head *list)
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/csiostor/csio_defs.h linux-4.19.1_new/drivers/scsi/csiostor/csio_defs.h
+--- linux-4.19.1_old/drivers/scsi/csiostor/csio_defs.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/csiostor/csio_defs.h	2018-11-08 10:57:33.645566652 +0000
+@@ -73,7 +73,8 @@
  #define csio_list_prev(elem)	(((struct list_head *)(elem))->prev)
  
  /* State machine */
@@ -3163,7 +3112,7 @@ index c38017b..3268e62 100644
  
  struct csio_sm {
  	struct list_head	sm_list;
-@@ -81,9 +82,9 @@ struct csio_sm {
+@@ -81,9 +82,9 @@
  };
  
  static inline void
@@ -3175,7 +3124,7 @@ index c38017b..3268e62 100644
  }
  
  static inline void
-@@ -93,21 +94,21 @@ csio_init_state(struct csio_sm *smp, void *state)
+@@ -93,21 +94,21 @@
  }
  
  static inline void
@@ -3203,11 +3152,10 @@ index c38017b..3268e62 100644
  }
  
  #define	CSIO_ASSERT(cond)		BUG_ON(!(cond))
-diff --git a/drivers/scsi/csiostor/csio_hw.c b/drivers/scsi/csiostor/csio_hw.c
-index a10cf25..4a6736f 100644
---- a/drivers/scsi/csiostor/csio_hw.c
-+++ b/drivers/scsi/csiostor/csio_hw.c
-@@ -89,15 +89,15 @@ static void csio_mgmtm_cleanup(struct csio_mgmtm *);
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/csiostor/csio_hw.c linux-4.19.1_new/drivers/scsi/csiostor/csio_hw.c
+--- linux-4.19.1_old/drivers/scsi/csiostor/csio_hw.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/csiostor/csio_hw.c	2018-11-08 10:57:33.645566652 +0000
+@@ -89,15 +89,15 @@
  static void csio_hw_mbm_cleanup(struct csio_hw *);
  
  /* State machine forward declarations */
@@ -3232,7 +3180,7 @@ index a10cf25..4a6736f 100644
  
  static void csio_hw_initialize(struct csio_hw *hw);
  static void csio_evtq_stop(struct csio_hw *hw);
-@@ -105,12 +105,12 @@ static void csio_evtq_start(struct csio_hw *hw);
+@@ -105,12 +105,12 @@
  
  int csio_is_hw_ready(struct csio_hw *hw)
  {
@@ -3247,7 +3195,7 @@ index a10cf25..4a6736f 100644
  }
  
  
-@@ -2653,8 +2653,11 @@ csio_hw_fatal_err(struct csio_hw *hw)
+@@ -2777,8 +2777,11 @@
   *
   */
  static void
@@ -3260,7 +3208,7 @@ index a10cf25..4a6736f 100644
  	hw->prev_evt = hw->cur_evt;
  	hw->cur_evt = evt;
  	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -2678,8 +2681,11 @@ csio_hws_uninit(struct csio_hw *hw, enum csio_hw_ev evt)
+@@ -2802,8 +2805,11 @@
   *
   */
  static void
@@ -3273,7 +3221,7 @@ index a10cf25..4a6736f 100644
  	hw->prev_evt = hw->cur_evt;
  	hw->cur_evt = evt;
  	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -2716,8 +2722,11 @@ csio_hws_configuring(struct csio_hw *hw, enum csio_hw_ev evt)
+@@ -2840,8 +2846,11 @@
   *
   */
  static void
@@ -3286,7 +3234,7 @@ index a10cf25..4a6736f 100644
  	hw->prev_evt = hw->cur_evt;
  	hw->cur_evt = evt;
  	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -2754,8 +2763,11 @@ csio_hws_initializing(struct csio_hw *hw, enum csio_hw_ev evt)
+@@ -2878,8 +2887,11 @@
   *
   */
  static void
@@ -3299,7 +3247,7 @@ index a10cf25..4a6736f 100644
  	/* Remember the event */
  	hw->evtflag = evt;
  
-@@ -2803,8 +2815,11 @@ csio_hws_ready(struct csio_hw *hw, enum csio_hw_ev evt)
+@@ -2927,8 +2939,11 @@
   *
   */
  static void
@@ -3312,7 +3260,7 @@ index a10cf25..4a6736f 100644
  	hw->prev_evt = hw->cur_evt;
  	hw->cur_evt = evt;
  	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -2863,8 +2878,11 @@ csio_hws_quiescing(struct csio_hw *hw, enum csio_hw_ev evt)
+@@ -2987,8 +3002,11 @@
   *
   */
  static void
@@ -3325,7 +3273,7 @@ index a10cf25..4a6736f 100644
  	hw->prev_evt = hw->cur_evt;
  	hw->cur_evt = evt;
  	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -2888,8 +2906,11 @@ csio_hws_quiesced(struct csio_hw *hw, enum csio_hw_ev evt)
+@@ -3012,8 +3030,11 @@
   *
   */
  static void
@@ -3338,7 +3286,7 @@ index a10cf25..4a6736f 100644
  	hw->prev_evt = hw->cur_evt;
  	hw->cur_evt = evt;
  	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -2914,8 +2935,11 @@ csio_hws_resetting(struct csio_hw *hw, enum csio_hw_ev evt)
+@@ -3038,8 +3059,11 @@
   *
   */
  static void
@@ -3351,7 +3299,7 @@ index a10cf25..4a6736f 100644
  	hw->prev_evt = hw->cur_evt;
  	hw->cur_evt = evt;
  	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -2949,8 +2973,11 @@ csio_hws_removing(struct csio_hw *hw, enum csio_hw_ev evt)
+@@ -3073,8 +3097,11 @@
   *
   */
  static void
@@ -3364,7 +3312,7 @@ index a10cf25..4a6736f 100644
  	hw->prev_evt = hw->cur_evt;
  	hw->cur_evt = evt;
  	CSIO_INC_STATS(hw, n_evt_sm[evt]);
-@@ -4107,7 +4134,7 @@ csio_hw_start(struct csio_hw *hw)
+@@ -4231,7 +4258,7 @@
  
  	if (csio_is_hw_ready(hw))
  		return 0;
@@ -3373,11 +3321,10 @@ index a10cf25..4a6736f 100644
  		return -EINVAL;
  	else
  		return -ENODEV;
-diff --git a/drivers/scsi/csiostor/csio_init.c b/drivers/scsi/csiostor/csio_init.c
-index ed2dae6..621adf4 100644
---- a/drivers/scsi/csiostor/csio_init.c
-+++ b/drivers/scsi/csiostor/csio_init.c
-@@ -1062,7 +1062,7 @@ static void csio_remove_one(struct pci_dev *pdev)
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/csiostor/csio_init.c linux-4.19.1_new/drivers/scsi/csiostor/csio_init.c
+--- linux-4.19.1_old/drivers/scsi/csiostor/csio_init.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/csiostor/csio_init.c	2018-11-08 10:57:33.645566652 +0000
+@@ -1062,7 +1062,7 @@
   *
   */
  static pci_ers_result_t
@@ -3386,11 +3333,10 @@ index ed2dae6..621adf4 100644
  {
  	struct csio_hw *hw = pci_get_drvdata(pdev);
  
-diff --git a/drivers/scsi/csiostor/csio_lnode.c b/drivers/scsi/csiostor/csio_lnode.c
-index cc5611e..1937cb0 100644
---- a/drivers/scsi/csiostor/csio_lnode.c
-+++ b/drivers/scsi/csiostor/csio_lnode.c
-@@ -55,10 +55,10 @@ int csio_fdmi_enable = 1;
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/csiostor/csio_lnode.c linux-4.19.1_new/drivers/scsi/csiostor/csio_lnode.c
+--- linux-4.19.1_old/drivers/scsi/csiostor/csio_lnode.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/csiostor/csio_lnode.c	2018-11-08 10:57:33.645566652 +0000
+@@ -55,10 +55,10 @@
  #define PORT_ID_PTR(_x)         ((uint8_t *)(&_x) + 1)
  
  /* Lnode SM declarations */
@@ -3405,7 +3351,7 @@ index cc5611e..1937cb0 100644
  
  static int csio_ln_mgmt_submit_req(struct csio_ioreq *,
  		void (*io_cbfn) (struct csio_hw *, struct csio_ioreq *),
-@@ -1092,7 +1092,7 @@ csio_handle_link_down(struct csio_hw *hw, uint8_t portid, uint32_t fcfi,
+@@ -1092,7 +1092,7 @@
  int
  csio_is_lnode_ready(struct csio_lnode *ln)
  {
@@ -3414,7 +3360,7 @@ index cc5611e..1937cb0 100644
  }
  
  /*****************************************************************************/
-@@ -1108,8 +1108,10 @@ csio_is_lnode_ready(struct csio_lnode *ln)
+@@ -1108,8 +1108,10 @@
   * Return - none.
   */
  static void
@@ -3426,7 +3372,7 @@ index cc5611e..1937cb0 100644
  	struct csio_hw *hw = csio_lnode_to_hw(ln);
  	struct csio_lnode *rln = hw->rln;
  	int rv;
-@@ -1161,8 +1163,10 @@ csio_lns_uninit(struct csio_lnode *ln, enum csio_ln_ev evt)
+@@ -1161,8 +1163,10 @@
   * Return - none.
   */
  static void
@@ -3438,7 +3384,7 @@ index cc5611e..1937cb0 100644
  	struct csio_hw *hw = csio_lnode_to_hw(ln);
  
  	CSIO_INC_STATS(ln, n_evt_sm[evt]);
-@@ -1213,8 +1217,10 @@ csio_lns_online(struct csio_lnode *ln, enum csio_ln_ev evt)
+@@ -1213,8 +1217,10 @@
   * Return - none.
   */
  static void
@@ -3450,7 +3396,7 @@ index cc5611e..1937cb0 100644
  	struct csio_hw *hw = csio_lnode_to_hw(ln);
  
  	CSIO_INC_STATS(ln, n_evt_sm[evt]);
-@@ -1287,8 +1293,10 @@ csio_lns_ready(struct csio_lnode *ln, enum csio_ln_ev evt)
+@@ -1287,8 +1293,10 @@
   * Return - none.
   */
  static void
@@ -3462,7 +3408,7 @@ index cc5611e..1937cb0 100644
  	struct csio_hw *hw = csio_lnode_to_hw(ln);
  	struct csio_lnode *rln = hw->rln;
  	int rv;
-@@ -1364,15 +1372,15 @@ csio_free_fcfinfo(struct kref *kref)
+@@ -1364,15 +1372,15 @@
  void
  csio_lnode_state_to_str(struct csio_lnode *ln, int8_t *str)
  {
@@ -3481,11 +3427,10 @@ index cc5611e..1937cb0 100644
  		strcpy(str, "OFFLINE");
  		return;
  	}
-diff --git a/drivers/scsi/csiostor/csio_rnode.c b/drivers/scsi/csiostor/csio_rnode.c
-index e9c3b04..4ba3a59 100644
---- a/drivers/scsi/csiostor/csio_rnode.c
-+++ b/drivers/scsi/csiostor/csio_rnode.c
-@@ -46,10 +46,10 @@ static int csio_rnode_init(struct csio_rnode *, struct csio_lnode *);
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/csiostor/csio_rnode.c linux-4.19.1_new/drivers/scsi/csiostor/csio_rnode.c
+--- linux-4.19.1_old/drivers/scsi/csiostor/csio_rnode.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/csiostor/csio_rnode.c	2018-11-08 10:57:33.645566652 +0000
+@@ -46,10 +46,10 @@
  static void csio_rnode_exit(struct csio_rnode *);
  
  /* Static machine forward declarations */
@@ -3500,7 +3445,7 @@ index e9c3b04..4ba3a59 100644
  
  /* RNF event mapping */
  static enum csio_rn_ev fwevt_to_rnevt[] = {
-@@ -88,13 +88,13 @@ static enum csio_rn_ev fwevt_to_rnevt[] = {
+@@ -88,13 +88,13 @@
  int
  csio_is_rnode_ready(struct csio_rnode *rn)
  {
@@ -3516,7 +3461,7 @@ index e9c3b04..4ba3a59 100644
  }
  
  static int
-@@ -601,8 +601,10 @@ __csio_unreg_rnode(struct csio_rnode *rn)
+@@ -601,8 +601,10 @@
   *
   */
  static void
@@ -3528,7 +3473,7 @@ index e9c3b04..4ba3a59 100644
  	struct csio_lnode *ln = csio_rnode_to_lnode(rn);
  	int ret = 0;
  
-@@ -641,8 +643,10 @@ csio_rns_uninit(struct csio_rnode *rn, enum csio_rn_ev evt)
+@@ -641,8 +643,10 @@
   *
   */
  static void
@@ -3540,7 +3485,7 @@ index e9c3b04..4ba3a59 100644
  	struct csio_lnode *ln = csio_rnode_to_lnode(rn);
  	int ret = 0;
  
-@@ -726,8 +730,10 @@ csio_rns_ready(struct csio_rnode *rn, enum csio_rn_ev evt)
+@@ -726,8 +730,10 @@
   *
   */
  static void
@@ -3552,7 +3497,7 @@ index e9c3b04..4ba3a59 100644
  	struct csio_lnode *ln = csio_rnode_to_lnode(rn);
  	int ret = 0;
  
-@@ -785,8 +791,10 @@ csio_rns_offline(struct csio_rnode *rn, enum csio_rn_ev evt)
+@@ -785,8 +791,10 @@
   *
   */
  static void
@@ -3564,11 +3509,10 @@ index e9c3b04..4ba3a59 100644
  	struct csio_lnode *ln = csio_rnode_to_lnode(rn);
  	int ret = 0;
  
-diff --git a/drivers/scsi/csiostor/csio_scsi.c b/drivers/scsi/csiostor/csio_scsi.c
-index dab0d3f..770ffbf 100644
---- a/drivers/scsi/csiostor/csio_scsi.c
-+++ b/drivers/scsi/csiostor/csio_scsi.c
-@@ -65,12 +65,12 @@ static int csio_ddp_descs = 128;
+diff -ur --new-file linux-4.19.1_old/drivers/scsi/csiostor/csio_scsi.c linux-4.19.1_new/drivers/scsi/csiostor/csio_scsi.c
+--- linux-4.19.1_old/drivers/scsi/csiostor/csio_scsi.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/scsi/csiostor/csio_scsi.c	2018-11-08 10:57:33.645566652 +0000
+@@ -65,12 +65,12 @@
  static int csio_do_abrt_cls(struct csio_hw *,
  				      struct csio_ioreq *, bool);
  
@@ -3587,7 +3531,7 @@ index dab0d3f..770ffbf 100644
  
  /*
   * csio_scsi_match_io - Match an ioreq with the given SCSI level data.
-@@ -700,8 +700,10 @@ csio_scsi_abrt_cls(struct csio_ioreq *req, bool abort)
+@@ -700,8 +700,10 @@
  /* START: SCSI SM                                                            */
  /*****************************************************************************/
  static void
@@ -3599,7 +3543,7 @@ index dab0d3f..770ffbf 100644
  	struct csio_hw *hw = req->lnode->hwp;
  	struct csio_scsim *scsim = csio_hw_to_scsim(hw);
  
-@@ -770,8 +772,10 @@ csio_scsis_uninit(struct csio_ioreq *req, enum csio_scsi_ev evt)
+@@ -770,8 +772,10 @@
  }
  
  static void
@@ -3611,7 +3555,7 @@ index dab0d3f..770ffbf 100644
  	struct csio_hw *hw = req->lnode->hwp;
  	struct csio_scsim *scm = csio_hw_to_scsim(hw);
  	struct csio_rnode *rn;
-@@ -842,8 +846,10 @@ csio_scsis_io_active(struct csio_ioreq *req, enum csio_scsi_ev evt)
+@@ -842,8 +846,10 @@
  }
  
  static void
@@ -3623,7 +3567,7 @@ index dab0d3f..770ffbf 100644
  	struct csio_hw *hw = req->lnode->hwp;
  	struct csio_scsim *scm = csio_hw_to_scsim(hw);
  
-@@ -885,8 +891,10 @@ csio_scsis_tm_active(struct csio_ioreq *req, enum csio_scsi_ev evt)
+@@ -885,8 +891,10 @@
  }
  
  static void
@@ -3635,7 +3579,7 @@ index dab0d3f..770ffbf 100644
  	struct csio_hw *hw = req->lnode->hwp;
  	struct csio_scsim *scm = csio_hw_to_scsim(hw);
  
-@@ -982,8 +990,10 @@ csio_scsis_aborting(struct csio_ioreq *req, enum csio_scsi_ev evt)
+@@ -982,8 +990,10 @@
  }
  
  static void
@@ -3647,7 +3591,7 @@ index dab0d3f..770ffbf 100644
  	struct csio_hw *hw = req->lnode->hwp;
  	struct csio_scsim *scm = csio_hw_to_scsim(hw);
  
-@@ -1046,8 +1056,11 @@ csio_scsis_closing(struct csio_ioreq *req, enum csio_scsi_ev evt)
+@@ -1046,8 +1056,11 @@
  }
  
  static void
@@ -3660,11 +3604,10 @@ index dab0d3f..770ffbf 100644
  	switch (evt) {
  	case CSIO_SCSIE_ABORT:
  	case CSIO_SCSIE_CLOSE:
-diff --git a/fs/afs/file.c b/fs/afs/file.c
-index 7d4f261..405f3c1 100644
---- a/fs/afs/file.c
-+++ b/fs/afs/file.c
-@@ -260,12 +260,12 @@ int afs_fetch_data(struct afs_vnode *vnode, struct key *key, struct afs_read *de
+diff -ur --new-file linux-4.19.1_old/fs/afs/file.c linux-4.19.1_new/fs/afs/file.c
+--- linux-4.19.1_old/fs/afs/file.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/fs/afs/file.c	2018-11-08 10:57:33.645566652 +0000
+@@ -260,12 +260,12 @@
  /*
   * read page from file, directory or symlink, given a key to use
   */
@@ -3679,7 +3622,7 @@ index 7d4f261..405f3c1 100644
  	int ret;
  
  	_enter("{%x},{%lu},{%lu}", key_serial(key), inode->i_ino, page->index);
-@@ -384,14 +384,14 @@ static int afs_readpage(struct file *file, struct page *page)
+@@ -384,14 +384,14 @@
  	if (file) {
  		key = afs_file_key(file);
  		ASSERT(key != NULL);
@@ -3696,11 +3639,10 @@ index 7d4f261..405f3c1 100644
  			key_put(key);
  		}
  	}
-diff --git a/fs/afs/internal.h b/fs/afs/internal.h
-index 9778df1..42204ee 100644
---- a/fs/afs/internal.h
-+++ b/fs/afs/internal.h
-@@ -751,7 +751,7 @@ extern void afs_put_wb_key(struct afs_wb_key *);
+diff -ur --new-file linux-4.19.1_old/fs/afs/internal.h linux-4.19.1_new/fs/afs/internal.h
+--- linux-4.19.1_old/fs/afs/internal.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/fs/afs/internal.h	2018-11-08 10:57:33.645566652 +0000
+@@ -752,7 +752,7 @@
  extern int afs_open(struct inode *, struct file *);
  extern int afs_release(struct inode *, struct file *);
  extern int afs_fetch_data(struct afs_vnode *, struct key *, struct afs_read *);
@@ -3709,11 +3651,10 @@ index 9778df1..42204ee 100644
  extern void afs_put_read(struct afs_read *);
  
  /*
-diff --git a/fs/exofs/inode.c b/fs/exofs/inode.c
-index 5f81fcd..b022ac3 100644
---- a/fs/exofs/inode.c
-+++ b/fs/exofs/inode.c
-@@ -470,6 +470,11 @@ static int readpage_strip(void *data, struct page *page)
+diff -ur --new-file linux-4.19.1_old/fs/exofs/inode.c linux-4.19.1_new/fs/exofs/inode.c
+--- linux-4.19.1_old/fs/exofs/inode.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/fs/exofs/inode.c	2018-11-08 10:57:33.645566652 +0000
+@@ -470,6 +470,11 @@
  	return ret;
  }
  
@@ -3725,7 +3666,7 @@ index 5f81fcd..b022ac3 100644
  static int exofs_readpages(struct file *file, struct address_space *mapping,
  			   struct list_head *pages, unsigned nr_pages)
  {
-@@ -478,7 +483,7 @@ static int exofs_readpages(struct file *file, struct address_space *mapping,
+@@ -478,7 +483,7 @@
  
  	_pcol_init(&pcol, nr_pages, mapping->host);
  
@@ -3734,11 +3675,10 @@ index 5f81fcd..b022ac3 100644
  	if (ret) {
  		EXOFS_ERR("read_cache_pages => %d\n", ret);
  		return ret;
-diff --git a/fs/fuse/file.c b/fs/fuse/file.c
-index aa23749a..e797ef7 100644
---- a/fs/fuse/file.c
-+++ b/fs/fuse/file.c
-@@ -837,9 +837,9 @@ struct fuse_fill_data {
+diff -ur --new-file linux-4.19.1_old/fs/fuse/file.c linux-4.19.1_new/fs/fuse/file.c
+--- linux-4.19.1_old/fs/fuse/file.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/fs/fuse/file.c	2018-11-08 10:57:33.645566652 +0000
+@@ -838,9 +838,9 @@
  	unsigned nr_pages;
  };
  
@@ -3750,11 +3690,10 @@ index aa23749a..e797ef7 100644
  	struct fuse_req *req = data->req;
  	struct inode *inode = data->inode;
  	struct fuse_conn *fc = get_fuse_conn(inode);
-diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
-index 7a9c144..31b67a7 100644
---- a/fs/nfs/dir.c
-+++ b/fs/nfs/dir.c
-@@ -664,8 +664,9 @@ int nfs_readdir_xdr_to_array(nfs_readdir_descriptor_t *desc, struct page *page,
+diff -ur --new-file linux-4.19.1_old/fs/nfs/dir.c linux-4.19.1_new/fs/nfs/dir.c
+--- linux-4.19.1_old/fs/nfs/dir.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/fs/nfs/dir.c	2018-11-08 10:57:33.645566652 +0000
+@@ -664,8 +664,9 @@
   * We only need to convert from xdr once so future lookups are much simpler
   */
  static
@@ -3765,7 +3704,7 @@ index 7a9c144..31b67a7 100644
  	struct inode	*inode = file_inode(desc->file);
  	int ret;
  
-@@ -698,7 +699,7 @@ static
+@@ -698,7 +699,7 @@
  struct page *get_cache_page(nfs_readdir_descriptor_t *desc)
  {
  	return read_cache_page(desc->file->f_mapping,
@@ -3774,11 +3713,10 @@ index 7a9c144..31b67a7 100644
  }
  
  /*
-diff --git a/fs/nfs/read.c b/fs/nfs/read.c
-index 48d7277..42dbf4f 100644
---- a/fs/nfs/read.c
-+++ b/fs/nfs/read.c
-@@ -354,7 +354,7 @@ struct nfs_readdesc {
+diff -ur --new-file linux-4.19.1_old/fs/nfs/read.c linux-4.19.1_new/fs/nfs/read.c
+--- linux-4.19.1_old/fs/nfs/read.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/fs/nfs/read.c	2018-11-08 10:57:33.645566652 +0000
+@@ -354,7 +354,7 @@
  };
  
  static int
@@ -3787,10 +3725,9 @@ index 48d7277..42dbf4f 100644
  {
  	struct nfs_readdesc *desc = (struct nfs_readdesc *)data;
  	struct nfs_page *new;
-diff --git a/fs/nfs/symlink.c b/fs/nfs/symlink.c
-index 06eb44b..53274f8 100644
---- a/fs/nfs/symlink.c
-+++ b/fs/nfs/symlink.c
+diff -ur --new-file linux-4.19.1_old/fs/nfs/symlink.c linux-4.19.1_new/fs/nfs/symlink.c
+--- linux-4.19.1_old/fs/nfs/symlink.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/fs/nfs/symlink.c	2018-11-08 10:57:33.645566652 +0000
 @@ -26,9 +26,10 @@
   * and straight-forward than readdir caching.
   */
@@ -3803,7 +3740,7 @@ index 06eb44b..53274f8 100644
  
  	error = NFS_PROTO(inode)->readlink(inode, page, 0, PAGE_SIZE);
  	if (error < 0)
-@@ -65,8 +66,7 @@ static const char *nfs_get_link(struct dentry *dentry,
+@@ -65,8 +66,7 @@
  		err = ERR_PTR(nfs_revalidate_mapping(inode, inode->i_mapping));
  		if (err)
  			return err;
@@ -3813,11 +3750,10 @@ index 06eb44b..53274f8 100644
  		if (IS_ERR(page))
  			return ERR_CAST(page);
  	}
-diff --git a/fs/nfsd/nfs4xdr.c b/fs/nfsd/nfs4xdr.c
-index a96843c..44fa1b3 100644
---- a/fs/nfsd/nfs4xdr.c
-+++ b/fs/nfsd/nfs4xdr.c
-@@ -496,8 +496,9 @@ nfsd4_decode_fattr(struct nfsd4_compoundargs *argp, u32 *bmval,
+diff -ur --new-file linux-4.19.1_old/fs/nfsd/nfs4xdr.c linux-4.19.1_new/fs/nfsd/nfs4xdr.c
+--- linux-4.19.1_old/fs/nfsd/nfs4xdr.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/fs/nfsd/nfs4xdr.c	2018-11-08 10:57:33.649566610 +0000
+@@ -496,8 +496,9 @@
  }
  
  static __be32
@@ -3828,7 +3764,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(sizeof(stateid_t));
-@@ -508,8 +509,9 @@ nfsd4_decode_stateid(struct nfsd4_compoundargs *argp, stateid_t *sid)
+@@ -508,8 +509,9 @@
  }
  
  static __be32
@@ -3839,7 +3775,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(4);
-@@ -518,8 +520,9 @@ nfsd4_decode_access(struct nfsd4_compoundargs *argp, struct nfsd4_access *access
+@@ -518,8 +520,9 @@
  	DECODE_TAIL;
  }
  
@@ -3850,7 +3786,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  	u32 dummy, uid, gid;
  	char *machine_name;
-@@ -598,8 +601,9 @@ static __be32 nfsd4_decode_cb_sec(struct nfsd4_compoundargs *argp, struct nfsd4_
+@@ -598,8 +601,9 @@
  	DECODE_TAIL;
  }
  
@@ -3861,7 +3797,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(4);
-@@ -609,8 +613,9 @@ static __be32 nfsd4_decode_backchannel_ctl(struct nfsd4_compoundargs *argp, stru
+@@ -609,8 +613,9 @@
  	DECODE_TAIL;
  }
  
@@ -3872,7 +3808,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(NFS4_MAX_SESSIONID_LEN + 8);
-@@ -622,8 +627,9 @@ static __be32 nfsd4_decode_bind_conn_to_session(struct nfsd4_compoundargs *argp,
+@@ -622,8 +627,9 @@
  }
  
  static __be32
@@ -3883,7 +3819,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(4);
-@@ -635,8 +641,9 @@ nfsd4_decode_close(struct nfsd4_compoundargs *argp, struct nfsd4_close *close)
+@@ -635,8 +641,9 @@
  
  
  static __be32
@@ -3894,7 +3830,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(12);
-@@ -647,8 +654,9 @@ nfsd4_decode_commit(struct nfsd4_compoundargs *argp, struct nfsd4_commit *commit
+@@ -647,8 +654,9 @@
  }
  
  static __be32
@@ -3905,7 +3841,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(4);
-@@ -692,20 +700,25 @@ nfsd4_decode_create(struct nfsd4_compoundargs *argp, struct nfsd4_create *create
+@@ -692,20 +700,25 @@
  }
  
  static inline __be32
@@ -3934,7 +3870,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(4);
-@@ -719,8 +732,9 @@ nfsd4_decode_link(struct nfsd4_compoundargs *argp, struct nfsd4_link *link)
+@@ -719,8 +732,9 @@
  }
  
  static __be32
@@ -3945,7 +3881,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	/*
-@@ -759,8 +773,9 @@ nfsd4_decode_lock(struct nfsd4_compoundargs *argp, struct nfsd4_lock *lock)
+@@ -759,8 +773,9 @@
  }
  
  static __be32
@@ -3956,7 +3892,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  		        
  	READ_BUF(32);
-@@ -778,8 +793,9 @@ nfsd4_decode_lockt(struct nfsd4_compoundargs *argp, struct nfsd4_lockt *lockt)
+@@ -778,8 +793,9 @@
  }
  
  static __be32
@@ -3967,7 +3903,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(8);
-@@ -798,8 +814,9 @@ nfsd4_decode_locku(struct nfsd4_compoundargs *argp, struct nfsd4_locku *locku)
+@@ -798,8 +814,9 @@
  }
  
  static __be32
@@ -3978,7 +3914,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(4);
-@@ -897,8 +914,9 @@ static __be32 nfsd4_decode_opaque(struct nfsd4_compoundargs *argp, struct xdr_ne
+@@ -897,8 +914,9 @@
  }
  
  static __be32
@@ -3989,7 +3925,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  	u32 dummy;
  
-@@ -1012,8 +1030,9 @@ nfsd4_decode_open(struct nfsd4_compoundargs *argp, struct nfsd4_open *open)
+@@ -1012,8 +1030,9 @@
  }
  
  static __be32
@@ -4000,7 +3936,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	if (argp->minorversion >= 1)
-@@ -1029,8 +1048,9 @@ nfsd4_decode_open_confirm(struct nfsd4_compoundargs *argp, struct nfsd4_open_con
+@@ -1029,8 +1048,9 @@
  }
  
  static __be32
@@ -4011,7 +3947,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  		    
  	status = nfsd4_decode_stateid(argp, &open_down->od_stateid);
-@@ -1049,8 +1069,9 @@ nfsd4_decode_open_downgrade(struct nfsd4_compoundargs *argp, struct nfsd4_open_d
+@@ -1049,8 +1069,9 @@
  }
  
  static __be32
@@ -4022,7 +3958,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(4);
-@@ -1072,8 +1093,9 @@ nfsd4_decode_putpubfh(struct nfsd4_compoundargs *argp, void *p)
+@@ -1072,8 +1093,9 @@
  }
  
  static __be32
@@ -4033,7 +3969,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	status = nfsd4_decode_stateid(argp, &read->rd_stateid);
-@@ -1087,8 +1109,9 @@ nfsd4_decode_read(struct nfsd4_compoundargs *argp, struct nfsd4_read *read)
+@@ -1087,8 +1109,9 @@
  }
  
  static __be32
@@ -4044,7 +3980,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(24);
-@@ -1103,8 +1126,9 @@ nfsd4_decode_readdir(struct nfsd4_compoundargs *argp, struct nfsd4_readdir *read
+@@ -1103,8 +1126,9 @@
  }
  
  static __be32
@@ -4055,7 +3991,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(4);
-@@ -1118,8 +1142,9 @@ nfsd4_decode_remove(struct nfsd4_compoundargs *argp, struct nfsd4_remove *remove
+@@ -1118,8 +1142,9 @@
  }
  
  static __be32
@@ -4066,7 +4002,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(4);
-@@ -1139,7 +1164,7 @@ nfsd4_decode_rename(struct nfsd4_compoundargs *argp, struct nfsd4_rename *rename
+@@ -1139,7 +1164,7 @@
  }
  
  static __be32
@@ -4075,7 +4011,7 @@ index a96843c..44fa1b3 100644
  {
  	DECODE_HEAD;
  
-@@ -1154,8 +1179,9 @@ nfsd4_decode_renew(struct nfsd4_compoundargs *argp, clientid_t *clientid)
+@@ -1154,8 +1179,9 @@
  
  static __be32
  nfsd4_decode_secinfo(struct nfsd4_compoundargs *argp,
@@ -4086,7 +4022,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(4);
-@@ -1170,8 +1196,9 @@ nfsd4_decode_secinfo(struct nfsd4_compoundargs *argp,
+@@ -1170,8 +1196,9 @@
  
  static __be32
  nfsd4_decode_secinfo_no_name(struct nfsd4_compoundargs *argp,
@@ -4097,7 +4033,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(4);
-@@ -1180,8 +1207,9 @@ nfsd4_decode_secinfo_no_name(struct nfsd4_compoundargs *argp,
+@@ -1180,8 +1207,9 @@
  }
  
  static __be32
@@ -4108,7 +4044,7 @@ index a96843c..44fa1b3 100644
  	__be32 status;
  
  	status = nfsd4_decode_stateid(argp, &setattr->sa_stateid);
-@@ -1192,8 +1220,9 @@ nfsd4_decode_setattr(struct nfsd4_compoundargs *argp, struct nfsd4_setattr *seta
+@@ -1192,8 +1220,9 @@
  }
  
  static __be32
@@ -4119,7 +4055,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	if (argp->minorversion >= 1)
-@@ -1222,8 +1251,9 @@ nfsd4_decode_setclientid(struct nfsd4_compoundargs *argp, struct nfsd4_setclient
+@@ -1222,8 +1251,9 @@
  }
  
  static __be32
@@ -4130,7 +4066,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	if (argp->minorversion >= 1)
-@@ -1238,8 +1268,9 @@ nfsd4_decode_setclientid_confirm(struct nfsd4_compoundargs *argp, struct nfsd4_s
+@@ -1238,8 +1268,9 @@
  
  /* Also used for NVERIFY */
  static __be32
@@ -4141,7 +4077,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	if ((status = nfsd4_decode_bitmap(argp, verify->ve_bmval)))
-@@ -1257,8 +1288,9 @@ nfsd4_decode_verify(struct nfsd4_compoundargs *argp, struct nfsd4_verify *verify
+@@ -1257,8 +1288,9 @@
  }
  
  static __be32
@@ -4152,7 +4088,7 @@ index a96843c..44fa1b3 100644
  	int avail;
  	int len;
  	DECODE_HEAD;
-@@ -1306,8 +1338,9 @@ nfsd4_decode_write(struct nfsd4_compoundargs *argp, struct nfsd4_write *write)
+@@ -1306,8 +1338,9 @@
  }
  
  static __be32
@@ -4163,7 +4099,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	if (argp->minorversion >= 1)
-@@ -1326,8 +1359,9 @@ nfsd4_decode_release_lockowner(struct nfsd4_compoundargs *argp, struct nfsd4_rel
+@@ -1326,8 +1359,9 @@
  
  static __be32
  nfsd4_decode_exchange_id(struct nfsd4_compoundargs *argp,
@@ -4174,7 +4110,7 @@ index a96843c..44fa1b3 100644
  	int dummy, tmp;
  	DECODE_HEAD;
  
-@@ -1428,8 +1462,9 @@ nfsd4_decode_exchange_id(struct nfsd4_compoundargs *argp,
+@@ -1426,8 +1460,9 @@
  
  static __be32
  nfsd4_decode_create_session(struct nfsd4_compoundargs *argp,
@@ -4185,7 +4121,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  	u32 dummy;
  
-@@ -1480,8 +1515,9 @@ nfsd4_decode_create_session(struct nfsd4_compoundargs *argp,
+@@ -1478,8 +1513,9 @@
  
  static __be32
  nfsd4_decode_destroy_session(struct nfsd4_compoundargs *argp,
@@ -4196,7 +4132,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  	READ_BUF(NFS4_MAX_SESSIONID_LEN);
  	COPYMEM(destroy_session->sessionid.data, NFS4_MAX_SESSIONID_LEN);
-@@ -1491,8 +1527,9 @@ nfsd4_decode_destroy_session(struct nfsd4_compoundargs *argp,
+@@ -1489,8 +1525,9 @@
  
  static __be32
  nfsd4_decode_free_stateid(struct nfsd4_compoundargs *argp,
@@ -4207,7 +4143,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(sizeof(stateid_t));
-@@ -1504,8 +1541,9 @@ nfsd4_decode_free_stateid(struct nfsd4_compoundargs *argp,
+@@ -1502,8 +1539,9 @@
  
  static __be32
  nfsd4_decode_sequence(struct nfsd4_compoundargs *argp,
@@ -4218,7 +4154,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(NFS4_MAX_SESSIONID_LEN + 16);
-@@ -1519,8 +1557,9 @@ nfsd4_decode_sequence(struct nfsd4_compoundargs *argp,
+@@ -1517,8 +1555,9 @@
  }
  
  static __be32
@@ -4229,7 +4165,7 @@ index a96843c..44fa1b3 100644
  	int i;
  	__be32 *p, status;
  	struct nfsd4_test_stateid_id *stateid;
-@@ -1554,8 +1593,9 @@ nfsd4_decode_test_stateid(struct nfsd4_compoundargs *argp, struct nfsd4_test_sta
+@@ -1552,8 +1591,9 @@
  	goto out;
  }
  
@@ -4240,7 +4176,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(8);
-@@ -1564,8 +1604,9 @@ static __be32 nfsd4_decode_destroy_clientid(struct nfsd4_compoundargs *argp, str
+@@ -1562,8 +1602,9 @@
  	DECODE_TAIL;
  }
  
@@ -4251,7 +4187,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(4);
-@@ -1577,8 +1618,9 @@ static __be32 nfsd4_decode_reclaim_complete(struct nfsd4_compoundargs *argp, str
+@@ -1575,8 +1616,9 @@
  #ifdef CONFIG_NFSD_PNFS
  static __be32
  nfsd4_decode_getdeviceinfo(struct nfsd4_compoundargs *argp,
@@ -4262,7 +4198,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  	u32 num, i;
  
-@@ -1604,8 +1646,9 @@ nfsd4_decode_getdeviceinfo(struct nfsd4_compoundargs *argp,
+@@ -1602,8 +1644,9 @@
  
  static __be32
  nfsd4_decode_layoutget(struct nfsd4_compoundargs *argp,
@@ -4273,7 +4209,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(36);
-@@ -1628,8 +1671,9 @@ nfsd4_decode_layoutget(struct nfsd4_compoundargs *argp,
+@@ -1626,8 +1669,9 @@
  
  static __be32
  nfsd4_decode_layoutcommit(struct nfsd4_compoundargs *argp,
@@ -4284,7 +4220,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  	u32 timechange;
  
-@@ -1676,8 +1720,9 @@ nfsd4_decode_layoutcommit(struct nfsd4_compoundargs *argp,
+@@ -1674,8 +1718,9 @@
  
  static __be32
  nfsd4_decode_layoutreturn(struct nfsd4_compoundargs *argp,
@@ -4295,7 +4231,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	READ_BUF(16);
-@@ -1711,8 +1756,9 @@ nfsd4_decode_layoutreturn(struct nfsd4_compoundargs *argp,
+@@ -1709,8 +1754,9 @@
  
  static __be32
  nfsd4_decode_fallocate(struct nfsd4_compoundargs *argp,
@@ -4306,7 +4242,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	status = nfsd4_decode_stateid(argp, &fallocate->falloc_stateid);
-@@ -1727,8 +1773,9 @@ nfsd4_decode_fallocate(struct nfsd4_compoundargs *argp,
+@@ -1725,8 +1771,9 @@
  }
  
  static __be32
@@ -4317,7 +4253,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	status = nfsd4_decode_stateid(argp, &clone->cl_src_stateid);
-@@ -1746,8 +1793,9 @@ nfsd4_decode_clone(struct nfsd4_compoundargs *argp, struct nfsd4_clone *clone)
+@@ -1744,8 +1791,9 @@
  }
  
  static __be32
@@ -4328,7 +4264,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  	unsigned int tmp;
  
-@@ -1770,8 +1818,9 @@ nfsd4_decode_copy(struct nfsd4_compoundargs *argp, struct nfsd4_copy *copy)
+@@ -1768,8 +1816,9 @@
  }
  
  static __be32
@@ -4339,7 +4275,7 @@ index a96843c..44fa1b3 100644
  	DECODE_HEAD;
  
  	status = nfsd4_decode_stateid(argp, &seek->seek_stateid);
-@@ -1800,87 +1849,87 @@ nfsd4_decode_notsupp(struct nfsd4_compoundargs *argp, void *p)
+@@ -1798,87 +1847,87 @@
  typedef __be32(*nfsd4_dec)(struct nfsd4_compoundargs *argp, void *);
  
  static const nfsd4_dec nfsd4_dec_ops[] = {
@@ -4501,7 +4437,7 @@ index a96843c..44fa1b3 100644
  };
  
  static inline bool
-@@ -3124,8 +3173,9 @@ nfsd4_encode_stateid(struct xdr_stream *xdr, stateid_t *sid)
+@@ -3155,8 +3204,9 @@
  }
  
  static __be32
@@ -4512,7 +4448,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -3137,8 +3187,9 @@ nfsd4_encode_access(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
+@@ -3168,8 +3218,9 @@
  	return 0;
  }
  
@@ -4523,7 +4459,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -3154,8 +3205,10 @@ static __be32 nfsd4_encode_bind_conn_to_session(struct nfsd4_compoundres *resp,
+@@ -3185,8 +3236,10 @@
  }
  
  static __be32
@@ -4535,7 +4471,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  
  	return nfsd4_encode_stateid(xdr, &close->cl_stateid);
-@@ -3163,8 +3216,9 @@ nfsd4_encode_close(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_c
+@@ -3194,8 +3247,9 @@
  
  
  static __be32
@@ -4546,7 +4482,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -3177,8 +3231,9 @@ nfsd4_encode_commit(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
+@@ -3208,8 +3262,9 @@
  }
  
  static __be32
@@ -4557,7 +4493,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -3192,8 +3247,9 @@ nfsd4_encode_create(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
+@@ -3223,8 +3278,9 @@
  }
  
  static __be32
@@ -4568,7 +4504,7 @@ index a96843c..44fa1b3 100644
  	struct svc_fh *fhp = getattr->ga_fhp;
  	struct xdr_stream *xdr = &resp->xdr;
  
-@@ -3202,8 +3258,9 @@ nfsd4_encode_getattr(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4
+@@ -3233,8 +3289,9 @@
  }
  
  static __be32
@@ -4579,7 +4515,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	struct svc_fh *fhp = *fhpp;
  	unsigned int len;
-@@ -3257,8 +3314,10 @@ nfsd4_encode_lock_denied(struct xdr_stream *xdr, struct nfsd4_lock_denied *ld)
+@@ -3288,8 +3345,10 @@
  }
  
  static __be32
@@ -4591,7 +4527,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  
  	if (!nfserr)
-@@ -3270,8 +3329,9 @@ nfsd4_encode_lock(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_lo
+@@ -3301,8 +3360,9 @@
  }
  
  static __be32
@@ -4602,7 +4538,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  
  	if (nfserr == nfserr_denied)
-@@ -3280,8 +3340,9 @@ nfsd4_encode_lockt(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_l
+@@ -3311,8 +3371,9 @@
  }
  
  static __be32
@@ -4613,7 +4549,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  
  	return nfsd4_encode_stateid(xdr, &locku->lu_stateid);
-@@ -3289,8 +3350,9 @@ nfsd4_encode_locku(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_l
+@@ -3320,8 +3381,9 @@
  
  
  static __be32
@@ -4624,7 +4560,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -3303,8 +3365,9 @@ nfsd4_encode_link(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_li
+@@ -3334,8 +3396,9 @@
  
  
  static __be32
@@ -4635,7 +4571,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -3397,16 +3460,20 @@ nfsd4_encode_open(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_op
+@@ -3428,16 +3491,20 @@
  }
  
  static __be32
@@ -4658,7 +4594,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  
  	return nfsd4_encode_stateid(xdr, &od->od_stateid);
-@@ -3538,9 +3605,9 @@ static __be32 nfsd4_encode_readv(struct nfsd4_compoundres *resp,
+@@ -3569,9 +3636,9 @@
  }
  
  static __be32
@@ -4670,7 +4606,7 @@ index a96843c..44fa1b3 100644
  	unsigned long maxcount;
  	struct xdr_stream *xdr = &resp->xdr;
  	struct file *file = read->rd_filp;
-@@ -3584,8 +3651,9 @@ nfsd4_encode_read(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -3615,8 +3682,9 @@
  }
  
  static __be32
@@ -4681,7 +4617,7 @@ index a96843c..44fa1b3 100644
  	int maxcount;
  	__be32 wire_count;
  	int zero = 0;
-@@ -3626,8 +3694,9 @@ nfsd4_encode_readlink(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd
+@@ -3657,8 +3725,9 @@
  }
  
  static __be32
@@ -4692,7 +4628,7 @@ index a96843c..44fa1b3 100644
  	int maxcount;
  	int bytes_left;
  	loff_t offset;
-@@ -3717,8 +3786,9 @@ nfsd4_encode_readdir(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4
+@@ -3748,8 +3817,9 @@
  }
  
  static __be32
@@ -4703,7 +4639,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -3730,8 +3800,9 @@ nfsd4_encode_remove(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
+@@ -3761,8 +3831,9 @@
  }
  
  static __be32
@@ -4714,7 +4650,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -3744,8 +3815,9 @@ nfsd4_encode_rename(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_
+@@ -3775,8 +3846,9 @@
  }
  
  static __be32
@@ -4725,7 +4661,7 @@ index a96843c..44fa1b3 100644
  	u32 i, nflavs, supported;
  	struct exp_flavor_info *flavs;
  	struct exp_flavor_info def_flavs[2];
-@@ -3813,8 +3885,9 @@ nfsd4_do_encode_secinfo(struct xdr_stream *xdr, struct svc_export *exp)
+@@ -3844,8 +3916,9 @@
  
  static __be32
  nfsd4_encode_secinfo(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -4736,7 +4672,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  
  	return nfsd4_do_encode_secinfo(xdr, secinfo->si_exp);
-@@ -3822,8 +3895,9 @@ nfsd4_encode_secinfo(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -3853,8 +3926,9 @@
  
  static __be32
  nfsd4_encode_secinfo_no_name(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -4747,7 +4683,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  
  	return nfsd4_do_encode_secinfo(xdr, secinfo->sin_exp);
-@@ -3834,8 +3908,9 @@ nfsd4_encode_secinfo_no_name(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -3865,8 +3939,9 @@
   * regardless of the error status.
   */
  static __be32
@@ -4758,7 +4694,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -3858,8 +3933,9 @@ nfsd4_encode_setattr(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4
+@@ -3889,8 +3964,9 @@
  }
  
  static __be32
@@ -4769,7 +4705,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -3882,8 +3958,9 @@ nfsd4_encode_setclientid(struct nfsd4_compoundres *resp, __be32 nfserr, struct n
+@@ -3913,8 +3989,9 @@
  }
  
  static __be32
@@ -4780,7 +4716,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -3899,8 +3976,9 @@ nfsd4_encode_write(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4_w
+@@ -3930,8 +4007,9 @@
  
  static __be32
  nfsd4_encode_exchange_id(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -4791,7 +4727,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  	char *major_id;
-@@ -3976,8 +4054,9 @@ nfsd4_encode_exchange_id(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4007,8 +4085,9 @@
  
  static __be32
  nfsd4_encode_create_session(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -4802,7 +4738,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -4029,8 +4108,9 @@ nfsd4_encode_create_session(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4060,8 +4139,9 @@
  
  static __be32
  nfsd4_encode_sequence(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -4813,7 +4749,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -4052,8 +4132,9 @@ nfsd4_encode_sequence(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4083,8 +4163,9 @@
  
  static __be32
  nfsd4_encode_test_stateid(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -4824,7 +4760,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	struct nfsd4_test_stateid_id *stateid, *next;
  	__be32 *p;
-@@ -4072,9 +4153,9 @@ nfsd4_encode_test_stateid(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4103,9 +4184,9 @@
  
  #ifdef CONFIG_NFSD_PNFS
  static __be32
@@ -4836,7 +4772,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	const struct nfsd4_layout_ops *ops;
  	u32 starting_len = xdr->buf->len, needed_len;
-@@ -4128,9 +4209,9 @@ nfsd4_encode_getdeviceinfo(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4159,9 +4240,9 @@
  }
  
  static __be32
@@ -4848,7 +4784,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	const struct nfsd4_layout_ops *ops;
  	__be32 *p;
-@@ -4155,9 +4236,9 @@ nfsd4_encode_layoutget(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4186,9 +4267,9 @@
  }
  
  static __be32
@@ -4860,7 +4796,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -4176,9 +4257,9 @@ nfsd4_encode_layoutcommit(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4207,9 +4288,9 @@
  }
  
  static __be32
@@ -4872,7 +4808,7 @@ index a96843c..44fa1b3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -4210,9 +4291,9 @@ nfsd42_encode_write_res(struct nfsd4_compoundres *resp, struct nfsd42_write_res
+@@ -4241,9 +4322,9 @@
  }
  
  static __be32
@@ -4884,7 +4820,7 @@ index a96843c..44fa1b3 100644
  	__be32 *p;
  
  	nfserr = nfsd42_encode_write_res(resp, &copy->cp_res);
-@@ -4227,8 +4308,9 @@ nfsd4_encode_copy(struct nfsd4_compoundres *resp, __be32 nfserr,
+@@ -4258,8 +4339,9 @@
  
  static __be32
  nfsd4_encode_seek(struct nfsd4_compoundres *resp, __be32 nfserr,
@@ -4895,7 +4831,7 @@ index a96843c..44fa1b3 100644
  	__be32 *p;
  
  	p = xdr_reserve_space(&resp->xdr, 4 + 8);
-@@ -4252,87 +4334,87 @@ typedef __be32(* nfsd4_enc)(struct nfsd4_compoundres *, __be32, void *);
+@@ -4283,87 +4365,87 @@
   * done in the decoding phase.
   */
  static const nfsd4_enc nfsd4_enc_ops[] = {
@@ -5057,11 +4993,10 @@ index a96843c..44fa1b3 100644
  };
  
  /*
-diff --git a/include/linux/compiler.h b/include/linux/compiler.h
-index 42506e4..91e9d1a 100644
---- a/include/linux/compiler.h
-+++ b/include/linux/compiler.h
-@@ -168,57 +168,47 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
+diff -ur --new-file linux-4.19.1_old/include/linux/compiler.h linux-4.19.1_new/include/linux/compiler.h
+--- linux-4.19.1_old/include/linux/compiler.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/include/linux/compiler.h	2018-11-08 10:57:33.649566610 +0000
+@@ -168,57 +168,47 @@
  
  #include <uapi/linux/types.h>
  
@@ -5141,7 +5076,7 @@ index 42506e4..91e9d1a 100644
  
  /*
   * Prevent the compiler from merging or refetching reads or writes. The
-@@ -245,23 +235,11 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
+@@ -245,23 +235,11 @@
  #include <asm/barrier.h>
  #include <linux/kasan-checks.h>
  
@@ -5168,7 +5103,7 @@ index 42506e4..91e9d1a 100644
  
  static __no_kasan_or_inline
  unsigned long read_word_at_a_time(const void *addr)
-@@ -270,12 +248,10 @@ unsigned long read_word_at_a_time(const void *addr)
+@@ -270,12 +248,10 @@
  	return *(unsigned long *)addr;
  }
  
@@ -5185,23 +5120,23 @@ index 42506e4..91e9d1a 100644
  })
  
  #endif /* __KERNEL__ */
-diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-index a8ba6b0..273fc69 100644
---- a/include/linux/compiler_types.h
-+++ b/include/linux/compiler_types.h
-@@ -266,6 +266,8 @@ struct ftrace_likely_data {
- # define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
- #endif
+diff -ur --new-file linux-4.19.1_old/include/linux/compiler_types.h linux-4.19.1_new/include/linux/compiler_types.h
+--- linux-4.19.1_old/include/linux/compiler_types.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/include/linux/compiler_types.h	2018-11-08 11:01:02.015373635 +0000
+@@ -154,6 +154,10 @@
+ /* Are two types/vars the same type (ignoring qualifiers)? */
+ #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
  
-+#define __type_is_unsigned(t) (__same_type((t)0, 0UL) || __same_type((t)0, 0U) || __same_type((t)0, (unsigned short)0) || __same_type((t)0, (unsigned char)0))
++#define __type_is_unsigned(t) \
++	(__same_type((t)0, 0UL) || __same_type((t)0, 0U) || \
++	 __same_type((t)0, (unsigned short)0) || __same_type((t)0, (unsigned char)0))
 +
  /* Is this type a native word size -- useful for atomic operations */
- #ifndef __native_word
- # define __native_word(t) (sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
-diff --git a/include/linux/linkage.h b/include/linux/linkage.h
-index d7618c4..8d1e945 100644
---- a/include/linux/linkage.h
-+++ b/include/linux/linkage.h
+ #define __native_word(t) \
+ 	(sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || \
+diff -ur --new-file linux-4.19.1_old/include/linux/linkage.h linux-4.19.1_new/include/linux/linkage.h
+--- linux-4.19.1_old/include/linux/linkage.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/include/linux/linkage.h	2018-11-08 10:57:33.649566610 +0000
 @@ -6,6 +6,7 @@
  #include <linux/stringify.h>
  #include <linux/export.h>
@@ -5252,11 +5187,10 @@ index d7618c4..8d1e945 100644
  #endif
  
  #ifndef END
-diff --git a/include/linux/moduleparam.h b/include/linux/moduleparam.h
-index ba36506..a77a398 100644
---- a/include/linux/moduleparam.h
-+++ b/include/linux/moduleparam.h
-@@ -284,7 +284,7 @@ static inline void kernel_param_unlock(struct module *mod)
+diff -ur --new-file linux-4.19.1_old/include/linux/moduleparam.h linux-4.19.1_new/include/linux/moduleparam.h
+--- linux-4.19.1_old/include/linux/moduleparam.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/include/linux/moduleparam.h	2018-11-08 10:57:33.649566610 +0000
+@@ -284,7 +284,7 @@
   * @len is usually just sizeof(string).
   */
  #define module_param_string(name, string, len, perm)			\
@@ -5265,7 +5199,7 @@ index ba36506..a77a398 100644
  		= { len, string };					\
  	__module_param_call(MODULE_PARAM_PREFIX, name,			\
  			    &param_ops_string,				\
-@@ -436,7 +436,7 @@ extern int param_set_bint(const char *val, const struct kernel_param *kp);
+@@ -436,7 +436,7 @@
   */
  #define module_param_array_named(name, array, type, nump, perm)		\
  	param_check_##type(name, &(array)[0]);				\
@@ -5274,11 +5208,10 @@ index ba36506..a77a398 100644
  	= { .max = ARRAY_SIZE(array), .num = nump,                      \
  	    .ops = &param_ops_##type,					\
  	    .elemsize = sizeof(array[0]), .elem = array };		\
-diff --git a/include/linux/netfilter/ipset/ip_set_comment.h b/include/linux/netfilter/ipset/ip_set_comment.h
-index 8e2bab1..1517a6f 100644
---- a/include/linux/netfilter/ipset/ip_set_comment.h
-+++ b/include/linux/netfilter/ipset/ip_set_comment.h
-@@ -60,8 +60,9 @@ ip_set_put_comment(struct sk_buff *skb, const struct ip_set_comment *comment)
+diff -ur --new-file linux-4.19.1_old/include/linux/netfilter/ipset/ip_set_comment.h linux-4.19.1_new/include/linux/netfilter/ipset/ip_set_comment.h
+--- linux-4.19.1_old/include/linux/netfilter/ipset/ip_set_comment.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/include/linux/netfilter/ipset/ip_set_comment.h	2018-11-08 10:57:33.649566610 +0000
+@@ -60,8 +60,9 @@
   * of the set data anymore.
   */
  static inline void
@@ -5289,11 +5222,10 @@ index 8e2bab1..1517a6f 100644
  	struct ip_set_comment_rcu *c;
  
  	c = rcu_dereference_protected(comment->c, 1);
-diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
-index b1bd218..f24b020 100644
---- a/include/linux/pagemap.h
-+++ b/include/linux/pagemap.h
-@@ -239,7 +239,7 @@ static inline gfp_t readahead_gfp_mask(struct address_space *x)
+diff -ur --new-file linux-4.19.1_old/include/linux/pagemap.h linux-4.19.1_new/include/linux/pagemap.h
+--- linux-4.19.1_old/include/linux/pagemap.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/include/linux/pagemap.h	2018-11-08 10:57:33.649566610 +0000
+@@ -239,7 +239,7 @@
  	return mapping_gfp_mask(x) | __GFP_NORETRY | __GFP_NOWARN;
  }
  
@@ -5302,7 +5234,7 @@ index b1bd218..f24b020 100644
  
  pgoff_t page_cache_next_hole(struct address_space *mapping,
  			     pgoff_t index, unsigned long max_scan);
-@@ -398,7 +398,7 @@ extern int read_cache_pages(struct address_space *mapping,
+@@ -398,7 +398,7 @@
  static inline struct page *read_mapping_page(struct address_space *mapping,
  				pgoff_t index, void *data)
  {
@@ -5311,11 +5243,10 @@ index b1bd218..f24b020 100644
  	return read_cache_page(mapping, index, filler, data);
  }
  
-diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
-index 5c1a093..3ba5cf3 100644
---- a/include/linux/syscalls.h
-+++ b/include/linux/syscalls.h
-@@ -117,7 +117,14 @@ union bpf_attr;
+diff -ur --new-file linux-4.19.1_old/include/linux/syscalls.h linux-4.19.1_new/include/linux/syscalls.h
+--- linux-4.19.1_old/include/linux/syscalls.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/include/linux/syscalls.h	2018-11-08 10:57:33.649566610 +0000
+@@ -118,7 +118,14 @@
  #define __TYPE_IS_L(t)	(__TYPE_AS(t, 0L))
  #define __TYPE_IS_UL(t)	(__TYPE_AS(t, 0UL))
  #define __TYPE_IS_LL(t) (__TYPE_AS(t, 0LL) || __TYPE_AS(t, 0ULL))
@@ -5331,7 +5262,7 @@ index 5c1a093..3ba5cf3 100644
  #define __SC_CAST(t, a)	(__force t) a
  #define __SC_ARGS(t, a)	a
  #define __SC_TEST(t, a) (void)BUILD_BUG_ON_ZERO(!__TYPE_IS_LL(t) && sizeof(t) > sizeof(long))
-@@ -235,18 +242,19 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
+@@ -236,18 +243,19 @@
  	__diag_push();							\
  	__diag_ignore(GCC, 8, "-Wattribute-alias",			\
  		      "Type aliasing is used to sanitize syscall arguments");\
@@ -5355,11 +5286,10 @@ index 5c1a093..3ba5cf3 100644
  	__diag_pop();							\
  	static inline long __do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
  #endif /* __SYSCALL_DEFINEx */
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 1e5625d..d051fec 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -577,6 +577,8 @@ int bpf_get_kallsym(unsigned int symnum, unsigned long *value, char *type,
+diff -ur --new-file linux-4.19.1_old/kernel/bpf/core.c linux-4.19.1_new/kernel/bpf/core.c
+--- linux-4.19.1_old/kernel/bpf/core.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/kernel/bpf/core.c	2018-11-08 10:57:33.649566610 +0000
+@@ -577,6 +577,8 @@
  	return ret;
  }
  
@@ -5368,7 +5298,7 @@ index 1e5625d..d051fec 100644
  struct bpf_binary_header *
  bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
  		     unsigned int alignment,
-@@ -600,11 +602,24 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
+@@ -600,11 +602,24 @@
  	hdr->pages = size / PAGE_SIZE;
  	hole = min_t(unsigned int, size - (proglen + sizeof(*hdr)),
  		     PAGE_SIZE - sizeof(*hdr));
@@ -5393,11 +5323,10 @@ index 1e5625d..d051fec 100644
  	return hdr;
  }
  
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index eec2d5f..72565c6 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -1106,8 +1106,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_context *cpuctx, int cpu)
+diff -ur --new-file linux-4.19.1_old/kernel/events/core.c linux-4.19.1_new/kernel/events/core.c
+--- linux-4.19.1_old/kernel/events/core.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/kernel/events/core.c	2018-11-08 10:57:33.649566610 +0000
+@@ -1106,8 +1106,9 @@
  	timer->function = perf_mux_hrtimer_handler;
  }
  
@@ -5408,7 +5337,7 @@ index eec2d5f..72565c6 100644
  	struct hrtimer *timer = &cpuctx->hrtimer;
  	struct pmu *pmu = cpuctx->ctx.pmu;
  	unsigned long flags;
-@@ -9496,8 +9497,7 @@ perf_event_mux_interval_ms_store(struct device *dev,
+@@ -9501,8 +9502,7 @@
  		cpuctx = per_cpu_ptr(pmu->pmu_cpu_context, cpu);
  		cpuctx->hrtimer_interval = ns_to_ktime(NSEC_PER_MSEC * timer);
  
@@ -5418,11 +5347,10 @@ index eec2d5f..72565c6 100644
  	}
  	cpus_read_unlock();
  	mutex_unlock(&mux_interval_mutex);
-diff --git a/kernel/module.c b/kernel/module.c
-index f475f30..71514b0 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -3009,8 +3009,15 @@ static struct module *setup_load_info(struct load_info *info, int flags)
+diff -ur --new-file linux-4.19.1_old/kernel/module.c linux-4.19.1_new/kernel/module.c
+--- linux-4.19.1_old/kernel/module.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/kernel/module.c	2018-11-08 10:57:33.649566610 +0000
+@@ -3003,8 +3003,15 @@
  static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  {
  	const char *modmagic = get_modinfo(info, "vermagic");
@@ -5438,7 +5366,7 @@ index f475f30..71514b0 100644
  	if (flags & MODULE_INIT_IGNORE_VERMAGIC)
  		modmagic = NULL;
  
-@@ -3045,7 +3052,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
+@@ -3039,7 +3046,7 @@
  		return err;
  
  	/* Set up license info based on the info section */
@@ -5447,11 +5375,10 @@ index f475f30..71514b0 100644
  
  	return 0;
  }
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 5ba96d9..eba49f4 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -2748,7 +2748,7 @@ static struct rq *finish_task_switch(struct task_struct *prev)
+diff -ur --new-file linux-4.19.1_old/kernel/sched/core.c linux-4.19.1_new/kernel/sched/core.c
+--- linux-4.19.1_old/kernel/sched/core.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/kernel/sched/core.c	2018-11-08 10:57:33.653566568 +0000
+@@ -2718,7 +2718,7 @@
  /* rq->lock is NOT held, but preemption is disabled */
  static void __balance_callback(struct rq *rq)
  {
@@ -5460,7 +5387,7 @@ index 5ba96d9..eba49f4 100644
  	void (*func)(struct rq *rq);
  	unsigned long flags;
  
-@@ -2756,7 +2756,7 @@ static void __balance_callback(struct rq *rq)
+@@ -2726,7 +2726,7 @@
  	head = rq->balance_callback;
  	rq->balance_callback = NULL;
  	while (head) {
@@ -5469,11 +5396,10 @@ index 5ba96d9..eba49f4 100644
  		next = head->next;
  		head->next = NULL;
  		head = next;
-diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index b5fbdde..8b58c8d 100644
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -505,8 +505,8 @@ static inline bool need_pull_dl_task(struct rq *rq, struct task_struct *prev)
+diff -ur --new-file linux-4.19.1_old/kernel/sched/deadline.c linux-4.19.1_new/kernel/sched/deadline.c
+--- linux-4.19.1_old/kernel/sched/deadline.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/kernel/sched/deadline.c	2018-11-08 10:57:33.653566568 +0000
+@@ -506,8 +506,8 @@
  	return dl_task(prev);
  }
  
@@ -5484,11 +5410,10 @@ index b5fbdde..8b58c8d 100644
  
  static void push_dl_tasks(struct rq *);
  static void pull_dl_task(struct rq *);
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index eaaec83..535bd83 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -349,8 +349,8 @@ static inline int has_pushable_tasks(struct rq *rq)
+diff -ur --new-file linux-4.19.1_old/kernel/sched/rt.c linux-4.19.1_new/kernel/sched/rt.c
+--- linux-4.19.1_old/kernel/sched/rt.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/kernel/sched/rt.c	2018-11-08 10:57:33.653566568 +0000
+@@ -351,8 +351,8 @@
  	return !plist_head_empty(&rq->rt.pushable_tasks);
  }
  
@@ -5499,11 +5424,10 @@ index eaaec83..535bd83 100644
  
  static void push_rt_tasks(struct rq *);
  static void pull_rt_task(struct rq *);
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index c7742dc..39668dc 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -818,7 +818,10 @@ struct rq {
+diff -ur --new-file linux-4.19.1_old/kernel/sched/sched.h linux-4.19.1_new/kernel/sched/sched.h
+--- linux-4.19.1_old/kernel/sched/sched.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/kernel/sched/sched.h	2018-11-08 10:57:33.653566568 +0000
+@@ -841,7 +841,10 @@
  	unsigned long		cpu_capacity;
  	unsigned long		cpu_capacity_orig;
  
@@ -5515,7 +5439,7 @@ index c7742dc..39668dc 100644
  
  	unsigned char		idle_balance;
  
-@@ -1088,7 +1091,7 @@ init_numa_balancing(unsigned long clone_flags, struct task_struct *p)
+@@ -1116,7 +1119,7 @@
  
  static inline void
  queue_balance_callback(struct rq *rq,
@@ -5524,7 +5448,7 @@ index c7742dc..39668dc 100644
  		       void (*func)(struct rq *rq))
  {
  	lockdep_assert_held(&rq->lock);
-@@ -1096,7 +1099,7 @@ queue_balance_callback(struct rq *rq,
+@@ -1124,7 +1127,7 @@
  	if (unlikely(head->next))
  		return;
  
@@ -5533,11 +5457,10 @@ index c7742dc..39668dc 100644
  	head->next = rq->balance_callback;
  	rq->balance_callback = head;
  }
-diff --git a/mm/filemap.c b/mm/filemap.c
-index 52517f2..4dde8b0 100644
---- a/mm/filemap.c
-+++ b/mm/filemap.c
-@@ -2780,7 +2780,7 @@ static struct page *wait_on_page_read(struct page *page)
+diff -ur --new-file linux-4.19.1_old/mm/filemap.c linux-4.19.1_new/mm/filemap.c
+--- linux-4.19.1_old/mm/filemap.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/mm/filemap.c	2018-11-08 10:57:33.653566568 +0000
+@@ -2780,7 +2780,7 @@
  
  static struct page *do_read_cache_page(struct address_space *mapping,
  				pgoff_t index,
@@ -5546,7 +5469,7 @@ index 52517f2..4dde8b0 100644
  				void *data,
  				gfp_t gfp)
  {
-@@ -2887,7 +2887,7 @@ static struct page *do_read_cache_page(struct address_space *mapping,
+@@ -2887,7 +2887,7 @@
   */
  struct page *read_cache_page(struct address_space *mapping,
  				pgoff_t index,
@@ -5555,7 +5478,7 @@ index 52517f2..4dde8b0 100644
  				void *data)
  {
  	return do_read_cache_page(mapping, index, filler, data, mapping_gfp_mask(mapping));
-@@ -2909,7 +2909,7 @@ struct page *read_cache_page_gfp(struct address_space *mapping,
+@@ -2909,7 +2909,7 @@
  				pgoff_t index,
  				gfp_t gfp)
  {
@@ -5564,11 +5487,10 @@ index 52517f2..4dde8b0 100644
  
  	return do_read_cache_page(mapping, index, filler, NULL, gfp);
  }
-diff --git a/mm/readahead.c b/mm/readahead.c
-index 792dea6..a651add 100644
---- a/mm/readahead.c
-+++ b/mm/readahead.c
-@@ -81,7 +81,7 @@ static void read_cache_pages_invalidate_pages(struct address_space *mapping,
+diff -ur --new-file linux-4.19.1_old/mm/readahead.c linux-4.19.1_new/mm/readahead.c
+--- linux-4.19.1_old/mm/readahead.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/mm/readahead.c	2018-11-08 10:57:33.653566568 +0000
+@@ -83,7 +83,7 @@
   * Hides the details of the LRU cache etc from the filesystems.
   */
  int read_cache_pages(struct address_space *mapping, struct list_head *pages,
@@ -5577,11 +5499,10 @@ index 792dea6..a651add 100644
  {
  	struct page *page;
  	int ret = 0;
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 5216a52..3e992cc 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -602,7 +602,8 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb);
+diff -ur --new-file linux-4.19.1_old/net/bridge/br_private.h linux-4.19.1_new/net/bridge/br_private.h
+--- linux-4.19.1_old/net/bridge/br_private.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/net/bridge/br_private.h	2018-11-08 10:57:33.653566568 +0000
+@@ -607,7 +607,8 @@
  
  static inline bool br_rx_handler_check_rcu(const struct net_device *dev)
  {
@@ -5591,11 +5512,10 @@ index 5216a52..3e992cc 100644
  }
  
  static inline bool br_rx_handler_check_rtnl(const struct net_device *dev)
-diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-index bc4bd247..ea7fff6 100644
---- a/net/netfilter/ipset/ip_set_core.c
-+++ b/net/netfilter/ipset/ip_set_core.c
-@@ -326,7 +326,6 @@ ip_set_get_ipaddr6(struct nlattr *nla, union nf_inet_addr *ipaddr)
+diff -ur --new-file linux-4.19.1_old/net/netfilter/ipset/ip_set_core.c linux-4.19.1_new/net/netfilter/ipset/ip_set_core.c
+--- linux-4.19.1_old/net/netfilter/ipset/ip_set_core.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/net/netfilter/ipset/ip_set_core.c	2018-11-08 10:57:33.653566568 +0000
+@@ -326,7 +326,6 @@
  }
  EXPORT_SYMBOL_GPL(ip_set_get_ipaddr6);
  
@@ -5603,7 +5523,7 @@ index bc4bd247..ea7fff6 100644
  /* ipset data extension types, in size order */
  
  const struct ip_set_ext_type ip_set_extensions[] = {
-@@ -352,7 +351,7 @@ const struct ip_set_ext_type ip_set_extensions[] = {
+@@ -352,7 +351,7 @@
  		.flag	 = IPSET_FLAG_WITH_COMMENT,
  		.len	 = sizeof(struct ip_set_comment),
  		.align	 = __alignof__(struct ip_set_comment),
@@ -5612,44 +5532,29 @@ index bc4bd247..ea7fff6 100644
  	},
  };
  EXPORT_SYMBOL_GPL(ip_set_extensions);
-diff --git a/scripts/Makefile.gcc-plugins b/scripts/Makefile.gcc-plugins
-index c961b9a..e6ddfa9 100644
---- a/scripts/Makefile.gcc-plugins
-+++ b/scripts/Makefile.gcc-plugins
-@@ -17,15 +17,28 @@ gcc-plugin-$(CONFIG_GCC_PLUGIN_RANDSTRUCT)	+= randomize_layout_plugin.so
- gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_RANDSTRUCT)	+= -DRANDSTRUCT_PLUGIN
- gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_RANDSTRUCT_PERFORMANCE)	+= -fplugin-arg-randomize_layout_plugin-performance-mode
+diff -ur --new-file linux-4.19.1_old/scripts/gcc-plugins/Makefile linux-4.19.1_new/scripts/gcc-plugins/Makefile
+--- linux-4.19.1_old/scripts/gcc-plugins/Makefile	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/scripts/gcc-plugins/Makefile	2018-11-08 22:29:12.636872465 +0000
+@@ -14,6 +14,8 @@
+   export HOST_EXTRACXXFLAGS
+ endif
  
-+gcc-plugin-subdir-$(CONFIG_PAX_RAP)			+= rap_plugin
-+gcc-plugin-$(CONFIG_PAX_RAP)				+= rap_plugin/rap_plugin.so
-+gcc-plugin-cflags-$(CONFIG_PAX_RAP)			+= -DRAP_PLUGIN -fplugin-arg-rap_plugin-check=call
-+# gcc-plugin-cflags-$(CONFIG_PAX_RAP)			+= -fplugin-arg-rap_plugin-report=func,fptr,abs
-+gcc-plugin-aflags-$(CONFIG_PAX_RAP)			+= -DRAP_PLUGIN
-+ifdef CONFIG_PAX_RAP
-+  RAP_PLUGIN_ABS_CFLAGS				:= -fplugin-arg-rap_plugin-hash=abs-finish
-+endif
-+gcc-plugin-cflags-$(CONFIG_PAX_RAP)			+= $(RAP_PLUGIN_ABS_CFLAGS)
++export HOSTLIBS
 +
- GCC_PLUGINS_CFLAGS := $(strip $(addprefix -fplugin=$(objtree)/scripts/gcc-plugins/, $(gcc-plugin-y)) $(gcc-plugin-cflags-y))
-+GCC_PLUGINS_AFLAGS := $(gcc-plugin-aflags-y)
+ $(obj)/randomize_layout_plugin.o: $(objtree)/$(obj)/randomize_layout_seed.h
+ quiet_cmd_create_randomize_layout_seed = GENSEED $@
+ cmd_create_randomize_layout_seed = \
+@@ -27,4 +29,7 @@
  
- export GCC_PLUGINS_CFLAGS GCC_PLUGIN GCC_PLUGIN_SUBDIR
- export DISABLE_LATENT_ENTROPY_PLUGIN
-+export RAP_PLUGIN_ABS_CFLAGS GCC_PLUGINS_AFLAGS
+ $(foreach p,$($(HOSTLIBS)-y:%.so=%),$(eval $(p)-objs := $(p).o))
  
- # sancov_plugin.so can be only in CFLAGS_KCOV because avoid duplication.
- GCC_PLUGINS_CFLAGS := $(filter-out %/sancov_plugin.so, $(GCC_PLUGINS_CFLAGS))
- 
- KBUILD_CFLAGS += $(GCC_PLUGINS_CFLAGS)
-+KBUILD_AFLAGS += $(GCC_PLUGINS_AFLAGS)
- GCC_PLUGIN := $(gcc-plugin-y)
- GCC_PLUGIN_SUBDIR := $(gcc-plugin-subdir-y)
- 
-diff --git a/scripts/gcc-plugins/rap_plugin/Makefile b/scripts/gcc-plugins/rap_plugin/Makefile
-new file mode 100644
-index 0000000..f2a0a03
---- /dev/null
-+++ b/scripts/gcc-plugins/rap_plugin/Makefile
++subdir-y := $(GCC_PLUGIN_SUBDIR)
++subdir-  += $(GCC_PLUGIN_SUBDIR)
++
+ clean-files += *.so
+diff -ur --new-file linux-4.19.1_old/scripts/gcc-plugins/rap_plugin/Makefile linux-4.19.1_new/scripts/gcc-plugins/rap_plugin/Makefile
+--- linux-4.19.1_old/scripts/gcc-plugins/rap_plugin/Makefile	1970-01-01 00:00:00.000000000 +0000
++++ linux-4.19.1_new/scripts/gcc-plugins/rap_plugin/Makefile	2018-11-08 10:57:33.653566568 +0000
 @@ -0,0 +1,6 @@
 +$(HOSTLIBS)-$(CONFIG_PAX_RAP) += rap_plugin.so
 +always := $($(HOSTLIBS)-y)
@@ -5657,53 +5562,9 @@ index 0000000..f2a0a03
 +rap_plugin-objs := $(patsubst $(srctree)/$(src)/%.c,%.o,$(wildcard $(srctree)/$(src)/*.c))
 +
 +clean-files += *.so
-diff --git a/scripts/gcc-plugins/rap_plugin/rap.h b/scripts/gcc-plugins/rap_plugin/rap.h
-new file mode 100644
-index 0000000..f6a284d
---- /dev/null
-+++ b/scripts/gcc-plugins/rap_plugin/rap.h
-@@ -0,0 +1,36 @@
-+#ifndef RAP_H_INCLUDED
-+#define RAP_H_INCLUDED
-+
-+#include "gcc-common.h"
-+
-+typedef struct {
-+	int hash; // will be sign extended to long in reality
-+} rap_hash_t;
-+
-+typedef struct {
-+	unsigned int qual_const:1;
-+	unsigned int qual_volatile:1;
-+} rap_hash_flags_t;
-+extern rap_hash_flags_t imprecise_rap_hash_flags;
-+
-+extern bool report_fptr_hash;
-+
-+extern GTY(()) tree rap_hash_type_node;
-+
-+void siphash24fold(unsigned char *out, const unsigned char *in, unsigned long long inlen, const unsigned char *k);
-+void rap_calculate_func_hashes(void *event_data, void *data);
-+rap_hash_t rap_hash_function_type(const_tree fntype, rap_hash_flags_t flags);
-+rap_hash_t rap_hash_function_decl(const_tree fndecl, rap_hash_flags_t flags);
-+rap_hash_t rap_hash_function_node_imprecise(cgraph_node_ptr node);
-+const_tree type_name(const_tree type);
-+tree create_new_var(tree type, const char *name);
-+
-+gimple barrier(tree var, bool full);
-+
-+#if BUILDING_GCC_VERSION >= 4009
-+opt_pass *make_rap_fptr_pass(void);
-+#else
-+struct opt_pass *make_rap_fptr_pass(void);
-+#endif
-+
-+#endif
-diff --git a/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c b/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
-new file mode 100644
-index 0000000..2f53f14
---- /dev/null
-+++ b/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
+diff -ur --new-file linux-4.19.1_old/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c linux-4.19.1_new/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
+--- linux-4.19.1_old/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c	1970-01-01 00:00:00.000000000 +0000
++++ linux-4.19.1_new/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c	2018-11-08 10:57:33.653566568 +0000
 @@ -0,0 +1,220 @@
 +/*
 + * Copyright 2012-2016 by PaX Team <pageexec@freemail.hu>
@@ -5925,11 +5786,49 @@ index 0000000..2f53f14
 +#define PASS_NAME rap_fptr
 +#define TODO_FLAGS_FINISH TODO_verify_ssa | TODO_verify_stmts | TODO_dump_func | TODO_remove_unused_locals | TODO_update_ssa | TODO_cleanup_cfg | TODO_rebuild_cgraph_edges | TODO_verify_flow
 +#include "gcc-generate-gimple-pass.h"
-diff --git a/scripts/gcc-plugins/rap_plugin/rap_hash.c b/scripts/gcc-plugins/rap_plugin/rap_hash.c
-new file mode 100644
-index 0000000..7c59f38
---- /dev/null
-+++ b/scripts/gcc-plugins/rap_plugin/rap_hash.c
+diff -ur --new-file linux-4.19.1_old/scripts/gcc-plugins/rap_plugin/rap.h linux-4.19.1_new/scripts/gcc-plugins/rap_plugin/rap.h
+--- linux-4.19.1_old/scripts/gcc-plugins/rap_plugin/rap.h	1970-01-01 00:00:00.000000000 +0000
++++ linux-4.19.1_new/scripts/gcc-plugins/rap_plugin/rap.h	2018-11-08 10:57:33.653566568 +0000
+@@ -0,0 +1,36 @@
++#ifndef RAP_H_INCLUDED
++#define RAP_H_INCLUDED
++
++#include "gcc-common.h"
++
++typedef struct {
++	int hash; // will be sign extended to long in reality
++} rap_hash_t;
++
++typedef struct {
++	unsigned int qual_const:1;
++	unsigned int qual_volatile:1;
++} rap_hash_flags_t;
++extern rap_hash_flags_t imprecise_rap_hash_flags;
++
++extern bool report_fptr_hash;
++
++extern GTY(()) tree rap_hash_type_node;
++
++void siphash24fold(unsigned char *out, const unsigned char *in, unsigned long long inlen, const unsigned char *k);
++void rap_calculate_func_hashes(void *event_data, void *data);
++rap_hash_t rap_hash_function_type(const_tree fntype, rap_hash_flags_t flags);
++rap_hash_t rap_hash_function_decl(const_tree fndecl, rap_hash_flags_t flags);
++rap_hash_t rap_hash_function_node_imprecise(cgraph_node_ptr node);
++const_tree type_name(const_tree type);
++tree create_new_var(tree type, const char *name);
++
++gimple barrier(tree var, bool full);
++
++#if BUILDING_GCC_VERSION >= 4009
++opt_pass *make_rap_fptr_pass(void);
++#else
++struct opt_pass *make_rap_fptr_pass(void);
++#endif
++
++#endif
+diff -ur --new-file linux-4.19.1_old/scripts/gcc-plugins/rap_plugin/rap_hash.c linux-4.19.1_new/scripts/gcc-plugins/rap_plugin/rap_hash.c
+--- linux-4.19.1_old/scripts/gcc-plugins/rap_plugin/rap_hash.c	1970-01-01 00:00:00.000000000 +0000
++++ linux-4.19.1_new/scripts/gcc-plugins/rap_plugin/rap_hash.c	2018-11-08 10:57:33.653566568 +0000
 @@ -0,0 +1,382 @@
 +/*
 + * Copyright 2012-2016 by PaX Team <pageexec@freemail.hu>
@@ -6313,11 +6212,9 @@ index 0000000..7c59f38
 +		gcc_assert(rap_imprecise_hashes[uid].hash);
 +	}
 +}
-diff --git a/scripts/gcc-plugins/rap_plugin/rap_plugin.c b/scripts/gcc-plugins/rap_plugin/rap_plugin.c
-new file mode 100644
-index 0000000..658c305
---- /dev/null
-+++ b/scripts/gcc-plugins/rap_plugin/rap_plugin.c
+diff -ur --new-file linux-4.19.1_old/scripts/gcc-plugins/rap_plugin/rap_plugin.c linux-4.19.1_new/scripts/gcc-plugins/rap_plugin/rap_plugin.c
+--- linux-4.19.1_old/scripts/gcc-plugins/rap_plugin/rap_plugin.c	1970-01-01 00:00:00.000000000 +0000
++++ linux-4.19.1_new/scripts/gcc-plugins/rap_plugin/rap_plugin.c	2018-11-08 10:57:33.653566568 +0000
 @@ -0,0 +1,534 @@
 +/*
 + * Copyright 2012-2016 by PaX Team <pageexec@freemail.hu>
@@ -6853,11 +6750,9 @@ index 0000000..658c305
 +
 +	return 0;
 +}
-diff --git a/scripts/gcc-plugins/rap_plugin/sip.c b/scripts/gcc-plugins/rap_plugin/sip.c
-new file mode 100644
-index 0000000..65bc1cd
---- /dev/null
-+++ b/scripts/gcc-plugins/rap_plugin/sip.c
+diff -ur --new-file linux-4.19.1_old/scripts/gcc-plugins/rap_plugin/sip.c linux-4.19.1_new/scripts/gcc-plugins/rap_plugin/sip.c
+--- linux-4.19.1_old/scripts/gcc-plugins/rap_plugin/sip.c	1970-01-01 00:00:00.000000000 +0000
++++ linux-4.19.1_new/scripts/gcc-plugins/rap_plugin/sip.c	2018-11-08 10:57:33.653566568 +0000
 @@ -0,0 +1,96 @@
 +// SipHash-2-4 adapted by the PaX Team from the public domain version written by
 +//   Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
@@ -6955,11 +6850,49 @@ index 0000000..65bc1cd
 +	b = v0 ^ v1 ^ v2 ^ v3;
 +	U64TO8_LE(out, b);
 +}
-diff --git a/security/Kconfig b/security/Kconfig
-index 7ef4ec8..5f8ca7a 100644
---- a/security/Kconfig
-+++ b/security/Kconfig
-@@ -81,6 +81,24 @@ config PAX_MPROTECT
+diff -ur --new-file linux-4.19.1_old/scripts/Makefile.gcc-plugins linux-4.19.1_new/scripts/Makefile.gcc-plugins
+--- linux-4.19.1_old/scripts/Makefile.gcc-plugins	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/scripts/Makefile.gcc-plugins	2018-11-08 21:52:07.488198402 +0000
+@@ -26,6 +26,16 @@
+ gcc-plugin-cflags-$(CONFIG_GCC_PLUGIN_RANDSTRUCT_PERFORMANCE)	\
+ 		+= -fplugin-arg-randomize_layout_plugin-performance-mode
+ 
++gcc-plugin-subdir-$(CONFIG_PAX_RAP)			+= rap_plugin
++gcc-plugin-$(CONFIG_PAX_RAP)				+= rap_plugin/rap_plugin.so
++gcc-plugin-cflags-$(CONFIG_PAX_RAP)			+= -DRAP_PLUGIN -fplugin-arg-rap_plugin-check=call
++# gcc-plugin-cflags-$(CONFIG_PAX_RAP)			+= -fplugin-arg-rap_plugin-report=func,fptr,abs
++gcc-plugin-aflags-$(CONFIG_PAX_RAP)			+= -DRAP_PLUGIN
++ifdef CONFIG_PAX_RAP
++  RAP_PLUGIN_ABS_CFLAGS				:= -fplugin-arg-rap_plugin-hash=abs-finish
++endif
++gcc-plugin-cflags-$(CONFIG_PAX_RAP)			+= $(RAP_PLUGIN_ABS_CFLAGS)
++
+ # All the plugin CFLAGS are collected here in case a build target needs to
+ # filter them out of the KBUILD_CFLAGS.
+ GCC_PLUGINS_CFLAGS := $(strip $(addprefix -fplugin=$(objtree)/scripts/gcc-plugins/, $(gcc-plugin-y)) $(gcc-plugin-cflags-y))
+@@ -33,12 +43,17 @@
+ GCC_PLUGINS_CFLAGS := $(filter-out %/sancov_plugin.so, $(GCC_PLUGINS_CFLAGS))
+ export GCC_PLUGINS_CFLAGS
+ 
++GCC_PLUGINS_AFLAGS := $(gcc-plugin-aflags-y)
++export RAP_PLUGIN_ABS_CFLAGS GCC_PLUGINS_AFLAGS
++
+ # Add the flags to the build!
+ KBUILD_CFLAGS += $(GCC_PLUGINS_CFLAGS)
++KBUILD_AFLAGS += $(GCC_PLUGINS_AFLAGS)
+ 
+ # All enabled GCC plugins are collected here for building below.
+ GCC_PLUGIN := $(gcc-plugin-y)
+-export GCC_PLUGIN
++GCC_PLUGIN_SUBDIR := $(gcc-plugin-subdir-y)
++export GCC_PLUGIN GCC_PLUGIN_SUBDIR
+ 
+ # Actually do the build, if requested.
+ PHONY += gcc-plugins
+diff -ur --new-file linux-4.19.1_old/security/Kconfig linux-4.19.1_new/security/Kconfig
+--- linux-4.19.1_old/security/Kconfig	2018-11-08 19:00:32.955255304 +0000
++++ linux-4.19.1_new/security/Kconfig	2018-11-08 10:57:33.653566568 +0000
+@@ -81,6 +81,24 @@
  
  endif
  
@@ -6984,6 +6917,3 @@ index 7ef4ec8..5f8ca7a 100644
  config PAX_RANDKSTACK
  	bool "Randomize kernel stack base"
  	depends on X86_TSC && X86
--- 
-2.7.4
-
