@@ -1,5 +1,5 @@
 From 0fd09a9a3418124e59cded88699d4c6bcdb811b2 Mon Sep 17 00:00:00 2001
-From: "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
+From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
 Date: Tue, 18 Sep 2018 18:33:06 -0700
 Subject: [PATCH] hwrng: rdrand - Add RNG driver based on x86 rdrand
  instruction
@@ -10,16 +10,16 @@ rdrand/rdseed instructions available on modern Intel and AMD CPUs.
 This can be used to feed the kernel's entropy pool on entropy-starved
 virtual machines.
 
-Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
- drivers/char/hw_random/Kconfig      | 14 ++++++++
+ drivers/char/hw_random/Kconfig      | 14 +++++++
  drivers/char/hw_random/Makefile     |  1 +
- drivers/char/hw_random/rdrand-rng.c | 72 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 87 insertions(+)
+ drivers/char/hw_random/rdrand-rng.c | 73 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 88 insertions(+)
  create mode 100644 drivers/char/hw_random/rdrand-rng.c
 
 diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
-index 95a031e..c7e7ce7 100644
+index dac895d..e6d4fad 100644
 --- a/drivers/char/hw_random/Kconfig
 +++ b/drivers/char/hw_random/Kconfig
 @@ -60,6 +60,20 @@ config HW_RANDOM_AMD
@@ -57,16 +57,16 @@ index e35ec3c..eda6b15 100644
  obj-$(CONFIG_HW_RANDOM_N2RNG) += n2-rng.o
 diff --git a/drivers/char/hw_random/rdrand-rng.c b/drivers/char/hw_random/rdrand-rng.c
 new file mode 100644
-index 0000000..ba017f3
+index 0000000..a2011de
 --- /dev/null
 +++ b/drivers/char/hw_random/rdrand-rng.c
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,73 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * RNG driver that uses the RDRAND/RDSEED instructions (found on modern
 + * Intel and AMD CPUs).
 + *
-+ * Author: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
++ * Author: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 + *
 + */
 +
@@ -111,7 +111,8 @@ index 0000000..ba017f3
 +	int err = -ENODEV;
 +
 +	if (!arch_has_random_seed() && !arch_has_random()) {
-+		pr_err(PFX "Neither RDSEED nor RDRAND is available.\n");
++		pr_info(PFX "Cannot load module, as your CPU does not "
++			    "support RDSEED or RDRAND instructions.\n");
 +		return err;
 +	}
 +
@@ -130,7 +131,7 @@ index 0000000..ba017f3
 +module_init(mod_init);
 +module_exit(mod_exit);
 +
-+MODULE_AUTHOR("Srivatsa S. Bhat <srivatsa@csail.mit.edu>");
++MODULE_AUTHOR("Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>");
 +MODULE_DESCRIPTION("H/W RNG driver for x86 CPUs that support RDRAND/RDSEED");
 +MODULE_LICENSE("GPL");
 -- 
