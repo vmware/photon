@@ -19,6 +19,7 @@ class SpecObject(object):
         self.version = ""
         self.release = ""
         self.buildarch = {}
+        self.whoNeedsMe = []
         self.buildRequiresAllPackages = []
         self.checkBuildRequirePackages = []
         self.installRequiresAllPackages = []
@@ -90,6 +91,14 @@ class SpecObjectsUtils(object):
                 self.mapSpecObjects[key] = sorted(value,
                                                   key=lambda x : self.compareVersions(x),
                                                   reverse=True)
+        # To create the upward deps
+        for specName in self.mapSpecObjects:
+            for specObj in self.mapSpecObjects[specName]:
+                for pkgRequired in specObj.buildRequiresAllPackages:
+                    specRequired = self.mapPackageToSpec[pkgRequired.package]
+                    if specRequired+".spec" in self.mapSpecFileNameToSpecObj:
+                        specRequiredObj = self.mapSpecFileNameToSpecObj[specRequired+".spec"]
+                        specRequiredObj.whoNeedsMe.append(specObj)
 
     def getListSpecFiles(self, listSpecFiles, path):
         for dirEntry in os.listdir(path):

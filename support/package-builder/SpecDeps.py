@@ -74,6 +74,18 @@ class SpecDependencyGenerator(object):
                         if depBasePkg not in depList:
                             depList.append(depBasePkg)
 
+    def findTotalWhoNeedsMe(self, specFile, whoNeedsMeList):
+        if specFile in SPECS.getData().mapSpecFileNameToSpecObj:
+            specObj = SPECS.getData().mapSpecFileNameToSpecObj[specFile]
+            for specObjWhoNeedsMe in specObj.whoNeedsMe:
+                if specObjWhoNeedsMe not in whoNeedsMeList:
+                    whoNeedsMeList.append(specObjWhoNeedsMe)
+                    self.findTotalWhoNeedsMe(specObjWhoNeedsMe.name +  ".spec", whoNeedsMeList)
+
+    def PrintTotalWhoNeedsMe(self,  whoNeedsMeList):
+        for specObj in whoNeedsMeList:
+            print("", specObj.name)
+
     def printTree(self, children, curParent, depth):
         if curParent in children:
             for child in children[curParent]:
@@ -164,7 +176,10 @@ class SpecDependencyGenerator(object):
                 return self.displayDependencies(displayOption, inputType, inputValue, mapDependencies, parent)
         elif inputType == "get-upward-deps":
             depList = []
+            depListNew = []
             for specFile in inputValue.split(":"):
+                self.findTotalWhoNeedsMe(specFile,depListNew)
+                self.PrintTotalWhoNeedsMe(depListNew)
                 if specFile in SPECS.getData().mapSpecFileNameToSpecObj:
                     specObj = SPECS.getData().mapSpecFileNameToSpecObj[specFile]
                     whoNeedsList.append(specObj.name+"-"+specObj.version)
