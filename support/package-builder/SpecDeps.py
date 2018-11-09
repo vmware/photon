@@ -72,6 +72,17 @@ class SpecDependencyGenerator(object):
                         if depBasePkg not in depList:
                             depList.append(depBasePkg)
 
+    def findTotalWhoNeedsMe(self, specFile, whoNeedsMeList):
+        if specFile in SPECS.getData().mapSpecFileNameToSpecObj:
+            specObj = SPECS.getData().mapSpecFileNameToSpecObj[specFile]
+            for specObjWhoNeedsMe in specObj.whoNeedsMe:
+                if specObjWhoNeedsMe.name+"-"+specObjWhoNeedsMe.version not in whoNeedsMeList:
+                    whoNeedsMeList.append(specObjWhoNeedsMe.name+"-"+specObjWhoNeedsMe.version)
+                    self.findTotalWhoNeedsMe(specObjWhoNeedsMe.name +  ".spec", whoNeedsMeList)
+
+    def PrintTotalWhoNeedsMe(self,  whoNeedsMeList):
+         self.logger.info ("Ajay: Upward dependencies: " + str(whoNeedsMeList))
+
     def printTree(self, children, curParent, depth):
         if curParent in children:
             for child in children[curParent]:
@@ -161,11 +172,17 @@ class SpecDependencyGenerator(object):
                 return self.displayDependencies(displayOption, inputType, inputValue, mapDependencies, parent)
         elif inputType == "get-upward-deps":
             depList = []
+            depListNew = []
             for specFile in inputValue.split(":"):
                 if specFile in SPECS.getData().mapSpecFileNameToSpecObj:
                     specObj = SPECS.getData().mapSpecFileNameToSpecObj[specFile]
                     whoNeedsList.append(specObj.name+"-"+specObj.version)
                     depList.append(specObj.name+"-"+specObj.version)
+                    if specObj.name+"-"+specObj.version not in depListNew:
+                        depListNew.append(specObj.name+"-"+specObj.version)
+                        self.findTotalWhoNeedsMe(specFile,depListNew)
+
+            self.PrintTotalWhoNeedsMe(depListNew)
             self.findTotalWhoNeeds(depList, whoNeedsList)
             return whoNeedsList
 
