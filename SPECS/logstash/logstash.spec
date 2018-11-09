@@ -1,12 +1,12 @@
 Summary:	Logstash is a tool for managing events and logs.
 Name:           logstash
 Version:        6.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:		https://github.com/elastic/logstash/archive/v%{version}.tar.gz
+URL:		https://github.com/elastic/logstash/archive/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
 %define sha1 %{name}-%{version}.tar.gz=d690f64a8d0fce9ccac04de4ee86f4b01bba5d3a
 Source1:        %{name}.service
@@ -17,6 +17,7 @@ Requires:	openjdk
 Requires:	ruby
 Requires:       systemd
 Requires:       elasticsearch
+Requires:       kibana
 
 %description
 Logstash is a tool to collect, process, and forward events and log messages. Collection is accomplished via configurable input plugins including raw socket/packet communication, file tailing, and several message bus clients. Once an input plugin has collected data it can be processed by any number of filters which modify and annotate the event data. Finally logstash routes events to output plugins which can forward the events to a variety of external programs including Elasticsearch, local files and several message bus implementations.
@@ -27,6 +28,7 @@ Logstash is a tool to collect, process, and forward events and log messages. Col
 %setup -q
 
 %build
+export OSS=true
 export LC_ALL=en_US.UTF-8
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 #Note: Only Building and Packaging Apache Licensed OSS part of Logstash. It doesn't include x-pack coponent of Elastic
@@ -52,36 +54,26 @@ install -vdm 750 %{buildroot}%{_datadir}/%{name}/vendor
 
 install -vdm 755 %{buildroot}/usr/lib/systemd/system
 install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/
-
-cp -r config/* %{buildroot}%{_sysconfdir}/%{name}
-cp -r config/* %{buildroot}%{_datadir}/%{name}/config
 install -p -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/
+cd build/
+tar -xvf %{name}-oss-%{version}-SNAPSHOT.tar.gz
+cp -r %{name}-%{version}-SNAPSHOT/config/* %{buildroot}%{_sysconfdir}/%{name}
+cp -r %{name}-%{version}-SNAPSHOT/config/* %{buildroot}%{_datadir}/%{name}/config
 
-cp -r bin/* %{buildroot}%{_datadir}/%{name}/bin
-rm -rf %{buildroot}%{_datadir}/%{name}/bin/bundle
-rm -rf %{buildroot}%{_datadir}/%{name}/bin/rspec
-rm -rf %{buildroot}%{_datadir}/%{name}/bin/rspec.spec
-rm -rf %{buildroot}%{_datadir}/%{name}/bin/rspec.bat
+cp -r %{name}-%{version}-SNAPSHOT/bin/* %{buildroot}%{_datadir}/%{name}/bin
 
-cp -r lib/* %{buildroot}%{_datadir}/%{name}/lib
-cp -r tools/ingest-converter/* %{buildroot}%{_datadir}/%{name}/tools/ingest-converter
-rm -rf %{buildroot}%{_datadir}/%{name}/tools/ingest-converter/build.gradle
-rm -rf %{buildroot}%{_datadir}/%{name}/tools/ingest-converter/src
+cp -r %{name}-%{version}-SNAPSHOT/lib/* %{buildroot}%{_datadir}/%{name}/lib
+cp -r %{name}-%{version}-SNAPSHOT/tools/* %{buildroot}%{_datadir}/%{name}/tools
 
-cp -r modules/* %{buildroot}%{_datadir}/%{name}/modules
-cp -r vendor/* %{buildroot}%{_datadir}/%{name}/vendor
-rm -rf %{buildroot}%{_datadir}/%{name}/vendor/_
-cp -r logstash-core-plugin-api/* %{buildroot}%{_datadir}/%{name}/logstash-core-plugin-api
-rm -rf %{buildroot}%{_datadir}/%{name}/logstash-core-plugin-api/versions-gem-copy.yml
-cp -r logstash-core/lib %{buildroot}%{_datadir}/%{name}/logstash-core
-cp -r logstash-core/locales %{buildroot}%{_datadir}/%{name}/logstash-core
-cp -r logstash-core/logstash-core.gemspec %{buildroot}%{_datadir}/%{name}/logstash-core
-cp -r logstash-core/versions-gem-copy.yml %{buildroot}%{_datadir}/%{name}/logstash-core
-install -p -m 0664 CONTRIBUTORS %{buildroot}%{_datadir}/%{name}
-install -p -m 0640 Gemfile %{buildroot}%{_datadir}/%{name}
-install -p -m 0640 Gemfile.lock %{buildroot}%{_datadir}/%{name}
-install -p -m 0664 LICENSE.txt %{buildroot}%{_datadir}/%{name}
-install -p -m 0640 NOTICE.TXT %{buildroot}%{_datadir}/%{name}
+cp -r %{name}-%{version}-SNAPSHOT/modules/* %{buildroot}%{_datadir}/%{name}/modules
+cp -r %{name}-%{version}-SNAPSHOT/vendor/* %{buildroot}%{_datadir}/%{name}/vendor
+cp -r %{name}-%{version}-SNAPSHOT/logstash-core-plugin-api/* %{buildroot}%{_datadir}/%{name}/logstash-core-plugin-api
+cp -r %{name}-%{version}-SNAPSHOT/logstash-core/* %{buildroot}%{_datadir}/%{name}/logstash-core
+install -p -m 0664 %{name}-%{version}-SNAPSHOT/CONTRIBUTORS %{buildroot}%{_datadir}/%{name}
+install -p -m 0640 %{name}-%{version}-SNAPSHOT/Gemfile %{buildroot}%{_datadir}/%{name}
+install -p -m 0640 %{name}-%{version}-SNAPSHOT/Gemfile.lock %{buildroot}%{_datadir}/%{name}
+install -p -m 0664 %{name}-%{version}-SNAPSHOT/LICENSE.txt %{buildroot}%{_datadir}/%{name}
+install -p -m 0640 %{name}-%{version}-SNAPSHOT/NOTICE.TXT %{buildroot}%{_datadir}/%{name}
 
 %pre
 if ! getent group %{name} >/dev/null; then
@@ -121,6 +113,8 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+*   Fri Nov 09 2018 Tapas Kundu <tkundu@vmware.com> 6.4.0-2
+-   Updated to build and package only oss distribution.
 *   Thu Oct 25 2018 Ankit Jain <ankitja@vmware.com> 6.4.0-1
 -   Updated to release 6.4.0
 *   Mon Aug 06 2018 Ankit Jain <ankitja@vmware.com> 6.3.0-2
