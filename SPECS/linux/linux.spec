@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.18.9
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.1
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=229ed4bedc5b8256bdd761845b1d7e20e1df12d7
+%define sha1 linux=5ece7a7149eeef06bba906eeabbc2f29a8ac3952
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -362,9 +362,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /etc/bash_completion.d/*
 /usr/share/perf-core/strace/groups/file
 /usr/share/doc/*
-%{_libdir}/perf/examples/bpf/5sec.c
-%{_libdir}/perf/examples/bpf/empty.c
-%{_libdir}/perf/include/bpf/bpf.h
+%{_libdir}/perf/examples/bpf/*
+%{_libdir}/perf/include/bpf/*
 
 %ifarch aarch64
 %files dtb-rpi3
@@ -373,6 +372,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Nov 05 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.1-1
+-   Update to version 4.19.1
 *   Tue Oct 16 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.18.9-5
 -   Change in config to enable drivers for zigbee and GPS
 *   Fri Oct 12 2018 Ajay Kaher <akaher@vmware.com> 4.18.9-4
