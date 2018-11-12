@@ -98,13 +98,13 @@ class SpecDependencyGenerator(object):
         depQue = queue.Queue()
         for package in inputPackages:
             if SPECS.getData().isRPMPackage(package):
-                for version in SPECS.getData().getVersions(package):
-                    pkg = package+"-"+version
-                    if pkg not in mapDependencies:
-                        mapDependencies[pkg] = 0
-                        parent[pkg] = ""
-                        depQue.put(pkg)
-                        self.findTotalRequires(mapDependencies, depQue, parent)
+                version = SPECS.getData().getHighestVersion(package)
+                pkg = package+"-"+version
+                if pkg not in mapDependencies:
+                    mapDependencies[pkg] = 0
+                    parent[pkg] = ""
+                    depQue.put(pkg)
+                    self.findTotalRequires(mapDependencies, depQue, parent)
             else:
                 self.logger.info("Could not find spec for " + package)
 
@@ -154,7 +154,6 @@ class SpecDependencyGenerator(object):
                 inputPackages.append(inputValue)
             else:
                 inputPackages = self.getAllPackageNames(inputValue)
-
             self.calculateSpecDependency(inputPackages, mapDependencies, parent)
             if outputFile is not None:
                 return self.displayDependencies(displayOption, inputType, outputFile, mapDependencies, parent)
