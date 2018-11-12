@@ -28,7 +28,7 @@ class CommandUtils:
     def runCommandInShell(cmd, logfile=None, logfn=None):
         retval = 0
         if logfn:
-            process = subprocess.Popen("%s" %cmd, shell=True, stdout=subprocess.PIPE)
+            process = subprocess.Popen("%s" %cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             retval = process.wait()
             logfn(process.communicate()[0].decode())
         else:
