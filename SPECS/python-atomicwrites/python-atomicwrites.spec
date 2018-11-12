@@ -4,7 +4,7 @@
 Summary:        Python Atomic file writes
 Name:           python-atomicwrites
 Version:        1.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -17,9 +17,19 @@ BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
 BuildRequires:  python-xml
 %if %{with_check}
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
 BuildRequires:  python-pytest
+BuildRequires:  python-six
+BuildRequires:  python-attrs
+BuildRequires:  python3-attrs
+BuildRequires:  python3-pytest
+BuildRequires:  python3-six
 %endif
 Requires:       python2
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 BuildArch:      noarch
 
 %description
@@ -27,12 +37,6 @@ Python Atomic file writes
 
 %package -n     python3-atomicwrites
 Summary:        Python Atomic file writes
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-pytest
-%endif
 Requires:       python3
 
 %description -n python3-atomicwrites
@@ -56,9 +60,15 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-PYTHONPATH=./ py.test2
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 funcsigs pathlib2 pluggy more-itertools
+cp tests/test_atomicwrites.py .
+python2 test_atomicwrites.py
 pushd ../p3dir
-PYTHONPATH=./ py.test3
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 funcsigs pathlib2 pluggy more-itertools
+cp tests/test_atomicwrites.py .
+python3 test_atomicwrites.py
 popd
 
 %files
@@ -74,6 +84,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 12 2018 Tapas Kundu <tkundu@vmware.com> 1.2.1-2
+-   Fixed make check
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.2.1-1
 -   Update to version 1.2.1
 *   Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 1.1.5-2
