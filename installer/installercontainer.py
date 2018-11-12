@@ -1,5 +1,4 @@
 #
-#    Copyright (C) 2015 vmware inc.
 #
 #    Author: Touseef Liaqat <tliaqat@vmware.com>
 
