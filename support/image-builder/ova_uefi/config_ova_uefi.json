@@ -1,16 +1,17 @@
 {
+    "image_type": "ova_uefi",
 	"hostname": "photon-machine",
 	"password": 
 		{
-			"crypted": false,
-			"text": "PASSWORD"
+			"crypted": true,
+			"text": "changeme"
 		},
 	"packagelist_file": "packages_ova.json",
     "size": {"root": "16", "swap": "0"},
     "boot":"efi",
     "public_key":"<ssh-key-here>",
-    "customartifacts": { "postinstallscripts": ["ova_uefi-custom-patch.sh"] },
+    "expirepassword": true,
     "artifacttype": "ova",
-    "keeprawdisk": "false"
+    "keeprawdisk": false
 }
 

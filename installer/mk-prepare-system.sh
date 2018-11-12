@@ -27,7 +27,9 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
 if mountpoint ${BUILDROOT}/run  >/dev/null 2>&1; then umount ${BUILDROOT}/run; fi
 if mountpoint ${BUILDROOT}/sys  >/dev/null 2>&1; then umount ${BUILDROOT}/sys; fi
 if mountpoint ${BUILDROOT}/proc >/dev/null 2>&1; then umount ${BUILDROOT}/proc; fi
-if mountpoint ${BUILDROOT}/dev  >/dev/null 2>&1; then umount -R ${BUILDROOT}/dev; fi
+if mountpoint ${BUILDROOT}/dev/pts  >/dev/null 2>&1; then umount ${BUILDROOT}/dev/pts; fi
+if mountpoint ${BUILDROOT}/dev  >/dev/null 2>&1; then umount ${BUILDROOT}/dev; fi
+sync
 [ ${EUID} -eq 0 ]   || fail "${PRGNAME}: Need to be root user: FAILURE"
 
 cd ${BUILDROOT} || fail "${PRGNAME}: Change directory: ${BUILDROOT}: FAILURE"
@@ -59,7 +61,8 @@ fi
 
 #   Mount kernel filesystem
 #
-if ! mountpoint ${BUILDROOT}/dev    >/dev/null 2>&1; then mount --rbind /dev ${BUILDROOT}/dev; mount --make-rslave ${BUILDROOT}/dev; fi
+if ! mountpoint ${BUILDROOT}/dev    >/dev/null 2>&1; then mount --bind /dev ${BUILDROOT}/dev; fi
+if ! mountpoint ${BUILDROOT}/dev/pts    >/dev/null 2>&1; then mount -t devpts devpts ${BUILDROOT}/dev/pts -o gid=5,mode=620; fi
 if ! mountpoint ${BUILDROOT}/proc   >/dev/null 2>&1; then mount -t proc proc ${BUILDROOT}/proc; fi
 if ! mountpoint ${BUILDROOT}/sys    >/dev/null 2>&1; then mount -t sysfs sysfs ${BUILDROOT}/sys; fi
 if ! mountpoint ${BUILDROOT}/run    >/dev/null 2>&1; then mount -t tmpfs tmpfs ${BUILDROOT}/run; fi
