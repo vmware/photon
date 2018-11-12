@@ -1,15 +1,16 @@
 {
+    "image_type": "ova",
     "hostname": "photon-machine",
     "password": 
         {
-            "crypted": false,
-            "text": "PASSWORD"
+            "crypted": true,
+            "text": "changeme"
         },
     "packagelist_file": "packages_ova.json",
     "size": { "root": "16", "swap": "0" },
     "public_key":"<ssh-key-here>",
-    "customartifacts": { "postinstallscripts": ["ova-custom-patch.sh"] },
+    "expirepassword": true,
     "artifacttype": "ova",
-    "keeprawdisk": "false"
+    "keeprawdisk": false
 }
 
