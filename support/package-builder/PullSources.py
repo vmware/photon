@@ -1,4 +1,3 @@
-#    Copyright (C) 2015-2017 VMware, Inc. All rights reserved.
 #    pullsources.py
 #    Allows pulling packages'sources from a source repository.
 #

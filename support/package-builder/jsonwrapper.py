@@ -1,7 +1,6 @@
-#    Copyright (C) 2015 vmware inc.
+#!/usr/bin/python3
 #
 #    Author: Sharath George <sharathg@vmware.com>
-
 
 import json
 import collections

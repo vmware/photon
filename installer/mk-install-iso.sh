@@ -31,26 +31,25 @@ PACKAGE_LIST_FILE=$3
 RPM_LIST=$4
 STAGE_PATH=$5
 ADDITIONAL_FILES_TO_COPY_FROM_STAGE=$6
-LIVE_CD=$7
-OUTPUT_DATA_PATH=$8
+OUTPUT_DATA_PATH=$7
 PHOTON_COMMON_DIR=$(dirname "${PACKAGE_LIST_FILE}")
 PACKAGE_LIST_FILE_BASE_NAME=$(basename "${PACKAGE_LIST_FILE}")
 #- Step 3 Setting up the boot loader
 WORKINGDIR=${BUILDROOT}
 BUILDROOT=${BUILDROOT}/photon-chroot
 
-run_command "cp isolinux to working directory: ${WORKINGDIR}" "cp -r BUILD_DVD/isolinux ${WORKINGDIR}/" "${LOGFILE}"
-run_command "cp boot/grub2 to working directory: ${WORKINGDIR}" "cp -r BUILD_DVD/boot ${WORKINGDIR}/" "${LOGFILE}"
+run_command "cp isolinux to working directory: ${WORKINGDIR}" "cp -r $SCRIPT_PATH/BUILD_DVD/isolinux ${WORKINGDIR}/" "${LOGFILE}"
+run_command "cp boot/grub2 to working directory: ${WORKINGDIR}" "cp -r $SCRIPT_PATH/BUILD_DVD/boot ${WORKINGDIR}/" "${LOGFILE}"
 run_command "# 1" "mkdir ${WORKINGDIR}/boot/grub2/fonts/" "${LOGFILE}"
-run_command "# 2" "cp boot/ascii.pf2 ${WORKINGDIR}/boot/grub2/fonts/" "${LOGFILE}"
+run_command "# 2" "cp $SCRIPT_PATH/boot/ascii.pf2 ${WORKINGDIR}/boot/grub2/fonts/" "${LOGFILE}"
 run_command "# 3" "mkdir -p ${WORKINGDIR}/boot/grub2/themes/photon/" "${LOGFILE}"
-run_command "# 4" "cp boot/splash.png ${WORKINGDIR}/boot/grub2/themes/photon/photon.png" "${LOGFILE}"
-run_command "# 5" "cp boot/terminal_*.tga ${WORKINGDIR}/boot/grub2/themes/photon/" "${LOGFILE}"
-run_command "# 6" "cp boot/theme.txt ${WORKINGDIR}/boot/grub2/themes/photon/" "${LOGFILE}"
+run_command "# 4" "cp $SCRIPT_PATH/boot/splash.png ${WORKINGDIR}/boot/grub2/themes/photon/photon.png" "${LOGFILE}"
+run_command "# 5" "cp $SCRIPT_PATH/boot/terminal_*.tga ${WORKINGDIR}/boot/grub2/themes/photon/" "${LOGFILE}"
+run_command "# 6" "cp $SCRIPT_PATH/boot/theme.txt ${WORKINGDIR}/boot/grub2/themes/photon/" "${LOGFILE}"
 run_command "echo : ${WORKINGDIR}" "echo ${WORKINGDIR}" "${LOGFILE}"
-cp BUILD_DVD/isolinux/splash.png ${BUILDROOT}/installer/boot/.
+cp $SCRIPT_PATH/BUILD_DVD/isolinux/splash.png ${BUILDROOT}/installer/boot/.
 mkdir -p ${BUILDROOT}/installer/EFI/BOOT
-cp EFI_$(uname -m)/BOOT/* ${BUILDROOT}/installer/EFI/BOOT/
+cp $SCRIPT_PATH/EFI_$(uname -m)/BOOT/* ${BUILDROOT}/installer/EFI/BOOT/
 
 #Generate efiboot image
 # efiboot is a fat16 image that has at least EFI/BOOT/bootx64.efi
@@ -74,18 +73,14 @@ mkdir $EFI_FOLDER
 mount -o loop ${WORKINGDIR}/${EFI_IMAGE} $EFI_FOLDER
 mkdir $EFI_FOLDER/EFI
 mkdir ${WORKINGDIR}/EFI
-cp -r ./EFI_$(uname -m)/BOOT $EFI_FOLDER/EFI/
-cp -r ./EFI_$(uname -m)/BOOT ${WORKINGDIR}/EFI/
+cp -r $SCRIPT_PATH/EFI_$(uname -m)/BOOT $EFI_FOLDER/EFI/
+cp -r $SCRIPT_PATH/EFI_$(uname -m)/BOOT ${WORKINGDIR}/EFI/
 ls -lR $EFI_FOLDER
 umount $EFI_FOLDER
 rm -rf $EFI_FOLDER
 #mcopy -s -i ${WORKINGDIR}/${EFI_IMAGE} ./EFI '::/'
 
-if [ "$LIVE_CD" = true ] ; then
-    mv ${WORKINGDIR}/isolinux/live-menu.cfg ${WORKINGDIR}/isolinux/menu.cfg
-fi
-
-cp sample_ks.cfg ${WORKINGDIR}/isolinux/
+cp $SCRIPT_PATH/sample_ks.cfg ${WORKINGDIR}/isolinux/
 
 find ${BUILDROOT} -name linux-[0-9]*.rpm | head -1 | xargs rpm2cpio | cpio -iv --to-stdout ./boot/vmlinuz* > ${WORKINGDIR}/isolinux/vmlinuz
 
@@ -110,7 +105,7 @@ mkdir -p ${BUILDROOT}/etc/systemd/scripts
 
 # Step 6 create fstab
 
-cp BUILD_DVD/fstab ${BUILDROOT}/etc/fstab
+cp $SCRIPT_PATH/BUILD_DVD/fstab ${BUILDROOT}/etc/fstab
 
 mkdir -p ${BUILDROOT}/etc/yum.repos.d
 cat >> ${BUILDROOT}/etc/yum.repos.d/photon-iso.repo << EOF
@@ -124,8 +119,6 @@ skip_if_unavailable=True
 EOF
 
 #- Step 7 - Create installer script
-if [ "$LIVE_CD" = false ] ; then
-
 cat >> ${BUILDROOT}/bin/bootphotoninstaller << EOF
 #!/bin/bash
 cd /installer
@@ -134,8 +127,6 @@ cd /installer
 EOF
 
 chmod 755 ${BUILDROOT}/bin/bootphotoninstaller
-
-fi
 
 cat >> ${BUILDROOT}/init << EOF
 mount -t proc proc /proc
@@ -148,11 +139,7 @@ chmod 755 ${BUILDROOT}/init
 sed -i "s/ExecStart.*/ExecStart=-\/sbin\/agetty --autologin root --noclear %I linux/g" ${BUILDROOT}/lib/systemd/system/getty@.service
 
 #- Step 7 - Create installer script
-if [ "$LIVE_CD" = false ] ; then
-
-    sed -i "s/root:.*/root:x:0:0:root:\/root:\/bin\/bootphotoninstaller/g" ${BUILDROOT}/etc/passwd
-
-fi
+sed -i "s/root:.*/root:x:0:0:root:\/root:\/bin\/bootphotoninstaller/g" ${BUILDROOT}/etc/passwd
 
 mkdir -p ${BUILDROOT}/mnt/photon-root/photon-chroot
 rm -rf ${BUILDROOT}/RPMS
@@ -192,99 +179,96 @@ fi
 
 rm -rf ${BUILDROOT}/LOGS
 
-if [ "$LIVE_CD" = false ] ; then
-    # Cleaning up
-    #Remove our rpm database as it fills up the ramdisk
-    for filename in ${BUILDROOT}/usr/lib/*; do 
-        #run_command " echo ${filename}" "echo ${filename}" "${LOGFILE}"
-        if [[ -f ${filename} ]]; then
-            file ${filename} | grep ELF >/dev/null 2>&1
-            #run_command " file ${filename}" "echo ${filename}" "${LOGFILE}"
-            if [[ $? -eq 0 ]]; then
-                run_command " strip ${filename}" "strip ${filename}" "${LOGFILE}"
-            fi;
+# Cleaning up
+#Remove our rpm database as it fills up the ramdisk
+for filename in ${BUILDROOT}/usr/lib/*; do 
+    #run_command " echo ${filename}" "echo ${filename}" "${LOGFILE}"
+    if [[ -f ${filename} ]]; then
+        file ${filename} | grep ELF >/dev/null 2>&1
+        #run_command " file ${filename}" "echo ${filename}" "${LOGFILE}"
+        if [[ $? -eq 0 ]]; then
+            run_command " strip ${filename}" "strip ${filename}" "${LOGFILE}"
         fi;
-    done
+    fi;
+done
 
-    #Remove our rpm database as it fills up the ramdisk
-    for filename in $(find ${BUILDROOT}/usr/lib/modules); do 
-        #run_command " echo ${filename}" "echo ${filename}" "${LOGFILE}"
-        if [[ -f ${filename} ]]; then
-            file ${filename} | grep ELF >/dev/null 2>&1
-            #run_command " file ${filename}" "echo ${filename}" "${LOGFILE}"
-            if [[ $? -eq 0 ]]; then
-                run_command " strip ${filename}" "strip ${filename}" "${LOGFILE}"
-            fi;
+#Remove our rpm database as it fills up the ramdisk
+for filename in $(find ${BUILDROOT}/usr/lib/modules); do 
+    #run_command " echo ${filename}" "echo ${filename}" "${LOGFILE}"
+    if [[ -f ${filename} ]]; then
+        file ${filename} | grep ELF >/dev/null 2>&1
+        #run_command " file ${filename}" "echo ${filename}" "${LOGFILE}"
+        if [[ $? -eq 0 ]]; then
+            run_command " strip ${filename}" "strip ${filename}" "${LOGFILE}"
         fi;
-    done
-    rm -rf ${BUILDROOT}/home/*
-    rm -rf ${BUILDROOT}/var/lib/rpm
+    fi;
+done
+rm -rf ${BUILDROOT}/home/*
+rm -rf ${BUILDROOT}/var/lib/rpm
 
-    # Remove the boot directory
-    rm -rf ${BUILDROOT}/boot
+# Remove the boot directory
+rm -rf ${BUILDROOT}/boot
 
-    #Remove the include files.
-    rm -rf ${BUILDROOT}/usr/include
+#Remove the include files.
+rm -rf ${BUILDROOT}/usr/include
 
-    rm ${BUILDROOT}/lib64/libmvec*
-    rm ${BUILDROOT}/usr/sbin/sln
-    rm ${BUILDROOT}/usr/bin/oldfind
+rm ${BUILDROOT}/lib64/libmvec*
+rm ${BUILDROOT}/usr/sbin/sln
+rm ${BUILDROOT}/usr/bin/oldfind
 
-    rm ${BUILDROOT}/usr/bin/localedef
-    rm ${BUILDROOT}/usr/bin/systemd-nspawn
-    rm ${BUILDROOT}/usr/bin/systemd-analyze
-    rm -rf ${BUILDROOT}/usr/lib64/gconv
-    rm ${BUILDROOT}/usr/bin/sqlite3
+rm ${BUILDROOT}/usr/bin/localedef
+rm ${BUILDROOT}/usr/bin/systemd-nspawn
+rm ${BUILDROOT}/usr/bin/systemd-analyze
+rm -rf ${BUILDROOT}/usr/lib64/gconv
+rm ${BUILDROOT}/usr/bin/sqlite3
 
-    rm ${BUILDROOT}/usr/bin/bsdcpio
-    rm ${BUILDROOT}/usr/bin/bsdtar
-    rm ${BUILDROOT}/usr/bin/networkctl
-    rm ${BUILDROOT}/usr/bin/machinectl
-    rm ${BUILDROOT}/usr/bin/pkg-config
-    rm ${BUILDROOT}/usr/bin/openssl
-    rm ${BUILDROOT}/usr/bin/timedatectl
-    rm ${BUILDROOT}/usr/bin/localectl
-    rm ${BUILDROOT}/usr/bin/systemd-cgls
-    rm ${BUILDROOT}/usr/bin/systemd-inhibit
-    rm ${BUILDROOT}/usr/bin/systemd-studio-bridge
-    rm ${BUILDROOT}/usr/bin/iconv
+rm ${BUILDROOT}/usr/bin/bsdcpio
+rm ${BUILDROOT}/usr/bin/bsdtar
+rm ${BUILDROOT}/usr/bin/networkctl
+rm ${BUILDROOT}/usr/bin/machinectl
+rm ${BUILDROOT}/usr/bin/pkg-config
+rm ${BUILDROOT}/usr/bin/openssl
+rm ${BUILDROOT}/usr/bin/timedatectl
+rm ${BUILDROOT}/usr/bin/localectl
+rm ${BUILDROOT}/usr/bin/systemd-cgls
+rm ${BUILDROOT}/usr/bin/systemd-inhibit
+rm ${BUILDROOT}/usr/bin/systemd-studio-bridge
+rm ${BUILDROOT}/usr/bin/iconv
 
-    rm -rf ${BUILDROOT}/usr/lib/python2.7/lib2to3
-    rm -rf ${BUILDROOT}/usr/lib/python2.7/lib-tk
-    rm -rf ${BUILDROOT}/usr/lib/python2.7/ensurepip
-    rm -rf ${BUILDROOT}/usr/lib/python2.7/distutils
-    rm -rf ${BUILDROOT}/usr/lib/python2.7/pydoc_data
-    rm -rf ${BUILDROOT}/usr/lib/python2.7/idlelib
-    rm -rf ${BUILDROOT}/usr/lib/python2.7/unittest 
+rm -rf ${BUILDROOT}/usr/lib/python2.7/lib2to3
+rm -rf ${BUILDROOT}/usr/lib/python2.7/lib-tk
+rm -rf ${BUILDROOT}/usr/lib/python2.7/ensurepip
+rm -rf ${BUILDROOT}/usr/lib/python2.7/distutils
+rm -rf ${BUILDROOT}/usr/lib/python2.7/pydoc_data
+rm -rf ${BUILDROOT}/usr/lib/python2.7/idlelib
+rm -rf ${BUILDROOT}/usr/lib/python2.7/unittest 
 
-    rm ${BUILDROOT}/usr/lib/librpmbuild.so*
-    rm ${BUILDROOT}/usr/lib/libdb_cxx*
-    rm ${BUILDROOT}/usr/lib/libnss_compat*
+rm ${BUILDROOT}/usr/lib/librpmbuild.so*
+rm ${BUILDROOT}/usr/lib/libdb_cxx*
+rm ${BUILDROOT}/usr/lib/libnss_compat*
 
-    rm ${BUILDROOT}/usr/bin/grub2-*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/*.module
-    rm ${BUILDROOT}/usr/lib/grub/x86_64-efi/*.module
+rm ${BUILDROOT}/usr/bin/grub2-*
+rm ${BUILDROOT}/usr/lib/grub/i386-pc/*.module
+rm ${BUILDROOT}/usr/lib/grub/x86_64-efi/*.module
 
-    for j in `ls ${BUILDROOT}/usr/sbin/grub2*`; do
-        bsname=$(basename "$j")
-        if [ $bsname != 'grub2-install' ]; then
-            rm $j
-        fi
-    done
+for j in `ls ${BUILDROOT}/usr/sbin/grub2*`; do
+    bsname=$(basename "$j")
+    if [ $bsname != 'grub2-install' ]; then
+        rm $j
+    fi
+done
 
-    # TODO: mbassiouny, Find a clean way to do that
-    for i in `ls ${BUILDROOT}/usr/share/`; do
-        if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' -a $i != 'factory' -a $i != 'dbus-1' ]; then
-            rm -rf ${BUILDROOT}/usr/share/$i
-        fi
-    done
-
-fi
+# TODO: mbassiouny, Find a clean way to do that
+for i in `ls ${BUILDROOT}/usr/share/`; do
+    if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' -a $i != 'factory' -a $i != 'dbus-1' ]; then
+        rm -rf ${BUILDROOT}/usr/share/$i
+    fi
+done
 
 # Set password max days to 99999 (disable aging)
 chroot ${BUILDROOT} /bin/bash -c "chage -M 99999 root"
 
-# Generate the intird
+# Generate the initrd
 pushd $BUILDROOT
 (find . | cpio -o -H newc --quiet | gzip -9 ) > ${WORKINGDIR}/isolinux/initrd.img
 popd
