@@ -1,5 +1,4 @@
 #
-#    Copyright (C) 2015 vmware inc.
 #
 #    Author: Sharath George <sharathg@vmware.com>
 

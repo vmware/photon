@@ -1,7 +1,6 @@
 """
 Photon installer
 """
-#    Copyright (C) 2015 vmware inc.
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
@@ -414,11 +413,10 @@ class Installer(object):
         """
         Execute the scripts in the modules folder
         """
-        sys.path.append("./modules")
-        modules_paths = glob.glob('modules/m_*.py')
+        sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "modules")))
+        modules_paths = glob.glob(os.path.abspath(os.path.join(os.path.dirname(__file__), 'modules')) + '/m_*.py')
         for mod_path in modules_paths:
-            module = mod_path.replace('/', '.', 1)
-            module = os.path.splitext(module)[0]
+            module = os.path.splitext(os.path.basename(mod_path))[0]
             try:
                 __import__(module)
                 mod = sys.modules[module]
@@ -445,7 +443,6 @@ class Installer(object):
                 modules.commons.log(modules.commons.LOG_ERROR,
                                     "Error: not able to execute module {}".format(module))
                 continue
-
             mod.execute(self.install_config, self.photon_root)
 
     def _adjust_packages_for_vmware_virt(self):
