@@ -128,6 +128,7 @@ packages-minimal: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SO
 		--dist-tag $(PHOTON_DIST_TAG) \
 		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
+		--pkginfo-file $(PHOTON_PKGINFO_FILE) \
 		$(PHOTON_RPMCHECK_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS) \
@@ -152,7 +153,7 @@ packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(
 		--dist-tag $(PHOTON_DIST_TAG) \
 		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
-		--pkginfo-file $(PHOTON_STAGE)/pkg_info.json \
+		--pkginfo-file $(PHOTON_PKGINFO_FILE) \
 		$(PACKAGE_BUILD_OPTIONS) \
 		$(PHOTON_RPMCHECK_FLAGS) \
 		$(PHOTON_KAT_BUILD_FLAGS) \
@@ -179,7 +180,7 @@ packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE
 		--dist-tag $(PHOTON_DIST_TAG) \
 		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
-		--pkginfo-file $(PHOTON_STAGE)/pkg_info.json \
+		--pkginfo-file $(PHOTON_PKGINFO_FILE) \
 		$(PACKAGE_BUILD_OPTIONS) \
 		$(PHOTON_RPMCHECK_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
@@ -296,7 +297,7 @@ check: packages
 		--dist-tag $(PHOTON_DIST_TAG) \
 		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
-		--pkginfo-file $(PHOTON_STAGE)/pkg_info.json \
+		--pkginfo-file $(PHOTON_PKGINFO_FILE) \
 		$(PACKAGE_BUILD_OPTIONS) \
 		--enable-rpmcheck \
 		$(rpmcheck_stop_on_error) \
@@ -310,89 +311,83 @@ all: iso photon-docker-image k8s-docker-images all-images src-iso
 
 iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Building Photon Full ISO..."
-	@cd $(PHOTON_INSTALLER_DIR) && \
-	sudo $(PHOTON_INSTALLER) \
+	@cd $(PHOTON_IMAGE_BUILDER_DIR) && \
+	sudo $(PHOTON_IMAGE_BUILDER) \
 		--iso-path $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
 		--debug-iso-path $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
-		--working-directory $(PHOTON_STAGE)/photon_iso \
 		--log-path $(PHOTON_STAGE)/LOGS \
 		--log-level $(LOGLEVEL) \
 		--rpm-path $(PHOTON_STAGE)/RPMS \
 		--srpm-path $(PHOTON_STAGE)/SRPMS \
 		--package-list-file $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
-		--output-data-path $(PHOTON_STAGE)/common/data \
-		--pkg-to-rpm-map-file $(PHOTON_STAGE)/pkg_info.json \
-		--json-data-path $(PHOTON_DATA_DIR) \
-		--force > \
+		--generated-data-path $(PHOTON_STAGE)/common/data \
+		--pkg-to-rpm-map-file $(PHOTON_PKGINFO_FILE) > \
 		$(PHOTON_LOGS_DIR)/installer.log 2>&1
 
 src-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Building Photon Full Source ISO..."
-	@cd $(PHOTON_INSTALLER_DIR) && \
-	sudo $(PHOTON_INSTALLER) \
+	@cd $(PHOTON_IMAGE_BUILDER_DIR) && \
+	sudo $(PHOTON_IMAGE_BUILDER) \
 		--src-iso-path $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).src.iso \
-		--working-directory $(PHOTON_STAGE)/photon_iso \
 		--log-path $(PHOTON_STAGE)/LOGS \
 		--log-level $(LOGLEVEL) \
 		--rpm-path $(PHOTON_STAGE)/RPMS \
 		--srpm-path $(PHOTON_STAGE)/SRPMS \
 		--package-list-file $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
-		--output-data-path $(PHOTON_STAGE)/common/data \
-		--pkg-to-rpm-map-file $(PHOTON_STAGE)/pkg_info.json \
-		--json-data-path $(PHOTON_DATA_DIR) \
-		--force > \
+		--generated-data-path $(PHOTON_STAGE)/common/data \
+		--pkg-to-rpm-map-file $(PHOTON_PKGINFO_FILE) > \
 		$(PHOTON_LOGS_DIR)/sourceiso-installer.log 2>&1
 
 image: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(PHOTON_PACKAGES)
-	@echo "Building image $(IMG_NAME)..."
+	@echo "Building image using $(CONFIG)..."
 	@cd $(PHOTON_IMAGE_BUILDER_DIR)
 	$(PHOTON_IMAGE_BUILDER) \
-		--build-scripts-path=$(PHOTON_IMAGE_BUILDER_DIR) \
-	--img-name=$(IMG_NAME) \
-	--src-root=$(SRCROOT) \
-	--generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
-	--stage-path=$(PHOTON_STAGE) \
-	--additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
-
+		--config-file=$(CONFIG) \
+		--img-name=$(IMG_NAME) \
+		--src-root=$(SRCROOT) \
+		--generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
+		--stage-path=$(PHOTON_STAGE) \
+		--rpm-path $(PHOTON_STAGE)/RPMS \
+		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
 
 all-images: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 	@echo "Building all images - gce, ami, azure, ova..."
 	@cd $(PHOTON_IMAGE_BUILDER_DIR)
 	$(PHOTON_IMAGE_BUILDER) \
-		--build-scripts-path=$(PHOTON_IMAGE_BUILDER_DIR) \
-		--img-name=ami \
 		--src-root=$(SRCROOT) \
 		--generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
 		--stage-path=$(PHOTON_STAGE) \
-		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
+		--rpm-path $(PHOTON_STAGE)/RPMS \
+		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH) \
+		--img-name=ami
 	$(PHOTON_IMAGE_BUILDER) \
-		--build-scripts-path=$(PHOTON_IMAGE_BUILDER_DIR) \
-		--img-name=azure \
 		--src-root=$(SRCROOT) \
 		--generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
 		--stage-path=$(PHOTON_STAGE) \
-		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
+		--rpm-path $(PHOTON_STAGE)/RPMS \
+		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH) \
+		--img-name=gce
 	$(PHOTON_IMAGE_BUILDER) \
-		--build-scripts-path=$(PHOTON_IMAGE_BUILDER_DIR) \
-		--img-name=gce \
 		--src-root=$(SRCROOT) \
 		--generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
 		--stage-path=$(PHOTON_STAGE) \
-		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
+		--rpm-path $(PHOTON_STAGE)/RPMS \
+		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH) \
+		--img-name=azure
 	$(PHOTON_IMAGE_BUILDER) \
-		--build-scripts-path=$(PHOTON_IMAGE_BUILDER_DIR) \
-		--img-name=ova \
 		--src-root=$(SRCROOT) \
 		--generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
 		--stage-path=$(PHOTON_STAGE) \
-		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
+		--rpm-path $(PHOTON_STAGE)/RPMS \
+		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH) \
+		--img-name=ova
 	$(PHOTON_IMAGE_BUILDER) \
-		--build-scripts-path=$(PHOTON_IMAGE_BUILDER_DIR) \
-		--img-name=ova_uefi \
 		--src-root=$(SRCROOT) \
 		--generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
 		--stage-path=$(PHOTON_STAGE) \
-		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
+		--rpm-path $(PHOTON_STAGE)/RPMS \
+		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH) \
+		--img-name=ova_uefi
 
 photon-docker-image:
 	$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)

@@ -1,7 +1,5 @@
 #! /usr/bin/python3
 #
-#    Copyright (C) 2015 vmware inc.
-#
 #    Author: Harish Udaiya Kumar <hudaiyakumar@vmware.com>
 import sys
 import os
