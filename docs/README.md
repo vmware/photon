@@ -4,9 +4,9 @@ The Photon OS Documentation provides information about how to install, configure
 
  ![PhotonOS Logo](images/photonos-logo-lg.png)
 
-**Product version: 1.0 and 2.0**
+**Product version: 3.0**
 
-This documentation applies to all 1.0.x and 2.0.x releases.
+This documentation applies to all 3.0.x releases.
 
 ## Intended Audiences
 
