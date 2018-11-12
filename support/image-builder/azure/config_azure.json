@@ -1,4 +1,5 @@
 {
+    "image_type": "azure",
     "hostname": "photon-machine",
     "password": 
         {
@@ -13,6 +14,6 @@
                             {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"}
                        ],
     "artifacttype": "vhd",
-    "keeprawdisk": "false"
+    "keeprawdisk": false
 }
 
