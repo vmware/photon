@@ -1,4 +1,5 @@
 {
+    "image_type": "gce",
     "hostname": "photon-machine",
     "password": 
         {
@@ -14,6 +15,6 @@
                             {"ntpd.service": "/usr/lib/systemd/system/ntpd.service"}
                        ],
     "artifacttype": "tgz",
-    "keeprawdisk": "false"
+    "keeprawdisk": false
 }
 

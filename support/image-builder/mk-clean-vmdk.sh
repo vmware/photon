@@ -18,7 +18,6 @@ SCRIPT_PATH=$(dirname $(realpath -s $0))
 INSTALLER_PATH=$SCRIPT_PATH/../../installer
 source ${INSTALLER_PATH}/config.inc		#	configuration parameters
 LOGFILE="/var/log/${PRGNAME}-${LOGFILE}"	#	set log file name
-LFS_DISK="/mnt/photon-disk"
 [ ${EUID} -eq 0 ]	|| { echo "${PRGNAME}: Need to be root user: FAILURE"; exit 1; }
 > ${LOGFILE}		#	clear/initialize logfile
 

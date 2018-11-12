@@ -51,6 +51,8 @@ class Utils(object):
     def runshellcommand(cmd, ignore_errors=False):
         print(cmd)
         command = cmd.split()
+        if 'chage' in cmd:
+            print (command)
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, err = p.communicate()
         rc = p.returncode
