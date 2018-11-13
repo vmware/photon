@@ -3,7 +3,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.8.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -20,6 +20,17 @@ BuildRequires:  make
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  systemd
+BuildRequires:  python2 >= 2.7.0
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+BuildRequires:  python-pip
+BuildRequires:  python-six
+BuildRequires:  python-xml
+BuildRequires:  python-setuptools
+BuildRequires:  python3 >= 3.4.0
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-six
 
 Requires:       libgcc-atomic
 Requires:       libcap-ng
@@ -37,13 +48,6 @@ traffic.
 
 %package -n     python-openvswitch
 Summary:        python-openvswitch
-BuildRequires:  python2 >= 2.7.0
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python-pip
-BuildRequires:  python-six
-BuildRequires:  python-xml
-BuildRequires:  python-setuptools
 Requires:       python2
 Requires:       python2-libs
 
@@ -52,10 +56,6 @@ Python 2 openvswith bindings.
 
 %package -n     python3-openvswitch
 Summary:        python3-openvswitch
-BuildRequires:  python3 >= 3.4.0
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-six
 Requires:       python3
 Requires:       python3-libs
 
@@ -120,15 +120,7 @@ It contains the documentation and manpages for OVN.
 %setup -q
 
 %build
-./configure \
-        CFLAGS="%{optflags}" \
-        --prefix=%{_prefix} \
-        --bindir=%{_bindir} \
-        --libdir=%{_libdir} \
-        --sysconfdir=/etc \
-        --localstatedir=/var \
-        --enable-ssl \
-        --enable-shared
+%configure --enable-ssl --enable-shared
 
 make %{_smp_mflags}
 
@@ -279,6 +271,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Tue Nov 13 2018 Anish Swaminathan <anishs@vmware.com> 2.8.2-3
+-   Replace with configure macro
 *   Wed Feb 28 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-2
 -   Setup the default conf file for local ovsdb server.
 *   Tue Feb 27 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-1
