@@ -423,15 +423,15 @@ index a590419..fabbb8f 100644
 --- a/include/linux/mm_types.h
 +++ b/include/linux/mm_types.h
 @@ -487,6 +487,9 @@ struct mm_struct {
- 	atomic_long_t hugetlb_usage;
+ 		atomic_long_t hugetlb_usage;
  #endif
- 	struct work_struct async_put_work;
+ 		struct work_struct async_put_work;
 +#if defined(CONFIG_PAX)
-+	unsigned long pax_flags;
++		unsigned long pax_flags;
 +#endif
  
  #if IS_ENABLED(CONFIG_HMM)
- 	/* HMM needs to track a few things per mm */
+ 		/* HMM needs to track a few things per mm */
 diff --git a/include/linux/sched.h b/include/linux/sched.h
 index 43731fe..cc0395d4 100644
 --- a/include/linux/sched.h
@@ -471,7 +471,7 @@ index fefa00d..9d3dd27 100644
 --- a/ipc/shm.c
 +++ b/ipc/shm.c
 @@ -1414,6 +1414,9 @@ long do_shmat(int shmid, char __user *shmaddr, int shmflg,
- 		f_mode = FMODE_READ | FMODE_WRITE;
+ 		f_flags = O_RDWR;
  	}
  	if (shmflg & SHM_EXEC) {
 +#ifdef CONFIG_PAX_NOWRITEEXEC
