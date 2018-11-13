@@ -5,6 +5,7 @@ from ThreadPool import ThreadPool
 from constants import constants
 from Logger import Logger
 from SpecData import SPECS
+from StringUtils import StringUtils
 
 class Scheduler(object):
 
@@ -168,17 +169,28 @@ class Scheduler(object):
         with open(constants.packageWeightsPath, 'r') as weightFile:
             Scheduler.pkgWeights = json.load(weightFile)
 
+    # A package's weight is an indicator of the time required to build
+    # that package, relative to other packages. These weights do not
+    # take build-time/install-time dependencies into account -- they
+    # are the individual build-times of the respective packages.
+    # Package weights are positive integers, with a default value of 1.
     @staticmethod
     def _getWeight(package):
+	# Package weights are assumed to be independent of package
+	# version (i.e., in the case of multi-version packages such as
+	# Go or Kubernetes, all the versions have the same weight). So
+	# convert packageName-version to packageName before looking up
+	# the package weight.
+        package, _ = StringUtils.splitPackageNameAndVersion(package)
         try:
-            return float(Scheduler.pkgWeights[package])
+            return int(Scheduler.pkgWeights[package]) + 1
         except KeyError:
-            return 0
+            return 1
 
     @staticmethod
     def _getPriority(package):
         try:
-            return float(Scheduler.priorityMap[package])
+            return int(Scheduler.priorityMap[package])
         except KeyError:
             return 0
 
