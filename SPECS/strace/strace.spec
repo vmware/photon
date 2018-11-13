@@ -1,14 +1,14 @@
 Summary:	Tracks system calls that are made by a running process
 Name:		strace
-Version:	4.24
-Release:	2%{?dist}
+Version:	4.25
+Release:	1%{?dist}
 License:	BSD
 URL:		https://strace.io/
 Group:		Development/Debuggers
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://strace.io/files/%{version}/%{name}-%{version}.tar.xz
-%define sha1 strace=09a8c9638fd02622157af9d744ad7c7f991c75df
+%define sha1 strace=4f5c8a0c4bf08b0c012de87ab9d10c0e3b06585f
 BuildRequires:	libacl-devel, libaio-devel
 %global __requires_exclude ^/usr/bin/perl$
 
@@ -51,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+*   Mon Nov 12 2018 Anish Swaminathan <anishs@vmware.com> 4.25-1
+-   Update strace to 4.25
 *   Thu Oct 25 2018 Ajay Kaher <akaher@vmware.com> 4.24-2
 -   Fix 4.24 for aarch64
 *   Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 4.24-1
