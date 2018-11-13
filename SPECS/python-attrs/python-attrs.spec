@@ -4,7 +4,7 @@
 Summary:        Attributes without boilerplate.
 Name:           python-attrs
 Version:        18.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/attrs
 License:        MIT
 Group:          Development/Languages/Python
@@ -20,6 +20,16 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
+BuildRequires:  python3-zope.interface
+%endif
 Requires:       python2
 Requires:       python2-libs
 
@@ -28,11 +38,6 @@ Attributes without boilerplate.
 
 %package -n     python3-attrs
 Summary:        python-attrs
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -59,8 +64,10 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
-python2 setup.py test
-#python3 does not support zope module for tests
+#python2 does not support for tests
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pytest hypothesis
+python3 setup.py test
 
 %files
 %defattr(-,root,root)
@@ -71,6 +78,8 @@ python2 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Nov 13 2018 Tapas Kundu <tkundu@vmware.com> 18.2.0-2
+-   Fixed the makecheck errors
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 18.2.0-1
 -   Update to version 18.2.0
 *   Thu Jul 06 2017 Chang Lee <changlee@vmware.com> 16.3.0-3
