@@ -65,6 +65,8 @@ def create_vmdk_and_partition(config, vmdk_path):
             partitions_data['bootdirectory'] = '/boot/'
             partitions_data['partitions'] = [{'path': partitions_data['root'], 'mountpoint': '/',
                                           'filesystem': 'ext4'}]
+            if not line.endswith("p2\n"):
+                partitions_data['dualboot'] = 'true'
             count += 1
         elif line.startswith("ESP_PARTITION="):
             partitions_data['esp'] = line.replace("ESP_PARTITION=", "").strip()
@@ -290,7 +292,6 @@ if __name__ == '__main__':
         package_installer = Installer(config, rpm_path=options.rpm_path,
                                       log_path=options.log_path, log_level=options.log_level)
         package_installer.install(None)
-
         # Making the iso if needed
         if options.iso_path:
             rpm_list = " ".join(
@@ -319,7 +320,6 @@ if __name__ == '__main__':
         if 'vmdk_install' in config and config['vmdk_install']:
             process = subprocess.Popen(['./mk-clean-vmdk.sh', config['disk']['disk']])
             process.wait()
-
         #Clean up the working directories
         if options.iso_path or options.vmdk_path or options.debug_iso_path:
             process = subprocess.Popen(['rm', '-rf', options.working_directory])

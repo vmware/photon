@@ -88,28 +88,26 @@ DISK_DEVICE=`losetup --show -f $VMDK_IMAGE_NAME`
 echo "Creating partition on raw disk"
 if [ $SWAP_PARTITION_SIZE -gt 0 ] 
 then
-      sgdisk -n 1::+8M -n 2::+${ROOT_PARTITION_SIZE}G -n 3: -p $DISK_DEVICE >> $LOGFILE
+      sgdisk -n 1::+8M -n 2::+8M -n 3::+${ROOT_PARTITION_SIZE}G -n 4: -p $DISK_DEVICE >> $LOGFILE
 else
-      sgdisk -n 1::+8M -n 2: -p $DISK_DEVICE >> $LOGFILE
+      sgdisk -n 1::+8M -n 2::+8M -n 3: -p $DISK_DEVICE >> $LOGFILE
 fi
 
-if [ $BOOT_FIRM_WARE = "efi" ]
-then
-    echo "EFI boot partition"
-    sgdisk -t1:ef00 $DISK_DEVICE >> $LOGFILE
-else
-    echo "BIOS boot partition"
-    sgdisk -t1:ef02 $DISK_DEVICE >> $LOGFILE
-fi
+echo "EFI boot partition"
+sgdisk -t2:ef00 $DISK_DEVICE >> $LOGFILE
+
+echo "BIOS boot partition"
+sgdisk -t1:ef02 $DISK_DEVICE >> $LOGFILE
+
 echo "Mapping device partition to loop device"
 kpartx -avs $DISK_DEVICE >> $LOGFILE
 
 DEVICE_NAME=`echo $DISK_DEVICE|cut -c6- `
 
 echo "Adding file system to device partition"
-mkfs -t ext4 /dev/mapper/${DEVICE_NAME}p2
+mkfs -t ext4 /dev/mapper/${DEVICE_NAME}p3
 
 echo "DISK_DEVICE=$DISK_DEVICE"
-echo "ROOT_PARTITION=/dev/mapper/${DEVICE_NAME}p2"
+echo "ROOT_PARTITION=/dev/mapper/${DEVICE_NAME}p3"
 
 

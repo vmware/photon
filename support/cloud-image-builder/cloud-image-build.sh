@@ -58,6 +58,15 @@ cat $VMDK_CONFIG_SAFE_FILE
 rm $VMDK_CONFIG_SAFE_FILE
 
 cd $BUILD_SCRIPTS_PATH
+echo $BUILD_SCRIPTS_PATH
+rpipath="rpi"
+if [[ "$BUILD_SCRIPTS_PATH" =~ "\"rpi\"" ]]; then
+    ROOTPART="2"
+    echo "rpi"
+else
+    ROOTPART="3"
+    echo "cloud"
+fi
 
 [ $status -eq 0 ] && ./customize_cloud_image.py \
  -r ${PHOTON_IMG_OUTPUT_PATH}/photon-${IMG_NAME}.raw \
@@ -68,8 +77,8 @@ cd $BUILD_SCRIPTS_PATH
  -i $IMG_NAME \
  -t $SRC_ROOT/tools/bin/ \
  -b $BUILD_SCRIPTS_PATH \
- -s $SRC_ROOT
-
+ -s $SRC_ROOT \
+ -p $ROOTPART
 rm -rf $WORKING_DIR/installer
 
 exit 0

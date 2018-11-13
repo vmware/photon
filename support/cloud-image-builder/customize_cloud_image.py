@@ -112,6 +112,7 @@ if __name__ == '__main__':
     parser.add_argument("-t", "--tools-bin-path", dest="tools_bin_path")
     parser.add_argument("-b", "--build-scripts-path", dest="build_scripts_path")
     parser.add_argument("-s", "--src-root", dest="src_root")
+    parser.add_argument("-p", "--root-parttition", dest="root_partition")
 
     options = parser.parse_args()
     utils = Utils()
@@ -125,7 +126,7 @@ if __name__ == '__main__':
 
     if not os.path.exists(options.mount_path):
         os.mkdir(options.mount_path)
-    loop_device_path = "/dev/mapper/{}p2".format(device_name)
+    loop_device_path = "/dev/mapper/{}p{}".format(device_name, options.root_partition)
 
     try:
         print("Generating PARTUUID for the loop device ...")
@@ -135,7 +136,7 @@ if __name__ == '__main__':
             "blkid -s UUID -o value {}".format(loop_device_path))).rstrip('\n')
         if partuuidval == '':
             sgdiskout = utils.runshellcommand(
-                "sgdisk -i 2 {} ".format(disk_device))
+                "sgdisk -i {} {} ".format(options.root_partition, disk_device))
             partuuidval = (re.findall(r'Partition unique GUID.*',
                                       sgdiskout))[0].split(':')[1].strip(' ').lower()
 
@@ -312,7 +313,7 @@ if __name__ == '__main__':
                         disk_partitions = utils.runshellcommand(
                             "kpartx -as {}".format(disk_device))
                         device_name = disk_device.split('/')[2]
-                        loop_device_path = "/dev/mapper/{}p2".format(device_name)
+                        loop_device_path = "/dev/mapper/{}p{}".format(device_name, options.root_partition)
 
                         print("Mounting the loop device for ova customization ...")
                         utils.runshellcommand(
