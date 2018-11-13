@@ -198,7 +198,7 @@ class PackageUtils(object):
 
         sourcePath = cmdUtils.findFile(source, constants.sourcePath)
         if not sourcePath:
-            sourcePath = cmdUtils.findFile(source, constants.specPath)
+            sourcePath = cmdUtils.findFile(source, os.path.dirname(SPECS.getData().getSpecFile(package, version)))
             if not sourcePath:
                 if sha1 is None:
                     self.logger.error("No sha1 found or missing source for " + source)
