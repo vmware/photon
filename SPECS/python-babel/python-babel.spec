@@ -3,7 +3,7 @@
 
 Name:           python-babel
 Version:        2.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        an integrated collection of utilities that assist in internationalizing and localizing Python applications
 License:        BSD3
 Group:          Development/Languages/Python
@@ -19,6 +19,20 @@ BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-pytz
 BuildRequires:  python-pytest
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-pytz
+BuildRequires:  python3-pytest
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
+BuildRequires:  python-six
+BuildRequires:  python3-six
+BuildRequires:  python-attrs
+BuildRequires:  python3-attrs
+%endif
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-pytz
@@ -34,12 +48,6 @@ The functionality Babel provides for internationalization (I18n) and localizatio
 
 %package -n     python3-babel
 Summary:        an integrated collection of utilities that assist in internationalizing and localizing Python applications
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-pytz
-BuildRequires:  python3-pytest
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-pytz
@@ -67,8 +75,12 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pytest freezegun funcsigs pathlib2 pluggy utils
 python2 setup.py test
 pushd ../p3dir
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pytest freezegun funcsigs pathlib2 pluggy utils
 python3 setup.py test
 popd
 
@@ -83,6 +95,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Nov 13 2018 Tapas Kundu <tkundu@vmware.com> 2.6.0-2
+-   Fixed make check errors.
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.6.0-1
 -   Update to version 2.6.0
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.0-3
