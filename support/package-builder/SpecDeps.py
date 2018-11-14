@@ -180,6 +180,14 @@ class SpecDependencyGenerator(object):
             self.logger.info(whoNeedsList)
             return whoNeedsList
 
+        elif inputType == "is-toolchain-pkg":
+            for specFile in inputValue.split(":"):
+                if specFile in SPECS.getData().mapSpecFileNameToSpecObj:
+                    specObj = SPECS.getData().mapSpecFileNameToSpecObj[specFile]
+                    if (specObj.name in constants.listCoreToolChainPackages) \
+                        or (specObj.name in constants.listToolChainPackages):
+                        return True
+            return False
 
 def main():
     usage = "Usage: %prog [options]"
@@ -213,15 +221,21 @@ def main():
         specDeps = SpecDependencyGenerator(options.log_path, options.log_level)
 
         if options.input_type == "remove-upward-deps":
-            whoNeedsList = specDeps.process("get-upward-deps", options.pkg, options.display_option)
-            logger.info("Removing upward dependencies: " + str(whoNeedsList))
-            for pkg in whoNeedsList:
-                package, version = StringUtils.splitPackageNameAndVersion(pkg)
-                release = SPECS.getData().getRelease(package, version)
-                for p in SPECS.getData().getPackages(package,version):
-                    buildarch=SPECS.getData().getBuildArch(p, version)
-                    rpmFile = "stage/RPMS/" + buildarch + "/" + p + "-" + version + "-" + release + ".*" + buildarch+".rpm"
-                    cmdUtils.runCommandInShell("rm -f "+rpmFile)
+            isToolChainPkg = specDeps.process("is-toolchain-pkg", options.pkg, options.display_option)
+            if isToolChainPkg:
+                logger.info("Removing all staged RPMs since toolchain packages were modified")
+                cmdUtils.runCommandInShell("rm -rf stage/RPMS/")
+            else:
+                whoNeedsList = specDeps.process("get-upward-deps", options.pkg, options.display_option)
+                logger.info("Removing upward dependencies: " + str(whoNeedsList))
+                for pkg in whoNeedsList:
+                    package, version = StringUtils.splitPackageNameAndVersion(pkg)
+                    release = SPECS.getData().getRelease(package, version)
+                    for p in SPECS.getData().getPackages(package,version):
+                        buildarch=SPECS.getData().getBuildArch(p, version)
+                        rpmFile = "stage/RPMS/" + buildarch + "/" + p + "-" + version + "-" + release + ".*" + buildarch+".rpm"
+                        cmdUtils.runCommandInShell("rm -f "+rpmFile)
+
         elif options.input_type == "print-upward-deps":
             whoNeedsList = specDeps.process("get-upward-deps", options.pkg, options.display_option)
             logger.info("Upward dependencies: " + str(whoNeedsList))
