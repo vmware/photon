@@ -1,7 +1,7 @@
-From 532a55505f69d284f54c089a5447fa4e2f98dfaf Mon Sep 17 00:00:00 2001
+From 55d8b02e67586f5da22aead5c95add8cb6ea51ad Mon Sep 17 00:00:00 2001
 From: DheerajSShetty <dheerajs@vmware.com>
-Date: Thu, 4 Oct 2018 17:16:50 -0700
-Subject: [PATCH]  VKE patch for k8s 1.10.8 (7988e2)
+Date: Tue, 13 Nov 2018 15:55:37 -0800
+Subject: [PATCH] VKE patch for k8s 1.10.8 (954f8375)
 
 ---
  api/swagger-spec/apps_v1alpha1.json                |  21 +
@@ -36,12 +36,12 @@ Subject: [PATCH]  VKE patch for k8s 1.10.8 (7988e2)
  pkg/cloudprovider/providers/cascade/OWNERS         |   3 +
  pkg/cloudprovider/providers/cascade/apitypes.go    | 230 +++++
  pkg/cloudprovider/providers/cascade/auth.go        | 145 ++++
- pkg/cloudprovider/providers/cascade/cascade.go     | 215 +++++
- .../providers/cascade/cascade_disks.go             | 228 +++++
+ pkg/cloudprovider/providers/cascade/cascade.go     | 219 +++++
+ .../providers/cascade/cascade_disks.go             | 253 ++++++
  .../providers/cascade/cascade_instances.go         | 125 +++
  .../providers/cascade/cascade_instances_test.go    |  44 +
- .../providers/cascade/cascade_loadbalancer.go      | 285 ++++++
- pkg/cloudprovider/providers/cascade/client.go      | 399 +++++++++
+ .../providers/cascade/cascade_loadbalancer.go      | 295 +++++++
+ pkg/cloudprovider/providers/cascade/client.go      | 400 +++++++++
  pkg/cloudprovider/providers/cascade/oidcclient.go  | 297 +++++++
  pkg/cloudprovider/providers/cascade/restclient.go  | 262 ++++++
  pkg/cloudprovider/providers/cascade/tests_owed     |   5 +
@@ -55,8 +55,8 @@ Subject: [PATCH]  VKE patch for k8s 1.10.8 (7988e2)
  pkg/volume/cascade_disk/BUILD                      |  43 +
  pkg/volume/cascade_disk/OWNERS                     |   2 +
  pkg/volume/cascade_disk/attacher.go                | 264 ++++++
- pkg/volume/cascade_disk/cascade_disk.go            | 390 +++++++++
- pkg/volume/cascade_disk/cascade_util.go            | 162 ++++
+ pkg/volume/cascade_disk/cascade_disk.go            | 399 +++++++++
+ pkg/volume/cascade_disk/cascade_util.go            | 178 ++++
  .../admission/persistentvolume/label/admission.go  |  54 ++
  plugin/pkg/admission/vke/BUILD                     |  61 ++
  plugin/pkg/admission/vke/admission.go              | 618 +++++++++++++
@@ -68,7 +68,7 @@ Subject: [PATCH]  VKE patch for k8s 1.10.8 (7988e2)
  staging/src/k8s.io/api/core/v1/generated.pb.go     | 310 ++++++-
  staging/src/k8s.io/api/core/v1/types.go            |  24 +-
  .../k8s.io/api/core/v1/zz_generated.deepcopy.go    |  50 +-
- 64 files changed, 6026 insertions(+), 110 deletions(-)
+ 64 files changed, 6091 insertions(+), 110 deletions(-)
 
 diff --git a/api/swagger-spec/apps_v1alpha1.json b/api/swagger-spec/apps_v1alpha1.json
 index 6f54662..0ce6f3f 100644
@@ -1752,10 +1752,10 @@ index 0000000..fc92377
 \ No newline at end of file
 diff --git a/pkg/cloudprovider/providers/cascade/cascade.go b/pkg/cloudprovider/providers/cascade/cascade.go
 new file mode 100644
-index 0000000..06ada64
+index 0000000..b9fafb9
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade.go
-@@ -0,0 +1,215 @@
+@@ -0,0 +1,219 @@
 +// The use of Cascade cloud provider requires the kubelet, kube-apiserver, and kube-controller-manager to be started
 +// with config flag: '--cloud-provider=cascade --cloud-config=[path_to_config_file]'.
 +package cascade
@@ -1846,11 +1846,15 @@ index 0000000..06ada64
 +
 +// VolumeOptions specifies capacity, tags, name and flavorID for a volume.
 +type VolumeOptions struct {
-+	CapacityGB int
-+	Tags       map[string]string
-+	Name       string
-+	Flavor     string
-+	Encrypted  bool
++	CapacityGB        int
++	Tags              map[string]string
++	Name              string
++	Type              string
++	ZonePresent       bool
++	ZonesPresent      bool
++	AvailabilityZone  string
++	AvailabilityZones string
++	Encrypted         bool
 +}
 +
 +func readConfig(config io.Reader) (*CascadeConfig, error) {
@@ -1973,14 +1977,15 @@ index 0000000..06ada64
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_disks.go b/pkg/cloudprovider/providers/cascade/cascade_disks.go
 new file mode 100644
-index 0000000..a2e8ded
+index 0000000..e889a28
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_disks.go
-@@ -0,0 +1,228 @@
+@@ -0,0 +1,253 @@
 +package cascade
 +
 +import (
 +	"context"
++	"fmt"
 +	"github.com/golang/glog"
 +	k8stypes "k8s.io/apimachinery/pkg/types"
 +	"k8s.io/apimachinery/pkg/util/sets"
@@ -1994,7 +1999,7 @@ index 0000000..a2e8ded
 +	// Check if disk is already attached to that node.
 +	attached, err := cc.DiskIsAttached(diskID, nodeName)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: cc.DiskIsAttached failed during AttachDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: cc.DiskIsAttached failed during AttachDisk. Error[%v]", err)
 +		return "", err
 +	}
 +
@@ -2006,19 +2011,19 @@ index 0000000..a2e8ded
 +
 +		vmID, err := cc.InstanceID(context.TODO(), nodeName)
 +		if err != nil {
-+			glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for AttachDisk. Error[%v]", err)
++			glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for AttachDisk. Error[%v]", err)
 +			return "", err
 +		}
 +
 +		task, err := cc.apiClient.AttachDisk(vmID, operation)
 +		if err != nil {
-+			glog.Errorf("Cascade Cloud Provider: Failed to attach disk with ID %s. Error[%v]", diskID, err)
++			glog.Errorf("VKE Cloud Provider: Failed to attach disk with ID %s. Error[%v]", diskID, err)
 +			return "", err
 +		}
 +
 +		_, err = cc.apiClient.WaitForTask(StringVal(task.ID))
 +		if err != nil {
-+			glog.Errorf("Cascade Cloud Provider: Failed to wait for task to attach disk with ID %s. Error[%v]",
++			glog.Errorf("VKE Cloud Provider: Failed to wait for task to attach disk with ID %s. Error[%v]",
 +				diskID, err)
 +			return "", err
 +		}
@@ -2027,7 +2032,7 @@ index 0000000..a2e8ded
 +	// Get mount device of the attached disk.
 +	disk, err := cc.apiClient.GetDisk(diskID)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
++		glog.Errorf("VKE Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
 +		return "", err
 +	}
 +
@@ -2042,19 +2047,19 @@ index 0000000..a2e8ded
 +
 +	vmID, err := cc.InstanceID(context.TODO(), nodeName)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for DetachDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for DetachDisk. Error[%v]", err)
 +		return err
 +	}
 +
 +	task, err := cc.apiClient.DetachDisk(vmID, operation)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to detach disk with pdID %s. Error[%v]", diskID, err)
++		glog.Errorf("VKE Cloud Provider: Failed to detach disk with pdID %s. Error[%v]", diskID, err)
 +		return err
 +	}
 +
 +	_, err = cc.apiClient.WaitForTask(StringVal(task.ID))
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to wait for task to detach disk with pdID %s. Error[%v]",
++		glog.Errorf("VKE Cloud Provider: Failed to wait for task to detach disk with pdID %s. Error[%v]",
 +			diskID, err)
 +		return err
 +	}
@@ -2066,7 +2071,7 @@ index 0000000..a2e8ded
 +func (cc *CascadeCloud) DiskIsAttached(diskID string, nodeName k8stypes.NodeName) (bool, error) {
 +	vmID, err := cc.InstanceID(context.TODO(), nodeName)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
 +		return false, err
 +	}
 +
@@ -2076,7 +2081,7 @@ index 0000000..a2e8ded
 +		case APIError:
 +			if err.(APIError).ErrorCode == VMNotFoundError {
 +				// If instance no longer exists, we will assume that the volume is not attached.
-+				glog.Warningf("Cascade Cloud Provider: Instance %s does not exist. DiskIsAttached will assume"+
++				glog.Warningf("VKE Cloud Provider: Instance %s does not exist. DiskIsAttached will assume"+
 +					" disk %s is not attached to it.", nodeName, diskID)
 +				return false, nil
 +			}
@@ -2086,7 +2091,7 @@ index 0000000..a2e8ded
 +
 +	disk, err := cc.apiClient.GetDisk(diskID)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
++		glog.Errorf("VKE Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
 +		return false, err
 +	}
 +
@@ -2106,14 +2111,14 @@ index 0000000..a2e8ded
 +
 +	vmID, err := cc.InstanceID(context.TODO(), nodeName)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
 +		return attached, err
 +	}
 +
 +	for _, diskID := range diskIDs {
 +		disk, err := cc.apiClient.GetDisk(diskID)
 +		if err != nil {
-+			glog.Warningf("Cascade Cloud Provider: failed to get VMs for persistent disk %s, err [%v]",
++			glog.Warningf("VKE Cloud Provider: failed to get VMs for persistent disk %s, err [%v]",
 +				diskID, err)
 +		} else {
 +			if disk.VM == vmID && StringVal(disk.State) == DiskStateAttached {
@@ -2130,7 +2135,7 @@ index 0000000..a2e8ded
 +	// Get Zones for the cluster
 +	zones, err := cc.apiClient.GetZones()
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to Get zones for the cluster. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to Get zones for the cluster. Error[%v]", err)
 +		return "", err
 +	}
 +
@@ -2139,11 +2144,35 @@ index 0000000..a2e8ded
 +	for _, zone := range zones {
 +		zoneSet.Insert(zone)
 +	}
-+	zone := volumeutil.ChooseZoneForVolume(zoneSet, volumeOptions.Name)
++	var zone string
++	if !volumeOptions.ZonePresent && !volumeOptions.ZonesPresent {
++		zone = volumeutil.ChooseZoneForVolume(zoneSet, volumeOptions.Name)
++	}
++	if !volumeOptions.ZonePresent && volumeOptions.ZonesPresent {
++		userZoneSet, err := volumeutil.ZonesToSet(volumeOptions.AvailabilityZones)
++		if err != nil {
++			return "", err
++		}
++		if !zoneSet.IsSuperset(userZoneSet) {
++			return "", fmt.Errorf("VKE Cloud Provider: Zones '%s' is invalid. "+
++				"Please use one or more of the following zones: %v", volumeOptions.AvailabilityZones, zoneSet.List())
++		}
++		zone = volumeutil.ChooseZoneForVolume(userZoneSet, volumeOptions.Name)
++	}
++	if volumeOptions.ZonePresent && !volumeOptions.ZonesPresent {
++		if err := volumeutil.ValidateZone(volumeOptions.AvailabilityZone); err != nil {
++			return "", err
++		}
++		if !zoneSet.Has(volumeOptions.AvailabilityZone) {
++			return "", fmt.Errorf("VKE Cloud Provider: Zone '%s' is invalid. "+
++				"Please use one of the following zones: %v", volumeOptions.AvailabilityZone, zoneSet.List())
++		}
++		zone = volumeOptions.AvailabilityZone
++	}
 +
 +	diskSpec := DiskCreateSpec{}
 +	diskSpec.Name = StringPtr(volumeOptions.Name)
-+	diskSpec.Flavor = StringPtr(volumeOptions.Flavor)
++	diskSpec.Flavor = StringPtr(volumeOptions.Type)
 +	diskSpec.CapacityGB = Int32Ptr(int32(volumeOptions.CapacityGB))
 +	diskSpec.Kind = StringPtr(DiskSpecKind)
 +	diskSpec.Zone = StringPtr(zone)
@@ -2151,13 +2180,13 @@ index 0000000..a2e8ded
 +
 +	task, err := cc.apiClient.CreateDisk(&diskSpec)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to CreateDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to CreateDisk. Error[%v]", err)
 +		return "", err
 +	}
 +
 +	waitTask, err := cc.apiClient.WaitForTask(StringVal(task.ID))
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to wait for task to CreateDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to wait for task to CreateDisk. Error[%v]", err)
 +		return "", err
 +	}
 +
@@ -2168,7 +2197,7 @@ index 0000000..a2e8ded
 +func (cc *CascadeCloud) DeleteDisk(diskID string) error {
 +	task, err := cc.apiClient.DeleteDisk(diskID)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to DeleteDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to DeleteDisk. Error[%v]", err)
 +		// If we get a DiskNotFound error, we assume that the disk is already deleted. So we don't return an error here.
 +		switch err.(type) {
 +		case APIError:
@@ -2184,7 +2213,7 @@ index 0000000..a2e8ded
 +
 +	_, err = cc.apiClient.WaitForTask(StringVal(task.ID))
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to wait for task to DeleteDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to wait for task to DeleteDisk. Error[%v]", err)
 +		return err
 +	}
 +
@@ -2195,7 +2224,7 @@ index 0000000..a2e8ded
 +func (cc *CascadeCloud) GetVolumeLabels(diskID string) (map[string]string, error) {
 +	disk, err := cc.apiClient.GetDisk(diskID)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to GetDisk for GetVolumeLabels. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to GetDisk for GetVolumeLabels. Error[%v]", err)
 +		return nil, err
 +	}
 +
@@ -2388,10 +2417,10 @@ index 0000000..8fb314d
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go b/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
 new file mode 100644
-index 0000000..6338072
+index 0000000..c2a62c2
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
-@@ -0,0 +1,285 @@
+@@ -0,0 +1,295 @@
 +package cascade
 +
 +import (
@@ -2407,6 +2436,8 @@ index 0000000..6338072
 +const TCP_PROTOCOL = "TCP"
 +
 +const HTTP_PROTOCOL = "HTTP"
++
++const ServiceAnnotationLoadBalancerInternal = "service.beta.kubernetes.io/vke-load-balancer-internal"
 +
 +// EnsureLoadBalancer creates or updates a Cascade load balancer
 +func (cc *CascadeCloud) EnsureLoadBalancer(ctx context.Context, clusterName string, k8sService *v1.Service, nodes []*v1.Node) (*v1.LoadBalancerStatus, error) {
@@ -2469,7 +2500,7 @@ index 0000000..6338072
 +	// Create load balancer
 +	createSpec := &LoadBalancerCreateSpec{
 +		Name:        StringPtr(loadBalancerName),
-+		Type:        StringPtr("PUBLIC"),
++		Type:        StringPtr(getLoadBalancerType(k8sService)),
 +		PortMaps:    portMaps,
 +		HealthCheck: healthCheck,
 +		SubDomain:   StringPtr(k8sService.Name),
@@ -2677,12 +2708,20 @@ index 0000000..6338072
 +func (l *loadBalancerLogger) Infof(msgTemplate string, args ...interface{}) {
 +	glog.Infoln(l.getLogMsg(msgTemplate, args))
 +}
++
++// Check if service requires an internal load balancer.
++func getLoadBalancerType(service *v1.Service) string {
++	if _, found := service.Annotations[ServiceAnnotationLoadBalancerInternal]; found {
++		return "PRIVATE"
++	}
++	return "PUBLIC"
++}
 diff --git a/pkg/cloudprovider/providers/cascade/client.go b/pkg/cloudprovider/providers/cascade/client.go
 new file mode 100644
-index 0000000..e4494e4
+index 0000000..400e377
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/client.go
-@@ -0,0 +1,399 @@
+@@ -0,0 +1,400 @@
 +package cascade
 +
 +import (
@@ -3006,7 +3045,7 @@ index 0000000..e4494e4
 +		api.cfg.clusterID, StringVal(loadBalancerName))
 +
 +	if len(subDomain) > 0 {
-+		uri = fmt.Sprintf(uri + "?sub-domain=%s", subDomain)
++		uri = fmt.Sprintf(uri+"?sub-domain=%s", subDomain)
 +	}
 +
 +	res, err := api.restClient.Delete(uri, api.options.TokenOptions)
@@ -3034,7 +3073,8 @@ index 0000000..e4494e4
 +
 +// Gets all the zones in which the cluster has the VMs in.
 +func (api *Client) GetZones() (zones []string, err error) {
-+	uri := fmt.Sprintf("%s/v1/tenants/%s/clusters/%s/zones", api.cfg.endpoint, api.cfg.tenantName,
++	// Call the version 2 zones API to use generic zones.
++	uri := fmt.Sprintf("%s/v1/tenants/%s/clusters/%s/zones?version=2", api.cfg.endpoint, api.cfg.tenantName,
 +		api.cfg.clusterID)
 +	res, err := api.restClient.Get(uri, api.options.TokenOptions)
 +	if err != nil {
@@ -4168,10 +4208,10 @@ index 0000000..c19c37c
 +}
 diff --git a/pkg/volume/cascade_disk/cascade_disk.go b/pkg/volume/cascade_disk/cascade_disk.go
 new file mode 100644
-index 0000000..3968060
+index 0000000..d07e83b
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/cascade_disk.go
-@@ -0,0 +1,390 @@
+@@ -0,0 +1,399 @@
 +package cascade_disk
 +
 +import (
@@ -4323,7 +4363,7 @@ index 0000000..3968060
 +// Abstract interface to disk operations.
 +type diskManager interface {
 +	// Creates a volume
-+	CreateVolume(provisioner *cascadeDiskProvisioner) (diskID string, volumeSizeGB int, fstype string, err error)
++	CreateVolume(provisioner *cascadeDiskProvisioner) (diskID string, volumeSizeGB int, labels map[string]string, fstype string, err error)
 +	// Deletes a volume
 +	DeleteVolume(deleter *cascadeDiskDeleter) error
 +}
@@ -4514,7 +4554,7 @@ index 0000000..3968060
 +			p.options.PVC.Spec.AccessModes, p.plugin.GetAccessModes())
 +	}
 +
-+	diskID, sizeGB, fstype, err := p.manager.CreateVolume(p)
++	diskID, sizeGB, labels, fstype, err := p.manager.CreateVolume(p)
 +	if err != nil {
 +		return nil, err
 +	}
@@ -4550,6 +4590,15 @@ index 0000000..3968060
 +		pv.Spec.AccessModes = p.plugin.GetAccessModes()
 +	}
 +
++	if len(labels) != 0 {
++		if pv.Labels == nil {
++			pv.Labels = make(map[string]string)
++		}
++		for k, v := range labels {
++			pv.Labels[k] = v
++		}
++	}
++
 +	return pv, nil
 +}
 +
@@ -4564,14 +4613,16 @@ index 0000000..3968060
 +}
 diff --git a/pkg/volume/cascade_disk/cascade_util.go b/pkg/volume/cascade_disk/cascade_util.go
 new file mode 100644
-index 0000000..e16199c
+index 0000000..0407f4c
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/cascade_util.go
-@@ -0,0 +1,162 @@
+@@ -0,0 +1,178 @@
 +package cascade_disk
 +
 +import (
 +	"fmt"
++	"os"
++	"path/filepath"
 +	"strconv"
 +	"strings"
 +	"time"
@@ -4582,8 +4633,6 @@ index 0000000..e16199c
 +	"k8s.io/kubernetes/pkg/cloudprovider/providers/cascade"
 +	"k8s.io/kubernetes/pkg/volume"
 +	volumeutil "k8s.io/kubernetes/pkg/volume/util"
-+	"path/filepath"
-+	"os"
 +)
 +
 +const (
@@ -4616,12 +4665,12 @@ index 0000000..e16199c
 +}
 +
 +// CreateVolume creates a Cascade persistent disk.
-+func (util *CascadeDiskUtil) CreateVolume(p *cascadeDiskProvisioner) (diskID string, capacityGB int, fstype string,
-+	err error) {
++func (util *CascadeDiskUtil) CreateVolume(p *cascadeDiskProvisioner) (string, int, map[string]string, string, error) {
++
 +	cloud, err := getCloudProvider(p.plugin.host.GetCloudProvider())
 +	if err != nil {
-+		glog.Errorf("Cascade Util: CreateVolume failed to get cloud provider. Error [%v]", err)
-+		return "", 0, "", err
++		glog.Errorf("CreateVolume failed to get cloud provider. Error [%v]", err)
++		return "", 0, nil, "", err
 +	}
 +
 +	capacity := p.options.PVC.Spec.Resources.Requests[v1.ResourceName(v1.ResourceStorage)]
@@ -4634,51 +4683,67 @@ index 0000000..e16199c
 +		Tags:       *p.options.CloudTags,
 +		Name:       name,
 +	}
-+
++	fstype := ""
 +	// enabling encryption by default if not provided from within storage class
 +	volumeOptions.Encrypted = true
 +	for parameter, value := range p.options.Parameters {
 +		switch strings.ToLower(parameter) {
-+		case "flavor":
-+			volumeOptions.Flavor = value
++		case "type":
++			volumeOptions.Type = value
++		case "zone":
++			volumeOptions.ZonePresent = true
++			volumeOptions.AvailabilityZone = value
++		case "zones":
++			volumeOptions.ZonesPresent = true
++			volumeOptions.AvailabilityZones = value
 +		case "encrypted":
 +			volumeOptions.Encrypted, err = strconv.ParseBool(value)
 +			if err != nil {
-+				glog.Errorf("Cascade Util: invalid value %q for encryption of volume plugin %s.", value,
-+					p.plugin.GetPluginName())
-+				return "", 0, "", fmt.Errorf("invalid encrypted boolean value %q, must be true or false: %v", value, err)
++				glog.Errorf("invalid value %q for encryption of volume plugin %s.", value, p.plugin.GetPluginName())
++				return "", 0, nil, "",
++					fmt.Errorf("invalid encrypted boolean value %q, must be true or false: %v", value, err)
 +			}
 +		case volume.VolumeParameterFSType:
 +			fstype = value
-+			glog.V(4).Infof("Cascade Util: Setting fstype to %s", fstype)
++			glog.V(4).Infof("Setting fstype to %s", fstype)
 +		default:
-+			glog.Errorf("Cascade Util: invalid option %s for volume plugin %s.", parameter,
++			glog.Errorf("invalid option %s for volume plugin %s.", parameter,
 +				p.plugin.GetPluginName())
-+			return "", 0, "", fmt.Errorf("Cascade Util: invalid option %s for volume plugin %s.", parameter,
-+				p.plugin.GetPluginName())
++			return "", 0, nil, "",
++				fmt.Errorf("invalid option %s for volume plugin %s.", parameter, p.plugin.GetPluginName())
 +		}
 +	}
 +
-+	diskID, err = cloud.CreateDisk(volumeOptions)
++	if volumeOptions.ZonePresent && volumeOptions.ZonesPresent {
++		return "", 0, nil, "", fmt.Errorf("both zone and zones StorageClass parameters must not be used at the same time")
++	}
++
++	diskID, err := cloud.CreateDisk(volumeOptions)
 +	if err != nil {
-+		glog.Errorf("Cascade Util: failed to CreateDisk. Error [%v]", err)
-+		return "", 0, "", err
++		glog.Errorf("failed to CreateDisk. Error [%v]", err)
++		return "", 0, nil, "", err
++	}
++
++	labels, err := cloud.GetVolumeLabels(diskID)
++	if err != nil {
++		// We don't really want to leak the volume here...
++		glog.Errorf("error building labels for new volume %q: %v", name, err)
 +	}
 +
 +	glog.V(4).Infof("Successfully created Cascade persistent disk %s", name)
-+	return diskID, volSizeGB, "", nil
++	return diskID, volSizeGB, labels, fstype, nil
 +}
 +
 +// DeleteVolume deletes a Cascade volume.
 +func (util *CascadeDiskUtil) DeleteVolume(disk *cascadeDiskDeleter) error {
 +	cloud, err := getCloudProvider(disk.plugin.host.GetCloudProvider())
 +	if err != nil {
-+		glog.Errorf("Cascade Util: DeleteVolume failed to get cloud provider. Error [%v]", err)
++		glog.Errorf("DeleteVolume failed to get cloud provider. Error [%v]", err)
 +		return err
 +	}
 +
 +	if err = cloud.DeleteDisk(disk.diskID); err != nil {
-+		glog.Errorf("Cascade Util: failed to DeleteDisk for diskID %s. Error [%v]", disk.diskID, err)
++		glog.Errorf("failed to DeleteDisk for diskID %s. Error [%v]", disk.diskID, err)
 +		return err
 +	}
 +
@@ -4688,8 +4753,8 @@ index 0000000..e16199c
 +
 +func getCloudProvider(cloud cloudprovider.Interface) (*cascade.CascadeCloud, error) {
 +	if cloud == nil {
-+		glog.Errorf("Cascade Util: Cloud provider not initialized properly")
-+		return nil, fmt.Errorf("Cascade Util: Cloud provider not initialized properly")
++		glog.Errorf("Cloud provider not initialized properly")
++		return nil, fmt.Errorf("Cloud provider not initialized properly")
 +	}
 +
 +	cc := cloud.(*cascade.CascadeCloud)
