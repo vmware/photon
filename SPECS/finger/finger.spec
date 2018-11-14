@@ -1,7 +1,7 @@
 Summary:	The finger client
 Name:		finger
 Version:	0.17
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD/
 Group:		Applications/Internet
 Vendor:		VMware, Inc.
@@ -10,7 +10,7 @@ Source0:	ftp://ftp.uk.linux.org/pub/linux/Networking/netkit/bsd-finger-%{version
 %define sha1 bsd-finger=cc0ab33494c618cf6f75d3e91c744bd36628cfe5
 Source1:	finger.socket
 Source2:	finger@.service
-Source3:	LICENSE
+Source3:	finger_LICENSE
 Patch0:		bsd-finger-time.patch
 Patch1:		fix-manpage-typo.patch
 BuildRequires:	systemd
@@ -85,6 +85,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/fingerd.8*
 
 %changelog
+*       Wed Nov 14 2018 Ajay Kaher <akaher@vmware.com> 0.17-3
+-       Fix LICENSE name issue
 *	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.17-2
 -	Apply patch to generate debuginfo
 *	Wed Dec 7 2016 Dheeraj Shetty <dheerajs@vmware.com> 0.17-1
