@@ -91,6 +91,11 @@ class Scheduler(object):
         Scheduler.listOfPackagesNextToBuild = PriorityQueue()
         Scheduler.listOfFailedPackages = []
         Scheduler._setPriorities()
+        if constants.publishBuildDependencies:
+            # This must be called only after calling _setPriorities(),
+            # which builds the dependency graph.
+            Scheduler._publishBuildDependencies()
+
 
     @staticmethod
     def notifyPackageBuildCompleted(package):
@@ -147,6 +152,19 @@ class Scheduler(object):
     @staticmethod
     def getDoneList():
         return list(Scheduler.listOfAlreadyBuiltPackages)
+
+
+    @staticmethod
+    def _publishBuildDependencies():
+            Scheduler.logger.debug("Publishing Build dependencies")
+            dependencyLists = {}
+            for package in list(Scheduler.mapPackagesToGraphNodes.keys()):
+                dependencyLists[package] = []
+                pkgNode = Scheduler.mapPackagesToGraphNodes[package]
+                for childPkg in list(pkgNode.childPkgNodes):
+                    dependencyLists[package].append(childPkg.packageName + "-" + childPkg.packageVersion)
+            with open(str(constants.logPath) + "/BuildDependencies.json", 'w') as graphfile:
+                graphfile.write(json.dumps(dependencyLists, sort_keys=True, indent=4))
 
 
     @staticmethod
@@ -561,23 +579,15 @@ class Scheduler(object):
 
     @staticmethod
     def _setPriorities():
-        if constants.packageWeightsPath is None:
-            Scheduler.logger.debug("Priority Scheduler disabled")
-            if constants.publishBuildDependencies:
-                Scheduler.logger.debug("Publishing Build dependencies")
-                Scheduler._buildGraph()
-        else:
-            Scheduler.logger.debug("Priority Scheduler enabled")
-            Scheduler._parseWeights()
+        Scheduler._parseWeights()
+        Scheduler._buildGraph()
 
-            Scheduler._buildGraph()
+        for package in Scheduler.sortedList:
+            pkgNode = Scheduler.mapPackagesToGraphNodes[package]
+            Scheduler.priorityMap[package] = pkgNode.criticalChainWeight
 
-            for package in Scheduler.sortedList:
-                pkgNode = Scheduler.mapPackagesToGraphNodes[package]
-                Scheduler.priorityMap[package] = pkgNode.criticalChainWeight
-
-            Scheduler.logger.debug("set Priorities: Priority of all packages")
-            Scheduler.logger.debug(Scheduler.priorityMap)
+        Scheduler.logger.debug("set Priorities: Priority of all packages")
+        Scheduler.logger.debug(Scheduler.priorityMap)
 
 
     @staticmethod
