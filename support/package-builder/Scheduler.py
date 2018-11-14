@@ -166,18 +166,33 @@ class Scheduler(object):
 
 
     @staticmethod
-    def _getBuildRequiredPackages(pkg):
-        listRequiredRPMPackages = []
-        listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPkg(pkg))
+    def __getRequiredTypePackages(pkg, requiresType):
+        listRPMPackages = []
+        if requiresType == "build":
+            listRPMPackages.extend(SPECS.getData().getBuildRequiresForPkg(pkg))
+        elif requiresType == "install":
+            listRPMPackages.extend(SPECS.getData().getRequiresAllForPkg(pkg))
 
-        listRequiredPackages = []
+        # Remove duplicates.
+        listRPMPackages = list(set(listRPMPackages))
 
-        for reqPkg in listRequiredRPMPackages:
+        listPackages = set()
+
+        for reqPkg in listRPMPackages:
             basePkg = SPECS.getData().getBasePkg(reqPkg)
-            if basePkg not in listRequiredPackages:
-                listRequiredPackages.append(basePkg)
+            listPackages.add(basePkg)
 
-        return listRequiredPackages
+        return list(listPackages)
+
+
+    @staticmethod
+    def _getBuildRequiredPackages(pkg):
+        return Scheduler.__getRequiredTypePackages(pkg, "build")
+
+
+    @staticmethod
+    def _getRequiredPackages(pkg):
+        return Scheduler.__getRequiredTypePackages(pkg, "install")
 
 
     def _createGraphNodes():
@@ -538,20 +553,6 @@ class Scheduler(object):
         Scheduler.logger.debug("set Priorities: Priority of all packages")
         Scheduler.logger.debug(Scheduler.priorityMap)
 
-
-    @staticmethod
-    def _getRequiredPackages(pkg):
-        listRequiredRPMPackages = []
-        listRequiredRPMPackages.extend(SPECS.getData().getRequiresAllForPkg(pkg))
-
-        listRequiredPackages = []
-
-        for reqPkg in listRequiredRPMPackages:
-            basePkg = SPECS.getData().getBasePkg(reqPkg)
-            if basePkg not in listRequiredPackages:
-                listRequiredPackages.append(basePkg)
-
-        return listRequiredPackages
 
     @staticmethod
     def _getListNextPackagesReadyToBuild():
