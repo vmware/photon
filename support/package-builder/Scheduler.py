@@ -15,8 +15,6 @@ class Scheduler(object):
     sortedList = []
     listOfPackagesNextToBuild = PriorityQueue()
     listOfFailedPackages = []
-    alldependencyGraph = {}
-    dependencyGraph = {}
     priorityMap = {}
     pkgWeights = {}
     logger = None
@@ -112,55 +110,6 @@ class Scheduler(object):
                 listRequiredPackages.append(basePkg)
 
         return listRequiredPackages
-
-
-    @staticmethod
-    def _getDependencies(package, parentPackage, k):
-
-        for node in list(Scheduler.alldependencyGraph[package].keys()):
-            Scheduler._getDependencies(node, package, k)
-
-        if parentPackage is None:
-            return
-        else:
-            for node in Scheduler.alldependencyGraph[package].keys():
-                try:
-                    Scheduler.alldependencyGraph[parentPackage][node] = max(
-                        Scheduler.alldependencyGraph[parentPackage][node],
-                        Scheduler.alldependencyGraph[package][node] * k)
-                except KeyError:
-                    Scheduler.alldependencyGraph[parentPackage][node] = (
-                        Scheduler.alldependencyGraph[package][node] * k)
-
-    @staticmethod
-    def _makeGraph():
-        k = 2
-        for package in Scheduler.sortedList:
-                Scheduler.dependencyGraph[package] = {}
-                Scheduler.alldependencyGraph[package] = {}
-                for child_package in Scheduler._getBuildRequiredPackages(package):
-                    Scheduler.dependencyGraph[package][child_package] = 1
-                for child_package in Scheduler._getRequiredPackages(package):
-                    Scheduler.alldependencyGraph[package][child_package] = 1
-        for package in Scheduler.sortedList:
-            for child_pkg in list(Scheduler.dependencyGraph[package].keys()):
-                Scheduler._getDependencies(child_pkg, package, k)
-                for node in list(Scheduler.alldependencyGraph[child_pkg].keys()):
-                    try:
-                        Scheduler.dependencyGraph[package][node] = max(
-                            Scheduler.dependencyGraph[package][node],
-                            Scheduler.alldependencyGraph[child_pkg][node] * k)
-                    except KeyError:
-                        Scheduler.dependencyGraph[package][node] = (
-                            Scheduler.alldependencyGraph[child_pkg][node] * k)
-        if constants.publishBuildDependencies:
-            dependencyLists = {}
-            for package in list(Scheduler.dependencyGraph.keys()):
-                dependencyLists[package] = []
-                for dependency in list(Scheduler.dependencyGraph[package].keys()):
-                    dependencyLists[package].append(dependency)
-            with open(str(constants.logPath) + "/BuildDependencies.json", 'w') as graphfile:
-                graphfile.write(json.dumps(dependencyLists, sort_keys=True, indent=4))
 
     @staticmethod
     def _parseWeights():
