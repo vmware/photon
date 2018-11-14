@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.9.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
@@ -185,6 +185,8 @@ fi
 %{_bindir}/pause-amd64
 
 %changelog
+*   Tue Nov 13 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.10-2
+-   Update vke patch (707a06ef)
 *   Mon Oct 08 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.10-1
 -   Update to k8s version 1.9.10 and vke patch (48fc708e)
 *   Tue Sep 11 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.6-11
