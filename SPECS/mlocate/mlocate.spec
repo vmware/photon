@@ -1,6 +1,6 @@
 Name:           mlocate
 Version:        0.26
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An utility for finding files by name.
 License:        GPL-2.0
 URL:            https://pagure.io/mlocate
@@ -30,6 +30,9 @@ much.
 	--disable-rpath
 make %{?_smp_mflags}
 
+%check
+make check
+
 %install
 make DESTDIR=%{buildroot} install
 mv %{buildroot}/%{_bindir}/locate %{buildroot}/%{_bindir}/%{name}
@@ -44,5 +47,7 @@ mv %{buildroot}/%{_mandir}/man1/locate.1 %{buildroot}/%{_mandir}/man1/%{name}.1
 %{_localstatedir}/*
 
 %changelog
+*   Thu Nov 15 2018 Sujay G <gsujay@vware.com> 0.26-2
+-   Added %check section
 *   Fri Jul 20 2018 Keerthana K <keerthanak@vmware.com> 0.26-1
 -   Initial mlocate package for Photon.
