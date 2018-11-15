@@ -71,11 +71,7 @@ else
 PUBLISH_BUILD_DEPENDENCIES :=
 endif
 
-ifdef WEIGHTS
 PACKAGE_WEIGHTS = --package-weights-path $(SRCROOT)/common/data/packageWeights.json
-else
-PACKAGE_WEIGHTS =
-endif
 
 ifdef PKG_BUILD_OPTIONS
 PACKAGE_BUILD_OPTIONS = --pkg-build-option-file $(PKG_BUILD_OPTIONS)
