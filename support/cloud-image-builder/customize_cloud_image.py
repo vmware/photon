@@ -9,6 +9,16 @@ from argparse import ArgumentParser
 import json
 from utils import Utils
 
+
+def copytree(src, dst, symlinks=False, ignore=None):
+    if not os.path.exists(dst):
+        os.makedirs(dst)
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            copytree(s, d, symlinks, ignore)
+
 def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
     output_path = os.path.dirname(os.path.realpath(raw_image_name))
     utils = Utils()
@@ -125,7 +135,11 @@ if __name__ == '__main__':
 
     if not os.path.exists(options.mount_path):
         os.mkdir(options.mount_path)
-    loop_device_path = "/dev/mapper/{}p2".format(device_name)
+
+    if options.image_name == 'ls1012afrwy':
+        loop_device_path = "/dev/mapper/{}p3".format(device_name)
+    else:
+        loop_device_path = "/dev/mapper/{}p2".format(device_name)
 
     try:
         print("Generating PARTUUID for the loop device ...")
@@ -144,6 +158,7 @@ if __name__ == '__main__':
 
         # Mount the loop device
         print("Mounting the loop device for customization ...")
+        print(loop_device_path)
         utils.runshellcommand(
             "mount -t ext4 {} {}".format(loop_device_path, options.mount_path))
         shutil.rmtree(options.mount_path + "/installer", ignore_errors=True)
@@ -188,9 +203,12 @@ if __name__ == '__main__':
                 for src, dest in filetuples.items():
                     if (os.path.isdir(options.build_scripts_path + '/' +
                                       options.image_name + '/' + src)):
-                        shutil.copytree(options.build_scripts_path + '/' +
-                                        options.image_name + '/' + src,
-                                        options.mount_path + dest, True)
+                        #shutil.copytree(options.build_scripts_path + '/' +
+                        #                options.image_name + '/' + src,
+                        #                options.mount_path + dest, True)
+                        copytree(options.build_scripts_path + '/' +
+                                 options.image_name + '/' + src,
+                                 options.mount_path + dest, True)
                     else:
                         shutil.copyfile(options.build_scripts_path + '/' +
                                         options.image_name + '/' + src,
