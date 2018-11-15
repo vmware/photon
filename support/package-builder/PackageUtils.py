@@ -319,6 +319,9 @@ class PackageUtils(object):
         if version == "*":
             version = SPECS.getData().getVersion(package,index)
         release = SPECS.getData().getRelease(package,version)
+        # pkg_build_options does not specify the release and there is no spec for that
+        if not release:
+            release = "*"
         listFoundRPMFiles = sum([cmdUtils.findFile(package+"-"+version+"-"+release+"."+platform.machine()+".rpm",constants.rpmPath),
                             cmdUtils.findFile(package+"-"+version+"-"+release+".noarch.rpm",constants.rpmPath)], [])
         if constants.inputRPMSPath is not None:

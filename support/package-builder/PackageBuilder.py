@@ -116,7 +116,7 @@ class PackageBuilder(PackageBuilderBase):
                 outputMap[threadName]=True
             except Exception as e:
                 # TODO: self.logger might be None
-                self.logger.error(e)
+                self.logger.exception(e)
                 outputMap[threadName]=False
                 raise e
 
