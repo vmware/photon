@@ -7,7 +7,7 @@
     <!-- Always force latest IE rendering engine or request Chrome Frame -->
     <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
     <!-- Use title if it's in the page YAML frontmatter -->
-    <title>Project Photon OS&trade; by VMware&reg;</title>
+    <title> Photon OS</title>
     <link href='apple-touch-icon-152x152-precomposed.png' rel='apple-touch-icon' sizes='152x152'>
     <link href='apple-touch-icon-144x144-precomposed.png' rel='apple-touch-icon' sizes='144x144'>
     <link href='apple-touch-icon-114x114-precomposed.png' rel='apple-touch-icon' sizes='114x114'>
@@ -16,21 +16,21 @@
     <link href='favicon.png' rel='shortcut icon'>
     <link href='favicon.ico' rel='icon' type='image/ico'>
     <link href="assets/css/all-7082dbf5.css" rel="stylesheet" type="text/css" />
-  </head>
+    <style type="text/css">
+<!--
+.style2 {font-family: Geneva, Arial, Helvetica, sans-serif}
+-->
+    </style>
+</head>
   <body class='index'>
     <header>
       <div class='peelback'></div>
       <div class='container'>
         <div class='row'>
-          <div class='brand-container'>
-            <a class="brand" href="https://vmware.github.io/photon"><h1>
-              Photon OS™
-            </h1>
-            </a>
-            <div class='by-vmware'>
-              by VMware, Inc.
-            </div>
-          </div>
+	
+          <div class='brand-container'><div class='by-vmware'></div> <p><font color="#FFFFFF">Open Source Program Office</font></p>
+       </div>
+	
           <nav>
             <a class="menu-actuator" href="#"><i class='ion-navicon'></i>
             Menu
@@ -38,13 +38,13 @@
             <div class='nav-collapse'>
               <div class='container'>
                 <div class='row'>
-                  <a href="#what-is-photon">What is Photon OS™</a>
-                  <a href="#getting-photon">Getting Photon OS™</a>
-                  <a href="#getting-started">Getting Started</a>
+                  <a href="#what-is-photon">What is Photon OS?</a>
+                  <a href="#getting-photon">Get Photon OS</a>
+                  <a href="#documentation">Documentation</a>
+				  <a href="#license">License</a>
+				  <a href="#contributing">Contributing</a>
                   <a href="#support">Support</a>
                   <a href="#contributors">Contributors</a>
-                  <a href="#contributing">Contributing</a>
-                  <a href="#license">License</a>
                 </div>
               </div>
             </div>
@@ -55,29 +55,23 @@
     <section class='hero'>
       <div class='container'>
         <div class="hero-image">
-          <a href="https://github.com/vmware/photon"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" /></a>
-          <img src="assets/img/photon-dfad9617.png" />
+          <a href="https://github.com/vmware/photon"></a>
+          <img src="assets/img/photon.png" />
         </div>
-        <h2 id="vmware-photon">Project Photon OS™ by VMware</h2>
-        <p>Container-Optimized Linux Operating System</p>
-        <a class="button button-primary button-large" href="https://github.com/vmware/photon"><i class='ion-social-github'></i>
+        <p><a class="btn btn-primary" href="https://github.com/vmware/photon"><i class='ion-social-github'></i>
         Fork
-        Photon™
-        <i class='ion-ios-arrow-right'></i>
-        </a>
-		<p>Track our progress in earning the Linux Foundation's Core Infrastructure Initiative's Best Practices Badge.
-        <br>
-		<a href="https://bestpractices.coreinfrastructure.org/projects/212"><img src="https://bestpractices.coreinfrastructure.org/projects/212/badge"></a>
-		</p>
+        Photon
+        </a></p>
+		
       </div>
     </section>
     <section class='about-photon'>
       <div class='container'>
         <div class='row'>
           <div class='content'>
-            <h2 id="what-is-photon">What is Photon OS</h2>
+            <h4 id="what-is-photon"><font color="#666666">What is Photon OS?</font></h4>
 
-            <p>Project Photon OS™ is an open source minimal Linux container host optimized for cloud-native applications, cloud platforms, and VMware infrastructure. Photon OS 2.0 includes new security features, OS management capabilities, and updated packages. We invite partners, customers, and community members to collaborate on using Photon OS to run high-performance virtual machines and containerized applications.</p>
+            <p>Project Photon OS™ is an open source, minimal Linux container host that is optimized for cloud-native applications, cloud platforms, and VMware infrastructure. Photon OS 2.0 includes new security features, OS management capabilities, and updated packages. We invite partners, customers, and community members to collaborate on using Photon OS to run high-performance virtual machines and containerized applications.</p>
             <ul>
               <li><strong>Optimized for VMware vSphere&reg;</strong>: The Linux kernel is tuned for performance when Photon OS runs on vSphere.</li>
               <li><strong>Support for containers</strong>: Photon OS includes the Docker daemon and works with container orchestration frameworks, such as Mesos and Kubernetes.</li>
@@ -85,6 +79,8 @@
               <li><strong>Security hardened</strong>: The kernel and other aspects of the operating system are built with an emphasis on security.</li>
             </ul>
             <p>For more information, see the <a href="/photon/assets/files/photon-os-datasheet.pdf">datasheet</a>.</p>
+			<p>Track our progress in earning the Linux Foundation's Core Infrastructure Initiative's Best Practices Badge. </p>
+		<div align="center"><a href="https://bestpractices.coreinfrastructure.org/projects/212"><img src="https://bestpractices.coreinfrastructure.org/projects/212/badge"></a></div>
           </div>
         </div>
       </div>
@@ -93,7 +89,7 @@
       <div class='container'>
         <div class='row'>
           <div class='content'>
-            <h2 id="getting-photon">Getting Photon OS</h2>
+            <h4 id="getting-photon"><font color="#666666">Get Photon OS</font></h4>
 
             <p>The latest stable binary version is 2.0, which builds on the expanded package library and guest OS validation on VMware platforms from the original 1.0 release. Photon OS comes in a variety of pre-built, cloud-ready images:</p>
             <ul>
@@ -118,7 +114,7 @@
     <section class='getting-started'>
       <div class='container'>
         <div class='row'>
-          <h2 id='getting-started'>Getting Started</h2>
+          <h4 id='documentation'><font color="#666666">Documentation</font></h4>
           <p>To help you get started, see the documentation. For additional information and resources, see the Photon OS wiki.</p>    
         </div>
 		<div class="row">
@@ -135,11 +131,33 @@
   <div><font size="-1">Downloads, security advisories, beta docs</font><br /><br /><a href="https://github.com/vmware/photon/wiki" target="_blank" class="button">Go</a> </div>
       </div>
     </section>
+	<section class='license'>
+      <div class='container'>
+        <div class='row'>
+          <div class='content'>
+            <h4 id="license"><font color="#666666">License</font></h4>
+            <p>The ISO and OVA images are distributed under the <a href="https://github.com/vmware/photon/blob/2.0/installer/EULA.txt" target="_blank">VMware Photon OS EULA</a>. Open source license information may be found the in Photon OS <a href="https://raw.githubusercontent.com/vmware/photon/master/COPYING" target="_blank">Open Source License</a> file.</p>
+          </div>
+          <div class='image'></div>
+        </div>
+      </div>
+    </section>
+	    <section class='contributing'>
+      <div class='container'>
+        <div class='row'>
+          <div class='content'>
+            <h4 id="contributing"><font color="#666666">Contributing</font></h4>
+            <p>The Photon project team welcomes contributions from the community. If you would like to contribute code and you have not signed our Contributor License Agreement (CLA), our CLA-bot will walk you through the process and update the issue when you open a <a href="https://help.github.com/articles/creating-a-pull-request">Pull Request</a>. For questions about the CLA process, see the <a href="https://cla.vmware.com/faq">FAQ</a> or submit a question through the GitHub issue tracker. </p>  
+        </div>
+        </div>
+      </div>
+    </section>
+    
     <section class='support'>
       <div class='container'>
         <div class='row'>
           <div class='content'>
-            <h2 id="support">Support</h2>
+            <h4 id="support"><font color="#666666">Support</font></h4>
 
             <p>Photon OS is released as open source software and provides community support through our GitHub project page. If you encounter an issue or have a question, feel free to reach out on the <a href="https://github.com/vmware/photon/issues"> GitHub issues page for Photon OS</a>.
           </div>
@@ -150,105 +168,15 @@
       <div class='container'>
         <div class='row'>
           <div class='content'>
-            <h2 id='contributors'>Contributors</h2>
-            <p>
-              <a title="Krishna Ganugapati" href="https://github.com/kganugapati"><img alt="Krishna Ganugapati" src="https://avatars.githubusercontent.com/u/11167611?v=3" />
-              </a>
-              <a title="Sriram Nambakam" href="https://github.com/snambakam"><img alt="Sriram Nambakam" src="https://avatars.githubusercontent.com/u/10917504?v=3" />
-              </a>
-              <a title="Sharath George" href="https://github.com/sharathjg"><img alt="Sharath George" src="https://avatars.githubusercontent.com/u/11167586?v=3" />
-              </a>
-              <a title="Priyesh Padmavilasom" href="https://github.com/ppadmavilasom"><img alt="Priyesh Padmavilasom" src="https://avatars.githubusercontent.com/u/11167452?v=3" />
-              </a>
-              <a title="Divya Thaluru" href="https://github.com/dthaluru"><img alt="Divya Thaluru" src="https://avatars.githubusercontent.com/u/11169145?v=3" />
-              </a>
-              
-			  <a title="Anish Swaminathan" href="https://github.com/suezzelur"><img alt="Anish Swaminathan" src="https://avatars.githubusercontent.com/u/12656953?v=3" />
-              </a>
-			  <a title="Kumar Kaushik" href="https://github.com/kaushik229"><img alt="Kumar Kaushik" src="https://avatars.githubusercontent.com/u/12632836?v=3" />
-              </a>
-			  <a title="Vinay Kulkarni" href="https://github.com/vinaykul"><img alt="Vinay Kulkarni" src="https://avatars.githubusercontent.com/u/12750645?v=3" />
-              </a>
-			  <a title="Danut Moraru" href="https://github.com/dmoraru"><img alt="Danut Moraru" src="https://avatars.githubusercontent.com/u/13158414?v=3" />
-              </a>
-			  <a title="Xiaolin Li" href="https://github.com/xiaolin-vmware"><img alt="Xiaolin Li" src="https://avatars.githubusercontent.com/u/13423245?v=3" />
-              </a>
-
-
-        <a title="Harish Udaiya Kumar" href="https://github.com/harishspqr"><img alt="Harish Udaiya Kumar" src="https://avatars.githubusercontent.com/u/1079484?v=3"/>
-              </a>
-
-       <a title="Steve Hoenisch" href="https://github.com/shoenisch"><img alt="Steve Hoenisch" src="https://avatars.githubusercontent.com/u/19195877?v=3"/>
-              </a>
-
-       <a title="Michelle Wang" href="https://github.com/michellewang-ubuntu"><img alt="Michelle Wang" src="https://avatars.githubusercontent.com/u/13158178?v=3"/>
-              </a>
-
-       <a title="Chang Lee" href="https://github.com/changpil"><img alt="Chang Lee" src="https://avatars.githubusercontent.com/u/13372496?v=3"/>
-              </a>
-
-
-       <a title="Dheeraj Shetty" href="https://github.com/DheerajSShetty"><img alt="Dheeraj Shetty" src="https://avatars.githubusercontent.com/u/7392258?v=3"/>
-              </a>
-
-      <a title="Bo Gan" href="https://github.com/ganboing"><img alt="Bo Gan" src="https://avatars.githubusercontent.com/u/3746900?v=3"/>
-              </a>
-
-       <a title="Rongrong Qiu" href="https://github.com/rongrongqiu"><img alt="Rongrong Qiu" src="https://avatars.githubusercontent.com/u/12969766?v=3"/>
-              </a>
-
-       <a title="Alexey Makhalov" href="https://github.com/YustasSwamp"><img alt="Alexey Makhalov" src="https://avatars.githubusercontent.com/u/1555190?v=3"/>
-              </a>
-
-
-       <a title="Rui Gu" href="https://github.com/ruigu-vm"><img alt="Rui Gu" src="https://avatars.githubusercontent.com/u/30092768?v=3"/>
-              </a>
-
-        <a title="Siju Maliakkal" href="https://github.com/smaliakkal"><img alt="Siju Maliakkal" src="https://avatars.githubusercontent.com/u/11180986?v=3"/>
-              </a>
-
-
-
-        <a title="Sarah Choi" href="https://github.com/sarchoi"><img alt="Sarah Choi" src="https://avatars.githubusercontent.com/u/12851118?v=3"/>
-              </a>
-
-
-
-
-        <a title="Robert Qi" href="https://github.com/robertqi"><img alt="Robert Qi" src="https://avatars.githubusercontent.com/u/24684145?v=3"/>
-              </a>
-
-
-
-        <a title="Srivatsa S. Bhat" href="https://github.com/srivatsabhat"><img alt="Srivatsa S. Bhat" src="https://avatars.githubusercontent.com/u/3593234?v=3"/>
-              </a>
-
-
-
-
-            </p>
+            <h4 id='contributors'><font color="#666666">Contributors</font></h4>
+            <br>
+      
+    <ul class="list-unstyled row">
+       
+      <li *ngFor="let contributor of contributors"><a [href]="contributor.html_url"><img [src]="contributor.avatar_url" alt="" class="contributor"></a></li>
+       
+    </ul>
           </div>
-        </div>
-      </div>
-    </section>
-    <section class='contributing'>
-      <div class='container'>
-        <div class='row'>
-          <div class='content'>
-            <h2 id="contributing">Contributing</h2>
-            <p>The Photon project team welcomes contributions from the community. If you would like to contribute code and you have not signed our Contributor License Agreement (CLA), our CLA-bot will walk you through the process and update the issue when you open a <a href="https://help.github.com/articles/creating-a-pull-request">Pull Request</a>. For questions about the CLA process, see the <a href="https://cla.vmware.com/faq">FAQ</a> or submit a question through the GitHub issue tracker. </p>  
-        </div>
-        </div>
-      </div>
-    </section>
-    <section class='license'>
-      <div class='container'>
-        <div class='row'>
-          <div class='content'>
-            <h2 id="license">License</h2>
-            <p>The ISO and OVA images are distributed under the <a href="https://github.com/vmware/photon/blob/2.0/installer/EULA.txt" target="_blank">VMware Photon OS EULA</a>. Open source license information may be found the in Photon OS <a href="https://raw.githubusercontent.com/vmware/photon/master/COPYING" target="_blank">Open Source License</a> file.</p>
-          </div>
-          <div class='image'></div>
         </div>
       </div>
     </section>
@@ -260,7 +188,7 @@
           </p>
           <p>
             &copy;
-            2017
+            2017-2018
             VMware, Inc. All Rights Reserved.
           </p>
         </div>
