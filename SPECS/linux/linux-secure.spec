@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.130
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.137
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=59621537cc8891aa3d0d77b2892db7828a0098f9
+%define sha1 linux=bd0e5ecf3bee96cb8c81d90247cb3389cbdc0727
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -71,8 +71,6 @@ Patch47:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 Patch48:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch49:        0002-xfs-verify-dinode-header-first.patch
 Patch50:        0003-xfs-enhance-dinode-verifier.patch
-# Fix for CVE-2018-13053
-Patch51:        0001-alarmtimer-Prevent-overflow-for-relative-nanosleep.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -199,7 +197,6 @@ EOF
 %patch48 -p1
 %patch49 -p1
 %patch50 -p1
-%patch51 -p1
 
 
 %patch71 -p1
@@ -334,6 +331,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Nov 16 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.137-1
+-   Update to version 4.9.137
 *   Tue Oct 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.130-2
 -   Improve error-handling of rdrand-rng kernel driver.
 *   Mon Oct 01 2018 srinidhira0 <srinidhir@vmware.com> 4.9.130-1
