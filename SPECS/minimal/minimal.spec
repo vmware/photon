@@ -1,7 +1,7 @@
 Name:           minimal
 Summary:        Metapackage to install minimal profile
 Version:        0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
@@ -34,7 +34,6 @@ Requires:       cpio
 Requires:       gzip
 Requires:       vim
 Requires:       tdnf
-Requires:       open-vm-tools
 Requires:       docker
 Requires:       bridge-utils
 Requires:       cloud-init
@@ -42,6 +41,9 @@ Requires:       tzdata
 Requires:       which
 Requires:       motd
 Requires:       cracklib-dicts
+%ifarch x86_64
+Requires:       open-vm-tools
+%endif
 
 %description
 Metapackage to install minimal profile
@@ -54,5 +56,7 @@ Metapackage to install minimal profile
 %defattr(-,root,root,0755)
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 0.1-2
+-   Add open-vm-tools as requires only for x86_64
 *   Tue Oct 30 2018 Anish Swaminathan <anishs@vmware.com> 0.1-1
 -   Initial packaging
