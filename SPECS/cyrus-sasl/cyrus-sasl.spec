@@ -1,7 +1,7 @@
 Summary:        Cyrus Simple Authentication Service Layer (SASL) library
 Name:           cyrus-sasl
 Version:        2.1.26
-Release:        14%{?dist}
+Release:        15%{?dist}
 License:        Custom
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
@@ -11,6 +11,8 @@ Source0:        ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
 %define sha1    cyrus-sasl=d6669fb91434192529bd13ee95737a8a5040241c
 Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.26-fixes-3.patch
 Patch1:         cyrus-sasl-mem-leak-fix.patch
+Patch2:         cyrus-sasl-2.1.26-fix-cross-compiling.patch
+Patch3:         cyrus-sasl-2.1.26-fix-cross-compiling-again.patch
 BuildRequires:  systemd
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel >= 1.12
@@ -32,18 +34,18 @@ protocol and the connection.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+if [ %{_host} != %{_build} ]; then
+%patch2 -p1
+%patch3 -p1
+fi
 %build
 autoreconf -fi
 pushd saslauthd
 autoreconf -fi
 popd
-./configure \
+%configure \
     CFLAGS="%{optflags} -fPIC" \
     CXXFLAGS="%{optflags}" \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=/etc \
     --with-plugindir=%{_libdir}/sasl2 \
     --without-dblib \
     --with-saslauthd=/run/saslauthd \
@@ -134,6 +136,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/saslauthd.8.gz
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.1.26-15
+-   Cross compilation support
 *   Tue Nov 21 2017 Anish Swaminathan <anishs@vmware.com>  2.1.26-14
 -   Update patch for memory leak fix
 *   Tue Oct 10 2017 Anish Swaminathan <anishs@vmware.com>  2.1.26-13

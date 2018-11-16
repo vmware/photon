@@ -1,7 +1,7 @@
 Summary:	Command-line editing and history capabilities
 Name:		readline
 Version:	7.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:		Applications/System
@@ -24,9 +24,7 @@ It contains the libraries and header files to create applications
 sed -i '/MV.*old/d' Makefile.in
 sed -i '/{OLDSUFF}/c:' support/shlib-install
 %build
-./configure \
-	--prefix=%{_prefix} \
-	--disable-silent-rules
+%configure --disable-silent-rules
 make SHLIB_LIBS=-lncurses
 %install
 make DESTDIR=%{buildroot} install
@@ -95,20 +93,23 @@ make %{?_smp_mflags} check
 %{_docdir}/%{name}-%{version}/rluserman.pdf
 %{_mandir}/man3/history.3.gz
 %{_mandir}/man3/readline.3.gz
+
 %changelog
-*       Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 7.0-2
--       Fix dependency
-*       Fri Jan 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 7.0-1
--       Updated to version 7.0
-*       Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 6.3-6
--       Move docs and man to the devel package
-*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 6.3-5
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.3-4
--	GA - Bump release of all rpms
-*	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 6.3-3
--	Adding ncurses to run time require package
-*   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 6.3-2
--   	Update according to UsrMove.
-*	Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 6.3-1
--	Initial build.	First version
+* Wed Nov 07 2018 Alexey Makhalov <amakhalov@vmware.com> 7.0-3
+- Use %configure
+* Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 7.0-2
+- Fix dependency
+* Fri Jan 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 7.0-1
+- Updated to version 7.0
+* Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 6.3-6
+- Move docs and man to the devel package
+* Mon Oct 04 2016 ChangLee <changlee@vmware.com> 6.3-5
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.3-4
+- GA - Bump release of all rpms
+* Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 6.3-3
+- Adding ncurses to run time require package
+* Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 6.3-2
+- Update according to UsrMove.
+* Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 6.3-1
+- Initial build. First version

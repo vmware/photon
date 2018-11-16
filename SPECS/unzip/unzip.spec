@@ -1,7 +1,7 @@
 Summary:        Unzip-6.0
 Name:           unzip
 Version:        6.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        BSD
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://downloads.sourceforge.net/infozip/unzip60.tar.gz
@@ -17,8 +17,8 @@ Patch3:         unzip-CVE-2014-9844.patch
 Patch4:         unzip-CVE-2014-9913.patch
 
 %description
-The UnZip package contains ZIP extraction utilities. These are useful 
-for extracting files from ZIP archives. ZIP archives are created 
+The UnZip package contains ZIP extraction utilities. These are useful
+for extracting files from ZIP archives. ZIP archives are created
 with PKZIP or Info-ZIP utilities, primarily in a DOS environment.
 
 %prep
@@ -30,23 +30,18 @@ with PKZIP or Info-ZIP utilities, primarily in a DOS environment.
 %patch4 -p1
 
 %build
-case `uname -m` in
-  i?86)
-    sed -i -e 's/DASM_CRC"/DASM_CRC -DNO_LCHMOD"/' unix/Makefile
-    make -f unix/Makefile linux %{?_smp_mflags}
-    ;;
-  *)
-    sed -i -e 's/CFLAGS="-O -Wall/& -DNO_LCHMOD/' unix/Makefile
-    sed -i 's/CFLAGS="-O -Wall/CFLAGS="-O -g -Wall/' unix/Makefile
-    sed -i 's/LF2 = -s/LF2 =/' unix/Makefile
-    sed -i 's|STRIP = strip|STRIP = /bin/true|' unix/Makefile
-    make -f unix/Makefile linux_noasm %{?_smp_mflags}
-    ;;
-esac
+#sed -i -e 's/CFLAGS="-O -Wall/& -DNO_LCHMOD/' unix/Makefile
+#sed -i 's/CFLAGS="-O -Wall/CFLAGS="-O -g -Wall/' unix/Makefile
+sed -i 's/LF2 = -s/LF2 =/' unix/Makefile
+sed -i 's|STRIP = strip|STRIP = /bin/true|' unix/Makefile
 
+make -f unix/Makefile unzips \
+    CC=%{_host}-gcc \
+    LD=%{_host}-gcc \
+    CFLAGS="-O -g -Wall -DNO_LCHMOD"
 %install
 install -v -m755 -d %{buildroot}%{_bindir}
-make DESTDIR=%{buildroot} prefix=%{_prefix} install
+make -f unix/Makefile DESTDIR=%{buildroot} prefix=%{_prefix} install
 cp %{_builddir}/unzip60/funzip %{buildroot}%{_bindir}
 cp %{_builddir}/unzip60/unzip %{buildroot}%{_bindir}
 cp %{_builddir}/unzip60/unzipsfx %{buildroot}%{_bindir}
@@ -61,6 +56,8 @@ make %{?_smp_mflags}  check
 %{_bindir}/*
 
 %changelog
+*   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 6.0-11
+-   Cross compilation support
 *   Thu Nov 02 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-10
 -   Fix CVE-2014-9844, CVE-2014-9913
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0-9

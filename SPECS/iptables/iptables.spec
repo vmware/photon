@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -33,14 +33,9 @@ It contains the libraries and header files to create applications.
 %prep
 %setup -q
 %build
-./configure \
-    CFLAGS="%{optflags}" \
-    CXXFLAGS="%{optflags}" \
+%configure \
     --disable-silent-rules \
-    --prefix=%{_prefix} \
     --exec-prefix= \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
     --with-xtlibdir=%{_libdir}/iptables \
     --with-pkgconfigdir=%{_libdir}/pkgconfig \
     --disable-nftables \
@@ -100,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8.0-2 
+-   Cross compilation support
 *   Mon Sep 10 2018 Ankit Jain <ankitja@vmware.com> 1.8.0-1
 -   Updated to version 1.8.0
 *   Thu Aug 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-4

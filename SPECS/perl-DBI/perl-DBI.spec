@@ -2,6 +2,8 @@
 # Filter unwanted dependencies
 %global __requires_exclude %{?__requires_exclude|%__requires_exclude|}^perl\\(RPC::\\)
 
+%define perl_vendorarchdir %(test %{_host} == %{_build} && echo %{perl_vendorarch} || echo %{perl_vendorarch} | sed 's/x86_64-linux-thread-multi/%{_arch}-linux/')
+
 # According to documentation, module using Coro is just:
 # A PROOF-OF-CONCEPT IMPLEMENTATION FOR EXPERIMENTATION.
 # Omit Coro support on bootsrap bacause perl-DBI is pulled in by core
@@ -11,7 +13,7 @@
 Summary:        A database access API for perl
 Name:           perl-DBI
 Version:        1.641
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        GPL+ or Artistic
 URL:            http://dbi.perl.org/
@@ -63,8 +65,15 @@ for F in lib/DBI/W32ODBC.pm lib/Win32/DBIODBC.pm; do
 done
 
 %build
-perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
-make
+perl Makefile.PL INSTALLDIRS=vendor AR=%{_host}-ar CC=%{_host}-gcc LD=%{_host}-gcc OPTIMIZE="%{optflags}"
+if [ %{_host} != %{_build} ]; then
+sed -i 's/x86_64-linux-thread-multi/%{_arch}-linux/' Makefile
+sed -i 's/PERL_ARCHLIBDEP = /PERL_ARCHLIBDEP = \/target-%{_arch}/' Makefile
+sed -i 's/PERL_INC = /PERL_INC = \/target-%{_arch}/' Makefile
+sed -i 's/PERL_INCDEP = /PERL_INCDEP = \/target-%{_arch}/' Makefile
+sed -i 's/-L\/usr\/local\/lib//' Makefile
+fi
+make %{?_smp_mflags}
 
 %install
 make pure_install DESTDIR=%{buildroot}
@@ -78,14 +87,16 @@ make test
 %files
 %{_bindir}/dbipro*
 %{_bindir}/dbilogstrip
-%{perl_vendorarch}/*.p*
-%{perl_vendorarch}/DBD/
-%{perl_vendorarch}/DBI/
-%{perl_vendorarch}/auto/DBI/
+%{perl_vendorarchdir}/*.p*
+%{perl_vendorarchdir}/DBD/
+%{perl_vendorarchdir}/DBI/
+%{perl_vendorarchdir}/auto/DBI/
 %{_mandir}/man1/*.1*
 %{_mandir}/man3/*.3*
 
 %changelog
+*   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.641-2
+-   Cross compilation support
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.641-1
 -   Update to version 1.641
 *   Mon Apr 3 2017 Robert Qi <qij@vmware.com> 1.636-1

@@ -1,7 +1,7 @@
 Summary:         Math libraries
 Name:            gmp
 Version:         6.1.2
-Release:         2%{?dist}
+Release:         3%{?dist}
 License:         LGPLv3+
 URL:             http://www.gnu.org/software/gmp
 Group:           Applications/System
@@ -26,8 +26,7 @@ for handling compiled objects.
 %setup -q
 
 %build
-    ./configure \
-    --prefix=%{_prefix} \
+%configure \
     --disable-silent-rules \
     --disable-static \
     --disable-assembly
@@ -60,6 +59,8 @@ make %{?_smp_mflags} check
 %{_docdir}/%{name}-%{version}/isa_abi_headache
 
 %changelog
+*   Tue Nov 06 2018 Alexey Makhalov <amakhalov@vmware.com> 6.1.2-3
+-   Use %configure
 *   Tue Apr 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.1.2-2
 -   Disable cxx (do not build libgmpxx). Disable static.
 *   Mon Apr 17 2017 Danut Moraru <dmoraru@vmware.com> 6.1.2-1

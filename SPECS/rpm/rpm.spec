@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -58,6 +58,7 @@ Shared libraries librpm and librpmio
 Requires:       perl
 Requires:       %{name}-devel = %{version}-%{release}
 Requires:       elfutils-libelf
+Requires:       cpio
 Summary: Binaries, scripts and libraries needed to build rpms.
 %description build
 Binaries, libraries and scripts to build rpms.
@@ -248,6 +249,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-5
+-   rpm-devel depends on cpio
 *   Wed Oct 03 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-4
 -   Clean up the file in accordance to spec file checker
 *   Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-3

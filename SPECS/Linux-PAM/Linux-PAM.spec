@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD and GPLv2+
 URL:            https://www.kernel.org/pub/linux/libs/pam/
 Group:          System Environment/Security
@@ -12,7 +12,7 @@ Source0:        http://linux-pam.org/library/%{name}-%{version}.tar.bz2
 BuildRequires:  cracklib-devel
 Requires:       cracklib
 %description
-The Linux PAM package contains Pluggable Authentication Modules used to 
+The Linux PAM package contains Pluggable Authentication Modules used to
 enable the local system administrator to choose how applications authenticate users.
 
 %package lang
@@ -35,11 +35,10 @@ for developing applications that use Linux-PAM.
 %setup -q
 %build
 
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=/etc   \
+%configure \
+    $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
+    --includedir=/usr/include/security \
+    --sbindir=/sbin \
     --enable-securedir=/usr/lib/security \
     --docdir=%{_docdir}/%{name}-%{version}
 
@@ -92,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-2
+-   Cross compilation support
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-1
 -   Version update.
 *   Fri Feb 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-5

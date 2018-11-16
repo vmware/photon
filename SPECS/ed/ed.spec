@@ -1,7 +1,7 @@
 Summary:        Ed - A line-oriented text editor
 Name:           ed
 Version:        1.14.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.gnu.org/software/ed/
 License:        GPLv3
 Group:          Applications/System
@@ -19,8 +19,7 @@ GNU ed is a line-oriented text editor. It is used to create, display, modify and
 %prep
 %setup -q
 %build
-./configure \
-    --prefix=%{_prefix}
+sh configure --prefix=/usr CC=%{_host}-gcc
 make V=1 %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -36,8 +35,11 @@ make  %{?_smp_mflags} check
 %{_bindir}/ed
 %{_bindir}/red
 %{_infodir}/*
+%exclude %{_datadir}/info/dir
 %{_mandir}/man1/*
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.14.2-2
+-   Cross compilation support
 *   Thu Sep 27 2018 Sujay G <gsujay@vmware.com> 1.14.2-1
 -   Initial build.

@@ -1,7 +1,7 @@
 Summary:        Contains programs for compressing and decompressing files
 Name:           bzip2
 Version:        1.0.6
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        BSD
 URL:            http://www.bzip.org/
 Group:          System Environment/Base
@@ -40,9 +40,16 @@ sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
 sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile
 
 %build
-make VERBOSE=1 %{?_smp_mflags} -f Makefile-libbz2_so
+if [ %{_host} != %{_build} ]; then
+  MFLAGS="CC=%{_arch}-unknown-linux-gnu-gcc AR=%{_arch}-unknown-linux-gnu-ar RANLIB=%{_arch}-unknown-linux-gnu-ranlib"
+  # disable buildtime testing
+  sed -i 's/all: libbz2.a bzip2 bzip2recover test/all: libbz2.a bzip2 bzip2recover/' Makefile
+else
+  MFLAGS=
+fi
+make VERBOSE=1 %{?_smp_mflags} -f Makefile-libbz2_so $MFLAGS
 make clean
-make VERBOSE=1 %{?_smp_mflags}
+make VERBOSE=1 %{?_smp_mflags} $MFLAGS
 
 %install
 make PREFIX=%{buildroot}/usr install
@@ -94,6 +101,8 @@ make %{?_smp_mflags} check
 %{_lib}/libbz2.so.*
 
 %changelog
+*   Thu Nov 08 2018 Alexey Makhalov <amakhalov@vmware.com> 1.0.6-10
+-   Cross compilation support
 *   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 1.0.6-9
 -   Add conflicts toybox.
 *   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 1.0.6-8

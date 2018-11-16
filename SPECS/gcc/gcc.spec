@@ -3,7 +3,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        7.3.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -96,9 +96,10 @@ sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
 %build
 
 export glibcxx_cv_c99_math_cxx98=yes glibcxx_cv_c99_math_cxx11=yes
+export gcc_cv_objdump=%{_arch}-unknown-linux-gnu-objdump
 
-SED=sed \
 %configure \
+    --target=%{_host} \
     --enable-shared \
     --enable-threads=posix \
     --enable-__cxa_atexit \
@@ -109,7 +110,6 @@ SED=sed \
     --enable-linker-build-id \
     --enable-plugin \
     --with-system-zlib
-#   --disable-silent-rules
 make %{?_smp_mflags}
 %install
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
@@ -208,6 +208,8 @@ make %{?_smp_mflags} check-gcc
 %{_lib64dir}/libgomp.spec
 
 %changelog
+*   Tue Nov 06 2018 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-5
+-   Cross compilation support
 *   Fri Nov 02 2018 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-4
 -   Use nofortify security_hardening instead of sed hacking
 -   Use %configure

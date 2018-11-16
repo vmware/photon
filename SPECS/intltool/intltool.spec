@@ -1,7 +1,7 @@
-Summary:	Intltool 
+Summary:	Intltool
 Name:		intltool
 Version:	0.51.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		https://freedesktop.org/wiki/Software/intltool/
 Source0:	https://launchpad.net/intltool/+download/%{name}-%{version}.tar.gz
@@ -18,7 +18,7 @@ The Intltool is an internationalization tool used for extracting translatable st
 %prep
 %setup -q
 %build
-./configure --prefix=%{_prefix}
+%configure
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -35,11 +35,13 @@ make %{?_smp_mflags} check
 %{_datadir}/intltool/*
 %{_mandir}/man8/*
 %changelog
-*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.51.0-3
--	Fix arch
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.51.0-2
--	GA - Bump release of all rpms
-* 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  0.51.0-1
-- 	Upgrade to 0.51.0
-*	Thu Oct 23 2014 Divya Thaluru <dthaluru@vmware.com> 0.50.2-1
--	Initial version
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 0.51.0-4
+-   Cross compilation support
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.51.0-3
+-   Fix arch
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.51.0-2
+-   GA - Bump release of all rpms
+*   Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  0.51.0-1
+-   Upgrade to 0.51.0
+*   Thu Oct 23 2014 Divya Thaluru <dthaluru@vmware.com> 0.50.2-1
+-   Initial version

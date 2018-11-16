@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.0.2p
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -68,7 +68,15 @@ tar xf %{SOURCE100} --no-same-owner -C ..
 # Do not package it to src.rpm
 :> %{SOURCE100}
 %endif
+if [ %{_host} != %{_build} ]; then
+#  export CROSS_COMPILE=%{_host}-
+  export CC=%{_host}-gcc
+  export AR=%{_host}-ar
+  export AS=%{_host}-as
+  export LD=%{_host}-ld
+fi
 export CFLAGS="%{optflags}"
+export MACHINE=%{_arch}
 ./config \
     --prefix=/usr \
     --libdir=lib \
@@ -129,6 +137,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.0.2p-3
+-   Cross compilation support
 *   Wed Oct 17 2018 Alexey Makhalov <amakhalov@vmware.com> 1.0.2p-2
 -   Move fips logic to spec file
 *   Fri Aug 17 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.0.2p-1

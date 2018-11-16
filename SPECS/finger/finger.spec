@@ -1,7 +1,7 @@
 Summary:	The finger client
 Name:		finger
 Version:	0.17
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD/
 Group:		Applications/Internet
 Vendor:		VMware, Inc.
@@ -43,8 +43,10 @@ system at the moment or a person.
 %build
 sed -i 's/install -s/install/' finger/Makefile
 sed -i 's/install -s/install/' fingerd/Makefile
-./configure \
-	--prefix=%{_prefix}
+if [ %{_host} != %{_build} ]; then
+sed -i '/\.\/__conftest/d' configure
+fi
+sh configure --prefix=%{_prefix} --with-c-compiler=%{_host}-gcc
 
 make %{?_smp_mflags}
 
@@ -85,6 +87,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/fingerd.8*
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 0.17-3
+-   Cross compilation support
 *	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.17-2
 -	Apply patch to generate debuginfo
 *	Wed Dec 7 2016 Dheeraj Shetty <dheerajs@vmware.com> 0.17-1

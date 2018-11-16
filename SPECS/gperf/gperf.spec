@@ -1,7 +1,7 @@
 Summary:	Gperf-3.0.4
 Name:		gperf
 Version:	3.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://freedesktop.org/wiki/Software/%{name}l/
 Source0:	http://ftp.gnu.org/gnu/gperf/%{name}-%{version}.tar.gz
@@ -17,8 +17,7 @@ Gperf generates a perfect hash function from a key set.
 %setup -q
 
 %build
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--docdir=%{_defaultdocdir}/%{name}-%{version}
 make %{?_smp_mflags}
 
@@ -42,9 +41,11 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 
 %changelog
-*	Thu Apr 13 2017 Danut Moraru <dmoraru@vmware.com> 3.1-1
--	Updated to version 3.1
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.4-2
--	GA - Bump release of all rpms
-*	Thu Oct 23 2014 Divya Thaluru <dthaluru@vmware.com> 3.0.4-1
--	Initial build. First version
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 3.1-2
+-   Cross compilation support
+*   Thu Apr 13 2017 Danut Moraru <dmoraru@vmware.com> 3.1-1
+-   Updated to version 3.1
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.4-2
+-   GA - Bump release of all rpms
+*   Thu Oct 23 2014 Divya Thaluru <dthaluru@vmware.com> 3.0.4-1
+-   Initial build. First version

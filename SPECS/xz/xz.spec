@@ -1,7 +1,7 @@
 Summary:        Programs for compressing and decompressing files
 Name:           xz
 Version:        5.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://tukaani.org/xz
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Applications/File
@@ -36,8 +36,7 @@ This package contains minimal set of shared xz libraries.
 %prep
 %setup -q
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
     --disable-static \
     --disable-silent-rules
@@ -96,6 +95,8 @@ make  %{?_smp_mflags}  check
 %defattr(-,root,root)
 
 %changelog
+*   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 5.2.4-2
+-   Cross compilation support
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 5.2.4-1
 -   Updated to latest version
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 5.2.3-2

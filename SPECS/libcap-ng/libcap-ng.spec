@@ -4,7 +4,7 @@
 Summary:        POSIX capability Library
 Name:           libcap-ng
 Version:        0.7.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
 URL:            http://people.redhat.com/sgrubb/libcap-ng
@@ -49,9 +49,7 @@ The libraries and header files needed for libcap_ng development.
 %setup -q
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --libdir=%{_libdir} \
+%configure \
     --with-python \
     --with-python3
 
@@ -89,6 +87,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_libdir}/*.a
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 0.7.9-2
+-   Cross compilation support
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 0.7.9-1
 -   Updated to latest version
 *   Mon May 22 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.8-2

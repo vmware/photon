@@ -1,7 +1,7 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
 Version:        3.3.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://procps.sourceforge.net/
 Group:          Applications/System
@@ -30,10 +30,13 @@ These are the additional language files of procps-ng
 %prep
 %setup -q
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --exec-prefix= \
-    --libdir=%{_libdir} \
+if [ %{_host} != %{_build} ]; then
+  export ac_cv_func_malloc_0_nonnull=yes
+  export ac_cv_func_realloc_0_nonnull=yes
+fi
+%configure \
+    --bindir=/bin \
+    --sbindir=/sbin \
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
     --disable-static \
     --disable-kill \
@@ -100,6 +103,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 3.3.15-2
+-   Cross compilation support
 *   Fri Aug 10 2018 Tapas Kundu <tkundu@vmware.com> 3.3.15-1
 -   Upgrade version to 3.3.15.
 -   Fix for CVE-2018-1122 CVE-2018-1123 CVE-2018-1124 CVE-2018-1125

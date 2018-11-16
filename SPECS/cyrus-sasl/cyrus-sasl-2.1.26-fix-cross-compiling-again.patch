@@ -1,0 +1,30 @@
+diff --git a/include/Makefile.am b/include/Makefile.am
+index 5ea5be2..c942efa 100644
+--- a/include/Makefile.am
++++ b/include/Makefile.am
+@@ -51,9 +51,15 @@ noinst_PROGRAMS = makemd5
+ 
+ makemd5_SOURCES = makemd5.c
+ 
+-md5global.h: makemd5
+-	-rm -f md5global.h
+-	./makemd5 md5global.h
++makemd5$(BUILD_EXEEXT) $(makemd5_OBJECTS): CC=gcc
++makemd5$(BUILD_EXEEXT) $(makemd5_OBJECTS): CFLAGS=$(CFLAGS_FOR_BUILD)
++makemd5$(BUILD_EXEEXT): LDFLAGS=$(LDFLAGS_FOR_BUILD)
++
++md5global.h: makemd5$(BUILD_EXEEXT) Makefile
++	-rm -f $@
++	./$< $@
++
++BUILT_SOURCES = md5global.h
+ 
+ EXTRA_DIST = NTMakefile
+ DISTCLEANFILES = md5global.h
+@@ -63,3 +69,6 @@ framedir = /Library/Frameworks/SASL2.framework
+ frameheaderdir = $(framedir)/Versions/A/Headers
+ frameheader_DATA = $(saslinclude_HEADERS)
+ endif
++
++# TODO: automake, don't build it
++makemd5$(EXEEXT):

@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.15
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -21,6 +21,8 @@ BuildRequires:  libffi-devel >= 3.0.13
 BuildRequires:  sqlite-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
+# cross compilation requires native python2 installed
+%define BuildRequiresNative python2
 Requires:       openssl
 Requires:       python2-libs = %{version}-%{release}
 Provides:       python-sqlite
@@ -115,12 +117,15 @@ The test package contains all regression tests for Python as well as the modules
 
 %build
 export OPT="${CFLAGS}"
-./configure \
+if [ %{_host} != %{_build} ]; then
+  sed -i 's/\tPYTHONPATH/\t-PYTHONPATH/' Makefile.pre.in
+  export ac_cv_buggy_getaddrinfo=no
+  export ac_cv_file__dev_ptmx=yes
+  export ac_cv_file__dev_ptc=no
+fi
+%configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
     --enable-shared \
     --with-ssl \
     --with-system-expat \
@@ -234,6 +239,8 @@ make test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.7.15-3
+-   Cross compilation support
 *   Mon Sep 17 2018 Dweep Advani <dadvani@vmware.com> 2.7.15-2
 -   Remove vulnerable Windows installers from python-libs rpm
 *   Mon Aug 20 2018 Dweep Advani <dadvani@vmware.com> 2.7.15-1

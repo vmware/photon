@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.28.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -17,6 +17,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.gz
 %define sha1    perl=0622f86160e8969633cbd21a2cca9e11ae1f8c5a
+Source1:	https://github.com/arsv/perl-cross/releases/download/1.2/perl-cross-1.2.tar.gz
+%define sha1	perl-cross=ded421469e0295ae6dde40e0cbcb2238b4e724e3
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
 Provides:       perl(s)
@@ -38,8 +40,16 @@ sed -i 's/-fstack-protector/&-all/' Configure
 %build
 export BUILD_ZLIB=False
 export BUILD_BZIP2=0
-CFLAGS="%{_optflags}"
 
+if [ %{_host} != %{_build} ]; then
+tar --strip-components=1 --no-same-owner -xf %{SOURCE1}
+sh ./configure \
+    --target=%{_host} \
+    --prefix=%{_prefix} \
+    -Dpager=%{_bindir}"/less -isR" \
+    -Duseshrplib \
+    -Dusethreads
+else
 sh Configure -des \
     -Dprefix=%{_prefix} \
     -Dvendorprefix=%{_prefix} \
@@ -47,8 +57,8 @@ sh Configure -des \
     -Dman3dir=%{_mandir}/man3 \
     -Dpager=%{_bindir}"/less -isR" \
     -Duseshrplib \
-    -Dusethreads \
-        -DPERL_RANDOM_DEVICE="/dev/erandom"
+    -Dusethreads
+fi
 
 make VERBOSE=1 %{?_smp_mflags}
 %install
@@ -71,6 +81,8 @@ make test TEST_SKIP_VERSION_CHECK=1
 %{_mandir}/*/*
 
 %changelog
+*   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 5.28.0-3
+-   Cross compilation support
 *   Wed Oct 24 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.28.0-2
 -   Add provides perl(s)
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 5.28.0-1

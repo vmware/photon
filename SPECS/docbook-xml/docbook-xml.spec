@@ -1,7 +1,7 @@
 Summary:        Docbook-xml-4.5
 Name:           docbook-xml
 Version:        4.5
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        MIT
 URL:            http://www.docbook.org
 Source0:        http://www.docbook.org/xml/4.5/%{name}-%{version}.zip
@@ -15,9 +15,9 @@ BuildRequires:  unzip
 BuildArch:      noarch
 
 %description
-The DocBook XML DTD-4.5 package contains document type definitions for 
-verification of XML data files against the DocBook rule set. These are 
-useful for structuring books and software documentation to a standard 
+The DocBook XML DTD-4.5 package contains document type definitions for
+verification of XML data files against the DocBook rule set. These are
+useful for structuring books and software documentation to a standard
 allowing you to utilize transformations already written for that standard.
 %prep
 %setup -c -T
@@ -135,7 +135,7 @@ if [ $1 -eq 0 ] ; then
     if [ -f /etc/xml/docbook ]; then
         xmlcatalog --noout --del \
         "file:///usr/share/xml/docbook/docbook-xml-4.5" /etc/xml/docbook
-        
+
         for DTDVERSION in 4.1.2 4.2 4.3 4.4 %{version}
         do
             xmlcatalog --noout --del \
@@ -161,6 +161,8 @@ fi
 /usr/share/xml/docbook/%{name}-%{version}
 /etc/xml
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 4.5-9
+-   Cross compilation support
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 4.5-8
 -   Remove libxml2-python from requires.
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.5-7

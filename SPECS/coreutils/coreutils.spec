@@ -1,7 +1,7 @@
 Summary:	Basic system utilities
 Name:		coreutils
 Version:	8.30
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/coreutils
 Group:		System Environment/Base
@@ -30,8 +30,9 @@ These are the additional language files of coreutils.
 %setup -q
 %patch0 -p1
 %build
-export FORCE_UNSAFE_CONFIGURE=1 &&  ./configure \
-	--prefix=%{_prefix} \
+autoreconf -fiv
+export FORCE_UNSAFE_CONFIGURE=1
+%configure \
 	--enable-no-install-program=kill,uptime \
 	--disable-silent-rules
 make %{?_smp_mflags}
@@ -79,6 +80,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %defattr(-,root,root)
 
 %changelog
+* Thu Nov 08 2018 Alexey Makhalov <amakhalov@vmware.com> 8.30-2
+- Cross compilation support
 * Fri Sep 07 2018 Alexey Makhalov <amakhalov@vmware.com> 8.30-1
 - Version update to support glibc-2.28
 * Tue Aug 28 2018 Alexey Makhalov <amakhalov@vmware.com> 8.27-4

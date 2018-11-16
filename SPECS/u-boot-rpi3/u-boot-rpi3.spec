@@ -3,7 +3,7 @@
 Summary:        U-Boot EFI firmware for the rpi3
 Name:		u-boot-rpi3
 Version:	2018.09
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
@@ -26,8 +26,8 @@ U-Boot is Open Source Firmware.
 
 %build
 cp %{SOURCE1} configs/
-make %{?_smp_mflags} CROSS_COMPILE= rpi_3_photon_defconfig
-make %{?_smp_mflags} CROSS_COMPILE= USE_PRIVATE_LIBGG=yes
+make %{?_smp_mflags} CROSS_COMPILE=%{_host}- rpi_3_photon_defconfig
+make %{?_smp_mflags} CROSS_COMPILE=%{_host}- USE_PRIVATE_LIBGG=yes
 
 %install
 install -D -m 0644 u-boot.bin %{buildroot}/boot/esp/u-boot.bin
@@ -37,6 +37,8 @@ install -D -m 0644 u-boot.bin %{buildroot}/boot/esp/u-boot.bin
 /boot/esp/*
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2018.09-5
+-   Cross compilation support
 *   Mon Oct 22 2018 Alexey Makhalov <amakhalov@vmware.com> 2018.09-4
 -   Remove bc, swig, python, openssl buildrequires.
 -   Remove doc subpackage.

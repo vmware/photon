@@ -1,7 +1,7 @@
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
 Version:        6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses/
 Group:          Applications/System
@@ -49,12 +49,16 @@ It contains all terminfo files
 %setup -q -n %{name}-%{version}-%{ncursessubversion}
 
 %build
+if [ %{_host} != %{_build} ]; then
+    # configure adds incorrect includedir -I/usr/include for cross g++.
+    # In result, g++ compilation will fail and configure will not
+    # detect cross g++
+    sed -i '/cf_includedir/d' configure
+fi
 mkdir v6
 pushd v6
 ln -s ../configure .
-./configure \
-    --prefix=%{_prefix} \
-    --mandir=%{_mandir} \
+%configure \
     --with-shared \
     --without-debug \
     --enable-pc-files \
@@ -68,9 +72,7 @@ popd
 mkdir v5
 pushd v5
 ln -s ../configure .
-./configure \
-    --prefix=%{_prefix} \
-    --mandir=%{_mandir} \
+%configure \
     --with-shared \
     --without-debug \
     --enable-pc-files \
@@ -91,7 +93,7 @@ for lib in ncurses form panel menu ; do \
     rm -vf %{buildroot}%{_libdir}/lib${lib}.so ; \
     echo "INPUT(-l${lib}w)" > %{buildroot}%{_libdir}/lib${lib}.so ; \
     ln -sfv lib${lib}w.a %{buildroot}%{_libdir}/lib${lib}.a ; \
-    ln -sfv /lib/pkgconfig/${lib}w.pc %{buildroot}/lib/pkgconfig/${lib}.pc
+    ln -sfv ${lib}w.pc %{buildroot}/lib/pkgconfig/${lib}.pc
 done
 ln -sfv libncurses++w.a %{buildroot}%{_libdir}/libncurses++.a
 rm -vf %{buildroot}%{_libdir}/libcursesw.so
@@ -183,6 +185,8 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Wed Nov 07 2018 Alexey Makhalov <amakhalov@vmware.com> 6.1-2
+-   Cross compilation support
 *   Wed Sep 12 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 6.1-1
 -   Update to version 6.1.
 *   Tue Jul 17 2018 Tapas Kundu <tkundu@vmware.com> 6.0-14

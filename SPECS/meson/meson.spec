@@ -3,7 +3,7 @@
 Name:           meson
 Summary:        Extremely fast and user friendly build system
 Version:        0.47.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://mesonbuild.com/
 Vendor:         VMware, Inc.
@@ -24,14 +24,14 @@ Requires:       ninja-build
 Requires:       python3
 
 %description
-Meson is an open source build system meant to be both extremely fast, 
+Meson is an open source build system meant to be both extremely fast,
 and, even more importantly, as user friendly as possible.
-The main design point of Meson is that every moment a developer spends 
-writing or debugging build definitions is a second wasted. 
+The main design point of Meson is that every moment a developer spends
+writing or debugging build definitions is a second wasted.
 So is every second spent waiting for the build system to actually start compiling code.
 
 %prep
-%setup 
+%setup
 
 %build
 
@@ -61,6 +61,8 @@ python3 ./run_tests.py
 %{_datadir}/polkit-1/actions/com.mesonbuild.install.policy
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 0.47.2-2
+-   Cross compilation support
 *   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.47.2-1
 -   Update to version 0.47.2
 *   Wed Dec 27 2017 Anish Swaminathan <anishs@vmware.com> 0.44.0-1

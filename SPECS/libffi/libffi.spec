@@ -1,7 +1,7 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		libffi
 Version:	3.2.1
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	BSD
 URL:		http://sourceware.org/libffi/
 Group:		System Environment/GeneralLibraries
@@ -34,12 +34,7 @@ sed -e '/^includesdir/ s:$(libdir)/@PACKAGE_NAME@-@PACKAGE_VERSION@/include:$(in
 sed -e '/^includedir/ s:${libdir}/@PACKAGE_NAME@-@PACKAGE_VERSION@/include:@includedir@:' \
     -e 's/^Cflags: -I${includedir}/Cflags:/' \
     -i libffi.pc.in        &&
-./configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags}" \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
+%configure \
 	--disable-static
 make %{?_smp_mflags}
 %install
@@ -70,6 +65,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 3.2.1-7
+-   Cross compilation support
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.2.1-6
 -   Aarch64 support
 *   Wed Jul 12 2017 Alexey Makhalov <amakhalov@vmware.com> 3.2.1-5

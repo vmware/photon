@@ -1,10 +1,11 @@
 %{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%define with_golang 0
 
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=026235ab9e8b19f6c2b1112ce13d180f35cf0ff4
 License:        GPLv2+
@@ -14,12 +15,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  krb5-devel
 BuildRequires:  openldap
-BuildRequires:  go
 BuildRequires:  tcp_wrappers-devel
 BuildRequires:  libcap-ng-devel
 BuildRequires:  swig
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
+%if %{with_golang}
+BuildRequires:  go
+%endif
 Requires:       systemd
 Requires:       krb5
 Requires:       openldap
@@ -67,12 +70,8 @@ and libauparse.
 %setup -q
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --exec_prefix=/usr \
-    --sbindir=%{_sbindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=%{_sysconfdir} \
+%configure \
+    $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --with-python=yes \
     --with-python3=yes \
     --with-libwrap \
@@ -80,7 +79,9 @@ and libauparse.
     --with-libcap-ng=yes \
     --with-aarch64 \
     --enable-zos-remote \
+%if %{with_golang}
     --with-golang \
+%endif
     --enable-systemd \
     --disable-static
 
@@ -147,7 +148,9 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 %{_libdir}/*.la
 %{_libdir}/pkgconfig/*.pc
+%if %{with_golang}
 %{_libdir}/golang/*
+%endif
 %{_includedir}/*.h
 %{_mandir}/man3/*
 /usr/share/aclocal/audit.m4
@@ -161,6 +164,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.8.4-2
+-   Cross compilation support
 *   Mon Sep 3 2018 Keerthana K <keerthanak@vmware.com> 2.8.4-1
 -   Updated to version 2.8.4.
 *   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-4

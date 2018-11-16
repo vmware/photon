@@ -1,7 +1,7 @@
 Summary:        Libraries for the public client interface for NIS(YP) and NIS+.
 Name:           libnsl
 Version:        1.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Source0:        https://github.com/thkukuk/libnsl/archive/v1.2.0/libnsl-1.2.0.tar.gz
 %define sha1    libnsl=f141c7cf0ff96d96e369dda36af8ed19af0fc3ca
 License:        GPLv2+
@@ -33,7 +33,7 @@ This package includes header files and libraries necessary for developing progra
 
 %build
 autoreconf -fi
-%configure
+%configure $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}")
 make %{?_smp_mflags}
 
 %install
@@ -56,5 +56,7 @@ make install DESTDIR=%{buildroot}
 %{_libdir}/*.la
 
 %changelog
+* Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-2 
+- Cross compilation support
 * Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-1
 - Initial version

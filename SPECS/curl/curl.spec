@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.61.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -19,10 +19,10 @@ Requires:       krb5
 Requires:       libssh2
 Requires:       curl-libs = %{version}-%{release}
 %description
-The cURL package contains an utility and a library used for 
-transferring files with URL syntax to any of the following 
-protocols: FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET, 
-DICT, LDAP, LDAPS and FILE. Its ability to both download and 
+The cURL package contains an utility and a library used for
+transferring files with URL syntax to any of the following
+protocols: FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET,
+DICT, LDAP, LDAPS and FILE. Its ability to both download and
 upload files can be incorporated into other programs to support
 functions like streaming media.
 
@@ -42,13 +42,7 @@ This package contains minimal set of shared curl libraries.
 %prep
 %setup -q
 %build
-./configure \
-    CFLAGS="%{optflags}" \
-    CXXFLAGS="%{optflags}" \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
+%configure \
     --disable-static \
     --enable-threaded-resolver \
     --with-ssl \
@@ -88,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 7.61.1-2
+-   Cross compilation support
 *   Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 7.61.1-1
 -   Upgraded to version 7.61.1
 *   Wed Apr 04 2018 Dheeraj Shetty <dheerajs@vmware.com> 7.59.0-1

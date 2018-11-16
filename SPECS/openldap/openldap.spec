@@ -2,7 +2,7 @@
 Summary:	OpenLdap-2.4.43
 Name:		openldap
 Version:	2.4.46
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	OpenLDAP
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -40,11 +40,15 @@ sed -i '/6.0.20/ a\\t__db_version_compat' configure
 export CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H"
 
 %configure \
-        --disable-static    \
-        --disable-debug     \
-        --disable-slapd     \
-        --with-tls=openssl
+    $(test %{_host} != %{_build} && echo "CC=%{_host}-gcc --with-yielding-select=yes --with-sysroot=/target-%{_arch}") \
+    --disable-static    \
+    --disable-debug     \
+    --disable-slapd     \
+    --with-tls=openssl
 
+if [ %{_host} != %{_build} ]; then
+ sed -i '/#define NEED_MEMCMP_REPLACEMENT 1/d' include/portable.h
+fi
 make depend
 make %{?_smp_mflags}
 %install
@@ -75,6 +79,8 @@ rm -rf %{buildroot}/*
 /etc/openldap/*
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.4.46-3
+-   Cross compilation support
 *   Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 2.4.46-2
 -   export CPPFLAGS before invoking configure
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.4.46-1

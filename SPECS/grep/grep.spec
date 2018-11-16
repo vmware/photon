@@ -1,7 +1,7 @@
 Summary:	Programs for searching through files
 Name:		grep
 Version:	3.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/grep
 Group:		Applications/File
@@ -23,8 +23,7 @@ These are the additional language files of grep
 %prep
 %setup -q
 %build
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--bindir=/bin \
 	--disable-silent-rules
 make %{?_smp_mflags}
@@ -49,6 +48,8 @@ make  %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 3.1-2 
+- Cross compilation support
 * Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 3.1-1
 - Update to version 3.1
 * Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 3.0-4

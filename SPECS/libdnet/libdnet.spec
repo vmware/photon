@@ -1,7 +1,7 @@
 Summary:        A simplified, portable interface to several low-level networking routines
 Name:           libdnet
 Version:        1.11
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD
 URL:            http://prdownloads.sourceforge.net/libdnet/libdnet-1.11.tar.gz
 Group:          Applications/System
@@ -23,9 +23,7 @@ It contains the libraries and header files to create applications.
 %setup -q
 %patch0 -p1
 %build
-./configure --prefix=/usr "CFLAGS=-fPIC" \
-	--host=%{_host} --build=%{_build} \
-            --mandir=%{_mandir}
+%configure "CFLAGS=-fPIC"
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -51,6 +49,8 @@ make  %{?_smp_mflags} check
 %{_libdir}/libdnet.a
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.11-7
+-   Cross compilation support
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.11-6
 -   Aarch64 support
 *   Thu Aug 03 2017 Kumar Kaushik <kaushikk@vmware.com> 1.11-5

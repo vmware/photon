@@ -26,12 +26,17 @@ for developing applications that use libcap.
 %prep
 %setup -q
 %build
+if [ %{_host} != %{_build} ]; then
+  MFLAGS="CC=%{_arch}-unknown-linux-gnu-gcc AR=%{_arch}-unknown-linux-gnu-ar RANLIB=%{_arch}-unknown-linux-gnu-ranlib BUILD_CC=gcc"
+else
+  MFLAGS=
+fi
 sed -i 's:LIBDIR:PAM_&:g' pam_cap/Makefile
-make %{?_smp_mflags}
+make %{?_smp_mflags} $MFLAGS
 %install
 make prefix=%{_prefix}	SBINDIR=%{_sbindir} PAM_LIBDIR=%{_libdir} RAISE_SETFCAP=no DESTDIR=%{buildroot} install
 %ifarch aarch64
-mv %{buildroot}%{_libdir} %{buildroot}%{_lib64dir}
+test -d %{buildroot}%{_libdir} && mv %{buildroot}%{_libdir} %{buildroot}%{_lib64dir}
 %endif
 chmod -v 755 %{buildroot}/usr/lib64/libcap.so
 %check

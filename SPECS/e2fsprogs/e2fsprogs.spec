@@ -1,7 +1,7 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
 Version:        1.44.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
@@ -11,6 +11,8 @@ Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.
 %define sha1    e2fsprogs=bfe11b75fee61c4d3795ac27eea11f9f7843294b
 Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox
+BuildRequires:  util-linux-devel
+Requires:       util-linux-libs
 
 %description
 The E2fsprogs package contains the utilities for handling the ext2 file system.
@@ -127,6 +129,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Fri Nov 9 2018 Alexey Makhalov <amakhalov@vmware.com> 1.44.3-3
+-   Add util-linux dependencies.
 *   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 1.44.3-2
 -   Add conflicts toybox.
 *   Mon Sep 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.44.3-1

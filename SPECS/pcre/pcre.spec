@@ -1,7 +1,7 @@
 Summary:        Grep for perl compatible regular expressions
 Name:           pcre
 Version:        8.42
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-%{version}.tar.bz2
 Group:          Applications/System
@@ -15,6 +15,7 @@ Requires:       libgcc
 Requires:       readline
 Requires:       libstdc++
 Requires:       pcre-libs = %{version}-%{release}
+Requires:       bzip2-libs
 %description
 The PCRE package contains Perl Compatible Regular Expression libraries. These are useful for implementing regular expression pattern matching using the same syntax and semantics as Perl 5.
 
@@ -36,7 +37,7 @@ This package contains minimal set of shared pcre libraries.
 %prep
 %setup -q
 %build
-./configure --prefix=/usr                     \
+%configure \
             --docdir=/usr/share/doc/pcre-%{version} \
             --enable-unicode-properties       \
             --enable-pcre16                   \
@@ -59,7 +60,7 @@ make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
-%files 
+%files
 %defattr(-,root,root)
 %{_bindir}/pcregrep
 %{_bindir}/pcretest
@@ -85,6 +86,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libpcre.so.*
 
 %changelog
+*   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 8.42-2
+-   Cross compilation support
 *   Tue Sep 11 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.42-1
 -   Update to version 8.42
 *   Wed Dec 20 2017 Xiaolin Li <xiaolinl@vmware.com> 8.41-1

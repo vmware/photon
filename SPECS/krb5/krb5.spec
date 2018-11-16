@@ -1,7 +1,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.16.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos/
 Group:          System Environment/Security
@@ -41,13 +41,15 @@ cd src &&
 sed -e 's@\^u}@^u cols 300}@' \
     -i tests/dejagnu/config/default.exp &&
 CPPFLAGS="-D_GNU_SOURCE" \
-autoconf &&
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=/etc \
-        --localstatedir=/var/lib \
+autoconf
+if [ %{_host} != %{_build} ]; then
+  export krb5_cv_attr_constructor_destructor=yes,yes
+  export ac_cv_func_regcomp=yes
+  export ac_cv_printf_positional=yes
+  export ac_cv_file__etc_environment=no
+  export ac_cv_file__etc_TIMEZONE=no
+fi
+%configure \
         --with-system-et         \
         --with-system-ss         \
         --with-system-verto=no   \
@@ -116,6 +118,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.16.1-2
+-   Cross compilation support
 *   Fri Sep 14 2018 Ankit Jain <ankitja@vmware.com> 1.16.1-1
 -   Update to version 1.16.1
 *   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.16-1

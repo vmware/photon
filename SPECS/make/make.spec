@@ -1,7 +1,7 @@
 Summary:	Program for compiling packages
 Name:		make
 Version:	4.2.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/make
 Group:		Development/Tools
@@ -19,8 +19,7 @@ The Make package contains a program for compiling packages.
 #work around an error caused by glibc-2.27
 sed -i '211,217 d; 219,229 d; 232 d' glob/glob.c
 
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--disable-silent-rules
 make %{?_smp_mflags}
 
@@ -40,6 +39,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-3
+- Cross compilation support
 * Sun Sep 09 2018 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-2
 - Fix compilation issue against glibc-2.27
 * Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 4.2.1-1

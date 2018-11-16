@@ -1,7 +1,8 @@
+%define debug_package %{nil}
 Summary:	Linux API header files
 Name:		linux-api-headers
 Version:	4.19.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel
@@ -9,22 +10,26 @@ Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=5ece7a7149eeef06bba906eeabbc2f29a8ac3952
-BuildArch:	noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
 %prep
 %setup -q -n linux-%{version}
 %build
 make mrproper
-make headers_check
 %install
+[ "%{_arch}" = "x86_64" ] && ARCH=x86_64
+[ "%{_arch}" = "aarch64" ] && ARCH=arm64
+[ "%{_arch}" = "i686" ] && ARCH=i386
 cd %{_builddir}/linux-%{version}
-make INSTALL_HDR_PATH=%{buildroot}%{_prefix} headers_install
+make ARCH=$ARCH headers_check
+make ARCH=$ARCH INSTALL_HDR_PATH=%{buildroot}%{_prefix} headers_install
 find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -delete
 %files
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+*   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 4.19.1-2
+-   Make it arch specific
 *   Mon Nov 05 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.1-1
 -   Update to version 4.19.1
 *   Thu Sep 20 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.18.9-1

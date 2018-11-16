@@ -1,7 +1,7 @@
 Summary:	XML-Parser perl module
 Name:		XML-Parser
 Version:	2.44
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPL+
 URL:		http://search.cpan.org/~toddr/%{name}-%{version}/
 Source0:		http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/%{name}-%{version}.tar.gz
@@ -18,7 +18,18 @@ The XML::Parser module is a Perl extension interface to James Clark's XML parser
 %prep
 %setup -q
 %build
-perl Makefile.PL --prefix=%{_prefix}
+perl Makefile.PL
+if [ %{_host} != %{_build} ]; then
+  ln -s /target-%{_arch}%{perl_privlib}/%{_arch}-linux %{perl_privlib}/%{_arch}-linux
+  mkdir -p %{perl_vendorlib}
+  ln -s /target-%{_arch}%{perl_vendorlib}/%{_arch}-linux %{perl_vendorlib}/%{_arch}-linux
+
+  # ugly hack again, similarly to cmake:
+  ln -sf aarch64-unknown-linux-gnu-gcc /usr/bin/gcc
+  ln -sf aarch64-unknown-linux-gnu-g++ /usr/bin/g++
+  ln -sf aarch64-unknown-linux-gnu-ld /usr/bin/ld
+  ln -sf aarch64-unknown-linux-gnu-ar /usr/bin/ar
+fi
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -34,6 +45,8 @@ make %{?_smp_mflags} test
 %{_libdir}/perl5/*
 %{_mandir}/man3/*
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.44-6
+-   Cross compilation support
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 2.44-5
 -   Consuming perl version upgrade of 5.28.0
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.44-4

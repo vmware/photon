@@ -1,7 +1,7 @@
 Summary:        Compression and decompression routines
 Name:           zlib
 Version:        1.2.11
-Release:        1%{?dist}
+Release:        3%{?dist}
 URL:            http://www.zlib.net/
 License:        zlib
 Group:          Applications/System
@@ -20,8 +20,16 @@ for handling compiled objects.
 %prep
 %setup -q
 %build
-./configure \
-    --prefix=%{_prefix}
+if [ %{_host} != %{_build} ]; then
+export CC=%{_host}-gcc
+export CXX=%{_host}-g++
+export AR=%{_host}-ar
+export AS=%{_host}-as
+export RANLIB=%{_host}-ranlib
+export LD=%{_host}-ld
+export STRIP=%{_host}-strip
+fi
+sh configure --prefix=%{_prefix} --shared
 make V=1 %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -35,7 +43,7 @@ make  %{?_smp_mflags} check
 %postun -p /sbin/ldconfig
 %files
 %defattr(-,root,root)
-%{_libdir}/libz.so.*
+%{_libdir}/libz.so*
 
 %files devel
 %{_includedir}/zconf.h
@@ -46,6 +54,10 @@ make  %{?_smp_mflags} check
 %{_mandir}/man3/zlib.3.gz
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.2.11-3
+-   Cross compilation support
+*   Tue Nov 06 2018 Sriram Nambakam <snambakam@vmware.com> 1.2.11-2
+-   Cross compilation support
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.11-1
 -   Updated to version 1.2.11.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.8-5

@@ -5,7 +5,7 @@
 Summary:        A password strength-checking library.
 Name:           cracklib
 Version:        2.9.6
-Release:        8%{?dist}
+Release:        9%{?dist}
 Group:          System Environment/Libraries
 Source:         cracklib-%{version}.tar.gz
 %define sha1    cracklib-%{version}=9199e7b8830717565a844430653f5a90a04fcd65
@@ -16,6 +16,17 @@ URL:            http://sourceforge.net/projects/cracklib/
 License:        GPL
 Vendor:         VMware, Inc.
 Distribution:   Photon
+BuildRequires:  python2
+BuildRequires:  python2-libs
+BuildRequires:  python2-devel
+BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+# cross compilation requires native dicts generating tools
+%define BuildRequiresNative cracklib-dicts
 Requires:         /bin/ln
 Requires(post):   /bin/ln
 Requires(postun): /bin/rm
@@ -24,9 +35,9 @@ Requires(postun): /bin/rm
 CrackLib tests passwords to determine whether they match certain
 security-oriented characteristics. You can use CrackLib to stop
 users from choosing passwords which would be easy to guess. CrackLib
-performs certain tests: 
+performs certain tests:
 
-* It tries to generate words from a username and gecos entry and 
+* It tries to generate words from a username and gecos entry and
   checks those words against the password;
 * It checks for simplistic patterns in passwords;
 * It checks for the password in a dictionary.
@@ -67,11 +78,6 @@ header files for development.
 %package    python
 Summary:    The cracklib python module
 Group:      Development/Languages/Python
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-
 Requires:   cracklib
 Requires:   python2
 Requires:   python2-libs
@@ -82,12 +88,6 @@ The cracklib python module
 %package -n python3-cracklib
 Summary:        The cracklib python module
 Group:          Development/Languages/Python
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-
 Requires:   cracklib
 Requires:   python3
 Requires:   python3-libs
@@ -112,12 +112,14 @@ install %{SOURCE1} dicts/
 
 %build
 
-CFLAGS="$RPM_OPT_FLAGS" ./configure \
-  --prefix=%{_prefix} \
-  --mandir=%{_mandir} \
-  --libdir=%{_libdir} \
-  --libexecdir=%{_libdir} \
-  --datadir=%{_datadir} \
+if [ %{_host} != %{_build} ]; then
+export PYTHONXCPREFIX=/target-%{_arch}/usr
+export CC=%{_host}-gcc
+export LDSHARED='%{_host}-gcc -shared'
+export LDFLAGS='-L/target-%{_arch}/usr/lib'
+fi
+export CFLAGS="$RPM_OPT_FLAGS"
+%configure \
   --disable-static \
   --without-python
 
@@ -132,8 +134,11 @@ rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT/
 chmod 755 ./util/cracklib-format
 chmod 755 ./util/cracklib-packer
-util/cracklib-format dicts/cracklib* | util/cracklib-packer $RPM_BUILD_ROOT/%{_datadir}/cracklib/words
-echo password | util/cracklib-packer $RPM_BUILD_ROOT/%{_datadir}/cracklib/empty
+if [ %{_host} != %{_build} ]; then
+export PATH=%{builddir}/util:$PATH
+fi
+cracklib-format dicts/cracklib* | cracklib-packer $RPM_BUILD_ROOT/%{_datadir}/cracklib/words
+echo password | cracklib-packer $RPM_BUILD_ROOT/%{_datadir}/cracklib/empty
 rm -f $RPM_BUILD_ROOT/%{_datadir}/cracklib/cracklib-small
 ln -s cracklib-format $RPM_BUILD_ROOT/%{_sbindir}/mkdict
 ln -s cracklib-packer $RPM_BUILD_ROOT/%{_sbindir}/packer
@@ -211,6 +216,8 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %{_datadir}/locale/*
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-9
+-   Cross compilation support
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-8
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 2.9.6-7
@@ -221,7 +228,7 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 -   Fix CVE-2016-6318, trigger for cracklib-dicts
 -   Trigger for dynamic symlink for dict
 *   Sun Nov 20 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-4
--   Revert compressing pw_dict.pwd back. Python code 
+-   Revert compressing pw_dict.pwd back. Python code
     cracklib.VeryFascistCheck does not handle it.
 *   Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-3
 -   Remove any dicts from cracklib main package

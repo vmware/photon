@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.58.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
 Group:		Applications/System
@@ -12,9 +12,13 @@ Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.58/%{name}-%{version}.tar
 BuildRequires:	pcre-devel
 BuildRequires:	libffi-devel
 BuildRequires:	pkg-config
-BuildRequires:	cmake
 BuildRequires:	which
 BuildRequires:	python-xml
+BuildRequires:	python2 >= 2.7
+BuildRequires:	python2-libs >= 2.7
+BuildRequires:	util-linux-devel
+BuildRequires:	elfutils-libelf-devel
+Requires:	elfutils-libelf
 Requires:	pcre-libs
 Requires:	libffi
 Provides:	pkgconfig(glib-2.0)
@@ -31,11 +35,11 @@ The GLib package contains a low-level libraries useful for providing data struct
 Summary:	Header files for the glib library
 Group:		Development/Libraries
 Requires:	glib = %{version}-%{release}
-BuildRequires:	python2 >= 2.7
-BuildRequires:	python2-libs >= 2.7
 Requires:	pcre-devel
+Requires:	util-linux-devel
 Requires:	python2
 Requires:	libffi-devel
+Requires:	elfutils-libelf-devel
 
 %description devel
 Static libraries and header files for the support library for the glib library
@@ -52,7 +56,14 @@ Gsettings schemas compiling tool
 %setup -q
 %build
 ./autogen.sh
-./configure --prefix=/usr --with-pcre=system 
+if [ %{_host} != %{_build} ]; then
+  export glib_cv_stack_grows=no
+  export ac_cv_func_posix_getpwuid_r=yes
+  export glib_cv_uscore=yes
+fi
+%configure \
+    --with-pcre=system \
+    --with-sysroot=/target-%{_arch}
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -60,7 +71,7 @@ make DESTDIR=%{buildroot} install
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 
-%files 
+%files
 %defattr(-,root,root)
 %{_libdir}/libglib-*.so.*
 %{_libdir}/libgthread-*.so.*
@@ -89,6 +100,8 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.58.0-2
+-   Cross compilation support
 *   Tue Sep 11 2018 Anish Swaminathan <anishs@vmware.com> 2.58.0-1
 -   Update version to 2.58.0
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.52.1-2
