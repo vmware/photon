@@ -1,18 +1,18 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.9.10
+Version:        1.9.11
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
-%define sha1    kubernetes-v%{version}.tar.gz=a0146f84867f8fee4fb59b52fe96262e4bb76983
+%define sha1    kubernetes-v%{version}.tar.gz=6f3e1cd53697f53d2432757dab6db2baf82d9d00
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         k8s-1.9-vke.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  go = 1.9.4
+BuildRequires:  go = 1.9.3
 BuildRequires:  rsync
 BuildRequires:  which
 Requires:       cni
@@ -185,6 +185,8 @@ fi
 %{_bindir}/pause-amd64
 
 %changelog
+*   Fri Nov 16 2018 Amarnath <vaa@vmware.com> 1.9.11-1
+-   Update to K8s version 1.9.11 with VCP patch (869d841)
 *   Mon Oct 08 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.10-1
 -   Update to k8s version 1.9.10 and vke patch (48fc708e)
 *   Tue Sep 11 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.6-11
