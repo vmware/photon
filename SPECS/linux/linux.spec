@@ -1,8 +1,19 @@
 %global security_hardening none
+
+%ifarch x86_64
+%define arch x86_64
+%define archdir x86
+%endif
+
+%ifarch aarch64
+%define arch arm64
+%define archdir arm64
+%endif
+
 Summary:        Kernel
 Name:           linux
 Version:        4.19.87
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -10,13 +21,12 @@ Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=6bef9ec5ef74ae160b18d7a0930cd80cb1461bdb
-Source1:	config
+Source1:	config_%{_arch}
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
 Source3:	https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
 %define sha1 ena_linux=c8ec9094f9db8d324d68a13b0b3dcd2c5271cbc0
-Source4:	config_aarch64
-Source5:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
+Source4:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
 %define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
 Source6:        update_photon_cfg.postun
 Source7:        check_for_config_applicability.inc
@@ -133,14 +143,11 @@ Patch1000:	%{kat_build}.patch
 Patch1001:	hmac_gen_kernel.patch
 
 BuildRequires:  bc
-BuildRequires:  kbd
 BuildRequires:  kmod-devel
 BuildRequires:  glib-devel
-BuildRequires:  xerces-c-devel
-BuildRequires:  xml-security-c-devel
-BuildRequires:  libdnet-devel
-BuildRequires:  libmspack-devel
-BuildRequires:  Linux-PAM-devel
+BuildRequires:  elfutils-devel
+BuildRequires:  libunwind-devel
+#BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
@@ -236,7 +243,7 @@ This Linux package contains hmac sha generator kernel module.
 %setup -q -n linux-%{version}
 %ifarch x86_64
 %setup -D -b 3 -n linux-%{version}
-%setup -D -b 5 -n linux-%{version}
+%setup -D -b 4 -n linux-%{version}
 %endif
 %patch0 -p1
 %patch1 -p1
@@ -320,23 +327,21 @@ This Linux package contains hmac sha generator kernel module.
 
 %build
 make mrproper
-
-%ifarch x86_64
 cp %{SOURCE1} .config
-arch="x86_64"
-%endif
-
-%ifarch aarch64
-cp %{SOURCE4} .config
-arch="arm64"
-%endif
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
 %include %{SOURCE7}
 
-make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
-make -C tools perf PYTHON=python3
+# Set/add CONFIG_CROSS_COMPILE= if needed
+if [ %{_host} != %{_build} ]; then
+grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFIG_CROSS_COMPILE="%{_host}-"' .config || \
+	echo 'CONFIG_CROSS_COMPILE="%{_host}-"' >> .config
+fi
+
+make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
+make ARCH=%{arch} -C tools perf PYTHON=python3
+
 %ifarch x86_64
 # build ENA module
 bldroot=`pwd`
@@ -346,7 +351,7 @@ popd
 # build XR module
 bldroot=`pwd`
 pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
-make KERNELDIR=$bldroot %{?_smp_mflags} all
+make KERNELDIR=$bldroot ARCH=%{arch} %{?_smp_mflags} all
 popd
 %endif
 
@@ -373,20 +378,12 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
 %{nil}
 
 %install
-%ifarch x86_64
-archdir="x86"
-%endif
-
-%ifarch aarch64
-archdir="arm64"
-%endif
-
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
-make INSTALL_MOD_PATH=%{buildroot} modules_install
+make ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
 # install ENA module
@@ -398,7 +395,7 @@ popd
 # install XR module
 bldroot=`pwd`
 pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
-make KERNELDIR=$bldroot INSTALL_MOD_PATH=%{buildroot} modules_install
+make ARCH=%{arch} KERNELDIR=$bldroot INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
 # Verify for build-id match
@@ -460,9 +457,9 @@ rm -rf %{buildroot}/lib/modules/%{uname_r}/source
 rm -rf %{buildroot}/lib/modules/%{uname_r}/build
 
 find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find arch/${archdir}/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find $(find arch/${archdir} -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find arch/${archdir}/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
+find arch/%{archdir}/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
+find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
+find arch/%{archdir}/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
 %ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
 install -vsm 755 tools/objtool/objtool %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
@@ -480,7 +477,7 @@ cp arch/arm64/kernel/module.lds %{buildroot}/usr/src/%{name}-headers-%{uname_r}/
 # disable (JOBS=1) parallel build to fix this issue:
 # fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
 # Linux version that was affected is 4.4.26
-make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3
+make -C tools ARCH=%{arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3
 
 %include %{SOURCE2}
 %include %{SOURCE6}
@@ -577,6 +574,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Dec 09 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.87-2
+-   Cross compilation support
 *   Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.19.87-1
 -   Update to version 4.19.87
 *   Tue Dec 03 2019 Keerthana K <keerthanak@vmware.com> 4.19.84-4

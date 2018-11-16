@@ -1,10 +1,11 @@
 %{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%define with_golang 0
 
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
 License:        GPLv2+
@@ -14,12 +15,18 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  krb5-devel
 BuildRequires:  openldap
-BuildRequires:  go
 BuildRequires:  tcp_wrappers-devel
 BuildRequires:  libcap-ng-devel
 BuildRequires:  swig
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+%if %{with_golang}
+BuildRequires:  go
+%endif
 Requires:       systemd
 Requires:       krb5
 Requires:       openldap
@@ -68,6 +75,7 @@ and libauparse.
 
 %build
 %configure \
+    $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --exec_prefix=/usr \
     --with-python=yes \
     --with-python3=yes \
@@ -76,7 +84,9 @@ and libauparse.
     --with-libcap-ng=yes \
     --with-aarch64 \
     --enable-zos-remote \
+%if %{with_golang}
     --with-golang \
+%endif
     --enable-systemd \
     --disable-static
 
@@ -143,7 +153,9 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 %{_libdir}/*.la
 %{_libdir}/pkgconfig/*.pc
+%if %{with_golang}
 %{_libdir}/golang/*
+%endif
 %{_includedir}/*.h
 %{_mandir}/man3/*
 /usr/share/aclocal/audit.m4
@@ -157,6 +169,10 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Nov 26 2019 Alexey Makhalov <amakhalov@vmware.com> 2.8.5-2
+-   Cross compilation support.
+-   Do not use BuildRequires in subpackages.
+-   Disable golang dependency.
 *   Thu Oct 17 2019 Shreyas B <shreyasb@vmware.com> 2.8.5-1
 -   Updated to version 2.8.5.
 *   Mon Sep 3 2018 Keerthana K <keerthanak@vmware.com> 2.8.4-1

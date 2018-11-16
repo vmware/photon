@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -61,6 +61,7 @@ Requires:       perl
 Requires:       lua
 Requires:       %{name}-devel = %{version}-%{release}
 Requires:       elfutils-libelf
+Requires:       cpio
 Summary: Binaries, scripts and libraries needed to build rpms.
 %description build
 Binaries, libraries and scripts to build rpms.
@@ -251,6 +252,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Oct 31 2019 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-6
+-   rpm-build depends on cpio
 *   Thu Oct 10 2019 Tapas Kundu <tkundu@vmware.com> 4.14.2-5
 -   Enabled lua support
 *   Wed Oct 03 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-4

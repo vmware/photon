@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -106,9 +106,15 @@ chmod +x find_requires.sh
 #___EOF
 
 %build
+
+# make aarch64 use /lib64 instead of /lib (same as x86_64)
+sed -i "s/libc_cv_rtlddir='\/lib'/libc_cv_rtlddir='\/lib64'/" sysdeps/unix/sysv/linux/aarch64/configure
+
 cd %{_builddir}/%{name}-build
 ../%{name}-%{version}/configure \
         --prefix=%{_prefix} \
+        --build=%{_build} \
+        --host=%{_host} \
         --disable-profile \
         --enable-kernel=3.2 \
         --enable-bind-now \
@@ -160,17 +166,26 @@ cat > %{buildroot}%{_sysconfdir}/ld.so.conf <<- "EOF"
 	/opt/lib
 	include /etc/ld.so.conf.d/*.conf
 EOF
+# Create empty ld.so.cache
+:> %{buildroot}%{_sysconfdir}/ld.so.cache
 popd
+
 %find_lang %{name} --all-name
 pushd localedata
 # Generate out of locale-archive an (en_US.) UTF-8 locale
 mkdir -p %{buildroot}/usr/lib/locale
-I18NPATH=. GCONV_PATH=../../glibc-build/iconvdata LC_ALL=C ../../glibc-build/locale/localedef --no-archive --prefix=%{buildroot} -A ../intl/locale.alias -i locales/en_US -c -f charmaps/UTF-8 en_US.UTF-8
+if [ %{_host} != %{_build} ]; then
+LOCALEDEF=localedef
+else
+LOCALEDEF=../../glibc-build/locale/localedef
+fi
+I18NPATH=. GCONV_PATH=../../glibc-build/iconvdata LC_ALL=C $LOCALEDEF --no-archive --prefix=%{buildroot} -A ../intl/locale.alias -i locales/en_US -c -f charmaps/UTF-8 en_US.UTF-8
 mv %{buildroot}/usr/lib/locale/en_US.utf8 %{buildroot}/usr/lib/locale/en_US.UTF-8
 popd
 # to do not depend on /bin/bash
 sed -i 's@#! /bin/bash@#! /bin/sh@' %{buildroot}/usr/bin/ldd
 sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}/usr/bin/tzselect
+
 
 %check
 cd %{_builddir}/glibc-build
@@ -206,14 +221,19 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %config(noreplace) %{_sysconfdir}/nsswitch.conf
 %config(noreplace) %{_sysconfdir}/ld.so.conf
 %config(noreplace) %{_sysconfdir}/rpc
-%config(missingok,noreplace) %{_sysconfdir}/ld.so.cache
+%attr(0644,root,root) %config(missingok,noreplace) %{_sysconfdir}/ld.so.cache
 %config %{_sysconfdir}/locale-gen.conf
+
+%ifarch %{ix86}
+/lib/*
+%exclude /lib/libpcprofile.so
+%{_libdir}/*.so
+%else
 /lib64/*
-%ifarch aarch64
-%exclude /lib
-%endif
 %exclude /lib64/libpcprofile.so
 %{_lib64dir}/*.so
+%endif
+
 /sbin/ldconfig
 /sbin/locale-gen.sh
 %{_bindir}/*
@@ -234,7 +254,11 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 %files iconv
 %defattr(-,root,root)
+%ifarch %{ix86}
+%{_libdir}/gconv/*
+%else
 %{_lib64dir}/gconv/*
+%endif
 /usr/bin/iconv
 /usr/sbin/iconvconfig
 
@@ -250,8 +274,13 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 /usr/sbin/zdump
 /usr/sbin/zic
 /sbin/sln
+%ifarch %{ix86}
+%{_libdir}/audit/*
+/lib/libpcprofile.so
+%else
 %{_lib64dir}/audit/*
 /lib64/libpcprofile.so
+%endif
 
 %files nscd
 %defattr(-,root,root)
@@ -272,8 +301,13 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %defattr(-,root,root)
 # TODO: Excluding for now to remove dependency on PERL
 # /usr/bin/mtrace
+%ifarch %{ix86}
+%{_libdir}/*.a
+%{_libdir}/*.o
+%else
 %{_lib64dir}/*.a
 %{_lib64dir}/*.o
+%endif
 %{_includedir}/*
 
 %files -f %{name}.lang lang
@@ -281,6 +315,10 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Tue Sep 24 2019 Alexey Makhalov <amakhalov@vmware.com> 2.28-5
+-   Cross compilling support
+-   Create empty ld.so.cache file for all builds (native and cross)
+-   Use /lib64 for aarch64
 *   Fri Jul 12 2019 Ankit Jain <ankitja@vmware.com> 2.28-4
 -   Replaced spaces with tab in nsswitch.conf file
 *   Fri Mar 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.28-3

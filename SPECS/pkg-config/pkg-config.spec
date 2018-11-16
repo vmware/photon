@@ -1,7 +1,7 @@
 Summary:	Build tool
 Name:		pkg-config
 Version:	0.29.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://www.freedesktop.org/wiki/Software/pkg-config
 Group:		Development/Tools
@@ -24,12 +24,20 @@ cd glib  # patches need to apply to internal glib
 cd ..
 
 %build
+if [ %{_host} != %{_build} ]; then
+# configure unable to run tests for cross compilation
+# preset values
+    export glib_cv_stack_grows=no
+    export ac_cv_func_posix_getpwuid_r=yes
+    export ac_cv_func_posix_getgrgid_r=yes
+    export glib_cv_uscore=yes
+fi
 %configure \
-	--prefix=%{_prefix} \
-	--with-internal-glib \
-	--disable-host-tool \
-	--docdir=%{_defaultdocdir}/%{name}-%{version} \
-	--disable-silent-rules
+    --target=%{_host} \
+    --with-internal-glib \
+    --disable-host-tool \
+    --docdir=%{_defaultdocdir}/%{name}-%{version} \
+    --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
@@ -45,13 +53,15 @@ make %{?_smp_mflags} check
 %{_docdir}/pkg-config-*/pkg-config-guide.html
 %{_mandir}/man1/pkg-config.1.gz
 %changelog
-*       Fri Jan 18 2019 Ajay Kaher <akaher@vmware.com> 0.29.2-2
--       Fix internal glib for CVE-2018-16428 and CVE-2018-16429
-*       Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 0.29.2-1
--       upgrade for 2.0
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 0.28-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.28-2
--	GA - Bump release of all rpms
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 0.28-1
--	Initial build. First version
+* Wed Jul 03 2019 Alexey Makhalov <amakhalov@vmware.com> 0.29.2-3
+- Cross compilation support
+* Fri Jan 18 2019 Ajay Kaher <akaher@vmware.com> 0.29.2-2
+- Fix internal glib for CVE-2018-16428 and CVE-2018-16429
+* Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 0.29.2-1
+- upgrade for 2.0
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 0.28-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.28-2
+- GA - Bump release of all rpms
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 0.28-1
+- Initial build. First version

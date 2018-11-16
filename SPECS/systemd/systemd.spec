@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          11%{?dist}
+Release:          12%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -38,6 +38,7 @@ Requires:         glib
 Requires:         libgcrypt
 Requires:         filesystem >= 1.1
 Requires:         elfutils
+Requires:         util-linux-libs
 BuildRequires:    intltool
 BuildRequires:    gperf
 BuildRequires:    libcap-devel
@@ -55,6 +56,7 @@ BuildRequires:    meson
 BuildRequires:    gettext
 BuildRequires:    shadow
 BuildRequires:    libgcrypt-devel
+BuildRequires:    elfutils-devel
 
 %description
 Systemd is an init replacement with better process control and security
@@ -101,6 +103,39 @@ EOF
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
 %build
+if [ %{_host} != %{_build} ]; then
+CPU_FAMILY=""
+test %{_arch} == "aarch64" && CPU_FAMILY="aarch64"
+test %{_arch} == "i686" && CPU_FAMILY="x86"
+
+cat > cross-compile-config.txt << EOF
+[binaries]
+c = '%{_host}-gcc'
+cpp = '%{_host}-g++'
+ar = '%{_host}-ar'
+ld = '%{_host}-ld'
+ranlib = '%{_host}-ranlib'
+strip = '%{_host}-strip'
+pkgconfig = '%{_host}-pkg-config'
+
+[properties]
+needs_exe_wrapper = true
+c_args = ['--sysroot=/target-%{_arch}']
+cpp_args = ['--sysroot=/target-%{_arch}']
+c_link_args = ['-lssp']
+cpp_link_args = ['-lssp']
+
+[host_machine]
+system = 'linux'
+cpu_family = '$CPU_FAMILY'
+cpu = '%{_arch}'
+endian = 'little'
+EOF
+
+  CROSS_COMPILE_CONFIG="--cross-file ./cross-compile-config.txt"
+else
+  CROSS_COMPILE_CONFIG=
+fi
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 meson  --prefix %{_prefix}                                            \
@@ -123,7 +158,7 @@ meson  --prefix %{_prefix}                                            \
        -Ddbussystemservicedir=%{_prefix}/share/dbus-1/system-services \
        -Dsysvinit-path=/etc/rc.d/init.d                               \
        -Drc-local=/etc/rc.d/rc.local                                  \
-       $PWD build &&
+       $PWD build $CROSS_COMPILE_CONFIG &&
        cd build &&
        %ninja_build
 
@@ -263,6 +298,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Thu Oct 31 2019 Alexey Makhalov <amakhalov@vmware.com> 239-12
+-    Cross compilation support
 *    Tue Oct 22 2019 Piyush Gupta <guptapi@vmware.com>  239-11
 -    Added requires elfutils
 *    Thu Jan 10 2019 Anish Swaminathan <anishs@vmware.com>  239-10

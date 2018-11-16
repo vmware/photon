@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.32
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -66,6 +66,7 @@ for handling compiled objects.
             --enable-ld=default \
             --enable-plugins    \
             --enable-shared     \
+            --enable-targets=x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu \
             --disable-werror    \
             --with-system-zlib  \
 	    --enable-install-libiberty \
@@ -147,6 +148,9 @@ make %{?_smp_mflags} check
 %{_lib64dir}/libiberty.a
 
 %changelog
+*   Tue Nov 26 2019 Alexey Makhalov <amakhalov@vmware.com> 2.32-4
+-   Support for aarch64 target to be able to strip aarch64 libraries
+    during cross-aarch64-gcc build
 *   Wed Nov 13 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.32-3
 -   Fix CVE-2019-17450 and CVE-2019-17451
 *   Sun Sep 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 2.32-2
