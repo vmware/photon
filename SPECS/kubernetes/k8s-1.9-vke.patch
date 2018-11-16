@@ -1,428 +1,199 @@
-From 2683eb21c7c52d3eacbeb190d0a27b2a2ebca708 Mon Sep 17 00:00:00 2001
-From: DheerajSShetty <dheerajs@vmware.com>
-Date: Mon, 8 Oct 2018 17:02:50 -0700
-Subject: [PATCH] VKE patch for k8s 1.9.10 (48fc708e)
+From 47f31f44df88156d4480e3f534903ed002edb82a Mon Sep 17 00:00:00 2001
+From: Amarnath <vaa@vmware.com>
+Date: Fri, 16 Nov 2018 14:28:56 +0530
+Subject: [PATCH] VCP patch for K8s v1.9.11 (869d841)
 
 ---
- api/swagger-spec/apps_v1alpha1.json                | Bin 135734 -> 136495 bytes
- api/swagger-spec/apps_v1beta1.json                 | Bin 311661 -> 312422 bytes
- api/swagger-spec/apps_v1beta2.json                 | Bin 425385 -> 426146 bytes
- api/swagger-spec/batch_v1.json                     | Bin 182308 -> 183069 bytes
- api/swagger-spec/batch_v1beta1.json                | Bin 185598 -> 186359 bytes
- api/swagger-spec/batch_v2alpha1.json               | Bin 185625 -> 186386 bytes
- api/swagger-spec/extensions_v1beta1.json           | Bin 473155 -> 473916 bytes
- api/swagger-spec/settings.k8s.io_v1alpha1.json     | Bin 128260 -> 129021 bytes
- api/swagger-spec/v1.json                           | Bin 988673 -> 989618 bytes
- cmd/kube-apiserver/app/options/plugins.go          |   2 +
- cmd/kube-controller-manager/app/BUILD              |   1 +
- cmd/kube-controller-manager/app/plugins.go         |   4 +
- cmd/kubelet/app/BUILD                              |   1 +
- cmd/kubelet/app/plugins.go                         |   2 +
- pkg/apis/core/types.go                             |  14 +
- pkg/apis/core/validation/validation.go             |  25 +
- pkg/apis/extensions/types.go                       |   1 +
- pkg/cloudprovider/providers/BUILD                  |   2 +
- pkg/cloudprovider/providers/cascade/BUILD          |  56 ++
- pkg/cloudprovider/providers/cascade/OWNERS         |   3 +
- pkg/cloudprovider/providers/cascade/apitypes.go    | 230 +++++
- pkg/cloudprovider/providers/cascade/auth.go        | 145 ++++
- pkg/cloudprovider/providers/cascade/cascade.go     | 219 +++++
- .../providers/cascade/cascade_disks.go             | 226 +++++
- .../providers/cascade/cascade_instances.go         | 124 +++
- .../providers/cascade/cascade_instances_test.go    |  43 +
- .../providers/cascade/cascade_loadbalancer.go      | 284 ++++++
- pkg/cloudprovider/providers/cascade/client.go      | 399 +++++++++
- pkg/cloudprovider/providers/cascade/oidcclient.go  | 297 +++++++
- pkg/cloudprovider/providers/cascade/restclient.go  | 262 ++++++
- pkg/cloudprovider/providers/cascade/tests_owed     |   5 +
- pkg/cloudprovider/providers/cascade/utils.go       |  29 +
- pkg/cloudprovider/providers/providers.go           |   1 +
- pkg/kubeapiserver/authorizer/config.go             |   8 +-
- pkg/kubeapiserver/authorizer/modes/modes.go        |   3 +-
- pkg/printers/internalversion/describe.go           |  11 +
- pkg/security/podsecuritypolicy/util/util.go        |   3 +
- pkg/volume/cascade_disk/BUILD                      |  43 +
- pkg/volume/cascade_disk/OWNERS                     |   2 +
- pkg/volume/cascade_disk/attacher.go                | 265 ++++++
- pkg/volume/cascade_disk/azure_disk_util.go         | 136 +++
- pkg/volume/cascade_disk/cascade_disk.go            | 391 +++++++++
- pkg/volume/cascade_disk/cascade_util.go            | 201 +++++
- .../admission/persistentvolume/label/admission.go  |  54 ++
- plugin/pkg/admission/vke/BUILD                     |  61 ++
- plugin/pkg/admission/vke/admission.go              | 618 +++++++++++++
- plugin/pkg/admission/vke/admission_test.go         | 960 +++++++++++++++++++++
- plugin/pkg/auth/authorizer/vke/BUILD               |  40 +
- plugin/pkg/auth/authorizer/vke/OWNERS              |   3 +
- plugin/pkg/auth/authorizer/vke/vke_authorizer.go   | 123 +++
- .../pkg/auth/authorizer/vke/vke_authorizer_test.go | 230 +++++
- staging/src/k8s.io/api/core/v1/generated.pb.go     | Bin 1241955 -> 1248240 bytes
- staging/src/k8s.io/api/core/v1/types.go            |  26 +-
- 53 files changed, 5545 insertions(+), 8 deletions(-)
+ api/swagger-spec/apps_v1alpha1.json           | Bin 135734 -> 136495 bytes
+ api/swagger-spec/apps_v1beta1.json            | Bin 311661 -> 312422 bytes
+ api/swagger-spec/apps_v1beta2.json            | Bin 425385 -> 426146 bytes
+ api/swagger-spec/batch_v1.json                | Bin 182308 -> 183069 bytes
+ api/swagger-spec/batch_v1beta1.json           | Bin 185598 -> 186359 bytes
+ api/swagger-spec/batch_v2alpha1.json          | Bin 185625 -> 186386 bytes
+ api/swagger-spec/extensions_v1beta1.json      | Bin 473155 -> 473916 bytes
+ .../settings.k8s.io_v1alpha1.json             | Bin 128260 -> 129021 bytes
+ api/swagger-spec/v1.json                      | Bin 988673 -> 989618 bytes
+ cmd/kube-apiserver/app/options/plugins.go     |   2 +
+ cmd/kube-controller-manager/app/BUILD         |   1 +
+ cmd/kube-controller-manager/app/plugins.go    |   4 +
+ cmd/kubelet/app/BUILD                         |   1 +
+ cmd/kubelet/app/plugins.go                    |   2 +
+ pkg/apis/core/types.go                        |  14 +
+ pkg/apis/core/validation/validation.go        |  25 +
+ pkg/apis/extensions/types.go                  |   1 +
+ pkg/cloudprovider/providers/BUILD             |   2 +
+ pkg/cloudprovider/providers/cascade/BUILD     |  56 +
+ pkg/cloudprovider/providers/cascade/OWNERS    |   3 +
+ .../providers/cascade/apitypes.go             | 230 +++++
+ pkg/cloudprovider/providers/cascade/auth.go   | 145 +++
+ .../providers/cascade/cascade.go              | 223 ++++
+ .../providers/cascade/cascade_disks.go        | 252 +++++
+ .../providers/cascade/cascade_instances.go    | 124 +++
+ .../cascade/cascade_instances_test.go         |  43 +
+ .../providers/cascade/cascade_loadbalancer.go | 284 ++++++
+ pkg/cloudprovider/providers/cascade/client.go | 400 ++++++++
+ .../providers/cascade/oidcclient.go           | 297 ++++++
+ .../providers/cascade/restclient.go           | 262 +++++
+ .../providers/cascade/tests_owed              |   5 +
+ pkg/cloudprovider/providers/cascade/utils.go  |  29 +
+ pkg/cloudprovider/providers/providers.go      |   1 +
+ pkg/kubeapiserver/authorizer/config.go        |   8 +-
+ pkg/kubeapiserver/authorizer/modes/modes.go   |   3 +-
+ pkg/printers/internalversion/describe.go      |  11 +
+ pkg/security/podsecuritypolicy/util/util.go   |   3 +
+ pkg/volume/cascade_disk/BUILD                 |  43 +
+ pkg/volume/cascade_disk/OWNERS                |   2 +
+ pkg/volume/cascade_disk/attacher.go           | 265 +++++
+ pkg/volume/cascade_disk/azure_disk_util.go    | 136 +++
+ pkg/volume/cascade_disk/cascade_disk.go       | 400 ++++++++
+ pkg/volume/cascade_disk/cascade_util.go       | 217 ++++
+ .../persistentvolume/label/admission.go       |  54 +
+ plugin/pkg/admission/vke/BUILD                |  61 ++
+ plugin/pkg/admission/vke/admission.go         | 627 ++++++++++++
+ plugin/pkg/admission/vke/admission_test.go    | 960 ++++++++++++++++++
+ plugin/pkg/auth/authorizer/vke/BUILD          |  40 +
+ plugin/pkg/auth/authorizer/vke/OWNERS         |   3 +
+ .../pkg/auth/authorizer/vke/vke_authorizer.go | 123 +++
+ .../authorizer/vke/vke_authorizer_test.go     | 230 +++++
+ .../src/k8s.io/api/core/v1/generated.pb.go    | Bin 1241955 -> 1248240 bytes
+ staging/src/k8s.io/api/core/v1/types.go       |  26 +-
+ 53 files changed, 5610 insertions(+), 8 deletions(-)
+ create mode 100644 pkg/cloudprovider/providers/cascade/BUILD
+ create mode 100644 pkg/cloudprovider/providers/cascade/OWNERS
+ create mode 100644 pkg/cloudprovider/providers/cascade/apitypes.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/auth.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/cascade.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/cascade_disks.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/cascade_instances.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/cascade_instances_test.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/client.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/oidcclient.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/restclient.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/tests_owed
+ create mode 100644 pkg/cloudprovider/providers/cascade/utils.go
+ create mode 100644 pkg/volume/cascade_disk/BUILD
+ create mode 100644 pkg/volume/cascade_disk/OWNERS
+ create mode 100644 pkg/volume/cascade_disk/attacher.go
+ create mode 100644 pkg/volume/cascade_disk/azure_disk_util.go
+ create mode 100644 pkg/volume/cascade_disk/cascade_disk.go
+ create mode 100644 pkg/volume/cascade_disk/cascade_util.go
+ create mode 100644 plugin/pkg/admission/vke/BUILD
+ create mode 100644 plugin/pkg/admission/vke/admission.go
+ create mode 100644 plugin/pkg/admission/vke/admission_test.go
+ create mode 100644 plugin/pkg/auth/authorizer/vke/BUILD
+ create mode 100644 plugin/pkg/auth/authorizer/vke/OWNERS
+ create mode 100644 plugin/pkg/auth/authorizer/vke/vke_authorizer.go
+ create mode 100644 plugin/pkg/auth/authorizer/vke/vke_authorizer_test.go
 
 diff --git a/api/swagger-spec/apps_v1alpha1.json b/api/swagger-spec/apps_v1alpha1.json
-index aa3fbdc..0189f38 100644
---- a/api/swagger-spec/apps_v1alpha1.json
-+++ b/api/swagger-spec/apps_v1alpha1.json
-@@ -1459,6 +1459,10 @@
-      "photonPersistentDisk": {
-       "$ref": "v1.PhotonPersistentDiskVolumeSource",
-       "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
-+     },
-+     "vkeDisk": {
-+      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
-      }
-     }
-    },
-@@ -2109,6 +2113,23 @@
-      }
-     }
-    },
-+   "v1.CascadeDiskVolumeSource": {
-+    "id": "v1.CascadeDiskVolumeSource",
-+    "description": "Represents a Cascade persistent disk resource.",
-+    "required": [
-+     "diskID"
-+    ],
-+    "properties": {
-+     "diskID": {
-+      "type": "string",
-+      "description": "ID that identifies Cascade persistent disk"
-+     },
-+     "fsType": {
-+      "type": "string",
-+      "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
-+     }
-+    }
-+   },
-    "v1.Container": {
-     "id": "v1.Container",
-     "description": "A single application container that you want to run within a pod.",
+index aa3fbdcc2d87c60c697e33edbcf2faad083b8353..0189f38fccd93c4660229dbb9d2843f43e6e0258 100644
+GIT binary patch
+delta 154
+zcmdnCgk$|GjtzBpxplY{KtQQ1J9TpJX=!%n#Ny<{l+@`Lof*X^?>i?X1C(&dEY4Oa
+zN-Zc#El$lVDON~SfU4STaaXH^6|7@=p%<eHvThSNr_G<ybh?2zBMXzK%jAu7m041N
+X=1u>g0Th)CU=)U_+in}c`12qD^kp{;
+
+delta 24
+icmV+z0O$X&stC5E2(W(LllkZrvr693bGKVm0o1^#Aq{W<
+
 diff --git a/api/swagger-spec/apps_v1beta1.json b/api/swagger-spec/apps_v1beta1.json
-index e253317..c1fa812 100644
---- a/api/swagger-spec/apps_v1beta1.json
-+++ b/api/swagger-spec/apps_v1beta1.json
-@@ -4479,6 +4479,10 @@
-       "$ref": "v1.PhotonPersistentDiskVolumeSource",
-       "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
-      },
-+     "vkeDisk": {
-+      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
-+     },
-      "projected": {
-       "$ref": "v1.ProjectedVolumeSource",
-       "description": "Items for all in one resources secrets, configmaps, and downward API"
-@@ -5206,6 +5210,23 @@
-      }
-     }
-    },
-+   "v1.CascadeDiskVolumeSource": {
-+    "id": "v1.CascadeDiskVolumeSource",
-+    "description": "Represents a Cascade persistent disk resource.",
-+    "required": [
-+     "diskID"
-+    ],
-+    "properties": {
-+     "diskID": {
-+      "type": "string",
-+      "description": "ID that identifies Cascade persistent disk"
-+     },
-+     "fsType": {
-+      "type": "string",
-+      "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
-+     }
-+    }
-+   },
-    "v1.ProjectedVolumeSource": {
-     "id": "v1.ProjectedVolumeSource",
-     "description": "Represents a projected volume source",
+index e2533176f494813ca5ac3fd67e65044823ad6fc1..c1fa8127aa2a2bacaada13ac578d5fc41e90c03c 100644
+GIT binary patch
+delta 171
+zcmaFcB>b#HxS@ryg=q@&dZx1M>9YTsWZ0Y&i<1*mrt4QTOH6<Nok>WhEIZXDvp8F!
+zD7By{wKz4eq*x(Q0ir5(Ya%mWGdGk2QZ>DinOPpm42|g*Jehf60=tEorKYcKWR_t|
+m0jl+MnVuNKqzq$!3}!N(uHM8f%nmiL-Mfi-yLS_dl05){>pI&2
+
+delta 30
+mcmaFXA^f&UxS@ryg=q@&`t9kA%m<p<GuoK9XSA{WvjqUgfee)Z
+
 diff --git a/api/swagger-spec/apps_v1beta2.json b/api/swagger-spec/apps_v1beta2.json
-index be42788..5abb9f5 100644
---- a/api/swagger-spec/apps_v1beta2.json
-+++ b/api/swagger-spec/apps_v1beta2.json
-@@ -6845,6 +6845,10 @@
-       "$ref": "v1.PhotonPersistentDiskVolumeSource",
-       "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
-      },
-+     "vkeDisk": {
-+      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
-+     },
-      "projected": {
-       "$ref": "v1.ProjectedVolumeSource",
-       "description": "Items for all in one resources secrets, configmaps, and downward API"
-@@ -7572,6 +7576,23 @@
-      }
-     }
-    },
-+   "v1.CascadeDiskVolumeSource": {
-+    "id": "v1.CascadeDiskVolumeSource",
-+    "description": "Represents a Cascade persistent disk resource.",
-+    "required": [
-+     "diskID"
-+    ],
-+    "properties": {
-+     "diskID": {
-+      "type": "string",
-+      "description": "ID that identifies Cascade persistent disk"
-+     },
-+     "fsType": {
-+      "type": "string",
-+      "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
-+     }
-+    }
-+   },
-    "v1.ProjectedVolumeSource": {
-     "id": "v1.ProjectedVolumeSource",
-     "description": "Represents a projected volume source",
+index be427887ae3c480f9baefd3f8aa06fb2106432a0..5abb9f599790f2308511a78fa77eaa581e43f3bb 100644
+GIT binary patch
+delta 193
+zcmZ4aTXIpOR6`463sVd87MAdO_Ok3$m(1eq=^r^*#Mzw_i<1*mQm3!0W6_j>$|w}2
+z78Ioxr{<LuD<mpFRcz<1XW?sRgYc%W|H-0)tXF*6Sr$1qh*?u@SWVedfHru#OgEgt
+zqRawfPcOX6VmkFatFSQCJcWYPqT<Zr5}+*#(|TB9r$0Etk~{tXQx>b~Rdy^Q?cz+V
+L+r^pKCRGCfc~eDu
+
+delta 33
+pcmZ3~D7EspWJ3#M3sVd87MAe(?feZa2b$UiSXs9Vu(D061_0UY3#R}8
+
 diff --git a/api/swagger-spec/batch_v1.json b/api/swagger-spec/batch_v1.json
-index 28787d8..28fcb65 100644
---- a/api/swagger-spec/batch_v1.json
-+++ b/api/swagger-spec/batch_v1.json
-@@ -1819,6 +1819,10 @@
-       "$ref": "v1.PhotonPersistentDiskVolumeSource",
-       "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
-      },
-+     "vkeDisk": {
-+      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
-+     },
-      "projected": {
-       "$ref": "v1.ProjectedVolumeSource",
-       "description": "Items for all in one resources secrets, configmaps, and downward API"
-@@ -2546,6 +2550,23 @@
-      }
-     }
-    },
-+   "v1.CascadeDiskVolumeSource": {
-+    "id": "v1.CascadeDiskVolumeSource",
-+    "description": "Represents a Cascade persistent disk resource.",
-+    "required": [
-+     "diskID"
-+    ],
-+    "properties": {
-+     "diskID": {
-+      "type": "string",
-+      "description": "ID that identifies Cascade persistent disk"
-+     },
-+     "fsType": {
-+      "type": "string",
-+      "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
-+     }
-+    }
-+   },
-    "v1.ProjectedVolumeSource": {
-     "id": "v1.ProjectedVolumeSource",
-     "description": "Represents a projected volume source",
+index 28787d818893103ae59b3dd8dd89ca6e936abd14..28fcb65b1ee00e15cef068fd3811f26de8fd592d 100644
+GIT binary patch
+delta 153
+zcmZ27fqU*W?uIRl&0$Ps+0#FUFv_qwCl)6src4(MWz>=>%T9I4EY4OaN-Zc#El$lV
+zDON~SfG9}aZW_kO*US#(O>anGR7TP(F<s##qby9IKa){vdfID78I}~Fanltt8CBUp
+ZEKiroj<1ZT|Gv&B3^QoE{0&Cd4*>9CHE93<
+
+delta 23
+fcmbO`jeE%i?uIRl&0*WE!x;}WZMV6@`0yP7cTEbn
+
 diff --git a/api/swagger-spec/batch_v1beta1.json b/api/swagger-spec/batch_v1beta1.json
-index bb9b870..f67a014 100644
---- a/api/swagger-spec/batch_v1beta1.json
-+++ b/api/swagger-spec/batch_v1beta1.json
-@@ -1874,6 +1874,10 @@
-       "$ref": "v1.PhotonPersistentDiskVolumeSource",
-       "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
-      },
-+     "vkeDisk": {
-+      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
-+     },
-      "projected": {
-       "$ref": "v1.ProjectedVolumeSource",
-       "description": "Items for all in one resources secrets, configmaps, and downward API"
-@@ -2601,6 +2605,23 @@
-      }
-     }
-    },
-+   "v1.CascadeDiskVolumeSource": {
-+    "id": "v1.CascadeDiskVolumeSource",
-+    "description": "Represents a Cascade persistent disk resource.",
-+    "required": [
-+     "diskID"
-+    ],
-+    "properties": {
-+     "diskID": {
-+      "type": "string",
-+      "description": "ID that identifies Cascade persistent disk"
-+     },
-+     "fsType": {
-+      "type": "string",
-+      "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
-+     }
-+    }
-+   },
-    "v1.ProjectedVolumeSource": {
-     "id": "v1.ProjectedVolumeSource",
-     "description": "Represents a projected volume source",
+index bb9b870bda2b1dbb5f6d702b55b0ccc7eecf417c..f67a0140e511e92f1b06a56552cc554950369d9f 100644
+GIT binary patch
+delta 162
+zcmeyjlKcC5?uIRl|B~3tvQu3$i?gRYDl&?*IVTn;C#FoVyUQpseL@hUkPK8-p(wSW
+zD782>ucTNZQ30YVb^C@SM!sflC=YB1V+o@?k|7$?3$`=z!UVX=7^SBFdCVxomIAcU
+d(`9nt7v<>z_ZV5GJ3e9bV27DH>j`7Z2LL*vJdXeX
+
+delta 23
+fcmeyqp8MZQ?uIRl|B|+EOJ+RKw0-*vMu+zRnAr@H
+
 diff --git a/api/swagger-spec/batch_v2alpha1.json b/api/swagger-spec/batch_v2alpha1.json
-index cde6619..78888be 100644
---- a/api/swagger-spec/batch_v2alpha1.json
-+++ b/api/swagger-spec/batch_v2alpha1.json
-@@ -1889,6 +1889,10 @@
-      "storageos": {
-       "$ref": "v1.StorageOSVolumeSource",
-       "description": "StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes."
-+     },
-+     "vkeDisk": {
-+      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
-      }
-     }
-    },
-@@ -2793,6 +2797,23 @@
-      }
-     }
-    },
-+   "v1.CascadeDiskVolumeSource": {
-+    "id": "v1.CascadeDiskVolumeSource",
-+    "description": "Represents a Cascade persistent disk resource.",
-+    "required": [
-+     "diskID"
-+    ],
-+    "properties": {
-+     "diskID": {
-+      "type": "string",
-+      "description": "ID that identifies Cascade persistent disk"
-+     },
-+     "fsType": {
-+      "type": "string",
-+      "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
-+     }
-+    }
-+   },
-    "v1.Container": {
-     "id": "v1.Container",
-     "description": "A single application container that you want to run within a pod.",
+index cde661970dd8939eb2cd91d83daee7cf5f321eb9..78888be268bab43aa67bd18fbb1d7e4f933a92df 100644
+GIT binary patch
+delta 201
+zcmbQaihI%q?uIRlXH%!kr807`mu08AWEN*n50qsTXLn94PEJfoot~G(s3`-LQ7B3+
+zC`v6(%_}KZNK}BSIGM!gHhpFWqs;b~sf=8USiu^n=ig;iK{iBu`hg9Ma%@mj|2$?i
+zWlI5C=IJs$QJhhk1;n0ixRcRzdjAtfVPUA*3I(Y}#hJw=KpPdNAIN8noxWfNWA60*
+TCmF4#zhYz(+5U;0N&PGUqT@;y
+
+delta 28
+kcmbQVfqUjE?uIRlXH%zpg)xb4pOwZaxM=$uE+)0J0ILBDUH||9
+
 diff --git a/api/swagger-spec/extensions_v1beta1.json b/api/swagger-spec/extensions_v1beta1.json
-index d8b20a3..73342a1 100644
---- a/api/swagger-spec/extensions_v1beta1.json
-+++ b/api/swagger-spec/extensions_v1beta1.json
-@@ -7502,6 +7502,10 @@
-      "storageos": {
-       "$ref": "v1.StorageOSVolumeSource",
-       "description": "StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes."
-+     },
-+     "vkeDisk": {
-+      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
-      }
-     }
-    },
-@@ -8214,6 +8218,23 @@
-      }
-     }
-    },
-+   "v1.CascadeDiskVolumeSource": {
-+    "id": "v1.CascadeDiskVolumeSource",
-+    "description": "Represents a Cascade persistent disk resource.",
-+    "required": [
-+     "diskID"
-+    ],
-+    "properties": {
-+     "diskID": {
-+      "type": "string",
-+      "description": "ID that identifies Cascade persistent disk"
-+     },
-+     "fsType": {
-+      "type": "string",
-+      "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
-+     }
-+    }
-+   },
-    "v1.ProjectedVolumeSource": {
-     "id": "v1.ProjectedVolumeSource",
-     "description": "Represents a projected volume source",
+index d8b20a3fd9809c3ebf68bd2790634ff19eba9d50..73342a11c3cab18a40c1a25bd83d1aa9715e6e21 100644
+GIT binary patch
+delta 217
+zcmX^7L1xc4nT8g|7N!>FEi8MVP3L>Y!ogmao$8WVoITxfHH$dAb7FCFVoK`txW_D-
+zGEf<XqSS(-)Z)~<l46BK1(=GRk6GNNcfMqi*?#jG%e#6ui1_sQI93&8Q^colFl3cu
+zgBtrLh1HZT1!$Y6%k+nTSd>{n?CFYDtftfJQ(1+Dp@u6Iq!txt7MB36RG7Zu1551m
+j37V|A)7N{kT1{W`f=zh3z$sRi_ETxB+fSvjRbB)D;iFUD
+
+delta 42
+zcmV+_0M-Az_8i0T9DsxYgaU*Ev;@88ms?r}6P7Io1-Fgo1oD4}z-a}yz-b12(UY$d
+A#sB~S
+
 diff --git a/api/swagger-spec/settings.k8s.io_v1alpha1.json b/api/swagger-spec/settings.k8s.io_v1alpha1.json
-index dc442a8..8c1f100 100644
---- a/api/swagger-spec/settings.k8s.io_v1alpha1.json
-+++ b/api/swagger-spec/settings.k8s.io_v1alpha1.json
-@@ -1676,6 +1676,10 @@
-      "storageos": {
-       "$ref": "v1.StorageOSVolumeSource",
-       "description": "StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes."
-+     },
-+     "vkeDisk": {
-+      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
-      }
-     }
-    },
-@@ -2350,6 +2354,23 @@
-      }
-     }
-    },
-+   "v1.CascadeDiskVolumeSource": {
-+    "id": "v1.CascadeDiskVolumeSource",
-+    "description": "Represents a Cascade persistent disk resource.",
-+    "required": [
-+     "diskID"
-+    ],
-+    "properties": {
-+     "diskID": {
-+      "type": "string",
-+      "description": "ID that identifies Cascade persistent disk"
-+     },
-+     "fsType": {
-+      "type": "string",
-+      "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
-+     }
-+    }
-+   },
-    "v1.ProjectedVolumeSource": {
-     "id": "v1.ProjectedVolumeSource",
-     "description": "Represents a projected volume source",
+index dc442a8ebbe1738f7c68ad5d8d70804a967c748e..8c1f1000dc808a5d912beda8c9954e60bf057121 100644
+GIT binary patch
+delta 172
+zcmZp9#s2p_d&3sS8uRIA%@{e@%d%5lGK;gPKjdN*XLC+0PEJgjeqa@&#Poffj6yO{
+zS%sq1f}+&o)Vz{ng+v92s?_NfCX8;Af8G|^KEa%^pqd>fymkYlGLlIe)9afU`PjfF
+rr%qSh$Y{!z0<_T6Wpd#oWfl-~`hzY;)9E`lG77`Y*nVdtqlPm8@Yg`W
+
+delta 27
+jcmezSp1tK2d&3sS8uQ6on?$yISTGh;Z~wWKk;MrBvM~#z
+
 diff --git a/api/swagger-spec/v1.json b/api/swagger-spec/v1.json
-index 97be62b..df544c8 100644
---- a/api/swagger-spec/v1.json
-+++ b/api/swagger-spec/v1.json
-@@ -20629,6 +20629,10 @@
-       "$ref": "v1.PhotonPersistentDiskVolumeSource",
-       "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
-      },
-+     "vkeDisk": {
-+      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
-+     },
-      "portworxVolume": {
-       "$ref": "v1.PortworxVolumeSource",
-       "description": "PortworxVolume represents a portworx volume attached and mounted on kubelets host machine"
-@@ -21200,6 +21204,23 @@
-      }
-     }
-    },
-+   "v1.CascadeDiskVolumeSource": {
-+    "id": "v1.CascadeDiskVolumeSource",
-+    "description": "Represents a Cascade persistent disk resource.",
-+    "required": [
-+     "diskID"
-+    ],
-+    "properties": {
-+     "diskID": {
-+      "type": "string",
-+      "description": "ID that identifies Cascade persistent disk"
-+     },
-+     "fsType": {
-+      "type": "string",
-+      "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
-+     }
-+    }
-+   },
-    "v1.PortworxVolumeSource": {
-     "id": "v1.PortworxVolumeSource",
-     "description": "PortworxVolumeSource represents a Portworx volume resource.",
-@@ -21657,6 +21678,10 @@
-      "storageos": {
-       "$ref": "v1.StorageOSVolumeSource",
-       "description": "StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes."
-+     },
-+     "vkeDisk": {
-+      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
-      }
-     }
-    },
+index 97be62be175cd751e8cf3f4755e4bda607aea4e5..df544c8d85ae65c3667844d2bf937f1390ad567c 100644
+GIT binary patch
+delta 287
+zcmZo%W3y?qO+yP~3sVbo3rh=Y3tJ0&3r7oQ3s(#G7M|5D>}A=hE}6yI(*y7DO0Xps
+zCnu()PJhtIqbUQGP$)_*C`v6(%_}KZNK|l!sMsFc!gD&64Z@p#;31C+J5&awSA5zd
+z9)aolFL-!iDi~+-NKLoA#UsO(0<_E1W%|ct9%U8~d%9sNpP8hKLP<tqi9%)y(3;G&
+z%+zAIMJz9QcEwHScjx6G&!y9WE_Itevy@w8y0a0l==A?*c!b)2y7O-T>CVS-4ghS+
+BXukje
+
+delta 60
+zcmdnA*`{%gO+yP~3sVbo3rh=Y3tJ0&3r7oQ3s(#G7M|5D+ml;)YE!o>zU7$~JN?#9
+QK9TljZ{F?A-hBG!0IJaz_W%F@
+
 diff --git a/cmd/kube-apiserver/app/options/plugins.go b/cmd/kube-apiserver/app/options/plugins.go
-index a0d2502..4fe32e4 100644
+index a0d2502e7f..4fe32e4569 100644
 --- a/cmd/kube-apiserver/app/options/plugins.go
 +++ b/cmd/kube-apiserver/app/options/plugins.go
 @@ -52,6 +52,7 @@ import (
@@ -440,7 +211,7 @@ index a0d2502..4fe32e4 100644
 +	vke.Register(plugins)
  }
 diff --git a/cmd/kube-controller-manager/app/BUILD b/cmd/kube-controller-manager/app/BUILD
-index c518b36..f1a91f6 100644
+index c518b3679f..f1a91f6cc6 100644
 --- a/cmd/kube-controller-manager/app/BUILD
 +++ b/cmd/kube-controller-manager/app/BUILD
 @@ -86,6 +86,7 @@ go_library(
@@ -452,7 +223,7 @@ index c518b36..f1a91f6 100644
          "//pkg/volume/csi:go_default_library",
          "//pkg/volume/fc:go_default_library",
 diff --git a/cmd/kube-controller-manager/app/plugins.go b/cmd/kube-controller-manager/app/plugins.go
-index 170c366..5fa1cb1 100644
+index 170c366c90..5fa1cb19ee 100644
 --- a/cmd/kube-controller-manager/app/plugins.go
 +++ b/cmd/kube-controller-manager/app/plugins.go
 @@ -34,6 +34,7 @@ import (
@@ -488,7 +259,7 @@ index 170c366..5fa1cb1 100644
  	return allPlugins
  }
 diff --git a/cmd/kubelet/app/BUILD b/cmd/kubelet/app/BUILD
-index c7e482f..0d3645a 100644
+index c7e482f49e..0d3645a3ed 100644
 --- a/cmd/kubelet/app/BUILD
 +++ b/cmd/kubelet/app/BUILD
 @@ -74,6 +74,7 @@ go_library(
@@ -500,7 +271,7 @@ index c7e482f..0d3645a 100644
          "//pkg/volume/cinder:go_default_library",
          "//pkg/volume/configmap:go_default_library",
 diff --git a/cmd/kubelet/app/plugins.go b/cmd/kubelet/app/plugins.go
-index ef41bb8..c9806f7 100644
+index ef41bb8e90..c9806f7f75 100644
 --- a/cmd/kubelet/app/plugins.go
 +++ b/cmd/kubelet/app/plugins.go
 @@ -32,6 +32,7 @@ import (
@@ -520,7 +291,7 @@ index ef41bb8..c9806f7 100644
  		allPlugins = append(allPlugins, csi.ProbeVolumePlugins()...)
  	}
 diff --git a/pkg/apis/core/types.go b/pkg/apis/core/types.go
-index b6b570b..1d9db5e 100644
+index b6b570b06e..1d9db5e7e5 100644
 --- a/pkg/apis/core/types.go
 +++ b/pkg/apis/core/types.go
 @@ -316,6 +316,8 @@ type VolumeSource struct {
@@ -559,7 +330,7 @@ index b6b570b..1d9db5e 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 diff --git a/pkg/apis/core/validation/validation.go b/pkg/apis/core/validation/validation.go
-index 5dd08c0..eb66cc9 100644
+index 5dd08c0df7..eb66cc9419 100644
 --- a/pkg/apis/core/validation/validation.go
 +++ b/pkg/apis/core/validation/validation.go
 @@ -681,6 +681,14 @@ func validateVolumeSource(source *core.VolumeSource, fldPath *field.Path, volNam
@@ -609,7 +380,7 @@ index 5dd08c0..eb66cc9 100644
  		allErrs = append(allErrs, field.Required(specPath, "must specify a volume type"))
  	}
 diff --git a/pkg/apis/extensions/types.go b/pkg/apis/extensions/types.go
-index e369728..a5406ab 100644
+index e36972846b..a5406ab60a 100644
 --- a/pkg/apis/extensions/types.go
 +++ b/pkg/apis/extensions/types.go
 @@ -925,6 +925,7 @@ var (
@@ -621,7 +392,7 @@ index e369728..a5406ab 100644
  )
  
 diff --git a/pkg/cloudprovider/providers/BUILD b/pkg/cloudprovider/providers/BUILD
-index aeccfa1..4313576 100644
+index aeccfa1e5b..4313576203 100644
 --- a/pkg/cloudprovider/providers/BUILD
 +++ b/pkg/cloudprovider/providers/BUILD
 @@ -12,6 +12,7 @@ go_library(
@@ -642,7 +413,7 @@ index aeccfa1..4313576 100644
          "//pkg/cloudprovider/providers/gce:all-srcs",
 diff --git a/pkg/cloudprovider/providers/cascade/BUILD b/pkg/cloudprovider/providers/cascade/BUILD
 new file mode 100644
-index 0000000..4089166
+index 0000000000..4089166732
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/BUILD
 @@ -0,0 +1,56 @@
@@ -704,7 +475,7 @@ index 0000000..4089166
 +)
 diff --git a/pkg/cloudprovider/providers/cascade/OWNERS b/pkg/cloudprovider/providers/cascade/OWNERS
 new file mode 100644
-index 0000000..70efc9d
+index 0000000000..70efc9dc1c
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/OWNERS
 @@ -0,0 +1,3 @@
@@ -713,7 +484,7 @@ index 0000000..70efc9d
 +- ysheng
 diff --git a/pkg/cloudprovider/providers/cascade/apitypes.go b/pkg/cloudprovider/providers/cascade/apitypes.go
 new file mode 100644
-index 0000000..d437394
+index 0000000000..d437394462
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/apitypes.go
 @@ -0,0 +1,230 @@
@@ -949,7 +720,7 @@ index 0000000..d437394
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/auth.go b/pkg/cloudprovider/providers/cascade/auth.go
 new file mode 100644
-index 0000000..fc92377
+index 0000000000..fc9237767f
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/auth.go
 @@ -0,0 +1,145 @@
@@ -1101,10 +872,10 @@ index 0000000..fc92377
 \ No newline at end of file
 diff --git a/pkg/cloudprovider/providers/cascade/cascade.go b/pkg/cloudprovider/providers/cascade/cascade.go
 new file mode 100644
-index 0000000..ba42576
+index 0000000000..7f10ae1db7
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade.go
-@@ -0,0 +1,219 @@
+@@ -0,0 +1,223 @@
 +// The use of Cascade cloud provider requires the kubelet, kube-apiserver, and kube-controller-manager to be started
 +// with config flag: '--cloud-provider=cascade --cloud-config=[path_to_config_file]'.
 +package cascade
@@ -1194,11 +965,15 @@ index 0000000..ba42576
 +
 +// VolumeOptions specifies capacity, tags, name and flavorID for a volume.
 +type VolumeOptions struct {
-+	CapacityGB int
-+	Tags       map[string]string
-+	Name       string
-+	Flavor     string
-+	Encrypted  bool
++	CapacityGB        int
++	Tags              map[string]string
++	Name              string
++	Type              string
++	ZonePresent       bool
++	ZonesPresent      bool
++	AvailabilityZone  string
++	AvailabilityZones string
++	Encrypted         bool
 +}
 +
 +func readConfig(config io.Reader) (*CascadeConfig, error) {
@@ -1326,18 +1101,20 @@ index 0000000..ba42576
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_disks.go b/pkg/cloudprovider/providers/cascade/cascade_disks.go
 new file mode 100644
-index 0000000..4df1ab9
+index 0000000000..e35f956fbe
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_disks.go
-@@ -0,0 +1,226 @@
+@@ -0,0 +1,252 @@
 +package cascade
 +
 +import (
++	"fmt"
 +	"github.com/golang/glog"
 +	k8stypes "k8s.io/apimachinery/pkg/types"
 +	"k8s.io/apimachinery/pkg/util/sets"
 +	"k8s.io/kubernetes/pkg/kubelet/apis"
 +	"k8s.io/kubernetes/pkg/volume"
++	volumeutil "k8s.io/kubernetes/pkg/volume/util"
 +)
 +
 +// Attaches given virtual disk volume to the node running kubelet.
@@ -1345,7 +1122,7 @@ index 0000000..4df1ab9
 +	// Check if disk is already attached to that node.
 +	attached, err := cc.DiskIsAttached(diskID, nodeName)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: cc.DiskIsAttached failed during AttachDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: cc.DiskIsAttached failed during AttachDisk. Error[%v]", err)
 +		return "", err
 +	}
 +
@@ -1357,19 +1134,19 @@ index 0000000..4df1ab9
 +
 +		vmID, err := cc.InstanceID(nodeName)
 +		if err != nil {
-+			glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for AttachDisk. Error[%v]", err)
++			glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for AttachDisk. Error[%v]", err)
 +			return "", err
 +		}
 +
 +		task, err := cc.apiClient.AttachDisk(vmID, operation)
 +		if err != nil {
-+			glog.Errorf("Cascade Cloud Provider: Failed to attach disk with ID %s. Error[%v]", diskID, err)
++			glog.Errorf("VKE Cloud Provider: Failed to attach disk with ID %s. Error[%v]", diskID, err)
 +			return "", err
 +		}
 +
 +		_, err = cc.apiClient.WaitForTask(StringVal(task.ID))
 +		if err != nil {
-+			glog.Errorf("Cascade Cloud Provider: Failed to wait for task to attach disk with ID %s. Error[%v]",
++			glog.Errorf("VKE Cloud Provider: Failed to wait for task to attach disk with ID %s. Error[%v]",
 +				diskID, err)
 +			return "", err
 +		}
@@ -1378,7 +1155,7 @@ index 0000000..4df1ab9
 +	// Get mount device of the attached disk.
 +	disk, err := cc.apiClient.GetDisk(diskID)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
++		glog.Errorf("VKE Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
 +		return "", err
 +	}
 +
@@ -1393,19 +1170,19 @@ index 0000000..4df1ab9
 +
 +	vmID, err := cc.InstanceID(nodeName)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for DetachDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for DetachDisk. Error[%v]", err)
 +		return err
 +	}
 +
 +	task, err := cc.apiClient.DetachDisk(vmID, operation)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to detach disk with pdID %s. Error[%v]", diskID, err)
++		glog.Errorf("VKE Cloud Provider: Failed to detach disk with pdID %s. Error[%v]", diskID, err)
 +		return err
 +	}
 +
 +	_, err = cc.apiClient.WaitForTask(StringVal(task.ID))
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to wait for task to detach disk with pdID %s. Error[%v]",
++		glog.Errorf("VKE Cloud Provider: Failed to wait for task to detach disk with pdID %s. Error[%v]",
 +			diskID, err)
 +		return err
 +	}
@@ -1417,7 +1194,7 @@ index 0000000..4df1ab9
 +func (cc *CascadeCloud) DiskIsAttached(diskID string, nodeName k8stypes.NodeName) (bool, error) {
 +	vmID, err := cc.InstanceID(nodeName)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
 +		return false, err
 +	}
 +
@@ -1427,7 +1204,7 @@ index 0000000..4df1ab9
 +		case APIError:
 +			if err.(APIError).ErrorCode == VMNotFoundError {
 +				// If instance no longer exists, we will assume that the volume is not attached.
-+				glog.Warningf("Cascade Cloud Provider: Instance %s does not exist. DiskIsAttached will assume"+
++				glog.Warningf("VKE Cloud Provider: Instance %s does not exist. DiskIsAttached will assume"+
 +					" disk %s is not attached to it.", nodeName, diskID)
 +				return false, nil
 +			}
@@ -1437,7 +1214,7 @@ index 0000000..4df1ab9
 +
 +	disk, err := cc.apiClient.GetDisk(diskID)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
++		glog.Errorf("VKE Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
 +		return false, err
 +	}
 +
@@ -1457,14 +1234,14 @@ index 0000000..4df1ab9
 +
 +	vmID, err := cc.InstanceID(nodeName)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
 +		return attached, err
 +	}
 +
 +	for _, diskID := range diskIDs {
 +		disk, err := cc.apiClient.GetDisk(diskID)
 +		if err != nil {
-+			glog.Warningf("Cascade Cloud Provider: failed to get VMs for persistent disk %s, err [%v]",
++			glog.Warningf("VKE Cloud Provider: failed to get VMs for persistent disk %s, err [%v]",
 +				diskID, err)
 +		} else {
 +			if disk.VM == vmID && StringVal(disk.State) == DiskStateAttached {
@@ -1481,7 +1258,7 @@ index 0000000..4df1ab9
 +	// Get Zones for the cluster
 +	zones, err := cc.apiClient.GetZones()
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to Get zones for the cluster. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to Get zones for the cluster. Error[%v]", err)
 +		return "", err
 +	}
 +
@@ -1490,11 +1267,35 @@ index 0000000..4df1ab9
 +	for _, zone := range zones {
 +		zoneSet.Insert(zone)
 +	}
-+	zone := volume.ChooseZoneForVolume(zoneSet, volumeOptions.Name)
++	var zone string
++	if !volumeOptions.ZonePresent && !volumeOptions.ZonesPresent {
++		zone = volume.ChooseZoneForVolume(zoneSet, volumeOptions.Name)
++	}
++	if !volumeOptions.ZonePresent && volumeOptions.ZonesPresent {
++		userZoneSet, err := volumeutil.ZonesToSet(volumeOptions.AvailabilityZones)
++		if err != nil {
++			return "", err
++		}
++		if !zoneSet.IsSuperset(userZoneSet) {
++			return "", fmt.Errorf("VKE Cloud Provider: Zones '%s' is invalid. "+
++				"Please use one or more of the following zones: %v", volumeOptions.AvailabilityZones, zoneSet.List())
++		}
++		zone = volume.ChooseZoneForVolume(userZoneSet, volumeOptions.Name)
++	}
++	if volumeOptions.ZonePresent && !volumeOptions.ZonesPresent {
++		if err := volume.ValidateZone(volumeOptions.AvailabilityZone); err != nil {
++			return "", err
++		}
++		if !zoneSet.Has(volumeOptions.AvailabilityZone) {
++			return "", fmt.Errorf("VKE Cloud Provider: Zone '%s' is invalid. "+
++				"Please use one of the following zones: %v", volumeOptions.AvailabilityZone, zoneSet.List())
++		}
++		zone = volumeOptions.AvailabilityZone
++	}
 +
 +	diskSpec := DiskCreateSpec{}
 +	diskSpec.Name = StringPtr(volumeOptions.Name)
-+	diskSpec.Flavor = StringPtr(volumeOptions.Flavor)
++	diskSpec.Flavor = StringPtr(volumeOptions.Type)
 +	diskSpec.CapacityGB = Int32Ptr(int32(volumeOptions.CapacityGB))
 +	diskSpec.Kind = StringPtr(DiskSpecKind)
 +	diskSpec.Zone = StringPtr(zone)
@@ -1502,13 +1303,13 @@ index 0000000..4df1ab9
 +
 +	task, err := cc.apiClient.CreateDisk(&diskSpec)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to CreateDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to CreateDisk. Error[%v]", err)
 +		return "", err
 +	}
 +
 +	waitTask, err := cc.apiClient.WaitForTask(StringVal(task.ID))
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to wait for task to CreateDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to wait for task to CreateDisk. Error[%v]", err)
 +		return "", err
 +	}
 +
@@ -1519,7 +1320,7 @@ index 0000000..4df1ab9
 +func (cc *CascadeCloud) DeleteDisk(diskID string) error {
 +	task, err := cc.apiClient.DeleteDisk(diskID)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to DeleteDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to DeleteDisk. Error[%v]", err)
 +		// If we get a DiskNotFound error, we assume that the disk is already deleted. So we don't return an error here.
 +		switch err.(type) {
 +		case APIError:
@@ -1535,7 +1336,7 @@ index 0000000..4df1ab9
 +
 +	_, err = cc.apiClient.WaitForTask(StringVal(task.ID))
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to wait for task to DeleteDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to wait for task to DeleteDisk. Error[%v]", err)
 +		return err
 +	}
 +
@@ -1546,7 +1347,7 @@ index 0000000..4df1ab9
 +func (cc *CascadeCloud) GetVolumeLabels(diskID string) (map[string]string, error) {
 +	disk, err := cc.apiClient.GetDisk(diskID)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to GetDisk for GetVolumeLabels. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to GetDisk for GetVolumeLabels. Error[%v]", err)
 +		return nil, err
 +	}
 +
@@ -1558,7 +1359,7 @@ index 0000000..4df1ab9
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_instances.go b/pkg/cloudprovider/providers/cascade/cascade_instances.go
 new file mode 100644
-index 0000000..4494542
+index 0000000000..44945420db
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_instances.go
 @@ -0,0 +1,124 @@
@@ -1688,7 +1489,7 @@ index 0000000..4494542
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_instances_test.go b/pkg/cloudprovider/providers/cascade/cascade_instances_test.go
 new file mode 100644
-index 0000000..bec5491
+index 0000000000..bec5491b51
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_instances_test.go
 @@ -0,0 +1,43 @@
@@ -1737,7 +1538,7 @@ index 0000000..bec5491
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go b/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
 new file mode 100644
-index 0000000..fac37e5
+index 0000000000..fac37e5696
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
 @@ -0,0 +1,284 @@
@@ -2028,10 +1829,10 @@ index 0000000..fac37e5
 \ No newline at end of file
 diff --git a/pkg/cloudprovider/providers/cascade/client.go b/pkg/cloudprovider/providers/cascade/client.go
 new file mode 100644
-index 0000000..e4494e4
+index 0000000000..400e3777d0
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/client.go
-@@ -0,0 +1,399 @@
+@@ -0,0 +1,400 @@
 +package cascade
 +
 +import (
@@ -2355,7 +2156,7 @@ index 0000000..e4494e4
 +		api.cfg.clusterID, StringVal(loadBalancerName))
 +
 +	if len(subDomain) > 0 {
-+		uri = fmt.Sprintf(uri + "?sub-domain=%s", subDomain)
++		uri = fmt.Sprintf(uri+"?sub-domain=%s", subDomain)
 +	}
 +
 +	res, err := api.restClient.Delete(uri, api.options.TokenOptions)
@@ -2383,7 +2184,8 @@ index 0000000..e4494e4
 +
 +// Gets all the zones in which the cluster has the VMs in.
 +func (api *Client) GetZones() (zones []string, err error) {
-+	uri := fmt.Sprintf("%s/v1/tenants/%s/clusters/%s/zones", api.cfg.endpoint, api.cfg.tenantName,
++	// Call the version 2 zones API to use generic zones.
++	uri := fmt.Sprintf("%s/v1/tenants/%s/clusters/%s/zones?version=2", api.cfg.endpoint, api.cfg.tenantName,
 +		api.cfg.clusterID)
 +	res, err := api.restClient.Get(uri, api.options.TokenOptions)
 +	if err != nil {
@@ -2433,7 +2235,7 @@ index 0000000..e4494e4
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/oidcclient.go b/pkg/cloudprovider/providers/cascade/oidcclient.go
 new file mode 100644
-index 0000000..6a71cc1
+index 0000000000..6a71cc184f
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/oidcclient.go
 @@ -0,0 +1,297 @@
@@ -2736,7 +2538,7 @@ index 0000000..6a71cc1
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/restclient.go b/pkg/cloudprovider/providers/cascade/restclient.go
 new file mode 100644
-index 0000000..71d8d1c
+index 0000000000..71d8d1c164
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/restclient.go
 @@ -0,0 +1,262 @@
@@ -3004,7 +2806,7 @@ index 0000000..71d8d1c
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/tests_owed b/pkg/cloudprovider/providers/cascade/tests_owed
 new file mode 100644
-index 0000000..dff5ab1
+index 0000000000..dff5ab1dcd
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/tests_owed
 @@ -0,0 +1,5 @@
@@ -3015,7 +2817,7 @@ index 0000000..dff5ab1
 +
 diff --git a/pkg/cloudprovider/providers/cascade/utils.go b/pkg/cloudprovider/providers/cascade/utils.go
 new file mode 100644
-index 0000000..866f853
+index 0000000000..866f853b42
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/utils.go
 @@ -0,0 +1,29 @@
@@ -3049,7 +2851,7 @@ index 0000000..866f853
 +	return &s
 +}
 diff --git a/pkg/cloudprovider/providers/providers.go b/pkg/cloudprovider/providers/providers.go
-index 7de9ca9..6d8a1d2 100644
+index 7de9ca9a41..6d8a1d2226 100644
 --- a/pkg/cloudprovider/providers/providers.go
 +++ b/pkg/cloudprovider/providers/providers.go
 @@ -20,6 +20,7 @@ import (
@@ -3061,7 +2863,7 @@ index 7de9ca9..6d8a1d2 100644
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/gce"
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/openstack"
 diff --git a/pkg/kubeapiserver/authorizer/config.go b/pkg/kubeapiserver/authorizer/config.go
-index 659f2ae..ed1f5f1 100644
+index 659f2ae7a0..ed1f5f1569 100644
 --- a/pkg/kubeapiserver/authorizer/config.go
 +++ b/pkg/kubeapiserver/authorizer/config.go
 @@ -32,6 +32,7 @@ import (
@@ -3087,7 +2889,7 @@ index 659f2ae..ed1f5f1 100644
  			alwaysAllowAuthorizer := authorizerfactory.NewAlwaysAllowAuthorizer()
  			authorizers = append(authorizers, alwaysAllowAuthorizer)
 diff --git a/pkg/kubeapiserver/authorizer/modes/modes.go b/pkg/kubeapiserver/authorizer/modes/modes.go
-index 56a708a..6eb920f 100644
+index 56a708a6b1..6eb920fed2 100644
 --- a/pkg/kubeapiserver/authorizer/modes/modes.go
 +++ b/pkg/kubeapiserver/authorizer/modes/modes.go
 @@ -23,9 +23,10 @@ const (
@@ -3103,7 +2905,7 @@ index 56a708a..6eb920f 100644
  // IsValidAuthorizationMode returns true if the given authorization mode is a valid one for the apiserver
  func IsValidAuthorizationMode(authzMode string) bool {
 diff --git a/pkg/printers/internalversion/describe.go b/pkg/printers/internalversion/describe.go
-index c33b1c6..ef39b3b 100644
+index c33b1c636c..ef39b3b114 100644
 --- a/pkg/printers/internalversion/describe.go
 +++ b/pkg/printers/internalversion/describe.go
 @@ -751,6 +751,8 @@ func describeVolumes(volumes []api.Volume, w PrefixWriter, space string) {
@@ -3139,7 +2941,7 @@ index c33b1c6..ef39b3b 100644
  			w.Write(LEVEL_1, "<unknown>\n")
  		}
 diff --git a/pkg/security/podsecuritypolicy/util/util.go b/pkg/security/podsecuritypolicy/util/util.go
-index d654f88..422fe0d 100644
+index d654f88c77..422fe0d759 100644
 --- a/pkg/security/podsecuritypolicy/util/util.go
 +++ b/pkg/security/podsecuritypolicy/util/util.go
 @@ -68,6 +68,7 @@ func GetAllFSTypesAsSet() sets.String {
@@ -3161,7 +2963,7 @@ index d654f88..422fe0d 100644
  	return "", fmt.Errorf("unknown volume type for volume: %#v", v)
 diff --git a/pkg/volume/cascade_disk/BUILD b/pkg/volume/cascade_disk/BUILD
 new file mode 100644
-index 0000000..3386612
+index 0000000000..3386612450
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/BUILD
 @@ -0,0 +1,43 @@
@@ -3210,7 +3012,7 @@ index 0000000..3386612
 +)
 diff --git a/pkg/volume/cascade_disk/OWNERS b/pkg/volume/cascade_disk/OWNERS
 new file mode 100644
-index 0000000..c3a4ed7
+index 0000000000..c3a4ed77dc
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/OWNERS
 @@ -0,0 +1,2 @@
@@ -3218,7 +3020,7 @@ index 0000000..c3a4ed7
 +- ashokc
 diff --git a/pkg/volume/cascade_disk/attacher.go b/pkg/volume/cascade_disk/attacher.go
 new file mode 100644
-index 0000000..66b5836
+index 0000000000..66b583651c
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/attacher.go
 @@ -0,0 +1,265 @@
@@ -3489,7 +3291,7 @@ index 0000000..66b5836
 +}
 diff --git a/pkg/volume/cascade_disk/azure_disk_util.go b/pkg/volume/cascade_disk/azure_disk_util.go
 new file mode 100644
-index 0000000..036b420
+index 0000000000..036b420d45
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/azure_disk_util.go
 @@ -0,0 +1,136 @@
@@ -3631,10 +3433,10 @@ index 0000000..036b420
 +}
 diff --git a/pkg/volume/cascade_disk/cascade_disk.go b/pkg/volume/cascade_disk/cascade_disk.go
 new file mode 100644
-index 0000000..a25f224
+index 0000000000..6229814ee5
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/cascade_disk.go
-@@ -0,0 +1,391 @@
+@@ -0,0 +1,400 @@
 +package cascade_disk
 +
 +import (
@@ -3787,7 +3589,7 @@ index 0000000..a25f224
 +// Abstract interface to disk operations.
 +type diskManager interface {
 +	// Creates a volume
-+	CreateVolume(provisioner *cascadeDiskProvisioner) (diskID string, volumeSizeGB int, fstype string, err error)
++	CreateVolume(provisioner *cascadeDiskProvisioner) (diskID string, volumeSizeGB int, labels map[string]string, fstype string, err error)
 +	// Deletes a volume
 +	DeleteVolume(deleter *cascadeDiskDeleter) error
 +}
@@ -3978,7 +3780,7 @@ index 0000000..a25f224
 +			p.options.PVC.Spec.AccessModes, p.plugin.GetAccessModes())
 +	}
 +
-+	diskID, sizeGB, fstype, err := p.manager.CreateVolume(p)
++	diskID, sizeGB, labels, fstype, err := p.manager.CreateVolume(p)
 +	if err != nil {
 +		return nil, err
 +	}
@@ -4014,6 +3816,15 @@ index 0000000..a25f224
 +		pv.Spec.AccessModes = p.plugin.GetAccessModes()
 +	}
 +
++	if len(labels) != 0 {
++		if pv.Labels == nil {
++			pv.Labels = make(map[string]string)
++		}
++		for k, v := range labels {
++			pv.Labels[k] = v
++		}
++	}
++
 +	return pv, nil
 +}
 +
@@ -4026,13 +3837,12 @@ index 0000000..a25f224
 +
 +	return nil, false, fmt.Errorf("Spec does not reference a Cascade disk type")
 +}
-\ No newline at end of file
 diff --git a/pkg/volume/cascade_disk/cascade_util.go b/pkg/volume/cascade_disk/cascade_util.go
 new file mode 100644
-index 0000000..2604b89
+index 0000000000..6f265e840b
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/cascade_util.go
-@@ -0,0 +1,201 @@
+@@ -0,0 +1,217 @@
 +package cascade_disk
 +
 +import (
@@ -4053,7 +3863,7 @@ index 0000000..2604b89
 +)
 +
 +const (
-+	checkSleepDuration  = time.Second
++	checkSleepDuration = time.Second
 +)
 +
 +type CascadeDiskUtil struct{}
@@ -4102,12 +3912,12 @@ index 0000000..2604b89
 +}
 +
 +// CreateVolume creates a Cascade persistent disk.
-+func (util *CascadeDiskUtil) CreateVolume(p *cascadeDiskProvisioner) (diskID string, capacityGB int, fstype string,
-+	err error) {
++func (util *CascadeDiskUtil) CreateVolume(p *cascadeDiskProvisioner) (string, int, map[string]string, string, error) {
++
 +	cloud, err := getCloudProvider(p.plugin.host.GetCloudProvider())
 +	if err != nil {
-+		glog.Errorf("Cascade Util: CreateVolume failed to get cloud provider. Error [%v]", err)
-+		return "", 0, "", err
++		glog.Errorf("CreateVolume failed to get cloud provider. Error [%v]", err)
++		return "", 0, nil, "", err
 +	}
 +
 +	capacity := p.options.PVC.Spec.Resources.Requests[v1.ResourceName(v1.ResourceStorage)]
@@ -4120,51 +3930,67 @@ index 0000000..2604b89
 +		Tags:       *p.options.CloudTags,
 +		Name:       name,
 +	}
-+
++	fstype := ""
 +	// enabling encryption by default if not provided from within storage class
 +	volumeOptions.Encrypted = true
 +	for parameter, value := range p.options.Parameters {
 +		switch strings.ToLower(parameter) {
-+		case "flavor":
-+			volumeOptions.Flavor = value
++		case "type":
++			volumeOptions.Type = value
++		case "zone":
++			volumeOptions.ZonePresent = true
++			volumeOptions.AvailabilityZone = value
++		case "zones":
++			volumeOptions.ZonesPresent = true
++			volumeOptions.AvailabilityZones = value
 +		case "encrypted":
 +			volumeOptions.Encrypted, err = strconv.ParseBool(value)
 +			if err != nil {
-+				glog.Errorf("Cascade Util: invalid value %q for encryption of volume plugin %s.", value,
-+					p.plugin.GetPluginName())
-+				return "", 0, "", fmt.Errorf("invalid encrypted boolean value %q, must be true or false: %v", value, err)
++				glog.Errorf("invalid value %q for encryption of volume plugin %s.", value, p.plugin.GetPluginName())
++				return "", 0, nil, "",
++					fmt.Errorf("invalid encrypted boolean value %q, must be true or false: %v", value, err)
 +			}
 +		case volume.VolumeParameterFSType:
 +			fstype = value
-+			glog.V(4).Infof("Cascade Util: Setting fstype to %s", fstype)
++			glog.V(4).Infof("Setting fstype to %s", fstype)
 +		default:
-+			glog.Errorf("Cascade Util: invalid option %s for volume plugin %s.", parameter,
++			glog.Errorf("invalid option %s for volume plugin %s.", parameter,
 +				p.plugin.GetPluginName())
-+			return "", 0, "", fmt.Errorf("Cascade Util: invalid option %s for volume plugin %s.", parameter,
-+				p.plugin.GetPluginName())
++			return "", 0, nil, "",
++				fmt.Errorf("invalid option %s for volume plugin %s.", parameter, p.plugin.GetPluginName())
 +		}
 +	}
 +
-+	diskID, err = cloud.CreateDisk(volumeOptions)
++	if volumeOptions.ZonePresent && volumeOptions.ZonesPresent {
++		return "", 0, nil, "", fmt.Errorf("both zone and zones StorageClass parameters must not be used at the same time")
++	}
++
++	diskID, err := cloud.CreateDisk(volumeOptions)
 +	if err != nil {
-+		glog.Errorf("Cascade Util: failed to CreateDisk. Error [%v]", err)
-+		return "", 0, "", err
++		glog.Errorf("failed to CreateDisk. Error [%v]", err)
++		return "", 0, nil, "", err
++	}
++
++	labels, err := cloud.GetVolumeLabels(diskID)
++	if err != nil {
++		// We don't really want to leak the volume here...
++		glog.Errorf("error building labels for new volume %q: %v", name, err)
 +	}
 +
 +	glog.V(4).Infof("Successfully created Cascade persistent disk %s", name)
-+	return diskID, volSizeGB, "", nil
++	return diskID, volSizeGB, labels, fstype, nil
 +}
 +
 +// DeleteVolume deletes a Cascade volume.
 +func (util *CascadeDiskUtil) DeleteVolume(disk *cascadeDiskDeleter) error {
 +	cloud, err := getCloudProvider(disk.plugin.host.GetCloudProvider())
 +	if err != nil {
-+		glog.Errorf("Cascade Util: DeleteVolume failed to get cloud provider. Error [%v]", err)
++		glog.Errorf("DeleteVolume failed to get cloud provider. Error [%v]", err)
 +		return err
 +	}
 +
 +	if err = cloud.DeleteDisk(disk.diskID); err != nil {
-+		glog.Errorf("Cascade Util: failed to DeleteDisk for diskID %s. Error [%v]", disk.diskID, err)
++		glog.Errorf("failed to DeleteDisk for diskID %s. Error [%v]", disk.diskID, err)
 +		return err
 +	}
 +
@@ -4174,8 +4000,8 @@ index 0000000..2604b89
 +
 +func getCloudProvider(cloud cloudprovider.Interface) (*cascade.CascadeCloud, error) {
 +	if cloud == nil {
-+		glog.Errorf("Cascade Util: Cloud provider not initialized properly")
-+		return nil, fmt.Errorf("Cascade Util: Cloud provider not initialized properly")
++		glog.Errorf("Cloud provider not initialized properly")
++		return nil, fmt.Errorf("Cloud provider not initialized properly")
 +	}
 +
 +	cc := cloud.(*cascade.CascadeCloud)
@@ -4235,7 +4061,7 @@ index 0000000..2604b89
 +	return "", err
 +}
 diff --git a/plugin/pkg/admission/persistentvolume/label/admission.go b/plugin/pkg/admission/persistentvolume/label/admission.go
-index 86e1921..bf2912b 100644
+index 86e1921fcd..bf2912bbeb 100644
 --- a/plugin/pkg/admission/persistentvolume/label/admission.go
 +++ b/plugin/pkg/admission/persistentvolume/label/admission.go
 @@ -27,6 +27,7 @@ import (
@@ -4319,7 +4145,7 @@ index 86e1921..bf2912b 100644
 +}
 diff --git a/plugin/pkg/admission/vke/BUILD b/plugin/pkg/admission/vke/BUILD
 new file mode 100644
-index 0000000..7d66036
+index 0000000000..7d66036e62
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/BUILD
 @@ -0,0 +1,61 @@
@@ -4387,10 +4213,10 @@ index 0000000..7d66036
 \ No newline at end of file
 diff --git a/plugin/pkg/admission/vke/admission.go b/plugin/pkg/admission/vke/admission.go
 new file mode 100644
-index 0000000..a9ec9df
+index 0000000000..a93e986a16
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission.go
-@@ -0,0 +1,618 @@
+@@ -0,0 +1,627 @@
 +package vke
 +
 +import (
@@ -4459,16 +4285,25 @@ index 0000000..a9ec9df
 +}
 +
 +var _ admission.MutationInterface = &vmwareAdmissionController{}
++var _ admission.ValidationInterface = &vmwareAdmissionController{}
 +
 +// Admit makes an admission decision based on the request attributes.
 +// Note: We implement the mutation interface for this admission controller, which means we have the ability to modify
 +// the resources. But we do not modify them because we just need to validate the requests to either let them through or
-+// block them. We have implemented this as a mutation interface because we need access to oldObjects during update
-+// operations to find out what values are being modified. For node update operation, the old and new objects are always
-+// identical in the validation phase (possibly due to some initializer modifying it). So, we are performing our
-+// validation during the mutation phase.
++// block them. We have implemented this mutation interface because we need access to oldObjects during update operations
++// to find out what values are being modified. For node update operation, the old and new objects are always identical
++// in the validation phase (possibly due to some initializer modifying it). So, we are performing this specific
++// vaidation during the mutation phase.
 +func (vac *vmwareAdmissionController) Admit(a admission.Attributes) (err error) {
-+	if isPrivilegedUser(vac, a) {
++	if isPrivilegedServiceAccount(a) {
++		return validatePrivilegedServiceAccount(a)
++	}
++
++	return err
++}
++
++// Validate makes an admission decision based on the request attributes.
++func (vac *vmwareAdmissionController) Validate(a admission.Attributes) (err error) {	if isPrivilegedUser(vac, a) {
 +		return nil
 +	}
 +
@@ -5011,7 +4846,7 @@ index 0000000..a9ec9df
 +}
 diff --git a/plugin/pkg/admission/vke/admission_test.go b/plugin/pkg/admission/vke/admission_test.go
 new file mode 100644
-index 0000000..684fad4
+index 0000000000..689a22dfa4
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission_test.go
 @@ -0,0 +1,960 @@
@@ -5732,7 +5567,7 @@ index 0000000..684fad4
 +	attrs := kadmission.NewAttributesRecord(pod, nil, kapi.Kind("Pod").WithVersion("version"),
 +		namespace, name, kapi.Resource("pods").WithVersion("version"), "", op, userInfo)
 +
-+	err = plugin.Admit(attrs)
++	err = plugin.Validate(attrs)
 +	if shouldPassValidate && err != nil {
 +		t.Errorf("%s: expected no errors on Validate but received %v", testCaseName, err)
 +	} else if !shouldPassValidate && err == nil {
@@ -5758,7 +5593,7 @@ index 0000000..684fad4
 +	attrs := kadmission.NewAttributesRecord(object, oldObject, kapi.Kind("kind").WithVersion("version"),
 +		namespace, name, groupResource, subresource, op, userInfo)
 +
-+	err = plugin.Admit(attrs)
++	err = plugin.Validate(attrs)
 +	if shouldPassValidate && err != nil {
 +		t.Errorf("%s: expected no errors on Validate but received %v", testCaseName, err)
 +	} else if !shouldPassValidate && err == nil {
@@ -5977,7 +5812,7 @@ index 0000000..684fad4
 +}
 diff --git a/plugin/pkg/auth/authorizer/vke/BUILD b/plugin/pkg/auth/authorizer/vke/BUILD
 new file mode 100644
-index 0000000..4b984f1
+index 0000000000..4b984f14ec
 --- /dev/null
 +++ b/plugin/pkg/auth/authorizer/vke/BUILD
 @@ -0,0 +1,40 @@
@@ -6023,7 +5858,7 @@ index 0000000..4b984f1
 +)
 diff --git a/plugin/pkg/auth/authorizer/vke/OWNERS b/plugin/pkg/auth/authorizer/vke/OWNERS
 new file mode 100644
-index 0000000..48f5944
+index 0000000000..48f594497a
 --- /dev/null
 +++ b/plugin/pkg/auth/authorizer/vke/OWNERS
 @@ -0,0 +1,3 @@
@@ -6033,7 +5868,7 @@ index 0000000..48f5944
 \ No newline at end of file
 diff --git a/plugin/pkg/auth/authorizer/vke/vke_authorizer.go b/plugin/pkg/auth/authorizer/vke/vke_authorizer.go
 new file mode 100644
-index 0000000..5f3103b
+index 0000000000..5f3103b0af
 --- /dev/null
 +++ b/plugin/pkg/auth/authorizer/vke/vke_authorizer.go
 @@ -0,0 +1,123 @@
@@ -6162,7 +5997,7 @@ index 0000000..5f3103b
 +}
 diff --git a/plugin/pkg/auth/authorizer/vke/vke_authorizer_test.go b/plugin/pkg/auth/authorizer/vke/vke_authorizer_test.go
 new file mode 100644
-index 0000000..6aba9ec
+index 0000000000..6aba9ecec9
 --- /dev/null
 +++ b/plugin/pkg/auth/authorizer/vke/vke_authorizer_test.go
 @@ -0,0 +1,230 @@
@@ -6397,510 +6232,39 @@ index 0000000..6aba9ec
 +	}
 +}
 diff --git a/staging/src/k8s.io/api/core/v1/generated.pb.go b/staging/src/k8s.io/api/core/v1/generated.pb.go
-index 5aeae2c..a7d5b12 100644
---- a/staging/src/k8s.io/api/core/v1/generated.pb.go
-+++ b/staging/src/k8s.io/api/core/v1/generated.pb.go
-@@ -35,6 +35,7 @@ limitations under the License.
- 		Binding
- 		CSIPersistentVolumeSource
- 		Capabilities
-+		CascadeDiskVolumeSource
- 		CephFSPersistentVolumeSource
- 		CephFSVolumeSource
- 		CinderVolumeSource
-@@ -260,9 +261,11 @@ func (m *AvoidPods) Reset()                    { *m = AvoidPods{} }
- func (*AvoidPods) ProtoMessage()               {}
- func (*AvoidPods) Descriptor() ([]byte, []int) { return fileDescriptorGenerated, []int{3} }
- 
--func (m *AzureDiskVolumeSource) Reset()                    { *m = AzureDiskVolumeSource{} }
--func (*AzureDiskVolumeSource) ProtoMessage()               {}
--func (*AzureDiskVolumeSource) Descriptor() ([]byte, []int) { return fileDescriptorGenerated, []int{4} }
-+func (m *CascadeDiskVolumeSource) Reset()      { *m = CascadeDiskVolumeSource{} }
-+func (*CascadeDiskVolumeSource) ProtoMessage() {}
-+func (*CascadeDiskVolumeSource) Descriptor() ([]byte, []int) {
-+	return fileDescriptorGenerated, []int{4}
-+}
- 
- func (m *AzureFilePersistentVolumeSource) Reset()      { *m = AzureFilePersistentVolumeSource{} }
- func (*AzureFilePersistentVolumeSource) ProtoMessage() {}
-@@ -1040,6 +1043,11 @@ func (*WeightedPodAffinityTerm) Descriptor() ([]byte, []int) {
- 	return fileDescriptorGenerated, []int{185}
- }
- 
-+func (m *AzureDiskVolumeSource) Reset()                    { *m = AzureDiskVolumeSource{} }
-+func (*AzureDiskVolumeSource) ProtoMessage()               {}
-+func (*AzureDiskVolumeSource) Descriptor() ([]byte, []int) { return fileDescriptorGenerated, []int{186} }
-+
-+
- func init() {
- 	proto.RegisterType((*AWSElasticBlockStoreVolumeSource)(nil), "k8s.io.api.core.v1.AWSElasticBlockStoreVolumeSource")
- 	proto.RegisterType((*Affinity)(nil), "k8s.io.api.core.v1.Affinity")
-@@ -1051,6 +1059,7 @@ func init() {
- 	proto.RegisterType((*Binding)(nil), "k8s.io.api.core.v1.Binding")
- 	proto.RegisterType((*CSIPersistentVolumeSource)(nil), "k8s.io.api.core.v1.CSIPersistentVolumeSource")
- 	proto.RegisterType((*Capabilities)(nil), "k8s.io.api.core.v1.Capabilities")
-+	proto.RegisterType((*CascadeDiskVolumeSource)(nil), "k8s.io.api.core.v1.CascadeDiskVolumeSource")
- 	proto.RegisterType((*CephFSPersistentVolumeSource)(nil), "k8s.io.api.core.v1.CephFSPersistentVolumeSource")
- 	proto.RegisterType((*CephFSVolumeSource)(nil), "k8s.io.api.core.v1.CephFSVolumeSource")
- 	proto.RegisterType((*CinderVolumeSource)(nil), "k8s.io.api.core.v1.CinderVolumeSource")
-@@ -1613,6 +1622,32 @@ func (m *Capabilities) MarshalTo(dAtA []byte) (int, error) {
- 	return i, nil
- }
- 
-+func (m *CascadeDiskVolumeSource) Marshal() (dAtA []byte, err error) {
-+	size := m.Size()
-+	dAtA = make([]byte, size)
-+	n, err := m.MarshalTo(dAtA)
-+	if err != nil {
-+		return nil, err
-+	}
-+	return dAtA[:n], nil
-+}
-+
-+func (m *CascadeDiskVolumeSource) MarshalTo(dAtA []byte) (int, error) {
-+	var i int
-+	_ = i
-+	var l int
-+	_ = l
-+	dAtA[i] = 0xa
-+	i++
-+	i = encodeVarintGenerated(dAtA, i, uint64(len(m.DiskID)))
-+	i += copy(dAtA[i:], m.DiskID)
-+	dAtA[i] = 0x12
-+	i++
-+	i = encodeVarintGenerated(dAtA, i, uint64(len(m.FSType)))
-+	i += copy(dAtA[i:], m.FSType)
-+	return i, nil
-+}
-+
- func (m *CephFSPersistentVolumeSource) Marshal() (dAtA []byte, err error) {
- 	size := m.Size()
- 	dAtA = make([]byte, size)
-@@ -6283,13 +6318,13 @@ func (m *PersistentVolumeSource) MarshalTo(dAtA []byte) (int, error) {
- 		}
- 		i += n120
- 	}
--	if m.AzureDisk != nil {
-+	if m.CascadeDisk != nil {
- 		dAtA[i] = 0x82
- 		i++
- 		dAtA[i] = 0x1
- 		i++
--		i = encodeVarintGenerated(dAtA, i, uint64(m.AzureDisk.Size()))
--		n121, err := m.AzureDisk.MarshalTo(dAtA[i:])
-+		i = encodeVarintGenerated(dAtA, i, uint64(m.CascadeDisk.Size()))
-+		n121, err := m.CascadeDisk.MarshalTo(dAtA[i:])
- 		if err != nil {
- 			return 0, err
- 		}
-@@ -6367,6 +6402,18 @@ func (m *PersistentVolumeSource) MarshalTo(dAtA []byte) (int, error) {
- 		}
- 		i += n127
- 	}
-+	if m.AzureDisk != nil {
-+		dAtA[i] = 0xba
-+		i++
-+		dAtA[i] = 0x1
-+		i++
-+		i = encodeVarintGenerated(dAtA, i, uint64(m.AzureDisk.Size()))
-+		n128, err := m.AzureDisk.MarshalTo(dAtA[i:])
-+		if err != nil {
-+			return 0, err
-+		}
-+		i += n128
-+	}
- 	return i, nil
- }
- 
-@@ -10316,13 +10363,13 @@ func (m *VolumeSource) MarshalTo(dAtA []byte) (int, error) {
- 		}
- 		i += n223
- 	}
--	if m.AzureDisk != nil {
-+	if m.CascadeDisk != nil {
- 		dAtA[i] = 0xb2
- 		i++
- 		dAtA[i] = 0x1
- 		i++
--		i = encodeVarintGenerated(dAtA, i, uint64(m.AzureDisk.Size()))
--		n224, err := m.AzureDisk.MarshalTo(dAtA[i:])
-+		i = encodeVarintGenerated(dAtA, i, uint64(m.CascadeDisk.Size()))
-+		n224, err := m.CascadeDisk.MarshalTo(dAtA[i:])
- 		if err != nil {
- 			return 0, err
- 		}
-@@ -10388,6 +10435,18 @@ func (m *VolumeSource) MarshalTo(dAtA []byte) (int, error) {
- 		}
- 		i += n229
- 	}
-+	if m.AzureDisk != nil {
-+		dAtA[i] = 0xe2
-+		i++
-+		dAtA[i] = 0x1
-+		i++
-+		i = encodeVarintGenerated(dAtA, i, uint64(m.AzureDisk.Size()))
-+		n230, err := m.AzureDisk.MarshalTo(dAtA[i:])
-+		if err != nil {
-+			return 0, err
-+		}
-+		i += n230
-+	}
- 	return i, nil
- }
- 
-@@ -10623,6 +10682,16 @@ func (m *Capabilities) Size() (n int) {
- 	return n
- }
- 
-+func (m *CascadeDiskVolumeSource) Size() (n int) {
-+	var l int
-+	_ = l
-+	l = len(m.DiskID)
-+	n += 1 + l + sovGenerated(uint64(l))
-+	l = len(m.FSType)
-+	n += 1 + l + sovGenerated(uint64(l))
-+	return n
-+}
-+
- func (m *CephFSPersistentVolumeSource) Size() (n int) {
- 	var l int
- 	_ = l
-@@ -12331,8 +12400,8 @@ func (m *PersistentVolumeSource) Size() (n int) {
- 		l = m.Quobyte.Size()
- 		n += 1 + l + sovGenerated(uint64(l))
- 	}
--	if m.AzureDisk != nil {
--		l = m.AzureDisk.Size()
-+	if m.CascadeDisk != nil {
-+		l = m.CascadeDisk.Size()
- 		n += 2 + l + sovGenerated(uint64(l))
- 	}
- 	if m.PhotonPersistentDisk != nil {
-@@ -12359,6 +12428,10 @@ func (m *PersistentVolumeSource) Size() (n int) {
- 		l = m.CSI.Size()
- 		n += 2 + l + sovGenerated(uint64(l))
- 	}
-+	if m.AzureDisk != nil {
-+		l = m.AzureDisk.Size()
-+		n += 2 + l + sovGenerated(uint64(l))
-+	}
- 	return n
- }
- 
-@@ -13788,8 +13861,8 @@ func (m *VolumeSource) Size() (n int) {
- 		l = m.Quobyte.Size()
- 		n += 2 + l + sovGenerated(uint64(l))
- 	}
--	if m.AzureDisk != nil {
--		l = m.AzureDisk.Size()
-+	if m.CascadeDisk != nil {
-+		l = m.CascadeDisk.Size()
- 		n += 2 + l + sovGenerated(uint64(l))
- 	}
- 	if m.PhotonPersistentDisk != nil {
-@@ -13812,6 +13885,10 @@ func (m *VolumeSource) Size() (n int) {
- 		l = m.StorageOS.Size()
- 		n += 2 + l + sovGenerated(uint64(l))
- 	}
-+	if m.AzureDisk != nil {
-+		l = m.AzureDisk.Size()
-+		n += 2 + l + sovGenerated(uint64(l))
-+	}
- 	return n
- }
- 
-@@ -13971,6 +14048,17 @@ func (this *Capabilities) String() string {
- 	}, "")
- 	return s
- }
-+func (this *CascadeDiskVolumeSource) String() string {
-+	if this == nil {
-+		return "nil"
-+	}
-+	s := strings.Join([]string{`&CascadeDiskVolumeSource{`,
-+		`DiskID:` + fmt.Sprintf("%v", this.DiskID) + `,`,
-+		`FSType:` + fmt.Sprintf("%v", this.FSType) + `,`,
-+		`}`,
-+	}, "")
-+	return s
-+}
- func (this *CephFSPersistentVolumeSource) String() string {
- 	if this == nil {
- 		return "nil"
-@@ -15335,13 +15423,14 @@ func (this *PersistentVolumeSource) String() string {
- 		`AzureFile:` + strings.Replace(fmt.Sprintf("%v", this.AzureFile), "AzureFilePersistentVolumeSource", "AzureFilePersistentVolumeSource", 1) + `,`,
- 		`VsphereVolume:` + strings.Replace(fmt.Sprintf("%v", this.VsphereVolume), "VsphereVirtualDiskVolumeSource", "VsphereVirtualDiskVolumeSource", 1) + `,`,
- 		`Quobyte:` + strings.Replace(fmt.Sprintf("%v", this.Quobyte), "QuobyteVolumeSource", "QuobyteVolumeSource", 1) + `,`,
--		`AzureDisk:` + strings.Replace(fmt.Sprintf("%v", this.AzureDisk), "AzureDiskVolumeSource", "AzureDiskVolumeSource", 1) + `,`,
-+		`CascadeDisk:` + strings.Replace(fmt.Sprintf("%v", this.CascadeDisk), "CascadeDiskVolumeSource", "CascadeDiskVolumeSource", 1) + `,`,
- 		`PhotonPersistentDisk:` + strings.Replace(fmt.Sprintf("%v", this.PhotonPersistentDisk), "PhotonPersistentDiskVolumeSource", "PhotonPersistentDiskVolumeSource", 1) + `,`,
- 		`PortworxVolume:` + strings.Replace(fmt.Sprintf("%v", this.PortworxVolume), "PortworxVolumeSource", "PortworxVolumeSource", 1) + `,`,
- 		`ScaleIO:` + strings.Replace(fmt.Sprintf("%v", this.ScaleIO), "ScaleIOPersistentVolumeSource", "ScaleIOPersistentVolumeSource", 1) + `,`,
- 		`Local:` + strings.Replace(fmt.Sprintf("%v", this.Local), "LocalVolumeSource", "LocalVolumeSource", 1) + `,`,
- 		`StorageOS:` + strings.Replace(fmt.Sprintf("%v", this.StorageOS), "StorageOSPersistentVolumeSource", "StorageOSPersistentVolumeSource", 1) + `,`,
- 		`CSI:` + strings.Replace(fmt.Sprintf("%v", this.CSI), "CSIPersistentVolumeSource", "CSIPersistentVolumeSource", 1) + `,`,
-+		`AzureDisk:` + strings.Replace(fmt.Sprintf("%v", this.AzureDisk), "AzureDiskVolumeSource", "AzureDiskVolumeSource", 1) + `,`,
- 		`}`,
- 	}, "")
- 	return s
-@@ -16468,12 +16557,13 @@ func (this *VolumeSource) String() string {
- 		`ConfigMap:` + strings.Replace(fmt.Sprintf("%v", this.ConfigMap), "ConfigMapVolumeSource", "ConfigMapVolumeSource", 1) + `,`,
- 		`VsphereVolume:` + strings.Replace(fmt.Sprintf("%v", this.VsphereVolume), "VsphereVirtualDiskVolumeSource", "VsphereVirtualDiskVolumeSource", 1) + `,`,
- 		`Quobyte:` + strings.Replace(fmt.Sprintf("%v", this.Quobyte), "QuobyteVolumeSource", "QuobyteVolumeSource", 1) + `,`,
--		`AzureDisk:` + strings.Replace(fmt.Sprintf("%v", this.AzureDisk), "AzureDiskVolumeSource", "AzureDiskVolumeSource", 1) + `,`,
-+		`CascadeDisk:` + strings.Replace(fmt.Sprintf("%v", this.CascadeDisk), "CascadeDiskVolumeSource", "CascadeDiskVolumeSource", 1) + `,`,
- 		`PhotonPersistentDisk:` + strings.Replace(fmt.Sprintf("%v", this.PhotonPersistentDisk), "PhotonPersistentDiskVolumeSource", "PhotonPersistentDiskVolumeSource", 1) + `,`,
- 		`PortworxVolume:` + strings.Replace(fmt.Sprintf("%v", this.PortworxVolume), "PortworxVolumeSource", "PortworxVolumeSource", 1) + `,`,
- 		`ScaleIO:` + strings.Replace(fmt.Sprintf("%v", this.ScaleIO), "ScaleIOVolumeSource", "ScaleIOVolumeSource", 1) + `,`,
- 		`Projected:` + strings.Replace(fmt.Sprintf("%v", this.Projected), "ProjectedVolumeSource", "ProjectedVolumeSource", 1) + `,`,
- 		`StorageOS:` + strings.Replace(fmt.Sprintf("%v", this.StorageOS), "StorageOSVolumeSource", "StorageOSVolumeSource", 1) + `,`,
-+		`AzureDisk:` + strings.Replace(fmt.Sprintf("%v", this.AzureDisk), "AzureDiskVolumeSource", "AzureDiskVolumeSource", 1) + `,`,
- 		`}`,
- 	}, "")
- 	return s
-@@ -34322,7 +34412,7 @@ func (m *PersistentVolumeSource) Unmarshal(dAtA []byte) error {
- 			iNdEx = postIndex
- 		case 16:
- 			if wireType != 2 {
--				return fmt.Errorf("proto: wrong wireType = %d for field AzureDisk", wireType)
-+				return fmt.Errorf("proto: wrong wireType = %d for field CascadeDisk", wireType)
- 			}
- 			var msglen int
- 			for shift := uint(0); ; shift += 7 {
-@@ -34346,10 +34436,10 @@ func (m *PersistentVolumeSource) Unmarshal(dAtA []byte) error {
- 			if postIndex > l {
- 				return io.ErrUnexpectedEOF
- 			}
--			if m.AzureDisk == nil {
--				m.AzureDisk = &AzureDiskVolumeSource{}
-+			if m.CascadeDisk == nil {
-+				m.CascadeDisk = &CascadeDiskVolumeSource{}
- 			}
--			if err := m.AzureDisk.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-+			if err := m.CascadeDisk.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
- 				return err
- 			}
- 			iNdEx = postIndex
-@@ -34551,6 +34641,39 @@ func (m *PersistentVolumeSource) Unmarshal(dAtA []byte) error {
- 				return err
- 			}
- 			iNdEx = postIndex
-+		case 23:
-+			if wireType != 2 {
-+				return fmt.Errorf("proto: wrong wireType = %d for field AzureDisk", wireType)
-+			}
-+			var msglen int
-+			for shift := uint(0); ; shift += 7 {
-+				if shift >= 64 {
-+					return ErrIntOverflowGenerated
-+				}
-+				if iNdEx >= l {
-+					return io.ErrUnexpectedEOF
-+				}
-+				b := dAtA[iNdEx]
-+				iNdEx++
-+				msglen |= (int(b) & 0x7F) << shift
-+				if b < 0x80 {
-+					break
-+				}
-+			}
-+			if msglen < 0 {
-+				return ErrInvalidLengthGenerated
-+			}
-+			postIndex := iNdEx + msglen
-+			if postIndex > l {
-+				return io.ErrUnexpectedEOF
-+			}
-+			if m.AzureDisk == nil {
-+				m.AzureDisk = &AzureDiskVolumeSource{}
-+			}
-+			if err := m.AzureDisk.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-+				return err
-+			}
-+			iNdEx = postIndex
- 		default:
- 			iNdEx = preIndex
- 			skippy, err := skipGenerated(dAtA[iNdEx:])
-@@ -35089,6 +35212,114 @@ func (m *PersistentVolumeStatus) Unmarshal(dAtA []byte) error {
- 	}
- 	return nil
- }
-+func (m *CascadeDiskVolumeSource) Unmarshal(dAtA []byte) error {
-+	l := len(dAtA)
-+	iNdEx := 0
-+	for iNdEx < l {
-+		preIndex := iNdEx
-+		var wire uint64
-+		for shift := uint(0); ; shift += 7 {
-+			if shift >= 64 {
-+				return ErrIntOverflowGenerated
-+			}
-+			if iNdEx >= l {
-+				return io.ErrUnexpectedEOF
-+			}
-+			b := dAtA[iNdEx]
-+			iNdEx++
-+			wire |= (uint64(b) & 0x7F) << shift
-+			if b < 0x80 {
-+				break
-+			}
-+		}
-+		fieldNum := int32(wire >> 3)
-+		wireType := int(wire & 0x7)
-+		if wireType == 4 {
-+			return fmt.Errorf("proto: CascadeDiskVolumeSource: wiretype end group for non-group")
-+		}
-+		if fieldNum <= 0 {
-+			return fmt.Errorf("proto: CascadeDiskVolumeSource: illegal tag %d (wire type %d)", fieldNum, wire)
-+		}
-+		switch fieldNum {
-+		case 1:
-+			if wireType != 2 {
-+				return fmt.Errorf("proto: wrong wireType = %d for field DiskID", wireType)
-+			}
-+			var stringLen uint64
-+			for shift := uint(0); ; shift += 7 {
-+				if shift >= 64 {
-+					return ErrIntOverflowGenerated
-+				}
-+				if iNdEx >= l {
-+					return io.ErrUnexpectedEOF
-+				}
-+				b := dAtA[iNdEx]
-+				iNdEx++
-+				stringLen |= (uint64(b) & 0x7F) << shift
-+				if b < 0x80 {
-+					break
-+				}
-+			}
-+			intStringLen := int(stringLen)
-+			if intStringLen < 0 {
-+				return ErrInvalidLengthGenerated
-+			}
-+			postIndex := iNdEx + intStringLen
-+			if postIndex > l {
-+				return io.ErrUnexpectedEOF
-+			}
-+			m.DiskID = string(dAtA[iNdEx:postIndex])
-+			iNdEx = postIndex
-+		case 2:
-+			if wireType != 2 {
-+				return fmt.Errorf("proto: wrong wireType = %d for field FSType", wireType)
-+			}
-+			var stringLen uint64
-+			for shift := uint(0); ; shift += 7 {
-+				if shift >= 64 {
-+					return ErrIntOverflowGenerated
-+				}
-+				if iNdEx >= l {
-+					return io.ErrUnexpectedEOF
-+				}
-+				b := dAtA[iNdEx]
-+				iNdEx++
-+				stringLen |= (uint64(b) & 0x7F) << shift
-+				if b < 0x80 {
-+					break
-+				}
-+			}
-+			intStringLen := int(stringLen)
-+			if intStringLen < 0 {
-+				return ErrInvalidLengthGenerated
-+			}
-+			postIndex := iNdEx + intStringLen
-+			if postIndex > l {
-+				return io.ErrUnexpectedEOF
-+			}
-+			m.FSType = string(dAtA[iNdEx:postIndex])
-+			iNdEx = postIndex
-+		default:
-+			iNdEx = preIndex
-+			skippy, err := skipGenerated(dAtA[iNdEx:])
-+			if err != nil {
-+				return err
-+			}
-+			if skippy < 0 {
-+				return ErrInvalidLengthGenerated
-+			}
-+			if (iNdEx + skippy) > l {
-+				return io.ErrUnexpectedEOF
-+			}
-+			iNdEx += skippy
-+		}
-+	}
-+
-+	if iNdEx > l {
-+		return io.ErrUnexpectedEOF
-+	}
-+	return nil
-+}
- func (m *PhotonPersistentDiskVolumeSource) Unmarshal(dAtA []byte) error {
- 	l := len(dAtA)
- 	iNdEx := 0
-@@ -48522,7 +48753,7 @@ func (m *VolumeSource) Unmarshal(dAtA []byte) error {
- 			iNdEx = postIndex
- 		case 22:
- 			if wireType != 2 {
--				return fmt.Errorf("proto: wrong wireType = %d for field AzureDisk", wireType)
-+				return fmt.Errorf("proto: wrong wireType = %d for field CascadeDisk", wireType)
- 			}
- 			var msglen int
- 			for shift := uint(0); ; shift += 7 {
-@@ -48546,10 +48777,10 @@ func (m *VolumeSource) Unmarshal(dAtA []byte) error {
- 			if postIndex > l {
- 				return io.ErrUnexpectedEOF
- 			}
--			if m.AzureDisk == nil {
--				m.AzureDisk = &AzureDiskVolumeSource{}
-+			if m.CascadeDisk == nil {
-+				m.CascadeDisk = &CascadeDiskVolumeSource{}
- 			}
--			if err := m.AzureDisk.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-+			if err := m.CascadeDisk.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
- 				return err
- 			}
- 			iNdEx = postIndex
-@@ -48718,6 +48949,39 @@ func (m *VolumeSource) Unmarshal(dAtA []byte) error {
- 				return err
- 			}
- 			iNdEx = postIndex
-+		case 28:
-+			if wireType != 2 {
-+				return fmt.Errorf("proto: wrong wireType = %d for field AzureDisk", wireType)
-+			}
-+			var msglen int
-+			for shift := uint(0); ; shift += 7 {
-+				if shift >= 64 {
-+					return ErrIntOverflowGenerated
-+				}
-+				if iNdEx >= l {
-+					return io.ErrUnexpectedEOF
-+				}
-+				b := dAtA[iNdEx]
-+				iNdEx++
-+				msglen |= (int(b) & 0x7F) << shift
-+				if b < 0x80 {
-+					break
-+				}
-+			}
-+			if msglen < 0 {
-+				return ErrInvalidLengthGenerated
-+			}
-+			postIndex := iNdEx + msglen
-+			if postIndex > l {
-+				return io.ErrUnexpectedEOF
-+			}
-+			if m.AzureDisk == nil {
-+				m.AzureDisk = &AzureDiskVolumeSource{}
-+			}
-+			if err := m.AzureDisk.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-+				return err
-+			}
-+			iNdEx = postIndex
- 		default:
- 			iNdEx = preIndex
- 			skippy, err := skipGenerated(dAtA[iNdEx:])
+index 5aeae2cbc07cd982f707dd157b3bd4bc9c3e96b6..a7d5b125e2af150330e0a97d7f6c8f686feddc9e 100644
+GIT binary patch
+delta 1273
+zcmb_bTSyd980Oq&ceYvGvDDmFo3)DunU_SYu!KyyXjxW9^q}ZQl4ci;F4%UVmgutO
+z;Qmok`65&h))J?BC?AT*&<uJgMRbXzhp43}ia;B8cib`PC3^Va|IeB8UH&uY-N>3C
+zlyt79Nmcu*t7=?DwflB%Zm4Ujca=9Z?X7lML=oDp%;9&@-P45Sp^wx(NmJD^yHzbK
+zHcbgHh0dvpeY)|JYsE>?He2nxl#X+o!5Jh8kQ{@i>lA*geWU}ve<U-sl{9FgOja}O
+zHt<+boceifntF5w3pX!YiiP~VW~JHU|Jc<|EK$qqp10|yh!u6|=sf?~C+-S1;TDDz
+zbl=b}i$h*I9<_BHN)8pUo{>hVxP|R7<Un)a!U^2z(JDUVz_|x?YKR4#3`eSQNhBDY
+z^kHRUH_%O1@-IHz#-Pbf?JyIt1l~`W!HWU15*!00fn?|8!(|`dit^!D2hQ?5Xv6$L
+z8~Ii+!J=t6;AKB4)ism>GD%|<KR-ZvXjB8aps$})<Aqt{)LTf7R#ZJB3X}%O+)xx=
+z5+Jp4h6xO1(FNh)7jM!U$XY|=)pIE+psmk_%0?vev9ILt8QsDWH%*MxT>eSx5eUcV
+zFQ`nV3=X+z1qAbGJoMIK8<Yi@iDw+APxt@ju!8?Qr<qeAc7*2g%fF~kHrVu*3LEvo
+z_&%`2u;o{yGzB^-qj*&jIBQrT?CNE+d8U<R^y#9NgDgA2@N>?aucSs=K&mj+Z0wwT
+zaF8t{ux*eXg}z#it1!Usb^bfo0mMJ4!a@{f^sHzVG?+A)HHaE48m90StrDH3&$jo9
+z{03zkY%2u?%C6cv<*@b;MX`Rtq%CExo~UZOoTkqSob7TAAATs^li|AGB)}3Dvx#?K
+zky|jozSCNcpzO3{<3D;NYi2}u{6+K3_u_kGe9v$v&$Pqv$e{hXcsFzdJXma&aQHF`
+z)6I*=b++=y!?v}$#G)J68D{iIW0D4|h8PX8TpF`IYWv@TUE!4cs(dOYociJqF&?^Z
+W35Aj9!4~rd<ni8?x%YP5>!RN;WXwVU
+
+delta 506
+zcmY+9OGs346vp{K^Ko^&W0Mcmxtii8E98c5+_jo<2okZKvuKkW1tlC`Ew2)ibg2_}
+zaJ=K9Rmh;?kpv;1i$d?B7PT=De1OOx1d)pVXOzIj4-V&?@B7Y4L+kEdI2Gb^&-v@y
+z5IbQd_SATd-SlONnZpJo|F8gz`$*|*`M-~|D-N4GUmxj!L4(vndWfW~0fXRxLCqML
+zF0F>0pDY5?E-i&-hib6l(kJ-Np^kusAyRJ7^cC5`erbi16vIiDZpo->pmT?{W>j}r
+zW1|U6E`5f^Z??s=BKW$;>a$^}su%uDcqP30%p2gyASQ;+Sd`dKu=r-LcMKw<yaUr0
+z{1JhO#ZTd3JrBT}exAJnw@3NL%l|tE<Z7%U4461!_rW`65+|v6uVW}6?s?$t3IX1v
+z9K>K;#t3}a7iBoHFJ=ftOJp6m--Ivo9sWHOQ>mNlpD3jIM6K1GkcwN197V1oPmzz^
+z360;y=2iVIg{aJvFfy&TW7nG2sbkM_K^uXdHtov2>X(-Dz>50|6om?(q6p)DeLZn)
+h;LS@3+ds6d!4}0j)ED#7Sd&kQRk5jK#isxJ<4Ycg%t-(M
+
 diff --git a/staging/src/k8s.io/api/core/v1/types.go b/staging/src/k8s.io/api/core/v1/types.go
-index 728cbd5..87ba6a4 100644
+index 728cbd5a62..87ba6a4997 100644
 --- a/staging/src/k8s.io/api/core/v1/types.go
 +++ b/staging/src/k8s.io/api/core/v1/types.go
 @@ -333,9 +333,8 @@ type VolumeSource struct {
@@ -6965,5 +6329,5 @@ index 728cbd5..87ba6a4 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 -- 
-2.7.4
+2.17.1
 
