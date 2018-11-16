@@ -106,6 +106,8 @@ class SpecObjectsUtils(object):
         for p in self.mapSpecObjects[specName]:
             if p.version == version:
                 return p.release
+        if specName == "gcc":
+             return self.mapSpecObjects[specName][0].release
         return None
 
     def getVersion(self, package, index=0):
