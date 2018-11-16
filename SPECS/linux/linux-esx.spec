@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.130
-Release:        3%{?dist}
+Version:        4.9.137
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=59621537cc8891aa3d0d77b2892db7828a0098f9
+%define sha1 linux=bd0e5ecf3bee96cb8c81d90247cb3389cbdc0727
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -61,8 +61,6 @@ Patch45:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 Patch46:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch47:        0002-xfs-verify-dinode-header-first.patch
 Patch48:        0003-xfs-enhance-dinode-verifier.patch
-# Fix for CVE-2018-13053
-Patch49:        0001-alarmtimer-Prevent-overflow-for-relative-nanosleep.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -140,7 +138,6 @@ The Linux package contains the Linux kernel doc files
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
-%patch49 -p1
 
 
 %build
@@ -236,6 +233,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Nov 16 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.137-1
+-   Update to version 4.9.137
 *   Mon Oct 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.130-3
 -   Enable SMB2 support in the config.
 *   Tue Oct 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.130-2
