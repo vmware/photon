@@ -1,14 +1,15 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.10.8
+Version:        1.10.10
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=a9b944ec9f07b08e8982df4e72c1d29e05564c71
+%define sha1    kubernetes-%{version}.tar.gz=588d1d97b76997a14ef4f0c557e7307d3ffb5e9a
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         k8s-1.10-vke.patch
+Patch1:         apimachinery-conn-1.10.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -55,6 +56,7 @@ tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 cd %{name}-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 make
@@ -207,6 +209,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Thu Nov 15 2018 Amarnath <vaa@vmware.com> 1.10.10-1
+-   Update to K8s version 1.10.10 with VMware Cloud PKS patch with API Machinery patch (72d667b)
 *   Thu Oct 04 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.10.8-1
 -   Update to k8s version 1.10.8 with VKE patch
 *   Tue Sep 11 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.10.2-13
