@@ -1,18 +1,19 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.11.3
-Release:        2%{?dist}
+Version:        1.11.4
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=60914656f6204ad95555b767181648eeef899dc0
+%define sha1    kubernetes-%{version}.tar.gz=a9f7d5691e1bbb39dad8d23b55a83161e3ce1c99
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         k8s-1.11-vke.patch
+Patch1:         apimachinery-conn.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  go >= 1.10
+BuildRequires:  go = 1.10.3
 BuildRequires:  rsync
 BuildRequires:  which
 Requires:       cni
@@ -56,6 +57,7 @@ tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 cd %{name}-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 make
@@ -208,6 +210,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Mon Nov 19 2018 Amarnath <vaa@vmware.com> 1.11.4-1
+-   Upgrade Kubernetes to 1.11.4 with VCP patch with API Machinery patch
 *   Tue Oct 16 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.11.3-2
 -   Add vke patch (350444)
 *   Fri Oct 05 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.11.3-1
