@@ -1,90 +1,91 @@
-# Photon OS Linux Troubleshooting Guide
+# Troubleshooting Guide
 
--   [Introduction](#introduction)
-    -   [Systemd and TDNF](#systemd-and-tdnf)
-    -   [The Root Account and the `sudo` and `su`
-        Commands](#the-root-account-and-the-sudo-and-su-commands)
-    -   [Checking the Version and Build
-        Number](#checking-the-version-and-build-number)
-    -   [General Best Practices](#general-best-practices)
-    -   [Logs on Photon OS](#logs-on-photon-os)
-    -   [Troubleshooting Progression](#troubleshooting-progression)
--   [Solutions to Common Problems](#solutions-to-common-problems)
-    -   [Resetting a Lost Root
-        Password](#resetting-a-lost-root-password)
-    -   [Fixing Permissions on Network Config
-        Files](#fixing-permissions-on-network-config-files)
-    -   [Permitting Root Login with
-        SSH](#permitting-root-login-with-ssh)
-    -   [Fixing Sendmail If Installed Before an FQDN Was
-        Set](#fixing-sendmail-if-installed-before-an-fqdn-was-set)
--   [Common Troubleshooting Tools on Photon
-    OS](#common-troubleshooting-tools-on-photon-os)
-    -   [Top](#top)
-    -   [ps](#ps)
-    -   [netstat](#netstat)
-    -   [find](#find)
-    -   [Locate](#locate)
-    -   [df](#df)
-    -   [md5sum and sha256sum](#md5sum-and-sha256sum)
-    -   [strace](#strace)
-    -   [file](#file)
-    -   [stat](#stat)
-    -   [watch](#watch)
-    -   [vmstat and fdisk](#vmstat-and-fdisk)
-    -   [lsof](#lsof)
-    -   [fuser](#fuser)
-    -   [ldd](#ldd)
-    -   [gdb](#gdb)
-    -   [Other Troubleshooting Tools Installed by
-        Default](#other-troubleshooting-tools-installed-by-default)
-    -   [Installing More Tools from
-        Repositories](#installing-more-tools-from-repositories)
-    -   [Linux Troubleshooting Tools Not on Photon
-        OS](#linux-troubleshooting-tools-not-on-photon-os)
--   [Systemd](#systemd)
-    -   [Viewing Services](#viewing-services)
-    -   [Using Systemd Commands Instead of Init.d
-        Commands](#using-systemd-commands-instead-of-init.d-commands)
-    -   [Analyzing System Logs with
-        journalctl](#analyzing-system-logs-with-journalctl)
-    -   [Inspecting Services with
-        `systemd-analyze`](#inspecting-services-with-systemd-analyze)
--   [Networking](#networking)
-    -   [Managing the Network
-        Configuration](#managing-the-network-configuration)
-    -   [Use `ip` and `ss` Commands Instead of `ifconfig` and
-        `netstat`](#use-ip-and-ss-commands-instead-of-ifconfig-and-netstat)
-    -   [Inspecting the Status of Network Links with
-        `networkctl`](#inspecting-the-status-of-network-links-with-networkctl)
-    -   [Turning on Network
-        Debugging](#turning-on-network-debugging)
-    -   [Installing the Packages for tcpdump and netcat with
-        tdnf](#installing-the-packages-for-tcpdump-and-netcat-with-tdnf)
-    -   [Checking Firewall Rules](#checking-firewall-rules)
-    -   [Netmgr](#netmgr)
--   [File System](#file-system)
-    -   [Checking Disk Space](#checking-disk-space)
-    -   [Adding a Disk and Partitioning
-        It](#adding-a-disk-and-partitioning-it)
-    -   [Expanding Disk Partition](#expanding-disk-partition)
-    -   [fdisk](#fdisk)
-    -   [fsck](#fsck)
-    -   [Fixing File System Errors When fsck
-        Fails](#fixing-file-system-errors-when-fsck-fails)
--   [Packages](#packages)
--   [Kernel Problems and Boot and Login
-    Problems](#kernel-problems-and-boot-and-login-problems)
-    -   [Kernel Overview](#kernel-overview)
-    -   [Boot Process Overview](#boot-process-overview)
-    -   [Blank Screen on Reboot](#blank-screen-on-reboot)
-    -   [Investigating Strange
-        Behavior](#investigating-strange-behavior)
-    -   [Investigating the Guest Kernel When You Cannot Log
-        On](#investigating-the-guest-kernel-when-you-cannot-log-on)
-    -   [Kernel Log Replication with
-        VProbes](#kernel-log-replication-with-vprobes)
--   [Performance Issues](#performance-issues)
+- [Toubleshooting Guide](README.md)
+    -    [Introduction](#introduction)
+        -   [Systemd and TDNF](#systemd-and-tdnf)
+        -   [The Root Account and the `sudo` and `su`
+            Commands](#the-root-account-and-the-sudo-and-su-commands)
+        -   [Checking the Version and Build
+            Number](#checking-the-version-and-build-number)
+        -   [General Best Practices](#general-best-practices)
+        -   [Logs on Photon OS](#logs-on-photon-os)
+        -   [Troubleshooting Progression](#troubleshooting-progression)
+    -   [Solutions to Common Problems](#solutions-to-common-problems)
+        -   [Resetting a Lost Root
+            Password](#resetting-a-lost-root-password)
+        -   [Fixing Permissions on Network Config
+            Files](#fixing-permissions-on-network-config-files)
+        -   [Permitting Root Login with
+            SSH](#permitting-root-login-with-ssh)
+        -   [Fixing Sendmail If Installed Before an FQDN Was
+            Set](#fixing-sendmail-if-installed-before-an-fqdn-was-set)
+    -   [Common Troubleshooting Tools on Photon
+        OS](#common-troubleshooting-tools-on-photon-os)
+        -   [Top](#top)
+        -   [ps](#ps)
+        -   [netstat](#netstat)
+        -   [find](#find)
+        -   [Locate](#locate)
+        -   [df](#df)
+        -   [md5sum and sha256sum](#md5sum-and-sha256sum)
+        -   [strace](#strace)
+        -   [file](#file)
+        -   [stat](#stat)
+        -   [watch](#watch)
+        -   [vmstat and fdisk](#vmstat-and-fdisk)
+        -   [lsof](#lsof)
+        -   [fuser](#fuser)
+        -   [ldd](#ldd)
+        -   [gdb](#gdb)
+        -   [Other Troubleshooting Tools Installed by
+            Default](#other-troubleshooting-tools-installed-by-default)
+        -   [Installing More Tools from
+            Repositories](#installing-more-tools-from-repositories)
+        -   [Linux Troubleshooting Tools Not on Photon
+            OS](#linux-troubleshooting-tools-not-on-photon-os)
+    -   [Systemd](#systemd)
+        -   [Viewing Services](#viewing-services)
+        -   [Using Systemd Commands Instead of Init.d
+            Commands](#using-systemd-commands-instead-of-init.d-commands)
+        -   [Analyzing System Logs with
+            journalctl](#analyzing-system-logs-with-journalctl)
+        -   [Inspecting Services with
+            `systemd-analyze`](#inspecting-services-with-systemd-analyze)
+    -   [Networking](#networking)
+        -   [Managing the Network
+            Configuration](#managing-the-network-configuration)
+        -   [Use `ip` and `ss` Commands Instead of `ifconfig` and
+            `netstat`](#use-ip-and-ss-commands-instead-of-ifconfig-and-netstat)
+        -   [Inspecting the Status of Network Links with
+            `networkctl`](#inspecting-the-status-of-network-links-with-networkctl)
+        -   [Turning on Network
+            Debugging](#turning-on-network-debugging)
+        -   [Installing the Packages for tcpdump and netcat with
+            tdnf](#installing-the-packages-for-tcpdump-and-netcat-with-tdnf)
+        -   [Checking Firewall Rules](#checking-firewall-rules)
+        -   [Netmgr](#netmgr)
+    -   [File System](#file-system)
+        -   [Checking Disk Space](#checking-disk-space)
+        -   [Adding a Disk and Partitioning
+            It](#adding-a-disk-and-partitioning-it)
+        -   [Expanding Disk Partition](#expanding-disk-partition)
+        -   [fdisk](#fdisk)
+        -   [fsck](#fsck)
+        -   [Fixing File System Errors When fsck
+            Fails](#fixing-file-system-errors-when-fsck-fails)
+    -   [Packages](#packages)
+    -   [Kernel Problems and Boot and Login
+        Problems](#kernel-problems-and-boot-and-login-problems)
+        -   [Kernel Overview](#kernel-overview)
+        -   [Boot Process Overview](#boot-process-overview)
+        -   [Blank Screen on Reboot](#blank-screen-on-reboot)
+        -   [Investigating Strange
+            Behavior](#investigating-strange-behavior)
+        -   [Investigating the Guest Kernel When You Cannot Log
+            On](#investigating-the-guest-kernel-when-you-cannot-log-on)
+        -   [Kernel Log Replication with
+            VProbes](#kernel-log-replication-with-vprobes)
+    -   [Performance Issues](#performance-issues)
 
 
 

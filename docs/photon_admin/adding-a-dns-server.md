@@ -1,10 +1,10 @@
 # Adding a DNS Server 
 
-Photon OS resolves domain names, IP addresses, and network names for local applications by using systemd-resolved. The systemd-resolved daemon automatically creates and maintains the /etc/resolv.conf file, into which systemd-resolved places the IP address of the DNS server. You should therefore never modify the /etc/resolv.conf file.
+Photon OS uses `systemd-resolved` to resolve domain names, IP addresses, and network names for local applications. The `systemd-resolved` daemon automatically creates and maintains the `/etc/resolv.conf` file, into which systemd-resolved places the IP address of the DNS server. You must not modify the `/etc/resolv.conf` file.
 
-(If you want to implement a local resolver like bind instead of systemd-resolved, stop the systemd-resolved service and disable it.)
+**Note**: If you want to implement a local resolver like `bind` instead of `systemd-resolved`, stop the `systemd-resolved` service and disable it.
 
-If you open the default /etc/resolv.conf file after you deploy Photon OS, it looks like this: 
+If you open the default `/etc/resolv.conf` file after you deploy Photon OS, it looks like this: 
 
 	root@photon-rc [ ~ ]# cat /etc/resolv.conf
 	# This file is managed by systemd-resolved(8). Do not edit.
@@ -16,7 +16,7 @@ If you open the default /etc/resolv.conf file after you deploy Photon OS, it loo
 
 	nameserver 198.51.100.2
 
-To add a DNS server to your static network configuration file, insert a DNS key into the Network section of, in this example, /etc/systemd/network/10-eth0-static.network and set it to the IP address of your DNS server: 
+To add a DNS server, insert a DNS key into the Network section of the static network configuration file, for example,  `/etc/systemd/network/10-eth0-static.network` and set it to the IP address of your DNS server: 
 
 	[Match]
 	Name=e*
@@ -26,10 +26,12 @@ To add a DNS server to your static network configuration file, insert a DNS key 
 	Gateway=198.51.0.1
 	DNS=198.51.0.1
 
-Another way of adding a DNS server is to modify /etc/systemd/resolved.conf--a method that can be particularly useful when your machine is working with DHCP. For more information, see https://www.freedesktop.org/software/systemd/man/resolved.conf.html.
+If your machine is working with DHCP, you can add a DNS server by modifying the `/etc/systemd/resolved.conf--a` method.
 
-You can optionally activate the local DNS stub resolver of systemd-resolved by adding `dns` and `resolve` to /etc/nsswitch.conf. To do so, make a backup copy of /etc/nsswitch.conf and then execute the following command as root:
+For more information, see https://www.freedesktop.org/software/systemd/man/resolved.conf.html.
+
+You can optionally activate the local DNS stub resolver of systemd-resolved by adding `dns` and `resolve` to the  `/etc/nsswitch.conf` file. To do so, make a backup copy of the `/etc/nsswitch.conf` file and then execute the following command as root:
 
 	sed -i 's/^hosts.*$/hosts: files resolve dns/' /etc/nsswitch.conf
 
-For more information on the systemd-resolved service, see https://www.freedesktop.org/software/systemd/man/systemd-resolved.service.html.
+For more information about the `systemd-resolved` service, see https://www.freedesktop.org/software/systemd/man/systemd-resolved.service.html.

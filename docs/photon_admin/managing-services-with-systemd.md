@@ -1,4 +1,4 @@
-# Managing Services with systemd
+# Managing Services with `systemd`
 
 Photon OS manages services with `systemd`. By using `systemd`, Photon OS adopts a contemporary Linux standard to bootstrap the user space and concurrently start services. This is an architecture that differs from traditional Linux systems such as SUSE Linux Enterprise Server. 
 
@@ -8,6 +8,13 @@ In contrast to a SysVinit system, `systemd` defines no such runlevels. Instead, 
 
 On Photon OS, you must manage services with systemd and `systemctl`, its command-line utility for inspecting and controlling the system, and not the deprecated commands of `init.d`. 
 
-For more information, see the index of all the systemd man pages, including systemctl, at the following URL: 
-
+For more information, see the index of all the systemd man pages, including systemctl, at 
 [https://www.freedesktop.org/software/systemd/man/](https://www.freedesktop.org/software/systemd/man/)
+
+-   [Viewing Services](viewing-services.md)
+-   [Controlling Services](controlling-services.md)
+-   [Creating a Startup Service](creating-a-startup-service.md)
+-   [Disabling the Photon OS httpd.service](disabling-the-photon-os-httpd.service.md)
+-   [Auditing System Events with auditd](auditing-system-events-with-auditd.md)
+-   [Analyzing systemd Logs with journalctl](analyzing-systemd-logs-with-journalctl.md)
+-   [Migrating Scripts to systemd](migrating-scripts-to-systemd.md)

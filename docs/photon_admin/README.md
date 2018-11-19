@@ -1,8 +1,8 @@
-# Photon OS Administration Guide
+# Administration Guide
 
-The *Photon OS Administration Guide* describes the fundamentals of administering Photon OS. 
+The Photon OS *Administration Guide* describes the fundamentals of administering Photon OS. 
 
-The *Photon OS Administration Guide* covers the basics of managing packages, controlling services with systemd, setting up networking, initializing Photon OS with cloud-init, running Docker containers, and working with other technologies, such as Kubernetes. 
+The *Administration Guide* covers the basics of managing packages, controlling services with systemd, setting up networking, initializing Photon OS with cloud-init, running Docker containers, and working with other technologies, such as Kubernetes. 
 
 **Product version: 3.0**
 

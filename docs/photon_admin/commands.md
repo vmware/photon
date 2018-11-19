@@ -61,7 +61,13 @@ To downgrade to a version lower than the next one, you must specify it by name, 
 
 	tdnf downgrade boost-1.56.0-2.ph1 
 
-**erase**: This command removes the package that you specify as an argument. The following is an example:
+**erase**: This command removes the package that you specify as an argument. 
+
+To remove a package, run the following command: 
+
+	tdnf erase pkgname
+	
+The following is an example:
 
 	tdnf erase vim
 	Removing:
@@ -79,7 +85,12 @@ You can also erase multiple packages:
 	tdnf info obsoletes
 	tdnf info upgrades
 
-**install**: This command takes the name of a package as its argument. It then installs the package and its dependencies. The following are examples:
+**install**: This command takes the name of a package as its argument. It then installs the package and its dependencies. 
+
+To install a package, run the following command:
+
+	tdnf install pkgname
+The following are examples:
 
 	tdnf install kubernetes
 
@@ -97,6 +108,10 @@ The list of packages might be long. To more easily view it, you can concatenate 
 
 	tdnf list all > pkgs.txt
 	vi pkgs.txt
+
+To list enabled repositories, run the following command:
+
+	tdnf repolist
 
 **makecache**: This command updates the cached binary metadata for all known repositories. The following is an example:
 

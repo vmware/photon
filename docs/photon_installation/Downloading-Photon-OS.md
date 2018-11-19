@@ -4,7 +4,7 @@ You download Photon OS from https://github.com/vmware/photon/wiki/Downloading-Ph
 
 Photon OS is available in the following pre-packaged, binary formats.
 
-### Download Formats ####
+## Download Formats ####
 
 | Format | Description |
 | --- | --- |

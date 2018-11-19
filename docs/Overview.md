@@ -1,6 +1,6 @@
 # Overview of Photon OS
 
-*Overview of Photon OS* provides an introduction to Photon OS, it versions, and distinguishing features.
+*Overview of Photon OS* provides an introduction to Photon OS, its versions, and distinguishing features.
 
 **Product version: 3.0**
 
