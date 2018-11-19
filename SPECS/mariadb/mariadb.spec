@@ -1,7 +1,7 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
 Version:        10.3.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -9,7 +9,6 @@ Distribution:   Photon
 Url:            https://mariadb.org/
 Source0:        https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz
 %define         sha1 mariadb=51e9870847daa76f1e82ade97d9cf60a31df7656
-BuildArch:      x86_64
 BuildRequires:  cmake
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
@@ -356,6 +355,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 10.3.9-3
+-   Enabling for aarch64
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 10.3.9-2
 -   Adding BuildArch
 *   Thu Sep 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 10.3.9-1

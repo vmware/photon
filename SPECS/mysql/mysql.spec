@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.12
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -10,7 +10,6 @@ Url:            http://www.mysql.com
 Source0:        https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-boost-%{version}.tar.gz
 %define         sha1 mysql-boost=c144d6c1350a9897da31ebbd3b5492ab1f152352
 
-BuildArch:      x86_64
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
@@ -72,6 +71,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 8.0.12-4
+-   Enabling for aarch64
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 8.0.12-3
 -   Adding BuildArch
 *   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 8.0.12-2
