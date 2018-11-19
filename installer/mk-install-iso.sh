@@ -122,8 +122,23 @@ EOF
 cat >> ${BUILDROOT}/bin/bootphotoninstaller << EOF
 #!/bin/bash
 cd /installer
-[ \$(tty) == '/dev/tty1' ] && LANG=en_US.UTF-8 ./isoInstaller.py --json-file=$PACKAGE_LIST_FILE_BASE_NAME 2> /var/log/installer && shutdown -r now
-/bin/bash
+
+ACTIVE_CONSOLE="\$(< /sys/devices/virtual/tty/console/active)"
+
+install() {
+  LANG=en_US.UTF-8 ./isoInstaller.py --json-file=$PACKAGE_LIST_FILE_BASE_NAME 2> /var/log/installer && shutdown -r now
+}
+
+try_run_installer() {
+  if [ "\$ACTIVE_CONSOLE" == "tty0" ]; then
+      [ "\$(tty)" == '/dev/tty1' ] && install
+  else
+      [ "\$(tty)" == "/dev/\$ACTIVE_CONSOLE" ] && install
+  fi
+}
+
+try_run_installer || exec /bin/bash
+
 EOF
 
 chmod 755 ${BUILDROOT}/bin/bootphotoninstaller
@@ -137,6 +152,7 @@ chmod 755 ${BUILDROOT}/init
 #adding autologin to the root user
 # and set TERM=linux for installer
 sed -i "s/ExecStart.*/ExecStart=-\/sbin\/agetty --autologin root --noclear %I linux/g" ${BUILDROOT}/lib/systemd/system/getty@.service
+sed -i "s/ExecStart.*/ExecStart=-\/sbin\/agetty --autologin root --keep-baud 115200,38400,9600 %I screen/g" ${BUILDROOT}/lib/systemd/system/serial-getty@.service
 
 #- Step 7 - Create installer script
 sed -i "s/root:.*/root:x:0:0:root:\/root:\/bin\/bootphotoninstaller/g" ${BUILDROOT}/etc/passwd
