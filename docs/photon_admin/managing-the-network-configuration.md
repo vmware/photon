@@ -1,18 +1,21 @@
 # Managing the Network Configuration
 
-The network service, which is enabled by default, starts when the system boots. You manage the network service by using systemd commands, such as systemd-networkd, systemd-resolvd, and networkctl. You can check its status of the network service by running the following command: 
+The network service, which is enabled by default, starts when the system boots. 
 
-	systemctl status systemd-networkd
-
-Here is a healthy result of the command: 
-
-	* systemd-networkd.service - Network Service
-	   Loaded: loaded (/usr/lib/systemd/system/systemd-networkd.service; enabled; vendor preset: enabled)
-	   Active: active (running) since Fri 2016-04-29 15:08:51 UTC; 6 days ago
-	     Docs: man:systemd-networkd.service(8)
-	 Main PID: 291 (systemd-network)
-	   Status: "Processing requests..."
-	   CGroup: /system.slice/systemd-networkd.service
-	           `-291 /lib/systemd/systemd-networkd
-
-Because Photon OS relies on systemd to manage services, you should employ the systemd suite of commands, not deprecated init.d commands or other deprecated commands, to manage networking. 
+-   [Commands to Manage Network Service](network_management_commands.md)
+-   [Using the Network Configuration Manager](using-the-network-configuration-manager.md)
+-   [Use `ip` and `ss` Commands Instead of `ifconfig` and `netstat`](use-ip-and-ss-commands.md)
+-   [Configuring Network Interfaces](configuring-network-interfaces.md)
+-   [Setting a Static IP Address](setting-a-static-ip-address.md)
+-   [Turning Off DHCP](turning-off-dhcp.md)
+-   [Adding a DNS Server](adding-a-dns-server.md)
+-   [Setting Up Networking for Multiple NICs](setting-up-networking-for-multiple-nics.md)
+    -   [Combining DHCP and Static IP Addresses with IPv4 and IPv6](combining-dhcp-and-static-ip-addresses-with-ipv4-and-ipv6.md)
+-   [Clearing the Machine ID of a Cloned Instance for DHCP](clearing-the-machine-id-of-a-cloned-instance-for-dhcp.md)
+-   [Using Predictable Network Interface Names](using-predictable-network-interface-names.md)
+-   [Inspecting the Status of Network Links with `networkctl`](inspecting-the-status-of-network-links-with-networkctl.md)
+-   [Network Debugging](turning-on-network-debugging.md)
+-   [Mounting a Network File System](mounting-a-network-file-system.md)
+-   [Installing the Packages for tcpdump and netcat with `tdnf`](installing-the-packages-for-tcpdump-and-netcat-with-tdnf.md)
+- [Network Configuration Manager - C API](netmgr.c.md)
+- [Network Configuration Manager - Python API](netmgr.python.md)        

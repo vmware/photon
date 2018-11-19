@@ -8,7 +8,7 @@ As a minimalist Linux run-time environment, the minimal version of Photon OS lac
     return 0;
     }
 
-The errors look something like this: 
+The errors appear as follows: 
 
     gcc test.c
     -bash: gcc: command not found
@@ -19,10 +19,10 @@ The errors look something like this:
 
 To enable the minimal version of Photon OS to preprocess, compile, assemble, and link C++ code, you must install the following packages as root with tdnf:
 
-* gcc
-* glibc-devel
-* binutils
+* `gcc`
+* `glibc-devel`
+* `binutils`
 
-Here's the `tdnf` command to install these packages: 
+To install the packages, use the following the `tdnf` command: 
 
     tdnf install gcc glibc-devel binutils

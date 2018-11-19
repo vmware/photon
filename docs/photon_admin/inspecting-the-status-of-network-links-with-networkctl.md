@@ -1,8 +1,12 @@
-# Inspecting the Status of Network Links with `networkctl`
+# Checking the Status of Network Links with `networkctl`
 
-The `networkctl` command shows information about network connections that helps you configure networking services and troubleshoot networking problems. You can, for example, progressively add options and arguments to the `networkctl` command to move from general information about network connections to specific information about a network connection. 
+You can inspect information about network connections by using the `networkctl` command. This can help you configure networking services and troubleshoot networking problems. 
 
-Running `networkctl` without options defaults to the list command:  
+You can progressively add options and arguments to the `networkctl` command to move from general information about network connections to specific information about a network connection. 
+
+# `networkctl` Command Without Options
+
+Run the `networkctl` command without options to default to the list command:  
 
 	networkctl
 	IDX LINK             TYPE               OPERATIONAL SETUP
@@ -12,9 +16,12 @@ Running `networkctl` without options defaults to the list command:
 	 11 vethb0aa7a6      ether              degraded    unmanaged
 	 4 links listed.
 
-Running `networkctl` with the status command displays information that looks like this; you can see that there are active network links with IP addresses for not only the Ethernet connection but also a Docker container. 
+## `networkctl status` Command
 
-	root@photon-rc [ ~ ]# networkctl status
+Run `networkctl` with the status command to display the following information:  
+
+```
+root@photon-rc [ ~ ]# networkctl status
 	*      State: routable
 	     Address: 198.51.100.131 on eth0
 	              172.17.0.1 on docker0
@@ -23,9 +30,16 @@ Running `networkctl` with the status command displays information that looks lik
 	              fe80::4c84:caff:fe76:a23f on vethb0aa7a6
 	     Gateway: 198.51.100.2 on eth0
 	         DNS: 198.51.100.2
+```
 
-You can then add a network link, such as the Ethernet connection, as the argument of the status command to show specific information about the link: 
 
+You can see that there are active network links with IP addresses for not only the Ethernet connection but also a Docker container.
+
+### `networkctl status` Command With Network Link Option
+
+You can add a network link, such as the Ethernet connection, as the argument of the `status` command to show specific information about the link: 
+
+```
 	root@photon-rc [ ~ ]# networkctl status eth0
 	* 2: eth0
 	       Link File: /usr/lib/systemd/network/99-default.link
@@ -41,10 +55,14 @@ You can then add a network link, such as the Ethernet connection, as the argumen
 	         Gateway: 198.51.100.2
 	             DNS: 198.51.100.2
 	        CLIENTID: ffb6220feb00020000ab116724f520a0a77337
+```
 
-And you can do the same thing with the Docker container: 
+### `networkctl status` Command With Docker Option
 
-	networkctl status docker0
+You can add a Docker container as the argument of the `status` command to show specific information about the container: 
+	
+```
+networkctl status docker0
 	* 3: docker0
 	       Link File: /usr/lib/systemd/network/99-default.link
 	    Network File: n/a
@@ -55,7 +73,8 @@ And you can do the same thing with the Docker container:
 	             MTU: 1500
 	         Address: 172.17.0.1
 	                  fe80::42:f0ff:fef7:bd81
+```
 
-In the example above, it is OK that the state of the Docker container is unmanaged; Docker handles managing the networking for the containers without using systemd-resolved or systemd-networkd. Instead, Docker manages the container's connection by using its bridge drive.
+In the example above, the state of the Docker container is unmanaged because Docker handles managing the networking for the containers without using systemd-resolved or systemd-networkd. Docker manages the container connection by using its bridge drive.
 
 For more information about `networkctl` commands and options, see https://www.freedesktop.org/software/systemd/man/networkctl.html.
