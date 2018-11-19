@@ -1,11 +1,14 @@
 Summary:        Program for modifying or creating files
 Name:           patch
 Version:        2.7.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        ftp://ftp.gnu.org/gnu/patch/%{name}-%{version}.tar.gz
 %define sha1 patch=0ed8f3e49d84964f27e27c712fc8780e291dfa60
+Patch0:		CVE-2018-6951.patch
+Patch1:		CVE-2018-1000156.patch
+Patch2:		CVE-2018-6952.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,6 +20,9 @@ file typically created by the diff program.
 
 %prep
 %setup -q
+%patch0	-p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 %configure --disable-silent-rules
@@ -35,6 +41,8 @@ make  %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*   Mon Nov 19 2018 Siju Maliakkal <smaliakkal@vmware.com> 2.7.6-3
+-   Add patches for CVE-2018-6951,CVE-2018-1000156,CVE-2018-6952
 *   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 2.7.6-2
 -   Add conflicts toybox.
 *   Tue Sep 11 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.7.6-1
