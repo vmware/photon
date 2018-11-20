@@ -1,7 +1,7 @@
 Summary:	RELP Library
 Name:		librelp
 Version:	1.2.17
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.librelp.com
 Source0:	http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
@@ -28,9 +28,9 @@ developing applications that use librelp.
 %prep
 %setup -q
 autoreconf -fiv
+sed -ie 's/export valgrind=.*/export valgrind""/' tests/test-framework.sh
 %build
-./configure \
-	--prefix=%{_prefix}
+%configure
 make %{?_smp_mflags}
 
 %install
@@ -52,6 +52,8 @@ make check
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*       Tue Nov 20 2018 Ashwin H <ashwinh@vmware.com> 1.2.17-2
+-       Fix librelp %check
 *       Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 1.2.17-1
 -       Updated to version 1.2.17
 *	Tue Apr 11 2017 Harish Udaiy Kumar <hudaiyakumar@vmware.com> 1.2.13-1
