@@ -92,7 +92,9 @@ def customizeImage(config, mount_path):
                 "chroot {} /bin/bash -c '/tempscripts/{}'".format(mount_path, script))
         shutil.rmtree(mount_path + "/tempscripts", ignore_errors=True)
     if 'expirepassword' in config and config['expirepassword']:
-        Utils.runshellcommand("chage -R {} -d 0 root".format(mount_path))
+        # Do not run 'chroot -R' from outside. It will not find nscd socket.
+        Utils.runshellcommand("chroot {} /bin/bash -c 'chage -d 0 root'".format(mount_path))
+        raise Exception ("exit 1")
 
 def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
     photon_release_ver = os.environ['PHOTON_RELEASE_VER']
