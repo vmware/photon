@@ -3,7 +3,7 @@
 Summary:        Elastic Search
 Name:           elasticsearch
 Version:        6.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License Version 2.0
 URL:            https://artifacts.elastic.co/downloads/elasticsearch/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
@@ -13,6 +13,7 @@ Source1:        cacerts
 Group:          Development/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
+BuildArch:      x86_64
 BuildRequires:  openjdk10
 BuildRequires:  unzip
 BuildRequires:  curl
@@ -117,6 +118,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+* Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 6.4.0-3
+- Add BuildArch
 * Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 6.4.0-2
 - Removed dependency on JAVA10_VERSION macro
 * Mon Sep 03 2018 Tapas Kundu <tkundu@vmware.com> 6.4.0-1

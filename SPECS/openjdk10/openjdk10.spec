@@ -3,7 +3,7 @@
 Summary:	OpenJDK
 Name:		openjdk10
 Version:	1.10.0.23
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -11,6 +11,7 @@ Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk10/jdk10/openjdk-%{version}.tar.gz
 %define sha1 openjdk-1.10.0=d0b6193fd1687b23fb7553b62d32f0e7e0527ea8
+BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -220,6 +221,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/lib/src.zip
 
 %changelog
+*   Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 1.10.0.23-3
+-   Add BuildArch
 *   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.10.0.23-2
 -   Use ExtraBuildRequires
 *   Mon Apr 23 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.0.23-1

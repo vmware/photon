@@ -3,7 +3,7 @@
 Summary:	OpenJDK
 Name:		openjdk9
 Version:	1.9.0.181
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -11,6 +11,7 @@ Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk9/b182/openjdk-%{version}.tar.gz
 %define sha1 openjdk-1.9.0=0761abc2aabb0aa24f63ce96853ab3bb57ccce67
+BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -224,6 +225,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/lib/src.zip
 
 %changelog
+*   Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 1.9.0.181-3
+-   Add BuildArch
 *   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.9.0.181-2
 -   Use ExtraBuildRequires
 *   Thu Apr 19 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.0.181-1
