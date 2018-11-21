@@ -122,6 +122,14 @@ Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
 %description dtb-rpi3
 Kernel Device Tree Blob files for Raspberry Pi3
+
+%package dtb-ls1012afrwy
+Summary:        Kernel Device Tree Blob files for NXP ls1012a FRWY board
+Group:          System Environment/Kernel
+Requires:       %{name} = %{version}-%{release}
+%description dtb-ls1012afrwy
+Kernel Device Tree Blob files for NXP ls1012a FRWY board
+
 %endif
 
 
@@ -241,6 +249,7 @@ install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
 # Install DTB files
 install -vdm 755 %{buildroot}/boot/dtb
 install -vm 640 arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dtb %{buildroot}/boot/dtb/
+install -vm 640 arch/arm64/boot/dts/freescale/fsl-ls1012a-frdm.dtb %{buildroot}/boot/dtb/
 %endif
 
 # Restrict the permission on System.map-X file
@@ -369,6 +378,11 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %files dtb-rpi3
 %defattr(-,root,root)
 /boot/dtb/bcm2837-rpi-3-b.dtb
+
+%files dtb-ls1012afrwy
+%defattr(-,root,root)
+/boot/dtb/fsl-ls1012a-frdm.dtb
+
 %endif
 
 %changelog

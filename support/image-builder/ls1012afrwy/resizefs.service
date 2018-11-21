@@ -1,0 +1,15 @@
+[Unit]
+Description=Resizes rootfs and creates swap partition
+DefaultDependencies=no
+Conflicts=shutdown.target
+After=systemd-remount-fs.service
+Before=systemd-sysusers.service sysinit.target shutdown.target
+ConditionPathExists=!/dev/mmcblk0p4
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/resizefs.sh
+
+[Install]
+WantedBy=multi-user.target
