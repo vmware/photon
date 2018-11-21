@@ -83,7 +83,7 @@ index 9033efc..1eeb714 100644
  #define ERROR_TDNF_OUT_OF_MEMORY        (ERROR_TDNF_SYSTEM_BASE + ENOMEM)
  #define ERROR_TDNF_NO_DATA              (ERROR_TDNF_SYSTEM_BASE + ENODATA)
 diff --git a/include/tdnftypes.h b/include/tdnftypes.h
-index 6aabaf0..2ebc466 100644
+index f2fbdb5..d89163c 100644
 --- a/include/tdnftypes.h
 +++ b/include/tdnftypes.h
 @@ -160,6 +160,7 @@ typedef struct _TDNF_SOLVED_PKG_INFO
@@ -95,7 +95,7 @@ index 6aabaf0..2ebc466 100644
      PTDNF_PKG_INFO pPkgsExisting;
      PTDNF_PKG_INFO pPkgsToInstall;
 diff --git a/solv/prototypes.h b/solv/prototypes.h
-index 1865b99..0fd08a5 100644
+index 2484649..9789316 100644
 --- a/solv/prototypes.h
 +++ b/solv/prototypes.h
 @@ -246,6 +246,17 @@ SolvFindHighestOrLowestInstalled(
@@ -117,16 +117,13 @@ index 1865b99..0fd08a5 100644
  uint32_t
  SolvCreateSack(
 diff --git a/solv/tdnfpackage.c b/solv/tdnfpackage.c
-index d394f07..3a926a1 100644
+index 9631cde..80c33c2 100644
 --- a/solv/tdnfpackage.c
 +++ b/solv/tdnfpackage.c
-@@ -1558,4 +1558,119 @@ cleanup:
- 
- error:
-     goto cleanup;
--}
-\ No newline at end of file
-+}
+@@ -1673,3 +1673,118 @@ SolvIsGlob(
+     }
+     return nResult;
+ }
 +
 +uint32_t
 +SolvGetNevraFromId(
