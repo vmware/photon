@@ -18,11 +18,11 @@ grub_efi_install()
     BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p1
 #    mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/esp
     # Raspberry prorpiaetary GPU bootloader (1st stage)
-    cp -r esp/* $BUILDROOT/boot/esp/
+    cp -r $SCRIPT_PATH/esp/* $BUILDROOT/boot/esp/
     # u-boot (2nd stage) was copied earlier by installer.py
     # grub efi bootloader (3rd stage)
     mkdir -p $BUILDROOT/boot/esp/EFI/BOOT/
-    cp EFI_aarch64/BOOT/* $BUILDROOT/boot/esp/EFI/BOOT/
+    cp $INSTALLER_PATH/EFI_aarch64/BOOT/* $BUILDROOT/boot/esp/EFI/BOOT/
     mkdir -p $BUILDROOT/boot/esp/boot/grub2
     cat > $BUILDROOT/boot/esp/boot/grub2/grub.cfg << EOF
 search -n -u ${BOOT_UUID} -s
@@ -65,11 +65,11 @@ ln -sfv grub2 $BUILDROOT/boot/grub
 grub_efi_install
 
 rm -rf ${BUILDROOT}/boot/grub2/fonts
-cp boot/ascii.pf2 ${BUILDROOT}/boot/grub2/
+cp $INSTALLER_PATH/boot/ascii.pf2 ${BUILDROOT}/boot/grub2/
 mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
-cp boot/splash.png ${BUILDROOT}/boot/grub2/themes/photon/photon.png
-cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
-cp boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
+cp $INSTALLER_PATH/boot/splash.png ${BUILDROOT}/boot/grub2/themes/photon/photon.png
+cp $INSTALLER_PATH/boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
+cp $INSTALLER_PATH/boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
 
 EXTRA_PARAMS="rootwait rw console=ttyS0,115200n8 console=tty0 cma=256M"
 

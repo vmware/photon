@@ -1,4 +1,5 @@
 {
+	"image_type": "rpi3",
 	"hostname": "photon-machine",
 	"password":
 		{
