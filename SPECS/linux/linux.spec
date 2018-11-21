@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.1
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -122,6 +122,14 @@ Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
 %description dtb-rpi3
 Kernel Device Tree Blob files for Raspberry Pi3
+
+%package dtb-ls1012afrwy
+Summary:        Kernel Device Tree Blob files for NXP ls1012a FRWY board
+Group:          System Environment/Kernel
+Requires:       %{name} = %{version}-%{release}
+%description dtb-ls1012afrwy
+Kernel Device Tree Blob files for NXP ls1012a FRWY board
+
 %endif
 
 
@@ -241,6 +249,7 @@ install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
 # Install DTB files
 install -vdm 755 %{buildroot}/boot/dtb
 install -vm 640 arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dtb %{buildroot}/boot/dtb/
+install -vm 640 arch/arm64/boot/dts/freescale/fsl-ls1012a-frdm.dtb %{buildroot}/boot/dtb/
 %endif
 
 # Restrict the permission on System.map-X file
@@ -369,9 +378,16 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %files dtb-rpi3
 %defattr(-,root,root)
 /boot/dtb/bcm2837-rpi-3-b.dtb
+
+%files dtb-ls1012afrwy
+%defattr(-,root,root)
+/boot/dtb/fsl-ls1012a-frdm.dtb
+
 %endif
 
 %changelog
+*   Mon Nov 19 2018 Srinidhi Rao <srinidhir@vmware.com> 4.19.1-3
+-   Add NXP LS1012A support.
 *   Mon Nov 12 2018 Ajay Kaher <akaher@vmware.com> 4.19.1-2
 -   Fix config_aarch64 for 4.19.1
 *   Mon Nov 05 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.1-1
