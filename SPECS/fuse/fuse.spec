@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libfuse/libfuse/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
 %define sha1 fuse=cd174e3d37995a42fad32fac92f76cd18e24174f
+Source1:        test_fuse.sh
 Patch0:        fuse-types.patch
 
 %description
@@ -30,6 +31,10 @@ It contains the libraries and header files to create fuse applications.
 %build
 %configure --disable-static INIT_D_PATH=/tmp/init.d &&
 make %{?_smp_mflags}
+
+%check
+install -m755 %{SOURCE1} .
+./test_fuse.sh
 
 %install
 mkdir -p %{buildroot}%{_libdir}/%{name}
