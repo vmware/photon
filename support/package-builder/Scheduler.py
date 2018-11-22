@@ -35,11 +35,11 @@ class Scheduler(object):
     @staticmethod
     def getBuildRequiredPackages(package):
         listRequiredRPMPackages = []
-        listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPackage(package))
+        listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPkg(package))
         listRequiredPackages = []
 
         for pkg in listRequiredRPMPackages:
-            basePkg = SPECS.getData().getSpecName(pkg.package)
+            basePkg = SPECS.getData().getBasePkg(pkg)
             if basePkg not in listRequiredPackages:
                 listRequiredPackages.append(basePkg)
 
@@ -148,12 +148,12 @@ class Scheduler(object):
     @staticmethod
     def getRequiredPackages(package):
         listRequiredRPMPackages=[]
-        listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPackage(package))
-        listRequiredRPMPackages.extend(SPECS.getData().getRequiresAllForPackage(package))
+        listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPkg(package))
+        listRequiredRPMPackages.extend(SPECS.getData().getRequiresAllForPkg(package))
         listRequiredPackages=[]
 
         for pkg in listRequiredRPMPackages:
-            basePkg=SPECS.getData().getSpecName(pkg.package)
+            basePkg=SPECS.getData().getBasePkg(pkg)
             if basePkg not in listRequiredPackages:
                 listRequiredPackages.append(basePkg)
         return listRequiredPackages

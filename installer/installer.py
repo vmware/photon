@@ -243,16 +243,19 @@ class Installer(object):
         # prepare the RPMs list
         json_pkg_to_rpm_map = JsonWrapper(self.install_config["pkg_to_rpm_map_file"])
         pkg_to_rpm_map = json_pkg_to_rpm_map.read()
-
         self.rpms_tobeinstalled = []
         selected_packages = self.install_config['packages']
 
         for pkg in selected_packages: 
-            if pkg in pkg_to_rpm_map:
-                if not pkg_to_rpm_map[pkg]['rpm'] is None:
-                    name = pkg_to_rpm_map[pkg]['rpm']
+            versionindex = pkg.rfind("-")
+            if versionindex == -1:
+                raise Exception("Invalid pkg name: " + pkg)
+            package = pkg[:versionindex]
+            if package in pkg_to_rpm_map:
+                if pkg_to_rpm_map[package]['rpm']:
+                    name = pkg_to_rpm_map[package]['rpm']
                     basename = os.path.basename(name)
-                    self.rpms_tobeinstalled.append({'filename': basename, 'path': name, 'package' : pkg})
+                    self.rpms_tobeinstalled.append({'filename': basename, 'path': name, 'package' : package})
 
         # Copy the rpms
         for rpm in self.rpms_tobeinstalled:
