@@ -125,7 +125,7 @@
         "pycurl3",
         "python3-yum-metadata-parser",
         "strace",
-        "cracklib-python3",
+        "python3-cracklib",
         "haveged",
         "vim-extra",
         "postgresql",
