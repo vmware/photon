@@ -12,6 +12,7 @@ import json
 import collections
 from SpecData import SPECS
 import re
+from StringUtils import StringUtils
 
 class ToolChainUtils(object):
 
@@ -90,7 +91,8 @@ class ToolChainUtils(object):
         try:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             for package in constants.listCoreToolChainPackages:
-                rpmPkg=pkgUtils.findRPMFileForGivenPackage(package)
+                version = SPECS.getData().getHighestVersion(package)
+                rpmPkg=pkgUtils.findRPMFileForGivenPackage(package, version)
                 if rpmPkg is not None:
                     continue
                 self.logger.info("Building core toolchain package: " + package)
@@ -104,9 +106,9 @@ class ToolChainUtils(object):
                 if not returnVal:
                     self.logger.error("Creating chroot failed")
                     raise Exception("creating chroot failed")
-                self.installToolChainRPMS(chrootID, package, listBuildOptionPackages, pkgBuildOptionFile, destLogPath)
-                pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
-                pkgUtils.buildRPMSForGivenPackage(package, chrootID, listBuildOptionPackages, pkgBuildOptionFile, destLogPath)
+                self.installToolChainRPMS(chrootID, package, version, listBuildOptionPackages, pkgBuildOptionFile, destLogPath)
+                pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath, version)
+                pkgUtils.buildRPMSForGivenPackage(package,version, chrootID, listBuildOptionPackages, pkgBuildOptionFile, destLogPath)
                 pkgCount += 1
                 chrUtils.destroyChroot(chrootID)
                 chrootID=None
@@ -120,13 +122,12 @@ class ToolChainUtils(object):
             raise e
         return pkgCount
 
-    def getListDependentPackageLineContent(self, index):
-        listBuildRequiresPkgLineContent=SPECS.getData().getBuildRequiresForPackage(self.package, index)
-        listBuildRequiresPkgLineContent.extend(SPECS.getData().getCheckBuildRequiresForPackage(self.package, index))
-        listBuildRequiresPkgLineContent=list(set(listBuildRequiresPkgLineContent))
-        return listBuildRequiresPkgLineContent
+    def getListDependentPackage(self, package, version):
+        listBuildRequiresPkg=SPECS.getData().getBuildRequiresForPackage(package, version)
+        listBuildRequiresPkg.extend(SPECS.getData().getCheckBuildRequiresForPackage(package, version))
+        return listBuildRequiresPkg
 
-    def installToolChainRPMS(self,chrootID, packageName, listBuildOptionPackages, pkgBuildOptionFile, logPath=None, index=0):
+    def installToolChainRPMS(self,chrootID, packageName,packageVersion, listBuildOptionPackages, pkgBuildOptionFile, logPath=None):
         if logPath is None:
             logPath=self.logPath
         cmdUtils = CommandUtils()
@@ -135,7 +136,7 @@ class ToolChainUtils(object):
         rpmFiles = ""
         packages = ""
         self.package=packageName
-        listBuildRequiresPackageLineContent = self.getListDependentPackageLineContent(index)
+        listBuildRequiresPackage = self.getListDependentPackage(packageName,packageVersion)
 
         for package in constants.listToolChainRPMsToInstall:
             pkgUtils=PackageUtils(self.logName,self.logPath)
@@ -156,9 +157,10 @@ class ToolChainUtils(object):
                             if package == str(override["package"].encode('utf-8')):
                                 version = str(override["version"].encode('utf-8'))
             if version == "*":
-                for depPkg in listBuildRequiresPackageLineContent:
-                        if depPkg.package == package:
-                                version=pkgUtils.getProperVersion(package,depPkg)
+                for depPkg in listBuildRequiresPackage:
+                        depPkgName, depPkgVersion = StringUtils.splitPackageNameAndVersion(depPkg)
+                        if depPkgName == package:
+                                version=depPkgVersion
             if constants.rpmCheck:
                 rpmFile=pkgUtils.findRPMFileForGivenPackage(package, version)
             else:
