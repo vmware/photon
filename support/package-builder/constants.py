@@ -336,6 +336,12 @@ class constants(object):
     listReInstallPackages=[
         "go"]
 
+    listLinuxPackages=[
+        "linux-aws",
+        "linux-esx",
+        "linux-secure",
+        "linux"]
+
     # List of packages that requires privileged docker
     # to run make check.
     listReqPrivilegedDockerForTest=[
