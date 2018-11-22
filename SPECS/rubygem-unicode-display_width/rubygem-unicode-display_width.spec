@@ -5,7 +5,7 @@
 Summary:        Unicode::DisplayWidth.
 Name:           rubygem-unicode-display_width
 Version:        1.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 License:        MIT
 Vendor:         VMware, Inc.
@@ -29,7 +29,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 
 %check
 cd %{buildroot}%{gemdir}/gems/unicode-display_width-%{version}
-gem install yard jeweler rake rspec
+gem install yard jeweler rake rspec unicode-emoji
 rake test
 
 %files
@@ -37,6 +37,8 @@ rake test
 %{gemdir}
 
 %changelog
+*   Thu Nov 22 2018 Sujay G <gsujay@vmware.com> 1.4.0-2
+-   Updated %check
 *   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 1.4.0-1
 -   Update to version 1.4.0
 *   Fri Jun 23 2017 Chang Lee <changlee@vmware.com> 1.1.3-2
