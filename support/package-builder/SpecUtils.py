@@ -144,8 +144,7 @@ class Specutils(object):
 
     def getRequiresAllPackages(self):
         dependentPackages=[]
-        for key in self.spec.packages.keys():
-            pkg = self.spec.packages.get(key)
+        for pkg in self.spec.packages.values():
             for dpkg in pkg.requires:
                 dependentPackages.append(dpkg)
         listDependentPackages = list(set(dependentPackages))
@@ -159,8 +158,7 @@ class Specutils(object):
 
     def getBuildRequiresAllPackages(self):
         dependentPackages=[]
-        for key in self.spec.packages.keys():
-            pkg = self.spec.packages.get(key)
+        for pkg in self.spec.packages.values():
             for dpkg in pkg.buildrequires:
                 dependentPackages.append(dpkg)
         listDependentPackages = list(set(dependentPackages))
@@ -174,8 +172,7 @@ class Specutils(object):
 
     def getCheckBuildRequiresAllPackages(self):
         dependentPackages=[]
-        for key in self.spec.packages.keys():
-            pkg = self.spec.packages.get(key)
+        for pkg in self.spec.packages.values():
             for dpkg in pkg.checkbuildrequires:
                 dependentPackages.append(dpkg)
         dependentPackages = list(set(dependentPackages))
@@ -183,20 +180,18 @@ class Specutils(object):
 
     def getRequires(self,pkgName):
         dependentPackages=[]
-        for key in self.spec.packages.keys():
-            pkg = self.spec.packages.get(key)
+        for pkg in self.spec.packages.values():
             if pkg.name == pkgName:
                 for dpkg in pkg.requires:
-                    dependentPackages.append(dpkg.package)
+                    dependentPackages.append(dpkg)
         return dependentPackages
 
     def getBuildRequires(self,pkgName):
         dependentPackages=[]
-        for key in self.spec.packages.keys():
-            pkg = self.spec.packages.get(key)
+        for pkg in self.spec.packages.values():
             if pkg.name == pkgName:
                 for dpkg in pkg.buildrequires:
-                    dependentPackages.append(dpkg.package)
+                    dependentPackages.append(dpkg)
         return dependentPackages
 
     def getProvides(self,packageName):
