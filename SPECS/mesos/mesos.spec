@@ -108,7 +108,7 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %changelog
 *   Tue Jan 23 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.2-2
 -   Add serf-devel to BuildRequires.
-*   Tue Oct 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.2-1
+*   Tue Oct 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.2-1
 -   Updated to version 1.2.2
 *   Mon Oct 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-7
 -   Use multiple cores to build mesos.

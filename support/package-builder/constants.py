@@ -467,3 +467,15 @@ class constants(object):
     @staticmethod
     def addMacro(macroName, macroValue):
         constants.userDefinedMacros[macroName]=macroValue
+
+    @staticmethod
+    def setLogLevel(logLevel):
+        constants.logLevel = logLevel
+
+    @staticmethod
+    def setLogPath(logPath):
+        constants.logPath = logPath
+
+    @staticmethod
+    def setSpecPath(specPath):
+        constants.specPath = specPath
