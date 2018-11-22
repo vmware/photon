@@ -156,6 +156,7 @@ def main():
             buildAPackage(package, listBuildOptionPackages, options.pkgBuildOptionFile, options.buildThreads, options.pkgBuildType)
         else:
             buildPackagesForAllSpecs(listBuildOptionPackages, options.pkgBuildOptionFile, logger, options.buildThreads, pkgInfoJsonFile, options.pkgBuildType)
+
     except Exception as e:
         logger.error("Caught an exception")
         logger.error(str(e))
@@ -171,19 +172,19 @@ def buildPackagesList(csvFilename):
     listPackages.sort()
     for package in listPackages:
         name = package
-        version = SPECS.getData().getVersion(package)
-        license = SPECS.getData().getLicense(package)
-        listPatches = SPECS.getData().getPatches(package)
-        url = SPECS.getData().getURL(package)
-        listSourceNames = SPECS.getData().getSources(package)
-        sources = ""
-        patches = ""
-        if listPatches is not None:
-            patches = " ".join(listPatches)
-        if listSourceNames is not None:
-            sources = " ".join(listSourceNames)
-        csvFile.write(name+","+version+","+license+","+url+","+sources+","+patches+"\n")
-    csvFile.close()
+        for version in SPECS.getData().getVersions(package):
+                license = SPECS.getData().getLicense(package, version)
+                listPatches = SPECS.getData().getPatches(package, version)
+                url = SPECS.getData().getURL(package, version)
+                listSourceNames = SPECS.getData().getSources(package,version)
+                sources = ""
+                patches = ""
+                if listPatches is not None:
+                        patches = " ".join(listPatches)
+                if listSourceNames is not None:
+                        sources = " ".join(listSourceNames)
+                csvFile.write(name+","+version+","+license+","+url+","+sources+","+patches+"\n")
+                csvFile.close()
 
 def readBlackListPackages(pkgBlackListFile):
     blackListPkgs = []
@@ -208,38 +209,38 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
         if package in blackListPkgs:
             continue
         ossname = package
-        ossversion = SPECS.getData().getVersion(package)
-        modified = False
-        listPatches = SPECS.getData().getPatches(package)
-        if listPatches is not None and len(listPatches) > 0 :
-            modified = True
-        url = SPECS.getData().getSourceURL(package)
-        if url is None:
-            url = SPECS.getData().getURL(package)
+        for version in SPECS.getData().getVersions(package):
+                modified = False
+                listPatches = SPECS.getData().getPatches(package, version)
+                if listPatches is not None and len(listPatches) > 0 :
+                        modified = True
+                url = SPECS.getData().getSourceURL(package, version)
+                if url is None:
+                        url = SPECS.getData().getURL(package, version)
 
-        sourceName = None
-        listSourceNames = SPECS.getData().getSources(package)
-        if len(listSourceNames) >0:
-            sourceName=listSourceNames[0]
-            sha1 = SPECS.getData().getSHA1(package, sourceName)
-            if sha1 is not None:
-                PullSources.get(package, sourceName, sha1, yamlSourceDir, constants.pullsourcesConfig, logger)
+                sourceName = None
+                listSourceNames = SPECS.getData().getSources(package, version)
+                if len(listSourceNames) >0:
+                        sourceName=listSourceNames[0]
+                        sha1 = SPECS.getData().getSHA1(package, sourceName, version)
+                        if sha1 is not None:
+                                PullSources.get(package, sourceName, sha1, yamlSourceDir, constants.pullsourcesConfig, logger)
 
-        if not singleFile:
-            yamlFile = open(yamlSourceDir+"/"+ossname+"-"+ossversion+".yaml", "w")
-        yamlFile.write("vmwsource:"+ossname+":"+ossversion+":\n")
-        yamlFile.write("  repository: VMWsource\n")
-        yamlFile.write("  name: '"+ossname+"'\n")
-        yamlFile.write("  version: '"+ossversion+"'\n")
-        yamlFile.write("  url: "+str(url)+"\n")
-        yamlFile.write("  license: UNKNOWN\n")
-        if sourceName is not None:
-            yamlFile.write("  vmwsource-distribution: "+str(sourceName)+"\n")
-        if modified:
-            yamlFile.write("  modified: true\n")
-        yamlFile.write("\n")
-        if not singleFile:
-            yamlFile.close()
+                if not singleFile:
+                        yamlFile = open(yamlSourceDir+"/"+ossname+"-"+version+".yaml", "w")
+                yamlFile.write("vmwsource:"+ossname+":"+version+":\n")
+                yamlFile.write("  repository: VMWsource\n")
+                yamlFile.write("  name: '"+ossname+"'\n")
+                yamlFile.write("  version: '"+version+"'\n")
+                yamlFile.write("  url: "+str(url)+"\n")
+                yamlFile.write("  license: UNKNOWN\n")
+                if sourceName is not None:
+                        yamlFile.write("  vmwsource-distribution: "+str(sourceName)+"\n")
+                if modified:
+                        yamlFile.write("  modified: true\n")
+                yamlFile.write("\n")
+                if not singleFile:
+                        yamlFile.close()
 
     if singleFile:
         yamlFile.close()
@@ -258,39 +259,39 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
         if package in blackListPkgs:
             continue
         ossname = package
-        ossversion = SPECS.getData().getVersion(package)
-        ossrelease = SPECS.getData().getRelease(package)
+        for ossversion in SPECS.getData().getVersions(package):
+                ossrelease = SPECS.getData().getRelease(package, ossversion)
 
-        listFoundSRPMFiles = cmdUtils.findFile(ossname+"-"+ossversion+"-"+ossrelease+".src.rpm",srpmPath)
-        srpmName = None
-        if len(listFoundSRPMFiles) == 1:
-            srpmFullPath = listFoundSRPMFiles[0];
-            srpmName = os.path.basename(srpmFullPath)
-            cpcmd = "cp "+ srpmFullPath +" "+yamlSrpmDir+"/"
-            returnVal = cmdUtils.runCommandInShell(cpcmd)
-            if not returnVal:
-                logger.error("Copy SRPM File is failed for package:"+ossname)
-        else:
-             logger.error("SRPM file is not found:" +ossname)
+                listFoundSRPMFiles = cmdUtils.findFile(ossname+"-"+ossversion+"-"+ossrelease+".src.rpm",srpmPath)
+                srpmName = None
+                if len(listFoundSRPMFiles) == 1:
+                        srpmFullPath = listFoundSRPMFiles[0];
+                        srpmName = os.path.basename(srpmFullPath)
+                        cpcmd = "cp "+ srpmFullPath +" "+yamlSrpmDir+"/"
+                        returnVal = cmdUtils.runCommandInShell(cpcmd)
+                        if not returnVal:
+                                logger.error("Copy SRPM File is failed for package:"+ossname)
+                else:
+                        logger.error("SRPM file is not found:" +ossname)
 
-        if not singleFile:
-            yamlFile = open(yamlSrpmDir+"/"+ossname+"-"+ossversion+"-"+ossrelease+".yaml", "w")
+                if not singleFile:
+                        yamlFile = open(yamlSrpmDir+"/"+ossname+"-"+ossversion+"-"+ossrelease+".yaml", "w")
 
-        yamlFile.write("baseos:"+ossname+":"+ossversion+"-"+ossrelease+":\n")
-        yamlFile.write("  repository: BaseOS\n")
-        yamlFile.write("  name: '"+ossname+"'\n")
-        yamlFile.write("  version: '"+ossversion+"-"+ossrelease+"'\n")
-        yamlFile.write("  url: 'http://www.vmware.com'\n")        
-        yamlFile.write("  baseos-style: rpm\n")
-        yamlFile.write("  baseos-source: '"+str(srpmName)+"'\n")
-        yamlFile.write("  baseos-osname: 'photon'\n")
-        yamlFile.write("\n")
-        if not singleFile:
-            yamlFile.close()
+                yamlFile.write("baseos:"+ossname+":"+ossversion+"-"+ossrelease+":\n")
+                yamlFile.write("  repository: BaseOS\n")
+                yamlFile.write("  name: '"+ossname+"'\n")
+                yamlFile.write("  version: '"+ossversion+"-"+ossrelease+"'\n")
+                yamlFile.write("  url: 'http://www.vmware.com'\n")
+                yamlFile.write("  baseos-style: rpm\n")
+                yamlFile.write("  baseos-source: '"+str(srpmName)+"'\n")
+                yamlFile.write("  baseos-osname: 'photon'\n")
+                yamlFile.write("\n")
+                if not singleFile:
+                        yamlFile.close()
 
-    if singleFile:
-        yamlFile.close()
-    logger.info("Generated srpm yaml files for all packages")
+        if singleFile:
+                yamlFile.close()
+        logger.info("Generated srpm yaml files for all packages")
 
 def buildAPackage(package, listBuildOptionPackages, pkgBuildOptionFile, buildThreads, pkgBuildType):
     listPackages=[]
