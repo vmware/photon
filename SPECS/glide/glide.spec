@@ -24,12 +24,19 @@ mkdir -p ${GOPATH}/src/github.com/Masterminds/glide
 cp -r * ${GOPATH}/src/github.com/Masterminds/glide/.
 pushd ${GOPATH}/src/github.com/Masterminds/glide
 make VERSION=%{version} build
+popd
+
+%check
+pushd ${GOPATH}/src/github.com/Masterminds/glide
+make test
+popd
 
 %install
 pushd ${GOPATH}/src/github.com/Masterminds/glide
 make install
 install -vdm 755 %{buildroot}%{_bindir}
 install -vpm 0755 -t %{buildroot}%{_bindir}/ ./glide
+popd
 
 %files
 %defattr(-,root,root)
