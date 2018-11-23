@@ -13,6 +13,20 @@ BuildRequires:  meson >= 0.38.0
 BuildRequires:  python-pytest
 BuildRequires:  systemd-devel
 
+%if %{with_check}
+BuildRequires:  python3-devel
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:	python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+BuildRequires:  python3-pytest
+BuildRequires:  python3-six
+BuildRequires:  python3-attrs
+BuildRequires:  which
+%endif
+
 %description
 With FUSE3 it is possible to implement a fully functional filesystem in a
 userspace program.
@@ -35,13 +49,14 @@ cd    build &&
 meson --prefix=%{_prefix} .. &&
 ninja -C ./
 
+%check
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pluggy atomicwrites more_itertools
+python3 -m pytest test/
+
 %install
 cd build
 DESTDIR=%{buildroot}/ ninja -C ./ install
-
-#%check
-#cd build
-#python3 -m pytest test/
 
 %files
 %defattr(-, root, root)
