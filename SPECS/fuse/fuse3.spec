@@ -1,7 +1,7 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
 Version:        3.2.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+
 Url:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
@@ -12,6 +12,19 @@ Source0:        https://github.com/libfuse/libfuse/archive/%{name}-%{version}.ta
 BuildRequires:  meson >= 0.38.0
 BuildRequires:  python-pytest
 BuildRequires:  systemd-devel
+%if %{with_check}
+BuildRequires:  python3-devel
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:	python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+BuildRequires:  python3-pytest
+BuildRequires:  python3-six
+BuildRequires:  python3-attrs
+BuildRequires:  which
+%endif
 
 %description
 With FUSE3 it is possible to implement a fully functional filesystem in a
@@ -35,13 +48,14 @@ cd    build &&
 meson --prefix=%{_prefix} .. &&
 ninja -C ./
 
+%check
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pluggy atomicwrites more_itertools
+python3 -m pytest test/
+
 %install
 cd build
 DESTDIR=%{buildroot}/ ninja -C ./ install
-
-#%check
-#cd build
-#python3 -m pytest test/
 
 %files
 %defattr(-, root, root)
@@ -59,6 +73,8 @@ DESTDIR=%{buildroot}/ ninja -C ./ install
 %{_libdir}/libfuse3.so*
 
 %changelog
+*   Fri Nov 23 2018 Ashwin H <ashwinh@vmware.com> 3.2.6-2
+-   Fix %check
 *   Mon Sep 24 2018 Srinidhi Rao <srinidhir@vmware.com> 3.2.6-1
 -   Update to version 3.2.6.
 *   Wed Jul 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.0.1-2
