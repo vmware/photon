@@ -5,10 +5,12 @@
 
 Name: rubygem-backports
 Version:        3.11.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Backports of Ruby features for older Ruby
 Group:          Development/Languages
 License:        MIT
+Vendor:         VMware, Inc.
+Distribution:   Photon
 URL:            http://github.com/marcandre/backports
 Source0:        https://rubygems.org/gems/backports-%{version}.gem
 %define sha1    backports=edf08f3a0d9e202048857d78ddda44e59294084c
@@ -34,14 +36,27 @@ Essential backports that enable many of the nice features of Ruby 1.8.7 up to
 %build
 %install
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+
+%check
+cd %{buildroot}%{gemdir}/gems/backports-%{version}
+# Removal of alias_method_chain method in Rails 5.1 version creates issue
+# since the existing testsuite doesn't reflect the change. To avoid rake
+# to abort and continue the tests following fix is done.
+# ref: https://github.com/marcandre/backports/issues/114
+sed -i "s/^/#/" lib/backports/rails/module.rb
+rake test
+
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
+
 %changelog
+*   Fri Nov 23 2018 Sujay G <gsujay@vmware.com> 3.11.4-2
+-   Updated %check section
 *   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 3.11.4-1
 -   Update to version 3.11.4
-*   Fri Aug 2 2017 Kumar Kaushik <kaushikk@vmware.com> 3.7.0-2
+*   Wed Aug 2 2017 Kumar Kaushik <kaushikk@vmware.com> 3.7.0-2
 -   Adding requires for test support.
 *   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.0-1
 -   Updated to version 3.7.0.
