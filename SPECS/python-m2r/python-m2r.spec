@@ -4,7 +4,7 @@
 Summary:        Markdown to reStructuredText converter.
 Name:           python-m2r
 Version:        0.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,8 +19,17 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-mistune
 BuildRequires:  python-docutils
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-mistune
+BuildRequires:  python3-docutils
 %if %{with_check}
 BuildRequires:  python-Pygments
+BuildRequires:  python3-Pygments
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
 %endif
 
 Requires:       python2
@@ -39,16 +48,6 @@ I wanted to write sphinx document in markdown, since it’s widely used now and 
 
 %package -n     python3-m2r
 Summary:        python-m2r
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-mistune
-BuildRequires:  python3-docutils
-%if %{with_check}
-BuildRequires:  python3-Pygments
-%endif
-
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-mistune
@@ -96,6 +95,9 @@ popd
 %{_bindir}/m2r3
 
 %changelog
+*   Mon Nov 26 2018 Tapas Kundu <tkundu@vmware.com> 0.2.0-2
+-   Fix makecheck
+-   Removed buildrequires from subpackage
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.2.0-1
 -   Update to version 0.2.0
 *   Fri Jul 21 2017 Divya Thaluru <dthaluru@vmware.com> 0.1.7-1
