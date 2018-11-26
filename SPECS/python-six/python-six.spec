@@ -3,7 +3,7 @@
 
 Name:           python-six
 Version:        1.11.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python
@@ -14,7 +14,15 @@ Source0:        six-%{version}.tar.gz
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
-
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+%endif
 Requires:       python2
 Requires:       python2-libs
 
@@ -25,11 +33,6 @@ Six is a Python 2 and 3 compatibility library. It provides utility functions for
 
 %package -n     python3-six
 Summary:        python-six
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -49,10 +52,13 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install pytest
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pytest
 python2 test_six.py
-easy_install-3.6 pytest
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pytest
 python3 test_six.py
+
 
 %files
 %defattr(-,root,root,-)
@@ -63,6 +69,8 @@ python3 test_six.py
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 26 2018 Tapas Kundu <tkundu@vmware.com> 1.11.0-2
+-   Fix makecheck
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.11.0-1
 -   Update to version 1.11.0
 *   Tue Jun 23 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.10.0-8
