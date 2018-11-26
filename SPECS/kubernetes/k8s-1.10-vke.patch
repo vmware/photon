@@ -1,7 +1,7 @@
-From 532a55505f69d284f54c089a5447fa4e2f98dfaf Mon Sep 17 00:00:00 2001
+From 9ae5383c8a058587af04bae626082c1d41b0d87f Mon Sep 17 00:00:00 2001
 From: DheerajSShetty <dheerajs@vmware.com>
-Date: Thu, 4 Oct 2018 17:16:50 -0700
-Subject: [PATCH]  VKE patch for k8s 1.10.8 (7988e2)
+Date: Mon, 26 Nov 2018 15:50:22 -0800
+Subject: [PATCH] VKE patch for k8s 1.10.11 (2bf7a01b)
 
 ---
  api/swagger-spec/apps_v1alpha1.json                |  21 +
@@ -17,37 +17,26 @@ Subject: [PATCH]  VKE patch for k8s 1.10.8 (7988e2)
  cmd/kube-controller-manager/app/plugins.go         |   4 +
  cmd/kubelet/app/BUILD                              |   1 +
  cmd/kubelet/app/plugins.go                         |   2 +
- pkg/apis/apps/v1/zz_generated.defaults.go          |  24 +-
- pkg/apis/apps/v1beta1/zz_generated.defaults.go     |  12 +-
- pkg/apis/apps/v1beta2/zz_generated.defaults.go     |  24 +-
- pkg/apis/batch/v1/zz_generated.defaults.go         |   6 +-
- pkg/apis/batch/v1beta1/zz_generated.defaults.go    |  12 +-
- pkg/apis/batch/v2alpha1/zz_generated.defaults.go   |  12 +-
  pkg/apis/core/types.go                             |  14 +
- pkg/apis/core/v1/zz_generated.conversion.go        |  32 +-
- pkg/apis/core/v1/zz_generated.defaults.go          |  24 +-
- pkg/apis/core/validation/validation.go             |  29 +-
- pkg/apis/core/zz_generated.deepcopy.go             |  34 +
+ pkg/apis/core/validation/validation.go             |  25 +
  pkg/apis/extensions/types.go                       |   1 +
- .../extensions/v1beta1/zz_generated.defaults.go    |  18 +-
- .../settings/v1alpha1/zz_generated.defaults.go     |   6 +-
  pkg/cloudprovider/providers/BUILD                  |   2 +
  pkg/cloudprovider/providers/cascade/BUILD          |  56 ++
  pkg/cloudprovider/providers/cascade/OWNERS         |   3 +
  pkg/cloudprovider/providers/cascade/apitypes.go    | 230 +++++
  pkg/cloudprovider/providers/cascade/auth.go        | 145 ++++
- pkg/cloudprovider/providers/cascade/cascade.go     | 215 +++++
- .../providers/cascade/cascade_disks.go             | 228 +++++
+ pkg/cloudprovider/providers/cascade/cascade.go     | 219 +++++
+ .../providers/cascade/cascade_disks.go             | 253 ++++++
  .../providers/cascade/cascade_instances.go         | 125 +++
  .../providers/cascade/cascade_instances_test.go    |  44 +
- .../providers/cascade/cascade_loadbalancer.go      | 285 ++++++
- pkg/cloudprovider/providers/cascade/client.go      | 399 +++++++++
+ .../providers/cascade/cascade_loadbalancer.go      | 295 +++++++
+ pkg/cloudprovider/providers/cascade/client.go      | 400 +++++++++
  pkg/cloudprovider/providers/cascade/oidcclient.go  | 297 +++++++
  pkg/cloudprovider/providers/cascade/restclient.go  | 262 ++++++
  pkg/cloudprovider/providers/cascade/tests_owed     |   5 +
  pkg/cloudprovider/providers/cascade/utils.go       |  29 +
  pkg/cloudprovider/providers/providers.go           |   1 +
- pkg/kubeapiserver/authorizer/config.go             |   8 +-
+ pkg/kubeapiserver/authorizer/config.go             |   7 +
  pkg/kubeapiserver/authorizer/modes/modes.go        |   3 +-
  pkg/kubeapiserver/options/plugins.go               |   3 +
  pkg/printers/internalversion/describe.go           |  11 +
@@ -55,11 +44,12 @@ Subject: [PATCH]  VKE patch for k8s 1.10.8 (7988e2)
  pkg/volume/cascade_disk/BUILD                      |  43 +
  pkg/volume/cascade_disk/OWNERS                     |   2 +
  pkg/volume/cascade_disk/attacher.go                | 264 ++++++
- pkg/volume/cascade_disk/cascade_disk.go            | 390 +++++++++
- pkg/volume/cascade_disk/cascade_util.go            | 162 ++++
+ pkg/volume/cascade_disk/azure_disk_util.go         | 135 +++
+ pkg/volume/cascade_disk/cascade_disk.go            | 399 +++++++++
+ pkg/volume/cascade_disk/cascade_util.go            | 217 +++++
  .../admission/persistentvolume/label/admission.go  |  54 ++
  plugin/pkg/admission/vke/BUILD                     |  61 ++
- plugin/pkg/admission/vke/admission.go              | 618 +++++++++++++
+ plugin/pkg/admission/vke/admission.go              | 628 ++++++++++++++
  plugin/pkg/admission/vke/admission_test.go         | 960 +++++++++++++++++++++
  plugin/pkg/auth/authorizer/vke/BUILD               |  40 +
  plugin/pkg/auth/authorizer/vke/OWNERS              |   2 +
@@ -67,8 +57,7 @@ Subject: [PATCH]  VKE patch for k8s 1.10.8 (7988e2)
  .../pkg/auth/authorizer/vke/vke_authorizer_test.go | 230 +++++
  staging/src/k8s.io/api/core/v1/generated.pb.go     | 310 ++++++-
  staging/src/k8s.io/api/core/v1/types.go            |  24 +-
- .../k8s.io/api/core/v1/zz_generated.deepcopy.go    |  50 +-
- 64 files changed, 6026 insertions(+), 110 deletions(-)
+ 53 files changed, 6098 insertions(+), 28 deletions(-)
 
 diff --git a/api/swagger-spec/apps_v1alpha1.json b/api/swagger-spec/apps_v1alpha1.json
 index 6f54662..0ce6f3f 100644
@@ -512,330 +501,6 @@ index ef41bb8..c9806f7 100644
  	if utilfeature.DefaultFeatureGate.Enabled(features.CSIPersistentVolume) {
  		allPlugins = append(allPlugins, csi.ProbeVolumePlugins()...)
  	}
-diff --git a/pkg/apis/apps/v1/zz_generated.defaults.go b/pkg/apis/apps/v1/zz_generated.defaults.go
-index 5029d8b..762c97f 100644
---- a/pkg/apis/apps/v1/zz_generated.defaults.go
-+++ b/pkg/apis/apps/v1/zz_generated.defaults.go
-@@ -71,9 +71,6 @@ func SetObjectDefaults_DaemonSet(in *v1.DaemonSet) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			core_v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			core_v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			core_v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -91,6 +88,9 @@ func SetObjectDefaults_DaemonSet(in *v1.DaemonSet) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			core_v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			core_v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.Template.Spec.InitContainers[i]
-@@ -215,9 +215,6 @@ func SetObjectDefaults_Deployment(in *v1.Deployment) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			core_v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			core_v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			core_v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -235,6 +232,9 @@ func SetObjectDefaults_Deployment(in *v1.Deployment) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			core_v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			core_v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.Template.Spec.InitContainers[i]
-@@ -359,9 +359,6 @@ func SetObjectDefaults_ReplicaSet(in *v1.ReplicaSet) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			core_v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			core_v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			core_v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -379,6 +376,9 @@ func SetObjectDefaults_ReplicaSet(in *v1.ReplicaSet) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			core_v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			core_v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.Template.Spec.InitContainers[i]
-@@ -503,9 +503,6 @@ func SetObjectDefaults_StatefulSet(in *v1.StatefulSet) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			core_v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			core_v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			core_v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -523,6 +520,9 @@ func SetObjectDefaults_StatefulSet(in *v1.StatefulSet) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			core_v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			core_v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.Template.Spec.InitContainers[i]
-diff --git a/pkg/apis/apps/v1beta1/zz_generated.defaults.go b/pkg/apis/apps/v1beta1/zz_generated.defaults.go
-index a61212c..a25eab48 100644
---- a/pkg/apis/apps/v1beta1/zz_generated.defaults.go
-+++ b/pkg/apis/apps/v1beta1/zz_generated.defaults.go
-@@ -67,9 +67,6 @@ func SetObjectDefaults_Deployment(in *v1beta1.Deployment) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -87,6 +84,9 @@ func SetObjectDefaults_Deployment(in *v1beta1.Deployment) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.Template.Spec.InitContainers[i]
-@@ -211,9 +211,6 @@ func SetObjectDefaults_StatefulSet(in *v1beta1.StatefulSet) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -231,6 +228,9 @@ func SetObjectDefaults_StatefulSet(in *v1beta1.StatefulSet) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.Template.Spec.InitContainers[i]
-diff --git a/pkg/apis/apps/v1beta2/zz_generated.defaults.go b/pkg/apis/apps/v1beta2/zz_generated.defaults.go
-index 059718d..0a1a197 100644
---- a/pkg/apis/apps/v1beta2/zz_generated.defaults.go
-+++ b/pkg/apis/apps/v1beta2/zz_generated.defaults.go
-@@ -71,9 +71,6 @@ func SetObjectDefaults_DaemonSet(in *v1beta2.DaemonSet) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -91,6 +88,9 @@ func SetObjectDefaults_DaemonSet(in *v1beta2.DaemonSet) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.Template.Spec.InitContainers[i]
-@@ -215,9 +215,6 @@ func SetObjectDefaults_Deployment(in *v1beta2.Deployment) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -235,6 +232,9 @@ func SetObjectDefaults_Deployment(in *v1beta2.Deployment) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.Template.Spec.InitContainers[i]
-@@ -359,9 +359,6 @@ func SetObjectDefaults_ReplicaSet(in *v1beta2.ReplicaSet) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -379,6 +376,9 @@ func SetObjectDefaults_ReplicaSet(in *v1beta2.ReplicaSet) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.Template.Spec.InitContainers[i]
-@@ -503,9 +503,6 @@ func SetObjectDefaults_StatefulSet(in *v1beta2.StatefulSet) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -523,6 +520,9 @@ func SetObjectDefaults_StatefulSet(in *v1beta2.StatefulSet) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.Template.Spec.InitContainers[i]
-diff --git a/pkg/apis/batch/v1/zz_generated.defaults.go b/pkg/apis/batch/v1/zz_generated.defaults.go
-index 9b02de3..7b88dcf 100644
---- a/pkg/apis/batch/v1/zz_generated.defaults.go
-+++ b/pkg/apis/batch/v1/zz_generated.defaults.go
-@@ -65,9 +65,6 @@ func SetObjectDefaults_Job(in *v1.Job) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			core_v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			core_v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			core_v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -85,6 +82,9 @@ func SetObjectDefaults_Job(in *v1.Job) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			core_v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			core_v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.Template.Spec.InitContainers[i]
-diff --git a/pkg/apis/batch/v1beta1/zz_generated.defaults.go b/pkg/apis/batch/v1beta1/zz_generated.defaults.go
-index 1d05468..1b17b0b 100644
---- a/pkg/apis/batch/v1beta1/zz_generated.defaults.go
-+++ b/pkg/apis/batch/v1beta1/zz_generated.defaults.go
-@@ -66,9 +66,6 @@ func SetObjectDefaults_CronJob(in *v1beta1.CronJob) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -86,6 +83,9 @@ func SetObjectDefaults_CronJob(in *v1beta1.CronJob) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.JobTemplate.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.JobTemplate.Spec.Template.Spec.InitContainers[i]
-@@ -209,9 +209,6 @@ func SetObjectDefaults_JobTemplate(in *v1beta1.JobTemplate) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -229,6 +226,9 @@ func SetObjectDefaults_JobTemplate(in *v1beta1.JobTemplate) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Template.Spec.Template.Spec.InitContainers {
- 		a := &in.Template.Spec.Template.Spec.InitContainers[i]
-diff --git a/pkg/apis/batch/v2alpha1/zz_generated.defaults.go b/pkg/apis/batch/v2alpha1/zz_generated.defaults.go
-index eec4cfb..12ddc74 100644
---- a/pkg/apis/batch/v2alpha1/zz_generated.defaults.go
-+++ b/pkg/apis/batch/v2alpha1/zz_generated.defaults.go
-@@ -66,9 +66,6 @@ func SetObjectDefaults_CronJob(in *v2alpha1.CronJob) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -86,6 +83,9 @@ func SetObjectDefaults_CronJob(in *v2alpha1.CronJob) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.JobTemplate.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.JobTemplate.Spec.Template.Spec.InitContainers[i]
-@@ -209,9 +209,6 @@ func SetObjectDefaults_JobTemplate(in *v2alpha1.JobTemplate) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -229,6 +226,9 @@ func SetObjectDefaults_JobTemplate(in *v2alpha1.JobTemplate) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Template.Spec.Template.Spec.InitContainers {
- 		a := &in.Template.Spec.Template.Spec.InitContainers[i]
 diff --git a/pkg/apis/core/types.go b/pkg/apis/core/types.go
 index 7f37e3d..fc792ee 100644
 --- a/pkg/apis/core/types.go
@@ -875,177 +540,8 @@ index 7f37e3d..fc792ee 100644
  // Adapts a ConfigMap into a volume.
  //
  // The contents of the target ConfigMap's Data field will be presented in a
-diff --git a/pkg/apis/core/v1/zz_generated.conversion.go b/pkg/apis/core/v1/zz_generated.conversion.go
-index cd8ae52..8c9f46e 100644
---- a/pkg/apis/core/v1/zz_generated.conversion.go
-+++ b/pkg/apis/core/v1/zz_generated.conversion.go
-@@ -60,6 +60,8 @@ func RegisterConversions(scheme *runtime.Scheme) error {
- 		Convert_core_CSIPersistentVolumeSource_To_v1_CSIPersistentVolumeSource,
- 		Convert_v1_Capabilities_To_core_Capabilities,
- 		Convert_core_Capabilities_To_v1_Capabilities,
-+		Convert_v1_CascadeDiskVolumeSource_To_core_CascadeDiskVolumeSource,
-+		Convert_core_CascadeDiskVolumeSource_To_v1_CascadeDiskVolumeSource,
- 		Convert_v1_CephFSPersistentVolumeSource_To_core_CephFSPersistentVolumeSource,
- 		Convert_core_CephFSPersistentVolumeSource_To_v1_CephFSPersistentVolumeSource,
- 		Convert_v1_CephFSVolumeSource_To_core_CephFSVolumeSource,
-@@ -673,6 +675,28 @@ func Convert_core_Capabilities_To_v1_Capabilities(in *core.Capabilities, out *v1
- 	return autoConvert_core_Capabilities_To_v1_Capabilities(in, out, s)
- }
- 
-+func autoConvert_v1_CascadeDiskVolumeSource_To_core_CascadeDiskVolumeSource(in *v1.CascadeDiskVolumeSource, out *core.CascadeDiskVolumeSource, s conversion.Scope) error {
-+	out.DiskID = in.DiskID
-+	out.FSType = in.FSType
-+	return nil
-+}
-+
-+// Convert_v1_CascadeDiskVolumeSource_To_core_CascadeDiskVolumeSource is an autogenerated conversion function.
-+func Convert_v1_CascadeDiskVolumeSource_To_core_CascadeDiskVolumeSource(in *v1.CascadeDiskVolumeSource, out *core.CascadeDiskVolumeSource, s conversion.Scope) error {
-+	return autoConvert_v1_CascadeDiskVolumeSource_To_core_CascadeDiskVolumeSource(in, out, s)
-+}
-+
-+func autoConvert_core_CascadeDiskVolumeSource_To_v1_CascadeDiskVolumeSource(in *core.CascadeDiskVolumeSource, out *v1.CascadeDiskVolumeSource, s conversion.Scope) error {
-+	out.DiskID = in.DiskID
-+	out.FSType = in.FSType
-+	return nil
-+}
-+
-+// Convert_core_CascadeDiskVolumeSource_To_v1_CascadeDiskVolumeSource is an autogenerated conversion function.
-+func Convert_core_CascadeDiskVolumeSource_To_v1_CascadeDiskVolumeSource(in *core.CascadeDiskVolumeSource, out *v1.CascadeDiskVolumeSource, s conversion.Scope) error {
-+	return autoConvert_core_CascadeDiskVolumeSource_To_v1_CascadeDiskVolumeSource(in, out, s)
-+}
-+
- func autoConvert_v1_CephFSPersistentVolumeSource_To_core_CephFSPersistentVolumeSource(in *v1.CephFSPersistentVolumeSource, out *core.CephFSPersistentVolumeSource, s conversion.Scope) error {
- 	out.Monitors = *(*[]string)(unsafe.Pointer(&in.Monitors))
- 	out.Path = in.Path
-@@ -3299,13 +3323,14 @@ func autoConvert_v1_PersistentVolumeSource_To_core_PersistentVolumeSource(in *v1
- 	out.AzureFile = (*core.AzureFilePersistentVolumeSource)(unsafe.Pointer(in.AzureFile))
- 	out.VsphereVolume = (*core.VsphereVirtualDiskVolumeSource)(unsafe.Pointer(in.VsphereVolume))
- 	out.Quobyte = (*core.QuobyteVolumeSource)(unsafe.Pointer(in.Quobyte))
--	out.AzureDisk = (*core.AzureDiskVolumeSource)(unsafe.Pointer(in.AzureDisk))
-+	out.CascadeDisk = (*core.CascadeDiskVolumeSource)(unsafe.Pointer(in.CascadeDisk))
- 	out.PhotonPersistentDisk = (*core.PhotonPersistentDiskVolumeSource)(unsafe.Pointer(in.PhotonPersistentDisk))
- 	out.PortworxVolume = (*core.PortworxVolumeSource)(unsafe.Pointer(in.PortworxVolume))
- 	out.ScaleIO = (*core.ScaleIOPersistentVolumeSource)(unsafe.Pointer(in.ScaleIO))
- 	out.Local = (*core.LocalVolumeSource)(unsafe.Pointer(in.Local))
- 	out.StorageOS = (*core.StorageOSPersistentVolumeSource)(unsafe.Pointer(in.StorageOS))
- 	out.CSI = (*core.CSIPersistentVolumeSource)(unsafe.Pointer(in.CSI))
-+	out.AzureDisk = (*core.AzureDiskVolumeSource)(unsafe.Pointer(in.AzureDisk))
- 	return nil
- }
- 
-@@ -3337,6 +3362,7 @@ func autoConvert_core_PersistentVolumeSource_To_v1_PersistentVolumeSource(in *co
- 	out.Local = (*v1.LocalVolumeSource)(unsafe.Pointer(in.Local))
- 	out.StorageOS = (*v1.StorageOSPersistentVolumeSource)(unsafe.Pointer(in.StorageOS))
- 	out.CSI = (*v1.CSIPersistentVolumeSource)(unsafe.Pointer(in.CSI))
-+	out.CascadeDisk = (*v1.CascadeDiskVolumeSource)(unsafe.Pointer(in.CascadeDisk))
- 	return nil
- }
- 
-@@ -5587,12 +5613,13 @@ func autoConvert_v1_VolumeSource_To_core_VolumeSource(in *v1.VolumeSource, out *
- 	out.ConfigMap = (*core.ConfigMapVolumeSource)(unsafe.Pointer(in.ConfigMap))
- 	out.VsphereVolume = (*core.VsphereVirtualDiskVolumeSource)(unsafe.Pointer(in.VsphereVolume))
- 	out.Quobyte = (*core.QuobyteVolumeSource)(unsafe.Pointer(in.Quobyte))
--	out.AzureDisk = (*core.AzureDiskVolumeSource)(unsafe.Pointer(in.AzureDisk))
-+	out.CascadeDisk = (*core.CascadeDiskVolumeSource)(unsafe.Pointer(in.CascadeDisk))
- 	out.PhotonPersistentDisk = (*core.PhotonPersistentDiskVolumeSource)(unsafe.Pointer(in.PhotonPersistentDisk))
- 	out.Projected = (*core.ProjectedVolumeSource)(unsafe.Pointer(in.Projected))
- 	out.PortworxVolume = (*core.PortworxVolumeSource)(unsafe.Pointer(in.PortworxVolume))
- 	out.ScaleIO = (*core.ScaleIOVolumeSource)(unsafe.Pointer(in.ScaleIO))
- 	out.StorageOS = (*core.StorageOSVolumeSource)(unsafe.Pointer(in.StorageOS))
-+	out.AzureDisk = (*core.AzureDiskVolumeSource)(unsafe.Pointer(in.AzureDisk))
- 	return nil
- }
- 
-@@ -5629,6 +5656,7 @@ func autoConvert_core_VolumeSource_To_v1_VolumeSource(in *core.VolumeSource, out
- 	out.PortworxVolume = (*v1.PortworxVolumeSource)(unsafe.Pointer(in.PortworxVolume))
- 	out.ScaleIO = (*v1.ScaleIOVolumeSource)(unsafe.Pointer(in.ScaleIO))
- 	out.StorageOS = (*v1.StorageOSVolumeSource)(unsafe.Pointer(in.StorageOS))
-+	out.CascadeDisk = (*v1.CascadeDiskVolumeSource)(unsafe.Pointer(in.CascadeDisk))
- 	return nil
- }
- 
-diff --git a/pkg/apis/core/v1/zz_generated.defaults.go b/pkg/apis/core/v1/zz_generated.defaults.go
-index 084c951..baeaa01 100644
---- a/pkg/apis/core/v1/zz_generated.defaults.go
-+++ b/pkg/apis/core/v1/zz_generated.defaults.go
-@@ -140,12 +140,12 @@ func SetObjectDefaults_PersistentVolume(in *v1.PersistentVolume) {
- 	if in.Spec.PersistentVolumeSource.ISCSI != nil {
- 		SetDefaults_ISCSIPersistentVolumeSource(in.Spec.PersistentVolumeSource.ISCSI)
- 	}
--	if in.Spec.PersistentVolumeSource.AzureDisk != nil {
--		SetDefaults_AzureDiskVolumeSource(in.Spec.PersistentVolumeSource.AzureDisk)
--	}
- 	if in.Spec.PersistentVolumeSource.ScaleIO != nil {
- 		SetDefaults_ScaleIOPersistentVolumeSource(in.Spec.PersistentVolumeSource.ScaleIO)
- 	}
-+	if in.Spec.PersistentVolumeSource.AzureDisk != nil {
-+		SetDefaults_AzureDiskVolumeSource(in.Spec.PersistentVolumeSource.AzureDisk)
-+	}
- }
- 
- func SetObjectDefaults_PersistentVolumeClaim(in *v1.PersistentVolumeClaim) {
-@@ -199,9 +199,6 @@ func SetObjectDefaults_Pod(in *v1.Pod) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -219,6 +216,9 @@ func SetObjectDefaults_Pod(in *v1.Pod) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.InitContainers {
- 		a := &in.Spec.InitContainers[i]
-@@ -342,9 +342,6 @@ func SetObjectDefaults_PodTemplate(in *v1.PodTemplate) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -362,6 +359,9 @@ func SetObjectDefaults_PodTemplate(in *v1.PodTemplate) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Template.Spec.InitContainers {
- 		a := &in.Template.Spec.InitContainers[i]
-@@ -487,9 +487,6 @@ func SetObjectDefaults_ReplicationController(in *v1.ReplicationController) {
- 			if a.VolumeSource.ConfigMap != nil {
- 				SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 			}
--			if a.VolumeSource.AzureDisk != nil {
--				SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--			}
- 			if a.VolumeSource.Projected != nil {
- 				SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 				for j := range a.VolumeSource.Projected.Sources {
-@@ -507,6 +504,9 @@ func SetObjectDefaults_ReplicationController(in *v1.ReplicationController) {
- 			if a.VolumeSource.ScaleIO != nil {
- 				SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 			}
-+			if a.VolumeSource.AzureDisk != nil {
-+				SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+			}
- 		}
- 		for i := range in.Spec.Template.Spec.InitContainers {
- 			a := &in.Spec.Template.Spec.InitContainers[i]
 diff --git a/pkg/apis/core/validation/validation.go b/pkg/apis/core/validation/validation.go
-index 8d12dad..2391b6b 100644
+index 8d12dad..8bd89c6 100644
 --- a/pkg/apis/core/validation/validation.go
 +++ b/pkg/apis/core/validation/validation.go
 @@ -664,6 +664,14 @@ func validateVolumeSource(source *core.VolumeSource, fldPath *field.Path, volNam
@@ -1094,83 +590,6 @@ index 8d12dad..2391b6b 100644
  	if numVolumes == 0 {
  		allErrs = append(allErrs, field.Required(specPath, "must specify a volume type"))
  	}
-@@ -4367,7 +4392,7 @@ func ValidateSecret(secret *core.Secret) field.ErrorList {
- 			allErrs = append(allErrs, field.Required(field.NewPath("metadata", "annotations").Key(core.ServiceAccountNameKey), ""))
- 		}
- 	case core.SecretTypeOpaque, "":
--	// no-op
-+		// no-op
- 	case core.SecretTypeDockercfg:
- 		dockercfgBytes, exists := secret.Data[core.DockerConfigKey]
- 		if !exists {
-@@ -4413,7 +4438,7 @@ func ValidateSecret(secret *core.Secret) field.ErrorList {
- 		if _, exists := secret.Data[core.TLSPrivateKeyKey]; !exists {
- 			allErrs = append(allErrs, field.Required(dataPath.Key(core.TLSPrivateKeyKey), ""))
- 		}
--	// TODO: Verify that the key matches the cert.
-+		// TODO: Verify that the key matches the cert.
- 	default:
- 		// no-op
- 	}
-diff --git a/pkg/apis/core/zz_generated.deepcopy.go b/pkg/apis/core/zz_generated.deepcopy.go
-index 3522575..3706048 100644
---- a/pkg/apis/core/zz_generated.deepcopy.go
-+++ b/pkg/apis/core/zz_generated.deepcopy.go
-@@ -321,6 +321,22 @@ func (in *Capabilities) DeepCopy() *Capabilities {
- }
- 
- // DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
-+func (in *CascadeDiskVolumeSource) DeepCopyInto(out *CascadeDiskVolumeSource) {
-+	*out = *in
-+	return
-+}
-+
-+// DeepCopy is an autogenerated deepcopy function, copying the receiver, creating a new CascadeDiskVolumeSource.
-+func (in *CascadeDiskVolumeSource) DeepCopy() *CascadeDiskVolumeSource {
-+	if in == nil {
-+		return nil
-+	}
-+	out := new(CascadeDiskVolumeSource)
-+	in.DeepCopyInto(out)
-+	return out
-+}
-+
-+// DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
- func (in *CephFSPersistentVolumeSource) DeepCopyInto(out *CephFSPersistentVolumeSource) {
- 	*out = *in
- 	if in.Monitors != nil {
-@@ -3324,6 +3340,15 @@ func (in *PersistentVolumeSource) DeepCopyInto(out *PersistentVolumeSource) {
- 			(*in).DeepCopyInto(*out)
- 		}
- 	}
-+	if in.CascadeDisk != nil {
-+		in, out := &in.CascadeDisk, &out.CascadeDisk
-+		if *in == nil {
-+			*out = nil
-+		} else {
-+			*out = new(CascadeDiskVolumeSource)
-+			**out = **in
-+		}
-+	}
- 	return
- }
- 
-@@ -5923,6 +5948,15 @@ func (in *VolumeSource) DeepCopyInto(out *VolumeSource) {
- 			(*in).DeepCopyInto(*out)
- 		}
- 	}
-+	if in.CascadeDisk != nil {
-+		in, out := &in.CascadeDisk, &out.CascadeDisk
-+		if *in == nil {
-+			*out = nil
-+		} else {
-+			*out = new(CascadeDiskVolumeSource)
-+			**out = **in
-+		}
-+	}
- 	return
- }
- 
 diff --git a/pkg/apis/extensions/types.go b/pkg/apis/extensions/types.go
 index e369728..a5406ab 100644
 --- a/pkg/apis/extensions/types.go
@@ -1182,94 +601,6 @@ index e369728..a5406ab 100644
 +	CascadeDisk           FSType = "cascadeDisk"
  	All                   FSType = "*"
  )
- 
-diff --git a/pkg/apis/extensions/v1beta1/zz_generated.defaults.go b/pkg/apis/extensions/v1beta1/zz_generated.defaults.go
-index 3b009be..261b3d4 100644
---- a/pkg/apis/extensions/v1beta1/zz_generated.defaults.go
-+++ b/pkg/apis/extensions/v1beta1/zz_generated.defaults.go
-@@ -73,9 +73,6 @@ func SetObjectDefaults_DaemonSet(in *v1beta1.DaemonSet) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -93,6 +90,9 @@ func SetObjectDefaults_DaemonSet(in *v1beta1.DaemonSet) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.Template.Spec.InitContainers[i]
-@@ -217,9 +217,6 @@ func SetObjectDefaults_Deployment(in *v1beta1.Deployment) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -237,6 +234,9 @@ func SetObjectDefaults_Deployment(in *v1beta1.Deployment) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.Template.Spec.InitContainers[i]
-@@ -383,9 +383,6 @@ func SetObjectDefaults_ReplicaSet(in *v1beta1.ReplicaSet) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -403,6 +400,9 @@ func SetObjectDefaults_ReplicaSet(in *v1beta1.ReplicaSet) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- 	for i := range in.Spec.Template.Spec.InitContainers {
- 		a := &in.Spec.Template.Spec.InitContainers[i]
-diff --git a/pkg/apis/settings/v1alpha1/zz_generated.defaults.go b/pkg/apis/settings/v1alpha1/zz_generated.defaults.go
-index f7604a4..d9cf7e8 100644
---- a/pkg/apis/settings/v1alpha1/zz_generated.defaults.go
-+++ b/pkg/apis/settings/v1alpha1/zz_generated.defaults.go
-@@ -71,9 +71,6 @@ func SetObjectDefaults_PodPreset(in *v1alpha1.PodPreset) {
- 		if a.VolumeSource.ConfigMap != nil {
- 			v1.SetDefaults_ConfigMapVolumeSource(a.VolumeSource.ConfigMap)
- 		}
--		if a.VolumeSource.AzureDisk != nil {
--			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
--		}
- 		if a.VolumeSource.Projected != nil {
- 			v1.SetDefaults_ProjectedVolumeSource(a.VolumeSource.Projected)
- 			for j := range a.VolumeSource.Projected.Sources {
-@@ -91,6 +88,9 @@ func SetObjectDefaults_PodPreset(in *v1alpha1.PodPreset) {
- 		if a.VolumeSource.ScaleIO != nil {
- 			v1.SetDefaults_ScaleIOVolumeSource(a.VolumeSource.ScaleIO)
- 		}
-+		if a.VolumeSource.AzureDisk != nil {
-+			v1.SetDefaults_AzureDiskVolumeSource(a.VolumeSource.AzureDisk)
-+		}
- 	}
- }
  
 diff --git a/pkg/cloudprovider/providers/BUILD b/pkg/cloudprovider/providers/BUILD
 index aeccfa1..4313576 100644
@@ -1752,10 +1083,10 @@ index 0000000..fc92377
 \ No newline at end of file
 diff --git a/pkg/cloudprovider/providers/cascade/cascade.go b/pkg/cloudprovider/providers/cascade/cascade.go
 new file mode 100644
-index 0000000..06ada64
+index 0000000..b9fafb9
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade.go
-@@ -0,0 +1,215 @@
+@@ -0,0 +1,219 @@
 +// The use of Cascade cloud provider requires the kubelet, kube-apiserver, and kube-controller-manager to be started
 +// with config flag: '--cloud-provider=cascade --cloud-config=[path_to_config_file]'.
 +package cascade
@@ -1846,11 +1177,15 @@ index 0000000..06ada64
 +
 +// VolumeOptions specifies capacity, tags, name and flavorID for a volume.
 +type VolumeOptions struct {
-+	CapacityGB int
-+	Tags       map[string]string
-+	Name       string
-+	Flavor     string
-+	Encrypted  bool
++	CapacityGB        int
++	Tags              map[string]string
++	Name              string
++	Type              string
++	ZonePresent       bool
++	ZonesPresent      bool
++	AvailabilityZone  string
++	AvailabilityZones string
++	Encrypted         bool
 +}
 +
 +func readConfig(config io.Reader) (*CascadeConfig, error) {
@@ -1973,14 +1308,15 @@ index 0000000..06ada64
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_disks.go b/pkg/cloudprovider/providers/cascade/cascade_disks.go
 new file mode 100644
-index 0000000..a2e8ded
+index 0000000..e889a28
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_disks.go
-@@ -0,0 +1,228 @@
+@@ -0,0 +1,253 @@
 +package cascade
 +
 +import (
 +	"context"
++	"fmt"
 +	"github.com/golang/glog"
 +	k8stypes "k8s.io/apimachinery/pkg/types"
 +	"k8s.io/apimachinery/pkg/util/sets"
@@ -1994,7 +1330,7 @@ index 0000000..a2e8ded
 +	// Check if disk is already attached to that node.
 +	attached, err := cc.DiskIsAttached(diskID, nodeName)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: cc.DiskIsAttached failed during AttachDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: cc.DiskIsAttached failed during AttachDisk. Error[%v]", err)
 +		return "", err
 +	}
 +
@@ -2006,19 +1342,19 @@ index 0000000..a2e8ded
 +
 +		vmID, err := cc.InstanceID(context.TODO(), nodeName)
 +		if err != nil {
-+			glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for AttachDisk. Error[%v]", err)
++			glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for AttachDisk. Error[%v]", err)
 +			return "", err
 +		}
 +
 +		task, err := cc.apiClient.AttachDisk(vmID, operation)
 +		if err != nil {
-+			glog.Errorf("Cascade Cloud Provider: Failed to attach disk with ID %s. Error[%v]", diskID, err)
++			glog.Errorf("VKE Cloud Provider: Failed to attach disk with ID %s. Error[%v]", diskID, err)
 +			return "", err
 +		}
 +
 +		_, err = cc.apiClient.WaitForTask(StringVal(task.ID))
 +		if err != nil {
-+			glog.Errorf("Cascade Cloud Provider: Failed to wait for task to attach disk with ID %s. Error[%v]",
++			glog.Errorf("VKE Cloud Provider: Failed to wait for task to attach disk with ID %s. Error[%v]",
 +				diskID, err)
 +			return "", err
 +		}
@@ -2027,7 +1363,7 @@ index 0000000..a2e8ded
 +	// Get mount device of the attached disk.
 +	disk, err := cc.apiClient.GetDisk(diskID)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
++		glog.Errorf("VKE Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
 +		return "", err
 +	}
 +
@@ -2042,19 +1378,19 @@ index 0000000..a2e8ded
 +
 +	vmID, err := cc.InstanceID(context.TODO(), nodeName)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for DetachDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for DetachDisk. Error[%v]", err)
 +		return err
 +	}
 +
 +	task, err := cc.apiClient.DetachDisk(vmID, operation)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to detach disk with pdID %s. Error[%v]", diskID, err)
++		glog.Errorf("VKE Cloud Provider: Failed to detach disk with pdID %s. Error[%v]", diskID, err)
 +		return err
 +	}
 +
 +	_, err = cc.apiClient.WaitForTask(StringVal(task.ID))
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to wait for task to detach disk with pdID %s. Error[%v]",
++		glog.Errorf("VKE Cloud Provider: Failed to wait for task to detach disk with pdID %s. Error[%v]",
 +			diskID, err)
 +		return err
 +	}
@@ -2066,7 +1402,7 @@ index 0000000..a2e8ded
 +func (cc *CascadeCloud) DiskIsAttached(diskID string, nodeName k8stypes.NodeName) (bool, error) {
 +	vmID, err := cc.InstanceID(context.TODO(), nodeName)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
 +		return false, err
 +	}
 +
@@ -2076,7 +1412,7 @@ index 0000000..a2e8ded
 +		case APIError:
 +			if err.(APIError).ErrorCode == VMNotFoundError {
 +				// If instance no longer exists, we will assume that the volume is not attached.
-+				glog.Warningf("Cascade Cloud Provider: Instance %s does not exist. DiskIsAttached will assume"+
++				glog.Warningf("VKE Cloud Provider: Instance %s does not exist. DiskIsAttached will assume"+
 +					" disk %s is not attached to it.", nodeName, diskID)
 +				return false, nil
 +			}
@@ -2086,7 +1422,7 @@ index 0000000..a2e8ded
 +
 +	disk, err := cc.apiClient.GetDisk(diskID)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
++		glog.Errorf("VKE Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
 +		return false, err
 +	}
 +
@@ -2106,14 +1442,14 @@ index 0000000..a2e8ded
 +
 +	vmID, err := cc.InstanceID(context.TODO(), nodeName)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
 +		return attached, err
 +	}
 +
 +	for _, diskID := range diskIDs {
 +		disk, err := cc.apiClient.GetDisk(diskID)
 +		if err != nil {
-+			glog.Warningf("Cascade Cloud Provider: failed to get VMs for persistent disk %s, err [%v]",
++			glog.Warningf("VKE Cloud Provider: failed to get VMs for persistent disk %s, err [%v]",
 +				diskID, err)
 +		} else {
 +			if disk.VM == vmID && StringVal(disk.State) == DiskStateAttached {
@@ -2130,7 +1466,7 @@ index 0000000..a2e8ded
 +	// Get Zones for the cluster
 +	zones, err := cc.apiClient.GetZones()
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to Get zones for the cluster. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to Get zones for the cluster. Error[%v]", err)
 +		return "", err
 +	}
 +
@@ -2139,11 +1475,35 @@ index 0000000..a2e8ded
 +	for _, zone := range zones {
 +		zoneSet.Insert(zone)
 +	}
-+	zone := volumeutil.ChooseZoneForVolume(zoneSet, volumeOptions.Name)
++	var zone string
++	if !volumeOptions.ZonePresent && !volumeOptions.ZonesPresent {
++		zone = volumeutil.ChooseZoneForVolume(zoneSet, volumeOptions.Name)
++	}
++	if !volumeOptions.ZonePresent && volumeOptions.ZonesPresent {
++		userZoneSet, err := volumeutil.ZonesToSet(volumeOptions.AvailabilityZones)
++		if err != nil {
++			return "", err
++		}
++		if !zoneSet.IsSuperset(userZoneSet) {
++			return "", fmt.Errorf("VKE Cloud Provider: Zones '%s' is invalid. "+
++				"Please use one or more of the following zones: %v", volumeOptions.AvailabilityZones, zoneSet.List())
++		}
++		zone = volumeutil.ChooseZoneForVolume(userZoneSet, volumeOptions.Name)
++	}
++	if volumeOptions.ZonePresent && !volumeOptions.ZonesPresent {
++		if err := volumeutil.ValidateZone(volumeOptions.AvailabilityZone); err != nil {
++			return "", err
++		}
++		if !zoneSet.Has(volumeOptions.AvailabilityZone) {
++			return "", fmt.Errorf("VKE Cloud Provider: Zone '%s' is invalid. "+
++				"Please use one of the following zones: %v", volumeOptions.AvailabilityZone, zoneSet.List())
++		}
++		zone = volumeOptions.AvailabilityZone
++	}
 +
 +	diskSpec := DiskCreateSpec{}
 +	diskSpec.Name = StringPtr(volumeOptions.Name)
-+	diskSpec.Flavor = StringPtr(volumeOptions.Flavor)
++	diskSpec.Flavor = StringPtr(volumeOptions.Type)
 +	diskSpec.CapacityGB = Int32Ptr(int32(volumeOptions.CapacityGB))
 +	diskSpec.Kind = StringPtr(DiskSpecKind)
 +	diskSpec.Zone = StringPtr(zone)
@@ -2151,13 +1511,13 @@ index 0000000..a2e8ded
 +
 +	task, err := cc.apiClient.CreateDisk(&diskSpec)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to CreateDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to CreateDisk. Error[%v]", err)
 +		return "", err
 +	}
 +
 +	waitTask, err := cc.apiClient.WaitForTask(StringVal(task.ID))
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to wait for task to CreateDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to wait for task to CreateDisk. Error[%v]", err)
 +		return "", err
 +	}
 +
@@ -2168,7 +1528,7 @@ index 0000000..a2e8ded
 +func (cc *CascadeCloud) DeleteDisk(diskID string) error {
 +	task, err := cc.apiClient.DeleteDisk(diskID)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to DeleteDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to DeleteDisk. Error[%v]", err)
 +		// If we get a DiskNotFound error, we assume that the disk is already deleted. So we don't return an error here.
 +		switch err.(type) {
 +		case APIError:
@@ -2184,7 +1544,7 @@ index 0000000..a2e8ded
 +
 +	_, err = cc.apiClient.WaitForTask(StringVal(task.ID))
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to wait for task to DeleteDisk. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to wait for task to DeleteDisk. Error[%v]", err)
 +		return err
 +	}
 +
@@ -2195,7 +1555,7 @@ index 0000000..a2e8ded
 +func (cc *CascadeCloud) GetVolumeLabels(diskID string) (map[string]string, error) {
 +	disk, err := cc.apiClient.GetDisk(diskID)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to GetDisk for GetVolumeLabels. Error[%v]", err)
++		glog.Errorf("VKE Cloud Provider: Failed to GetDisk for GetVolumeLabels. Error[%v]", err)
 +		return nil, err
 +	}
 +
@@ -2388,10 +1748,10 @@ index 0000000..8fb314d
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go b/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
 new file mode 100644
-index 0000000..6338072
+index 0000000..c2a62c2
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
-@@ -0,0 +1,285 @@
+@@ -0,0 +1,295 @@
 +package cascade
 +
 +import (
@@ -2407,6 +1767,8 @@ index 0000000..6338072
 +const TCP_PROTOCOL = "TCP"
 +
 +const HTTP_PROTOCOL = "HTTP"
++
++const ServiceAnnotationLoadBalancerInternal = "service.beta.kubernetes.io/vke-load-balancer-internal"
 +
 +// EnsureLoadBalancer creates or updates a Cascade load balancer
 +func (cc *CascadeCloud) EnsureLoadBalancer(ctx context.Context, clusterName string, k8sService *v1.Service, nodes []*v1.Node) (*v1.LoadBalancerStatus, error) {
@@ -2469,7 +1831,7 @@ index 0000000..6338072
 +	// Create load balancer
 +	createSpec := &LoadBalancerCreateSpec{
 +		Name:        StringPtr(loadBalancerName),
-+		Type:        StringPtr("PUBLIC"),
++		Type:        StringPtr(getLoadBalancerType(k8sService)),
 +		PortMaps:    portMaps,
 +		HealthCheck: healthCheck,
 +		SubDomain:   StringPtr(k8sService.Name),
@@ -2677,12 +2039,20 @@ index 0000000..6338072
 +func (l *loadBalancerLogger) Infof(msgTemplate string, args ...interface{}) {
 +	glog.Infoln(l.getLogMsg(msgTemplate, args))
 +}
++
++// Check if service requires an internal load balancer.
++func getLoadBalancerType(service *v1.Service) string {
++	if _, found := service.Annotations[ServiceAnnotationLoadBalancerInternal]; found {
++		return "PRIVATE"
++	}
++	return "PUBLIC"
++}
 diff --git a/pkg/cloudprovider/providers/cascade/client.go b/pkg/cloudprovider/providers/cascade/client.go
 new file mode 100644
-index 0000000..e4494e4
+index 0000000..400e377
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/client.go
-@@ -0,0 +1,399 @@
+@@ -0,0 +1,400 @@
 +package cascade
 +
 +import (
@@ -3006,7 +2376,7 @@ index 0000000..e4494e4
 +		api.cfg.clusterID, StringVal(loadBalancerName))
 +
 +	if len(subDomain) > 0 {
-+		uri = fmt.Sprintf(uri + "?sub-domain=%s", subDomain)
++		uri = fmt.Sprintf(uri+"?sub-domain=%s", subDomain)
 +	}
 +
 +	res, err := api.restClient.Delete(uri, api.options.TokenOptions)
@@ -3034,7 +2404,8 @@ index 0000000..e4494e4
 +
 +// Gets all the zones in which the cluster has the VMs in.
 +func (api *Client) GetZones() (zones []string, err error) {
-+	uri := fmt.Sprintf("%s/v1/tenants/%s/clusters/%s/zones", api.cfg.endpoint, api.cfg.tenantName,
++	// Call the version 2 zones API to use generic zones.
++	uri := fmt.Sprintf("%s/v1/tenants/%s/clusters/%s/zones?version=2", api.cfg.endpoint, api.cfg.tenantName,
 +		api.cfg.clusterID)
 +	res, err := api.restClient.Get(uri, api.options.TokenOptions)
 +	if err != nil {
@@ -3713,7 +3084,7 @@ index 7de9ca9..6d8a1d2 100644
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/gce"
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/openstack"
 diff --git a/pkg/kubeapiserver/authorizer/config.go b/pkg/kubeapiserver/authorizer/config.go
-index 30661bc..0d46db4 100644
+index 30661bc..4743432 100644
 --- a/pkg/kubeapiserver/authorizer/config.go
 +++ b/pkg/kubeapiserver/authorizer/config.go
 @@ -33,6 +33,7 @@ import (
@@ -3724,11 +3095,10 @@ index 30661bc..0d46db4 100644
  )
  
  type AuthorizationConfig struct {
-@@ -86,7 +87,12 @@ func (config AuthorizationConfig) New() (authorizer.Authorizer, authorizer.RuleR
- 			)
+@@ -87,6 +88,12 @@ func (config AuthorizationConfig) New() (authorizer.Authorizer, authorizer.RuleR
  			nodeAuthorizer := node.NewAuthorizer(graph, nodeidentifier.NewDefaultNodeIdentifier(), bootstrappolicy.NodeRules())
  			authorizers = append(authorizers, nodeAuthorizer)
--
+ 
 +		case modes.ModeVKE:
 +			vkeAuthorizer, err := vke.NewAuthorizer()
 +			if err != nil {
@@ -4166,12 +3536,153 @@ index 0000000..c19c37c
 +func (detacher *cascadeDiskDetacher) UnmountDevice(deviceMountPath string) error {
 +	return volumeutil.UnmountPath(deviceMountPath, detacher.mounter)
 +}
+diff --git a/pkg/volume/cascade_disk/azure_disk_util.go b/pkg/volume/cascade_disk/azure_disk_util.go
+new file mode 100644
+index 0000000..7f9812f
+--- /dev/null
++++ b/pkg/volume/cascade_disk/azure_disk_util.go
+@@ -0,0 +1,135 @@
++package cascade_disk
++
++import (
++	"io/ioutil"
++	"os"
++	"path"
++	"strconv"
++	"strings"
++
++	"github.com/golang/glog"
++)
++
++const (
++	environmentFilePath = "/etc/kubernetes/environment"
++	diskPath            = "/dev/disk/cloud/"
++	sysPath             = "/sys/bus/scsi/devices"
++	lunIndex            = 3
++	maxOsScsiHostNo     = 3
++	vendor              = "vendor"
++	msftVendor          = "MSFT"
++	model               = "model"
++	vhdModel            = "VIRTUAL DISK"
++	block               = "block"
++)
++
++func findAzureVolume(lun int) (device string, err error) {
++	azureDisks := listAzureDiskPath()
++	return findDiskByLunWithConstraint(lun, azureDisks)
++}
++
++// List all the devices that are used by azure.
++// All these devices are the symbolic link under /dev/disk/cloud/
++// eg. azure_resource -> ../../sdb
++func listAzureDiskPath() []string {
++	var azureDiskList []string
++	if dirs, err := ioutil.ReadDir(diskPath); err == nil {
++		for _, f := range dirs {
++			name := f.Name()
++			diskPath := diskPath + name
++			if link, linkErr := os.Readlink(diskPath); linkErr == nil {
++				sd := link[(strings.LastIndex(link, "/") + 1):]
++				azureDiskList = append(azureDiskList, sd)
++			}
++		}
++	}
++	glog.V(12).Infof("Azure sys disks paths: %v", azureDiskList)
++	return azureDiskList
++}
++
++// Azure attach/detach APIs return the disk model that does not have disk
++// device path name (eg. /dev/sde) instead it gives the lun number of the disk
++// getting attached/detached.
++// This function maps that lun number to device path name of the
++// device mounted to "current" node.
++// Refrence : https://github.com/kubernetes/kubernetes/blob/master/pkg/volume/azure_dd/azure_common_linux.go#L69
++//            https://docs.microsoft.com/en-us/azure/virtual-machines/linux/troubleshoot-device-names-problems
++func findDiskByLunWithConstraint(lun int, azureDisks []string) (string, error) {
++	var err error
++	if dirs, err := ioutil.ReadDir(sysPath); err == nil {
++		for _, f := range dirs {
++			name := f.Name()
++			// look for path like /sys/bus/scsi/devices/3:0:0:1
++			arr := strings.Split(name, ":")
++			if len(arr) < 4 {
++				continue
++			}
++			if len(azureDisks) == 0 {
++				glog.V(4).Infof("/dev/disk/cloud is not populated, now try to parse %v directly", name)
++				target, err := strconv.Atoi(arr[0])
++				if err != nil {
++					glog.Errorf("failed to parse target from %v (%v), err %v", arr[0], name, err)
++					continue
++				}
++				// as observed, targets 0-3 are used by OS disks. Skip them
++				if target <= maxOsScsiHostNo {
++					continue
++				}
++			}
++
++			// extract LUN from the path.
++			// LUN is the last index of the array, i.e. 1 in /sys/bus/scsi/devices/3:0:0:1
++			l, err := strconv.Atoi(arr[lunIndex])
++			if err != nil {
++				// unknown path format, continue to read the next one
++				glog.V(4).Infof("azure disk - failed to parse lun from %v (%v), err %v", arr[lunIndex], name, err)
++				continue
++			}
++			if lun == l {
++				// find the matching LUN
++				// read vendor and model to ensure it is a VHD disk
++				vendorPath := path.Join(sysPath, name, vendor)
++				vendorBytes, err := ioutil.ReadFile(vendorPath)
++				if err != nil {
++					glog.Errorf("failed to read device vendor, err: %v", err)
++					continue
++				}
++				vendor := strings.TrimSpace(string(vendorBytes))
++				if strings.ToUpper(vendor) != msftVendor {
++					glog.V(4).Infof("vendor doesn't match VHD, got %s", vendor)
++					continue
++				}
++
++				modelPath := path.Join(sysPath, name, model)
++				modelBytes, err := ioutil.ReadFile(modelPath)
++				if err != nil {
++					glog.Errorf("failed to read device model, err: %v", err)
++					continue
++				}
++				model := strings.TrimSpace(string(modelBytes))
++				if strings.ToUpper(model) != vhdModel {
++					glog.V(4).Infof("model doesn't match VHD, got %s", model)
++					continue
++				}
++
++				// find a disk, validate name
++				dir := path.Join(sysPath, name, block)
++				if dev, err := ioutil.ReadDir(dir); err == nil {
++					found := false
++					devName := dev[0].Name()
++					for _, diskName := range azureDisks {
++						glog.V(12).Infof("azureDisk - validating disk %q with sys disk %q", devName, diskName)
++						if devName == diskName {
++							found = true
++							break
++						}
++					}
++					if !found {
++						return "/dev/" + devName, nil
++					}
++				}
++			}
++		}
++	}
++	return "", err
++}
 diff --git a/pkg/volume/cascade_disk/cascade_disk.go b/pkg/volume/cascade_disk/cascade_disk.go
 new file mode 100644
-index 0000000..3968060
+index 0000000..d07e83b
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/cascade_disk.go
-@@ -0,0 +1,390 @@
+@@ -0,0 +1,399 @@
 +package cascade_disk
 +
 +import (
@@ -4323,7 +3834,7 @@ index 0000000..3968060
 +// Abstract interface to disk operations.
 +type diskManager interface {
 +	// Creates a volume
-+	CreateVolume(provisioner *cascadeDiskProvisioner) (diskID string, volumeSizeGB int, fstype string, err error)
++	CreateVolume(provisioner *cascadeDiskProvisioner) (diskID string, volumeSizeGB int, labels map[string]string, fstype string, err error)
 +	// Deletes a volume
 +	DeleteVolume(deleter *cascadeDiskDeleter) error
 +}
@@ -4514,7 +4025,7 @@ index 0000000..3968060
 +			p.options.PVC.Spec.AccessModes, p.plugin.GetAccessModes())
 +	}
 +
-+	diskID, sizeGB, fstype, err := p.manager.CreateVolume(p)
++	diskID, sizeGB, labels, fstype, err := p.manager.CreateVolume(p)
 +	if err != nil {
 +		return nil, err
 +	}
@@ -4550,6 +4061,15 @@ index 0000000..3968060
 +		pv.Spec.AccessModes = p.plugin.GetAccessModes()
 +	}
 +
++	if len(labels) != 0 {
++		if pv.Labels == nil {
++			pv.Labels = make(map[string]string)
++		}
++		for k, v := range labels {
++			pv.Labels[k] = v
++		}
++	}
++
 +	return pv, nil
 +}
 +
@@ -4564,14 +4084,16 @@ index 0000000..3968060
 +}
 diff --git a/pkg/volume/cascade_disk/cascade_util.go b/pkg/volume/cascade_disk/cascade_util.go
 new file mode 100644
-index 0000000..e16199c
+index 0000000..5ad0bc9
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/cascade_util.go
-@@ -0,0 +1,162 @@
+@@ -0,0 +1,217 @@
 +package cascade_disk
 +
 +import (
 +	"fmt"
++	"os"
++	"path/filepath"
 +	"strconv"
 +	"strings"
 +	"time"
@@ -4582,8 +4104,7 @@ index 0000000..e16199c
 +	"k8s.io/kubernetes/pkg/cloudprovider/providers/cascade"
 +	"k8s.io/kubernetes/pkg/volume"
 +	volumeutil "k8s.io/kubernetes/pkg/volume/util"
-+	"path/filepath"
-+	"os"
++	"bufio"
 +)
 +
 +const (
@@ -4605,23 +4126,43 @@ index 0000000..e16199c
 +
 +// Returns path for given VKE disk mount
 +func getDiskByIdPath(devicePath string) string {
-+	nvmePath, err := findNvmeVolume(devicePath)
++	provider, err := getProvider()
 +	if err != nil {
-+		glog.Warningf("error looking for nvme volume %q: %v", devicePath, err)
-+	} else if nvmePath != "" {
-+		devicePath = nvmePath
++		glog.Warningf("error getting provider name from %s: %v", environmentFilePath, err)
++		return devicePath
 +	}
 +
++	switch provider {
++	case "azure":
++		// devicePath is an integer then it is lun returned from azure attach disk.
++		if diskLun, err := strconv.Atoi(devicePath); err == nil {
++			azDevicePath, err := findAzureVolume(diskLun)
++			if err != nil {
++				glog.Warningf("error looking for azure volume %q: %v", devicePath, err)
++			} else if azDevicePath != "" {
++				devicePath = azDevicePath
++			}
++		} else {
++			glog.Warningf("The device path for azure expected to be an integer but it is %s. Error : %v", devicePath, err)
++		}
++	default:
++		nvmePath, err := findNvmeVolume(devicePath)
++		if err != nil {
++			glog.Warningf("error looking for nvme volume %q: %v", devicePath, err)
++		} else if nvmePath != "" {
++			devicePath = nvmePath
++		}
++	}
 +	return devicePath
 +}
 +
 +// CreateVolume creates a Cascade persistent disk.
-+func (util *CascadeDiskUtil) CreateVolume(p *cascadeDiskProvisioner) (diskID string, capacityGB int, fstype string,
-+	err error) {
++func (util *CascadeDiskUtil) CreateVolume(p *cascadeDiskProvisioner) (string, int, map[string]string, string, error) {
++
 +	cloud, err := getCloudProvider(p.plugin.host.GetCloudProvider())
 +	if err != nil {
-+		glog.Errorf("Cascade Util: CreateVolume failed to get cloud provider. Error [%v]", err)
-+		return "", 0, "", err
++		glog.Errorf("CreateVolume failed to get cloud provider. Error [%v]", err)
++		return "", 0, nil, "", err
 +	}
 +
 +	capacity := p.options.PVC.Spec.Resources.Requests[v1.ResourceName(v1.ResourceStorage)]
@@ -4634,51 +4175,67 @@ index 0000000..e16199c
 +		Tags:       *p.options.CloudTags,
 +		Name:       name,
 +	}
-+
++	fstype := ""
 +	// enabling encryption by default if not provided from within storage class
 +	volumeOptions.Encrypted = true
 +	for parameter, value := range p.options.Parameters {
 +		switch strings.ToLower(parameter) {
-+		case "flavor":
-+			volumeOptions.Flavor = value
++		case "type":
++			volumeOptions.Type = value
++		case "zone":
++			volumeOptions.ZonePresent = true
++			volumeOptions.AvailabilityZone = value
++		case "zones":
++			volumeOptions.ZonesPresent = true
++			volumeOptions.AvailabilityZones = value
 +		case "encrypted":
 +			volumeOptions.Encrypted, err = strconv.ParseBool(value)
 +			if err != nil {
-+				glog.Errorf("Cascade Util: invalid value %q for encryption of volume plugin %s.", value,
-+					p.plugin.GetPluginName())
-+				return "", 0, "", fmt.Errorf("invalid encrypted boolean value %q, must be true or false: %v", value, err)
++				glog.Errorf("invalid value %q for encryption of volume plugin %s.", value, p.plugin.GetPluginName())
++				return "", 0, nil, "",
++					fmt.Errorf("invalid encrypted boolean value %q, must be true or false: %v", value, err)
 +			}
 +		case volume.VolumeParameterFSType:
 +			fstype = value
-+			glog.V(4).Infof("Cascade Util: Setting fstype to %s", fstype)
++			glog.V(4).Infof("Setting fstype to %s", fstype)
 +		default:
-+			glog.Errorf("Cascade Util: invalid option %s for volume plugin %s.", parameter,
++			glog.Errorf("invalid option %s for volume plugin %s.", parameter,
 +				p.plugin.GetPluginName())
-+			return "", 0, "", fmt.Errorf("Cascade Util: invalid option %s for volume plugin %s.", parameter,
-+				p.plugin.GetPluginName())
++			return "", 0, nil, "",
++				fmt.Errorf("invalid option %s for volume plugin %s.", parameter, p.plugin.GetPluginName())
 +		}
 +	}
 +
-+	diskID, err = cloud.CreateDisk(volumeOptions)
++	if volumeOptions.ZonePresent && volumeOptions.ZonesPresent {
++		return "", 0, nil, "", fmt.Errorf("both zone and zones StorageClass parameters must not be used at the same time")
++	}
++
++	diskID, err := cloud.CreateDisk(volumeOptions)
 +	if err != nil {
-+		glog.Errorf("Cascade Util: failed to CreateDisk. Error [%v]", err)
-+		return "", 0, "", err
++		glog.Errorf("failed to CreateDisk. Error [%v]", err)
++		return "", 0, nil, "", err
++	}
++
++	labels, err := cloud.GetVolumeLabels(diskID)
++	if err != nil {
++		// We don't really want to leak the volume here...
++		glog.Errorf("error building labels for new volume %q: %v", name, err)
 +	}
 +
 +	glog.V(4).Infof("Successfully created Cascade persistent disk %s", name)
-+	return diskID, volSizeGB, "", nil
++	return diskID, volSizeGB, labels, fstype, nil
 +}
 +
 +// DeleteVolume deletes a Cascade volume.
 +func (util *CascadeDiskUtil) DeleteVolume(disk *cascadeDiskDeleter) error {
 +	cloud, err := getCloudProvider(disk.plugin.host.GetCloudProvider())
 +	if err != nil {
-+		glog.Errorf("Cascade Util: DeleteVolume failed to get cloud provider. Error [%v]", err)
++		glog.Errorf("DeleteVolume failed to get cloud provider. Error [%v]", err)
 +		return err
 +	}
 +
 +	if err = cloud.DeleteDisk(disk.diskID); err != nil {
-+		glog.Errorf("Cascade Util: failed to DeleteDisk for diskID %s. Error [%v]", disk.diskID, err)
++		glog.Errorf("failed to DeleteDisk for diskID %s. Error [%v]", disk.diskID, err)
 +		return err
 +	}
 +
@@ -4688,8 +4245,8 @@ index 0000000..e16199c
 +
 +func getCloudProvider(cloud cloudprovider.Interface) (*cascade.CascadeCloud, error) {
 +	if cloud == nil {
-+		glog.Errorf("Cascade Util: Cloud provider not initialized properly")
-+		return nil, fmt.Errorf("Cascade Util: Cloud provider not initialized properly")
++		glog.Errorf("Cloud provider not initialized properly")
++		return nil, fmt.Errorf("Cloud provider not initialized properly")
 +	}
 +
 +	cc := cloud.(*cascade.CascadeCloud)
@@ -4729,6 +4286,24 @@ index 0000000..e16199c
 +	}
 +
 +	return resolved, nil
++}
++
++func getProvider() (provider string, err error) {
++	file, err := os.Open(environmentFilePath)
++	if err != nil {
++		return "", err
++	}
++	defer file.Close()
++
++	scanner := bufio.NewScanner(file)
++
++	for scanner.Scan() {
++		lineContent := scanner.Text()
++		if strings.Contains(lineContent, "PROVIDER=") {
++			return strings.SplitAfter(lineContent, "=")[1], err
++		}
++	}
++	return "", err
 +}
 diff --git a/plugin/pkg/admission/persistentvolume/label/admission.go b/plugin/pkg/admission/persistentvolume/label/admission.go
 index 819adae..3d55589 100644
@@ -4883,10 +4458,10 @@ index 0000000..97c0856
 \ No newline at end of file
 diff --git a/plugin/pkg/admission/vke/admission.go b/plugin/pkg/admission/vke/admission.go
 new file mode 100644
-index 0000000..f850e26
+index 0000000..5434f7d
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission.go
-@@ -0,0 +1,618 @@
+@@ -0,0 +1,628 @@
 +package vke
 +
 +import (
@@ -4955,15 +4530,25 @@ index 0000000..f850e26
 +}
 +
 +var _ admission.MutationInterface = &vmwareAdmissionController{}
++var _ admission.ValidationInterface = &vmwareAdmissionController{}
 +
 +// Admit makes an admission decision based on the request attributes.
 +// Note: We implement the mutation interface for this admission controller, which means we have the ability to modify
 +// the resources. But we do not modify them because we just need to validate the requests to either let them through or
-+// block them. We have implemented this as a mutation interface because we need access to oldObjects during update
-+// operations to find out what values are being modified. For node update operation, the old and new objects are always
-+// identical in the validation phase (possibly due to some initializer modifying it). So, we are performing our
-+// validation during the mutation phase.
++// block them. We have implemented this mutation interface because we need access to oldObjects during update operations
++// to find out what values are being modified. For node update operation, the old and new objects are always identical
++// in the validation phase (possibly due to some initializer modifying it). So, we are performing this specific
++// vaidation during the mutation phase.
 +func (vac *vmwareAdmissionController) Admit(a admission.Attributes) (err error) {
++	if isPrivilegedServiceAccount(a) {
++		return validatePrivilegedServiceAccount(a)
++	}
++
++	return err
++}
++
++// Validate makes an admission decision based on the request attributes.
++func (vac *vmwareAdmissionController) Validate(a admission.Attributes) (err error) {
 +	if isPrivilegedUser(vac, a) {
 +		return nil
 +	}
@@ -5507,7 +5092,7 @@ index 0000000..f850e26
 +}
 diff --git a/plugin/pkg/admission/vke/admission_test.go b/plugin/pkg/admission/vke/admission_test.go
 new file mode 100644
-index 0000000..684fad4
+index 0000000..689a22d
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission_test.go
 @@ -0,0 +1,960 @@
@@ -6228,7 +5813,7 @@ index 0000000..684fad4
 +	attrs := kadmission.NewAttributesRecord(pod, nil, kapi.Kind("Pod").WithVersion("version"),
 +		namespace, name, kapi.Resource("pods").WithVersion("version"), "", op, userInfo)
 +
-+	err = plugin.Admit(attrs)
++	err = plugin.Validate(attrs)
 +	if shouldPassValidate && err != nil {
 +		t.Errorf("%s: expected no errors on Validate but received %v", testCaseName, err)
 +	} else if !shouldPassValidate && err == nil {
@@ -6254,7 +5839,7 @@ index 0000000..684fad4
 +	attrs := kadmission.NewAttributesRecord(object, oldObject, kapi.Kind("kind").WithVersion("version"),
 +		namespace, name, groupResource, subresource, op, userInfo)
 +
-+	err = plugin.Admit(attrs)
++	err = plugin.Validate(attrs)
 +	if shouldPassValidate && err != nil {
 +		t.Errorf("%s: expected no errors on Validate but received %v", testCaseName, err)
 +	} else if !shouldPassValidate && err == nil {
@@ -7458,101 +7043,6 @@ index 36f4567..7b280cd 100644
  // Adapts a ConfigMap into a volume.
  //
  // The contents of the target ConfigMap's Data field will be presented in a
-diff --git a/staging/src/k8s.io/api/core/v1/zz_generated.deepcopy.go b/staging/src/k8s.io/api/core/v1/zz_generated.deepcopy.go
-index ebdcb89..a04787f 100644
---- a/staging/src/k8s.io/api/core/v1/zz_generated.deepcopy.go
-+++ b/staging/src/k8s.io/api/core/v1/zz_generated.deepcopy.go
-@@ -321,6 +321,22 @@ func (in *Capabilities) DeepCopy() *Capabilities {
- }
- 
- // DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
-+func (in *CascadeDiskVolumeSource) DeepCopyInto(out *CascadeDiskVolumeSource) {
-+	*out = *in
-+	return
-+}
-+
-+// DeepCopy is an autogenerated deepcopy function, copying the receiver, creating a new CascadeDiskVolumeSource.
-+func (in *CascadeDiskVolumeSource) DeepCopy() *CascadeDiskVolumeSource {
-+	if in == nil {
-+		return nil
-+	}
-+	out := new(CascadeDiskVolumeSource)
-+	in.DeepCopyInto(out)
-+	return out
-+}
-+
-+// DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
- func (in *CephFSPersistentVolumeSource) DeepCopyInto(out *CephFSPersistentVolumeSource) {
- 	*out = *in
- 	if in.Monitors != nil {
-@@ -3247,13 +3263,13 @@ func (in *PersistentVolumeSource) DeepCopyInto(out *PersistentVolumeSource) {
- 			**out = **in
- 		}
- 	}
--	if in.AzureDisk != nil {
--		in, out := &in.AzureDisk, &out.AzureDisk
-+	if in.CascadeDisk != nil {
-+		in, out := &in.CascadeDisk, &out.CascadeDisk
- 		if *in == nil {
- 			*out = nil
- 		} else {
--			*out = new(AzureDiskVolumeSource)
--			(*in).DeepCopyInto(*out)
-+			*out = new(CascadeDiskVolumeSource)
-+			**out = **in
- 		}
- 	}
- 	if in.PhotonPersistentDisk != nil {
-@@ -3310,6 +3326,15 @@ func (in *PersistentVolumeSource) DeepCopyInto(out *PersistentVolumeSource) {
- 			(*in).DeepCopyInto(*out)
- 		}
- 	}
-+	if in.AzureDisk != nil {
-+		in, out := &in.AzureDisk, &out.AzureDisk
-+		if *in == nil {
-+			*out = nil
-+		} else {
-+			*out = new(AzureDiskVolumeSource)
-+			(*in).DeepCopyInto(*out)
-+		}
-+	}
- 	return
- }
- 
-@@ -5871,13 +5896,13 @@ func (in *VolumeSource) DeepCopyInto(out *VolumeSource) {
- 			**out = **in
- 		}
- 	}
--	if in.AzureDisk != nil {
--		in, out := &in.AzureDisk, &out.AzureDisk
-+	if in.CascadeDisk != nil {
-+		in, out := &in.CascadeDisk, &out.CascadeDisk
- 		if *in == nil {
- 			*out = nil
- 		} else {
--			*out = new(AzureDiskVolumeSource)
--			(*in).DeepCopyInto(*out)
-+			*out = new(CascadeDiskVolumeSource)
-+			**out = **in
- 		}
- 	}
- 	if in.PhotonPersistentDisk != nil {
-@@ -5925,6 +5950,15 @@ func (in *VolumeSource) DeepCopyInto(out *VolumeSource) {
- 			(*in).DeepCopyInto(*out)
- 		}
- 	}
-+	if in.AzureDisk != nil {
-+		in, out := &in.AzureDisk, &out.AzureDisk
-+		if *in == nil {
-+			*out = nil
-+		} else {
-+			*out = new(AzureDiskVolumeSource)
-+			(*in).DeepCopyInto(*out)
-+		}
-+	}
- 	return
- }
- 
 -- 
 2.7.4
 
