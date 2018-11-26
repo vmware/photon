@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.1
-Release:        2%{?dist}
+Version:        4.19.4
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=5ece7a7149eeef06bba906eeabbc2f29a8ac3952
+%define sha1 linux=8260e2f7261c1e7ed343607999abefd4c84610e4
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -186,6 +186,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Nov 26 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.4-1
+-   Update to version 4.19.4
 *   Thu Nov 15 2018 Ajay Kaher <akaher@vmware.com> 4.19.1-2
 -   Adding BuildArch
 *   Thu Nov 08 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.1-1

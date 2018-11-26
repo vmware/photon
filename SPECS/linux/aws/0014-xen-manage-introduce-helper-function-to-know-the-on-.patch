@@ -22,7 +22,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  2 files changed, 19 insertions(+)
 
 diff --git a/drivers/xen/manage.c b/drivers/xen/manage.c
-index 1c9750fefa64..1720225eecb6 100644
+index 609fca8..2676b52 100644
 --- a/drivers/xen/manage.c
 +++ b/drivers/xen/manage.c
 @@ -50,6 +50,21 @@ enum suspend_modes {
@@ -48,10 +48,10 @@ index 1c9750fefa64..1720225eecb6 100644
  	int cancelled;
  };
 diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
-index a95e65ec83c3..2e4b476b516c 100644
+index f6e798d..2aa94d8 100644
 --- a/include/xen/xen-ops.h
 +++ b/include/xen/xen-ops.h
-@@ -38,6 +38,10 @@ u64 xen_steal_clock(int cpu);
+@@ -39,6 +39,10 @@ u64 xen_steal_clock(int cpu);
  
  int xen_setup_shutdown_event(void);
  
@@ -61,7 +61,6 @@ index a95e65ec83c3..2e4b476b516c 100644
 +
  extern unsigned long *xen_contiguous_bitmap;
  
- #ifdef CONFIG_XEN_PV
+ #if defined(CONFIG_XEN_PV) || defined(CONFIG_ARM) || defined(CONFIG_ARM64)
 -- 
-2.14.4
-
+2.7.4
