@@ -4,7 +4,7 @@
 Summary:        tzinfo object for the local timezone.
 Name:           python-tzlocal
 Version:        1.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -12,12 +12,22 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/tzlocal/1.4
 Source0:        https://files.pythonhosted.org/packages/source/t/tzlocal/tzlocal-%{version}.tar.gz
 %define sha1    tzlocal=98dc51724f3201f66f4ec36f22b99bd03f3059bd
+Patch0:         tzlocal-make-check-fix.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-six
 
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-six
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+%endif
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-pytz
@@ -34,12 +44,6 @@ With tzlocal you only need to call get_localzone() and you will get a tzinfo obj
 
 %package -n     python3-tzlocal
 Summary:        python-tzlocal
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-six
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-pytz
@@ -49,6 +53,7 @@ Python 3 version.
 
 %prep
 %setup -q -n tzlocal-%{version}
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -79,6 +84,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 26 2018 Tapas Kundu <tkundu@vmware.com> 1.5.1-2
+-   Fix make check
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.5.1-1
 -   Update to version 1.5.1
 *   Mon Sep 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.4-1
