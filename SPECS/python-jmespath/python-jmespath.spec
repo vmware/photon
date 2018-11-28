@@ -5,7 +5,7 @@
 Summary:        Query Language for JSON
 Name:           python-jmespath
 Version:        0.9.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,6 +18,14 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-xml
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+%endif
 Requires:       python2
 Requires:       python2-libs
 BuildArch:      noarch
@@ -27,10 +35,6 @@ JMESPath (pronounced “james path”) allows you to declaratively specify how t
 
 %package -n     python3-jmespath
 Summary:        python-jmespath
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -58,8 +62,12 @@ popd
 python2 setup.py install --single-version-externally-managed -O1 --root=%{buildroot}
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 nose
 python2 setup.py test
 pushd ../p3dir
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 nose
 python3 setup.py test
 popd
 
@@ -74,5 +82,8 @@ popd
 %{_bindir}/jp.py-%{python3_version}
 
 %changelog
+*   Wed Nov 28 2018 Tapas Kundu <tkundu@vmware.com> 0.9.3-2
+-   Fix make check
+-   moved the build requires from subpackages
 *   Sun Jan 07 2018 Kumar Kaushik <kaushikk@vmware.com> 0.9.3-1
 -   Initial packaging for photon.
