@@ -3,12 +3,13 @@
 Summary:        XML and HTML with Python
 Name:           python-lxml
 Version:        4.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
 Source0:        https://pypi.python.org/packages/39/e8/a8e0b1fa65dd021d48fe21464f71783655f39a41f218293c1c590d54eb82/lxml-%{version}.tar.gz
 %define sha1    lxml=4a77c5471dfea2a32fd16475d130350af7d33f85
+Patch0:         lxml-make-check-fix.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python2-devel
@@ -17,6 +18,9 @@ BuildRequires:  python-xml
 BuildRequires:  libxslt
 BuildRequires:  libxslt-devel
 BuildRequires:  cython
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 Requires:       python2
 Requires:       libxslt
 
@@ -25,12 +29,6 @@ The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxs
 
 %package -n     python3-lxml
 Summary:        python-lxml
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  libxslt
-BuildRequires:  libxslt-devel
-BuildRequires:  cython
 Requires:       libxslt
 Requires:       python3
 Requires:       python3-libs
@@ -40,6 +38,7 @@ Python 3 version.
 
 %prep
 %setup -q -n lxml-%{version}
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -76,6 +75,9 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Nov 28 2018 Tapas Kundu <tkundu@vmware.com> 4.2.4-2
+-   Fix make check
+-   moved build requires from subpackage
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 4.2.4-1
 -   Update to version 4.2.4
 *   Mon Aug 07 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.7.3-3
