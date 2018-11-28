@@ -6,7 +6,7 @@
 # Known side effect: screen might be "garbaged" by reply string.
 
 full_screen () {
-	if [[ -t 0 ]] ; then
+	if [[ -t 0 ]] && [[ -t 1 ]]; then
 		# s - save cursor position
 		# [r;cH - set cursor position to r;c
 		# [6n - get cursor position

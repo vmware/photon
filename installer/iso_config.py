@@ -161,8 +161,8 @@ class IsoConfig(object):
 
         base_path = os.path.dirname("build_install_options_all.json")
         package_list = []
-        if 'packagelist_file' in config:
-            package_list = PackageSelector.get_packages_to_install(config['packagelist_file'],
+        if 'packagelist_file' in install_config:
+            package_list = PackageSelector.get_packages_to_install(install_config['packagelist_file'],
                                                                base_path)
 
         if 'additional_packages' in install_config:
