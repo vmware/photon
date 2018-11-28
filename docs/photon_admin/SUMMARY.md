@@ -59,7 +59,7 @@
     - [Network Configuration Manager - C API](netmgr.c.md)
     - [Network Configuration Manager - Python API](netmgr.python.md)        
 -   [Cloud-Init on Photon OS](cloud-init-on-photon-os.md)
-    - [Deploy Photon OS With `cloud-init`](deploy_photon_with_cloud-init.md
+    - [Deploy Photon OS With cloud-init](deploy_photon_with_cloud-init.md)
     - [Creating a Stand-Alone Photon Machine with
         cloud-init](creating-a-stand-alone-photon-machine-with-cloud-init.md)
     -   [Customizing a Photon OS Machine on
