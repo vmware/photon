@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -186,6 +186,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Nov 29 2018 Alexey Makhalov <amakhalov@vmware.com> 4.19.1-3
+-   Fix BAR4 is zero issue for IDE devices
 *   Thu Nov 15 2018 Ajay Kaher <akaher@vmware.com> 4.19.1-2
 -   Adding BuildArch
 *   Thu Nov 08 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.1-1
