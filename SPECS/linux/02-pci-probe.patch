@@ -3,7 +3,24 @@ From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 29 Sep 2015 15:55:49 -0700
 Subject: [PATCH] pci/probe.c: Hardcodded pci probe.
 
-Added pci=scan_all cmdline parameter to verify hardcodded pci values
+PCI probing takes a long time to scan resources for all devices
+on PCI bus. Idea of this patch is to hardcode known resources
+for known devices. In VMware hypervisor we do not have much
+virtual PCI devices.
+
+is_known_device() has list of known devices and available
+resources (BARs) for them.
+It returns: 0 if BAR not available for the given device
+            1 if available and sz parameter will have BAR size
+
+guess_bar_count() returns maximum number of BARs for the given
+class to do not probe for all 6 bars
+
+has_rom() returns 0 if given class does not have any ROM BARs,
+which allows to skip ROM probing
+
+Added pci=scan_all cmdline parameter verifies hardcodded pci
+values at runtime.
 ---
  drivers/pci/pci.c   |   2 +
  drivers/pci/pci.h   |   2 +
@@ -456,10 +473,10 @@ diff -ur linux-4.19.1/drivers/pci/probe.c linux-4.19.1_new/drivers/pci/probe.c
 +
 +		if (pci_scan_and_verify)
 +			pci_read_bases(dev, 6, PCI_ROM_ADDRESS);
-+		else if (class != PCI_CLASS_STORAGE_IDE)
++		else
 +			pci_read_bases(dev,
-+			guess_bar_count(dev->class),
-+			has_rom(dev->class, PCI_ROM_ADDRESS));
++				guess_bar_count(dev->class),
++				has_rom(dev->class, PCI_ROM_ADDRESS));
  
  		pci_subsystem_ids(dev, &dev->subsystem_vendor, &dev->subsystem_device);
  
