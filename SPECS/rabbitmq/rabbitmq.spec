@@ -1,7 +1,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.6.15
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -19,6 +19,7 @@ BuildRequires: rsync
 BuildRequires: zip
 BuildRequires: libxslt
 BuildRequires: python-xml
+BuildRequires: python2
 BuildArch:     noarch
 
 %description
@@ -101,6 +102,8 @@ rm -rf $RPM_BUILD_ROOT
 /var/lib/*
 
 %changelog
+* Tue Feb 05 2019 Alexey Makhalov <amakhalov@vmware.com> 3.6.15-4
+- Added BuildRequires python2.
 * Thu Jan 31 2019 Siju Maliakkal <smaliakkal@vmware.com> 3.6.15-3
 - Consuming erlang 19.3
 * Mon Sep 24 2018 Dweep Advani <dadvani@vmware.com> 3.6.15-2
