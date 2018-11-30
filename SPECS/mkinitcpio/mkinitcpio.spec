@@ -1,7 +1,7 @@
 Summary:    Modular initramfs image creation utility
 Name:       mkinitcpio
 Version:    24
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        https://projects.archlinux.org/mkinitcpio.git/
 Group:      System Environment/Development
@@ -11,7 +11,7 @@ Source0:    https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{ver
 %define sha1 mkinitcpio=416789532960f7deecb4d5734a398da2437bbb58
 Patch0:     mkinitcpio-shutdown-ramfs.service.patch
 BuildRequires: asciidoc
-BuildRequires: python2-libs
+BuildRequires: python2
 BuildRequires: python-xml
 BuildRequires: docbook-xsl
 BuildRequires: libxml2-devel
@@ -49,6 +49,8 @@ make DESTDIR=%{buildroot} install
 /usr/share/*
 
 %changelog
+*   Fri Jan 18 2019 Alexey Makhalov <amakhalov@vmware.com> 24-2
+-   Added buildRequires python2.
 *   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 24-1
 -   Update to version 24
 *   Fri May 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 23-3

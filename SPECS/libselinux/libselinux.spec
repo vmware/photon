@@ -3,7 +3,7 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        2.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Source0:        https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}.tar.gz
@@ -13,6 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libsepol-devel
 BuildRequires:  pcre-devel, swig
+BuildRequires:  python2-devel
 BuildRequires:  python3-devel
 Requires:       pcre-libs
 Requires:       libsepol
@@ -35,7 +36,7 @@ decisions.  Required for any applications that use the SELinux API.
 %package        utils
 Summary:        SELinux libselinux utilies
 Group:          Development/Libraries
-Requires:       libselinux = %{version}-%{release} 
+Requires:       libselinux = %{version}-%{release}
 
 %description    utils
 The libselinux-utils package contains the utilities
@@ -50,7 +51,7 @@ Provides:       pkgconfig(libselinux)
 
 %description    devel
 The libselinux-devel package contains the libraries and header files
-needed for developing SELinux applications. 
+needed for developing SELinux applications.
 
 %package        python
 Summary:        SELinux python2 bindings for libselinux
@@ -130,6 +131,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.8-2
+-   Added BuildRequires python2-devel
 *   Fri Aug 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.8-1
 -   Update to version 2.8 to get it to build with gcc 7.3
 *   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 2.6-4

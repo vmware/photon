@@ -2,7 +2,7 @@
 
 Name:           python-subprocess32
 Version:        3.5.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A backport of the subprocess module from Python 3.2/3.3 for use on 2.x
 License:        PSF
 Group:          Development/Languages/Python
@@ -12,7 +12,7 @@ Source0:        subprocess32-%{version}.tar.gz
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  python2
+BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-pytest
@@ -44,6 +44,8 @@ PYTHONPATH=build/lib.linux-%{_arch}-%{python2_ver}/ python2 test_subprocess32.py
 %{python_sitelib}/*
 
 %changelog
+*   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 3.5.2-2
+-   Added BuildRequires python2-devel
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 3.5.2-1
 -   Update to version 3.5.2
 *   Mon Sep 25 2017 Rui Gu <ruig@vmware.com> 3.2.7-2
