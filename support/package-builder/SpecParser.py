@@ -320,11 +320,11 @@ class SpecParser(object):
                 packageName = listContents[i]
                 if listContents[i].startswith("/"):
                     provider = constants.providedBy.get(listContents[i], None)
-                    i += 1
                     if provider is not None:
                         packageName = provider
                     else:
-                        continue
+                        raise Exception('What package does provide %s? Please modify providedBy in constants.py' % (listContents[i]))
+                    i += 1
                 if i + 2 < len(listContents):
                     if listContents[i+1] in (">=", "<=", "=", "<", ">"):
                         compare = listContents[i+1]
