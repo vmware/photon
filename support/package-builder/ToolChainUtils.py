@@ -20,7 +20,6 @@ class ToolChainUtils(object):
         self.logName = logName
         self.logPath = logPath
         self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
-        self.rpmbuildCommand = "rpmbuild"
         if os.geteuid() == 0:
             self.rpmCommand = "rpm"
         else:
@@ -74,7 +73,7 @@ class ToolChainUtils(object):
                     CommandUtils.runCommandInShell("mkdir -p " + destLogPath)
                 chroot = Chroot(self.logger)
                 chroot.create(package + "-" + version)
-                self.installToolChainRPMS(chroot, package, version, destLogPath)
+                self.installToolchainRPMS(chroot, package, version)
                 pkgUtils.adjustGCCSpecs(chroot, package, version)
                 pkgUtils.buildRPMSForGivenPackage(chroot, package, version, destLogPath)
                 pkgCount += 1
@@ -82,7 +81,7 @@ class ToolChainUtils(object):
             self.logger.debug("Successfully built toolchain")
             self.logger.info("-" * 45 + "\n")
         except Exception as e:
-            self.logger.error("Unable to build tool chain.")
+            self.logger.error("Unable to build toolchain.")
             # print stacktrace
             traceback.print_exc()
             raise e
@@ -93,10 +92,8 @@ class ToolChainUtils(object):
         listBuildRequiresPkg.extend(SPECS.getData().getCheckBuildRequiresForPackage(package, version))
         return listBuildRequiresPkg
 
-    def installToolChainRPMS(self, chroot, packageName=None, packageVersion=None, logPath=None, usePublishedRPMS=True, availablePackages=None):
-        if logPath is None:
-            logPath = self.logPath
-        self.logger.debug("Installing Tool Chain RPMS.......")
+    def installToolchainRPMS(self, chroot, packageName=None, packageVersion=None, usePublishedRPMS=True, availablePackages=None):
+        self.logger.debug("Installing toolchain RPMS.......")
         rpmFiles = ""
         packages = ""
         listBuildRequiresPackages = []
@@ -160,17 +157,17 @@ class ToolChainUtils(object):
         retVal = CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug)
         if retVal != 0:
             self.logger.debug("Command Executed:" + cmd)
-            self.logger.error("Installing tool chain  failed")
+            self.logger.error("Installing toolchain RPMS failed")
             raise Exception("RPM installation failed")
         self.logger.debug("Successfully installed default toolchain RPMS in Chroot:" + chroot.getID())
         if packageName:
-            self.installCustomToolChainRPMS(chroot, packageName, packageVersion)
+            self.installExtraToolchainRPMS(chroot, packageName, packageVersion)
 
-    def installCustomToolChainRPMS(self, sandbox, packageName, packageVersion):
+    def installExtraToolchainRPMS(self, sandbox, packageName, packageVersion):
         listOfToolChainPkgs = SPECS.getData().getExtraBuildRequiresForPackage(packageName, packageVersion)
         if not listOfToolChainPkgs:
             return
-        self.logger.debug("Installing package specific tool chain RPMs for " + packageName +
+        self.logger.debug("Installing package specific toolchain RPMS for " + packageName +
                          ": " + str(listOfToolChainPkgs))
         rpmFiles = ""
         packages = ""
