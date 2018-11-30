@@ -90,7 +90,7 @@ function check-for-configure()
     exit 1
   fi
 
-  grep "%configure" $1 > /dev/null || exit 0
+  grep "%configure" $1 > /dev/null || return
 
   grep -Pzo ".*\\\\(\n)%configure.*" $1
   if [ $? -eq 0 ] ; then
@@ -119,7 +119,11 @@ function check-for-buildrequires()
   fi
 }
 
-SPECS=`git diff --name-only $1 @ | grep -e "SPECS/.*.spec$"`
+if [ -z "$(git diff-index --name-only HEAD --)" ] ; then
+	SPECS=`git diff --name-only @~ | grep -e "SPECS/.*.spec$"`
+else
+	SPECS=`git diff --name-only | grep -e "SPECS/.*.spec$"`
+fi
 for i in `echo $SPECS`;
 do
   echo Analyzing $i ...
