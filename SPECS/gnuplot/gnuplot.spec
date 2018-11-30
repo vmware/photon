@@ -1,7 +1,7 @@
 Summary:        Gnuplot is a portable command-line driven graphing utility.
 Name:           gnuplot
 Version:        5.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Freeware
 URL:            http://www.gnuplot.info/
 Group:          Applications
@@ -17,13 +17,13 @@ Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS W
 %setup -q
 
 %build
-./configure --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
+%configure \
     --disable-static \
     --enable-shared
 make
+
+%check
+make check
 
 %install
 make DESTDIR=%{buildroot} install
@@ -35,6 +35,8 @@ make DESTDIR=%{buildroot} install
 
 
 %changelog
+*   Sun Nov 25 2018 Ashwin H <ashwinh@vmware.com> 5.2.4-2
+-   Fix %check
 *   Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 5.2.4-1
 -   Update version to 5.2.4
 *   Wed Apr 12 2017 Danut Moraru <dmoraru@vmware.com> 5.0.6-1

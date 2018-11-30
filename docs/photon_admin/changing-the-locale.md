@@ -1,6 +1,8 @@
 # Changing the Locale 
 
-You can change the locale if the default locale, shown below by running the `localectl` command, fails to fulfill your requirements: 
+You can change the locale if the default locale does not meet your requirements. 
+
+To find the locale, run the the `localectl` command:  
 
     localectl
     System Locale: LANG=en_US.UTF-8
@@ -11,6 +13,6 @@ To change the locale, choose the languages that you want from `/usr/share/locale
 
     locale-gen.sh
 
-Finally, run the following command to set the new locale, replacing the example (`en_US.UTF-8`) with the locale that you want: 
+Finally, run the following command to set the new locale, replacing the example (`en_US.UTF-8`) with the locale that you require: 
 
     localectl set-locale LANG="en_US.UTF-8" LC_CTYPE="en_US.UTF-8"

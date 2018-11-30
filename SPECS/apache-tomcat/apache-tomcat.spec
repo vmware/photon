@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.31
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -14,6 +14,7 @@ Source0:        http://mirrors.koehn.com/apache/tomcat/tomcat-8/v%{version}/src/
 Source1:        base-for-%{name}-%{version}.tar.gz
 %define sha1    base=9c954df61d7c72f6d5e7319d25351e178a84cab4
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
+Patch1:         CVE-2018-8014.patch
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
 BuildRequires:  apache-ant
@@ -38,6 +39,7 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 %setup -D -b 1 -n %{name}-%{version}-src
 %patch0 -p1
+%patch1 -p1
 
 %build
 ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
@@ -101,6 +103,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Wed Nov 21 2018 Dweep Advani <dadvani@vmware.com> 8.5.31-3
+-   Fix CVE-2018-8014
 *   Thu May 17 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.31-2
 -   Mark configuration files as config(noreplace)
 *   Mon May 07 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.31-1
@@ -122,7 +126,7 @@ rm -rf %{buildroot}/*
 *   Wed Sep 27 2017 Alexey Makhalov <amakhalov@vmware.com> 8.5.20-3
 -   Offline build, disable javadoc target
 *   Wed Sep 13 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.20-2
--   Updated the permissions on directories packaged 
+-   Updated the permissions on directories packaged
 *   Tue Aug 15 2017 Anish Swaminathan <anishs@vmware.com> 8.5.20-1
 -   Upgraded to version 8.5.20
 *   Thu Jul 6 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.16-1
@@ -153,6 +157,6 @@ rm -rf %{buildroot}/*
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 7.0.63-3
 -   Change path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 7.0.63-2
--   Updated dependency after repackaging openjdk. 
+-   Updated dependency after repackaging openjdk.
 *   Wed Jul 8 2015 Sriram Nambakam <snambakam@vmware.com> 7.0.63
 -   Initial build.  First version

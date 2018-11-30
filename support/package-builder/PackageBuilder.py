@@ -174,8 +174,11 @@ class PackageBuilder(object):
                 if pkg in self.mapPackageToCycles:
                     continue
                 packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
-                latestPkgRPM = os.path.basename(
-                    pkgUtils.findRPMFile(packageName, packageVersion)).replace(".rpm", "")
+                rpmfile = pkgUtils.findRPMFile(packageName, packageVersion)
+                if rpmfile is None:
+                    self.logger.error("No rpm file found for package: " + packageName + "-" + packageVersion)
+                    raise Exception("Missing rpm file")
+                latestPkgRPM = os.path.basename(rpmfile).replace(".rpm", "")
                 if pkg in listInstalledPackages and latestPkgRPM in listInstalledRPMs:
                     continue
                 self._installPackage(pkgUtils, packageName,packageVersion, sandbox, destLogPath,listInstalledPackages, listInstalledRPMs)

@@ -1,6 +1,6 @@
 # Photon OS Package Repositories
 
-The default installation of Photon OS includes four yum-compatible repositories plus the repository on the Photon OS ISO when it's available in a CD-ROM drive:  
+The default installation of Photon OS includes four yum-compatible repositories plus the repository on the Photon OS ISO when it is available in a CD-ROM drive:  
 
     ls /etc/yum.repos.d/
     lightwave.repo
@@ -13,7 +13,8 @@ The Photon ISO repository (`photon-iso.repo`) contains the installation packages
 
 The main Photon OS repository (`photon.repo`) contains all the packages that are built from the ISO or from another source. This repository points to a static batch of packages and spec files at the point of a release. 
 
-The updates repository (`photon-updates.repo`) is irrelevant to a major release until after the release is installed. Thereafter, the updates repository holds the updated packages for that release. The repository, that is, points to updates for the installed version, such as a version of Kubernetes that supersedes the version installed during the major release. 
+The updates repository (`photon-updates.repo`) is irrelevant to a major release until after the release is installed. Thereafter, the updates repository holds the updated packages for that release. The repository points to updates for the installed version, such as a version of Kubernetes that supersedes the version installed during the major release. 
 
-The Photon extras repository (`photon-extras.repo`) holds Likewise Open, an open source authentication engine, and other VMware software that you can add to Photon OS for free. Photon OS supports but does not build the packages in the extras repository.  
+The Photon extras repository (`photon-extras.repo`) holds Likewise Open, an open source authentication engine, and other VMware software that you can add to Photon OS for free. Photon OS supports but does not build the packages in the extras repository. 
+
 Similarly, the Lightwave repository (`lightwave.repo`) contains the packages that make up the VMware Lightwave security suite for cloud applications, including tools for identity management, access control, and certificate management.

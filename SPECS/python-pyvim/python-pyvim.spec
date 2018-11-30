@@ -4,7 +4,7 @@
 Summary:        Pure Python Vi Implementation.
 Name:           python-pyvim
 Version:        2.0.22
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -22,9 +22,23 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  python-pytest
 BuildRequires:  python-prompt_toolkit
+BuildRequires:  python3-pytest
+BuildRequires:  python3-prompt_toolkit
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
+BuildRequires:  python-atomicwrites
+BuildRequires:  python3-atomicwrites
+BuildRequires:  python-attrs
+BuildRequires:  python3-attrs
+BuildRequires:  python-xml
+BuildRequires:  python3-xml
 %endif
 
 Requires:       python2
@@ -38,14 +52,6 @@ An implementation of Vim in Python.
 
 %package -n     python3-pyvim
 Summary:        python-pyvim
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-pytest
-BuildRequires:  python3-prompt_toolkit
-%endif
 
 Requires:       python3
 Requires:       python3-libs
@@ -67,7 +73,11 @@ mv %{buildroot}/%{_bindir}/pyvim %{buildroot}/%{_bindir}/pyvim3
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pathlib2 funcsigs pluggy more-itertools pyflakes
 PYTHONPATH=./ py.test2
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pathlib2 funcsigs pluggy more-itertools pyflakes
 PYTHONPATH=./ py.test3
 
 %files
@@ -81,6 +91,8 @@ PYTHONPATH=./ py.test3
 %{_bindir}/pyvim3
 
 %changelog
+*   Mon Nov 26 2018 Tapas Kundu <tkundu@vmware.com> 2.0.22-3
+-   Fix makecheck
 *   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 2.0.22-2
 -   Use --no-same-owner for tar
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.0.22-1

@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          6%{?dist}
+Release:          7%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -23,6 +23,7 @@ Patch4:           systemd-239-query-duid.patch
 # Fix glibc-2.28 build issue. Checked in upstream after v239
 Patch5:           systemd-239-glibc-build-fix.patch
 Patch6:           systemd-239-revert-mtu.patch
+Patch7:           systemd-239-CVE-2018-15688.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -84,6 +85,7 @@ EOF
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -250,6 +252,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Sun Nov 11 2018 Tapas Kundu <tkundu@vmware.com> 239-7
+-    Fix CVE-2018-15688
 *    Fri Oct 26 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 239-6
 -    Auto-load rdrand-rng kernel module only on x86.
 *    Fri Oct 26 2018 Anish Swaminathan <anishs@vmware.com>  239-5

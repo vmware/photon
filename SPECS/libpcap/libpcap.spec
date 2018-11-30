@@ -1,7 +1,7 @@
 Summary:	C/C++ library for network traffic capture
 Name:		libpcap
 Version:	1.9.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://www.tcpdump.org
 Source0:	http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
@@ -37,6 +37,12 @@ developing applications that use %{name}.
 %configure
 make %{?_smp_mflags}
 
+%check
+make testprogs
+testprogs/opentest
+testprogs/findalldevstest
+
+
 %install
 make DESTDIR=%{buildroot} install
 
@@ -61,6 +67,8 @@ make DESTDIR=%{buildroot} install
 %{_mandir}/man7/*
 
 %changelog
+*	Mon Nov 26 2018 Ashwin H <ashwinh@vmware.com> 1.9.0-2
+-       Fix %check
 *       Sun Sep 30 2018 Bo Gan <ganb@vmware.com> 1.9.0-1
 -       Update to 1.9.0
 -       Split devel package

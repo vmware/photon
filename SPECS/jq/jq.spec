@@ -1,7 +1,7 @@
 Summary:       jq is a lightweight and flexible command-line JSON processor.
 Name:          jq
 Version:       1.5
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       MIT
@@ -14,7 +14,8 @@ Patch0:        CVE-2015-8863.patch
 Patch1:        CVE-2016-4074.patch
 Distribution:  Photon
 %if %{with_check}
-BuildRequires: oniguruma
+BuildRequires: which
+BuildRequires: oniguruma-devel
 %endif
 
 %description
@@ -34,8 +35,7 @@ Development files for jq
 %patch1 -p1
 
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --disable-static
 make %{?_smp_mflags}
 
@@ -63,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*  Mon Nov 19 2018 Ashwin H<ashwinh@vmware.com> 1.5-4
+-  Add which for %check
 *  Tue Aug 22 2017 Chang Lee <changlee@vmware.com> 1.5-3
 -  Add oniguruma for %check
 *  Wed Jun 07 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5-2
