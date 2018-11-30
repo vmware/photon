@@ -1,7 +1,7 @@
 Summary:    libpsl - C library to handle the Public Suffix List
 Name:       libpsl
 Version:    0.20.2
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    MIT
 URL:        https://github.com/rockdaboot/libpsl
 Group:      System Environment/Development
@@ -11,6 +11,7 @@ Source0:    https://github.com/rockdaboot/libpsl/releases/download/%{name}-%{ver
 %define sha1 libpsl=890376d6038652911cfa853ccfb5b993ae0743ee
 
 BuildRequires: icu-devel
+BuildRequires: python2
 Requires:      icu
 
 %description
@@ -92,5 +93,7 @@ make check
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 0.20.2-2
+-   Added BuildRequires python2
 *   Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 0.20.2-1
 -   Initial packaging of libpsl

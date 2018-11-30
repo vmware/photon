@@ -548,8 +548,7 @@ install-photon-docker-image: photon-docker-image
 # Spec file checker and utilities
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 check-spec-files:
-	@echo ""
-	@./tools/scripts/check_spec_files.sh $(BASE_COMMIT)
+	@./tools/scripts/check_spec_files.sh
 
 generate-dep-lists:
 	@echo ""
