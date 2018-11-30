@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.15
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -37,6 +37,7 @@ version is for backward compatibility with other dependent packages.
 %package libs
 Summary: The libraries for python runtime
 Group: Applications/System
+Requires:       python2 = %{version}-%{release}
 Requires:       sqlite-libs
 Requires:       expat >= 2.1.0
 Requires:       libffi >= 3.0.13
@@ -235,6 +236,8 @@ make test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 2.7.15-4
+-   Added Requires python2 for python2-libs
 *   Fri Dec 21 2018 Tapas Kundu <tkundu@vmware.com> 2.7.15-3
 -   Fix for CVE-2018-14647
 *   Mon Sep 17 2018 Dweep Advani <dadvani@vmware.com> 2.7.15-2
