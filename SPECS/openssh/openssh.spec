@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.8p1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -21,6 +21,7 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
+BuildRequires:  groff
 Requires:       openssh-clients = %{version}-%{release}
 Requires:       openssh-server = %{version}-%{release}
 %description
@@ -179,6 +180,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 7.8p1-2
+-   Added BuildRequires groff
 *   Tue Sep 11 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 7.8p1-1
 -   Update version
 *   Tue Nov 28 2017 Xiaolin Li <xiaolinl@vmware.comm> 7.5p1-11
