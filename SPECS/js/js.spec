@@ -1,7 +1,7 @@
 Summary:       Mozilla's JavaScript engine.
 Name:          js
 Version:       1.8.5
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPLv1.1
@@ -13,13 +13,14 @@ BuildRequires: autoconf
 BuildRequires: ncurses-devel
 BuildRequires: nspr-devel >= 4.7
 BuildRequires: zip
+BuildRequires: python2
 Requires:      ncurses
 Requires:      nspr
 %define sha1 js185=52a01449c48d7a117b35f213d3e4263578d846d6
 
 %description
 Mozilla's JavaScript engine includes a just-in-time compiler (JIT) that compiles
-JavaScript to machine code, for a significant speed increase. 
+JavaScript to machine code, for a significant speed increase.
 
 %package devel
 Summary:        js devel
@@ -69,6 +70,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/mozjs185.pc
 
 %changelog
+*   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 1.8.5-3
+-   Added BuildRequires python2
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.5-2
 -   Aarch64 support
 *   Thu Oct 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.5-1

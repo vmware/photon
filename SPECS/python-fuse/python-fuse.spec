@@ -2,7 +2,7 @@
 
 Name:           python-fuse
 Version:        0.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python interface to libfuse
 License:        LGPL
 Group:          Development/Languages/Python
@@ -14,7 +14,7 @@ Distribution:   Photon
 BuildRequires:  fuse
 BuildRequires:  fuse-devel
 BuildRequires:  pkg-config
-BuildRequires:  python2
+BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 Requires:       fuse
@@ -41,6 +41,8 @@ easy_install py
 %{python2_sitelib}/fuse*
 
 %changelog
+*   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 0.3.1-2
+-   Added BuildRequires python2-devel
 *   Sat Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.3.1-1
 -   Updated to 0.3.1
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.2.1-2
