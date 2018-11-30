@@ -32,6 +32,7 @@ BuildRequires: perl
 BuildRequires: python-setuptools
 BuildRequires: nss
 BuildRequires: shadow
+BuildRequires: python2-devel
 %if %with_boost
 BuildRequires: boost-devel
 %endif
@@ -73,6 +74,7 @@ Initscript for Systemtap scripts.
 %package python
 Group:         System/Tools
 Summary:       Python interface for systemtap
+Requires:      python2
 
 %description python
 This packages has the python interface to systemtap
@@ -355,6 +357,8 @@ fi
 %{_mandir}/man8/systemtap-service.8*
 
 %changelog
+*   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 4.0-2
+-   Added BuildRequires python2-devel
 *   Tue Dec 04 2018 Keerthana K <keerthanak@vmware.com> 4.0-1
 -   Updated to version 4.0
 *   Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 3.3-1
