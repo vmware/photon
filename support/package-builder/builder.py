@@ -121,9 +121,8 @@ def main():
         logger.error("Found some errors. Please fix input options and re-run it.")
         return False
 
-    if not os.path.isdir(options.rpmPath):
-        cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/"+platform.machine())
-        cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/noarch")
+    cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/"+platform.machine())
+    cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/noarch")
 
     if not os.path.isdir(options.sourceRpmPath):
         cmdUtils.runCommandInShell("mkdir -p "+options.sourceRpmPath)
