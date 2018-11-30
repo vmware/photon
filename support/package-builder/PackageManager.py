@@ -128,12 +128,14 @@ class PackageManager(object):
                     not constants.rpmCheck):
                 listPackagesToBuild.remove(pkg)
 
-        if listPackagesToBuild:
-            self.logger.info("List of packages yet to be built...")
-            self.logger.info(listPackagesToBuild)
-            self.logger.info("")
         if not self._readPackageBuildData(listPackagesToBuild):
             return False
+
+        if self.sortedPackageList:
+            self.logger.info("List of packages yet to be built...")
+            self.logger.info(str(set(self.sortedPackageList) - set(self.listOfPackagesAlreadyBuilt)))
+            self.logger.info("")
+
         return True
 
     def _buildTestPackages(self, buildThreads):
@@ -216,7 +218,7 @@ class PackageManager(object):
             chroot = Chroot(self.logger)
             chroot.create("toolchain-chroot")
             tcUtils = ToolChainUtils("toolchain-chroot", self.logPath)
-            tcUtils.installToolChainRPMS(chroot, usePublishedRPMS=usePublishedRPMs)
+            tcUtils.installToolchainRPMS(chroot, usePublishedRPMS=usePublishedRPMs)
         except Exception as e:
             if chroot:
                 chroot.destroy()
