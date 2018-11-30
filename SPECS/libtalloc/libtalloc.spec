@@ -1,7 +1,7 @@
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
 Version:    2.1.14
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    LGPLv3+
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
@@ -11,6 +11,7 @@ Source0:    https://www.samba.org/ftp/talloc/talloc-%{version}.tar.gz
 %define sha1 talloc=9d563b768148b620bdae1c97b36cfc30928a1044
 BuildRequires: libxslt
 BuildRequires: docbook-xsl
+BuildRequires: python2-devel
 
 %description
 Libtalloc alloc is a hierarchical, reference counted memory pool system with destructors. It is the core memory allocator used in Samba.
@@ -77,6 +78,8 @@ make check
 %{_libdir}/libpytalloc-util.so
 
 %changelog
+*   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.1.14-2
+-   Added BuildRequires python2-devel
 *   Tue Sep 11 2018 Bo Gan <ganb@vmware.com> 2.1.14-1
 -   Update to 2.1.14
 *   Thu Aug 03 2017 Chang Lee <changlee@vmware.com> 2.1.9-2

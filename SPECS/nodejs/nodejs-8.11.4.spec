@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        8.11.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,6 +11,8 @@ Source0:        https://nodejs.org/download/release/v8.3.0/node-v%{version}.tar.
 %define         sha1 node=195b6e6b53d04659cd6ee6afa203ad486d6eb758
 
 BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
+BuildRequires:  python2
+BuildRequires:  which
 Requires:       (coreutils >= 8.22 or toybox)
 Requires:       openssl >= 1.0.1
 
@@ -30,7 +32,7 @@ for developing applications that use nodejs.
 %setup -q -n node-v%{version}
 
 %build
-./configure --prefix=%{_prefix} \
+sh configure --prefix=%{_prefix} \
            --shared-openssl \
            --shared-zlib
 
@@ -70,6 +72,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 8.11.4-2
+-   Added BuildRequires python2, which
 *   Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 8.11.4-1
 -   Updated to version 8.11.4 to fix CVE-2018-7161 and CVE-2018-7167.
 *   Wed Feb 14 2018 Xiaolin Li <xiaolinl@vmware.com> 8.3.0-1
