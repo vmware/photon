@@ -14,3 +14,11 @@ terminal-box : "terminal_*.tga"
 	selected_item_color = "#000000"
 }
 
++ label {
+        left = 50%-300
+        top = 95%
+        height = 30
+        width = 600
+        align = "center"
+        text = "@KEYMAP_SHORT@"
+}
