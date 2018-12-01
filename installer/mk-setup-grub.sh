@@ -21,12 +21,12 @@ grub_efi_install()
     #
     if [[ $HDD == *"loop"* ]]
     then
-         BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p1
+         BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p$EFI_PARTITION_NUMBER
     elif [[ $HDD == *"nvme"* || $HDD == *"mmcblk"* ]]
     then
-         BOOT_PARTITION=${HDD}p1
+         BOOT_PARTITION=${HDD}p$EFI_PARTITION_NUMBER
     else
-         BOOT_PARTITION=${HDD}1
+         BOOT_PARTITION=${HDD}$EFI_PARTITION_NUMBER
     fi
     mkfs.fat $BOOT_PARTITION
     mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/efi
@@ -48,7 +48,7 @@ search -n -u ${BOOT_UUID} -s
 configfile ${BOOT_DIRECTORY}grub2/grub.cfg
 EOF
     # Some platforms do not support adding boot entry. Thus, ignore failures.
-    efibootmgr --create --remove-dups --disk "$HDD" --part 1 --loader "/EFI/Boot/$EXE_NAME" --label Photon --verbose >&2 || :
+    efibootmgr --create --remove-dups --disk "$HDD" --part $EFI_PARTITION_NUMBER --loader "/EFI/Boot/$EXE_NAME" --label Photon --verbose >&2 || :
     umount $BUILDROOT/boot/efi
 }
 
@@ -68,9 +68,8 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #    set log file name
 ARCH=$(uname -m)    # host architecture
 [ ${EUID} -eq 0 ]    || fail "${PRGNAME}: Need to be root user: FAILURE"
 > ${LOGFILE}        #    clear/initialize logfile
-
 # Check if passing a HHD and partition
-if [ $# -eq 6 ]
+if [ $# -ge 6 ]
     then
         BOOTMODE=$1
     HDD=$2
@@ -78,6 +77,7 @@ if [ $# -eq 6 ]
     BOOT_PARTITION_PATH=$4
     BOOT_DIRECTORY=$5
     BOOT_PARTITION_NUMBER=$6
+    EFI_PARTITION_NUMBER="1"
 fi
 
 #
@@ -98,8 +98,16 @@ if [ "$BOOTMODE" == "bios" ]; then
         exit 1
     fi
     grub_mbr_install
-fi
-if [ "$BOOTMODE" == "efi" ]; then
+elif [ "$BOOTMODE" == "efi" ]; then
+    grub_efi_install
+elif [ "$BOOTMODE" == "dualboot" ]; then
+    EFI_PARTITION_NUMBER="2"
+    if [ -z $grubInstallCmd ]; then
+        echo "Unable to find grub install command"
+        exit 1
+    fi
+    grub_mbr_install
+
     grub_efi_install
 fi
 
