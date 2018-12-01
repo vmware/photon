@@ -21,12 +21,12 @@ grub_efi_install()
     #
     if [[ $HDD == *"loop"* ]]
     then
-         BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p1
+         BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p$EFI_PARTITION_NUMBER
     elif [[ $HDD == *"nvme"* || $HDD == *"mmcblk"* ]]
     then
-         BOOT_PARTITION=${HDD}p1
+         BOOT_PARTITION=${HDD}p$EFI_PARTITION_NUMBER
     else
-         BOOT_PARTITION=${HDD}1
+         BOOT_PARTITION=${HDD}$EFI_PARTITION_NUMBER
     fi
     mkfs.fat $BOOT_PARTITION
     mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/efi
@@ -48,7 +48,7 @@ search -n -u ${BOOT_UUID} -s
 configfile ${BOOT_DIRECTORY}grub2/grub.cfg
 EOF
     # Some platforms do not support adding boot entry. Thus, ignore failures.
-    efibootmgr --create --remove-dups --disk "$HDD" --part 1 --loader "/EFI/Boot/$EXE_NAME" --label Photon --verbose >&2 || :
+    efibootmgr --create --remove-dups --disk "$HDD" --part $EFI_PARTITION_NUMBER --loader "/EFI/Boot/$EXE_NAME" --label Photon --verbose >&2 || :
     umount $BUILDROOT/boot/efi
 }
 
@@ -68,9 +68,8 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #    set log file name
 ARCH=$(uname -m)    # host architecture
 [ ${EUID} -eq 0 ]    || fail "${PRGNAME}: Need to be root user: FAILURE"
 > ${LOGFILE}        #    clear/initialize logfile
-
 # Check if passing a HHD and partition
-if [ $# -eq 6 ]
+if [ $# -ge 6 ]
     then
         BOOTMODE=$1
     HDD=$2
@@ -78,6 +77,14 @@ if [ $# -eq 6 ]
     BOOT_PARTITION_PATH=$4
     BOOT_DIRECTORY=$5
     BOOT_PARTITION_NUMBER=$6
+    EFI_PARTITION_NUMBER="1"
+    DUALBOOT="false"
+fi
+
+if [ $# -eq 7 ]
+    then
+        DUALBOOT=$7
+        EFI_PARTITION_NUMBER="2"
 fi
 
 #
@@ -85,6 +92,16 @@ fi
 #
 PARTUUID=$(blkid -s PARTUUID -o value $ROOT_PARTITION_PATH)
 BOOT_UUID=$(blkid -s UUID -o value $BOOT_PARTITION_PATH)
+
+if [ "$BOOTMODE" == "efi" ]; then
+    grub_efi_install
+    if [ "$DUALBOOT" == "true" ]; then
+        #Cleanup the workspace directory
+        rm -rf "$BUILDROOT"/tools
+        rm -rf "$BUILDROOT"/RPMS
+        exit 0
+    fi
+fi
 
 grubInstallCmd=""
 mkdir -p $BUILDROOT/boot/grub2
@@ -98,9 +115,6 @@ if [ "$BOOTMODE" == "bios" ]; then
         exit 1
     fi
     grub_mbr_install
-fi
-if [ "$BOOTMODE" == "efi" ]; then
-    grub_efi_install
 fi
 
 rm -rf ${BUILDROOT}/boot/grub2/fonts

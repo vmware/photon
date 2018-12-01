@@ -176,6 +176,9 @@ def generateImage(raw_image_path, additional_rpms_path, tools_bin_path, src_root
     working_directory = os.path.dirname(raw_image_path)
     mount_path = os.path.splitext(raw_image_path)[0]
     build_scripts_path = os.path.dirname(os.path.abspath(__file__))
+    root_partition_no = 2
+    if 'boot' in config and config['boot'] == 'both':
+        root_partition_no = 3
 
     if os.path.exists(mount_path) and os.path.isdir(mount_path):
         shutil.rmtree(mount_path)
@@ -186,9 +189,7 @@ def generateImage(raw_image_path, additional_rpms_path, tools_bin_path, src_root
     device_name = disk_device.split('/')[2]
     if not device_name:
         raise Exception("Could not create loop device and partition")
-
-    loop_device_path = "/dev/mapper/{}p2".format(device_name)
-
+    loop_device_path = "/dev/mapper/{}p{}".format(device_name, root_partition_no)
     print(loop_device_path)
 
     try:

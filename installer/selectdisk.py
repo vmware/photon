@@ -9,6 +9,7 @@ from menu import Menu
 from confirmwindow import ConfirmWindow
 import modules.commons
 from progressbar import ProgressBar
+import subprocess
 
 class SelectDisk(object):
     def __init__(self, maxy, maxx, install_config):
@@ -95,6 +96,11 @@ class SelectDisk(object):
             self.partition_window.adderror('Partitioning failed, you may try again')
         else:
             self.install_config['disk'] = partitions_data
+            arch = subprocess.check_output(['uname', '-m'], universal_newlines=True)
+            if "x86" in arch:
+                self.install_config['boot'] = 'both'
+            else:
+                self.install_config['boot'] = 'efi'
 
         self.progress_bar.hide()
         return ActionResult(partitions_data != None, None)
