@@ -8,6 +8,7 @@
         },
     "packagelist_file": "packages_ova.json",
     "size": { "root": "16", "swap": "0" },
+    "boot":"dualboot",
     "public_key":"<ssh-key-here>",
     "expirepassword": true,
     "artifacttype": "ova",

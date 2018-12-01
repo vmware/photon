@@ -41,21 +41,29 @@ def partition_disk(disk, partitions):
     if retval != 0:
         log(LOG_ERROR, "Failed clearing disk {0}".format(disk))
         return None
-
     # Partitioning the disk
     extensible_partition = None
     partitions_count = len(partitions)
-    partition_number = 2
+    partition_number = 3
     # Add part size and grub flags
-    grub_flag = ':ef02'
-    part_size = '+2M'
-    if os.path.isdir("/sys/firmware/efi"):
-        grub_flag = ':ef00'
-        part_size = '+3M'
 
+    bios_flag = ':ef02'
+    part_size = '+2M'
     # Adding the bios partition
     partition_cmd = ['sgdisk', '-n 1::' + part_size]
+
+    efi_flag = ':ef00'
+    part_size = '+3M'
+    # Adding the efi partition
+    partition_cmd.extend(['-n 2::' + part_size])
     # Adding the known size partitions
+
+    arch = subprocess.check_output(['uname', '-m'], universal_newlines=True)
+    if "x86" not in arch:
+        partition_number = 2
+        # Adding the efi partition
+        partition_cmd = ['sgdisk', '-n 1::' + part_size]
+
     for partition in partitions:
         if partition['size'] == 0:
             # Can not have more than 1 extensible partition
@@ -86,12 +94,25 @@ def partition_disk(disk, partitions):
         log(LOG_ERROR, "Faild partition disk, command: {0}". format(partition_cmd))
         return None
 
-    process = subprocess.Popen(['sgdisk', '-t1' + grub_flag, disk], stderr=output, stdout=output)
-    retval = process.wait()
-    if retval != 0:
-        log(LOG_ERROR, "Failed to setup grub partition")
-        return None
+    if "x86" not in arch:
+        process = subprocess.Popen(['sgdisk', '-t1' + efi_flag, disk], stderr=output, stdout=output)
+        retval = process.wait()
+        if retval != 0:
+            log(LOG_ERROR, "Failed to setup efi partition")
+            return None
 
+    else:
+        process = subprocess.Popen(['sgdisk', '-t1' + bios_flag, disk], stderr=output, stdout=output)
+        retval = process.wait()
+        if retval != 0:
+            log(LOG_ERROR, "Failed to setup bios partition")
+            return None
+
+        process = subprocess.Popen(['sgdisk', '-t2' + efi_flag, disk], stderr=output, stdout=output)
+        retval = process.wait()
+        if retval != 0:
+            log(LOG_ERROR, "Failed to setup efi partition")
+            return None
     # Format the filesystem
     for partition in partitions:
         if "mountpoint" in partition:
