@@ -370,8 +370,6 @@ class Installer(object):
                 shutil.copy(modules.commons.KS_POST_INSTALL_LOG_FILE_NAME,
                             self.photon_root + '/var/log/')
 
-            if self.install_config['iso_installer'] and os.path.isdir("/sys/firmware/efi"):
-                self.install_config['boot'] = 'efi'
             # install grub
             if 'boot_partition_number' not in self.install_config['disk']:
                 self.install_config['disk']['boot_partition_number'] = 1
@@ -395,6 +393,26 @@ class Installer(object):
                          self.install_config['disk']['bootdirectory'],
                          str(self.install_config['disk']['boot_partition_number'])],
                         stdout=self.output)
+                elif self.install_config['boot'] == 'both':
+                    process = subprocess.Popen(
+                        [self.setup_grub_command, '-w', self.photon_root,
+                         "bios", self.install_config['disk']['disk'],
+                         self.install_config['disk']['root'],
+                         self.install_config['disk']['boot'],
+                         self.install_config['disk']['bootdirectory'],
+                         str(self.install_config['disk']['boot_partition_number'])],
+                        stdout=self.output)
+                    retval = process.wait()
+                    self.install_config['disk']['boot_partition_number'] = 2
+                    process = subprocess.Popen(
+                         [self.setup_grub_command, '-w', self.photon_root,
+                         "efi", self.install_config['disk']['disk'],
+                         self.install_config['disk']['root'],
+                         self.install_config['disk']['boot'],
+                         self.install_config['disk']['bootdirectory'],
+                         str(self.install_config['disk']['boot_partition_number']),
+                         "true"],
+                        stdout=self.output)
             except:
                 #install bios if variable is not set.
                 process = subprocess.Popen(
@@ -405,6 +423,7 @@ class Installer(object):
                      self.install_config['disk']['bootdirectory'],
                      str(self.install_config['disk']['boot_partition_number'])],
                     stdout=self.output)
+
             retval = process.wait()
 
             self._update_fstab()

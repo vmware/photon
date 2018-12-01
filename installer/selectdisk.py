@@ -95,6 +95,7 @@ class SelectDisk(object):
             self.partition_window.adderror('Partitioning failed, you may try again')
         else:
             self.install_config['disk'] = partitions_data
+            self.install_config['boot'] = 'both'
 
         self.progress_bar.hide()
         return ActionResult(partitions_data != None, None)
