@@ -136,7 +136,6 @@ def createIso(options):
     config['vmdk_install'] = False
     config['type'] = 'iso'
     config['working_directory'] = working_directory
-
     result = runInstaller(options, config)
     if not result:
         raise Exception("Installation process failed")
@@ -228,10 +227,12 @@ def verifyImageTypeAndConfig(config_file, img_name):
 
 def create_vmdk_and_partition(config, vmdk_path, disk_setup_script):
     partitions_data = {}
-
     firmware = "bios"
-    if 'boot' in config and config['boot'] == 'efi':
-        firmware = "efi"
+    if 'boot' in config:
+        if config['boot'] == 'efi':
+            firmware = "efi"
+        if config['boot'] == 'dualboot':
+            firmware = 'dualboot'
     process = subprocess.Popen([disk_setup_script, '-rp', config['size']['root'], '-sp',
                                 config['size']['swap'], '-n', vmdk_path, '-fm', firmware],
                                stdout=subprocess.PIPE)
