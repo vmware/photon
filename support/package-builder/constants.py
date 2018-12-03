@@ -361,7 +361,8 @@ class constants(object):
     def getPullSourcesURLs(packageName):
         urls=[]
         urls.append(constants.pullsourcesURL)
-        urls.extend(constants.extrasourcesURLs[packageName])
+        if packageName in constants.extrasourcesURLs:
+            urls.extend(constants.extrasourcesURLs[packageName])
         return urls
 
     @staticmethod
