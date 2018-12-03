@@ -62,10 +62,8 @@ After you have downloaded the Photon OS OVA image (OVA with Hardware Version 11)
     
     **Note** : Because of limitations within OVA support on Fusion, it was necessary to specify a default password for the OVA option. However, all Photon OS instances that are created by importing the OVA will require an immediate password change upon login. The default account credentials are:
     
-    | **Setting** | **Value** |
-    | --- | --- |
-    | Username | ``root`` |
-    | Password | ``changeme`` |
+    - Username: ``root``
+    - Password: ``changeme``
     
     After you provide these credentials, Fusion prompts you to create a new password and type it a second time to verify it. For security, Photon OS forbids common dictionary words for the root password. Once logged in, you will see the shell prompt.
     

@@ -111,7 +111,7 @@ After you download the Photon OS ISO image into a folder of your choice, complet
     
     Choose **Yes** and press the Enter key.
 
-    1. Select an Installation Option
+1. Select an Installation Option
     
     After partitioning the disk, the installer prompts you to select an installation option.
     
@@ -119,11 +119,26 @@ After you download the Photon OS ISO image into a folder of your choice, complet
     
     Each install option provides a different run-time environment, depending on your requirements.
     
-    | **Option** | **Description** |
-    | --- | --- |
-    | **Photon Minimal** | Photon Minimum is a very lightweight version of the container host runtime that is best suited for container management and hosting. There is sufficient packaging and functionality to allow most common operations around modifying existing containers, as well as being a highly performant and full-featured runtime. |
-    | **Photon Full** | Photon Full includes several additional packages to enhance the authoring and packaging of containerized applications and/or system customization. For simply running containers, Photon Full will be overkill. Use Photon Full for developing and packaging the application that will be run as a container, as well as authoring the container, itself. For testing and validation purposes, Photon Full will include all components necessary to run containers. |
-    | **Photon OSTree Server** | This installation profile will create the server instance that will host the filesystem tree and managed definitions for rpm-ostree managed hosts created with the "Photon OSTree Host" installation profile. Most environments should need only one Photon OSTree Server instance to manage the state of the Photon OSTree Hosts. Use Photon OSTree Server when you are establishing a new repository and management node for Photon OS hosts. |
+	  <table style="height: 170px;" border="1" cellspacing="0" cellpadding="10">
+		<tbody>
+		<tr>
+		<td><b>Option</b></td>
+		<td><b>Description</b></td>
+		</tr>
+		<tr>
+		<td><b>Photon Minimal</b></td>
+		<td>Photon Minimum is a very lightweight version of the container host runtime that is best suited for container management and hosting. There is sufficient packaging and functionality to allow most common operations around modifying existing containers, as well as being a highly performant and full-featured runtime.</p></td>
+		</tr>
+		<tr>
+		<td><b>Photon Full</b></td>
+		<td>Photon Full includes several additional packages to enhance the authoring and packaging of containerized applications and/or system customization. For simply running containers, Photon Full will be overkill. Use Photon Full for developing and packaging the application that will be run as a container, as well as authoring the container, itself. For testing and validation purposes, Photon Full will include all components necessary to run containers.</td>
+		</tr>
+		<tr>
+		<td><b>Photon OSTree Server<b></td>
+		<td>This installation profile will create the server instance that will host the filesystem tree and managed definitions for rpm-ostree managed hosts created with the "Photon OSTree Host" installation profile. Most environments should need only one Photon OSTree Server instance to manage the state of the Photon OSTree Hosts. Use Photon OSTree Server when you are establishing a new repository and management node for Photon OS hosts.</td>
+		</tr>
+		</tbody>
+		</table>
     
     **Note:**  The option you choose determines the disk and memory resources required for your installation.
     
@@ -164,7 +179,7 @@ After you download the Photon OS ISO image into a folder of your choice, complet
     
     **Note:** If you have trouble with unintentional repeated characters in the Remote Console, follow VMware KB 196 ( [http://kb.vmware.com/kb/196](http://kb.vmware.com/kb/196)) for a setting to apply to the virtual machine.
     
-    Press the Enter key. The installer proceeds to install the software. Installation times will vary based on the system hardware and installation options you selected. Most installations complete in less than one minute.
+    Press the `Enter` key. The installer proceeds to install the software. Installation times will vary based on the system hardware and installation options you selected. Most installations complete in less than one minute.
 
 1. Reboot the VM and Log In
 
