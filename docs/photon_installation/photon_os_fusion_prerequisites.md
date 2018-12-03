@@ -1,4 +1,4 @@
-# Prerequisites
+# Prerequisites for Running Photon OS on Fusion
 
 Resource requirements and recommendations vary depending on several factors, including the host environment (for example, VMware Fusion and VMware vSphere), the distribution file used (ISO or OVA), and the selected installation settings (for example, full or basic installation).
 
@@ -31,10 +31,9 @@ Before you use Photon OS within Fusion, perform the following prerequisite tasks
 	</tbody>
 	</table>
 
+	**Note:** The setup instructions in this guide use VMware Fusion Professional version 8.5.8, as per the following screenshot.
 
-    **Note:** The setup instructions in this guide use VMware Fusion Professional version 8.5.8, as per the following screenshot.
-
-    ![Fusion version](images/fs-version.png)
+	![Fusion version](images/fs-version.png)
 
 2. Decide whether to use the OVA or ISO distribution to set up Photon OS.
 

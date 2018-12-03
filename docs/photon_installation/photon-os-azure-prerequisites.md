@@ -1,4 +1,4 @@
-# Prerequisites
+# Prerequisites for Running Photon OS on Azure
 
 Before you use Photon OS with Microsoft Azure, perform the following prerequisite tasks:
 

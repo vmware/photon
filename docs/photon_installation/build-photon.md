@@ -1,6 +1,6 @@
 # Build an ISO from the Source Code for Photon OS
 
-You can build an ISO from the source code for Photon OS. This section describes how to build the ISO, use the cached toolchain and RPMS, and cached sources.
+You can build an ISO from the source code for Photon OS. This section describes how to build the ISO, use the cached toolchain and RPMS, and cached sources. You can use this method as an alternative to downloading a pre-built version.
 
 * [Folder Layout](folder_layout.md)
 * [Build Prerequisites](build_prerequisites.md)

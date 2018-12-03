@@ -51,36 +51,34 @@ After you have downloaded the OVA, log in to your vSphere environment and perfor
 1. Verify Deployment Settings
 
         
-    ![Deployment settings](images/vs-ova-settings.png)
-    
-    Click **Finish**. vSphere uploads and validates your OVA. Depending on bandwidth, this operation might take a while.
-    
-    When finished, vShield powers up a new VM based on your selections.
+	![Deployment settings](images/vs-ova-settings.png)
+        
+	Click **Finish**. vSphere uploads and validates your OVA. Depending on bandwidth, this operation might take a while.
+        
+	When finished, vShield powers up a new VM based on your selections.
 
-1. Change Login Settings
+7. Change Login Settings
 
-    ![Login settings](images/vs-ova-splash.png)
+	![Login settings](images/vs-ova-splash.png)
+        
+	After the VM is booted, open the command window. vSphere prompts you to log in.
+        
+	**Note**: Because of limitations within OVA support on vSphere, it was necessary to specify a default password for the OVA option. However, all Photon OS instances that are created by importing the OVA require an immediate password change upon login. The default account credentials are:
+        
+        - Username: ``root``
+        - Password: ``changeme``
     
-    After the VM is booted, open the command window. vSphere prompts you to log in.
-    
-    **Note**: Because of limitations within OVA support on vSphere, it was necessary to specify a default password for the OVA option. However, all Photon OS instances that are created by importing the OVA require an immediate password change upon login. The default account credentials are:
-    
-    | **Setting** | **Value** |
-    | --- | --- |
-    | Username | ``root`` |
-    | Password | ``changeme`` |
+	After you provide these credentials, vSphere prompts you to create a new password and type it a second time to verify it.
+        
+	**Note:** For security, Photon OS forbids common dictionary words for the root password.  
+        
+	Once logged in, you will see the shell prompt.
+        
+	![Shell prompt](images/vs-ova-login.png)
+        
+	Once complete, proceed to [Deploying a Containerized Application in Photon OS](deploying-a-containerized-application-in-photon-os.md).
 
-    After you provide these credentials, vSphere prompts you to create a new password and type it a second time to verify it.
-    
-    **Note:** For security, Photon OS forbids common dictionary words for the root password.  
-    
-    Once logged in, you will see the shell prompt.
-    
-    ![Shell prompt](images/vs-ova-login.png)
-    
-    Once complete, proceed to [Deploying a Containerized Application in Photon OS](deploying-a-containerized-application-in-photon-os.md).
-
-1. Export the VM as a Template (Optional)
+8. Export the VM as a Template (Optional)
 
     Consider converting this imported VM into a template (from the Actions menu, choose **Export** ) so that you have a master Photon OS instance that can be combined with vSphere Guest Customization to enable rapid provisioning of Photon OS instances.
     

@@ -1,4 +1,4 @@
-# Prerequisites
+# Prerequisites for Running Photon OS on GCE
 
 Before you use Photon OS within GCE, verify that you have the following resources:
 
@@ -34,6 +34,8 @@ Perform the following tasks to make Photon OS work on GCE:
  1. Create `/etc/ssh/sshd_not_to_be_run` with just the contents “GOOGLE\n”.
  
  For more information see [Importing Boot Disk Images to Compute Engine](https://cloud.google.com/compute/docs/tutorials/building-images).
+
+For information about upgrading the Photon OS Linux kernel see [Upgrading the Kernel Version Requires Grub Changes for AWS and GCE Images](Upgrading-the-Kernel-Version-Requires-Grub-Changes-for-AWS-and-GCE-Images.md)
 
 ## Photon OS Image
 
@@ -140,7 +142,8 @@ Perform the following tasks:
     echo "nameserver 8.8.8.8" >> /etc/resolv.conf
     ```
 
-1. Remove ssh host keys and add script to regenerate them at boot time.
+1. Remove ssh host 
+2. keys and add script to regenerate them at boot time.
       
     ```
     rm /etc/ssh/ssh_host_*
@@ -181,27 +184,27 @@ Perform the following tasks:
 
 1. Pack and upload to GCE.
 
-Shut down the Photon VM and copy its disk to THE `tmp` folder.       
-         
-   ```
-   # You will need to install Google Cloud SDK on host machine to upload the image and play with GCE.
-         cp Virtual\ Machines.localized/photon.vmwarevm/Virtual\ Disk.vmdk /tmp/disk.vmdk
-         cd /tmp
-         # GCE needs disk to be named as disk.raw with raw format.
-         qemu-img convert -f vmdk -O raw disk.vmdk disk.raw
-         
-         # ONLY GNU tar will work to create acceptable tar.gz file for GCE. MAC's default tar is BSDTar which will not work. 
-         # On Mac OS X ensure that you have gtar "GNU Tar" installed. exmaple: gtar -Szcf photon.tar.gz disk.raw 
-   
-         gtar -Szcf photon.tar.gz disk.raw 
-         
-         # Upload
-         gsutil cp photon.tar.gz gs://photon-bucket
-         
-         # Create image
-         gcloud compute --project "<project name>" images create "photon-beta-vYYYYMMDD" --description "Photon Beta" --source-uri https://storage.googleapis.com/photon-bucket/photon032315.tar.gz
-         
-         # Create instance on GCE of photon image
-         gcloud compute --project "photon" instances create "photon" --zone "us-central1-f" --machine-type "n1-standard-1" --network "default" --maintenance-policy "MIGRATE" --scopes "https://www.googleapis.com/auth/devstorage.read_only" "https://www.googleapis.com/auth/logging.write" --image "https://www.googleapis.com/compute/v1/projects/photon/global/images/photon" --boot-disk-type "pd-standard" --boot-disk-device-name "photon"
-   
-   ```
+    Shut down the Photon VM and copy its disk to THE `tmp` folder.       
+             
+       ```
+       # You will need to install Google Cloud SDK on host machine to upload the image and play with GCE.
+             cp Virtual\ Machines.localized/photon.vmwarevm/Virtual\ Disk.vmdk /tmp/disk.vmdk
+             cd /tmp
+             # GCE needs disk to be named as disk.raw with raw format.
+             qemu-img convert -f vmdk -O raw disk.vmdk disk.raw
+             
+             # ONLY GNU tar will work to create acceptable tar.gz file for GCE. MAC's default tar is BSDTar which will not work. 
+             # On Mac OS X ensure that you have gtar "GNU Tar" installed. exmaple: gtar -Szcf photon.tar.gz disk.raw 
+       
+             gtar -Szcf photon.tar.gz disk.raw 
+             
+             # Upload
+             gsutil cp photon.tar.gz gs://photon-bucket
+             
+             # Create image
+             gcloud compute --project "<project name>" images create "photon-beta-vYYYYMMDD" --description "Photon Beta" --source-uri https://storage.googleapis.com/photon-bucket/photon032315.tar.gz
+             
+             # Create instance on GCE of photon image
+             gcloud compute --project "photon" instances create "photon" --zone "us-central1-f" --machine-type "n1-standard-1" --network "default" --maintenance-policy "MIGRATE" --scopes "https://www.googleapis.com/auth/devstorage.read_only" "https://www.googleapis.com/auth/logging.write" --image "https://www.googleapis.com/compute/v1/projects/photon/global/images/photon" --boot-disk-type "pd-standard" --boot-disk-device-name "photon"
+       
+       ```

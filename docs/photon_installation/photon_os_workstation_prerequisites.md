@@ -1,4 +1,4 @@
-# Prerequisites
+# Prerequisites for Running Photon OS on Workstation
 
 Before you use Photon OS within Workstation, perform the following prerequisite tasks:
 
@@ -29,12 +29,11 @@ Before you use Photon OS within Workstation, perform the following prerequisite 
 	</tbody>
 	</table>
 
-
 	Resource requirements and recommendations vary depending on several factors, including the host environment (for example, VMware Workstation and VMware vSphere), the distribution file used (ISO or OVA), and the selected installation settings (for example, full or basic installation).
 
 	**Note:**  The setup instructions in this guide use VMware Workstation Professional version 12.5.7.
 
-    ![Workstation version](images/ws_version.png)
+	![Workstation version](images/ws_version.png)
 
 1. Decide whether to use the OVA or ISO distribution to set up Photon OS.
 

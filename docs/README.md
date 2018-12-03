@@ -18,6 +18,7 @@ This information is intended for Photon OS administrators and developers:
 |Download and Install Photon OS.|[Installation Guide](photon_installation/README.md)|
 |Fundamentals of administering Photon OS. Basics of managing packages, controlling services with systemd, setting up networking, and initializing Photon OS. |[Administration Guide](photon_admin/README.md)|
 |Use Photon OS.|[User Guide](photon_user/README.md)|
+|Use Photon OS command-line utilities.|[Command-Line Interface Reference](photon_cli/README.md)|
 |Solutions for common problems that you might encounter while using Photon OS.|[Troubleshooting Guide](photon_troubleshoot/README.md)|
 
 ----------

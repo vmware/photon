@@ -1,6 +1,6 @@
-# Prerequisites
+# Prerequisites for Running Photon OS on AWS EC2
 
-Before you use Photon OS with Amazon Elastic Cloud Compute, perform the following prerequisite tasks:
+Before you use Photon OS with Amazon Elastic Cloud Compute(AWS EC2), perform the following prerequisite tasks:
 
 1. Verify that you have the following resources:
     

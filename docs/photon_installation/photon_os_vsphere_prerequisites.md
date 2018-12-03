@@ -1,4 +1,4 @@
-# Prerequisites
+# Prerequisites for Running Photon OS on vSphere
 
 Resource requirements and recommendations vary depending on several factors, including the host environment (for example, VMware vSphere and VMware Fusion), the distribution file used (ISO or OVA), and the selected installation settings (for example, full or basic installation).
 
