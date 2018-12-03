@@ -3,7 +3,7 @@
 
 Name:           python-M2Crypto
 Version:        0.30.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 License:        MIT
@@ -62,6 +62,12 @@ pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
+%check
+python2 setup.py test
+pushd ../p3dir
+python3 setup.py test
+popd
+
 %clean
 rm -rf %{buildroot}
 
@@ -74,6 +80,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Dec 03 2018 Ashwin H <ashwinh@vmware.com> 0.30.1-2
+-   Add %check
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.30.1-1
 -   Update to version 0.30.1
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.26.0-2
