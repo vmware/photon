@@ -358,10 +358,11 @@ class constants(object):
         constants.extrasourcesURLs[packageName] = urls
 
     @staticmethod
-    def getPullSourcesURLs(packageName):
+    def getPullSourcesURLs(packageName, extrasourcesURLs='build'):
         urls=[]
         urls.append(constants.pullsourcesURL)
-        urls.extend(constants.extrasourcesURLs[packageName])
+        if extrasourcesURLs == "build":
+            urls.extend(constants.extrasourcesURLs[packageName])
         return urls
 
     @staticmethod
