@@ -102,7 +102,7 @@ def main():
     sys.exit(0)
 
 
-def get_baseurl(self, conf_file):
+def get_baseurl(conf_file):
     with open(conf_file) as jsonFile:
         config = json.load(jsonFile)
     return config['baseurl']
@@ -168,7 +168,8 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
                 sha1 = SPECS.getData().getSHA1(package, version, sourceName)
                 if sha1 is not None:
                     PullSources.get(package, sourceName, sha1, yamlSourceDir,
-                                    constants.getPullSourcesURLs(package), logger)
+                                    constants.getPullSourcesURLs(package, extrasourcesURLs="OSSTP"),
+                                    logger)
 
             if not singleFile:
                 yamlFile = open(yamlSourceDir + "/" + ossname + "-" + version + ".yaml", "w")
