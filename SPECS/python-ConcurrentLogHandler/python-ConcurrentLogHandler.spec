@@ -3,7 +3,7 @@
 
 Name:           python-ConcurrentLogHandler
 Version:        0.9.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Concurrent logging handler (drop-in replacement for RotatingFileHandler) Python 2.6+
 License:        Apache-2.0
 Group:          Development/Languages/Python
@@ -59,6 +59,15 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 #No test case available for this package
+%check
+PATH=%{buildroot}%{_bindir}:${PATH} \
+PYTHONPATH=%{buildroot}%{python_sitelib} \
+python2 stresstest.py
+pushd ../p3dir
+PATH=%{buildroot}%{_bindir}:${PATH} \
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+python3 stresstest.py
+popd
 
 %files
 %defattr(-,root,root,-)
@@ -73,6 +82,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %exclude /usr/tests/stresstest.py
 
 %changelog
+*   Mon Dec 03 2018 Ashwin H <ashwinh@vmware.com> 0.9.1-3
+-   Add %check
 *   Thu Sep 21 2017 Bo Gan <ganb@vmware.com> 0.9.1-2
 -   Disable test as no tests are available
 *   Fri Aug 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.1-1
