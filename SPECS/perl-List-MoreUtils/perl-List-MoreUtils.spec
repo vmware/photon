@@ -2,7 +2,7 @@
 Summary:	Provide the stuff missing in List::Util
 Name:		perl-List-MoreUtils
 Version:	0.428
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPL+ or Artistic
 Group:          Development/Libraries
 URL:		http://search.cpan.org/dist/List-MoreUtils/
@@ -33,6 +33,10 @@ find %{buildroot} -name 'perllocal.pod' -delete
 %{_fixperms} -c %{buildroot}
 
 %check
+# Install required module List::MoreUtils::XS for maketest
+export PERL_MM_USE_DEFAULT=1
+echo "yes" | cpan -a
+cpan -i List::MoreUtils::XS
 make test
 
 %files
@@ -42,6 +46,8 @@ make test
 %{_mandir}/man3/List::MoreUtils::Contributing.3.gz
 
 %changelog
+*   Mon Dec 03 2018 Dweep Advani <dadvani@vmware.com> 0.428-2
+-   Fix makecheck tests
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 0.428-1
 -   Update to version 0.428
 *   Wed Apr 05 2017 Robert Qi <qij@vmware.com> 0.418-1

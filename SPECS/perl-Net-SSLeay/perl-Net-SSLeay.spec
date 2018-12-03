@@ -1,7 +1,7 @@
 Summary:        Perl extension for using OpenSSL
 Name:           perl-Net-SSLeay
 Version:        1.85
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~mikem/Net-SSLeay-%{version}/
@@ -47,6 +47,10 @@ find %{buildroot} -type f -name .packlist -delete
 find %{buildroot} -type f -name '*.bs' -empty -delete
 
 %check
+# Install required modules for test - Test::Pod, Test::Exception, Test::Warn and Test::NoWarnings
+export PERL_MM_USE_DEFAULT=1
+echo "yes" | cpan -a
+cpan -i Test::Pod Test::Exception Test::Warn Test::NoWarnings
 make test
 
 %files
@@ -54,6 +58,8 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*   Mon Dec 03 2018 Dweep Advani <dadvani@vmware.com> 1.85-3
+-   Fixing makecheck tests
 *   Wed Oct 17 2018 Alexey Makhalov <amakhalov@vmware.com> 1.85-2
 -   Move fips logic to spec file
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.85-1
@@ -66,4 +72,3 @@ make test
 -   GA - Bump release of all rpms
 *   Mon Mar 28 2016 Mahmoud Bassiouny <mbassiounu@vmware.com> 1.72-1
 -   Initial version.
-
