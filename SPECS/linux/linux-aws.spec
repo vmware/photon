@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.1
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.6
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=5ece7a7149eeef06bba906eeabbc2f29a8ac3952
+%define sha1 linux=d96fd72968960268b2203a3b4aff9497cd3abc61
 Source1:	config-aws
 Source2:	initramfs.trigger
 # common
@@ -62,7 +62,6 @@ Patch123: 0027-xen-blkfront-add-persistent_grants-parameter.patch
 Patch125: 0029-Revert-xen-dont-fiddle-with-event-channel-masking-in.patch
 Patch131: 0035-xen-blkfront-Fixed-blkfront_restore-to-remove-a-call.patch
 Patch133: 0037-x86-tsc-avoid-system-instability-in-hibernation.patch
-Patch151: 0055-net-ipv4-defensive-cipso-option-parsing.patch
 Patch152: 0056-Amazon-ENA-driver-Update-to-version-1.6.0.patch
 
 %if 0%{?kat_build:1}
@@ -179,7 +178,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch125 -p1
 %patch131 -p1
 %patch133 -p1
-%patch151 -p1
 %patch152 -p1
 
 %if 0%{?kat_build:1}
@@ -358,6 +356,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/perf/include/bpf/*
 
 %changelog
+*   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-1
+-   Update to version 4.19.6
+-   Enable EFI in config-aws to support kernel signing.
 *   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.1-3
 -   Set nvme io_timeout to maximum in kernel cmdline.
 *   Wed Nov 14 2018 Ajay Kaher <akaher@vmware.com> 4.19.1-2

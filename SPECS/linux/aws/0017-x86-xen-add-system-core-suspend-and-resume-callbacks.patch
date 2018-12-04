@@ -23,10 +23,10 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  3 files changed, 56 insertions(+)
 
 diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
-index 8afb6dd311f1..c78b3e8fb2e5 100644
+index d24ad16..4196a65 100644
 --- a/arch/x86/xen/enlighten_hvm.c
 +++ b/arch/x86/xen/enlighten_hvm.c
-@@ -201,6 +201,7 @@ static void __init xen_hvm_guest_init(void)
+@@ -202,6 +202,7 @@ static void __init xen_hvm_guest_init(void)
  	if (xen_feature(XENFEAT_hvm_callback_vector))
  		xen_have_vector_callback = 1;
  
@@ -35,7 +35,7 @@ index 8afb6dd311f1..c78b3e8fb2e5 100644
  	WARN_ON(xen_cpuhp_setup(xen_cpu_up_prepare_hvm, xen_cpu_dead_hvm));
  	xen_unplug_emulated_devices();
 diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
-index 3e3a58ea669e..5e542b7e5802 100644
+index 1d83152..784c448 100644
 --- a/arch/x86/xen/suspend.c
 +++ b/arch/x86/xen/suspend.c
 @@ -2,17 +2,22 @@
@@ -61,7 +61,7 @@ index 3e3a58ea669e..5e542b7e5802 100644
  
  #include "xen-ops.h"
  #include "mmu.h"
-@@ -78,3 +83,51 @@ void xen_arch_suspend(void)
+@@ -82,3 +87,51 @@ void xen_arch_suspend(void)
  
  	on_each_cpu(xen_vcpu_notify_suspend, NULL, 1);
  }
@@ -114,10 +114,10 @@ index 3e3a58ea669e..5e542b7e5802 100644
 +		register_syscore_ops(&xen_hvm_syscore_ops);
 +}
 diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
-index 2e4b476b516c..90c2b41eb4f3 100644
+index 2aa94d8..77f65e5 100644
 --- a/include/xen/xen-ops.h
 +++ b/include/xen/xen-ops.h
-@@ -42,6 +42,8 @@ bool xen_suspend_mode_is_xen_suspend(void);
+@@ -43,6 +43,8 @@ bool xen_suspend_mode_is_xen_suspend(void);
  bool xen_suspend_mode_is_pm_suspend(void);
  bool xen_suspend_mode_is_pm_hibernation(void);
  
@@ -125,7 +125,7 @@ index 2e4b476b516c..90c2b41eb4f3 100644
 +
  extern unsigned long *xen_contiguous_bitmap;
  
- #ifdef CONFIG_XEN_PV
+ #if defined(CONFIG_XEN_PV) || defined(CONFIG_ARM) || defined(CONFIG_ARM64)
 -- 
-2.14.4
+2.7.4
 
