@@ -1,0 +1,15 @@
+[Unit]
+Description=Logstash
+Documentation=https://www.elastic.co/products/logstash
+After=network.target
+ConditionPathExists=/etc/logstash/logstash.conf
+
+[Service]
+ExecStart=/bin/bash /usr/share/logstash/bin/logstash -f /etc/logstash/logstash.conf
+ExecReload=/usr/bin/kill -HUP $MAINPID
+KillSignal=SIGINT
+User=logstash
+Group=logstash
+
+[Install]
+WantedBy=multi-user.target
