@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.1
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.6
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=5ece7a7149eeef06bba906eeabbc2f29a8ac3952
+%define sha1 linux=d96fd72968960268b2203a3b4aff9497cd3abc61
 Source1:        config-secure
 Source2:        initramfs.trigger
 # common
@@ -234,6 +234,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Dec 04 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-1
+-   Update to version 4.19.6
 *   Thu Nov 15 2018 Ajay Kaher <akaher@vmware.com> 4.19.1-2
 -   Adding BuildArch
 *   Thu Nov 08 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.1-1
