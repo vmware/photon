@@ -1,0 +1,199 @@
+From 2b5569f243f3255d6aaf893eb757d8c070b3d0ec Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 07 Dec 2018 05:58:50 +0000
+Subject: [PATCH] BUG 2219020: --sec-severity option updates
+
+Changes include:
+    1. tdnf --sec-severity [value] updateinfo and
+       tdnf --sec-severity [value] updateinfo summary commands to filter
+       the results based on the condition.
+    2. "tdnf --sec-severity [value] updateinfo" and "tdnf --sec-severity [value] update"
+       prints "0 Updates. No data available" with return code 0 instead of Error code 1661,
+       if there are no updates.
+
+Change-Id: If90db5e6a3b5f401d3f45f84b16d059dbbf90caf
+---
+
+diff --git a/client/api.c b/client/api.c
+index 6b06232..39ee086 100644
+--- a/client/api.c
++++ b/client/api.c
+@@ -1041,6 +1041,7 @@
+ 
+     char*  pszSeverity = NULL;
+     uint32_t dwSecurity = 0;
++    int nUpdates = 0;
+ 
+     if(!pTdnf || !pTdnf->pSack || !pTdnf->pSack->pPool ||
+        !ppUpdateInfo)
+@@ -1112,6 +1113,7 @@
+ 
+             if(pInfo)
+             {
++                nUpdates++;
+                 pInfo->pNext = pUpdateInfos;
+                 pUpdateInfos = pInfo;
+                 pInfo = NULL;
+@@ -1123,12 +1125,8 @@
+ 
+     if(!pUpdateInfos)
+     {
+-        dwError = ERROR_TDNF_NO_DATA;
+-        BAIL_ON_TDNF_ERROR(dwError);
+-    }
+-
+-    if(!pUpdateInfos)
+-    {
++        printf(
++           "\n%d updates.\n", nUpdates);
+         dwError = ERROR_TDNF_NO_DATA;
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+diff --git a/client/updateinfo.c b/client/updateinfo.c
+index bf51a95..9956524 100644
+--- a/client/updateinfo.c
++++ b/client/updateinfo.c
+@@ -40,6 +40,9 @@
+     uint32_t nType = 0;
+     PTDNF_UPDATEINFO_SUMMARY pSummary = NULL;
+     const char *pszType = 0;
++    char *pszSeverity = NULL;
++    uint32_t dwSecurity = 0;
++    const char* pszTemp = NULL;
+ 
+     if(!pTdnf || !pTdnf->pSack || !pTdnf->pSack->pPool ||
+        !ppSummary)
+@@ -74,6 +77,12 @@
+     pSummary[UPDATE_SECURITY].nType = UPDATE_SECURITY;
+     pSummary[UPDATE_BUGFIX].nType = UPDATE_BUGFIX;
+     pSummary[UPDATE_ENHANCEMENT].nType = UPDATE_ENHANCEMENT;
++
++    dwError = TDNFGetSecuritySeverityOption(
++                  pTdnf,
++                  &dwSecurity,
++                  &pszSeverity);
++    BAIL_ON_TDNF_ERROR(dwError);
+ 
+     for(dwPkgIndex = 0; dwPkgIndex < dwSize; dwPkgIndex++)
+     {
+@@ -113,6 +122,20 @@
+                 nType = UPDATE_ENHANCEMENT;
+             else if (!strcmp (pszType, "security"))
+                 nType = UPDATE_SECURITY;
++            if (dwSecurity)
++            {
++                if (nType != UPDATE_SECURITY)
++                    continue;
++            }
++            else if (pszSeverity)
++            {
++                pszTemp = pool_lookup_str(
++                              pTdnf->pSack->pPool,
++                              dwAdvId,
++                              UPDATE_SEVERITY);
++                if (!pszTemp || atof(pszSeverity) > atof(pszTemp))
++                    continue;
++            }
+             pSummary[nType].nCount++;
+         }
+         SolvFreePackageList(pUpdateAdvPkgList);
+@@ -121,6 +144,7 @@
+     *ppSummary = pSummary;
+ 
+ cleanup:
++    TDNF_SAFE_FREE_MEMORY(pszSeverity);
+     if(pInstalledPkgList)
+     {
+         SolvFreePackageList(pInstalledPkgList);
+diff --git a/tests/update.at b/tests/update.at
+index 88c30cf..9fc72bb 100644
+--- a/tests/update.at
++++ b/tests/update.at
+@@ -81,7 +81,7 @@
+ TDNF_CLI_W_CHROOT install tdnf-test-multiversion-1.0.1 -y
+ TDNF_CLI_W_CHROOT update --sec-severity 7.8 -y
+ ],
+-[125],
++[0],
+ [ignore],
+ [ignore])
+ AT_CLEANUP
+diff --git a/tests/whatprovides.at b/tests/whatprovides.at
+index 874b71f..e4ee499 100644
+--- a/tests/whatprovides.at
++++ b/tests/whatprovides.at
+@@ -37,7 +37,7 @@
+ AT_CHECK([
+ TDNF_CLI_W_CHROOT whatprovides aa
+ ],
+-[125],
++[0],
+ [ignore],
+ [ignore])
+ AT_CLEANUP
+diff --git a/tools/cli/lib/updateinfocmd.c b/tools/cli/lib/updateinfocmd.c
+index b46f593..1cbff6d 100644
+--- a/tools/cli/lib/updateinfocmd.c
++++ b/tools/cli/lib/updateinfocmd.c
+@@ -91,10 +91,6 @@
+     return dwError;
+ 
+ error:
+-    if(dwError == ERROR_TDNF_NO_DATA)
+-    {
+-        dwError = 0;
+-    }
+     goto cleanup;
+ }
+ 
+@@ -109,6 +105,7 @@
+     uint32_t dwError = 0;
+     int i = 0;
+     PTDNF_UPDATEINFO_SUMMARY pSummary = NULL;
++    int nCount = 0;
+ 
+     if(!pContext || !pCmdArgs)
+     {
+@@ -127,12 +124,20 @@
+     {
+         if(pSummary[i].nCount > 0)
+         {
++            nCount++;
+             printf(
+                 "%d %s notice(s)\n",
+                 pSummary[i].nCount,
+                 TDNFGetUpdateInfoType(pSummary[i].nType));
+         }
+     }
++    if (nCount == 0)
++    {
++        printf(
++            "\n%d updates.\n", nCount);
++        dwError = ERROR_TDNF_NO_DATA;
++        BAIL_ON_CLI_ERROR(dwError);
++    }
+ 
+ cleanup:
+     if(pSummary)
+diff --git a/tools/cli/main.c b/tools/cli/main.c
+index dc7a505..4d2ab9d 100644
+--- a/tools/cli/main.c
++++ b/tools/cli/main.c
+@@ -161,7 +161,7 @@
+ 
+ error:
+     TDNFCliPrintError(dwError);
+-    if (dwError == ERROR_TDNF_CLI_NOTHING_TO_DO)
++    if (dwError == ERROR_TDNF_CLI_NOTHING_TO_DO || dwError == ERROR_TDNF_NO_DATA)
+     {
+         // Nothing to do should not return an error code
+         dwError = 0;
+@@ -187,7 +187,7 @@
+         dwError = TDNFGetErrorString(dwErrorCode, &pszError);
+         BAIL_ON_CLI_ERROR(dwError);
+     }
+-    if(dwErrorCode == ERROR_TDNF_CLI_NOTHING_TO_DO)
++    if(dwErrorCode == ERROR_TDNF_CLI_NOTHING_TO_DO || dwErrorCode == ERROR_TDNF_NO_DATA)
+     {
+         dwErrorCode = 0;
+     }

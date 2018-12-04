@@ -1,0 +1,60 @@
+From 539830860338da09eaabd2e98ba3f10387dc311d Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Tue, 04 Dec 2018 09:51:42 +0000
+Subject: [PATCH] "tdnf list available" command updates
+
+Changes to ignore pseudo package names listed in list available command.
+
+Change-Id: I0d0285fd30b785d609dc4ded4eeb36b99302db43
+---
+
+diff --git a/solv/tdnfquery.c b/solv/tdnfquery.c
+index 5e1f8d8..2d92d2c 100644
+--- a/solv/tdnfquery.c
++++ b/solv/tdnfquery.c
+@@ -676,9 +676,42 @@
+         for (nIndex = 0; nIndex < pQuery->queueJob.count ; nIndex += 2)
+         {
+             queue_empty(&queueTmp);
+-            pool_job2solvables(pQuery->pSack->pPool, &queueTmp,
+-                               pQuery->queueJob.elements[nIndex],
+-                               pQuery->queueJob.elements[nIndex + 1]);
++            Id p, pp, how, what;
++            what = pQuery->queueJob.elements[nIndex + 1];
++            how = SOLVER_SELECTMASK & pQuery->queueJob.elements[nIndex];
++            Pool *pool = pQuery->pSack->pPool;
++            if (how == SOLVER_SOLVABLE_ALL)
++            {
++               FOR_POOL_SOLVABLES(p)
++               {
++                  if(is_pseudo_package(pool, &pool->solvables[p]))
++                     continue;
++                  queue_push(&queueTmp, p);
++               }
++            }
++            else if (how == SOLVER_SOLVABLE_REPO)
++            {
++               Repo *repo = pool_id2repo(pool, what);
++               Solvable *s;
++               if (repo)
++               {
++	           FOR_REPO_SOLVABLES(repo, p, s)
++                   {
++                      if (is_pseudo_package(pool, &pool->solvables[p]))
++                          continue;
++	              queue_push(&queueTmp, p);
++                   }
++	       }
++            }
++            else
++            {
++               FOR_JOB_SELECT(p, pp, how, what)
++               {
++                  if (is_pseudo_package(pool, &pool->solvables[p]))
++                      continue;
++	          queue_push(&queueTmp, p);
++               }
++            }
+             queue_insertn(&pQuery->queueResult,
+                           pQuery->queueResult.count,
+                           queueTmp.count,
