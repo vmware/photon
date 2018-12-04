@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        2.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -28,6 +28,7 @@ Source2:        cache-updateinfo.service
 Source3:        cache-updateinfo.timer
 Source4:        updateinfo.sh
 Patch0:         tdnf-epoch-and-perm.patch
+Patch1:         tdnf-list-available.patch
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
@@ -51,6 +52,7 @@ Library providing cli libs for tdnf like clients.
 %prep
 %setup -qn %{name}-%{version}-beta
 %patch0 -p1
+%patch1 -p1
 
 %build
 autoreconf -i
@@ -148,6 +150,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Tue Dec 04 2018 Keerthana K <keerthanak@vmware.com> 2.0.0-4
+-   Fix bug on list available command.
 *   Wed Nov 21 2018 Keerthana K <keerthanak@vmware.com> 2.0.0-3
 -   Update to 2.0.0 beta release.
 *   Mon Oct 08 2018 Keerthana K <keerthanak@vmware.com> 2.0.0-2
