@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -207,6 +207,7 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/python3.7/lib-dynload/pyexpat*.so
 %exclude %{_libdir}/python3.7/curses
 %exclude %{_libdir}/python3.7/lib-dynload/_curses*.so
+%exclude %{_libdir}/python3.7/distutils/command/wininst-*.exe
 
 %files  xml
 %{_libdir}/python3.7/xml/*
@@ -256,6 +257,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Tue Dec 04 2018 Tapas Kundu <tkundu@vmware.com> 3.7.0-2
+-   Excluded windows installer from python3 libs packaging.
 *   Wed Sep 26 2018 Tapas Kundu <tkundu@vmware.com> 3.7.0-1
 -   Updated to version 3.7.0
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.6.1-9
