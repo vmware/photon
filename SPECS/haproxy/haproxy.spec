@@ -1,14 +1,14 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
-Version:        1.6.12
+Version:        1.8.14
 Release:        1%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.haproxy.org/download/1.6/src/%{name}-%{version}.tar.gz
-%define sha1 haproxy=7a8b05adbb405d8ca280b25b82f6a6b2da6e2622
+Source0:        http://www.haproxy.org/download/1.8/src/%{name}-%{version}.tar.gz
+%define sha1 haproxy=589c6f933d73e8d6ba5307c8304cafb80e968481
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  lua-devel
@@ -58,6 +58,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Tue Dec 04 2018 Ajay Kaher <akaher@vmware.com> 1.8.14-1
+-   Update to version 1.8.14
 *   Tue Apr 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.6.12-1
 -   Updated to version 1.6.12
 *   Sun Nov 27 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.10-1
