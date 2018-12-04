@@ -1,55 +1,50 @@
 %global include_tests 1
 
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-%{!?pythonpath: %global pythonpath %(%{__python} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
+%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
+%{!?python3_sitearch: %global python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
+%{!?pythonpath: %global pythonpath %(python3 -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
 
 %define _salttesting SaltTesting
 %define _salttesting_ver 2016.5.11
 
-Name: salt
+Name: salt3
 Version: 2018.3.3
 Release: 1%{?dist}
-Summary: A parallel remote execution system
-
+Summary: A parallel remote execution system with python3
 Group:   System Environment/Daemons
 License: ASL 2.0
 URL:     http://saltstack.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0: http://pypi.python.org/packages/source/s/%{name}/%{name}-%{version}.tar.gz
+Source0: http://pypi.python.org/packages/source/s/salt/salt-%{version}.tar.gz
 %define sha1 salt=18e148c2ef4418efe741c4b84d0ae284ebbf108b
 Source1: https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-2016.5.11.tar.gz
 %define sha1 SaltTesting=474dbd7029e3d48cdb468be3c63b2262e47556c8
-Source2: %{name}-master.service
-Source3: %{name}-syndic.service
-Source4: %{name}-minion.service
-Source5: %{name}-api.service
+Source2: salt-master.service
+Source3: salt-syndic.service
+Source4: salt-minion.service
+Source5: salt-api.service
 Source6: logrotate.salt
 
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildArch: noarch
 
+BuildRoot: %{_tmppath}/salt-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildArch: noarch
 %ifarch %{ix86} x86_64
 Requires: dmidecode
 %endif
 
+
 Requires: pciutils
-Requires: python-backports_abc
-Requires: python-singledispatch
-
-
-BuildRequires: python2-devel
-BuildRequires: systemd 
-Requires: pycrypto
-Requires: python-jinja2
-Requires: python-msgpack
-Requires: PyYAML 
-Requires: python-requests
-Requires: python-zmq
-Requires: tornado
-Requires: python-xml
-Requires: python-futures
+Requires: python3-backports_abc
+BuildRequires: python3-devel
+BuildRequires: systemd
+Requires: python3-pycrypto
+Requires: python3-jinja2
+Requires: python3-msgpack
+Requires: python3-PyYAML
+Requires: python3-requests
+Requires: python3-zmq
+Requires: python3-tornado
 
 %description
 Salt is a distributed remote execution system used to execute commands and
@@ -60,10 +55,9 @@ information, and not just dozens, but hundreds or even thousands of individual
 servers, handle them quickly and through a simple and manageable interface.
 
 %package master
-Summary: Management component for salt, a parallel remote execution system
+Summary: Management component for salt, a parallel remote execution system with python3
 Group:   System Environment/Daemons
 Requires: %{name} = %{version}-%{release}
-
 %description master
 The Salt master is the central server to which all minions connect.
 
@@ -71,7 +65,6 @@ The Salt master is the central server to which all minions connect.
 Summary: Client component for Salt, a parallel remote execution system
 Group:   System Environment/Daemons
 Requires: %{name} = %{version}-%{release}
-
 %description minion
 The Salt minion is the agent component of Salt. It listens for instructions
 from the master, runs jobs, and returns results back to the master.
@@ -80,7 +73,6 @@ from the master, runs jobs, and returns results back to the master.
 Summary: Master-of-master component for Salt, a parallel remote execution system
 Group:   System Environment/Daemons
 Requires: %{name} = %{version}-%{release}
-
 %description syndic
 The Salt syndic is a master daemon which can receive instruction from a
 higher-level master, allowing for tiered organization of your Salt
@@ -90,7 +82,6 @@ infrastructure.
 Summary: REST API for Salt, a parallel remote execution system
 Group:   System administration tools
 Requires: %{name}-master = %{version}-%{release}
-
 %description api
 salt-api provides a REST interface to the Salt master.
 
@@ -98,7 +89,6 @@ salt-api provides a REST interface to the Salt master.
 Summary: Cloud provisioner for Salt, a parallel remote execution system
 Group:   System administration tools
 Requires: %{name}-master = %{version}-%{release}
-
 %description cloud
 The salt-cloud tool provisions new cloud VMs, installs salt-minion on them, and
 adds them to the master's collection of controllable minions.
@@ -107,7 +97,6 @@ adds them to the master's collection of controllable minions.
 Summary: Agentless SSH-based version of Salt, a parallel remote execution system
 Group:   System administration tools
 Requires: %{name} = %{version}-%{release}
-
 %description ssh
 The salt-ssh tool can run remote execution functions and states without the use
 of an agent (salt-minion) service.
@@ -116,7 +105,6 @@ of an agent (salt-minion) service.
 Summary: Command Proxy of Salt, a parallel remote execution system
 Group:   System administration tools
 Requires: %{name} = %{version}-%{release}
-
 %description proxy
 Receives commands from a Salt master and proxies these commands to devices 
 that are unable to run a full minion.
@@ -125,23 +113,20 @@ that are unable to run a full minion.
 Summary: Salt Package Manager of Salt, a parallel remote execution system
 Group:   System administration tools
 Requires: %{name} = %{version}-%{release}
-
 %description spm
 Salt Package Manager
 
-%prep
-%setup -c
-%setup -T -D -a 1
 
-cd %{name}-%{version}
+%prep
+%setup -c -n salt-%{version}
+cd salt-%{version}
 
 %build
 
-
 %install
 rm -rf %{buildroot}
-cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
-%{__python} setup.py install -O1 --root %{buildroot}
+cd $RPM_BUILD_DIR/salt-%{version}/salt-%{version}
+python3 setup.py install -O1 --root %{buildroot}
 
 # Add some directories
 install -d -m 0755 %{buildroot}%{_var}/cache/salt
@@ -163,21 +148,21 @@ install -p -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/
 install -p -m 0644 %{SOURCE3} %{buildroot}%{_unitdir}/
 install -p -m 0644 %{SOURCE4} %{buildroot}%{_unitdir}/
 install -p -m 0644 %{SOURCE5} %{buildroot}%{_unitdir}/
-
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d/
 install -p -m 0644 %{SOURCE6} %{buildroot}%{_sysconfdir}/logrotate.d/salt
-
 
 %clean
 rm -rf %{buildroot}
 
+
 %files
 %defattr(-,root,root,-)
-%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
-%{python_sitelib}/%{name}/*
-%{python_sitelib}/%{name}-*-py?.?.egg-info
+%doc $RPM_BUILD_DIR/salt-%{version}/salt-%{version}/LICENSE
+%{python3_sitelib}/salt/*
+%{python3_sitelib}/salt-*-py?.?.egg-info
 %{_sysconfdir}/logrotate.d/salt
 %{_var}/cache/salt
+
 
 %files master
 %defattr(-,root,root)
@@ -239,8 +224,6 @@ rm -rf %{buildroot}
 %files spm
 %doc %{_mandir}/man1/spm.1.*
 %{_bindir}/spm
-
-
 
 %preun master
 %if 0%{?systemd_preun:1}
@@ -311,16 +294,9 @@ rm -rf %{buildroot}
   /bin/systemctl daemon-reload &>/dev/null
   [ $1 -gt 0 ] && /bin/systemctl try-restart salt-minion.service &>/dev/null || :
 %endif
-
 %endif
 
 %changelog
 * Tue Dec 04 2018 Vinothkumar D <vinothkumard@vmware.com> 2018.3.3-1
-- Update to 2018.3.3
-* Thu Jan 11 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2017.7.2-1
-- Update to 2017.7.2
-- Fixes CVE-2017-5192, CVE-2017-5200, CVE-2017-8109
-- CVE-2017-12791, CVE-2017-14695, CVE-2017-14696
-* Thu Oct 26 2017 Padmini Thirumalachar <pthirumalachar@vmware.com> 2016.11.2-1
-- This is an initial version of salt for Photon OS
-  The source is from https://github.com/saltstack/salt/archive/v2016.11.2.tar.gz
+- This is an initial version of salt with python3 support for Photon OS
+  The source is from https://github.com/saltstack/salt/archive/v2018.3.3.tar.gz
