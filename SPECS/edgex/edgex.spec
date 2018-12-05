@@ -4,7 +4,7 @@
 Summary:        EdgeX Foundry Go Services
 Name:           edgex
 Version:        0.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/edgexfoundry/edgex-go
 Group:          Applications/System
@@ -33,7 +33,6 @@ BuildRequires:  make
 BuildRequires:  systemd-devel
 BuildRequires:  zeromq-devel
 Requires:       systemd
-Requires:       mongodb
 Requires:       consul
 
 %description
@@ -93,5 +92,7 @@ install -p -m644 %{SOURCE6} %{buildroot}%{_datadir}/%{name}/scripts/`basename %{
 %{_var}/log/*
 
 %changelog
+*   Wed Dec 05 2018 Alexey Makhalov <amakhalov@vmware.com> 0.6.0-2
+-   Remove 'Requires: mongodb'. But edgex still depends on mongo.
 *   Fri Jul 06 2018 Alexey Makhalov <amakhalov@vmware.com> 0.6.0-1
 -   Initial version
