@@ -7,7 +7,7 @@
             "text": "PASSWORD"
         },
     "packagelist_file": "packages_ami.json",
-    "size": {"root": "16", "swap": "0"},
+    "size": {"root": "8", "swap": "0"},
     "public_key":"<ssh-key-here>",
     "postinstallscripts": [ "ami-patch.sh", "../password-expiry.sh" ],
     "additionalfiles": [
