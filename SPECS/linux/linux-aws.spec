@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.1
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -252,7 +252,7 @@ ln -s vmlinux-%{uname_r} %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlin
 
 cat > %{buildroot}/boot/%{name}-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta nvme_core.io_timeout=4294967295
 photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
@@ -358,6 +358,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/perf/include/bpf/*
 
 %changelog
+*   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.1-3
+-   Set nvme io_timeout to maximum in kernel cmdline.
 *   Wed Nov 14 2018 Ajay Kaher <akaher@vmware.com> 4.19.1-2
 -   Adding BuildArch
 *   Tue Nov 06 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.1-1

@@ -60,7 +60,7 @@ echo "Tunnel no" >> /etc/ssh/ssh_config
 echo "ServerAliveInterval 420" >> /etc/ssh/ssh_config
 
 sed -i 's/net.ifnames=0//' /boot/grub/grub.cfg
-sed -i 's/$photon_cmdline/init=\/lib\/systemd\/systemd loglevel=3 ro console=ttyS0 earlyprintk=ttyS0/' /boot/grub/grub.cfg
+sed -i 's/$photon_cmdline/init=\/lib\/systemd\/systemd loglevel=3 ro console=ttyS0 earlyprintk=ttyS0 nvme_core.io_timeout=4294967295/' /boot/grub/grub.cfg
 
 # Disable loading/unloading of modules
 #echo "kernel.modules_disabled = 1" > /etc/sysctl.d/modules_disabled.conf
