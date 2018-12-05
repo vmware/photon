@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -35,6 +35,10 @@ Patch22:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-defaul
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
 Patch25:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+# Out-of-tree patches from AppArmor:
+Patch26:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch27:        4.17-0002-apparmor-af_unix-mediation.patch
+Patch28:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 
 BuildArch:     x86_64
 BuildRequires: bc
@@ -90,6 +94,9 @@ The Linux package contains the Linux kernel doc files
 %patch22 -p1
 %patch24 -p1
 %patch25 -p1
+%patch26 -p1
+%patch27 -p1
+%patch28 -p1
 
 %build
 # patch vmw_balloon driver
@@ -186,6 +193,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-2
+-   Add out-of-tree patches from AppArmor and enable it by default.
 *   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-1
 -   Update to version 4.19.6
 *   Thu Nov 29 2018 Alexey Makhalov <amakhalov@vmware.com> 4.19.1-3
