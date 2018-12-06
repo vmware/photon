@@ -102,7 +102,7 @@ class PackageUtils(object):
         specPath = constants.topDirPath + "/SPECS/"
         if (constants.rpmCheck and
                 package in constants.testForceRPMS and
-                SPECS.getData().isCheckAvailable(package)):
+                SPECS.getData().isCheckAvailable(package, version)):
             logFilePath = destLogPath + "/" + package + "-test.log"
         else:
             logFilePath = destLogPath + "/" + package + ".log"
@@ -125,7 +125,7 @@ class PackageUtils(object):
         listSRPMFiles = []
         try:
             listRPMFiles, listSRPMFiles = self._buildRPM(sandbox, specPath + specName,
-                                                         logFilePath, package, macros)
+                                                         logFilePath, package, version, macros)
             logmsg = package + " build done - RPMs : [ "
             for f in listRPMFiles:
                 logmsg += (os.path.basename(f) + " ")
@@ -137,7 +137,7 @@ class PackageUtils(object):
         finally:
             if (constants.rpmCheck and
                     package in constants.testForceRPMS and
-                    SPECS.getData().isCheckAvailable(package)):
+                    SPECS.getData().isCheckAvailable(package, version)):
                 cmd = ("sed -i '/^Executing(%check):/,/^Processing files:/{//!b};d' " + logFilePath)
                 CommandUtils().runCommandInShell(cmd, logfn=self.logger.debug)
         self.logger.debug("RPM build is successful")
@@ -235,18 +235,18 @@ class PackageUtils(object):
         return pullsources_urls, macros
 
 
-    def _buildRPM(self, sandbox, specFile, logFile, package, macros):
+    def _buildRPM(self, sandbox, specFile, logFile, package, version, macros):
         rpmBuildcmd = self.rpmbuildBinary + " " + self.rpmbuildBuildallOption
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             self.logger.debug("#" * (68 + 2 * len(package)))
-            if not SPECS.getData().isCheckAvailable(package):
-                self.logger.debug("####### " + package +
+            if not SPECS.getData().isCheckAvailable(package, version):
+                self.logger.info("####### " + package +
                                  " MakeCheck is not available. Skipping MakeCheck TEST for " +
                                  package + " #######")
                 rpmBuildcmd = self.rpmbuildBinary + " --clean"
             else:
-                self.logger.debug("####### " + package +
+                self.logger.info("####### " + package +
                                  " MakeCheck is available. Running MakeCheck TEST for " +
                                  package + " #######")
                 rpmBuildcmd = self.rpmbuildBinary + " " + self.rpmbuildCheckOption
@@ -264,12 +264,12 @@ class PackageUtils(object):
         returnVal = sandbox.run(rpmBuildcmd, logfile = logFile)
 
         if constants.rpmCheck and package in constants.testForceRPMS:
-            if not SPECS.getData().isCheckAvailable(package):
-                constants.testLogger.debug(package + " : N/A")
+            if not SPECS.getData().isCheckAvailable(package, version):
+                constants.testLogger.info(package + " : N/A")
             elif returnVal == 0:
-                constants.testLogger.debug(package + " : PASS")
+                constants.testLogger.info(package + " : PASS")
             else:
-                constants.testLogger.debug(package + " : FAIL")
+                constants.testLogger.info(package + " : FAIL")
 
         if constants.rpmCheck:
             if returnVal != 0 and constants.rpmCheckStopOnError:
