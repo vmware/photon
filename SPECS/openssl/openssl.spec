@@ -1,6 +1,6 @@
 Summary:    Management tools and libraries relating to cryptography
 Name:       openssl
-Version:    1.0.2p
+Version:    1.0.2q
 Release:    1%{?dist}
 License:    OpenSSL
 URL:        http://www.openssl.org
@@ -8,16 +8,16 @@ Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1 openssl=f34b5322e92415755c7d58bf5d0d5cf37666382c
+%define sha1 openssl=692f5f2f1b114f8adaadaa3e7be8cce1907f38c5
 Patch0:     c_rehash.patch
 Patch1:     openssl-ipv6apps.patch
 Patch2:     openssl-init-conslidate.patch
 Patch3:     openssl-drbg-default-read-system-fips.patch
-Requires:   bash glibc libgcc 
+Requires:   bash glibc libgcc
 
 %description
 The OpenSSL package contains management tools and libraries relating
-to cryptography. These are useful for providing cryptography 
+to cryptography. These are useful for providing cryptography
 functions to other packages, such as OpenSSH, email applications and
 web browsers (for accessing HTTPS sites).
 
@@ -112,6 +112,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Thu Dec 06 2018 Sujay G <gsujay@vmware.com> 1.0.2q-1
+-   Upgrade to 1.0.2q
 *   Fri Aug 17 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.0.2p-1
 -   Upgrade to 1.0.2p
 *   Mon Aug 13 2018 Ankit Jain <ankitja@vmware.com> 1.0.2o-3
