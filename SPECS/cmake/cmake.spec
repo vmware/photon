@@ -1,7 +1,7 @@
 Summary:	Cmake-3.12.1
 Name:		cmake
 Version:	3.12.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.12/%{name}-%{version}.tar.gz
@@ -19,17 +19,26 @@ BuildRequires:  curl-devel
 BuildRequires:  libgcc-devel
 BuildRequires:  expat-libs
 BuildRequires:  expat-devel
+BuildRequires:  zlib
+BuildRequires:  zlib-devel
+BuildRequires:  libarchive
+BuildRequires:  libarchive-devel
+BuildRequires:  bzip2
+BuildRequires:  bzip2-devel
 Requires:	ncurses
 Requires:       expat
+Requires:       zlib
+Requires:       libarchive
+Requires:       bzip2
 %description
-CMake is an extensible, open-source system that manages the build process in an 
-operating system and in a compiler-independent manner. 
+CMake is an extensible, open-source system that manages the build process in an
+operating system and in a compiler-independent manner.
 %prep
 %setup -q
 %patch0 -p1
 %build
 ncores="$(/usr/bin/getconf _NPROCESSORS_ONLN)"
-./bootstrap --prefix=%{_prefix} --system-expat --parallel=$ncores
+./bootstrap --prefix=%{_prefix} --system-expat --system-zlib --system-libarchive --system-bzip2 --parallel=$ncores
 make %{?_smp_mflags}
 
 %install
@@ -49,6 +58,8 @@ make  %{?_smp_mflags} test
 %{_libdir}/rpm/macros.d/macros.cmake
 
 %changelog
+*       Thu Dec 06 2018 <ashwinh@vmware.com> 3.12.1-3
+-       Bug Fix 2243672. Add system provided libs.
 *       Sun Sep 30 2018 Bo Gan <ganb@vmware.com> 3.12.1-2
 -       smp make (make -jN)
 -       specify /usr/lib as CMAKE_INSTALL_LIBDIR
