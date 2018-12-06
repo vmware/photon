@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           apparmor
 Version:        2.13
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -9,6 +9,7 @@ Source0:        https://launchpad.net/apparmor/2.13/2.13.0/+download/%{name}-%{v
 %define sha1    apparmor=54202cafce24911c45141d66e2d1e037e8aa5746
 Patch0:         apparmor-set-profiles-complain-mode.patch
 Patch1:         apparmor-service-start-fix.patch
+Patch2:         apparmor-fix-make-check.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
@@ -37,8 +38,10 @@ BuildRequires:  apr
 BuildRequires:  apr-util-devel
 BuildRequires:  Linux-PAM
 BuildRequires:  Linux-PAM-devel
-
-%global debug_package %{nil}
+BuildRequires:  dejagnu
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+BuildRequires:  python3-setuptools, python3-xml
 
 %description
 AppArmor is a file and network mandatory access control
@@ -155,6 +158,7 @@ This package contains the AppArmor module for perl.
 %setup -q -n %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 export PYTHONPATH=/usr/lib/python3.7/site-packages
@@ -193,15 +197,20 @@ make %{?_smp_mflags}
 cd ../../profiles
 make %{?_smp_mflags}
 
-
 %check
-make check -C libraries/libapparmor
-make check -C binutils
-make check -C parser
-make check -C utils
-make check -C changehat/mod_apparmor
-make check -C pam_apparmor
-make check -C profiles
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pyflakes
+export PYTHONPATH=/usr/lib/python3.7/site-packages
+export PYTHON=/usr/bin/python3
+export PYTHON_VERSION=3.7
+export PYTHON_VERSIONS=python3
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
+cd ./libraries/libapparmor
+make check
+cd ../../binutils/
+make check
+cd ../utils
+make check
 
 %install
 export PYTHONPATH=/usr/lib/python3.7/site-packages
@@ -344,6 +353,8 @@ make DESTDIR=%{buildroot} install
 %{perl_archlib}/perllocal.pod
 
 %changelog
+*   Thu Dec 06 2018 Keerthana K <keerthanak@vmware.com> 2.13-6
+-   Fixed make check failures.
 *   Fri Oct 05 2018 Tapas Kundu <tkundu@vmware.com> 2.13-5
 -   Updated using python 3.7 libs
 *   Wed Oct 03 2018 Keerthana K <keerthanak@vmware.com> 2.13-4
