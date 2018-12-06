@@ -3,7 +3,7 @@
 
 Name:           pygobject
 Version:        3.30.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python Bindings for GObject
 Group:          Development/Languages
 License:        LGPLv2+
@@ -22,12 +22,20 @@ BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  which
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 %if %{with_check}
+BuildRequires:  python-setuptools
+BuildRequires:  python3-setuptools
 BuildRequires:  gobject-introspection-python
 BuildRequires:  python3-test
 BuildRequires:  python2-test
 BuildRequires:  glib-schemas
 BuildRequires:  dbus
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
+BuildRequires:  python3-xml
 %endif
 
 %description
@@ -35,9 +43,6 @@ Python bindings for GLib and GObject.
 
 %package -n     python3-pygobject
 Summary:        python-pygobject
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 Requires:       python3
 Requires:       python3-libs
 Requires:       gobject-introspection
@@ -75,8 +80,12 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pytest
 python2 setup.py test
 pushd ../p3dir
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pytest
 python3 setup.py test
 popd
 
@@ -96,6 +105,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+*   Thu Dec 06 2018 Tapas Kundu <tkundu@vmware.com> 3.30.1-2
+-   Fix makecheck
 *   Thu Sep 27 2018 Tapas Kundu <tkundu@vmware.com> 3.30.1-1
 -   Updated to release 3.30.1
 *   Tue Sep 19 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.24.1-3
