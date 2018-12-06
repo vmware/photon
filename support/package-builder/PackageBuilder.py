@@ -191,7 +191,7 @@ class PackageBuilder(object):
         if constants.rpmCheck and self.package in constants.testForceRPMS:
             # One time optimization
             if constants.listMakeCheckRPMPkgWithVersionstoInstall is None:
-                constants.listMakeCheckRPMPkgWithVersionstoInstalli=[]
+                constants.listMakeCheckRPMPkgWithVersionstoInstall=[]
                 for package in constants.listMakeCheckRPMPkgtoInstall:
                     version = SPECS.getData().getHighestVersion(package)
                     constants.listMakeCheckRPMPkgWithVersionstoInstall.append(package+"-"+version)
