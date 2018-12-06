@@ -4,7 +4,7 @@
 Summary:        The Swiss Army knife of Python web development
 Name:           python-werkzeug
 Version:        0.14.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,11 +18,16 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-incremental
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
-BuildRequires:  python-pytest
 BuildRequires:  python-requests
+BuildRequires:  python3-requests
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
 %endif
-
 Requires:       python2
 Requires:       python2-libs
 
@@ -33,15 +38,6 @@ Werkzeug started as simple collection of various utilities for WSGI applications
 
 %package -n     python3-werkzeug
 Summary:        python-werkzeug
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-pytest
-BuildRequires:  python3-requests
-%endif
-
 Requires:       python3
 Requires:       python3-libs
 %description -n python3-werkzeug
@@ -54,14 +50,14 @@ Python 3 version.
 python2 setup.py build
 python3 setup.py build
 
-
 %install
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-PYTHONPATH=./ py.test2
-LANG=en_US.UTF-8 PYTHONPATH=./ py.test3
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pytest hypothesis
+LANG=en_US.UTF-8 PYTHONPATH=./  python2 setup.py test
 
 %files
 %defattr(-,root,root)
@@ -72,6 +68,9 @@ LANG=en_US.UTF-8 PYTHONPATH=./ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Dec 03 2018 Tapas Kundu <tkundu@vmware.com> 0.14.1-2
+-   Fix make check
+-   Moved buildrequires from subpackage
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.14.1-1
 -   Update to version 0.14.1
 *   Tue Jul 25 2017 Divya Thaluru <dthaluru@vmware.com> 0.12.1-2
