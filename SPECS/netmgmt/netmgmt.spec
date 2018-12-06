@@ -1,18 +1,12 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
-Version:       1.1.0
-Release:       9%{?dist}
+Version:       1.2.0
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
 URL:           http://www.vmware.com
 Source0:       %{name}-%{version}.tar.gz
-Patch0:        netmgmt-1.1.0-2.patch
-Patch1:        netmgmt-1.1.0-coverity-and-bug-fix.patch
-Patch2:        netmgmt-1.1.0-carry-match-conf-fix.patch
-Patch3:        netmgmt-1.1.0-back-compat.patch
-Patch4:        netmgmt-1.1.0-build-arm64.patch
-Patch5:        netmgmt-iaid-cli-fix.patch
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: check >= 0.9.4
@@ -24,7 +18,7 @@ Requires:      libgcc
 Requires:      ntp
 Requires:      pcre
 Requires:      systemd >= 228
-%define sha1 netmgmt=d1e4b5700e7f3a6a6b674c9db41d4adfe5f54c00
+%define sha1 netmgmt=e08b88b8c9b11a226d5483a6d978e70e96ef7464
 
 %description
 Network management utilities for PhotonOS
@@ -47,12 +41,6 @@ header files and libraries for netmgmt cli
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
 
 %build
 autoreconf -mif
@@ -98,37 +86,39 @@ popd
 # %doc ChangeLog README COPYING
 
 %changelog
-*   Mon  Oct 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-9
+*   Thu Dec 06 2018 Michelle Wang <michellew@vmware.com> 1.2.0-1
+-   Update netmgmt to 1.2.0.
+*   Mon Oct 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-9
 -   Fix netmgr if_iaid CLI.
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-8
 -   Use standard configure macros
-*   Sat  Oct 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-7
+*   Sat Oct 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-7
 -   Support netmgr for arm64.
-*   Wed  Sep 20 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-6
+*   Wed Sep 20 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-6
 -   Backward compatibility interface.
-*   Sat  Sep 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-5
+*   Sat Sep 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-5
 -   Retain current match conf when creating interface specific conf.
-*   Tue  Aug 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-4
+*   Tue Aug 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-4
 -   Fix coverity issues.
-*   Thu  May 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-3
+*   Thu May 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-3
 -   Fix handling of invalid match section config files.
-*   Tue  Apr 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-2
+*   Tue Apr 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-2
 -   Add query cfg filename API, remove fw_rule API, misc cleanup.
-*   Fri  Mar 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-1
+*   Fri Mar 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-1
 -   Update netmgmt to v1.1.0
-*   Thu  Oct 27 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.4-3
+*   Thu Oct 27 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.4-3
 -   Fix to allow reading multiple keys in a config section.
-*   Tue  Aug 16 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.4-2
+*   Tue Aug 16 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.4-2
 -   Fix DNS servers CLI bug.
-*   Thu  Jul 28 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.4-1
+*   Thu Jul 28 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.4-1
 -   Update DNS servers CLI and API.
-*   Wed  Jul 20 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.3-2
+*   Wed Jul 20 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.3-2
 -   Allow ini-parser to read and carry keys with empty values.
-*   Fri  Jul 08 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.3-1
+*   Fri Jul 08 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.3-1
 -   Update set/get dns_servers, duid, iaid APIs.
-*   Wed  Jun 15 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.1-5
+*   Wed Jun 15 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.1-5
 -   Fix linklist delete bug in iniparser.
-*   Fri  Jun 03 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.1-4
+*   Fri Jun 03 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.1-4
 -   Set correct file permissions for config files.
 *   Wed May 25 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-3
 -   Do not fail if valid commands are executed
