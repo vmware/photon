@@ -1,14 +1,14 @@
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.5.5
-Release:        2%{?dist}
+Version:        3.5.6
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define         sha1 Python=66c4cfc0f64b545ee5a7725f26a2fd834cdf1682
+%define         sha1 Python=05548da58ec75a7af316c4a4cb8fc667ac6ac8f9
 Patch0:         cgi3.patch
 Patch1:         sockWarning.patch
 Patch3:         python3-CVE-2018-1000117.patch
@@ -199,6 +199,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Thu Dec 06 2018 Sujay G <gsujay@vmware.com> 3.5.6-1
+-   Upgrade to version 3.5.6
 *   Fri Aug 17 2018 Dweep Advani <dadvani@vmware.com> 3.5.5-2
 -   Fix CVE-2018-1060 and CVE-2018-1061
 *   Fri May 11 2018 Xiaolin Li <xiaolinl@vmware.com> 3.5.5-1
@@ -210,7 +212,7 @@ rm -rf %{buildroot}/*
 *   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 3.5.3-7
 -   Release bump for expat version update
 *   Thu Sep 14 2017 Kumar Kaushik <kaushikk@vmware.com> 3.5.3-6
--   Adding patch for socket cleanup issue, Bug # 1956257. 
+-   Adding patch for socket cleanup issue, Bug # 1956257.
 *   Fri Jul 28 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.3-5
 -   Fixed dependencies for easy_install-3.5
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.3-4
