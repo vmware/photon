@@ -4,7 +4,7 @@
 Summary:        provides a pure-Python implementation of immutable URLs
 Name:           python-hyperlink
 Version:        18.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -17,13 +17,19 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
-%if %{with_check}
-BuildRequires:  python-pytest
-%endif
 
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
-
+%if %{with_check}
+BuildRequires:  python-idna
+BuildRequires:  python3-idna
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
+%endif
 BuildArch:      noarch
 
 %description
@@ -31,13 +37,6 @@ Hyperlink provides a pure-Python implementation of immutable URLs. Based on RFC 
 
 %package -n     python3-hyperlink
 Summary:        provides a pure-Python implementation of immutable URLs
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-pytest
-%endif
 
 Requires:       python3
 Requires:       python3-libs
@@ -56,6 +55,7 @@ pushd ../p3dir
 python3 setup.py build
 popd
 
+
 %install
 pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
@@ -63,10 +63,15 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-pytest2
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pytest
+pytest
 pushd ../p3dir
-pytest3
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pytest
+pytest
 popd
+
 
 %files
 %defattr(-,root,root)
@@ -77,6 +82,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 06 2018 Tapas Kundu <tkundu@vmware.com> 18.0.0-2
+-   Fix make check.
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 18.0.0-1
 -   Update to version 18.0.0
 *   Wed Sep 20 2017 Bo Gan <ganb@vmware.com> 17.3.1-2
