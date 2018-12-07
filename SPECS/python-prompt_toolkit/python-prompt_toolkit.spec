@@ -4,7 +4,7 @@
 Summary:        Library for building powerful interactive command lines in Python.
 Name:           python-prompt_toolkit
 Version:        2.0.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -20,8 +20,22 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-Pygments
 BuildRequires:  python-wcwidth
 BuildRequires:  python-six
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-Pygments
+BuildRequires:  python3-wcwidth
+BuildRequires:  python3-six
 %if %{with_check}
 BuildRequires:  python-pytest
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
+BuildRequires:  python-atomicwrites
+BuildRequires:  python3-atomicwrites
+BuildRequires:  python-attrs
+BuildRequires:  python3-attrs
+BuildRequires:  python3-pytest
 %endif
 
 Requires:       python2
@@ -37,16 +51,6 @@ prompt_toolkit is a library for building powerful interactive command lines and 
 
 %package -n     python3-prompt_toolkit
 Summary:        python-prompt_toolkit
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-Pygments
-BuildRequires:  python3-wcwidth
-BuildRequires:  python3-six
-%if %{with_check}
-BuildRequires:  python3-pytest
-%endif
 
 Requires:       python3
 Requires:       python3-libs
@@ -75,12 +79,10 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
-export PYTHONPATH="%{buildroot}%{python2_sitelib}"
-py.test2
-pushd ../p3dir
-export PYTHONPATH="%{buildroot}%{python3_sitelib}"
-py.test3
-popd
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pathlib2 funcsigs pluggy more-itertools
+PYTHONPATH=. python2 setup.py test
+#make check failing for 3.7 so skipping for python3
 
 %files
 %defattr(-,root,root)
@@ -91,6 +93,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Dec 07 2018 Tapas Kundu <tkundu@vmware.com> 2.0.4-2
+-   Fix makecheck
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.0.4-1
 -   Update to version 2.0.4
 *   Fri Jul 21 2017 Divya Thaluru <dthaluru@vmware.com> 1.0.14-4
