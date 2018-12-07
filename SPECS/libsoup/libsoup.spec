@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.64.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -9,6 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.57/%{name}-%{version}.tar.xz
 %define sha1 libsoup=3d3b1ad79e05cc59b6698a6f892f59dbeca30f1c
+Patch0:          libsoup-fix-make-check.patch
 BuildRequires:   glib-devel
 BuildRequires:   gobject-introspection
 BuildRequires:   libxml2-devel
@@ -21,6 +22,9 @@ BuildRequires:   glib-networking
 BuildRequires:   autogen
 BuildRequires:   sqlite-devel
 BuildRequires:   libpsl-devel
+BuildRequires:   krb5-devel
+BuildRequires:   httpd
+BuildRequires:   icu-devel
 %if %{with_check}
 BuildRequires:   krb5-devel
 %endif
@@ -58,6 +62,7 @@ These are the additional language files of libsoup.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 %configure --disable-vala
@@ -95,6 +100,8 @@ make  check
 %defattr(-,root,root)
 
 %changelog
+*   Fri Dec 07 2018 Keerthana <keerthanak@vmware.com> 2.64.0-2
+-   Fix Make check failures.
 *   Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 2.64.0-1
 -   Update to 2.64.0
 *   Mon Sep 03 2018 Ankit Jain <ankitja@vmware.com> 2.57.1-4
@@ -116,7 +123,7 @@ make  check
 *   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 2.50.0-4
 -   Removing la files from packages.
 *   Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 2.50.0-3
--   Addinf libxml2 to Requires 
+-   Addinf libxml2 to Requires
 *   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 2.50.0-2
 -   Exclude /usr/lib/debug
 *   Fri Jun 5 2015 Touseef Liaqat <tliaqat@vmware.com> 2.50.0-1
