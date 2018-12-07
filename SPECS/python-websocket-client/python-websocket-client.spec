@@ -3,7 +3,7 @@
 
 Name:           python-websocket-client
 Version:        0.53.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        WebSocket client for python
 License:        LGPL
 Group:          Development/Languages/Python
@@ -14,6 +14,11 @@ Source0:        websocket_client-%{version}.tar.gz
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+%if %{with_check}
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+%endif
+
 Requires:       python2
 Requires:       python2-libs
 
@@ -48,6 +53,12 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+%check
+python2 setup.py test
+pushd ../p3dir
+python3 setup.py test
+popd
+
 %files
 %defattr(-,root,root,-)
 %{python2_sitelib}/*
@@ -58,6 +69,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Dec 07 2018 Ashwin H <ashwinh@vmware.com> 0.53.0-2
+-   Add %check
 *   Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 0.53.0-1
 -   Updated to release 0.53.0
 *   Thu Nov 30 2017 Xiaolin Li <xiaolinl@vmware.com> 0.44.0-1
