@@ -1,7 +1,6 @@
-diff -ru a/xpath.c b/xpath.c
 --- a/xpath.c	2017-10-26 07:54:40.000000000 +0000
-+++ b/xpath.c	2018-10-26 19:59:15.725601177 +0000
-@@ -13337,9 +13337,8 @@
++++ b/xpath.c  2018-12-06 17:26:45.633305896 -0800
+@@ -13297,9 +13297,8 @@ xmlXPathCompOpEval(xmlXPathParserContext
  		return(0);
  	    }
              xmlXPathBooleanFunction(ctxt, 1);
@@ -13,7 +12,7 @@ diff -ru a/xpath.c b/xpath.c
  	    xmlXPathReleaseObject(ctxt->context, arg2);
              return (total);
          case XPATH_OP_OR:
-@@ -13363,9 +13362,8 @@
+@@ -13323,9 +13322,8 @@ xmlXPathCompOpEval(xmlXPathParserContext
  		return(0);
  	    }
              xmlXPathBooleanFunction(ctxt, 1);
