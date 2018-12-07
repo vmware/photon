@@ -2,7 +2,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.12.1
-Release:        3%{?kernelsubrelease}%{?dist}
+Release:        4%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
@@ -23,6 +23,7 @@ BuildRequires:  ncurses-devel
 BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:  libgcrypt
 BuildRequires:  sysdig
+BuildRequires:  jq-devel
 BuildRequires:  git
 BuildRequires:  lua-devel
 BuildRequires:  libyaml-devel
@@ -54,7 +55,12 @@ tar xf %{SOURCE2} --no-same-owner
 mv sysdig-0.23.1 ../sysdig
 sed -i 's|../falco/rules|rules|g' userspace/engine/CMakeLists.txt
 sed -i 's|../falco/userspace|userspace|g' userspace/engine/config_falco_engine.h.in
-cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} CMakeLists.txt
+cmake \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DUSE_BUNDLED_OPENSSL=OFF \
+    -DUSE_BUNDLED_CURL=OFF \
+    -DUSE_BUNDLED_JQ=OFF \
+    CMakeLists.txt
 make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
 
 %install
@@ -90,6 +96,8 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+*   Tue Dec 12 2018 Sujay G <gsujay@vmware.com> 0.12.1-4
+-   Disabled bundled JQ, openssl and instead use Photon maintained packages.
 *   Wed Oct 24 2018 Ajay Kaher <akaher@vmware.com> 0.12.1-3
 -   Adding BuildArch
 *   Wed Oct 24 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.12.1-2
