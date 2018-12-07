@@ -1,14 +1,14 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2p
-Release:        2%{?dist}
+Version:        1.0.2q
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1    openssl=f34b5322e92415755c7d58bf5d0d5cf37666382c
+%define sha1    openssl=692f5f2f1b114f8adaadaa3e7be8cce1907f38c5
 Source1:        rehash_ca_certificates.sh
 %if 0%{?with_fips:1}
 Source100:      openssl-fips-2.0.9-lin64.tar.gz
@@ -129,6 +129,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Fri Dec 07 2018 Sujay G <gsujay@vmware.com> 1.0.2q-1
+-   Bump version to 1.0.2q
 *   Wed Oct 17 2018 Alexey Makhalov <amakhalov@vmware.com> 1.0.2p-2
 -   Move fips logic to spec file
 *   Fri Aug 17 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.0.2p-1
