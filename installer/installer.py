@@ -407,6 +407,9 @@ class Installer(object):
                     stdout=self.output)
             retval = process.wait()
 
+            if retval != 0:
+                raise Exception("Bootloader (grub2) setup failed")
+
             self._update_fstab()
 
     def _execute_modules(self, phase):
