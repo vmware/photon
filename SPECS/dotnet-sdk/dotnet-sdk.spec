@@ -1,15 +1,15 @@
 %define debug_package %{nil}
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
-Version:        2.1.4
+Version:        2.1.403
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
 Url:            https://github.com/dotnet/core
 Group:          Development/Tools
-Source0:        https://download.microsoft.com/download/1/1/5/115B762D-2B41-4AF3-9A63-92D9680B9409/dotnet-sdk-2.1.4-linux-x64.tar.gz
-%define sha1    dotnet-sdk=0201b2f073dea70abfc00383f8093f8dafa802ea
+Source0:        https://download.microsoft.com/download/1/1/5/115B762D-2B41-4AF3-9A63-92D9680B9409/dotnet-sdk-2.1.403-linux-x64.tar.gz
+%define sha1    dotnet-sdk=0a72a76e833f20da90a052f634d6711ef62d0526
 BuildArch:      x86_64
 Requires:       dotnet-runtime icu
 
@@ -34,5 +34,7 @@ cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/dotnet-sdk-%{version
     %{_docdir}/*
 
 %changelog
+*   Wed Dec 05 2018 Ajay Kaher <akaher@vmware.com> 2.1.403-1
+-   upgraded to version 2.1.403
 *   Wed Jan 31 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.4-1
 -   Initial build for photon
