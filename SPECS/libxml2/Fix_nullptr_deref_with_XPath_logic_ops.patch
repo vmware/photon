@@ -1,0 +1,26 @@
+--- a/xpath.c	2017-10-26 07:54:40.000000000 +0000
++++ b/xpath.c  2018-12-06 17:26:45.633305896 -0800
+@@ -13297,9 +13297,8 @@ xmlXPathCompOpEval(xmlXPathParserContext
+ 		return(0);
+ 	    }
+             xmlXPathBooleanFunction(ctxt, 1);
+-            arg1 = valuePop(ctxt);
+-            arg1->boolval &= arg2->boolval;
+-            valuePush(ctxt, arg1);
++            if (ctxt->value != NULL)
++                ctxt->value->boolval &= arg2->boolval;
+ 	    xmlXPathReleaseObject(ctxt->context, arg2);
+             return (total);
+         case XPATH_OP_OR:
+@@ -13323,9 +13322,8 @@ xmlXPathCompOpEval(xmlXPathParserContext
+ 		return(0);
+ 	    }
+             xmlXPathBooleanFunction(ctxt, 1);
+-            arg1 = valuePop(ctxt);
+-            arg1->boolval |= arg2->boolval;
+-            valuePush(ctxt, arg1);
++            if (ctxt->value != NULL)
++                ctxt->value->boolval |= arg2->boolval;
+ 	    xmlXPathReleaseObject(ctxt->context, arg2);
+             return (total);
+         case XPATH_OP_EQUAL:
