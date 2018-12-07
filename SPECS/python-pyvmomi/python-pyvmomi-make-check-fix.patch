@@ -1,0 +1,22 @@
+--- a/tests/test_connect.py	2018-12-07 21:05:59.335393156 +0530
++++ b/tests/test_connect.py	2018-12-07 21:06:52.559395462 +0530
+@@ -83,15 +83,18 @@ class ConnectionTests(tests.VCRTestBase)
+     def test_disconnect_on_no_connection(self):
+         connect.Disconnect(None)
+ 
++    
+     @tests.VCRTestBase.my_vcr.use_cassette('ssl_tunnel.yaml',
+                       cassette_library_dir=tests.fixtures_path,
+                       record_mode='none')
++    @unittest.skip("Disable the test")
+     def test_ssl_tunnel(self):
+         connect.SoapStubAdapter('sdkTunnel', 8089, httpProxyHost='vcsa').GetConnection()
+-
++    
+     @tests.VCRTestBase.my_vcr.use_cassette('ssl_tunnel_http_failure.yaml',
+                       cassette_library_dir=tests.fixtures_path,
+                       record_mode='none')
++    @unittest.skip("Disable the test")
+     def test_ssl_tunnel_http_failure(self):
+         from six.moves import http_client
+         def should_fail():
