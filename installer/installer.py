@@ -165,7 +165,7 @@ class Installer(object):
         process = subprocess.Popen(['mkdir', '-p', self.photon_root], stdout=self.output)
         retval = process.wait()
         if retval != 0:
-            modules.commons.log(modules.commons.LOG_ERROR, "Fail to create the root directory")
+            modules.commons.log(modules.commons.LOG_ERROR, "Failed to create the root directory")
             self.exit_gracefully(None, None)
 
         # Copy the installer files
@@ -173,7 +173,7 @@ class Installer(object):
                                    stdout=self.output)
         retval = process.wait()
         if retval != 0:
-            modules.commons.log(modules.commons.LOG_ERROR, "Fail to copy install scripts")
+            modules.commons.log(modules.commons.LOG_ERROR, "Failed to copy install scripts")
             self.exit_gracefully(None, None)
 
         # Create the rpms directory
@@ -181,7 +181,7 @@ class Installer(object):
                                    stdout=self.output)
         retval = process.wait()
         if retval != 0:
-            modules.commons.log(modules.commons.LOG_ERROR, "Fail to create the rpms directory")
+            modules.commons.log(modules.commons.LOG_ERROR, "Failed to create the rpms directory")
             self.exit_gracefully(None, None)
         self._copy_rpms()
 
@@ -199,7 +199,7 @@ class Installer(object):
                             os.path.join(self.photon_root, "installer")]) != 0 or
            subprocess.call(['mount', '--bind', '/installer',
                             os.path.join(self.photon_root, "installer")]) != 0):
-            modules.commons.log(modules.commons.LOG_ERROR, "Fail to bind installer")
+            modules.commons.log(modules.commons.LOG_ERROR, "Failed to bind installer")
             self.exit_gracefully(None, None)
     def _unbind_installer(self):
         # unmount the installer directory
@@ -209,14 +209,14 @@ class Installer(object):
         retval = process.wait()
         if retval != 0:
             modules.commons.log(modules.commons.LOG_ERROR,
-                                "Fail to unbind the installer directory")
+                                "Failed to unbind the installer directory")
         # remove the installer directory
         process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")],
                                    stdout=self.output)
         retval = process.wait()
         if retval != 0:
             modules.commons.log(modules.commons.LOG_ERROR,
-                                "Fail to remove the installer directory")
+                                "Failed to remove the installer directory")
     def _bind_repo_dir(self):
         """
         Bind repo dir for tdnf installation
@@ -226,7 +226,7 @@ class Installer(object):
             return
         if (subprocess.call(['mkdir', '-p', rpm_cache_dir]) != 0 or
                 subprocess.call(['mount', '--bind', self.rpm_path, rpm_cache_dir]) != 0):
-            modules.commons.log(modules.commons.LOG_ERROR, "Fail to bind cache rpms")
+            modules.commons.log(modules.commons.LOG_ERROR, "Failed to bind cache rpms")
             self.exit_gracefully(None, None)
 
     def _unbind_repo_dir(self):
@@ -238,7 +238,7 @@ class Installer(object):
             return
         if (subprocess.call(['umount', rpm_cache_dir]) != 0 or
                 subprocess.call(['rm', '-rf', rpm_cache_dir]) != 0):
-            modules.commons.log(modules.commons.LOG_ERROR, "Fail to unbind cache rpms")
+            modules.commons.log(modules.commons.LOG_ERROR, "Failed to unbind cache rpms")
             self.exit_gracefully(None, None)
 
     def _update_fstab(self):
@@ -339,7 +339,7 @@ class Installer(object):
         retval = process.wait()
         if retval != 0:
             modules.commons.log(modules.commons.LOG_ERROR,
-                                "Fail to setup the target system after the installation")
+                                "Failed to setup the target system after the installation")
 
         if self.install_config['iso_installer']:
 
@@ -355,14 +355,14 @@ class Installer(object):
             retval = process.wait()
             if retval != 0:
                 modules.commons.log(modules.commons.LOG_ERROR,
-                                    "Fail to swapoff")
+                                    "Failed to swapoff")
             # remove the tdnf cache directory and the swapfile.
             process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "cache")],
                                        stdout=self.output)
             retval = process.wait()
             if retval != 0:
                 modules.commons.log(modules.commons.LOG_ERROR,
-                                    "Fail to remove the cache")
+                                    "Failed to remove the cache")
         if not self.install_config['iso_system']:
             # Execute post installation modules
             self._execute_modules(modules.commons.POST_INSTALL)
@@ -376,27 +376,9 @@ class Installer(object):
             if 'boot_partition_number' not in self.install_config['disk']:
                 self.install_config['disk']['boot_partition_number'] = 1
 
-            try:
-                if self.install_config['boot'] == 'bios':
-                    process = subprocess.Popen(
-                        [self.setup_grub_command, '-w', self.photon_root,
-                         "bios", self.install_config['disk']['disk'],
-                         self.install_config['disk']['root'],
-                         self.install_config['disk']['boot'],
-                         self.install_config['disk']['bootdirectory'],
-                         str(self.install_config['disk']['boot_partition_number'])],
-                        stdout=self.output)
-                elif self.install_config['boot'] == 'efi':
-                    process = subprocess.Popen(
-                        [self.setup_grub_command, '-w', self.photon_root,
-                         "efi", self.install_config['disk']['disk'],
-                         self.install_config['disk']['root'],
-                         self.install_config['disk']['boot'],
-                         self.install_config['disk']['bootdirectory'],
-                         str(self.install_config['disk']['boot_partition_number'])],
-                        stdout=self.output)
-            except:
-                #install bios if variable is not set.
+            # Install bios if 'boot' variable is unset or set to bios.
+            if not self.install_config['boot'] or \
+                (self.install_config['boot'] == 'bios'):
                 process = subprocess.Popen(
                     [self.setup_grub_command, '-w', self.photon_root,
                      "bios", self.install_config['disk']['disk'],
@@ -405,8 +387,17 @@ class Installer(object):
                      self.install_config['disk']['bootdirectory'],
                      str(self.install_config['disk']['boot_partition_number'])],
                     stdout=self.output)
-            retval = process.wait()
+            elif self.install_config['boot'] == 'efi':
+                process = subprocess.Popen(
+                    [self.setup_grub_command, '-w', self.photon_root,
+                     "efi", self.install_config['disk']['disk'],
+                     self.install_config['disk']['root'],
+                     self.install_config['disk']['boot'],
+                     self.install_config['disk']['bootdirectory'],
+                     str(self.install_config['disk']['boot_partition_number'])],
+                    stdout=self.output)
 
+            retval = process.wait()
             if retval != 0:
                 raise Exception("Bootloader (grub2) setup failed")
 
