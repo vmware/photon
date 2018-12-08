@@ -4,7 +4,7 @@ Version:        0.1
 Release:        2%{?dist}
 License:        GPLv2
 Requires:       gcc, binutils, make, glibc-devel, linux-api-headers, automake
-Requires:       autoconf, libtool, gawk, diffutils
+Requires:       autoconf, libtool, gawk, diffutils, patch, bison
 
 %description
 Metapackage to install all build tools
