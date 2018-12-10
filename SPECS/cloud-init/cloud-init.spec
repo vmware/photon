@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        18.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -22,6 +22,7 @@ Patch6:         systemd-service-changes.patch
 Patch7:         makecheck.patch
 Patch8:         systemd-resolved-config.patch
 Patch9:         cloud-init-azureds.patch
+Patch10:        ds-identity.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -77,6 +78,7 @@ ssh keys and to let the user run various scripts.
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 
 find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -145,6 +147,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Tue Dec 04 2018 Ajay Kaher <akaher@vmware.com> 18.3-2
+-   Fix auto startup at boot time
 *   Wed Oct 24 2018 Ajay Kaher <akaher@vmware.com> 18.3-1
 -   Upgraded version to 18.3
 *   Sun Oct 07 2018 Tapas Kundu <tkundu@vmware.com> 0.7.9-15
