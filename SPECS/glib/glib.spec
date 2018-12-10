@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.58.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
 Group:		Applications/System
@@ -15,6 +15,8 @@ BuildRequires:	pkg-config
 BuildRequires:	cmake
 BuildRequires:	which
 BuildRequires:	python-xml
+BuildRequires:	python2 >= 2.7
+BuildRequires:	python2-libs >= 2.7
 Requires:	pcre-libs
 Requires:	libffi
 Provides:	pkgconfig(glib-2.0)
@@ -31,8 +33,7 @@ The GLib package contains a low-level libraries useful for providing data struct
 Summary:	Header files for the glib library
 Group:		Development/Libraries
 Requires:	glib = %{version}-%{release}
-BuildRequires:	python2 >= 2.7
-BuildRequires:	python2-libs >= 2.7
+Requires:	python-xml
 Requires:	pcre-devel
 Requires:	python2
 Requires:	libffi-devel
@@ -52,7 +53,7 @@ Gsettings schemas compiling tool
 %setup -q
 %build
 ./autogen.sh
-./configure --prefix=/usr --with-pcre=system 
+%configure --with-pcre=system
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -60,7 +61,7 @@ make DESTDIR=%{buildroot} install
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 
-%files 
+%files
 %defattr(-,root,root)
 %{_libdir}/libglib-*.so.*
 %{_libdir}/libgthread-*.so.*
@@ -89,6 +90,8 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+*   Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 2.58.0-2
+-   glib-devel requires python-xml.
 *   Tue Sep 11 2018 Anish Swaminathan <anishs@vmware.com> 2.58.0-1
 -   Update version to 2.58.0
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.52.1-2

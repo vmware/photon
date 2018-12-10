@@ -4,7 +4,7 @@
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.58.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
@@ -21,6 +21,12 @@ BuildRequires:  glib-devel >= 2.58.0
 BuildRequires:  libffi-devel
 BuildRequires:  go
 BuildRequires:  autoconf-archive
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+BuildRequires:  python-xml
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-xml
 Requires:       libffi
 Requires:       glib >= 2.58.0
 Patch0:         disableFaultyTest.patch
@@ -34,9 +40,6 @@ things.
 Summary:        Python package for handling GObject introspection data
 Group:          Development/Languages
 Requires:       %{name} = %{version}-%{release}
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python-xml
 Requires:       python2
 Requires:       python-xml
 %description    python
@@ -47,9 +50,6 @@ data from Python.
 Summary:        Python3 package for handling GObject introspection data
 Group:          Development/Languages
 Requires:       %{name} = %{version}-%{release}
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-xml
 Requires:       python3-xml
 Requires:       python3
 %description -n python3-gobject-introspection
@@ -60,6 +60,7 @@ data from Python.
 Summary:        Libraries and headers for gobject-introspection
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-python = %{version}-%{release}
 Requires:       libffi-devel
 Requires:       glib-devel
 
@@ -137,6 +138,8 @@ make  %{?_smp_mflags} check
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.58.0-2
+-   -devel requires -python.
 *   Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 1.58.0-1
 -   Update version to 1.58.0
 *   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 1.52.1-5
