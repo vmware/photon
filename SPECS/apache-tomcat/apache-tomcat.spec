@@ -1,6 +1,6 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.33
+Version:        8.5.35
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -8,12 +8,11 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-Source0:        http://mirrors.koehn.com/apache/tomcat/tomcat-8/v%{version}/src/%{name}-src-%{version}-src.tar.gz
-%define sha1    apache-tomcat-src=1c9f34ec4c1659eb8c11ebbaf95b6f8d85ff37ae
+Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
+%define sha1    apache-tomcat=c1c68f8cfeb816be2f9210903cbdd9eb4759a52f
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=e49b167305a917469bc5e76df8cea141a5acfcb5
-Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
+%define sha1    base=68897a45e160a2b09ac5132a34ff6d5e30771365
 BuildRequires:  openjre
 BuildRequires:  openjdk
 BuildRequires:  apache-ant
@@ -37,7 +36,6 @@ The Apache Tomcat package contains binaries for the Apache Tomcat servlet contai
 find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "*.gz" -o \
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 %setup -D -b 1 -n %{name}-%{version}-src
-%patch0 -p1
 
 %build
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
@@ -102,6 +100,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Mon Dec 10 2018 Dweep Advani <dadvani@vmware.com> 8.5.35-1
+-   Updated to 8.5.35 release.
 *   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 8.5.33-1
 -   Updated to 8.5.33 release.
 *   Tue Sep 04 2018 Tapas Kundu <tkundu@vmware.com> 8.5.32-1
