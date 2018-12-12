@@ -1,7 +1,7 @@
 Summary:	Logstash is a tool for managing events and logs.
 Name:           logstash
 Version:        6.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,6 +11,7 @@ Source0:        %{name}-%{version}.tar.gz
 %define sha1 %{name}-%{version}.tar.gz=d690f64a8d0fce9ccac04de4ee86f4b01bba5d3a
 Source1:        %{name}.service
 Source2:        %{name}.conf
+BuildArch:      x86_64
 BuildRequires:	openjdk8
 BuildRequires:	ruby
 BuildRequires:  git
@@ -111,5 +112,7 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+*   Wed Dec 12 2018 Ajay Kaher <akaher@vmware.com> 6.4.0-2
+-   Adding BuildArch.
 *   Tue Dec 04 2018 Ankit Jain <ankitja@vmware.com> 6.4.0-1
 -   Initial Version.
