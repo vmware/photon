@@ -9,13 +9,12 @@ For example, instead of running the /etc/init.d/ssh script to stop and start the
 	systemctl stop sshd
 	systemctl start sshd
 
--   [Troubleshooting Services with `systemctl`](troubleshooting-services.md)
--   [Analyzing System Logs with `journalctl`](analyzing-system-logs-with-journalctl.md)
--   [Inspecting Services with `systemd-analyze`](inspecting-services-with-systemd-analyze.md)
+- [Enabling `systemd` Debug Shell During Boot](enabling-systemd-debug.md) 
+- [Troubleshooting Services with `systemctl`](troubleshooting-services.md)
+- [Analyzing System Logs with `journalctl`](analyzing-system-logs-with-journalctl.md)
+- [Inspecting Services with `systemd-analyze`](inspecting-services-with-systemd-analyze.md)
 
 For an overview of systemd, see [systemd System and Service Manager](https://www.freedesktop.org/wiki/Software/systemd/) and the [man page for systemd](https://www.freedesktop.org/software/systemd/man/systemd.html). The systemd man pages are listed at [https://www.freedesktop.org/software/systemd/man/](https://www.freedesktop.org/software/systemd/man/).
 
-## 
 
-### 
 
