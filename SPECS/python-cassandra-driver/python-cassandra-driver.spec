@@ -6,7 +6,7 @@
 Summary:        A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+)
 Name:           python-cassandra-driver
 Version:        3.15.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/datastax/python-driver#datastax-python-driver-for-apache-cassandra
 License:        Apache 2.0
 Group:          Development/Languages/Python
@@ -23,6 +23,11 @@ BuildRequires:  python-pip
 BuildRequires:  python-pytest
 BuildRequires:  libev-devel
 BuildRequires:  libev
+%if %{with_check}
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+BuildRequires:  iana-etc
+%endif
 Requires:       python2
 Requires:       python2-libs
 
@@ -77,8 +82,9 @@ $easy_install_2 twisted
 $easy_install_2 gevent
 $easy_install_2 eventlet
 $easy_install_2 packaging
-pip install eventlet
-python2 setup.py nosetests -w tests/unit/
+$easy_install_2 Netbase
+python2 setup.py gevent_nosetests
+python2 setup.py eventlet_nosetests
 pushd ../p3dir
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 nose
@@ -93,8 +99,9 @@ $easy_install_3 twisted
 $easy_install_3 gevent
 $easy_install_3 eventlet
 $easy_install_3 packaging
-pip3 install eventlet
-python3 setup.py nosetests -w tests/unit/
+$easy_install_3 Netbase
+python3 setup.py gevent_nosetests
+python3 setup.py eventlet_nosetests
 popd
 
 %files
@@ -106,6 +113,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Dec 12 2018 Tapas Kundu <tkundu@vmware.com> 3.15.1-2
+-   Fix make check
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 3.15.1-1
 -   Update to version 3.15.1
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 3.10.0-5
