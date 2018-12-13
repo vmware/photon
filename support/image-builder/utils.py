@@ -49,9 +49,7 @@ class Utils(object):
 
     @staticmethod
     def runshellcommand(cmd, ignore_errors=False):
-        print(cmd)
-        command = cmd.split()
-        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, err = p.communicate()
         rc = p.returncode
         if not ignore_errors:
