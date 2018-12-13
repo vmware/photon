@@ -266,7 +266,7 @@ def createImage(options):
     if not validImage:
         raise Exception("Image type/config not supported")
     
-    if 'ova' in config['image_type'] and shutil.which("ovftool") is None:
+    if 'ova' in config['artifacttype'] and shutil.which("ovftool") is None:
         raise Exception("ovftool is not available")
     workingDir = os.path.abspath(options.stage_path + "/" + config['image_type'])
     if os.path.exists(workingDir) and os.path.isdir(workingDir):
