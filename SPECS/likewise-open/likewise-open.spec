@@ -1,16 +1,13 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
-Version: 	6.2.11.12
-Release:    2%{?dist}
+Version: 	6.2.11.13
+Release:    1%{?dist}
 Group: 		Development/Libraries
 Vendor:     VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
 URL: 		https://github.com/vmware/likewise-open
 Source0:    %{name}-%{version}.tar.gz
-%define sha1 likewise-open=417412eca6734896886bbb2ebac17f668bd80cdf
-Patch0:         likewise-open-aarch64.patch
-Patch1:         0001-likewise-open-Fix-build-warnings-errors-with-gcc-7.3.patch
-Patch2:         0002-likewise-domainjoin-recognize-photon.patch
+%define sha1 likewise-open=7012d73820c8cbdb8f0fa3b38f7478bce74f59a6
 Distribution:   Photon
 Requires:       Linux-PAM
 Requires:       (coreutils >= 8.22 or toybox)
@@ -48,9 +45,6 @@ This package provides files for developing against the Likewise APIs
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 # hack against glibc-2.26 to avoid getopt declaration mismatch
@@ -294,6 +288,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Wed Dec 12 2018 Sriram Nambakam <snambakam@vmware.com> 6.2.11.13-1
+-   Apply patches to source tar ball
 *   Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 6.2.11.12-2
 -   Change domain join to recognize Photon release and use systemctl
 *   Mon Aug 13 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.2.11.12-1
