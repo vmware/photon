@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.6
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -84,11 +84,11 @@ Requires:       %{name} = %{version}-%{release}
 %description drivers-gpu
 The Linux package contains the Linux kernel drivers for GPU
 
-%package sound
+%package drivers-sound
 Summary:        Kernel Sound modules
 Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
-%description sound
+%description drivers-sound
 The Linux package contains the Linux kernel sound support
 
 %package docs
@@ -303,18 +303,18 @@ make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
 %include %{SOURCE2}
 
 %post
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 %post drivers-gpu
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 
-%post sound
-/sbin/depmod -aq %{uname_r}
+%post drivers-sound
+/sbin/depmod -a %{uname_r}
 
 %ifarch x86_64
 %post oprofile
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 %endif
 
 %files
@@ -347,7 +347,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %exclude /lib/modules/%{uname_r}/kernel/drivers/gpu/drm/cirrus/
 /lib/modules/%{uname_r}/kernel/drivers/gpu
 
-%files sound
+%files drivers-sound
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/kernel/sound
 
@@ -386,6 +386,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Jan 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-4
+-   .config: added Compulab fitlet2 device drivers
+-   .config_aarch64: added gpio sysfs support
+-   renamed -sound to -drivers-sound
 *   Tue Jan 01 2019 Ajay Kaher <akaher@vmware.com> 4.19.6-3
 -   .config: Enable CONFIG_PCI_HYPERV driver
 *   Wed Dec 19 2018 Srinidhi Rao <srinidhir@vmware.com> 4.19.6-2
