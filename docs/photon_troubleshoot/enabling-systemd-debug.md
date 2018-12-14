@@ -10,7 +10,7 @@ Perform the following steps to enable early shell access:
 
 1. Append `systemd.debug-shell=1` to the kernel command line. 
 
-    To change logging level to debug, you can append `systemd.log_level=debug`.
+    Optionally, to change logging level to debug, you can append `systemd.log_level=debug`.
 
 1. Press `F10` to proceed with the boot.
 
