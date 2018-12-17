@@ -1,0 +1,97 @@
+From 0de8ce3ee8e38cc66683438f715c79a2cc69539e Mon Sep 17 00:00:00 2001
+From: Long Li <longli@microsoft.com>
+Date: Tue, 8 Nov 2016 14:04:38 -0800
+Subject: PCI: hv: Allocate physically contiguous hypercall params buffer
+
+hv_do_hypercall() assumes that we pass a segment from a physically
+contiguous buffer.  A buffer allocated on the stack may not work if
+CONFIG_VMAP_STACK=y is set.
+
+Use kmalloc() to allocate this buffer.
+
+Reported-by: Haiyang Zhang <haiyangz@microsoft.com>
+Signed-off-by: Long Li <longli@microsoft.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Acked-by: K. Y. Srinivasan <kys@microsoft.com>
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ drivers/pci/host/pci-hyperv.c | 29 +++++++++++++++++++----------
+ 1 file changed, 19 insertions(+), 10 deletions(-)
+
+(limited to 'drivers/pci/host/pci-hyperv.c')
+
+diff --git a/drivers/pci/host/pci-hyperv.c b/drivers/pci/host/pci-hyperv.c
+index a63c3a4f6c7c..3efcc7bdc5fb 100644
+--- a/drivers/pci/host/pci-hyperv.c
++++ b/drivers/pci/host/pci-hyperv.c
+@@ -378,6 +378,8 @@ struct hv_pcibus_device {
+ 	struct msi_domain_info msi_info;
+ 	struct msi_controller msi_chip;
+ 	struct irq_domain *irq_domain;
++	struct retarget_msi_interrupt retarget_msi_interrupt_params;
++	spinlock_t retarget_msi_interrupt_lock;
+ };
+ 
+ /*
+@@ -774,34 +776,40 @@ static void hv_irq_unmask(struct irq_data *data)
+ {
+ 	struct msi_desc *msi_desc = irq_data_get_msi_desc(data);
+ 	struct irq_cfg *cfg = irqd_cfg(data);
+-	struct retarget_msi_interrupt params;
++	struct retarget_msi_interrupt *params;
+ 	struct hv_pcibus_device *hbus;
+ 	struct cpumask *dest;
+ 	struct pci_bus *pbus;
+ 	struct pci_dev *pdev;
+ 	int cpu;
++	unsigned long flags;
+ 
+ 	dest = irq_data_get_affinity_mask(data);
+ 	pdev = msi_desc_to_pci_dev(msi_desc);
+ 	pbus = pdev->bus;
+ 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
+ 
+-	memset(&params, 0, sizeof(params));
+-	params.partition_id = HV_PARTITION_ID_SELF;
+-	params.source = 1; /* MSI(-X) */
+-	params.address = msi_desc->msg.address_lo;
+-	params.data = msi_desc->msg.data;
+-	params.device_id = (hbus->hdev->dev_instance.b[5] << 24) |
++	spin_lock_irqsave(&hbus->retarget_msi_interrupt_lock, flags);
++
++	params = &hbus->retarget_msi_interrupt_params;
++	memset(params, 0, sizeof(*params));
++	params->partition_id = HV_PARTITION_ID_SELF;
++	params->source = 1; /* MSI(-X) */
++	params->address = msi_desc->msg.address_lo;
++	params->data = msi_desc->msg.data;
++	params->device_id = (hbus->hdev->dev_instance.b[5] << 24) |
+ 			   (hbus->hdev->dev_instance.b[4] << 16) |
+ 			   (hbus->hdev->dev_instance.b[7] << 8) |
+ 			   (hbus->hdev->dev_instance.b[6] & 0xf8) |
+ 			   PCI_FUNC(pdev->devfn);
+-	params.vector = cfg->vector;
++	params->vector = cfg->vector;
+ 
+ 	for_each_cpu_and(cpu, dest, cpu_online_mask)
+-		params.vp_mask |= (1ULL << vmbus_cpu_number_to_vp_number(cpu));
++		params->vp_mask |= (1ULL << vmbus_cpu_number_to_vp_number(cpu));
++
++	hv_do_hypercall(HVCALL_RETARGET_INTERRUPT, params, NULL);
+ 
+-	hv_do_hypercall(HVCALL_RETARGET_INTERRUPT, &params, NULL);
++	spin_unlock_irqrestore(&hbus->retarget_msi_interrupt_lock, flags);
+ 
+ 	pci_msi_unmask_irq(data);
+ }
+@@ -2186,6 +2194,7 @@ static int hv_pci_probe(struct hv_device *hdev,
+ 	INIT_LIST_HEAD(&hbus->resources_for_children);
+ 	spin_lock_init(&hbus->config_lock);
+ 	spin_lock_init(&hbus->device_list_lock);
++	spin_lock_init(&hbus->retarget_msi_interrupt_lock);
+ 	sema_init(&hbus->enum_sem, 1);
+ 	init_completion(&hbus->remove_event);
+ 
+-- 
+cgit 1.2-0.3.lf.el7
+
