@@ -12,23 +12,28 @@ You can get Photon OS up and running on an RPi3 board, by flashing the Photon RP
 
 After you have downloaded the Photon RPi3 image with the file extension `.raw.xz`, you can choose one of the methods below to flash it onto the RPi3 SD card.
 
-1. **Flash Photon to RPi3 using Etcher**
-    
-    - Install Etcher [https://etcher.io/](https://etcher.io/), which is a utility to flash SD cards attached to your host computer.
-    - Plug the RPi3 SD card into your host computer's SD card reader.
-    - Perform the following steps on the Etcher GUI: **Select image** -> **Select drive** -> **Flash**, by selecting the Photon OS RPi3 as image and the RPi3 SD card as drive.
 
-2. **Flash Photon to RPi3 using Linux CLI**
-   
-    - If you have Linux running on your host computer, install the `xz` package, which provides the `xz` compression utility and related tools, from your distribution package manager.
-    - Plug the RPi3's SD card into your host computer's SD card reader.
-    - Identify the device file under `/dev` that refers to the RPi3 SD card. For example, `/dev/sdc`. This file path is used to flash the Photon image onto the RPi3 in the next step.
+1. Flash Photon to RPi3 using Etcher
+1. Flash Photon to RPi3 using Linux CLI
+
+
+### Flash Photon to RPi3 using Etcher
     
-        **Note**: Make sure that you are flashing to the device file that refers to your RPi3 SD card. Running the below command with an incorrect device file will overwrite that device without warning and might result in a corrupted disk. The device file '/dev/sdc` is an example and might not be the device file in your case. 
+1. Install Etcher [https://etcher.io/](https://etcher.io/), which is a utility to flash SD cards attached to your host computer.
+1. Plug the RPi3 SD card into your host computer's SD card reader.
+1. Perform the following steps on the Etcher GUI: **Select image** -> **Select drive** -> **Flash**, by selecting the Photon OS RPi3 as image and the RPi3 SD card as drive.
+
+### Flash Photon to RPi3 using Linux CLI
+   
+1. If you have Linux running on your host computer, install the `xz` package, which provides the `xz` compression utility and related tools, from your distribution package manager.
+1. Plug the RPi3's SD card into your host computer's SD card reader.
+1. Identify the device file under `/dev` that refers to the RPi3 SD card. For example, `/dev/sdc`. This file path is used to flash the Photon image onto the RPi3 in the next step.
+    
+    **Note**: Make sure that you are flashing to the device file that refers to your RPi3 SD card. Running the below command with an incorrect device file will overwrite that device without warning and might result in a corrupted disk. The device file '/dev/sdc` is an example and might not be the device file in your case. 
         
-    - Run the following command to flash Photon onto th RPi3 SD card:
+1. Run the following command to flash Photon onto the RPi3 SD card:
         
-        `xzcat <photon-rpi3-image.raw.xz> | sudo dd of=/dev/sdc bs=4M conv=fsync`
+    `xzcat <photon-rpi3-image.raw.xz> | sudo dd of=/dev/sdc bs=4M conv=fsync`
 
 ## Boot Photon OS on Raspberry Pi 3
 
