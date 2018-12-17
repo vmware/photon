@@ -15,7 +15,7 @@ cat << EOF >> /lib/systemd/system/eth0.service
 	Wants=local-fs.target network-online.target network.target
 
 	[Service]
-	ExecStart=/bin/ifconfig eth0 mtu 1460 up
+	ExecStart=/usr/sbin/ifconfig eth0 mtu 1460 up
 	Type=oneshot
 
 	[Install]
