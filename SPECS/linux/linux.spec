@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.140
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -70,6 +70,11 @@ Patch45:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 Patch46:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch47:        0002-xfs-verify-dinode-header-first.patch
 Patch48:        0003-xfs-enhance-dinode-verifier.patch
+
+#HyperV PCI patches
+Patch51:        0001_PCI_hv_Allocate_physically_contiguous_hypercall_params_buffer.patch
+Patch52:        0002_PCI_hv_Add_vPCI_version_protocol_negotiation.patch
+Patch53:        0003_PCI_hv_Use_vPCI_protocol_version_1.2_v4.9.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -189,6 +194,10 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
+
+%patch51 -p1
+%patch52 -p1
+%patch53 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -363,6 +372,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Dec 17 2018 Ajay Kaher <akaher@vmware.com> 4.9.140-2
+-   Enable pci-hyperv support and apply relevant patches
 *   Mon Nov 26 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.140-1
 -   Update to version 4.9.140
 *   Fri Nov 16 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.137-1
