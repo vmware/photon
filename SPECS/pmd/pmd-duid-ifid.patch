@@ -1,0 +1,48 @@
+--- a/tools/cli/netmgmt/net_main.c	2019-01-04 16:48:20.110587273 +0530
++++ b/tools/cli/netmgmt/net_main.c	2019-01-04 17:14:21.630581994 +0530
+@@ -986,6 +986,7 @@ cmd_dhcp_duid(
+ {
+     uint32_t dwError = 0;
+     char *pszDuid = NULL;
++    char *pszDuid = NULL, *pszIfName = NULL;
+ 
+     if(!hPMD || !pCmd)
+     {
+@@ -993,19 +994,18 @@ cmd_dhcp_duid(
+         BAIL_ON_CLI_ERROR(dwError);
+     }
+ 
+-    if (pCmd->op == OP_SET)
+-    {
++    dwError = netmgrcli_find_cmdopt(pCmd, "interface", &pszIfName);
++    BAIL_ON_CLI_ERROR(dwError);
++
++    if (pCmd->op == OP_SET) {
+         dwError = netmgrcli_find_cmdopt(pCmd, "duid", &pszDuid);
+         BAIL_ON_CLI_ERROR(dwError);
+ 
+-        dwError = netmgr_client_set_duid(hPMD, NULL, pszDuid);
++        dwError = netmgr_client_set_duid(hPMD, pszIfName, pszDuid);
+         pszDuid = NULL;
+         BAIL_ON_CLI_ERROR(dwError);
+-    }
+-
+-    if (pCmd->op == OP_GET)
+-    {
+-        dwError = netmgr_client_get_duid(hPMD, NULL, &pszDuid);
++    } else if (pCmd->op == OP_GET) {
++        dwError = netmgr_client_get_duid(hPMD, pszIfName, &pszDuid);
+         BAIL_ON_CLI_ERROR(dwError);
+         fprintf(stdout, "DUID=%s\n", pszDuid);
+     }
+--- a/server/netmgmtrpcapi.c	2019-01-04 17:14:47.594581907 +0530
++++ b/server/netmgmtrpcapi.c	2019-01-04 17:15:25.350581779 +0530
+@@ -1285,6 +1285,8 @@ netmgr_rpc_get_iaid(
+         dwError = ERROR_PMD_INVALID_PARAMETER;
+         BAIL_ON_PMD_ERROR(dwError);
+     }
++    dwError = rpc_open_privsep_internal(NET_PRIVSEP, &hPMD);
++    BAIL_ON_PMD_ERROR(dwError);
+ 
+     dwError = netmgr_client_get_iaid_w(hPMD, pwszIfname, &iaid);
+     BAIL_ON_PMD_ERROR(dwError);
