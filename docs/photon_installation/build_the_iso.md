@@ -23,4 +23,16 @@ Perform the following steps to install the packages on Ubuntu:
     
 **Result**
 
-The ISO is created at `$HOME/workspaces/photon/stage/photon.iso`.
+This command first builds all RPMs corresponding to the SPEC files in your Photon repository and then builds a bootable ISO containing those RPMs.
+
+For example: The ISO is created at `$HOME/workspaces/photon/stage/photon.iso`.
+ 
+The RPMs thus built are stored under `stage/RPMS/` directory within the repository, using the following directory hierarchy:
+ 
+    stage/:
+            RPMS/:
+                    noarch/*.rpm    [Architecture-independent RPMs]
+                    x86-64/*.rpm    [RPMs built for the x86-64 architecture]
+                    aarch64/*.rpm  [RPMs built for the aarch64 (ARM64) architecture]
+
+
