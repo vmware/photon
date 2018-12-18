@@ -1,16 +1,17 @@
 Summary:        Utilities for internationalization and localization
 Name:           gettext
-Version:        0.19.8
-Release:        2%{?dist}
+Version:        0.19.8.1
+Release:        1%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/gettext
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
-%define         sha1 gettext=dc551d4783edf691c1f0095ca927d3128b5093e8
+%define         sha1 gettext=e0fe90ede22f7f16bbde7bdea791a835f2773fc9
 Source1:        libxml2-2.9.8.tar.gz
 %define         sha1 libxml2=66bcefd98a6b7573427cf66f9d3841b59eb5b8c3
+Patch0:         gettext-0.19.8.1-CVE-2018-18751.patch
 
 %description
 These allow programs to be compiled with NLS
@@ -22,6 +23,7 @@ messages in the user's native language.
 %setup -D -a 1
 rm -rf gnulib-local/lib/libxml
 mv libxml2-2.9.8 gnulib-local/lib/libxml
+%patch0 -p1
 
 %build
 ./configure \
@@ -53,12 +55,14 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 %{_libdir}/*.a
 %{_datarootdir}/aclocal/*
-%{_datarootdir}/%{name}-%{version}/*
+%{_datadir}/*
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_datarootdir}/%{name}/*
 %{_mandir}/*
 
 %changelog
+*   Tue Dec 18 2018 Ashwin H <ashwinh@vmware.com> 0.19.8.1-1
+-   Upgrade to 0.19.8.1 and then Fix CVE-2018-18751
 *   Wed May 23 2018 Xiaolin Li <xiaolinl@vmware.com> 0.19.8-2
 -   Rebuild gettext with libxml2-2.9.8
 *   Wed Apr 05 2017 Danut Moraru <dmoraru@vmware.com> 0.19.8-1
