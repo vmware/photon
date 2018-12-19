@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 import tarfile
+import lzma as xz
 import fileinput
 from argparse import ArgumentParser
 import json
@@ -158,9 +159,18 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         os.remove(raw_image)
 
 def generateCompressedFile(inputfile, outputfile, formatstring):
-    tarout = tarfile.open(outputfile, formatstring)
-    tarout.add(inputfile, arcname=os.path.basename(inputfile))
-    tarout.close()
+    if formatstring == "w:xz":
+        in_file = open(inputfile, 'rb')
+        in_data = in_file.read()
+
+        out_file = open(inputfile+".xz", 'wb')
+        out_file.write(xz.compress(in_data))
+        in_file.close()
+        out_file.close()
+    else:
+        tarout = tarfile.open(outputfile, formatstring)
+        tarout.add(inputfile, arcname=os.path.basename(inputfile))
+        tarout.close()
 
 def generateImage(raw_image_path, additional_rpms_path, tools_bin_path, src_root, config):
     working_directory = os.path.dirname(raw_image_path)
@@ -176,8 +186,11 @@ def generateImage(raw_image_path, additional_rpms_path, tools_bin_path, src_root
     device_name = disk_device.split('/')[2]
     if not device_name:
         raise Exception("Could not create loop device and partition")
+
     loop_device_path = "/dev/mapper/{}p2".format(device_name)
-    
+
+    print(loop_device_path)
+
     try:
         (uuidval, partuuidval) = generateUuid(loop_device_path)
         # Prep the loop device
