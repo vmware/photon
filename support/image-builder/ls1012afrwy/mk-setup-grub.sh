@@ -22,7 +22,7 @@ grub_efi_install()
     cp -r $SCRIPT_PATH/esp/ls1012afrwy_boot.scr $BUILDROOT/boot_temp/
     cp -rfa $BUILDROOT/boot_temp/vmlinuz-* $BUILDROOT/boot_temp/Image
     gzip -k $BUILDROOT/boot_temp/Image
-    cp -rfa $BUILDROOT/boot_temp/dtb/fsl-ls1012a-frdm.dtb $BUILDROOT/boot_temp/fsl-ls1012a-frwy.dtb
+    cp -rfa $BUILDROOT/boot_temp/dtb/fsl-ls1012a-frwy.dtb $BUILDROOT/boot_temp/fsl-ls1012a-frwy.dtb
     sync
     umount $BUILDROOT/boot_temp/
     rm -rf $BUILDROOT/boot_temp/

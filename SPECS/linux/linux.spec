@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.6
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -43,6 +43,8 @@ Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.p
 Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
 Patch31:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+# NXP LS1012a FRWY patches
+Patch33:        0001-nxp-ls1012a-Add-support-for-pfe-driver.patch
 
 
 %if 0%{?kat_build:1}
@@ -154,6 +156,7 @@ Kernel Device Tree Blob files for NXP ls1012a FRWY board
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
+%patch33 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -249,7 +252,7 @@ install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
 # Install DTB files
 install -vdm 755 %{buildroot}/boot/dtb
 install -vm 640 arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dtb %{buildroot}/boot/dtb/
-install -vm 640 arch/arm64/boot/dts/freescale/fsl-ls1012a-frdm.dtb %{buildroot}/boot/dtb/
+install -vm 640 arch/arm64/boot/dts/freescale/fsl-ls1012a-frwy.dtb %{buildroot}/boot/dtb/
 %endif
 
 # Restrict the permission on System.map-X file
@@ -381,11 +384,13 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 %files dtb-ls1012afrwy
 %defattr(-,root,root)
-/boot/dtb/fsl-ls1012a-frdm.dtb
+/boot/dtb/fsl-ls1012a-frwy.dtb
 
 %endif
 
 %changelog
+*   Wed Dec 19 2018 Srinidhi Rao <srinidhir@vmware.com> 4.19.6-3
+-   Add Network support for NXP LS1012A board.
 *   Wed Dec 19 2018 Srinidhi Rao <srinidhir@vmware.com> 4.19.6-2
 -   Add NXP LS1012A support.
 *   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-1
