@@ -13,6 +13,8 @@ import os
 import hashlib
 import datetime
 import requests
+import random
+import string
 from requests.auth import HTTPBasicAuth
 from CommandUtils import CommandUtils
 
@@ -76,7 +78,9 @@ class pullSources:
         # download to a temporary location (on the same filesystem)
         # and then rename it to the final destination filename.
 
-        temp_file_path = file_path + "-" + package
+        temp_file_path = file_path + "-" + \
+                "".join([random.choice(
+                    string.ascii_letters + string.digits) for _ in range(6)])
 
         with open(temp_file_path, 'wb') as handle:
             response = requests.get(url, auth=self._auth, stream=True)
