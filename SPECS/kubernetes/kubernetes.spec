@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.9.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
@@ -9,6 +9,7 @@ Source0:        kubernetes-v%{version}.tar.gz
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         k8s-cascade.patch
+Patch1:         CVE-2018-1002105.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -49,6 +50,7 @@ tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 cd %{name}-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 make
@@ -186,6 +188,8 @@ fi
 %{_bindir}/pause-amd64
 
 %changelog
+*   Thu Dec 20 2018 Ashwin H <ashwinh@vmware.com> 1.9.6-2
+-   Fix CVE-2018-1002105
 *   Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.9.6-1
 -   k8s v1.9.6 and Cascade Cloud Provider patch
 *   Tue Jan 30 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-5
