@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.164
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -338,6 +338,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Dec 20 2018 Alexey Makhalov <amakhalov@vmware.com> 4.4.164-3
+-   .config: CONFIG_FANOTIFY_ACCESS_PERMISSIONS=y
 *   Wed Dec 12 2018 Kamal Charan <kcharan@vmware.com> 4.4.164-2
 -   Add 9p zero copy data path using crossfd
 *   Mon Nov 26 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.164-1
