@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.140
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -312,17 +312,17 @@ make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
 %include %{SOURCE2}
 
 %post
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 %post drivers-gpu
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 
 %post sound
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 
 %post oprofile
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 
 %files
 %defattr(-,root,root)
@@ -372,6 +372,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Dec 20 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.140-3
+-   .config: CONFIG_FANOTIFY_ACCESS_PERMISSIONS=y
+-   Removed deprecated -q option for depmod
 *   Mon Dec 17 2018 Ajay Kaher <akaher@vmware.com> 4.9.140-2
 -   Enable pci-hyperv support and apply relevant patches
 *   Mon Nov 26 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.140-1
