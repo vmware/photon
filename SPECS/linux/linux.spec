@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.6
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -386,6 +386,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Dec 21 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-3
+-   Enable AppArmor by default.
 *   Wed Dec 19 2018 Srinidhi Rao <srinidhir@vmware.com> 4.19.6-2
 -   Add NXP LS1012A support.
 *   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-1
