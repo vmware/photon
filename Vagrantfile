@@ -74,7 +74,7 @@ vm_config = { ram: 2048, cpu: 2 }
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # the photon-build-machine box is built using packer,
   # see support/packer-templates/photon-build-machine.json
-  config.vm.box = 'photon-build-machine'
+  config.vm.box = 'vmware/photon-build-machine'
 
   config.vm.box_check_update = false
 
