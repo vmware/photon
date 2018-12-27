@@ -5,7 +5,7 @@
 
 Name:           python-backports_abc
 Version:        0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A backport of recent additions to the 'collections.abc' module.
 License:        PSFL
 Group:          Development/Languages/Python
@@ -61,7 +61,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Dec 04 2018 Padmini Thirumalachar <pthirumalachar@vmware.com> 0.5-1
+*   Tue Dec 04 2018 Padmini Thirumalachar <pthirumalachar@vmware.com> 0.5-2
 -   To build python2 and python3 backports_abc packages.
 *   Wed Nov 29 2017 Padmini Thirumalachar <pthirumalachar@vmware.com> 0.5-1
 -   Initial version of python backports_abc for PhotonOS.
