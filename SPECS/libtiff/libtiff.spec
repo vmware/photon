@@ -1,26 +1,14 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
-Version:        4.0.9
-Release:        7%{?dist}
+Version:        4.0.10
+Release:        1%{?dist}
 License:        libtiff
 URL:            http://www.simplesystems.org/libtiff/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://download.osgeo.org/%{name}/tiff-%{version}.tar.gz
-%define sha1    tiff=87d4543579176cc568668617c22baceccd568296
-# patches:      https://blogs.gentoo.org/ago/2017/01/01/libtiff-multiple-heap-based-buffer-overflow/
-Patch0:         libtiff-4.0.9-CVE-2017-18013.patch
-Patch1:         libtiff-4.0.9-CVE-2017-9935.patch
-Patch2:         libtiff-4.0.9-CVE-2017-17095.patch
-Patch3:         libtiff-4.0.9-CVE-2018-5784.patch
-Patch4:         libtiff-4.0-9-CVE-2017-11613-1.patch
-Patch5:         libtiff-4.0-9-CVE-2017-11613-2.patch
-Patch6:         libtiff-4.0-9-CVE-2018-7456.patch
-Patch7:         libtiff-4.0.9-CVE-2018-8905.patch
-Patch8:         libtiff-4.0.9-CVE-2018-10963.patch
-Patch9:         libtiff-4.0.9-CVE-2018-17100.patch
-Patch10:        libtiff-4.0.9-CVE-2018-17101.patch
+Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff-v%{version}.tar.gz
+%define sha1    libtiff-v=e4ec512e56544d7586178dc69c7b5728f74fcc79
 
 BuildRequires:  libjpeg-turbo-devel
 Requires:       libjpeg-turbo
@@ -35,20 +23,10 @@ Requires:       libjpeg-turbo-devel
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q -n tiff-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
+%setup -q -n libtiff-v%{version}
 
 %build
+sh autogen.sh
 %configure \
     --disable-static
 make %{?_smp_mflags}
@@ -81,6 +59,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Thu Dec 27 2018 Ashwin H <ankitja@vmware.com> 4.0.10-1
+-   Update to 4.0.10 
 *   Mon Nov 19 2018 Ashwin H <ankitja@vmware.com> 4.0.9-7
 -   Fix CVE-2018-17100, CVE-2018-17101
 *   Tue Jun 19 2018 Ankit Jain <ankitja@vmware.com> 4.0.9-6
