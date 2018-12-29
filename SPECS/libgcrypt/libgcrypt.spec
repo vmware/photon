@@ -1,14 +1,12 @@
 Summary:        Crypto Libraries
 Name:           libgcrypt
-Version:        1.7.6
-Release:        4%{?dist}
+Version:        1.8.1
+Release:        1%{?dist}
 License:        GPLv2+ and LGPLv2+
 URL:            http://www.gnu.org/software/libgcrypt/
 Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
-%define sha1 libgcrypt=d2b9e0f413064cfc67188f80d3cbda887c755a62
-Patch0:         CVE-2017-0379.patch
-Patch1:         libgcrypt-CVE-2017-9526.patch
-Patch2:         libgcrypt-CVE-2018-0495.patch
+%define sha1 libgcrypt=dd35f00da45602afe81e01f4d60c40bbdd826fe6
+Patch0:         libgcrypt-CVE-2018-0495.patch
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 BuildRequires:  libgpg-error
@@ -22,7 +20,8 @@ cryptographic building blocks using an extendable and flexible API.
 
 %package devel
 Summary:    Development libraries and header files for libgcrypt
-Requires:   libgcrypt
+Requires:    %{name} = %{version}-%{release}
+Requires:    libgpg-error
 
 %description devel
 The package contains libraries and header files for developing applications
@@ -31,8 +30,7 @@ that use libgcrypt.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
+
 %build
 ./configure \
     --prefix=%{_prefix}
@@ -53,15 +51,17 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/*
 %{_libdir}/*.so.*
 %{_mandir}/man1/*
+%{_libdir}/*.la
+/usr/share/aclocal/libgcrypt.m4
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*.h
 %{_libdir}/*.so
-%{_libdir}/*.la
-/usr/share/aclocal/libgcrypt.m4
 
 %changelog
+*   Fri Dec 28 2018 Ashwin H <ashwinh@vmware.com> 1.8.1-1
+-   Update to 1.8.1 for security fixes which include CVE-2017-7526
 *   Mon Sep 03 2018 Ankit Jain <ankitja@vmware.com> 1.7.6-4
 -   Fix for CVE-2018-0495
 *   Thu Oct 19 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.6-3
