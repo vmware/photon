@@ -2,7 +2,7 @@
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.7.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
@@ -16,6 +16,7 @@ Patch1:         net-snmp-5.7.2-systemd.patch
 Patch2:         net-snmp-remove-u64-typedef.patch
 Patch3:         net-snmp-fix-perl-module-compilation.patch
 Patch4:         net-snmp-CVE-2018-1000116.patch
+Patch5:         net-snmp-CVE-2018-18065.patch
 BuildRequires:  openssl-devel perl systemd
 Requires:       perl systemd
 %description
@@ -35,6 +36,7 @@ The net-snmp-devel package contains headers and libraries for building SNMP appl
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 ./configure --prefix=%{_prefix} \
@@ -99,6 +101,8 @@ rm -rf %{buildroot}/*
 %exclude /usr/lib/perl5/5.24.1/*/perllocal.pod
 
 %changelog
+*   Mon Dec 31 2018 Ankit Jain <ankitja@vmware.com> 5.7.3-10
+-   Fix for CVE-2018-18065
 *   Tue Jul 31 2018 Ajay Kaher <akaher@vmware.com> 5.7.3-9
 -   Excluded perllocal.pod for aarch64
 *   Mon Apr 16 2018 Xiaolin Li <xiaolinl@vmware.com> 5.7.3-8
