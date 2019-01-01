@@ -3,7 +3,7 @@
 %define gem_name libxml-ruby
 Name:           rubygem-libxml-ruby
 Version:        3.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 Group:          Applications/Programming
 License:        BSD
@@ -13,7 +13,7 @@ URL:            https://rubygems.org/gems/%{gem_name}
 Source0:        https://rubygems.org/downloads/libxml-ruby-%{version}.gem
 %define sha1    libxml-ruby=9a4f28d019da0aef73773d676f9ba3ce9294b6bb
 BuildRequires:  ruby >= 2.4.0
-BuildRequires:  libxml2-devel 
+BuildRequires:  libxml2-devel
 Requires:       ruby >= 2.4.0
 %description
 Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
@@ -34,6 +34,8 @@ rake test
 %defattr(-,root,root,-)
 %{gemdir}
 %changelog
+*   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 3.0.0-4
+-   Increment the release version as part of ruby upgrade
 *   Thu Sep 05 2017 Chang Lee <changlee@vmware.com> 3.0.0-3
 -   Added %check without canonicalize tests
 *   Thu Apr 13 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.0.0-2

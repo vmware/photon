@@ -4,7 +4,7 @@
 
 Name: rubygem-serverengine
 Version:        2.0.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A framework to implement robust multiprocess servers like Unicorn
 Group:          Development/Languages
 License:        Apache 2
@@ -30,5 +30,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 2.0.7-2
+-   Increment the release version as part of ruby upgrade
 *   Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 2.0.7-1
 -   Initial build

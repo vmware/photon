@@ -4,7 +4,7 @@
 
 Name: rubygem-activesupport
 Version:        5.0.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Support libaries for Rails framework.
 Group:          Development/Languages
 License:        MIT
@@ -31,5 +31,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 5.0.0.1-2
+-   Increment the release version as part of ruby upgrade
 *   Fri Aug 25 2017 Kumar Kaushik <kaushikk@vmware.com> 5.0.0.1-1
 -   Initial build
