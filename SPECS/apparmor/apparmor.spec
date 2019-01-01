@@ -370,7 +370,7 @@ make DESTDIR=%{buildroot} install
 
 %files -n ruby-apparmor
 %defattr(-,root,root)
-%{_libdir}/ruby/site_ruby/2.4.0/x86_64-linux/LibAppArmor.so
+%{_libdir}/ruby/site_ruby/2.5.0/x86_64-linux/LibAppArmor.so
 
 %changelog
 *   Wed Aug 8 2018 Keerthana K <keerthanak@vmware.com> 2.13-3

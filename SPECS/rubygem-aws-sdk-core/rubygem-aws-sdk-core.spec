@@ -4,7 +4,7 @@
 
 Name: rubygem-aws-sdk-core
 Version:        3.22.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides API clients for AWS.
 Group:          Development/Languages
 License:        Apache 2.0
@@ -34,5 +34,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 3.22.1-2
+-   Increment the release version as part of ruby upgrade
 *   Mon Jul 30 2018 Srinidhi Rao <srinidhir@vmware.com> 3.22.1-1
 -   Initial build

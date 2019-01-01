@@ -4,7 +4,7 @@
 
 Name: rubygem-cool-io
 Version:        1.5.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        a high performance event framework for Ruby which uses the libev C library
 Group:          Development/Languages
 License:        N/A
@@ -30,5 +30,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 1.5.3-2
+-   Increment the release version as part of ruby upgrade
 *   Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 1.5.3-1
 -   Initial build

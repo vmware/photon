@@ -4,7 +4,7 @@
 
 Name: rubygem-tzinfo
 Version:        1.2.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Timezone related support for Ruby.
 Group:          Development/Languages
 License:        MIT
@@ -29,6 +29,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 1.2.5-2
+-   Increment the release version as part of ruby upgrade
 *   Tue Aug 14 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.5-1
 -   Upgraded to 1.2.5
 *   Fri Aug 25 2017 Kumar Kaushik <kaushikk@vmware.com> 1.2.3-1

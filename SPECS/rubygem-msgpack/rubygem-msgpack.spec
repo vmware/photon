@@ -4,7 +4,7 @@
 
 Name: rubygem-msgpack
 Version:        1.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A binary-based efficient object serialization library
 Group:          Development/Languages
 License:        Apache 2.0
@@ -32,5 +32,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 1.2.4-2
+-   Increment the release version as part of ruby upgrade
 *   Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.4-1
 -   Initial build
