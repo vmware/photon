@@ -4,7 +4,7 @@
 
 Name: rubygem-dig_rb
 Version:        1.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Array/Hash/Struct#dig backfill for ruby
 Group:          Development/Languages
 License:        MIT
@@ -30,5 +30,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 1.0.1-2
+-   Increment the release version as part of ruby upgrade
 *   Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 1.0.1-1
 -   Initial build

@@ -4,7 +4,7 @@
 
 Name: rubygem-systemd-journal
 Version:        1.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides the ability to navigate and read entries from the systemd journal in ruby
 Group:          Development/Languages
 License:        MIT
@@ -34,5 +34,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 1.3.3-2
+-   Increment the release version as part of ruby upgrade
 *   Mon Aug 13 2018 Srinidhi Rao <srinidhir@vmware.com> 1.3.3-1
 -   Initial build

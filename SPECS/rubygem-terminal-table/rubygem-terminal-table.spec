@@ -3,7 +3,7 @@
 %define gem_name terminal-table
 Name:           rubygem-terminal-table
 Version:        1.7.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Simple, feature rich ascii table generation library
 Group:          Applications/Programming
 Vendor:         VMware, Inc.
@@ -26,6 +26,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %defattr(-,root,root,-)
 %{gemdir}
 %changelog
+*   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 1.7.3-3
+-   Increment the release version as part of ruby upgrade
 *   Wed Mar 29 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.3-2
 -   Added rubygem-unicode-display_width to requires.
 *   Wed Mar 22 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.3-1

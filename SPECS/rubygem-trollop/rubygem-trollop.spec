@@ -3,7 +3,7 @@
 %define gem_name trollop
 Name: rubygem-trollop
 Version: 2.1.2
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: Commandline option parser for Ruby
 Group: Applications/Programming
 License: BSD
@@ -23,6 +23,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %defattr(-,root,root,-)
 %{gemdir}
 %changelog
+* Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 2.1.2-4
+- Increment the release version as part of ruby upgrade
 * Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 2.1.2-3
 - Bump up release number to reflect ruby upgrade
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-2

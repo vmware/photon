@@ -4,7 +4,7 @@
 
 Name: rubygem-bundler
 Version:        1.16.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        manages an application's dependencies
 Group:          Development/Languages
 License:        MIT
@@ -31,5 +31,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 1.16.3-2
+-   Increment the release version as part of ruby upgrade
 *   Mon Aug 13 2018 Srinidhi Rao <srinidhir@vmware.com> 1.16.3-1
 -   Initial build
