@@ -1,15 +1,14 @@
 Summary:        Ruby
 Name:           ruby
-Version:        2.5.1
+Version:        2.5.3
 Release:        1%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://cache.ruby-lang.org/pub/ruby/2.4/%{name}-%{version}.tar.bz2
-%define sha1    ruby=251fdb5ac10783b036fe923aa7986be582062361
-Patch1:         ruby-CVE-2017-9228.patch
+Source0:        http://cache.ruby-lang.org/pub/ruby/2.5/%{name}-%{version}.tar.bz2
+%define sha1    ruby=d47ede7dab79de25fcc274dfcad0f92f389a4313
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -24,10 +23,8 @@ This is useful for object-oriented scripting.
 
 %prep
 %setup -q
-%patch1 -p1
 %build
-./configure \
-    --prefix=%{_prefix}   \
+%configure \
         --enable-shared \
         --docdir=%{_docdir}/%{name}-%{version}
 make %{?_smp_mflags} COPY="cp -p"
@@ -55,6 +52,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Tue Jan 01 2019 Sujay G <gsujay@vmware.com> 2.5.3-1
+-   Update to version 2.5.3, to fix CVE-2018-16395 & CVE-2018-16396
 *   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 2.5.1-1
 -   Update to version 2.5.1
 *   Fri Jan 12 2018 Xiaolin Li <xiaolinl@vmware.com> 2.4.3-2
