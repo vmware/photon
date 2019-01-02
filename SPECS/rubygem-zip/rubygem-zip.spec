@@ -3,7 +3,7 @@
 %define gem_name zip
 Name: rubygem-zip
 Version: 2.0.2
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: Ruby library for reading and writing Zip files
 Group: Applications/Programming
 License: BSD
@@ -23,6 +23,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %defattr(-,root,root,-)
 %{gemdir}
 %changelog
+* Tue Jan 29 2019 Srinidhi Rao <srinidhir@vmware.com> 2.0.2-4
+- Increment the release version as part of ruby upgrade.
 * Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 2.0.2-3
 - Bump up release number to reflect ruby upgrade
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.2-2

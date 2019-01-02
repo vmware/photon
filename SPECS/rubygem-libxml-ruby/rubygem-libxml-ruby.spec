@@ -5,7 +5,7 @@
 Summary:        Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 Name:           rubygem-libxml-ruby
 Version:        3.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Applications/Programming
 License:        BSD
 Vendor:         VMware, Inc.
@@ -14,7 +14,7 @@ URL:            https://rubygems.org/gems/%{gem_name}
 Source0:        https://rubygems.org/downloads/libxml-ruby-%{version}.gem
 %define sha1    libxml-ruby=9a4f28d019da0aef73773d676f9ba3ce9294b6bb
 BuildRequires:  ruby >= 2.4.0
-BuildRequires:  libxml2-devel 
+BuildRequires:  libxml2-devel
 Requires:       ruby >= 2.4.0
 %description
 Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
@@ -27,6 +27,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %defattr(-,root,root,-)
 %{gemdir}
 %changelog
+*   Tue Jan 29 2019 Srinidhi Rao <srinidhir@vmware.com> 3.0.0-3
+-   Increment the release version as part of ruby upgrade.
 *   Thu Sep 28 2017 Xiaolin Li <xiaolinl@vmware.com> 3.0.0-2
 -   Build with ruby 2.4.2.
 *   Wed Mar 22 2017 Xiaolin Li <xiaolinl@vmware.com> 3.0.0-1
