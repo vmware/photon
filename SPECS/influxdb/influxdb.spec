@@ -1,6 +1,6 @@
 Name:           influxdb
 Version:        1.6.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
@@ -153,6 +153,9 @@ cd %{name}
 go clean ./...
 go install ./...
 
+%check
+go test -run=TestDatabase . -v
+
 %install
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_sysconfdir}/influxdb
@@ -223,6 +226,8 @@ fi
 %exclude %{_bindir}/test_client
 
 %changelog
+*   Wed Jan 02 2019 Keerthana K <keerthanak@vmware.com> 1.6.0-3
+-   Added make check.
 *   Thu Oct 25 2018 Ajay Kaher <akaher@vmware.com> 1.6.0-2
 -   Fix for aarch64
 *   Wed Aug 1 2018 Keerthana K <keerthanak@vmware.com> 1.6.0-1
