@@ -4,7 +4,7 @@
 
 Name:           rubygem-mini_portile2
 Version:        2.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Simplistic port-like solution for developers
 Group:          Development/Languages
 License:        MIT
@@ -29,6 +29,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Tue Jan 29 2019 Srinidhi Rao <srinidhir@vmware.com> 2.1.0-2
+-   Increment the release version as part of ruby upgrade.
 *   Wed Mar 22 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.0-1
 -   Updated to version 2.1.0
 *   Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 2.0.0-3

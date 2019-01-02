@@ -5,7 +5,7 @@
 Summary:        Builders for MarkUp
 Name:           rubygem-builder
 Version:        3.2.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 License:        MIT
 Vendor:         VMware, Inc.
@@ -30,6 +30,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Tue Jan 29 2019 Srinidhi Rao <srinidhir@vmware.com> 3.2.3-2
+-   Increment the release version as part of ruby upgrade.
 *   Wed Mar 22 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.3-1
 -   Updated to version 3.2.3.
 *   Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 3.2.2-3
