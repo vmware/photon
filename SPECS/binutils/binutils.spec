@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.31
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -9,6 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
 %define sha1    binutils=e1a564cd356d2126d2e9a59e8587757634e731aa
+Patch0:         binutils-CVE-2018-17794-18700-18701-18484.patch
+Patch1:         binutils-CVE-2018-18605.patch
+Patch2:         binutils-CVE-2018-18607.patch
+Patch3:         binutils-CVE-2018-18606.patch
+
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -20,6 +25,10 @@ It contains the libraries and header files to create applications
 for handling compiled objects.
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 install -vdm 755 ../binutils-build
@@ -110,6 +119,9 @@ make %{?_smp_mflags} check
 %{_lib64dir}/libiberty.a
 
 %changelog
+*   Wed Jan 02 2019 Ankit Jain <ankitja@vmware.com> 2.31-2
+-   Fixes for CVE-2018-17794, CVE-2018-18700, CVE-2018-18701
+-   CVE-2018-18484, CVE-2018-18605, CVE-2018-18606, CVE-2018-18607
 *   Tue Jul 24 2018 Keerthana K <keerthanak@vmware.com> 2.31-1
 -   Update to version 2.31.
 *   Mon Jun 25 2018 Keerthana K <keerthanak@vmware.com> 2.30-6
