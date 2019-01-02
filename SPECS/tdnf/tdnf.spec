@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        2.0.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -19,6 +19,9 @@ BuildRequires:  rpm-devel
 BuildRequires:  openssl-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  curl-devel
+BuildRequires:  createrepo_c
+BuildRequires:  glib
+BuildRequires:  libxml2
 Obsoletes:      yum
 Provides:       yum
 Source0:        %{name}-%{version}-beta.tar.gz
@@ -63,6 +66,9 @@ autoreconf -i
 %configure \
     --disable-static
 make %{?_smp_mflags}
+
+%check
+make check
 
 %install
 make DESTDIR=%{buildroot} install
@@ -154,6 +160,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Wed Jan 02 2019 Keerthana K <keerthanak@vmware.com> 2.0.0-5
+-   Added make check.
 *   Tue Dec 04 2018 Keerthana K <keerthanak@vmware.com> 2.0.0-4
 -   Add support for libsolv caching.
 -   Fix bug in tdnf updateinfo command.
