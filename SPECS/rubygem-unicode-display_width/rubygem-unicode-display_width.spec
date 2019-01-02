@@ -5,7 +5,7 @@
 Summary:        Unicode::DisplayWidth.
 Name:           rubygem-unicode-display_width
 Version:        1.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 License:        MIT
 Vendor:         VMware, Inc.
@@ -40,5 +40,7 @@ popd
 %{gemdir}
 
 %changelog
+*   Tue Jan 29 2019 Srinidhi Rao <srinidhir@vmware.com> 1.1.3-2
+-   Increment the release version as part of ruby upgrade.
 *   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.1.3-1
 -   Initial build

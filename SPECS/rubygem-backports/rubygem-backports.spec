@@ -5,7 +5,7 @@
 
 Name: rubygem-backports
 Version:        3.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Backports of Ruby features for older Ruby
 Group:          Development/Languages
 License:        MIT
@@ -28,6 +28,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Tue Jan 29 2019 Srinidhi Rao <srinidhir@vmware.com> 3.7.0-2
+-   Increment the release version as part of ruby upgrade.
 *   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.0-1
 -   Updated to version 3.7.0.
 *   Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 3.6.8-3
