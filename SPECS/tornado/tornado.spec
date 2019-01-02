@@ -3,7 +3,7 @@
 
 Name:           tornado
 Version:        4.5.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tornado is a Python web framework and asynchronous networking library
 License:        PSFL
 Group:          Development/Languages/Python
@@ -35,8 +35,6 @@ Requires:       python3-libs
 %description -n python3-tornado
 Python 3 version.
 
-
-
 %prep
 %setup -n tornado-%{version}
 rm -rf ../p3dir
@@ -63,8 +61,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Dec 04 2018 Padmini Thirumalachar <pthirumalachar@vmware.com> 4.5.2-1
+*   Tue Dec 04 2018 Padmini Thirumalachar <pthirumalachar@vmware.com> 4.5.2-2
 -   To build python2 and python3 tornado packages
 *   Mon Dec 11 2017 Padmini Thirumalachar <pthirumalachar@vmware.com> 4.5.2-1
 -   Initial version of python tornado for PhotonOS.
-
