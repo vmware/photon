@@ -10,6 +10,7 @@ import shutil
 import signal
 import sys
 import glob
+import re
 import modules.commons
 from jsonwrapper import JsonWrapper
 from progressbar import ProgressBar
@@ -455,14 +456,8 @@ class Installer(object):
         try:
             if self.install_config['install_linux_esx']:
                 selected_packages = self.install_config['packages']
-                try:
-                    selected_packages.remove('linux')
-                except ValueError:
-                    pass
-                try:
-                    selected_packages.remove('initramfs')
-                except ValueError:
-                    pass
+                regex = re.compile(r'^linux-[0-9]|^initramfs-[0-9]')
+                selected_packages = [x for x in selected_packages if not regex.search(x)]
                 selected_packages.append('linux-esx')
         except KeyError:
             pass
