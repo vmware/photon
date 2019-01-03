@@ -1,7 +1,7 @@
-From 71c06970a0147b6a9f566174e345de781fa573f5 Mon Sep 17 00:00:00 2001
-From: Amarnath <vaa@vmware.com>
-Date: Tue, 27 Nov 2018 18:06:31 +0530
-Subject: [PATCH] VCP patch for K8s v1.11.5 (3f918d7)
+From 19a65bf775cf99c9fc3c9c250be09e79e324db2b Mon Sep 17 00:00:00 2001
+From: ejohn <ejohn@vmware.com>
+Date: Thu, 3 Jan 2019 12:07:34 +0530
+Subject: [PATCH] VCP patch for K8s v1.11.6 (5fcf357b)
 
 ---
  api/swagger-spec/apps_v1alpha1.json           |   21 +
@@ -27,7 +27,7 @@ Subject: [PATCH] VCP patch for K8s v1.11.5 (3f918d7)
  pkg/cloudprovider/providers/cascade/auth.go   |  145 +
  .../providers/cascade/cascade.go              |  219 ++
  .../providers/cascade/cascade_disks.go        |  253 ++
- .../providers/cascade/cascade_instances.go    |  132 +
+ .../providers/cascade/cascade_instances.go    |  133 +
  .../cascade/cascade_instances_test.go         |   44 +
  .../providers/cascade/cascade_loadbalancer.go |  295 ++
  pkg/cloudprovider/providers/cascade/client.go |  400 +++
@@ -57,7 +57,7 @@ Subject: [PATCH] VCP patch for K8s v1.11.5 (3f918d7)
  .../authorizer/vke/vke_authorizer_test.go     |  230 ++
  .../src/k8s.io/api/core/v1/generated.pb.go    | 2686 +++++++++--------
  staging/src/k8s.io/api/core/v1/types.go       |   24 +-
- 53 files changed, 7298 insertions(+), 1214 deletions(-)
+ 53 files changed, 7299 insertions(+), 1214 deletions(-)
  create mode 100644 pkg/cloudprovider/providers/cascade/BUILD
  create mode 100644 pkg/cloudprovider/providers/cascade/OWNERS
  create mode 100644 pkg/cloudprovider/providers/cascade/apitypes.go
@@ -449,7 +449,7 @@ index 7cfc2e91ac..b36450efdf 100644
      }
     },
 diff --git a/cmd/kube-controller-manager/app/BUILD b/cmd/kube-controller-manager/app/BUILD
-index 64c82a719a..0a9bd71e9c 100644
+index e3ddc733f0..4dbd986cea 100644
 --- a/cmd/kube-controller-manager/app/BUILD
 +++ b/cmd/kube-controller-manager/app/BUILD
 @@ -86,6 +86,7 @@ go_library(
@@ -568,7 +568,7 @@ index 1669edc41e..60ba08e91b 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 diff --git a/pkg/apis/core/validation/validation.go b/pkg/apis/core/validation/validation.go
-index 7050c604e5..cf15bb705d 100644
+index 120879c85b..b1c6f9a154 100644
 --- a/pkg/apis/core/validation/validation.go
 +++ b/pkg/apis/core/validation/validation.go
 @@ -638,6 +638,14 @@ func validateVolumeSource(source *core.VolumeSource, fldPath *field.Path, volNam
@@ -1594,10 +1594,10 @@ index 0000000000..e889a28951
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_instances.go b/pkg/cloudprovider/providers/cascade/cascade_instances.go
 new file mode 100644
-index 0000000000..33acfc01e0
+index 0000000000..9f3f17c169
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_instances.go
-@@ -0,0 +1,132 @@
+@@ -0,0 +1,133 @@
 +package cascade
 +
 +import (
@@ -1669,8 +1669,10 @@ index 0000000000..33acfc01e0
 +}
 +
 +// InstanceID returns the cloud provider ID of the specified instance.
++// Note: We call Cascade Controller here to check if the instance is alive or not. That check is used by Kubernetes
++// to proactively remove nodes that the cloud provider believes is no longer available.
 +func (cc *CascadeCloud) InstanceID(ctx context.Context, nodeName k8stypes.NodeName) (string, error) {
-+	return getInstanceIDFromNodeName(nodeName)
++	return getInstanceIDAndLivelinessFromNodeName(cc, nodeName)
 +}
 +
 +// This gets the Cascade VM ID from the Kubernetes node name.
@@ -1713,7 +1715,6 @@ index 0000000000..33acfc01e0
 +	}
 +	return instanceID, nil
 +}
-+
 +
 +// InstanceTypeByProviderID returns the cloudprovider instance type of the node with the specified unique providerID
 +// This method will not be called from the node that is requesting this ID. i.e. metadata service
@@ -11027,5 +11028,5 @@ index d9f4869fbc..5417d75199 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 -- 
-2.17.1
+2.19.1
 
