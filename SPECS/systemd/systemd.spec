@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          7%{?dist}
+Release:          8%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -17,13 +17,15 @@ Source5:          10-rdrand-rng.conf
 
 Patch0:           01-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           02-install-general-aliases.patch
-Patch2:           systemd-236-default-dns-from-env.patch
+Patch2:           systemd-239-default-dns-from-env.patch
 Patch3:           systemd-macros.patch
 Patch4:           systemd-239-query-duid.patch
 # Fix glibc-2.28 build issue. Checked in upstream after v239
 Patch5:           systemd-239-glibc-build-fix.patch
 Patch6:           systemd-239-revert-mtu.patch
 Patch7:           systemd-239-CVE-2018-15688.patch
+Patch8:           systemd-239-CVE-2018-15686.patch
+Patch9:           systemd-239-CVE-2018-15687.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -86,6 +88,8 @@ EOF
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
+%patch9 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -252,6 +256,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Wed Jan 02 2019 Anish Swaminathan <anishs@vmware.com>  239-8
+-    Fix CVE-2018-15686, CVE-2018-15687
 *    Sun Nov 11 2018 Tapas Kundu <tkundu@vmware.com> 239-7
 -    Fix CVE-2018-15688
 *    Fri Oct 26 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 239-6
