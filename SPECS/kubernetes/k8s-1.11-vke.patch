@@ -1,7 +1,7 @@
-From 71c06970a0147b6a9f566174e345de781fa573f5 Mon Sep 17 00:00:00 2001
-From: Amarnath <vaa@vmware.com>
-Date: Tue, 27 Nov 2018 18:06:31 +0530
-Subject: [PATCH] VCP patch for K8s v1.11.5 (3f918d7)
+From 129c4992319e619fdc698765f072b2e228d76e57 Mon Sep 17 00:00:00 2001
+From: ejohn <ejohn@vmware.com>
+Date: Thu, 3 Jan 2019 10:48:10 +0530
+Subject: [PATCH] VCP patch for K8s v1.11.6 (5fcf357b)
 
 ---
  api/swagger-spec/apps_v1alpha1.json           |   21 +
@@ -13,12 +13,12 @@ Subject: [PATCH] VCP patch for K8s v1.11.5 (3f918d7)
  api/swagger-spec/extensions_v1beta1.json      |   21 +
  .../settings.k8s.io_v1alpha1.json             |   21 +
  api/swagger-spec/v1.json                      |   25 +
- cmd/kube-controller-manager/app/BUILD         |    1 +
+ cmd/kube-controller-manager/app/BUILD         |    2 +-
  cmd/kube-controller-manager/app/plugins.go    |    4 +
  cmd/kubelet/app/BUILD                         |    1 +
  cmd/kubelet/app/plugins.go                    |    2 +
  pkg/apis/core/types.go                        |   14 +
- pkg/apis/core/validation/validation.go        |   25 +
+ pkg/apis/core/validation/validation.go        |   77 +-
  pkg/apis/policy/types.go                      |    1 +
  pkg/cloudprovider/providers/BUILD             |    2 +
  pkg/cloudprovider/providers/cascade/BUILD     |   56 +
@@ -27,7 +27,7 @@ Subject: [PATCH] VCP patch for K8s v1.11.5 (3f918d7)
  pkg/cloudprovider/providers/cascade/auth.go   |  145 +
  .../providers/cascade/cascade.go              |  219 ++
  .../providers/cascade/cascade_disks.go        |  253 ++
- .../providers/cascade/cascade_instances.go    |  132 +
+ .../providers/cascade/cascade_instances.go    |  133 +
  .../cascade/cascade_instances_test.go         |   44 +
  .../providers/cascade/cascade_loadbalancer.go |  295 ++
  pkg/cloudprovider/providers/cascade/client.go |  400 +++
@@ -57,7 +57,7 @@ Subject: [PATCH] VCP patch for K8s v1.11.5 (3f918d7)
  .../authorizer/vke/vke_authorizer_test.go     |  230 ++
  .../src/k8s.io/api/core/v1/generated.pb.go    | 2686 +++++++++--------
  staging/src/k8s.io/api/core/v1/types.go       |   24 +-
- 53 files changed, 7298 insertions(+), 1214 deletions(-)
+ 53 files changed, 7343 insertions(+), 1223 deletions(-)
  create mode 100644 pkg/cloudprovider/providers/cascade/BUILD
  create mode 100644 pkg/cloudprovider/providers/cascade/OWNERS
  create mode 100644 pkg/cloudprovider/providers/cascade/apitypes.go
@@ -449,7 +449,7 @@ index 7cfc2e91ac..b36450efdf 100644
      }
     },
 diff --git a/cmd/kube-controller-manager/app/BUILD b/cmd/kube-controller-manager/app/BUILD
-index 64c82a719a..0a9bd71e9c 100644
+index e3ddc733f0..0a9bd71e9c 100644
 --- a/cmd/kube-controller-manager/app/BUILD
 +++ b/cmd/kube-controller-manager/app/BUILD
 @@ -86,6 +86,7 @@ go_library(
@@ -460,6 +460,14 @@ index 64c82a719a..0a9bd71e9c 100644
          "//pkg/volume/cinder:go_default_library",
          "//pkg/volume/csi:go_default_library",
          "//pkg/volume/fc:go_default_library",
+@@ -113,7 +114,6 @@ go_library(
+         "//vendor/k8s.io/apimachinery/pkg/util/sets:go_default_library",
+         "//vendor/k8s.io/apimachinery/pkg/util/uuid:go_default_library",
+         "//vendor/k8s.io/apimachinery/pkg/util/wait:go_default_library",
+-        "//vendor/k8s.io/apiserver/pkg/server/healthz:go_default_library",
+         "//vendor/k8s.io/apiserver/pkg/util/feature:go_default_library",
+         "//vendor/k8s.io/client-go/discovery/cached:go_default_library",
+         "//vendor/k8s.io/client-go/dynamic:go_default_library",
 diff --git a/cmd/kube-controller-manager/app/plugins.go b/cmd/kube-controller-manager/app/plugins.go
 index 42034d5c6d..e729785006 100644
 --- a/cmd/kube-controller-manager/app/plugins.go
@@ -568,7 +576,7 @@ index 1669edc41e..60ba08e91b 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 diff --git a/pkg/apis/core/validation/validation.go b/pkg/apis/core/validation/validation.go
-index 7050c604e5..cf15bb705d 100644
+index 120879c85b..cf15bb705d 100644
 --- a/pkg/apis/core/validation/validation.go
 +++ b/pkg/apis/core/validation/validation.go
 @@ -638,6 +638,14 @@ func validateVolumeSource(source *core.VolumeSource, fldPath *field.Path, volNam
@@ -617,6 +625,105 @@ index 7050c604e5..cf15bb705d 100644
  	if numVolumes == 0 {
  		allErrs = append(allErrs, field.Required(specPath, "must specify a volume type"))
  	}
+@@ -5049,16 +5074,50 @@ func ValidateNamespaceFinalizeUpdate(newNamespace, oldNamespace *core.Namespace)
+ 	return allErrs
+ }
+ 
++// Construct lookup map of old subset IPs to NodeNames.
++func updateEpAddrToNodeNameMap(ipToNodeName map[string]string, addresses []core.EndpointAddress) {
++	for n := range addresses {
++		if addresses[n].NodeName == nil {
++			continue
++		}
++		ipToNodeName[addresses[n].IP] = *addresses[n].NodeName
++	}
++}
++
++// Build a map across all subsets of IP -> NodeName
++func buildEndpointAddressNodeNameMap(subsets []core.EndpointSubset) map[string]string {
++	ipToNodeName := make(map[string]string)
++	for i := range subsets {
++		updateEpAddrToNodeNameMap(ipToNodeName, subsets[i].Addresses)
++		updateEpAddrToNodeNameMap(ipToNodeName, subsets[i].NotReadyAddresses)
++	}
++	return ipToNodeName
++}
++
++func validateEpAddrNodeNameTransition(addr *core.EndpointAddress, ipToNodeName map[string]string, fldPath *field.Path) field.ErrorList {
++	errList := field.ErrorList{}
++	existingNodeName, found := ipToNodeName[addr.IP]
++	if !found {
++		return errList
++	}
++	if addr.NodeName == nil || *addr.NodeName == existingNodeName {
++		return errList
++	}
++	// NodeName entry found for this endpoint IP, but user is attempting to change NodeName
++	return append(errList, field.Forbidden(fldPath, fmt.Sprintf("Cannot change NodeName for %s to %s", addr.IP, *addr.NodeName)))
++}
++
+ // ValidateEndpoints tests if required fields are set.
+ func ValidateEndpoints(endpoints *core.Endpoints) field.ErrorList {
+ 	allErrs := ValidateObjectMeta(&endpoints.ObjectMeta, true, ValidateEndpointsName, field.NewPath("metadata"))
+ 	allErrs = append(allErrs, ValidateEndpointsSpecificAnnotations(endpoints.Annotations, field.NewPath("annotations"))...)
+-	allErrs = append(allErrs, validateEndpointSubsets(endpoints.Subsets, field.NewPath("subsets"))...)
++	allErrs = append(allErrs, validateEndpointSubsets(endpoints.Subsets, []core.EndpointSubset{}, field.NewPath("subsets"))...)
+ 	return allErrs
+ }
+ 
+-func validateEndpointSubsets(subsets []core.EndpointSubset, fldPath *field.Path) field.ErrorList {
++func validateEndpointSubsets(subsets []core.EndpointSubset, oldSubsets []core.EndpointSubset, fldPath *field.Path) field.ErrorList {
+ 	allErrs := field.ErrorList{}
++	ipToNodeName := buildEndpointAddressNodeNameMap(oldSubsets)
+ 	for i := range subsets {
+ 		ss := &subsets[i]
+ 		idxPath := fldPath.Index(i)
+@@ -5069,10 +5128,10 @@ func validateEndpointSubsets(subsets []core.EndpointSubset, fldPath *field.Path)
+ 			allErrs = append(allErrs, field.Required(idxPath, "must specify `addresses` or `notReadyAddresses`"))
+ 		}
+ 		for addr := range ss.Addresses {
+-			allErrs = append(allErrs, validateEndpointAddress(&ss.Addresses[addr], idxPath.Child("addresses").Index(addr))...)
++			allErrs = append(allErrs, validateEndpointAddress(&ss.Addresses[addr], idxPath.Child("addresses").Index(addr), ipToNodeName)...)
+ 		}
+ 		for addr := range ss.NotReadyAddresses {
+-			allErrs = append(allErrs, validateEndpointAddress(&ss.NotReadyAddresses[addr], idxPath.Child("notReadyAddresses").Index(addr))...)
++			allErrs = append(allErrs, validateEndpointAddress(&ss.NotReadyAddresses[addr], idxPath.Child("notReadyAddresses").Index(addr), ipToNodeName)...)
+ 		}
+ 		for port := range ss.Ports {
+ 			allErrs = append(allErrs, validateEndpointPort(&ss.Ports[port], len(ss.Ports) > 1, idxPath.Child("ports").Index(port))...)
+@@ -5082,7 +5141,7 @@ func validateEndpointSubsets(subsets []core.EndpointSubset, fldPath *field.Path)
+ 	return allErrs
+ }
+ 
+-func validateEndpointAddress(address *core.EndpointAddress, fldPath *field.Path) field.ErrorList {
++func validateEndpointAddress(address *core.EndpointAddress, fldPath *field.Path, ipToNodeName map[string]string) field.ErrorList {
+ 	allErrs := field.ErrorList{}
+ 	for _, msg := range validation.IsValidIP(address.IP) {
+ 		allErrs = append(allErrs, field.Invalid(fldPath.Child("ip"), address.IP, msg))
+@@ -5096,6 +5155,10 @@ func validateEndpointAddress(address *core.EndpointAddress, fldPath *field.Path)
+ 			allErrs = append(allErrs, field.Invalid(fldPath.Child("nodeName"), *address.NodeName, msg))
+ 		}
+ 	}
++	allErrs = append(allErrs, validateEpAddrNodeNameTransition(address, ipToNodeName, fldPath.Child("nodeName"))...)
++	if len(allErrs) > 0 {
++		return allErrs
++	}
+ 	allErrs = append(allErrs, validateNonSpecialIP(address.IP, fldPath.Child("ip"))...)
+ 	return allErrs
+ }
+@@ -5145,11 +5208,9 @@ func validateEndpointPort(port *core.EndpointPort, requireName bool, fldPath *fi
+ }
+ 
+ // ValidateEndpointsUpdate tests to make sure an endpoints update can be applied.
+-// NodeName changes are allowed during update to accommodate the case where nodeIP or PodCIDR is reused.
+-// An existing endpoint ip will have a different nodeName if this happens.
+ func ValidateEndpointsUpdate(newEndpoints, oldEndpoints *core.Endpoints) field.ErrorList {
+ 	allErrs := ValidateObjectMetaUpdate(&newEndpoints.ObjectMeta, &oldEndpoints.ObjectMeta, field.NewPath("metadata"))
+-	allErrs = append(allErrs, validateEndpointSubsets(newEndpoints.Subsets, field.NewPath("subsets"))...)
++	allErrs = append(allErrs, validateEndpointSubsets(newEndpoints.Subsets, oldEndpoints.Subsets, field.NewPath("subsets"))...)
+ 	allErrs = append(allErrs, ValidateEndpointsSpecificAnnotations(newEndpoints.Annotations, field.NewPath("annotations"))...)
+ 	return allErrs
+ }
 diff --git a/pkg/apis/policy/types.go b/pkg/apis/policy/types.go
 index 298fcd0e4d..174d0fc876 100644
 --- a/pkg/apis/policy/types.go
@@ -1594,10 +1701,10 @@ index 0000000000..e889a28951
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_instances.go b/pkg/cloudprovider/providers/cascade/cascade_instances.go
 new file mode 100644
-index 0000000000..33acfc01e0
+index 0000000000..9f3f17c169
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_instances.go
-@@ -0,0 +1,132 @@
+@@ -0,0 +1,133 @@
 +package cascade
 +
 +import (
@@ -1669,8 +1776,10 @@ index 0000000000..33acfc01e0
 +}
 +
 +// InstanceID returns the cloud provider ID of the specified instance.
++// Note: We call Cascade Controller here to check if the instance is alive or not. That check is used by Kubernetes
++// to proactively remove nodes that the cloud provider believes is no longer available.
 +func (cc *CascadeCloud) InstanceID(ctx context.Context, nodeName k8stypes.NodeName) (string, error) {
-+	return getInstanceIDFromNodeName(nodeName)
++	return getInstanceIDAndLivelinessFromNodeName(cc, nodeName)
 +}
 +
 +// This gets the Cascade VM ID from the Kubernetes node name.
@@ -1713,7 +1822,6 @@ index 0000000000..33acfc01e0
 +	}
 +	return instanceID, nil
 +}
-+
 +
 +// InstanceTypeByProviderID returns the cloudprovider instance type of the node with the specified unique providerID
 +// This method will not be called from the node that is requesting this ID. i.e. metadata service
@@ -11027,5 +11135,5 @@ index d9f4869fbc..5417d75199 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 -- 
-2.17.1
+2.19.1
 
