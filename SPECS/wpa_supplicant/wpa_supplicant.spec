@@ -1,23 +1,23 @@
 Summary:          WPA client
 Name:             wpa_supplicant
-Version:          2.6
-Release:          2%{?dist}
+Version:          2.7
+Release:          1%{?dist}
 License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          https://w1.fi/releases/%{name}-%{version}.tar.gz
-%define sha1 wpa=8189704e257c3e9f8300c49dc6e49a381b1d6299
+%define sha1 wpa=3c3c2c6bc493fb32b919d9b410768324f3729e25
 BuildRequires:    libnl-devel openssl-devel
 Requires:         libnl
 Requires:         openssl
-Patch0:           wpa_supplicant-2.6-upstream_fixes-1.patch
+
 %description
 WPA Supplicant is a Wi-Fi Protected Access (WPA) client and IEEE 802.1X supplicant
+
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 cat > wpa_supplicant/.config << "EOF"
@@ -84,8 +84,6 @@ update_config=1
 # Add network= entry below
 EOF
 
-
-
 %files
 %defattr(-,root,root)
 %{_sbindir}/wpa_cli
@@ -96,8 +94,10 @@ EOF
 %{_sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 
 %changelog
+*   Thu Jan 3 2019 Michelle Wang <michellew@vmware.com> 2.7-1
+-   Update version to 2.7.
 *   Fri Aug 17 2018 Alexey Makhalov <amakhalov@vmware.com> 2.6-2
 -   Improve .service file: wait wlanX to appear, run daemon in background.
 -   Added skeleton for wlan0 conf file.
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.6-1
--   Initial build.    First version
+-   Initial build. First version.
