@@ -455,10 +455,9 @@ class Installer(object):
         """
         try:
             if self.install_config['install_linux_esx']:
-                selected_packages = self.install_config['packages']
                 regex = re.compile(r'^linux-[0-9]|^initramfs-[0-9]')
-                selected_packages = [x for x in selected_packages if not regex.search(x)]
-                selected_packages.append('linux-esx')
+                self.install_config['packages'] = [x for x in self.install_config['packages'] if not regex.search(x)]
+                self.install_config['packages'].append('linux-esx')
         except KeyError:
             pass
 
