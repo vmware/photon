@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          16%{?dist}
+Release:          17%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -33,6 +33,7 @@ Patch14:          systemd-233-CVE-2017-18078.patch
 Patch15:          systemd-233-util-linux-build-failure.patch
 Patch16:          systemd-233-CVE-2018-1049.patch
 Patch17:          systemd-233-CVE-2018-15688.patch
+Patch18:          systemd-233-CVE-2018-15686.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -104,6 +105,7 @@ sed -i "/xlocale.h/d" src/basic/parse-util.c
 %patch15 -p1
 %patch16 -p1
 %patch17 -p1
+%patch18 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -254,6 +256,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Thu Jan 03 2019 Anish Swaminathan <anishs@vmware.com>  233-17
+-    Fix CVE-2018-15686
 *    Fri Nov 02 2018 Tapas Kundu <tkundu@vmware.com> 233-16
 -    Fix CVE-2018-15688
 *    Mon Jul 23 2018 Ankit Jain <ankitja@vmware.com>  233-15
@@ -274,7 +278,7 @@ rm -rf %{buildroot}/*
 -    Move network file to systemd package
 *    Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 233-7
 -    Fix compilation issue for glibc-2.26
-*    Fri Jul 20 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-6
+*    Thu Jul 20 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-6
 -    Fix for CVE-2017-1000082.
 *    Fri Jul 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-5
 -    Fix default-dns-from-env patch.
