@@ -1,41 +1,59 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        7.4p1
-Release:        7%{?dist}
+Version:        7.8p1
+Release:        1%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha1    openssh=2330bbf82ed08cf3ac70e0acf00186ef3eeb97e0
+%define sha1    openssh=27e267e370315561de96577fccae563bc2c37a60
 Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1    blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
+Source2:        sshd.service
+Source3:        sshd-keygen.service
 Patch0:         blfs_systemd_fixes.patch
-Patch1:         openssh-7.4p1-fips.patch
-Patch2:         openssh-7.4p1-configure-fips.patch
-Patch3:         openssh-CVE-2017-15906.patch
+Patch1:         openssh-7.8p1-fips.patch
+Patch2:         openssh-7.8p1-configure-fips.patch
+
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM
 BuildRequires:  krb5
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
-Requires:       systemd
-Requires:       openssl
-Requires:       Linux-PAM
-Requires:       shadow
+Requires:       openssh-clients = %{version}-%{release}
+Requires:       openssh-server = %{version}-%{release}
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
-useful for encrypting authentication and subsequent traffic over a 
-network. The ssh and scp commands are secure implementions of telnet 
+useful for encrypting authentication and subsequent traffic over a
+network. The ssh and scp commands are secure implementions of telnet
 and rcp respectively.
+
+%package clients
+Summary: openssh client applications.
+Requires:   openssl
+%description clients
+This provides the ssh client utilities.
+
+%package server
+Summary: openssh server applications
+Requires:   Linux-PAM
+Requires:   shadow
+Requires:   ncurses
+Requires:   systemd
+Requires:   openssh-clients = %{version}-%{release}
+Requires(post): /bin/chown
+%description server
+This provides the ssh server daemons, utilities, configuration and service files.
+
 %prep
 %setup -q
-tar xf %{SOURCE1}
+tar xf %{SOURCE1} --no-same-owner
 %patch0 -p0
 %patch1 -p1
 %patch2 -p1
-%patch3 -p3
+
 %build
 ./configure \
     CFLAGS="%{optflags}" \
@@ -56,6 +74,13 @@ make
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 install -vdm755 %{buildroot}/var/lib/sshd
+echo "AllowTcpForwarding no" >> %{buildroot}/etc/ssh/sshd_config
+echo "ClientAliveCountMax 2" >> %{buildroot}/etc/ssh/sshd_config
+echo "Compression no" >> %{buildroot}/etc/ssh/sshd_config
+echo "MaxAuthTries 2" >> %{buildroot}/etc/ssh/sshd_config
+#echo "MaxSessions 2" >> %{buildroot}/etc/ssh/sshd_config
+echo "TCPKeepAlive no" >> %{buildroot}/etc/ssh/sshd_config
+echo "AllowAgentForwarding no" >> %{buildroot}/etc/ssh/sshd_config
 echo "PermitRootLogin no" >> %{buildroot}/etc/ssh/sshd_config
 echo "UsePAM yes" >> %{buildroot}/etc/ssh/sshd_config
 #   Install daemon script
@@ -63,56 +88,41 @@ pushd blfs-systemd-units-20140907
 make DESTDIR=%{buildroot} install-sshd
 popd
 
-cat << EOF > %{buildroot}/lib/systemd/system/sshd.service
-[Unit]
-Description=OpenSSH Daemon
-After=network.target sshd-keygen.service
-
-[Service]
-ExecStart=/usr/sbin/sshd -D
-ExecReload=/bin/kill -HUP \$MAINPID
-KillMode=process
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-cat << EOF >> %{buildroot}/lib/systemd/system/sshd-keygen.service
-[Unit]
-Description=Generate sshd host keys
-ConditionPathExists=|!/etc/ssh/ssh_host_rsa_key
-ConditionPathExists=|!/etc/ssh/ssh_host_ecdsa_key
-ConditionPathExists=|!/etc/ssh/ssh_host_ed25519_key
-Before=sshd.service
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/usr/bin/ssh-keygen -A
-[Install]
-WantedBy=multi-user.target
-EOF
+install -m644 %{SOURCE2} %{buildroot}/lib/systemd/system/sshd.service
+install -m644 %{SOURCE3} %{buildroot}/lib/systemd/system/sshd-keygen.service
+install -m755 contrib/ssh-copy-id %{buildroot}/%{_bindir}/
+install -m644 contrib/ssh-copy-id.1 %{buildroot}/%{_mandir}/man1/
 
 %{_fixperms} %{buildroot}/*
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
-%pre
+%check
+if ! getent passwd sshd >/dev/null; then
+   useradd sshd
+fi
+if [ ! -d /var/lib/sshd ]; then
+   mkdir /var/lib/sshd
+   chmod 0755 /var/lib/sshd
+fi
+cp %{buildroot}/usr/bin/scp /usr/bin
+chmod g+w . -R
+useradd test -G root -m
+sudo -u test -s /bin/bash -c "PATH=$PATH make tests"
+
+%pre server
 getent group sshd >/dev/null || groupadd -g 50 sshd
 getent passwd sshd >/dev/null || useradd -c 'sshd PrivSep' -d /var/lib/sshd -g sshd -s /bin/false -u 50 sshd
 
-%preun
+%preun server
 %systemd_preun sshd.service sshd-keygen.service
 
-%post
+%post server
 /sbin/ldconfig
 if [ $1 -eq 1 ] ; then
     chown -v root:sys /var/lib/sshd
 fi
 %systemd_post sshd.service sshd-keygen.service
 
-%postun
+%postun server
 /sbin/ldconfig
 %systemd_postun_with_restart sshd.service sshd-keygen.service
 if [ $1 -eq 0 ] ; then
@@ -127,23 +137,52 @@ fi
 %clean
 rm -rf %{buildroot}/*
 %files
+%files server
 %defattr(-,root,root)
-%attr(0755,root,root) %dir %{_sysconfdir}/ssh
-%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/moduli
-%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/ssh_config
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
+%attr(700,root,sys)/var/lib/sshd
+/lib/systemd/system/sshd-keygen.service
 /lib/systemd/system/sshd.service
 /lib/systemd/system/sshd.socket
 /lib/systemd/system/sshd@.service
-/lib/systemd/system/sshd-keygen.service
-%{_bindir}/*
-%{_sbindir}/*
-%{_libexecdir}/*
-%{_mandir}/man1/*
-%{_mandir}/man5/*
-%{_mandir}/man8/*
-%attr(700,root,sys)/var/lib/sshd
+%{_sbindir}/sshd
+%{_libexecdir}/sftp-server
+%{_mandir}/man5/sshd_config.5.gz
+%{_mandir}/man8/sshd.8.gz
+%{_mandir}/man5/moduli.5.gz
+%{_mandir}/man8/sftp-server.8.gz
+
+
+
+%files clients
+%attr(0755,root,root) %dir %{_sysconfdir}/ssh
+%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/moduli
+%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/ssh_config
+%{_bindir}/ssh
+%{_bindir}/scp
+%{_bindir}/sftp
+%{_bindir}/ssh-keygen
+%{_bindir}/ssh-keyscan
+%{_bindir}/ssh-add
+%{_bindir}/ssh-agent
+%{_bindir}/ssh-copy-id
+%{_libexecdir}/ssh-keysign
+%{_libexecdir}/ssh-pkcs11-helper
+%{_mandir}/man1/scp.1.gz
+%{_mandir}/man1/ssh-agent.1.gz
+%{_mandir}/man1/ssh-keygen.1.gz
+%{_mandir}/man1/ssh-keyscan.1.gz
+%{_mandir}/man5/ssh_config.5.gz
+%{_mandir}/man1/ssh-add.1.gz
+%{_mandir}/man1/ssh.1.gz
+%{_mandir}/man1/ssh-copy-id.1.gz
+%{_mandir}/man1/sftp.1.gz
+%{_mandir}/man8/ssh-keysign.8.gz
+%{_mandir}/man8/ssh-pkcs11-helper.8.gz
+
 %changelog
+*   Fri Jan 04 2019 Ashwin H <ashwinh@vmware.comm> 7.8p1-1
+-   Update to 7.8p1 which has Fix for CVE-2018-15473.
 *   Tue Nov 28 2017 Xiaolin Li <xiaolinl@vmware.comm> 7.4p1-7
 -   Fix CVE-2017-15906.
 *   Tue Nov 14 2017 Anish Swaminathan <anishs@vmware.com> 7.4p1-6
