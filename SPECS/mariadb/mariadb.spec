@@ -1,14 +1,14 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
-Version:        10.3.9
-Release:        3%{?dist}
+Version:        10.3.11
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://mariadb.org/
 Source0:        https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define         sha1 mariadb=51e9870847daa76f1e82ade97d9cf60a31df7656
+%define         sha1 mariadb=7b75d7ec06642f26ce197e07f5ba16283061cc87
 BuildRequires:  cmake
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
@@ -285,12 +285,18 @@ rm -rf %{buildroot}
 %{_mandir}/man1/resolveip.1.gz
 %{_mandir}/man1/resolve_stack_dump.1.gz
 %{_mandir}/man1/tokuftdump.1.gz
-%{_mandir}/man1/tokuft_logdump.1.gz
+%{_mandir}/man1/tokuft_logprint.1.gz
 %{_mandir}/man1/wsrep_sst_common.1.gz
 %{_mandir}/man1/wsrep_sst_mysqldump.1.gz
 %{_mandir}/man1/wsrep_sst_rsync.1.gz
 %{_mandir}/man1/wsrep_sst_xtrabackup.1.gz
 %{_mandir}/man1/wsrep_sst_xtrabackup-v2.1.gz
+%{_mandir}/man1/mariabackup.1.gz
+%{_mandir}/man1/mbstream.1.gz
+%{_mandir}/man1/mysql_embedded.1.gz
+%{_mandir}/man1/mysql_ldb.1.gz
+%{_mandir}/man1/wsrep_sst_mariabackup.1.gz
+%{_mandir}/man1/wsrep_sst_rsync_wan.1.gz
 %{_mandir}/man8/*
 %{_datadir}/mysql/fill_help_tables.sql
 %{_datadir}/mysql/install_spider.sql
@@ -325,6 +331,7 @@ rm -rf %{buildroot}
 %{_libdir}/libmariadb.so
 %{_libdir}/libmariadbd.so
 %{_libdir}/libmysqld.so
+%{_libdir}/pkgconfig/libmariadb.pc
 %{_datadir}/pkgconfig/mariadb.pc
 
 %files errmsg
@@ -355,6 +362,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Wed Jan 02 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.3.11-1
+-   Upgrade to version 10.3.11
 *   Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 10.3.9-3
 -   Enabling for aarch64
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 10.3.9-2
