@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.6
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -386,6 +386,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Jan 04 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-5
+-   Enable AppArmor by default.
 *   Wed Jan 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-4
 -   .config: added Compulab fitlet2 device drivers
 -   .config_aarch64: added gpio sysfs support
