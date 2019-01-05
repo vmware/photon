@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          48%{?dist}
+Release:          49%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -47,6 +47,7 @@ Patch29:          systemd-228-CVE-2017-15908-dns-pkt-loop-fix.patch
 Patch30:          systemd-228-CVE-2017-18078.patch
 Patch31:          systemd-228-CVE-2018-1049.patch
 Patch32:          systemd-228-CVE-2018-15688.patch 
+Patch33:          systemd-228-CVE-2018-15686.patch 
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -113,6 +114,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
+%patch33 -p1
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -253,6 +255,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*    Fri Jan 04 2019 Anish Swaminathan <anishs@vmware.com> 228-49
+-    Fix CVE-2018-15686
 *    Fri Nov 02 2018 Tapas Kundu <tkundu@vmware.com> 228-48
 -    Fix CVE-2018-15688
 *    Mon Jul 23 2018 Ankit Jain <ankitja@vmware.com>  228-47
