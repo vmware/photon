@@ -1,14 +1,14 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.12
-Release:        4%{?dist}
+Version:        8.0.13
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
-Source0:        https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=c144d6c1350a9897da31ebbd3b5492ab1f152352
+Source0:        https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
+%define         sha1 mysql-boost=c4109cb99c1a70d1d1bb54a9934f44c68b51dad3
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -38,7 +38,7 @@ cmake . \
       -DINSTALL_DOCDIR=share/doc \
       -DINSTALL_DOCREADMEDIR=share/doc \
       -DINSTALL_SUPPORTFILESDIR=share/support-files \
-      -DCMAKE_BUILD_TYPE=RELEASE \
+      -DCMAKE_BUILD_TYPE=RelWithDebInfo \
       -DCMAKE_C_FLAGS=-fPIC \
       -DCMAKE_CXX_FLAGS=-fPIC \
       -DWITH_EMBEDDED_SERVER=OFF
@@ -53,9 +53,10 @@ make test
 
 %files
 %defattr(-,root,root)
-%doc LICENSE  README
+%doc LICENSE  README router/LICENSE.router router/README.router
 %{_libdir}/plugin/*
-%{_libdir}/libmysqlclient.so.*
+%{_libdir}/*.so.*
+%{_libdir}/mysqlrouter/*.so
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_mandir}/man8/*
@@ -63,14 +64,18 @@ make test
 %exclude /usr/mysql-test
 %exclude /usr/docs
 %exclude /usr/share
+%exclude /usr/*.router
 
 %files devel
-%{_libdir}/libmysqlclient.so
+%{_libdir}/*.so
 %{_libdir}/*.a
 %{_includedir}/*
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Wed Jan 02 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.13-1
+-   Upgrade to version 8.0.13
+-   Workaround for broken DCMAKE_BUILD_TYPE=RELEASE(Mysql Bug#92945). Revert in next version
 *   Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 8.0.12-4
 -   Enabling for aarch64
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 8.0.12-3
