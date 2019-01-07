@@ -412,6 +412,20 @@ class Installer(object):
                 raise Exception("Bootloader (grub2) setup failed")
 
             self._update_fstab()
+            if not self.install_config['iso_installer']:
+                process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")],
+                                           stdout=self.output)
+                retval = process.wait()
+                if retval != 0:
+                    modules.commons.log(modules.commons.LOG_ERROR,
+                                        "Fail to remove the installer directory")
+                process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "RPMS")],
+                                           stdout=self.output)
+                retval = process.wait()
+                if retval != 0:
+                    modules.commons.log(modules.commons.LOG_ERROR,
+                                        "Fail to remove the input rpms directory")
+
 
     def _execute_modules(self, phase):
         """
