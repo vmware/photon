@@ -107,8 +107,3 @@ menuentry "Photon" {
 }
 # End /boot/grub2/grub.cfg
 EOF
-
-#Cleanup the workspace directory
-rm -rf "$BUILDROOT"/tools
-rm -rf "$BUILDROOT"/RPMS
-
