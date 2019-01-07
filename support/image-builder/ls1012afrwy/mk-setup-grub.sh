@@ -105,8 +105,3 @@ mkdir $BUILDROOT/boot/grub
 cp -rfa $BUILDROOT/boot/grub2/* $BUILDROOT/boot/grub/
 
 grub_efi_install
-
-#Cleanup the workspace directory
-rm -rf "$BUILDROOT"/tools
-rm -rf "$BUILDROOT"/RPMS
-

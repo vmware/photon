@@ -233,9 +233,3 @@ fi
 EOF
 
 sed -i "s/UUID_PLACEHOLDER/$UUID_VAL/" "$BUILDROOT"/boot/grub2/grub.cfg > ${LOGFILE} 
-
-#Cleanup the workspace directory
-#find "$BUILDROOT"/{,usr/}{lib,bin,sbin} -type f -exec strip --strip-debug --strip-unneeded '{}' ';' > /dev/null 2>&1
-rm -rf "$BUILDROOT"/tools
-rm -rf "$BUILDROOT"/RPMS
-#umount $BUILDROOT
