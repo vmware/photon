@@ -12,6 +12,7 @@
     - [Features](features.md)
 - [Installation Guide](photon_installation/README.md)
     - [Downloading Photon OS](photon_installation/Downloading-Photon-OS.md)
+    - [Upgrading to Photon OS 3.0](photon_installation/Upgrading_to_photon_os_3.0.md)
     - [Build an ISO from the source code for Photon OS](photon_installation/build-photon.md)
         - [Folder Layout](photon_installation/folder_layout.md)
         * [Build Prerequisites](photon_installation/build_prerequisites.md)
