@@ -23,7 +23,7 @@ This information is intended for Photon OS administrators and developers:
 
 ----------
 
-Copyright &copy; 2016-2018 VMware, Inc. All rights reserved. [Copyright and trademark information](http://pubs.vmware.com/copyright-trademark.html). Any feedback you provide to VMware is subject to the terms at [www.vmware.com/community_terms.html](https://www.vmware.com/community_terms.html).
+Copyright &copy; 2016-2019 VMware, Inc. All rights reserved. [Copyright and trademark information](http://pubs.vmware.com/copyright-trademark.html). Any feedback you provide to VMware is subject to the terms at [www.vmware.com/community_terms.html](https://www.vmware.com/community_terms.html).
 
 **VMware, Inc.**<br>
 3401 Hillview Ave.<br>

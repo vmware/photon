@@ -5,7 +5,7 @@
         "plugins": ["insert-logo", "chapter-fold", "edit-link", "noembed"],
         "pluginsConfig": {
             "insert-logo": {
-                "url": "images/photonos-logo-sm.png",
+                "url": "photonos-logo-sm.png",
                 "style": "background: none"
         },
             "edit-link": {
