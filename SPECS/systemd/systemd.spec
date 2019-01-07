@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          7%{?dist}
+Release:          8%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -252,6 +252,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Wed Jan 09 2019 Keerthana K <keerthanak@vmware.com> 239-8
+-    Seting default values for tcp_timestamps, tcp_challenge_ack_limit and ip_forward.
 *    Sun Nov 11 2018 Tapas Kundu <tkundu@vmware.com> 239-7
 -    Fix CVE-2018-15688
 *    Fri Oct 26 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 239-6
