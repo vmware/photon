@@ -1,0 +1,22 @@
+NVME driver allocates admin and IO vector using pci_alloc_irq_vectors(). 
+
+In v4.9, if IO vector allocated using PCI_IRQ_AFFINITY, 
+then assignment of IO vector in vector_irq mismatches with actual assignment. 
+Due to which some IO INT fails to handle.
+
+If IO vector allocated without using PCI_IRQ_AFFINITY, 
+then all IO INT scheduled on CPU 0 and no IO INT fails.
+
+
+diff -Nurp linux-4.9.140/drivers/nvme/host/pci.c linux-4.9.140_modified/drivers/nvme/host/pci.c
+--- linux-4.9.140/drivers/nvme/host/pci.c	2018-11-23 17:27:41.000000000 +0530
++++ linux-4.9.140_modified/drivers/nvme/host/pci.c	2019-01-07 19:01:42.283918064 +0530
+@@ -1451,7 +1451,7 @@ static int nvme_setup_io_queues(struct n
+ 	 */
+ 	pci_free_irq_vectors(pdev);
+ 	nr_io_queues = pci_alloc_irq_vectors(pdev, 1, nr_io_queues,
+-			PCI_IRQ_ALL_TYPES | PCI_IRQ_AFFINITY);
++			PCI_IRQ_ALL_TYPES);
+ 	if (nr_io_queues <= 0)
+ 		return -EIO;
+ 	dev->max_qid = nr_io_queues;
