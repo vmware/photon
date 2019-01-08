@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.19.6
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.13
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d96fd72968960268b2203a3b4aff9497cd3abc61
+%define sha1 linux=ddf3c474b5c86113bd1cfdc1fd8dfda7918a6b5b
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -386,6 +386,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Jan 08 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.13-1
+-   Update to version 4.19.13
 *   Fri Jan 04 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-5
 -   Enable AppArmor by default.
 *   Wed Jan 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-4
