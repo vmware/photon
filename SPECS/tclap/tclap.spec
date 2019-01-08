@@ -1,7 +1,7 @@
 Summary:    simple interface for defining and acessing commandline arguments
 Name:       tclap
 Version:    1.2.2
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    MIT
 URL:        http://tclap.sourceforge.net
 Group:      Development/Libraries
@@ -31,14 +31,13 @@ API documentation for TCLAP
 
 %build
 ./configure --prefix=%{_prefix}
-
 make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
 
 %check
-make %{?_smp_mflags} check
+make check
 
 %files
 %defattr(-,root,root)
@@ -50,6 +49,8 @@ make %{?_smp_mflags} check
 %{_docdir}/*
 
 %changelog
+*   Tue Jan 08 2019 Michelle Wang <michellew@vmware.com> 1.2.2-2
+-   Fix make check for tclap.
 *   Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 1.2.2-1
 -   Update version to 1.2.2.
 *   Tue Jun 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.1-1
