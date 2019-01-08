@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.6
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -356,6 +356,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/perf/include/bpf/*
 
 %changelog
+*   Mon Jan 07 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-2
+-   Enable additional security hardening options in the config.
 *   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-1
 -   Update to version 4.19.6
 -   Enable EFI in config-aws to support kernel signing.
