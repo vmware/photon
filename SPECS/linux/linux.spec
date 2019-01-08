@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.140
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -75,6 +75,9 @@ Patch48:        0003-xfs-enhance-dinode-verifier.patch
 Patch51:        0001_PCI_hv_Allocate_physically_contiguous_hypercall_params_buffer.patch
 Patch52:        0002_PCI_hv_Add_vPCI_version_protocol_negotiation.patch
 Patch53:        0003_PCI_hv_Use_vPCI_protocol_version_1.2_v4.9.patch
+
+# NVME PCI patch
+Patch61:        0001_nvme_io_irq_without_affinity.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -198,6 +201,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch51 -p1
 %patch52 -p1
 %patch53 -p1
+%patch61 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -372,6 +376,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Jan 08 2019 Ajay Kaher <akaher@vmware.com> 4.9.140-3
+-   Apply nvme_io_irq_without_affinity.patch
 *   Mon Dec 17 2018 Ajay Kaher <akaher@vmware.com> 4.9.140-2
 -   Enable pci-hyperv support and apply relevant patches
 *   Mon Nov 26 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.140-1
