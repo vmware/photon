@@ -5,15 +5,15 @@ Subject: [PATCH] x86/vmware: pv-ops boot_clock
 
 ---
  arch/x86/include/asm/paravirt.h       |  5 +++++
- arch/x86/include/asm/paravirt_types.h |  5 +++++
+ arch/x86/include/asm/paravirt_types.h |  2 ++
  arch/x86/kernel/cpu/vmware.c          | 24 +++++++++++++++++++++++-
  arch/x86/kernel/head_64.S             |  8 ++++++++
  arch/x86/kernel/paravirt.c            |  7 +++++++
- arch/x86/kernel/setup.c               |  9 +++++++++
- 6 files changed, 57 insertions(+), 1 deletion(-)
+ arch/x86/kernel/setup.c               | 10 ++++++++++
+ 6 files changed, 55 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/include/asm/paravirt.h b/arch/x86/include/asm/paravirt.h
-index d49bbf4..e0e5b8e 100644
+index e375d4266..e5c64e1 100644
 --- a/arch/x86/include/asm/paravirt.h
 +++ b/arch/x86/include/asm/paravirt.h
 @@ -184,6 +184,11 @@ static inline u64 paravirt_steal_clock(int cpu)
@@ -29,10 +29,10 @@ index d49bbf4..e0e5b8e 100644
  {
  	return PVOP_CALL1(u64, pv_cpu_ops.read_pmc, counter);
 diff --git a/arch/x86/include/asm/paravirt_types.h b/arch/x86/include/asm/paravirt_types.h
-index 180bc0b..b6280a9 100644
+index 4b75acc..156cfa3 100644
 --- a/arch/x86/include/asm/paravirt_types.h
 +++ b/arch/x86/include/asm/paravirt_types.h
-@@ -53,7 +53,8 @@ struct mm_struct;
+@@ -53,6 +53,7 @@ struct mm_struct;
  struct desc_struct;
  struct task_struct;
  struct cpumask;
@@ -40,8 +40,7 @@ index 180bc0b..b6280a9 100644
  struct flush_tlb_info;
  struct mmu_gather;
  
- /*
-@@ -99,6 +100,7 @@ struct pv_lazy_ops {
+@@ -100,6 +101,7 @@ struct pv_lazy_ops {
  struct pv_time_ops {
  	unsigned long long (*sched_clock)(void);
  	unsigned long long (*steal_clock)(int cpu);
@@ -50,7 +49,7 @@ index 180bc0b..b6280a9 100644
  
  struct pv_cpu_ops {
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 20509ee..e299357 100644
+index d4a8c9a..45c78ec 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -101,6 +101,7 @@ static struct cyc2ns_data vmware_cyc2ns __ro_after_init;
@@ -88,7 +87,7 @@ index 20509ee..e299357 100644
  static __init int setup_vmw_sched_clock(char *s)
  {
  	vmw_sched_clock = 0;
-@@ -143,7 +164,7 @@ static unsigned long long vmware_sched_clock(void)
+@@ -143,7 +164,7 @@ static unsigned long long notrace vmware_sched_clock(void)
  static void __init vmware_cyc2ns_setup(void)
  {
  	struct cyc2ns_data *d = &vmware_cyc2ns;
@@ -106,11 +105,11 @@ index 20509ee..e299357 100644
  #else
  #define vmware_paravirt_ops_setup() do {} while (0)
 diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-index 8344dd2..60ad9ac 100644
+index a3618cf..93b5e83 100644
 --- a/arch/x86/kernel/head_64.S
 +++ b/arch/x86/kernel/head_64.S
-@@ -107,6 +107,14 @@ ENTRY(secondary_startup_64)
- 	 * after the boot processor executes this code.
+@@ -72,6 +72,14 @@ startup_64:
+ 	 * tables and then reload them.
  	 */
  
 +	/*
@@ -121,14 +120,14 @@ index 8344dd2..60ad9ac 100644
 +	or	%rax, %rdx
 +	mov	%rdx, tsc_at_head(%rip)
 +
- 	/* Sanitize CPU configuration */
- 	call verify_cpu
+ 	/* Set up the stack for verify_cpu(), similar to initial_stack below */
+ 	leaq	(__end_init_task - SIZEOF_PTREGS)(%rip), %rsp
  
 diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
-index 930c883..f6b3799 100644
+index 8dc69d8..3cf11e7 100644
 --- a/arch/x86/kernel/paravirt.c
 +++ b/arch/x86/kernel/paravirt.c
-@@ -219,6 +219,12 @@ static u64 native_steal_clock(int cpu)
+@@ -220,6 +220,12 @@ static u64 native_steal_clock(int cpu)
  	return 0;
  }
  
@@ -141,7 +140,7 @@ index 930c883..f6b3799 100644
  /* These are in entry.S */
  extern void native_iret(void);
  extern void native_usergs_sysret64(void);
-@@ -326,6 +332,7 @@ struct pv_init_ops pv_init_ops = {
+@@ -327,6 +333,7 @@ struct pv_init_ops pv_init_ops = {
  struct pv_time_ops pv_time_ops = {
  	.sched_clock = native_sched_clock,
  	.steal_clock = native_steal_clock,
@@ -150,10 +149,10 @@ index 930c883..f6b3799 100644
  
  __visible struct pv_irq_ops pv_irq_ops = {
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 74b4472..3a6ab94 100644
+index b4866ba..ecec1e1 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -1318,3 +1318,13 @@ static int __init register_kernel_offset_dumper(void)
+@@ -1309,3 +1309,13 @@ static int __init register_kernel_offset_dumper(void)
  	return 0;
  }
  __initcall(register_kernel_offset_dumper);
