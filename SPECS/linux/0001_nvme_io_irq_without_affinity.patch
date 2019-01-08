@@ -1,0 +1,44 @@
+NVME driver allocates admin and IO vector using pci_alloc_irq_vectors(). 
+
+In v4.9, if IO vector allocated using PCI_IRQ_AFFINITY, 
+then assignment of IO vector in vector_irq mismatches with actual assignment. 
+Due to which some IO INT fails to handle.
+
+If IO vector allocated without using PCI_IRQ_AFFINITY, 
+then all IO INT scheduled on CPU 0 and no IO INT fails.
+
+diff -Nurp linux-4.9.140_modified/drivers/nvme/host/pci.c linux-4.9.140/drivers/nvme/host/pci.c
+--- linux-4.9.140_modified/drivers/nvme/host/pci.c	2018-11-23 17:27:41.000000000 +0530
++++ linux-4.9.140/drivers/nvme/host/pci.c	2019-01-17 01:27:30.002509017 +0530
+@@ -1450,8 +1450,18 @@ static int nvme_setup_io_queues(struct n
+ 	 * setting up the full range we need.
+ 	 */
+ 	pci_free_irq_vectors(pdev);
+-	nr_io_queues = pci_alloc_irq_vectors(pdev, 1, nr_io_queues,
+-			PCI_IRQ_ALL_TYPES | PCI_IRQ_AFFINITY);
++
++	if (pdev->vendor == PCI_VENDOR_ID_MICROSOFT &&
++			pdev->device == PCI_DEVICE_ID_MICROSOFT) {
++		nr_io_queues = pci_alloc_irq_vectors(pdev, 1, nr_io_queues,
++				PCI_IRQ_ALL_TYPES);
++		dev_warn(dev->ctrl.device, "detected MicroSoft NVMe controller, "
++			"skipping PCI_IRQ_AFFINITY from pci_alloc_irq_vectors\n");
++	} else {
++		nr_io_queues = pci_alloc_irq_vectors(pdev, 1, nr_io_queues,
++				PCI_IRQ_ALL_TYPES | PCI_IRQ_AFFINITY);
++	}
++
+ 	if (nr_io_queues <= 0)
+ 		return -EIO;
+ 	dev->max_qid = nr_io_queues;
+diff -Nurp linux-4.9.140_modified/include/linux/pci_ids.h linux-4.9.140/include/linux/pci_ids.h
+--- linux-4.9.140_modified/include/linux/pci_ids.h	2018-11-23 17:27:41.000000000 +0530
++++ linux-4.9.140/include/linux/pci_ids.h	2019-01-17 01:10:34.606536165 +0530
+@@ -3056,4 +3056,7 @@
+ 
+ #define PCI_VENDOR_ID_NCUBE		0x10ff
+ 
++#define PCI_VENDOR_ID_MICROSOFT		0x1414
++#define PCI_DEVICE_ID_MICROSOFT		0xb111
++
+ #endif /* _LINUX_PCI_IDS_H */
