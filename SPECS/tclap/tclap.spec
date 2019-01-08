@@ -38,7 +38,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 
 %check
-make %{?_smp_mflags} check
+make check
 
 %files
 %defattr(-,root,root)
