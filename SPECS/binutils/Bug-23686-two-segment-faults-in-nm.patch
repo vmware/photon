@@ -1,0 +1,124 @@
+From 30838132997e6a3cfe3ec11c58b32b22f6f6b102 Mon Sep 17 00:00:00 2001
+From: Alan Modra <amodra@gmail.com>
+Date: Thu, 20 Sep 2018 15:29:17 +0930
+Subject: [PATCH] Bug 23686, two segment faults in nm
+
+Fixes the bugs exposed by the testcases in the PR, plus two more bugs
+I noticed when looking at _bfd_stab_section_find_nearest_line.
+
+	PR 23686
+	* dwarf2.c (read_section): Error when attempting to malloc
+	"(bfd_size_type) -1".
+	* syms.c (_bfd_stab_section_find_nearest_line): Bounds check
+	function_name.  Bounds check reloc address.  Formatting.  Ensure
+	.stabstr zero terminated.
+---
+ bfd/dwarf2.c  |  9 ++++++++-
+ bfd/syms.c    | 22 ++++++++++++++++------
+ 2 files changed, 24 insertions(+), 7 deletions(-)
+
+diff --git a/bfd/dwarf2.c b/bfd/dwarf2.c
+index 3b28855..77a7368 100644
+--- a/bfd/dwarf2.c
++++ b/bfd/dwarf2.c
+@@ -527,6 +527,7 @@ read_section (bfd *	      abfd,
+   asection *msec;
+   const char *section_name = sec->uncompressed_name;
+   bfd_byte *contents = *section_buffer;
++  bfd_size_type amt;
+ 
+   /* The section may have already been read.  */
+   if (contents == NULL)
+@@ -549,7 +550,13 @@ read_section (bfd *	      abfd,
+       *section_size = msec->rawsize ? msec->rawsize : msec->size;
+       /* Paranoia - alloc one extra so that we can make sure a string
+ 	 section is NUL terminated.  */
+-      contents = (bfd_byte *) bfd_malloc (*section_size + 1);
++      amt = *section_size + 1;
++      if (amt == 0)
++	{
++	  bfd_set_error (bfd_error_no_memory);
++	  return FALSE;
++	}
++      contents = (bfd_byte *) bfd_malloc (amt);
+       if (contents == NULL)
+ 	return FALSE;
+       if (syms
+diff --git a/bfd/syms.c b/bfd/syms.c
+index 187071f..e09640a 100644
+--- a/bfd/syms.c
++++ b/bfd/syms.c
+@@ -1035,6 +1035,10 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
+ 					 0, strsize))
+ 	return FALSE;
+ 
++      /* Stab strings ought to be nul terminated.  Ensure the last one
++	 is, to prevent running off the end of the buffer.  */
++      info->strs[strsize - 1] = 0;
++
+       /* If this is a relocatable object file, we have to relocate
+ 	 the entries in .stab.  This should always be simple 32 bit
+ 	 relocations against symbols defined in this object file, so
+@@ -1073,7 +1077,8 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
+ 		  || r->howto->bitsize != 32
+ 		  || r->howto->pc_relative
+ 		  || r->howto->bitpos != 0
+-		  || r->howto->dst_mask != 0xffffffff)
++		  || r->howto->dst_mask != 0xffffffff
++		  || r->address * bfd_octets_per_byte (abfd) + 4 > stabsize)
+ 		{
+ 		  _bfd_error_handler
+ 		    (_("unsupported .stab relocation"));
+@@ -1195,7 +1200,8 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
+ 		{
+ 		  nul_fun = stab;
+ 		  nul_str = str;
+-		  if (file_name >= (char *) info->strs + strsize || file_name < (char *) str)
++		  if (file_name >= (char *) info->strs + strsize
++		      || file_name < (char *) str)
+ 		    file_name = NULL;
+ 		  if (stab + STABSIZE + TYPEOFF < info->stabs + stabsize
+ 		      && *(stab + STABSIZE + TYPEOFF) == (bfd_byte) N_SO)
+@@ -1206,7 +1212,8 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
+ 		      directory_name = file_name;
+ 		      file_name = ((char *) str
+ 				   + bfd_get_32 (abfd, stab + STRDXOFF));
+-		      if (file_name >= (char *) info->strs + strsize || file_name < (char *) str)
++		      if (file_name >= (char *) info->strs + strsize
++			  || file_name < (char *) str)
+ 			file_name = NULL;
+ 		    }
+ 		}
+@@ -1217,7 +1224,8 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
+ 	      file_name = (char *) str + bfd_get_32 (abfd, stab + STRDXOFF);
+ 	      /* PR 17512: file: 0c680a1f.  */
+ 	      /* PR 17512: file: 5da8aec4.  */
+-	      if (file_name >= (char *) info->strs + strsize || file_name < (char *) str)
++	      if (file_name >= (char *) info->strs + strsize
++		  || file_name < (char *) str)
+ 		file_name = NULL;
+ 	      break;
+ 
+@@ -1226,7 +1234,8 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
+ 	      function_name = (char *) str + bfd_get_32 (abfd, stab + STRDXOFF);
+ 	      if (function_name == (char *) str)
+ 		continue;
+-	      if (function_name >= (char *) info->strs + strsize)
++	      if (function_name >= (char *) info->strs + strsize
++		  || function_name < (char *) str)
+ 		function_name = NULL;
+ 
+ 	      nul_fun = NULL;
+@@ -1335,7 +1344,8 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
+ 	  if (val <= offset)
+ 	    {
+ 	      file_name = (char *) str + bfd_get_32 (abfd, stab + STRDXOFF);
+-	      if (file_name >= (char *) info->strs + strsize || file_name < (char *) str)
++	      if (file_name >= (char *) info->strs + strsize
++		  || file_name < (char *) str)
+ 		file_name = NULL;
+ 	      *pline = 0;
+ 	    }
+-- 
+2.9.3
+
