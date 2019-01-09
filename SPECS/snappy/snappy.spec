@@ -44,7 +44,9 @@ find %{buildroot} -name '*.la' -delete
 rm -rf %{buildroot}
 
 %check
-make check
+cd testdata
+cmake ../ && make
+make test
 
 %post -p /sbin/ldconfig
 
