@@ -1,7 +1,7 @@
 Summary:	Fast compression and decompression library
 Name:		snappy
 Version:	1.1.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD and LGPLv2 and Sleepycat
 URL:		http://code.google.com/p/snappy/
 Source0:	https://github.com/google/%{name}/archive/%{name}-%{version}.tar.gz
@@ -44,7 +44,9 @@ find %{buildroot} -name '*.la' -delete
 rm -rf %{buildroot}
 
 %check
-make check
+cd testdata
+cmake ../ && make
+make test
 
 %post -p /sbin/ldconfig
 
@@ -63,7 +65,9 @@ make check
 %{_lib64dir}/libsnappy.so
 
 %changelog
-*	Wed Sep 19 2018 Srinidhi Rao <srinidhir@vmware.com> 1.1.7-1
--	Updating the version to 1.1.7
-*	Fri Dec 16 2016 Dheeraj Shetty <Dheerajs@vmware.com> 1.1.3-1
--	Initial build. First version
+*  Wed Jan 09 2019 Michelle Wang <michellew@vmware.com> 1.1.7-2
+-  Fix make check for snappy.
+*  Wed Sep 19 2018 Srinidhi Rao <srinidhir@vmware.com> 1.1.7-1
+-  Updating the version to 1.1.7.
+*  Fri Dec 16 2016 Dheeraj Shetty <Dheerajs@vmware.com> 1.1.3-1
+-  Initial build. First version.
