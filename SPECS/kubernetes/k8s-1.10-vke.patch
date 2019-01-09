@@ -1,66 +1,93 @@
-From 9ae5383c8a058587af04bae626082c1d41b0d87f Mon Sep 17 00:00:00 2001
-From: DheerajSShetty <dheerajs@vmware.com>
-Date: Mon, 26 Nov 2018 15:50:22 -0800
-Subject: [PATCH] VKE patch for k8s 1.10.11 (2bf7a01b)
+From c1d6b2dd40a9fc67870be6d768a27c286a5ba6c3 Mon Sep 17 00:00:00 2001
+From: ekj1711 <ejohn@vmware.com>
+Date: Wed, 9 Jan 2019 18:05:27 +0530
+Subject: [PATCH] VCP patch for K8s v1.10.12
 
 ---
- api/swagger-spec/apps_v1alpha1.json                |  21 +
- api/swagger-spec/apps_v1beta1.json                 |  21 +
- api/swagger-spec/apps_v1beta2.json                 |  21 +
- api/swagger-spec/batch_v1.json                     |  21 +
- api/swagger-spec/batch_v1beta1.json                |  21 +
- api/swagger-spec/batch_v2alpha1.json               |  21 +
- api/swagger-spec/extensions_v1beta1.json           |  21 +
- api/swagger-spec/settings.k8s.io_v1alpha1.json     |  21 +
- api/swagger-spec/v1.json                           |  25 +
- cmd/kube-controller-manager/app/BUILD              |   1 +
- cmd/kube-controller-manager/app/plugins.go         |   4 +
- cmd/kubelet/app/BUILD                              |   1 +
- cmd/kubelet/app/plugins.go                         |   2 +
- pkg/apis/core/types.go                             |  14 +
- pkg/apis/core/validation/validation.go             |  25 +
- pkg/apis/extensions/types.go                       |   1 +
- pkg/cloudprovider/providers/BUILD                  |   2 +
- pkg/cloudprovider/providers/cascade/BUILD          |  56 ++
- pkg/cloudprovider/providers/cascade/OWNERS         |   3 +
- pkg/cloudprovider/providers/cascade/apitypes.go    | 230 +++++
- pkg/cloudprovider/providers/cascade/auth.go        | 145 ++++
- pkg/cloudprovider/providers/cascade/cascade.go     | 219 +++++
- .../providers/cascade/cascade_disks.go             | 253 ++++++
- .../providers/cascade/cascade_instances.go         | 125 +++
- .../providers/cascade/cascade_instances_test.go    |  44 +
- .../providers/cascade/cascade_loadbalancer.go      | 295 +++++++
- pkg/cloudprovider/providers/cascade/client.go      | 400 +++++++++
- pkg/cloudprovider/providers/cascade/oidcclient.go  | 297 +++++++
- pkg/cloudprovider/providers/cascade/restclient.go  | 262 ++++++
- pkg/cloudprovider/providers/cascade/tests_owed     |   5 +
- pkg/cloudprovider/providers/cascade/utils.go       |  29 +
- pkg/cloudprovider/providers/providers.go           |   1 +
- pkg/kubeapiserver/authorizer/config.go             |   7 +
- pkg/kubeapiserver/authorizer/modes/modes.go        |   3 +-
- pkg/kubeapiserver/options/plugins.go               |   3 +
- pkg/printers/internalversion/describe.go           |  11 +
- pkg/security/podsecuritypolicy/util/util.go        |   3 +
- pkg/volume/cascade_disk/BUILD                      |  43 +
- pkg/volume/cascade_disk/OWNERS                     |   2 +
- pkg/volume/cascade_disk/attacher.go                | 264 ++++++
- pkg/volume/cascade_disk/azure_disk_util.go         | 135 +++
- pkg/volume/cascade_disk/cascade_disk.go            | 399 +++++++++
- pkg/volume/cascade_disk/cascade_util.go            | 217 +++++
- .../admission/persistentvolume/label/admission.go  |  54 ++
- plugin/pkg/admission/vke/BUILD                     |  61 ++
- plugin/pkg/admission/vke/admission.go              | 628 ++++++++++++++
- plugin/pkg/admission/vke/admission_test.go         | 960 +++++++++++++++++++++
- plugin/pkg/auth/authorizer/vke/BUILD               |  40 +
- plugin/pkg/auth/authorizer/vke/OWNERS              |   2 +
- plugin/pkg/auth/authorizer/vke/vke_authorizer.go   | 123 +++
- .../pkg/auth/authorizer/vke/vke_authorizer_test.go | 230 +++++
- staging/src/k8s.io/api/core/v1/generated.pb.go     | 310 ++++++-
- staging/src/k8s.io/api/core/v1/types.go            |  24 +-
- 53 files changed, 6098 insertions(+), 28 deletions(-)
+ api/swagger-spec/apps_v1alpha1.json           |  21 +
+ api/swagger-spec/apps_v1beta1.json            |  21 +
+ api/swagger-spec/apps_v1beta2.json            |  21 +
+ api/swagger-spec/batch_v1.json                |  21 +
+ api/swagger-spec/batch_v1beta1.json           |  21 +
+ api/swagger-spec/batch_v2alpha1.json          |  21 +
+ api/swagger-spec/extensions_v1beta1.json      |  21 +
+ .../settings.k8s.io_v1alpha1.json             |  21 +
+ api/swagger-spec/v1.json                      |  25 +
+ cmd/kube-controller-manager/app/BUILD         |   3 +-
+ cmd/kube-controller-manager/app/plugins.go    |   4 +
+ cmd/kubelet/app/BUILD                         |   1 +
+ cmd/kubelet/app/plugins.go                    |   2 +
+ pkg/apis/core/types.go                        |  14 +
+ pkg/apis/core/validation/validation.go        |  86 +-
+ pkg/apis/extensions/types.go                  |   1 +
+ pkg/cloudprovider/providers/BUILD             |   2 +
+ pkg/cloudprovider/providers/cascade/BUILD     |  56 +
+ pkg/cloudprovider/providers/cascade/OWNERS    |   3 +
+ .../providers/cascade/apitypes.go             | 230 +++++
+ pkg/cloudprovider/providers/cascade/auth.go   | 145 +++
+ .../providers/cascade/cascade.go              | 219 ++++
+ .../providers/cascade/cascade_disks.go        | 253 +++++
+ .../providers/cascade/cascade_instances.go    | 125 +++
+ .../cascade/cascade_instances_test.go         |  44 +
+ .../providers/cascade/cascade_loadbalancer.go | 295 ++++++
+ pkg/cloudprovider/providers/cascade/client.go | 400 ++++++++
+ .../providers/cascade/oidcclient.go           | 297 ++++++
+ .../providers/cascade/restclient.go           | 262 +++++
+ .../providers/cascade/tests_owed              |   5 +
+ pkg/cloudprovider/providers/cascade/utils.go  |  29 +
+ pkg/cloudprovider/providers/providers.go      |   1 +
+ pkg/kubeapiserver/authorizer/config.go        |   7 +
+ pkg/kubeapiserver/authorizer/modes/modes.go   |   3 +-
+ pkg/kubeapiserver/options/plugins.go          |   3 +
+ pkg/printers/internalversion/describe.go      |  11 +
+ pkg/security/podsecuritypolicy/util/util.go   |   3 +
+ pkg/volume/cascade_disk/BUILD                 |  43 +
+ pkg/volume/cascade_disk/OWNERS                |   2 +
+ pkg/volume/cascade_disk/attacher.go           | 264 +++++
+ pkg/volume/cascade_disk/azure_disk_util.go    | 135 +++
+ pkg/volume/cascade_disk/cascade_disk.go       | 399 ++++++++
+ pkg/volume/cascade_disk/cascade_util.go       | 217 ++++
+ .../persistentvolume/label/admission.go       |  54 +
+ plugin/pkg/admission/vke/BUILD                |  61 ++
+ plugin/pkg/admission/vke/admission.go         | 628 ++++++++++++
+ plugin/pkg/admission/vke/admission_test.go    | 960 ++++++++++++++++++
+ plugin/pkg/auth/authorizer/vke/BUILD          |  40 +
+ plugin/pkg/auth/authorizer/vke/OWNERS         |   2 +
+ .../pkg/auth/authorizer/vke/vke_authorizer.go | 123 +++
+ .../authorizer/vke/vke_authorizer_test.go     | 230 +++++
+ .../src/k8s.io/api/core/v1/generated.pb.go    | 310 +++++-
+ staging/src/k8s.io/api/core/v1/types.go       |  24 +-
+ 53 files changed, 6099 insertions(+), 90 deletions(-)
+ create mode 100644 pkg/cloudprovider/providers/cascade/BUILD
+ create mode 100644 pkg/cloudprovider/providers/cascade/OWNERS
+ create mode 100644 pkg/cloudprovider/providers/cascade/apitypes.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/auth.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/cascade.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/cascade_disks.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/cascade_instances.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/cascade_instances_test.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/client.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/oidcclient.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/restclient.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/tests_owed
+ create mode 100644 pkg/cloudprovider/providers/cascade/utils.go
+ create mode 100644 pkg/volume/cascade_disk/BUILD
+ create mode 100644 pkg/volume/cascade_disk/OWNERS
+ create mode 100644 pkg/volume/cascade_disk/attacher.go
+ create mode 100644 pkg/volume/cascade_disk/azure_disk_util.go
+ create mode 100644 pkg/volume/cascade_disk/cascade_disk.go
+ create mode 100644 pkg/volume/cascade_disk/cascade_util.go
+ create mode 100644 plugin/pkg/admission/vke/BUILD
+ create mode 100644 plugin/pkg/admission/vke/admission.go
+ create mode 100644 plugin/pkg/admission/vke/admission_test.go
+ create mode 100644 plugin/pkg/auth/authorizer/vke/BUILD
+ create mode 100644 plugin/pkg/auth/authorizer/vke/OWNERS
+ create mode 100644 plugin/pkg/auth/authorizer/vke/vke_authorizer.go
+ create mode 100644 plugin/pkg/auth/authorizer/vke/vke_authorizer_test.go
 
 diff --git a/api/swagger-spec/apps_v1alpha1.json b/api/swagger-spec/apps_v1alpha1.json
-index 6f54662..0ce6f3f 100644
+index 6f546623de..0ce6f3f2fc 100644
 --- a/api/swagger-spec/apps_v1alpha1.json
 +++ b/api/swagger-spec/apps_v1alpha1.json
 @@ -1459,6 +1459,10 @@
@@ -99,7 +126,7 @@ index 6f54662..0ce6f3f 100644
      "id": "v1.Container",
      "description": "A single application container that you want to run within a pod.",
 diff --git a/api/swagger-spec/apps_v1beta1.json b/api/swagger-spec/apps_v1beta1.json
-index f2aa27c..0780075 100644
+index f2aa27c64d..0780075c2a 100644
 --- a/api/swagger-spec/apps_v1beta1.json
 +++ b/api/swagger-spec/apps_v1beta1.json
 @@ -4483,6 +4483,10 @@
@@ -138,7 +165,7 @@ index f2aa27c..0780075 100644
      "id": "v1.ProjectedVolumeSource",
      "description": "Represents a projected volume source",
 diff --git a/api/swagger-spec/apps_v1beta2.json b/api/swagger-spec/apps_v1beta2.json
-index 7d92e2b..c050ee8 100644
+index 7d92e2bf52..c050ee8473 100644
 --- a/api/swagger-spec/apps_v1beta2.json
 +++ b/api/swagger-spec/apps_v1beta2.json
 @@ -6849,6 +6849,10 @@
@@ -177,7 +204,7 @@ index 7d92e2b..c050ee8 100644
      "id": "v1.ProjectedVolumeSource",
      "description": "Represents a projected volume source",
 diff --git a/api/swagger-spec/batch_v1.json b/api/swagger-spec/batch_v1.json
-index e57104a..c3aa722 100644
+index e57104a996..c3aa722033 100644
 --- a/api/swagger-spec/batch_v1.json
 +++ b/api/swagger-spec/batch_v1.json
 @@ -1823,6 +1823,10 @@
@@ -216,7 +243,7 @@ index e57104a..c3aa722 100644
      "id": "v1.ProjectedVolumeSource",
      "description": "Represents a projected volume source",
 diff --git a/api/swagger-spec/batch_v1beta1.json b/api/swagger-spec/batch_v1beta1.json
-index 67b49f7..11f30a5 100644
+index 67b49f7b46..11f30a5aa4 100644
 --- a/api/swagger-spec/batch_v1beta1.json
 +++ b/api/swagger-spec/batch_v1beta1.json
 @@ -1878,6 +1878,10 @@
@@ -255,7 +282,7 @@ index 67b49f7..11f30a5 100644
      "id": "v1.ProjectedVolumeSource",
      "description": "Represents a projected volume source",
 diff --git a/api/swagger-spec/batch_v2alpha1.json b/api/swagger-spec/batch_v2alpha1.json
-index 8616a87..2e1a8f7 100644
+index 8616a875c1..2e1a8f7782 100644
 --- a/api/swagger-spec/batch_v2alpha1.json
 +++ b/api/swagger-spec/batch_v2alpha1.json
 @@ -1893,6 +1893,10 @@
@@ -294,7 +321,7 @@ index 8616a87..2e1a8f7 100644
      "id": "v1.Container",
      "description": "A single application container that you want to run within a pod.",
 diff --git a/api/swagger-spec/extensions_v1beta1.json b/api/swagger-spec/extensions_v1beta1.json
-index 76e3253..b79ca7a 100644
+index 76e32530dc..b79ca7acb4 100644
 --- a/api/swagger-spec/extensions_v1beta1.json
 +++ b/api/swagger-spec/extensions_v1beta1.json
 @@ -7506,6 +7506,10 @@
@@ -333,7 +360,7 @@ index 76e3253..b79ca7a 100644
      "id": "v1.ProjectedVolumeSource",
      "description": "Represents a projected volume source",
 diff --git a/api/swagger-spec/settings.k8s.io_v1alpha1.json b/api/swagger-spec/settings.k8s.io_v1alpha1.json
-index fa66976..5108c61 100644
+index fa66976a67..5108c61ab4 100644
 --- a/api/swagger-spec/settings.k8s.io_v1alpha1.json
 +++ b/api/swagger-spec/settings.k8s.io_v1alpha1.json
 @@ -1676,6 +1676,10 @@
@@ -372,7 +399,7 @@ index fa66976..5108c61 100644
      "id": "v1.ProjectedVolumeSource",
      "description": "Represents a projected volume source",
 diff --git a/api/swagger-spec/v1.json b/api/swagger-spec/v1.json
-index d3b6ea7..662614f 100644
+index d3b6ea7daf..662614f97c 100644
 --- a/api/swagger-spec/v1.json
 +++ b/api/swagger-spec/v1.json
 @@ -19310,6 +19310,10 @@
@@ -422,7 +449,7 @@ index d3b6ea7..662614f 100644
      }
     },
 diff --git a/cmd/kube-controller-manager/app/BUILD b/cmd/kube-controller-manager/app/BUILD
-index a3f98b1..3410214 100644
+index b5af7c5626..79926dbb58 100644
 --- a/cmd/kube-controller-manager/app/BUILD
 +++ b/cmd/kube-controller-manager/app/BUILD
 @@ -88,6 +88,7 @@ go_library(
@@ -433,8 +460,17 @@ index a3f98b1..3410214 100644
          "//pkg/volume/cinder:go_default_library",
          "//pkg/volume/csi:go_default_library",
          "//pkg/volume/fc:go_default_library",
+@@ -116,7 +117,7 @@ go_library(
+         "//vendor/k8s.io/apimachinery/pkg/util/sets:go_default_library",
+         "//vendor/k8s.io/apimachinery/pkg/util/uuid:go_default_library",
+         "//vendor/k8s.io/apimachinery/pkg/util/wait:go_default_library",
+-        "//vendor/k8s.io/apiserver/pkg/server/healthz:go_default_library",
++	"//vendor/k8s.io/apiserver/pkg/server/healthz:go_default_library",
+         "//vendor/k8s.io/apiserver/pkg/util/feature:go_default_library",
+         "//vendor/k8s.io/client-go/discovery:go_default_library",
+         "//vendor/k8s.io/client-go/discovery/cached:go_default_library",
 diff --git a/cmd/kube-controller-manager/app/plugins.go b/cmd/kube-controller-manager/app/plugins.go
-index 42034d5..e729785 100644
+index 42034d5c6d..e729785006 100644
 --- a/cmd/kube-controller-manager/app/plugins.go
 +++ b/cmd/kube-controller-manager/app/plugins.go
 @@ -34,6 +34,7 @@ import (
@@ -470,7 +506,7 @@ index 42034d5..e729785 100644
  	return allPlugins
  }
 diff --git a/cmd/kubelet/app/BUILD b/cmd/kubelet/app/BUILD
-index cbfb90f..6264d0c 100644
+index cbfb90ff13..6264d0ce53 100644
 --- a/cmd/kubelet/app/BUILD
 +++ b/cmd/kubelet/app/BUILD
 @@ -117,6 +117,7 @@ go_library(
@@ -482,7 +518,7 @@ index cbfb90f..6264d0c 100644
          "//pkg/volume/cinder:go_default_library",
          "//pkg/volume/configmap:go_default_library",
 diff --git a/cmd/kubelet/app/plugins.go b/cmd/kubelet/app/plugins.go
-index ef41bb8..c9806f7 100644
+index ef41bb8e90..c9806f7f75 100644
 --- a/cmd/kubelet/app/plugins.go
 +++ b/cmd/kubelet/app/plugins.go
 @@ -32,6 +32,7 @@ import (
@@ -502,7 +538,7 @@ index ef41bb8..c9806f7 100644
  		allPlugins = append(allPlugins, csi.ProbeVolumePlugins()...)
  	}
 diff --git a/pkg/apis/core/types.go b/pkg/apis/core/types.go
-index 7f37e3d..fc792ee 100644
+index 7f37e3d989..fc792ee119 100644
 --- a/pkg/apis/core/types.go
 +++ b/pkg/apis/core/types.go
 @@ -316,6 +316,8 @@ type VolumeSource struct {
@@ -541,7 +577,7 @@ index 7f37e3d..fc792ee 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 diff --git a/pkg/apis/core/validation/validation.go b/pkg/apis/core/validation/validation.go
-index 8d12dad..8bd89c6 100644
+index f7bc992d0d..2ccbce66e1 100644
 --- a/pkg/apis/core/validation/validation.go
 +++ b/pkg/apis/core/validation/validation.go
 @@ -664,6 +664,14 @@ func validateVolumeSource(source *core.VolumeSource, fldPath *field.Path, volNam
@@ -590,8 +626,83 @@ index 8d12dad..8bd89c6 100644
  	if numVolumes == 0 {
  		allErrs = append(allErrs, field.Required(specPath, "must specify a volume type"))
  	}
+@@ -4764,57 +4789,6 @@ func ValidateNamespaceFinalizeUpdate(newNamespace, oldNamespace *core.Namespace)
+ 	return allErrs
+ }
+ 
+-// ValidateEndpoints tests if required fields are set.
+-func ValidateEndpoints(endpoints *core.Endpoints) field.ErrorList {
+-	allErrs := ValidateObjectMeta(&endpoints.ObjectMeta, true, ValidateEndpointsName, field.NewPath("metadata"))
+-	allErrs = append(allErrs, ValidateEndpointsSpecificAnnotations(endpoints.Annotations, field.NewPath("annotations"))...)
+-	allErrs = append(allErrs, validateEndpointSubsets(endpoints.Subsets, field.NewPath("subsets"))...)
+-	return allErrs
+-}
+-
+-func validateEndpointSubsets(subsets []core.EndpointSubset, fldPath *field.Path) field.ErrorList {
+-	allErrs := field.ErrorList{}
+-	for i := range subsets {
+-		ss := &subsets[i]
+-		idxPath := fldPath.Index(i)
+-
+-		// EndpointSubsets must include endpoint address. For headless service, we allow its endpoints not to have ports.
+-		if len(ss.Addresses) == 0 && len(ss.NotReadyAddresses) == 0 {
+-			//TODO: consider adding a RequiredOneOf() error for this and similar cases
+-			allErrs = append(allErrs, field.Required(idxPath, "must specify `addresses` or `notReadyAddresses`"))
+-		}
+-		for addr := range ss.Addresses {
+-			allErrs = append(allErrs, validateEndpointAddress(&ss.Addresses[addr], idxPath.Child("addresses").Index(addr))...)
+-		}
+-		for addr := range ss.NotReadyAddresses {
+-			allErrs = append(allErrs, validateEndpointAddress(&ss.NotReadyAddresses[addr], idxPath.Child("notReadyAddresses").Index(addr))...)
+-		}
+-		for port := range ss.Ports {
+-			allErrs = append(allErrs, validateEndpointPort(&ss.Ports[port], len(ss.Ports) > 1, idxPath.Child("ports").Index(port))...)
+-		}
+-	}
+-
+-	return allErrs
+-}
+-
+-func validateEndpointAddress(address *core.EndpointAddress, fldPath *field.Path) field.ErrorList {
+-	allErrs := field.ErrorList{}
+-	for _, msg := range validation.IsValidIP(address.IP) {
+-		allErrs = append(allErrs, field.Invalid(fldPath.Child("ip"), address.IP, msg))
+-	}
+-	if len(address.Hostname) > 0 {
+-		allErrs = append(allErrs, ValidateDNS1123Label(address.Hostname, fldPath.Child("hostname"))...)
+-	}
+-	// During endpoint update, verify that NodeName is a DNS subdomain and transition rules allow the update
+-	if address.NodeName != nil {
+-		for _, msg := range ValidateNodeName(*address.NodeName, false) {
+-			allErrs = append(allErrs, field.Invalid(fldPath.Child("nodeName"), *address.NodeName, msg))
+-		}
+-	}
+-	allErrs = append(allErrs, validateNonSpecialIP(address.IP, fldPath.Child("ip"))...)
+-	return allErrs
+-}
+-
+ func validateNonSpecialIP(ipAddress string, fldPath *field.Path) field.ErrorList {
+ 	// We disallow some IPs as endpoints or external-ips.  Specifically,
+ 	// unspecified and loopback addresses are nonsensical and link-local
+@@ -4859,16 +4833,6 @@ func validateEndpointPort(port *core.EndpointPort, requireName bool, fldPath *fi
+ 	return allErrs
+ }
+ 
+-// ValidateEndpointsUpdate tests to make sure an endpoints update can be applied.
+-// NodeName changes are allowed during update to accommodate the case where nodeIP or PodCIDR is reused.
+-// An existing endpoint ip will have a different nodeName if this happens.
+-func ValidateEndpointsUpdate(newEndpoints, oldEndpoints *core.Endpoints) field.ErrorList {
+-	allErrs := ValidateObjectMetaUpdate(&newEndpoints.ObjectMeta, &oldEndpoints.ObjectMeta, field.NewPath("metadata"))
+-	allErrs = append(allErrs, validateEndpointSubsets(newEndpoints.Subsets, field.NewPath("subsets"))...)
+-	allErrs = append(allErrs, ValidateEndpointsSpecificAnnotations(newEndpoints.Annotations, field.NewPath("annotations"))...)
+-	return allErrs
+-}
+-
+ // ValidateSecurityContext ensure the security context contains valid settings
+ func ValidateSecurityContext(sc *core.SecurityContext, fldPath *field.Path) field.ErrorList {
+ 	allErrs := field.ErrorList{}
 diff --git a/pkg/apis/extensions/types.go b/pkg/apis/extensions/types.go
-index e369728..a5406ab 100644
+index e36972846b..a5406ab60a 100644
 --- a/pkg/apis/extensions/types.go
 +++ b/pkg/apis/extensions/types.go
 @@ -925,6 +925,7 @@ var (
@@ -603,7 +714,7 @@ index e369728..a5406ab 100644
  )
  
 diff --git a/pkg/cloudprovider/providers/BUILD b/pkg/cloudprovider/providers/BUILD
-index aeccfa1..4313576 100644
+index aeccfa1e5b..4313576203 100644
 --- a/pkg/cloudprovider/providers/BUILD
 +++ b/pkg/cloudprovider/providers/BUILD
 @@ -12,6 +12,7 @@ go_library(
@@ -624,7 +735,7 @@ index aeccfa1..4313576 100644
          "//pkg/cloudprovider/providers/gce:all-srcs",
 diff --git a/pkg/cloudprovider/providers/cascade/BUILD b/pkg/cloudprovider/providers/cascade/BUILD
 new file mode 100644
-index 0000000..4089166
+index 0000000000..4089166732
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/BUILD
 @@ -0,0 +1,56 @@
@@ -686,7 +797,7 @@ index 0000000..4089166
 +)
 diff --git a/pkg/cloudprovider/providers/cascade/OWNERS b/pkg/cloudprovider/providers/cascade/OWNERS
 new file mode 100644
-index 0000000..70efc9d
+index 0000000000..70efc9dc1c
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/OWNERS
 @@ -0,0 +1,3 @@
@@ -695,7 +806,7 @@ index 0000000..70efc9d
 +- ysheng
 diff --git a/pkg/cloudprovider/providers/cascade/apitypes.go b/pkg/cloudprovider/providers/cascade/apitypes.go
 new file mode 100644
-index 0000000..d437394
+index 0000000000..d437394462
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/apitypes.go
 @@ -0,0 +1,230 @@
@@ -931,7 +1042,7 @@ index 0000000..d437394
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/auth.go b/pkg/cloudprovider/providers/cascade/auth.go
 new file mode 100644
-index 0000000..fc92377
+index 0000000000..fc9237767f
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/auth.go
 @@ -0,0 +1,145 @@
@@ -1083,7 +1194,7 @@ index 0000000..fc92377
 \ No newline at end of file
 diff --git a/pkg/cloudprovider/providers/cascade/cascade.go b/pkg/cloudprovider/providers/cascade/cascade.go
 new file mode 100644
-index 0000000..b9fafb9
+index 0000000000..b9fafb92e1
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade.go
 @@ -0,0 +1,219 @@
@@ -1308,7 +1419,7 @@ index 0000000..b9fafb9
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_disks.go b/pkg/cloudprovider/providers/cascade/cascade_disks.go
 new file mode 100644
-index 0000000..e889a28
+index 0000000000..e889a28951
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_disks.go
 @@ -0,0 +1,253 @@
@@ -1567,7 +1678,7 @@ index 0000000..e889a28
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_instances.go b/pkg/cloudprovider/providers/cascade/cascade_instances.go
 new file mode 100644
-index 0000000..957378b
+index 0000000000..957378bf0a
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_instances.go
 @@ -0,0 +1,125 @@
@@ -1698,7 +1809,7 @@ index 0000000..957378b
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_instances_test.go b/pkg/cloudprovider/providers/cascade/cascade_instances_test.go
 new file mode 100644
-index 0000000..8fb314d
+index 0000000000..8fb314def1
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_instances_test.go
 @@ -0,0 +1,44 @@
@@ -1748,7 +1859,7 @@ index 0000000..8fb314d
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go b/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
 new file mode 100644
-index 0000000..c2a62c2
+index 0000000000..c2a62c2ff7
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
 @@ -0,0 +1,295 @@
@@ -2049,7 +2160,7 @@ index 0000000..c2a62c2
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/client.go b/pkg/cloudprovider/providers/cascade/client.go
 new file mode 100644
-index 0000000..400e377
+index 0000000000..400e3777d0
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/client.go
 @@ -0,0 +1,400 @@
@@ -2455,7 +2566,7 @@ index 0000000..400e377
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/oidcclient.go b/pkg/cloudprovider/providers/cascade/oidcclient.go
 new file mode 100644
-index 0000000..6a71cc1
+index 0000000000..6a71cc184f
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/oidcclient.go
 @@ -0,0 +1,297 @@
@@ -2758,7 +2869,7 @@ index 0000000..6a71cc1
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/restclient.go b/pkg/cloudprovider/providers/cascade/restclient.go
 new file mode 100644
-index 0000000..71d8d1c
+index 0000000000..71d8d1c164
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/restclient.go
 @@ -0,0 +1,262 @@
@@ -3026,7 +3137,7 @@ index 0000000..71d8d1c
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/tests_owed b/pkg/cloudprovider/providers/cascade/tests_owed
 new file mode 100644
-index 0000000..dff5ab1
+index 0000000000..dff5ab1dcd
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/tests_owed
 @@ -0,0 +1,5 @@
@@ -3037,7 +3148,7 @@ index 0000000..dff5ab1
 +
 diff --git a/pkg/cloudprovider/providers/cascade/utils.go b/pkg/cloudprovider/providers/cascade/utils.go
 new file mode 100644
-index 0000000..8ecde98
+index 0000000000..8ecde989c5
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/utils.go
 @@ -0,0 +1,29 @@
@@ -3072,7 +3183,7 @@ index 0000000..8ecde98
 +}
 \ No newline at end of file
 diff --git a/pkg/cloudprovider/providers/providers.go b/pkg/cloudprovider/providers/providers.go
-index 7de9ca9..6d8a1d2 100644
+index 7de9ca9a41..6d8a1d2226 100644
 --- a/pkg/cloudprovider/providers/providers.go
 +++ b/pkg/cloudprovider/providers/providers.go
 @@ -20,6 +20,7 @@ import (
@@ -3084,7 +3195,7 @@ index 7de9ca9..6d8a1d2 100644
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/gce"
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/openstack"
 diff --git a/pkg/kubeapiserver/authorizer/config.go b/pkg/kubeapiserver/authorizer/config.go
-index 30661bc..4743432 100644
+index 30661bc14f..4743432d4f 100644
 --- a/pkg/kubeapiserver/authorizer/config.go
 +++ b/pkg/kubeapiserver/authorizer/config.go
 @@ -33,6 +33,7 @@ import (
@@ -3109,7 +3220,7 @@ index 30661bc..4743432 100644
  			alwaysAllowAuthorizer := authorizerfactory.NewAlwaysAllowAuthorizer()
  			authorizers = append(authorizers, alwaysAllowAuthorizer)
 diff --git a/pkg/kubeapiserver/authorizer/modes/modes.go b/pkg/kubeapiserver/authorizer/modes/modes.go
-index 54d0a62..73a763f 100644
+index 54d0a62770..73a763ff14 100644
 --- a/pkg/kubeapiserver/authorizer/modes/modes.go
 +++ b/pkg/kubeapiserver/authorizer/modes/modes.go
 @@ -25,9 +25,10 @@ const (
@@ -3125,7 +3236,7 @@ index 54d0a62..73a763f 100644
  // IsValidAuthorizationMode returns true if the given authorization mode is a valid one for the apiserver
  func IsValidAuthorizationMode(authzMode string) bool {
 diff --git a/pkg/kubeapiserver/options/plugins.go b/pkg/kubeapiserver/options/plugins.go
-index 75095b2..0914847 100644
+index 75095b20d1..0914847d7a 100644
 --- a/pkg/kubeapiserver/options/plugins.go
 +++ b/pkg/kubeapiserver/options/plugins.go
 @@ -58,6 +58,7 @@ import (
@@ -3153,7 +3264,7 @@ index 75095b2..0914847 100644
  
  // DefaultOffAdmissionPlugins get admission plugins off by default for kube-apiserver.
 diff --git a/pkg/printers/internalversion/describe.go b/pkg/printers/internalversion/describe.go
-index 318148d..bd26dc6 100644
+index 318148dfa1..bd26dc6179 100644
 --- a/pkg/printers/internalversion/describe.go
 +++ b/pkg/printers/internalversion/describe.go
 @@ -754,6 +754,8 @@ func describeVolumes(volumes []api.Volume, w PrefixWriter, space string) {
@@ -3189,7 +3300,7 @@ index 318148d..bd26dc6 100644
  			w.Write(LEVEL_1, "<unknown>\n")
  		}
 diff --git a/pkg/security/podsecuritypolicy/util/util.go b/pkg/security/podsecuritypolicy/util/util.go
-index d581f50..bfd21b1 100644
+index d581f5012a..bfd21b19a2 100644
 --- a/pkg/security/podsecuritypolicy/util/util.go
 +++ b/pkg/security/podsecuritypolicy/util/util.go
 @@ -68,6 +68,7 @@ func GetAllFSTypesAsSet() sets.String {
@@ -3211,7 +3322,7 @@ index d581f50..bfd21b1 100644
  	return "", fmt.Errorf("unknown volume type for volume: %#v", v)
 diff --git a/pkg/volume/cascade_disk/BUILD b/pkg/volume/cascade_disk/BUILD
 new file mode 100644
-index 0000000..3386612
+index 0000000000..3386612450
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/BUILD
 @@ -0,0 +1,43 @@
@@ -3260,7 +3371,7 @@ index 0000000..3386612
 +)
 diff --git a/pkg/volume/cascade_disk/OWNERS b/pkg/volume/cascade_disk/OWNERS
 new file mode 100644
-index 0000000..c3a4ed7
+index 0000000000..c3a4ed77dc
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/OWNERS
 @@ -0,0 +1,2 @@
@@ -3268,7 +3379,7 @@ index 0000000..c3a4ed7
 +- ashokc
 diff --git a/pkg/volume/cascade_disk/attacher.go b/pkg/volume/cascade_disk/attacher.go
 new file mode 100644
-index 0000000..c19c37c
+index 0000000000..c19c37c965
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/attacher.go
 @@ -0,0 +1,264 @@
@@ -3538,7 +3649,7 @@ index 0000000..c19c37c
 +}
 diff --git a/pkg/volume/cascade_disk/azure_disk_util.go b/pkg/volume/cascade_disk/azure_disk_util.go
 new file mode 100644
-index 0000000..7f9812f
+index 0000000000..7f9812f767
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/azure_disk_util.go
 @@ -0,0 +1,135 @@
@@ -3679,7 +3790,7 @@ index 0000000..7f9812f
 +}
 diff --git a/pkg/volume/cascade_disk/cascade_disk.go b/pkg/volume/cascade_disk/cascade_disk.go
 new file mode 100644
-index 0000000..d07e83b
+index 0000000000..d07e83b3d3
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/cascade_disk.go
 @@ -0,0 +1,399 @@
@@ -4084,7 +4195,7 @@ index 0000000..d07e83b
 +}
 diff --git a/pkg/volume/cascade_disk/cascade_util.go b/pkg/volume/cascade_disk/cascade_util.go
 new file mode 100644
-index 0000000..5ad0bc9
+index 0000000000..5ad0bc9316
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/cascade_util.go
 @@ -0,0 +1,217 @@
@@ -4306,7 +4417,7 @@ index 0000000..5ad0bc9
 +	return "", err
 +}
 diff --git a/plugin/pkg/admission/persistentvolume/label/admission.go b/plugin/pkg/admission/persistentvolume/label/admission.go
-index 819adae..3d55589 100644
+index 819adae192..3d55589c89 100644
 --- a/plugin/pkg/admission/persistentvolume/label/admission.go
 +++ b/plugin/pkg/admission/persistentvolume/label/admission.go
 @@ -27,6 +27,7 @@ import (
@@ -4390,7 +4501,7 @@ index 819adae..3d55589 100644
 +}
 diff --git a/plugin/pkg/admission/vke/BUILD b/plugin/pkg/admission/vke/BUILD
 new file mode 100644
-index 0000000..97c0856
+index 0000000000..97c0856d39
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/BUILD
 @@ -0,0 +1,61 @@
@@ -4458,7 +4569,7 @@ index 0000000..97c0856
 \ No newline at end of file
 diff --git a/plugin/pkg/admission/vke/admission.go b/plugin/pkg/admission/vke/admission.go
 new file mode 100644
-index 0000000..5434f7d
+index 0000000000..5434f7d505
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission.go
 @@ -0,0 +1,628 @@
@@ -5092,7 +5203,7 @@ index 0000000..5434f7d
 +}
 diff --git a/plugin/pkg/admission/vke/admission_test.go b/plugin/pkg/admission/vke/admission_test.go
 new file mode 100644
-index 0000000..689a22d
+index 0000000000..689a22dfa4
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission_test.go
 @@ -0,0 +1,960 @@
@@ -6058,7 +6169,7 @@ index 0000000..689a22d
 +}
 diff --git a/plugin/pkg/auth/authorizer/vke/BUILD b/plugin/pkg/auth/authorizer/vke/BUILD
 new file mode 100644
-index 0000000..4b984f1
+index 0000000000..4b984f14ec
 --- /dev/null
 +++ b/plugin/pkg/auth/authorizer/vke/BUILD
 @@ -0,0 +1,40 @@
@@ -6104,7 +6215,7 @@ index 0000000..4b984f1
 +)
 diff --git a/plugin/pkg/auth/authorizer/vke/OWNERS b/plugin/pkg/auth/authorizer/vke/OWNERS
 new file mode 100644
-index 0000000..c3a4ed7
+index 0000000000..c3a4ed77dc
 --- /dev/null
 +++ b/plugin/pkg/auth/authorizer/vke/OWNERS
 @@ -0,0 +1,2 @@
@@ -6112,7 +6223,7 @@ index 0000000..c3a4ed7
 +- ashokc
 diff --git a/plugin/pkg/auth/authorizer/vke/vke_authorizer.go b/plugin/pkg/auth/authorizer/vke/vke_authorizer.go
 new file mode 100644
-index 0000000..5f3103b
+index 0000000000..5f3103b0af
 --- /dev/null
 +++ b/plugin/pkg/auth/authorizer/vke/vke_authorizer.go
 @@ -0,0 +1,123 @@
@@ -6241,7 +6352,7 @@ index 0000000..5f3103b
 +}
 diff --git a/plugin/pkg/auth/authorizer/vke/vke_authorizer_test.go b/plugin/pkg/auth/authorizer/vke/vke_authorizer_test.go
 new file mode 100644
-index 0000000..6aba9ec
+index 0000000000..6aba9ecec9
 --- /dev/null
 +++ b/plugin/pkg/auth/authorizer/vke/vke_authorizer_test.go
 @@ -0,0 +1,230 @@
@@ -6476,7 +6587,7 @@ index 0000000..6aba9ec
 +	}
 +}
 diff --git a/staging/src/k8s.io/api/core/v1/generated.pb.go b/staging/src/k8s.io/api/core/v1/generated.pb.go
-index 85c7b63..b97b2f1 100644
+index 85c7b634b3..b97b2f1b5e 100644
 --- a/staging/src/k8s.io/api/core/v1/generated.pb.go
 +++ b/staging/src/k8s.io/api/core/v1/generated.pb.go
 @@ -35,6 +35,7 @@ limitations under the License.
@@ -6979,7 +7090,7 @@ index 85c7b63..b97b2f1 100644
  			iNdEx = preIndex
  			skippy, err := skipGenerated(dAtA[iNdEx:])
 diff --git a/staging/src/k8s.io/api/core/v1/types.go b/staging/src/k8s.io/api/core/v1/types.go
-index 36f4567..7b280cd 100644
+index 36f456702e..7b280cd460 100644
 --- a/staging/src/k8s.io/api/core/v1/types.go
 +++ b/staging/src/k8s.io/api/core/v1/types.go
 @@ -333,9 +333,9 @@ type VolumeSource struct {
@@ -7044,5 +7155,5 @@ index 36f4567..7b280cd 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 -- 
-2.7.4
+2.19.1
 
