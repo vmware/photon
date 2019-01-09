@@ -14,6 +14,7 @@
         * [Use the Cached Toolchain and RPMS](Use_the_Cached_Toolchain_and_RPMS.md)
         * [Use Cached Sources](use_cached_sources.md)
         * [View Build Logs](view_build_logs.md)
+    - [Building Package or Kernel Modules Using a Script](build-package-kernel-using-script.md)
     - [Running Photon OS on vSphere](Running-Photon-OS-on-vSphere.md)
         - [Prerequisites for Running Photon OS on vSphere](photon_os_vsphere_prerequisites.md)
         - [Importing the OVA for Photon OS 3.0](importing_ova_for_photon_os_3.0.md)
