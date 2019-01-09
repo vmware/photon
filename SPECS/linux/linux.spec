@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.6
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Release:        6%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -386,6 +386,11 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Jan 09 2019 Ankit Jain <ankitja@vmware.com> 4.19.6-6
+-   Enable following for x86_64 and aarch64:
+-    Enable Kernel Address Space Layout Randomization.
+-    Enable F2FS_FS_SECURITY
+-    Enable CONFIG_SECURITY_NETWORK_XFRM
 *   Fri Jan 04 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-5
 -   Enable AppArmor by default.
 *   Wed Jan 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-4
