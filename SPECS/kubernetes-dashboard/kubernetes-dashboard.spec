@@ -1,7 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        1.8.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-%{version}.tar.gz
@@ -18,10 +18,10 @@ BuildRequires:  git
 BuildRequires:  glibc-devel
 BuildRequires:  go
 BuildRequires:  linux-api-headers
-BuildRequires:  nodejs
+BuildRequires:  nodejs = 9.11.2
 BuildRequires:  openjre8
 BuildRequires:  which
-Requires:       nodejs
+Requires:       nodejs = 9.11.2
 Requires:       openjre8
 
 %description
@@ -35,7 +35,7 @@ export PATH=${PATH}:/usr/bin
 tar xf %{SOURCE1} --no-same-owner
 cp %{SOURCE2} .
 #npm install --unsafe-perm
-#Remove the lines which strips the debuginfo. 
+#Remove the lines which strips the debuginfo.
 sed -i '/https:\/\/golang.org\/cmd\/link\//,+2d' ./build/backend.js
 ./node_modules/.bin/gulp build
 
@@ -58,6 +58,8 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
+*    Mon Jan 07 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.8.3-4
+-    Added nodejs-9.11.2 dependency
 *    Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.8.3-3
 -    Adding BuildArch
 *    Wed Sep 19 2018 Tapas Kundu <tkundu@vmware.com> 1.8.3-2

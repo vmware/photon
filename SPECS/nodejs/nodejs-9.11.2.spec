@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        10.14.1
+Version:        9.11.2
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,10 +8,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
-%define         sha1 node=ef39d1c5d87e018c0daf22fbdf38c31cfdfce901
+%define         sha1 node=4b1a5582afc298cf77fe47fa61ffc8c7f32f074d
 
-BuildRequires:  coreutils >= 8.22, zlib
+BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
 Requires:       (coreutils >= 8.22 or toybox)
+Requires:       openssl >= 1.0.1
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -29,8 +30,9 @@ for developing applications that use nodejs.
 %setup -q -n node-v%{version}
 
 %build
-sh configure --prefix=%{_prefix} \
-	     --shared-zlib
+./configure --prefix=%{_prefix} \
+           --shared-openssl \
+           --shared-zlib
 
 make %{?_smp_mflags}
 
@@ -68,8 +70,6 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
-*   Tue Jan 08 2019 Siju Maliakkal <smaliakkal@vmware.com> 10.14.1-1
--   Upgrade to 10.14.1 LTS
 *   Thu Sep 20 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.11.2-1
 -   Updated to version 9.11.2
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.9.0-1
