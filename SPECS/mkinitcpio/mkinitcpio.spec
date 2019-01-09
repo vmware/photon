@@ -1,7 +1,7 @@
 Summary:    Modular initramfs image creation utility
 Name:       mkinitcpio
 Version:    24
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        https://projects.archlinux.org/mkinitcpio.git/
 Group:      System Environment/Development
@@ -30,6 +30,7 @@ Multi-format archive and compression library
 for i in "hooks/*" ; do sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" $i; done
 sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" init
 sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" shutdown
+for i in "test/*" ; do sed -i "s/\#\!\/lib\/initcpio\/busybox ash/\#\!\/bin\/bash/" $i; done
 sed -i "s/a2x/a2x --verbose --no-xmllint/" Makefile
 
 make %{?_smp_mflags}
@@ -37,9 +38,11 @@ make %{?_smp_mflags}
 %install
 rm -rf %{buildroot}%{_infodir}
 make DESTDIR=%{buildroot} install
-
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
+%check
+make check
 
 %files
 %defattr(-,root,root)
@@ -47,8 +50,9 @@ make DESTDIR=%{buildroot} install
 /usr/bin/*
 /etc/*
 /usr/share/*
-
 %changelog
+*   Mon Jan 07 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 24-2
+-   Add make check
 *   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 24-1
 -   Update to version 24
 *   Fri May 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 23-3
