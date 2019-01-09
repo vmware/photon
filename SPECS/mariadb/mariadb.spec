@@ -1,7 +1,7 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
 Version:        10.3.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -96,7 +96,20 @@ echo "disable mariadb.service" > %{buildroot}%{_libdir}/systemd/system-preset/50
 
 %check
 cd build
+make install
+groupadd -r mysql
+useradd  -c "mysql" -s /bin/false -g mysql -M -r mysql
+/sbin/ldconfig
+mkdir -p /var/lib/mysql
+chown  mysql:mysql /var/lib/mysql || :
+mysql_install_db --datadir="/var/lib/mysql" --user="mysql" --basedir="/usr"
+/usr/sbin/mysqld --user=mysql &
+export MASTER_MYPORT=3306
 make test
+kill %1
+sleep 10
+userdel mysql
+groupdel mysql
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -362,6 +375,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Mon Jan 07 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.3.11-2
+-   Fixed make check
 *   Wed Jan 02 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.3.11-1
 -   Upgrade to version 10.3.11
 *   Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 10.3.9-3
