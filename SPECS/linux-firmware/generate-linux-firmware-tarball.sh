@@ -34,5 +34,16 @@ cp qoriq-engine-pfe-bin/ls1012a/slow_path/ppfe_class_ls1012a.elf $DST/ls1012a_pp
 cp qoriq-engine-pfe-bin/ls1012a/slow_path/ppfe_tmu_ls1012a.elf $DST/ls1012a_ppe/
 cp qoriq-engine-pfe-bin/NXP-Binary-EULA.txt $DST/ls1012a_ppe/
 
+# Compulab Fitlet2 requires:
+mkdir $DST/i915
+cp linux-firmware/i915/bxt_dmc_ver1_07.bin $DST/i915/
+cp linux-firmware/LICENSE.i915 $DST/
+
+mkdir $DST/intel
+cp linux-firmware/intel/ibt-11-5.* $DST/intel/
+cp linux-firmware/LICENCE.ibt_firmware $DST/
+
+cp linux-firmware/iwlwifi-8000C-*.ucode $DST/
+cp linux-firmware/LICENCE.iwlwifi_firmware $DST/
 
 tar -czvf $DST.tar.gz $DST
