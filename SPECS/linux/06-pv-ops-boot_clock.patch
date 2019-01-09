@@ -13,10 +13,10 @@ Subject: [PATCH] x86/vmware: pv-ops boot_clock
  6 files changed, 57 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/include/asm/paravirt.h b/arch/x86/include/asm/paravirt.h
-index ce932812f142..3d4ba2a999cb 100644
+index 24af8b1..65af182 100644
 --- a/arch/x86/include/asm/paravirt.h
 +++ b/arch/x86/include/asm/paravirt.h
-@@ -193,6 +193,11 @@ static inline u64 paravirt_steal_clock(int cpu)
+@@ -194,6 +194,11 @@ static inline u64 paravirt_steal_clock(int cpu)
  	return PVOP_CALL1(u64, pv_time_ops.steal_clock, cpu);
  }
  
@@ -29,10 +29,10 @@ index ce932812f142..3d4ba2a999cb 100644
  {
  	return PVOP_CALL1(u64, pv_cpu_ops.read_pmc, counter);
 diff --git a/arch/x86/include/asm/paravirt_types.h b/arch/x86/include/asm/paravirt_types.h
-index 0f400c0e4979..5f09979f612d 100644
+index 04b7971..b3c7f41 100644
 --- a/arch/x86/include/asm/paravirt_types.h
 +++ b/arch/x86/include/asm/paravirt_types.h
-@@ -51,6 +51,10 @@ struct mm_struct;
+@@ -52,6 +52,10 @@ struct mm_struct;
  struct desc_struct;
  struct task_struct;
  struct cpumask;
@@ -43,7 +43,7 @@ index 0f400c0e4979..5f09979f612d 100644
  
  /*
   * Wrapper type for pointers to code which uses the non-standard
-@@ -96,6 +100,7 @@ struct pv_lazy_ops {
+@@ -97,6 +101,7 @@ struct pv_lazy_ops {
  struct pv_time_ops {
  	unsigned long long (*sched_clock)(void);
  	unsigned long long (*steal_clock)(int cpu);
@@ -52,7 +52,7 @@ index 0f400c0e4979..5f09979f612d 100644
  
  struct pv_cpu_ops {
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 987ac571d16c..0e1fc6e17efc 100644
+index 569356f..ad82ac3 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -124,6 +124,7 @@ static struct kmsg_dumper kmsg_dumper = {
@@ -72,7 +72,7 @@ index 987ac571d16c..0e1fc6e17efc 100644
  
  	clocks_calc_mult_shift(&d->cyc2ns_mul, &d->cyc2ns_shift,
  			       vmware_tsc_khz, NSEC_PER_MSEC, 0);
-@@ -175,6 +176,26 @@ struct clocksource * __init clocksource_default_clock(void)
+@@ -176,6 +177,26 @@ struct clocksource * __init clocksource_default_clock(void)
  	return &clocksource_vmware;
  }
  
@@ -99,7 +99,7 @@ index 987ac571d16c..0e1fc6e17efc 100644
  static uint64_t vmware_steal_clock(int cpu)
  {
  	struct vmware_steal_time *steal;
-@@ -311,6 +332,7 @@ static void __init vmware_paravirt_ops_setup(void)
+@@ -312,6 +333,7 @@ static void __init vmware_paravirt_ops_setup(void)
  #endif
  	}
  	clocksource_register_khz(&clocksource_vmware, vmware_tsc_khz);
@@ -108,14 +108,13 @@ index 987ac571d16c..0e1fc6e17efc 100644
  #else
  #define vmware_paravirt_ops_setup() do {} while (0)
 diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-index b4421cc191b0..f7b8017fa90a 100644
+index 9d72cf5..42d8307 100644
 --- a/arch/x86/kernel/head_64.S
 +++ b/arch/x86/kernel/head_64.S
-@@ -184,6 +184,14 @@ ENTRY(secondary_startup_64)
- 	 * after the boot processor executes this code.
+@@ -68,6 +68,14 @@ startup_64:
  	 */
  
-+	/*
+ 	/*
 +	 * Read a TSC value first
 +	 */
 +	rdtsc
@@ -123,14 +122,15 @@ index b4421cc191b0..f7b8017fa90a 100644
 +	or	%rax, %rdx
 +	mov	%rdx, tsc_at_head(%rip)
 +
- 	/* Sanitize CPU configuration */
- 	call verify_cpu
- 
++	/*
+ 	 * Setup stack for verify_cpu(). "-8" because initial_stack is defined
+ 	 * this way, see below. Our best guess is a NULL ptr for stack
+ 	 * termination heuristics and we don't want to break anything which
 diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
-index bbf3d5933eaa..10bbdb3e6651 100644
+index bf9552b..22319ab 100644
 --- a/arch/x86/kernel/paravirt.c
 +++ b/arch/x86/kernel/paravirt.c
-@@ -203,6 +203,12 @@ static u64 native_steal_clock(int cpu)
+@@ -209,6 +209,12 @@ static u64 native_steal_clock(int cpu)
  	return 0;
  }
  
@@ -143,7 +143,7 @@ index bbf3d5933eaa..10bbdb3e6651 100644
  /* These are in entry.S */
  extern void native_iret(void);
  extern void native_usergs_sysret64(void);
-@@ -310,6 +316,7 @@ struct pv_init_ops pv_init_ops = {
+@@ -316,6 +322,7 @@ struct pv_init_ops pv_init_ops = {
  struct pv_time_ops pv_time_ops = {
  	.sched_clock = native_sched_clock,
  	.steal_clock = native_steal_clock,
@@ -152,10 +152,10 @@ index bbf3d5933eaa..10bbdb3e6651 100644
  
  __visible struct pv_irq_ops pv_irq_ops = {
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 9c337b0e8ba7..67a42e58b118 100644
+index 49960ec..87d7870 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -1302,3 +1302,12 @@ void arch_show_smap(struct seq_file *m, struct vm_area_struct *vma)
+@@ -1322,3 +1322,12 @@ void arch_show_smap(struct seq_file *m, struct vm_area_struct *vma)
  
  	seq_printf(m, "ProtectionKey:  %8u\n", vma_pkey(vma));
  }
@@ -168,6 +168,3 @@ index 9c337b0e8ba7..67a42e58b118 100644
 +	paravirt_read_boot_clock64(ts);
 +}
 +#endif
--- 
-2.11.0
-
