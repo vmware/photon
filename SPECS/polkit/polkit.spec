@@ -1,12 +1,13 @@
 Summary:       A toolkit for defining and handling authorizations.
 Name:          polkit
 Version:       0.113
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       LGPLv2+
 URL:           https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
 Source0:       https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
+Patch0:        polkit-CVE-2018-19788.patch
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: expat-devel
@@ -40,18 +41,11 @@ header files and libraries for polkit
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --sbindir=%{_sbindir} \
-    --includedir=%{_includedir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
-    --infodir=%{_infodir} \
+%configure \
     --datadir=%{_datarootdir} \
-    --sysconfdir=%{_sysconfdir} \
     --enable-libsystemd-login=yes \
     --with-systemdsystemunitdir=%{_libdir}/systemd/system
 make %{?_smp_mflags}
@@ -117,6 +111,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Thu Jan 10 2019 Dweep Advani <dadvani@vmware.com> 0.113-4
+-   Fix for CVE-2018-19788
 *   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 0.113-3
 -   Added pre and postun requires for shadow tools
 *   Thu Oct 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.113-2
