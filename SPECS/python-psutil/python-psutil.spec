@@ -5,7 +5,7 @@
 Summary:        A library for retrieving information onrunning processes and system utilization
 Name:           python-psutil
 Version:        5.4.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/psutil
 License:        BSD
 Group:          Development/Languages/Python
@@ -14,12 +14,15 @@ Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/psutil/psutil-%{version}.tar.gz
 %define sha1    psutil=4c7c8cb5a4915eb7148a1080030f9097be87d3e4
 Patch0:         disable-tests-python-psutil.patch
+Patch1:         python-psutil-make-check-fix.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 %if %{with_check}
-BuildRequires:  python-pytest
 BuildRequires:  python-six
 BuildRequires:  python-pbr
 BuildRequires:  python2-test
@@ -27,6 +30,13 @@ BuildRequires:  python-ipaddress
 BuildRequires:  python-enum
 BuildRequires:  ncurses-terminfo
 BuildRequires:  coreutils
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
+BuildRequires:  python3-six
+BuildRequires:  python3-test
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-pbr
 %endif
 Requires:       python2
 Requires:       python2-libs
@@ -36,17 +46,6 @@ psutil (process and system utilities) is a cross-platform library for retrieving
 
 %package -n     python3-psutil
 Summary:        python-psutil
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-%if %{with_check}
-BuildRequires:  python3-pytest
-BuildRequires:  python3-six
-BuildRequires:  python3-test
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-pbr
-%endif
 Requires:       python3
 Requires:       python3-libs
 
@@ -56,6 +55,7 @@ Python 3 version.
 %prep
 %setup -q -n psutil-%{version}
 %patch0 -p1
+%patch1 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -71,8 +71,10 @@ pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
+
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pytest
 $easy_install_2 linecache2
 $easy_install_2 mock
 $easy_install_2 unittest2
@@ -80,11 +82,11 @@ make test PYTHON=python%{python2_version}
 
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 linecache2
+$easy_install_3 pytest
 $easy_install_3 mock
 $easy_install_3 unittest2
 pushd ../p3dir
 LANG=en_US.UTF-8 make test PYTHON=python%{python3_version}
-popd
 
 %files
 %defattr(-,root,root)
@@ -95,6 +97,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jan 11 2019 Tapas Kundu <tkundu@vmware.com> 5.4.7-2
+-   Fix makecheck
 *   Wed Sep 12 2018 Tapas Kundu <tkundu@vmware.com> 5.4.7-1
 -   Updated to version 5.4.7
 *   Fri Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 5.2.2-2
