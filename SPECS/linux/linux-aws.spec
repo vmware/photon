@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.6
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.14
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d96fd72968960268b2203a3b4aff9497cd3abc61
+%define sha1 linux=6da248374ab6f4fe989949a58982ebdc1ac5b63a
 Source1:	config-aws
 Source2:	initramfs.trigger
 # common
@@ -356,6 +356,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/perf/include/bpf/*
 
 %changelog
+*   Thu Jan 10 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.14-1
+-   Update to version 4.19.14
 *   Mon Jan 07 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-2
 -   Enable additional security hardening options in the config.
 *   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-1
