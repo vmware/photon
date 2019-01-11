@@ -1,0 +1,10 @@
+--- a/psutil/tests/test_linux.py	2019-01-11 22:06:51.056282841 +0530
++++ b/psutil/tests/test_linux.py	2019-01-11 22:10:41.008276693 +0530
+@@ -752,6 +752,7 @@ class TestSystemCPU(unittest.TestCase):
+                 self.assertEqual(freq.min, 200.0)
+                 self.assertEqual(freq.max, 300.0)
+ 
++    @unittest.skip("Disable the test as we do not monitor cpu freq in Photon")
+     @unittest.skipIf(TRAVIS, "fails on Travis")
+     @unittest.skipIf(not HAS_CPU_FREQ, "not supported")
+     def test_cpu_freq_no_scaling_cur_freq_file(self):
