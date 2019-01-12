@@ -3,7 +3,7 @@
 Summary:        Python SSH module
 Name:           paramiko
 Version:        2.1.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -11,7 +11,7 @@ Distribution:   Photon
 URL:            http://www.paramiko.org/
 Source0:        https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
 %define         sha1 paramiko=0f1e47ec1822964aeb96974562716c834292962c
-
+Patch0:		paramiko-CVE-2018-1000805.patch
 BuildArch:      noarch
 
 BuildRequires:  python-setuptools
@@ -48,6 +48,7 @@ Python 3 version.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 python2 setup.py build
@@ -81,6 +82,8 @@ LANG=en_US.UTF-8 python3 test.py
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jan 11 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.1.5-2
+-   Applied patch for CVE-2018-1000805
 *   Mon Apr 16 2018 Xiaolin Li <xiaolinl@vmware.com> 2.1.5-1
 -   Update version to 2.1.5 for CVE-2018-1000132
 *   Tue Jul 25 2017 Divya Thaluru <dthaluru@vmware.com> 2.1.2-5
