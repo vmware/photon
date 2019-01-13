@@ -8,6 +8,7 @@ from jsonwrapper import JsonWrapper
 from menu import Menu
 from window import Window
 from actionresult import ActionResult
+import re
 
 class PackageSelector(object):
     def __init__(self,  maxy, maxx, install_config, options_file):
@@ -41,7 +42,11 @@ class PackageSelector(object):
 
                 if "remove" in install_option[1]:
                     for package in install_option[1]["remove"]:
-                        package_list.remove(package)
+                        regex = re.compile(r'^'+str(package)+'-[0-9]')
+                        pkgs = [x for x in package_list if regex.search(x)]
+                        for p in pkgs:
+                            pkg = p.encode('utf-8')
+                            package_list.remove(pkg)
 
                 break
         return package_list
