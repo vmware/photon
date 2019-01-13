@@ -8,7 +8,7 @@
 		},
     "packagelist_file": "packages_ls1012afrwy.json",
     "size": {"root": "1", "swap": "0"},
-    "boot":"bios",
+    "boot":"efi",
     "public_key":"<ssh-key-here>",
     "postinstallscripts": ["ls1012afrwy-custom-patch.sh"],
     "additionalfiles": [

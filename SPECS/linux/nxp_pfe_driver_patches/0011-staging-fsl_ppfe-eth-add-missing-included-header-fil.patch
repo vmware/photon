@@ -1,0 +1,43 @@
+From 389086e1ab9c389224f6c6c79b6ab3b764044973 Mon Sep 17 00:00:00 2001
+From: Guanhua Gao <guanhua.gao@nxp.com>
+Date: Fri, 12 Jan 2018 16:28:20 +0800
+Subject: [PATCH 11/22] staging: fsl_ppfe/eth: add missing included header file
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+ppfe compilation on dash-lts 4.14 reports error:
+In file included from drivers/staging/fsl_ppfe/pfe_mod.h:30:0,
+		from drivers/staging/fsl_ppfe/pfe_mod.c:20:
+drivers/staging/fsl_ppfe/pfe_hif.h:172:24: error: field â_cleanup_taskletâas incomplete type
+	struct tasklet_struct tx_cleanup_tasklet;
+
+The structure tasklet_struct is defined in interrupt.h, add it to fix the compilation error.
+
+Signed-off-by: Guanhua Gao <guanhua.gao@nxp.com>
+
+[ Srinidhi Rao : Ported this patch to photon linux from
+  qoriq-components linux 'linux-4.14-nxp'
+  (https://source.codeaurora.org/external/qoriq/qoriq-components/linux)
+]
+
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+---
+ drivers/staging/fsl_ppfe/pfe_hif.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/staging/fsl_ppfe/pfe_hif.h b/drivers/staging/fsl_ppfe/pfe_hif.h
+index 6e36f0c1f4ff..8281adb12cd7 100644
+--- a/drivers/staging/fsl_ppfe/pfe_hif.h
++++ b/drivers/staging/fsl_ppfe/pfe_hif.h
+@@ -20,6 +20,7 @@
+ #define _PFE_HIF_H_
+ 
+ #include <linux/netdevice.h>
++#include <linux/interrupt.h>
+ 
+ #define HIF_NAPI_STATS
+ 
+-- 
+2.14.2
+

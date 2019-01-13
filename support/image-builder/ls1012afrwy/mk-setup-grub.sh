@@ -15,18 +15,16 @@
 
 grub_efi_install()
 {
-    BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p2
-    mkdir -p $BUILDROOT/boot_temp/
-    mount -t ext4 $BOOT_PARTITION $BUILDROOT/boot_temp/
-    cp -rfa $BUILDROOT/boot/* $BUILDROOT/boot_temp/
-    cp -r $SCRIPT_PATH/esp/ls1012afrwy_boot.scr $BUILDROOT/boot_temp/
-    cp -rfa $BUILDROOT/boot_temp/vmlinuz-* $BUILDROOT/boot_temp/Image
-    gzip -k $BUILDROOT/boot_temp/Image
-    cp -rfa $BUILDROOT/boot_temp/dtb/fsl-ls1012a-frdm.dtb $BUILDROOT/boot_temp/fsl-ls1012a-frwy.dtb
-    sync
-    umount $BUILDROOT/boot_temp/
-    rm -rf $BUILDROOT/boot_temp/
+	cp -r $SCRIPT_PATH/esp/ls1012afrwy_boot.scr $BUILDROOT/
+	mkdir -p $BUILDROOT/boot/esp/EFI/BOOT/
+	cp $SCRIPT_PATH/esp/bootaa64.efi $BUILDROOT/boot/esp/EFI/BOOT/
+	mkdir -p $BUILDROOT/boot/esp/boot/grub2
+	cat > $BUILDROOT/boot/esp/boot/grub2/grub.cfg << EOF
+search -n -u ${BOOT_UUID} -s
+configfile ${BOOT_DIRECTORY}grub2/grub.cfg
+EOF
 }
+
 
 set -o errexit        # exit if error...insurance ;)
 set -o nounset        # exit if variable not initalized
@@ -55,19 +53,23 @@ fi
 #
 #    Install grub2.
 #
-BOOT_UUID=$(blkid -s UUID -o value $BOOT_PARTITION_PATH)
+BOOT_UUID=$(blkid -s UUID -o value $ROOT_PARTITION_PATH)
 
 echo "$ROOT_PARTITION_PATH"
 echo "$BUILDROOT"
+
+mkdir -p $BUILDROOT/boot/grub2/
+ln -sfv grub2 $BUILDROOT/boot/grub
+
+
+grub_efi_install
 
 RFS_PARTITION=/dev/mapper/`basename ${HDD}`p2
 #umount -f $BUILDROOT
 #mount -t ext4 $ROOT_PATITION_PATH $BUILDROOT
 
-EXTRA_PARAMS="rootwait rw console=ttyS0,115200n8 console=tty0 cma=256M rootfs=/dev/mmcblk0p3"
+EXTRA_PARAMS="rootwait rw console=ttyS0,115200n8 console=tty0 cma=256M rootfs=/dev/mmcblk0p2"
 
-
-mkdir -p $BUILDROOT/boot/grub2/
 
 cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 # Begin /boot/grub2/grub.cfg
@@ -101,7 +103,12 @@ EOF
 
 
 
-mkdir $BUILDROOT/boot/grub
-cp -rfa $BUILDROOT/boot/grub2/* $BUILDROOT/boot/grub/
+#mkdir $BUILDROOT/boot/grub
+#cp -rfa $BUILDROOT/boot/grub2/* $BUILDROOT/boot/grub/
 
-grub_efi_install
+#grub_efi_install
+
+#Cleanup the workspace directory
+rm -rf "$BUILDROOT"/tools
+rm -rf "$BUILDROOT"/RPMS
+

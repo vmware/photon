@@ -1,0 +1,55 @@
+From 1ba5f5745e480b7d1a5627f396f343e546f6c395 Mon Sep 17 00:00:00 2001
+From: Bhaskar Upadhaya <Bhaskar.Upadhaya@nxp.com>
+Date: Wed, 29 Nov 2017 12:21:43 +0530
+Subject: [PATCH 10/22] staging: fsl_ppfe/eth: Disable autonegotiation for 2.5G
+ SGMII
+
+PCS initialization sequence for 2.5G SGMII interface governs
+auto negotiation to be in disabled mode
+
+Signed-off-by: Bhaskar Upadhaya <Bhaskar.Upadhaya@nxp.com>
+
+[ Srinidhi Rao : Ported this patch to photon linux from
+  qoriq-components linux 'linux-4.14-nxp'
+  (https://source.codeaurora.org/external/qoriq/qoriq-components/linux)
+]
+
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+---
+ drivers/staging/fsl_ppfe/pfe_eth.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/fsl_ppfe/pfe_eth.c b/drivers/staging/fsl_ppfe/pfe_eth.c
+index 8d2b1da0cc20..9e8850b28990 100644
+--- a/drivers/staging/fsl_ppfe/pfe_eth.c
++++ b/drivers/staging/fsl_ppfe/pfe_eth.c
+@@ -1174,6 +1174,7 @@ static void ls1012a_configure_serdes(struct net_device *ndev)
+ 	struct pfe_eth_priv_s *priv = pfe->eth.eth_priv[0];
+ 	int sgmii_2500 = 0;
+ 	struct mii_bus *bus = priv->mii_bus;
++	u16 value = 0;
+ 
+ 	if (priv->einfo->mii_config == PHY_INTERFACE_MODE_2500SGMII)
+ 		sgmii_2500 = 1;
+@@ -1191,14 +1192,16 @@ static void ls1012a_configure_serdes(struct net_device *ndev)
+ 		pfe_eth_mdio_write(bus, 0, 0x4, 0x4001);
+ 		pfe_eth_mdio_write(bus, 0, 0x12, 0xa120);
+ 		pfe_eth_mdio_write(bus, 0, 0x13, 0x7);
++		/* Autonegotiation need to be disabled for 2.5G SGMII mode*/
++		value = 0x0140;
++		pfe_eth_mdio_write(bus, 0, 0x0, value);
+ 	} else {
+ 		pfe_eth_mdio_write(bus, 0, 0x14, 0xb);
+ 		pfe_eth_mdio_write(bus, 0, 0x4, 0x1a1);
+ 		pfe_eth_mdio_write(bus, 0, 0x12, 0x400);
+ 		pfe_eth_mdio_write(bus, 0, 0x13, 0x0);
++		pfe_eth_mdio_write(bus, 0, 0x0, 0x1140);
+ 	}
+-
+-	pfe_eth_mdio_write(bus, 0, 0x0, 0x1140);
+ }
+ 
+ /*
+-- 
+2.14.2
+
