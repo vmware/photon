@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.6
-Release:        6%{?kat_build:.%kat_build}%{?dist}
+Release:        7%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -43,7 +43,32 @@ Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.p
 Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
 Patch31:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
-
+%ifarch aarch64
+# NXP LS1012a FRWY patches
+Patch51:        0001-staging-fsl_ppfe-eth-header-files-for-pfe-driver.patch
+Patch52:        0002-staging-fsl_ppfe-eth-introduce-pfe-driver.patch
+Patch53:        0003-staging-fsl_ppfe-eth-fix-RGMII-tx-delay-issue.patch
+Patch54:        0004-staging-fsl_ppfe-eth-remove-unused-functions.patch
+Patch55:        0005-staging-fsl_ppfe-eth-fix-read-write-ack-idx-issue.patch
+Patch56:        0006-staging-fsl_ppfe-eth-Make-phy_ethtool_ksettings_get-.patch
+Patch57:        0007-staging-fsl_ppfe-eth-add-function-to-update-tmu-cred.patch
+Patch58:        0008-staging-fsl_ppfe-eth-Avoid-packet-drop-at-TMU-queues.patch
+Patch59:        0009-staging-fsl_ppfe-eth-Enable-PFE-in-clause-45-mode.patch
+Patch60:        0010-staging-fsl_ppfe-eth-Disable-autonegotiation-for-2.5.patch
+Patch61:        0011-staging-fsl_ppfe-eth-add-missing-included-header-fil.patch
+Patch62:        0012-staging-fsl_ppfe-eth-clean-up-iounmap-pfe-ddr_basead.patch
+Patch63:        0013-staging-fsl_ppfe-eth-calculate-PFE_PKT_SIZE-with-SKB.patch
+Patch64:        0014-staging-fsl_ppfe-eth-support-for-userspace-networkin.patch
+Patch65:        0015-staging-fsl_ppfe-eth-unregister-netdev-after-pfe_phy.patch
+Patch66:        0016-staging-fsl_ppfe-eth-HW-parse-results-for-DPDK.patch
+Patch67:        0017-staging-fsl_ppfe-eth-reorganize-pfe_netdev_ops.patch
+Patch68:        0018-staging-fsl_ppfe-eth-use-mask-for-rx-max-frame-len.patch
+Patch69:        0019-staging-fsl_ppfe-eth-define-pfe-ndo_change_mtu-funct.patch
+Patch70:        0020-staging-fsl_ppfe-eth-remove-jumbo-frame-enable-from-.patch
+Patch71:        0021-staging-fsl_ppfe-eth-disable-CRC-removal.patch
+Patch72:        0022-staging-fsl_ppfe-eth-handle-ls1012a-errata_a010897.patch
+Patch73:        0023-staging-fsl_ppfe-eth-Modify-Kconfig-to-enable-pfe-dr.patch
+%endif
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -155,6 +180,32 @@ Kernel Device Tree Blob files for NXP ls1012a FRWY board
 %patch31 -p1
 %patch32 -p1
 
+%ifarch aarch64
+# NXP FSL_PPFE Driver patches
+%patch51 -p1
+%patch52 -p1
+%patch53 -p1
+%patch54 -p1
+%patch55 -p1
+%patch56 -p1
+%patch57 -p1
+%patch58 -p1
+%patch59 -p1
+%patch60 -p1
+%patch61 -p1
+%patch62 -p1
+%patch63 -p1
+%patch64 -p1
+%patch65 -p1
+%patch66 -p1
+%patch67 -p1
+%patch68 -p1
+%patch69 -p1
+%patch70 -p1
+%patch71 -p1
+%patch72 -p1
+%patch73 -p1
+%endif
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
@@ -249,7 +300,7 @@ install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
 # Install DTB files
 install -vdm 755 %{buildroot}/boot/dtb
 install -vm 640 arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dtb %{buildroot}/boot/dtb/
-install -vm 640 arch/arm64/boot/dts/freescale/fsl-ls1012a-frdm.dtb %{buildroot}/boot/dtb/
+install -vm 640 arch/arm64/boot/dts/freescale/fsl-ls1012a-frwy.dtb %{buildroot}/boot/dtb/
 %endif
 
 # Restrict the permission on System.map-X file
@@ -381,11 +432,13 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 %files dtb-ls1012afrwy
 %defattr(-,root,root)
-/boot/dtb/fsl-ls1012a-frdm.dtb
+/boot/dtb/fsl-ls1012a-frwy.dtb
 
 %endif
 
 %changelog
+*   Fri Jan 11 2019 Srinidhi Rao <srinidhir@vmware.com> 4.19.6-7
+-   Add Network support for NXP LS1012A board.
 *   Wed Jan 09 2019 Ankit Jain <ankitja@vmware.com> 4.19.6-6
 -   Enable following for x86_64 and aarch64:
 -    Enable Kernel Address Space Layout Randomization.
