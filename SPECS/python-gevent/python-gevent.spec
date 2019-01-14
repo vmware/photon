@@ -4,7 +4,7 @@
 Summary:        Coroutine-based network library
 Name:           python-gevent
 Version:        1.3.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,9 +18,17 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires: lsof
 BuildRequires: python2-test
+BuildRequires: curl-devel
+BuildRequires: openssl-devel
+BuildRequires: python3-test
 %endif
 
 Requires:       python2
@@ -39,15 +47,6 @@ Features include:
 
 %package -n     python3-gevent
 Summary:        python-gevent
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires: lsof
-BuildRequires: python3-test
-%endif
 
 Requires:       python3
 Requires:       python3-libs
@@ -68,17 +67,22 @@ python3 setup.py build
 
 %install
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-cd ../p3dir
+pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+popd
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 nose
 python2 setup.py develop
-cd src/greentest
-PYTHONPATH=.. python2 testrunner.py --config known_failures.py
-cd ../../../p3dir
+nosetests
+pushd ../p3dir
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 nose
 python3 setup.py develop
-cd src/greentest
-PYTHONPATH=.. python3 testrunner.py --config known_failures.py
+nosetests
+popd
+
 
 %files
 %defattr(-,root,root,-)
@@ -89,6 +93,8 @@ PYTHONPATH=.. python3 testrunner.py --config known_failures.py
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jan 14 2019 Tapas Kundu <tkundu@vmware.com>1.3.6-2
+-   Fix make check
 *   Wed Sep 12 2018 Tapas Kundu <tkundu@vmware.com> 1.3.6-1
 -   Updated to version 1.3.6
 *   Wed Sep 20 2017 Bo Gan <ganb@vmware.com> 1.2.1-6
