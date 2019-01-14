@@ -1,8 +1,8 @@
 %define python3_sitelib /usr/lib/python3.7/site-packages
 
 Name:           cloud-init
-Version:        18.3
-Release:        2%{?dist}
+Version:        18.4
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -10,7 +10,7 @@ URL:            http://launchpad.net/cloud-init
 Vendor:         VMware, Inc
 Distribution:   Photon
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 cloud-init=a317e2add93578d244328dcf97d46fad1c3140f9
+%define sha1 cloud-init=f5e0602dce83ed1f3ad15149dad772a5a6fb1a44
 Source1:        cloud-photon.cfg
 Source2:        99-disable-networking-config.cfg
 
@@ -147,6 +147,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Mon Jan 07 2019 Sujay G <gsujay@vmware.com> 18.4-1
+-   Bump to version 18.4
 *   Tue Dec 04 2018 Ajay Kaher <akaher@vmware.com> 18.3-2
 -   Fix auto startup at boot time
 *   Wed Oct 24 2018 Ajay Kaher <akaher@vmware.com> 18.3-1
