@@ -1,15 +1,15 @@
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        2.0.5
+Version:        2.2.0
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
 Url:            https://github.com/dotnet/core
 Group:          Development/Tools
-Source0:        https://download.microsoft.com/download/1/1/0/11046135-4207-40D3-A795-13ECEA741B32/dotnet-runtime-2.0.5-linux-x64.tar.gz
-%define sha1    dotnet-runtime=631b1f4a4c07a4488e846fc2142ce74c1b8b84a8
 BuildArch:      x86_64
+Source0:        https://download.microsoft.com/download/A/7/8/A78F1D25-8D5C-4411-B544-C7D527296D5E/%{name}-%{version}-linux-x64.tar.gz
+%define sha1    dotnet-runtime=7f9815101143463f2d244fa15c51cc9098328920
 Requires:       curl libunwind krb5 lttng-ust
 
 %description
@@ -17,14 +17,14 @@ Requires:       curl libunwind krb5 lttng-ust
 applications, microservices and modern websites.
 
 %prep
-%setup -c dotnet-runtime-%{version}
+%setup -c %{name}-%{version}
 
 %build
 
 %install
 mkdir -p %{buildroot}%{_libdir}/dotnet
-mkdir -p %{buildroot}%{_docdir}/dotnet-runtime-%{version}
-cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/dotnet-runtime-%{version}
+mkdir -p %{buildroot}%{_docdir}/%{name}-%{version}
+cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/%{name}-%{version}
 rm LICENSE.txt ThirdPartyNotices.txt
 cp -r * %{buildroot}%{_libdir}/dotnet
 mkdir -p %{buildroot}%{_bindir}
@@ -66,5 +66,7 @@ ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
     %{_libdir}/*
 
 %changelog
+*   Mon Jan 14 2019 Dweep Advani <dadvani@vmware.com> 2.2.0-1
+-   Upgraded to version 2.2.0
 *   Wed Jan 31 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.5-1
 -   Initial build for photon
