@@ -1,8 +1,8 @@
 %define python3_sitelib /usr/lib/python3.7/site-packages
 
 Name:           cloud-init
-Version:        18.3
-Release:        2%{?dist}
+Version:        18.4
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -10,9 +10,8 @@ URL:            http://launchpad.net/cloud-init
 Vendor:         VMware, Inc
 Distribution:   Photon
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 cloud-init=a317e2add93578d244328dcf97d46fad1c3140f9
+%define sha1 cloud-init=f5e0602dce83ed1f3ad15149dad772a5a6fb1a44
 Source1:        cloud-photon.cfg
-Source2:        99-disable-networking-config.cfg
 
 Patch0:         photon-distro.patch
 Patch2:         vca-admin-pwd.patch
@@ -95,9 +94,6 @@ mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
 # We supply our own config file since our software differs from Ubuntu's.
 cp -p %{SOURCE1} %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
 
-# Disable networking config by cloud-init
-cp -p %{SOURCE2} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
-
 %check
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 ln -s /usr/bin/pip3 /usr/bin/pip
@@ -132,7 +128,6 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/cloud/templates/*
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/05_logging.cfg
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg
-%config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/99-disable-networking-config.cfg
 %{_sysconfdir}/NetworkManager/dispatcher.d/hook-network-manager
 %{_sysconfdir}/dhcp/dhclient-exit-hooks.d/hook-dhclient
 /lib/systemd/system-generators/cloud-init-generator
@@ -147,6 +142,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Mon Jan 07 2019 Sujay G <gsujay@vmware.com> 18.4-1
+-   Bump to version 18.4
+-   Update .cfg files to support cloud-init GOSC confgigurations for networking
 *   Tue Dec 04 2018 Ajay Kaher <akaher@vmware.com> 18.3-2
 -   Fix auto startup at boot time
 *   Wed Oct 24 2018 Ajay Kaher <akaher@vmware.com> 18.3-1
