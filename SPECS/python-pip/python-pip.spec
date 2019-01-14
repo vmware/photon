@@ -1,7 +1,7 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           python-pip
 Version:        18.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pip
 Summary:        The PyPA recommended tool for installing Python packages.
 License:        MIT
@@ -20,6 +20,10 @@ BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 %if %{with_check}
 BuildRequires:	mercurial
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
+BuildRequires:  python-xml
+BuildRequires:  PyYAML
 %endif
 
 Requires:       python2
@@ -49,7 +53,9 @@ $easy_install_2 freezegun mock pretend virtualenv scripttest pytest pytest-captu
 
 #Disabled svn, bazaar, git related tests
 #Disabled non_local_distutils test
-PYTHONPATH=%{buildroot}%{python2_sitelib} py.test -m 'not network' -k 'not svn and not bazaar and not bzr and not git and not non_local_distutils'
+#PYTHONPATH=%{buildroot}%{python2_sitelib} py.test -m 'not network' -k 'not svn and not bazaar and not bzr and not git and not non_local_distutils
+python setup.py test
+
 
 %files
 %defattr(-,root,root)
@@ -57,6 +63,8 @@ PYTHONPATH=%{buildroot}%{python2_sitelib} py.test -m 'not network' -k 'not svn a
 %{_bindir}/*
 
 %changelog
+*   Mon Jan 14 2019 Tapas Kundu <tkundu@vmware.com> 18.0-2
+-   Fix make check
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 18.0-1
 -   Update to version 18.0
 *   Thu Jul 20 2017 Divya Thaluru <dthaluru@vmware.com> 9.0.1-6
