@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -100,11 +100,11 @@ if [ "$1" = "0" -a                      \
    %{_bindir}/vmware-rpctool 'tools.set.version 0' &> /dev/null || /bin/true
 fi
 
-%postun 
+%postun
 /sbin/ldconfig
 %systemd_postun_with_restart vmtoolsd.service vgauthd.service
 
-%files 
+%files
 %defattr(-,root,root)
 %{_libdir}/open-vm-tools/plugins/*
 %{_libdir}/*.so.*
@@ -113,6 +113,7 @@ fi
 %{_datadir}/*
 /lib/*
 %{_sbindir}/*
+%ghost %{_libdir}/open-vm-tools/
 
 %files devel
 %defattr(-,root,root)
@@ -121,6 +122,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Mon Jan 14 2019 Sujay G <gsujay@vmware.com> 10.3.0-3
+-   Fix to remove all files associated with open-vm-tools on uninstallation.
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 10.3.0-2
 -   Adding BuildArch
 *   Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 10.3.0-1
