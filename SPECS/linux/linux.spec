@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.164
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -281,17 +281,17 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
 
 %post
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 %post drivers-gpu
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 
 %post sound
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 
 %post oprofile
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 
 %files
 %defattr(-,root,root)
@@ -338,6 +338,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Jan 15 2019 Alexey Makhalov <amakhalov@vmware.com> 4.4.164-4
+-   .config: disable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
+-   Removed deprecated -q option for depmod
 *   Thu Dec 20 2018 Alexey Makhalov <amakhalov@vmware.com> 4.4.164-3
 -   .config: CONFIG_FANOTIFY_ACCESS_PERMISSIONS=y
 *   Wed Dec 12 2018 Kamal Charan <kcharan@vmware.com> 4.4.164-2
