@@ -1,13 +1,13 @@
 [Unit]
-Description=EdgeX core-config-seed
+Description=EdgeX config-seed
 Requires=network.target
 After=network.target consul.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/bin/edgex-core-config-seed
-WorkingDirectory=/usr/share/edgex/core-config-seed
+ExecStart=/usr/bin/edgex-config-seed -c /usr/share/edgex
+WorkingDirectory=/var/log/edgex/config-seed
 
 [Install]
 WantedBy=multi-user.target
