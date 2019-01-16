@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.19.6
-Release:        7%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.15
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d96fd72968960268b2203a3b4aff9497cd3abc61
+%define sha1 linux=fb970b2014ecf9dcef23943f8095b28dfe0d6cca
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -437,6 +437,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Jan 15 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.15-1
+-   Update to version 4.19.15
 *   Fri Jan 11 2019 Srinidhi Rao <srinidhir@vmware.com> 4.19.6-7
 -   Add Network support for NXP LS1012A board.
 *   Wed Jan 09 2019 Ankit Jain <ankitja@vmware.com> 4.19.6-6

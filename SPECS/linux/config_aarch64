@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 4.19.6 Kernel Configuration
+# Linux/arm64 4.19.15 Kernel Configuration
 #
 
 #
@@ -4618,6 +4618,7 @@ CONFIG_TYPEC=m
 # USB Type-C Alternate Mode drivers
 #
 # CONFIG_TYPEC_DP_ALTMODE is not set
+# CONFIG_USB_ROLE_SWITCH is not set
 # CONFIG_USB_ULPI_BUS is not set
 # CONFIG_UWB is not set
 CONFIG_MMC=y
