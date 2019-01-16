@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.140
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -372,6 +372,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Jan 15 2019 Alexey Makhalov <amakhalov@vmware.com> 4.9.140-4
+-   .config: disable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
 *   Thu Dec 20 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.140-3
 -   .config: CONFIG_FANOTIFY_ACCESS_PERMISSIONS=y
 -   Removed deprecated -q option for depmod
