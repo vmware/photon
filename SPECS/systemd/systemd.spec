@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          49%{?dist}
+Release:          50%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -46,8 +46,11 @@ Patch28:          systemd-228-link-disabled-nullptr-fix.patch
 Patch29:          systemd-228-CVE-2017-15908-dns-pkt-loop-fix.patch
 Patch30:          systemd-228-CVE-2017-18078.patch
 Patch31:          systemd-228-CVE-2018-1049.patch
-Patch32:          systemd-228-CVE-2018-15688.patch 
-Patch33:          systemd-228-CVE-2018-15686.patch 
+Patch32:          systemd-228-CVE-2018-15688.patch
+Patch33:          systemd-228-CVE-2018-15686.patch
+Patch34:          systemd-228-CVE-2018-16864.patch
+Patch35:          systemd-228-CVE-2018-16865.patch
+Patch36:          systemd-228-CVE-2018-16866.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -115,6 +118,9 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
+%patch34 -p1
+%patch35 -p1
+%patch36 -p1
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -255,6 +261,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*    Thu Jan 10 2019 Anish Swaminathan <anishs@vmware.com>  228-50
+-    Fix CVE-2018-16864, CVE-2018-16865, CVE-2018-16866
 *    Fri Jan 04 2019 Anish Swaminathan <anishs@vmware.com> 228-49
 -    Fix CVE-2018-15686
 *    Fri Nov 02 2018 Tapas Kundu <tkundu@vmware.com> 228-48
