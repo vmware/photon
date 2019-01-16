@@ -23,7 +23,7 @@ After you have installed and configured a domain on Lightwave, and joined a clie
 4. (Optional) In a new console, use `curl` to verify that the Photon Management Daemon returns information.
 
 	Use the root credentials for the local client to authenticate against the daemon service.
-	`# curl https://<lightwave-client-FQDN>:2081/v1/info -ku root`
+	`# curl https://<lightwave-client-FQDN>:2081/v1/info -u root`
 
 5. (Optional) Create an administrative user for the Photon Management Daemon for your domain and assign it the domain administrator role.
 	1. In a browser, go to https://*lightwave-server-FQDN*.
