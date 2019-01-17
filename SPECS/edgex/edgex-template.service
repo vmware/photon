@@ -4,11 +4,11 @@ Requires=network.target
 After=network.target consul.service edgex-core-config-seed.service
 
 [Service]
-ExecStart=/usr/bin/edgex-SERVICE_NAME -c
+ExecStart=/usr/bin/edgex-SERVICE_NAME
 ExecReload=/usr/bin/kill -HUP $MAINPID
 KillSignal=SIGINT
 Restart=on-failure
-WorkingDirectory=/var/log/edgex/SERVICE_NAME
+WorkingDirectory=/usr/share/edgex/SERVICE_NAME
 
 [Install]
 WantedBy=multi-user.target
