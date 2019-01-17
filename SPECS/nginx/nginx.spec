@@ -1,7 +1,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.13.8
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
@@ -44,7 +44,8 @@ popd
     --with-ipv6 \
     --with-stream \
     --with-http_auth_request_module \
-    --with-http_sub_module
+    --with-http_sub_module \
+    --with-http_v2_module
 
 make %{?_smp_mflags}
 %install
@@ -76,6 +77,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %dir %{_var}/log/nginx
 
 %changelog
+*   Thu Jan 17 2019 Keerthana K <keerthanak@vmware.com> 1.13.8-7
+-   Adding http v2 module support.
 *   Mon Dec 17 2018 Ankit Jain <ankitja@vmware.com> 1.13.8-6
 -   Fix for CVE-2018-16843 and CVE-2018-16844
 *   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.13.8-5
