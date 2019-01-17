@@ -1,7 +1,7 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.2.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
@@ -52,16 +52,6 @@ autoreconf -mif
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
-%check
-make distclean
-pushd build
-make -f Makefile.bootstrap
-sed -i 's/systemctl start docker && //g' tests/Makefile
-cp -p /etc/systemd/network/99-dhcp-en.network /etc/systemd/network/10-eth0.network
-sed -i 's/Name=e\*/Name=eth0/g' /etc/systemd/network/10-eth0.network
-make check
-popd
-
 %post
 /sbin/ldconfig
 # First argument is 1 => New Installation
@@ -86,6 +76,9 @@ popd
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Thu Jan 17 2019 Michelle Wang <michellew@vmware.com> 1.2.0-2
+-   Remove make check for netmgmt.
+-   Netmgmt tests are package tests instead of unit tests.
 *   Thu Dec 06 2018 Michelle Wang <michellew@vmware.com> 1.2.0-1
 -   Update netmgmt to 1.2.0.
 *   Mon Oct 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-9
