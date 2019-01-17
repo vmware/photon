@@ -1,7 +1,7 @@
 Summary:	Cmake-3.12.1
 Name:		cmake
 Version:	3.12.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.12/%{name}-%{version}.tar.gz
@@ -16,7 +16,6 @@ BuildRequires:  xz
 BuildRequires:  xz-devel
 BuildRequires:  curl
 BuildRequires:  curl-devel
-BuildRequires:  libgcc-devel
 BuildRequires:  expat-libs
 BuildRequires:  expat-devel
 BuildRequires:  zlib
@@ -58,6 +57,8 @@ make  %{?_smp_mflags} test
 %{_libdir}/rpm/macros.d/macros.cmake
 
 %changelog
+*       Thu Jan 17 2019 Ankit Jain <ankitja@vmware.com> 3.12.1-4
+-       Removed unnecessary libgcc-devel buildrequires
 *       Thu Dec 06 2018 <ashwinh@vmware.com> 3.12.1-3
 -       Bug Fix 2243672. Add system provided libs.
 *       Sun Sep 30 2018 Bo Gan <ganb@vmware.com> 3.12.1-2
