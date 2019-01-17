@@ -134,7 +134,7 @@ The `-h` option prints out the available and used space in human-readable sizes.
 
 ## md5sum 
 
-The `md5sum` tool calculates 128-bit MD5 hashes--a message digest, or digital signature, of a file--to uniquely identify a file and verify its integrity after file transfers, downloads, or disk errors when the security of the file is not in question. 
+The `md5sum` tool calculates 128-bit RSA Data Security, Inc. MD5 Message Digest Algorithm hashes (a message digest, or digital signature, of a file) to uniquely identify a file and verify its integrity after file transfers, downloads, or disk errors when the security of the file is not in question. 
 
 `md5sum` can help troubleshooting installation issues by verifying that the version of Photon OS being installed matches the version on the Bintray download page. If, for instance, bytes were dropped during the download, the checksums will not match. Try downloading it again.
 
