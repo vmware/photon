@@ -1,7 +1,7 @@
 Summary:	Docbook-xsl-1.79.1
 Name:		docbook-xsl
 Version:	1.79.1
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	Apache License
 URL:		http://www.docbook.org
 Source0:	http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
@@ -36,6 +36,10 @@ cp -v -R VERSION common eclipse epub extensions fo highlighting html \
     %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.79.1
 
 pushd %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.79.1
+rm extensions/saxon65.jar
+rm tools/lib/saxon.jar
+rm tools/lib/saxon9-ant.jar
+rm tools/lib/saxon9he.jar
 ln -s VERSION VERSION.xsl
 popd
 
@@ -87,6 +91,8 @@ fi
 %{_docdir}/*
 
 %changelog
+*       Fri Jan 18 2019 Tapas Kundu <tkundu@vmware.com> 1.79.1-7
+-       Removed saxon jar files while installing
 *	Tue Dec 04 2018 Ashwin H<ashwinh@vmware.com> 1.79.1-6
 -       Remove windows installers
 *	Fri Aug 18 2017 Rongrong Qiu <rqiu@vmware.com> 1.79.1-5
