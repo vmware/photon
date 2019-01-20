@@ -2,7 +2,7 @@
 %global security_hardening none
 Summary:	OpenJDK
 Name:		openjdk
-Version:	1.8.0.192
+Version:	1.8.0.202
 Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
@@ -10,7 +10,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
-%define sha1    openjdk=e8df20e8bb8fad4ed08867cbc42202039b356b2d
+%define sha1    openjdk=2cc98fa932f62258342b793edbbf3fe577a0e594
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
 BuildRequires:  pcre-devel
@@ -232,6 +232,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*       Fri Jan 18 2019 Srinidhi Rao <srinidhir@vmware.com> 1.8.0.202-1
+-       Upgraded to version 1.8.0.202
 *       Thu Oct 18 2018 Tapas Kundu <tkundu@vmware.com> 1.8.0.192-1
 -       Upgraded to version 1.8.0.192
 *       Tue Jul 24 2018 Tapas Kundu <tkundu@vmware.com> 1.8.0.181-1
