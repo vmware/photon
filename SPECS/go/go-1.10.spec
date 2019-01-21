@@ -12,15 +12,15 @@
 
 Summary:        Go
 Name:           go
-Version:        1.10.4
-Release:        2%{?dist}
+Version:        1.10.7
+Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
-%define sha1    go=adcd9d0bbbc764fa4ff20c08eb4a5a527fa95d96
+%define sha1    go=d083beabcd3c47b36a93ee7067664d0b1733843f
 Requires:       glibc
 %define ExtraBuildRequires go
 
@@ -110,6 +110,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Mon Jan 21 2019 Bo Gan <ganb@vmware.com> 1.10.7-1
+-   Update to 1.10.7
 *   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.10.4-2
 -   Use ExtraBuildRequires
 *   Mon Sep 24 2018 Tapas Kundu <tkundu@vmware.com> 1.10.4-1

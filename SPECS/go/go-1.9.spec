@@ -13,17 +13,15 @@
 
 Summary:        Go
 Name:           go
-Version:        1.9.4
-Release:        3%{?dist}
+Version:        1.9.7
+Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
-%define sha1    go=12b0ecee83525cd594f4fbf30380d4832e06f189
-Patch0:         go_imports_fix.patch
-Patch1:         CVE-2018-7187.patch
+%define sha1    go=388bb51899059e979b81473998f4e955c2af99ca
 Requires:       glibc
 # to avoid cyclic dependency use prebuilt publish go rpm
 %define ExtraBuildRequires go
@@ -33,8 +31,6 @@ Go is an open source programming language that makes it easy to build simple, re
 
 %prep
 %setup -qn %{name}
-%patch0 -p1
-%patch1 -p1
 
 %build
 export GOHOSTOS=linux
@@ -116,6 +112,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Mon Jan 21 2019 Bo Gan <ganb@vmware.com> 1.9.7-1
+-   Update to 1.9.7
 *   Wed Oct 24 2018 Alexey Makhalov <amakhalov@vmware.com> 1.9.4-3
 -   Use extra build requires
 *   Mon Apr 02 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.4-2
