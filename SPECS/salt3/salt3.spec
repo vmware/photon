@@ -8,7 +8,7 @@
 %define _salttesting_ver 2016.5.11
 
 Name: salt3
-Version: 2018.3.3
+Version: 2018.3.2
 Release: 1%{?dist}
 Summary: A parallel remote execution system with python3
 Group:   System Environment/Daemons
@@ -16,8 +16,8 @@ License: ASL 2.0
 URL:     http://saltstack.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0: http://pypi.python.org/packages/source/s/salt/salt-%{version}.tar.gz
-%define sha1 salt=18e148c2ef4418efe741c4b84d0ae284ebbf108b
+Source0: https://github.com/saltstack/salt/releases/download/v%{version}/salt/salt-%{version}.tar.gz
+%define sha1 salt=2df3d3c1c35d29b66909c74818ec6ec945c4550e
 Source1: https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-2016.5.11.tar.gz
 %define sha1 SaltTesting=474dbd7029e3d48cdb468be3c63b2262e47556c8
 Source2: salt-master.service
@@ -297,6 +297,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Jan 21 2019 Vinothkumar D <vinothkumard@vmware.com> 2018.3.2-1
+- Downgrade to version 2018.3.2.
 * Tue Dec 04 2018 Vinothkumar D <vinothkumard@vmware.com> 2018.3.3-1
 - This is an initial version of salt with python3 support for Photon OS
   The source is from https://github.com/saltstack/salt/archive/v2018.3.3.tar.gz
