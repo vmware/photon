@@ -8,7 +8,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.9.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
@@ -19,7 +19,7 @@ Patch0:         k8s-1.9-vke.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  go = 1.9.4
+BuildRequires:  go = 1.9.7
 BuildRequires:  rsync
 BuildRequires:  which
 Requires:       cni
@@ -192,6 +192,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+*   Mon Jan 21 2019 Bo Gan <ganb@vmware.com> 1.9.10-2
+-   Build using go 1.9.7
 *   Wed Aug 29 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.10-1
 -   Update to k8s version 1.9.10 with VKE patch (fbdcc5c)
 *   Thu May 03 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.6-1

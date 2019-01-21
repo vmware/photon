@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -26,7 +26,7 @@ BuildRequires:  libltdl-devel
 BuildRequires:  libgcc-devel
 BuildRequires:  glibc-devel
 BuildRequires:  unzip
-BuildRequires:  go = 1.10.4
+BuildRequires:  go = 1.10.7
 BuildRequires:  sed
 BuildRequires:  cmake
 BuildRequires:  findutils
@@ -216,5 +216,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Jan 21 2019 Bo Gan <ganb@vmware.com> 18.06.1-2
+-   Build using go 1.10.7
 *   Mon Jan 17 2019 Bo Gan <ganb@vmware.com> 18.06.1-1
 -   Update to 18.06.1-ce
