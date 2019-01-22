@@ -60,7 +60,7 @@ def create_ova_image(raw_image_name, tools_path, config):
     rawsplit = os.path.splitext(raw_image_name)
     ova_name = rawsplit[0] + '.ova'
 
-    ovatar = tarfile.open(ova_name, "w", format=tarfile.USTAR_FORMAT)
+    ovatar = tarfile.open(ova_name, "w:gz", format=tarfile.USTAR_FORMAT)
     for name in ["photon-ova.ovf", "photon-ova.mf", "photon-ova-disk1.vmdk"]:
         ovatar.add(name, arcname=os.path.basename(name))
     ovatar.close()
@@ -81,7 +81,7 @@ def create_ova_image(raw_image_name, tools_path, config):
             temp_name_list = temp_name_list[:2] + ["hw{}".format(addlversion)] + temp_name_list[2:]
             new_ova_name = '-'.join(temp_name_list)
             new_ova_path = output_path + '/' + new_ova_name
-            ovatar = tarfile.open(new_ova_path, "w", format=tarfile.USTAR_FORMAT)
+            ovatar = tarfile.open(new_ova_path, "w:gz", format=tarfile.USTAR_FORMAT)
             for name in [new_ovf_path, mf_path, "photon-ova-disk1.vmdk"]:
                 ovatar.add(name, arcname=os.path.basename(name))
             ovatar.close()
