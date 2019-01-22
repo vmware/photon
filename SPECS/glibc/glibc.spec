@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -17,6 +17,7 @@ Source2:        locale-gen.conf
 Patch0:         http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
 Patch1:         glibc-2.24-bindrsvport-blacklist.patch
 Patch2:         0002-malloc-arena-fix.patch
+Patch3:         glibc-2.28-CVE-2018-19591.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -73,6 +74,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -273,6 +275,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Tue Jan 22 2019 Anish Swaminathan <anishs@vmware.com> 2.28-2
+-   Fix CVE-2018-19591
 *   Tue Aug 28 2018 Alexey Makhalov <amakhalov@vmware.com> 2.28-1
 -   Version update. Disable obsolete rpc (use libtirpc) and nsl.
 *   Tue Jan 23 2018 Xiaolin Li <xiaolinl@vmware.com> 2.26-10
