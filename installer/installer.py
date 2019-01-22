@@ -131,7 +131,7 @@ class Installer(object):
                                .format(self.progress_bar.time_elapsed))
             self._eject_cdrom()
 
-    def _copy_rpms(self):
+    def _create_installrpms_list(self):
         """
         Prepare RPM list and copy rpms
         """
@@ -154,10 +154,6 @@ class Installer(object):
                     self.rpms_tobeinstalled.append({'filename': basename, 'path': name,
                                                     'package' : package})
 
-        # Copy the rpms
-        for rpm in self.rpms_tobeinstalled:
-            shutil.copy(rpm['path'], self.photon_root + '/RPMS/')
-
     def _copy_files(self):
         """
         Copy the rpm files and instal scripts.
@@ -177,14 +173,7 @@ class Installer(object):
             modules.commons.log(modules.commons.LOG_ERROR, "Fail to copy install scripts")
             self.exit_gracefully(None, None)
 
-        # Create the rpms directory
-        process = subprocess.Popen(['mkdir', '-p', self.photon_root + '/RPMS'],
-                                   stdout=self.output)
-        retval = process.wait()
-        if retval != 0:
-            modules.commons.log(modules.commons.LOG_ERROR, "Fail to create the rpms directory")
-            self.exit_gracefully(None, None)
-        self._copy_rpms()
+        self._create_installrpms_list()
 
     def _bind_installer(self):
         """
@@ -321,7 +310,7 @@ class Installer(object):
         else:
             self._copy_files()
             #Setup the filesystem basics
-            process = subprocess.Popen([self.prepare_command, '-w', self.photon_root],
+            process = subprocess.Popen([self.prepare_command, '-w', self.photon_root, self.rpm_path],
                                        stdout=self.output)
             retval = process.wait()
             if retval != 0:
@@ -419,13 +408,6 @@ class Installer(object):
                 if retval != 0:
                     modules.commons.log(modules.commons.LOG_ERROR,
                                         "Fail to remove the installer directory")
-                process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "RPMS")],
-                                           stdout=self.output)
-                retval = process.wait()
-                if retval != 0:
-                    modules.commons.log(modules.commons.LOG_ERROR,
-                                        "Fail to remove the input rpms directory")
-
 
     def _execute_modules(self, phase):
         """
