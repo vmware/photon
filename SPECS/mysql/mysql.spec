@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.13
+Version:        8.0.14
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=c4109cb99c1a70d1d1bb54a9934f44c68b51dad3
+%define         sha1 mysql-boost=73a9f69ee9d8955d00b9ee2284cf27547562e831
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -33,15 +33,16 @@ Development headers for developing applications linking to maridb
 %build
 cmake . \
       -DCMAKE_INSTALL_PREFIX=/usr   \
-      -DWITH_BOOST=boost/boost_1_67_0 \
+      -DWITH_BOOST=boost/boost_1_68_0 \
       -DINSTALL_MANDIR=share/man \
       -DINSTALL_DOCDIR=share/doc \
       -DINSTALL_DOCREADMEDIR=share/doc \
       -DINSTALL_SUPPORTFILESDIR=share/support-files \
-      -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+      -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_C_FLAGS=-fPIC \
       -DCMAKE_CXX_FLAGS=-fPIC \
-      -DWITH_EMBEDDED_SERVER=OFF
+      -DWITH_EMBEDDED_SERVER=OFF \
+      -DFORCE_INSOURCE_BUILD=1
 
 make %{?_smp_mflags}
 
@@ -73,6 +74,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Tue Jan 22 2019 Siju Maliakkal <smaliakkal@vmware.com> 8.0.14-1
+-   Upgrade to 8.0.14
 *   Wed Jan 02 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.13-1
 -   Upgrade to version 8.0.13
 -   Workaround for broken DCMAKE_BUILD_TYPE=RELEASE(Mysql Bug#92945). Revert in next version
