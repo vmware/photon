@@ -2,7 +2,7 @@
 
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.6.4
+Version:        2.7.6
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
@@ -10,7 +10,7 @@ Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha1 %{name}=d17399bd005ac225957a635b6610045100261853
+%define sha1 %{name}=869842cbd17815cf5113f6d516102e0fdc701d6c
 
 
 BuildArch:      noarch
@@ -41,12 +41,14 @@ python2 setup.py install -O1 --skip-build \
 %check
 python2 setup.py test
 
-%files 
+%files
 %defattr(-, root, root)
 %{_bindir}/*
 %{python2_sitelib}/*
 
 %changelog
+*   Tue Jan 22 2019 Anish Swaminathan <anishs@vmware.com> 2.7.6-1
+-   Version update to 2.7.6, fix CVE-2018-16876
 *   Mon Sep 17 2018 Ankit Jain <ankitja@vmware.com> 2.6.4-1
 -   Version update to 2.6.4
 *   Thu Oct 12 2017 Anish Swaminathan <anishs@vmware.com> 2.4.0.0-1
