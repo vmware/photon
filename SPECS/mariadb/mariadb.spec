@@ -1,7 +1,7 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
 Version:        10.3.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -53,6 +53,8 @@ errmsg for maridb
 
 %prep
 %setup -q %{name}-%{version}
+# Remove PerconaFT from here because of AGPL licence
+rm -rf storage/tokudb/PerconaFT
 
 %build
 mkdir build && cd build
@@ -362,6 +364,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Wed Jan 23 2019 Ajay Kaher <akaher@vmware.com> 10.3.11-2
+-   Remove PerconaFT from mariadb pkg because of AGPL licence
 *   Wed Jan 02 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.3.11-1
 -   Upgrade to version 10.3.11
 *   Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 10.3.9-3
