@@ -1,0 +1,72 @@
+From ad8b5f060aef55a55156253d93c6ac0071c6019d Mon Sep 17 00:00:00 2001
+From: Dexuan Cui <decui@microsoft.com>
+Date: Wed, 1 Nov 2017 20:30:53 +0000
+Subject: [PATCH 137/156] PCI: hv: Use effective affinity mask
+
+The effective_affinity_mask is always set when an interrupt is assigned in
+__assign_irq_vector() -> apic->cpu_mask_to_apicid(), e.g. for struct apic
+apic_physflat: -> default_cpu_mask_to_apicid() ->
+irq_data_update_effective_affinity(), but it looks d->common->affinity
+remains all-1's before the user space or the kernel changes it later.
+
+In the early allocation/initialization phase of an IRQ, we should use the
+effective_affinity_mask, otherwise Hyper-V may not deliver the interrupt to
+the expected CPU.  Without the patch, if we assign 7 Mellanox ConnectX-3
+VFs to a 32-vCPU VM, one of the VFs may fail to receive interrupts.
+
+Signed-off-by: Dexuan Cui <decui@microsoft.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Jake Oshins <jakeo@microsoft.com>
+Cc: stable@vger.kernel.org
+Cc: Jork Loeser <jloeser@microsoft.com>
+Cc: Stephen Hemminger <sthemmin@microsoft.com>
+Cc: K. Y. Srinivasan <kys@microsoft.com>
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ drivers/pci/host/pci-hyperv.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+--- a/drivers/pci/host/pci-hyperv.c	2017-12-05 16:55:53.278586020 -0800
++++ b/drivers/pci/host/pci-hyperv.c	2017-12-05 16:55:53.274586071 -0800
+@@ -878,7 +878,7 @@ static void hv_irq_unmask(struct irq_dat
+ 	int cpu;
+ 	u64 res;
+ 
+-	dest = irq_data_get_affinity_mask(data);
++	dest = irq_data_get_effective_affinity_mask(data);
+ 	pdev = msi_desc_to_pci_dev(msi_desc);
+ 	pbus = pdev->bus;
+ 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
+@@ -1041,6 +1041,7 @@ static void hv_compose_msi_msg(struct ir
+ 	struct hv_pci_dev *hpdev;
+ 	struct pci_bus *pbus;
+ 	struct pci_dev *pdev;
++	struct cpumask *dest;
+ 	struct compose_comp_ctxt comp;
+ 	struct tran_int_desc *int_desc;
+ 	struct {
+@@ -1055,6 +1056,7 @@ static void hv_compose_msi_msg(struct ir
+ 	int ret;
+ 
+ 	pdev = msi_desc_to_pci_dev(irq_data_get_msi_desc(data));
++	dest = irq_data_get_effective_affinity_mask(data);
+ 	pbus = pdev->bus;
+ 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
+ 	hpdev = get_pcichild_wslot(hbus, devfn_to_wslot(pdev->devfn));
+@@ -1080,14 +1082,14 @@ static void hv_compose_msi_msg(struct ir
+ 	switch (pci_protocol_version) {
+ 	case PCI_PROTOCOL_VERSION_1_1:
+ 		size = hv_compose_msi_req_v1(&ctxt.int_pkts.v1,
+-					irq_data_get_affinity_mask(data),
++					dest,
+ 					hpdev->desc.win_slot.slot,
+ 					cfg->vector);
+ 		break;
+ 
+ 	case PCI_PROTOCOL_VERSION_1_2:
+ 		size = hv_compose_msi_req_v2(&ctxt.int_pkts.v2,
+-					irq_data_get_affinity_mask(data),
++					dest,
+ 					hpdev->desc.win_slot.slot,
+ 					cfg->vector);
+ 		break;
