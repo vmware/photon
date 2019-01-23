@@ -1,11 +1,11 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
-Version:        1.8.3
-Release:        4%{?dist}
+Version:        1.10.1
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    kubernetes-dashboard=d0e85648129f6b480773539dc2a83e04f85c76f1
+%define sha1    kubernetes-dashboard=ad2d26be3a7d099e0d917f04b873a72945694d58
 Source1:        npm-sources-9.9.0.tar.gz
 %define sha1    npm-sources=0d50a69bd3a2e0cd637b752d67759755d94ece4c
 Source2:        package-lock.json
@@ -58,6 +58,8 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
+*    Wed Jan 23 2019 Keerthana K <keerthanak@vmware.com> 1.10.1-1
+-    Updating kubernetes-dashboard to 1.10.1 for security fix
 *    Mon Jan 07 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.8.3-4
 -    Added nodejs-9.11.2 dependency
 *    Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.8.3-3
