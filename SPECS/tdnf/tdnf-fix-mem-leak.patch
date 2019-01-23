@@ -1,0 +1,72 @@
+From dfedaa1d05de9ad0c4f92897b94dade28d629f68 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Tue, 22 Jan 2019 11:25:10 +0000
+Subject: [PATCH] Fixes for memory leak
+
+Change-Id: I4c2c080209daa370dc2d89c6e900f68e8f165f5d
+---
+
+diff --git a/client/api.c b/client/api.c
+index 39ee086..a55092e 100644
+--- a/client/api.c
++++ b/client/api.c
+@@ -137,7 +137,10 @@
+         pArgs->nCmdCount = nCmdCountOrig;
+         pArgs->ppszCmds = ppszCmdsOrig;
+     }
+-
++    if(pSolvedPkgInfo)
++    {
++       TDNFFreeSolvedPackageInfo(pSolvedPkgInfo);
++    }
+     return dwError;
+ 
+ error:
+diff --git a/client/gpgcheck.c b/client/gpgcheck.c
+index c09e201..04fb32e 100644
+--- a/client/gpgcheck.c
++++ b/client/gpgcheck.c
+@@ -266,9 +266,9 @@
+     }
+ 
+ cleanup:
++    TDNF_SAFE_FREE_MEMORY(pszKeyData);
+     return dwError;
+ error:
+-    TDNF_SAFE_FREE_MEMORY(pszKeyData);
+     if(pPubkey)
+     {
+         rpmPubkeyFree(pPubkey);
+diff --git a/client/resolve.c b/client/resolve.c
+index 8fd24d1..f8f5816 100644
+--- a/client/resolve.c
++++ b/client/resolve.c
+@@ -162,6 +162,8 @@
+                                      ppszPkgsNotResolved,
+                                      queueGoal);
+                        BAIL_ON_TDNF_ERROR(dwError);
++                       TDNF_SAFE_FREE_MEMORY(pszName);
++                       pszName = NULL;
+                    }
+                }
+            }
+diff --git a/common/configreader.c b/common/configreader.c
+index 25fb9fc..adb814c 100644
+--- a/common/configreader.c
++++ b/common/configreader.c
+@@ -203,6 +203,7 @@
+         return;
+     }
+     TdnfFreeConfigSections(pData->pSections);
++    TDNF_SAFE_FREE_MEMORY(pData->pszConfFile);
+     TDNF_SAFE_FREE_MEMORY(pData);
+ }
+ 
+@@ -358,6 +359,7 @@
+ 
+         dwError = pfnConfSectionCB(pData, pszSection);
+         BAIL_ON_TDNF_ERROR(dwError);
++        TDNF_SAFE_FREE_MEMORY(pszSection);
+     }
+     else if(pfnConfKeyValueCB)
+     {
