@@ -9,7 +9,7 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.5
-Release:        8%{?dist}
+Release:        9%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -43,6 +43,7 @@ Source0:        %{name}-%{version}-3.tar.gz
 Patch0:         pmd-update-to-c-rest-engine-1.1.patch
 Patch1:         pmd-rename-DNS_MODE_INVALID-with-DNS_MODE_UNKNOWN.patch
 Patch2:         pmd-duid-ifid.patch
+Patch3:         pmd-fw-bugfix.patch
 
 %description
 Photon Management Daemon
@@ -93,6 +94,7 @@ Python3 bindings for photon management daemon
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 sed -i 's/pmd, 0.0.1/pmd, 0.0.5/' configure.ac
@@ -310,6 +312,8 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*   Wed Jan 23 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-9
+-   Fix a bug in firewall management persist commands
 *   Tue Dec 18 2018 Tapas Kundu <tkundu@vmware.com> 0.0.5-8
 -   Fix for if_iaid and duid.
 *   Tue Dec 11 2018 Michelle Wang <michellew@vmware.com> 0.0.5-7
