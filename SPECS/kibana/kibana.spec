@@ -1,14 +1,14 @@
 Name:            kibana
 Summary:         Browser-based analytics and search dashboard for Elasticsearch.
-Version:         6.4.0
-Release:         2%{?dist}
+Version:         6.4.1
+Release:         1%{?dist}
 License:         Apache License Version 2.0
 URL:             https://www.elastic.co/products/kibana
 Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}.tar.gz
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Daemons
-%define sha1     kibana=41879947d7de83d4d1c00bd91182574c0034b6f3
+%define sha1     kibana=144d2a1e8958b07cf7ca0d51a9d58de0ac7ad123
 BuildArch:       x86_64
 BuildRequires:   git
 BuildRequires:   yarn
@@ -33,6 +33,7 @@ yarn kbn bootstrap
 %build
 export PATH=${PATH}:/usr/bin
 yarn build --skip-os-packages
+
 
 %install
 mkdir -p %{buildroot}%{_datadir}/%{name}
@@ -115,6 +116,8 @@ exit
 %{_datadir}/%{name}
 
 %changelog
+*   Tue Jan 22 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.1-1
+-   Upgrade to 6.4.1 to mitigate CVE-2018-3830
 *   Mon Oct 29 2018 Ajay Kaher <akaher@vmware.com> 6.4.0-2
 -   Add BuildArch
 *   Wed Oct 24 2018 Keerthana K <keerthanak@vmware.com> 6.4.0-1
