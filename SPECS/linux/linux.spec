@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.164
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.171
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=33ac0f11bcb49515bd6e2c4c841c25cb62d735de
+%define sha1 linux=0dad29240a55b758c2ebe81ce43b4766b7d81f7d
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -40,8 +40,6 @@ Patch19:        0001-net-create-skb_gso_validate_mac_len.patch
 Patch20:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
 # Fix for CVE-2018-8043
 Patch22:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
-# Fix for CVE-2017-18241
-Patch25:        0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
 Patch26:        Implement-the-f-xattrat-family-of-functions.patch
 Patch27:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
@@ -162,7 +160,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch19 -p1
 %patch20 -p1
 %patch22 -p1
-%patch25 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -338,6 +335,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Jan 24 2019 Ajay Kaher <akaher@vmware.com> 4.4.171-1
+-   Update to version 4.4.171
 *   Tue Jan 15 2019 Alexey Makhalov <amakhalov@vmware.com> 4.4.164-4
 -   .config: disable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
 -   Removed deprecated -q option for depmod
