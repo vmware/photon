@@ -1,6 +1,6 @@
-Summary:        Etcd-3.1.19
+Summary:        Etcd-3.2.24
 Name:           etcd
-Version:        3.1.19
+Version:        3.2.24
 Release:        1%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/etcd-io/etcd
@@ -8,7 +8,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 etcd=3a567f058f66c1ccb8267f2dc54912ae661ab03b
+%define sha1 etcd=36f3f30e323a96cf42f940d07daeab1e73ef7343
 Source1:        etcd.service
 BuildRequires:  go >= 1.7
 
@@ -59,6 +59,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 
 %changelog
+*   Wed Jan 23 2019 Tapas Kundu <tkundu@vmware.com> 3.2.24-1
+-   Updated to release 3.2.24
 *   Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 3.1.19-1
 -   Updated to release 3.1.19
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1.5-4
