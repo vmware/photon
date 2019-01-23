@@ -1,0 +1,54 @@
+From eba61d21b1ad88f9d4f63b5844f17da1dc8d8930 Mon Sep 17 00:00:00 2001
+From: Dexuan Cui <decui@microsoft.com>
+Date: Mon, 29 Oct 2018 23:18:48 -0700
+Subject: [PATCH] x86/irq: implement irq_data_get_effective_affinity_mask() for
+ v4.12.14
+
+See __assign_irq_vector():
+	cpumask_copy(d->domain, vector_cpumask);
+
+The function is required by Hyper-V pci-hyperv driver. See
+79aa801e8994 ("PCI: hv: Use effective affinity mask")
+
+Signed-off-by: Dexuan Cui <decui@microsoft.com>
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ arch/x86/kernel/apic/vector.c | 8 ++++++++
+ include/linux/irq.h           | 2 ++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
+index 26c3769..627985a 100644
+--- a/arch/x86/kernel/apic/vector.c
++++ b/arch/x86/kernel/apic/vector.c
+@@ -69,6 +69,14 @@ struct irq_cfg *irqd_cfg(struct irq_data *irq_data)
+ }
+ EXPORT_SYMBOL_GPL(irqd_cfg);
+ 
++struct cpumask *irq_data_get_effective_affinity_mask(struct irq_data *d)
++{
++	struct apic_chip_data *data = apic_chip_data(d);
++
++	return data ? data->domain : NULL;
++}
++EXPORT_SYMBOL_GPL(irq_data_get_effective_affinity_mask);
++
+ struct irq_cfg *irq_cfg(unsigned int irq)
+ {
+ 	return irqd_cfg(irq_get_irq_data(irq));
+diff --git a/include/linux/irq.h b/include/linux/irq.h
+index 45b037e..a3c8c0d 100644
+--- a/include/linux/irq.h
++++ b/include/linux/irq.h
+@@ -695,6 +695,8 @@ static inline struct cpumask *irq_data_get_affinity_mask(struct irq_data *d)
+ 	return d->common->affinity;
+ }
+ 
++struct cpumask *irq_data_get_effective_affinity_mask(struct irq_data *d);
++
+ unsigned int arch_dynirq_lower_bound(unsigned int from);
+ 
+ int __irq_alloc_descs(int irq, unsigned int from, unsigned int cnt, int node,
+-- 
+2.7.4
+

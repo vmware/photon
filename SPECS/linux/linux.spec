@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.140
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Release:        6%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -71,13 +71,13 @@ Patch46:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch47:        0002-xfs-verify-dinode-header-first.patch
 Patch48:        0003-xfs-enhance-dinode-verifier.patch
 
-#HyperV PCI patches
+# HyperV PCI patches to Use vPCI_protocol_version_1.2
 Patch51:        0001_PCI_hv_Allocate_physically_contiguous_hypercall_params_buffer.patch
 Patch52:        0002_PCI_hv_Add_vPCI_version_protocol_negotiation.patch
 Patch53:        0003_PCI_hv_Use_vPCI_protocol_version_1.2_v4.9.patch
-
-# NVME PCI patch
-Patch61:        0001_nvme_io_irq_without_affinity.patch
+# HyperV PCI patches to solve IRQ no handler problem
+Patch54:        0004-PCI-hv-Use-effective-affinity-mask.patch
+Patch55:        0005-x86-irq-implement-irq_data_get_effective_affinity.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -201,7 +201,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch51 -p1
 %patch52 -p1
 %patch53 -p1
-%patch61 -p1
+%patch54 -p1
+%patch55 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -376,6 +377,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed Jan 23 2019 Ajay Kaher <akaher@vmware.com> 4.9.140-6
+-   Fix IRQ issue by using effective_affinity
+-   Remove nvme_io_irq_without_affinity.patch
 *   Thu Jan 17 2019 Ajay Kaher <akaher@vmware.com> 4.9.140-5
 -   Fix IRQ issues with NVMe on Azure.
 *   Tue Jan 15 2019 Alexey Makhalov <amakhalov@vmware.com> 4.9.140-4
