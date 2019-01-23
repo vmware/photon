@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.164
-Release:       2%{?dist}
+Version:       4.4.171
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=33ac0f11bcb49515bd6e2c4c841c25cb62d735de
+%define sha1 linux=0dad29240a55b758c2ebe81ce43b4766b7d81f7d
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -42,7 +42,6 @@ Patch28:       0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
 # Fix for CVE-2018-8043
 Patch30:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 # Fix for CVE-2017-18241
-Patch33:       0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
 Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
 Patch35:       0001-scsi-libsas-direct-call-probe-and-destruct.patch
@@ -130,7 +129,6 @@ The Linux package contains the Linux kernel doc files
 %patch27 -p1
 %patch28 -p1
 %patch30 -p1
-%patch33 -p1
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
@@ -237,6 +235,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jan 24 2019 Ajay Kaher <akaher@vmware.com> 4.4.171-1
+-   Update to version 4.4.171
 *   Wed Dec 12 2018 Kamal Charan <kcharan@vmware.com> 4.4.164-2
 -   Add 9p zero copy data path using crossfd
 *   Mon Nov 26 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.164-1
