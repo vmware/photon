@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.34
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -11,6 +11,7 @@ Source0:        http://apache.mirrors.hoobly.com//httpd/%{name}-%{version}.tar.b
 %define sha1    httpd=94d6e274273903ed153479c7701fa03761abf93d
 Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.27-blfs_layout-1.patch
 Patch1:         httpd-uncomment-ServerName.patch
+Patch2:         httpd-CVE-2018-11763.patch
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -28,6 +29,9 @@ Requires:       lua
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 Provides:       apache2
+
+%define _confdir %{_sysconfdir}
+
 %description
 The Apache HTTP Server.
 
@@ -56,21 +60,19 @@ The httpd-tools of httpd.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
-./configure --prefix=%{_sysconfdir}/httpd \
-            --exec-prefix=%{_prefix} \
-            --bindir=%{_bindir}                             \
-            --sbindir=%{_sbindir}                           \
-            --mandir=%{_mandir}                             \
-            --libdir=%{_libdir}                             \
-            --sysconfdir=%{_sysconfdir}/httpd/conf          \
-            --includedir=%{_includedir}/httpd               \
-            --libexecdir=%{_libdir}/httpd/modules           \
-            --enable-authnz-fcgi                            \
-            --enable-mods-shared="all cgi"                  \
-            --enable-mpms-shared=all                        \
-            --with-apr=%{_prefix}                           \
+%configure \
+            --prefix=%{_sysconfdir}/httpd          \
+            --exec-prefix=%{_prefix}               \
+            --sysconfdir=%{_confdir}/httpd/conf    \
+            --libexecdir=%{_libdir}/httpd/modules  \
+            --datadir=%{_sysconfdir}/httpd         \
+            --enable-authnz-fcgi                   \
+            --enable-mods-shared="all cgi"         \
+            --enable-mpms-shared=all               \
+            --with-apr=%{_prefix}                  \
             --with-apr-util=%{_prefix}
 
 make %{?_smp_mflags}
@@ -181,6 +183,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Thu Jan 24 2019 Dweep Advani <dadvani@vmware.com> 2.4.34-2
+-   Fixed CVE-2018-11763
 *   Wed Aug 29 2018 Tapas Kundu <tkundu@vmware.com> 2.4.34-1
 -   Updated to version 2.4.34, fix CVE-2018-1333
 *   Mon Oct 02 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.28-1
