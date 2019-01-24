@@ -2,6 +2,12 @@
 
 Photon OS works with kickstart for unattended, automated installations. The kickstart configuration file can either reside in the CD-ROM attached to the host or be served through an HTTP server.
 
+* [Kickstart Capabilities](#kickstart-capabilities)
+* [Permitted JSON Fields](#permitted-json-fields)
+* [Sample Configuration File](#sample-configuration-file)
+* [Unattended Installation Through Kickstart](#unattended-installation-through-kickstart)
+
+
 ## Kickstart Capabilities
 
 Photon OS supports the following configurations with kickstart:
@@ -12,6 +18,87 @@ Photon OS supports the following configurations with kickstart:
 * Selecting whether to install the full or the minimal version of Photon OS 
 * Applying a post-installation script
 * Adding public keys to allow the root account to log in through SSH
+
+## Permitted JSON Fields
+
+The following is a list of allowed JSON fields and their descriptions:
+
+<table style="height: 170px;" border="1" width="250" cellspacing="0" cellpadding="10">
+	<tbody>
+	<tr>
+	<td><b>Field</b></td>
+	<td><b>Description</b></td>
+	</tr>
+	<tr>
+	<td>hostname</td>
+	<td>The host name as string. You can also specify the name in printf format. 
+<p> The hostname must not start with a number or "-" and must be less than 64 characters.  
+<p> Example: "photon-$((RANDOM%4096))"
+</p></td>
+	</tr>
+	<tr>
+	<td>password:
+  <p>crypted: true/false
+  <p>text: password text </td>
+	<td> <b>crypted: true</b>: 
+This indicates that the "text" field is already encrypted. In this case, the specified password is used as is for the root user.
+<p> <b>crypted: false:</b>
+This indicates that the "text" field is plain text. It is then encrypted and used to create the root user's password.
+<p> <b>text</b>: Plain text or encrypted password.
+</td>
+	</tr>
+	<tr>
+	<td>disk</td>
+	<td>Indicates the install disk 
+<p> Example: /dev/sda </td>
+	</tr>
+	<tr>
+	<td>partitions</td>
+	<td>An array of partition definitions.
+<p> Example:
+<p>[
+ <p>                       {"mountpoint": "/", "size": 0, "filesystem": "ext4"},
+ <p>                       {"mountpoint": "/boot", "size": 128, "filesystem": "ext4"},
+ <p>                      {"mountpoint": "/root", "size": 128, "filesystem": "ext4"},
+ <p>                       {"size": 128, "filesystem": "swap"}
+<p>]</td>
+	</tr></tr>
+	<tr>
+	<td>packagelist_file</td>
+	<td>Indicates the name of the file that contains the list of packages to install.
+</td>
+	</tr><tr>
+	<td>additional_packages</td>
+	<td>Specify an array of additional packages.
+</td>
+	</tr><tr>
+	<td>type</td>
+	<td>Specify the type of package. Specify "full", "minimal" or "micro". 
+</td>
+	</tr><tr>
+	<td>install_linux_esx</td>
+	<td>Specify a boolean value to use linux esx instead of generic linux. 
+</td>
+	</tr><tr>
+	<td>type</td>
+	<td>Specify the type of package. 
+<p> Specify "full", "minimal" or "micro". 
+</td>
+	</tr><tr>
+	<td>postinstall</td>
+	<td>Specify an array of bash commands to execute after install. <p> See the example for partitions.
+</td>
+	</tr><tr>
+	<td>public_key</td>
+	<td>Optional. <p>The public key that you require to install for password-less logins. <p> This key is created in authorized_keys in the .ssh directory.
+</td>
+	</tr>
+	</tbody>
+	</table>
+	
+
+  
+## Sample Configuration File
 
 Here is a sample kickstart configuration file:
 

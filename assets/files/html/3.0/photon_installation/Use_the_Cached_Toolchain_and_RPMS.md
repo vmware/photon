@@ -1,17 +1,22 @@
 # Use the Cached Toolchain and RPMS
 
-To use the cached toolchain, run the following command:
+When the necessary RPMs are available under the `stage/RPMS/` directory, the commands that you use to create any Photon artifact such as, ISO or OVA will reuse those RPMs to create the specified image.
+
+If you already have the Photon RPMs available elsewhere, and not under `stage/RPMS/` in the Photon repository, you can build Photon artifacts using those cached RPMs by setting the `PHOTON_CACHE_PATH` variable to point to the directory containing those RPMs. 
+
+For example, if your RPMs are located under `$HOME/photon-cache/`, then use the following command to build an ISO:
+ 
+`sudo make iso PHOTON_CACHE_PATH=$HOME/photon-cache`
+
+The `$HOME/photon-cache/` directory should follow the same structure as the `stage/RPMS/` directory:
 
 ```
-mkdir $HOME/photon-cache
-sudo make iso PHOTON_CACHE_PATH=$HOME/photon-cache
+photon-cache/:
+├──RPMS/:
+    ├──noarch/*.noarch.rpm
+    ├──x86_64/*.x86_64.rpm
+    ├──aarch64/*.aarch64.rpm
+
 ```
 
-The directory format of `PHOTON_CACHE_PATH` is as follows:
 
-```
-photon-cache/
-├──tools-build.tar.gz
-├──RPMS/x86-64/*.rpm
-└──RPMX/noarch/*.rpm
-```
