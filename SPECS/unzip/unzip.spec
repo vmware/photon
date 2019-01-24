@@ -1,7 +1,7 @@
 Summary:        Unzip-6.0
 Name:           unzip
 Version:        6.0
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        BSD
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://downloads.sourceforge.net/infozip/unzip60.tar.gz
@@ -16,10 +16,11 @@ Patch2:         CVE-2015-7696-CVE-2015-7697.patch
 Patch3:         unzip-CVE-2014-9844.patch
 Patch4:         unzip-CVE-2014-9913.patch
 Patch5:         unzip-CVE-2018-1000035.patch
+Patch6:         unzip_cfactor_overflow.patch
 
 %description
-The UnZip package contains ZIP extraction utilities. These are useful 
-for extracting files from ZIP archives. ZIP archives are created 
+The UnZip package contains ZIP extraction utilities. These are useful
+for extracting files from ZIP archives. ZIP archives are created
 with PKZIP or Info-ZIP utilities, primarily in a DOS environment.
 
 %prep
@@ -30,6 +31,7 @@ with PKZIP or Info-ZIP utilities, primarily in a DOS environment.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %build
 sed -i -e 's/CFLAGS="-O -Wall/& -DNO_LCHMOD -DLARGE_FILE_SUPPORT -DZIP64_SUPPORT/' unix/Makefile
@@ -55,6 +57,8 @@ make %{?_smp_mflags}  check
 %{_bindir}/*
 
 %changelog
+*   Thu Jan 24 2019 Ankit Jain <ankitja@vmware.com> 6.0-13
+-   Fix for CVE-2018-18384
 *   Fri Jun 29 2018 Dweep Advani <dadvani@vmware.com> 6.0-12
 -   Making unzip work with large file
 *   Tue May 29 2018 Xiaolin Li <xiaolinl@vmware.com> 6.0-11
