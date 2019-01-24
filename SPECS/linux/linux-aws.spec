@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.140
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.152
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=926d3d735f9d531fece00241845cfbab25eb273e
+%define sha1 linux=54848e3506112f18cdbe16fa226c015ba17525b1
 Source1:	config-aws
 Source2:	initramfs.trigger
 # common
@@ -53,12 +53,9 @@ Patch35:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
 # Fix for CVE-2018-8043
 Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 # Fix for CVE-2017-18241
-Patch40:        0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
 Patch43:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
-# Fix for CVE-2017-18249
-Patch44:        0001-f2fs-fix-race-condition-in-between-free-nid-allocator-initializer.patch
 # Fix for CVE-2018-10323
 Patch45:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 # Fix for CVE-2018-10322
@@ -223,10 +220,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch34 -p1
 %patch35 -p1
 %patch38 -p1
-%patch40 -p1
 %patch42 -p1
 %patch43 -p1
-%patch44 -p1
 %patch45 -p1
 %patch46 -p1
 %patch47 -p1
@@ -440,6 +435,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Jan 24 2019 Ajay Kaher <akaher@vmware.com> 4.9.152-1
+-   Update to version 4.9.152
 *   Tue Jan 15 2019 Alexey Makhalov <amakhalov@vmware.com> 4.9.140-2
 -   .config: disable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
 -   Removed deprecated -q option for depmod
