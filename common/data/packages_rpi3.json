@@ -8,7 +8,7 @@
                 "openssh", "gdbm", "parted", "linux-firmware",
                 "photon-release", "photon-repos",
                 "sed", "grep", "cpio", "gzip", "vim", "libdb", "tdnf",
-                "which", "tzdata", "motd", "gdbm", "u-boot-rpi3" ]
+                "which", "tzdata", "motd", "gdbm", "u-boot" ]
 }
 
 
