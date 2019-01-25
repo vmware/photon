@@ -1,6 +1,6 @@
 # Using the Network Configuration Manager
 
-The Network Configuration Manager library that ships with Photon OS 2.0 provides a collection of C, Python, and CLI APIs that simplify common onfiguration tasks for:
+The Network Configuration Manager library that ships with Photon OS 3.0 provides a collection of C, Python, and CLI APIs that simplify common onfiguration tasks for:
 
 - interfaces
 - IP addresses (IPv4 and IPv6 addresses)
