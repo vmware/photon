@@ -1,9 +1,9 @@
 %global security_hardening none
 %global debug_package %{nil}
-Summary:        U-Boot EFI firmware for the rpi3
-Name:		u-boot-rpi3
+Summary:        U-Boot EFI firmware
+Name:		u-boot
 Version:	2018.09
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
@@ -38,6 +38,8 @@ install -D -m 0644 u-boot.bin %{buildroot}/boot/esp/u-boot.bin
 /boot/esp/*
 
 %changelog
+*   Thu Jan 24 2019 Alexey Makhalov <amakhalov@vmware.com> 2018.09-7
+-   Renamed package from u-boot-rpi3 to u-boot.
 *   Fri Nov 23 2018 Ajay Kaher <akaher@vmware.com> 2018.09-6
 -   Enable USB_KEYBAORD which has CONTROL_EP
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 2018.09-5
