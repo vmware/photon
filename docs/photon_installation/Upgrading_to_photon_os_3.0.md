@@ -1,6 +1,6 @@
 # Upgrading to Photon OS 3.0
 
-You can upgrade your existing Photon OS 2.0 VMs to take advantage of the functionality enhancements in Photon OS 3.0. For details, see What is New in Photon OS 3.0.
+You can upgrade your existing Photon OS 2.0 VMs to take advantage of the functionality enhancements in Photon OS 3.0. For details, see [What's New in Photon OS 3.0](What-is-New-in-Photon-OS-3.0.md).
 
 Photon OS 3.0 provides a seamless upgrade for Photon OS 2.0 implementations. You simply download an upgrade package, run a script, and reboot the VM. The upgrade script will update your packages and retain your 2.0 customizations in your new OS 3.0 VM.
 

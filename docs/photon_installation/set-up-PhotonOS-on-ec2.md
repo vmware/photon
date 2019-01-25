@@ -19,7 +19,7 @@ Perform the following steps to set up Photon OS on EC2
     Change the mode bits of the public key pair file to protect its security. In the command, include the path to the file if you need to.  
     	
     ```
-    chown 600 mykeypair.pub
+    chmod 600 mykeypair.pub
     ```
     
     Change the mode bits on your private key pair file so that only you can view it:  
