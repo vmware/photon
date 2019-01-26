@@ -90,31 +90,14 @@ parted -s $VMDK_IMAGE_NAME 'mklabel msdos mkpart primary fat32 1MB 12MB mkpart p
 echo "Associating loopdevice to raw disk"
 DISK_DEVICE=`losetup --show -f -P $VMDK_IMAGE_NAME`
 
-#echo "Creating partition on raw disk"
-#if [ $SWAP_PARTITION_SIZE -gt 0 ] 
-#then
-#      sgdisk -n 1::+8M -n 2::+${ROOT_PARTITION_SIZE}G -n 3: -p $DISK_DEVICE >> $LOGFILE
-#else
-#      sgdisk -n 1::+8M -n 2: -p $DISK_DEVICE >> $LOGFILE
-#fi
-
-#if [ $BOOT_FIRM_WARE = "efi" ]
-#then
-#    echo "EFI boot partition"
-#    sgdisk -t1:ef00 $DISK_DEVICE >> $LOGFILE
-#else
-#    echo "BIOS boot partition"
-#    sgdisk -t1:ef02 $DISK_DEVICE >> $LOGFILE
-#fi
-
 echo "Mapping device partition to loop device"
 kpartx -avs $DISK_DEVICE >> $LOGFILE
 
 DEVICE_NAME=`echo $DISK_DEVICE|cut -c6- `
 
 echo "Formatting partitions"
+# rootfs label is important for grub to find `root`
 mkfs.ext4 -F -v -O ^huge_file -b 4096 -L rootfs /dev/mapper/${DEVICE_NAME}p2
-#mkfs.ext4 -F -v -b 4096 -L boot /dev/mapper/${DEVICE_NAME}p1
 mkfs.fat -n EFI /dev/mapper/${DEVICE_NAME}p1
 
 echo "DISK_DEVICE=$DISK_DEVICE"
