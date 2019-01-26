@@ -15,14 +15,9 @@
 
 grub_efi_install()
 {
-	cp -r $SCRIPT_PATH/esp/ls1012afrwy_boot.scr $BUILDROOT/
+	cp -r $SCRIPT_PATH/esp/ls1012afrwy_boot.scr $BUILDROOT/boot/esp/
 	mkdir -p $BUILDROOT/boot/esp/EFI/BOOT/
-	cp $SCRIPT_PATH/esp/bootaa64.efi $BUILDROOT/boot/esp/EFI/BOOT/
-	mkdir -p $BUILDROOT/boot/esp/boot/grub2
-	cat > $BUILDROOT/boot/esp/boot/grub2/grub.cfg << EOF
-search -n -u ${BOOT_UUID} -s
-configfile ${BOOT_DIRECTORY}grub2/grub.cfg
-EOF
+        cp $INSTALLER_PATH/EFI_aarch64/BOOT/bootaa64.efi $BUILDROOT/boot/esp/EFI/BOOT/
 }
 
 
@@ -61,15 +56,10 @@ echo "$BUILDROOT"
 mkdir -p $BUILDROOT/boot/grub2/
 ln -sfv grub2 $BUILDROOT/boot/grub
 
-
 grub_efi_install
 
-RFS_PARTITION=/dev/mapper/`basename ${HDD}`p2
-#umount -f $BUILDROOT
-#mount -t ext4 $ROOT_PATITION_PATH $BUILDROOT
 
-EXTRA_PARAMS="rootwait rw console=ttyS0,115200n8 console=tty0 cma=256M rootfs=/dev/mmcblk0p2"
-
+EXTRA_PARAMS="rootwait rw console=ttyS0,115200n8 console=tty0 rootfs=/dev/mmcblk0p2"
 
 cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 # Begin /boot/grub2/grub.cfg

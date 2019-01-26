@@ -3,7 +3,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.02
-Release:    10%{?dist}
+Release:    11%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -13,6 +13,9 @@ Source0:    http://alpha.gnu.org/gnu/grub/grub-2.02~rc2.tar.xz
 %define sha1 grub=4f6f3719fd7dbb0449a58547c1b08c9801337663
 Patch0:     Fix_to_boot_entries_with_out_password.patch
 Patch1:     0001-Secure-Boot-support.patch
+%ifarch aarch64
+Patch100:   0001-efinet-do-not-start-EFI-networking-at-module-init-ti.patch
+%endif
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
 BuildRequires:  systemd-devel
@@ -48,6 +51,9 @@ Additional library files for grub
 %setup -qn grub-2.02~rc2
 %patch0 -p1
 %patch1 -p1
+%ifarch aarch64
+%patch100 -p1
+%endif
 %build
 ./autogen.sh
 %ifarch x86_64
@@ -57,7 +63,6 @@ pushd build-for-pc
     --prefix=%{_prefix} \
     --sbindir=/sbin \
     --sysconfdir=%{_sysconfdir} \
-    --disable-grub-emu-usb \
     --disable-werror \
     --disable-efiemu \
     --with-grubdir=grub2 \
@@ -76,7 +81,6 @@ pushd build-for-efi
     --prefix=%{_prefix} \
     --sbindir=/sbin \
     --sysconfdir=%{_sysconfdir} \
-    --disable-grub-emu-usb \
     --disable-werror \
     --disable-efiemu \
     --with-grubdir=grub2 \
@@ -145,6 +149,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_datarootdir}/locale/*
 
 %changelog
+*   Fri Jan 25 2019 Alexey Makhalov <amakhalov@vmware.com> 2.02-11
+-   Disable efinet for aarch64 to workwround NXP ls1012a frwy PFE bug.
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.02-10
 -   Aarch64 support
 *   Fri Jun 2  2017 Bo Gan <ganb@vmware.com> 2.02-9
