@@ -56,14 +56,12 @@ Perform the following tasks:
           
         ```
         mount /dev/cdrom /media/cdrom
-        tdnf install yum
-        tdnf install python2-libs
-        yum install ntp sudo wget tar which gptfdisk sed findutils grep gzip --nogpgcheck -y
+        tdnf install python2-libs ntp sudo wget tar which gptfdisk sed findutils grep gzip -y
     ```
 
-    1. Convert GPT to MBR and update the grub
+1. Convert GPT to MBR and update the grub
     
-        Photon installer installs GPT partition table by default but GCE only accepts an MBR (msdos) type partition table. So, you must convert GPT to MBR and update the grub. USe the following commands to update the grub:
+        Photon installer installs GPT partition table by default but GCE only accepts an MBR (msdos) type partition table. So, you must convert GPT to MBR and update the grub. Use the following commands to update the grub:
         
              ```
            # Change partition table to MBR from GPT
@@ -81,17 +79,17 @@ Perform the following tasks:
            grub2-mkconfig -o /boot/grub2/grub.cfg
              ```
       
-1.  Install Google Cloud SDK and GCE Packages
+1. Install Google Cloud SDK and GCE Packages
       
     ```
-    yum install google-daemon google-startup-scripts
+          tdnf install -y google-compute-engine google-compute-engine-services
           cp /usr/lib/systemd/system/google* /lib/systemd/system/
           cd /lib/systemd/system/multi-user.target.wants/
           
           # Create links in multi-user.target to auto-start these scripts and services.
           for i in ../google*; do  ln -s $i `basename $i`; done
           
-          cd /tmp/; wget https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz --no-check-certificate
+          cd /tmp/; wget https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz
           tar -xf google-cloud-sdk.tar.gz
           cd google-cloud-sdk
           ./install.sh
@@ -100,13 +98,13 @@ Perform the following tasks:
 1. Update /etc/hosts file with GCE values as follows:
      
     ```
-    echo "169.254.169.254 metadata.google.internal metadata" >> /etc/hosts
+          echo "169.254.169.254 metadata.google.internal metadata" >> /etc/hosts
     ```
       
 1. Remove all servers from ntp.conf and add Google's ntp server.
       
     ```
-    sed -i -e "/server/d" /etc/ntp.conf
+          sed -i -e "/server/d" /etc/ntp.conf
           cat /etc/ntp.conf
           echo "server 169.254.169.254" >> /etc/ntp.conf
           # Create ntpd.service to auto starting ntp server.
@@ -133,20 +131,19 @@ Perform the following tasks:
 1. Set UTC timezone
       
     ```
-    ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+          ln -sf /usr/share/zoneinfo/UTC /etc/localtime
     ```
 
 1. Update /etc/resolv.conf
       
     ```
-    echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+          echo "nameserver 8.8.8.8" >> /etc/resolv.conf
     ```
 
-1. Remove ssh host 
-2. keys and add script to regenerate them at boot time.
+1. Remove ssh host keys and add script to regenerate them at boot time.
       
     ```
-    rm /etc/ssh/ssh_host_*
+          rm /etc/ssh/ssh_host_*
           # Depending on the installation, you may need to purge the following keys
           rm /etc/ssh/ssh_host_rsa_key*
           rm /etc/ssh/ssh_host_dsa_key*
