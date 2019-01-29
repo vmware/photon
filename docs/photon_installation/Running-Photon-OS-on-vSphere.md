@@ -6,6 +6,6 @@ You can use Photon OS as a virtual machine within VMware vSphere. You can downlo
 - [Importing the OVA for Photon OS 3.0](importing_ova_for_photon_os_3.0.md)
 - [Installing the ISO Image for Photon OS 3.0](installing-the-iso-image-for-photon-os-30.md)
 
-**Note**: If you want to upgrade an existing Photon 1.0 VM, see [Upgrading to Photon OS 3.0](Upgrading-to-Photon-OS-3.0.md). 
+**Note**: If you want to upgrade an existing Photon 1.0 VM, see [Upgrading to Photon OS 3.0](Upgrading_to_photon_os_3.0.md). 
 
 
