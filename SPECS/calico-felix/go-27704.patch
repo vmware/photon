@@ -1,0 +1,35 @@
+From 2f5d2388922f370f4355f327fcf4cfe9f5583908 Mon Sep 17 00:00:00 2001
+From: Kunpei Sakai <kunpei@google.com>
+Date: Fri, 21 Sep 2018 04:40:41 +0800
+Subject: [PATCH] html: avoid panic even if unconsidered <isindex> and <template> combination
+
+The <isindex> element has been removed from the spec so that the
+<template> element doesn't cover it.
+To avoid panic, this commit adds ignoring code as a workaround.
+
+Fixes golang/go#27704
+
+Change-Id: I847391389285df2fc0eb6a795f8c93b481cdebac
+Reviewed-on: https://go-review.googlesource.com/136575
+Reviewed-by: Nigel Tao <nigeltao@golang.org>
+---
+
+diff --git a/html/parse.go b/html/parse.go
+index 091fb0d..63ac179 100644
+--- a/html/parse.go
++++ b/html/parse.go
+@@ -984,6 +984,14 @@
+ 			p.acknowledgeSelfClosingTag()
+ 			p.popUntil(buttonScope, a.P)
+ 			p.parseImpliedToken(StartTagToken, a.Form, a.Form.String())
++			if p.form == nil {
++				// NOTE: The 'isindex' element has been removed,
++				// and the 'template' element has not been designed to be
++				// collaborative with the index element.
++				//
++				// Ignore the token.
++				return true
++			}
+ 			if action != "" {
+ 				p.form.Attr = []Attribute{{Key: "action", Val: action}}
+ 			}
