@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        1.8.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -15,6 +15,7 @@ BuildRequires:  lua-devel
 BuildRequires:  pkg-config
 BuildRequires:  zlib-devel
 BuildRequires:  systemd
+BuildRequires:  systemd-devel
 Requires:       systemd
 
 %description
@@ -33,7 +34,7 @@ Requires:       %{name} = %{version}-%{release}
 
 %build
 make %{?_smp_mflags} TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 \
-        USE_GETADDRINFO=1 USE_ZLIB=1
+        USE_GETADDRINFO=1 USE_ZLIB=1 USE_SYSTEMD=1
 make %{?_smp_mflags} -C contrib/systemd
 sed -i s/"local\/"/""/g contrib/systemd/haproxy.service
 sed -i "s/\/run/\/var\/run/g" contrib/systemd/haproxy.service
@@ -58,6 +59,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Tue Jan 29 2019 Ajay Kaher <akaher@vmware.com> 1.8.14-2
+-   Add USE_SYSTEMD=1, to fix haproxy start issue
 *   Tue Dec 04 2018 Ajay Kaher <akaher@vmware.com> 1.8.14-1
 -   Update to version 1.8.14
 *   Tue Apr 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.6.12-1
