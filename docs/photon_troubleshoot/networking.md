@@ -9,4 +9,4 @@ Use the `systemd` suite of commands and not deprecated `init.d` commands or othe
 - [Checking Firewall Rules](checking-firewall-rules.md)
 - [Inspect Network Settings with `netmgr`](netmgr.md)
 
-For information about tcpdump and netcat, see [Installing the Packages for tcpdump and netcat with tdnf](photon_admin/installing-the-packages-for-tcpdump-and-netcat-with-tdnf.md)
+For information about tcpdump and netcat, see [Installing the Packages for tcpdump and netcat with tdnf](../photon_admin/installing-the-packages-for-tcpdump-and-netcat-with-tdnf.md)

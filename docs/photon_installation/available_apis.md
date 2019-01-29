@@ -36,7 +36,7 @@ To show help text for individual interfaces:
 >>> help(pmd.server().firewall)
 >>> help(pmd.server().user)
 ~~~~
-For details about the network commands, see also the [Network Configuration Manager - Python API](photon_admin/netmgr.python.md).
+For details about the network commands, see also the [Network Configuration Manager - Python API](../photon_admin/netmgr.python.md).
 
 ## PMD C API
 
@@ -44,4 +44,4 @@ PMD C APIs are defined in the header files (pmd_fwmgmt.h, pmd_netmgr.h, pmd_pkgm
 ~~~~
 [https://github.com/vmware/pmd/tree/master/include](https://github.com/vmware/pmd/tree/master/include)
 ~~~~
-For details about the network commands, see also the [Network Configuration Manager - C API](photon_admin/netmgr.c.md).
+For details about the network commands, see also the [Network Configuration Manager - C API](../photon_admin/netmgr.c.md).

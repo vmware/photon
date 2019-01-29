@@ -6,7 +6,7 @@ On Photon OS, `tdnf` is the default package manager. The standard syntax for `td
 tdnf [options] <command> [<arguments>...]
 ```
 
-The main configuration files reside in `/etc/tdnf/tdnf.conf`. The repositories appear in `/etc/yum.repos.d/` with `.repo` file extensions. For more information, see the [Photon OS Administration Guide](https://github.com/vmware/photon/blob/master/docs/photon-admin-guide.md).
+The main configuration files reside in `/etc/tdnf/tdnf.conf`. The repositories appear in `/etc/yum.repos.d/` with `.repo` file extensions. For more information, see the [Photon OS Administration Guide](../photon_admin/README.md).
 
 The cache files for data and metadata reside in `/var/cache/tdnf`. The local cache is populated with data from the repository: 
 	

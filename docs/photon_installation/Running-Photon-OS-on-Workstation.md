@@ -7,5 +7,5 @@ You can use Photon OS as a virtual machine within VMware Workstation. You can do
 - [Importing the OVA for Photon OS 3.0](importing_ova_for_photon_os_3.0-workstation.md)
 - [Installing the ISO Image for Photon OS 3.0](installing-the-iso-image-for-photon-os-30-workstation.md)
 
-**Note**: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in [Upgrading to Photon OS 3.0](Upgrading-to-Photon-OS-3.0.md). 
+**Note**: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in [Upgrading to Photon OS 3.0](Upgrading_to_photon_os_3.0.md). 
 
