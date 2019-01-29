@@ -8,7 +8,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.11.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -16,6 +16,8 @@ Source0:        kubernetes-%{version}.tar.gz
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         k8s-1.11-vke.patch
+Patch1:         go-27704.patch
+Patch2:         go-27842.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -63,6 +65,11 @@ tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 cd %{name}-%{version}
 %patch0 -p1
+
+pushd vendor/golang.org/x/net
+%patch1 -p1
+%patch2 -p1
+popd
 
 %build
 make
@@ -224,6 +231,8 @@ fi
 %endif
 
 %changelog
+*   Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 1.11.3-3
+-   Fix CVE-2018-17846 and CVE-2018-17143
 *   Fri Oct 26 2018 Ajay Kaher <akaher@vmware.com> 1.11.3-2
 -   Fix for aarch64
 *   Tue Oct 23 2018 Michelle Wang <michellew@vmware.com> 1.11.3-1
