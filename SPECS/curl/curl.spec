@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.59.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -12,6 +12,10 @@ Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
 Patch0:         curl-CVE-2018-1000300.patch
 Patch1:         curl-CVE-2018-1000301.patch
 Patch2:         curl-CVE-2018-0500.patch
+Patch3:         curl-CVE-2018-16839.patch
+Patch4:         curl-CVE-2018-16840.patch
+Patch5:         curl-CVE-2018-16842.patch
+Patch6:         curl-CVE-2018-14618.patch
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -22,10 +26,10 @@ Requires:       krb5
 Requires:       libssh2
 Requires:       curl-libs = %{version}-%{release}
 %description
-The cURL package contains an utility and a library used for 
-transferring files with URL syntax to any of the following 
-protocols: FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET, 
-DICT, LDAP, LDAPS and FILE. Its ability to both download and 
+The cURL package contains an utility and a library used for
+transferring files with URL syntax to any of the following
+protocols: FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET,
+DICT, LDAP, LDAPS and FILE. Its ability to both download and
 upload files can be incorporated into other programs to support
 functions like streaming media.
 
@@ -47,6 +51,11 @@ This package contains minimal set of shared curl libraries.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+
 %build
 ./configure \
     CFLAGS="%{optflags}" \
@@ -62,6 +71,7 @@ This package contains minimal set of shared curl libraries.
     --with-libssh2 \
     --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
 make %{?_smp_mflags}
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
@@ -73,9 +83,12 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
+
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -94,6 +107,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Tue Jan 29 2019 Dweep Advani <dadvani@vmware.com> 7.59.0-4
+-   Fix for CVE-2018-16839, CVE-2018-16840, CVE-2018-16842 and CVE-2018-14618
 *   Tue Sep 18 2018 Keerthana K <keerthanak@vmware.com> 7.59.0-3
 -   Fix for CVE-2018-0500
 *   Thu Jul 05 2018 Keerthana K <keerthanak@vmware.com> 7.59.0-2
