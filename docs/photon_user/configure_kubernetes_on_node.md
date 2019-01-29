@@ -49,7 +49,7 @@ Perform the following steps to configure the kubelet on the node:
 
 ## Result
 
-You should have a functional cluster. You can now launch a test pod. For an introduction to working with Kubernetes, see [Kubernetes 101](http://kubernetes.io/docs/user-guide/walkthrough/).
+You should have a functional cluster. You can now launch a test pod. For an introduction to working with Kubernetes, see [Kubernetes documentation](http://kubernetes.io/docs/home/).
 
 
 

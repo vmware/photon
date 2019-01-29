@@ -69,4 +69,4 @@ After you have downloaded the Photon OS OVA image (OVA with Hardware Version 11)
     
     ![Login](images/fs-ova-login.png)
     
-Once complete, proceed to [Deploying a Containerized Application in Photon OS](deploying-a-containerized-application-in-photon-os-fusion.md).
+Once complete, proceed to [Deploying a Containerized Application in Photon OS](deploying-a-containerized-application-in-photon-os.md).

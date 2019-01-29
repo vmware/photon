@@ -9,5 +9,5 @@ Photon OS manages packages with an open source, yum-compatible package manager c
 - [Configure a Repository](configure-a-repository.md)
 - [Adding the Dev Repository to Get New Packages from the GitHub Dev Branch](adding-the-dev-repository.md)
 - [Standard Syntax for `tdnf` Commands](standard_tdnf_syntax.md)
-    -   [Options for Commands](photon_admin/options-for-commands.md)
-    -   [Commands](photon_admin/commands.md)
+    -   [Options for Commands](options-for-commands.md)
+    -   [Commands](commands.md)

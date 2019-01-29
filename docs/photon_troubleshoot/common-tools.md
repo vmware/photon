@@ -83,7 +83,7 @@ Use the `find` command to troubleshoot a Photon OS machine that has stopped work
 
 		find / -mtime -1 
 
-See the `find` [manual](See https://www.gnu.org/software/findutils/manual/find.html). Take note of the security considerations listed in the `find` manual if you are using `find` to troubleshoot an appliance running on Photon OS. 
+See the `find` [manual](https://www.gnu.org/software/findutils/manual/find.html). Take note of the security considerations listed in the `find` manual if you are using `find` to troubleshoot an appliance running on Photon OS. 
 
 ## locate
 

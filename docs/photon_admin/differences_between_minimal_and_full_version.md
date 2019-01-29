@@ -23,4 +23,4 @@ To add support for Java programs to the minimal version of Photon OS, install th
 
 **NOTE:** `openjdk` and `openjre` are available as openjdk8 and openjre8 in Photon OS 3.0
 
-For more information about `tdnf`, see [Tiny DNF for Package Management](tiny-dnf-for-package-management.md)
+For more information about `tdnf`, see [Tiny DNF for Package Management](tdnf.md)
