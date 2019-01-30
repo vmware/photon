@@ -3,7 +3,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.0.0533
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -35,6 +35,7 @@ echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
     --prefix=%{_prefix} \
     --enable-multibyte
 make VERBOSE=1 %{?_smp_mflags}
+
 %install
 #cd %{_builddir}/%{name}74
 make DESTDIR=%{buildroot} install
@@ -43,6 +44,7 @@ install -vdm 755 %{buildroot}/etc
 cat > %{buildroot}/etc/vimrc << "EOF"
 " Begin /etc/vimrc
 
+set shell=/bin/bash
 set nocompatible
 set backspace=2
 set ruler
@@ -72,6 +74,14 @@ EOF
 sed -i '/source test_recover.vim/d' src/testdir/test_alot.vim
 make test
 
+%post
+if ! sed -n -e '0,/[[:space:]]*call[[:space:]]\+system\>/p' %{_sysconfdir}/vimrc | \
+     grep -q '^[[:space:]]*set[[:space:]]\+shell=/bin/bash'
+then
+    sed -i -e 's#^\([[:space:]]*\)\(call[[:space:]]\+system.*\)$#\1set shell=/bin/bash\n\1\2#g' \
+        %{_sysconfdir}/vimrc
+fi
+
 %files extra
 %defattr(-,root,root)
 %{_bindir}/vimtutor
@@ -89,7 +99,6 @@ make test
 %{_datarootdir}/icons/locolor/32x32/apps/gvim.png
 %{_datarootdir}/vim/vim80/defaults.vim
 %{_datarootdir}/vim/vim80/pack/dist/opt/*
-
 %{_datarootdir}/vim/vim80/compiler/*
 %{_datarootdir}/vim/vim80/delmenu.vim
 %{_datarootdir}/vim/vim80/evim.vim
@@ -163,7 +172,6 @@ make test
 %{_datarootdir}/vim/vim80/colors/desert.vim
 %{_datarootdir}/vim/vim80/syntax/syntax.vim
 %{_datarootdir}/vim/vim80/rgb.txt
-
 %{_bindir}/ex
 %{_bindir}/vi
 %{_bindir}/view
@@ -173,6 +181,8 @@ make test
 %{_bindir}/vimdiff
 
 %changelog
+*   Tue Jan 29 2019 Dweep Advani <dadvani@vmware.com> 8.0.0533-6
+-   Fixed swap file creation error for custom login shell
 *   Thu Jul 12 2018 Tapas Kundu <tkundu@vmware.com> 8.0.0533-5
 -   Fix for CVE-2017-1000382
 *   Tue Jul 10 2018 Tapas Kundu <tkundu@vmware.com> 8.0.0533-4
