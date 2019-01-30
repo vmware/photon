@@ -3,7 +3,7 @@
 Summary:    Text editor
 Name:       vim
 Version:    7.4
-Release:    10%{?dist}
+Release:    11%{?dist}
 License:    Charityware
 URL:        http://www.vim.org
 Group:      Applications/Editors
@@ -48,6 +48,7 @@ install -vdm 755 %{buildroot}/etc
 cat > %{buildroot}/etc/vimrc << "EOF"
 " Begin /etc/vimrc
 
+set shell=/bin/bash
 set nocompatible
 set backspace=2
 set ruler
@@ -144,7 +145,7 @@ EOF
 
 %files
 %defattr(-,root,root)
-%config(noreplace) /etc/vimrc
+%config /etc/vimrc
 %{_datarootdir}/vim/vim74/colors/desert.vim
 %{_datarootdir}/vim/vim74/syntax/syntax.vim
 %{_bindir}/ex
@@ -156,6 +157,8 @@ EOF
 %{_bindir}/vimdiff
 
 %changelog
+*   Tue Jan 29 2019 Dweep Advani <dadvani@vmware.com> 7.4-11
+-   Fixed swap file creation error for custom login shell
 *   Thu Jul 12 2018 Tapas Kundu <tkundu@vmware.com> 7.4-10
 -   Fix for CVE-2017-1000382
 *   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 7.4-9
