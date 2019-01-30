@@ -3,7 +3,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.1.0388
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -42,6 +42,7 @@ install -vdm 755 %{buildroot}/etc
 cat > %{buildroot}/etc/vimrc << "EOF"
 " Begin /etc/vimrc
 
+set shell=/bin/bash
 set nocompatible
 set backspace=2
 set ruler
@@ -160,7 +161,7 @@ make test
 
 %files
 %defattr(-,root,root)
-%config(noreplace) /etc/vimrc
+%config /etc/vimrc
 %{_datarootdir}/vim/vim81/syntax/syntax.vim
 %{_datarootdir}/vim/vim81/rgb.txt
 %{_datarootdir}/vim/vim81/colors/desert.vim
@@ -173,6 +174,8 @@ make test
 %{_bindir}/vimdiff
 
 %changelog
+*   Tue Jan 29 2019 Dweep Advani <dadvani@vmware.com> 8.1.0388-3
+-   Fixed swap file creation error for custom login shell
 *   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 8.1.0388-2
 -   Add conflicts toybox for vim-extra.
 *   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 8.1.0388-1
