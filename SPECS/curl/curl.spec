@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.59.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -12,14 +12,17 @@ Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
 Patch0:         curl-CVE-2018-1000300.patch
 Patch1:         curl-CVE-2018-1000301.patch
 Patch2:         curl-CVE-2018-0500.patch
-Patch3:		curl-CVE-2018-16840.patch
-Patch4:		curl-CVE-2018-16842.patch
+Patch3:         curl-CVE-2018-16839.patch
+Patch4:         curl-CVE-2018-16840.patch
+Patch5:         curl-CVE-2018-16842.patch
+Patch6:         curl-CVE-2018-14618.patch
 Requires:       ca-certificates
 BuildRequires:  ca-certificates
 Requires:       openssl
 BuildRequires:  openssl-devel
 Requires:       libssh2
 BuildRequires:  libssh2-devel
+
 %description
 The cURL package contains an utility and a library used for 
 transferring files with URL syntax to any of the following 
@@ -27,6 +30,7 @@ protocols: FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET,
 DICT, LDAP, LDAPS and FILE. Its ability to both download and 
 upload files can be incorporated into other programs to support
 functions like streaming media.
+
 %prep
 %setup -q
 sed -i '/--static-libs)/{N;s#echo .*#echo #;}' curl-config.in
@@ -35,6 +39,9 @@ sed -i '/--static-libs)/{N;s#echo .*#echo #;}' curl-config.in
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
+%patch6 -p1
+
 %build
 ./configure \
     CFLAGS="%{optflags}" \
@@ -49,6 +56,7 @@ sed -i '/--static-libs)/{N;s#echo .*#echo #;}' curl-config.in
     --with-libssh2 \
     --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
 make %{?_smp_mflags}
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
@@ -57,10 +65,14 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post   -p /sbin/ldconfig
+
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -72,7 +84,10 @@ rm -rf %{buildroot}/*
 
 %{_datarootdir}/aclocal/libcurl.m4
 %{_docdir}/%{name}-%{version}
+
 %changelog
+*   Wed Jan 30 2019 Dweep Advani <dadvani@vmware.com> 7.59.0-5
+-   Fixed CVE-2018-14618 and CVE-2018-16839
 *   Thu Jan 03 2019 Siju Maliakkal <smaliakkal@vmware.com> 7.59.0-4
 -   Apply patches for CVE-2018-16840, CVE-2018-16842
 *   Tue Sep 18 2018 Keerthana K <keerthanak@vmware.com> 7.59.0-3
