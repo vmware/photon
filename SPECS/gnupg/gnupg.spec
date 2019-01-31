@@ -1,11 +1,12 @@
 Summary:	OpenPGP standard implementation used for encrypted communication and data storage.
 Name:		gnupg
 Version:	2.1.20
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		https://gnupg.org/index.html
 Group:		Applications/Cryptography.
 Source0:        https://gnupg.org/ftp/gcrypt/gnupg/%{name}-%{version}.tar.bz2
+Patch0:         CVE-2018-12020.patch
 %define sha1 gnupg=500ddae8e4225ae2e300934090f9b9a427b8def1
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -35,6 +36,7 @@ a command line tool with features for easy integration with other applications.
 
 %prep
 %setup -q -n %{name}-%{version}
+%patch0 -p1
 
 %build
 ./configure --prefix=%{_prefix}      \
@@ -57,6 +59,8 @@ make DESTDIR=%{buildroot} install
 %exclude %{_infodir}/dir
 %exclude /usr/share/doc/*
 %changelog
+*       Fri Feb 01 2019 Ashwin H <ashwinh@vmware.com> 2.1.20-2
+-       Fix CVE-2018-12020
 *       Mon Jul 31 2017 Kumar Kaushik <kaushikk@vmware.com> 2.1.20-1
 -       Updating version, fixing issue # 1907079
 *       Wed Jul 27 2016 Kumar Kaushik <kaushikk@vmware.com> 2.0.30-1
