@@ -67,7 +67,7 @@ Configure `systemd-networkd` to assign IP address to network. Perform the follow
     IPv6AcceptRA=no
     ```
 
-1. Restart systemd-networkd using:
+1. Restart `systemd-networkd` using:
 
     `Systemctl restart systemd-networkd`
 
