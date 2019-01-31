@@ -1,6 +1,6 @@
-# Prioritize eth0 Route Over wlan
+# Prioritize eth0 Route Over WLAN
 
-You can prioritise the eth0 route over the wlan route. Perform the following steps:
+You can prioritise the eth0 route over the WLAN route. Perform the following steps:
 
 1. Modify the `/etc/systemd/network/99-dhcp-en.network` file and add the following content:
 

@@ -5,7 +5,6 @@
 ----
 
 - [Installation Guide](README.md)
-    - [What's New in Photon OS 3.0](What-is-New-in-Photon-OS-3.0.md)
     - [Downloading Photon OS](Downloading-Photon-OS.md)
     - [Upgrading to Photon OS 3.0](Upgrading_to_photon_os_3.0.md)
     - [Build an ISO from the source code for Photon OS](build-photon.md)
