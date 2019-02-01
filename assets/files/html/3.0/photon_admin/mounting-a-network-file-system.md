@@ -8,4 +8,4 @@ The `nfs-utils` package is installed by default in the full version of Photon OS
 tdnf install nfs-utils
 ```
 
-For instructions on how to use `nfs-utils` to share files over a network, see [Photon OS nfs-utils](nfs-utils.md).
+For instructions on how to use `nfs-utils` to share files over a network, see [Photon OS nfs-utils](../photon_user/nfs-utils.md).

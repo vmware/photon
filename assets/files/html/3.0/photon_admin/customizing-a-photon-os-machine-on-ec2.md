@@ -90,6 +90,6 @@ You can view the cloud-init output log file on EC2 at `/var/log/cloud-init-outpu
 
 For more information on using cloud-init user data on EC2, see [Running Commands on Your Linux Instance at Launch](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html).
 
-For more information on how to get Photon OS up and running on EC2 and run a containerized application in the Docker engine, see [Running Photon OS on Amazon Elastic Cloud Compute](Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.md).
+For more information on how to get Photon OS up and running on EC2 and run a containerized application in the Docker engine, see [Running Photon OS on Amazon Elastic Cloud Compute](../photon_installation/Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.md).
 
-With Photon OS, you can also build cloud images on Google Compute Engine and other cloud providers. For more information, see [Compatible Cloud Images](cloud-images.md).
+With Photon OS, you can also build cloud images on Google Compute Engine and other cloud providers. For more information, see [Compatible Cloud Images](../photon_installation/cloud-images.md).

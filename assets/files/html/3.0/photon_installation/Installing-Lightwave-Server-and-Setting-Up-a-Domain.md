@@ -21,7 +21,7 @@ You can configure Lightwave server as domain controller on a Photon client. You 
 	`# configure-lightwave-server --domain <your-domain> --password '<administrator-user-password>' --ssl-subject-alt-name <machine-ip-address>`
 4. Edit `iptables` rules to allow connections to and from the client.
 
-	The default Photon OS 2.0 firewall settings block all incoming, outgoing, and forwards so that you must reconfigure them.
+	The default Photon OS 3.0 firewall settings block all incoming, outgoing, and forwards so that you must reconfigure them.
 	
 	`# iptables -P INPUT ACCEPT`
 

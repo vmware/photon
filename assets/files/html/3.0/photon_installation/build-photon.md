@@ -9,5 +9,5 @@ You can build an ISO from the source code for Photon OS. This section describes 
 * [Use Cached Sources](use_cached_sources.md)
 * [View Build Logs](view_build_logs.md)
 
-For information on how to install and build a package on Photon OS from the package's source RPM, see the [Photon OS Administration Guide](photon_admin/building-a-package-from-a-source-rpm.md).
+For information on how to install and build a package on Photon OS from the package's source RPM, see the [Photon OS Administration Guide](../photon_admin/building-a-package-from-a-source-rpm.md).
 

@@ -14,7 +14,7 @@ When a cloud instance of Photon OS starts, `cloud-init` requires a data source. 
 
 The metadata gives the cloud service provider instructions on how to implement the Photon OS machine in the cloud infrastructure. Metadata typically includes the instance ID and the local host name. 
 
-The user data contains the commands and scripts that Photon OS executes when it starts in the cloud. The user data commonly takes the form of a shell script or a YAML file containing a cloud configuration. The [cloud-init documentation](https://launchpad.net/cloud-init and https://cloudinit.readthedocs.org/en/latest/) contains information about the types of data sources and the formats for metadata and user data. 
+The user data contains the commands and scripts that Photon OS executes when it starts in the cloud. The user data commonly takes the form of a shell script or a YAML file containing a cloud configuration. The [cloud-init overview](https://launchpad.net/cloud-init) and [cloud-init documentation](https://cloudinit.readthedocs.org/en/latest/) contains information about the types of data sources and the formats for metadata and user data. 
 
 On Photon OS, `cloud-init` is enabled and running by default. You can use the following command to check the status: 
 	

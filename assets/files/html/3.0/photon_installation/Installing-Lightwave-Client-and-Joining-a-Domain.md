@@ -17,7 +17,7 @@ After you have set up a Lightwave domain controller, you can join Photon clients
 
 3. Edit the `iptables` firewall rules configuration file to allow connections on port `2020` as a default setting.
 	
-	The default Photon OS 2.0 firewall settings block all incoming, outgoing, and forwards so that you must configure the rules.
+	The default Photon OS 3.0 firewall settings block all incoming, outgoing, and forwards so that you must configure the rules.
 
 	1. Open the  iptables settings file.
 	
