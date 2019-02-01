@@ -86,7 +86,7 @@ rm -rf $EFI_FOLDER
 
 cp $SCRIPT_PATH/sample_ks.cfg ${WORKINGDIR}/isolinux/
 
-find ${BUILDROOT} -name linux-[0-9]*.rpm | head -1 | xargs rpm2cpio | cpio -iv --to-stdout ./boot/vmlinuz* > ${WORKINGDIR}/isolinux/vmlinuz
+find ${RPMS_PATH} -name linux-[0-9]*.rpm | head -1 | xargs rpm2cpio | cpio -iv --to-stdout ./boot/vmlinuz* > ${WORKINGDIR}/isolinux/vmlinuz
 
 rm -f ${BUILDROOT}/installer/*.pyc
 rm -rf ${BUILDROOT}/installer/BUILD_DVD
