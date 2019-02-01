@@ -8,11 +8,24 @@ Perform the following steps to install the packages on Ubuntu:
     sudo apt-get -y install bison gawk g++ createrepo python-aptdaemon genisoimage texinfo python-requests libfuse-dev libssl-dev uuid-dev libreadline-dev kpartx git bc
     ```
 
-
 1. Get Docker:
 
     ```
     wget -qO- https://get.docker.com/ | sh
+    ```
+
+1. Install pip and docker 2.3.0 
+   
+    ```
+    sudo apt install python3-pip
+    pip3 install docker==2.3.0
+    ```
+    
+    If you encounter an error for LOCALE when you run these commands, then export the following variables in the terminal:
+    
+    ```
+    export LC_ALL="en_US.UTF-8"
+    export LC_CTYPE="en_US.UTF-8"
     ```
 
 1. Make the ISO. The example below assumes that you checked out the workspace under `$HOME/workspaces/photon`:

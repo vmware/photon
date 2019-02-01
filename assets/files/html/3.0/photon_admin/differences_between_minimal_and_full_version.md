@@ -21,6 +21,6 @@ To add support for Java programs to the minimal version of Photon OS, install th
 	openjre 	x86_64    1.8.0.92-1.ph1    95.09 M
 	openjdk 	x86_64    1.8.0.92-1.ph1    37.63 M
 
-**NOTE:** `openjdk` and `openjre` are available as openjdk8 and openjre8 in Photon OS 2.0
+**NOTE:** `openjdk` and `openjre` are available as openjdk8 and openjre8 in Photon OS 3.0
 
-For more information about `tdnf`, see [Tiny DNF for Package Management](tiny-dnf-for-package-management.md)
+For more information about `tdnf`, see [Tiny DNF for Package Management](tdnf.md)

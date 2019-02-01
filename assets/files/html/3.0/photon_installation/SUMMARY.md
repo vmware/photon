@@ -26,7 +26,7 @@
     - [Running Photon OS on Workstation](Running-Photon-OS-on-Workstation.md)
         - [Prerequisites for Running Photon OS on Workstation](photon_os_workstation_prerequisites.md)
         - [Importing the OVA for Photon OS 3.0](importing_ova_for_photon_os_3.0-workstation.md)
-        - [Installing the ISO Image for Photon OS 2.0](installing-the-iso-image-for-photon-os-30-workstation.md)
+        - [Installing the ISO Image for Photon OS 3.0](installing-the-iso-image-for-photon-os-30-workstation.md)
     - [Running Photon OS on AWS EC2](Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.md)
         - [Prerequisites for Running Photon OS on AWS EC2](photon_os_ecc_prerequisites.md)
         - [Set Up Photon OS on EC2](set-up-PhotonOS-on-ec2.md)

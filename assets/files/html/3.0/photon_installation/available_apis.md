@@ -17,7 +17,7 @@ For more information about the copenapi_cli tool, refer to [github.com/vmware/co
 
 ## PMD Python API
 
-Python3 is included with your Photon OS 2.0 distribution. PMD Python interfaces are available for python3 (pmd-python3) and python2 (pmd-python2). You can use tdnf to ensure that the latest version is installed:
+Python3 is included with your Photon OS 3.0 distribution. PMD Python interfaces are available for python3 (pmd-python3) and python2 (pmd-python2). You can use tdnf to ensure that the latest version is installed:
 ~~~~
 # tdnf install pmd-python3
 # systemctl start pmd
@@ -36,7 +36,7 @@ To show help text for individual interfaces:
 >>> help(pmd.server().firewall)
 >>> help(pmd.server().user)
 ~~~~
-For details about the network commands, see also the [Network Configuration Manager - Python API](photon_admin/netmgr.python.md).
+For details about the network commands, see also the [Network Configuration Manager - Python API](../photon_admin/netmgr.python.md).
 
 ## PMD C API
 
@@ -44,4 +44,4 @@ PMD C APIs are defined in the header files (pmd_fwmgmt.h, pmd_netmgr.h, pmd_pkgm
 ~~~~
 [https://github.com/vmware/pmd/tree/master/include](https://github.com/vmware/pmd/tree/master/include)
 ~~~~
-For details about the network commands, see also the [Network Configuration Manager - C API](photon_admin/netmgr.c.md).
+For details about the network commands, see also the [Network Configuration Manager - C API](../photon_admin/netmgr.c.md).

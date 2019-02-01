@@ -57,4 +57,4 @@ echo &quot;########################&quot;
 exit ${exit_code}
 ````
 
-You can now proceed to [Deploying a Containerized Application in Photon OS](deploying-a-containerized-application-in-photon-os-fusion.md).
+You can now proceed to [Deploying a Containerized Application in Photon OS](deploying-a-containerized-application-in-photon-os.md).
