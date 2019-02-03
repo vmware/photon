@@ -1,0 +1,13 @@
+diff -Naur linux-4.4.171/arch/x86/kvm/vmx.c linux-4.4.171_CVE-2018-16882/arch/x86/kvm/vmx.c
+--- linux-4.4.171/arch/x86/kvm/vmx.c	2019-01-17 02:46:12.000000000 +0530
++++ linux-4.4.171_CVE-2018-16882/arch/x86/kvm/vmx.c	2019-01-30 23:23:07.278368291 +0530
+@@ -9284,6 +9284,9 @@
+ 		if (vmx->nested.pi_desc_page) { /* shouldn't happen */
+ 			kunmap(vmx->nested.pi_desc_page);
+ 			nested_release_page(vmx->nested.pi_desc_page);
++			vmx->nested.pi_desc_page = NULL;
++			vmx->nested.pi_desc = NULL;
++			vmcs_write64(POSTED_INTR_DESC_ADDR, -1ull);
+ 		}
+ 		vmx->nested.pi_desc_page =
+ 			nested_get_page(vcpu, vmcs12->posted_intr_desc_addr);
