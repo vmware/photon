@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.140
-Release:        3%{?dist}
+Version:        4.9.154
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=926d3d735f9d531fece00241845cfbab25eb273e
+%define sha1 linux=1a506bd238df9dbdc81e6b74abc0bb751a45eb5b
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -48,13 +48,9 @@ Patch34:        0001-net-create-skb_gso_validate_mac_len.patch
 Patch35:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
 # Fix for CVE-2018-8043
 Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
-# Fix for CVE-2017-18241
-Patch40:        0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
 Patch43:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
-# Fix for CVE-2017-18249
-Patch44:        0001-f2fs-fix-race-condition-in-between-free-nid-allocator-initializer.patch
 # Fix for CVE-2018-10323
 Patch45:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 # Fix for CVE-2018-10322
@@ -130,10 +126,8 @@ The Linux package contains the Linux kernel doc files
 %patch34 -p1
 %patch35 -p1
 %patch38 -p1
-%patch40 -p1
 %patch42 -p1
 %patch43 -p1
-%patch44 -p1
 %patch45 -p1
 %patch46 -p1
 %patch47 -p1
@@ -233,6 +227,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Feb 04 2019 Ajay Kaher <akaher@vmware.com> 4.9.154-1
+-   Update to version 4.9.154
 *   Tue Jan 08 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.140-3
 -   Read TSC only during the startup of the boot-CPU.
 *   Mon Dec 03 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.140-2

@@ -4542,7 +4542,7 @@ index a260cde..1b99d3b 100644
 -static int param_set_kgdboc_var(const char *kmessage, struct kernel_param *kp)
 +static int param_set_kgdboc_var(const char *kmessage, const struct kernel_param *kp)
  {
- 	int len = strlen(kmessage);
+ 	size_t len = strlen(kmessage);
  
 diff --git a/drivers/video/console/dummycon.c b/drivers/video/console/dummycon.c
 index b90ef96..12f6ec5 100644
