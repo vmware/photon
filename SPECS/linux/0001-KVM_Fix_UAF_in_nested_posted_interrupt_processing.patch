@@ -1,0 +1,49 @@
+nested_get_vmcs12_pages() processes the posted_intr address in vmcs12. It
+caches the kmap()ed page object and pointer, however, it doesn't handle
+errors correctly: it's possible to cache a valid pointer, then release
+the page and later dereference the dangling pointer.
+
+I was able to reproduce with the following steps:
+
+1. Call vmlaunch with valid posted_intr_desc_addr but an invalid
+MSR_EFER. This causes nested_get_vmcs12_pages() to cache the kmap()ed
+pi_desc_page and pi_desc. Later the invalid EFER value fails
+check_vmentry_postreqs() which fails the first vmlaunch.
+
+2. Call vmlanuch with a valid EFER but an invalid posted_intr_desc_addr
+(I set it to 2G - 0x80). The second time we call nested_get_vmcs12_pages
+pi_desc_page is unmapped and released and pi_desc_page is set to NULL
+(the "shouldn't happen" clause). Due to the invalid
+posted_intr_desc_addr, kvm_vcpu_gpa_to_page() fails and
+nested_get_vmcs12_pages() returns. It doesn't return an error value so
+vmlaunch proceeds. Note that at this time we have a dangling pointer in
+vmx->nested.pi_desc and POSTED_INTR_DESC_ADDR in L0's vmcs.
+
+3. Issue an IPI in L2 guest code. This triggers a call to
+vmx_complete_nested_posted_interrupt() and pi_test_and_clear_on() which
+dereferences the dangling pointer.
+
+Vulnerable code requires nested and enable_apicv variables to be set to
+true. The host CPU must also support posted interrupts.
+
+Fixes: 5e2f30b756a37 "KVM: nVMX: get rid of nested_get_page()"
+Reviewed-by: Andy Honig <ahonig@google.com>
+Signed-off-by: Cfir Cohen <cfir@google.com>
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ arch/x86/kvm/vmx.c | 2 ++
+ 1 file changed, 2 insertions(+)
+ 
+diff -Naur linux-4.4.171/arch/x86/kvm/vmx.c linux-4.4.171_CVE-2018-16882/arch/x86/kvm/vmx.c
+--- linux-4.4.171/arch/x86/kvm/vmx.c	2019-01-17 02:46:12.000000000 +0530
++++ linux-4.4.171_CVE-2018-16882/arch/x86/kvm/vmx.c	2019-01-30 23:23:07.278368291 +0530
+@@ -9284,6 +9284,9 @@
+ 		if (vmx->nested.pi_desc_page) { /* shouldn't happen */
+ 			kunmap(vmx->nested.pi_desc_page);
+ 			nested_release_page(vmx->nested.pi_desc_page);
++			vmx->nested.pi_desc_page = NULL;
++			vmx->nested.pi_desc = NULL;
++			vmcs_write64(POSTED_INTR_DESC_ADDR, -1ull);
+ 		}
+ 		vmx->nested.pi_desc_page =
+ 			nested_get_page(vcpu, vmcs12->posted_intr_desc_addr);
