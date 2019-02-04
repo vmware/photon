@@ -51,7 +51,7 @@ class PackageBuilder(object):
             if self.sandbox.hasToolchain():
                 tUtils.installExtraToolchainRPMS(self.sandbox, self.package, self.version)
             else:
-                tUtils.installToolchainRPMS(self.sandbox, self.package, self.version)
+                tUtils.installToolchainRPMS(self.sandbox, self.package, self.version, availablePackages=self.doneList)
 
             listDependentPackages, listTestPackages, listInstalledPackages, listInstalledRPMs = (
                 self._findDependentPackagesAndInstalledRPM(self.sandbox))
