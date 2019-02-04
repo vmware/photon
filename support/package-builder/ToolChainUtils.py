@@ -52,10 +52,12 @@ class ToolChainUtils(object):
         try:
             pkgUtils = PackageUtils(self.logName, self.logPath)
             coreToolChainYetToBuild = []
+            doneList = []
             for package in constants.listCoreToolChainPackages:
                 version = SPECS.getData().getHighestVersion(package)
                 rpmPkg = pkgUtils.findRPMFile(package, version)
                 if rpmPkg is not None:
+                    doneList.append(package+'-'+version)
                     continue
                 else:
                     coreToolChainYetToBuild.append(package)
@@ -73,11 +75,12 @@ class ToolChainUtils(object):
                     CommandUtils.runCommandInShell("mkdir -p " + destLogPath)
                 chroot = Chroot(self.logger)
                 chroot.create(package + "-" + version)
-                self.installToolchainRPMS(chroot, package, version)
+                self.installToolchainRPMS(chroot, package, version, availablePackages=doneList)
                 pkgUtils.adjustGCCSpecs(chroot, package, version)
                 pkgUtils.buildRPMSForGivenPackage(chroot, package, version, destLogPath)
                 pkgCount += 1
                 chroot.destroy()
+                doneList.append(package+'-'+version)
             self.logger.debug("Successfully built toolchain")
             self.logger.info("-" * 45 + "\n")
         except Exception as e:
@@ -113,8 +116,13 @@ class ToolChainUtils(object):
             if not version:
                 version = SPECS.getData().getHighestVersion(package)
 
-            basePkg = SPECS.getData().getSpecName(package)+"-"+version
-            isAvailable = (availablePackages and basePkg in availablePackages)
+            if availablePackages is not None:
+                basePkg = SPECS.getData().getSpecName(package)+"-"+version
+                isAvailable = basePkg in availablePackages
+            else:
+                # if availablePackages is not provided (rear case) it is safe
+                # to use findRPMFile()
+                isAvailable = True
 
             if constants.rpmCheck:
                 rpmFile = pkgUtils.findRPMFile(package, version)
@@ -130,7 +138,7 @@ class ToolChainUtils(object):
                     constants.listToolChainRPMsToInstall.index(packageName) <
                         constants.listToolChainRPMsToInstall.index(package)):
                     isAvailable = False
-                else:
+                if isAvailable:
                     rpmFile = pkgUtils.findRPMFile(package, version)
 
             if rpmFile is None:
