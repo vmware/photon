@@ -130,7 +130,7 @@ class ToolChainUtils(object):
                     constants.listToolChainRPMsToInstall.index(packageName) <
                         constants.listToolChainRPMsToInstall.index(package)):
                     isAvailable = False
-                else:
+                if isAvailable:
                     rpmFile = pkgUtils.findRPMFile(package, version)
 
             if rpmFile is None:
