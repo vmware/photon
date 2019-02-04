@@ -4,7 +4,7 @@
 Summary:        EdgeX Foundry Go Services
 Name:           edgex
 Version:        0.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/edgexfoundry/edgex-go
 Group:          Applications/System
@@ -23,7 +23,7 @@ BuildRequires:  make
 BuildRequires:  systemd-devel
 BuildRequires:  zeromq-devel
 Requires:       systemd
-Requires:       consul
+Requires:       zeromq
 Requires:       redis
 
 %description
@@ -49,7 +49,9 @@ cd %{_builddir}/src/github.com/edgexfoundry/edgex-go
 # patch influxdb go get path
 sed -i 's#influxdata/influxdb/client/v2#influxdata/influxdb1-client/v2#' internal/export/distro/influxdb.go
 
-# modify configuration
+# modify configuration:
+# - logs go to /var/log/edgex
+# - change DB from mongodb to redisdb
 sed -i 's#./logs/#/var/log/edgex/#' cmd/config-seed/res/configuration.toml
 
 sed -i 's#./logs/#/var/log/edgex/#' cmd/core-command/res/configuration.toml
@@ -81,6 +83,9 @@ sed -i 's#./logs/#/var/log/edgex/#' cmd/support-scheduler/res/configuration.toml
 sed -i 's#./logs/#/var/log/edgex/#' cmd/sys-mgmt-agent/res/configuration.toml
 sed -i "s#OperationsType = 'docker'#OperationsType = 'os'#" cmd/sys-mgmt-agent/res/configuration.toml
 
+# Disable consul [Registry] section for all services
+find cmd -name configuration.toml | xargs sed -i "/^\[Registry\]/,+3 s/^/#/"
+
 GOPATH=%{_builddir} make build %{?_smp_mflags}
 
 %install
@@ -100,6 +105,10 @@ install -p -m644 cmd/${srv}/res/configuration.toml %{buildroot}%{_datadir}/%{nam
 sed "s/SERVICE_NAME/${srv}/" %{SOURCE2} > %{buildroot}%{_libdir}/systemd/system/edgex-${srv}.service
 done
 
+# core data does not stop on SIGINT, so use SIGKILL instead.
+# It allows `systemctl stop edgex-core-data` to work properly.
+sed -i "s/SIGINT/SIGKILL/" %{buildroot}%{_libdir}/systemd/system/edgex-core-data.service
+
 # config-seed extras
 cp -a cmd/config-seed/res/properties %{buildroot}%{_datadir}/%{name}/config-seed/config
 
@@ -111,6 +120,9 @@ cp -a cmd/config-seed/res/properties %{buildroot}%{_datadir}/%{name}/config-seed
 %{_var}/log/*
 
 %changelog
+*   Mon Feb 04 2019 Alexey Makhalov <amakhalov@vmware.com> 0.7.1-2
+-   Remove consul dependency.
+-   Use SIGKILL for core-data to terminate the service.
 *   Wed Jan 16 2019 Alexey Makhalov <amakhalov@vmware.com> 0.7.1-1
 -   Version update. Use redis db.
 *   Wed Dec 05 2018 Alexey Makhalov <amakhalov@vmware.com> 0.6.0-2
