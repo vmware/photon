@@ -29,10 +29,11 @@ cp -a linux-firmware/rsi $DST/
 cp linux-firmware/rsi_91x.fw $DST/
 
 # NXP ls1012a FRWY requires:
-mkdir $DST/ls1012a_ppe/
-cp qoriq-engine-pfe-bin/ls1012a/slow_path/ppfe_class_ls1012a.elf $DST/ls1012a_ppe/
-cp qoriq-engine-pfe-bin/ls1012a/slow_path/ppfe_tmu_ls1012a.elf $DST/ls1012a_ppe/
-cp qoriq-engine-pfe-bin/NXP-Binary-EULA.txt $DST/ls1012a_ppe/
+cp qoriq-engine-pfe-bin/ls1012a/slow_path/ppfe_class_ls1012a.elf $DST/
+cp qoriq-engine-pfe-bin/ls1012a/slow_path/ppfe_tmu_ls1012a.elf $DST/
+cp qoriq-engine-pfe-bin/NXP-Binary-EULA.txt $DST/
+mkdir -p $DST/ath10k/QCA9377
+cp -a linux-firmware/ath10k/QCA9377/hw1.0 $DST/ath10k/QCA9377/
 
 # Compulab Fitlet2 requires:
 mkdir $DST/i915
