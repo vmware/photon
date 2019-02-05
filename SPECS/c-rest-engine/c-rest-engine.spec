@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.2
-Release:       5%{?dist}
+Release:       6%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache 2.0
@@ -17,6 +17,7 @@ Patch3:        typo_fixes.patch
 Patch4:        ssl_read_error.patch
 Patch5:        persistent_connection.patch
 Patch6:        fd_leak.patch
+Patch7:        http_header_should_be_case_insensitive.patch
 %define sha1   c-rest-engine=25aa9d1f2680e26114dee18365c510692552f8e4
 
 %description
@@ -40,6 +41,7 @@ development libs and header files for c-rest-engine
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 %build
 cd build
@@ -72,6 +74,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Tue Feb 05 2019 Michelle Wang <michellew@vmware.com> 1.2-6
+-  http_header_should_be_case_insensitive.patch.
 *  Wed May 09 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-5
 -  Adding patch for file descriptor leak issue.
 *  Thu Mar 22 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-4

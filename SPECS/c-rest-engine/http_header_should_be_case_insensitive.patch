@@ -1,0 +1,35 @@
+From 7dba20efc87f74309638fbde950069eb3ffcea99 Mon Sep 17 00:00:00 2001
+From: sruo <sruo@vmware.com>
+Date: Fri, 1 Feb 2019 22:24:55 +0000
+Subject: [PATCH] Http Header should be case insensitive
+
+CNA 4473
+
+VMREST_API
+uint32_t
+VmRESTGetHttpHeader(
+    PREST_REQUEST                    pRequest,
+    char const*                      pszName,
+    char**                           ppszResponse
+    );
+
+pszName parameter should be case insensitive per RFC 2616/7230 defintion
+
+Change-Id: I4673b1fbb7717ad906d11b3737379ef8bd840052
+---
+ server/restengine/httpUtilsInternal.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/server/restengine/httpUtilsInternal.c b/server/restengine/httpUtilsInternal.c
+index ad7203f..d54a9d3 100644
+--- a/server/restengine/httpUtilsInternal.c
++++ b/server/restengine/httpUtilsInternal.c
+@@ -687,7 +687,7 @@ VmRESTGetHTTPMiscHeader(
+     temp = miscHeaderQueue->head;
+     while (temp != NULL)
+     {
+-        if (strcmp(temp->header, header) == 0)
++        if (strcasecmp(temp->header, header) == 0)
+         {
+             *response = temp->value;
+             break;
