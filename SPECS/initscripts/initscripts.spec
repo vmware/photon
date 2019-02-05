@@ -3,7 +3,7 @@ Name:		initscripts
 Version:	9.70
 License:	GPLv2
 Group:		System Environment/Base
-Release:	2%{?dist}
+Release:	3%{?dist}
 URL:		https://github.com/fedora-sysv/initscripts
 Source0:	https://github.com/fedora-sysv/initscripts/archive/%{name}-%{version}.tar.gz
 %define sha1 initscripts=6e2ba0946fa2f175f576614d9374ad00266aec66
@@ -74,12 +74,29 @@ chmod 755 %{buildroot}%{_sysconfdir}/rc.d/rc.local
 ln -sfv rc.d/init.d %{buildroot}/etc/init.d
 rm -rf %{buildroot}%{_prefix}/lib/systemd
 
+cat >> %{buildroot}%{_sysconfdir}/sysconfig/network <<- "EOF"
+###
+# This file is used to specify information about the desired network configuration.
+# By default, it contains the following options:
+#
+
+# A boolean yes or no to Configure networking or not to configure networking.
+# NETWORKING=boolean
+
+# Hostname of your machine
+# HOSTNAME=value
+
+# where gwip is the IP address of the remote network gateway -if available.
+# GATEWAY=gwip
+EOF
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %dir %{_sysconfdir}/sysconfig/network-scripts
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/adjtime
 %config(noreplace) %{_sysconfdir}/sysconfig/init
 %config(noreplace) %{_sysconfdir}/sysconfig/netconsole
+%config(noreplace) %{_sysconfdir}/sysconfig/network
 %config(noreplace) %{_sysconfdir}/sysconfig/readonly-root
 %{_sysconfdir}/sysconfig/network-scripts/ifdown
 %{_sysconfdir}/sysconfig/network-scripts/ifdown-post
@@ -162,6 +179,8 @@ rm -rf %{buildroot}%{_prefix}/lib/systemd
 %{_sysconfdir}/profile.d/debug*
 
 %changelog
+*   Tue Jan 05 2019 Ankit Jain <ankitja@vmware.com> 9.70-3
+-   Added network configuration to fix "service --status-all"
 *   Tue Dec 26 2017 Divya Thaluru <dthaluru@vmware.com> 9.70-2
 -   Fixed return code in /etc/init.d/functions bash script
 *   Mon Apr 3 2017 Dheeraj Shetty <dheerajs@vmware.com> 9.70-1
