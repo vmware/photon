@@ -1,14 +1,14 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        10.2.0
-Release:        5%{?dist}
+Version:        10.2.5
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 open-vm-tools=adba97493c4f96db6281a6964ee26b17b5adc5c5
+%define sha1 open-vm-tools=f2eea3df2145bf898acd2f021bb1c745774d8222
 Source1:        gosc-scripts-1.2.tar.gz
 %define sha1 gosc-scripts-1.2=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
@@ -98,6 +98,8 @@ fi
 
 
 %changelog
+*   Thu Feb 07 2019 Ankit Jain <ankitja@vmware.com> 10.2.5-1
+-   Updating version to 10.2.5
 *   Mon Apr 23 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 10.2.0-5
 -   Bump release number to pick up changes to xerces-c.
 *   Mon Apr 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 10.2.0-4
