@@ -1,7 +1,7 @@
 Summary:        fork of the original IJG libjpeg which uses SIMD.
 Name:           libjpeg-turbo
 Version:        2.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        IJG
 URL:            http://sourceforge.net/projects/libjpeg-turbo
 Group:          System Environment/Libraries
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        http://downloads.sourceforge.net/libjpeg-turbo/%{name}-%{version}.tar.gz
 %define sha1    libjpeg-turbo=6d74b609294b6bae5a7cde035f7d6b80d60ebb77
 Patch0:         libjpeg-turbo-CVE-2018-20330.patch
+Patch1:         CVE-2018-19664.patch
 BuildRequires:  nasm
 BuildRequires:  cmake
 Requires:       nasm
@@ -25,12 +26,14 @@ It contains the libraries and header files to create applications
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 mkdir -p build
 cd build
 cmake \
       -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+      -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
       -DCMAKE_SKIP_RPATH:BOOL=YES \
       -DCMAKE_SKIP_INSTALL_RPATH:BOOL=YES \
       -DENABLE_STATIC:BOOL=NO ..
@@ -50,17 +53,19 @@ find %{buildroot} -name '*.la' -delete
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-/usr/lib64/*.so*
+%{_libdir}/*.so*
 %{_datadir}/*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-#%{_libdir}/*.so
-#%{_libdir}/pkgconfig/*.pc
-/usr/lib64/pkgconfig/*.pc
+%{_libdir}/*.so
+%{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Fri Feb 02 2019 Sujay G <gsujay@vmware.com> 2.0.0-2
+-   Corrected the libs location from /usr/lib64 to /usr/lib
+-   Fix CVE-2018-19664
 *   Tue Jan 22 2019 Sujay G <gsujay@vmware.com> 2.0.0-1
 -   Bump version to 2.0.0 and Fix CVE-2018-20330
 *   Mon Dec 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-2
