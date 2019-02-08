@@ -60,6 +60,6 @@ With the exception of the 'libtdnf' source code, Photon OS source code is distri
 
 ## Photon OS Resources
 
-- **Documentation**: See the [Docs](docs/) folder.
+- **Documentation**: The Photon OS Documentation provides information about how to install, configure, and use VMware Photon OS™. You can view the published HTML files on https://vmware.github.io/photon/assets/files/html/3.0/index.html and the source files on the [Docs](docs/) folder.
 - **Security Updates**: Visit [Security-Advisories](https://github.com/vmware/photon/wiki/Security-Advisories).
 - **Vagrant box**: An official Vagrant box is available on Hashicorp Atlas, to get started: `vagrant init vmware/photon`. A plugin to support Photon OS guests in Vagrant is available at [https://github.com/vmware/vagrant-guests-photon](#https://github.com/vmware/vagrant-guests-photon). Some users have found that our Vagrant box requires VirtualBox 4.3 or later. If you have issues, please check your version.
