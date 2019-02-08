@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.19.15
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.20
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=fb970b2014ecf9dcef23943f8095b28dfe0d6cca
+%define sha1 linux=36b19941b097d27157a0aface2349cc38d59489e
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -437,6 +437,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Feb 08 2019 Ajay Kaher <akaher@vmware.com> 4.19.20-1
+-   Update to version 4.19.20
 *   Thu Jan 24 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.15-2
 -   Add WiFi (ath10k), sensors (i2c,spi), usb support for NXP LS1012A board.
 *   Tue Jan 15 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.15-1
