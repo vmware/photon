@@ -3,16 +3,16 @@
 %define __os_install_post %{nil}
 Summary:        Docker
 Name:           docker
-Version:        18.06.1
-Release:        2%{?dist}
+Version:        18.06.2
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/docker/docker-ce/archive/docker-%{version}-ce.tar.gz
-%define sha1 docker=ff91e1f87e81b29eafc9c098110c2537b2752f7c
-%define DOCKER_GITCOMMIT e68fc7a215d7133c34aa18e3b72b4a21fd0c6136
+%define sha1 docker=d67890d32c8e4ee09bf2a00585d95211d8def486
+%define DOCKER_GITCOMMIT 6d37f41e333ee478440ef969392020f7e3915cd3
 Source99:       default-disable.preset
 Patch99:        remove-firewalld.patch
 
@@ -61,8 +61,8 @@ cd /go/src/github.com
 mkdir opencontainers
 mkdir docker
 
-ln -snrf "$OLDPWD/components/engine" docker/docker
-ln -snrf "$OLDPWD/components/cli" docker/cli
+ln -snrf "$OLDPWD/docker-ce-%{version}-ce/components/engine" docker/docker
+ln -snrf "$OLDPWD/docker-ce-%{version}-ce/components/cli" docker/cli
 
 %build
 export GOPATH="/go"
@@ -96,8 +96,8 @@ install -d -m755 %{buildroot}/lib/udev/rules.d
 install -d -m755 %{buildroot}%{_datadir}/bash-completion/completions
 
 # install binary
-install -p -m 755 "$(readlink -f components/cli/build/docker)" %{buildroot}%{_bindir}/docker
-install -p -m 755 "$(readlink -f components/engine/bundles/latest/dynbinary-daemon/dockerd)" %{buildroot}%{_bindir}/dockerd
+install -p -m 755 "$(readlink -f docker-ce-%{version}-ce/components/cli/build/docker)" %{buildroot}%{_bindir}/docker
+install -p -m 755 "$(readlink -f docker-ce-%{version}-ce/components/engine/bundles/latest/dynbinary-daemon/dockerd)" %{buildroot}%{_bindir}/dockerd
 
 # install proxy
 install -p -m 755 /usr/local/bin/docker-proxy %{buildroot}%{_bindir}/docker-proxy
@@ -114,33 +114,33 @@ install -p -m 755 /usr/local/bin/docker-runc %{buildroot}%{_bindir}/docker-runc
 install -p -m 755 /usr/local/bin/docker-init %{buildroot}%{_bindir}/docker-init
 
 # install udev rules
-install -p -m 644 components/engine/contrib/udev/80-docker.rules %{buildroot}/lib/udev/rules.d/80-docker.rules
+install -p -m 644 docker-ce-%{version}-ce/components/engine/contrib/udev/80-docker.rules %{buildroot}/lib/udev/rules.d/80-docker.rules
 
 # add init scripts
-install -p -m 644 components/packaging/rpm/systemd/docker.service %{buildroot}%{_unitdir}/docker.service
+install -p -m 644 docker-ce-%{version}-ce/components/packaging/rpm/systemd/docker.service %{buildroot}%{_unitdir}/docker.service
 
 # add bash completions
-install -p -m 644 components/cli/contrib/completion/bash/docker %{buildroot}%{_datadir}/bash-completion/completions/docker
+install -p -m 644 docker-ce-%{version}-ce/components/cli/contrib/completion/bash/docker %{buildroot}%{_datadir}/bash-completion/completions/docker
 
 # install manpages
-install -p -m 644 components/cli/man/man1/*.1 %{buildroot}%{_mandir}/man1
-install -p -m 644 components/cli/man/man5/*.5 %{buildroot}%{_mandir}/man5
-install -p -m 644 components/cli/man/man8/*.8 %{buildroot}%{_mandir}/man8
+install -p -m 644 docker-ce-%{version}-ce/components/cli/man/man1/*.1 %{buildroot}%{_mandir}/man1
+install -p -m 644 docker-ce-%{version}-ce/components/cli/man/man5/*.5 %{buildroot}%{_mandir}/man5
+install -p -m 644 docker-ce-%{version}-ce/components/cli/man/man8/*.8 %{buildroot}%{_mandir}/man8
 
 # add vimfiles
 install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/doc
 install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/ftdetect
 install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/syntax
-install -p -m 644 components/engine/contrib/syntax/vim/doc/dockerfile.txt %{buildroot}%{_datadir}/vim/vimfiles/doc/dockerfile.txt
-install -p -m 644 components/engine/contrib/syntax/vim/ftdetect/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
-install -p -m 644 components/engine/contrib/syntax/vim/syntax/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/syntax/dockerfile.vim
+install -p -m 644 docker-ce-%{version}-ce/components/engine/contrib/syntax/vim/doc/dockerfile.txt %{buildroot}%{_datadir}/vim/vimfiles/doc/dockerfile.txt
+install -p -m 644 docker-ce-%{version}-ce/components/engine/contrib/syntax/vim/ftdetect/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
+install -p -m 644 docker-ce-%{version}-ce/components/engine/contrib/syntax/vim/syntax/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 mkdir -p build-docs
 for engine_file in AUTHORS CHANGELOG.md CONTRIBUTING.md LICENSE MAINTAINERS NOTICE README.md; do
-    cp "components/engine/$engine_file" "build-docs/engine-$engine_file"
+    cp "docker-ce-%{version}-ce/components/engine/$engine_file" "build-docs/engine-$engine_file"
 done
 for cli_file in LICENSE MAINTAINERS NOTICE README.md; do
-    cp "components/cli/$cli_file" "build-docs/cli-$cli_file"
+    cp "docker-ce-%{version}-ce/components/cli/$cli_file" "build-docs/cli-$cli_file"
 done
 
 install -v -D -m 0644 %{SOURCE99} %{buildroot}%{_presetdir}/50-docker.preset
@@ -216,6 +216,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Feb 11 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 18.06.2-1
+-   Upgrade Docker to fix CVE-2019-5736
 *   Mon Jan 21 2019 Bo Gan <ganb@vmware.com> 18.06.1-2
 -   Build using go 1.10.7
 *   Mon Jan 17 2019 Bo Gan <ganb@vmware.com> 18.06.1-1
