@@ -1,0 +1,13 @@
+diff --git a/docker-ce-18.06.2-ce/components/packaging/rpm/systemd/docker.service b/docker-ce-18.06.2-ce/components/packaging/rpm/systemd/docker.service
+index 6c60646..a10146d 100644
+--- a/docker-ce-18.06.2-ce/components/packaging/rpm/systemd/docker.service
++++ b/docker-ce-18.06.2-ce/components/packaging/rpm/systemd/docker.service
+@@ -1,7 +1,7 @@
+ [Unit]
+ Description=Docker Application Container Engine
+ Documentation=https://docs.docker.com
+-After=network-online.target firewalld.service
++After=network-online.target
+ Wants=network-online.target
+ 
+ [Service]
