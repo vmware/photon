@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -14,6 +14,7 @@ Source0:        https://github.com/docker/docker-ce/archive/docker-%{version}-ce
 %define sha1 docker=ff91e1f87e81b29eafc9c098110c2537b2752f7c
 %define DOCKER_GITCOMMIT e68fc7a215d7133c34aa18e3b72b4a21fd0c6136
 Source99:       default-disable.preset
+Patch0:		CVE-2019-5736.patch
 Patch99:        remove-firewalld.patch
 
 BuildRequires:  systemd
@@ -54,6 +55,7 @@ Documentation and vimfiles for docker
 %prep
 %setup -q -c
 
+%patch0 -p1
 %patch99 -p1
 
 mkdir -p /go/src/github.com
@@ -216,6 +218,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Feb 11 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 18.06.1-3
+-   Fix CVE-2019-5736
 *   Mon Jan 21 2019 Bo Gan <ganb@vmware.com> 18.06.1-2
 -   Build using go 1.10.7
 *   Mon Jan 17 2019 Bo Gan <ganb@vmware.com> 18.06.1-1
