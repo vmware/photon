@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.03.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -15,6 +15,7 @@ Source0:        https://github.com/docker/docker-ce/archive/docker-%{version}-ce
 %define DOCKER_GITCOMMIT 0520e243029d1361649afb0706a1c5d9a1c012b8
 Source99:       default-disable.preset
 Patch0:         fix-apparmor-not-being-applied-to-exec-processes.patch
+Patch1:         CVE-2019-5736.patch
 Patch99:        remove-firewalld.patch
 
 BuildRequires:  systemd
@@ -52,6 +53,7 @@ Documentation and vimfiles for docker
 %setup -q -c
 
 %patch0 -p1
+%patch1 -p1
 %patch99 -p1
 
 mkdir -p /go/src/github.com
@@ -190,6 +192,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Feb 11 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 18.03.0-3
+-   Patch to fix CVE-2019-5736
 *   Fri Sep 07 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 18.03.0-2
 -   Fix apparmor not being applied to exec processes
 *   Mon Apr 09 2018 Bo Gan <ganb@vmware.com> 18.03.0-1
