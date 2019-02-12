@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        17.06.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -29,6 +29,7 @@ Source6:        default-disable.preset
 Patch0:         remove-firewalld.patch
 Patch1:         CVE-2017-14992.patch
 Patch2:         fix-apparmor-not-being-applied-to-exec-processes.patch
+Patch3:         CVE-2019-5736-v17.06.patch
 
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -80,6 +81,7 @@ ln -s docker-ce/components/packaging packaging
 %patch0 -p2
 %patch1 -p2
 %patch2 -p2
+%patch3 -p1
 
 mkdir -p /go/src/github.com
 cd /go/src/github.com
@@ -227,6 +229,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Tue Feb 12 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 17.06.0-9
+-   Patch runc for CVE-2019-5736
 *   Wed Sep 19 2018 Bo Gan <ganb@vmware.com> 17.06.0-8
 -   Use go 1.9.4 rather than latest go toolchain
 *   Thu Sep 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 17.06.0-7
