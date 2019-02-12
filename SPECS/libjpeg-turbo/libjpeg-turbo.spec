@@ -1,7 +1,7 @@
 Summary:        fork of the original IJG libjpeg which uses SIMD.
 Name:           libjpeg-turbo
 Version:        2.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        IJG
 URL:            http://sourceforge.net/projects/libjpeg-turbo
 Group:          System Environment/Libraries
@@ -31,6 +31,7 @@ mkdir -p build
 cd build
 cmake \
       -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+      -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
       -DCMAKE_SKIP_RPATH:BOOL=YES \
       -DCMAKE_SKIP_INSTALL_RPATH:BOOL=YES \
       -DENABLE_STATIC:BOOL=NO ..
@@ -50,17 +51,18 @@ find %{buildroot} -name '*.la' -delete
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-/usr/lib64/*.so*
+%{_libdir}/*.so*
 %{_datadir}/*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-#%{_libdir}/*.so
-#%{_libdir}/pkgconfig/*.pc
-/usr/lib64/pkgconfig/*.pc
+%{_libdir}/*.so
+%{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Tue Feb 12 2019 Sujay G <gsujay@vmware.com> 2.0.0-2
+-   Corrected the libs location from /usr/lib64 to /usr/lib
 *   Tue Jan 22 2019 Sujay G <gsujay@vmware.com> 2.0.0-1
 -   Bump version to 2.0.0 and Fix CVE-2018-20330
 *   Mon Dec 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-2
