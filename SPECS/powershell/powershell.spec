@@ -1,7 +1,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        6.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -29,6 +29,7 @@ It consists of a cross-platform command-line shell and associated scripting lang
 # sed -i 's/2.1.403/2.1.4/' global.json
 
 %build
+sed -i -e '/refs\/tags\/v%{version}/{n;q}' .git/packed-refs
 cp %{SOURCE1} .
 chmod +x ./build.sh
 ./build.sh
@@ -52,6 +53,8 @@ ln -sf %{_libdir}/powershell/pwsh %{buildroot}%{_bindir}/pwsh
     %{_docdir}/*
 
 %changelog
+*   Wed Feb 13 2019 Ajay Kaher <akaher@vmware.com> 6.1.1-2
+-   Fix version mismatch issue.
 *   Wed Dec 05 2018 Ajay Kaher <akaher@vmware.com> 6.1.1-1
 -   upgrade version to 6.1.1
 *   Thu Sep 27 2018 Ajay Kaher <akaher@vmware.com> 6.0.1-2
