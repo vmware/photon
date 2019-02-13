@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.11.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -208,6 +208,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Wed Feb 13 2019 Dheeraj Shetty <dheerajs@vmware.com> 1.11.6-2
+-   Add VMware Cloud PKS patch (a7e6dfae)
 *   Thu Jan 3 2019 Emil <ejohn@vmware.com> 1.11.6-1
 -   Upgrade to 1.11.6 with VMware Cloud PKS patch (5fcf357b)
 *   Tue Nov 27 2018 Amarnath <vaa@vmware.com> 1.11.5-1
