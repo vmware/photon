@@ -1,7 +1,7 @@
 Summary:	CLI tool for spawning and running containers per OCI spec.
 Name:		runc
 Version:	1.0.0.rc4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	ASL 2.0
 URL:		https://runc.io/
 Source0:	https://github.com/opencontainers/runc/archive/%{name}-1.0.0-rc4.tar.gz
@@ -16,6 +16,7 @@ Source4:	https://github.com/golang/sys/archive/golang-sys-07c182904dbd53199946ba
 %define sha1 golang-sys=940b297797b1defc11d67820a92becefeaa88f59
 Source5:	https://github.com/golang/crypto/archive/golang-crypto-eb71ad9bd329b5ac0fd0148dd99bd62e8be8e035.zip
 %define sha1 golang-crypto=775ab62e664ee2c89f624d5be6c55775360653ee
+Source6:        CVE-2019-5736.patch
 Group:		Virtualization/Libraries
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -65,6 +66,7 @@ cp -r . ../build/src/github.com/opencontainers/runc
 cd ../build
 export GOPATH=$GOPATH:`pwd`
 cd src/github.com/opencontainers/runc
+patch -p1 < %{SOURCE6}
 make %{?_smp_mflags}
 
 %install
@@ -76,6 +78,8 @@ make install BINDIR=%{buildroot}%{_sbindir}
 %{_sbindir}/runc
 
 %changelog
+*   Mon Feb 11 2019 Bo Gan <ganb@vmware.com> 1.0.0.rc4-2
+-   Fix CVE-2019-5736
 *   Tue Aug 22 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.0.0.rc4-1
 -   Update runc package to 1.0.0.rc4.
 *   Tue Apr 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.1.1-1
