@@ -1,7 +1,7 @@
-From 19a65bf775cf99c9fc3c9c250be09e79e324db2b Mon Sep 17 00:00:00 2001
-From: ejohn <ejohn@vmware.com>
-Date: Thu, 3 Jan 2019 12:07:34 +0530
-Subject: [PATCH] VCP patch for K8s v1.11.6 (5fcf357b)
+From 8bda9bcd663474113a2841ba65b3c0282732285e Mon Sep 17 00:00:00 2001
+From: Vivek Goyal <vivekgoyal@vmware.com>
+Date: Wed, 13 Feb 2019 18:47:55 -0800
+Subject: [PATCH] VCP patch for K8s v1.11.6
 
 ---
  api/swagger-spec/apps_v1alpha1.json           |   21 +
@@ -27,7 +27,7 @@ Subject: [PATCH] VCP patch for K8s v1.11.6 (5fcf357b)
  pkg/cloudprovider/providers/cascade/auth.go   |  145 +
  .../providers/cascade/cascade.go              |  219 ++
  .../providers/cascade/cascade_disks.go        |  253 ++
- .../providers/cascade/cascade_instances.go    |  133 +
+ .../providers/cascade/cascade_instances.go    |  129 +
  .../cascade/cascade_instances_test.go         |   44 +
  .../providers/cascade/cascade_loadbalancer.go |  295 ++
  pkg/cloudprovider/providers/cascade/client.go |  400 +++
@@ -49,15 +49,15 @@ Subject: [PATCH] VCP patch for K8s v1.11.6 (5fcf357b)
  pkg/volume/cascade_disk/cascade_util.go       |  217 ++
  .../persistentvolume/label/admission.go       |   54 +
  plugin/pkg/admission/vke/BUILD                |   61 +
- plugin/pkg/admission/vke/admission.go         |  629 ++++
- plugin/pkg/admission/vke/admission_test.go    |  960 ++++++
+ plugin/pkg/admission/vke/admission.go         |  662 ++++
+ plugin/pkg/admission/vke/admission_test.go    |  995 ++++++
  plugin/pkg/auth/authorizer/vke/BUILD          |   40 +
  plugin/pkg/auth/authorizer/vke/OWNERS         |    2 +
  .../pkg/auth/authorizer/vke/vke_authorizer.go |  125 +
  .../authorizer/vke/vke_authorizer_test.go     |  230 ++
  .../src/k8s.io/api/core/v1/generated.pb.go    | 2686 +++++++++--------
  staging/src/k8s.io/api/core/v1/types.go       |   24 +-
- 53 files changed, 7299 insertions(+), 1214 deletions(-)
+ 53 files changed, 7363 insertions(+), 1214 deletions(-)
  create mode 100644 pkg/cloudprovider/providers/cascade/BUILD
  create mode 100644 pkg/cloudprovider/providers/cascade/OWNERS
  create mode 100644 pkg/cloudprovider/providers/cascade/apitypes.go
@@ -1335,7 +1335,7 @@ index 0000000000..b9fafb92e1
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_disks.go b/pkg/cloudprovider/providers/cascade/cascade_disks.go
 new file mode 100644
-index 0000000000..e889a28951
+index 0000000000..ab1c8d3157
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_disks.go
 @@ -0,0 +1,253 @@
@@ -1367,7 +1367,7 @@ index 0000000000..e889a28951
 +			DiskID: StringPtr(diskID),
 +		}
 +
-+		vmID, err := cc.InstanceID(context.TODO(), nodeName)
++		vmID, err := cc.InstanceIDFromNodeName(context.TODO(), nodeName)
 +		if err != nil {
 +			glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for AttachDisk. Error[%v]", err)
 +			return "", err
@@ -1403,7 +1403,7 @@ index 0000000000..e889a28951
 +		DiskID: StringPtr(diskID),
 +	}
 +
-+	vmID, err := cc.InstanceID(context.TODO(), nodeName)
++	vmID, err := cc.InstanceIDFromNodeName(context.TODO(), nodeName)
 +	if err != nil {
 +		glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for DetachDisk. Error[%v]", err)
 +		return err
@@ -1427,7 +1427,7 @@ index 0000000000..e889a28951
 +
 +// DiskIsAttached returns if disk is attached to the VM using controllers supported by the plugin.
 +func (cc *CascadeCloud) DiskIsAttached(diskID string, nodeName k8stypes.NodeName) (bool, error) {
-+	vmID, err := cc.InstanceID(context.TODO(), nodeName)
++	vmID, err := cc.InstanceIDFromNodeName(context.TODO(), nodeName)
 +	if err != nil {
 +		glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
 +		return false, err
@@ -1467,7 +1467,7 @@ index 0000000000..e889a28951
 +		attached[diskID] = false
 +	}
 +
-+	vmID, err := cc.InstanceID(context.TODO(), nodeName)
++	vmID, err := cc.InstanceIDFromNodeName(context.TODO(), nodeName)
 +	if err != nil {
 +		glog.Errorf("VKE Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
 +		return attached, err
@@ -1594,10 +1594,10 @@ index 0000000000..e889a28951
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_instances.go b/pkg/cloudprovider/providers/cascade/cascade_instances.go
 new file mode 100644
-index 0000000000..9f3f17c169
+index 0000000000..b7d14cb09a
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_instances.go
-@@ -0,0 +1,133 @@
+@@ -0,0 +1,129 @@
 +package cascade
 +
 +import (
@@ -1653,13 +1653,9 @@ index 0000000000..9f3f17c169
 +	return k8stypes.NodeName(hostname), nil
 +}
 +
-+// ExternalID returns the cloud provider ID of the specified instance (deprecated).
-+// Note: We call Cascade Controller here to check if the instance is alive or not. That check is used by Kubernetes
-+// to proactively remove nodes that the cloud provider believes is no longer available. Even otherwise, Kubernetes
-+// will remove those nodes eventually.
-+
-+func (cc *CascadeCloud) ExternalID(ctx context.Context, nodeName k8stypes.NodeName) (string, error) {
-+	return getInstanceIDAndLivelinessFromNodeName(cc, nodeName)
++// InstanceIDFromNodeName returns the cloud provider ID of the specified instance.
++func (cc *CascadeCloud) InstanceIDFromNodeName(ctx context.Context, nodeName k8stypes.NodeName) (string, error) {
++	return getInstanceIDFromNodeName(nodeName)
 +}
 +
 +// InstanceExistsByProviderID returns true if the instance with the given provider id still exists and is running.
@@ -1783,7 +1779,7 @@ index 0000000000..8fb314def1
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go b/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
 new file mode 100644
-index 0000000000..c2a62c2ff7
+index 0000000000..c9052b9983
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
 @@ -0,0 +1,295 @@
@@ -1989,7 +1985,7 @@ index 0000000000..c2a62c2ff7
 +		// If we cannot get the instance ID, something is wrong on the Cascade Controller side.
 +		// However, we should tolerate such failure and continue the load balancer VM update
 +		// by skipping this VM.
-+		instanceID, err := cc.InstanceID(context.TODO(), types.NodeName(node.Name))
++		instanceID, err := cc.InstanceIDFromNodeName(context.TODO(), types.NodeName(node.Name))
 +		if err != nil {
 +			logger.Warningf("Unable to get instance ID for node %s, skip updating this VM for load balancer. Error [%v]", node.Name, err)
 +			continue
@@ -4492,10 +4488,10 @@ index 0000000000..530877a443
 \ No newline at end of file
 diff --git a/plugin/pkg/admission/vke/admission.go b/plugin/pkg/admission/vke/admission.go
 new file mode 100644
-index 0000000000..1998d1d338
+index 0000000000..cae4dd77c6
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission.go
-@@ -0,0 +1,629 @@
+@@ -0,0 +1,662 @@
 +package vke
 +
 +import (
@@ -4549,6 +4545,7 @@ index 0000000000..1998d1d338
 +	strategyFactory podsecuritypolicy.StrategyFactory
 +	privilegedGroup string
 +	clusterID       string
++	privilegedMode  bool
 +}
 +
 +// vmwareAdmissionControllerConfig holds config data for VMwareAdmissionController.
@@ -4613,6 +4610,8 @@ index 0000000000..1998d1d338
 +		err = validateClusterRoles(a)
 +	case rbac.Resource("clusterrolebindings"):
 +		err = validateClusterRoleBindings(a)
++	case api.Resource("persistentvolumes"):
++		err = validatePersistentVolumes(vac, a)
 +	}
 +
 +	return err
@@ -4640,9 +4639,11 @@ index 0000000000..1998d1d338
 +	}
 +
 +	// Load PSP from file. If it fails, use default.
++	privilegedMode := true
 +	psp := getPSPFromFile(config.VMwareAdmissionController.PodSecurityPolicyFile)
 +	if psp == nil {
 +		psp = getDefaultPSP()
++		privilegedMode = false
 +	}
 +
 +	return &vmwareAdmissionController{
@@ -4650,6 +4651,7 @@ index 0000000000..1998d1d338
 +		strategyFactory: podsecuritypolicy.NewSimpleStrategyFactory(),
 +		privilegedGroup: config.VMwareAdmissionController.PrivilegedGroup,
 +		clusterID:       config.VMwareAdmissionController.ClusterID,
++		privilegedMode:  privilegedMode,
 +	}, nil
 +}
 +
@@ -4958,6 +4960,33 @@ index 0000000000..1998d1d338
 +	return checkReservedPrefix(clusterRoleBinding.Name, a)
 +}
 +
++func validatePersistentVolumes(vac *vmwareAdmissionController, a admission.Attributes) error {
++	// If the operation is not a Create operation, we allow. This is because Create is the only operation which can be
++	// used to create a new PV of type hostPath to get access to the host file system. All the other operations
++	// including Update cannot be used to gain access to host file system.
++	if a.GetOperation() != admission.Create {
++		return nil
++	}
++
++	pv, ok := a.GetObject().(*api.PersistentVolume)
++	// If we cannot get the PV object, fail.
++	if !ok {
++		return admission.NewForbidden(a,
++			fmt.Errorf("%s validation failed: unexpected type %T", PluginName, a.GetObject()))
++	}
++
++	// If we are running in non-privileged mode, then fail if the PV is of type hostPath. We want to do this to prevent
++	// access to host file system on a non-privileged cluster.
++	if !vac.privilegedMode {
++		if pv.Spec.HostPath != nil {
++			return admission.NewForbidden(a,
++				fmt.Errorf("%s validation failed: cannot create a PersistentVolume of type hostPath", PluginName))
++		}
++	}
++
++	return nil
++}
++
 +func validatePods(vac *vmwareAdmissionController, a admission.Attributes) error {
 +	// If the request is acting on a sub resource of a pod then allow it. This request is not directly coming to a pod,
 +	// but to a sub-resource like pods/foo/status. So, this does not have to be blocked.
@@ -5127,10 +5156,10 @@ index 0000000000..1998d1d338
 +}
 diff --git a/plugin/pkg/admission/vke/admission_test.go b/plugin/pkg/admission/vke/admission_test.go
 new file mode 100644
-index 0000000000..689a22dfa4
+index 0000000000..1842253290
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission_test.go
-@@ -0,0 +1,960 @@
+@@ -0,0 +1,995 @@
 +package vke
 +
 +import (
@@ -5823,6 +5852,23 @@ index 0000000000..689a22dfa4
 +			userInfo:           newTestUserBuilder().withGroup(systemWorkerGroup).build(),
 +			shouldPassValidate: false,
 +		},
++		"denied: regular lightwave user creates a PV of type hostPath": {
++			operation:          kadmission.Create,
++			resource:           "persistentvolumes",
++			namespace:          "",
++			name:               "test-pv",
++			object:             getHostPathPV(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: false,
++		},
++		"allowed: regular lightwave user deletes a PV": {
++			operation:          kadmission.Delete,
++			resource:           "persistentvolumes",
++			namespace:          "",
++			name:               "test-pv",
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
 +	}
 +	for k, v := range tests {
 +		testResourceValidation(k, v.operation, v.resource, v.subresource, v.name, v.namespace, v.userInfo, v.object,
@@ -6090,6 +6136,24 @@ index 0000000000..689a22dfa4
 +func (n *testNodeBuilder) withTaint(taints []kapi.Taint) *testNodeBuilder {
 +	n.node.Spec.Taints = taints
 +	return n
++}
++
++func getHostPathPV() *kapi.PersistentVolume {
++	return &kapi.PersistentVolume{
++		ObjectMeta: metav1.ObjectMeta{
++			Name:        "test-pv",
++			Namespace:   "",
++			Annotations: nil,
++		},
++		Spec: kapi.PersistentVolumeSpec{
++			StorageClassName: "manual",
++			PersistentVolumeSource: kapi.PersistentVolumeSource{
++				HostPath: &kapi.HostPathVolumeSource{
++					Path: "/",
++				},
++			},
++		},
++	}
 +}
 diff --git a/plugin/pkg/auth/authorizer/vke/BUILD b/plugin/pkg/auth/authorizer/vke/BUILD
 new file mode 100644
@@ -11028,5 +11092,5 @@ index d9f4869fbc..5417d75199 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 -- 
-2.19.1
+2.17.2 (Apple Git-113)
 
