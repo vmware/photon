@@ -2,12 +2,12 @@
 
 Summary:        Elastic Search
 Name:           elasticsearch
-Version:        6.4.1
+Version:        6.4.3
 Release:        1%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}.tar.gz=0cee8c50023e699b49eda523262bf1c212fb9714
+%define sha1    %{name}-%{version}.tar.gz=44f99fca3ad7373c4e3fd73b7a396ed7e1e2519a
 Source1:        cacerts
 %define sha1    cacerts=f584c7c1f48c552f39acfb5560a300a657d9f3bb
 Group:          Development/Daemons
@@ -118,6 +118,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+* Wed Feb 13 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-1
+- Upgrade to 6.4.3 for CVE-2018-17244
 * Tue Dec 18 2018 Siju Maliakkal <smaliakkal@vmware.com> 6.4.1-1
 - Upgrade elasticsearch to 6.4.1 to mitigate CVE-2018-3831
 * Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 6.4.0-3
