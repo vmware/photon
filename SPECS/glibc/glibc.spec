@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.22
-Release:        23%{?dist}
+Release:        24%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -52,6 +52,8 @@ Patch24:        glibc-fix-CVE-2017-18269.patch
 Patch25:        glibc-fix-CVE-2018-11236.patch
 Patch26:        glibc-fix-CVE-2017-15671.patch
 Patch27:        glibc-fix-CVE-2017-12132.patch
+Patch28:        glibc-Check-length-of-ifname-before-copying-it-into-to-ifreq-structure.patch
+Patch29:        glibc-fix-CVE-2018-19591.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -105,6 +107,8 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch25 -p1
 %patch26 -p1
 %patch27 -p1
+%patch28 -p1
+%patch29 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -232,6 +236,8 @@ popd
 %{_datarootdir}/locale/locale.alias
 
 %changelog
+*   Wed Feb 13 2019 Alexey Makhalov <amakhalov@vmware.com> 2.22-24
+-   Fix for CVE-2018-19591.
 *   Tue Jan 29 2019 Keerthana K <keerthanak@vmware.com> 2.22-23
 -   Fix for CVE-2017-12132.
 *   Thu Aug 09 2018 Keerthana K <keerthanak@vmware.com> 2.22-22
@@ -240,7 +246,7 @@ popd
 -   Fix for CVE-2018-11236.
 *   Mon Jun 25 2018 Keerthana K <keerthanak@vmware.com> 2.22-20
 -   Fix for CVE-2017-18269.
-*   Tue Jan 20 2018 Xiaolin Li <xiaolinl@vmware.com> 2.22-19
+*   Tue Jan 23 2018 Xiaolin Li <xiaolinl@vmware.com> 2.22-19
 -   Fix CVE-2018-1000001 and CVE-2018-6485
 *   Mon Jan 08 2018 Xiaolin Li <xiaolinl@vmware.com> 2.22-18
 -   Fix CVE-2017-16997
