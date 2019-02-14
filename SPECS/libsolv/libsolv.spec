@@ -1,11 +1,12 @@
 Summary:	Libsolv-0.6.19
 Name:		libsolv
 Version:	0.6.19
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	BSD
 URL:		https://github.com/openSUSE/libsolv
 Source0:	https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
 %define sha1 libsolv=2066529e5a95aac15a79863bb937bb159b05cffa
+Patch0:         CVE-2018-20532-20533-20534.patch
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -20,6 +21,7 @@ Libsolv is a free package management library, using SAT technology to solve requ
 It supports debian, rpm, archlinux and haiku style distributions. 
 %prep
 %setup -q
+%patch0 -p1
 %build
 cmake \
 	-DCMAKE_INSTALL_PREFIX=%{_prefix} \
@@ -39,6 +41,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/*
 %{_includedir}/*
 %changelog
+*   Thu Feb 14 2019 Keerthana K <keerthanak@vmware.com> 0.6.19-6
+-   Fix for CVE-2018-20532, CVE-2018-20533, CVE-2018-20534.
 *   Wed Jul 18 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.19-5
 -   use libdb
 *   Sat Sep 30 2017 Anish Swaminathan <anishs@vmware.com> 0.6.19-4
