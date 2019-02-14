@@ -1,19 +1,19 @@
-%define sourcever 3220000
+%define sourcever 3260000
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
-Version:        3.22.0
-Release:        3%{?dist}
+Version:        3.26.0
+Release:        1%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sqlite.org/2018/%{name}-autoconf-%{sourcever}.tar.gz
-%define sha1    sqlite=2fb24ec12001926d5209d2da90d252b9825366ac
-Patch0:         sqlite-3.22.0-CVE-2018-8740.patch
+%define sha1    sqlite=9af2df1a6da5db6e2ecf3f463625f16740e036e9
 Obsoletes:      sqlite-autoconf
 Requires:       sqlite-libs = %{version}-%{release}
 Provides:       sqlite3
+
 %description
 This package contains most of the static files that comprise the
 www.sqlite.org website including all of the SQL Syntax and the 
@@ -38,7 +38,6 @@ The sqlite3 library.
 
 %prep
 %setup -q -n %{name}-autoconf-%{sourcever}
-%patch0 -p1
 
 %build
 ./configure \
@@ -57,6 +56,7 @@ The sqlite3 library.
     --libdir=%{_libdir}                 \
     --disable-static
 make
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
@@ -94,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0.8.6
 
 %changelog
+*   Wed Feb 3 2019 Michelle Wang <michellew@vmware.com> 3.26.0-1
+-   Upgrade to 3.26.0 for a critical Vulnerability named 'Magallan'.
 *   Thu May 31 2018 Xiaolin Li <xiaolinl@vmware.com> 3.22.0-3
 -   Change cflags.
 *   Tue Apr 17 2018 Xiaolin Li <xiaolinl@vmware.com> 3.22.0-2
