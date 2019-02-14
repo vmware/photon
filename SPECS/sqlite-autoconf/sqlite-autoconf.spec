@@ -1,43 +1,36 @@
-%define sourcever 3220000
+%define sourcever 3260000
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite-autoconf
-Version:        3.22.0
-Release:        3%{?dist}
+Version:        3.26.0
+Release:        1%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://sqlite.org/2018/%{name}-3220000.tar.gz
-%define sha1    sqlite=2fb24ec12001926d5209d2da90d252b9825366ac
-Patch0:         sqlite-3.22.0-CVE-2018-8740.patch
+Source0:        http://sqlite.org/2018/%{name}-3260000.tar.gz
+%define sha1    sqlite=9af2df1a6da5db6e2ecf3f463625f16740e036e9
 Obsoletes:      libsqlite
 Provides:       sqlite3
 %description
 This package contains most of the static files that comprise the
 www.sqlite.org website including all of the SQL Syntax and the 
 C/C++ interface specs and other miscellaneous documentation.
+
 %prep
-%setup -q -n %{name}-%{sourcever}
-%patch0 -p1
+%setup -q -n %{name}-autoconf-%{sourcever}
 
 %build
-./configure \
-    CFLAGS="%{optflags}                 \
-    -DSQLITE_ENABLE_FTS3=1              \
-    -DSQLITE_ENABLE_COLUMN_METADATA     \
-    -DSQLITE_ENABLE_UNLOCK_NOTIFY=1     \
-    -DSQLITE_SECURE_DELETE=1"           \
+%configure \
+    CFLAGS="%{optflags}"                \
     CXXFLAGS="%{optflags}               \
     -DSQLITE_ENABLE_FTS3=1              \
     -DSQLITE_ENABLE_COLUMN_METADATA=1   \
     -DSQLITE_ENABLE_UNLOCK_NOTIFY=1     \
     -DSQLITE_SECURE_DELETE=1"           \
-    --prefix=%{_prefix}                 \
-    --bindir=%{_bindir}                 \
-    --libdir=%{_libdir}                 \
     --disable-static
-make -j1
+make
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
@@ -45,12 +38,16 @@ install -D -m644 sqlite3.1 %{buildroot}/%{_mandir}/man1/sqlite3.1
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/%{_infodir}
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so*
@@ -58,7 +55,10 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
 %{_mandir}/man1/*
+
 %changelog
+*   Wed Feb 3 2019 Michelle Wang <michellew@vmware.com> 3.26.0-1
+-   Upgrade to 3.26.0 for a critical Vulnerability named 'Magallan'.
 *   Thu May 31 2018 Xiaolin Li <xiaolinl@vmware.com> 3.22.0-3
 -   Change cflags.
 *   Tue Apr 17 2018 Xiaolin Li <xiaolinl@vmware.com> 3.22.0-2
