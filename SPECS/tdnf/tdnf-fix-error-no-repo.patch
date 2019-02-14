@@ -1,0 +1,48 @@
+From 355b46fb6f1d850f264f7554bef39df56791d18c Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Mon, 11 Feb 2019 09:59:55 +0000
+Subject: [PATCH] Fix to address errors when no repos are enabled.
+
+pool_createwhatprovides is moved to InitSack() from InitRepo().
+When no repos are enabled createwhatprovides is not set due to which
+commands fail.
+
+Change-Id: I3fc15022a9e6bfbcaec88c62343c856dba873861
+---
+
+diff --git a/client/repo.c b/client/repo.c
+index 5967689..d5010c0 100644
+--- a/client/repo.c
++++ b/client/repo.c
+@@ -99,7 +99,6 @@
+         dwError = SolvCreateMetaDataCache(pSack, pSolvRepoInfo);
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+-    pool_createwhatprovides(pPool);
+ 
+     dwError = TDNFAllocateStringPrintf(
+                   &pszLastRefreshMarker,
+diff --git a/solv/tdnfpool.c b/solv/tdnfpool.c
+index 65bdce1..b22de1d 100644
+--- a/solv/tdnfpool.c
++++ b/solv/tdnfpool.c
+@@ -113,6 +113,7 @@
+     BAIL_ON_TDNF_LIBSOLV_ERROR(dwError);
+ 
+     pool_set_installed(pPool, pRepo);
++    pool_createwhatprovides(pPool);
+ 
+     pSack->pPool = pPool;
+     *ppSack = pSack;
+diff --git a/solv/tdnfquery.c b/solv/tdnfquery.c
+index b4eb9a9..a75276f 100644
+--- a/solv/tdnfquery.c
++++ b/solv/tdnfquery.c
+@@ -815,7 +815,6 @@
+     queue_init(&queueSel);
+     queue_init(&queueResult);
+     pPool = pQuery->pSack->pPool;
+-    pool_createwhatprovides(pPool);
+ 
+     for(nIndex = dwStartIndex; nIndex < dwEndIndex; nIndex++)
+     {
