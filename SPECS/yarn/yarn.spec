@@ -1,6 +1,6 @@
 Summary:        Fast, reliable, and secure dependency management.
 Name:           yarn
-Version:        1.6.0
+Version:        1.10.1
 Release:        1%{?dist}
 License:        BSD 2-Clause
 URL:            https://yarnpkg.com
@@ -43,5 +43,7 @@ ln -sf %{_libdir}/node_modules/%{name}/bin/yarn.js %{buildroot}%{_bindir}/yarnpk
 %{_libdir}/node_modules/%{name}
 
 %changelog
+*   Wed Feb 13 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.10.1-1
+-   Upgrade to 1.10.1 for kibana buildrequirement
 *   Mon Jul 09 2018 Keerthana K <keerthanak@vmware.com> 1.6.0-1
 -   Initial yarn package for PhotonOS.
