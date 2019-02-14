@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.26
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -28,6 +28,8 @@ Patch10:        glibc-fix-CVE-2017-15671.patch
 Patch11:        glibc-fix-CVE-2017-18269.patch
 Patch12:        glibc-fix-CVE-2018-11236.patch
 Patch13:        glibc-fix-CVE-2018-11237.patch
+Patch14:        glibc-Check-length-of-ifname-before-copying-it-into-to-ifreq-structure.patch
+Patch15:        glibc-fix-CVE-2018-19591.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -95,6 +97,8 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch11 -p1
 %patch12 -p1
 %patch13 -p1
+%patch14 -p1
+%patch15 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -299,6 +303,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Wed Feb 13 2019 Alexey Makhalov <amakhalov@vmware.com> 2.26-14
+-   Fix for CVE-2018-19591.
 *   Tue Jun 26 2018 Keerthana K <keerthanak@vmware.com> 2.26-13
 -   Fix for CVE-2018-11236, CVE-2018-11237.
 *   Mon Jun 25 2018 Keerthana K <keerthanak@vmware.com> 2.26-12

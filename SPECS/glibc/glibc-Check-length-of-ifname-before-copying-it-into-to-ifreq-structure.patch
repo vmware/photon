@@ -1,0 +1,33 @@
+From 2180fee114b778515b3f560e5ff1e795282e60b0 Mon Sep 17 00:00:00 2001
+From: Steve Ellcey <sellcey@caviumnetworks.com>
+Date: Wed, 15 Nov 2017 08:58:48 -0800
+Subject: [PATCH] Check length of ifname before copying it into to ifreq
+ structure.
+
+	[BZ #22442]
+	* sysdeps/unix/sysv/linux/if_index.c (__if_nametoindex):
+	Check if ifname is too long.
+---
+ sysdeps/unix/sysv/linux/if_index.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/sysdeps/unix/sysv/linux/if_index.c b/sysdeps/unix/sysv/linux/if_index.c
+index 56f3f13..e7ca27b 100644
+--- a/sysdeps/unix/sysv/linux/if_index.c
++++ b/sysdeps/unix/sysv/linux/if_index.c
+@@ -43,6 +43,12 @@ __if_nametoindex (const char *ifname)
+   if (fd < 0)
+     return 0;
+ 
++  if (strlen (ifname) >= IFNAMSIZ)
++    {
++      __set_errno (ENODEV);
++      return 0;
++    }
++
+   strncpy (ifr.ifr_name, ifname, sizeof (ifr.ifr_name));
+   if (__ioctl (fd, SIOCGIFINDEX, &ifr) < 0)
+     {
+-- 
+2.9.3
+
