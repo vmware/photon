@@ -2,7 +2,7 @@
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
@@ -37,6 +37,7 @@ The net-snmp-devel package contains headers and libraries for building SNMP appl
                 --build=i686 \
                 --target=ia64-linux \
                 --sbindir=/sbin \
+                --sysconfdir=/etc \
                 --with-sys-location="unknown" \
                 --with-logfile=/var/log/net-snmpd.log \
                 --with-persistent-directory=/var/lib/net-snmp \
@@ -93,6 +94,8 @@ rm -rf %{buildroot}/*
 %exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %changelog
+*   Thu Feb 14 2019 Benson Kwok <bkwok@vmware.com> 5.8-3
+-   Adding --sysconfdir parameter to configure command 
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 5.8-2
 -   Using %configure and changing for perl upgrade
 *   Wed Sep 19 2018 Keerthana K <keerthanak@vmware.com> 5.8-1
