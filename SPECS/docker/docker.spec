@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.03.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -83,7 +83,7 @@ for component in tini "proxy dynamic" "runc all" "containerd dynamic"; do
   hack/dockerfile/install/install.sh $component
 done
 DOCKER_BUILDTAGS="pkcs11 seccomp exclude_graphdriver_aufs" \
-VERSION=%{version} DOCKER_GITCOMMIT=${GIT_COMMIT_SHORT} hack/make.sh dynbinary
+VERSION=%{version}-ce DOCKER_GITCOMMIT=${GIT_COMMIT_SHORT} hack/make.sh dynbinary
 popd
 
 %install
@@ -192,6 +192,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Thu Feb 14 2019 Bo Gan <ganb@vmware.com> 18.03.0-4
+-   Fix docker version string
 *   Mon Feb 11 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 18.03.0-3
 -   Patch to fix CVE-2019-5736
 *   Fri Sep 07 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 18.03.0-2
