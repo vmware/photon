@@ -1,7 +1,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.15.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
@@ -10,6 +10,7 @@ Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 # Downloaded patch from https://github.com/rsyslog/rsyslog/pull/1565
 Patch0:         CVE-2017-12588.patch
+Patch1:         CVE-2018-16881.patch
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -34,6 +35,7 @@ It offers high-performance, great security features and a modular design. While 
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
 ./configure \
     --prefix=%{_prefix} \
@@ -75,6 +77,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/systemd/system/rsyslog.service
 %{_sysconfdir}/systemd/journald.conf.d/*
 %changelog
+*   Thu Feb 14 2019 Keerthana K <keerthanak@vmware.com> 8.15.0-9
+-   Fix for CVE-2018-16881
 *   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 8.15.0-8
 -   Fix typos in change log.
 *   Fri Dec 15 2017 Anish Swaminathan <anishs@vmware.com>  8.15.0-7
