@@ -1,11 +1,12 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.6.26
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
 %define sha1    libsolv=7699af00e648bf3e631246559c48ceb7f3f544b9
+Patch0:         CVE-2018-20532-20533-20534.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -30,6 +31,7 @@ for developing applications that use libsolv.
 
 %prep
 %setup -q
+%patch0 -p1
 %build
 cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
@@ -62,6 +64,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Feb 14 2019 Keerthana K <keerthanak@vmware.com> 0.6.26-5
+-   Fix for CVE-2018-20532, CVE-2018-20533, CVE-2018-20534.
 *   Thu Mar 01 2018 Xiaolin Li <xiaolinl@vmware.com> 0.6.26-4
 -   provides pkgconfig(libsolv).
 *   Fri Apr 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.26-3
@@ -81,7 +85,7 @@ make %{?_smp_mflags} test
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 0.6.17-1
 -   Updated to version 0.6.17
 *   Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.6.6-3
--   Updated build-requires after creating devel package for db. 
+-   Updated build-requires after creating devel package for db.
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 0.6.6-2
 -   Updated group.
 *   Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 0.6.6-1
