@@ -1,7 +1,7 @@
 Summary:	Utilities for file systems, consoles, partitions, and messages
 Name:		util-linux
 Version:	2.27.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 URL:		http://www.kernel.org/pub/linux/utils/util-linux
 License:	GPLv2+
 Group:		Applications/System
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	%{name}-%{version}.tar.xz
 %define sha1 util-linux=462bca6320535d39b62216d8609da5531bfef0bb
+Patch0:         CVE-2017-2616.patch
 BuildRequires:	ncurses-devel >= 6.0-3
 Requires:	ncurses >= 6.0-3
 %description
@@ -31,6 +32,7 @@ These are the header and library files of util-linux.
 
 %prep
 %setup -q
+%patch0 -p1
 sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
 %build
 ./configure \
@@ -69,6 +71,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/*
 
 %changelog
+*   Thu Feb 14 2019 Keerthana K <keerthanak@vmware.com> 2.27.1-4
+-   Fix for CVE-2017-2616.
 *   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 2.27.1-3
 -   Use specified version of ncurses wich has long chtype and mmask_t
     (see ncurses changelog)
