@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.5p1
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -18,6 +18,7 @@ Patch1:         openssh-7.5p1-fips.patch
 Patch2:         openssh-7.5p1-configure-fips.patch
 Patch3:         openssh-CVE-2017-15906.patch
 Patch4:         openssh-CVE-2018-15473.patch
+Patch5:         openssh-CVE-2018-20685.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
@@ -55,6 +56,7 @@ tar xf %{SOURCE1} --no-same-owner
 %patch2 -p1
 %patch3 -p3
 %patch4 -p1
+%patch5 -p1
 %build
 ./configure \
     CFLAGS="%{optflags}" \
@@ -182,6 +184,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Thu Feb 14 2019 Ankit Jain <ankitja@vmware.comm> 7.5p1-12
+-   Fix CVE-2018-20685.
 *   Tue Jan 22 2019 Ankit Jain <ankitja@vmware.comm> 7.5p1-11
 -   Fix CVE-2018-15473.
 *   Tue Nov 28 2017 Xiaolin Li <xiaolinl@vmware.comm> 7.5p1-10
