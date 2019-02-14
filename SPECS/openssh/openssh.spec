@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.8p1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -16,6 +16,7 @@ Source3:        sshd-keygen.service
 Patch0:         blfs_systemd_fixes.patch
 Patch1:         openssh-7.8p1-fips.patch
 Patch2:         openssh-7.8p1-configure-fips.patch
+Patch3:         openssh-CVE-2018-20685.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
@@ -52,13 +53,9 @@ tar xf %{SOURCE1} --no-same-owner
 %patch0 -p0
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 %build
-./configure \
-    CFLAGS="%{optflags}" \
-    CXXFLAGS="%{optflags}" \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
+%configure \
     --sysconfdir=/etc/ssh \
     --datadir=/usr/share/sshd \
     --with-md5-passwords \
@@ -179,6 +176,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Thu Feb 14 2019 Ankit Jain <ankitja@vmware.comm> 7.8p1-2
+-   Fix CVE-2018-20685.
+-   Use %configure
 *   Tue Sep 11 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 7.8p1-1
 -   Update version
 *   Tue Nov 28 2017 Xiaolin Li <xiaolinl@vmware.comm> 7.5p1-11
