@@ -1,9 +1,10 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.2
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
+Distribution:  Photon
 License:       Apache 2.0
 URL:           http://www.github.com/vmware/c-rest-engine
 Requires:      openssl >= 1.0.1
@@ -54,6 +55,9 @@ make
 cd build && make install DESTDIR=$RPM_BUILD_ROOT
 find %{buildroot} -name '*.la' -delete
 
+%check
+make check
+
 %post -p  /sbin/ldconfig
 
 %files
@@ -68,7 +72,9 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
-*  Wed May 08 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-3
+*  Fri Jan 11 2019 Ankit Jain <ankitja@vmware.com> 1.2-4
+-  Added Makecheck
+*  Tue May 08 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-3
 -  Appying patch for fd leak issue.
 *  Fri Feb 23 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-2
 -  Appying patch for preprocess timeout.

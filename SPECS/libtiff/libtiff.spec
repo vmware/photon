@@ -1,22 +1,15 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
-Version:        4.0.9
-Release:        4%{?dist}
+Version:        4.0.10
+Release:        2%{?dist}
 License:        libtiff
-URL:            http://www.simplesystems.org/libtiff/
+URL:            https://gitlab.com/libtiff/libtiff
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://download.osgeo.org/%{name}/tiff-%{version}.tar.gz
-%define sha1    tiff=87d4543579176cc568668617c22baceccd568296
-Patch0:         libtiff-4.0.9-CVE-2017-18013.patch
-Patch1:         libtiff-4.0.9-CVE-2017-9935.patch
-Patch2:         libtiff-4.0.9-CVE-2017-17095.patch
-Patch3:         libtiff-4.0.9-CVE-2018-5784.patch
-Patch4:         libtiff-4.0-9-CVE-2017-11613-1.patch
-Patch5:         libtiff-4.0-9-CVE-2017-11613-2.patch
-Patch6:         libtiff-4.0-9-CVE-2018-7456.patch
-Patch7:         libtiff-4.0.9-CVE-2018-8905.patch
+Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff-v%{version}.tar.gz
+%define sha1    libtiff-v=e4ec512e56544d7586178dc69c7b5728f74fcc79
+Patch0:         CVE-2018-12900.patch
 BuildRequires:  libjpeg-turbo-devel
 Requires:       libjpeg-turbo
 %description
@@ -30,16 +23,10 @@ Requires:       libjpeg-turbo-devel
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q -n tiff-%{version}
+%setup -q -n libtiff-v%{version}
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
 %build
+sh autogen.sh
 %configure \
     --disable-static
 make %{?_smp_mflags}
@@ -72,6 +59,12 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Mon Jan 28 2019 Keerthana K <keerthanak@vmware.com> 4.0.10-2
+-   Fix for CVE-2018-12900
+*   Mon Dec 10 2018 Ashwin H <ashwinh@vmware.com> 4.0.10-1
+-   Update to 4.0.10
+*   Sun Dec 02 2018 Ashwin H <ashwinh@vmware.com> 4.0.9-5
+-   Fix CVE-2018-17100, CVE-2018-17101
 *   Mon May 14 2018 Xiaolin Li <xiaolinl@vmware.com> 4.0.9-4
 -   Fix CVE-2018-7456, CVE-2018-8905, CVE-2018-5784, CVE-2017-11613
 *   Wed Feb 14 2018 Dheeraj Shetty <dheerajs@vmware.com> 4.0.9-3

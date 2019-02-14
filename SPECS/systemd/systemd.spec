@@ -1,27 +1,34 @@
-Summary:          Systemd-236
+Summary:          Systemd-239
 Name:             systemd
-Version:          236
-Release:          3%{?dist}
+Version:          239
+Release:          10%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          %{name}-%{version}.tar.gz
-%define sha1      systemd=eab372a3441997dfba1dfa41183918764c31a7df
+%define sha1      systemd=8803baa484cbe36680463c8c5e6febeff074b8e7
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
 Source4:          99-dhcp-en.network
+Source5:          10-rdrand-rng.conf
 
 Patch0:           01-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           02-install-general-aliases.patch
-Patch2:           systemd-236-default-dns-from-env.patch
+Patch2:           systemd-239-default-dns-from-env.patch
 Patch3:           systemd-macros.patch
-Patch4:           systemd-236-util-linux-build-failure.patch
-
-#TODO: Verify this patch is necessary or not
-#Patch4:           systemd-233-query-duid.patch
+Patch4:           systemd-239-query-duid.patch
+# Fix glibc-2.28 build issue. Checked in upstream after v239
+Patch5:           systemd-239-glibc-build-fix.patch
+Patch6:           systemd-239-revert-mtu.patch
+Patch7:           systemd-239-CVE-2018-15688.patch
+Patch8:           systemd-239-CVE-2018-15686.patch
+Patch9:           systemd-239-CVE-2018-15687.patch
+Patch10:          systemd-239-CVE-2018-16864.patch
+Patch11:          systemd-239-CVE-2018-16865.patch
+Patch12:          systemd-239-CVE-2018-16866.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -54,6 +61,7 @@ Systemd is an init replacement with better process control and security
 %package devel
 Summary:        Development headers for systemd
 Requires:       %{name} = %{version}-%{release}
+Requires:    glib-devel
 
 %description devel
 Development headers for developing applications linking to libsystemd
@@ -80,8 +88,16 @@ EOF
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
 
-sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
+sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
 %build
 export LANG=en_US.UTF-8
@@ -136,6 +152,9 @@ rm %{buildroot}/lib/systemd/system/default.target
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
 install -dm 0755 %{buildroot}/%{_sysconfdir}/systemd/network
 install -m 0644 %{SOURCE4} %{buildroot}/%{_sysconfdir}/systemd/network
+%ifarch x86_64
+install -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/modules-load.d
+%endif
 %find_lang %{name} ../%{name}.lang
 
 %post
@@ -166,6 +185,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.resolve1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.network1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.machine1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.portable1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.timesync1.conf
 %config(noreplace) %{_sysconfdir}/systemd/system.conf
 %config(noreplace) %{_sysconfdir}/systemd/user.conf
 %config(noreplace) %{_sysconfdir}/systemd/logind.conf
@@ -174,6 +195,9 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/systemd/coredump.conf
 %config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
 %config(noreplace) %{_sysconfdir}/pam.d/systemd-user
+%ifarch x86_64
+%config(noreplace) %{_sysconfdir}/modules-load.d/10-rdrand-rng.conf
+%endif
 %config(noreplace) %{_sysconfdir}/systemd/network/99-dhcp-en.network
 
 %dir %{_sysconfdir}/udev
@@ -190,7 +214,12 @@ rm -rf %{buildroot}/*
 /lib/systemd/network/80-container*
 /lib/systemd/*.so
 /lib/systemd/resolv.conf
+/lib/systemd/portablectl
 %config(noreplace) /lib/systemd/network/99-default.link
+%config(noreplace) /lib/systemd/portable/profile/default/service.conf
+%config(noreplace) /lib/systemd/portable/profile/nonetwork/service.conf
+%config(noreplace) /lib/systemd/portable/profile/strict/service.conf
+%config(noreplace) /lib/systemd/portable/profile/trusted/service.conf
 %{_libdir}/environment.d/99-environment.conf
 %exclude %{_libdir}/debug
 %exclude %{_datadir}/locale
@@ -233,6 +262,27 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Thu Jan 10 2019 Anish Swaminathan <anishs@vmware.com>  239-10
+-    Fix CVE-2018-16864, CVE-2018-16865, CVE-2018-16866
+*    Wed Jan 09 2019 Keerthana K <keerthanak@vmware.com> 239-9
+-    Seting default values for tcp_timestamps, tcp_challenge_ack_limit and ip_forward.
+*    Wed Jan 02 2019 Anish Swaminathan <anishs@vmware.com>  239-8
+-    Fix CVE-2018-15686, CVE-2018-15687
+*    Sun Nov 11 2018 Tapas Kundu <tkundu@vmware.com> 239-7
+-    Fix CVE-2018-15688
+*    Fri Oct 26 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 239-6
+-    Auto-load rdrand-rng kernel module only on x86.
+*    Fri Oct 26 2018 Anish Swaminathan <anishs@vmware.com>  239-5
+-    Revert the commit that causes GCE networkd timeout
+-    https://github.com/systemd/systemd/commit/44b598a1c9d11c23420a5ef45ff11bcb0ed195eb
+*    Mon Oct 08 2018 Srinidhi Rao <srinidhir@vmware.com> 239-4
+-    Add glib-devel as a Requirement to systemd-devel
+*    Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 239-3
+-    Fix compilation issue against glibc-2.28
+*    Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 239-2
+-    Automatically load rdrand-rng kernel module on every boot.
+*    Tue Aug 28 2018 Anish Swaminathan <anishs@vmware.com>  239-1
+-    Update systemd to 239
 *    Wed Apr 11 2018 Xiaolin Li <xiaolinl@vmware.com>  236-3
 -    Build systemd with util-linux 2.32.
 *    Wed Jan 17 2018 Divya Thaluru <dthaluru@vmware.com>  236-2
@@ -249,7 +299,7 @@ rm -rf %{buildroot}/*
 -    Move network file to systemd package
 *    Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 233-7
 -    Fix compilation issue for glibc-2.26
-*    Fri Jul 20 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-6
+*    Fri Jul 21 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-6
 -    Fix for CVE-2017-1000082.
 *    Fri Jul 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-5
 -    Fix default-dns-from-env patch.

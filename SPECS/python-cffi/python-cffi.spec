@@ -3,15 +3,15 @@
 
 Summary:        Interface for Python to call C code
 Name:           python-cffi
-Version:        1.10.0
-Release:        3%{?dist}
+Version:        1.11.5
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-%{version}.tar.gz
-%define sha1    cffi=8484aba03d1e64367d3110c0e36c1ed052b43f12
+%define sha1    cffi=1686e6689a691414d3d22626c837adeee3996dd9
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -19,9 +19,15 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  libffi-devel
 BuildRequires:  python-pycparser
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-pycparser
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
-BuildRequires:	python-py
-BuildRequires:	python-pytest
+BuildRequires:	openssl-devel
+BuildRequires:  curl-devel
 %endif
 Requires:       python2
 Requires:       python2-libs
@@ -32,16 +38,6 @@ Foreign Function Interface for Python, providing a convenient and reliable way o
 
 %package -n     python3-cffi
 Summary:        python-cffi
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-pycparser
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:	python3-py
-BuildRequires:	python3-pytest
-%endif
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-pycparser
@@ -67,8 +63,12 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pytest
 python2 setup.py test
 pushd ../p3dir
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pytest
 python3 setup.py test
 popd
 
@@ -81,6 +81,10 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Nov 15 2018 Tapas Kundu <tkundu@vmware.com> 1.11.5-2
+-   Fixed make check errors.
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.11.5-1
+-   Update to version 1.11.5
 *   Mon Jul 17 2017 Divya Thaluru <dthaluru@vmware.com> 1.10.0-3
 -   Added build time dependecies required during check
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.10.0-2

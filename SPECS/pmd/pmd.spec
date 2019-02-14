@@ -9,7 +9,7 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.5
-Release:        6%{?dist}
+Release:        9%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -21,7 +21,7 @@ Requires:       jansson
 Requires:       likewise-open >= 6.2.9
 Requires:       netmgmt
 Requires:       systemd
-Requires:       tdnf >= 2.2.0
+Requires:       tdnf >= 2.0.0
 Requires:       lightwave-client-libs
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       shadow
@@ -36,9 +36,14 @@ BuildRequires:  netmgmt-cli-devel
 BuildRequires:  netmgmt-devel
 BuildRequires:  tdnf-devel >= 1.2.0
 BuildRequires:  lightwave-devel
+BuildRequires: python2-devel >= 2.7
+BuildRequires: python3-devel >= 3.5
 Source0:        %{name}-%{version}-3.tar.gz
 %define sha1    pmd=fe9b4b81410497d209fc4b6efb9574a049557b25
 Patch0:         pmd-update-to-c-rest-engine-1.1.patch
+Patch1:         pmd-rename-DNS_MODE_INVALID-with-DNS_MODE_UNKNOWN.patch
+Patch2:         pmd-duid-ifid.patch
+Patch3:         pmd-fw-bugfix.patch
 
 %description
 Photon Management Daemon
@@ -71,7 +76,6 @@ Summary: Python2 bindings for photon management daemon
 Group: Development/Libraries
 Requires: python2 >= 2.7
 Requires: %{name}-cli = %{version}-%{release}
-BuildRequires: python2-devel >= 2.7
 
 %description python2
 Python2 bindings for photon management daemon
@@ -81,7 +85,6 @@ Summary: Python3 bindings for photon management daemon
 Group: Development/Libraries
 Requires: python3 >= 3.5
 Requires: %{name}-cli = %{version}-%{release}
-BuildRequires: python3-devel >= 3.5
 
 %description python3
 Python3 bindings for photon management daemon
@@ -89,16 +92,15 @@ Python3 bindings for photon management daemon
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 sed -i 's/pmd, 0.0.1/pmd, 0.0.5/' configure.ac
 sed -i 's,-lcrypto,-lcrypto -lgssapi_krb5 @top_builddir@/client/libpmdclient.la,' server/Makefile.am
 autoreconf -mif
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=/etc \
+%configure \
     --with-likewise=/opt/likewise \
     --enable-python=no \
     --disable-static
@@ -310,6 +312,12 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*   Wed Jan 23 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-9
+-   Fix a bug in firewall management persist commands
+*   Tue Dec 18 2018 Tapas Kundu <tkundu@vmware.com> 0.0.5-8
+-   Fix for if_iaid and duid.
+*   Tue Dec 11 2018 Michelle Wang <michellew@vmware.com> 0.0.5-7
+-   DNS_MODE_INVALID is renamed with DNS_MODE_UNKNOWN in netmgmt 1.2.0.
 *   Thu Mar 01 2018 Xiaolin Li <xiaolinl@vmware.com> 0.0.5-6
 -   Build with tdnf 2.0.0.
 *   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  0.0.5-5

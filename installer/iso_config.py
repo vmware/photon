@@ -1,5 +1,7 @@
-import os.path
+import os
+import sys
 import subprocess
+import shlex
 import re
 import json
 import time
@@ -20,7 +22,7 @@ from linuxselector import LinuxSelector
 class IsoConfig(object):
     """This class handles iso installer configuration."""
     def __init__(self):
-        self.cd_path = None
+        self.cd_mount_path = None
         self.alpha_chars = list(range(65, 91))
         self.alpha_chars.extend(range(97, 123))
         self.hostname_accepted_chars = self.alpha_chars
@@ -32,24 +34,34 @@ class IsoConfig(object):
         self.random_hostname = "photon-" + self.random_id.strip()
 
     def Configure(self, options_file, maxy, maxx):
-        kernel_params = subprocess.check_output(['cat', '/proc/cmdline'])
-
-        # check for the repo param
-        m = re.match(r".*repo=(\S+)\s*.*\s*", kernel_params.decode())
-        if m is not None:
-            rpm_path = m.group(1)
-        else:
-            # the rpms should be in the cd
-            self.mount_cd()
-            rpm_path = os.path.join(self.cd_path, "RPMS")
-
-        # check the kickstart param
+        ks_path = None
+        rpm_path = None
         ks_config = None
-        m = re.match(r".*ks=(\S+)\s*.*\s*", kernel_params.decode())
-        if m is not None:
-            ks_config = self.get_config(m.group(1))
+        cd_search = None
 
-        install_config = None
+        with open('/proc/cmdline', 'r') as f:
+            kernel_params = shlex.split(f.read().replace('\n', ''))
+
+        for arg in kernel_params:
+            if arg.startswith("ks="):
+                ks_path = arg[len("ks="):]
+            elif arg.startswith("repo="):
+                rpm_path = arg[len("repo="):]
+            elif arg.startswith("photon.media="):
+                cd_search = arg[len("photon.media="):]
+
+        if cd_search is not None:
+            self.mount_cd(cd_search)
+
+        if ks_path is not None:
+            ks_config = self.get_config(ks_path)
+
+        if rpm_path is None:
+            # the rpms should be in the cd
+            if self.cd_mount_path is None:
+                raise Exception("Please specify RPM repo location, as no cdrom is specified. (PXE?)")
+            rpm_path = os.path.join(self.cd_mount_path, "RPMS")
+
         if ks_config:
             install_config = self.ks_config(options_file, ks_config)
         else:
@@ -97,26 +109,41 @@ class IsoConfig(object):
             raise Exception(err_msg)
         else:
             if path.startswith("cdrom:/"):
-                self.mount_cd()
-                path = os.path.join(self.cd_path, path.replace("cdrom:/", "", 1))
+                if self.cd_mount_path is None:
+                    raise Exception("cannot read ks config from cdrom, no cdrom specified")
+                path = os.path.join(self.cd_mount_path, path.replace("cdrom:/", "", 1))
             return (JsonWrapper(path)).read()
 
-    def mount_cd(self):
+    def mount_cd(self, cd_search):
         """Mount the cd with RPMS"""
         # check if the cd is already mounted
-        if self.cd_path:
+        if self.cd_mount_path:
             return
+        mount_path = "/mnt/cdrom"
 
         # Mount the cd to get the RPMS
-        process = subprocess.Popen(['mkdir', '-p', '/mnt/cdrom'])
-        retval = process.wait()
+        os.makedirs(mount_path, exist_ok=True)
+
+        # Construct mount cmdline
+        cmdline = ['mount']
+        if cd_search.startswith("UUID="):
+            cmdline.extend(['-U', cd_search[len("UUID="):] ]);
+        elif cd_search.startswith("LABEL="):
+            cmdline.extend(['-L', cd_search[len("LABEL="):] ]);
+        elif cd_search == "cdrom":
+            cmdline.append('/dev/cdrom')
+        else:
+            print("Unsupported installer media, check photon.media in kernel cmdline")
+            raise Exception("Can not mount the cd")
+
+        cmdline.extend(['-o', 'ro', mount_path])
 
         # Retry mount the CD
         for _ in range(0, 3):
-            process = subprocess.Popen(['mount', '/dev/cdrom', '/mnt/cdrom'])
+            process = subprocess.Popen(cmdline)
             retval = process.wait()
             if retval == 0:
-                self.cd_path = "/mnt/cdrom"
+                self.cd_mount_path = mount_path
                 return
             print("Failed to mount the cd, retry in a second")
             time.sleep(1)
@@ -132,16 +159,12 @@ class IsoConfig(object):
         if self.is_vmware_virtualization() and 'install_linux_esx' not in install_config:
             install_config['install_linux_esx'] = True
 
-        json_wrapper_option_list = JsonWrapper("build_install_options_all.json")
-        option_list_json = json_wrapper_option_list.read()
-        options_sorted = option_list_json.items()
-
         base_path = os.path.dirname("build_install_options_all.json")
         package_list = []
-
-        package_list = PackageSelector.get_packages_to_install(options_sorted,
-                                                               install_config['type'],
+        if 'packagelist_file' in install_config:
+            package_list = PackageSelector.get_packages_to_install(install_config['packagelist_file'],
                                                                base_path)
+
         if 'additional_packages' in install_config:
             package_list.extend(install_config['additional_packages'])
         install_config['packages'] = package_list
@@ -223,20 +246,12 @@ class IsoConfig(object):
                 index += 1
                 if index == len(items):
                     break
-                #Skip linux select screen for ostree installation.
-                if index == select_linux_index:
-                    if install_config['type'] == 'ostree_server':
-                        index += 1
             else:
                 index -= 1
                 while index >= 0 and items[index][1] is False:
                     index -= 1
                 if index < 0:
                     index = 0
-                #Skip linux select screen for ostree installation.
-                if index == select_linux_index:
-                    if install_config['type'] == 'ostree_server':
-                        index -= 1
         return install_config
     def add_ui_pages(self, options_file, maxy, maxx, install_config):
         items = []

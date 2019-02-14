@@ -2,14 +2,14 @@
 
 Name:           meson
 Summary:        Extremely fast and user friendly build system
-Version:        0.44.0
+Version:        0.47.2
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://mesonbuild.com/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/mesonbuild/meson/archive/%{version}/%{name}-%{version}.tar.gz
-%define sha1    meson=4a5aa56f81fc1350a5c501ef6046eef8a13467c7
+%define sha1    meson=14d6978a17631b550eb6f630f1377d4ea905d106
 BuildArch:      noarch
 BuildRequires:  gcc
 BuildRequires:  python3-devel
@@ -58,8 +58,11 @@ python3 ./run_tests.py
 %{_mandir}/man1/%{name}test.1*
 %{_mandir}/man1/wraptool.1*
 %{_libdir}/rpm/macros.d/macros.%{name}
+%{_datadir}/polkit-1/actions/com.mesonbuild.install.policy
 
 %changelog
+*   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.47.2-1
+-   Update to version 0.47.2
 *   Wed Dec 27 2017 Anish Swaminathan <anishs@vmware.com> 0.44.0-1
 -   Initial packaging
 

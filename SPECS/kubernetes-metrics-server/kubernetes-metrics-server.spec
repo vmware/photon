@@ -1,11 +1,13 @@
 Summary:        Kubernetes Metrics Server
 Name:           kubernetes-metrics-server
 Version:        0.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/kubernetes-incubator/metrics-server/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    kubernetes-metrics-server-%{version}.tar.gz=ac18b1360aede4647c9dbaa72bddf735b228daf3
+Patch0:         go-27704.patch
+Patch1:         go-27842.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -18,6 +20,11 @@ in the cluster, e.g. Horizontal Pod Autoscaler, to make decisions.
 
 %prep -p exit
 %setup -qn metrics-server-%{version}
+
+pushd vendor/golang.org/x/net
+%patch0 -p1
+%patch1 -p1
+popd
 
 %build
 export ARCH=amd64
@@ -48,5 +55,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/metrics-server
 
 %changelog
+*   Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 0.2.1-2
+-   Fix CVE-2018-17846 and CVE-2018-17143
 *   Tue Jul 10 2018 Dheeraj Shetty <dheerajs@vmware.com> 0.2.1-1
 -   kubernetes-metrics-server 0.2.1

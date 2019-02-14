@@ -2,15 +2,15 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Python C parser
 Name:           python-pycparser
-Version:        2.17
-Release:        3%{?dist}
+Version:        2.18
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/pycparser
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/p/pycparser/pycparser-%{version}.tar.gz
-%define sha1    pycparser=afc1f70c6fce0e196dece88d6da3b8d5b2af6297
+%define sha1    pycparser=1c75af69ae6273b1f1f531744f87d060965ed85d
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -60,6 +60,8 @@ python2 all_tests.py
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.18-1
+-   Update to version 2.18
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.17-3
 -   Use python2 instead of python
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.17-2

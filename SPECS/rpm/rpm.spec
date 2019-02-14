@@ -3,21 +3,19 @@
 
 Summary:        Package manager
 Name:           rpm
-Version:        4.13.0.1
-Release:        7%{?dist}
+Version:        4.14.2
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
-%define sha1    rpm=2119489397d7e4da19320ef9330ab717ac05587d
+%define sha1    rpm=8cd4fb1df88c3c73ac506f8ac92be8c39fa610eb
 Source1:        macros
 Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
-Patch0:         find-debuginfo-do-not-generate-non-existing-build-id.patch
-Patch1:         find-debuginfo-do-not-generate-dir-entries.patch
-Patch2:         rpm-CVE-2017-7501.patch
+Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
@@ -30,6 +28,8 @@ BuildRequires:  elfutils-devel
 BuildRequires:  libcap-devel
 BuildRequires:  xz-devel
 BuildRequires:  file-devel
+BuildRequires:  python2-devel
+BuildRequires:  python3-devel
 
 %description
 RPM package manager
@@ -72,14 +72,12 @@ These are the additional language files of rpm.
 %package -n     python-rpm
 Summary:        Python 2 bindings for rpm.
 Group:          Development/Libraries
-BuildRequires:  python2-devel
 Requires:       python2
 %description -n python-rpm
 
 %package -n     python3-rpm
 Summary:        Python 3 bindings for rpm.
 Group:          Development/Libraries
-BuildRequires:  python3-devel
 Requires:       python3
 
 %description -n python3-rpm
@@ -88,32 +86,18 @@ Python3 rpm.
 %prep
 %setup -n rpm-%{name}-%{version}-release
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
 # pass -L opts to gcc as well to prioritize it over standard libs
 sed -i 's/-Wl,-L//g' python/setup.py.in
+sed -i '/library_dirs/d' python/setup.py.in
 sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 
 ./autogen.sh --noconfigure
-./configure \
+%configure \
     CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
         --program-prefix= \
-        --prefix=%{_prefix} \
-        --exec-prefix=%{_prefix} \
-        --bindir=%{_bindir} \
-        --sbindir=%{_sbindir} \
-        --sysconfdir=%{_sysconfdir} \
-        --datadir=%{_datadir} \
-        --includedir=%{_includedir} \
-        --libdir=%{_libdir} \
-        --libexecdir=%{_libexecdir} \
-        --localstatedir=%{_var} \
-        --sharedstatedir=%{_sharedstatedir} \
-        --mandir=%{_mandir} \
-        --infodir=%{_infodir} \
         --disable-dependency-tracking \
         --disable-static \
         --enable-python \
@@ -154,7 +138,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-/bin/rpm
+%{_bindir}/rpm
 %{_bindir}/gendiff
 %{_bindir}/rpm2archive
 %{_bindir}/rpm2cpio
@@ -173,11 +157,15 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/tgpg
 %{_libdir}/rpm/platform
 %{_libdir}/rpm-plugins/*
+%{_libdir}/rpm/python-macro-helper
+%{_libdir}/rpm/pythondistdeps.py
 %{_mandir}/man8/rpm.8.gz
 %{_mandir}/man8/rpm2cpio.8.gz
 %{_mandir}/man8/rpmdb.8.gz
 %{_mandir}/man8/rpmgraph.8.gz
 %{_mandir}/man8/rpmkeys.8.gz
+%{_mandir}/man8/rpm-misc.8.gz
+%{_mandir}/man8/rpm-plugin-systemd-inhibit.8.gz
 %exclude %{_mandir}/fr/man8/*.gz
 %exclude %{_mandir}/ja/man8/*.gz
 %exclude %{_mandir}/ko/man8/*.gz
@@ -260,6 +248,14 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Oct 03 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-4
+-   Clean up the file in accordance to spec file checker
+*   Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-3
+-   Fix python libs dependencies to use current libs version (regression)
+*   Fri Sep 28 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-2
+-   macros: set _build_id_links to alldebug
+*   Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 4.14.2-1
+-   Update to version 4.14.2
 *   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-7
 -   Fix CVE-2017-7501
 *   Wed Oct 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-6
@@ -283,7 +279,7 @@ rm -rf %{buildroot}
 -   rpm-libs requires nss-libs, xz-libs and bzip2-libs.
 *   Tue Mar 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-20
 -   Added python3 packages and moved python2 site packages from devel to python-rpm.
-*   Mon Jan 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-19
+*   Tue Jan 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-19
 -   added buildrequires for xz-devel for PayloadIsLzma cap
 *   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-18
 -   Moved some files from rpm to rpm-build.
@@ -303,7 +299,7 @@ rm -rf %{buildroot}
 -   Modified %check
 *   Fri Aug 26 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-11
 -   find-debuginfo...patch: exclude non existing .build-id from packaging
--   Move all files from rpm-system-configuring-scripts tarball to here 
+-   Move all files from rpm-system-configuring-scripts tarball to here
 *   Wed May 25 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-10
 -   Exclude .build-id/.1 and .build-id/.1.debug from debuginfo pkg
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-9
@@ -312,7 +308,7 @@ rm -rf %{buildroot}
 -   Update rpm version in lock-step with lua update to 5.3.2
 *   Fri Apr 08 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.11.2-7
 -   Build rpm with capabilities.
-*   Thu Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
+*   Wed Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
 -   Moving build utils to a different package.
 *   Sat Jun 27 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-5
 -   Update rpm-system-configuring-scripts. Use tar --no-same-owner for rpmbuild.

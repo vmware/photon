@@ -1,12 +1,13 @@
-Summary:	Cmake-3.8.0
+Summary:	Cmake-3.12.1
 Name:		cmake
-Version:	3.8.0
+Version:	3.12.1
 Release:	4%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
-Source0:	http://www.cmake.org/files/v3.8/%{name}-%{version}.tar.gz
+Source0:	http://www.cmake.org/files/v3.12/%{name}-%{version}.tar.gz
+%define sha1 cmake=5359cd2e36051b0746580298d42518b0aef27979
+Source1:	macros.cmake
 Patch0:         disableUnstableUT.patch
-%define sha1 cmake=660ec06a46b46dc5d675371a2256ec739f8bb8b7
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -15,25 +16,34 @@ BuildRequires:  xz
 BuildRequires:  xz-devel
 BuildRequires:  curl
 BuildRequires:  curl-devel
-BuildRequires:  libgcc-devel
 BuildRequires:  expat-libs
 BuildRequires:  expat-devel
+BuildRequires:  zlib
+BuildRequires:  zlib-devel
+BuildRequires:  libarchive
+BuildRequires:  libarchive-devel
+BuildRequires:  bzip2
+BuildRequires:  bzip2-devel
 Requires:	ncurses
 Requires:       expat
+Requires:       zlib
+Requires:       libarchive
+Requires:       bzip2
 %description
-CMake is an extensible, open-source system that manages the build process in an 
-operating system and in a compiler-independent manner. 
+CMake is an extensible, open-source system that manages the build process in an
+operating system and in a compiler-independent manner.
 %prep
 %setup -q
 %patch0 -p1
 %build
 ncores="$(/usr/bin/getconf _NPROCESSORS_ONLN)"
-./bootstrap --prefix=%{_prefix} --system-expat --parallel=$ncores
+./bootstrap --prefix=%{_prefix} --system-expat --system-zlib --system-libarchive --system-bzip2 --parallel=$ncores
+make %{?_smp_mflags}
 
-make
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
+install -Dpm0644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d/macros.cmake
 
 %check
 make  %{?_smp_mflags} test
@@ -44,11 +54,23 @@ make  %{?_smp_mflags} test
 %{_bindir}/*
 /usr/doc/%{name}-*/*
 /usr/share/aclocal/*
+%{_libdir}/rpm/macros.d/macros.cmake
+
 %changelog
+*       Thu Jan 17 2019 Ankit Jain <ankitja@vmware.com> 3.12.1-4
+-       Removed unnecessary libgcc-devel buildrequires
+*       Thu Dec 06 2018 <ashwinh@vmware.com> 3.12.1-3
+-       Bug Fix 2243672. Add system provided libs.
+*       Sun Sep 30 2018 Bo Gan <ganb@vmware.com> 3.12.1-2
+-       smp make (make -jN)
+-       specify /usr/lib as CMAKE_INSTALL_LIBDIR
+*       Fri Sep 07 2018 Ajay Kaher <akaher@vmware.com> 3.12.1-1
+-       Upgrading version to 3.12.1
+-       Adding macros.cmake
 *       Fri Sep 29 2017 Kumar Kaushik <kaushikk@vmware.com> 3.8.0-4
 -       Building using system expat libs.
 *       Thu Aug 17 2017 Kumar Kaushik <kaushikk@vmware.com> 3.8.0-3
--       Fixing make check bug # 1632102. 
+-       Fixing make check bug # 1632102.
 *	Tue May 23 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.8.0-2
 -	bug 1448414: Updated to build in parallel
 *       Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com>  3.8.0-1

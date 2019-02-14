@@ -5,11 +5,13 @@ class constants(object):
     sourcePath = ""
     rpmPath = ""
     logPath = ""
+    logLevel = "info"
     topDirPath = ""
     buildRootPath = "/mnt"
     prevPublishRPMRepo = ""
     prevPublishXRPMRepo = ""
-    pullsourcesConfig = ""
+    pullsourcesURL = ""
+    extrasourcesURLs = {}
     buildPatch = False
     inputRPMSPath = ""
     rpmCheck = False
@@ -17,6 +19,7 @@ class constants(object):
     publishBuildDependencies = False
     packageWeightsPath = None
     dockerUnixSocket = "/var/run/docker.sock"
+    buildContainerImage = "photon_build_container:latest"
     userDefinedMacros = {}
     dist = None
     buildNumber = None
@@ -25,6 +28,8 @@ class constants(object):
     testForceRPMS = []
     tmpDirPath = "/dev/shm"
     buildOptions = {}
+    # will be extended later from listMakeCheckRPMPkgtoInstall
+    listMakeCheckRPMPkgWithVersionstoInstall = None
 
     noDepsPackageList = [
         "texinfo",
@@ -49,9 +54,6 @@ class constants(object):
         "gmp",
         "mpfr",
         "mpc",
-        "libgcc",
-        "libstdc++",
-        "libgomp",
         "gcc",
         "pkg-config",
         "ncurses",
@@ -93,7 +95,6 @@ class constants(object):
         "libtool",
         "flex",
         "bison",
-        "lua",
         "popt",
         "nspr",
         "nspr-devel",
@@ -110,12 +111,8 @@ class constants(object):
         "automake",
         "openssl",
         "openssl-devel",
-        "python2",
         "libdb",
-        "rpm",
-        "groff",
-        "man-pages",
-        "cpio"]
+        "rpm"]
 
     # List or RPMS that will be installed in a chroot prior to build each
     # package. This list should be ordered by install order. On a stage1
@@ -141,6 +138,7 @@ class constants(object):
         "mpc",
         "libgcc",
         "libgcc-devel",
+        "libgcc-atomic",
         "libstdc++",
         "libstdc++-devel",
         "libgomp",
@@ -178,8 +176,6 @@ class constants(object):
         "flex-devel",
         "bison",
         "readline-devel",
-        "lua",
-        "lua-devel",
         "popt",
         "popt-devel",
         "nspr",
@@ -204,9 +200,6 @@ class constants(object):
         "automake",
         "openssl",
         "openssl-devel",
-        "python2",
-        "python2-libs",
-        "python2-devel",
         "libcap",
         "libdb",
         "libdb-devel",
@@ -214,105 +207,7 @@ class constants(object):
         "rpm-build",
         "rpm-devel",
         "rpm-libs",
-        "groff",
-        "man-pages",
-        "cpio",
-        "go"]
-
-    perPackageToolChain = dict.fromkeys(
-        ["openjdk8",
-         "openjdk8-doc",
-         "openjdk8-src",
-         "openjdk8-sample",
-         "openjre8",
-         "openjdk9",
-         "openjdk9-doc",
-         "openjdk9-src",
-         "openjre9",
-         "openjdk10",
-         "openjdk10-doc",
-         "openjdk10-src",
-         "openjre10"],
-          {
-          "x86_64":[
-            "icu-devel",
-            "cups",
-            "cups-devel",
-            "xorg-proto-devel",
-            "libXtst",
-            "libXtst-devel",
-            "libXfixes",
-            "libXfixes-devel",
-            "libXi",
-            "libXi-devel",
-            "openjdk",
-            "openjre",
-            "icu",
-            "alsa-lib",
-            "alsa-lib-devel",
-            "xcb-proto",
-            "libXdmcp-devel",
-            "libXau-devel",
-            "util-macros",
-            "xtrans",
-            "libxcb-devel",
-            "proto",
-            "libXdmcp",
-            "libxcb",
-            "libXau",
-            "xtrans-devel",
-            "libX11",
-            "libX11-devel",
-            "libXext",
-            "libXext-devel",
-            "libICE-devel",
-            "libSM",
-            "libICE",
-            "libSM-devel",
-            "libXt",
-            "libXmu",
-            "libXt-devel",
-            "libXmu-devel",
-            "libXrender",
-            "libXrender-devel"],
-         "aarch64":[
-            "icu-devel",
-            "openjdk",
-            "openjre",
-            "icu",
-            "alsa-lib",
-            "alsa-lib-devel",
-            "xcb-proto",
-            "libXdmcp-devel",
-            "libXau-devel",
-            "util-macros",
-            "xtrans",
-            "libxcb-devel",
-            "proto",
-            "libXdmcp",
-            "libxcb",
-            "libXau",
-            "xtrans-devel",
-            "libX11",
-            "libX11-devel",
-            "libXext",
-            "libXext-devel",
-            "libICE-devel",
-            "libSM",
-            "libICE",
-            "libSM-devel",
-            "libXt",
-            "libXmu",
-            "libXt-devel",
-            "libXmu-devel",
-            "libXrender",
-            "libXrender-devel"]
-          })
-
-    perPackageToolChain["apache-maven"] = {
-          "x86_64":["apache-maven"],
-          "aarch64":["apache-maven"]
-          }
+        "cpio"]
 
     # List of RPMs which are not published. They will be created during the
     # build process
@@ -347,7 +242,7 @@ class constants(object):
         "python3-setuptools",
         "ca-certificates",
         "linux",
-        "createrepo",
+        "createrepo_c",
         "sudo",
         "ruby",
         "curl",
@@ -369,8 +264,6 @@ class constants(object):
         "net-tools",
         "less",
         "iana-etc",
-        "yum-metadata-parser",
-        "yum",
         "libdb",
         "rpm-devel",
         "rpm",
@@ -386,9 +279,6 @@ class constants(object):
         "gnupg",
         "ncurses-terminfo"]
 
-    listReInstallPackages = [
-        "go"]
-
     # List of packages that requires privileged docker
     # to run make check.
     listReqPrivilegedDockerForTest = [
@@ -403,87 +293,32 @@ class constants(object):
     # Requires: shadow
     providedBy = {
         "/usr/sbin/useradd":"shadow",
+        "/usr/sbin/userdel":"shadow",
         "/usr/sbin/groupadd":"shadow",
+        "/sbin/service":"initscripts",
         "/usr/bin/which":"which",
-        "/bin/sed":"sed"
-    }
-
-    # list of spec files to skip for parsing for given arch
-    skipSpecsForArch = {
-        "x86_64":[
-            "u-boot-rpi3.spec",
-            "openjdk8_aarch64.spec"
-            ],
-        "aarch64":[
-            # fakeroot-ng does not support aarch64
-            "fakeroot-ng.spec",
-            # ipxe does not support aarch64
-            "ipxe.spec",
-            # kexec-tools for arm64 does not support fpic
-            "kexec-tools.spec",
-            # no TXT/tboot on arm64
-            "tboot.spec",
-            # backward-cpp does not support amd64
-            "backward-cpp.spec",
-            "envoy.spec",
-            # only generic linux is for arm64
-            "linux-esx.spec",
-            "linux-secure.spec",
-            "linux-aws.spec",
-            # only linux-secure supports aufs
-            "aufs-util.spec",
-            # open-vm-tools does not support aarch64
-            "open-vm-tools.spec",
-            # syslinux does not support aarch64
-            "syslinux.spec",
-            # TODO: mariadb build hangs on amd64
-            "mariadb.spec",
-            # TODO: mysql fails on amd64 with fpic
-            "mysql.spec",
-            # irqbalance for arm64 ?
-            "irqbalance.spec",
-            # openjdk8.spec is for x86_64 arch
-            "openjdk8.spec",
-            # dashboard failed to build libxslt during `npm install`
-            "kubernetes-dashboard.spec",
-            # test issue (java null pointer exception) before compilation
-            "wavefront-proxy.spec",
-            # sysdig for aarch64 requires luajit, skip it and falco
-            # https://github.com/draios/sysdig/issues/833
-            "sysdig.spec",
-            "falco.spec",
-            # one more fail, not investigated yet
-            "log4cpp.spec",
-
-            # VIVACE packages
-            # need to update to mono-4.5
-            "mono.spec",
-            "banshee.spec",
-            "dbus-sharp.spec",
-            "dbus-sharp-glib.spec",
-            "gnome-keyring-sharp.spec",
-            "gnome-sharp.spec",
-            "gtk-sharp2.spec",
-            "mono-addins.spec",
-            "monodevelop.spec",
-            "nuget.spec",
-            "nunit.spec",
-            "pinta.spec",
-            "taglib-sharp.spec",
-            "tomboy.spec",
-            "totem.spec",
-            "webkit-sharp.spec",
-            # compilation issues with libwebkit
-            "libwebkit.spec",
-            "xf86-video-vmware.spec",
-            "xf86-video-intel.spec",
-            "xf86-input-vmmouse.spec",
-            # does not recognize aarch64
-            "thunderbird.spec",
-            #
-            "open-vm-tools-vivace.spec"
-
-        ]
+        "/usr/bin/python":"python2",
+        "/bin/python":"python2",
+        "/bin/python2":"python2",
+        "/bin/python3":"python3",
+        "/bin/awk":"gawk",
+        "/bin/gawk":"gawk",
+        "/bin/sed":"sed",
+        "/bin/grep":"grep",
+        "/bin/sh":"bash",
+        "/bin/bash":"bash",
+        "/bin/zsh":"zsh",
+        "/bin/tcsh":"tcsh",
+        "/bin/csh":"csh",
+        "/bin/perl":"perl",
+        "/bin/mergerepo":"createrepo_c",
+        "/bin/modifyrepo":"createrepo_c",
+        "/bin/false":"coreutils",
+        "/bin/ln":"coreutils",
+        "/bin/chown":"coreutils",
+        "/bin/cp":"coreutils",
+        "/bin/rm":"coreutils",
+        "/bin/mv":"coreutils"
     }
 
     @staticmethod
@@ -507,6 +342,10 @@ class constants(object):
         constants.topDirPath = topDirPath
 
     @staticmethod
+    def setLogLevel(logLevel):
+        constants.logLevel = logLevel
+
+    @staticmethod
     def setLogPath(logPath):
         constants.logPath = logPath
 
@@ -523,8 +362,20 @@ class constants(object):
         constants.buildRootPath = buildRootPath
 
     @staticmethod
-    def setPullSourcesConfig(pullSourcesConfig):
-        constants.pullsourcesConfig = pullSourcesConfig
+    def setPullSourcesURL(url):
+        constants.pullsourcesURL = url
+
+    @staticmethod
+    def setExtraSourcesURLs(packageName, urls):
+        constants.extrasourcesURLs[packageName] = urls
+
+    @staticmethod
+    def getPullSourcesURLs(packageName):
+        urls=[]
+        urls.append(constants.pullsourcesURL)
+        if packageName in constants.extrasourcesURLs:
+            urls.extend(constants.extrasourcesURLs[packageName])
+        return urls
 
     @staticmethod
     def setInputRPMSPath(inputRPMSPath):
@@ -565,7 +416,8 @@ class constants(object):
     @staticmethod
     def initialize():
         if constants.rpmCheck:
-            constants.testLogger = Logger.getLogger("MakeCheckTest", constants.logPath)
+            constants.testLogger = Logger.getLogger("MakeCheckTest",
+                                                    constants.logPath, constants.logLevel)
             constants.addMacro("with_check", "1")
         else:
             constants.addMacro("with_check", "0")
@@ -594,5 +446,15 @@ class constants(object):
         constants.userDefinedMacros[macroName] = macroValue
 
     @staticmethod
-    def setBuidOptions(options):
+    def setBuildOptions(options):
         constants.buildOptions = options
+
+    @staticmethod
+    def getAdditionalMacros(package):
+        macros = {}
+        if package in constants.buildOptions.keys():
+            pkg = constants.buildOptions[package]
+            for m in pkg["macros"]:
+                k, v = m.split(' ', 1)
+                macros[k] = v
+        return macros

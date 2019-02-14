@@ -1,14 +1,13 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
-Version: 	6.2.11.4
-Release:        4%{?dist}
+Version: 	6.2.11.13
+Release:    0%{?dist}
 Group: 		Development/Libraries
-Vendor:         VMware, Inc.
+Vendor:     VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
 URL: 		https://github.com/vmware/likewise-open
-Source0:        %{name}-%{version}.tar.gz
-%define sha1 likewise-open=6aa4cf11de6747d5f8940666c21adc3e1f7b6a4b
-Patch0:         likewise-open-aarch64.patch
+Source0:    %{name}-%{version}.tar.gz
+%define sha1 likewise-open=7012d73820c8cbdb8f0fa3b38f7478bce74f59a6
 Distribution:   Photon
 Requires:       Linux-PAM
 Requires:       (coreutils >= 8.22 or toybox)
@@ -36,7 +35,7 @@ BuildRequires:  sqlite-devel
 %package devel
 Summary:        Likewise Open (development)
 Group:          Development/Libraries
-Requires:       likewise-open = %{version}-%{release} 
+Requires:       likewise-open = %{version}-%{release}
 
 %description
 Likewise Open 6.1 LWIS
@@ -46,7 +45,6 @@ This package provides files for developing against the Likewise APIs
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 # hack against glibc-2.26 to avoid getopt declaration mismatch
@@ -263,7 +261,7 @@ fi
 %clean
 rm -rf %{buildroot}/*
 
-%files 
+%files
 %defattr(-,root,root)
 %exclude /etc/krb5.conf.default
 /opt/likewise/bin/*
@@ -290,6 +288,12 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Wed Dec 12 2018 Sriram Nambakam <snambakam@vmware.com> 6.2.11.13-0
+-   Apply patches to source tar ball
+*   Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 6.2.11.12-2
+-   Change domain join to recognize Photon release and use systemctl
+*   Mon Aug 13 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.2.11.12-1
+-   Update to version 6.2.11.12 and fix build issues with gcc 7.3
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-4
 -   Aarch64 support
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-3

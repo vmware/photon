@@ -3,7 +3,7 @@
 Summary:	OpenJDK
 Name:		openjdk10
 Version:	1.10.0.23
-Release:	1%{?dist}
+Release:	3%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -11,6 +11,7 @@ Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk10/jdk10/openjdk-%{version}.tar.gz
 %define sha1 openjdk-1.10.0=d0b6193fd1687b23fb7553b62d32f0e7e0527ea8
+BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -23,8 +24,10 @@ Requires:       openjre10 = %{version}-%{release}
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
 AutoReqProv: 	no
+%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel
 %define bootstrapjdkversion 1.8.0.112
 %define jdk_major_version 1.10.0
+
 %description
 The OpenJDK package installs java class library and javac java compiler.
 
@@ -57,10 +60,9 @@ This package provides the runtime library class sources.
 %setup -qn openjdk-%{version}
 
 %build
-chmod a+x ./configure
 unset JAVA_HOME &&
 ENABLE_HEADLESS_ONLY="true" &&
-./configure \
+sh configure \
 	--with-target-bits=64 \
 	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
 	--enable-headless-only \
@@ -83,7 +85,7 @@ make \
 
 %install
 unset JAVA_HOME &&
-make install 
+make install
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
@@ -219,5 +221,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/lib/src.zip
 
 %changelog
-*   Thu Apr 23 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.0.23-1
+*   Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 1.10.0.23-3
+-   Add BuildArch
+*   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.10.0.23-2
+-   Use ExtraBuildRequires
+*   Mon Apr 23 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.0.23-1
 -   Initial build. First version

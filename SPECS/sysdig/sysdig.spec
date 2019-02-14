@@ -1,22 +1,24 @@
 %global security_hardening none
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
-Version:        0.19.1
-Release:        1%{?kernelsubrelease}%{?dist}
+Version:        0.23.1
+Release:        3%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
-%define sha1    sysdig=425ea9fab8e831274626a9c9e65f0dfb4f9bc019
-BuildRequires:  cmake 
+%define sha1    sysdig=8d1ce894c8fcd8a1939c28adbfb661ad82110bde
+BuildArch:      x86_64
+BuildRequires:  cmake
 BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  wget
+BuildRequires:  jq-devel
 Requires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 Requires:       zlib
 Requires:       ncurses
@@ -42,6 +44,7 @@ cmake \
     -DUSE_BUNDLED_OPENSSL=OFF \
     -DUSE_BUNDLED_CURL=OFF \
     -DUSE_BUNDLED_ZLIB=OFF \
+    -DUSE_BUNDLED_JQ=OFF \
     -DUSE_BUNDLED_NCURSES=OFF ..
 
 make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
@@ -64,16 +67,22 @@ rm -rf %{buildroot}/*
 
 %postun
 /sbin/depmod -a
- 
+
 %files
 %defattr(-,root,root)
-/etc/bash_completion.d/* 
+/etc/bash_completion.d/*
 %{_bindir}
 %exclude %{_usrsrc}
 %{_datadir}
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/sysdig-probe.ko
 
 %changelog
+*   Fri Dec 07 2018 Sujay G <gsujay@vmware.com> 0.23.1-3
+-   Disabled bundled JQ and use Photon maintained JQ
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 0.23.1-2
+-   Adding BuildArch
+*   Wed Sep 19 2018 Ajay Kaher <akaher@vmware.com> 0.23.1-1
+-   Update to version 0.23.1
 *   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 0.19.1-1
 -   Update to version 0.19.1
 *   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.15.1-1

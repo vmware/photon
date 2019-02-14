@@ -1,11 +1,11 @@
 Summary:	RELP Library
 Name:		librelp
-Version:	1.2.13
-Release:	1%{?dist}
+Version:	1.2.17
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.librelp.com
 Source0:	http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
-%define sha1 librelp=c54fd06bed925f125d020575399a36fb56bb7838
+%define sha1 librelp=701d69e7723fe614b96750af8cba5ee9a54085fe
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -27,12 +27,27 @@ developing applications that use librelp.
 
 %prep
 %setup -q
+autoreconf -fiv
+
 %build
-./configure \
-	--prefix=%{_prefix}
+%configure
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
+
+%check
+#There are two tests(out of 16) which run under valgrind.
+#Currently these two tests just greps for a message output after test.
+#If we need to enable valgrind, it needs 'unstripped' version of ld.so
+#This is available in glibc-debuginfo which needs to be installed in
+#sandbox environment. This needs tdnf package which in turn needs to
+#install glibc-debuginfo package (which has unstripped version of ld.so).
+#Due to above dependecy overhead which needs more analysis
+#and since tests are not using any valgrind functionality,
+#disabling valgrind.
+sed -ie 's/export valgrind=.*/export valgrind""/' tests/test-framework.sh
+make check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -47,6 +62,10 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*       Tue Nov 20 2018 Ashwin H <ashwinh@vmware.com> 1.2.17-2
+-       Fix librelp %check
+*       Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 1.2.17-1
+-       Updated to version 1.2.17
 *	Tue Apr 11 2017 Harish Udaiy Kumar <hudaiyakumar@vmware.com> 1.2.13-1
 -	Updated to version 1.2.13
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.9-2

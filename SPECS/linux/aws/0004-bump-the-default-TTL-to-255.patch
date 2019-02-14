@@ -1,0 +1,42 @@
+From 66d9d24f23d04e2edf129efd13a43d4828f71dad Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Tue, 26 Jan 2016 21:29:13 +0000
+Subject: bump the default TTL to 255
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Rashika Kheria <rashika@amazon.de>
+Reviewed-by: Harris Palaiologos <palaiolo@amazon.de>
+CR: https://cr.amazon.com/r/4775330/
+(cherry picked from commit fe107a549001408933250a3224e2b620f4b0f3ec)
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/6834769/
+
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Frederick Lefebvre <fredlef@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
+CR: https://cr.amazon.com/r/8209723/
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ include/uapi/linux/ip.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/ip.h b/include/uapi/linux/ip.h
+index b24a742beae5..b63e31229c69 100644
+--- a/include/uapi/linux/ip.h
++++ b/include/uapi/linux/ip.h
+@@ -66,7 +66,7 @@
+ 
+ #define IPVERSION	4
+ #define MAXTTL		255
+-#define IPDEFTTL	64
++#define IPDEFTTL	MAXTTL
+ 
+ #define IPOPT_OPTVAL 0
+ #define IPOPT_OLEN   1
+-- 
+2.14.4
+

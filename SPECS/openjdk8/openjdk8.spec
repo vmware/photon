@@ -2,17 +2,18 @@
 %global security_hardening none
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.172
-Release:	1%{?dist}
+Version:	1.8.0.192
+Release:	3%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
-%define sha1 openjdk=c159933c1432409890dcfd7dcaad516b727669c7
+%define sha1 openjdk=e8df20e8bb8fad4ed08867cbc42202039b356b2d
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
+BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -25,7 +26,9 @@ Requires:       openjre8 = %{version}-%{release}
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
 AutoReqProv: 	no
+%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel
 %define bootstrapjdkversion 1.8.0.112
+
 %description
 The OpenJDK package installs java class library and javac java compiler.
 
@@ -72,9 +75,9 @@ sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeS
 sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJDK_TARGET_OS := linux\n&/' jdk/make/lib/Awt2dLibraries.gmk
 
 %build
-chmod a+x ./configure
+chmod a+x ./configur*
 unset JAVA_HOME &&
-./configure \
+./configur* \
 	CUPS_NOT_NEEDED=yes \
 	--with-target-bits=64 \
 	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
@@ -84,7 +87,8 @@ unset JAVA_HOME &&
 	--with-extra-cflags="-std=gnu++98 -fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
 	--with-freetype-include=/usr/include/freetype2 \
 	--with-freetype-lib=/usr/lib \
-	--with-stdc++lib=dynamic
+	--with-stdc++lib=dynamic \
+	--disable-zip-debug-info
 
 make \
     DEBUG_BINARIES=true \
@@ -238,6 +242,14 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Mon Oct 29 2018 Ajay Kaher <akaher@vmware.com> 1.8.0.192-3
+-   Adding BuildArch
+*   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.192-2
+-   Use ExtraBuildRequires
+*   Thu Oct 18 2018 Tapas Kundu <tkundu@vmware.com> 1.8.0.192-1
+-   Upgraded to version 1.8.0.192
+*   Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 1.8.0.181-1
+-   Upgraded to 1.8.0.181 version.
 *   Mon Apr 23 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.172-1
 -   Upgraded to version 1.8.0.172
 *   Fri Jan 19 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.162-1

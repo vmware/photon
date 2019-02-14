@@ -1,18 +1,18 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.31
-Release:        2%{?dist}
+Version:        8.5.37
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-Source0:        http://mirrors.koehn.com/apache/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1    apache-tomcat=c364d8814f06d1911e3dedf599fb07ab6c020c1d
+Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
+%define sha1    apache-tomcat=adfd9e4c27502e5d41cb7b77a2a8c8f680258c53
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=9c954df61d7c72f6d5e7319d25351e178a84cab4
+%define sha1    base=f13bf2eaf717564f572eeebaf2efcac483e6f9b9
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
@@ -101,6 +101,12 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Thu Jan 10 2019 Dweep Advani <dadvani@vmware.com> 8.5.37-1
+-   Upgrade to version 8.5.37
+*   Fri Dec 07 2018 Dweep Advani <dadvani@vmware.com> 8.5.35-1
+-   Upgrade to version 8.5.35
+*   Wed Nov 21 2018 Dweep Advani <dadvani@vmware.com> 8.5.31-3
+-   Fix CVE-2018-8014
 *   Thu May 17 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.31-2
 -   Mark configuration files as config(noreplace)
 *   Mon May 07 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.31-1
@@ -122,7 +128,7 @@ rm -rf %{buildroot}/*
 *   Wed Sep 27 2017 Alexey Makhalov <amakhalov@vmware.com> 8.5.20-3
 -   Offline build, disable javadoc target
 *   Wed Sep 13 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.20-2
--   Updated the permissions on directories packaged 
+-   Updated the permissions on directories packaged
 *   Tue Aug 15 2017 Anish Swaminathan <anishs@vmware.com> 8.5.20-1
 -   Upgraded to version 8.5.20
 *   Thu Jul 6 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.16-1
@@ -153,6 +159,6 @@ rm -rf %{buildroot}/*
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 7.0.63-3
 -   Change path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 7.0.63-2
--   Updated dependency after repackaging openjdk. 
+-   Updated dependency after repackaging openjdk.
 *   Wed Jul 8 2015 Sriram Nambakam <snambakam@vmware.com> 7.0.63
 -   Initial build.  First version

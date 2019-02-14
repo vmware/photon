@@ -1,18 +1,20 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        8.3.0
-Release:        1%{?dist}
+Version:        10.14.1
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
-Source0:        https://nodejs.org/download/release/v8.3.0/node-v%{version}.tar.xz
-%define         sha1 node=62969b076013b20370fd42b7441b3c7ab7ac924f
+Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
+%define         sha1 node=ef39d1c5d87e018c0daf22fbdf38c31cfdfce901
 
-BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
+BuildRequires:  coreutils >= 8.22, zlib
+BuildRequires:  python2
+BuildRequires:  which
 Requires:       (coreutils >= 8.22 or toybox)
-Requires:       openssl >= 1.0.1
+Requires:       python2
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -30,9 +32,8 @@ for developing applications that use nodejs.
 %setup -q -n node-v%{version}
 
 %build
-./configure --prefix=%{_prefix} \
-           --shared-openssl \
-           --shared-zlib
+sh configure --prefix=%{_prefix} \
+	     --shared-zlib
 
 make %{?_smp_mflags}
 
@@ -70,6 +71,14 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 10.14.1-2
+-   Added BuildRequires python2, which
+*   Tue Jan 08 2019 Siju Maliakkal <smaliakkal@vmware.com> 10.14.1-1
+-   Upgrade to 10.14.1 LTS
+*   Thu Sep 20 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.11.2-1
+-   Updated to version 9.11.2
+*   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.9.0-1
+-   Updated to version 9.9.0
 *   Wed Feb 14 2018 Xiaolin Li <xiaolinl@vmware.com> 8.3.0-1
 -   Updated to version 8.3.0
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 7.7.4-4

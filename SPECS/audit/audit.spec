@@ -3,10 +3,10 @@
 
 Summary:        Kernel Audit Tool
 Name:           audit
-Version:        2.7.5
-Release:        4%{?dist}
+Version:        2.8.4
+Release:        1%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha1    audit=7aaae7ea80f2280b25f243916e8d18b7338b5f53
+%define sha1    audit=026235ab9e8b19f6c2b1112ce13d180f35cf0ff4
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit/
@@ -161,6 +161,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Sep 3 2018 Keerthana K <keerthanak@vmware.com> 2.8.4-1
+-   Updated to version 2.8.4.
 *   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-4
 -   Fixed the log file directory structure
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-3

@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.14.54
+Version:        4.19.15
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=434080e874f7b78c3234f22784427d4a189fb54d
+%define sha1 linux=fb970b2014ecf9dcef23943f8095b28dfe0d6cca
 Source1:        config-secure
 Source2:        initramfs.trigger
 # common
@@ -20,24 +20,31 @@ Patch1:         double-tcp_mem-limits.patch
 Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
-Patch6:         x86-vmware-STA-support.patch
+Patch6:         4.18-x86-vmware-STA-support.patch
 # secure
+Patch7:         0001-bpf-ext4-bonding-Fix-compilation-errors.patch
 Patch13:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
 Patch14:        0002-Added-PAX_RANDKSTACK.patch
 Patch15:        0003-Added-rap_plugin.patch
 # HyperV Patches
 Patch16:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 #FIPS patches - allow some algorithms
-Patch24:        Allow-some-algo-tests-for-FIPS.patch
-Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
+Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
+# Out-of-tree patches from AppArmor:
+Patch32:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch33:        4.17-0002-apparmor-af_unix-mediation.patch
+Patch34:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+Patch35:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
 %endif
+BuildArch:      x86_64
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
@@ -88,6 +95,7 @@ The Linux package contains the Linux kernel doc files
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
@@ -95,6 +103,10 @@ The Linux package contains the Linux kernel doc files
 %patch24 -p1
 %patch26 -p1
 %patch31 -p1
+%patch32 -p1
+%patch33 -p1
+%patch34 -p1
+%patch35 -p1
 
 pushd ..
 %patch99 -p0
@@ -160,7 +172,7 @@ cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_
 # because .ko files will be loaded from the memory (LoadPin: obj=<unknown>)
 cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta loadpin.enabled=0 slub_debug=P page_poison=1 slab_nomerge
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta loadpin.enabled=0 audit=1 slub_debug=P page_poison=1 slab_nomerge pti=on
 photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
@@ -222,6 +234,35 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jan 15 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.15-1
+-   Update to version 4.19.15
+*   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-4
+-   cmdline: added audit=1 pti=on
+-   config: PANIC_TIMEOUT=-1, DEBUG_RODATA_TEST=y
+*   Wed Jan 09 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-3
+-   Additional security hardening options in the config.
+*   Fri Jan 04 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-2
+-   Enable AppArmor by default.
+*   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-1
+-   Update to version 4.19.6
+*   Thu Nov 15 2018 Ajay Kaher <akaher@vmware.com> 4.19.1-2
+-   Adding BuildArch
+*   Thu Nov 08 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.1-1
+-   Update to version 4.19.1
+*   Tue Oct 30 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.18.9-3
+-   Fix PAX randkstack and RAP plugin patches to avoid boot panic.
+*   Mon Oct 22 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.18.9-2
+-   Use updated steal time accounting patch.
+*   Tue Sep 25 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.18.9-1
+-   Update to version 4.18.9
+*   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
+-   Update to version 4.14.67
+*   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-4
+-   Add rdrand-based RNG driver to enhance kernel entropy.
+*   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-3
+-   Add full retpoline support by building with retpoline-enabled gcc.
+*   Thu Aug 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-2
+-   Apply out-of-tree patches needed for AppArmor.
 *   Mon Jul 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-1
 -   Update to version 4.14.54
 *   Mon Mar 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-2
@@ -281,7 +322,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Tue Jul 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-1
 -   Fix CVE-2017-11176 and CVE-2017-10911
 *   Fri Jul 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-3
--   Remove aufs source tarballs from git repo 
+-   Remove aufs source tarballs from git repo
 *   Mon Jul 03 2017 Xiaolin Li <xiaolinl@vmware.com> 4.9.34-2
 -   Add libdnet-devel, kmod-devel and libmspack-devel to BuildRequires
 *   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-1
@@ -318,7 +359,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Wed Feb 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-2
 -   rap_plugin improvement: throw error on function type casting
     function signatures were cleaned up using this feature.
--   Added RAP_ENTRY for asm functions. 
+-   Added RAP_ENTRY for asm functions.
 *   Thu Feb 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-1
 -   Update to linux-4.9.9 to fix CVE-2016-10153, CVE-2017-5546,
     CVE-2017-5547, CVE-2017-5548 and CVE-2017-5576.
@@ -346,5 +387,4 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   .config: add netfilter_xt_match_{cgroup,ipvs} support
 -   .config: disable /dev/mem
 *   Mon Oct 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-1
-    Initial commit. 
-
+    Initial commit.

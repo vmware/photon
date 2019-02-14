@@ -2,14 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-asn1crypto
-Version:        0.22.0
-Release:        3%{?dist}
+Version:        0.24.0
+Release:        1%{?dist}
 Summary:        A fast, pure Python library for parsing and serializing ASN.1 structures.
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/67/14/5d66588868c4304f804ebaff9397255f6ec5559e46724c2496e0f26e68d6/asn1crypto-0.22.0.tar.gz
 Source0:        asn1crypto-%{version}.tar.gz
-%define sha1    asn1crypto=c4f60b52dd06e3fd0ed568a741e968aaccd2e3e5
+%define sha1    asn1crypto=c8f64e99bc01d90c412891cdad97675d8fe79cc7
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -65,6 +65,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.24.0-1
+-   Update to version 0.24.0
 *   Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 0.22.0-3
 -   Removed %check because the source does not include the test module
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.22.0-2

@@ -2,18 +2,23 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-websocket-client
-Version:        0.44.0
-Release:        1%{?dist}
+Version:        0.53.0
+Release:        2%{?dist}
 Summary:        WebSocket client for python
 License:        LGPL
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/websocket-client
 Source0:        websocket_client-%{version}.tar.gz
-%define sha1    websocket_client=736908072e36c1f3dc5714b685e246d8090ee1df
+%define sha1    websocket_client=09bd8914944646fde9d2672392579a982ea0f031
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+%if %{with_check}
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+%endif
+
 Requires:       python2
 Requires:       python2-libs
 
@@ -48,6 +53,12 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+%check
+python2 setup.py test
+pushd ../p3dir
+python3 setup.py test
+popd
+
 %files
 %defattr(-,root,root,-)
 %{python2_sitelib}/*
@@ -58,6 +69,10 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Dec 07 2018 Ashwin H <ashwinh@vmware.com> 0.53.0-2
+-   Add %check
+*   Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 0.53.0-1
+-   Updated to release 0.53.0
 *   Thu Nov 30 2017 Xiaolin Li <xiaolinl@vmware.com> 0.44.0-1
 -   Update websocket_client to version 0.44.0
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.0-2

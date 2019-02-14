@@ -1,15 +1,14 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
-Version:        10.2.10
-Release:        1%{?dist}
+Version:        10.3.11
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://mariadb.org/
-Source0:        http://mirrors.nodesdirect.com/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define         sha1 mariadb=14a7d6b5c77de5235b60ffa13bf80a1dd2dda49c
-
+Source0:        https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz
+%define         sha1 mariadb=7b75d7ec06642f26ce197e07f5ba16283061cc87
 BuildRequires:  cmake
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
@@ -54,6 +53,8 @@ errmsg for maridb
 
 %prep
 %setup -q %{name}-%{version}
+# Remove PerconaFT from here because of AGPL licence
+rm -rf storage/tokudb/PerconaFT
 
 %build
 mkdir build && cd build
@@ -79,7 +80,9 @@ cmake -DCMAKE_BUILD_TYPE=Release                        \
       -DSKIP_TESTS=ON                                   \
       -DTOKUDB_OK=0                                     \
       ..
-make
+
+make %{?_smp_mflags}
+
 %install
 cd build
 make DESTDIR=%{buildroot} install
@@ -134,6 +137,7 @@ rm -rf %{buildroot}
 %{_libdir}/libmysqlclient.so
 %{_libdir}/libmysqlclient_r.so
 %{_libdir}/libmariadb.so.*
+%{_libdir}/libmariadbd.so.*
 %{_bindir}/msql2mysql
 %{_bindir}/mysql
 %{_bindir}/mysql_find_rows
@@ -148,6 +152,7 @@ rm -rf %{buildroot}
 %{_bindir}/mysqlshow
 %{_bindir}/mysqlslap
 %{_bindir}/mariadb_config
+%{_bindir}/test-connect-t
 %{_bindir}/mysql_client_test
 %{_bindir}/mysql_client_test_embedded
 %{_bindir}/mysql_config
@@ -162,6 +167,7 @@ rm -rf %{buildroot}
 %{_bindir}/mytop
 %{_bindir}/perror
 %{_bindir}/sst_dump
+%{_bindir}/myrocks_hotbackup
 %{_mandir}/man1/msql2mysql.1.gz
 %{_mandir}/man1/mysql.1.gz
 %{_mandir}/man1/mysqlaccess.1.gz
@@ -207,7 +213,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/my.cnf.d/mysql-clients.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/server.cnf
 %dir %attr(0750,mysql,mysql) %{_var}/lib/mysql
-%{_libdir}/libmysqld.so.*
 %{_libdir}/mysql/plugin*
 %{_bindir}/aria_chk
 %{_bindir}/aria_dump_log
@@ -238,6 +243,7 @@ rm -rf %{buildroot}
 %{_bindir}/wsrep_sst_mariabackup
 %{_bindir}/wsrep_sst_mysqldump
 %{_bindir}/wsrep_sst_rsync
+%{_bindir}/wsrep_sst_rsync_wan
 %{_bindir}/wsrep_sst_xtrabackup
 %{_bindir}/wsrep_sst_xtrabackup-v2
 %{_sbindir}/*
@@ -245,11 +251,6 @@ rm -rf %{buildroot}
 %{_libdir}/systemd/system/mariadb@.service
 %{_libdir}/systemd/system-preset/50-mariadb.preset
 %{_datadir}/binary-configure
-%{_datadir}/my-huge.cnf
-%{_datadir}/my-innodb-heavy-4G.cnf
-%{_datadir}/my-large.cnf
-%{_datadir}/my-medium.cnf
-%{_datadir}/my-small.cnf
 %{_datadir}/mysql-log-rotate
 %{_datadir}/mysql.server
 %{_datadir}/mysqld_multi.server
@@ -286,12 +287,18 @@ rm -rf %{buildroot}
 %{_mandir}/man1/resolveip.1.gz
 %{_mandir}/man1/resolve_stack_dump.1.gz
 %{_mandir}/man1/tokuftdump.1.gz
-%{_mandir}/man1/tokuft_logdump.1.gz
+%{_mandir}/man1/tokuft_logprint.1.gz
 %{_mandir}/man1/wsrep_sst_common.1.gz
 %{_mandir}/man1/wsrep_sst_mysqldump.1.gz
 %{_mandir}/man1/wsrep_sst_rsync.1.gz
 %{_mandir}/man1/wsrep_sst_xtrabackup.1.gz
 %{_mandir}/man1/wsrep_sst_xtrabackup-v2.1.gz
+%{_mandir}/man1/mariabackup.1.gz
+%{_mandir}/man1/mbstream.1.gz
+%{_mandir}/man1/mysql_embedded.1.gz
+%{_mandir}/man1/mysql_ldb.1.gz
+%{_mandir}/man1/wsrep_sst_mariabackup.1.gz
+%{_mandir}/man1/wsrep_sst_rsync_wan.1.gz
 %{_mandir}/man8/*
 %{_datadir}/mysql/fill_help_tables.sql
 %{_datadir}/mysql/install_spider.sql
@@ -304,6 +311,13 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/mysql_system_tables_data.sql
 %{_datadir}/mysql/mysql_test_data_timezone.sql
 %{_datadir}/mysql/mysql_to_mariadb.sql
+%{_datadir}/mysql/mysql_test_db.sql
+%license %{_datadir}/mysql/mroonga/AUTHORS
+%license %{_datadir}/mysql/mroonga/COPYING
+%license %{_datadir}/groonga-normalizer-mysql/lgpl-2.0.txt
+%license %{_datadir}/groonga/COPYING
+%doc %{_datadir}/groonga-normalizer-mysql/README.md
+%doc %{_datadir}/groonga/README.md
 
 
 %files server-galera
@@ -317,7 +331,9 @@ rm -rf %{buildroot}
 %{_includedir}/mysql/*
 %{_datadir}/aclocal/mysql.m4
 %{_libdir}/libmariadb.so
+%{_libdir}/libmariadbd.so
 %{_libdir}/libmysqld.so
+%{_libdir}/pkgconfig/libmariadb.pc
 %{_datadir}/pkgconfig/mariadb.pc
 
 %files errmsg
@@ -348,6 +364,16 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Wed Jan 23 2019 Ajay Kaher <akaher@vmware.com> 10.3.11-2
+-   Remove PerconaFT from mariadb pkg because of AGPL licence
+*   Wed Jan 02 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.3.11-1
+-   Upgrade to version 10.3.11
+*   Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 10.3.9-3
+-   Enabling for aarch64
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 10.3.9-2
+-   Adding BuildArch
+*   Thu Sep 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 10.3.9-1
+-   Update to version 10.3.9
 *   Tue Nov 07 2017 Xiaolin Li <xiaolinl@vmware.com> 10.2.10-1
 -   Update to verion 10.2.10 to address CVE-2017-10378, CVE-2017-10268
 *   Wed Sep 06 2017 Xiaolin Li <xiaolinl@vmware.com> 10.2.8-1

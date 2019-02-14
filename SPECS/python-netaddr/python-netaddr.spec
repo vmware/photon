@@ -3,7 +3,7 @@
 
 Name:           python-netaddr
 Version:        0.7.19
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A network address manipulation library for Python
 License:        BSD
 Group:          Development/Languages/Python
@@ -15,8 +15,14 @@ Patch0:         0001-fixed-broken-tests-in-issue-149-python-3-regression.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
-BuildRequires:  python-pytest
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
 %endif
 
 Requires:       python2
@@ -29,13 +35,6 @@ A network address manipulation library for Python
 
 %package -n python3-netaddr
 Summary:        Python3-netaddr
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-pytest
-%endif
 %description -n python3-netaddr
 Python 3 version.
 
@@ -59,10 +58,15 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-PYTHONPATH=./ py.test2
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pytest
+PYTHONPATH=./ python setup.py test
 pushd ../p3dir
-LANG=en_US.UTF-8 PYTHONPATH=./ py.test3
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pytest
+LANG=en_US.UTF-8 PYTHONPATH=./ python3 setup.py test
 popd
+
 
 %files
 %defattr(-,root,root,-)
@@ -75,6 +79,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Dec 03 2018 Tapas Kundu <tkundu@vmware.com> 0.7.19-6
+-   Fixed make check.
 *   Tue Jul 25 2017 Divya Thaluru <dthaluru@vmware.com> 0.7.19-5
 -   Fixed test command and added patch to fix test issues.
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.19-4

@@ -1,5 +1,4 @@
 #
-#    Copyright (C) 2015 vmware inc.
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
@@ -29,35 +28,17 @@ class PackageSelector(object):
                              can_go_next=True, position=1)
 
     @staticmethod
-    def get_packages_to_install(options, config_type, output_data_path):
-        package_list = []
-        for install_option in options:
-            if install_option[0] == config_type:
-                for include_type in install_option[1]["include"]:
-                    package_list = (package_list +
-                                    PackageSelector.get_packages_to_install(options,
-                                                                            include_type,
-                                                                            output_data_path))
-                json_wrapper_package_list = JsonWrapper(os.path.join(output_data_path,
-                                                                     install_option[1]["file"]))
-                package_list_json = json_wrapper_package_list.read()
-                package_list = package_list + package_list_json["packages"]
-
-                if "remove" in install_option[1]:
-                    for package in install_option[1]["remove"]:
-                        package_list.remove(package)
-
-                break
-        return package_list
+    def get_packages_to_install(packagelist_file, output_data_path):
+        json_wrapper_package_list = JsonWrapper(os.path.join(output_data_path,
+                                                packagelist_file))
+        package_list_json = json_wrapper_package_list.read()
+        return package_list_json["packages"]
 
     @staticmethod
-    def get_additional_files_to_copy_in_iso(options, base_path, config_type):
+    def get_additional_files_to_copy_in_iso(install_option, base_path):
         additional_files = []
-        for install_option in options:
-            if install_option[0] == config_type:
-                if "additional-files" in install_option[1]:
-                    additional_files = install_option[1]["additional-files"]
-                break
+        if "additional-files" in install_option[1]:
+            additional_files = install_option[1]["additional-files"]
         return additional_files
 
     def load_package_list(self, options_file):
@@ -73,11 +54,10 @@ class PackageSelector(object):
         visible_options_cnt = 0
         for install_option in options_sorted:
             if install_option[1]["visible"] == True:
-                package_list = PackageSelector.get_packages_to_install(options_sorted,
-                                                                       install_option[0],
+                package_list = PackageSelector.get_packages_to_install(install_option[1]['packagelist_file'],
                                                                        base_path)
                 additional_files = PackageSelector.get_additional_files_to_copy_in_iso(
-                    options_sorted, base_path, install_option[0])
+                    install_option, base_path)
                 self.package_menu_items.append((install_option[1]["title"],
                                                 self.exit_function,
                                                 [install_option[0],

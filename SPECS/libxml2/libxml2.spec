@@ -3,27 +3,27 @@
 
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.9.7
-Release:        1%{?dist}
+Version:        2.9.8
+Release:        2%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
-#https://bugs.python.org/issue23524
-Patch0:         libxml2-2.9.4-remove-_PyVerify_fd-call.patch
-%define sha1    libxml2=ab3325e6cdda50ab2382fdfe0bdb6f7d1b9224a6
+Patch0:         Fix_nullptr_deref_with_XPath_logic_ops.patch
+%define sha1    libxml2=66bcefd98a6b7573427cf66f9d3841b59eb5b8c3
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+BuildRequires:  python3-devel
 Provides:       pkgconfig(libxml-2.0)
 
 %description
-The libxml2 package contains libraries and utilities used for parsing XML files. 
+The libxml2 package contains libraries and utilities used for parsing XML files.
 
 %package python
 Summary:        The libxml2 python module
 Group:          Development/Languages/Python
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
 Requires:       %{name} = %{version}
 Requires:       python2
 Requires:       python2-libs
@@ -34,7 +34,6 @@ The libxml2 python module
 %package -n     python3-libxml2
 Summary:        Python 3 bindings for libxml2.
 Group:          Development/Libraries
-BuildRequires:  python3-devel
 Requires:       %{name} = %{version}
 Requires:       python3
 
@@ -51,16 +50,9 @@ Static libraries and header files for the support library for libxml
 %prep
 %setup -q
 %patch0 -p1
-sed \
-  -e /xmlInitializeCatalog/d \
-  -e 's/((ent->checked =.*&&/(((ent->checked == 0) ||\
-          ((ent->children == NULL) \&\& (ctxt->options \& XML_PARSE_NOENT))) \&\&/' \
-  -i parser.c
+
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
+%configure \
     --disable-static \
     --with-history
 make %{?_smp_mflags}
@@ -72,10 +64,7 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
 make clean
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
+%configure \
     --disable-static \
     --with-python=/usr/bin/python3
 make %{?_smp_mflags}
@@ -115,6 +104,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
 %changelog
+*   Fri Dec 07 2018 Dweep Advani <dadvani@vmware.com> 2.9.8-2
+-   Fix CVE-2018-14404 and improve build and install sections
+*   Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 2.9.8-1
+-   Update to version 2.9.8
 *   Mon Feb 12 2018 Xiaolin Li <xiaolinl@vmware.com> 2.9.7-1
 -   Update to version 2.9.7
 *   Wed Oct 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-1
@@ -149,7 +142,7 @@ rm -rf %{buildroot}/*
 -   Upgraded to version 2.9.3
 *   Thu Jan 28 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.2-1
 -   Downgrade to version 2.9.2
--   libxml 2.9.3 has been found to have major functional issues. 
+-   libxml 2.9.3 has been found to have major functional issues.
 -   Until these are resolved, please roadmap updating to 2.9.2.
 *   Wed Dec 2 2015 Xiaolin Li <xiaolinl@vmware.com> 2.9.3-1
 -   Update to version 2.9.3

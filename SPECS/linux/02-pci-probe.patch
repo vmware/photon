@@ -3,31 +3,47 @@ From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 29 Sep 2015 15:55:49 -0700
 Subject: [PATCH] pci/probe.c: Hardcodded pci probe.
 
-Added pci=scan_all cmdline parameter to verify hardcodded pci values
+PCI probing takes a long time to scan resources for all devices
+on PCI bus. Idea of this patch is to hardcode known resources
+for known devices. In VMware hypervisor we do not have much
+virtual PCI devices.
+
+is_known_device() has list of known devices and available
+resources (BARs) for them.
+It returns: 0 if BAR not available for the given device
+            1 if available and sz parameter will have BAR size
+
+guess_bar_count() returns maximum number of BARs for the given
+class to do not probe for all 6 bars
+
+has_rom() returns 0 if given class does not have any ROM BARs,
+which allows to skip ROM probing
+
+Added pci=scan_all cmdline parameter verifies hardcodded pci
+values at runtime.
 ---
  drivers/pci/pci.c   |   2 +
  drivers/pci/pci.h   |   2 +
  drivers/pci/probe.c | 377 +++++++++++++++++++++++++++++++++++++++++++++++++++-
  3 files changed, 377 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 6922964e3dff..e4db16e7c1d2 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -5303,6 +5303,8 @@ static int __init pci_setup(char *str)
- 				pcie_bus_config = PCIE_BUS_PEER2PEER;
- 			} else if (!strncmp(str, "pcie_scan_all", 13)) {
+
+diff -ur linux-4.19.1/drivers/pci/pci.c linux-4.19.1_new/drivers/pci/pci.c
+--- linux-4.19.1/drivers/pci/pci.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/pci/pci.c	2018-11-08 01:59:21.813106907 +0000
+@@ -6116,6 +6116,8 @@
  				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
+ 			} else if (!strncmp(str, "disable_acs_redir=", 18)) {
+ 				disable_acs_redir_param = str + 18;
 +			} else if (!strncmp(str, "scan_all", 8)) {
 +				pci_scan_all();
  			} else {
  				printk(KERN_ERR "PCI: Unknown option `%s'\n",
  						str);
-diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index a5d37f6a9fb5..aaa456c9bf95 100644
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -163,6 +163,8 @@ void pci_no_msi(void);
+diff -ur linux-4.19.1/drivers/pci/pci.h linux-4.19.1_new/drivers/pci/pci.h
+--- linux-4.19.1/drivers/pci/pci.h	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/pci/pci.h	2018-11-08 01:57:51.917110565 +0000
+@@ -147,6 +147,8 @@
  static inline void pci_no_msi(void) { }
  #endif
  
@@ -36,11 +52,10 @@ index a5d37f6a9fb5..aaa456c9bf95 100644
  static inline void pci_msi_set_enable(struct pci_dev *dev, int enable)
  {
  	u16 control;
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index d266d800f246..11544ddd6e5c 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -163,6 +163,346 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+diff -ur linux-4.19.1/drivers/pci/probe.c linux-4.19.1_new/drivers/pci/probe.c
+--- linux-4.19.1/drivers/pci/probe.c	2018-11-04 13:50:54.000000000 +0000
++++ linux-4.19.1_new/drivers/pci/probe.c	2018-11-08 01:57:51.917110565 +0000
+@@ -168,6 +168,346 @@
  
  #define PCI_COMMAND_DECODE_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_IO)
  
@@ -385,9 +400,9 @@ index d266d800f246..11544ddd6e5c 100644
 +}
 +
  /**
-  * pci_read_base - read a PCI BAR
+  * pci_read_base - Read a PCI BAR
   * @dev: the PCI device
-@@ -175,13 +515,20 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+@@ -180,13 +520,20 @@
  int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		    struct resource *res, unsigned int pos)
  {
@@ -409,7 +424,7 @@ index d266d800f246..11544ddd6e5c 100644
  	/* No printks while decoding is disabled! */
  	if (!dev->mmio_always_on) {
  		pci_read_config_word(dev, PCI_COMMAND, &orig_cmd);
-@@ -191,7 +538,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -196,7 +543,6 @@
  		}
  	}
  
@@ -417,7 +432,7 @@ index d266d800f246..11544ddd6e5c 100644
  
  	pci_read_config_dword(dev, pos, &l);
  	pci_write_config_dword(dev, pos, l | mask);
-@@ -207,6 +553,11 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -212,6 +558,11 @@
  	if (sz == 0xffffffff)
  		sz = 0;
  
@@ -429,13 +444,13 @@ index d266d800f246..11544ddd6e5c 100644
  	/*
  	 * I don't know how l can have all bits set.  Copied from old code.
  	 * Maybe it fixes a bug on some ancient platform.
-@@ -311,8 +662,19 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -316,8 +667,19 @@
  fail:
  	res->flags = 0;
  out:
 -	if (res->flags)
 +	if (res->flags) {
- 		dev_printk(KERN_DEBUG, &dev->dev, "reg 0x%x: %pR\n", pos, res);
+ 		pci_printk(KERN_DEBUG, dev, "reg 0x%x: %pR\n", pos, res);
 +		if (pci_scan_and_verify) {
 +			int bar = (pos - PCI_BASE_ADDRESS_0) >> 2;
 +			int maxbar = guess_bar_count(dev->class);
@@ -450,7 +465,7 @@ index d266d800f246..11544ddd6e5c 100644
  
  	return (res->flags & IORESOURCE_MEM_64) ? 1 : 0;
  }
-@@ -1265,7 +1627,14 @@ int pci_setup_device(struct pci_dev *dev)
+@@ -1646,7 +2008,13 @@
  		if (class == PCI_CLASS_BRIDGE_PCI)
  			goto bad;
  		pci_read_irq(dev);
@@ -458,14 +473,10 @@ index d266d800f246..11544ddd6e5c 100644
 +
 +		if (pci_scan_and_verify)
 +			pci_read_bases(dev, 6, PCI_ROM_ADDRESS);
-+		else if (class != PCI_CLASS_STORAGE_IDE)
++		else
 +			pci_read_bases(dev,
-+			guess_bar_count(dev->class),
-+			has_rom(dev->class, PCI_ROM_ADDRESS));
-+
- 		pci_read_config_word(dev, PCI_SUBSYSTEM_VENDOR_ID, &dev->subsystem_vendor);
- 		pci_read_config_word(dev, PCI_SUBSYSTEM_ID, &dev->subsystem_device);
++				guess_bar_count(dev->class),
++				has_rom(dev->class, PCI_ROM_ADDRESS));
  
--- 
-2.11.0
-
+ 		pci_subsystem_ids(dev, &dev->subsystem_vendor, &dev->subsystem_device);
+ 

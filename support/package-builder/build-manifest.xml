@@ -233,7 +233,6 @@
         <package id="openssl"/>
         <package id="openssl-devel"
                  spec="openssl"/>
-        <package id="ostree"/>
         <package id="parted"/>
         <package id="patch"/>
         <package id="pcre"/>
@@ -273,8 +272,6 @@
         <package id="rpm"/>
         <package id="rpm-devel"
                  spec="rpm"/>
-        <package id="rpm-ostree"/>
-        <package id="rpm-ostree-toolbox"/>
         <package id="ruby"/>
         <package id="sed"/>
         <package id="sed-lang"
@@ -657,7 +654,6 @@
         <pkgref id="ntp"/>
         <pkgref id="openldap"/>
         <pkgref id="openssl-devel"/>
-        <pkgref id="ostree"/>
         <pkgref id="parted"/>
         <pkgref id="patch"/>
         <pkgref id="pcre-devel"/>
@@ -672,8 +668,6 @@
         <pkgref id="python2-tools"/>
         <pkgref id="readline-devel"/>
         <pkgref id="rpm-devel"/>
-        <pkgref id="rpm-ostree"/>
-        <pkgref id="rpm-ostree-toolbox"/>
         <pkgref id="ruby"/>
         <pkgref id="sed-lang"/>
         <pkgref id="sudo"/>

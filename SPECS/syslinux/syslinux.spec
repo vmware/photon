@@ -2,7 +2,7 @@
 Summary:	Simple kernel loader which boots from a FAT filesystem
 Name:		syslinux
 Version:	6.04
-Release:	2%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://www.syslinux.org
 Group:		Applications/System
@@ -10,6 +10,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://www.kernel.org/pub/linux/utils/boot/%{name}/Testing/%{version}/%{name}-%{version}-pre1.tar.xz
 Patch0:		0001-Add-install-all-target-to-top-side-of-HAVE_FIRMWARE.patch
+BuildArch:      x86_64
 BuildRequires:	nasm
 BuildRequires:	util-linux-devel
 Requires:	util-linux
@@ -32,6 +33,8 @@ Headers and libraries for syslinux development.
 %setup -q -n %{name}-%{version}-pre1
 %patch0 -p1
 %build
+#make some fixes required by glibc-2.28:
+sed -i '/unistd/a #include <sys/sysmacros.h>' extlinux/main.c
 make bios clean all
 %install
 make bios install-all \
@@ -58,6 +61,10 @@ rm %{buildroot}/%{_bindir}/sha1pass
 %{_datadir}/syslinux/com32/*
 
 %changelog
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 6.04-4
+-   Adding BuildArch
+*   Wed Sep 19 2018 Alexey Makhalov <amakhalov@vmware.com> 6.04-3
+-   Fix compilation issue against glibc-2.28
 *   Wed Oct 25 2017 Alexey Makhalov <amakhalov@vmware.com> 6.04-2
 -   Remove md5pass and sha1pass tools
 *   Tue Oct 17 2017 Alexey Makhalov <amakhalov@vmware.com> 6.04-1

@@ -1,14 +1,14 @@
 Summary:        Programs for finding and viewing man pages
 Name:           man-db
-Version:        2.7.6
-Release:        4%{?dist}
+Version:        2.8.4
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.nongnu.org/man-db
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
-%define sha1    man-db=919dcb34d604faac9b18a38ead07f457d0dab501
+%define sha1    man-db=729096a35fec13df8b7b350fdc1b323f990b6144
 Requires:       libpipeline
 Requires:       gdbm
 Requires:       xz
@@ -18,7 +18,7 @@ Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 %if %{with_check}
 BuildRequires:  shadow
 %endif
-BuildRequires:  libpipeline
+BuildRequires:  libpipeline-devel
 BuildRequires:  gdbm-devel
 BuildRequires:  xz
 BuildRequires:  groff
@@ -27,12 +27,10 @@ BuildRequires:  groff
 The Man-DB package contains programs for finding and viewing man pages.
 
 %prep
-%setup -qn %{name}-%{version}.1
+%setup -qn %{name}-%{version}
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
-    --sysconfdir=%{_sysconfdir} \
     --disable-setuid \
     --with-browser=%{_bindir}/lynx \
     --with-vgrind=%{_bindir}/vgrind \
@@ -78,6 +76,8 @@ fi
 %{_libdir}/tmpfiles.d/man-db.conf
 
 %changelog
+*   Mon Oct 22 2018 Sujay G <gsujay@vmware.com> 2.8.4-1
+-   Bump man-db version to 2.8.4
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.6-4
 -   Remove shadow from requires and use explicit tools for post actions
 *   Fri Aug 04 2017 Chang Lee <changlee@vmware.com> 2.7.6-3

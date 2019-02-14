@@ -1,18 +1,21 @@
 Summary:	advanced key-value store
 Name:		redis
-Version:	3.2.8
-Release:	5%{?dist}
+Version:	4.0.11
+Release:	1%{?dist}
 License:	BSD
 URL:		http://redis.io/
 Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha1 redis=6780d1abb66f33a97aad0edbe020403d0a15b67f
+%define sha1 redis=a13ccf0f7051f82dc1c979bd94f0b9a9ba039122
 Patch0:         redis-conf.patch
 BuildRequires:  gcc
 BuildRequires:  systemd
 BuildRequires:  make
+BuildRequires:  which
+BuildRequires:  tcl
+BuildRequires:  tcl-devel
 Requires:	systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 
@@ -51,8 +54,7 @@ WantedBy=multi-user.target
 EOF
 
 %check
-#check requires tcl which is not supported in Photon OS right now.
-
+make check
 
 %pre
 getent group %{name} &> /dev/null || \
@@ -81,6 +83,8 @@ exit 0
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+* Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 4.0.11-1
+- Updated to version 4.0.11.
 * Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  3.2.8-5
 - Fixed the log file directory structure
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.2.8-4

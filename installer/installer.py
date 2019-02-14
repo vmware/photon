@@ -1,7 +1,6 @@
 """
 Photon installer
 """
-#    Copyright (C) 2015 vmware inc.
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
@@ -11,6 +10,7 @@ import shutil
 import signal
 import sys
 import glob
+import re
 import modules.commons
 from jsonwrapper import JsonWrapper
 from progressbar import ProgressBar
@@ -21,25 +21,32 @@ class Installer(object):
     """
     Photon installer
     """
-    mount_command = "./mk-mount-disk.sh"
-    prepare_command = "./mk-prepare-system.sh"
+    mount_command = os.path.dirname(__file__)+"/mk-mount-disk.sh"
     finalize_command = "./mk-finalize-system.sh"
-    chroot_command = "./mk-run-chroot.sh"
-    setup_grub_command = "./mk-setup-grub.sh"
-    unmount_disk_command = "./mk-unmount-disk.sh"
+    chroot_command = os.path.dirname(__file__)+"/mk-run-chroot.sh"
+    unmount_disk_command = os.path.dirname(__file__)+"/mk-unmount-disk.sh"
 
     def __init__(self, install_config, maxy=0, maxx=0, iso_installer=False,
-                 rpm_path="../stage/RPMS", log_path="../stage/LOGS"):
+                 rpm_path=os.path.dirname(__file__)+"/../stage/RPMS", log_path=os.path.dirname(__file__)+"/../stage/LOGS", log_level="info"):
         self.install_config = install_config
         self.install_config['iso_installer'] = iso_installer
         self.rpm_path = rpm_path
         self.log_path = log_path
+        self.log_level = log_level
 
         if 'working_directory' in self.install_config:
             self.working_directory = self.install_config['working_directory']
         else:
             self.working_directory = "/mnt/photon-root"
+        if 'prepare_script' in self.install_config:
+            self.prepare_command = self.install_config['prepare_script']
+        else:
+            self.prepare_command = os.path.dirname(__file__)+"/mk-prepare-system.sh"
         self.photon_root = self.working_directory + "/photon-chroot"
+        if 'setup_grub_script' in self.install_config:
+            self.setup_grub_command = self.install_config['setup_grub_script']
+        else:
+            self.setup_grub_command = os.path.dirname(__file__)+"/mk-setup-grub.sh"
         self.rpms_tobeinstalled = None
 
         if self.install_config['iso_installer']:
@@ -124,7 +131,7 @@ class Installer(object):
                                .format(self.progress_bar.time_elapsed))
             self._eject_cdrom()
 
-    def _copy_rpms(self):
+    def _create_installrpms_list(self):
         """
         Prepare RPM list and copy rpms
         """
@@ -136,16 +143,16 @@ class Installer(object):
         selected_packages = self.install_config['packages']
 
         for pkg in selected_packages:
+            versionindex = pkg.rfind("-")
+            if versionindex == -1:
+                raise Exception("Invalid pkg name: " + pkg)
+            package = pkg[:versionindex]
             if pkg in pkg_to_rpm_map:
                 if pkg_to_rpm_map[pkg]['rpm'] is not None:
                     name = pkg_to_rpm_map[pkg]['rpm']
                     basename = os.path.basename(name)
                     self.rpms_tobeinstalled.append({'filename': basename, 'path': name,
-                                                    'package' : pkg})
-
-        # Copy the rpms
-        for rpm in self.rpms_tobeinstalled:
-            shutil.copy(rpm['path'], self.photon_root + '/RPMS/')
+                                                    'package' : package})
 
     def _copy_files(self):
         """
@@ -159,21 +166,14 @@ class Installer(object):
             self.exit_gracefully(None, None)
 
         # Copy the installer files
-        process = subprocess.Popen(['cp', '-r', "../installer", self.photon_root],
+        process = subprocess.Popen(['cp', '-r', os.path.dirname(__file__), self.photon_root],
                                    stdout=self.output)
         retval = process.wait()
         if retval != 0:
             modules.commons.log(modules.commons.LOG_ERROR, "Fail to copy install scripts")
             self.exit_gracefully(None, None)
 
-        # Create the rpms directory
-        process = subprocess.Popen(['mkdir', '-p', self.photon_root + '/RPMS'],
-                                   stdout=self.output)
-        retval = process.wait()
-        if retval != 0:
-            modules.commons.log(modules.commons.LOG_ERROR, "Fail to create the rpms directory")
-            self.exit_gracefully(None, None)
-        self._copy_rpms()
+        self._create_installrpms_list()
 
     def _bind_installer(self):
         """
@@ -299,7 +299,7 @@ class Installer(object):
         if self.install_config['iso_installer']:
             self._bind_installer()
             self._bind_repo_dir()
-            process = subprocess.Popen([Installer.prepare_command, '-w',
+            process = subprocess.Popen([self.prepare_command, '-w',
                                         self.photon_root, 'install'],
                                        stdout=self.output)
             retval = process.wait()
@@ -310,7 +310,7 @@ class Installer(object):
         else:
             self._copy_files()
             #Setup the filesystem basics
-            process = subprocess.Popen([Installer.prepare_command, '-w', self.photon_root],
+            process = subprocess.Popen([self.prepare_command, '-w', self.photon_root, self.rpm_path],
                                        stdout=self.output)
             retval = process.wait()
             if retval != 0:
@@ -329,7 +329,7 @@ class Installer(object):
         retval = process.wait()
         if retval != 0:
             modules.commons.log(modules.commons.LOG_ERROR,
-                                "Fail to setup th target system after the installation")
+                                "Fail to setup the target system after the installation")
 
         if self.install_config['iso_installer']:
 
@@ -369,7 +369,7 @@ class Installer(object):
             try:
                 if self.install_config['boot'] == 'bios':
                     process = subprocess.Popen(
-                        [Installer.setup_grub_command, '-w', self.photon_root,
+                        [self.setup_grub_command, '-w', self.photon_root,
                          "bios", self.install_config['disk']['disk'],
                          self.install_config['disk']['root'],
                          self.install_config['disk']['boot'],
@@ -378,7 +378,7 @@ class Installer(object):
                         stdout=self.output)
                 elif self.install_config['boot'] == 'efi':
                     process = subprocess.Popen(
-                        [Installer.setup_grub_command, '-w', self.photon_root,
+                        [self.setup_grub_command, '-w', self.photon_root,
                          "efi", self.install_config['disk']['disk'],
                          self.install_config['disk']['root'],
                          self.install_config['disk']['boot'],
@@ -388,7 +388,7 @@ class Installer(object):
             except:
                 #install bios if variable is not set.
                 process = subprocess.Popen(
-                    [Installer.setup_grub_command, '-w', self.photon_root,
+                    [self.setup_grub_command, '-w', self.photon_root,
                      "bios", self.install_config['disk']['disk'],
                      self.install_config['disk']['root'],
                      self.install_config['disk']['boot'],
@@ -397,17 +397,26 @@ class Installer(object):
                     stdout=self.output)
             retval = process.wait()
 
+            if retval != 0:
+                raise Exception("Bootloader (grub2) setup failed")
+
             self._update_fstab()
+            if not self.install_config['iso_installer']:
+                process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")],
+                                           stdout=self.output)
+                retval = process.wait()
+                if retval != 0:
+                    modules.commons.log(modules.commons.LOG_ERROR,
+                                        "Fail to remove the installer directory")
 
     def _execute_modules(self, phase):
         """
         Execute the scripts in the modules folder
         """
-        sys.path.append("./modules")
-        modules_paths = glob.glob('modules/m_*.py')
+        sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "modules")))
+        modules_paths = glob.glob(os.path.abspath(os.path.join(os.path.dirname(__file__), 'modules')) + '/m_*.py')
         for mod_path in modules_paths:
-            module = mod_path.replace('/', '.', 1)
-            module = os.path.splitext(module)[0]
+            module = os.path.splitext(os.path.basename(mod_path))[0]
             try:
                 __import__(module)
                 mod = sys.modules[module]
@@ -434,7 +443,6 @@ class Installer(object):
                 modules.commons.log(modules.commons.LOG_ERROR,
                                     "Error: not able to execute module {}".format(module))
                 continue
-
             mod.execute(self.install_config, self.photon_root)
 
     def _adjust_packages_for_vmware_virt(self):
@@ -443,16 +451,9 @@ class Installer(object):
         """
         try:
             if self.install_config['install_linux_esx']:
-                selected_packages = self.install_config['packages']
-                try:
-                    selected_packages.remove('linux')
-                except ValueError:
-                    pass
-                try:
-                    selected_packages.remove('initramfs')
-                except ValueError:
-                    pass
-                selected_packages.append('linux-esx')
+                regex = re.compile(r'^linux-[0-9]|^initramfs-[0-9]')
+                self.install_config['packages'] = [x for x in self.install_config['packages'] if not regex.search(x)]
+                self.install_config['packages'].append('linux-esx')
         except KeyError:
             pass
 

@@ -1,5 +1,5 @@
 [photon-extras]
-name=VMware Photon Extras 2.0(x86_64)
+name=VMware Photon Extras 3.0(_arch)
 baseurl=https://dl.bintray.com/vmware/photon_extras_$releasever_$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1

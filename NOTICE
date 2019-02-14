@@ -1,12 +1,12 @@
 NOTICE
 
-Photon OS v2.0
+Photon OS v3.0
 
-Copyright © 2014-2017 VMware, Inc. All Rights Reserved.
+Copyright © 2014-2019 VMware, Inc. All Rights Reserved.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License (GPL) version 2.0 or for the "libtdnf" source, under the terms of the GNU Lesser General Public License (LGPL) version 2.1, as published by the Free Software Foundation.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTIBILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License version 2.0 and LGPL veresion 2.1 for more details.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTIBILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License version 2.0 and LGPL version 2.1 for more details.
 
 You should have received a copy of the GPL version 2 and LGPL version 2.1 along with this program. If not, see https://www.gnu.org/licenses/gpl-2.0.html and https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 

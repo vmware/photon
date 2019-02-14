@@ -3,12 +3,12 @@
 
 Summary:	The gcovr command provides a utility for managing the use of the GNU gcov utility
 Name:		gcovr
-Version:	3.3
-Release:	1%{?dist}
+Version:	4.1
+Release:	2%{?dist}
 License:	BSD Clause-3
 URL:		http://gcovr.com/
 Source0:	https://github.com/gcovr/gcovr/archive/%{name}-%{version}.tar.gz
-%define sha1 gcovr=880f1497859e83a45572914067a3a0ccae964ad5
+%define sha1 gcovr=69520213d49bc46966fa23de336cc11b64a0fc2e
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -16,6 +16,22 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:	python3-setuptools
+BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+BuildRequires:  python-pytest
+BuildRequires:  python3-pytest
+BuildRequires:  python-six
+BuildRequires:  python3-six
+BuildRequires:  python-attrs
+BuildRequires:  python3-attrs
+BuildRequires:  python-xml
+%endif
 Requires:       python2
 Requires:       python2-libs
 Buildarch:	noarch
@@ -24,11 +40,6 @@ The gcovr command provides a utility for managing the use of the GNU gcov utilit
 
 %package -n     python3-gcovr
 Summary:        python3-gcovr
-BuildRequires:  python3-devel
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:	python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 %description -n python3-gcovr
@@ -54,21 +65,33 @@ python2 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 funcsigs pathlib2 pluggy utils atomicwrites more_itertools
+$easy_install_2 pyutilib
 python2 setup.py test
+pushd ../p3dir
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 funcsigs pathlib2 pluggy utils atomicwrites more_itertools
+$easy_install_3 pyutilib
 python3 setup.py test
+popd
 
 %files
 %defattr(-,root,root)
-%doc README.md LICENSE.txt CHANGELOG.txt
+%doc README.rst LICENSE.txt CHANGELOG.rst
 %{python2_sitelib}*
 %{_bindir}/gcovr
 
 %files -n python3-gcovr
 %defattr(-,root,root)
-%doc README.md LICENSE.txt CHANGELOG.txt
+%doc README.rst LICENSE.txt CHANGELOG.rst
 %{_bindir}/gcovr3
 %{python3_sitelib}*
 
 %changelog
+*   Wed Nov 21 2018 Ashwin H <ashwinh@vmware.com> 4.1-2
+-   Fix gcovr %check
+*   Tue Sep 18 2018 Sujay G <gsujay@vmware.com> 4.1-1
+-   Bump gcovr version to 4.1
 *   Fri Jun 09 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3-1
 -   Initial build. First version

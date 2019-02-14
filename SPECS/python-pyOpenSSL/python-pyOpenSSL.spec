@@ -2,7 +2,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python-pyOpenSSL
-Version:        17.2.0
+Version:        18.0.0
 Release:        2%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 License:        ASL 2.0
@@ -10,14 +10,17 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/pyOpenSSL/pyOpenSSL-%{version}.tar.gz
-%define sha1    pyOpenSSL=ab5454f2d297c642c7c3dffeeca359f914a11dd3
-Patch0:         X509StoreContext_mem_leak.patch
+%define sha1    pyOpenSSL=a41b82512585dd05a5370fb737f4eb4119030a38
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
-BuildRequires:  python-pytest
 BuildRequires:  python-cryptography
 BuildRequires:  python-enum
 BuildRequires:  python-ipaddress
@@ -31,6 +34,17 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-packaging
 BuildRequires:  python-enum34
 BuildRequires:  python-asn1crypto
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+BuildRequires:  python3-cryptography
+BuildRequires:  python3-six
+BuildRequires:  python3-pycparser
+BuildRequires:  python3-cffi
+BuildRequires:  python3-idna
+BuildRequires:  python3-pyasn1
+BuildRequires:  python3-six
+BuildRequires:  python3-packaging
+BuildRequires:  python3-asn1crypto
 %endif
 Requires:       python2
 Requires:       python2-libs
@@ -46,23 +60,6 @@ High-level wrapper around a subset of the OpenSSL library.
 
 %package -n     python3-pyOpenSSL
 Summary:        Python 3 version
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-pytest
-BuildRequires:  python3-cryptography
-BuildRequires:  python3-six
-BuildRequires:  python3-pycparser
-BuildRequires:  python3-cffi
-BuildRequires:  python3-idna
-BuildRequires:  python3-pyasn1
-BuildRequires:  python3-six
-BuildRequires:  python3-packaging
-BuildRequires:  python3-asn1crypto
-%endif
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-cryptography
@@ -73,7 +70,6 @@ Python 3 version.
 
 %prep
 %setup -q -n pyOpenSSL-%{version}
-%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -93,18 +89,21 @@ popd
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
 $easy_install_2 pretend
 $easy_install_2 flaky
+$easy_install_2 pytest
 PATH=%{buildroot}%{_bindir}:${PATH} \
 LANG=en_US.UTF-8  PYTHONPATH=%{buildroot}%{python2_sitelib} \
-    py.test2
+    pytest
 
+pushd ../p3dir
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 pretend
 $easy_install_3 flaky
-pushd ../p3dir
+$easy_install_3 pytest
 PATH=%{buildroot}%{_bindir}:${PATH} \
 LANG=en_US.UTF-8  PYTHONPATH=%{buildroot}%{python3_sitelib} \
-    py.test3
+    pytest
 popd
+
 
 %files
 %defattr(-,root,root)
@@ -115,6 +114,10 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jan 11 2019 Tapas Kundu <tkundu@vmware.com> 18.0.0-2
+-   Fix makecheck
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 18.0.0-1
+-   Update to version 18.0.0
 *   Thu Jun 14 2018 Tapas Kundu <tkundu@vmware.com> 17.2.0-2
 -   Added memory fix for X509StoreContext Class.
 *   Mon Aug 14 2017 Xiaolin Li <xiaolinl@vmware.com> 17.2.0-1

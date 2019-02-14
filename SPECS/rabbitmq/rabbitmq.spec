@@ -1,14 +1,14 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.6.10
-Release:       3%{?dist}
+Version:       3.6.15
+Release:       4%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       MPLv1.1
 URL:           https://github.com/rabbitmq/rabbitmq-server
 Source0:       http://www.rabbitmq.com/releases/rabbitmq-server/v%{version}/%{name}-%{version}.tar.xz
-%define sha1 rabbitmq=0d879f998683079a31c1e872ce4c5640ebd35406
+%define sha1 rabbitmq=617cfba3406804b7cdc9999b88c06086e3705904
 Source1:       rabbitmq.config
 Requires:      erlang
 Requires:      /bin/sed
@@ -19,6 +19,7 @@ BuildRequires: rsync
 BuildRequires: zip
 BuildRequires: libxslt
 BuildRequires: python-xml
+BuildRequires: python2
 BuildArch:     noarch
 
 %description
@@ -28,7 +29,7 @@ rabbitmq messaging server
 %setup -q
 
 %build
-make
+make %{?_smp_mflags}
 
 %install
 make install DESTDIR=$RPM_BUILD_ROOT \
@@ -64,6 +65,9 @@ ExecStop=/usr/lib/rabbitmq/lib/rabbitmq_server-%{version}/sbin/rabbitmqctl stop
 WantedBy=multi-user.target
 EOF
 
+%check
+make tests
+
 %pre
 if ! getent group rabbitmq >/dev/null; then
   groupadd -r rabbitmq
@@ -98,6 +102,14 @@ rm -rf $RPM_BUILD_ROOT
 /var/lib/*
 
 %changelog
+* Tue Feb 05 2019 Alexey Makhalov <amakhalov@vmware.com> 3.6.15-4
+- Added BuildRequires python2.
+* Thu Jan 31 2019 Siju Maliakkal <smaliakkal@vmware.com> 3.6.15-3
+- Consuming erlang 19.3
+* Mon Sep 24 2018 Dweep Advani <dadvani@vmware.com> 3.6.15-2
+- Consuming updated erlang version of 21.0
+* Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 3.6.15-1
+- Update to version 3.6.15
 * Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  3.6.10-3
 - Fixed the log file directory structure
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.6.10-2

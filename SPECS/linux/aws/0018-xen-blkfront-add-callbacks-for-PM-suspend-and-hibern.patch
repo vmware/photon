@@ -1,0 +1,332 @@
+From 10ec45655d02f685f19984a1a953c2b14f575d1b Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Thu, 8 Jun 2017 19:15:55 +0000
+Subject: xen-blkfront: add callbacks for PM suspend and hibernation
+
+Add freeze and restore callbacks for PM suspend and hibernation support.
+The freeze handler stops a block-layer queue and disconnect the frontend
+from the backend while freeing ring_info and associated resources. The
+restore handler re-allocates ring_info and re-connect to the backedend,
+so the rest of the kernel can continue to use the block device
+transparently.Also, the handlers are used for both PM
+suspend and hibernation so that we can keep the existing suspend/resume
+callbacks for Xen suspend without modification.
+If a backend doesn't have commit 12ea729645ac ("xen/blkback: unmap all
+persistent grants when frontend gets disconnected"), the frontend may see
+massive amount of grant table warning when freeing resources.
+
+ [   36.852659] deferring g.e. 0xf9 (pfn 0xffffffffffffffff)
+ [   36.855089] xen:grant_table: WARNING: g.e. 0x112 still in use!
+
+In this case, persistent grants would need to be disabled.
+
+Ensure no reqs/rsps in rings before disconnecting. When disconnecting
+the frontend from the backend in blkfront_freeze(), there still may be
+unconsumed requests or responses in the rings, especially when the
+backend is backed by network-based device. If the frontend gets
+disconnected with such reqs/rsps remaining there, it can cause
+grant warnings and/or losing reqs/rsps by freeing pages afterward.
+This can lead resumed kernel into unrecoverable state like unexpected
+freeing of grant page and/or hung task due to the lost reqs or rsps.
+Therefore we have to ensure that there is no unconsumed requests or
+responses before disconnecting.
+
+Actually, the frontend just needs to wait for some amount of time so that
+the backend can process the requests, put responses and notify the
+frontend back. Timeout used here is based on some heuristic. If we somehow
+hit the timeout, it would mean something serious happens in the backend,
+the frontend will just return an error to PM core and PM suspend/hibernation
+will be aborted. This may be something should be fixed by the backend side,
+but a frontend side fix is probably still worth doing to work with
+broader backends.
+
+Backport Note:
+Unlike 4.9 kernel, blk-mq is default for 4.14 kernel and request-based
+mode cod eis not included in this frontend driver.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+CR: https://cr.amazon.com/r/8297625/
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/block/xen-blkfront.c | 164 ++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 156 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
+index 429d201..0487e6a 100644
+--- a/drivers/block/xen-blkfront.c
++++ b/drivers/block/xen-blkfront.c
+@@ -47,6 +47,8 @@
+ #include <linux/bitmap.h>
+ #include <linux/list.h>
+ #include <linux/workqueue.h>
++#include <linux/completion.h>
++#include <linux/delay.h>
+ 
+ #include <xen/xen.h>
+ #include <xen/xenbus.h>
+@@ -79,6 +81,8 @@ enum blkif_state {
+ 	BLKIF_STATE_DISCONNECTED,
+ 	BLKIF_STATE_CONNECTED,
+ 	BLKIF_STATE_SUSPENDED,
++	BLKIF_STATE_FREEZING,
++	BLKIF_STATE_FROZEN
+ };
+ 
+ struct grant {
+@@ -220,6 +224,7 @@ struct blkfront_info
+ 	struct list_head requests;
+ 	struct bio_list bio_list;
+ 	struct list_head info_list;
++	struct completion wait_backend_disconnected;
+ };
+ 
+ static unsigned int nr_minors;
+@@ -261,6 +266,16 @@ static DEFINE_SPINLOCK(minor_lock);
+ static int blkfront_setup_indirect(struct blkfront_ring_info *rinfo);
+ static void blkfront_gather_backend_features(struct blkfront_info *info);
+ static int negotiate_mq(struct blkfront_info *info);
++static void __blkif_free(struct blkfront_info *info);
++
++static inline bool blkfront_ring_is_busy(struct blkif_front_ring *ring)
++{
++	if (RING_SIZE(ring) > RING_FREE_REQUESTS(ring) ||
++	    RING_HAS_UNCONSUMED_RESPONSES(ring))
++		return true;
++	else
++		return false;
++}
+ 
+ static int get_id_from_freelist(struct blkfront_ring_info *rinfo)
+ {
+@@ -995,6 +1010,7 @@ static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size,
+ 	info->sector_size = sector_size;
+ 	info->physical_sector_size = physical_sector_size;
+ 	blkif_set_queue_limits(info);
++	init_completion(&info->wait_backend_disconnected);
+ 
+ 	return 0;
+ }
+@@ -1218,6 +1234,8 @@ static void xlvbd_release_gendisk(struct blkfront_info *info)
+ /* Already hold rinfo->ring_lock. */
+ static inline void kick_pending_request_queues_locked(struct blkfront_ring_info *rinfo)
+ {
++	if (unlikely(rinfo->dev_info->connected == BLKIF_STATE_FREEZING))
++                return;
+ 	if (!RING_FULL(&rinfo->ring))
+ 		blk_mq_start_stopped_hw_queues(rinfo->dev_info->rq, true);
+ }
+@@ -1341,8 +1359,6 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
+ 
+ static void blkif_free(struct blkfront_info *info, int suspend)
+ {
+-	unsigned int i;
+-
+ 	/* Prevent new requests being issued until we fix things up. */
+ 	info->connected = suspend ?
+ 		BLKIF_STATE_SUSPENDED : BLKIF_STATE_DISCONNECTED;
+@@ -1350,6 +1366,13 @@ static void blkif_free(struct blkfront_info *info, int suspend)
+ 	if (info->rq)
+ 		blk_mq_stop_hw_queues(info->rq);
+ 
++	__blkif_free(info);
++}
++
++static void __blkif_free(struct blkfront_info *info)
++{
++	unsigned int i;
++
+ 	for (i = 0; i < info->nr_rings; i++)
+ 		blkif_free_ring(&info->rinfo[i]);
+ 
+@@ -1553,8 +1576,10 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+ 	struct blkfront_ring_info *rinfo = (struct blkfront_ring_info *)dev_id;
+ 	struct blkfront_info *info = rinfo->dev_info;
+ 
+-	if (unlikely(info->connected != BLKIF_STATE_CONNECTED))
+-		return IRQ_HANDLED;
++	if (unlikely(info->connected != BLKIF_STATE_CONNECTED)) {
++		if (info->connected != BLKIF_STATE_FREEZING)
++			return IRQ_HANDLED;
++	}
+ 
+ 	spin_lock_irqsave(&rinfo->ring_lock, flags);
+  again:
+@@ -2019,6 +2044,7 @@ static int blkif_recover(struct blkfront_info *info)
+ 	struct bio *bio;
+ 	unsigned int segs;
+ 
++	bool frozen = info->connected == BLKIF_STATE_FROZEN;
+ 	blkfront_gather_backend_features(info);
+ 	/* Reset limits changed by blk_mq_update_nr_hw_queues(). */
+ 	blkif_set_queue_limits(info);
+@@ -2045,6 +2071,9 @@ static int blkif_recover(struct blkfront_info *info)
+ 		kick_pending_request_queues(rinfo);
+ 	}
+ 
++	if (frozen)
++		return 0;
++
+ 	list_for_each_entry_safe(req, n, &info->requests, queuelist) {
+ 		/* Requeue pending requests (flush or discard) */
+ 		list_del_init(&req->queuelist);
+@@ -2358,6 +2387,7 @@ static void blkfront_connect(struct blkfront_info *info)
+ 
+ 		return;
+ 	case BLKIF_STATE_SUSPENDED:
++	case BLKIF_STATE_FROZEN:
+ 		/*
+ 		 * If we are recovering from suspension, we need to wait
+ 		 * for the backend to announce it's features before
+@@ -2475,13 +2505,38 @@ static void blkback_changed(struct xenbus_device *dev,
+ 		break;
+ 
+ 	case XenbusStateClosed:
+-		if (dev->state == XenbusStateClosed)
++		if (dev->state == XenbusStateClosed) {
++			if (info->connected == BLKIF_STATE_FREEZING) {
++				__blkif_free(info);
++				info->connected = BLKIF_STATE_FROZEN;
++				complete(&info->wait_backend_disconnected);
++				break;
++			}
++
+ 			break;
++		}
++
++		/*
++		 * We may somehow receive backend's Closed again while thawing
++		 * or restoring and it causes thawing or restoring to fail.
++		 * Ignore such unexpected state anyway.
++		*/
++		if (info->connected == BLKIF_STATE_FROZEN &&
++				dev->state == XenbusStateInitialised) {
++			dev_dbg(&dev->dev,
++					"ignore the backend's Closed state: %s",
++					dev->nodename);
++			break;
++		}		
+ 		/* fall through */
+ 	case XenbusStateClosing:
+-		if (info)
+-			blkfront_closing(info);
+-		break;
++		if (info) {
++                        if (info->connected == BLKIF_STATE_FREEZING)
++                                xenbus_frontend_closed(dev);
++                        else
++                                blkfront_closing(info);
++                }
++                break;
+ 	}
+ }
+ 
+@@ -2621,6 +2676,96 @@ static void blkif_release(struct gendisk *disk, fmode_t mode)
+ 	mutex_unlock(&blkfront_mutex);
+ }
+ 
++static int blkfront_freeze(struct xenbus_device *dev)
++{
++	unsigned int i;
++	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
++        struct blkfront_ring_info *rinfo;
++        struct blkif_front_ring *ring;
++	/* This would be reasonable timeout as used in xenbus_dev_shutdown() */
++	unsigned int timeout = 5 * HZ;
++	int err = 0;
++	
++	info->connected = BLKIF_STATE_FREEZING;
++	
++	blk_mq_stop_hw_queues(info->rq);
++	
++	for (i = 0; i < info->nr_rings; i++) {
++		rinfo = &info->rinfo[i];
++
++		gnttab_cancel_free_callback(&rinfo->callback);
++		flush_work(&rinfo->work);
++	}
++	
++	for (i = 0; i < info->nr_rings; i++) {
++                spinlock_t *lock;
++                bool busy;
++                unsigned long req_timeout_ms = 25;
++                unsigned long ring_timeout;
++
++                rinfo = &info->rinfo[i];
++                ring = &rinfo->ring;
++
++                lock = &rinfo->ring_lock;
++
++                ring_timeout = jiffies +
++                        msecs_to_jiffies(req_timeout_ms * RING_SIZE(ring));
++
++                do {
++                        spin_lock_irq(lock);
++                        busy = blkfront_ring_is_busy(ring);
++                        spin_unlock_irq(lock);
++
++                        if (busy)
++                                msleep(req_timeout_ms);
++                        else
++                                break;
++                } while (time_is_after_jiffies(ring_timeout));
++
++                /* Timed out */
++                if (busy) {
++                        xenbus_dev_error(dev, err, "the ring is still busy");
++                        info->connected = BLKIF_STATE_CONNECTED;
++                        return -EBUSY;
++                }
++        }
++	
++	/* Kick the backend to disconnect */
++	xenbus_switch_state(dev, XenbusStateClosing);
++
++	/*
++	 * We don't want to move forward before the frontend is diconnected
++	 * from the backend cleanly.
++	 */
++	timeout = wait_for_completion_timeout(&info->wait_backend_disconnected,
++					      timeout);
++	if (!timeout) {
++		err = -EBUSY;
++		xenbus_dev_error(dev, err, "Freezing timed out;"
++				 "the device may become inconsistent state");
++	}
++
++	return err;
++}
++
++static int blkfront_restore(struct xenbus_device *dev)
++{
++	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
++	int err = 0;
++
++	err = negotiate_mq(info);
++	if (err)
++		goto out;
++
++	err = talk_to_blkback(dev, info);
++	if (err)
++		goto out;
++	blk_mq_update_nr_hw_queues(&info->tag_set, info->nr_rings);
++
++out:
++	return err;
++}
++
+ static const struct block_device_operations xlvbd_block_fops =
+ {
+ 	.owner = THIS_MODULE,
+@@ -2643,6 +2788,9 @@ static struct xenbus_driver blkfront_driver = {
+ 	.resume = blkfront_resume,
+ 	.otherend_changed = blkback_changed,
+ 	.is_ready = blkfront_is_ready,
++	.freeze = blkfront_freeze,
++	.thaw = blkfront_restore,
++	.restore = blkfront_restore
+ };
+ 
+ static void purge_persistent_grants(struct blkfront_info *info)

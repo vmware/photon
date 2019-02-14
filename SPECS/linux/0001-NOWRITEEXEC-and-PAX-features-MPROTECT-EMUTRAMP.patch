@@ -19,10 +19,10 @@ Subject: [PATCH 1/3] NOWRITEEXEC and PAX features: MPROTECT, EMUTRAMP
  12 files changed, 424 insertions(+)
 
 diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index b0ff3786..e886bf8 100644
+index 045338a..778820a 100644
 --- a/arch/x86/mm/fault.c
 +++ b/arch/x86/mm/fault.c
-@@ -244,6 +244,11 @@ force_sig_info_fault(int si_signo, int si_code, unsigned long address,
+@@ -225,6 +225,11 @@ force_sig_info_fault(int si_signo, int si_code, unsigned long address,
  	force_sig_info(si_signo, &info, tsk);
  }
  
@@ -34,7 +34,7 @@ index b0ff3786..e886bf8 100644
  DEFINE_SPINLOCK(pgd_lock);
  LIST_HEAD(pgd_list);
  
-@@ -925,6 +930,13 @@ __bad_area_nosemaphore(struct pt_regs *regs, unsigned long error_code,
+@@ -873,6 +878,13 @@ __bad_area_nosemaphore(struct pt_regs *regs, unsigned long error_code,
  				return;
  		}
  #endif
@@ -48,7 +48,7 @@ index b0ff3786..e886bf8 100644
  
  		/*
  		 * To avoid leaking information about the kernel page table
-@@ -1531,3 +1543,209 @@ do_page_fault(struct pt_regs *regs, unsigned long error_code)
+@@ -1470,3 +1482,209 @@ do_page_fault(struct pt_regs *regs, unsigned long error_code)
  	exception_exit(prev_state);
  }
  NOKPROBE_SYMBOL(do_page_fault);
@@ -259,7 +259,7 @@ index b0ff3786..e886bf8 100644
 +}
 +#endif
 diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
-index 73b01e4..ea8fed3 100644
+index 816cc92..058422d 100644
 --- a/fs/binfmt_elf.c
 +++ b/fs/binfmt_elf.c
 @@ -40,6 +40,7 @@
@@ -270,7 +270,7 @@ index 73b01e4..ea8fed3 100644
  #include <linux/uaccess.h>
  #include <asm/param.h>
  #include <asm/page.h>
-@@ -71,6 +72,10 @@ static int elf_core_dump(struct coredump_params *cprm);
+@@ -76,6 +77,10 @@ static int elf_core_dump(struct coredump_params *cprm);
  #define elf_core_dump	NULL
  #endif
  
@@ -281,7 +281,7 @@ index 73b01e4..ea8fed3 100644
  #if ELF_EXEC_PAGESIZE > PAGE_SIZE
  #define ELF_MIN_ALIGN	ELF_EXEC_PAGESIZE
  #else
-@@ -90,6 +95,9 @@ static struct linux_binfmt elf_format = {
+@@ -95,6 +100,9 @@ static struct linux_binfmt elf_format = {
  	.load_binary	= load_elf_binary,
  	.load_shlib	= load_elf_library,
  	.core_dump	= elf_core_dump,
@@ -291,7 +291,7 @@ index 73b01e4..ea8fed3 100644
  	.min_coredump	= ELF_EXEC_PAGESIZE,
  };
  
-@@ -859,6 +867,18 @@ static int load_elf_binary(struct linux_binprm *bprm)
+@@ -873,6 +881,18 @@ static int load_elf_binary(struct linux_binprm *bprm)
  	/* Do this immediately, since STACK_TOP as used in setup_arg_pages
  	   may depend on the personality.  */
  	SET_PERSONALITY2(loc->elf_ex, &arch_state);
@@ -310,7 +310,7 @@ index 73b01e4..ea8fed3 100644
  	if (elf_read_implies_exec(loc->elf_ex, executable_stack))
  		current->personality |= READ_IMPLIES_EXEC;
  
-@@ -2385,6 +2405,56 @@ out:
+@@ -2411,6 +2431,56 @@ static int elf_core_dump(struct coredump_params *cprm)
  
  #endif		/* CONFIG_ELF_CORE */
  
@@ -368,10 +368,10 @@ index 73b01e4..ea8fed3 100644
  {
  	register_binfmt(&elf_format);
 diff --git a/fs/exec.c b/fs/exec.c
-index 3e14ba2..2f6ddc2 100644
+index bdd0eac..29ae0ac 100644
 --- a/fs/exec.c
 +++ b/fs/exec.c
-@@ -744,7 +744,12 @@ int setup_arg_pages(struct linux_binprm *bprm,
+@@ -748,7 +748,12 @@ int setup_arg_pages(struct linux_binprm *bprm,
  	if (unlikely(executable_stack == EXSTACK_ENABLE_X))
  		vm_flags |= VM_EXEC;
  	else if (executable_stack == EXSTACK_DISABLE_X)
@@ -385,10 +385,10 @@ index 3e14ba2..2f6ddc2 100644
  	vm_flags |= VM_STACK_INCOMPLETE_SETUP;
  
 diff --git a/include/linux/binfmts.h b/include/linux/binfmts.h
-index b0abe21..644ca30 100644
+index c05f24f..1c9133d 100644
 --- a/include/linux/binfmts.h
 +++ b/include/linux/binfmts.h
-@@ -95,6 +95,9 @@ struct linux_binfmt {
+@@ -97,6 +97,9 @@ struct linux_binfmt {
  	int (*load_binary)(struct linux_binprm *);
  	int (*load_shlib)(struct file *);
  	int (*core_dump)(struct coredump_params *cprm);
@@ -419,32 +419,34 @@ index e3649b3..c1e78a3 100644
  #endif
  
 diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index c85f11d..9aa42c1 100644
+index a590419..fabbb8f 100644
 --- a/include/linux/mm_types.h
 +++ b/include/linux/mm_types.h
-@@ -508,6 +508,9 @@ struct mm_struct {
- 	atomic_long_t hugetlb_usage;
+@@ -487,6 +487,9 @@ struct mm_struct {
+ 		atomic_long_t hugetlb_usage;
  #endif
- 	struct work_struct async_put_work;
+ 		struct work_struct async_put_work;
 +#if defined(CONFIG_PAX)
-+	unsigned long pax_flags;
++		unsigned long pax_flags;
 +#endif
  
  #if IS_ENABLED(CONFIG_HMM)
- 	/* HMM needs to track a few things per mm */
+ 		/* HMM needs to track a few things per mm */
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index fdf74f2..3e4f9ed 100644
+index 43731fe..cc0395d4 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
-@@ -1667,4 +1667,6 @@ extern long sched_getaffinity(pid_t pid, struct cpumask *mask);
+@@ -1775,6 +1775,8 @@ extern long sched_getaffinity(pid_t pid, struct cpumask *mask);
  #define TASK_SIZE_OF(tsk)	TASK_SIZE
  #endif
  
 +#define MF_PAX_EMUTRAMP		0x02000000	/* Emulate trampolines */
 +
- #endif
+ #ifdef CONFIG_RSEQ
+ 
+ /*
 diff --git a/include/uapi/linux/elf.h b/include/uapi/linux/elf.h
-index c58627c..3c9eda7 100644
+index 4e12c42..5a7b624 100644
 --- a/include/uapi/linux/elf.h
 +++ b/include/uapi/linux/elf.h
 @@ -38,6 +38,7 @@ typedef __s64	Elf64_Sxword;
@@ -465,11 +467,11 @@ index c58627c..3c9eda7 100644
  #define OLD_DT_LOOS	0x60000000
  #define DT_LOOS		0x6000000d
 diff --git a/ipc/shm.c b/ipc/shm.c
-index bd65275..f6ff14a 100644
+index fefa00d..9d3dd27 100644
 --- a/ipc/shm.c
 +++ b/ipc/shm.c
-@@ -1317,6 +1317,9 @@ long do_shmat(int shmid, char __user *shmaddr, int shmflg,
- 		f_mode = FMODE_READ | FMODE_WRITE;
+@@ -1414,6 +1414,9 @@ long do_shmat(int shmid, char __user *shmaddr, int shmflg,
+ 		f_flags = O_RDWR;
  	}
  	if (shmflg & SHM_EXEC) {
 +#ifdef CONFIG_PAX_NOWRITEEXEC
@@ -479,10 +481,10 @@ index bd65275..f6ff14a 100644
  		acc_mode |= S_IXUGO;
  	}
 diff --git a/mm/mmap.c b/mm/mmap.c
-index 0de87a3..2aaae36 100644
+index 17bbf4d..14f7098 100644
 --- a/mm/mmap.c
 +++ b/mm/mmap.c
-@@ -1378,6 +1378,17 @@ unsigned long do_mmap(struct file *file, unsigned long addr,
+@@ -1427,6 +1427,17 @@ unsigned long do_mmap(struct file *file, unsigned long addr,
  	vm_flags |= calc_vm_prot_bits(prot, pkey) | calc_vm_flag_bits(flags) |
  			mm->def_flags | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC;
  
@@ -500,7 +502,7 @@ index 0de87a3..2aaae36 100644
  	if (flags & MAP_LOCKED)
  		if (!can_do_mlock())
  			return -EPERM;
-@@ -2874,6 +2885,9 @@ static int do_brk_flags(unsigned long addr, unsigned long request, unsigned long
+@@ -2936,6 +2947,9 @@ static int do_brk_flags(unsigned long addr, unsigned long len, unsigned long fla
  	if ((flags & (~VM_EXEC)) != 0)
  		return -EINVAL;
  	flags |= VM_DATA_DEFAULT_FLAGS | VM_ACCOUNT | mm->def_flags;
@@ -510,7 +512,7 @@ index 0de87a3..2aaae36 100644
  
  	error = get_unmapped_area(NULL, addr, len, 0, MAP_FIXED);
  	if (offset_in_page(error))
-@@ -3280,6 +3294,17 @@ static struct vm_area_struct *__install_special_mapping(
+@@ -3349,6 +3363,17 @@ static struct vm_area_struct *__install_special_mapping(
  	vma->vm_start = addr;
  	vma->vm_end = addr + len;
  
@@ -529,7 +531,7 @@ index 0de87a3..2aaae36 100644
  	vma->vm_page_prot = vm_get_page_prot(vma->vm_flags);
  
 diff --git a/mm/mprotect.c b/mm/mprotect.c
-index ec39f73..d1a3fc3 100644
+index 6d33162..f9c0faf 100644
 --- a/mm/mprotect.c
 +++ b/mm/mprotect.c
 @@ -26,6 +26,10 @@
@@ -541,9 +543,9 @@ index ec39f73..d1a3fc3 100644
 +#include <linux/binfmts.h>
 +#endif
  #include <linux/uaccess.h>
+ #include <linux/mm_inline.h>
  #include <asm/pgtable.h>
- #include <asm/cacheflush.h>
-@@ -360,6 +364,10 @@ success:
+@@ -425,6 +429,10 @@ mprotect_fixup(struct vm_area_struct *vma, struct vm_area_struct **pprev,
  	 * held in write mode.
  	 */
  	vma->vm_flags = newflags;
@@ -554,7 +556,7 @@ index ec39f73..d1a3fc3 100644
  	dirty_accountable = vma_wants_writenotify(vma, vma->vm_page_prot);
  	vma_set_page_prot(vma);
  
-@@ -451,6 +459,10 @@ static int do_mprotect_pkey(unsigned long start, size_t len,
+@@ -516,6 +524,10 @@ static int do_mprotect_pkey(unsigned long start, size_t len,
  	if (start > vma->vm_start)
  		prev = vma;
  
@@ -566,7 +568,7 @@ index ec39f73..d1a3fc3 100644
  		unsigned long mask_off_old_flags;
  		unsigned long newflags;
 diff --git a/security/Kconfig b/security/Kconfig
-index e8e4494..3cef193 100644
+index c430206..564e975 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -4,6 +4,84 @@
@@ -654,6 +656,3 @@ index e8e4494..3cef193 100644
  source security/keys/Kconfig
  
  config SECURITY_DMESG_RESTRICT
--- 
-2.8.1
-

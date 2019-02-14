@@ -1,21 +1,23 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.14.54
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.15
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=434080e874f7b78c3234f22784427d4a189fb54d
+%define sha1 linux=fb970b2014ecf9dcef23943f8095b28dfe0d6cca
 Source1:	config
 Source2:	initramfs.trigger
-%define ena_version 1.5.0
-Source3:       https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
-%define sha1 ena_linux=cbbbe8a3bbab6d01a4e38417cb0ead2f7cb8b2ee
+%define ena_version 1.6.0
+Source3:	https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
+%define sha1 ena_linux=c8ec9094f9db8d324d68a13b0b3dcd2c5271cbc0
 Source4:	config_aarch64
+Source5:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
+%define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -24,18 +26,49 @@ Patch1:         double-tcp_mem-limits.patch
 Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
-Patch6:         x86-vmware-STA-support.patch
-# rpi3 dts
-Patch10:	arm-dts-add-vchiq-entry.patch
+Patch6:         4.18-x86-vmware-STA-support.patch
+# ttyXRUSB support
+Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
 #HyperV patches
 Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 #FIPS patches - allow some algorithms
-Patch24:        Allow-some-algo-tests-for-FIPS.patch
-Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
+Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
+# Out-of-tree patches from AppArmor:
+Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
+Patch31:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+%ifarch aarch64
+# NXP LS1012a FRWY patches
+Patch51:        0001-staging-fsl_ppfe-eth-header-files-for-pfe-driver.patch
+Patch52:        0002-staging-fsl_ppfe-eth-introduce-pfe-driver.patch
+Patch53:        0003-staging-fsl_ppfe-eth-fix-RGMII-tx-delay-issue.patch
+Patch54:        0004-staging-fsl_ppfe-eth-remove-unused-functions.patch
+Patch55:        0005-staging-fsl_ppfe-eth-fix-read-write-ack-idx-issue.patch
+Patch56:        0006-staging-fsl_ppfe-eth-Make-phy_ethtool_ksettings_get-.patch
+Patch57:        0007-staging-fsl_ppfe-eth-add-function-to-update-tmu-cred.patch
+Patch58:        0008-staging-fsl_ppfe-eth-Avoid-packet-drop-at-TMU-queues.patch
+Patch59:        0009-staging-fsl_ppfe-eth-Enable-PFE-in-clause-45-mode.patch
+Patch60:        0010-staging-fsl_ppfe-eth-Disable-autonegotiation-for-2.5.patch
+Patch61:        0011-staging-fsl_ppfe-eth-add-missing-included-header-fil.patch
+Patch62:        0012-staging-fsl_ppfe-eth-clean-up-iounmap-pfe-ddr_basead.patch
+Patch63:        0013-staging-fsl_ppfe-eth-calculate-PFE_PKT_SIZE-with-SKB.patch
+Patch64:        0014-staging-fsl_ppfe-eth-support-for-userspace-networkin.patch
+Patch65:        0015-staging-fsl_ppfe-eth-unregister-netdev-after-pfe_phy.patch
+Patch66:        0016-staging-fsl_ppfe-eth-HW-parse-results-for-DPDK.patch
+Patch67:        0017-staging-fsl_ppfe-eth-reorganize-pfe_netdev_ops.patch
+Patch68:        0018-staging-fsl_ppfe-eth-use-mask-for-rx-max-frame-len.patch
+Patch69:        0019-staging-fsl_ppfe-eth-define-pfe-ndo_change_mtu-funct.patch
+Patch70:        0020-staging-fsl_ppfe-eth-remove-jumbo-frame-enable-from-.patch
+Patch71:        0021-staging-fsl_ppfe-eth-disable-CRC-removal.patch
+Patch72:        0022-staging-fsl_ppfe-eth-handle-ls1012a-errata_a010897.patch
+Patch73:        0023-staging-fsl_ppfe-eth-Modify-Kconfig-to-enable-pfe-dr.patch
+%endif
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -65,7 +98,7 @@ Summary:        Kernel Dev
 Group:          System Environment/Kernel
 Obsoletes:      linux-dev
 Requires:       %{name} = %{version}-%{release}
-Requires:       python2 gawk
+Requires:       python3 gawk
 %description devel
 The Linux package contains the Linux kernel dev files
 
@@ -76,17 +109,17 @@ Requires:       %{name} = %{version}-%{release}
 %description drivers-gpu
 The Linux package contains the Linux kernel drivers for GPU
 
-%package sound
+%package drivers-sound
 Summary:        Kernel Sound modules
 Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
-%description sound
+%description drivers-sound
 The Linux package contains the Linux kernel sound support
 
 %package docs
 Summary:        Kernel docs
 Group:          System Environment/Kernel
-Requires:       python2
+Requires:       python3
 %description docs
 The Linux package contains the Linux kernel doc files
 
@@ -114,6 +147,14 @@ Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
 %description dtb-rpi3
 Kernel Device Tree Blob files for Raspberry Pi3
+
+%package dtb-ls1012afrwy
+Summary:        Kernel Device Tree Blob files for NXP ls1012a FRWY board
+Group:          System Environment/Kernel
+Requires:       %{name} = %{version}-%{release}
+%description dtb-ls1012afrwy
+Kernel Device Tree Blob files for NXP ls1012a FRWY board
+
 %endif
 
 
@@ -121,6 +162,7 @@ Kernel Device Tree Blob files for Raspberry Pi3
 %setup -q -n linux-%{version}
 %ifarch x86_64
 %setup -D -b 3 -n linux-%{version}
+%setup -D -b 5 -n linux-%{version}
 %endif
 %patch0 -p1
 %patch1 -p1
@@ -128,11 +170,42 @@ Kernel Device Tree Blob files for Raspberry Pi3
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch10 -p1
+%patch11 -p1
 %patch13 -p1
 %patch24 -p1
 %patch26 -p1
 %patch28 -p1
+%patch29 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
+
+%ifarch aarch64
+# NXP FSL_PPFE Driver patches
+%patch51 -p1
+%patch52 -p1
+%patch53 -p1
+%patch54 -p1
+%patch55 -p1
+%patch56 -p1
+%patch57 -p1
+%patch58 -p1
+%patch59 -p1
+%patch60 -p1
+%patch61 -p1
+%patch62 -p1
+%patch63 -p1
+%patch64 -p1
+%patch65 -p1
+%patch66 -p1
+%patch67 -p1
+%patch68 -p1
+%patch69 -p1
+%patch70 -p1
+%patch71 -p1
+%patch72 -p1
+%patch73 -p1
+%endif
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
@@ -161,6 +234,11 @@ make -C tools perf
 bldroot=`pwd`
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
+popd
+# build XR module
+bldroot=`pwd`
+pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
+make KERNELDIR=$bldroot %{?_smp_mflags} all
 popd
 %endif
 
@@ -196,6 +274,12 @@ pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
+# install XR module
+bldroot=`pwd`
+pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
+make KERNELDIR=$bldroot INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
+
 # Verify for build-id match
 # We observe different IDs sometimes
 # TODO: debug it
@@ -216,6 +300,7 @@ install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
 # Install DTB files
 install -vdm 755 %{buildroot}/boot/dtb
 install -vm 640 arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dtb %{buildroot}/boot/dtb/
+install -vm 640 arch/arm64/boot/dts/freescale/fsl-ls1012a-frwy.dtb %{buildroot}/boot/dtb/
 %endif
 
 # Restrict the permission on System.map-X file
@@ -257,6 +342,10 @@ cp .config %{buildroot}/usr/src/%{name}-headers-%{uname_r} # copy .config manual
 ln -sf "/usr/src/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
+%ifarch aarch64
+cp arch/arm64/kernel/module.lds %{buildroot}/usr/src/%{name}-headers-%{uname_r}/arch/arm64/kernel/
+%endif
+
 # disable (JOBS=1) parallel build to fix this issue:
 # fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
 # Linux version that was affected is 4.4.26
@@ -265,18 +354,18 @@ make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
 %include %{SOURCE2}
 
 %post
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 %post drivers-gpu
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 
-%post sound
-/sbin/depmod -aq %{uname_r}
+%post drivers-sound
+/sbin/depmod -a %{uname_r}
 
 %ifarch x86_64
 %post oprofile
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 %endif
 
 %files
@@ -309,7 +398,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %exclude /lib/modules/%{uname_r}/kernel/drivers/gpu/drm/cirrus/
 /lib/modules/%{uname_r}/kernel/drivers/gpu
 
-%files sound
+%files drivers-sound
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/kernel/sound
 
@@ -333,14 +422,76 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /etc/bash_completion.d/*
 /usr/share/perf-core/strace/groups/file
 /usr/share/doc/*
+%{_libdir}/perf/examples/bpf/*
+%{_libdir}/perf/include/bpf/*
 
 %ifarch aarch64
 %files dtb-rpi3
 %defattr(-,root,root)
 /boot/dtb/bcm2837-rpi-3-b.dtb
+
+%files dtb-ls1012afrwy
+%defattr(-,root,root)
+/boot/dtb/fsl-ls1012a-frwy.dtb
+
 %endif
 
 %changelog
+*   Thu Jan 24 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.15-2
+-   Add WiFi (ath10k), sensors (i2c,spi), usb support for NXP LS1012A board.
+*   Tue Jan 15 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.15-1
+-   Update to version 4.19.15
+*   Fri Jan 11 2019 Srinidhi Rao <srinidhir@vmware.com> 4.19.6-7
+-   Add Network support for NXP LS1012A board.
+*   Wed Jan 09 2019 Ankit Jain <ankitja@vmware.com> 4.19.6-6
+-   Enable following for x86_64 and aarch64:
+-    Enable Kernel Address Space Layout Randomization.
+-    Enable CONFIG_SECURITY_NETWORK_XFRM
+*   Fri Jan 04 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-5
+-   Enable AppArmor by default.
+*   Wed Jan 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-4
+-   .config: added Compulab fitlet2 device drivers
+-   .config_aarch64: added gpio sysfs support
+-   renamed -sound to -drivers-sound
+*   Tue Jan 01 2019 Ajay Kaher <akaher@vmware.com> 4.19.6-3
+-   .config: Enable CONFIG_PCI_HYPERV driver
+*   Wed Dec 19 2018 Srinidhi Rao <srinidhir@vmware.com> 4.19.6-2
+-   Add NXP LS1012A support.
+*   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-1
+-   Update to version 4.19.6
+*   Fri Dec 07 2018 Alexey Makhalov <amakhalov@vmware.com> 4.19.1-3
+-   .config: added qmi wwan module
+*   Mon Nov 12 2018 Ajay Kaher <akaher@vmware.com> 4.19.1-2
+-   Fix config_aarch64 for 4.19.1
+*   Mon Nov 05 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.1-1
+-   Update to version 4.19.1
+*   Tue Oct 16 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.18.9-5
+-   Change in config to enable drivers for zigbee and GPS
+*   Fri Oct 12 2018 Ajay Kaher <akaher@vmware.com> 4.18.9-4
+-   Enable LAN78xx for aarch64 rpi3
+*   Fri Oct 5 2018 Ajay Kaher <akaher@vmware.com> 4.18.9-3
+-   Fix config_aarch64 for 4.18.9
+-   Add module.lds for aarch64
+*   Wed Oct 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.18.9-2
+-   Use updated steal time accounting patch.
+-   .config: Enable CONFIG_CPU_ISOLATION and a few networking options
+-   that got accidentally dropped in the last update.
+*   Mon Oct 1 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.18.9-1
+-   Update to version 4.18.9
+*   Tue Sep 25 2018 Ajay Kaher <akaher@vmware.com> 4.14.67-2
+-   Build hang (at make oldconfig) fix in config_aarch64
+*   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
+-   Update to version 4.14.67
+*   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-7
+-   Add rdrand-based RNG driver to enhance kernel entropy.
+*   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-6
+-   Add full retpoline support by building with retpoline-enabled gcc.
+*   Thu Aug 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-5
+-   Apply out-of-tree patches needed for AppArmor.
+*   Wed Aug 22 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.54-4
+-   Fix overflow kernel panic in rsi driver.
+-   .config: enable BT stack, enable GPIO sysfs.
+-   Add Exar USB serial driver.
 *   Fri Aug 17 2018 Ajay Kaher <akaher@vmware.com> 4.14.54-3
 -   Enabled USB PCI in config_aarch64
 -   Build hang (at make oldconfig) fix in config_aarch64

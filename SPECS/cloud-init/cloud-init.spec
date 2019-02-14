@@ -1,27 +1,28 @@
-%define python3_sitelib /usr/lib/python3.6/site-packages
+%define python3_sitelib /usr/lib/python3.7/site-packages
 
 Name:           cloud-init
-Version:        0.7.9
-Release:        14%{?dist}
+Version:        18.3
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
 URL:            http://launchpad.net/cloud-init
+Vendor:         VMware, Inc
+Distribution:   Photon
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 cloud-init=3b4345267e72e28b877e2e3f0735c1f672674cfc
+%define sha1 cloud-init=a317e2add93578d244328dcf97d46fad1c3140f9
 Source1:        cloud-photon.cfg
 Source2:        99-disable-networking-config.cfg
 
 Patch0:         photon-distro.patch
-Patch1:         change-requires.patch
 Patch2:         vca-admin-pwd.patch
 Patch3:         photon-hosts-template.patch
-Patch4:         resizePartitionUUID.patch
 Patch5:         datasource-guestinfo.patch
 Patch6:         systemd-service-changes.patch
 Patch7:         makecheck.patch
 Patch8:         systemd-resolved-config.patch
 Patch9:         cloud-init-azureds.patch
+Patch10:        ds-identity.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -32,6 +33,16 @@ BuildRequires:  iproute2
 BuildRequires:  automake
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-six
+# %if %{with_check}
+BuildRequires:  python3-requests
+# %endif
+BuildRequires:  python3-PyYAML
+BuildRequires:  python3-urllib3
+BuildRequires:  python3-chardet
+BuildRequires:  python3-certifi
+BuildRequires:  python3-idna
+BuildRequires:  python3-jinja2
 
 Requires:       systemd
 Requires:       (net-tools or toybox)
@@ -48,6 +59,7 @@ Requires:       python3-markupsafe
 Requires:       python3-six
 Requires:       python3-setuptools
 Requires:       python3-xml
+Requires:       python3-jsonschema
 BuildArch:      noarch
 
 %description
@@ -59,17 +71,16 @@ ssh keys and to let the user run various scripts.
 %prep
 %setup -q -n %{name}-%{version}
 %patch0 -p1
-%patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 
-find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
+find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
 %build
 python3 setup.py build
@@ -77,9 +88,6 @@ python3 setup.py build
 %install
 rm -rf $RPM_BUILD_ROOT
 python3 setup.py install -O1 --skip-build --root=%{buildroot} --init-system systemd
-
-# Don't ship the tests
-rm -r %{buildroot}%{python3_sitelib}/tests
 
 mkdir -p %{buildroot}/var/lib/cloud
 mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
@@ -130,6 +138,7 @@ rm -rf $RPM_BUILD_ROOT
 /lib/systemd/system-generators/cloud-init-generator
 /lib/udev/rules.d/66-azure-ephemeral.rules
 /lib/systemd/system/*
+/etc/bash_completion.d/cloud-init
 %{_docdir}/cloud-init/*
 %{_libdir}/cloud-init/*
 %{python3_sitelib}/*
@@ -138,6 +147,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Tue Dec 04 2018 Ajay Kaher <akaher@vmware.com> 18.3-2
+-   Fix auto startup at boot time
+*   Wed Oct 24 2018 Ajay Kaher <akaher@vmware.com> 18.3-1
+-   Upgraded version to 18.3
+*   Sun Oct 07 2018 Tapas Kundu <tkundu@vmware.com> 0.7.9-15
+-   Updated using python 3.7 lib
 *   Wed Feb 28 2018 Anish Swaminathan <anishs@vmware.com> 0.7.9-14
 -   Add support for systemd constructs for azure DS
 *   Mon Oct 16 2017 Vinay Kulkarni <kulakrniv@vmware.com> 0.7.9-13
@@ -160,7 +175,7 @@ rm -rf $RPM_BUILD_ROOT
 -   Enable OVF datasource by default
 *   Mon May 22 2017 Kumar Kaushik <kaushikk@vmware.com> 0.7.9-4
 -   Making cloud-init to use python3.
-*   Thu May 15 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-3
+*   Mon May 15 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-3
 -   Disable networking config by cloud-init
 *   Thu May 04 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-2
 -   Support userdata in vmx guestinfo
@@ -182,7 +197,7 @@ rm -rf $RPM_BUILD_ROOT
 *   Mon Oct 24 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-11
 -   Enabled ssh module in cloud-init
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-10
--   Fixed logic to restart the active services after upgrade 
+-   Fixed logic to restart the active services after upgrade
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.6-9
 -   GA - Bump release of all rpms
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-8

@@ -1,15 +1,16 @@
 Summary:    Provide tools to manage multipath devices
 Name:       device-mapper-multipath
 Version:    0.7.3
-Release:    1%{?dist}
+Release:    3%{?dist}
 License:    GPL+
 Group:      System Environment/Base
+Vendor:     VMware, Inc.
+Distribution: Photon
 URL:        http://christophe.varoqui.free.fr/
 Source0:    multipath-tools-a0e0752.tar.gz
 %define git_commit_short a0e0752
 %define sha1 multipath-tools=56c171d5ed567654a10996b6d9892944d9d0cb48
 BuildRequires:  userspace-rcu-devel
-BuildRequires:  librados-devel
 BuildRequires:  libaio-devel
 BuildRequires:  device-mapper-devel
 BuildRequires:  readline-devel
@@ -17,7 +18,6 @@ BuildRequires:  ncurses-devel
 BuildRequires:  systemd-devel
 BuildRequires:  json-c-devel
 Requires:   userspace-rcu
-Requires:   librados2
 Requires:   libaio
 Requires:   device-mapper
 Requires:   libselinux
@@ -28,11 +28,11 @@ Requires:   kpartx = %{version}-%{release}
 
 %description
 Device-mapper-multipath provides tools to manage multipath devices by
-instructing the device-mapper multipath kernel module what to do. 
+instructing the device-mapper multipath kernel module what to do.
 
 %package -n kpartx
 Summary:    Partition device manager for device-mapper devices
-
+Requires:   device-mapper
 %description -n kpartx
 kpartx manages partition creation and removal for device-mapper devices.
 
@@ -95,6 +95,10 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+*   Thu Dec 06 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 0.7.3-3
+-   Make device-mapper a runtime dependency of kpartx.
+*   Wed Sep 26 2018 Anish Swaminathan <anishs@vmware.com>  0.7.3-2
+-   Remove rados dependency
 *   Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.3-1
 -   Update to 0.7.3
 *   Tue May 9  2017 Bo Gan <ganb@vmware.com> 0.7.1-1

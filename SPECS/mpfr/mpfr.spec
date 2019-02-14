@@ -1,6 +1,6 @@
 Summary:	Functions for multiple precision math
 Name:		mpfr
-Version:	3.1.5
+Version:	4.0.1
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.mpfr.org
@@ -8,7 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.mpfr.org/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1 mpfr=2a2118179f8f3c682389dcddc800d30132e8794a
+%define sha1 mpfr=655e3cf416a0cc9530d9cb3c38dc8839504f0e98
 Requires:	gmp
 %description
 The MPFR package contains functions for multiple precision math.
@@ -41,28 +41,31 @@ make %{?_smp_mflags} check
 %postun	-p /sbin/ldconfig
 %files
 %defattr(-,root,root)
-%{_libdir}/libmpfr.so.4.1.5
-%{_libdir}/libmpfr.so.4
+%{_libdir}/libmpfr.so.*
 
 %files devel
 %{_includedir}/mpf2mpfr.h
 %{_includedir}/mpfr.h
 %{_libdir}/libmpfr.a
 %{_libdir}/libmpfr.so
-%{_docdir}/mpfr-3.1.5/NEWS
-%{_docdir}/mpfr-3.1.5/FAQ.html
-%{_docdir}/mpfr-3.1.5/examples/version.c
-%{_docdir}/mpfr-3.1.5/examples/rndo-add.c
-%{_docdir}/mpfr-3.1.5/examples/ReadMe
-%{_docdir}/mpfr-3.1.5/examples/sample.c
-%{_docdir}/mpfr-3.1.5/examples/divworst.c
-%{_docdir}/mpfr-3.1.5/COPYING.LESSER
-%{_docdir}/mpfr-3.1.5/TODO
-%{_docdir}/mpfr-3.1.5/BUGS
-%{_docdir}/mpfr-3.1.5/AUTHORS
-%{_docdir}/mpfr-3.1.5/COPYING
+%{_libdir}/pkgconfig/*
+%{_docdir}/mpfr-%{version}/NEWS
+%{_docdir}/mpfr-%{version}/FAQ.html
+%{_docdir}/mpfr-%{version}/examples/version.c
+%{_docdir}/mpfr-%{version}/examples/rndo-add.c
+%{_docdir}/mpfr-%{version}/examples/ReadMe
+%{_docdir}/mpfr-%{version}/examples/sample.c
+%{_docdir}/mpfr-%{version}/examples/divworst.c
+%{_docdir}/mpfr-%{version}/examples/can_round.c
+%{_docdir}/mpfr-%{version}/COPYING.LESSER
+%{_docdir}/mpfr-%{version}/TODO
+%{_docdir}/mpfr-%{version}/BUGS
+%{_docdir}/mpfr-%{version}/AUTHORS
+%{_docdir}/mpfr-%{version}/COPYING
 
 %changelog
+*       Thu Sep 20 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.0.1-1
+-       Update package version
 *       Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 3.1.5-1
 -       Update package version
 *       Mon Oct 03 2016 ChangLee <changlee@vmware.com> 3.1.3-3

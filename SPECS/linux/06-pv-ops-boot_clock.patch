@@ -5,18 +5,18 @@ Subject: [PATCH] x86/vmware: pv-ops boot_clock
 
 ---
  arch/x86/include/asm/paravirt.h       |  5 +++++
- arch/x86/include/asm/paravirt_types.h |  5 +++++
+ arch/x86/include/asm/paravirt_types.h |  2 ++
  arch/x86/kernel/cpu/vmware.c          | 24 +++++++++++++++++++++++-
  arch/x86/kernel/head_64.S             |  8 ++++++++
  arch/x86/kernel/paravirt.c            |  7 +++++++
- arch/x86/kernel/setup.c               |  9 +++++++++
- 6 files changed, 57 insertions(+), 1 deletion(-)
+ arch/x86/kernel/setup.c               | 10 ++++++++++
+ 6 files changed, 55 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/include/asm/paravirt.h b/arch/x86/include/asm/paravirt.h
-index ce932812f142..3d4ba2a999cb 100644
+index e375d4266..e5c64e1 100644
 --- a/arch/x86/include/asm/paravirt.h
 +++ b/arch/x86/include/asm/paravirt.h
-@@ -193,6 +193,11 @@ static inline u64 paravirt_steal_clock(int cpu)
+@@ -184,6 +184,11 @@ static inline u64 paravirt_steal_clock(int cpu)
  	return PVOP_CALL1(u64, pv_time_ops.steal_clock, cpu);
  }
  
@@ -29,21 +29,18 @@ index ce932812f142..3d4ba2a999cb 100644
  {
  	return PVOP_CALL1(u64, pv_cpu_ops.read_pmc, counter);
 diff --git a/arch/x86/include/asm/paravirt_types.h b/arch/x86/include/asm/paravirt_types.h
-index 0f400c0e4979..5f09979f612d 100644
+index 4b75acc..156cfa3 100644
 --- a/arch/x86/include/asm/paravirt_types.h
 +++ b/arch/x86/include/asm/paravirt_types.h
-@@ -51,6 +51,10 @@ struct mm_struct;
+@@ -53,6 +53,7 @@ struct mm_struct;
  struct desc_struct;
  struct task_struct;
  struct cpumask;
-+#if __BITS_PER_LONG == 64
-+# define timespec64 timespec
-+#endif
 +struct timespec64;
  struct flush_tlb_info;
+ struct mmu_gather;
  
- /*
-@@ -96,6 +100,7 @@ struct pv_lazy_ops {
+@@ -100,6 +101,7 @@ struct pv_lazy_ops {
  struct pv_time_ops {
  	unsigned long long (*sched_clock)(void);
  	unsigned long long (*steal_clock)(int cpu);
@@ -52,27 +49,18 @@ index 0f400c0e4979..5f09979f612d 100644
  
  struct pv_cpu_ops {
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 987ac571d16c..0e1fc6e17efc 100644
+index d4a8c9a..45c78ec 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -124,6 +124,7 @@ static struct kmsg_dumper kmsg_dumper = {
- #ifdef CONFIG_PARAVIRT
- static struct cyc2ns_data vmware_cyc2ns __ro_after_init;
+@@ -101,6 +101,7 @@ static struct cyc2ns_data vmware_cyc2ns __ro_after_init;
  static int vmw_sched_clock __initdata = 1;
+ static DEFINE_PER_CPU_DECRYPTED(struct vmware_steal_time, steal_time) __aligned(64);
+ static int has_steal_clock = 0;
 +uint64_t __initdata tsc_at_head;
  
- static __init int setup_vmw_sched_clock(char *s)
+ static u64 vmware_clock_get_cycles(struct clocksource *cs)
  {
-@@ -145,7 +146,7 @@ static unsigned long long vmware_sched_clock(void)
- static void __init vmware_cyc2ns_setup(void)
- {
- 	struct cyc2ns_data *d = &vmware_cyc2ns;
--	unsigned long long tsc_now = rdtsc();
-+	unsigned long long tsc_now = tsc_at_head;
- 
- 	clocks_calc_mult_shift(&d->cyc2ns_mul, &d->cyc2ns_shift,
- 			       vmware_tsc_khz, NSEC_PER_MSEC, 0);
-@@ -175,6 +176,26 @@ struct clocksource * __init clocksource_default_clock(void)
+@@ -123,6 +124,26 @@ struct clocksource * __init clocksource_default_clock(void)
  	return &clocksource_vmware;
  }
  
@@ -96,10 +84,19 @@ index 987ac571d16c..0e1fc6e17efc 100644
 +	}
 +}
 +
- static uint64_t vmware_steal_clock(int cpu)
+ static __init int setup_vmw_sched_clock(char *s)
  {
- 	struct vmware_steal_time *steal;
-@@ -311,6 +332,7 @@ static void __init vmware_paravirt_ops_setup(void)
+ 	vmw_sched_clock = 0;
+@@ -143,7 +164,7 @@ static unsigned long long notrace vmware_sched_clock(void)
+ static void __init vmware_cyc2ns_setup(void)
+ {
+ 	struct cyc2ns_data *d = &vmware_cyc2ns;
+-	unsigned long long tsc_now = rdtsc();
++	unsigned long long tsc_now = tsc_at_head;
+ 
+ 	clocks_calc_mult_shift(&d->cyc2ns_mul, &d->cyc2ns_shift,
+ 			       vmware_tsc_khz, NSEC_PER_MSEC, 0);
+@@ -347,6 +368,7 @@ static void __init vmware_paravirt_ops_setup(void)
  #endif
  	}
  	clocksource_register_khz(&clocksource_vmware, vmware_tsc_khz);
@@ -108,11 +105,11 @@ index 987ac571d16c..0e1fc6e17efc 100644
  #else
  #define vmware_paravirt_ops_setup() do {} while (0)
 diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-index b4421cc191b0..f7b8017fa90a 100644
+index a3618cf..93b5e83 100644
 --- a/arch/x86/kernel/head_64.S
 +++ b/arch/x86/kernel/head_64.S
-@@ -184,6 +184,14 @@ ENTRY(secondary_startup_64)
- 	 * after the boot processor executes this code.
+@@ -72,6 +72,14 @@ startup_64:
+ 	 * tables and then reload them.
  	 */
  
 +	/*
@@ -123,14 +120,14 @@ index b4421cc191b0..f7b8017fa90a 100644
 +	or	%rax, %rdx
 +	mov	%rdx, tsc_at_head(%rip)
 +
- 	/* Sanitize CPU configuration */
- 	call verify_cpu
+ 	/* Set up the stack for verify_cpu(), similar to initial_stack below */
+ 	leaq	(__end_init_task - SIZEOF_PTREGS)(%rip), %rsp
  
 diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
-index bbf3d5933eaa..10bbdb3e6651 100644
+index 8dc69d8..3cf11e7 100644
 --- a/arch/x86/kernel/paravirt.c
 +++ b/arch/x86/kernel/paravirt.c
-@@ -203,6 +203,12 @@ static u64 native_steal_clock(int cpu)
+@@ -220,6 +220,12 @@ static u64 native_steal_clock(int cpu)
  	return 0;
  }
  
@@ -143,7 +140,7 @@ index bbf3d5933eaa..10bbdb3e6651 100644
  /* These are in entry.S */
  extern void native_iret(void);
  extern void native_usergs_sysret64(void);
-@@ -310,6 +316,7 @@ struct pv_init_ops pv_init_ops = {
+@@ -327,6 +333,7 @@ struct pv_init_ops pv_init_ops = {
  struct pv_time_ops pv_time_ops = {
  	.sched_clock = native_sched_clock,
  	.steal_clock = native_steal_clock,
@@ -152,13 +149,14 @@ index bbf3d5933eaa..10bbdb3e6651 100644
  
  __visible struct pv_irq_ops pv_irq_ops = {
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 9c337b0e8ba7..67a42e58b118 100644
+index b4866ba..ecec1e1 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -1302,3 +1302,12 @@ void arch_show_smap(struct seq_file *m, struct vm_area_struct *vma)
- 
- 	seq_printf(m, "ProtectionKey:  %8u\n", vma_pkey(vma));
+@@ -1309,3 +1309,13 @@ static int __init register_kernel_offset_dumper(void)
+ 	return 0;
  }
+ __initcall(register_kernel_offset_dumper);
++
 +
 +/* We need to define a real function for read_boot_clock64, to override the
 +   weak default version */
@@ -168,6 +166,3 @@ index 9c337b0e8ba7..67a42e58b118 100644
 +	paravirt_read_boot_clock64(ts);
 +}
 +#endif
--- 
-2.11.0
-

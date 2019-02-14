@@ -1,14 +1,14 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        10.2.0
-Release:        4%{?dist}
+Version:        10.3.0
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 open-vm-tools=adba97493c4f96db6281a6964ee26b17b5adc5c5
+Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-%{version}-8931395.tar.gz
+%define sha1 open-vm-tools=236d8159882ab2663043232a59f84eba144d0345
 Source1:        gosc-scripts-1.2.tar.gz
 %define sha1 gosc-scripts-1.2=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
@@ -19,6 +19,7 @@ Patch2:         PureIPv6-hosts.patch
 Patch3:         GOSC-libDeploy.patch
 Patch4:         timezoneCust.patch
 Patch5:         gosc-post-custom.patch
+BuildArch:      x86_64
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
@@ -29,6 +30,9 @@ BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  fuse-devel
 BuildRequires:  systemd
+BuildRequires:  rpcsvc-proto-devel
+BuildRequires:  libtirpc-devel
+BuildRequires:  xmlsec1-devel
 Requires:       fuse
 Requires:       xerces-c
 Requires:       libdnet
@@ -38,6 +42,8 @@ Requires:       xml-security-c
 Requires:       openssl
 Requires:       systemd
 Requires:       libstdc++
+Requires:       libtirpc
+Requires:       xmlsec1
 %description
 VmWare virtualization user mode tools
 
@@ -48,8 +54,8 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications.
 
 %prep
-%setup -q -n %{name}-stable-%{version}/%{name}
-%setup -a 1 -n %{name}-stable-%{version}/%{name}
+%setup -q -n %{name}-%{version}-8931395
+%setup -a 1 -n %{name}-%{version}-8931395
 %patch0 -p0
 %patch1 -p0
 %patch2 -p0
@@ -59,7 +65,7 @@ It contains the libraries and header files to create applications.
 %build
 touch ChangeLog
 autoreconf -i
-sh ./configure --prefix=/usr --without-x --without-kernel-modules --without-icu --disable-static
+sh ./configure --prefix=/usr --without-x --without-kernel-modules --without-icu --disable-static --with-tirpc
 make %{?_smp_mflags}
 %install
 
@@ -94,13 +100,25 @@ if [ "$1" = "0" -a                      \
    %{_bindir}/vmware-rpctool 'tools.set.version 0' &> /dev/null || /bin/true
 fi
 
-%postun 
+%postun
 /sbin/ldconfig
 %systemd_postun_with_restart vmtoolsd.service vgauthd.service
 
-%files 
+%files
 %defattr(-,root,root)
-%{_libdir}/open-vm-tools/plugins/*
+%dir %{_libdir}/%{name}
+%dir %{_libdir}/%{name}/plugins
+%dir %{_libdir}/%{name}/plugins/common
+%dir %{_libdir}/%{name}/plugins/vmsvc
+%{_libdir}/%{name}/plugins/vmsvc/libdeployPkgPlugin.so
+%{_libdir}/%{name}/plugins/vmsvc/libgrabbitmqProxy.so
+%{_libdir}/%{name}/plugins/vmsvc/libguestInfo.so
+%{_libdir}/%{name}/plugins/vmsvc/libpowerOps.so
+%{_libdir}/%{name}/plugins/vmsvc/libresolutionKMS.so
+%{_libdir}/%{name}/plugins/vmsvc/libtimeSync.so
+%{_libdir}/%{name}/plugins/vmsvc/libvmbackup.so
+%{_libdir}/%{name}/plugins/common/libhgfsServer.so
+%{_libdir}/%{name}/plugins/common/libvix.so
 %{_libdir}/*.so.*
 %{_bindir}/*
 %{_sysconfdir}/*
@@ -115,6 +133,12 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Tue Jan 29 2019 Tapas Kundu <tkundu@vmware.com> 10.3.0-3
+-   Fix to remove all files associated with open-vm-tools on uninstallation.
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 10.3.0-2
+-   Adding BuildArch
+*   Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 10.3.0-1
+-   Version update. Use rpcsvc-proto, libtirpc, xmlsec1
 *   Tue Jul 10 2018 Keerthana K <keerthanak@vmware.com> 10.2.0-4
 -   Fix for post custom script failure.
 *   Mon Apr 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 10.2.0-3

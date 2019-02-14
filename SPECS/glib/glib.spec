@@ -1,18 +1,22 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
-Version:	2.52.1
+Version:	2.58.0
 Release:	2%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.52/%{name}-%{version}.tar.xz
-%define sha1 glib=ae55d5a476e7e9c08f06e22e9a723e4d0313a873
+Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.58/%{name}-%{version}.tar.xz
+%define sha1 glib=c00e433c56e0ba3541abc5222aeca4136de10fb8
 BuildRequires:	pcre-devel
 BuildRequires:	libffi-devel
 BuildRequires:	pkg-config
 BuildRequires:	cmake
+BuildRequires:	which
+BuildRequires:	python-xml
+BuildRequires:	python2 >= 2.7
+BuildRequires:	python2-libs >= 2.7
 Requires:	pcre-libs
 Requires:	libffi
 Provides:	pkgconfig(glib-2.0)
@@ -29,8 +33,7 @@ The GLib package contains a low-level libraries useful for providing data struct
 Summary:	Header files for the glib library
 Group:		Development/Libraries
 Requires:	glib = %{version}-%{release}
-BuildRequires:	python2 >= 2.7
-BuildRequires:	python2-libs >= 2.7
+Requires:	python-xml
 Requires:	pcre-devel
 Requires:	python2
 Requires:	libffi-devel
@@ -49,7 +52,8 @@ Gsettings schemas compiling tool
 %prep
 %setup -q
 %build
-./configure --prefix=/usr --with-pcre=system 
+./autogen.sh
+%configure --with-pcre=system
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -57,7 +61,7 @@ make DESTDIR=%{buildroot} install
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 
-%files 
+%files
 %defattr(-,root,root)
 %{_libdir}/libglib-*.so.*
 %{_libdir}/libgthread-*.so.*
@@ -86,6 +90,10 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+*   Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 2.58.0-2
+-   glib-devel requires python-xml.
+*   Tue Sep 11 2018 Anish Swaminathan <anishs@vmware.com> 2.58.0-1
+-   Update version to 2.58.0
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.52.1-2
 -   Requires pcre-libs, BuildRequires libffi-devel.
 *   Wed Apr 12 2017 Danut Moraru <dmoraru@vmware.com> 2.52.1-1

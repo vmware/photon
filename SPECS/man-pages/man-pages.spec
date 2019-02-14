@@ -1,6 +1,6 @@
 Summary:	Man pages
 Name:		man-pages
-Version:	4.10
+Version:	4.16
 Release:	1%{?dist}
 License:	GPLv2+ and BSD
 URL:		http://www.kernel.org/doc/man-pages
@@ -8,7 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.kernel.org/pub/linux/docs/man-pages/%{name}-%{version}.tar.gz
-%define sha1 man-pages=8538ebbf1723ddd4709a9e1670f023463a2be56c
+%define sha1 man-pages=354b253235052e398fa9677fd29aacfa87b1117f
 BuildArch:	noarch
 
 %description
@@ -37,13 +37,13 @@ rm -vf %{buildroot}%{_mandir}/man5/passwd.5
 %{_mandir}/man8/*
 
 %changelog
-*       Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 4.10-1
--       Update pacakge version
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.04-2
--	GA - Bump release of all rpms
-* 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  4.04-1
-- 	Upgrade to 4.04
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.59-1
--	Initial build. First version
-
-
+*   Thu Sep 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.16-1
+-   Update to version 4.16
+*   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 4.10-1
+-   Update pacakge version
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.04-2
+-   GA - Bump release of all rpms
+*   Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  4.04-1
+-   Upgrade to 4.04
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.59-1
+-   Initial build. First version

@@ -1,20 +1,20 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
-Version:        1.6.12
+Version:        1.8.14
 Release:        1%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.haproxy.org/download/1.6/src/%{name}-%{version}.tar.gz
-%define sha1 haproxy=7a8b05adbb405d8ca280b25b82f6a6b2da6e2622
+Source0:        http://www.haproxy.org/download/1.8/src/%{name}-%{version}.tar.gz
+%define sha1 haproxy=589c6f933d73e8d6ba5307c8304cafb80e968481
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  lua-devel
 BuildRequires:  pkg-config
 BuildRequires:  zlib-devel
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 Requires:       systemd
 
 %description
@@ -33,7 +33,7 @@ Requires:       %{name} = %{version}-%{release}
 
 %build
 make %{?_smp_mflags} TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 \
-        USE_GETADDRINFO=1 USE_ZLIB=1
+        USE_GETADDRINFO=1 USE_ZLIB=1 USE_SYSTEMD=1
 make %{?_smp_mflags} -C contrib/systemd
 sed -i s/"local\/"/""/g contrib/systemd/haproxy.service
 sed -i "s/\/run/\/var\/run/g" contrib/systemd/haproxy.service
@@ -58,6 +58,12 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Tue Dec 04 2018 Ajay Kaher <akaher@vmware.com> 1.8.14-1
+-   Update to version 1.8.14
+*   Thu Oct 25 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.8.13-2
+-   Build with USE_SYSTEMD=1 to fix service startup.
+*   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 1.8.13-1
+-   Update to version 1.8.13
 *   Tue Apr 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.6.12-1
 -   Updated to version 1.6.12
 *   Sun Nov 27 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.10-1
@@ -70,4 +76,3 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 -   Updated to version 1.6.3
 *   Thu Oct 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.5.14-1
 -   Add haproxy v1.5 package.
-

@@ -1,6 +1,5 @@
 import threading
-from PackageBuilder import PackageBuilderChroot
-from PackageBuilder import PackageBuilderContainer
+from PackageBuilder import PackageBuilder
 import Scheduler
 import ThreadPool
 
@@ -18,29 +17,24 @@ class WorkerThread(threading.Thread):
     def run(self):
         buildThreadFailed = False
         ThreadPool.ThreadPool.makeWorkerThreadActive(self.name)
-        self.logger.info("Thread " + self.name + " is starting now")
+        self.logger.debug("Thread " + self.name + " is starting now")
         while True:
             pkg = Scheduler.Scheduler.getNextPackageToBuild()
+            doneList = Scheduler.Scheduler.getDoneList()
             if pkg is None:
                 break
-            self.logger.info("Thread " + self.name + " is building package:" + pkg)
-            if self.pkgBuildType == "chroot":
-                pkgBuilder = PackageBuilderChroot(self.mapPackageToCycle,
-                                                  self.pkgBuildType)
-            elif self.pkgBuildType == "container":
-                pkgBuilder = PackageBuilderContainer(self.mapPackageToCycle,
-                                                     self.pkgBuildType)
+            pkgBuilder = PackageBuilder(self.mapPackageToCycle,
+                                              self.pkgBuildType)
             try:
-                pkgBuilder.buildPackageFunction(pkg)
+                pkgBuilder.build(pkg, doneList)
             except Exception as e:
                 self.logger.exception(e)
                 buildThreadFailed = True
                 Scheduler.Scheduler.notifyPackageBuildFailed(pkg)
-                self.logger.info("Thread " + self.name + " stopped building package:" + pkg)
+                self.logger.debug("Thread " + self.name + " stopped building package:" + pkg)
                 self.statusEvent.set()
                 break
-            self.logger.info("Thread " + self.name + " finished building package:" + pkg)
             Scheduler.Scheduler.notifyPackageBuildCompleted(pkg)
 
         ThreadPool.ThreadPool.makeWorkerThreadInActive(self.name)
-        self.logger.info("Thread " + self.name + " is going to rest")
+        self.logger.debug("Thread " + self.name + " is going to rest")

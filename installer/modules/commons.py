@@ -68,7 +68,7 @@ def partition_disk(disk, partitions):
 
         partition['partition_number'] = partition_number
         prefix = ''
-        if 'nvme' in disk:
+        if 'nvme' in disk or 'mmcblk' in disk:
             prefix = 'p'
         partition['path'] = disk + prefix + repr(partition_number)
         partition_number = partition_number + 1

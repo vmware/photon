@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.14.54
+Version:        4.19.15
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=434080e874f7b78c3234f22784427d4a189fb54d
+%define sha1 linux=fb970b2014ecf9dcef23943f8095b28dfe0d6cca
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -20,7 +20,7 @@ Patch1:         double-tcp_mem-limits.patch
 Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
-Patch6:         x86-vmware-STA-support.patch
+Patch6:         4.18-x86-vmware-STA-support.patch
 
 # -esx
 Patch13:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
@@ -31,12 +31,16 @@ Patch17:        04-quiet-boot.patch
 Patch18:        05-pv-ops-clocksource.patch
 Patch19:        06-pv-ops-boot_clock.patch
 Patch20:        07-vmware-only.patch
-Patch21:        vmware-balloon-late-initcall.patch
-Patch22:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+Patch22:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
+Patch25:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+# Out-of-tree patches from AppArmor:
+Patch26:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch27:        4.17-0002-apparmor-af_unix-mediation.patch
+Patch28:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 
-
+BuildArch:     x86_64
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -87,9 +91,12 @@ The Linux package contains the Linux kernel doc files
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
-%patch21 -p1
 %patch22 -p1
 %patch24 -p1
+%patch25 -p1
+%patch26 -p1
+%patch27 -p1
+%patch28 -p1
 
 %build
 # patch vmw_balloon driver
@@ -186,11 +193,36 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jan 15 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.15-1
+-   Update to version 4.19.15
+-   .config: Enable USB_SERIAL and USB_ACM
+*   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-4
+-   Additional security hardening options in the config.
+*   Tue Jan 08 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-3
+-   Fix crash on cpu hot-add.
+*   Fri Jan 04 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-2
+-   Add out-of-tree patches from AppArmor and enable it by default.
+*   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-1
+-   Update to version 4.19.6
+*   Thu Nov 29 2018 Alexey Makhalov <amakhalov@vmware.com> 4.19.1-3
+-   Fix BAR4 is zero issue for IDE devices
+*   Thu Nov 15 2018 Ajay Kaher <akaher@vmware.com> 4.19.1-2
+-   Adding BuildArch
+*   Thu Nov 08 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.1-1
+-   Update to version 4.19.1
+*   Mon Sep 24 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.18.9-1
+-   Update to version 4.18.9
+*   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
+-   Update to version 4.14.67
+*   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-3
+-   Add rdrand-based RNG driver to enhance kernel entropy.
+*   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-2
+-   Add full retpoline support by building with retpoline-enabled gcc.
 *   Mon Jul 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-1
 -   Update to version 4.14.54
 *   Fri Feb 02 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-1
 -   Version update
-*   Mon Dec 19 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-2
+*   Tue Dec 19 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-2
 -   Enable audit support (CONFIG_AUDIT=y)
 *   Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-1
 -   Version update
@@ -420,7 +452,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Thu Aug 13 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-3
 -   Added environment file(photon.cfg) for a grub.
 *   Tue Aug 11 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-2
-    Added pci-probe-vmware.patch. Removed unused modules. Decreased boot time. 
+    Added pci-probe-vmware.patch. Removed unused modules. Decreased boot time.
 *   Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-1
-    Initial commit. Use patchset from Clear Linux. 
+    Initial commit. Use patchset from Clear Linux.
 

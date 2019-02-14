@@ -1,33 +1,28 @@
 {
     "iso" : {
         "title" : "ISO Packages",
-        "file" : "packages_iso.json",
+        "packagelist_file" : "packages_iso.json",
         "visible" : false,
-        "include" : [],
         "additional-files" : ["open_source_license.txt","NOTICE"]
     },
     "minimal" : {
         "title" : "1. Photon Minimal",
-        "file" : "packages_minimal.json",
-        "visible" : true,
-        "include" : []
+        "packagelist_file" : "packages_minimal.json",
+        "visible" : true
     },
-    "full" : {
-        "title" : "2. Photon Full",
-        "file" : "packages_full.json",
-        "visible" : true,
-        "include" : ["minimal"]
+    "developer" : {
+        "title" : "2. Photon Developer",
+        "packagelist_file" : "packages_developer.json",
+        "visible" : true
     },
-    "ostree_server" : {
-        "title" : "3. Photon OSTree Server",
-        "file" : "packages_ostree_server.json",
-        "visible" : true,
-        "include" : ["minimal"]
+    "edge" : {
+        "title" : "3. Photon Edge",
+        "packagelist_file" : "packages_edge.json",
+        "visible" : true
     },
     "appliance" : {
         "title" : "Minimal packages to support appliances.",
-        "file" : "packages_appliance.json",
-        "visible" : false,
-        "include" : []
+        "packagelist_file" : "packages_appliance.json",
+        "visible" : false
     }
 }

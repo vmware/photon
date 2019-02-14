@@ -1,0 +1,72 @@
+From d4c1d4fcf4e1a9cd6082093a00613d0b46178b94 Mon Sep 17 00:00:00 2001
+From: Anchal Agarwal <anchalag@amazon.com>
+Date: Tue, 27 Mar 2018 17:23:50 +0000
+Subject: Revert "xen: dont fiddle with event channel masking in
+ suspend/resume"
+
+This reverts commit e91b2b1194335ca83d8a40fa4e0efd480bf2babe.
+evtchn are supposed to be masked during resume however they are not
+which causes special interrupts like PV spinlock to cause kernel
+BUG() as its expects the IRQ to be masked. This causes instances
+that are live migrated successfully to crash after few minutes.
+
+Signed-off--by: Anchal Agarwal <anchalag@amazon.com>
+Signed-off--by: Eduardo Valentin <eduval@amazon.com>
+Reviewed-by: Frank van der Linden <fllinden@amazon.com>
+Reviewed-by: Alakesh Haloi <alakeshh@amazon.com>
+Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
+
+CR: https://cr.amazon.com/r/8361544/
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/xen/events/events_base.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
+index ed24a017d2d6..2babdeffe00c 100644
+--- a/drivers/xen/events/events_base.c
++++ b/drivers/xen/events/events_base.c
+@@ -343,6 +343,14 @@ static void bind_evtchn_to_cpu(unsigned int chn, unsigned int cpu)
+ 	info->cpu = cpu;
+ }
+ 
++static void xen_evtchn_mask_all(void)
++{
++	unsigned int evtchn;
++
++	for (evtchn = 0; evtchn < xen_evtchn_nr_channels(); evtchn++)
++		mask_evtchn(evtchn);
++}
++
+ /**
+  * notify_remote_via_irq - send event to remote end of event channel via irq
+  * @irq: irq of event channel to send event to
+@@ -1563,6 +1571,7 @@ void xen_irq_resume(void)
+ 	struct irq_info *info;
+ 
+ 	/* New event-channel space is not 'live' yet. */
++	xen_evtchn_mask_all();
+ 	xen_evtchn_resume();
+ 
+ 	/* No IRQ <-> event-channel mappings. */
+@@ -1680,7 +1689,6 @@ module_param(fifo_events, bool, 0);
+ void __init xen_init_IRQ(void)
+ {
+ 	int ret = -EINVAL;
+-	unsigned int evtchn;
+ 
+ 	if (fifo_events)
+ 		ret = xen_evtchn_fifo_init();
+@@ -1692,8 +1700,7 @@ void __init xen_init_IRQ(void)
+ 	BUG_ON(!evtchn_to_irq);
+ 
+ 	/* No event channels are 'live' right now. */
+-	for (evtchn = 0; evtchn < xen_evtchn_nr_channels(); evtchn++)
+-		mask_evtchn(evtchn);
++	xen_evtchn_mask_all();
+ 
+ 	pirq_needs_eoi = pirq_needs_eoi_flag;
+ 
+-- 
+2.14.4
+

@@ -1,11 +1,11 @@
 Summary:	Very fast, header only, C++ logging library.
 Name:		spdlog
-Version:	0.13.0
-Release:	1%{?dist}
+Version:	1.1.0
+Release:	2%{?dist}
 License:	MIT
 URL:		https://github.com/gabime/spdlog
-Source0:	%{name}-v%{version}.tar.gz
-%define sha1    spdlog=e9968ab555f9f7bb86d6257e98d7a92313a91297
+Source0:	%{name}-%{version}.tar.gz
+%define sha1    spdlog=9b428a0eb4ace8f4916896dd2b3c021a9dc77f79
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -31,12 +31,20 @@ make %{?_smp_mflags}
 cd build
 make DESTDIR=%{buildroot} install
 
+%check
+cd build
+make test
+
 %files
 %defattr(-,root,root)
 %{_includedir}/%{name}/*
-%{_libdir}/cmake/%{name}/*.cmake
-%{_libdir}/pkgconfig/spdlog.pc
+%{_lib64dir}/cmake/%{name}/*.cmake
+%{_lib64dir}/pkgconfig/spdlog.pc
 
 %changelog
+*    Mon Nov 26 2018 Sujay G <gsujay@vmware.com> 1.1.0-2
+-    Added %check section
+*    Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 1.1.0-1
+-    Updating the version to 1.1.0-1.
 *    Wed Jul 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.13.0-1
 -    Initial version of spdlog package for Photon.

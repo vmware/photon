@@ -5,15 +5,15 @@
 
 Summary:        Code coverage measurement for Python.
 Name:           python-coverage
-Version:        4.3.4
-Release:        5%{?dist}
+Version:        4.5.1
+Release:        1%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/coverage
 Source0:        https://files.pythonhosted.org/packages/source/c/coverage/coverage-%{version}.tar.gz
-%define         sha1 coverage=8ffe985cb6efd4b747fd8ee75a9a41e4f319cc71
+%define         sha1 coverage=ec7c2ee6eae78708bee08af8b85e03dd8d673ef2
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -87,6 +87,8 @@ popd
 %{_bindir}/coverage-%{python3_version}
 
 %changelog
+*   Sat Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 4.5.1-1
+-   Updated to 4.5.1
 *   Thu Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.4-5
 -   Fixed make check errors
 *   Fri Jul 07 2017 Chang Lee <changlee@vmware.com> 4.3.4-4

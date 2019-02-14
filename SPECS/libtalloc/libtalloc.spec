@@ -1,17 +1,17 @@
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
-Version:    2.1.9
+Version:    2.1.14
 Release:    2%{?dist}
 License:    LGPLv3+
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    https://www.samba.org/ftp/talloc/talloc-2.1.9.tar.gz
-%define sha1 talloc=e1e79fec4c0b6bd92be904a9c03b0a168478711a
-Patch0:      wscript-test_magic_differs.patch
+Source0:    https://www.samba.org/ftp/talloc/talloc-%{version}.tar.gz
+%define sha1 talloc=9d563b768148b620bdae1c97b36cfc30928a1044
 BuildRequires: libxslt
 BuildRequires: docbook-xsl
+BuildRequires: python2-devel
 
 %description
 Libtalloc alloc is a hierarchical, reference counted memory pool system with destructors. It is the core memory allocator used in Samba.
@@ -42,32 +42,25 @@ Development libraries for python-talloc
 
 %prep
 %setup -q -n talloc-%{version}
-%patch0 -p1
 
 %build
-%configure --disable-rpath \
-           --disable-rpath-install \
-           --bundled-libraries=NONE \
+%configure --bundled-libraries=NONE \
            --builtin-libraries=replace \
            --disable-silent-rules
 make %{?_smp_mflags} V=1
 
 %install
 %make_install
-find %{buildroot}  -name "*.so*" -exec chmod -c +x {} \;
-rm -f %{buildroot}/%{_libdir}/libtalloc.a
 rm -f %{buildroot}/usr/share/swig/*/talloc.i
 
 %check
-cp %{buildroot}/usr/lib/libtalloc.so.2 /usr/lib/
-cp %{buildroot}/usr/lib/libpytalloc-util.so.2 /usr/lib/
 make check
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
-%{_libdir}/*.so.*
+%{_libdir}/libtalloc.so.*
 
 %files devel
 %{_includedir}/talloc.h
@@ -85,6 +78,10 @@ make check
 %{_libdir}/libpytalloc-util.so
 
 %changelog
+*   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.1.14-2
+-   Added BuildRequires python2-devel
+*   Tue Sep 11 2018 Bo Gan <ganb@vmware.com> 2.1.14-1
+-   Update to 2.1.14
 *   Thu Aug 03 2017 Chang Lee <changlee@vmware.com> 2.1.9-2
 -   Copy libraries and add a patch for path regarding %check
 *   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 2.1.9-1

@@ -1,0 +1,106 @@
+diff --git a/client/netmgr_api.c b/client/netmgr_api.c
+index b6371f4..3ca9dbd 100644
+--- a/client/netmgr_api.c
++++ b/client/netmgr_api.c
+@@ -2595,7 +2595,7 @@ cleanup:
+ error:
+     if (pMode)
+     {
+-        *pMode = DNS_MODE_INVALID;
++        *pMode = DNS_MODE_UNKNOWN;
+     }
+     if (pCount)
+     {
+diff --git a/python/netmgmt_py.c b/python/netmgmt_py.c
+index 0f7e4c5..9b3c36a 100644
+--- a/python/netmgmt_py.c
++++ b/python/netmgmt_py.c
+@@ -1222,7 +1222,7 @@ get_dns_servers(
+ {
+     uint32_t dwError = 0;
+     size_t i = 0, count = 0;
+-    NET_DNS_MODE dnsMode = DNS_MODE_INVALID;
++    NET_DNS_MODE dnsMode = DNS_MODE_UNKNOWN;
+     char *pszInterfaceName = NULL;
+     char *pszDnsMode = NULL;
+     char **ppszDnsServers = NULL;
+@@ -1254,7 +1254,7 @@ get_dns_servers(
+         }
+     }
+ 
+-    if (dnsMode == DNS_MODE_INVALID)
++    if (dnsMode == DNS_MODE_UNKNOWN)
+     {
+         pszDnsMode = "invalid";
+     }
+@@ -1731,7 +1731,7 @@ fill_link_info(
+     size_t i = 0, j = 0;
+     NET_LINK_MODE linkMode = LINK_MODE_UNKNOWN;
+     NET_LINK_STATE linkState = LINK_STATE_UNKNOWN;
+-    NET_DNS_MODE dnsMode = DNS_MODE_INVALID;
++    NET_DNS_MODE dnsMode = DNS_MODE_UNKNOWN;
+     NET_IPV4_ADDR_MODE addrMode = IPV4_ADDR_MODE_NONE;
+     char *pszDuid = 0, *pszIfName = NULL, *pszAddrMode = NULL;
+     char *pszMacAddress = NULL, *pszIpv4Addr =NULL, *pszDnsMode = NULL;
+@@ -1830,7 +1830,7 @@ fill_link_info(
+     }
+     BAIL_ON_PMD_ERROR(dwError);
+ 
+-    if (dnsMode == DNS_MODE_INVALID)
++    if (dnsMode == DNS_MODE_UNKNOWN)
+     {
+         pszDnsMode = "invalid";
+     }
+@@ -2056,7 +2056,7 @@ get_system_network_info(
+     uint32_t dwError = 0;
+     size_t j = 0;
+     size_t countDnsServers = 0, countDnsDomains = 0, countNtpServers = 0;
+-    NET_DNS_MODE dnsMode = DNS_MODE_INVALID;
++    NET_DNS_MODE dnsMode = DNS_MODE_UNKNOWN;
+     PPY_SYSTEM pPySystemObject = NULL;
+     char *pszDuid = 0, *pszDnsMode = NULL;
+     char **ppszDnsServers = NULL, **ppszDnsDomains = NULL;
+@@ -2085,7 +2085,7 @@ get_system_network_info(
+     }
+     BAIL_ON_PMD_ERROR(dwError);
+ 
+-    if (dnsMode == DNS_MODE_INVALID)
++    if (dnsMode == DNS_MODE_UNKNOWN)
+     {
+         pszDnsMode = "invalid";
+     }
+diff --git a/server/netmgmtrestapi.c b/server/netmgmtrestapi.c
+index 75e9506..7a86ab4 100644
+--- a/server/netmgmtrestapi.c
++++ b/server/netmgmtrestapi.c
+@@ -212,7 +212,7 @@ net_str_to_dns_mode(
+     )
+ {
+     uint32_t dwError = 0;
+-    NET_DNS_MODE nMode = DNS_MODE_INVALID;
++    NET_DNS_MODE nMode = DNS_MODE_UNKNOWN;
+ 
+     if (!pMode)
+     {
+@@ -230,7 +230,7 @@ net_str_to_dns_mode(
+     }
+     else
+     {
+-        nMode = DNS_MODE_INVALID;
++        nMode = DNS_MODE_UNKNOWN;
+     }
+ 
+     *pMode = nMode;
+diff --git a/tools/cli/netmgmt/net_main.c b/tools/cli/netmgmt/net_main.c
+index e6f69d4..09ce588 100644
+--- a/tools/cli/netmgmt/net_main.c
++++ b/tools/cli/netmgmt/net_main.c
+@@ -677,7 +677,7 @@ cmd_dns_servers(
+ {
+     uint32_t dwError = 0, add = 0;
+     size_t dwCount = 0, i = 0;
+-    NET_DNS_MODE dnsMode = DNS_MODE_INVALID;
++    NET_DNS_MODE dnsMode = DNS_MODE_UNKNOWN;
+     char *pszIfname = NULL, *pszMode = NULL;
+     char *pszDnsServers = NULL, *pszNoRestart = NULL;
+     char *s1, *s2, *pszServers = NULL, **ppszDnsServersList = NULL;

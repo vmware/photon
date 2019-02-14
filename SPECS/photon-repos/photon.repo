@@ -1,5 +1,5 @@
 [photon]
-name=VMware Photon Linux 2.0(x86_64)
+name=VMware Photon Linux 3.0(_arch)
 baseurl=https://dl.bintray.com/vmware/photon_release_$releasever_$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1

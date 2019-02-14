@@ -1,19 +1,20 @@
 %global security_hardening none
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
-Version:        0.8.1
-Release:        1%{?kernelsubrelease}%{?dist}
+Version:        0.12.1
+Release:        4%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/draios/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1    falco=7873d34769656349678584502296b147aa5445fa
-Source1:        https://github.com/draios/sysdig/archive/sysdig-0.19.1.tar.gz
-%define sha1    sysdig=425ea9fab8e831274626a9c9e65f0dfb4f9bc019
+%define sha1    falco=f0b18777d990bd325c712ceca67fe49d6b71b0e9
+Source1:        https://github.com/draios/sysdig/archive/sysdig-0.23.1.tar.gz
+%define sha1    sysdig=8d1ce894c8fcd8a1939c28adbfb661ad82110bde
 Source2:        http://libvirt.org/sources/libvirt-2.0.0.tar.xz
 %define sha1    libvirt=9a923b06df23f7a5526e4ec679cdadf4eb35a38f
+BuildArch:      x86_64
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
@@ -22,6 +23,7 @@ BuildRequires:  ncurses-devel
 BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:  libgcrypt
 BuildRequires:  sysdig
+BuildRequires:  jq-devel
 BuildRequires:  git
 BuildRequires:  lua-devel
 BuildRequires:  libyaml-devel
@@ -42,7 +44,7 @@ Requires:       sysdig
 Requires:       dkms
 
 %description
-Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules. 
+Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules.
 
 %prep
 %setup
@@ -50,17 +52,21 @@ Sysdig falco is an open source, behavioral activity monitor designed to detect a
 tar xf %{SOURCE2} --no-same-owner
 
 %build
-mv sysdig-0.19.1 ../sysdig
+mv sysdig-0.23.1 ../sysdig
 sed -i 's|../falco/rules|rules|g' userspace/engine/CMakeLists.txt
 sed -i 's|../falco/userspace|userspace|g' userspace/engine/config_falco_engine.h.in
-cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} CMakeLists.txt
+cmake \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DUSE_BUNDLED_OPENSSL=OFF \
+    -DUSE_BUNDLED_CURL=OFF \
+    -DUSE_BUNDLED_JQ=OFF \
+    CMakeLists.txt
 make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
 
 %install
 make install KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build" DESTDIR=%{buildroot}
 mkdir -p %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra
 mv driver/falco-probe.ko %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra
-sed -i 's|/var/lib/dkms/$PACKAGE_NAME/$SYSDIG_VERSION/$KERNEL_RELEASE/$ARCH/module/$PROBE_NAME.ko|/lib/modules/$KERNEL_RELEASE/extra/$PROBE_NAME.ko|g' %{buildroot}/usr/bin/falco-probe-loader
 
 #falco requires docker instance and dpkg to pass make check.
 #%check
@@ -83,7 +89,21 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/falco-probe.ko
 
+%post
+/sbin/depmod -a
+
+%postun
+/sbin/depmod -a
+
 %changelog
+*   Tue Dec 12 2018 Sujay G <gsujay@vmware.com> 0.12.1-4
+-   Disabled bundled JQ, openssl and instead use Photon maintained packages.
+*   Wed Oct 24 2018 Ajay Kaher <akaher@vmware.com> 0.12.1-3
+-   Adding BuildArch
+*   Wed Oct 24 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.12.1-2
+-   Add depmod for falco-probe.ko and removed patch from new falco-probe-loader
+*   Mon Sep 24 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.12.1-1
+-   Update falco and sysdig versions to fix build error with linux 4.18
 *   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 0.8.1-1
 -   Version update to build against linux-4.14.y kernel
 *   Thu Aug 24 2017 Rui Gu <ruig@vmware.com> 0.6.0-3

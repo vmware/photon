@@ -1,27 +1,33 @@
 Summary:	Tracks system calls that are made by a running process
 Name:		strace
-Version:	4.16
-Release:	3%{?dist}
+Version:	4.25
+Release:	1%{?dist}
 License:	BSD
-URL:		http://sourceforge.net/p/strace/code/ci/master/tree/
+URL:		https://strace.io/
 Group:		Development/Debuggers
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://downloads.sourceforge.net/project/strace/strace/%{version}/%{name}-%{version}.tar.xz
-%define sha1 strace=b780a8cd2e60ea836cfd3468e0f81623a346d180
+Source0:	https://strace.io/files/%{version}/%{name}-%{version}.tar.xz
+%define sha1 strace=4f5c8a0c4bf08b0c012de87ab9d10c0e3b06585f
 BuildRequires:	libacl-devel, libaio-devel
 %global __requires_exclude ^/usr/bin/perl$
 
 %description
-The strace program intercepts and displays the system calls made by a running process. strace also records 
-all the arugments and return values from the system calls. This is useful in debugging a process. 
+The strace program intercepts and displays the system calls made by a running process. strace also records
+all the arugments and return values from the system calls. This is useful in debugging a process.
 
 %prep
 %setup -q
 
 %build
-./configure \
-	--prefix=%{_prefix} \
+%ifarch aarch64
+%configure \
+	--disable-mpers \
+	--prefix=%{_prefix}
+%else
+%configure \
+	--prefix=%{_prefix}
+%endif
 
 # to resolve build issue with glibc-2.26
 sed -i 's/struct ucontext/ucontext_t/g' linux/x86_64/arch_sigreturn.c
@@ -34,17 +40,23 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot}
 
 %check
-make -k check 
+make -k check
 
 %clean
 rm -rf %{buildroot}/*
 
-%files 
+%files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/man1/*
 
 %changelog
+*   Tue Nov 13 2018 Srinidhi Rao <srinidhir@vmware.com> 4.25-1
+-   Updating to version 4.25
+*   Thu Oct 25 2018 Ajay Kaher <akaher@vmware.com> 4.24-2
+-   Fix 4.24 for aarch64
+*   Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 4.24-1
+-   Updating to version 4.24
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-3
 -   Aarch64 support
 *   Wed Aug 23 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-2

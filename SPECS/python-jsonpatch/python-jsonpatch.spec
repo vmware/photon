@@ -2,14 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-jsonpatch
-Version:        1.15
-Release:        4%{?dist}
+Version:        1.23
+Release:        1%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
 Url:		https://pypi.python.org/pypi/jsonpatch
 Source0:        https://pypi.python.org/packages/be/c1/947048a839120acefc13a614280be3289db404901d1a2d49b6310c6d5757/jsonpatch-%{version}.tar.gz
-%define sha1 jsonpatch=a678cb3d2a91fc350c7355361f0d3a0d9808d119
+%define sha1    jsonpatch=6097861e88b94fd42fcc9713aa81d5f97b4cc350
 
 BuildRequires: python2
 BuildRequires: python2-libs
@@ -69,6 +69,8 @@ popd
 %{_bindir}/jsonpatch3
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.23-1
+-   Update to version 1.23
 *       Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.15-4
 -       Separate python3 and python2 specific scripts in bin directory
 *       Thu Apr 27 2017 Sarah Choi <sarahc@vmware.com> 1.15-3

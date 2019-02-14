@@ -1,14 +1,14 @@
 Summary:        A library that provides compression and decompression of file formats used by Microsoft
 Name:           libmspack
-Version:        0.5alpha
-Release:        3%{?dist}
+Version:        0.7.1alpha
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://www.cabextract.org.uk/libmspack/libmspack-0.5alpha.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.cabextract.org.uk/libmspack/%{name}-%{version}.tar.gz
-%define sha1    libmspack=226f19b1fc58e820671a1749983b06896e108cc4
+%define sha1    libmspack=073348180586d7b0f61fd7f971162ffb5c1f6621
 %description
 A library that provides compression and decompression of file formats used by Microsoft
 
@@ -20,12 +20,14 @@ It contains the libraries and header files to create applications.
 
 %prep
 %setup -q
+
 %build
-./configure --prefix=/usr
-make %{?_smp_mflags}
+%configure
+#Package does not support parallel make
+make
+
 %install
 make DESTDIR=%{buildroot} install
-find %{buildroot}/usr/lib/ -name '*.la' -delete
 
 %check
 cd test
@@ -36,15 +38,22 @@ cd test
 
 %files 
 %defattr(-,root,root)
+%{_bindir}/cabrip
+%{_bindir}/chmextract
+%{_bindir}/msexpand
+%{_bindir}/oabextract
 %{_libdir}/*.so.*
 
 %files  devel
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
 %{_libdir}/*.a
+%{_libdir}/*.la
 %{_libdir}/*.so
 
 %changelog
+*   Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 0.7.1alpha-1
+-   Update to 0.7.1alpha
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5alpha-3
 -   Add devel package.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.5alpha-2

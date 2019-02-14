@@ -1,7 +1,7 @@
 Summary:	Apache Commons Daemon
 Name:		commons-daemon
 Version:	1.1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://commons.apache.org/proper/commons-daemon
 Group:		Applications/System
@@ -26,7 +26,7 @@ code to control a Java daemon from a Unix operating system.
 rm -rf %{buildroot}
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 ant dist
 
 %ifarch x86_64
@@ -45,7 +45,7 @@ cd src/native/unix && ./configure && make
 cd $CURDIR
 
 %install
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 DIST_DIR=%{buildroot}%{_datadir}/java
 
 mkdir -p -m 755 $DIST_DIR
@@ -62,8 +62,10 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+*   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
+-   Removed dependency on JAVA8_VERSION macro
 *   Tue Dec 26 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-1
--   Versio update to support aarch64
+-   Version update to support aarch64
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0.15-12
 -   Remove BuildArch
 *   Tue Jun 20 2017 Divya Thaluru <dthaluru@vmware.com> 1.0.15-11
@@ -78,8 +80,8 @@ chmod -R 755 $DIST_DIR
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.15-7
 -   Updated JAVA_HOME path to point to latest JDK.
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.15-6
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.15-6
+-   GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru<dthaluru@vmware.com> 1.0.15-5
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.15-4
@@ -87,6 +89,6 @@ chmod -R 755 $DIST_DIR
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.0.15-3
 -   Changing path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0.15-2
--   Updated dependencies after repackaging openjdk. 
+-   Updated dependencies after repackaging openjdk.
 *   Wed Jul 15 2015 Sriram Nambakam <snambakam@vmware.com> 1.0.15-1
 -   Initial commit

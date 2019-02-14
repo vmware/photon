@@ -4,152 +4,231 @@ import queue
 import json
 import operator
 from distutils.version import StrictVersion
-from SpecUtils import Specutils
 from Logger import Logger
 from constants import constants
+from StringUtils import StringUtils
+from distutils.version import LooseVersion
+from SpecParser import SpecParser
 
 
+class SpecData(object):
 
-class SpecObject(object):
-    def __init__(self):
-        self.listPackages = []
-        self.listRPMPackages = []
-        self.name = ""
-        self.version = ""
-        self.release = ""
-        self.buildRequirePackages = []
-        self.checkBuildRequirePackages = []
-        self.installRequiresAllPackages = []
-        self.installRequiresPackages = {}
-        self.specFile = ""
-        self.listSources = []
-        self.checksums = {}
-        self.listPatches = []
-        self.securityHardening = ""
-        self.url = ""
-        self.sourceurl = ""
-        self.license = ""
-        self.specDefs = {}
+    def __init__(self, logPath, specFilesPath):
 
+        self.logger = Logger.getLogger("SpecData", logPath, constants.logLevel)
 
-class SpecObjectsUtils(object):
-
-    def __init__(self, logPath):
+        # map default package name to list of SpecObjects. Usually it is just
+        # a list with only one element. But, for multiversion spec file this
+        # list has as many elements as many versions of given package name
+        # are available
         self.mapSpecObjects = {}
-        self.mapPackageToSpec = {}
-        self.logger = Logger.getLogger("Serializable Spec objects", logPath)
 
-    def readSpecsAndConvertToSerializableObjects(self, specFilesPath):
-        listSpecFiles = []
-        self.getListSpecFiles(listSpecFiles, specFilesPath)
-        for specFile in listSpecFiles:
-            spec = Specutils(specFile)
-            specName = spec.getBasePackageName()
-            specObj = SpecObject()
-            specObj.name = specName
-            specObj.buildRequirePackages = spec.getBuildRequiresAllPackages()
-            specObj.installRequiresAllPackages = spec.getRequiresAllPackages()
-            specObj.checkBuildRequirePackages = spec.getCheckBuildRequiresAllPackages()
-            specObj.listPackages = spec.getPackageNames()
-            specObj.specFile = specFile
-            specObj.version = spec.getVersion()
-            specObj.release = spec.getRelease()
-            specObj.listSources = spec.getSourceNames()
-            specObj.checksums = spec.getChecksums()
-            specObj.specDefs = spec.getDefinitions()
-            specObj.listPatches = spec.getPatchNames()
-            specObj.securityHardening = spec.getSecurityHardeningOption()
-            specObj.isCheckAvailable = spec.isCheckAvailable()
-            specObj.license = spec.getLicense()
-            specObj.url = spec.getURL()
-            specObj.sourceurl = spec.getSourceURL()
+        # map subpackage names to default package name
+        self.mapPackageToSpec = {}
+
+        # map spec file name to SpecObject
+        self.mapSpecFileNameToSpecObj = {}
+
+        self._readSpecs(specFilesPath)
+
+
+    # Read all .spec files from the given folder including subfolders,
+    # creates corresponding SpecObjects and put them in internal mappings.
+    def _readSpecs(self, specFilesPath):
+        for specFile in self._getListSpecFiles(specFilesPath):
+            spec = SpecParser(specFile)
+
+            # skip the specfile if buildarch differs
+            buildarch = spec.packages.get('default').buildarch
+            if (buildarch != "noarch" and
+                    platform.machine() != buildarch):
+                self.logger.info("skipping spec file: "+str(specFile))
+                continue
+
+            specObj = spec.createSpecObject()
+
+            name = specObj.name
             for specPkg in specObj.listPackages:
-                specObj.installRequiresPackages[specPkg] = spec.getRequires(specPkg)
-                self.mapPackageToSpec[specPkg] = specName
-                if spec.getIsRPMPackage(specPkg):
-                    specObj.listRPMPackages.append(specPkg)
-            if specName in self.mapSpecObjects:
-                self.mapSpecObjects[specName].append(specObj)
+                self.mapPackageToSpec[specPkg] = name
+
+            if name in self.mapSpecObjects:
+                self.mapSpecObjects[name].append(specObj)
             else:
-                self.mapSpecObjects[specName]=[specObj]
+                self.mapSpecObjects[name]=[specObj]
+
+            self.mapSpecFileNameToSpecObj[os.path.basename(specFile)]=specObj
+
+
+        # Sort the multiversion list to make getHighestVersion happy
         for key, value in self.mapSpecObjects.items():
             if len(value) > 1:
                 self.mapSpecObjects[key] = sorted(value,
                                                   key=lambda x : self.compareVersions(x),
                                                   reverse=True)
 
-    def getListSpecFiles(self, listSpecFiles, path):
+    def _getListSpecFiles(self, path):
+        listSpecFiles = []
         for dirEntry in os.listdir(path):
             dirEntryPath = os.path.join(path, dirEntry)
             if (os.path.isfile(dirEntryPath) and
-                    dirEntryPath.endswith(".spec") and
-                    os.path.basename(dirEntryPath) not in
-                    constants.skipSpecsForArch.get(platform.machine(), [])):
+                    dirEntryPath.endswith(".spec")):
                 listSpecFiles.append(dirEntryPath)
             elif os.path.isdir(dirEntryPath):
-                self.getListSpecFiles(listSpecFiles, dirEntryPath)
+                listSpecFiles.extend(self._getListSpecFiles(dirEntryPath))
+        return listSpecFiles
 
-    def getBuildRequiresForPackage(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].buildRequirePackages
+    def _getProperVersion(self,depPkg):
+        if (depPkg.compare == ""):
+            return self.getHighestVersion(depPkg.package)
+        specObjs=self.getSpecObjects(depPkg.package)
+        try:
+            for obj in specObjs:
+                verrel=obj.version+"-"+obj.release
+                if depPkg.compare == ">=":
+                    if LooseVersion(verrel) >= LooseVersion(depPkg.version):
+                        return obj.version
+                elif depPkg.compare == "<=":
+                    if LooseVersion(verrel) <= LooseVersion(depPkg.version):
+                        return obj.version
+                elif depPkg.compare == "=":
+                    if LooseVersion(verrel) == LooseVersion(depPkg.version):
+                        return obj.version
+                    if LooseVersion(obj.version) == LooseVersion(depPkg.version):
+                        return obj.version
+                elif depPkg.compare == "<":
+                    if LooseVersion(verrel) < LooseVersion(depPkg.version):
+                        return obj.version
+                elif depPkg.compare == ">":
+                    if LooseVersion(verrel) > LooseVersion(depPkg.version):
+                        return obj.version
+        except Exception as e:
+            self.logger.error("Exception happened while searching for: " + \
+                              depPkg.package + depPkg.compare + depPkg.version)
+            raise e
 
-    def getRequiresAllForPackage(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].installRequiresAllPackages
+        # about to throw exception
+        availableVersions=""
+        for obj in specObjs:
+            availableVersions+=" "+obj.name+"-"+obj.version+"-"+obj.release
+        raise Exception("Could not find package: " + depPkg.package + \
+                         depPkg.compare + depPkg.version + \
+                         " available specs:" + availableVersions)
 
-    def getRequiresForPackage(self, package, index=0):
-        specName = self.getSpecName(package)
-        if package in self.mapSpecObjects[specName][index].installRequiresPackages:
-            return self.mapSpecObjects[specName][index].installRequiresPackages[package]
-        return None
+    def _getSpecObjField(self, package, version, field):
+        for specObj in self.getSpecObjects(package):
+            if specObj.version == version:
+                return field(specObj)
+        self.logger.error("Could not find " + package +
+                          "-" + version + " package from specs")
+        raise Exception("Invalid package: " + package + "-" + version)
 
-    def getCheckBuildRequiresForPackage(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].checkBuildRequirePackages
+    def getBuildRequiresForPackage(self, package, version):
+        buildRequiresList=[]
+        for pkg in self._getSpecObjField(package, version, field=lambda x : x.buildRequires):
+            properVersion = self._getProperVersion(pkg)
+            buildRequiresList.append(pkg.package+"-"+properVersion)
+        return buildRequiresList
 
-    def getSpecObj(self, package):
+    def getExtraBuildRequiresForPackage(self, package, version):
+        packages=[]
+        for pkg in self._getSpecObjField(package, version, field=lambda x : x.extraBuildRequires):
+            # no version deps for publishrpms - use just name
+            packages.append(pkg.package)
+        return packages
+
+    def getBuildRequiresForPkg(self, pkg):
+        package, version = StringUtils.splitPackageNameAndVersion(pkg)
+        return self.getBuildRequiresForPackage(package, version)
+
+    # Returns list of [ "pkg1-vers1", "pkg2-vers2",.. ]
+    def getRequiresAllForPackage(self, package, version):
+        requiresList=[]
+        for pkg in self._getSpecObjField(package, version, field=lambda x : x.installRequires):
+            properVersion = self._getProperVersion(pkg)
+            requiresList.append(pkg.package+"-"+properVersion)
+        return requiresList
+
+    def getRequiresAllForPkg(self, pkg):
+        package, version = StringUtils.splitPackageNameAndVersion(pkg)
+        return self.getRequiresAllForPackage(package, version)
+
+    def getRequiresForPackage(self, package, version):
+        requiresList=[]
+        for specObj in self.getSpecObjects(package):
+            if specObj.version == version:
+                if package in specObj.installRequiresPackages:
+                    requiresPackages = specObj.installRequiresPackages[package]
+                    for pkg in requiresPackages:
+                        properVersion = self._getProperVersion(pkg)
+                        requiresList.append(pkg.package+"-"+properVersion)
+                return requiresList
+        self.logger.error("Could not find " + package +
+                          "-" + version + " package from specs")
+        raise Exception("Invalid package: " + package + "-" + version)
+
+    def getRequiresForPkg(self, pkg):
+        package, version = StringUtils.splitPackageNameAndVersion(pkg)
+        return self.getRequiresForPackage(package, version)
+
+    def getCheckBuildRequiresForPackage(self, package, version):
+        checkBuildRequiresList=[]
+        checkBuildRequiresPackages = self._getSpecObjField(package, version, field=lambda x : x.checkBuildRequires)
+        for pkg in checkBuildRequiresPackages:
+            properVersion = self._getProperVersion(pkg)
+            checkBuildRequiresList.append(pkg.package+"-"+properVersion)
+        return checkBuildRequiresList
+
+    # Returns list of SpecObjects for given subpackage name
+    def getSpecObjects(self, package):
         specName=self.getSpecName(package)
         return self.mapSpecObjects[specName]
 
     def getPkgNamesFromObj(self, objlist):
         listPkgName=[]
-        listPkgNames=list(set(objlist))
-        for name in listPkgNames:
+        for name in objlist:
                 listPkgName.append(name.package)
-        listPkgName=list(set(listPkgName))
         return listPkgName
 
-    def getRelease(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].release
+    def getRelease(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x : x.release)
 
-    def getVersion(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].version
+    def getVersions(self, package):
+        versions=[]
+        for specObj in self.getSpecObjects(package):
+            versions.append(specObj.version)
+        return versions
 
-    def getSpecFile(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].specFile
+    def getHighestVersion(self, package):
+        return self.getSpecObjects(package)[0].version
 
-    def getPatches(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].listPatches
+    def getBuildArch(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x : x.buildarch[package])
 
-    def getSources(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].listSources
+    def getSpecFile(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x : x.specFile)
 
-    def getSHA1(self, package, source, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].checksums.get(source)
+    def getPatches(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x : x.listPatches)
 
-    def getPackages(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].listPackages
+    def getSources(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x : x.listSources)
 
-    def getRPMPackages(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].listRPMPackages
+    def getSHA1(self, package, version, source):
+        return self._getSpecObjField(package, version, field=lambda x : x.checksums.get(source))
+
+    # returns list of package names (no versions)
+    def getPackages(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x : x.listPackages)
+
+    def getPackagesForPkg(self, pkg):
+        pkgs=[]
+        package, version = StringUtils.splitPackageNameAndVersion(pkg)
+        for p in self.getPackages(package, version):
+            pkgs.append(p+"-"+version)
+        return pkgs
+
+    def getRPMPackages(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x : x.listRPMPackages)
 
     @staticmethod
     def compareVersions(p):
@@ -160,7 +239,7 @@ class SpecObjectsUtils(object):
             specName = self.mapPackageToSpec[package]
             if specName in self.mapSpecObjects:
                 return specName
-        self.logger.error("Could not able to find " + package + " package from specs")
+        self.logger.error("Could not find " + package + " package from specs")
         raise Exception("Invalid package:" + package)
 
     def isRPMPackage(self, package):
@@ -170,63 +249,51 @@ class SpecObjectsUtils(object):
                 return True
         return False
 
-    def getSecurityHardeningOption(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].securityHardening
+    def getSecurityHardeningOption(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x : x.securityHardening)
 
-    def isCheckAvailable(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].isCheckAvailable
+    def isCheckAvailable(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x : x.isCheckAvailable)
 
     def getListPackages(self):
         return list(self.mapSpecObjects.keys())
 
-    def getURL(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].url
+    def getURL(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x : x.url)
 
-    def getSourceURL(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].sourceurl
+    def getSourceURL(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x : x.sourceurl)
 
-    def getLicense(self, package, index=0):
-        specName = self.getSpecName(package)
-        return self.mapSpecObjects[specName][index].license
+    def getLicense(self, package, version):
+        return self._getSpecObjField(package, version, field=lambda x : x.license)
 
-    def getNumberOfVersions(self, package):
-        specName=self.getSpecName(package)
-        return len(self.mapSpecObjects[specName])
+    # Converts "glibc-devel-2.28" into "glibc-2.28"
+    def getBasePkg(self, pkg):
+        package, version = StringUtils.splitPackageNameAndVersion(pkg)
+        return self.getSpecName(package)+"-"+version
+
 
     def printAllObjects(self):
         listSpecs = self.mapSpecObjects.keys()
         for spec in listSpecs:
-            specObj = self.mapSpecObjects[spec]
-            self.logger.info("-----------Spec:"+specObj.name+"--------------")
-            self.logger.info("Version:"+specObj.version)
-            self.logger.info("Release:"+specObj.release)
-            self.logger.info("SpecFile:"+specObj.specFile)
-            self.logger.info(" ")
-            self.logger.info("Source Files")
-            self.logger.info(specObj.listSources)
-            self.logger.info(" ")
-            self.logger.info("Patch Files")
-            self.logger.info(specObj.listPatches)
-            self.logger.info(" ")
-            self.logger.info(" ")
-            self.logger.info("List RPM packages")
-            self.logger.info(specObj.listPackages)
-            self.logger.info(" ")
-            self.logger.info(" ")
-            self.logger.info("Build require packages")
-            self.logger.info(self.getPkgNamesFromObj(specObj.buildRequirePackages))
-            self.logger.info(" ")
-            self.logger.info(" ")
-            self.logger.info("install require packages")
-            self.logger.info(self.getPkgNamesFromObj(specObj.installRequiresAllPackages))
-            self.logger.info(" ")
-            self.logger.info(specObj.installRequiresPackages)
-            self.logger.info("security_hardening: " + specObj.securityHardening)
-            self.logger.info("------------------------------------------------")
+            for specObj in self.mapSpecObjects[spec]:
+                self.logger.debug("-----------Spec:"+specObj.name+"--------------")
+                self.logger.debug("Version:"+specObj.version)
+                self.logger.debug("Release:"+specObj.release)
+                self.logger.debug("SpecFile:"+specObj.specFile)
+                self.logger.debug("Source Files")
+                self.logger.debug(specObj.listSources)
+                self.logger.debug("Patch Files")
+                self.logger.debug(specObj.listPatches)
+                self.logger.debug("List RPM packages")
+                self.logger.debug(specObj.listPackages)
+                self.logger.debug("Build require packages")
+                self.logger.debug(self.getPkgNamesFromObj(specObj.buildRequires))
+                self.logger.debug("install require packages")
+                self.logger.debug(self.getPkgNamesFromObj(specObj.installRequires))
+                self.logger.debug(specObj.installRequiresPackages)
+                self.logger.debug("security_hardening: " + specObj.securityHardening)
+                self.logger.debug("------------------------------------------------")
 
 
 class SPECS(object):
@@ -250,34 +317,15 @@ class SPECS(object):
 
     def initialize(self):
         # Preparse some files
-        # adding openjre8 version rpm macro
-        if platform.machine() == "x86_64":
-            spec = Specutils(constants.specPath + "/openjdk8/openjdk8.spec")
-        else:
-            spec = Specutils(constants.specPath + "/openjdk8/openjdk8_aarch64.spec")
-        java8version = spec.getVersion()
-        constants.addMacro("JAVA8_VERSION", java8version)
-
-        # adding openjre9 version rpm macro
-        if platform.machine() == "x86_64":
-            spec = Specutils(constants.specPath + "/openjdk9/openjdk9.spec")
-            java9version = spec.getVersion()
-            constants.addMacro("JAVA9_VERSION", java9version)
-
-
-        # adding openjre10 version rpm macro
-        if platform.machine() == "x86_64":
-            spec = Specutils(constants.specPath + "/openjdk10/openjdk10.spec")
-            java10version = spec.getVersion()
-            constants.addMacro("JAVA10_VERSION", java10version)
 
         # adding kernelversion rpm macro
-        spec = Specutils(constants.specPath + "/linux/linux.spec")
-        kernelversion = spec.getVersion()
+        spec = SpecParser(constants.specPath + "/linux/linux.spec")
+        defPkg = spec.packages.get('default')
+        kernelversion = defPkg.version
         constants.addMacro("KERNEL_VERSION", kernelversion)
 
         # adding kernelrelease rpm macro
-        kernelrelease = spec.getRelease()
+        kernelrelease = defPkg.release
         constants.addMacro("KERNEL_RELEASE", kernelrelease)
 
         # adding kernelsubrelease rpm macro
@@ -290,138 +338,5 @@ class SPECS(object):
             constants.addMacro("kernelsubrelease", kernelsubrelease)
 
         # Full parsing
-        self.specData = SpecObjectsUtils(constants.logPath)
-        self.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
+        self.specData = SpecData(constants.logPath, constants.specPath)
 
-
-class SpecDependencyGenerator(object):
-
-    def findTotalRequires(self, mapDependencies, depQue, parent):
-        while not depQue.empty():
-            specPkg = depQue.get()
-            try:
-                listRequiredPackages = SPECS.getData().getRequiresForPackage(specPkg)
-            except Exception as e:
-                print("Caught Exception:"+str(e))
-                print(specPkg + " is missing")
-
-            for depPkg in listRequiredPackages:
-                if depPkg in mapDependencies:
-                    if mapDependencies[depPkg] < mapDependencies[specPkg] + 1:
-                        mapDependencies[depPkg] = mapDependencies[specPkg] + 1
-                        parent[depPkg] = specPkg
-                        self.updateLevels(mapDependencies, depPkg, parent, mapDependencies[depPkg])
-                else:
-                    mapDependencies[depPkg] = mapDependencies[specPkg] + 1
-                    parent[depPkg] = specPkg
-                    depQue.put(depPkg)
-
-    def findTotalWhoNeedsToBuild(self, depQue, whoNeedsBuild):
-        while not depQue.empty():
-            specPkg = depQue.get()
-            listPackagesRequiredToBuild = SPECS.getData().getBuildRequiresForPackage(specPkg)
-            for depPkg in listPackagesRequiredToBuild:
-                depSpecPkg = SPECS.getData().getSpecName(depPkg)
-                if depSpecPkg not in whoNeedsBuild:
-                    whoNeedsBuild.append(depSpecPkg)
-                    depQue.put(depSpecPkg)
-
-    def printTree(self, children, curParent, depth):
-        if curParent in children:
-            for child in children[curParent]:
-                print ("\t" * depth + child)
-                self.printTree(children, child, depth + 1)
-
-    def getAllPackageNames(self, jsonFilePath):
-        with open(jsonFilePath) as jsonData:
-            option_list_json = json.load(jsonData)
-            packages = option_list_json["packages"]
-            return packages
-
-    def updateLevels(self, mapDependencies, inPkg, parent, level):
-        listPackages = SPECS.getData().getPackages(inPkg)
-        for depPkg in SPECS.getData().getRequiresForPackage(inPkg):
-            if depPkg in listPackages:
-                continue
-            if depPkg in mapDependencies and mapDependencies[depPkg] < level + 1:
-                mapDependencies[depPkg] = level + 1
-                parent[depPkg] = inPkg
-                self.updateLevels(mapDependencies, depPkg, parent, mapDependencies[depPkg])
-
-    def calculateSpecDependency(self, inputPackages, mapDependencies, parent):
-        depQue = queue.Queue()
-        for pkg in inputPackages:
-            if SPECS.getData().isRPMPackage(pkg):
-                if pkg not in mapDependencies:
-                    mapDependencies[pkg] = 0
-                    parent[pkg] = ""
-                    depQue.put(pkg)
-                    self.findTotalRequires(mapDependencies, depQue, parent)
-            else:
-                print("Could not find spec for "+pkg)
-
-    def displayDependencies(self, displayOption, inputType, inputValue, allDeps, parent):
-        children = {}
-        sortedList = []
-        for elem in sorted(allDeps.items(), key=operator.itemgetter(1), reverse=True):
-            sortedList.append(elem[0])
-        # construct all children nodes
-        if displayOption == "tree":
-            for k, v in parent.iteritems():
-                children.setdefault(v, []).append(k)
-            if inputType == "json":
-                print("Dependency Mappings for {}".format(inputValue) + " :")
-                print("-" * 52 + " {}".format(children))
-                print("-" * 52)
-            if "" in children:
-                for child in children[""]:
-                    print(child)
-                    self.printTree(children, child, 1)
-                print("*" * 18 + " {} ".format(len(sortedList)) +
-                      "packages in total " + "*" * 18)
-            else:
-                if inputType == "pkg" and len(children) > 0:
-                    print ("cyclic dependency detected, mappings: \n", children)
-
-        # To display a flat list of all packages
-        elif displayOption == "list":
-            print (sortedList)
-
-        # To generate a new JSON file based on given input json file
-        elif displayOption == "json" and inputType == "json":
-            d = {'packages': sortedList}
-            with open(inputValue, 'w') as outfile:
-                json.dump(d, outfile)
-
-        return sortedList
-
-    def process(self, inputType, inputValue, displayOption, outputFile=None):
-        whoNeedsList = []
-        inputPackages = []
-        whoNeedsBuild = []
-        mapDependencies = {}
-        parent = {}
-        if inputType == "pkg" or inputType == "json":
-            if inputType == "pkg":
-                inputPackages.append(inputValue)
-            else:
-                inputPackages = self.getAllPackageNames(inputValue)
-
-            self.calculateSpecDependency(inputPackages, mapDependencies, parent)
-            if outputFile is not None:
-                return self.displayDependencies(displayOption, inputType, outputFile, mapDependencies, parent)
-            else:
-                return self.displayDependencies(displayOption, inputType, inputValue, mapDependencies, parent)
-        elif inputType == "who-needs":
-            for depPkg in SPECS.getData().mapPackageToSpec:
-                if inputValue in SPECS.getData().getRequiresForPackage(depPkg):
-                    whoNeedsList.append(depPkg)
-            print (whoNeedsList)
-            return whoNeedsList
-        elif inputType == "who-needs-build":
-            depQue = queue.Queue()
-            depQue.put(inputValue)
-            self.findTotalWhoNeedsToBuild(depQue, whoNeedsBuild)
-            print ("Following specs need to be build again")
-            print (whoNeedsBuild)
-            return whoNeedsBuild

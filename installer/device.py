@@ -1,5 +1,4 @@
 #
-#    Copyright (C) 2015 vmware inc.
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
@@ -14,7 +13,7 @@ class Device(object):
 
     @staticmethod
     def refresh_devices():
-        devices_list = subprocess.check_output(['lsblk', '-d', '-I', '8,259', '-n',
+        devices_list = subprocess.check_output(['lsblk', '-d', '-I', '8,179,259', '-n',
                                                 '--output', 'NAME,SIZE,MODEL'],
                                                stderr=open(os.devnull, 'w'))
         return Device.wrap_devices_from_list(devices_list)
@@ -22,7 +21,7 @@ class Device(object):
     @staticmethod
     def refresh_devices_bytes():
         devices_list = subprocess.check_output(['lsblk', '-d', '--bytes', '-I',
-                                                '8,259', '-n', '--output', 'NAME,SIZE,MODEL'],
+                                                '8,179,259', '-n', '--output', 'NAME,SIZE,MODEL'],
                                                stderr=open(os.devnull, 'w'))
         return Device.wrap_devices_from_list(devices_list)
 

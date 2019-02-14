@@ -1,27 +1,27 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        7.5p1
-Release:        11%{?dist}
+Version:        7.8p1
+Release:        2%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha1    openssh=5e8f185d00afb4f4f89801e9b0f8b9cee9d87ebd
+%define sha1    openssh=27e267e370315561de96577fccae563bc2c37a60
 Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1    blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Source2:        sshd.service
 Source3:        sshd-keygen.service
 Patch0:         blfs_systemd_fixes.patch
-Patch1:         openssh-7.5p1-fips.patch
-Patch2:         openssh-7.5p1-configure-fips.patch
-Patch3:         openssh-CVE-2017-15906.patch
+Patch1:         openssh-7.8p1-fips.patch
+Patch2:         openssh-7.8p1-configure-fips.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
+BuildRequires:  groff
 Requires:       openssh-clients = %{version}-%{release}
 Requires:       openssh-server = %{version}-%{release}
 %description
@@ -53,14 +53,8 @@ tar xf %{SOURCE1} --no-same-owner
 %patch0 -p0
 %patch1 -p1
 %patch2 -p1
-%patch3 -p3
 %build
-./configure \
-    CFLAGS="%{optflags}" \
-    CXXFLAGS="%{optflags}" \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
+%configure \
     --sysconfdir=/etc/ssh \
     --datadir=/usr/share/sshd \
     --with-md5-passwords \
@@ -181,6 +175,11 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 7.8p1-2
+-   Added BuildRequires groff
+-   Use %configure
+*   Tue Sep 11 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 7.8p1-1
+-   Update version
 *   Tue Nov 28 2017 Xiaolin Li <xiaolinl@vmware.comm> 7.5p1-11
 -   Fix CVE-2017-15906.
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 7.5p1-10

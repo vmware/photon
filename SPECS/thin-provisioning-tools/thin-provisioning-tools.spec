@@ -1,12 +1,12 @@
 Summary:        Thin provisioning tools
 Name:           thin-provisioning-tools
-Version:        0.6.3
-Release:        3%{?dist}
+Version:        0.7.0
+Release:        1%{?dist}
 License:        GPLv3+
 Group:          System Environment/Base
 URL:            https://github.com/jthornber/thin-provisioning-tools
 Source0:        thin-provisioning-tools-%{version}.tar.gz
-%define sha1    thin-provisioning-tools=6e2db216ffaa62a8945d42d91131b94b59fe73d7
+%define sha1    thin-provisioning-tools=618dd1e11d34ba99ce2eb3880303283ade5b708e
 Patch0:         thin-provisioning-tools-fix-for-gcc-6.3.patch
 BuildRequires:  expat-devel, libaio-devel, boost-devel
 Requires:       expat, libaio
@@ -49,6 +49,7 @@ rm -rf %{buildroot}
 %{_sbindir}/cache_metadata_size
 %{_sbindir}/cache_restore
 %{_sbindir}/cache_repair
+%{_sbindir}/cache_writeback
 %{_sbindir}/era_check
 %{_sbindir}/era_dump
 %{_sbindir}/era_restore
@@ -62,8 +63,11 @@ rm -rf %{buildroot}
 %{_sbindir}/thin_delta
 %{_sbindir}/thin_ls
 %{_sbindir}/thin_trim
+%{_sbindir}/thin_show_duplicates
 
 %changelog
+*   Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 0.7.0-1
+-   Update version to stable release version 0.7.0.
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.6.3-3
 -   Use standard configure macros
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.3-2

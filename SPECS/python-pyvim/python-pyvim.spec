@@ -3,28 +3,42 @@
 
 Summary:        Pure Python Vi Implementation.
 Name:           python-pyvim
-Version:        0.0.20
-Release:        4%{?dist}
+Version:        2.0.22
+Release:        3%{?dist}
 License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/service_identity
 Source0:        pyvim-%{version}.tar.gz
-%define         sha1 pyvim-%{version}=0bcda6d5f01be0b334f8bdf974b23c3f65e023ae
+%define sha1    pyvim=b44c9e78755b1f13ee45a2903758386425e9a2ba
 # To get tests:
 # git clone https://github.com/jonathanslenders/pyvim.git && cd pyvim
 # git checkout 6860c413 && tar -czvf ../pyvim-tests-0.0.20.tar.gz tests/
 Source1:        pyvim-tests-%{version}.tar.gz
-%define sha1 pyvim-tests=480cec56514ea5ff0387e72c53bbddb951d95954
+%define sha1 pyvim-tests=57c48d48d1e20ae997975a99504be26191b2a662
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  python-pytest
 BuildRequires:  python-prompt_toolkit
+BuildRequires:  python3-pytest
+BuildRequires:  python3-prompt_toolkit
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
+BuildRequires:  python-atomicwrites
+BuildRequires:  python3-atomicwrites
+BuildRequires:  python-attrs
+BuildRequires:  python3-attrs
+BuildRequires:  python-xml
+BuildRequires:  python3-xml
 %endif
 
 Requires:       python2
@@ -38,14 +52,6 @@ An implementation of Vim in Python.
 
 %package -n     python3-pyvim
 Summary:        python-pyvim
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-pytest
-BuildRequires:  python3-prompt_toolkit
-%endif
 
 Requires:       python3
 Requires:       python3-libs
@@ -55,7 +61,7 @@ Python 3 version.
 
 %prep
 %setup -q -n pyvim-%{version}
-tar -xf %{SOURCE1}
+tar -xf %{SOURCE1} --no-same-owner
 
 %build
 python2 setup.py build
@@ -67,7 +73,11 @@ mv %{buildroot}/%{_bindir}/pyvim %{buildroot}/%{_bindir}/pyvim3
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pathlib2 funcsigs pluggy more-itertools pyflakes
 PYTHONPATH=./ py.test2
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pathlib2 funcsigs pluggy more-itertools pyflakes
 PYTHONPATH=./ py.test3
 
 %files
@@ -81,6 +91,12 @@ PYTHONPATH=./ py.test3
 %{_bindir}/pyvim3
 
 %changelog
+*   Mon Nov 26 2018 Tapas Kundu <tkundu@vmware.com> 2.0.22-3
+-   Fix makecheck
+*   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 2.0.22-2
+-   Use --no-same-owner for tar
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.0.22-1
+-   Update to version 2.0.22
 *   Mon Jul 24 2017 Divya Thaluru <dthaluru@vmware.com> 0.0.20-4
 -   Fixed runtime dependencies and make check errors
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.0.20-3

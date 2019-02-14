@@ -1,14 +1,15 @@
 Summary:        Reading, writing, and converting info pages
 Name:           texinfo
-Version:        6.3
-Release:        3%{?dist}
+Version:        6.5
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            http://ftp.gnu.org/gnu/texinfo/texinfo-%{version}.tar.xz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
-%define sha1    texinfo=64568f2791d1309aaccc22e63758458fd249ec8b
+Patch0:         texinfo-perl-fix.patch
+%define sha1    texinfo=72a06b48862911c638787cc3307871b990a59726
 BuildRequires:  perl
 
 %description
@@ -16,10 +17,9 @@ The Texinfo package contains programs for reading, writing,
 and converting info pages.
 %prep
 %setup -q
+%patch0 -p1
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --disable-silent-rules
+%configure --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
@@ -54,6 +54,11 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/texinfo/*
 
 %changelog
+*   Fri Nov 02 2018 Anish Swaminathan <anishs@vmware.com> 6.5-2
+-   Fix texinfo issue with locales
+-   http://lists.gnu.org/archive/html/bug-texinfo/2018-06/msg00029.html
+*   Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 6.5-1
+-   Update version to 6.5.
 *   Fri May 05 2017 Xiaolin Li <xiaolinl@vmware.com> 6.3-3
 -   Excluded pdftexi2dvi, texi2dvi, texi2pdf from package,
 -   because these commands depend on installation of tex.

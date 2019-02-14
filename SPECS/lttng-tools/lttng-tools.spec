@@ -1,11 +1,11 @@
 Summary: LTTng is an open source tracing framework for Linux.
 Name:    lttng-tools
-Version: 2.9.4
+Version: 2.10.5
 Release: 1%{?dist}
 License: GPLv2 and LGPLv2
 URL: https://lttng.org/download/
 Source: %{name}-%{version}.tar.bz2
-%define sha1 lttng-tools=ab1945fd36b30f445eb5c83f199b011d42525612
+%define sha1 lttng-tools=68790d44529a3b29896c35bb2350e8a0e1226264
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:  Photon
@@ -46,6 +46,8 @@ find %{buildroot} -name '*.la' -delete
 %exclude %{_libdir}/debug
 
 %changelog
+*   Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.10.5-1
+-   Update to version 2.10.5
 *   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 2.9.4-1
 -   Update package version
 *   Tue Jul 26 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.1-3

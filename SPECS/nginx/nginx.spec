@@ -1,6 +1,6 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.13.8
+Version:        1.15.3
 Release:        3%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nginx=a1f9348c9c46f449a0b549d0519dd34191d30cee
+%define sha1    nginx=584a585096cffa240a6224f718b4c0c83a7a5e36
 Source1:        nginx.service
 Source2:        nginx-njs-0.2.1.tar.gz
 %define sha1    nginx-njs=fd8c3f2d219f175be958796e3beaa17f3b465126
@@ -38,7 +38,9 @@ popd
     --with-http_ssl_module \
     --with-pcre \
     --with-ipv6 \
-    --with-stream
+    --with-stream \
+    --with-http_auth_request_module \
+    --with-http_sub_module
 
 make %{?_smp_mflags}
 %install
@@ -51,13 +53,34 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/*
+%config(noreplace) %{_sysconfdir}/%{name}/fastcgi.conf
+%config(noreplace) %{_sysconfdir}/%{name}/fastcgi.conf.default
+%config(noreplace) %{_sysconfdir}/%{name}/fastcgi_params
+%config(noreplace) %{_sysconfdir}/%{name}/fastcgi_params.default
+%config(noreplace) %{_sysconfdir}/%{name}/koi-utf
+%config(noreplace) %{_sysconfdir}/%{name}/koi-win
+%config(noreplace) %{_sysconfdir}/%{name}/mime.types
+%config(noreplace) %{_sysconfdir}/%{name}/mime.types.default
+%config(noreplace) %{_sysconfdir}/%{name}/nginx.conf
+%config(noreplace) %{_sysconfdir}/%{name}/nginx.conf.default
+%config(noreplace) %{_sysconfdir}/%{name}/scgi_params
+%config(noreplace) %{_sysconfdir}/%{name}/scgi_params.default
+%config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params
+%config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params.default
+%{_sysconfdir}/%{name}/win-utf
+%{_sysconfdir}/%{name}/html/*
 %{_sbindir}/*
 %{_libdir}/systemd/system/nginx.service
 %dir %{_var}/opt/nginx/log
 %{_var}/log/nginx
 
 %changelog
+*   Wed Nov 07 2018 Ajay Kaher <akaher@vmware.com> 1.15.3-3
+-   mark config files as non replaceable on upgrade.
+*   Mon Sep 17 2018 Keerthana K <keerthanak@vmware.com> 1.15.3-2
+-   Adding http_auth_request_module and http_sub_module.
+*   Fri Sep 7 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.15.3-1
+-   Upgrade to version 1.15.3
 *   Fri Jul 20 2018 Keerthana K <keerthanak@vmware.com> 1.13.8-3
 -   Restarting nginx on failure.
 *   Fri Jun 08 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.13.8-2

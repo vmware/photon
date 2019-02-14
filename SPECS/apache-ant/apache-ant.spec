@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
-Version:	1.10.1
-Release:	5%{?dist}
+Version:	1.10.5
+Release:	3%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      noarch
 Source0:	http://apache.mirrors.lucidnetworks.net//ant/source/%{name}-%{version}-src.tar.gz
-%define sha1 apache-ant=86958f1b11b74dcc31ce0514a25af5307903d52a
+%define sha1 apache-ant=ce14b7f699dcaa5b91e1f1fc642b111e42c5993d
 Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
 Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
@@ -35,7 +35,6 @@ This package contains additional perl and python scripts for Apache
 Ant.
 
 %prep
-
 %setup -q
 tar xf %{SOURCE1} --no-same-owner
 tar xf %{SOURCE2} --no-same-owner
@@ -46,7 +45,7 @@ rm -rf %{buildroot}
 %build
 ANT_DIST_DIR=%{buildroot}%{_prefix}
 cp -v ./hamcrest-1.3/hamcrest-core-1.3.jar ./lib/optional
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 mkdir -p -m 700 $ANT_DIST_DIR
 ./bootstrap.sh && ./build.sh -Ddist.dir=$ANT_DIST_DIR
 
@@ -78,6 +77,19 @@ cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/README.txt $MAVEN_ANT_T
 chown -R root:root $MAVEN_ANT_TASKS_DIR
 chmod 644 $MAVEN_ANT_TASKS_DIR/*
 
+%check
+# Disable following tests which are currently failing in chrooted environment -
+#   - org.apache.tools.ant.types.selectors.OwnedBySelectorTest
+#   - org.apache.tools.ant.types.selectors.PosixGroupSelectorTest
+#   - org.apache.tools.mail.MailMessageTest
+if [ "$(stat -c %d:%i /)" != "$(stat -c %d:%i /proc/1/root/.)" ]; then
+  rm -f src/tests/junit/org/apache/tools/ant/types/selectors/OwnedBySelectorTest.java \
+        src/tests/junit/org/apache/tools/ant/types/selectors/PosixGroupSelectorTest.java \
+        src/tests/junit/org/apache/tools/mail/MailMessageTest.java
+fi
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+bootstrap/bin/ant -v run-tests
+
 %files
 %defattr(-,root,root)
 %dir %{_bindir}
@@ -106,6 +118,12 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_bindir}/runant.pl
 
 %changelog
+*   Tue Dec 04 2018 Dweep Advani <dadvani@vmware.com> 1.10.5-3
+-   Adding MakeCheck tests
+*   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 1.10.5-2
+-   Removed dependency on JAVA8_VERSION macro
+*   Mon Sep 17 2018 Ankit Jain <ankitja@vmware.com> 1.10.5-1
+-   Updated Apache Ant to 1.10.5
 *   Wed Jun 28 2017 Kumar Kaushik <kaushikk@vmware.com> 1.10.1-5
 -   Base package does not require python2.
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 1.10.1-4
@@ -127,7 +145,7 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 -   GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.9.6-2
 -   Updated JAVA_HOME path to point to latest JDK.
-*   Tue Feb 29 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-1
+*   Mon Feb 29 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-1
 -   Updated to version 1.9.6
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.9.4-4
 -   Updated JAVA_HOME path to point to latest JDK.

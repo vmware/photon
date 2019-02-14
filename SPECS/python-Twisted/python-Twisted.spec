@@ -3,17 +3,17 @@
 
 Summary:        An asynchronous networking framework written in Python
 Name:           python-Twisted
-Version:        17.5.0
-Release:        3%{?dist}
+Version:        18.7.0
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://twistedmatrix.com
-Source0:        https://pypi.python.org/packages/source/T/Twisted/twisted-%{version}.tar.gz
-%define sha1 twisted=2c7331971b37095faa4d232c402cd7571ce45b37
-Patch0:        extra_dependency.patch 
-Patch1:        no_packet.patch 
+Source0:        https://pypi.python.org/packages/source/T/Twisted/Twisted-%{version}.tar.bz2
+%define sha1 Twisted=949c75da0426ca139a3128fecb484eeb7513087e
+Patch0:        extra_dependency.patch
+Patch1:        no_packet.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -25,6 +25,12 @@ BuildRequires:  python-cryptography
 BuildRequires:  python-pyOpenSSL
 BuildRequires:  python-six
 
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-incremental
+BuildRequires:  python3-zope.interface
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-zope.interface
@@ -32,20 +38,14 @@ Requires:       python-netaddr
 Requires:       python-incremental
 Requires:       python-constantly
 Requires:       python-hyperlink
-
+Requires:       python-attrs
 %description
-Twisted is an event-driven networking engine written in Python and licensed under the open source ​MIT license. Twisted runs on Python 2 and an ever growing subset also works with Python 3. 
+Twisted is an event-driven networking engine written in Python and licensed under the open source ​MIT license. Twisted runs on Python 2 and an ever growing subset also works with Python 3.
 
 Twisted also supports many common network protocols, including SMTP, POP3, IMAP, SSHv2, and DNS.
 
 %package -n     python3-Twisted
 Summary:        python-Twisted
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-incremental
-BuildRequires:  python3-zope.interface
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -54,12 +54,13 @@ Requires:       python3-netaddr
 Requires:       python3-incremental
 Requires:       python3-constantly
 Requires:       python3-hyperlink
+Requires:       python3-attrs
 
 %description -n python3-Twisted
 Python 3 version.
 
 %prep
-%setup -q -n twisted-twisted-%{version}
+%setup -q -n Twisted-%{version}
 %patch0 -p1
 %patch1 -p1
 rm -rf ../p3dir
@@ -127,6 +128,11 @@ popd
 %{_bindir}/cftp3
 
 %changelog
+*   Tue Oct 30 2018 Tapas Kundu <tkundu@vmware.com> 18.7.0-2
+-   Moved build requires from subpackage
+-   Added attrs package in requires.
+*   Thu Sep 13 2018 Tapas Kundu <tkundu@vmware.com> 18.7.0-1
+-   Upgraded to release 18.7.0
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 17.5.0-3
 -   Remove BuildArch
 *   Mon Sep 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 17.5.0-2

@@ -1,7 +1,7 @@
 Summary:	Photon repo files, gpg keys
 Name:		photon-repos
-Version:	2.0
-Release:	1%{?dist}
+Version:	3.0
+Release:	2%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://vmware.github.io/photon/
@@ -18,6 +18,11 @@ BuildArch:	noarch
 
 %description
 Photon repo files and gpg keys 
+
+%build
+sed -i 's/_arch/%{_arch}/g' %{SOURCE1} \
+         %{SOURCE2} %{SOURCE3} \
+         %{SOURCE4} %{SOURCE5}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -45,15 +50,20 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
-*	Thu Jul 13 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0-1
--	Maintenance for 2.0
-*	Fri Nov 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-5
--	Remove requires for rpm
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-4
--	GA - Bump release of all rpms
-*       Mon May 23 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-3
--       Add photon-debuginfo repo.
-*       Mon Apr 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-2
--       Fix regression in photon-extras gpg key location
-*       Mon Apr 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-1
--       Initial
+*   Mon Oct 1 2018 Ajay Kaher <akaher@vmware.com> 3.0-2
+-   Fix arch name in repos
+*   Mon Sep 24 2018 Anish Swaminathan <anishs@vmware.com> 3.0-1
+-   Update to 3.0
+*   Thu Jul 13 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0-1
+-   Maintenance for 2.0
+*   Fri Nov 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-5
+-   Remove requires for rpm
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-4
+-   GA - Bump release of all rpms
+*   Mon May 23 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-3
+-   Add photon-debuginfo repo.
+*   Mon Apr 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-2
+-   Fix regression in photon-extras gpg key location
+*   Mon Apr 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-1
+-   Initial
+

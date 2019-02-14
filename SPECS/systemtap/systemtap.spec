@@ -7,15 +7,15 @@
 %define        with_sqlite    1
 
 Name:          systemtap
-Version:       3.2
-Release:       1%{?dist}
+Version:       4.0
+Release:       2%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://sourceware.org/systemtap/
 Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
-%define sha1 systemtap=cd4482870015b9429f9945588ea8846d4ace20d1
+%define sha1 systemtap=40a21d71b0d42bc216f75befd3fca82701821211
 License:       GPLv2+
 
 BuildRequires: elfutils-devel
@@ -32,6 +32,7 @@ BuildRequires: perl
 BuildRequires: python-setuptools
 BuildRequires: nss
 BuildRequires: shadow
+BuildRequires: python2-devel
 %if %with_boost
 BuildRequires: boost-devel
 %endif
@@ -73,6 +74,7 @@ Initscript for Systemtap scripts.
 %package python
 Group:         System/Tools
 Summary:       Python interface for systemtap
+Requires:      python2
 
 %description python
 This packages has the python interface to systemtap
@@ -352,8 +354,15 @@ fi
 %{_mandir}/man7/error::*.7stap*
 %{_mandir}/man7/warning::debuginfo.7stap*
 %{_mandir}/man8/stap-server.8*
+%{_mandir}/man8/systemtap-service.8*
 
 %changelog
+*   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 4.0-2
+-   Added BuildRequires python2-devel
+*   Tue Dec 04 2018 Keerthana K <keerthanak@vmware.com> 4.0-1
+-   Updated to version 4.0
+*   Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 3.3-1
+-   Updated to version 3.3
 *   Tue Jan 23 2018 Divya Thaluru <dthaluru@vmware.com>  3.2-1
 -   Updated to version 3.2
 *   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  3.1-5

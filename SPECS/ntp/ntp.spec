@@ -1,6 +1,6 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
-Version:        4.2.8p11
+Version:        4.2.8p12
 Release:        1%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
@@ -8,7 +8,7 @@ Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha1    ntp=b20352bb76963a0ef5ec07ba99c2bb97ec6b6aeb
+%define sha1    ntp=316a0c823beb3ea12c8ce125442a0cda15c45d73
 
 #https://github.com/darkhelmet/ntpstat
 Source1: ntpstat-master.zip
@@ -173,6 +173,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Fri Aug 24 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p12-1
+-   Upgrade version to 4.2.8p12.
 *   Mon Mar 05 2018 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p11-1
 -   Upgrade version to 4.2.8p11 and move perl scripts to perl subpackage.
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.2.8p10-4

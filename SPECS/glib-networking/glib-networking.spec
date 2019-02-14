@@ -1,6 +1,6 @@
 Summary:    Glib networking modules
 Name:       glib-networking
-Version:    2.50.0
+Version:    2.59.1
 Release:    1%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/glib-networking
@@ -8,7 +8,7 @@ Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://ftp.gnome.org/pub/GNOME/sources/glib-networking/2.50/%{name}-%{version}.tar.xz
-%define sha1 glib-networking=d8f6a52fd977acc0ff32fe3152ad4cb3f699c053
+%define sha1 glib-networking=91b9c594712be28e4e3b2d7c60b06c20b62667ee
 BuildRequires:	nettle-devel
 BuildRequires:	autogen-libopts-devel
 BuildRequires:	libtasn1-devel
@@ -19,6 +19,9 @@ BuildRequires:  intltool
 BuildRequires:  glib
 BuildRequires:  glib-devel
 BuildRequires:  glib-schemas
+BuildRequires:  meson
+BuildRequires:  gnome-common
+BuildRequires:  ninja-build
 Requires:	nettle
 Requires:	gnutls
 Requires:	libtasn1
@@ -39,19 +42,21 @@ These are the additional language files of glib-networking.
 %setup -q
 
 %build
-export CFLAGS="%{optflags}"
-./configure  --prefix=%{_prefix} \
-    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
-
-make %{?_smp_mflags}
+mkdir build &&
+cd    build &&
+meson --prefix=/usr            \
+      -Dlibproxy_support=false \
+      -Dgnome_proxy_support=false \
+      -Dpkcs11_support=false .. &&
+ninja
 
 %install
-rm -rf %{buildroot}%{_infodir}
-make DESTDIR=%{buildroot} install
+cd build
+DESTDIR=%{buildroot} ninja install
 %find_lang %{name}
 
 %check
-make %{?_smp_mflags} check
+ninja test
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -61,12 +66,16 @@ make %{?_smp_mflags} check
 %{_libdir}
 %exclude %{_libdir}/debug
 
-%files lang -f %{name}.lang
+%files lang -f build/%{name}.lang
 %defattr(-,root,root)
 
 %changelog
+*       Wed Nov 21 2018 Ashwin H <ashwinh@vmware.com> 2.59.1-1
+-       Updated to 2.59.1 for make check fixes
+*       Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 2.58.0-1
+-       Update to version 2.58.0
 *	Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.50.0-1
--	Updated to version 2.50.0 
+-	Updated to version 2.50.0
 *       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.46.1-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.46.1-2

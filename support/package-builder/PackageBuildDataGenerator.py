@@ -4,6 +4,7 @@ from collections import OrderedDict
 from Logger import Logger
 from constants import constants
 from SpecData import SPECS
+from StringUtils import StringUtils
 
 def removeDuplicateEntries(myList):
     myListCopy = list(OrderedDict.fromkeys(myList))
@@ -18,7 +19,7 @@ class PackageBuildDataGenerator(object):
             logName = "PackageBuildDataGenerator"
         if logPath is None:
             logPath = constants.logPath
-        self.logger = Logger.getLogger(logName, logPath)
+        self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
         self.__mapCyclesToPackageList = {}
         self.__mapPackageToCycle = {}
         self.__buildDependencyGraph = {}
@@ -27,10 +28,9 @@ class PackageBuildDataGenerator(object):
         self.__sortedBuildDependencyGraph = {}
 
     def getPackageBuildData(self, listPackages):
-        basePackages = set()
+        basePackages = []
         for pkg in listPackages:
-            basePackage = SPECS.getData().getSpecName(pkg)
-            basePackages.add(basePackage)
+            basePackages.append(SPECS.getData().getBasePkg(pkg))
 
         self._readDependencyGraphAndCyclesForGivenPackages(basePackages)
         self._getSortedBuildOrderList()
@@ -46,7 +46,7 @@ class PackageBuildDataGenerator(object):
         sortListForPkg = []
 
         for p in runTimeDepPkgList:
-            basePkg = SPECS.getData().getSpecName(p)
+            basePkg = SPECS.getData().getBasePkg(p)
             for bPkg in self.__sortedBuildDependencyGraph[basePkg]:
                 if bPkg not in sortListForPkg:
                     sortListForPkg.append(bPkg)
@@ -110,16 +110,16 @@ class PackageBuildDataGenerator(object):
 
             # Remove duplicate entries in sorted list in intervals
             if (len(sortedList) - prevSortListLen) > 100:
-                self.logger.info("Removing duplicates in sortedList")
+                self.logger.debug("Removing duplicates in sortedList")
                 sortedList = removeDuplicateEntries(sortedList)
             else:
                 prevSortListLen = len(sortedList)
 
-        self.logger.info("Removing duplicates in sorted list")
+        self.logger.debug("Removing duplicates in sorted list")
         sortedList = removeDuplicateEntries(sortedList)
 
-        self.logger.info("Sorted list:")
-        self.logger.info(sortedList)
+        self.logger.debug("Sorted list: ")
+        self.logger.debug(sortedList)
         self.__sortedPackageList = sortedList
 
     def _constructBuildAndRunTimeDependencyGraph(self, basePackage):
@@ -132,32 +132,27 @@ class PackageBuildDataGenerator(object):
 
         nextPackagesToConstructGraph = set()
         if addBuildTimeGraph:
-            dependentRpmPackages = SPECS.getData().getBuildRequiresForPackage(basePackage)
+            dependentRpmPackages = SPECS.getData().getBuildRequiresForPkg(basePackage)
             dependentPackages = set()
-            for rpmPkg in dependentRpmPackages:
-                basePkg = SPECS.getData().getSpecName(rpmPkg.package)
-                dependentPackages.add(basePkg)
+            for dependentPkg in dependentRpmPackages:
+                dependentPackages.add(SPECS.getData().getBasePkg(dependentPkg))
             self.__buildDependencyGraph[basePackage] = dependentPackages
             nextPackagesToConstructGraph.update(dependentPackages)
 
         if addRunTimeGraph:
-            rpmPackages = SPECS.getData().getPackages(basePackage)
             dependentPackages = set()
-            dependentRpmPackagesNames= set()
-            for rpmPkg in rpmPackages:
-                dependentRpmPackages = SPECS.getData().getRequiresAllForPackage(rpmPkg)
-                for pkgName in dependentRpmPackages:
-                    dependentRpmPackagesNames.add(pkgName.package)
-                self.__runTimeDependencyGraph[rpmPkg] = copy.copy(dependentRpmPackagesNames)
-                for pkg in dependentRpmPackagesNames:
-                    dependentPackages.add(SPECS.getData().getSpecName(pkg))
+            for rpmPkg in SPECS.getData().getPackagesForPkg(basePackage):
+                dependentRpmPackages = SPECS.getData().getRequiresAllForPkg(rpmPkg)
+                self.__runTimeDependencyGraph[rpmPkg] = copy.copy(set(dependentRpmPackages))
+                for pkg in dependentRpmPackages:
+                    dependentPackages.add(SPECS.getData().getBasePkg(pkg))
             nextPackagesToConstructGraph.update(dependentPackages)
 
         for pkg in nextPackagesToConstructGraph:
             self._constructBuildAndRunTimeDependencyGraph(pkg)
 
     def _readDependencyGraphAndCyclesForGivenPackages(self, basePackages):
-        self.logger.info("Reading dependency graph to check for cycles")
+        self.logger.debug("Reading dependency graph to check for cycles")
 
         for pkg in basePackages:
             self._constructBuildAndRunTimeDependencyGraph(pkg)
@@ -240,7 +235,7 @@ class PackageBuildDataGenerator(object):
         return sortedPackageList, circularDependencyGraph
 
     def _constructDependencyMap(self, cyclicDependencyGraph):
-        self.logger.info("Constructing dependency map from circular dependency graph.....")
+        self.logger.debug("Constructing dependency map from circular dependency graph.....")
         constructDependencyMap = {}
         for node in cyclicDependencyGraph.keys():
             tmpDepNodeList = set()
@@ -258,19 +253,19 @@ class PackageBuildDataGenerator(object):
                             tmpDepNodeList.add(depNode)
             depNodeList.remove(node)
             constructDependencyMap[node] = depNodeList
-        self.logger.info("Dependency Map:")
-        self.logger.info(constructDependencyMap)
+        self.logger.debug("Dependency Map:")
+        self.logger.debug(constructDependencyMap)
         return constructDependencyMap
 
     def _findCircularDependencies(self, cyclicDependencyGraph):
-        self.logger.info("Looking for circular dependencies")
+        self.logger.debug("Looking for circular dependencies")
         if not cyclicDependencyGraph:
             return
         #step1: construct dependency map from dependency graph
         constructDependencyMap = self._constructDependencyMap(cyclicDependencyGraph)
 
         #step2: find cycles in dependency map
-        self.logger.info("Finding and adding cycles using constructed dependency map......")
+        self.logger.debug("Finding and adding cycles using constructed dependency map......")
         cycleCount = 0
         for node in cyclicDependencyGraph.keys():
             listDepPkg = constructDependencyMap[node]
@@ -288,12 +283,12 @@ class PackageBuildDataGenerator(object):
                     for x in cycPkgs:
                         self.__mapPackageToCycle[x] = cycleName
                     self.__mapCyclesToPackageList[cycleName] = cycPkgs
-                    self.logger.info("New circular dependency found:")
-                    self.logger.info(cycleName + " " + ",".join(cycPkgs))
+                    self.logger.debug("New circular dependency found:")
+                    self.logger.debug(cycleName + " " + ",".join(cycPkgs))
                     cycleCount += 1
 
         if cycleCount > 0:
-            self.logger.info("Found " + str(cycleCount) + " cycles.")
-            self.logger.info("Successfully added all detected circular dependencies to list.")
+            self.logger.debug("Found " + str(cycleCount) + " cycles.")
+            self.logger.debug("Successfully added all detected circular dependencies to list.")
         else:
-            self.logger.info("No circular dependencies found.")
+            self.logger.debug("No circular dependencies found.")

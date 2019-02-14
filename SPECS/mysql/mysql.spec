@@ -1,19 +1,20 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        5.7.20
-Release:        2%{?dist}
+Version:        8.0.14
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
-Source0:        https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=1fcbaea0d75d71a8a868f518b5b0afaaa18c5cda
-Patch0:         Fix-CVE-2018-2696.patch
+Source0:        https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
+%define         sha1 mysql-boost=73a9f69ee9d8955d00b9ee2284cf27547562e831
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
+BuildRequires:  libtirpc-devel
+BuildRequires:  rpcsvc-proto-devel
 
 %description
 MySQL is a free, widely used SQL engine. It can be used as a fast database as well as a rock-solid DBMS using a modular engine architecture.
@@ -28,20 +29,23 @@ Development headers for developing applications linking to maridb
 
 %prep
 %setup -q %{name}-boost-%{version}
-%patch0 -p1
 
 %build
 cmake . \
       -DCMAKE_INSTALL_PREFIX=/usr   \
-      -DWITH_BOOST=boost/boost_1_59_0 \
+      -DWITH_BOOST=boost/boost_1_68_0 \
       -DINSTALL_MANDIR=share/man \
       -DINSTALL_DOCDIR=share/doc \
       -DINSTALL_DOCREADMEDIR=share/doc \
       -DINSTALL_SUPPORTFILESDIR=share/support-files \
-      -DCMAKE_BUILD_TYPE=RELEASE \
-      -DWITH_EMBEDDED_SERVER=OFF
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_C_FLAGS=-fPIC \
+      -DCMAKE_CXX_FLAGS=-fPIC \
+      -DWITH_EMBEDDED_SERVER=OFF \
+      -DFORCE_INSOURCE_BUILD=1
 
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 
@@ -50,9 +54,10 @@ make test
 
 %files
 %defattr(-,root,root)
-%doc COPYING  README
+%doc LICENSE  README router/LICENSE.router router/README.router
 %{_libdir}/plugin/*
-%{_libdir}/libmysqlclient.so.*
+%{_libdir}/*.so.*
+%{_libdir}/mysqlrouter/*.so
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_mandir}/man8/*
@@ -60,14 +65,30 @@ make test
 %exclude /usr/mysql-test
 %exclude /usr/docs
 %exclude /usr/share
+%exclude /usr/*.router
 
 %files devel
-%{_libdir}/libmysqlclient.so
+%{_libdir}/*.so
 %{_libdir}/*.a
 %{_includedir}/*
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Tue Jan 22 2019 Siju Maliakkal <smaliakkal@vmware.com> 8.0.14-1
+-   Upgrade to 8.0.14
+*   Wed Jan 02 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.13-1
+-   Upgrade to version 8.0.13
+-   Workaround for broken DCMAKE_BUILD_TYPE=RELEASE(Mysql Bug#92945). Revert in next version
+*   Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 8.0.12-4
+-   Enabling for aarch64
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 8.0.12-3
+-   Adding BuildArch
+*   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 8.0.12-2
+-   Use libtirpc instead obsoleted rpc from glibc.
+*   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 8.0.12-1
+-   Update to version 8.0.12
+*   Wed Aug 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 5.7.23-1
+-   Update to version 5.7.23 to get it to build with gcc 7.3
 *   Thu Jan 25 2018 Divya Thaluru <dthaluru@vmware.com> 5.7.20-2
 -   Added patch for CVE-2018-2696
 *   Wed Oct 25 2017 Xiaolin Li <xiaolinl@vmware.com> 5.7.20-1

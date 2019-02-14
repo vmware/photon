@@ -1,0 +1,28 @@
+diff -Naur u-boot-2018.09-orig/include/configs/rpi.h u-boot-2018.09-new/include/configs/rpi.h
+--- u-boot-2018.09-orig/include/configs/rpi.h	2018-09-10 21:46:42.000000000 +0000
++++ u-boot-2018.09-new/include/configs/rpi.h	2018-10-08 11:13:31.271558726 +0000
+@@ -146,11 +146,20 @@
+ 	"fdt_addr_r=0x02600000\0" \
+ 	"ramdisk_addr_r=0x02700000\0"
+ 
++
++#ifdef CONFIG_USB
++#define BOOT_TARGET_DEVICES(func) \
++        func(MMC, mmc, 0) \
++        func(USB, usb, 0) \
++        func(PXE, pxe, na) \
++        func(DHCP, dhcp, na)
++#else
+ #define BOOT_TARGET_DEVICES(func) \
+-	func(MMC, mmc, 0) \
+-	func(USB, usb, 0) \
+-	func(PXE, pxe, na) \
+-	func(DHCP, dhcp, na)
++        func(MMC, mmc, 0) \
++        func(PXE, pxe, na) \
++        func(DHCP, dhcp, na)
++#endif
++
+ #include <config_distro_bootcmd.h>
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \

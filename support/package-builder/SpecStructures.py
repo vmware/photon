@@ -1,24 +1,5 @@
 import platform
 
-class rpmMacro(object):
-
-    def __init__(self):
-        self.macroName = ""
-        self.macroFlag = ""
-        self.content = ""
-        self.position = -1
-        self.endposition = -1
-
-    def setName(self, name):
-        self.macroName = name
-
-    def displayMacro(self):
-        print("Macro:")
-        print(self.macroName + " {}".format(self.macroFlag)
-              + " {}".format(self.position)
-              + " {}".format(self.endposition))
-        print(self.content)
-
 class dependentPackageData(object):
 
     def __init__(self):
@@ -45,6 +26,7 @@ class Package(object):
         self.buildrequires = []
         self.buildprovides = []
         self.checkbuildrequires = []
+        self.extrabuildrequires = []
 
         self.requires = []
         self.provides = []
@@ -69,14 +51,40 @@ class Package(object):
     def updatePackageMacro(self, macro):
         if macro.macroName == "%post":
             self.postMacro = macro
-            return True
         if macro.macroName == "%postun":
             self.postunMacro = macro
-            return True
         if macro.macroName == "%files":
             self.filesMacro = macro
-            return True
         if macro.macroName == "%description":
             self.descriptionMacro = macro
-            return True
-        return False
+
+class SpecObject(object):
+    def __init__(self):
+        self.name = ""
+        self.version = ""
+        self.release = ""
+        # map subpackage name to its buildarch
+        self.buildarch = {}
+        # list of subpackage names
+        self.listPackages = []
+        # list of subpackage names that have %files section
+        self.listRPMPackages = []
+
+        # Next four lists store dependentPackageData objects
+        self.buildRequires = []
+        self.installRequires = []
+        self.checkBuildRequires = []
+        self.extraBuildRequires = []
+        # map subpackage name to list of install requires
+        # dependentPackageData objects
+        self.installRequiresPackages = {}
+
+        # full spec file name
+        self.specFile = ""
+        self.listSources = []
+        self.checksums = {}
+        self.listPatches = []
+        self.securityHardening = ""
+        self.url = ""
+        self.sourceurl = ""
+        self.license = ""

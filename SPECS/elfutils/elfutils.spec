@@ -1,13 +1,14 @@
 # -*- rpm-spec-*-
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
-Version:	0.169
+Version:	0.174
 Release:	2%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 URL:    	https://sourceware.org/elfutils
 Source0:	https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 elfutils=4977019aece471362dbdd28a27ef1030471dff84
+%define sha1 elfutils=95899ce5fa55002e46bf4e02d01a249516e296fd
+Patch0:         CVE-2018-18310.patch
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -105,6 +106,7 @@ These are the additional language files of elfutils.
 
 %prep
 %setup -q
+%patch0 -p1
 %build
 %configure --program-prefix=%{_programprefix}
 make %{?_smp_mflags}
@@ -195,6 +197,10 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root)
 
 %changelog
+* Thu Jan 24 2019 Keerthana K <keerthanak@vmware.com> 0.174-2
+- Fix for CVE-2018-18310
+* Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 0.174-1
+- Version update
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 0.169-2
 - Requires bzip2-libs
 * Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 0.169-1
@@ -229,7 +235,7 @@ rm -rf ${RPM_BUILD_ROOT}
   aarch64 support.
 
 * Mon Sep 30 2013 Mark Wielaard <mjw@redhat.com> 0.157-1
-- libdw: Add new functions dwarf_getlocations, dwarf_getlocation_attr 
+- libdw: Add new functions dwarf_getlocations, dwarf_getlocation_attr
          and dwarf_getlocation_die.
 - readelf: Show contents of NT_SIGINFO and NT_FILE core notes.
 - addr2line: Support -i, --inlines output option.
@@ -238,66 +244,66 @@ rm -rf ${RPM_BUILD_ROOT}
 * Thu Jul 25 2013 Jan Kratochvil <jan.kratochvil@redhat.com> 0.156-1
 - lib: New macro COMPAT_VERSION_NEWPROTO.
 - libdw: Handle GNU extension opcodes in dwarf_getlocation.
-- libdwfl: Fix STB_GLOBAL over STB_WEAK preference in 
-  dwfl_module_addrsym.          Add minisymtab support.          Add 
-  parameter add_p_vaddr to dwfl_report_elf.          Use DT_DEBUG 
+- libdwfl: Fix STB_GLOBAL over STB_WEAK preference in
+  dwfl_module_addrsym.          Add minisymtab support.          Add
+  parameter add_p_vaddr to dwfl_report_elf.          Use DT_DEBUG
   library search first.
 - libebl: Handle new core note types in EBL.
-- backends: Interpret NT_ARM_VFP.           Implement core file 
+- backends: Interpret NT_ARM_VFP.           Implement core file
   registers parsing for s390/s390x.
-- readelf: Add --elf-section input option to inspect an embedded ELF 
-  file.          Add -U, --unresolved-address-offsets output control.   
-         Add --debug-dump=decodedline support.          Accept version 
-  8 .gdb_index section format.          Adjust output formatting width. 
-           When highpc is in constant form print it also as address.    
+- readelf: Add --elf-section input option to inspect an embedded ELF
+  file.          Add -U, --unresolved-address-offsets output control.
+         Add --debug-dump=decodedline support.          Accept version
+  8 .gdb_index section format.          Adjust output formatting width.
+           When highpc is in constant form print it also as address.
         Display raw .debug_aranges. Use libdw only for decodedaranges.
 - elflint: Add __bss_start__ to the list of allowed symbols.
-- tests: Add configure --enable-valgrind option to run all tests 
+- tests: Add configure --enable-valgrind option to run all tests
   under valgrind.        Enable automake parallel-tests for make check.
 - translations: Updated Polish translation.
 - Updates for Automake 1.13.
 
 * Fri Aug 24 2012 Mark Wielaard <mjw@redhat.com> 0.155-1
-- libelf: elf*_xlatetomd now works for cross-endian ELF note data.    
-       elf_getshdr now works consistently on non-mmaped ELF files after 
-          calling elf_cntl(ELF_C_FDREAD).         Implement support for 
+- libelf: elf*_xlatetomd now works for cross-endian ELF note data.
+       elf_getshdr now works consistently on non-mmaped ELF files after
+          calling elf_cntl(ELF_C_FDREAD).         Implement support for
   ar archives with 64-bit symbol table.
-- libdw: dwarf.h corrected the DW_LANG_ObjC constant name (was 
-  DW_LANG_Objc).        Any existing sources using the old name will 
-  have to be updated.        Add DW_MACRO_GNU .debug_macro type 
-  encodings constants, DW_ATE_UTF        and DW_OP_GNU_parameter_ref to 
-  dwarf.h.        Experimental support for DWZ multifile forms 
-  DW_FORM_GNU_ref_alt        and DW_FORM_GNU_strp_alt.  Disabled by 
+- libdw: dwarf.h corrected the DW_LANG_ObjC constant name (was
+  DW_LANG_Objc).        Any existing sources using the old name will
+  have to be updated.        Add DW_MACRO_GNU .debug_macro type
+  encodings constants, DW_ATE_UTF        and DW_OP_GNU_parameter_ref to
+  dwarf.h.        Experimental support for DWZ multifile forms
+  DW_FORM_GNU_ref_alt        and DW_FORM_GNU_strp_alt.  Disabled by
   default.  Use configure        --enable-dwz to test it.
-- readelf: Add .debug_macro parsing support.          Add .gdb_index 
+- readelf: Add .debug_macro parsing support.          Add .gdb_index
   version 7 parsing support.          Recognize DW_OP_GNU_parameter_ref.
 - backends: Add support for Tilera TILE-Gx processor.
 - translations: Updated Ukrainian translation.
 
 * Fri Jun 22 2012 Mark Wielaard <mjw@redhat.com> 0.154-1
-- libelf: [g]elf[32|64]_offscn() do not match SHT_NOBITS sections at 
+- libelf: [g]elf[32|64]_offscn() do not match SHT_NOBITS sections at
   OFFSET.
-- libdw: dwarf_highpc function now handles DWARF 4 DW_AT_high_pc 
-  constant form.        Fix bug using dwarf_next_unit to iterate over 
+- libdw: dwarf_highpc function now handles DWARF 4 DW_AT_high_pc
+  constant form.        Fix bug using dwarf_next_unit to iterate over
   .debug_types.
 - elflint: Now accepts gold linker produced executables.
-- The license is now GPLv2/LGPLv3+ for the libraries and GPLv3+ for 
-  stand-alone programs. There is now also a formal CONTRIBUTING 
+- The license is now GPLv2/LGPLv3+ for the libraries and GPLv3+ for
+  stand-alone programs. There is now also a formal CONTRIBUTING
   document describing how to submit patches.
 
 * Thu Feb 23 2012 Mark Wielaard <mjw@redhat.com> 0.153-1
 - libdw: Support reading .zdebug_* DWARF sections compressed via zlib.
 - libdwfl: Speed up dwfl_module_addrsym.
 - nm: Support C++ demangling.
-- ar: Support D modifier for "deterministic output" with no 
-  uid/gid/mtime info.     The U modifier is the inverse.     elfutils 
-  can be configured with the --enable-deterministic-archives     option 
+- ar: Support D modifier for "deterministic output" with no
+  uid/gid/mtime info.     The U modifier is the inverse.     elfutils
+  can be configured with the --enable-deterministic-archives     option
   to make the D behavior the default when U is not specified.
 - ranlib: Support -D and -U flags with same meaning.
-- readelf: Improve output of -wline. Add support for printing SDT elf 
-  notes.          Add printing of .gdb_index section. 	 Support for 
+- readelf: Improve output of -wline. Add support for printing SDT elf
+  notes.          Add printing of .gdb_index section. 	 Support for
   typed DWARF stack, call_site and entry_value.
-- strip: Add --reloc-debug-sections option.        Improved SHT_GROUP 
+- strip: Add --reloc-debug-sections option.        Improved SHT_GROUP
   sections handling.
 
 * Tue Feb 15 2011  <drepper@gmail.com> 0.152-1

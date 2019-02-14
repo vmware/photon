@@ -1,16 +1,19 @@
+%global security_hardening nofortify
 %define _use_internal_dependency_generator 0
 Summary:        Contains the GNU compiler collection
 Name:           gcc
-Version:        6.3.0
-Release:        7%{?dist}
+Version:        7.3.0
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.bz2
-%define sha1 gcc=928ab552666ee08eed645ff20ceb49d139205dea
+Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.xz
+%define sha1 gcc=9689b9cae7b2886fdaa08449a26701f095c04e48
 Patch0:         PLUGIN_TYPE_CAST.patch
+Patch1:         libsanitizer-avoidustat.h-glibc-2.28.patch
+Patch2:         090_all_pr55930-dependency-tracking.patch
 Requires:       libstdc++-devel = %{version}-%{release}
 Requires:       libgcc-devel = %{version}-%{release}
 Requires:       libgomp-devel = %{version}-%{release}
@@ -84,36 +87,18 @@ This package contains development headers and static library for libgomp
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
-# disable FORTIFY_SOURCE=2 from hardening
-sed -i '/*cpp:/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
-sed -i '/Ofast:-D_FORTIFY_SOURCE=2/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
 # disable no-pie for gcc binaries
 sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
 
-install -vdm 755 ../gcc-build
 %build
-
-# Fix compilation issue for glibc-2.26.
-# TODO: remove these lines after gcc update to 7.2+
-#
-# 1. "typedef struct ucontext ucontext_t" was renamed to
-#    "typedef struct ucontext_t ucontext_t"
-sed -i 's/struct ucontext/ucontext_t/g' libgcc/config/i386/linux-unwind.h
-sed -i 's/struct ucontext/ucontext_t/g' libgcc/config/aarch64/linux-unwind.h
-# 2. struct sigaltstack removed
-sed -i 's/struct sigaltstack/void/g' libsanitizer/sanitizer_common/sanitizer_linux.cc
-sed -i '/struct sigaltstack;/d' libsanitizer/sanitizer_common/sanitizer_linux.h
-sed -i 's/struct sigaltstack/void/g' libsanitizer/sanitizer_common/sanitizer_linux.h
-sed -i 's/struct sigaltstack/stack_t/g' libsanitizer/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc
-sed -i 's/__res_state/struct __res_state/g' libsanitizer/tsan/tsan_platform_linux.cc
 
 export glibcxx_cv_c99_math_cxx98=yes glibcxx_cv_c99_math_cxx11=yes
 
-cd ../gcc-build
 SED=sed \
-../%{name}-%{version}/configure \
-    --prefix=%{_prefix} \
+%configure \
     --enable-shared \
     --enable-threads=posix \
     --enable-__cxa_atexit \
@@ -127,7 +112,6 @@ SED=sed \
 #   --disable-silent-rules
 make %{?_smp_mflags}
 %install
-pushd ../gcc-build
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/%_lib
 ln -sv %{_bindir}/cpp %{buildroot}/%{_lib}
@@ -136,7 +120,6 @@ install -vdm 755 %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
 mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
 chmod 755 %{buildroot}/%{_lib64dir}/libgcc_s.so.1
 rm -rf %{buildroot}%{_infodir}
-popd
 %find_lang %{name} --all-name
 
 %check
@@ -146,7 +129,6 @@ test `cat /proc/sys/kernel/randomize_va_space` -ne 0 && rm gcc/testsuite/gcc.dg/
 # disable security hardening for tests
 rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
 # run only gcc tests
-cd ../gcc-build/gcc
 make %{?_smp_mflags} check-gcc
 # Only 1 FAIL is OK
 [ `grep ^FAIL testsuite/gcc/gcc.sum | wc -l` -ne 1 -o `grep ^XPASS testsuite/gcc/gcc.sum | wc -l` -ne 0 ] && exit 1 ||:
@@ -163,17 +145,14 @@ make %{?_smp_mflags} check-gcc
 %{_bindir}/*
 #   Libraries
 %{_lib64dir}/*
-%ifarch x86_64
-%exclude %{_libexecdir}/gcc/x86_64-pc-linux-gnu/%{version}/f951
-%endif
-%ifarch aarch64
-%exclude %{_libexecdir}/gcc/aarch64-unknown-linux-gnu/%{version}/f951
-%endif
+%exclude %{_libexecdir}/gcc/%{_arch}-unknown-linux-gnu/%{version}/f951
 %{_libdir}/gcc/*
 #   Library executables
 %{_libexecdir}/gcc/*
 #   Man pages
 %{_mandir}/man1/gcov.1.gz
+%{_mandir}/man1/gcov-dump.1.gz
+%{_mandir}/man1/gcov-tool.1.gz
 %{_mandir}/man1/gcc.1.gz
 %{_mandir}/man1/g++.1.gz
 %{_mandir}/man1/cpp.1.gz
@@ -188,12 +167,7 @@ make %{?_smp_mflags} check-gcc
 %defattr(-,root,root)
 %{_bindir}/*gfortran
 %{_mandir}/man1/gfortran.1.gz
-%ifarch x86_64
-%{_libexecdir}/gcc/x86_64-pc-linux-gnu/%{version}/f951
-%endif
-%ifarch aarch64
-%{_libexecdir}/gcc/aarch64-unknown-linux-gnu/%{version}/f951
-%endif
+%{_libexecdir}/gcc/%{_arch}-unknown-linux-gnu/%{version}/f951
 
 %files -n libgcc
 %defattr(-,root,root)
@@ -218,6 +192,7 @@ make %{?_smp_mflags} check-gcc
 %defattr(-,root,root)
 %{_lib64dir}/libstdc++.so
 %{_lib64dir}/libstdc++.la
+%{_lib64dir}/libstdc++.a
 
 %{_includedir}/c++/*
 
@@ -233,6 +208,15 @@ make %{?_smp_mflags} check-gcc
 %{_lib64dir}/libgomp.spec
 
 %changelog
+*   Fri Nov 02 2018 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-4
+-   Use nofortify security_hardening instead of sed hacking
+-   Use %configure
+*   Wed Sep 19 2018 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-3
+-   Fix compilation issue for glibc-2.28
+*   Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 7.3.0-2
+-   Packaging .a files (libstdc++-static files).
+*   Wed Aug 01 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 7.3.0-1
+-   Update to version 7.3.0 to get retpoline support.
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-7
 -   Aarch64 support
 *   Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-6

@@ -1,7 +1,7 @@
 Summary:  	xinetd -- A better inetd.
 Name:		xinetd
 Version:	2.3.15
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	BSD
 Group:		System Environment/Daemons
 Vendor:     	VMware, Inc.
@@ -12,7 +12,9 @@ Source0:	https://github.com/xinetd-org/xinetd/archive/%{name}-%{version}.tar.gz
 Source1:        xinetd.service
 
 BuildRequires:  systemd
+BuildRequires:  libtirpc-devel
 Requires:       systemd
+Requires:       libtirpc
 
 %description
 Xinetd is a powerful inetd replacement. Xinetd has access control 
@@ -28,6 +30,7 @@ mechanism to protect against port scanners, among other things.
 %configure \
 	--sbindir=%{buildroot}/%{_sbindir} 	\
 	--mandir=%{buildroot}/%{_datadir}/man 
+export LDFLAGS=-ltirpc CFLAGS=-I/usr/include/tirpc
 %make_build
 
 %install
@@ -68,6 +71,8 @@ rm -rf %{buildroot}
 %{_libdir}/systemd/system-preset/50-xinetd.preset
 
 %changelog
+*   Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 2.3.15-9
+-   Use libtirpc
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.3.15-8
 -   Use standard configure macros
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.3.15-7

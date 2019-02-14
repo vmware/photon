@@ -1,6 +1,5 @@
 #! /usr/bin/python3
 #
-#    Copyright (C) 2015 vmware inc.
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 

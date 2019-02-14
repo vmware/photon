@@ -16,8 +16,7 @@ from SpecData import SPECS
 from PackageInfo import PackageInfo
 
 def main():
-    usage = "Usage: %prog [options] <package name>"
-    parser = ArgumentParser(usage)
+    parser = ArgumentParser()
     parser.add_argument("-s", "--spec-path", dest="specPath", default="../../SPECS")
     parser.add_argument("-x", "--source-path", dest="sourcePath",
                         default="../../stage/SOURCES")
@@ -30,6 +29,7 @@ def main():
     parser.add_argument("-e", "--publish-XRPMS-path", dest="publishXRPMSPath",
                         default="../../stage/PUBLISHXRPMS")
     parser.add_argument("-l", "--log-path", dest="logPath", default="../../stage/LOGS")
+    parser.add_argument("-y", "--log-level", dest="logLevel", default="error")
     parser.add_argument("-z", "--top-dir-path", dest="topDirPath", default="/usr/src/photon")
     parser.add_argument("-b", "--build-root-path", dest="buildRootPath", default="/mnt")
     parser.add_argument("-t", "--threads", dest="buildThreads",
@@ -37,7 +37,7 @@ def main():
     parser.add_argument("-m", "--tool-chain-stage", dest="toolChainStage", default="None")
     parser.add_argument("-c", "--pullsources-config", dest="pullsourcesConfig",
                         default="pullsources.conf")
-    parser.add_argument("-d", "--dist", dest="dist", default="")
+    parser.add_argument("-d", "--dist-tag", dest="dist", default="")
     parser.add_argument("-k", "--input-RPMS-path", dest="inputRPMSPath", default=None)
     parser.add_argument("-n", "--build-number", dest="buildNumber", default="0000000")
     parser.add_argument("-v", "--release-version", dest="releaseVersion", default="NNNnNNN")
@@ -53,16 +53,18 @@ def main():
                         default=False, action="store_true")
     parser.add_argument("-bd", "--publish-build-dependencies", dest="publishBuildDependencies",
                         default=False)
-    parser.add_argument("-pw", "--package-weights-path", dest="packageWeightsPath", default=None)
-    parser.add_argument("-bt", "--build-type", dest="pkgBuildType", default="chroot")
+    parser.add_argument("-pw", "--package-weights-path", dest="packageWeightsPath",
+                        default="../../common/data/packageWeights.json")
+    parser.add_argument("-bt", "--build-type", dest="pkgBuildType", choices=['chroot', 'container'], default="chroot")
     parser.add_argument("-F", "--kat-build", dest="katBuild", default=None)
+    parser.add_argument("-pj", "--packages-json-input", dest="pkgJsonInput", default=None)
     parser.add_argument("PackageName", nargs='?')
     options = parser.parse_args()
     cmdUtils = CommandUtils()
     if not os.path.isdir(options.logPath):
         cmdUtils.runCommandInShell("mkdir -p " + options.logPath)
 
-    logger = Logger.getLogger(options.logPath + "/Main")
+    logger = Logger.getLogger("Main", options.logPath, options.logLevel)
     errorFlag = False
     package = None
     pkgInfoJsonFile = options.pkgInfoFile
@@ -94,8 +96,7 @@ def main():
         logger.error("Given X RPMS Path is missing noarch sub-directory:"+
                      options.publishXRPMSPath)
         errorFlag = True
-    if not os.path.isfile(options.pkgBuildOptionFile):
-        logger.warning("Given JSON File is not a file:"+options.pkgBuildOptionFile)
+
 
     if options.inputRPMSPath is not None and not os.path.isdir(options.inputRPMSPath):
         logger.error("Given input RPMS Path is not a directory:"+options.inputRPMSPath)
@@ -103,6 +104,10 @@ def main():
 
     if options.packageWeightsPath is not None and not os.path.isfile(options.packageWeightsPath):
         logger.error("Given input Weights file is not a file:"+options.packageWeightsPath)
+        errorFlag = True
+
+    if options.pkgJsonInput is not None and not os.path.isfile(options.pkgJsonInput):
+        logger.error("Given input packages file is not a file:"+options.pkgJsonInput)
         errorFlag = True
 
     if options.installPackage:
@@ -116,9 +121,8 @@ def main():
         logger.error("Found some errors. Please fix input options and re-run it.")
         return False
 
-    if not os.path.isdir(options.rpmPath):
-        cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/"+platform.machine())
-        cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/noarch")
+    cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/"+platform.machine())
+    cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/noarch")
 
     if not os.path.isdir(options.sourceRpmPath):
         cmdUtils.runCommandInShell("mkdir -p "+options.sourceRpmPath)
@@ -126,16 +130,17 @@ def main():
     if not os.path.isdir(options.buildRootPath):
         cmdUtils.runCommandInShell("mkdir -p " + options.buildRootPath)
 
-    logger.info("Source Path :"+options.sourcePath)
-    logger.info("Spec Path :" + options.specPath)
-    logger.info("Rpm Path :" + options.rpmPath)
-    logger.info("Log Path :" + options.logPath)
-    logger.info("Top Dir Path :" + options.topDirPath)
-    logger.info("Publish RPMS Path :" + options.publishRPMSPath)
-    logger.info("Publish X RPMS Path :" + options.publishXRPMSPath)
+    logger.debug("Source Path :"+options.sourcePath)
+    logger.debug("Spec Path :" + options.specPath)
+    logger.debug("Rpm Path :" + options.rpmPath)
+    logger.debug("Log Path :" + options.logPath)
+    logger.debug("Log Level :" + options.logLevel)
+    logger.debug("Top Dir Path :" + options.topDirPath)
+    logger.debug("Publish RPMS Path :" + options.publishRPMSPath)
+    logger.debug("Publish X RPMS Path :" + options.publishXRPMSPath)
 
     if options.installPackage:
-        logger.info("Package to build:" + package)
+        logger.debug("Package to build:" + package)
 
     get_packages_with_build_options(options.pkgBuildOptionFile)
 
@@ -147,13 +152,14 @@ def main():
         constants.setSourceRpmPath(options.sourceRpmPath)
         constants.setTopDirPath(options.topDirPath)
         constants.setLogPath(options.logPath)
+        constants.setLogLevel(options.logLevel)
         constants.setDist(options.dist)
         constants.setBuildNumber(options.buildNumber)
         constants.setReleaseVersion(options.releaseVersion)
         constants.setPrevPublishRPMRepo(options.publishRPMSPath)
         constants.setPrevPublishXRPMRepo(options.publishXRPMSPath)
         constants.setBuildRootPath(options.buildRootPath)
-        constants.setPullSourcesConfig(options.pullsourcesConfig)
+        constants.setPullSourcesURL(get_baseurl(options.pullsourcesConfig))
         constants.setInputRPMSPath(options.inputRPMSPath)
         constants.setRPMCheck(options.rpmCheck)
         constants.setRpmCheckStopOnError(options.rpmCheckStopOnError)
@@ -171,10 +177,13 @@ def main():
             pkgManager = PackageManager()
             pkgManager.buildToolChainPackages(options.buildThreads)
         elif options.installPackage:
-            buildAPackage(package, options.buildThreads, options.pkgBuildType)
+            buildSpecifiedPackages([package], options.buildThreads, options.pkgBuildType)
+        elif options.pkgJsonInput:
+            buildPackagesInJson(options.pkgJsonInput, options.buildThreads,
+                                options.pkgBuildType, pkgInfoJsonFile, logger)
         else:
-            buildPackagesForAllSpecs(logger, options.buildThreads, pkgInfoJsonFile,
-                                     options.pkgBuildType)
+            buildPackagesForAllSpecs(options.buildThreads, options.pkgBuildType,
+                                     pkgInfoJsonFile, logger)
     except Exception as e:
         logger.error("Caught an exception")
         logger.error(str(e))
@@ -184,36 +193,44 @@ def main():
     sys.exit(0)
 
 
-def buildAPackage(package, buildThreads, pkgBuildType):
-    listPackages = [package]
-    pkgManager = PackageManager(pkgBuildType=pkgBuildType)
+def buildSpecifiedPackages(listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile=None, logger=None):
     if constants.rpmCheck:
         constants.setTestForceRPMS(copy.copy(listPackages))
-    pkgManager.buildPackages(listPackages, buildThreads, pkgBuildType)
+    pkgManager = PackageManager(pkgBuildType=pkgBuildType)
+    pkgManager.buildPackages(listPackages, buildThreads)
+
+    if pkgInfoJsonFile is not None:
+        # Generating package info file which is required by installer
+        if logger is not None:
+            logger.debug("Writing Package info to the file:" + pkgInfoJsonFile)
+        pkgInfo = PackageInfo()
+        pkgInfo.loadPackagesData()
+        pkgInfo.writePkgListToFile(pkgInfoJsonFile)
 
 
-def buildPackagesForAllSpecs(logger, buildThreads, pkgInfoJsonFile, pkgBuildType):
+def buildPackagesInJson(pkgJsonInput, buildThreads, pkgBuildType, pkgInfoJsonFile, logger):
+    listPackages = []
+    with open(pkgJsonInput) as jsonData:
+        pkg_list_json = json.load(jsonData)
+        listPackages = pkg_list_json["packages"]
+    buildSpecifiedPackages(listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile, logger)
+
+
+def buildPackagesForAllSpecs(buildThreads, pkgBuildType, pkgInfoJsonFile, logger):
     listPackages = SPECS.getData().getListPackages()
-
-    logger.info("List of packages to build:")
-    logger.info(listPackages)
-    if constants.rpmCheck:
-        constants.setTestForceRPMS(copy.copy(listPackages))
-    pkgManager = PackageManager(pkgBuildType=pkgBuildType)
-    pkgManager.buildPackages(listPackages, buildThreads, pkgBuildType)
-
-    # Generating package info file which is required by installer
-    logger.info("Writing Package info to the file:" + pkgInfoJsonFile)
-    pkgInfo = PackageInfo()
-    pkgInfo.loadPackagesData()
-    pkgInfo.writePkgListToFile(pkgInfoJsonFile)
+    buildSpecifiedPackages(listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile, logger)
 
 
 def get_packages_with_build_options(pkg_build_options_file):
     if os.path.exists(pkg_build_options_file):
         with open(pkg_build_options_file) as jsonData:
             pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
-            constants.setBuidOptions(pkg_build_option_json)
+            constants.setBuildOptions(pkg_build_option_json)
+
+def get_baseurl(conf_file):
+    with open(conf_file) as jsonFile:
+        config = json.load(jsonFile)
+    return config['baseurl']
 
 def get_all_package_names(build_install_option):
     base_path = os.path.dirname(build_install_option)

@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.14.54
+Version:        4.19.15
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,12 +9,9 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=434080e874f7b78c3234f22784427d4a189fb54d
+%define sha1 linux=fb970b2014ecf9dcef23943f8095b28dfe0d6cca
 Source1:	config-aws
 Source2:	initramfs.trigger
-%define ena_version 1.5.0
-Source3:       https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
-%define sha1 ena_linux=cbbbe8a3bbab6d01a4e38417cb0ead2f7cb8b2ee
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -23,20 +20,54 @@ Patch1:         double-tcp_mem-limits.patch
 Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
-Patch6:         x86-vmware-STA-support.patch
+Patch6:         4.18-x86-vmware-STA-support.patch
 #HyperV patches
 Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 #FIPS patches - allow some algorithms
-Patch24:        Allow-some-algo-tests-for-FIPS.patch
-Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
+Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
+# Out-of-tree patches from AppArmor:
+Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
+Patch31:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+
+# Amazon AWS
+Patch101: 0002-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch102: 0004-bump-the-default-TTL-to-255.patch
+Patch103: 0005-bump-default-tcp_wmem-from-16KB-to-20KB.patch
+Patch105: 0009-drivers-introduce-AMAZON_DRIVER_UPDATES.patch
+Patch106: 0010-drivers-amazon-add-network-device-drivers-support.patch
+Patch107: 0011-drivers-amazon-introduce-AMAZON_ENA_ETHERNET.patch
+Patch108: 0012-Importing-Amazon-ENA-driver-1.5.0-into-amazon-4.14.y.patch
+Patch109: 0013-xen-manage-keep-track-of-the-on-going-suspend-mode.patch
+Patch110: 0014-xen-manage-introduce-helper-function-to-know-the-on-.patch
+Patch111: 0015-xenbus-add-freeze-thaw-restore-callbacks-support.patch
+Patch112: 0016-x86-xen-Introduce-new-function-to-map-HYPERVISOR_sha.patch
+Patch113: 0017-x86-xen-add-system-core-suspend-and-resume-callbacks.patch
+Patch114: 0018-xen-blkfront-add-callbacks-for-PM-suspend-and-hibern.patch
+Patch115: 0019-xen-netfront-add-callbacks-for-PM-suspend-and-hibern.patch
+Patch116: 0020-xen-time-introduce-xen_-save-restore-_steal_clock.patch
+Patch117: 0021-x86-xen-save-and-restore-steal-clock.patch
+Patch118: 0022-xen-events-add-xen_shutdown_pirqs-helper-function.patch
+Patch119: 0023-x86-xen-close-event-channels-for-PIRQs-in-system-cor.patch
+Patch120: 0024-PM-hibernate-update-the-resume-offset-on-SNAPSHOT_SE.patch
+Patch121: 0025-Not-for-upstream-PM-hibernate-Speed-up-hibernation-b.patch
+Patch122: 0026-xen-blkfront-resurrect-request-based-mode.patch
+Patch123: 0027-xen-blkfront-add-persistent_grants-parameter.patch
+Patch125: 0029-Revert-xen-dont-fiddle-with-event-channel-masking-in.patch
+Patch131: 0035-xen-blkfront-Fixed-blkfront_restore-to-remove-a-call.patch
+Patch133: 0037-x86-tsc-avoid-system-instability-in-hibernation.patch
+Patch152: 0056-Amazon-ENA-driver-Update-to-version-1.6.0.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
 %endif
+BuildArch:      x86_64
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
@@ -61,7 +92,7 @@ The Linux package contains the Linux kernel.
 Summary:        Kernel Dev
 Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
-Requires:       python2 gawk
+Requires:       python3 gawk
 %description devel
 The Linux package contains the Linux kernel dev files
 
@@ -82,7 +113,7 @@ The Linux package contains the Linux kernel sound support
 %package docs
 Summary:        Kernel docs
 Group:          System Environment/Kernel
-Requires:       python2
+Requires:       python3
 %description docs
 The Linux package contains the Linux kernel doc files
 
@@ -106,9 +137,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 
 %prep
 %setup -q -n linux-%{version}
-%ifarch x86_64
-%setup -D -b 3 -n linux-%{version}
-%endif
+
 %patch0 -p1
 %patch1 -p1
 %patch3 -p1
@@ -119,6 +148,38 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch24 -p1
 %patch26 -p1
 %patch28 -p1
+%patch29 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
+
+%patch101 -p1
+%patch102 -p1
+%patch103 -p1
+%patch105 -p1
+%patch106 -p1
+%patch107 -p1
+%patch108 -p1
+%patch109 -p1
+%patch110 -p1
+%patch111 -p1
+%patch112 -p1
+%patch113 -p1
+%patch114 -p1
+%patch115 -p1
+%patch116 -p1
+%patch117 -p1
+%patch118 -p1
+%patch119 -p1
+%patch120 -p1
+%patch121 -p1
+%patch122 -p1
+%patch123 -p1
+%patch125 -p1
+%patch131 -p1
+%patch133 -p1
+%patch152 -p1
+
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
@@ -136,13 +197,6 @@ sed -i 's/CONFIG_LOCALVERSION="-aws"/CONFIG_LOCALVERSION="-%{release}-aws"/' .co
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
 make -C tools perf
-%ifarch x86_64
-# build ENA module
-bldroot=`pwd`
-pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
-popd
-%endif
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
@@ -170,11 +224,6 @@ install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
-# install ENA module
-bldroot=`pwd`
-pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
-popd
 
 # Verify for build-id match
 # We observe different IDs sometimes
@@ -201,7 +250,7 @@ ln -s vmlinux-%{uname_r} %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlin
 
 cat > %{buildroot}/boot/%{name}-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta nvme_core.io_timeout=4294967295
 photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
@@ -303,8 +352,35 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /etc/bash_completion.d/*
 /usr/share/perf-core/strace/groups/file
 /usr/share/doc/*
+%{_libdir}/perf/examples/bpf/*
+%{_libdir}/perf/include/bpf/*
 
 %changelog
+*   Tue Jan 15 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.15-1
+-   Update to version 4.19.15
+*   Mon Jan 07 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-2
+-   Enable additional security hardening options in the config.
+*   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-1
+-   Update to version 4.19.6
+-   Enable EFI in config-aws to support kernel signing.
+*   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.1-3
+-   Set nvme io_timeout to maximum in kernel cmdline.
+*   Wed Nov 14 2018 Ajay Kaher <akaher@vmware.com> 4.19.1-2
+-   Adding BuildArch
+*   Tue Nov 06 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.1-1
+-   Update to version 4.19.1
+*   Mon Oct 22 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.18.9-1
+-   Update to version 4.18.9
+*   Mon Oct 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-2
+-   Add enhancements from Amazon.
+*   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
+-   Update to version 4.14.67
+*   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-4
+-   Add rdrand-based RNG driver to enhance kernel entropy.
+*   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-3
+-   Add full retpoline support by building with retpoline-enabled gcc.
+*   Thu Aug 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-2
+-   Apply out-of-tree patches needed for AppArmor.
 *   Mon Jul 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-1
 -   Update to version 4.14.54
 *   Thu Feb 22 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.8-1

@@ -1,15 +1,16 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           scons
-Version:        2.5.1
-Release:        1%{?dist}
+Version:        3.0.1
+Release:        2%{?dist}
 Summary:        An Open Source software construction tool
 Group:          Development/Tools
 License:        MIT
 URL:            http://scons.org
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-%define sha1    scons=f742350251734df75355e51c70f291e119ef927a
+%define sha1    scons=498691cf8d4f6da971b99fab0c3480ef944c4d1e
 Vendor:         VMware, Inc.
 Distribution:   Photon
+BuildRequires:  python2
 Requires:       python2
 BuildArch:      noarch
 
@@ -43,5 +44,9 @@ rm -rf %{buildroot}
 %{_datadir}/*
 
 %changelog
+*   Mon Jan 07 2019 Alexey Makhalov <amakhalov@vmware.com> 3.0.1-2
+-   BuildRequires: python2
+*   Tue Sep 18 2018 Srinidhi Rao <srinidhir@vmware.com> 3.0.1-1
+-   Upgraded to version 3.0.1
 *   Sun Oct 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5.1-1
 -   Initial build.  First version
