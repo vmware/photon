@@ -3,7 +3,7 @@ Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
 Version:        1.4.33
-Release:        4%{?dist}
+Release:        5%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -20,7 +20,6 @@ BuildRequires:  cmake
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
-
 %description
 The AWS SDK for C++ provides a modern C++ (version C++ 11 or later) interface for Amazon Web Services (AWS).
 
@@ -28,7 +27,6 @@ The AWS SDK for C++ provides a modern C++ (version C++ 11 or later) interface fo
 Summary:        aws sdk core
 Group:          Development/Libraries
 Requires:       aws-core-libs = %{version}-%{release}
-
 %description -n aws-sdk-core
 aws sdk cpp core
 
@@ -38,7 +36,6 @@ Group:          Development/Libraries
 Requires:       openssl-devel
 Requires:       curl-devel
 Requires:       zlib-devel
-
 %description -n aws-core-libs
 aws core libs
 
@@ -47,7 +44,6 @@ Summary:        aws sdk kinesis
 Group:          Development/Libraries
 Requires:       aws-sdk-core = %{version}-%{release}
 Requires:       aws-kinesis-libs = %{version}-%{release}
-
 %description -n aws-sdk-kinesis
 aws sdk cpp for kinesis
 
@@ -55,7 +51,6 @@ aws sdk cpp for kinesis
 Summary:        aws kinesis libs
 Group:          Development/Libraries
 Requires:       aws-core-libs = %{version}-%{release}
-
 %description -n aws-kinesis-libs
 aws kinesis libs
 
@@ -64,24 +59,6 @@ Summary:        aws sdk s3
 Group:          Development/Libraries
 Requires:       aws-sdk-core = %{version}-%{release}
 Requires:       aws-s3-libs = %{version}-%{release}
-
-%package -n     aws-sdk-kms
-Summary:        aws sdk kms
-Group:          Development/Libraries
-Requires:       aws-sdk-core = %{version}-%{release}
-Requires:       aws-kms-libs = %{version}-%{release}
-
-%description -n aws-sdk-kms
-aws sdk cpp for kms
-
-%package -n     aws-kms-libs
-Summary:        aws kms libs
-Group:          Development/Libraries
-Requires:       aws-core-libs = %{version}-%{release}
-
-%description -n aws-kms-libs
-aws sdk cpp libs for kms
-
 %description -n aws-sdk-s3
 aws sdk cpp for s3
 
@@ -89,9 +66,38 @@ aws sdk cpp for s3
 Summary:        aws s3 libs
 Group:          Development/Libraries
 Requires:       aws-core-libs = %{version}-%{release}
-
 %description -n aws-s3-libs
 aws s3 libs
+
+%package -n     aws-sdk-kms
+Summary:        aws sdk kms
+Group:          Development/Libraries
+Requires:       aws-sdk-core = %{version}-%{release}
+Requires:       aws-kms-libs = %{version}-%{release}
+%description -n aws-sdk-kms
+aws sdk cpp for kms
+
+%package -n     aws-kms-libs
+Summary:        aws kms libs
+Group:          Development/Libraries
+Requires:       aws-core-libs = %{version}-%{release}
+%description -n aws-kms-libs
+aws sdk cpp libs for kms
+
+%package -n     aws-sdk-monitoring
+Summary:        aws sdk monitoring
+Group:          Development/Libraries
+Requires:       aws-sdk-core = %{version}-%{release}
+Requires:       aws-monitoring-libs = %{version}-%{release}
+%description -n aws-sdk-monitoring
+aws sdk cpp for monitoring
+
+%package -n     aws-monitoring-libs
+Summary:        aws monitoring libs
+Group:          Development/Libraries
+Requires:       aws-core-libs = %{version}-%{release}
+%description -n aws-monitoring-libs
+aws sdk cpp libs for monitoring
 
 %prep
 %setup
@@ -102,16 +108,15 @@ cd build
 cmake \
 -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
 -DCMAKE_BUILD_TYPE=Release ..
-for component in "core" "kinesis" "kms" "s3"; do
+for component in "core" "kinesis" "s3" "kms" "monitoring"; do
   cd aws-cpp-sdk-$component
   make %{?_smp_mflags}
   cd ..
 done
 
-
 %install
 cd build
-for component in "core" "kinesis" "kms" "s3"; do
+for component in "core" "kinesis" "s3" "kms" "monitoring"; do
   cd aws-cpp-sdk-$component
   make DESTDIR=%{buildroot} install
   cd ..
@@ -153,15 +158,19 @@ rm -rf %{buildroot}/*
     %defattr(-,root,root,0755)
     %exclude %{_includedir}/aws/core
     %exclude %{_includedir}/aws/kinesis
-    %exclude %{_includedir}/aws/kms
     %exclude %{_includedir}/aws/s3
+    %exclude %{_includedir}/aws/kms
+    %exclude %{_includedir}/aws/monitoring
     %exclude %{_lib64dir}/pkgconfig/aws-cpp-sdk-core.pc
     %exclude %{_lib64dir}/pkgconfig/aws-cpp-sdk-kinesis.pc
     %exclude %{_lib64dir}/pkgconfig/aws-cpp-sdk-s3.pc
+    %exclude %{_lib64dir}/pkgconfig/aws-cpp-sdk-kms.pc
+    %exclude %{_lib64dir}/pkgconfig/aws-cpp-sdk-monitoring.pc
     %exclude %{_lib64dir}/libaws-cpp-sdk-core.so
     %exclude %{_lib64dir}/libaws-cpp-sdk-kinesis.so
-    %exclude %{_lib64dir}/libaws-cpp-sdk-kms.so
     %exclude %{_lib64dir}/libaws-cpp-sdk-s3.so
+    %exclude %{_lib64dir}/libaws-cpp-sdk-kms.so
+    %exclude %{_lib64dir}/libaws-cpp-sdk-monitoring.so
 
 %files -n aws-sdk-core
     %defattr(-,root,root,0755)
@@ -181,15 +190,6 @@ rm -rf %{buildroot}/*
     %defattr(-,root,root,0755)
     %{_lib64dir}/libaws-cpp-sdk-kinesis.so
 
-%files -n aws-sdk-kms
-    %defattr(-,root,root,0755)
-    %{_includedir}/aws/kms/*
-    %{_lib64dir}/pkgconfig/aws-cpp-sdk-kms.pc
-
-%files -n aws-kms-libs
-    %defattr(-,root,root,0755)
-    %{_lib64dir}/libaws-cpp-sdk-kms.so
-
 %files -n aws-sdk-s3
     %defattr(-,root,root,0755)
     %{_includedir}/aws/s3/*
@@ -199,7 +199,27 @@ rm -rf %{buildroot}/*
     %defattr(-,root,root,0755)
     %{_lib64dir}/libaws-cpp-sdk-s3.so
 
+%files -n aws-sdk-kms
+    %defattr(-,root,root,0755)
+    %{_includedir}/aws/kms/*
+    %{_lib64dir}/pkgconfig/aws-cpp-sdk-kms.pc
+
+%files -n aws-kms-libs
+    %defattr(-,root,root,0755)
+    %{_lib64dir}/libaws-cpp-sdk-kms.so
+
+%files -n aws-sdk-monitoring
+    %defattr(-,root,root,0755)
+    %{_includedir}/aws/monitoring/*
+    %{_lib64dir}/pkgconfig/aws-cpp-sdk-monitoring.pc
+
+%files -n aws-monitoring-libs
+    %defattr(-,root,root,0755)
+    %{_lib64dir}/libaws-cpp-sdk-monitoring.so
+
 %changelog
+*   Fri Feb 15 2019 Michelle Wang <michellew@vmware.com> 1.4.33-5
+-   Add monitoring libraries
 *   Thu Sep 27 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.33-4
 -   Add kms libraries
 *   Thu May 03 2018 Anish Swaminathan <anishs@vmware.com> 1.4.33-3
