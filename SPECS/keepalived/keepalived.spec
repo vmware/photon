@@ -1,15 +1,14 @@
 Summary:        HA monitor built upon LVS, VRRP and services poller
 Name:           keepalived
-Version:        2.0.7
-Release:        2%{?dist}
+Version:        2.0.10
+Release:        1%{?dist}
 License:        GPL
 URL:            http://www.keepalived.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.keepalived.org/software/%{name}-%{version}.tar.gz
-Patch0:         CVE-2018-19044.patch
-%define sha1    %{name}-%{version}=e7c18b719f5c6ff4d8c93429044dbb07f89326a2
+Source0:        https://github.com/acassen/keepalived/archive/keepalived-v%{version}.zip
+%define sha1    %{name}-v%{version}=86b4307f7827c42fcce1fdb270ff614b569741cd
 Source1:        %{name}.service
 BuildRequires:  openssl-devel
 BuildRequires:  iptables-devel
@@ -19,6 +18,7 @@ BuildRequires:  libnl-devel
 BuildRequires:  libnfnetlink-devel
 BuildRequires:  net-snmp-devel
 BuildRequires:  systemd
+BuildRequires:  unzip
 Requires:       systemd
 Requires:       libnl-devel
 
@@ -36,9 +36,9 @@ healthchecks and LVS directors failover.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
+autoreconf -f -i
 %configure \
     --with-systemdsystemunitdir=%{_unitdir} \
     --enable-snmp       \
@@ -85,8 +85,8 @@ fi
 %{_mandir}/man8/%{name}.8*
 
 %changelog
-*   Thu Feb 14 2019 Ashwin H <ashwinh@vmware.com> 2.0.7-2
--   Fix CVE-2018-19044
+*   Fri Feb 15 2019 Ashwin H <ashwinh@vmware.com> 2.0.10-1
+-   Updated to version 2.0.10
 *   Wed Sep 12 2018 Ankit Jain <ankitja@vmware.com> 2.0.7-1
 -   Updated to version 2.0.7
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.3.5-2
