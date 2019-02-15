@@ -115,7 +115,7 @@ class PackageUtils(object):
 
             sourcePath = cmdUtils.findFile(source,constants.sourcePath)
             if sourcePath is None or len(sourcePath) == 0:
-                sourcePath = cmdUtils.findFile(source,constants.specPath)
+                sourcePath = cmdUtils.findFile(source, "%s/%s" % (constants.specPath, package))
                 if sourcePath is None or len(sourcePath) == 0:
                     if sha1 is None:
                         self.logger.error("No sha1 found or missing source for "+source)
