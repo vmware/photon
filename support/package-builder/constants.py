@@ -212,7 +212,7 @@ class constants(object):
         "cpio",
         "go"]
 
-    perPackageToolChain = dict.fromkeys(["openjdk8", "openjdk8-doc", "openjdk8-src", "openjdk8-sample", "openjre8", "openjdk9", "openjdk9-doc", "openjdk9-src", "openjdk9-sample", "openjre9", "openjdk10", "openjdk10-doc", "openjdk10-src", "openjdk10-sample", "openjre10" ], [
+    perPackageToolChain = dict.fromkeys(["openjdk8", "openjdk8-doc", "openjdk8-src", "openjdk8-sample", "openjre8", "openjdk9", "openjdk9-doc", "openjdk9-src", "openjdk9-sample", "openjre9", "openjdk10", "openjdk10-doc", "openjdk10-src", "openjdk10-sample", "openjre10", "openjdk11", "openjdk11-doc", "openjdk11-src", "openjdk11-sample" ], [
         "glib-devel",
         "icu-devel",
         "openjdk",
