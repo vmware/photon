@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.154
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -69,6 +69,8 @@ Patch49:        0002-xfs-verify-dinode-header-first.patch
 Patch50:        0003-xfs-enhance-dinode-verifier.patch
 #Fix CVE-2019-8912
 Patch51:        fix_use_after_free_in_sockfs_setattr.patch
+# Fix for CVE-2018-16882
+Patch52:        0001-KVM_Fix_UAF_in_nested_posted_interrupt_processing.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -194,6 +196,7 @@ EOF
 %patch49 -p1
 %patch50 -p1
 %patch51 -p1
+%patch52 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -327,6 +330,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Feb 25 2019 Ajay Kaher <akaher@vmware.com> 4.9.154-3
+-   Fix CVE-2018-16882
 *   Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.154-2
 -   Fix CVE-2019-8912
 *   Mon Feb 04 2019 Ajay Kaher <akaher@vmware.com> 4.9.154-1
