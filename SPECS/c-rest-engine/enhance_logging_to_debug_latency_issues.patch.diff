@@ -1,0 +1,99 @@
+From 2e897880c501756ffd6312a29c12f17c817f889f Mon Sep 17 00:00:00 2001
+From: Prakash US1070105 <arumugamprak@vmware.com>
+Date: Thu, 14 Feb 2019 15:21:55 -0800
+Subject: [PATCH] Enhance logging to debug latency issues
+
+Changes:
+    - Added logging to calcualte time taken for SSL handshake.
+      (Reading payload time stamp - Accept data conn time stamp)
+    - Added logging to calculate time taken to read payload
+      (Read status time stamp - Reading payload time stamp)
+    - Modified the "Giving callback to application" log from INFO to
+      DEBUG.
+
+Testing:
+    - Sample logs from a request
+
+Feb 14 23:58:41 lightwave-i-05266b074b9c67dac vmdird[13934]: 2019-02-14
+23:58:41:216447 t@140057943766784 INFO: C-REST-ENGINE: ( NEW REQUEST )
+Accepted new connection with socket fd 3
+
+Feb 14 23:58:41 lightwave-i-05266b074b9c67dac vmdird[13934]: 2019-02-14
+23:58:41:219120 t@140057943766784 INFO: C-REST-ENGINE start reading
+payload fd 3
+
+Feb 14 23:58:41 lightwave-i-05266b074b9c67dac vmdird[13934]: 2019-02-14
+23:58:41:219172 t@140057943766784 INFO: C-REST-ENGINE Read status, total
+bytes(including prev) 1094 fd 3
+
+Feb 14 23:58:41 lightwave-i-05266b074b9c67dac vmdird[13934]: 2019-02-14
+23:58:41:219345 t@140057943766784 INFO: C-REST-ENGINE: HTTP URI
+/v1/vmdir/ldap
+
+Feb 14 23:58:41 lightwave-i-05266b074b9c67dac vmdird[13934]:
+t@140057943766784: reqid:  [,0] Add Entry
+(cn=testuser2,cn=users,dc=vmware,dc=com)(from )(by
+cn=Administrator,cn=Users,dc=vmware,dc=com)(via Ext)(USN 332816218,0)
+(conv Time: 0)
+
+Feb 14 23:58:41 lightwave-i-05266b074b9c67dac vmdird[13934]: 2019-02-14
+23:58:41:223387 t@140057943766784 INFO: C-REST-ENGINE: Application
+callback returns dwError 0
+
+Change-Id: Ib5a249e5256273567c95734e7c28cf8e49697426
+---
+
+diff --git a/server/restengine/httpProtocolHead.c b/server/restengine/httpProtocolHead.c
+index be3ff09..f00c2f6 100644
+--- a/server/restengine/httpProtocolHead.c
++++ b/server/restengine/httpProtocolHead.c
+@@ -1335,7 +1335,7 @@
+
+              case PROCESS_APPLICATION_CALLBACK:
+                  /**** Give callback to application ****/
+-                 VMREST_LOG_INFO(pRESTHandle,"%s","C-REST-ENGINE: Giving callback to application...");
++                 VMREST_LOG_DEBUG(pRESTHandle,"%s","C-REST-ENGINE: Giving callback to application...");
+                  dwError = VmRESTTriggerAppCb(
+                                pRESTHandle,
+                                pRequest,
+diff --git a/transport/posix/socket.c b/transport/posix/socket.c
+index 364ce0e..59b13ed 100644
+--- a/transport/posix/socket.c
++++ b/transport/posix/socket.c
+@@ -869,6 +869,8 @@
+     dwError = VmRESTLockMutex(pSocket->pMutex);
+     BAIL_ON_VMREST_ERROR(dwError);
+
++    VMREST_LOG_INFO(pRESTHandle, "C-REST-ENGINE start reading payload fd %d", pSocket->fd);
++
+     bLocked = TRUE;
+     if (pSocket->pszBuffer)
+     {
+@@ -940,8 +942,8 @@
+
+     if (nRead == -1)
+     {
+-        if (((pSocket->fd > 0) && (errorCode == EAGAIN || errorCode == EWOULDBLOCK)) ||
+-           ((pRESTHandle->pSSLInfo->isSecure) &&
++        if (((pSocket->fd > 0) && (errorCode == EAGAIN || errorCode == EWOULDBLOCK)) ||
++           ((pRESTHandle->pSSLInfo->isSecure) &&
+            ((errorCode == SSL_ERROR_WANT_READ) || ((errorCode == SSL_ERROR_SSL) && (errno == EAGAIN)))))
+         {
+             dwError = REST_ENGINE_SUCCESS;
+@@ -970,11 +972,15 @@
+     pSocket->pszBuffer = pszBufPrev;
+     pSocket->nProcessed = 0;
+     pSocket->nBufData = nPrevBuf;
+-
++
+     *ppszBuffer = pSocket->pszBuffer;
+     *nBufLen = pSocket->nBufData;
+
+-    VMREST_LOG_DEBUG(pRESTHandle,"Read status, total bytes(including prev) %u", *nBufLen);
++    VMREST_LOG_INFO(
++            pRESTHandle,
++            "C-REST-ENGINE Read status, total bytes(including prev) %u fd %d",
++            *nBufLen,
++            pSocket->fd);
+
+ cleanup:
