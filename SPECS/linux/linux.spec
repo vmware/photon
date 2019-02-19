@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.154
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -66,6 +66,10 @@ Patch45:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 Patch46:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch47:        0002-xfs-verify-dinode-header-first.patch
 Patch48:        0003-xfs-enhance-dinode-verifier.patch
+# Fix for CVE-2018-16882
+Patch49:        0001-KVM_Fix_UAF_in_nested_posted_interrupt_processing.patch
+# Fix for CVE-2018-16880
+Patch50:        0001-vhost_fix_OOB_in_get_rx_bufs.patch
 
 # HyperV PCI patches to Use vPCI_protocol_version_1.2
 Patch51:        0001_PCI_hv_Allocate_physically_contiguous_hypercall_params_buffer.patch
@@ -191,6 +195,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
+%patch49 -p1
+%patch50 -p1
 
 %patch51 -p1
 %patch52 -p1
@@ -371,6 +377,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Feb 19 2019 Ajay Kaher <akaher@vmware.com> 4.9.154-2
+-   Fix CVE-2018-16880, CVE-2018-16882
 *   Mon Feb 04 2019 Ajay Kaher <akaher@vmware.com> 4.9.154-1
 -   Update to version 4.9.154
 *   Wed Jan 23 2019 Ajay Kaher <akaher@vmware.com> 4.9.140-6
