@@ -1,0 +1,39 @@
+diff --git a/server/restengine/httpProtocolHead.c b/server/restengine/httpProtocolHead.c
+index be3ff09..f00c2f6 100644
+--- a/server/restengine/httpProtocolHead.c
++++ b/server/restengine/httpProtocolHead.c
+@@ -1335,7 +1335,7 @@ VmRESTProcessBuffer(
+ 
+              case PROCESS_APPLICATION_CALLBACK:
+                  /**** Give callback to application ****/
+-                 VMREST_LOG_INFO(pRESTHandle,"%s","C-REST-ENGINE: Giving callback to application...");
++                 VMREST_LOG_DEBUG(pRESTHandle,"%s","C-REST-ENGINE: Giving callback to application...");
+                  dwError = VmRESTTriggerAppCb(
+                                pRESTHandle,
+                                pRequest,
+diff --git a/transport/posix/socket.c b/transport/posix/socket.c
+index 364ce0e..bb0acee 100644
+--- a/transport/posix/socket.c
++++ b/transport/posix/socket.c
+@@ -869,6 +869,8 @@ VmSockPosixRead(
+     dwError = VmRESTLockMutex(pSocket->pMutex);
+     BAIL_ON_VMREST_ERROR(dwError);
+ 
++    VMREST_LOG_INFO(pRESTHandle, "C-REST-ENGINE start reading payload fd %d", pSocket->fd);
++
+     bLocked = TRUE;
+     if (pSocket->pszBuffer)
+     {
+@@ -974,7 +976,11 @@ VmSockPosixRead(
+     *ppszBuffer = pSocket->pszBuffer;
+     *nBufLen = pSocket->nBufData;
+ 
+-    VMREST_LOG_DEBUG(pRESTHandle,"Read status, total bytes(including prev) %u", *nBufLen);
++    VMREST_LOG_INFO(
++            pRESTHandle,
++            "C-REST-ENGINE Read status, total bytes(including prev) %u fd %d",
++            *nBufLen,
++            pSocket->fd);
+ 
+ cleanup:
+ 
