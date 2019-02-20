@@ -5,7 +5,7 @@ Release:        1%{?dist}
 License:        BSD 2-Clause
 URL:            https://yarnpkg.com
 Source0:        https://github.com/yarnpkg/yarn/archive/%{name}-%{version}.tar.gz
-%define sha1    yarn=dca4344aa4aa9b31aebe95636985b6fabc4d0542
+%define sha1    yarn=2f5d4c9e3fe876108d3e48db6645332195676e95
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Developement/Languages/NodeJs
