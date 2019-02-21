@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -39,6 +39,8 @@ Patch25:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.p
 Patch26:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch27:        4.17-0002-apparmor-af_unix-mediation.patch
 Patch28:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+#Fix CVE-2019-8912
+Patch29:        fix_use_after_free_in_sockfs_setattr.patch
 
 BuildArch:     x86_64
 BuildRequires: bc
@@ -97,6 +99,7 @@ The Linux package contains the Linux kernel doc files
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
+%patch29 -p1
 
 %build
 # patch vmw_balloon driver
@@ -193,6 +196,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.15-2
+-   Fix CVE-2019-8912
 *   Tue Jan 15 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.15-1
 -   Update to version 4.19.15
 -   .config: Enable USB_SERIAL and USB_ACM
