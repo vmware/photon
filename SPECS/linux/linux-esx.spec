@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.171
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -62,6 +62,8 @@ Patch46:        0006-xfs-verify-dinode-header-first.patch
 Patch47:        0007-xfs-move-inode-fork-verifiers-to-xfs_dinode_verify.patch
 Patch48:        0008-xfs-enhance-dinode-verifier.patch
 Patch49:        net-9p-vdfs-zerocopy.patch
+#Fix CVE-2019-8912
+Patch50:        fix_use_after_free_in_sockfs_setattr.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -145,6 +147,7 @@ The Linux package contains the Linux kernel doc files
 %patch47 -p1
 %patch48 -p1
 %patch49 -p1
+%patch50 -p1
 
 %patch67 -p1
 
@@ -235,6 +238,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.171-2
+-   Fix CVE-2019-8912
 *   Thu Jan 24 2019 Ajay Kaher <akaher@vmware.com> 4.4.171-1
 -   Update to version 4.4.171
 *   Wed Dec 12 2018 Kamal Charan <kcharan@vmware.com> 4.4.164-2
