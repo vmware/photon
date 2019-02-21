@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.20
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -36,6 +36,8 @@ Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 #FIPS patches - allow some algorithms
 Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Fix for CVE-2019-8912
+Patch27:        0001-net_crypto_set_sk_to_NULL_when_af_alg_release.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
@@ -174,6 +176,7 @@ Kernel Device Tree Blob files for NXP ls1012a FRWY board
 %patch13 -p1
 %patch24 -p1
 %patch26 -p1
+%patch27 -p1
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
@@ -437,6 +440,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Feb 21 2019 Ajay Kaher <akaher@vmware.com> 4.19.20-2
+-   Fix CVE-2019-8912
 *   Fri Feb 08 2019 Ajay Kaher <akaher@vmware.com> 4.19.20-1
 -   Update to version 4.19.20
 *   Thu Jan 24 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.15-2
