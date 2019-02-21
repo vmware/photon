@@ -1,0 +1,23 @@
+From 3fb1ac5d57954bb0d881a68777e996b46ed44ce3 Mon Sep 17 00:00:00 2001
+From: tomty89 <tom.ty89@gmail.com>
+Date: Sat, 4 Jun 2016 18:31:07 +0800
+Subject: [PATCH] networkd-link: fix handler typo for route_remove() (#3433)
+
+Obviously we've been using the wrong handler here. Fixes #3352.
+---
+ src/network/networkd-link.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/network/networkd-link.c b/src/network/networkd-link.c
+index ba4147f8756..ee52b1ce1e1 100644
+--- a/src/network/networkd-link.c
++++ b/src/network/networkd-link.c
+@@ -2252,7 +2252,7 @@ static int link_drop_foreign_config(Link *link) {
+                 if (route->protocol == RTPROT_KERNEL)
+                         continue;
+ 
+-                r = route_remove(route, link, link_address_remove_handler);
++                r = route_remove(route, link, link_route_remove_handler);
+                 if (r < 0)
+                         return r;
+         }
