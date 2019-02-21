@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.15
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -38,6 +38,10 @@ Patch32:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.p
 Patch33:        4.17-0002-apparmor-af_unix-mediation.patch
 Patch34:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch35:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+#Fix CVE-2019-8912
+Patch36:        fix_use_after_free_in_sockfs_setattr.patch
+
+
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
 
@@ -107,6 +111,7 @@ The Linux package contains the Linux kernel doc files
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
+%patch36 -p1
 
 pushd ..
 %patch99 -p0
@@ -234,6 +239,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.15-2
+-   Fix CVE-2019-8912
 *   Tue Jan 15 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.15-1
 -   Update to version 4.19.15
 *   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-4

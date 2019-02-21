@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.15
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -43,6 +43,9 @@ Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.p
 Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
 Patch31:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+#Fix CVE-2019-8912
+Patch33:	fix_use_after_free_in_sockfs_setattr.patch
+
 %ifarch aarch64
 # NXP LS1012a FRWY patches
 Patch51:        0001-staging-fsl_ppfe-eth-header-files-for-pfe-driver.patch
@@ -179,6 +182,7 @@ Kernel Device Tree Blob files for NXP ls1012a FRWY board
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
+%patch33 -p1
 
 %ifarch aarch64
 # NXP FSL_PPFE Driver patches
@@ -437,6 +441,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.15-3
+-   Fix CVE-2019-8912
 *   Thu Jan 24 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.15-2
 -   Add WiFi (ath10k), sensors (i2c,spi), usb support for NXP LS1012A board.
 *   Tue Jan 15 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.15-1
