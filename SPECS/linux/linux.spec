@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.171
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -63,10 +63,11 @@ Patch41:        0008-xfs-enhance-dinode-verifier.patch
 Patch42:        net-9p-vdfs-zerocopy.patch
 # Fix for CVE-2018-16882
 Patch43:        0001-KVM_Fix_UAF_in_nested_posted_interrupt_processing.patch
+# Fix for CVE-2019-8912
+Patch44:        0001-net_crypto_set_sk_to_NULL_when_af_alg_release.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
-
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -180,6 +181,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch41 -p1
 %patch42 -p1
 %patch43 -p1
+%patch44 -p1
 
 %patch67 -p1
 
@@ -338,6 +340,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Feb 21 2019 Ajay Kaher <akaher@vmware.com> 4.4.171-3
+-   Fix CVE-2019-8912
 *   Wed Jan 30 2019 Ajay Kaher <akaher@vmware.com> 4.4.171-2
 -   Fix CVE-2018-16882
 *   Thu Jan 24 2019 Ajay Kaher <akaher@vmware.com> 4.4.171-1
