@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.154
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -74,11 +74,14 @@ Patch53:        0003_PCI_hv_Use_vPCI_protocol_version_1.2_v4.9.patch
 # HyperV PCI patches to solve IRQ no handler problem
 Patch54:        0004-PCI-hv-Use-effective-affinity-mask.patch
 Patch55:        0005-x86-irq-implement-irq_data_get_effective_affinity.patch
+#Fix CVE-2019-8912
+Patch56:        fix_use_after_free_in_sockfs_setattr.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
 Patch72: 0002-apparmor-Fix-quieting-of-audit-messages-for-network-.patch
 Patch73: 0003-UBUNTU-SAUCE-apparmor-Add-the-ability-to-mediate-mou.patch
+
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -197,6 +200,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch53 -p1
 %patch54 -p1
 %patch55 -p1
+%patch56 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -371,6 +375,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.154-2
+-   Fix CVE-2019-8912
 *   Mon Feb 04 2019 Ajay Kaher <akaher@vmware.com> 4.9.154-1
 -   Update to version 4.9.154
 *   Wed Jan 23 2019 Ajay Kaher <akaher@vmware.com> 4.9.140-6

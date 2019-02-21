@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.154
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -57,6 +57,8 @@ Patch45:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 Patch46:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch47:        0002-xfs-verify-dinode-header-first.patch
 Patch48:        0003-xfs-enhance-dinode-verifier.patch
+#Fix CVE-2019-8912
+Patch49:        fix_use_after_free_in_sockfs_setattr.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -132,7 +134,7 @@ The Linux package contains the Linux kernel doc files
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
-
+%patch49 -p1
 
 %build
 
@@ -227,6 +229,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.154-2
+-   Fix CVE-2019-8912
 *   Mon Feb 04 2019 Ajay Kaher <akaher@vmware.com> 4.9.154-1
 -   Update to version 4.9.154
 *   Tue Jan 08 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.140-3

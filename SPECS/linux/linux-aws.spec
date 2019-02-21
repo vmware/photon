@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.154
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -61,7 +61,8 @@ Patch45:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 Patch46:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch47:        0002-xfs-verify-dinode-header-first.patch
 Patch48:        0003-xfs-enhance-dinode-verifier.patch
-
+#Fix CVE-2019-8912
+Patch49:        fix_use_after_free_in_sockfs_setattr.patch
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
 Patch72: 0002-apparmor-Fix-quieting-of-audit-messages-for-network-.patch
@@ -225,6 +226,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
+%patch49 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -434,6 +436,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.154-2
+-   Fix CVE-2019-8912
 *   Mon Feb 04 2019 Ajay Kaher <akaher@vmware.com> 4.9.154-1
 -   Update to version 4.9.154
 *   Tue Jan 15 2019 Alexey Makhalov <amakhalov@vmware.com> 4.9.140-2
