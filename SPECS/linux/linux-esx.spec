@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.171
-Release:       2%{?dist}
+Version:       4.4.174
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=0dad29240a55b758c2ebe81ce43b4766b7d81f7d
+%define sha1 linux=78e2e16e7ae47d1669f00bef0eb3ade3f991d8ee
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -47,11 +47,6 @@ Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch35:       0001-scsi-libsas-direct-call-probe-and-destruct.patch
 # Fix for CVE-2018-10323
 Patch36:       0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
-# Fix for CVE-2017-18249 (following 4 patches)
-Patch37:       0001-f2fs-cover-more-area-with-nat_tree_lock.patch
-Patch38:       0002-Revert-f2fs-check-the-node-block-address-of-newly-al.patch
-Patch39:       0003-f2fs-remove-an-obsolete-variable.patch
-Patch40:       0004-f2fs-fix-race-condition-in-between-free-nid-allocato.patch
 # Fix for CVE-2018-10322 (following 8 patches)
 Patch41:        0001-xfs-add-missing-include-dependencies-to-xfs_dir2.h.patch
 Patch42:        0002-xfs-replace-xfs_mode_to_ftype-table-with-switch-stat.patch
@@ -134,10 +129,6 @@ The Linux package contains the Linux kernel doc files
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
-%patch37 -p1
-%patch38 -p1
-%patch39 -p1
-%patch40 -p1
 %patch41 -p1
 %patch42 -p1
 %patch43 -p1
@@ -238,6 +229,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Feb 22 2019 Srinidhi Rao<srinidhir@vmware.com> 4.4.174-1
+-   Update to version 4.4.174
 *   Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.171-2
 -   Fix CVE-2019-8912
 *   Thu Jan 24 2019 Ajay Kaher <akaher@vmware.com> 4.4.171-1
