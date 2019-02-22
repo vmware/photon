@@ -1,7 +1,7 @@
-From 8bda9bcd663474113a2841ba65b3c0282732285e Mon Sep 17 00:00:00 2001
-From: Vivek Goyal <vivekgoyal@vmware.com>
-Date: Wed, 13 Feb 2019 18:47:55 -0800
-Subject: [PATCH] VCP patch for K8s v1.11.6
+From d1709a72244e4edf40bddacc26adfceff3561f2f Mon Sep 17 00:00:00 2001
+From: abhishek rathore <arathore@vmware.com>
+Date: Fri, 22 Feb 2019 12:12:09 +0530
+Subject: [PATCH] VCP patch for K8s v1.11.7 (2c62ea46)
 
 ---
  api/swagger-spec/apps_v1alpha1.json           |   21 +
@@ -18,7 +18,7 @@ Subject: [PATCH] VCP patch for K8s v1.11.6
  cmd/kubelet/app/BUILD                         |    1 +
  cmd/kubelet/app/plugins.go                    |    2 +
  pkg/apis/core/types.go                        |   14 +
- pkg/apis/core/validation/validation.go        |   25 +
+ pkg/apis/core/validation/validation.go        |   27 +-
  pkg/apis/policy/types.go                      |    1 +
  pkg/cloudprovider/providers/BUILD             |    2 +
  pkg/cloudprovider/providers/cascade/BUILD     |   56 +
@@ -57,7 +57,7 @@ Subject: [PATCH] VCP patch for K8s v1.11.6
  .../authorizer/vke/vke_authorizer_test.go     |  230 ++
  .../src/k8s.io/api/core/v1/generated.pb.go    | 2686 +++++++++--------
  staging/src/k8s.io/api/core/v1/types.go       |   24 +-
- 53 files changed, 7363 insertions(+), 1214 deletions(-)
+ 53 files changed, 7363 insertions(+), 1216 deletions(-)
  create mode 100644 pkg/cloudprovider/providers/cascade/BUILD
  create mode 100644 pkg/cloudprovider/providers/cascade/OWNERS
  create mode 100644 pkg/cloudprovider/providers/cascade/apitypes.go
@@ -321,7 +321,7 @@ index 050235b53f..3484e13353 100644
      "id": "v1.Container",
      "description": "A single application container that you want to run within a pod.",
 diff --git a/api/swagger-spec/extensions_v1beta1.json b/api/swagger-spec/extensions_v1beta1.json
-index 07c832d787..26d2578257 100644
+index 0b25e40fd8..3b34ab08db 100644
 --- a/api/swagger-spec/extensions_v1beta1.json
 +++ b/api/swagger-spec/extensions_v1beta1.json
 @@ -7513,6 +7513,10 @@
@@ -568,7 +568,7 @@ index 1669edc41e..60ba08e91b 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 diff --git a/pkg/apis/core/validation/validation.go b/pkg/apis/core/validation/validation.go
-index 120879c85b..b1c6f9a154 100644
+index 120879c85b..e879cc0d9b 100644
 --- a/pkg/apis/core/validation/validation.go
 +++ b/pkg/apis/core/validation/validation.go
 @@ -638,6 +638,14 @@ func validateVolumeSource(source *core.VolumeSource, fldPath *field.Path, volNam
@@ -617,6 +617,15 @@ index 120879c85b..b1c6f9a154 100644
  	if numVolumes == 0 {
  		allErrs = append(allErrs, field.Required(specPath, "must specify a volume type"))
  	}
+@@ -5145,8 +5170,6 @@ func validateEndpointPort(port *core.EndpointPort, requireName bool, fldPath *fi
+ }
+ 
+ // ValidateEndpointsUpdate tests to make sure an endpoints update can be applied.
+-// NodeName changes are allowed during update to accommodate the case where nodeIP or PodCIDR is reused.
+-// An existing endpoint ip will have a different nodeName if this happens.
+ func ValidateEndpointsUpdate(newEndpoints, oldEndpoints *core.Endpoints) field.ErrorList {
+ 	allErrs := ValidateObjectMetaUpdate(&newEndpoints.ObjectMeta, &oldEndpoints.ObjectMeta, field.NewPath("metadata"))
+ 	allErrs = append(allErrs, validateEndpointSubsets(newEndpoints.Subsets, field.NewPath("subsets"))...)
 diff --git a/pkg/apis/policy/types.go b/pkg/apis/policy/types.go
 index 298fcd0e4d..174d0fc876 100644
 --- a/pkg/apis/policy/types.go
