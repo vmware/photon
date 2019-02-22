@@ -58,8 +58,8 @@ cp $SCRIPT_PATH/EFI_$(uname -m)/BOOT/* ${BUILDROOT}/installer/EFI/BOOT/
 # # make VENDOR_CERT_FILE=<VMware cert> EFI_PATH=/usr/lib 'DEFAULT_LOADER=\\\\grubx64.efi' shimx64.efi
 # # mv shimx64.efi bootx64.efi
 
-# grubx64.efi is generated on Photon OS by using grub2-efi >= 2.02-7:
-# # grub2-efi-mkimage -o grubx64.efi -p /boot/grub2 -O x86_64-efi  fat iso9660 part_gpt part_msdos  normal boot linux configfile loopback chain  efifwsetup efi_gop efi_uga  ls search search_label search_fs_uuid search_fs_file  gfxterm gfxterm_background gfxterm_menu test all_video loadenv  exfat ext2 udf halt gfxmenu png tga lsefi help linuxefi probe echo
+# grubx64.efi is generated on Photon OS by using grub2-efi-2.02-12:
+# # grub2-mkimage -o grubx64.efi -p /boot/grub2 -O x86_64-efi  fat iso9660 part_gpt part_msdos  normal boot linux configfile loopback chain  efifwsetup efi_gop efi_uga  ls search search_label search_fs_uuid search_fs_file  gfxterm gfxterm_background gfxterm_menu test all_video loadenv  exfat ext2 udf halt gfxmenu png tga lsefi help probe echo
 
 # grubaa64.efi is generated on Photon OS (aarch64) by using grub2-efi >= 2.02-11:
 # cat > /tmp/grub-embed-config.cfg << EOF
