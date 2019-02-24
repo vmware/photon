@@ -33,6 +33,7 @@ BuildRequires:  findutils
 BuildRequires:  git
 BuildRequires:  libapparmor
 BuildRequires:  libapparmor-devel
+BuildRequires:  curl
 Requires:       libapparmor
 Requires:       libltdl
 Requires:       libgcc
