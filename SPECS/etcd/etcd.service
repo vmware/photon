@@ -3,6 +3,7 @@ Description=Etcd Server
 After=network.target
 
 [Service]
+EnvironmentFile=-/etc/sysconfig/etcd
 Type=notify
 WorkingDirectory=/var/lib/etcd/
 ExecStart=/usr/bin/etcd --config-file /etc/etcd/etcd-default-conf.yml
