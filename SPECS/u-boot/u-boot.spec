@@ -2,18 +2,21 @@
 %global debug_package %{nil}
 Summary:        U-Boot EFI firmware
 Name:		u-boot
-Version:	2018.09
-Release:	7%{?dist}
+Version:	2019.01
+Release:	1%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        ftp://ftp.denx.de/pub/u-boot/u-boot-%{version}.tar.bz2
-%define sha1 u-boot=e43d4fc09395f8cde29d655d35b2bb773e89b444
+%define sha1 u-boot=3c4d22eea02032488e1a4cc5da202bb2469cf6fa
 Source1:        rpi_3_photon_defconfig
+Source2:        uboot.env
 Patch0:		0001-XXX-openSUSE-XXX-Load-dtb-from-part.patch
 Patch1:		0004-Fix-MMC1-external-SD-slot-on-Samsun.patch
 Patch2:		0005-Fix-no-usb.patch
+Patch3:         add_tcp_wget_support.patch
+Group:          Development/Tools
 BuildArch:      aarch64
 
 %description
@@ -24,20 +27,25 @@ U-Boot is Open Source Firmware.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 cp %{SOURCE1} configs/
+cp %{SOURCE2} .
 make %{?_smp_mflags} CROSS_COMPILE= rpi_3_photon_defconfig
 make %{?_smp_mflags} CROSS_COMPILE= USE_PRIVATE_LIBGG=yes
 
 %install
 install -D -m 0644 u-boot.bin %{buildroot}/boot/esp/u-boot.bin
+install -D -m 0644 uboot.env %{buildroot}/boot/esp/uboot.env
 
 %files
 %defattr(-,root,root)
 /boot/esp/*
 
 %changelog
+*   Fri Feb 22 2019 Tapas Kundu <tkundu@vmware.com> 2019.01-1
+-   Updating to 2019.01
 *   Thu Jan 24 2019 Alexey Makhalov <amakhalov@vmware.com> 2018.09-7
 -   Renamed package from u-boot-rpi3 to u-boot.
 *   Fri Nov 23 2018 Ajay Kaher <akaher@vmware.com> 2018.09-6
