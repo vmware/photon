@@ -1,0 +1,1590 @@
+This patch is to enable tcp and wget support in u-boot.
+
+Reference:
+https://lists.denx.de/pipermail/u-boot/2018-June/332739.html
+https://patchwork.ozlabs.org/patch/934007/
+
+
+--- a/include/net.h	2019-01-14 22:02:36.000000000 +0000
++++ b/include/net.h	2019-02-21 05:36:45.082330020 +0000
+@@ -26,7 +26,9 @@
+  *	alignment in memory.
+  *
+  */
+-
++#if defined(CONFIG_TCP)		/* Protected UDP uses less bufferes than TCP */
++#define CONFIG_SYS_RX_ETH_BUFFER 12
++#endif
+ #ifdef CONFIG_SYS_RX_ETH_BUFFER
+ # define PKTBUFSRX	CONFIG_SYS_RX_ETH_BUFFER
+ #else
+@@ -352,6 +354,7 @@ struct vlan_ethernet_hdr {
+ #define PROT_PPP_SES	0x8864		/* PPPoE session messages	*/
+ 
+ #define IPPROTO_ICMP	 1	/* Internet Control Message Protocol	*/
++#define IPPROTO_TCP	 6
+ #define IPPROTO_UDP	17	/* User Datagram Protocol		*/
+ 
+ /*
+@@ -537,7 +540,7 @@ extern int		net_restart_wrap;	/* Tried a
+ 
+ enum proto_t {
+ 	BOOTP, RARP, ARP, TFTPGET, DHCP, PING, DNS, NFS, CDP, NETCONS, SNTP,
+-	TFTPSRV, TFTPPUT, LINKLOCAL, FASTBOOT, WOL
++	TFTPSRV, TFTPPUT, LINKLOCAL, FASTBOOT, WOL, WGET
+ };
+ 
+ extern char	net_boot_file_name[1024];/* Boot File name */
+@@ -684,6 +687,8 @@ static inline void net_send_packet(uchar
+ int net_send_ip_packet(uchar *ether, struct in_addr dest, int dport, int sport,
+ 		       int payload_len, int proto, u8 action, u32 tcp_seq_num,
+ 		       u32 tcp_ack_num);
++int net_send_tcp_packet(int payload_len, int dport, int sport, u8 action,
++			u32 tcp_seq_num, u32 tcp_ack_num);
+ int net_send_udp_packet(uchar *ether, struct in_addr dest, int dport,
+ 			int sport, int payload_len);
+ 
+--- a/include/net/tcp.h	2019-02-22 11:07:25.767384692 +0000
++++ b/include/net/tcp.h	2019-02-20 16:21:35.634978332 +0000
+@@ -0,0 +1,227 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * TCP Support with SACK for file transfer.
++ *
++ * Copyright 2017 Duncan Hare, All rights reserved.
++ */
++
++#define TCP_ACTIVITY 127		/* Number of packets received   */
++					/* before console progress mark */
++
++struct ip_tcp_hdr {
++	u8		ip_hl_v;	/* header length and version	*/
++	u8		ip_tos;		/* type of service		*/
++	u16		ip_len;		/* total length			*/
++	u16		ip_id;		/* identification		*/
++	u16		ip_off;		/* fragment offset field	*/
++	u8		ip_ttl;		/* time to live			*/
++	u8		ip_p;		/* protocol			*/
++	u16		ip_sum;		/* checksum			*/
++	struct in_addr	ip_src;		/* Source IP address		*/
++	struct in_addr	ip_dst;		/* Destination IP address	*/
++	u16		tcp_src;	/* TCP source port		*/
++	u16		tcp_dst;	/* TCP destination port		*/
++	u32		tcp_seq;	/* TCP sequence number		*/
++	u32		tcp_ack;	/* TCP Acknowledgment number	*/
++	u8		tcp_hlen;	/* 4 bits TCP header Length/4	*/
++					/* 4 bits Reserved		*/
++					/* 2 more bits reserved		*/
++	u8		tcp_flags;	/* see defines			*/
++	u16		tcp_win;	/* TCP windows size		*/
++	u16		tcp_xsum;	/* Checksum			*/
++	u16		tcp_ugr;	/* Pointer to urgent data	*/
++} __packed;
++
++#define IP_TCP_HDR_SIZE		(sizeof(struct ip_tcp_hdr))
++#define TCP_HDR_SIZE		(IP_TCP_HDR_SIZE  - IP_HDR_SIZE)
++
++#define TCP_DATA	0x00	/* Data Packet - internal use only	*/
++#define TCP_FIN		0x01	/* Finish flag				*/
++#define TCP_SYN		0x02	/* Synch (start) flag			*/
++#define TCP_RST		0x04	/* reset flag				*/
++#define TCP_PUSH	0x08	/* Push - Notify app			*/
++#define TCP_ACK		0x10	/* Acknowledgment of data received	*/
++#define TCP_URG		0x20	/* Urgent				*/
++#define TCP_ECE		0x40	/* Congestion control			*/
++#define TCP_CWR		0x80	/* Congestion Control			*/
++
++/*
++ * TCP header options, Seq, MSS, and SACK
++ */
++
++#define TCP_SACK 32			/* Number of packets analyzed   */
++					/* on leading edge of stream    */
++
++#define TCP_O_END	0x00		/* End of option list		*/
++#define TCP_1_NOP	0x01		/* Single padding NOP		*/
++#define TCP_O_NOP	0x01010101	/* NOPs pad to 32 bit boundary	*/
++#define TCP_O_MSS	0x02		/* MSS Size option		*/
++#define TCP_O_SCL	0x03		/* Window Scale option		*/
++#define TCP_P_SACK	0x04		/* SACK permitted		*/
++#define TCP_V_SACK	0x05		/* SACK values			*/
++#define TCP_O_TS	0x08		/* Timestamp option		*/
++#define TCP_OPT_LEN_2	0x02
++#define TCP_OPT_LEN_3	0x03
++#define TCP_OPT_LEN_4	0x04
++#define TCP_OPT_LEN_6	0x06
++#define TCP_OPT_LEN_8	0x08
++#define TCP_OPT_LEN_A	0x0a		/* Timestamp Length		*/
++
++/*
++ * Please review the warning in net.c about these two parameters.
++ * They are part of a promise of RX buffer size to the sending TCP
++ */
++
++#define TCP_MSS		1460		/* Max segment size		*/
++#define TCP_SCALE	0x01		/* Scale			*/
++
++struct tcp_mss {			/* TCP Max Segment size		*/
++	u8	kind;			/* Field ID			*/
++	u8	len;			/* Field length			*/
++	u16	mss;			/* Segment size value		*/
++} __packed;
++
++struct tcp_scale {			/* TCP Windows Scale		*/
++	u8	kind;			/* Field ID			*/
++	u8	len;			/* Filed length			*/
++	u8	scale;			/* windows shift value used for */
++					/* networks with many hops	*/
++					/* Typically 4 or more hops	*/
++
++} __packed;
++
++struct tcp_sack_p {			/* SACK permitted		*/
++	u8	kind;			/* Field Id			*/
++	u8	len;			/* Field length			*/
++} __packed;
++
++					/* Terse definitions used       */
++					/* long definitions make the    */
++					/* indented code overflow line  */
++					/* length linits                */
++struct sack_edges {
++	u32	l;			/* Left edge of stream		*/
++	u32	r;			/* right edge of stream		*/
++} __packed;
++
++#define TCP_SACK_SIZE (sizeof(struct sack_edges))
++
++/*
++ * A TCP stream has holes when packets are missing or disordered.
++ * A hill is the inverese of a hole, and is data received.
++ * TCP receiveds hills (a sequence of data), and inferrs Holes
++ * from the "hills" or packets received.
++ */
++
++#define TCP_SACK_HILLS	4
++
++struct tcp_sack_v {
++	u8	kind;			/* Field ID		        */
++	u8	len;			/* Field Length			*/
++	struct	sack_edges hill[TCP_SACK_HILLS]; /* L & R window edges	*/
++} __packed;
++
++struct tcp_t_opt {			/* TCP time stamps option	*/
++	u8	kind;			/* Field id			*/
++	u8	len;			/* Field length			*/
++	u32	t_snd;			/* Sender timestamp		*/
++	u32	t_rcv;			/* Receiver timestamp		*/
++} __packed;
++
++#define TCP_TSOPT_SIZE (sizeof(struct tcp_t_opt))
++
++/*
++ * ip tcp  structure with options
++ */
++
++struct ip_tcp_hdr_o {
++	struct	ip_tcp_hdr hdr;
++	struct	tcp_mss	   mss;
++	struct	tcp_scale  scale;
++	struct	tcp_sack_p sack_p;
++	struct	tcp_t_opt  t_opt;
++	u8	end;
++} __packed;
++
++#define IP_TCP_O_SIZE (sizeof(struct ip_tcp_hdr_o))
++
++struct ip_tcp_hdr_s {
++	struct	ip_tcp_hdr	hdr;
++	struct	tcp_t_opt	t_opt;
++	struct	tcp_sack_v	sack_v;
++	u8	end;
++} __packed;
++
++#define IP_TCP_SACK_SIZE (sizeof(struct ip_tcp_hdr_s))
++
++/*
++ * TCP pseudo header definitions
++ */
++#define PSEUDO_PAD_SIZE	8
++
++struct pseudo_hdr {
++	u8 padding[PSEUDO_PAD_SIZE];	/* pseudo hdr size = ip_tcp hdr size */
++	struct in_addr p_src;
++	struct in_addr p_dst;
++	u8      rsvd;
++	u8      p;
++	u16     len;
++} __packed;
++
++#define PSEUDO_HDR_SIZE	(sizeof(struct pseudo_hdr)) - PSEUDO_PAD_SIZE
++
++/*
++ * union for building TCP/IP packet. Build Pseudo header in packed buffer
++ * first, calculate TCP checksum, then build IP header in packed buffer.
++ */
++
++union tcp_build_pkt {
++	struct pseudo_hdr ph;
++	struct ip_tcp_hdr_o ip;
++	struct ip_tcp_hdr_s sack;
++	uchar  raw[1600];
++} __packed;
++
++/*
++ * TCP State machine states for connection
++ */
++
++enum TCP_STATE {
++	TCP_CLOSED,		/* Need to send SYN to connect		  */
++	TCP_SYN_SENT,		/* Trying to connect, waiting for SYN ACK */
++	TCP_ESTABLISHED,	/* both server & client have a connection */
++	TCP_CLOSE_WAIT,		/* Rec FIN, passed to app for FIN, ACK rsp*/
++	TCP_CLOSING,		/* Rec FIN, sent FIN, ACK waiting for ACK */
++	TCP_FIN_WAIT_1,		/* Sent FIN waiting for response	  */
++	TCP_FIN_WAIT_2		/* Rec ACK from FIN sent, waiting for FIN */
++};
++
++enum TCP_STATE tcp_get_tcp_state(void);
++void tcp_set_tcp_state(enum TCP_STATE new_state);
++int tcp_set_tcp_header(uchar *pkt, int dport, int sport, int payload_len,
++		       u8 action, u32 tcp_seq_num, u32 tcp_ack_num);
++
++/*
++ * An incoming packet handler.
++ * @param pkt    pointer to the application packet
++ * @param dport  destination UDP port
++ * @param sip    source IP address
++ * @param sport  source UDP port
++ * @param len    packet length
++ */
++typedef void rxhand_tcp(uchar *pkt, unsigned int dport,
++			struct in_addr sip, unsigned int sport,
++			unsigned int len);
++void tcp_set_tcp_handler(rxhand_tcp *f);
++
++void rxhand_tcp_f(union tcp_build_pkt *b, unsigned int len);
++
++/*
++ * An incoming TCP packet handler for the TCP protocol.
++ * There is also a dynamic function pointer for TCP based commands to
++ * receive incoming traffic after the TCP protocol code has done its work.
++ */
++
++void rxhand_action(u8 tcp_action, int payload_len, u32 tcp_seq_num,
++		   u32 tcp_ack_num, unsigned int pkt_len,
++		   union tcp_build_pkt *b);
+--- a/net/Kconfig	2019-01-14 22:02:36.000000000 +0000
++++ b/net/Kconfig	2019-02-20 16:22:21.914704150 +0000
+@@ -22,4 +22,9 @@ config NETCONSOLE
+ 	  Support the 'nc' input/output device for networked console.
+ 	  See README.NetConsole for details.
+ 
++config TCP
++	bool "TCP stack"
++	help
++	  TCP protocol support with SACK for wget. Selecting this will provide
++	  the fastest file transfer possible.
+ endif   # if NET
+--- a/net/Makefile	2019-01-14 22:02:36.000000000 +0000
++++ b/net/Makefile	2019-02-21 05:40:05.474372488 +0000
+@@ -23,8 +23,9 @@ obj-$(CONFIG_CMD_PING) += ping.o
+ obj-$(CONFIG_CMD_RARP) += rarp.o
+ obj-$(CONFIG_CMD_SNTP) += sntp.o
+ obj-$(CONFIG_CMD_TFTPBOOT) += tftp.o
+-obj-$(CONFIG_UDP_FUNCTION_FASTBOOT)  += fastboot.o
++obj-$(CONFIG_TCP)      += tcp.o
+ obj-$(CONFIG_CMD_WOL)  += wol.o
++obj-$(CONFIG_CMD_WGET) += wget.o
+ 
+ # Disable this warning as it is triggered by:
+ # sprintf(buf, index ? "foo%d" : "foo", index)
+--- a/net/net.c	2019-01-14 22:02:36.000000000 +0000
++++ b/net/net.c	2019-02-21 05:42:18.156998774 +0000
+@@ -114,6 +114,8 @@
+ #if defined(CONFIG_CMD_SNTP)
+ #include "sntp.h"
+ #endif
++#include <net/tcp.h>
++#include <net/wget.h>
+ #if defined(CONFIG_CMD_WOL)
+ #include "wol.h"
+ #endif
+@@ -391,6 +393,9 @@ void net_init(void)
+ 
+ 		/* Only need to setup buffer pointers once. */
+ 		first_call = 0;
++#if defined(CONFIG_TCP)
++		tcp_set_tcp_state(TCP_CLOSED);
++#endif
+ 	}
+ 
+ 	net_init_loop();
+@@ -501,6 +506,11 @@ restart:
+ 			nfs_start();
+ 			break;
+ #endif
++#if defined(CONFIG_CMD_WGET)
++		case WGET:
++			wget_start();
++			break;
++#endif
+ #if defined(CONFIG_CMD_CDP)
+ 		case CDP:
+ 			cdp_start();
+@@ -814,6 +824,17 @@ int net_send_udp_packet(uchar *ether, st
+ 				  IPPROTO_UDP, 0, 0, 0);
+ }
+ 
++#if defined(CONFIG_TCP)
++int net_send_tcp_packet(int payload_len, int dport, int sport, u8 action,
++			u32 tcp_seq_num, u32 tcp_ack_num)
++{
++	return net_send_ip_packet(net_server_ethaddr, net_server_ip, dport,
++				  sport, payload_len, IPPROTO_TCP, action,
++				  tcp_seq_num, tcp_ack_num);
++}
++#endif
++
++
+ int net_send_ip_packet(uchar *ether, struct in_addr dest, int dport, int sport,
+ 		       int payload_len, int proto, u8 action, u32 tcp_seq_num,
+ 		       u32 tcp_ack_num)
+@@ -845,6 +866,14 @@ int net_send_ip_packet(uchar *ether, str
+ 				   payload_len);
+ 		pkt_hdr_size = eth_hdr_size + IP_UDP_HDR_SIZE;
+ 		break;
++#if defined(CONFIG_TCP)
++	case IPPROTO_TCP:
++		pkt_hdr_size = eth_hdr_size +
++		tcp_set_tcp_header(pkt + eth_hdr_size, dport, sport,
++				   payload_len, action, tcp_seq_num,
++				   tcp_ack_num);
++	break;
++#endif
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -1254,6 +1283,16 @@ void net_process_received_packet(uchar *
+ 		if (ip->ip_p == IPPROTO_ICMP) {
+ 			receive_icmp(ip, len, src_ip, et);
+ 			return;
++#if defined(CONFIG_TCP)
++		} else if (ip->ip_p == IPPROTO_TCP) {
++			debug_cond(DEBUG_DEV_PKT,
++				   "TCP PH (to=%pI4, from=%pI4, len=%d)\n",
++				   &dst_ip, &src_ip, len);
++
++			rxhand_tcp_f((union tcp_build_pkt *)ip, len);
++			return;
++#endif
++
+ 		} else if (ip->ip_p != IPPROTO_UDP) {	/* Only UDP packets */
+ 			return;
+ 		}
+@@ -1564,7 +1603,8 @@ int net_parse_bootfile(struct in_addr *i
+ 
+ #if	defined(CONFIG_CMD_NFS)		|| \
+ 	defined(CONFIG_CMD_SNTP)	|| \
+-	defined(CONFIG_CMD_DNS)
++	defined(CONFIG_CMD_DNS)         || \
++        defined(CONFIG_CMD_WGET)
+ /*
+  * make port a little random (1024-17407)
+  * This keeps the math somewhat trivial to compute, and seems to work with
+--- a/net/tcp.c	2019-02-22 11:07:16.290624985 +0000
++++ b/net/tcp.c	2019-02-21 06:22:35.527085578 +0000
+@@ -0,0 +1,702 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright 2017 Duncan Hare, all rights reserved.
++ */
++
++/*
++ * General Desription:
++ *
++ * TCP support for the wget command, for fast file downloading.
++ *
++ * HTTP/TCP Receiver:
++ *
++ *      Prequeisites:   - own ethernet address
++ *                      - own IP address
++ *                      - Server IP address
++ *                      - Server with TCP
++ *                      - TCP application (eg wget)
++ *      Next Step       HTTPS?
++ */
++#include <common.h>
++#include <command.h>
++#include <console.h>
++#include <environment.h>
++#include <errno.h>
++#include <net.h>
++#include <net/tcp.h>
++
++/*
++ * TCP sliding window  control used by us to request re-TX
++ */
++
++static struct tcp_sack_v tcp_lost;
++
++/* TCP option timestamp */
++static u32 loc_timestamp;
++static u32 rmt_timestamp;
++
++u32 tcp_seq_init;
++u32 tcp_ack_edge;
++u32 tcp_seq_max;
++
++int tcp_activity_count;
++
++/*
++ * Search for TCP_SACK and review the comments before the code section
++ * TCP_SACK is the number of packets at the front of the stream
++ */
++
++enum pkt_state {PKT, NOPKT};
++struct sack_r {
++	struct sack_edges se;
++	enum   pkt_state st;
++};
++
++struct sack_r edge_a[TCP_SACK];
++unsigned int sack_idx;
++unsigned int prev_len;
++
++/* TCP connection state */
++static enum TCP_STATE tcp_state;
++
++/*
++ * An incoming TCP packet handler for the TCP protocol.
++ * There is also a dynamic function pointer for TCP based commands to
++ * receive incoming traffic after the TCP protocol code has done its work.
++ */
++
++/* Current TCP RX packet handler */
++static rxhand_tcp *tcp_packet_handler;
++
++enum TCP_STATE tcp_get_tcp_state(void)
++{
++	return tcp_state;
++}
++
++void tcp_set_tcp_state(enum TCP_STATE new_state)
++{
++	tcp_state = new_state;
++}
++
++static void dummy_handler(uchar *pkt, unsigned int dport,
++			  struct in_addr sip, unsigned int sport,
++			  unsigned int len)
++{
++}
++
++void tcp_set_tcp_handler(rxhand_tcp *f)
++{
++	debug_cond(DEBUG_INT_STATE, "--- net_loop TCP handler set (%p)\n", f);
++	if (!f)
++		tcp_packet_handler = dummy_handler;
++	else
++		tcp_packet_handler = f;
++}
++
++u16 tcp_set_pseudo_header(uchar *pkt, struct in_addr src, struct in_addr dest,
++			  int tcp_len, int pkt_len)
++{
++	union tcp_build_pkt *b = (union tcp_build_pkt *)pkt;
++	int checksum_len;
++
++	/*
++	 * Pseudo header
++	 *
++	 * Zero the byte after the last byte so that the header checksum
++	 * will always work.
++	 */
++
++	pkt[pkt_len] = 0x00;
++
++	net_copy_ip((void *)&b->ph.p_src, &src);
++	net_copy_ip((void *)&b->ph.p_dst, &dest);
++	b->ph.rsvd	= 0x00;
++	b->ph.p		= IPPROTO_TCP;
++	b->ph.len	= htons(tcp_len);
++	checksum_len	= tcp_len + PSEUDO_HDR_SIZE;
++
++	debug_cond(DEBUG_DEV_PKT,
++		   "TCP Pesudo  Header  (to=%pI4, from=%pI4, Len=%d)\n",
++		   &b->ph.p_dst, &b->ph.p_src, checksum_len);
++
++	return compute_ip_checksum(pkt + PSEUDO_PAD_SIZE, checksum_len);
++}
++
++int net_set_ack_options(union tcp_build_pkt *b)
++{
++	b->sack.hdr.tcp_hlen  = (TCP_HDR_SIZE >> 2) << 4;
++
++	b->sack.t_opt.kind  = TCP_O_TS;
++	b->sack.t_opt.len   = TCP_OPT_LEN_A;
++	b->sack.t_opt.t_snd = htons(loc_timestamp);
++	b->sack.t_opt.t_rcv = rmt_timestamp;
++	b->sack.sack_v.kind = TCP_1_NOP;
++	b->sack.sack_v.len  = 0x00;
++
++	if (tcp_lost.len > TCP_OPT_LEN_2) {
++		debug_cond(DEBUG_DEV_PKT, "TCP ack opt lost.len %x\n",
++			   tcp_lost.len);
++		b->sack.sack_v.len       = tcp_lost.len;
++		b->sack.sack_v.kind      = TCP_V_SACK;
++		b->sack.sack_v.hill[0].l = htonl(tcp_lost.hill[0].l);
++		b->sack.sack_v.hill[0].r = htonl(tcp_lost.hill[0].r);
++
++		/*
++		 * These SACK structures are initialized with NOPs to
++		 * provide TCP header alignment padding. There are 4
++		 * SACK structures used for both header padding and
++		 * internally.
++		 */
++
++		b->sack.sack_v.hill[1].l = htonl(tcp_lost.hill[1].l);
++		b->sack.sack_v.hill[1].r = htonl(tcp_lost.hill[1].r);
++		b->sack.sack_v.hill[2].l = htonl(tcp_lost.hill[2].l);
++		b->sack.sack_v.hill[2].r = htonl(tcp_lost.hill[2].r);
++		b->sack.sack_v.hill[3].l = TCP_O_NOP;
++		b->sack.sack_v.hill[3].r = TCP_O_NOP;
++	}
++
++	/*
++	 * TCP lengths are stored as a rounded up number of 32 bit words
++	 * Add 3 to length round up, rounded, then divided into the length
++	 * in 32 bit words.
++	 */
++
++	b->sack.hdr.tcp_hlen = (((TCP_HDR_SIZE + TCP_TSOPT_SIZE
++				+ tcp_lost.len + 3)  >> 2) << 4);
++
++	/*
++	 * This returns the actual rounded up length of the
++	 * TCP header to add to the total packet length
++	 */
++
++	return b->sack.hdr.tcp_hlen >> 2;
++}
++
++void net_set_syn_options(union tcp_build_pkt *b)
++{
++	tcp_lost.len		= 0;
++	b->ip.hdr.tcp_hlen      = 0xa0;
++
++	b->ip.mss.kind          = TCP_O_MSS;
++	b->ip.mss.len           = TCP_OPT_LEN_4;
++	b->ip.mss.mss           = htons(TCP_MSS);
++	b->ip.scale.kind        = TCP_O_SCL;
++	b->ip.scale.scale       = TCP_SCALE;
++	b->ip.scale.len         = TCP_OPT_LEN_3;
++	b->ip.sack_p.kind       = TCP_P_SACK;
++	b->ip.sack_p.len        = TCP_OPT_LEN_2;
++	b->ip.t_opt.kind        = TCP_O_TS;
++	b->ip.t_opt.len         = TCP_OPT_LEN_A;
++	loc_timestamp           = get_ticks();
++	rmt_timestamp           = 0x00000000;
++	b->ip.t_opt.t_snd       = 0;
++	b->ip.t_opt.t_rcv       = 0x00000000;
++	b->ip.end               = TCP_O_END;
++}
++
++int tcp_set_tcp_header(uchar *pkt, int dport, int sport, int payload_len,
++		       u8 action, u32 tcp_seq_num, u32 tcp_ack_num)
++{
++	union tcp_build_pkt *b = (union tcp_build_pkt *)pkt;
++	int	pkt_hdr_len;
++	int	pkt_len;
++	int	tcp_len;
++
++/*
++ * Header: 5 32 bit words. 4 bits TCP header Length, 4 bits reserved options
++ */
++	b->ip.hdr.tcp_flags	= action;
++	pkt_hdr_len		= IP_TCP_HDR_SIZE;
++	b->ip.hdr.tcp_hlen      = 0x50;
++
++	switch (action) {
++	case TCP_SYN:
++		debug_cond(DEBUG_DEV_PKT,
++			   "TCP Hdr:SYN (%pI4, %pI4, sq=%d, ak=%d)\n",
++			   &net_server_ip, &net_ip,
++			   tcp_seq_num, tcp_ack_num);
++		tcp_activity_count = 0;
++		net_set_syn_options(b);
++
++		tcp_seq_num = 0;
++		tcp_ack_num = 0;
++		pkt_hdr_len = IP_TCP_O_SIZE;
++		if (tcp_state == TCP_SYN_SENT) {  /* Too many SYNs */
++			action    = TCP_FIN;
++			tcp_state = TCP_FIN_WAIT_1;
++		} else {
++			tcp_state = TCP_SYN_SENT;
++		}
++	break;
++	case TCP_ACK:
++		pkt_hdr_len         = IP_HDR_SIZE +
++				      net_set_ack_options(b);
++		b->ip.hdr.tcp_flags = action;
++		debug_cond(DEBUG_DEV_PKT,
++			   "TCP Hdr:ACK (%pI4, %pI4, s=%d, a=%d, A=%x)\n",
++			   &net_server_ip, &net_ip, tcp_seq_num, tcp_ack_num,
++			   action);
++	break;
++	case TCP_FIN:
++		debug_cond(DEBUG_DEV_PKT,
++			   "TCP Hdr:FIN  (%pI4, %pI4, s=%d, a=%d)\n",
++			   &net_server_ip, &net_ip, tcp_seq_num, tcp_ack_num);
++		payload_len = 0;
++		pkt_hdr_len = IP_TCP_HDR_SIZE;
++		tcp_state   = TCP_FIN_WAIT_1;
++
++	break;
++
++	/* Notify connection closing */
++
++	case (TCP_FIN | TCP_ACK):
++	case ((TCP_FIN | TCP_ACK) | TCP_PUSH):
++		if (tcp_state == TCP_CLOSE_WAIT)
++			tcp_state = TCP_CLOSING;
++		tcp_ack_edge++;
++		debug_cond(DEBUG_DEV_PKT,
++			   "TCP Hdr:FIN ACK PSH(%pI4, %pI4, s=%d, a=%d, A=%x)\n",
++			   &net_server_ip, &net_ip,
++			   tcp_seq_num, tcp_ack_edge, action);
++					/* FALLTHRU */
++	default:
++		pkt_hdr_len         = IP_HDR_SIZE +
++				      net_set_ack_options(b);
++		b->ip.hdr.tcp_flags = action | TCP_PUSH | TCP_ACK;
++		debug_cond(DEBUG_DEV_PKT,
++			   "TCP Hdr:dft  (%pI4, %pI4, s=%d, a=%d, A=%x)\n",
++			   &net_server_ip, &net_ip,
++			   tcp_seq_num, tcp_ack_num, action);
++	}
++
++	pkt_len	= pkt_hdr_len + payload_len;
++	tcp_len	= pkt_len - IP_HDR_SIZE;
++
++	/* TCP Header */
++	b->ip.hdr.tcp_ack       = htonl(tcp_ack_edge);
++	b->ip.hdr.tcp_src	= htons(sport);
++	b->ip.hdr.tcp_dst	= htons(dport);
++	b->ip.hdr.tcp_seq	= htonl(tcp_seq_num);
++	tcp_seq_num		= tcp_seq_num + payload_len;
++
++	/*
++	 * TCP window size - TCP header variable tcp_win.
++	 * Change tcp_win only if you have an understanding of network
++	 * overrun, congestion, TCP segment sizes, TCP windows, TCP scale,
++	 * queuing theory  and packet buffering. If there are too few buffers,
++	 * there will be data loss, recovery may work or the sending TCP,
++	 * the server, could abort the stream transmission.
++	 * MSS is governed by maximum Ethernet frame length.
++	 * The number of buffers is governed by the desire to have a queue of
++	 * full buffers to be processed at the destination to maximize
++	 * throughput. Temporary memory use for the boot phase on modern
++	 * SOCs is may not be considered a constraint to buffer space, if
++	 * it is, then the u-boot tftp or nfs kernel netboot should be
++	 * considered.
++	 */
++
++	b->ip.hdr.tcp_win	= htons(PKTBUFSRX * TCP_MSS >>  TCP_SCALE);
++
++	b->ip.hdr.tcp_xsum	= 0x0000;
++	b->ip.hdr.tcp_ugr	= 0x0000;
++
++	b->ip.hdr.tcp_xsum = tcp_set_pseudo_header(pkt, net_ip, net_server_ip,
++						   tcp_len, pkt_len);
++
++	net_set_ip_header((uchar *)&b->ip, net_server_ip, net_ip,
++			  pkt_len, IPPROTO_TCP);
++
++	return pkt_hdr_len;
++}
++
++/*
++ * Selective Acknowledgment (Essential for fast stream transfer)
++ */
++
++void tcp_hole(u32 tcp_seq_num, u32 len, u32 tcp_seq_max)
++{
++	unsigned int idx_sack;
++	unsigned int sack_end = TCP_SACK - 1;
++	unsigned int sack_in;
++	unsigned int hill = 0;
++	enum pkt_state expect = PKT;
++
++	u32 seq   = tcp_seq_num - tcp_seq_init;
++	u32 hol_l = tcp_ack_edge - tcp_seq_init;
++	u32 hol_r = 0;
++
++	/* Place new seq number in correct place in receive array */
++
++	if (prev_len == 0)
++		prev_len = len;
++	idx_sack = sack_idx + ((tcp_seq_num - tcp_ack_edge) / prev_len);
++	if (idx_sack < TCP_SACK) {
++		edge_a[idx_sack].se.l = tcp_seq_num;
++		edge_a[idx_sack].se.r = tcp_seq_num + len;
++		edge_a[idx_sack].st   = PKT;
++
++/*
++ * The fin (last) packet is not the same length as data packets, and if it's
++ * length is recorded and used for array index calculation, calculation breaks.
++ */
++		if (prev_len < len)
++			prev_len = len;
++	}
++
++	debug_cond(DEBUG_DEV_PKT,
++		   "TCP 1 seq %d, edg %d, len %d, sack_idx %d, sack_end %d\n",
++		    seq, hol_l, len, sack_idx, sack_end);
++
++	/* Right edge of contiguous stream, is the left edge of first hill */
++
++	hol_l = tcp_seq_num - tcp_seq_init;
++	hol_r = hol_l + len;
++
++	tcp_lost.len = TCP_OPT_LEN_2;
++
++	debug_cond(DEBUG_DEV_PKT,
++		   "TCP 1 in %d, seq %d, pkt_l %d, pkt_r %d, sack_idx %d, sack_end %d\n",
++		   idx_sack, seq, hol_l, hol_r, sack_idx, sack_end);
++
++	for (sack_in = sack_idx; sack_in < sack_end && hill < TCP_SACK_HILLS;
++		 sack_in++)  {
++		switch (expect) {
++		case NOPKT:
++			switch (edge_a[sack_in].st) {
++			case NOPKT:
++				debug_cond(DEBUG_INT_STATE, "N");
++			break;
++			case PKT:
++				debug_cond(DEBUG_INT_STATE, "n");
++					tcp_lost.hill[hill].l =
++						edge_a[sack_in].se.l;
++					tcp_lost.hill[hill].r =
++						edge_a[sack_in].se.r;
++				expect = PKT;
++			break;
++			}
++		break;
++		case PKT:
++			switch (edge_a[sack_in].st) {
++			case NOPKT:
++				debug_cond(DEBUG_INT_STATE, "p");
++				if (sack_in > sack_idx &&
++				    hill < TCP_SACK_HILLS) {
++					hill++;
++					tcp_lost.len += TCP_OPT_LEN_8;
++				}
++				expect = NOPKT;
++			break;
++			case PKT:
++				debug_cond(DEBUG_INT_STATE, "P");
++
++				if (tcp_ack_edge == edge_a[sack_in].se.l) {
++					tcp_ack_edge = edge_a[sack_in].se.r;
++					edge_a[sack_in].st = NOPKT;
++					sack_idx++;
++				} else {
++					if (hill < TCP_SACK_HILLS)
++						tcp_lost.hill[hill].r =
++							edge_a[sack_in].se.r;
++				if (sack_in == sack_end - 1)
++					tcp_lost.hill[hill].r =
++						edge_a[sack_in].se.r;
++				}
++			break;
++			}
++		break;
++		}
++	}
++	debug_cond(DEBUG_INT_STATE, "\n");
++	if (tcp_lost.len <= TCP_OPT_LEN_2)
++		sack_idx = 0;
++}
++
++void tcp_parse_options(uchar *o, int o_len)
++{
++	struct tcp_t_opt  *tsopt;
++	uchar *p = o;
++/*
++ *	NOPs are options with a zero length, and thus are special.
++ *	All other options have length fields.
++ */
++
++	for (p = o; p < (o + o_len); p = p + p[1]) {
++		if (p[1] != 0) {
++			switch (p[0]) {
++			case TCP_O_END:
++				return; /* Finished processing options */
++			case TCP_O_MSS:
++			case TCP_O_SCL:
++			case TCP_P_SACK:
++			case TCP_V_SACK:
++				break; /* Continue to process options */
++			case TCP_O_TS:
++				tsopt = (struct tcp_t_opt *)p;
++				rmt_timestamp = tsopt->t_snd;
++				return;
++			break;
++			} /* End switch, process optional NOPs */
++
++			if (p[0] == TCP_O_NOP)
++				p++;
++		} else {
++			return; /* Finished processing options */
++		}
++	}
++}
++
++u8 tcp_state_machine(u8 tcp_flags, u32 *tcp_seq_num, int payload_len)
++{
++	u8  tcp_fin  = tcp_flags & TCP_FIN;
++	u8  tcp_syn  = tcp_flags & TCP_SYN;
++	u8  tcp_rst  = tcp_flags & TCP_RST;
++	u8  tcp_push = tcp_flags & TCP_PUSH;
++	u8  tcp_ack  = tcp_flags & TCP_ACK;
++	u8  action   = TCP_DATA;
++	int i;
++
++	/*
++	 * tcp_flags are examined to determine TX action in a given state
++	 * tcp_push is interpreted to mean "inform the app"
++	 * urg, ece, cer and nonce flags are not supported.
++	 *
++	 * exe and crw are use to signal and confirm knowledge of congestion.
++	 * This TCP only sends a file request and acks. If it generates
++	 * congestion, the network is broken.
++	 */
++
++	debug_cond(DEBUG_INT_STATE, "TCP STATE ENTRY %x\n", action);
++	if (tcp_rst) {
++		action    = TCP_DATA;
++		tcp_state = TCP_CLOSED;
++		net_set_state(NETLOOP_FAIL);
++		debug_cond(DEBUG_INT_STATE, "TCP Reset %x\n", tcp_flags);
++		return TCP_RST;
++	}
++
++	switch  (tcp_state) {
++	case TCP_CLOSED:
++		debug_cond(DEBUG_INT_STATE, "TCP CLOSED %x\n", tcp_flags);
++		if (tcp_fin)
++			action = TCP_DATA;
++		if (tcp_syn)
++			action = TCP_RST;
++		if (tcp_ack)
++			action = TCP_DATA;
++		break;
++	case TCP_SYN_SENT:
++		debug_cond(DEBUG_INT_STATE, "TCP_SYN_SENT %x, %d\n",
++			   tcp_flags, *tcp_seq_num);
++		if (tcp_fin) {
++			action = action | TCP_PUSH;
++			tcp_state = TCP_CLOSE_WAIT;
++		}
++		if (tcp_syn) {
++			action = action |  TCP_ACK | TCP_PUSH;
++			if (tcp_ack) {
++				tcp_seq_init          = *tcp_seq_num;
++				*tcp_seq_num          = *tcp_seq_num + 1;
++				tcp_seq_max           = *tcp_seq_num;
++				tcp_ack_edge          = *tcp_seq_num;
++				sack_idx              = 0;
++				edge_a[sack_idx].se.l = *tcp_seq_num;
++				edge_a[sack_idx].se.r = *tcp_seq_num;
++				prev_len              = 0;
++				tcp_state             = TCP_ESTABLISHED;
++				for (i = 0; i < TCP_SACK; i++)
++					edge_a[i].st   = NOPKT;
++			}
++		} else {
++			if (tcp_ack)
++				action = TCP_DATA;
++		}
++		break;
++	case TCP_ESTABLISHED:
++		debug_cond(DEBUG_INT_STATE,
++			   "TCP_ESTABLISHED %x\n", tcp_flags);
++		if (*tcp_seq_num > tcp_seq_max)
++			tcp_seq_max = *tcp_seq_num;
++		if (payload_len > 0) {
++			tcp_hole(*tcp_seq_num, payload_len, tcp_seq_max);
++			tcp_fin = TCP_DATA;  /* cause standalone FIN */
++		}
++
++		if ((tcp_fin) && tcp_lost.len <= TCP_OPT_LEN_2) {
++			action    = action | TCP_FIN | TCP_PUSH | TCP_ACK;
++			tcp_state =  TCP_CLOSE_WAIT;
++		} else {
++			if (tcp_ack)
++				action = TCP_DATA;
++		}
++		if (tcp_push)
++			action = action | TCP_PUSH;
++		if (tcp_syn)
++			action = TCP_ACK + TCP_RST;
++		break;
++	case TCP_CLOSE_WAIT:
++		debug_cond(DEBUG_INT_STATE, "TCP_CLOSE_WAIT (%x)\n", tcp_flags);
++		action = TCP_DATA;			/* Wait for app	*/
++		break;
++	case TCP_FIN_WAIT_2:
++		debug_cond(DEBUG_INT_STATE, "TCP_FIN_WAIT_2 (%x)\n", tcp_flags);
++		if (tcp_fin)
++			action =  TCP_DATA;
++		if (tcp_syn)
++			action =  TCP_DATA;
++		if (tcp_ack) {
++			action =  TCP_PUSH | TCP_ACK;
++			tcp_state = TCP_CLOSED;
++			puts("\n");
++		}
++		break;
++	case TCP_FIN_WAIT_1:
++		debug_cond(DEBUG_INT_STATE, "TCP_FIN_WAIT_1 (%x)\n", tcp_flags);
++		if (tcp_fin) {
++			action = TCP_ACK | TCP_FIN;
++			 tcp_state = TCP_FIN_WAIT_2;
++		}
++		if (tcp_syn)
++			action =  TCP_RST;
++		if (tcp_ack) {
++			tcp_state = TCP_CLOSED;
++			tcp_seq_num = tcp_seq_num + 1;
++		}
++		break;
++	case TCP_CLOSING:
++		debug_cond(DEBUG_INT_STATE, "TCP_CLOSING (%x)\n", tcp_flags);
++		if (tcp_fin)
++			action = TCP_DATA;
++		if (tcp_syn)
++			action = TCP_RST;
++		if (tcp_ack) {
++			action = TCP_PUSH;
++			tcp_state = TCP_CLOSED;
++			puts("\n");
++		}
++		break;
++	}
++	return action;
++}
++
++void rxhand_tcp_f(union tcp_build_pkt *b, unsigned int pkt_len)
++{
++	int tcp_len = pkt_len - IP_HDR_SIZE;
++	u16 tcp_rx_xsum = b->ip.hdr.ip_sum;
++	u8  tcp_action = TCP_DATA;
++	u32 tcp_seq_num;
++	u32 tcp_ack_num;
++	struct in_addr action_and_state;
++
++	int tcp_hdr_len;
++	int payload_len;
++
++	/*
++	 * Verify IP header
++	 */
++	debug_cond(DEBUG_DEV_PKT,
++		   "TCP RX in RX Sum (to=%pI4, from=%pI4, len=%d)\n",
++			   &b->ip.hdr.ip_src, &b->ip.hdr.ip_dst, pkt_len);
++
++	debug_cond(DEBUG_DEV_PKT,
++		   "In__________________________________________\n");
++
++	b->ip.hdr.ip_src = net_server_ip;
++	b->ip.hdr.ip_dst = net_ip;
++	b->ip.hdr.ip_sum = 0x0000;
++	if (tcp_rx_xsum != compute_ip_checksum(b, IP_HDR_SIZE)) {
++		debug_cond(DEBUG_DEV_PKT,
++			   "TCP RX IP xSum Error (%pI4, =%pI4, len=%d)\n",
++			   &net_ip, &net_server_ip, pkt_len);
++		return;
++	}
++
++	/*
++	 * Build pseudo header and verify TCP header
++	 */
++	tcp_rx_xsum = b->ip.hdr.tcp_xsum;
++	b->ip.hdr.tcp_xsum = 0x0000;
++	if (tcp_rx_xsum != tcp_set_pseudo_header((uchar *)b, b->ip.hdr.ip_src,
++						 b->ip.hdr.ip_dst, tcp_len,
++						 pkt_len)) {
++		debug_cond(DEBUG_DEV_PKT,
++			   "TCP RX TCP xSum Error (%pI4, %pI4, len=%d)\n",
++			   &net_ip, &net_server_ip, tcp_len);
++		return;
++	}
++
++	tcp_hdr_len = (b->ip.hdr.tcp_hlen >> 2);
++	payload_len = tcp_len - tcp_hdr_len;
++
++	if (tcp_hdr_len > TCP_HDR_SIZE)
++		tcp_parse_options((uchar *)b + IP_TCP_HDR_SIZE,
++				  tcp_hdr_len - TCP_HDR_SIZE);
++	/*
++	 * Incoming sequence and ack numbers are server's view of the numbers.
++	 * The app must swap the numbers when responding.
++	 */
++
++	tcp_seq_num = ntohl(b->ip.hdr.tcp_seq);
++	tcp_ack_num = ntohl(b->ip.hdr.tcp_ack);
++
++	/* Packets are not ordered. Send to app as received. */
++
++	tcp_action  = tcp_state_machine(b->ip.hdr.tcp_flags,
++					&tcp_seq_num, payload_len);
++
++	/*
++	 * State-altering command to be sent.
++	 * The packet sequence and ack numbers are in the tcp_seq_num
++	 * and tcp_ack_num variables. The current packet, its position
++	 * in the data stream, is the in the range of those variables.
++	 *
++	 * In the "application push" invocation, the TCP header with all
++	 * its information is pointed to by the packet pointer.
++	 *
++	 * In the typedef
++	 *      void rxhand_tcp(uchar *pkt, unsigned int dport,
++	 *                      struct in_addr sip, unsigned int sport,
++	 *                      unsigned int len);
++	 * *pkt is the pointer to the payload
++	 * dport is used for tcp_seg_num
++	 * action_and_state.s_addr is used for TCP state
++	 * sport is used for tcp_ack_num (which is unused by the app)
++	 * pkt_ length is the payload length.
++	 *
++	 * TCP_PUSH from the state machine with a payload length of 0 is a
++	 * connect or disconnect event
++	 */
++
++	tcp_activity_count++;
++	if (tcp_activity_count > TCP_ACTIVITY) {
++		puts("| ");
++		tcp_activity_count = 0;
++	}
++
++
++	if ((tcp_action & TCP_PUSH) || payload_len > 0) {
++		debug_cond(DEBUG_DEV_PKT,
++			   "TCP Notify (action=%x, Seq=%d,Ack=%d,Pay%d)\n",
++			   tcp_action, tcp_seq_num, tcp_ack_num, payload_len);
++
++		action_and_state.s_addr = tcp_action;
++		(*tcp_packet_handler) ((uchar *)b + pkt_len - payload_len,
++				       tcp_seq_num, action_and_state,
++				       tcp_ack_num, payload_len);
++
++	} else if (tcp_action != TCP_DATA) {
++		debug_cond(DEBUG_DEV_PKT,
++			   "TCP Action (action=%x,Seq=%d,Ack=%d,Pay=%d)\n",
++			   tcp_action, tcp_seq_num, tcp_ack_num, payload_len);
++
++		/*
++		 * Warning: Incoming Ack & Seq sequence numbers are transposed
++		 * here to outgoing Seq & Ack sequence numbers
++		 */
++		net_send_tcp_packet(0, ntohs(b->ip.hdr.tcp_src),
++				    ntohs(b->ip.hdr.tcp_dst),
++				    (tcp_action & (~TCP_PUSH)),
++				    tcp_seq_num, tcp_ack_num);
++	}
++}
+--- a/cmd/Kconfig	2019-01-14 22:02:36.000000000 +0000
++++ b/cmd/Kconfig	2019-02-21 05:35:21.591649174 +0000
+@@ -1265,6 +1265,14 @@ config CMD_NFS
+ 	help
+ 	  Boot image via network using NFS protocol.
+ 
++config CMD_WGET
++	bool "wget"
++	select TCP
++	help
++	  Download kernel, or other files, from a web server over TCP.
++	  Fast file transfer over networks with latenc
++
++
+ config CMD_MII
+ 	bool "mii"
+ 	help
+--- a/cmd/net.c	2019-01-14 22:02:36.000000000 +0000
++++ b/cmd/net.c	2019-02-21 05:36:20.348350616 +0000
+@@ -26,6 +26,20 @@ U_BOOT_CMD(
+ );
+ #endif
+ 
++#if defined(CONFIG_CMD_WGET)
++static int do_wget(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
++{
++	return netboot_common(WGET, cmdtp, argc, argv);
++}
++
++U_BOOT_CMD(
++	wget,   3,      1,      do_wget,
++	"boot image via network using HTTP protocol",
++	"[loadAddress] [[hostIPaddr:]path and image name]"
++);
++#endif
++
++
+ #ifdef CONFIG_CMD_TFTPBOOT
+ int do_tftpb(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+ {
+--- a/include/net/wget.h	2019-02-22 11:07:07.837947380 +0000
++++ b/include/net/wget.h	2019-02-22 08:09:51.773771633 +0000
+@@ -0,0 +1,19 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Duncan Hare Copyright 2017
++ */
++
++void wget_start(void);			/* Begin wget */
++
++enum WGET_STATE {
++	WGET_CLOSED,
++	WGET_CONNECTING,
++	WGET_CONNECTED,
++	WGET_TRANSFERRING,
++	WGET_TRANSFERRED
++};
++
++#define	DEBUG_WGET		0	/* Set to 1 for debug messges */
++#define	SERVER_PORT		80
++#define	WGET_RETRY_COUNT	30
++#define	WGET_TIMEOUT		2000UL
+--- a/net/wget.c	2019-02-22 11:06:59.717296398 +0000
++++ b/net/wget.c	2019-02-21 06:27:16.333626855 +0000
+@@ -0,0 +1,426 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * WGET/HTTP support driver based on U-BOOT's nfs.c
++ * Copyright Duncan Hare <dh@synoia.com> 2017
++ */
++
++#include <common.h>
++#include <command.h>
++#include <mapmem.h>
++#include <net.h>
++#include <net/wget.h>
++#include <net/tcp.h>
++
++const char bootfile1[]   = "GET ";
++const  char bootfile3[]   = " HTTP/1.0\r\n\r\n";
++const char http_eom[]     = "\r\n\r\n";
++const char http_ok[]      = "200";
++const char content_len[]  = "Content-Length";
++const char linefeed[]     = "\r\n";
++static struct in_addr web_server_ip;
++static int our_port;
++static int wget_timeout_count;
++
++struct pkt_qd {
++	uchar *pkt;
++	unsigned int tcp_seq_num;
++	unsigned int len;
++};
++
++/*
++ * This is a control structure for out of order packets received.
++ * The actual packet bufers are in the kernel space, and are
++ * expected to be overwritten by the downloaded image.
++ */
++
++static struct pkt_qd pkt_q[PKTBUFSRX / 4];
++static int pkt_q_idx;
++static unsigned long content_length;
++static unsigned int packets;
++
++static unsigned int initial_data_seq_num;
++
++static enum  WGET_STATE wget_state;
++
++static char *image_url;
++static unsigned int wget_timeout = WGET_TIMEOUT;
++
++static void  wget_timeout_handler(void);
++
++static enum net_loop_state wget_loop_state;
++
++/* Timeout retry parameters */
++static u8 retry_action;
++static unsigned int retry_tcp_ack_num;
++static unsigned int retry_tcp_seq_num;
++static int retry_len;
++
++static inline int store_block(uchar *src, unsigned int offset, unsigned int len)
++{
++	ulong newsize = offset + len;
++	uchar *ptr;
++
++#ifdef CONFIG_SYS_DIRECT_FLASH_WGET
++	int i, rc = 0;
++
++	for (i = 0; i < CONFIG_SYS_MAX_FLASH_BANKS; i++) {
++		/* start address in flash? */
++		if (load_addr + offset >= flash_info[i].start[0]) {
++			rc = 1;
++			break;
++		}
++	}
++
++	if (rc) { /* Flash is destination for this packet */
++		rc = flash_write((uchar *)src,
++				 (ulong)(load_addr + offset), len);
++		if (rc) {
++			flash_perror(rc);
++			return -1;
++		}
++	} else {
++#endif /* CONFIG_SYS_DIRECT_FLASH_WGET */
++
++		ptr = map_sysmem(load_addr + offset, len);
++		memcpy(ptr, src, len);
++		unmap_sysmem(ptr);
++
++#ifdef CONFIG_SYS_DIRECT_FLASH_WGET
++	}
++#endif
++	if (net_boot_file_size < (offset + len))
++		net_boot_file_size = newsize;
++	return 0;
++}
++
++/*
++ * wget response dispatcher
++ * WARNING, This, and only this, is the place in wget.c where
++ * SEQUENCE NUMBERS are swapped between incoming (RX)
++ * and outgoing (TX).
++ * Procedure wget_handler() is correct for RX traffic.
++ */
++static void wget_send_stored(void)
++{
++	u8 action                  = retry_action;
++	unsigned int tcp_ack_num   = retry_tcp_ack_num;
++	unsigned int tcp_seq_num   = retry_tcp_seq_num;
++	int len                    = retry_len;
++	uchar *ptr;
++	uchar *offset;
++
++	tcp_ack_num = tcp_ack_num + len;
++
++	switch (wget_state) {
++	case WGET_CLOSED:
++		debug_cond(DEBUG_WGET, "wget: send SYN\n");
++		wget_state = WGET_CONNECTING;
++		net_send_tcp_packet(0, SERVER_PORT, our_port, action,
++				    tcp_seq_num, tcp_ack_num);
++		packets = 0;
++		break;
++	case WGET_CONNECTING:
++		pkt_q_idx = 0;
++		net_send_tcp_packet(0, SERVER_PORT, our_port, action,
++				    tcp_seq_num, tcp_ack_num);
++
++		ptr = net_tx_packet + net_eth_hdr_size()
++			+ IP_TCP_HDR_SIZE + TCP_TSOPT_SIZE + 2;
++		offset = ptr;
++
++		memcpy(offset, &bootfile1, strlen(bootfile1));
++		offset = offset + strlen(bootfile1);
++
++		memcpy(offset, image_url, strlen(image_url));
++		offset = offset + strlen(image_url);
++
++		memcpy(offset, &bootfile3, strlen(bootfile3));
++		offset = offset + strlen(bootfile3);
++		net_send_tcp_packet((offset - ptr), SERVER_PORT, our_port,
++				    TCP_PUSH, tcp_seq_num, tcp_ack_num);
++		wget_state = WGET_CONNECTED;
++		break;
++	case WGET_CONNECTED:
++	case WGET_TRANSFERRING:
++	case WGET_TRANSFERRED:
++		net_send_tcp_packet(0, SERVER_PORT, our_port, action,
++				    tcp_seq_num, tcp_ack_num);
++		break;
++	}
++}
++
++static void wget_send(u8 action, unsigned int tcp_ack_num,
++		      unsigned int tcp_seq_num, int len)
++{
++	retry_action      = action;
++	retry_tcp_ack_num = tcp_ack_num;
++	retry_tcp_seq_num = tcp_seq_num;
++	retry_len         = len;
++	wget_send_stored();
++}
++
++void wget_fail(char *error_message, unsigned int tcp_seq_num,
++	       unsigned int tcp_ack_num, u8 action)
++{
++	printf("%s", error_message);
++	printf("%s", "wget: Transfer Fail\n");
++	net_set_timeout_handler(0, NULL);
++	wget_send(action, tcp_seq_num, tcp_ack_num, 0);
++}
++
++void wget_success(u8 action, unsigned int tcp_seq_num,
++		  unsigned int tcp_ack_num, int len, int packets)
++{
++	printf("Packets received %d, Transfer Successful\n", packets);
++	wget_send(action, tcp_seq_num, tcp_ack_num, len);
++}
++
++/*
++ * Interfaces of U-BOOT
++ */
++static void wget_timeout_handler(void)
++{
++	if (++wget_timeout_count > WGET_RETRY_COUNT) {
++		puts("\nRetry count exceeded; starting again\n");
++		wget_send(TCP_RST, 0, 0, 0);
++		net_start_again();
++	} else {
++		puts("T ");
++		net_set_timeout_handler(wget_timeout +
++					WGET_TIMEOUT * wget_timeout_count,
++					wget_timeout_handler);
++		wget_send_stored();
++	}
++}
++
++static void wget_connected(uchar *pkt, unsigned int tcp_seq_num,
++			   struct in_addr action_and_state,
++			   unsigned int tcp_ack_num, unsigned int len)
++{
++	u8 action = action_and_state.s_addr;
++	uchar *pkt_in_q;
++	char *pos;
++	int  hlen;
++	int  i;
++
++	pkt[len] = '\0';
++	pos = strstr((char *)pkt, http_eom);
++
++	if (pos == 0) {
++		debug_cond(DEBUG_WGET,
++			   "wget: Connected, data before Header %p\n", pkt);
++		pkt_in_q = (void *)load_addr + 0x20000 + (pkt_q_idx * 0x800);
++		memcpy(pkt_in_q, pkt, len);
++		pkt_q[pkt_q_idx].pkt              = pkt_in_q;
++		pkt_q[pkt_q_idx].tcp_seq_num      = tcp_seq_num;
++		pkt_q[pkt_q_idx].len              = len;
++		pkt_q_idx++;
++	} else {
++		debug_cond(DEBUG_WGET, "wget: Connected HTTP Header %p\n", pkt);
++		hlen = pos - (char *)pkt + sizeof(http_eom) - 1;
++		pos  = strstr((char *)pkt, linefeed);
++		if (pos > 0)
++			i = pos - (char *)pkt;
++		else
++			i = hlen;
++		printf("%.*s", i,  pkt);
++
++		wget_state = WGET_TRANSFERRING;
++
++		if (strstr((char *)pkt, http_ok) == 0) {
++			debug_cond(DEBUG_WGET,
++				   "wget: Connected Bad Xfer\n");
++			wget_loop_state = NETLOOP_FAIL;
++			wget_send(action, tcp_seq_num, tcp_ack_num, len);
++		} else {
++			debug_cond(DEBUG_WGET,
++				   "wget: Connctd pkt %p  hlen %x\n",
++				   pkt, hlen);
++			initial_data_seq_num = tcp_seq_num + hlen;
++
++			pos  = strstr((char *)pkt, content_len);
++			if (!pos) {
++				content_length = -1;
++			} else {
++				pos = pos + sizeof(content_len) + 2;
++				strict_strtoul(pos, 10, &content_length);
++				debug_cond(DEBUG_WGET,
++					   "wget: Connected Len %lu\n",
++					   content_length);
++			}
++
++			net_boot_file_size = 0;
++
++			if (len > hlen)
++				store_block(pkt + hlen, 0, len - hlen);
++			debug_cond(DEBUG_WGET,
++				   "wget: Connected Pkt %p hlen %x\n",
++				   pkt, hlen);
++
++			for (i = 0; i < pkt_q_idx; i++) {
++				store_block(pkt_q[i].pkt,
++					    pkt_q[i].tcp_seq_num -
++						initial_data_seq_num,
++					    pkt_q[i].len);
++			debug_cond(DEBUG_WGET,
++				   "wget: Connctd pkt Q %p len %x\n",
++				   pkt_q[i].pkt, pkt_q[i].len);
++			}
++		}
++	}
++	wget_send(action, tcp_seq_num, tcp_ack_num, len);
++}
++
++	/*
++	 * In the "application push" invocation, the TCP header with all
++	 * its information is pointed to by the packet pointer.
++	 *
++	 * in the typedef
++	 *      void rxhand_tcp(uchar *pkt, unsigned int dport,
++	 *                      struct in_addr sip, unsigned int sport,
++	 *                      unsigned int len);
++	 * *pkt is the pointer to the payload
++	 * dport is used for tcp_seg_num
++	 * action_and_state.s_addr is used for TCP state
++	 * sport is used for tcp_ack_num (which is unused by the app)
++	 * pkt_ length is the payload length.
++	 */
++static void wget_handler(uchar *pkt, unsigned int tcp_seq_num,
++			 struct in_addr action_and_state,
++			 unsigned int tcp_ack_num, unsigned int len)
++{
++	enum TCP_STATE wget_tcp_state = tcp_get_tcp_state();
++	u8 action = action_and_state.s_addr;
++
++	net_set_timeout_handler(wget_timeout, wget_timeout_handler);
++	packets++;
++
++	switch (wget_state) {
++	case WGET_CLOSED:
++		debug_cond(DEBUG_WGET, "wget: Handler: Error!, State wrong\n");
++		break;
++	case WGET_CONNECTING:
++		debug_cond(DEBUG_WGET,
++			   "wget: Connecting In len=%x, Seq=%x, Ack=%x\n",
++			   len, tcp_seq_num, tcp_ack_num);
++		if (len == 0) {
++			if (wget_tcp_state == TCP_ESTABLISHED) {
++				debug_cond(DEBUG_WGET,
++					   "wget: Cting, send, len=%x\n", len);
++				wget_send(action, tcp_seq_num, tcp_ack_num,
++					  len);
++			} else {
++				printf("%.*s", len,  pkt);
++				wget_fail("wget: Handler Connected Fail\n",
++					  tcp_seq_num, tcp_ack_num, action);
++			}
++		}
++		break;
++	case WGET_CONNECTED:
++		debug_cond(DEBUG_WGET, "wget: Connected seq=%x, len=%x\n",
++			   tcp_seq_num, len);
++		if (len == 0) {
++			wget_fail("Image not found, no data returned\n",
++				  tcp_seq_num, tcp_ack_num, action);
++		} else {
++			wget_connected(pkt, tcp_seq_num, action_and_state,
++				       tcp_ack_num, len);
++		}
++		break;
++	case WGET_TRANSFERRING:
++		debug_cond(DEBUG_WGET,
++			   "wget: Transferring, seq=%x, ack=%x,len=%x\n",
++			   tcp_seq_num, tcp_ack_num, len);
++
++		if (store_block(pkt,
++				tcp_seq_num - initial_data_seq_num, len) != 0) {
++			wget_fail("wget: store error\n",
++				  tcp_seq_num, tcp_ack_num, action);
++			return;
++		}
++
++		switch (wget_tcp_state) {
++		case TCP_FIN_WAIT_2:
++			wget_send(TCP_ACK, tcp_seq_num, tcp_ack_num, len);
++		case TCP_SYN_SENT:
++		case TCP_CLOSING:
++		case TCP_FIN_WAIT_1:
++		case TCP_CLOSED:
++			net_set_state(NETLOOP_FAIL);
++			break;
++		case TCP_ESTABLISHED:
++			wget_send(TCP_ACK, tcp_seq_num, tcp_ack_num,
++				  len);
++			wget_loop_state = NETLOOP_SUCCESS;
++			break;
++		case TCP_CLOSE_WAIT:     /* End of transfer */
++			wget_state = WGET_TRANSFERRED;
++			wget_send(action | TCP_ACK | TCP_FIN,
++				  tcp_seq_num, tcp_ack_num, len);
++			break;
++		}
++		break;
++	case WGET_TRANSFERRED:
++		printf("Packets received %d, Transfer Successful\n", packets);
++		net_set_state(wget_loop_state);
++		break;
++	}
++}
++
++void wget_start(void)
++{
++	debug_cond(DEBUG_WGET, "%s\n", __func__);
++
++	image_url = strchr(net_boot_file_name, ':');
++	if (image_url > 0) {
++		web_server_ip = string_to_ip(net_boot_file_name);
++		++image_url;
++	} else {
++		web_server_ip = net_server_ip;
++		image_url = net_boot_file_name;
++	}
++
++	debug_cond(DEBUG_WGET,
++		   "wget: Transfer HTTP Server %pI4; our IP %pI4\n",
++		   &web_server_ip, &net_ip);
++
++	/* Check if we need to send across this subnet */
++	if (net_gateway.s_addr && net_netmask.s_addr) {
++		struct in_addr our_net;
++		struct in_addr server_net;
++
++		our_net.s_addr = net_ip.s_addr & net_netmask.s_addr;
++		server_net.s_addr = net_server_ip.s_addr & net_netmask.s_addr;
++		if (our_net.s_addr != server_net.s_addr)
++			debug_cond(DEBUG_WGET,
++				   "wget: sending through gateway %pI4",
++				   &net_gateway);
++	}
++	debug_cond(DEBUG_WGET, "URL '%s\n", image_url);
++
++	if (net_boot_file_expected_size_in_blocks) {
++		debug_cond(DEBUG_WGET, "wget: Size is 0x%x Bytes = ",
++			   net_boot_file_expected_size_in_blocks << 9);
++		print_size(net_boot_file_expected_size_in_blocks << 9, "");
++	}
++	debug_cond(DEBUG_WGET,
++		   "\nwget:Load address: 0x%lx\nLoading: *\b", load_addr);
++
++	net_set_timeout_handler(wget_timeout, wget_timeout_handler);
++	tcp_set_tcp_handler(wget_handler);
++
++	wget_timeout_count = 0;
++	wget_state = WGET_CLOSED;
++
++	our_port = random_port();
++
++	/*
++	 * Zero out server ether to forece apr resolution in case
++	 * the server ip for the previous u-boot commsnd, for exanple dns
++	 * is not the same as the web server ip.
++	 */
++
++	memset(net_server_ethaddr, 0, 6);
++
++	wget_send(TCP_SYN, 0, 0, 0);
++}

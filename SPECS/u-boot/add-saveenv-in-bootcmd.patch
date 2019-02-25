@@ -1,0 +1,14 @@
+This patch is to add saveenv to the boot command.
+So, shile booting it will save the u-boot env 
+variables in uboot.env file.
+
+--- a/include/config_distro_bootcmd.h	2019-03-11 04:48:01.875279582 +0000
++++ b/include/config_distro_bootcmd.h	2019-03-11 04:50:14.069956062 +0000
+@@ -423,6 +423,7 @@
+ 	BOOT_TARGET_DEVICES(BOOTENV_DEV)                                  \
+ 	\
+ 	"distro_bootcmd=" BOOTENV_SET_SCSI_NEED_INIT                      \
++		"saveenv;"                                                \
+ 		"for target in ${boot_targets}; do "                      \
+ 			"run bootcmd_${target}; "                         \
+ 		"done\0"
