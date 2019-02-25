@@ -1,7 +1,7 @@
 Summary:        Etcd-3.1.5
 Name:           etcd
 Version:        3.3.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd/
 Group:          System Environment/Security
@@ -59,6 +59,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 
 %changelog
+*   Mon Feb 25 2019 Keerthana K <keerthanak@vmware.com> 3.3.9-2
+-   Add env variable ETCD_UNSUPPORTED_ARCH=arm64 for arm to start etcd service.
 *   Fri Sep 21 2018 Sujay G <gsujay@vmware.com> 3.3.9-1
 -   Bump etcd version to 3.3.9
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1.5-4
