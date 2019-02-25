@@ -1,0 +1,15 @@
+--- a/include/config_distro_bootcmd.h	2019-01-14 22:02:36.000000000 +0000
++++ b/include/config_distro_bootcmd.h	2019-02-28 10:03:37.203657533 +0000
+@@ -423,9 +423,11 @@
+ 	BOOT_TARGET_DEVICES(BOOTENV_DEV)                                  \
+ 	\
+ 	"distro_bootcmd=" BOOTENV_SET_SCSI_NEED_INIT                      \
++                "saveenv;"                                                \
+ 		"for target in ${boot_targets}; do "                      \
+ 			"run bootcmd_${target}; "                         \
+-		"done\0"
++		"done"                                                    \
++                "\0"
+ 
+ #ifndef CONFIG_BOOTCOMMAND
+ #define CONFIG_BOOTCOMMAND "run distro_bootcmd"
