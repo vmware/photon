@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.28.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -17,6 +17,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.gz
 %define sha1    perl=0622f86160e8969633cbd21a2cca9e11ae1f8c5a
+Patch0:         perl-CVE-2018-18311.patch
+Patch1:         perl-CVE-2018-18312.patch
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
 Provides:       perl(s)
@@ -33,6 +35,8 @@ The Perl package contains the Practical Extraction and
 Report Language.
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 sed -i 's/-fstack-protector/&-all/' Configure
 
 %build
@@ -71,6 +75,8 @@ make test TEST_SKIP_VERSION_CHECK=1
 %{_mandir}/*/*
 
 %changelog
+*   Tue Feb 26 2019 Dweep Advani <dadvani@vmware.com> 5.28.0-3
+-   Fixed CVE-2018-18311 and CVE-2018-18312
 *   Wed Oct 24 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.28.0-2
 -   Add provides perl(s)
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 5.28.0-1
