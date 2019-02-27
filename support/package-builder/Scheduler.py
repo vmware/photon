@@ -559,8 +559,20 @@ class Scheduler(object):
         for pkg in Scheduler.listOfPackagesToBuild:
             if pkg in Scheduler.listOfPackagesCurrentlyBuilding:
                 continue
-            listRequiredPackages = list(set(Scheduler._getBuildRequiredPackages(pkg) + \
-                                   Scheduler._getRequiredPackages(pkg)))
+            listRequiredSubPackages = list(set(SPECS.getData().getBuildRequiresForPkg(pkg) + \
+                                   SPECS.getData().getRequiresAllForPkg(pkg)))
+
+            # extend to full Requires tree
+            for p in listRequiredSubPackages:
+                reqs = SPECS.getData().getRequiresAllForPkg(p)
+                for r in reqs:
+                    if r not in listRequiredSubPackages:
+                        listRequiredSubPackages.append(r)
+
+            # convert subpackages to basepkg
+            listRequiredPackages = set()
+            for p in listRequiredSubPackages:
+                listRequiredPackages.add(SPECS.getData().getBasePkg(p))
 
             canBuild = True
             for reqPkg in listRequiredPackages:
