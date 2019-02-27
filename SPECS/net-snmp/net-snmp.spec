@@ -2,7 +2,7 @@
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.7.3
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
@@ -44,6 +44,7 @@ The net-snmp-devel package contains headers and libraries for building SNMP appl
                 --build=i686 \
                 --target=ia64-linux \
                 --sbindir=/sbin \
+                --sysconfdir=%{_sysconfdir} \
                 --with-sys-location="unknown" \
                 --with-logfile=/var/log/net-snmpd.log \
                 --with-persistent-directory=/var/lib/net-snmp \
@@ -65,6 +66,12 @@ install -m 0644 %{SOURCE2} %{buildroot}/lib/systemd/system/snmptrapd.service
 make %{?_smp_mflags} test
 
 %post
+if [ $1 == 2 ]; then
+  # Upgrading net-snmp, preserve the existing config in /usr/etc/snmp
+  if [ -d /usr/etc/snmp -a ! -e %{_sysconfdir}/snmp ]; then
+    ln -sf /usr/etc/snmp %{_sysconfdir}/snmp
+  fi
+fi
 /sbin/ldconfig
 %systemd_post snmpd.service
 %systemd_post snmptrapd.service
@@ -89,6 +96,7 @@ rm -rf %{buildroot}/*
 %{_bindir}
 %{_libdir}/*.so.*
 /sbin/*  
+%ghost %config(noreplace) %{_sysconfdir}/snmp/*
 
 %files devel
 %defattr(-,root,root)
@@ -101,6 +109,8 @@ rm -rf %{buildroot}/*
 %exclude /usr/lib/perl5/5.24.1/*/perllocal.pod
 
 %changelog
+*   Wed Feb 20 2019 Dweep Advani <dadvani@vmware.com> 5.7.3-11
+-   Fixed snmpd.conf path
 *   Mon Dec 31 2018 Ankit Jain <ankitja@vmware.com> 5.7.3-10
 -   Fix for CVE-2018-18065
 *   Tue Jul 31 2018 Ajay Kaher <akaher@vmware.com> 5.7.3-9
