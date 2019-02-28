@@ -1,7 +1,14 @@
+%ifarch x86_64
+%define archname amd64
+%endif
+%ifarch aarch64
+%define archname arm64
+%endif
+
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.12.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -66,34 +73,41 @@ popd
 make
 pushd build/pause
 mkdir -p bin
-gcc -Os -Wall -Werror -static -o bin/pause-amd64 pause.c
-strip bin/pause-amd64
+gcc -Os -Wall -Werror -static -o bin/pause-%{archname} pause.c
+strip bin/pause-%{archname}
 popd
-make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/amd64 windows/amd64"
+
+%ifarch x86_64
+make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/%{archname} windows/%{archname}"
+%endif
 
 %install
 install -vdm644 %{buildroot}/etc/profile.d
 install -m 755 -d %{buildroot}%{_bindir}
 install -m 755 -d %{buildroot}/opt/vmware/kubernetes
-install -m 755 -d %{buildroot}/opt/vmware/kubernetes/darwin/amd64
-install -m 755 -d %{buildroot}/opt/vmware/kubernetes/linux/amd64
-install -m 755 -d %{buildroot}/opt/vmware/kubernetes/windows/amd64
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes/linux/%{archname}
+%ifarch x86_64
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes/windows/%{archname}
+%endif
 
 binaries=(cloud-controller-manager hyperkube kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
-  install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/amd64/${bin}
+  install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/${bin}
 done
-install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-amd64
+install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-%{archname}
 
 # kubectl-extras
-install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/darwin/amd64/ _output/local/bin/darwin/amd64/kubectl
-install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/linux/amd64/ _output/local/bin/linux/amd64/kubectl
-install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/windows/amd64/ _output/local/bin/windows/amd64/kubectl.exe
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/linux/%{archname}/ _output/local/bin/linux/%{archname}/kubectl
+%ifarch x86_64
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}/ _output/local/bin/darwin/%{archname}/kubectl
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/windows/%{archname}/ _output/local/bin/windows/%{archname}/kubectl.exe
+%endif
 
 # kubeadm install
 install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
-install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/amd64/kubeadm
+install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/kubeadm
 install -p -m 755 -t %{buildroot}/etc/systemd/system build/rpms/kubelet.service
 install -p -m 755 -t %{buildroot}/etc/systemd/system/kubelet.service.d build/rpms/10-kubeadm.conf
 sed -i '/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/d' %{buildroot}/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
@@ -203,14 +217,18 @@ fi
 
 %files pause
 %defattr(-,root,root)
-%{_bindir}/pause-amd64
+%{_bindir}/pause-%{archname}
 
 %files kubectl-extras
 %defattr(-,root,root)
-/opt/vmware/kubernetes/darwin/amd64/kubectl
-/opt/vmware/kubernetes/linux/amd64/kubectl
-/opt/vmware/kubernetes/windows/amd64/kubectl.exe
+/opt/vmware/kubernetes/linux/%{archname}/kubectl
+%ifarch x86_64
+/opt/vmware/kubernetes/darwin/%{archname}/kubectl
+/opt/vmware/kubernetes/windows/%{archname}/kubectl.exe
+%endif
 
 %changelog
+*   Thu Feb 28 2019 Ashwin H <ashwinh@vmware.com> 1.12.5-2
+-   Fix build error for ARM.
 *   Thu Feb 21 2019 Ashwin H <ashwinh@vmware.com> 1.12.5-1
 -   Update to 1.12.5-1
