@@ -2,15 +2,15 @@
 
 Summary:	Mesos
 Name:		mesos
-Version:	1.2.2
-Release:	2%{?dist}
+Version:	1.5.2
+Release:	1%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 mesos=bbcec6f04bb629a16a5ea24a8cde3f3e9f75300e
+%define sha1 mesos=3709a2a8093493934e4c8e0d34114fc55cf22dfc
 BuildRequires:	openjre >= %{JAVA_VERSION}
 BuildRequires:  openjdk >= %{JAVA_VERSION}
 BuildRequires:	curl
@@ -124,8 +124,10 @@ find %{buildroot}%{python2_sitelib}/mesos -name '*.pyc' -delete
 %{python2_sitelib}/mesos/*
 
 %changelog
-*   Tue Jan 23 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.2-2
--   Add serf-devel to BuildRequires.
+*	Wed Feb 27 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.2-1
+-	Update to 1.5.2. Includes fix for CVE-2018-1330
+*       Tue Jan 23 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.2-2
+-       Add serf-devel to BuildRequires.
 *       Tue Oct 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.2-1
 -       Updated to version 1.2.2
 *	Thu Sep 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-3
