@@ -73,16 +73,11 @@ This indicates that the "text" field is plain text. It is then encrypted and use
 </td>
 	</tr><tr>
 	<td>type</td>
-	<td>Specify the type of package. Specify "full", "minimal" or "micro". 
+	<td>Specify the type of package. Specify "full" or "micro". 
 </td>
 	</tr><tr>
 	<td>install_linux_esx</td>
 	<td>Specify a boolean value to use linux esx instead of generic linux. 
-</td>
-	</tr><tr>
-	<td>type</td>
-	<td>Specify the type of package. 
-<p> Specify "full", "minimal" or "micro". 
 </td>
 	</tr><tr>
 	<td>postinstall</td>
