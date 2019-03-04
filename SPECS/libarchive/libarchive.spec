@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.3.3
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
@@ -9,6 +9,8 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
 %define sha1 libarchive=499a8f48a895faff4151d7398b24070d578f0b2e
+Patch0:     libarchive-CVE-2018-1000877.patch
+Patch1:     libarchive-CVE-2018-1000878.patch
 BuildRequires:  xz-libs
 BuildRequires:  xz-devel
 Requires:       xz-libs
@@ -19,14 +21,16 @@ Multi-format archive and compression library
 Summary:	Header and development files
 Requires:	%{name} = %{version}
 %description	devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 
 %build
 export CFLAGS="%{optflags}"
-./configure  --prefix=%{_prefix} --disable-static
+%configure --disable-static
 
 make %{?_smp_mflags}
 
@@ -54,6 +58,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Mar 04 2019 Ankit Jain <ankitja@vmware.com> 3.3.3-2
+-   Fix for CVE-2018-1000877 and CVE-2018-1000878
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 3.3.3-1
 -   Updated to latest version
 *   Fri Sep 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.3.1-2
