@@ -1,0 +1,321 @@
+From e6012ec141c05b20928263517d51b5b0a88ae272 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 22 Feb 2019 11:50:24 +0000
+Subject: [PATCH] changes in tdnf makecache and --refresh commands
+
+Previously tdnf makecache and --refresh always downloads repodata irrespective
+of changes in repodata. This change uses shasum comaparison to detect if there
+is any change in repodata and downloads repodata only if there is any
+change in repodata.
+
+Change-Id: Ia800bb54e69fec649aa10188fe981d66d2fc56a7
+---
+
+diff --git a/client/api.c b/client/api.c
+index a55092e..35d8e5c 100644
+--- a/client/api.c
++++ b/client/api.c
+@@ -358,6 +358,9 @@
+             dwError = TDNFRepoRemoveCache(pTdnf,*ppszReposUsed);
+             BAIL_ON_TDNF_ERROR(dwError);
+ 
++            dwError = TDNFRemoveSolvCache(pTdnf, *ppszReposUsed);
++            BAIL_ON_TDNF_ERROR(dwError);
++
+             ++ppszReposUsed;
+         }
+     }
+diff --git a/client/init.c b/client/init.c
+index 8823599..c7fcb16 100644
+--- a/client/init.c
++++ b/client/init.c
+@@ -177,10 +177,15 @@
+     uint32_t dwError = 0;
+     char* pszRepoCacheDir = NULL;
+     int nMetadataExpired = 0;
+-    if(!pTdnf)
++    if(!pTdnf || !pTdnf->pArgs)
+     {
+         dwError = ERROR_TDNF_INVALID_PARAMETER;
+         BAIL_ON_TDNF_ERROR(dwError);
++    }
++
++    if (nCleanMetadata == 1)
++    {
++        pTdnf->pArgs->nRefresh = 1;
+     }
+ 
+     //If there is an empty repo directory, do nothing
+@@ -193,7 +198,7 @@
+             if(pTempRepo->nEnabled)
+             {
+                 //Check if expired since last sync per metadata_expire
+-                if(!nCleanMetadata && pTempRepo->lMetadataExpire >= 0)
++                if(pTempRepo->lMetadataExpire >= 0)
+                 {
+                     dwError = TDNFAllocateStringPrintf(
+                                   &pszRepoCacheDir,
+@@ -212,14 +217,8 @@
+                     pszRepoCacheDir = NULL;
+                 }
+ 
+-                if(nCleanMetadata || nMetadataExpired)
++                if(nMetadataExpired)
+                 {
+-                    if(!pTdnf->pArgs->nQuiet)
+-                    {
+-                        fprintf(stdout,
+-                                "Refreshing metadata for: '%s'\n",
+-                                pTempRepo->pszName);
+-                    }
+                     dwError = TDNFRepoRemoveCache(pTdnf, pTempRepo->pszId);
+                     if(dwError == ERROR_TDNF_FILE_NOT_FOUND)
+                     {
+diff --git a/client/prototypes.h b/client/prototypes.h
+index 87e8dfe..4f4a526 100644
+--- a/client/prototypes.h
++++ b/client/prototypes.h
+@@ -125,6 +125,18 @@
+     );
+ 
+ uint32_t
++TDNFRemoveLastRefreshMarker(
++    PTDNF pTdnf,
++    const char* pszRepoId
++    );
++
++uint32_t
++TDNFRemoveTmpRepodata(
++    const char* pszTmpRepodataDir,
++    const char* pszTmpRepoMDFile
++    );
++
++uint32_t
+ TDNFRemoveSolvCache(
+     PTDNF pTdnf,
+     const char* pszRepoId
+@@ -507,6 +519,12 @@
+     PTDNF_REPO_METADATA pRepoMD
+     );
+ 
++uint32_t
++TDNFReplaceRepoMDFile(
++    const char *pszSrcFile,
++    const char *pszDstFile
++    );
++
+ //repolist.c
+ uint32_t
+ TDNFLoadReposFromFile(
+diff --git a/client/repo.c b/client/repo.c
+index 633d1a0..1482748 100644
+--- a/client/repo.c
++++ b/client/repo.c
+@@ -135,6 +135,8 @@
+         if(pTdnf)
+         {
+             TDNFRepoRemoveCache(pTdnf, pRepoData->pszId);
++            TDNFRemoveSolvCache(pTdnf, pRepoData->pszId);
++            TDNFRemoveLastRefreshMarker(pTdnf, pRepoData->pszId);
+         }
+     }
+     goto cleanup;
+@@ -282,8 +284,12 @@
+     uint32_t dwError = 0;
+     char *pszRepoMDFile = NULL;
+     char *pszRepoMDUrl = NULL;
++    char *pszTmpRepoDataDir = NULL;
++    char *pszTmpRepoMDFile = NULL;
+     PTDNF_REPO_METADATA pRepoMDRel = NULL;
+     PTDNF_REPO_METADATA pRepoMD = NULL;
++    unsigned char pszCookie[SOLV_COOKIE_LEN];
++    unsigned char pszTmpCookie[SOLV_COOKIE_LEN];
+ 
+     if(!pTdnf ||
+        !pRepoData ||
+@@ -325,6 +331,54 @@
+     dwError = TDNFAllocateString(pRepoData->pszId, &pRepoMDRel->pszRepo);
+     BAIL_ON_TDNF_ERROR(dwError);
+ 
++    // Calculate sha1sum for the existing repomd xml and compare with the new downloaded
++    // repomd xml file for refresh / makecache commands
++    if (pTdnf->pArgs->nRefresh && access(pszRepoMDFile, F_OK) == 0)
++    {
++        dwError = SolvCalculateCookieForRepoMD(pszRepoMDFile, pszCookie);
++        BAIL_ON_TDNF_ERROR(dwError);
++
++        dwError = TDNFAllocateStringPrintf(
++                      &pszTmpRepoDataDir,
++                      "%s/tmp",
++                      pszRepoDataDir);
++        BAIL_ON_TDNF_ERROR(dwError);
++
++        dwError = TDNFAllocateStringPrintf(
++                      &pszTmpRepoMDFile,
++                      "%s/%s",
++                      pszTmpRepoDataDir,
++                      TDNF_REPO_METADATA_FILE_NAME);
++        BAIL_ON_TDNF_ERROR(dwError);
++
++        dwError = TDNFUtilsMakeDirs(pszTmpRepoDataDir);
++        if(dwError == ERROR_TDNF_ALREADY_EXISTS)
++        {
++            dwError = 0;
++        }
++        BAIL_ON_TDNF_ERROR(dwError);
++
++        dwError = TDNFDownloadFile(
++                      pTdnf,
++                      pRepoData->pszId,
++                      pszRepoMDUrl,
++                      pszTmpRepoMDFile,
++                      pRepoData->pszId);
++        BAIL_ON_TDNF_ERROR(dwError);
++
++
++        dwError = SolvCalculateCookieForRepoMD(pszTmpRepoMDFile, pszTmpCookie);
++        BAIL_ON_TDNF_ERROR(dwError);
++
++
++        if (memcmp (pszCookie, pszTmpCookie, sizeof(pszTmpCookie)) != 0)
++        {
++            // Different shasum , replace repomd
++            dwError = TDNFReplaceRepoMDFile( pszTmpRepoMDFile, pszRepoMDFile);
++            BAIL_ON_TDNF_ERROR(dwError);
++        }
++    }
++
+     if(access(pszRepoMDFile, F_OK))
+     {
+         if(errno != ENOENT)
+@@ -332,7 +386,12 @@
+             dwError = errno;
+             BAIL_ON_TDNF_SYSTEM_ERROR(dwError);
+         }
+-
++        if(!pTdnf->pArgs->nQuiet)
++        {
++           fprintf(stdout,
++                   "Refreshing metadata for: '%s'\n",
++                    pRepoData->pszName);
++        }
+         dwError = TDNFUtilsMakeDirs(pszRepoDataDir);
+         if(dwError == ERROR_TDNF_ALREADY_EXISTS)
+         {
+@@ -363,6 +422,9 @@
+ 
+ cleanup:
+     TDNFFreeRepoMetadata(pRepoMDRel);
++    TDNFRemoveTmpRepodata(pszTmpRepoDataDir, pszTmpRepoMDFile);
++    TDNF_SAFE_FREE_MEMORY(pszTmpRepoMDFile);
++    TDNF_SAFE_FREE_MEMORY(pszTmpRepoDataDir);
+     TDNF_SAFE_FREE_MEMORY(pszRepoMDFile);
+     TDNF_SAFE_FREE_MEMORY(pszRepoMDUrl);
+     return dwError;
+@@ -662,3 +724,25 @@
+     TDNF_SAFE_FREE_MEMORY(pRepoMD->pszUpdateInfo);
+     TDNF_SAFE_FREE_MEMORY(pRepoMD);
+ }
++
++uint32_t
++TDNFReplaceRepoMDFile(
++    const char *pszSrcFile,
++    const char *pszDstFile
++    )
++{
++    uint32_t dwError = 0;
++
++    if (IsNullOrEmptyString(pszSrcFile) || IsNullOrEmptyString(pszDstFile))
++    {
++        dwError = ERROR_TDNF_INVALID_PARAMETER;
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
++    dwError = rename (pszSrcFile, pszDstFile);
++    BAIL_ON_TDNF_ERROR(dwError);
++
++cleanup:
++    return dwError;
++error:
++    goto cleanup;
++}
+diff --git a/client/repoutils.c b/client/repoutils.c
+index 63040ea..a024954 100644
+--- a/client/repoutils.c
++++ b/client/repoutils.c
+@@ -277,6 +277,75 @@
+ }
+ 
+ uint32_t
++TDNFRemoveTmpRepodata(
++    const char* pszTmpRepodataDir,
++    const char* pszTmpRepoMDFile
++    )
++{
++    uint32_t dwError = 0;
++
++    if (IsNullOrEmptyString(pszTmpRepodataDir) || IsNullOrEmptyString(pszTmpRepoMDFile))
++    {
++        dwError = ERROR_TDNF_INVALID_PARAMETER;
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
++    if (unlink(pszTmpRepoMDFile))
++    {
++        if (errno != ENOENT)
++        {
++            dwError = errno;
++            BAIL_ON_TDNF_ERROR(dwError);
++        }
++    }
++    if (rmdir(pszTmpRepodataDir))
++    {
++        dwError = errno;
++        BAIL_ON_TDNF_SYSTEM_ERROR(dwError);
++    }
++cleanup:
++    return dwError;
++error:
++    goto cleanup;
++}
++
++uint32_t
++TDNFRemoveLastRefreshMarker(
++    PTDNF pTdnf,
++    const char* pszRepoId
++    )
++{
++    uint32_t dwError = 0;
++    char* pszLastRefreshMarker = NULL;
++
++    if(!pTdnf || !pTdnf->pConf || IsNullOrEmptyString(pszRepoId))
++    {
++        dwError = ERROR_TDNF_INVALID_PARAMETER;
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
++
++    dwError = TDNFAllocateStringPrintf(
++                  &pszLastRefreshMarker,
++                  "%s/%s/%s",
++                  pTdnf->pConf->pszCacheDir,
++                  pszRepoId,
++                  TDNF_REPO_METADATA_MARKER);
++    BAIL_ON_TDNF_ERROR(dwError);
++    if (pszLastRefreshMarker)
++    {
++        if(unlink(pszLastRefreshMarker))
++        {
++           dwError = errno;
++           BAIL_ON_TDNF_SYSTEM_ERROR(dwError);
++        }
++    }
++cleanup:
++    TDNF_SAFE_FREE_MEMORY(pszLastRefreshMarker);
++    return dwError;
++error:
++    goto cleanup;
++}
++
++uint32_t
+ TDNFRemoveSolvCache(
+     PTDNF pTdnf,
+     const char* pszRepoId
+
