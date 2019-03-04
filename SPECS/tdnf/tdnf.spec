@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        2.0.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -39,6 +39,7 @@ Patch3:         tdnf-updateinfo-cmd-updates.patch
 Patch4:         tdnf-fix-mem-leak.patch
 Patch5:         tdnf-fix-curl-status-type.patch
 Patch6:         tdnf-fix-error-no-repo.patch
+Patch7:         tdnf-refresh-mkcache.patch
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
@@ -68,6 +69,7 @@ Library providing cli libs for tdnf like clients.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 %build
 autoreconf -i
@@ -168,6 +170,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Mon Mar 04 2019 Keerthana K <keerthanak@vmware.com> 2.0.0-8
+-   makecache and refresh command updates.
 *   Thu Feb 14 2019 Keerthana K <keerthanak@vmware.com> 2.0.0-7
 -   Fix to address issues when no repos are enabled.
 *   Wed Jan 23 2019 Keerthana K <keerthanak@vmware.com> 2.0.0-6
