@@ -1,9 +1,9 @@
 diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
-index 3b9aadd007f5..96a55ea46c25 100644
+index 08b8aa5..62a662d 100644
 --- a/drivers/usb/class/cdc-acm.c
 +++ b/drivers/usb/class/cdc-acm.c
-@@ -1942,6 +1942,20 @@ static const struct usb_device_id acm_ids[] = {
- 	.driver_info = IGNORE_DEVICE,
+@@ -1887,6 +1887,20 @@ static const struct usb_device_id acm_ids[] = {
+ 	.driver_info = SEND_ZERO_PACKET,
  	},
  
 +	/* Exclude Exar USB serial ports */
