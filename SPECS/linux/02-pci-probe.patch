@@ -28,21 +28,21 @@ values at runtime.
  3 files changed, 377 insertions(+), 4 deletions(-)
 
 
-diff -ur linux-4.19.1/drivers/pci/pci.c linux-4.19.1_new/drivers/pci/pci.c
---- linux-4.19.1/drivers/pci/pci.c	2018-11-04 13:50:54.000000000 +0000
-+++ linux-4.19.1_new/drivers/pci/pci.c	2018-11-08 01:59:21.813106907 +0000
-@@ -6116,6 +6116,8 @@
- 				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
+diff -ur linux-4.19.26/drivers/pci/pci.c linux-4.19.26_new/drivers/pci/pci.c
+--- linux-4.19.26/drivers/pci/pci.c	2019-02-27 14:39:03.000000000 +0530
++++ linux-4.19.26_new/drivers/pci/pci.c	2019-03-05 07:47:24.981001824 +0530
+@@ -6115,6 +6115,8 @@
  			} else if (!strncmp(str, "disable_acs_redir=", 18)) {
- 				disable_acs_redir_param = str + 18;
+ 				disable_acs_redir_param =
+ 					kstrdup(str + 18, GFP_KERNEL);
 +			} else if (!strncmp(str, "scan_all", 8)) {
 +				pci_scan_all();
  			} else {
  				printk(KERN_ERR "PCI: Unknown option `%s'\n",
  						str);
-diff -ur linux-4.19.1/drivers/pci/pci.h linux-4.19.1_new/drivers/pci/pci.h
---- linux-4.19.1/drivers/pci/pci.h	2018-11-04 13:50:54.000000000 +0000
-+++ linux-4.19.1_new/drivers/pci/pci.h	2018-11-08 01:57:51.917110565 +0000
+diff -ur linux-4.19.26/drivers/pci/pci.h linux-4.19.26_new/drivers/pci/pci.h
+--- linux-4.19.26/drivers/pci/pci.h	2019-02-27 14:39:03.000000000 +0530
++++ linux-4.19.26_new/drivers/pci/pci.h	2019-03-05 07:47:24.981001824 +0530
 @@ -147,6 +147,8 @@
  static inline void pci_no_msi(void) { }
  #endif
@@ -52,9 +52,9 @@ diff -ur linux-4.19.1/drivers/pci/pci.h linux-4.19.1_new/drivers/pci/pci.h
  static inline void pci_msi_set_enable(struct pci_dev *dev, int enable)
  {
  	u16 control;
-diff -ur linux-4.19.1/drivers/pci/probe.c linux-4.19.1_new/drivers/pci/probe.c
---- linux-4.19.1/drivers/pci/probe.c	2018-11-04 13:50:54.000000000 +0000
-+++ linux-4.19.1_new/drivers/pci/probe.c	2018-11-08 01:57:51.917110565 +0000
+diff -ur linux-4.19.26/drivers/pci/probe.c linux-4.19.26_new/drivers/pci/probe.c
+--- linux-4.19.26/drivers/pci/probe.c	2019-02-27 14:39:03.000000000 +0530
++++ linux-4.19.26_new/drivers/pci/probe.c	2019-03-05 07:47:24.997001823 +0530
 @@ -168,6 +168,346 @@
  
  #define PCI_COMMAND_DECODE_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_IO)
