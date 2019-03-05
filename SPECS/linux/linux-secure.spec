@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.15
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.26
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=fb970b2014ecf9dcef23943f8095b28dfe0d6cca
+%define sha1 linux=18b659da3a2f7eaef7b16a3c468bed9f7071c17a
 Source1:        config-secure
 Source2:        initramfs.trigger
 # common
@@ -38,9 +38,6 @@ Patch32:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.p
 Patch33:        4.17-0002-apparmor-af_unix-mediation.patch
 Patch34:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch35:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
-#Fix CVE-2019-8912
-Patch36:        fix_use_after_free_in_sockfs_setattr.patch
-
 
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
@@ -111,7 +108,6 @@ The Linux package contains the Linux kernel doc files
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
-%patch36 -p1
 
 pushd ..
 %patch99 -p0
@@ -239,6 +235,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Mar 05 2019 Ajay Kaher <akaher@vmware.com> 4.19.26-1
+-   Update to version 4.19.26
 *   Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.15-2
 -   Fix CVE-2019-8912
 *   Tue Jan 15 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.15-1
