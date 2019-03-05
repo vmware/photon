@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           apparmor
 Version:        2.13
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -350,9 +350,11 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{perl_vendorarch}/auto/LibAppArmor/
 %{perl_vendorarch}/LibAppArmor.pm
-%{perl_archlib}/perllocal.pod
+%exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+*   Tue Mar 05 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.13-7
+-   Excluded conflicting perllocal.pod
 *   Thu Dec 06 2018 Keerthana K <keerthanak@vmware.com> 2.13-6
 -   Fixed make check failures.
 *   Fri Oct 05 2018 Tapas Kundu <tkundu@vmware.com> 2.13-5
