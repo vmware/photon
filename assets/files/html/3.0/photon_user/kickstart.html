@@ -69,7 +69,7 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="kubernetes_intro.html" />
+    <link rel="next" href="kickstart_through_http.html" />
     
     
     <link rel="prev" href="PXE-boot.html" />
@@ -1847,7 +1847,78 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.3" data-path="kubernetes_intro.html">
+        <li class="chapter " data-level="1.5.3" data-path="kickstart_through_http.html">
+            
+                <a href="kickstart_through_http.html">
+            
+                    
+                    Kickstart Through HTTP
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.3.1" data-path="kickstart-prerequisites.html">
+            
+                <a href="kickstart-prerequisites.html">
+            
+                    
+                    Prerequisites
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3.2" data-path="kickstart-procedure.html">
+            
+                <a href="kickstart-procedure.html">
+            
+                    
+                    Procedure
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3.3" data-path="packer-template.html">
+            
+                <a href="packer-template.html">
+            
+                    
+                    Packer Template
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3.4" data-path="packages-minimal-json-file.html">
+            
+                <a href="packages-minimal-json-file.html">
+            
+                    
+                    packages_minimal.json File
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4" data-path="kubernetes_intro.html">
             
                 <a href="kubernetes_intro.html">
             
@@ -1861,7 +1932,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.5.3.1" data-path="prerequisites.html">
+        <li class="chapter " data-level="1.5.4.1" data-path="prerequisites.html">
             
                 <a href="prerequisites.html">
             
@@ -1874,7 +1945,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.3.2" data-path="running_kubernetes.html">
+        <li class="chapter " data-level="1.5.4.2" data-path="running_kubernetes.html">
             
                 <a href="running_kubernetes.html">
             
@@ -1888,7 +1959,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.5.3.2.1" data-path="system_information.html">
+        <li class="chapter " data-level="1.5.4.2.1" data-path="system_information.html">
             
                 <a href="system_information.html">
             
@@ -1901,7 +1972,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.3.2.2" data-path="prepare_the_hosts.html">
+        <li class="chapter " data-level="1.5.4.2.2" data-path="prepare_the_hosts.html">
             
                 <a href="prepare_the_hosts.html">
             
@@ -1914,7 +1985,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.3.2.3" data-path="configure_kubernetes_on_master.html">
+        <li class="chapter " data-level="1.5.4.2.3" data-path="configure_kubernetes_on_master.html">
             
                 <a href="configure_kubernetes_on_master.html">
             
@@ -1927,7 +1998,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.3.2.4" data-path="configure_kubernetes_on_node.html">
+        <li class="chapter " data-level="1.5.4.2.4" data-path="configure_kubernetes_on_node.html">
             
                 <a href="configure_kubernetes_on_node.html">
             
@@ -1950,7 +2021,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.4" data-path="nfs-utils.html">
+        <li class="chapter " data-level="1.5.5" data-path="nfs-utils.html">
             
                 <a href="nfs-utils.html">
             
@@ -2795,7 +2866,7 @@ This indicates that the &quot;text&quot; field is plain text. It is then encrypt
     </tr>
     <tr>
     <td>disk</td>
-    <td>Indicates the install disk 
+    <td>Indicates the install disk.
 <p> Example: /dev/sda </p></td>
     </tr>
     <tr>
@@ -2818,18 +2889,9 @@ This indicates that the &quot;text&quot; field is plain text. It is then encrypt
     <td>Specify an array of additional packages.
 </td>
     </tr><tr>
-    <td>type</td>
-    <td>Specify the type of package. Specify &quot;full&quot;, &quot;minimal&quot; or &quot;micro&quot;. 
-</td>
-    </tr><tr>
     <td>install_linux_esx</td>
-    <td>Specify a boolean value to use linux esx instead of generic linux. 
+    <td>Specify a boolean value to use linux esx instead of generic linux.
 </td>
-    </tr><tr>
-    <td>type</td>
-    <td>Specify the type of package. 
-<p> Specify &quot;full&quot;, &quot;minimal&quot; or &quot;micro&quot;. 
-</p></td>
     </tr><tr>
     <td>postinstall</td>
     <td>Specify an array of bash commands to execute after install. <p> See the example for partitions.
@@ -2843,18 +2905,17 @@ This indicates that the &quot;text&quot; field is plain text. It is then encrypt
     </table>
 
 
-
 <h2 id="sample-configuration-file">Sample Configuration File</h2>
 <p>Here is a sample kickstart configuration file:</p>
 <pre><code>{
     &quot;hostname&quot;: &quot;&lt;hostname&gt;&quot;,
-    &quot;password&quot;: 
+    &quot;password&quot;:
         {
             &quot;crypted&quot;: &lt;true|false&gt;,
             &quot;text&quot;: &quot;&lt;password, either plain text or encrypted&gt;&quot;
         },
     &quot;disk&quot;: &quot;/dev/sda&quot;,
-    &quot;type&quot;: &quot;minimal&quot;,
+    &quot;packagelist_file&quot;: &quot;packages_minimal.json&quot;,
     &quot;postinstall&quot;: [
                     &quot;#!/bin/sh&quot;,
                     &quot;echo \&quot;Hello World\&quot; &gt; /etc/postinstall&quot;
@@ -2928,7 +2989,7 @@ popd
                 </a>
                 
                 
-                <a href="kubernetes_intro.html" class="navigation navigation-next " aria-label="Next page: Kubernetes on Photon OS">
+                <a href="kickstart_through_http.html" class="navigation navigation-next " aria-label="Next page: Kickstart Through HTTP">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -2939,7 +3000,7 @@ popd
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Working with Kickstart","level":"1.5.2","depth":2,"next":{"title":"Kubernetes on Photon OS","level":"1.5.3","depth":2,"path":"photon_user/kubernetes_intro.md","ref":"photon_user/kubernetes_intro.md","articles":[{"title":"Prerequisites","level":"1.5.3.1","depth":3,"path":"photon_user/prerequisites.md","ref":"photon_user/prerequisites.md","articles":[]},{"title":"Running Kubernetes on Photon OS","level":"1.5.3.2","depth":3,"path":"photon_user/running_kubernetes.md","ref":"photon_user/running_kubernetes.md","articles":[{"title":"System Information","level":"1.5.3.2.1","depth":4,"path":"photon_user/system_information.md","ref":"photon_user/system_information.md","articles":[]},{"title":"Prepare the Hosts","level":"1.5.3.2.2","depth":4,"path":"photon_user/prepare_the_hosts.md","ref":"photon_user/prepare_the_hosts.md","articles":[]},{"title":"Configure Kubernetes Services on Master","level":"1.5.3.2.3","depth":4,"path":"photon_user/configure_kubernetes_on_master.md","ref":"photon_user/configure_kubernetes_on_master.md","articles":[]},{"title":"Configure Kubernetes Services on Node","level":"1.5.3.2.4","depth":4,"path":"photon_user/configure_kubernetes_on_node.md","ref":"photon_user/configure_kubernetes_on_node.md","articles":[]}]}]},"previous":{"title":"Setting Up a Network PXE Boot Server","level":"1.5.1","depth":2,"path":"photon_user/PXE-boot.md","ref":"photon_user/PXE-boot.md","articles":[]},"dir":"ltr"},"config":{"plugins":["insert-logo","chapter-fold","edit-link","noembed"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"noembed":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit this Page","base":"https://github.com/vmware/photon/tree/master/docs"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"insert-logo":{"style":"background: none","url":"photonos-logo-sm.png"}},"theme":"default","pdf":{"pageBreaksBefore":"/","headerTemplate":"_TITLE_","paperSize":"letter","margin":{"right":62,"left":62,"top":56,"bottom":56},"fontSize":12,"fontFamily":"Arial","footerTemplate":"_PAGENUM_","chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"VMware Photon OS 3.0 Documentation","gitbook":"3.x.x"},"file":{"path":"photon_user/kickstart.md","mtime":"2019-02-01T08:58:50.836Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-02-05T05:11:16.681Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Working with Kickstart","level":"1.5.2","depth":2,"next":{"title":"Kickstart Through HTTP","level":"1.5.3","depth":2,"path":"photon_user/kickstart_through_http.md","ref":"photon_user/kickstart_through_http.md","articles":[{"title":"Prerequisites","level":"1.5.3.1","depth":3,"path":"photon_user/kickstart-prerequisites.md","ref":"photon_user/kickstart-prerequisites.md","articles":[]},{"title":"Procedure","level":"1.5.3.2","depth":3,"path":"photon_user/kickstart-procedure.md","ref":"photon_user/kickstart-procedure.md","articles":[]},{"title":"Packer Template","level":"1.5.3.3","depth":3,"path":"photon_user/packer-template.md","ref":"photon_user/packer-template.md","articles":[]},{"title":"packages_minimal.json File","level":"1.5.3.4","depth":3,"path":"photon_user/packages-minimal-json-file.md","ref":"photon_user/packages-minimal-json-file.md","articles":[]}]},"previous":{"title":"Setting Up a Network PXE Boot Server","level":"1.5.1","depth":2,"path":"photon_user/PXE-boot.md","ref":"photon_user/PXE-boot.md","articles":[]},"dir":"ltr"},"config":{"plugins":["insert-logo","chapter-fold","edit-link","noembed"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"noembed":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit this Page","base":"https://github.com/vmware/photon/tree/master/docs"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"insert-logo":{"style":"background: none","url":"photonos-logo-sm.png"}},"theme":"default","pdf":{"pageBreaksBefore":"/","headerTemplate":"_TITLE_","paperSize":"letter","margin":{"right":62,"left":62,"top":56,"bottom":56},"fontSize":12,"fontFamily":"Arial","footerTemplate":"_PAGENUM_","chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"VMware Photon OS 3.0 Documentation","gitbook":"3.x.x"},"file":{"path":"photon_user/kickstart.md","mtime":"2019-03-05T10:25:47.087Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-03-05T10:37:15.434Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
