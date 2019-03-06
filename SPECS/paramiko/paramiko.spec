@@ -3,7 +3,7 @@
 Summary:        Python SSH module
 Name:           paramiko
 Version:        2.4.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -19,29 +19,32 @@ BuildRequires:  python2-devel
 BuildRequires:  ecdsa > 0.11
 BuildRequires:  pycrypto > 2.1
 BuildRequires:  python-cryptography
-
-Requires:       python2
-Requires:       pycrypto > 2.1
-Requires:       ecdsa > 0.11
-Requires:       python-cryptography
-
-
-%description
-"Paramiko" is a combination of the esperanto words for "paranoid" and "friend". It's a module for Python 2.6+ that implements the SSH2 protocol for secure (encrypted and authenticated) connections to remote machines. Unlike SSL (aka TLS), SSH2 protocol does not require hierarchical certificates signed by a powerful central authority.
-
-%package -n     python3-paramiko
-Summary:        python3-paramiko
 BuildRequires:  python3-devel
 BuildRequires:  python3-ecdsa > 0.11
 BuildRequires:  python3-pycrypto > 2.1
 BuildRequires:  python3-cryptography
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+Requires:       python2
+Requires:       pycrypto > 2.1
+Requires:       ecdsa > 0.11
+Requires:       python-cryptography
+Requires:       python-PyNaCl
+Requires:       python-bcrypt
+
+%description
+"Paramiko" is a combination of the esperanto words for "paranoid" and "friend". It's a module for Python 2.6+ that implements the SSH2 protocol for secure (encrypted and authenticated) connections to remote machines. Unlike SSL (aka TLS), SSH2 protocol does not require hierarchical certificates signed by a powerful central authority.
+
+%package -n     python3-paramiko
+Summary:        python3-paramiko
 
 Requires:       python3
 Requires:       python3-pycrypto > 2.1
 Requires:       python3-ecdsa > 0.11
 Requires:       python3-cryptography
+Requires:       python3-PyNaCl
+Requires:       python3-bcrypt
+
 %description -n python3-paramiko
 
 Python 3 version.
@@ -81,6 +84,8 @@ LANG=en_US.UTF-8 python3 test.py
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Mar 06 2019 Tapas Kundu <tkundu@vmware.com> 2.4.2-2
+-   Added bcrypt and PyNaCl to requires.
 *   Thu Jan 10 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.4.2-1
 -   Upgraded to 2.4.2 to mitigate CVE-2018-1000805
 *   Tue Sep 11 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.4.1-1
