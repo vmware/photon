@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.34
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -72,6 +72,9 @@ The httpd-tools of httpd.
             --enable-authnz-fcgi                   \
             --enable-mods-shared="all cgi"         \
             --enable-mpms-shared=all               \
+            --runtimedir=/var/run                  \
+            --logfiledir=/var/log                  \
+            --proxycachedir=/var/cache             \
             --with-apr=%{_prefix}                  \
             --with-apr-util=%{_prefix}
 
@@ -183,6 +186,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Thu Mar 7 2019 Michelle Wang <michellew@vmware.com> 2.4.34-3
+-   Fixed log configure for httpd
 *   Thu Jan 24 2019 Dweep Advani <dadvani@vmware.com> 2.4.34-2
 -   Fixed CVE-2018-11763
 *   Wed Aug 29 2018 Tapas Kundu <tkundu@vmware.com> 2.4.34-1
