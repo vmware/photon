@@ -65,6 +65,7 @@ The httpd-tools of httpd.
 %build
 %configure \
             --prefix=%{_sysconfdir}/httpd          \
+            --localstatedir=%{_prefix}             \
             --exec-prefix=%{_prefix}               \
             --sysconfdir=%{_confdir}/httpd/conf    \
             --libexecdir=%{_libdir}/httpd/modules  \
