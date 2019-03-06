@@ -17,6 +17,7 @@
 %_exec_prefix       /usr
 %_bindir            /usr/bin
 %_sbindir           /usr/sbin
+%_srvdir            /usr/srv
 %_libdir            /usr/lib
 %_lib64dir          /usr/lib64
 %_libexecdir        /usr/libexec
