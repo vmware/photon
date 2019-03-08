@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.34
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -64,8 +64,6 @@ The httpd-tools of httpd.
 
 %build
 %configure \
-            --prefix=%{_sysconfdir}/httpd          \
-            --exec-prefix=%{_prefix}               \
             --sysconfdir=%{_confdir}/httpd/conf    \
             --libexecdir=%{_libdir}/httpd/modules  \
             --datadir=%{_sysconfdir}/httpd         \
@@ -73,14 +71,13 @@ The httpd-tools of httpd.
             --enable-mods-shared="all cgi"         \
             --enable-mpms-shared=all               \
             --with-apr=%{_prefix}                  \
-            --with-apr-util=%{_prefix}
-
+            --with-apr-util=%{_prefix}             \
+            --enable-layout=RPM
 make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
 install -vdm755 %{buildroot}/usr/lib/systemd/system
-install -vdm755 %{buildroot}/etc/httpd/logs
 
 cat << EOF >> %{buildroot}/usr/lib/systemd/system/httpd.service
 [Unit]
@@ -161,7 +158,7 @@ fi
 %exclude %{_bindir}/dbmmanage
 %{_sbindir}/*
 %{_datadir}/*
-%{_sysconfdir}/httpd/build/*
+%{_sysconfdir}/httpd/html/index.html
 %{_sysconfdir}/httpd/cgi-bin/*
 %{_sysconfdir}/httpd/conf/extra
 %{_sysconfdir}/httpd/conf/original
@@ -170,12 +167,11 @@ fi
 %config(noreplace) %{_sysconfdir}/httpd/conf/httpd.conf
 %{_sysconfdir}/httpd/conf/mime.types
 %{_sysconfdir}/httpd/error/*
-%{_sysconfdir}/httpd/htdocs/*
 %{_sysconfdir}/httpd/icons/*
 %{_sysconfdir}/httpd/httpd.conf
-%dir %{_sysconfdir}/httpd/logs
 %{_libdir}/systemd/system/httpd.service
 %{_libdir}/systemd/system-preset/50-httpd.preset
+%{_localstatedir}/log/httpd
 
 %files tools
 %defattr(-,root,root)
@@ -183,6 +179,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Thu Mar 7 2019 Michelle Wang <michellew@vmware.com> 2.4.34-3
+-   Update build configure for httpd
 *   Thu Jan 24 2019 Dweep Advani <dadvani@vmware.com> 2.4.34-2
 -   Fixed CVE-2018-11763
 *   Wed Aug 29 2018 Tapas Kundu <tkundu@vmware.com> 2.4.34-1
