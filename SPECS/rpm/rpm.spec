@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -248,6 +248,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Mar 08 2019 Ajay Kaher <akaher@vmware.com> 4.14.2-5
+-   Run all brp-strip's in background
 *   Wed Oct 03 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-4
 -   Clean up the file in accordance to spec file checker
 *   Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-3
