@@ -15,13 +15,21 @@ Perform the following steps to configure the kubelet on the node:
     KUBELET_HOSTNAME="--hostname_override=photon-node"
     
     # location of the api-server
-    KUBELET_API_SERVER="--api_servers=http://photon-master:8080"
-    
+    KUBELET_API_SERVER="--kubeconfig=/etc/kubernetes/kubeconfig"
+        
     # Add your own
     #KUBELET_ARGS=""
     ```
 
-1. Start the appropriate services on the node (photon-node):
+2. Edit /etc/kubernetes/kubeconfig to appear like this:
+
+    ```apiVersion: v1
+    clusters:
+    - cluster:
+        server: http://photon-master:8080
+    ```
+
+3. Start the appropriate services on the node (photon-node):
 
     ```sh
     for SERVICES in kube-proxy kubelet docker; do 
@@ -31,7 +39,7 @@ Perform the following steps to configure the kubelet on the node:
     done
     ```
 
-1. Check to make sure that the cluster can now see the photon-node on photon-master and that its status changes to _Ready_.
+4. Check to make sure that the cluster can now see the photon-node on photon-master and that its status changes to _Ready_.
 
    ```console
    kubectl get nodes
