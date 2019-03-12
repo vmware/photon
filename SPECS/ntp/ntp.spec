@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -63,6 +63,7 @@ install -v -m755    -d %{buildroot}%{_datadir}/doc/%{name}-%{version}
 cp -v -R html/*     %{buildroot}%{_datadir}/doc/%{name}-%{version}/
 install -vdm 755 %{buildroot}/etc
 
+mkdir -p %{buildroot}/var/lib/ntp/drift
 mkdir -p %{buildroot}/etc/sysconfig
 cp %{SOURCE2} %{buildroot}/etc/sysconfig/ntp
 pushd ntpstat-master
@@ -121,6 +122,7 @@ fi
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
+%dir /var/lib/ntp/drift
 %attr(0750, root, root) %config(noreplace) /etc/ntp.conf
 %attr(0750, root, root) %config(noreplace) /etc/sysconfig/ntp
 /lib/systemd/system/ntpd.service
@@ -141,6 +143,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Tue Mar 19 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.2.8p12-2
+-   Created directory for drift file
 *   Wed Aug 22 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p12-1
 -   Upgrade version to 4.2.8p12.
 *   Wed Aug 1 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p11-2
