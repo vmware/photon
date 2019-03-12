@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -107,6 +107,9 @@ fi
 if ! getent passwd ntp >/dev/null; then
     useradd -c "Network Time Protocol" -d /var/lib/ntp -u 87 -g ntp -s /bin/false ntp
 fi
+if [ ! -d /var/lib/ntp/drift ]; then
+   mkdir -p /var/lib/ntp/drift
+fi 
 %post
 %{_sbindir}/ldconfig 
 %systemd_post ntpd.service
@@ -141,6 +144,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Mon Mar 11 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.2.8p12-2
+-   Created directory for drift file
 *   Wed Aug 22 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p12-1
 -   Upgrade version to 4.2.8p12.
 *   Wed Aug 1 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p11-2
