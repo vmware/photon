@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.34
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -64,6 +64,7 @@ The httpd-tools of httpd.
 
 %build
 %configure \
+            --prefix=%{_sysconfdir}/httpd          \
             --sysconfdir=%{_confdir}/httpd/conf    \
             --libexecdir=%{_libdir}/httpd/modules  \
             --datadir=%{_sysconfdir}/httpd         \
@@ -179,8 +180,10 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Thu Mar 13 2019 Michelle Wang <michellew@vmware.com> 2.4.34-4
+-   Fix configure for rel_libexecdir variable with RPMS layout
 *   Thu Mar 7 2019 Michelle Wang <michellew@vmware.com> 2.4.34-3
--   Update build configure for httpd
+-   Update build configure for httpd to use RPM layout
 *   Thu Jan 24 2019 Dweep Advani <dadvani@vmware.com> 2.4.34-2
 -   Fixed CVE-2018-11763
 *   Wed Aug 29 2018 Tapas Kundu <tkundu@vmware.com> 2.4.34-1
