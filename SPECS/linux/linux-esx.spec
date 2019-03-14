@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.154
-Release:        2%{?dist}
+Version:        4.9.163
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=1a506bd238df9dbdc81e6b74abc0bb751a45eb5b
+%define sha1 linux=8c716f0109f819a1e361853631ff885994c6b1d9
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -43,9 +43,6 @@ Patch30:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
 Patch31:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 Patch32:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
-# Fixes for CVE-2018-1000026
-Patch34:        0001-net-create-skb_gso_validate_mac_len.patch
-Patch35:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
 # Fix for CVE-2018-8043
 Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -125,8 +122,6 @@ The Linux package contains the Linux kernel doc files
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
-%patch34 -p1
-%patch35 -p1
 %patch38 -p1
 %patch42 -p1
 %patch43 -p1
@@ -229,6 +224,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Mar 14 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.163-1
+-   Update to version 4.9.163
 *   Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.154-2
 -   Fix CVE-2019-8912
 *   Mon Feb 04 2019 Ajay Kaher <akaher@vmware.com> 4.9.154-1
