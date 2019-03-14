@@ -1,15 +1,14 @@
 Summary:        A 2D graphics library.
 Name:           cairo
-Version:        1.14.8
-Release:        2%{?dist}
+Version:        1.16.0
+Release:        1%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://cairographics.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://cairographics.org/releases/%{name}-%{version}.tar.xz
-%define sha1    cairo=c6f7b99986f93c9df78653c3e6a3b5043f65145e
-Patch0:         CVE-2017-9814.patch
+%define sha1    cairo=00e81842ae5e81bb0343108884eb5205be0eac14
 BuildRequires:  pkg-config
 BuildRequires:  libpng-devel
 BuildRequires:  libxml2-devel
@@ -36,14 +35,13 @@ It contains the libraries and header files to create applications
 
 %prep
 %setup -q
-%patch0 -p1
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --enable-xlib=no \
+%configure \
+    --prefix=%{_prefix}     \
+    --enable-xlib=no        \
     --enable-xlib-render=no \
-    --enable-win32=no \
-        CFLAGS="-O3 -fPIC" \
+    --enable-win32=no       \
+        CFLAGS="-O3 -fPIC"  \
     --disable-static
 make %{?_smp_mflags}
 
@@ -75,6 +73,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Thu Mar 14 2019 Michelle Wang <michellew@vmware.com> 1.16.0-1
+-   Upgrade cairo to 1.16.0
 *   Tue Oct 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.14.8-2
 -   Fix CVE-2017-9814
 *   Wed Apr 05 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.14.8-1
