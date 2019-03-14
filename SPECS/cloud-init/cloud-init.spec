@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -138,6 +138,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Thu Mar 14 2019 Ajay Kaher <akaher@vmware.com> 0.7.9-15
+-   Fix netmask conversion from dotted to cidr
 *   Wed Feb 28 2018 Anish Swaminathan <anishs@vmware.com> 0.7.9-14
 -   Add support for systemd constructs for azure DS
 *   Mon Oct 16 2017 Vinay Kulkarni <kulakrniv@vmware.com> 0.7.9-13
