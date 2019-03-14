@@ -1,0 +1,114 @@
+From 5c3de329ce6eb6c71be62d32046d0a6f04d850e5 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 08 Mar 2019 08:30:55 +0000
+Subject: [PATCH] Skip Digest and Signature check if nogpgcheck is enabled.
+
+The signature checks has been split in rpm 4.14.2 version.
+If nogpgcheck is enabled in tdnf we are skipping signature and
+digest checks while installing the rpm.
+
+Change-Id: I9fcb6cd5a46c1ac71b685dcfe12801342d9c4893
+---
+
+diff --git a/client/rpmtrans.c b/client/rpmtrans.c
+index 92e88bf..1111647 100644
+--- a/client/rpmtrans.c
++++ b/client/rpmtrans.c
+@@ -278,6 +278,11 @@
+         fprintf(stdout, "Testing transaction\n");
+     }
+ 
++    if (pTdnf->pArgs->nNoGPGCheck)
++    {
++        rpmtsSetVSFlags(pTS->pTS, rpmtsVSFlags(pTS->pTS) | RPMVSF_MASK_NODIGESTS | RPMVSF_MASK_NOSIGNATURES);
++        rpmtsSetVfyLevel(pTS->pTS, ~RPMSIG_VERIFIABLE_TYPE);
++    }
+     rpmtsSetFlags(pTS->pTS, RPMTRANS_FLAG_TEST);
+     dwError = rpmtsRun(pTS->pTS, NULL, pTS->nProbFilterFlags);
+     BAIL_ON_TDNF_ERROR(dwError);
+@@ -455,6 +460,12 @@
+     }
+     BAIL_ON_TDNF_RPM_ERROR(dwError);
+ 
++    if (!nGPGCheck)
++    {
++        rpmtsSetVSFlags(pTS->pTS, rpmtsVSFlags(pTS->pTS) | RPMVSF_MASK_NODIGESTS | RPMVSF_MASK_NOSIGNATURES);
++        rpmtsSetVfyLevel(pTS->pTS, ~RPMSIG_VERIFIABLE_TYPE);
++    }
++
+     dwError = rpmtsAddInstallElement(
+                   pTS->pTS,
+                   rpmHeader,
+diff --git a/tests/init.at b/tests/init.at
+index 7c1c497..0bc8380 100644
+--- a/tests/init.at
++++ b/tests/init.at
+@@ -21,6 +21,7 @@
+ mkdir -p $abs_top_builddir/tests/testroot/var/cache/tdnf
+ mkdir -p $abs_top_builddir/tests/testroot/etc/yum.repos.d
+ mkdir -p $abs_top_builddir/tests/testroot/etc/tdnf
++mkdir -p $abs_top_builddir/tests/testroot/etc/pki/rpm-gpg
+ mkdir $abs_top_builddir/tests/testroot/BUILD
+ mkdir $abs_top_builddir/tests/testroot/RPMS
+ mkdir $abs_top_builddir/tests/testroot/SRPMS
+@@ -29,6 +30,24 @@
+ [main]
+ repodir=$abs_top_builddir/tests/testroot/etc/yum.repos.d
+ cachedir=$abs_top_builddir/tests/testroot/var/cache/tdnf
++EOF
++
++cat << EOF > $abs_top_builddir/tests/testroot/etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
++-----BEGIN PGP PUBLIC KEY BLOCK-----
++Version: GnuPG v1.4.7 (GNU/Linux)
++
++mI0ESAP+VwEEAMZylR8dOijUPNn3He3GdgM/kOXEhn3uQl+sRMNJUDm1qebi2D5b
++Qa7GNBIlXm3DEMAS+ZlkiFQ4WnhUq5awEXU7MGcWCEGfums5FckV2tysSfn7HeWd
++9mkEnsY2CUZF54lyKfY0f+vdFd6QdYo6b+YxGnLyiunEYHXSEo1TNj1vABEBAAG0
++QlZNd2FyZSwgSW5jLiAtLSBMaW51eCBQYWNrYWdpbmcgS2V5IC0tIDxsaW51eC1w
++YWNrYWdlc0B2bXdhcmUuY29tPoi8BBMBAgAmBQJIA/5XAhsDBQkRcu4ZBgsJCAcD
++AgQVAggDBBYCAwECHgECF4AACgkQwLXgq2b9SUkw0AP/UlmWQIjMNcYfTKCOOyFx
++Csl3bY5OZ6HZs4qCRvzESVTyKs0YN1gX5YDDRmE5EbaqSO7OLriA7p81CYhstYID
++GjVTBqH/zJz/DGKQUv0A7qGvnX4MDt/cvvgEXjGpeRx42le/mkPsHdwbG/8jKveY
++S/eu0g9IenS49i0hcOnjShGIRgQQEQIABgUCSAQWfAAKCRD1ZoIQEyn810LTAJ9k
++IOziCqa/awfBvlLq4eRgN/NnkwCeJLOuL6eAueYjaODTcFEGKUXlgM4=
++=bXtp
++-----END PGP PUBLIC KEY BLOCK-----
+ EOF
+ ]])
+ 
+@@ -41,11 +60,16 @@
+ [basic]
+ name=basic
+ baseurl=file://$abs_top_builddir/tests/testroot/RPMS
++gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+ gpgcheck=0
+ enabled=1
+ EOF
+ ]])
+ 
++m4_define([TDNF_ENABLE_GPGCHECK],[[
++sed -i 's/gpgcheck=0/gpgcheck=1/g' $abs_top_builddir/tests/testroot/etc/yum.repos.d/basic.repo
++]])
++
+ m4_define([TDNF_CHROOT_CLEAN],[[
+ rm -rf $abs_top_builddir/tests/testroot
+ ]])
+diff --git a/tests/install.at b/tests/install.at
+index afede31..b761f7a 100644
+--- a/tests/install.at
++++ b/tests/install.at
+@@ -51,3 +51,14 @@
+ [ignore],
+ [ignore])
+ AT_CLEANUP
++
++AT_SETUP([install without gpgcheck])
++AT_KEYWORDS([install])
++AT_CHECK([
++TDNF_ENABLE_GPGCHECK
++TDNF_CLI_W_CHROOT --nogpgcheck install tdnf-test-two -y
++],
++[0],
++[ignore],
++[ignore])
++AT_CLEANUP
