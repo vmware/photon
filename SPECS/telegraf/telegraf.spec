@@ -2,15 +2,17 @@
 
 Summary:        agent for collecting, processing, aggregating, and writing metrics.
 Name:           telegraf
-Version:        1.7.4
+Version:        1.10.0
 Release:        1%{?dist}
 License:        MIT
 URL:            https://github.com/influxdata/telegraf
 Source0:        https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
-%define sha1    telegraf=f6ecf299a5147bb592d779affff4efd236970831
+%define sha1    telegraf=e02d4c1319099f4111ab06a4fa6c4e47b8e70742
 Source1:        https://github.com/wavefrontHQ/telegraf/archive/telegraf-plugin-1.4.0.zip
 %define sha1    telegraf-plugin=51d2bedf6b7892dbe079e7dd948d60c31a2fc436
 Source2:        https://raw.githubusercontent.com/wavefrontHQ/integrations/master/telegraf/telegraf.conf
+Source3:       golang-dep-0.5.0.tar.gz
+%define sha1 golang-dep-0.5.0=b8bb441fe3a4445e6cd4fa263dd2112e8566a734
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -32,6 +34,10 @@ Postgres, or Redis) and third party APIs (like Mailchimp, AWS CloudWatch, or Goo
 
 %prep
 %setup
+mkdir -p ${GOPATH}/src/github.com/golang/dep
+tar xf %{SOURCE3} --no-same-owner --strip-components 1 -C ${GOPATH}/src/github.com/golang/dep/
+mkdir -p ${GOPATH}/src/github.com/influxdata/telegraf
+tar xf %{SOURCE0} --no-same-owner --strip-components 1 -C ${GOPATH}/src/github.com/influxdata/telegraf
 cat << EOF >>%{SOURCE2}
 [[outputs.wavefront]]
 host = "localhost"
@@ -47,8 +53,9 @@ unzip %{SOURCE1}
 popd
 
 %build
-mkdir -p ${GOPATH}/src/github.com/influxdata/telegraf
-cp -r * ${GOPATH}/src/github.com/influxdata/telegraf
+pushd ${GOPATH}/src/github.com/golang/dep
+CGO_ENABLED=0 GOOS=linux go build -v -ldflags "-s -w" -o ${GOPATH}/bin/dep ./cmd/dep/
+popd
 mkdir -p ${GOPATH}/src/github.com/wavefronthq/telegraf/plugins/outputs/wavefront
 pushd ../telegraf-1.4.0
 cp -r *  ${GOPATH}/src/github.com/wavefronthq/telegraf/
@@ -97,6 +104,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+*   Thu Mar 14 2019 Keerthana K <keerthanak@vmware.com> 1.10.0-1
+-   Update to version 1.10.0
 *   Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 1.7.4-1
 -   Update version to 1.7.4 and its plugin version to 1.4.0.
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.4-2
