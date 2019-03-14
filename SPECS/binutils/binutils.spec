@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.31
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -15,6 +15,8 @@ Patch2:         binutils-CVE-2018-18607.patch
 Patch3:         binutils-CVE-2018-18606.patch
 Patch4:         binutils-CVE-2018-19931.patch
 Patch5:         binutils-CVE-2018-1000876.patch
+Patch6:         binutils-CVE-2019-9075.patch
+Patch7:         binutils-CVE-2019-9077.patch
 
 %description
 The Binutils package contains a linker, an assembler,
@@ -35,6 +37,8 @@ for handling compiled objects.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
+%patch7 -p1
 
 %build
 install -vdm 755 ../binutils-build
@@ -123,6 +127,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libopcodes.so
 
 %changelog
+*   Thu Mar 14 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.31-4
+-   Fix CVE-2019-9075 and CVE-2019-9077
 *   Wed Feb 13 2019 Alexey Makhalov <amakhalov@vmware.com> 2.31-3
 -   Fix CVE-2018-19931 and CVE-2018-1000876
 *   Wed Jan 02 2019 Ankit Jain <ankitja@vmware.com> 2.31-2
