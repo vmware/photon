@@ -1,7 +1,7 @@
 diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/cloudinit/distros/photon.py
---- cloud-init-0.7.9/cloudinit/distros/photon.py	1969-12-31 16:00:00.000000000 -0800
-+++ cloud-init-0.7.9-new/cloudinit/distros/photon.py	2017-05-15 05:13:49.156848344 -0700
-@@ -0,0 +1,319 @@
+--- cloud-init-0.7.9/cloudinit/distros/photon.py	1970-01-01 05:30:00.000000000 +0530
++++ cloud-init-0.7.9-new/cloudinit/distros/photon.py	2019-03-15 02:04:38.050451527 +0530
+@@ -0,0 +1,320 @@
 +# vi: ts=4 expandtab
 +#
 +# Copyright (C) 2017 VMware Inc.
@@ -16,6 +16,7 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +from cloudinit import util
 +from cloudinit.distros import net_util
 +from cloudinit.distros.parsers.hostname import HostnameConf
++from cloudinit.net.network_state import mask2cidr
 +
 +from cloudinit.settings import PER_INSTANCE
 +
@@ -80,7 +81,7 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +            if info.get('address'):
 +                net_cfg['Address'] = "%s" % (info.get('address'))
 +                if info.get('netmask'):
-+                    net_cfg['Address'] += "/%s" % (info.get('netmask'))
++                    net_cfg['Address'] += "/%s" % (mask2cidr(info.get('netmask')))
 +            if info.get('gateway'):
 +                net_cfg['Gateway'] = info.get('gateway')
 +            if info.get('dns-nameservers'):
