@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.31.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -15,6 +15,8 @@ Patch0:         Bug-23686-two-segment-faults-in-nm.patch
 Patch1:         PR23685-buffer-overflow.patch
 # Fix CVE-2018-1000876
 Patch2:         PR23994-libffd-integer-overflow.patch
+Patch3:         binutils-CVE-2019-9075.patch
+Patch4:         binutils-CVE-2019-9077.patch
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -32,6 +34,8 @@ for handling compiled objects.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 %configure \
@@ -116,6 +120,8 @@ make %{?_smp_mflags} check
 %{_lib64dir}/libiberty.a
 
 %changelog
+*   Thu Mar 14 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.31.1-4
+-   Fix CVE-2019-9075 and CVE-2019-9077
 *   Tue Jan 22 2019 Anish Swaminathan <anishs@vmware.com> 2.31.1-3
 -   fix CVE-2018-1000876
 *   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.31.1-2
