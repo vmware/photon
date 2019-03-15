@@ -1,7 +1,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.15.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
@@ -26,7 +26,7 @@ tar -C nginx-njs -xf %{SOURCE2}
 popd
 
 %build
-./configure \
+sh configure \
     --prefix=%{_sysconfdir}//nginx              \
     --sbin-path=/usr/sbin/nginx                 \
     --conf-path=/etc/nginx/nginx.conf           \
@@ -40,7 +40,8 @@ popd
     --with-ipv6 \
     --with-stream \
     --with-http_auth_request_module \
-    --with-http_sub_module
+    --with-http_sub_module \
+    --with-http_stub_status_module
 
 make %{?_smp_mflags}
 %install
@@ -75,6 +76,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %{_var}/log/nginx
 
 %changelog
+*   Fri Mar 15 2019 Keerthana K <keerthanak@vmware.com> 1.15.3-4
+-   Enable http_stub_status_module.
 *   Wed Nov 07 2018 Ajay Kaher <akaher@vmware.com> 1.15.3-3
 -   mark config files as non replaceable on upgrade.
 *   Mon Sep 17 2018 Keerthana K <keerthanak@vmware.com> 1.15.3-2
