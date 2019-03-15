@@ -1,7 +1,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.15.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
@@ -46,7 +46,8 @@ sh configure \
     --with-ipv6 \
     --with-stream \
     --with-http_auth_request_module \
-    --with-http_sub_module
+    --with-http_sub_module \
+    --with-http_stub_status_module
 
 make %{?_smp_mflags}
 %install
@@ -81,6 +82,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %{_var}/log/nginx
 
 %changelog
+*   Fri Mar 15 2019 Keerthana K <keerthanak@vmware.com> 1.15.3-6
+-   Enable https_stub_status_module.
 *   Mon Feb 25 2019 Ankit Jain <ankitja@vmware.com> 1.15.3-5
 -   Fix for CVE-2018-16843 and CVE-2018-16844
 *   Thu Feb 21 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.15.3-4
