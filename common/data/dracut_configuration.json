@@ -1,7 +1,0 @@
-{
-    "dracut_configuration" : {
-        "add_drivers" : ["tmem","xen-acpi-processor","xen-evtchn","xen-gntalloc","xen-gntdev","xen-privcmd","xen-pciback","xenfs",
-				"hv_ballon","hv_utils","hv_vmbus","cn"
-			]
-    }
-}

@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+source common.inc
+
 DIST_TAG=$1
 DIST_VER=$2
 SPEC_DIR=$3
@@ -34,6 +36,9 @@ cp ${NGINX_INC_RPM_FILE} tmp/nginxinc/
 pushd ./tmp/nginxinc
 rpm2cpio ${NGINX_INC_RPM} | cpio -vid
 popd
+
+setup_repo
+
 docker build --rm -t ${IMG_NAME} -f Dockerfile.nginx-ingress .
 docker save -o ${NGINX_INC_TAR} ${IMG_NAME}
 gzip ${NGINX_INC_TAR}

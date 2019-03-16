@@ -1,0 +1,20 @@
+{
+    "packages": [
+                 "minimal",
+                 "linux",
+                 "initramfs",
+                 "go",
+                 "git",
+                 "tar",
+                 "grub2",
+                 "less",
+                 "device-mapper",
+                 "kpartx",
+                 "openssl-devel",
+                 "fuse-devel",
+                 "createrepo",
+                 "texinfo",
+                 "wget",
+                 "sudo"
+                 ]
+}

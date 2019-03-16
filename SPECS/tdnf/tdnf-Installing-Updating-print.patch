@@ -1,0 +1,226 @@
+diff --git a/client/packageutils.c b/client/packageutils.c
+index 56dedbf..02b8eda 100644
+--- a/client/packageutils.c
++++ b/client/packageutils.c
+@@ -350,6 +350,8 @@ TDNFPopulatePkgInfos(
+                       &pPkgInfo->pszName);
+         BAIL_ON_TDNF_ERROR(dwError);
+ 
++        pPkgInfo->dwEpoch = hy_package_get_epoch(hPkg);
++
+         dwError = TDNFGetPackageVersion(hPkg, &pPkgInfo->pszVersion);
+         BAIL_ON_TDNF_ERROR(dwError);
+ 
+@@ -502,6 +504,7 @@ TDNFPopulatePkgInfoArray(
+         }
+         else if(nDetail == DETAIL_LIST)
+         {
++            pPkg->dwEpoch = hy_package_get_epoch(hPkg);
+             dwError = TDNFSafeAllocateString(
+                           hy_package_get_name(hPkg),
+                           &pPkg->pszName);
+diff --git a/client/remoterepo.c b/client/remoterepo.c
+index 72bf268..b9c1c9a 100644
+--- a/client/remoterepo.c
++++ b/client/remoterepo.c
+@@ -27,15 +27,28 @@ lrProgressCB(
+     gdouble dDownloaded
+     )
+ {
++    double dPercent;
++
+     if(dTotalToDownload > 0.00)
+     {
+-        gdouble dPercent = (dDownloaded/dTotalToDownload) * 100.0;
+-        fprintf(
+-            stdout,
+-            "%-35s %10.0f  %5.0f%%\r",
+-            (char*)pUserData,
+-            dDownloaded,
+-            dPercent);
++        dPercent = ((double)dDownloaded / (double)dTotalToDownload) * 100.0;
++        if(!isatty(STDOUT_FILENO))
++        {
++            fprintf(stdout, "%s %3.0f%% %f\n",
++                (char*)pUserData,
++                dPercent,
++                dDownloaded);
++        }
++        else
++        {
++            gdouble dPercent = (dDownloaded/dTotalToDownload) * 100.0;
++            fprintf(
++                stdout,
++                "%-35s %10.0f  %5.0f%%\r",
++                (char*)pUserData,
++                dDownloaded,
++                dPercent);
++        }
+         fflush(stdout);
+     }
+     return 0;
+diff --git a/client/rpmtrans.c b/client/rpmtrans.c
+index c0a3145..d856a3d 100644
+--- a/client/rpmtrans.c
++++ b/client/rpmtrans.c
+@@ -29,7 +29,7 @@ TDNFRpmExecTransaction(
+ {
+     uint32_t dwError = 0;
+     int nKeepCachedRpms = 0;
+-    TDNFRPMTS ts = {0};
++    TDNFRPMTS ts = {pTdnf->pArgs->nQuiet};
+ 
+     if(!pTdnf || !pTdnf->pConf || !pSolvedInfo)
+     {
+@@ -706,6 +706,7 @@ TDNFRpmCB(
+      rpmCallbackData data
+      )
+ {
++    Header pPkgHeader = (Header) pArg;
+     void* pResult = NULL;
+     char* pszFileName = (char*)key;
+     PTDNFRPMTS pTS = (PTDNFRPMTS)data;
+@@ -728,6 +729,25 @@ TDNFRpmCB(
+                 pTS->pFD = NULL;
+             }
+             break;
++        case RPMCALLBACK_INST_START:
++        case RPMCALLBACK_UNINST_START:
++            if(pTS->nQuiet)
++                break;
++            if(what == RPMCALLBACK_INST_START)
++            {
++                fprintf(stdout, "%s", "Installing/Updating: ");
++            }
++            else
++            {
++                fprintf(stdout, "%s", "Removing: ");
++            }
++            {
++                char* pszNevra = headerGetAsString(pPkgHeader, RPMTAG_NEVRA);
++                fprintf(stdout, "%s\n", pszNevra);
++                free(pszNevra);
++                (void)fflush(stdout);
++            }
++            break;
+         default:
+             break;
+     }
+diff --git a/client/structs.h b/client/structs.h
+index 019340d..4591901 100644
+--- a/client/structs.h
++++ b/client/structs.h
+@@ -31,6 +31,7 @@ typedef struct _TDNF_
+ 
+ typedef struct _TDNF_RPM_TS_
+ {
++  int                nQuiet;
+   rpmts              pTS;
+   rpmKeyring         pKeyring;
+   rpmtransFlags      nTransFlags;
+diff --git a/client/utils.c b/client/utils.c
+index 364434e..3cd9c8e 100644
+--- a/client/utils.c
++++ b/client/utils.c
+@@ -34,7 +34,7 @@ TDNFUtilsFormatSize(
+     int nIndex = 0;
+     int nLimit = strlen(pszSizes);
+     double dKiloBytes = 1024.0;
+-    int nMaxSize = 25;
++    int nMaxSize = 35;
+ 
+     if(!ppszFormattedSize)
+     {
+@@ -51,7 +51,8 @@ TDNFUtilsFormatSize(
+     dwError = TDNFAllocateMemory(1, nMaxSize, (void**)&pszFormattedSize);
+     BAIL_ON_TDNF_ERROR(dwError);
+ 
+-    if(sprintf(pszFormattedSize, "%.2f %c", dSize, pszSizes[nIndex]) < 0)
++    if(sprintf(pszFormattedSize, "%6.2f%c %lu", dSize, pszSizes[nIndex],
++        (unsigned long)unSize) < 0)
+     {
+         dwError = ERROR_TDNF_OUT_OF_MEMORY;
+         BAIL_ON_TDNF_ERROR(dwError);
+@@ -189,7 +190,7 @@ TDNFUtilsMakeDir(
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+ 
+-    if(mkdir(pszDir, 755))
++    if(mkdir(pszDir, 0755))
+     {
+         if(errno != EEXIST)
+         {
+diff --git a/tools/cli/installcmd.c b/tools/cli/installcmd.c
+index c7ecaf7..489874f 100644
+--- a/tools/cli/installcmd.c
++++ b/tools/cli/installcmd.c
+@@ -425,12 +425,12 @@ PrintAction(
+     char* pszTotalInstallSize = NULL;
+ 
+     #define COL_COUNT 4
+-    //Name | Arch | Version-Release | Install Size
++    //Name | Arch | [Epoch:]Version-Release | Install Size
+     int nColPercents[COL_COUNT] = {40, 15, 25, 10};
+     int nColWidths[COL_COUNT] = {0};
+ 
+     #define MAX_COL_LEN 256
+-    char szVersionAndRelease[MAX_COL_LEN] = {0};
++    char szEpochVersionRelease[MAX_COL_LEN] = {0};
+ 
+     if(!pPkgInfos)
+     {
+@@ -471,26 +471,43 @@ PrintAction(
+     while(pPkgInfo)
+     {
+         dwTotalInstallSize += pPkgInfo->dwInstallSizeBytes;
+-        memset(szVersionAndRelease, 0, MAX_COL_LEN);
+-        if(snprintf(
+-            szVersionAndRelease,
+-            MAX_COL_LEN,
+-            "%s-%s",
+-            pPkgInfo->pszVersion,
+-            pPkgInfo->pszRelease) < 0)
++        memset(szEpochVersionRelease, 0, MAX_COL_LEN);
++        if(pPkgInfo->dwEpoch)
+         {
+-            dwError = errno;
+-            BAIL_ON_CLI_ERROR(dwError);
++            if(snprintf(
++                szEpochVersionRelease,
++                MAX_COL_LEN,
++                "%u:%s-%s",
++                (unsigned)pPkgInfo->dwEpoch,
++                pPkgInfo->pszVersion,
++                pPkgInfo->pszRelease) < 0)
++            {
++                dwError = errno;
++                BAIL_ON_CLI_ERROR(dwError);
++            }
++        }
++        else
++        {
++            if(snprintf(
++                szEpochVersionRelease,
++                MAX_COL_LEN,
++                "%s-%s",
++                pPkgInfo->pszVersion,
++                pPkgInfo->pszRelease) < 0)
++            {
++                dwError = errno;
++                BAIL_ON_CLI_ERROR(dwError);
++            }
+         }
+ 
+         printf(
+-            "%-*s%-*s%-*s%*s\n",
++            "%-*s %-*s %-*s %*s\n",
+             nColWidths[0],
+             pPkgInfo->pszName,
+             nColWidths[1],
+             pPkgInfo->pszArch,
+             nColWidths[2],
+-            szVersionAndRelease,
++            szEpochVersionRelease,
+             nColWidths[3],
+             pPkgInfo->pszFormattedSize);
+         pPkgInfo = pPkgInfo->pNext;

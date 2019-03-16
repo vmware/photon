@@ -1,7 +1,7 @@
 Summary:  Bourne-Again SHell
 Name:     bash
 Version:  4.3.48
-Release:  2%{?dist}
+Release:  3%{?dist}
 License:  GPLv3
 URL:      https://www.gnu.org/software/bash/
 Group:    System Environment/Base
@@ -76,7 +76,7 @@ The package contains the Bourne-Again SHell
 %package lang
 Summary: Additional language files for bash
 Group: System Environment/Base
-Requires: %{name} == %{version}-%{release}
+Requires: %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of bash.
 
@@ -139,7 +139,7 @@ These are the additional language files of bash.
 %build
 %configure --bindir=/bin \
   --without-bash-malloc \
-  --with-installed-readline 
+  --with-installed-readline
 make %{?_smp_mflags}
 #check if the bash version matches our spec file
 BASHVERSION="$(./bashversion -r).$(./bashversion -v).$(./bashversion -p)"
@@ -414,6 +414,8 @@ fi
 #%defattr(-,root,root)
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 4.3.48-3
+-   Corrected assignment('==' -> '=') in Requires
 *   Mon Nov 13 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.48-2
 -   Fix CVE-2016-9401.
 *   Thu Oct 19 2017 Bo Gan <ganb@vmware.com> 4.3.48-1

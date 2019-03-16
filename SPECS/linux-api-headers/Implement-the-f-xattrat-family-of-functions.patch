@@ -1,0 +1,223 @@
+From dd6595e90768ea30a0a41d96ceb5da3cc1916bd2 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Wed, 16 Aug 2017 21:14:17 +0000
+Subject: [PATCH] Implement the f*xattrat family of functions
+
+Inspired by https://lkml.org/lkml/2014/1/21/266
+---
+ arch/x86/entry/syscalls/syscall_64.tbl |   4 ++
+ fs/xattr.c                             | 123 +++++++++++++++++++++++++++++++++
+ include/linux/syscalls.h               |  11 ++-
+ 4 files changed, 141 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/syscall_64.tbl
+index 314a90b..3c2dfa1 100644
+--- a/arch/x86/entry/syscalls/syscall_64.tbl
++++ b/arch/x86/entry/syscalls/syscall_64.tbl
+@@ -332,6 +332,10 @@
+ 323	common	userfaultfd		sys_userfaultfd
+ 324	common	membarrier		sys_membarrier
+ 325	common	mlock2			sys_mlock2
++508	common	fsetxattrat		sys_fsetxattrat
++509	common	fgetxattrat		sys_fgetxattrat
++510	common	flistxattrat		sys_flistxattrat
++511	common	fremovexattrat		sys_fremovexattrat
+ 
+ #
+ # x32-specific system call numbers start at 512 to avoid cache impact
+diff --git a/fs/xattr.c b/fs/xattr.c
+index f0da9d2..d5e4944 100644
+--- a/fs/xattr.c
++++ b/fs/xattr.c
+@@ -419,6 +419,41 @@ SYSCALL_DEFINE5(fsetxattr, int, fd, const char __user *, name,
+ 	return error;
+ }
+ 
++SYSCALL_DEFINE6(fsetxattrat, int, fd, const char __user *, pathname,
++		const char __user *, name, const void __user *, value,
++		size_t, size, int, flags)
++{
++	struct path path;
++	int error;
++	unsigned int lookup_flags = 0;
++
++	if (flags & ~(XATTR_CREATE | XATTR_REPLACE |
++		      AT_SYMLINK_NOFOLLOW | AT_EMPTY_PATH))
++		return -EINVAL;
++
++	if (!(flags & AT_SYMLINK_NOFOLLOW))
++		lookup_flags |= LOOKUP_FOLLOW;
++	if (flags & AT_EMPTY_PATH)
++		lookup_flags |= LOOKUP_EMPTY;
++
++retry:
++	error = user_path_at(fd, pathname, lookup_flags, &path);
++	if (error)
++		return error;
++	error = mnt_want_write(path.mnt);
++	if (!error) {
++		error = setxattr(path.dentry, name, value, size,
++				 flags & (XATTR_CREATE | XATTR_REPLACE));
++		mnt_drop_write(path.mnt);
++	}
++	path_put(&path);
++	if (retry_estale(error, lookup_flags)) {
++		lookup_flags |= LOOKUP_REVAL;
++		goto retry;
++	}
++	return error;
++}
++
+ /*
+  * Extended attribute GET operations
+  */
+@@ -513,6 +548,35 @@ SYSCALL_DEFINE4(fgetxattr, int, fd, const char __user *, name,
+ 	return error;
+ }
+ 
++SYSCALL_DEFINE6(fgetxattrat, int, fd, const char __user *, pathname,
++		const char __user *, name, void __user *, value, size_t, size,
++		int, flags)
++{
++	struct path path;
++	ssize_t error;
++	unsigned int lookup_flags = 0;
++
++	if (flags & ~(AT_SYMLINK_NOFOLLOW | AT_EMPTY_PATH))
++		return -EINVAL;
++
++	if (!(flags & AT_SYMLINK_NOFOLLOW))
++		lookup_flags |= LOOKUP_FOLLOW;
++	if (flags & AT_EMPTY_PATH)
++		lookup_flags |= LOOKUP_EMPTY;
++
++retry:
++	error = user_path_at(fd, pathname, lookup_flags, &path);
++	if (error)
++		return error;
++	error = getxattr(path.dentry, name, value, size);
++	path_put(&path);
++	if (retry_estale(error, lookup_flags)) {
++		lookup_flags |= LOOKUP_REVAL;
++		goto retry;
++	}
++	return error;
++}
++
+ /*
+  * Extended attribute LIST operations
+  */
+@@ -594,6 +658,34 @@ SYSCALL_DEFINE3(flistxattr, int, fd, char __user *, list, size_t, size)
+ 	return error;
+ }
+ 
++SYSCALL_DEFINE5(flistxattrat, int, fd, const char __user *, pathname,
++		char __user *, list, size_t, size, int, flags)
++{
++	struct path path;
++	ssize_t error;
++	unsigned int lookup_flags = 0;
++
++	if (flags & ~(AT_SYMLINK_NOFOLLOW | AT_EMPTY_PATH))
++		return -EINVAL;
++
++	if (!(flags & AT_SYMLINK_NOFOLLOW))
++		lookup_flags |= LOOKUP_FOLLOW;
++	if (flags & AT_EMPTY_PATH)
++		lookup_flags |= LOOKUP_EMPTY;
++
++retry:
++	error = user_path_at(fd, pathname, lookup_flags, &path);
++	if (error)
++		return error;
++	error = listxattr(path.dentry, list, size);
++	path_put(&path);
++	if (retry_estale(error, lookup_flags)) {
++		lookup_flags |= LOOKUP_REVAL;
++		goto retry;
++	}
++	return error;
++}
++
+ /*
+  * Extended attribute REMOVE operations
+  */
+@@ -663,6 +755,37 @@ SYSCALL_DEFINE2(fremovexattr, int, fd, const char __user *, name)
+ 	return error;
+ }
+ 
++SYSCALL_DEFINE4(fremovexattrat, int, fd, const char __user *, pathname,
++		const char __user *, name, int, flags)
++{
++	struct path path;
++	int error;
++	unsigned int lookup_flags = 0;
++
++	if (flags & ~(AT_SYMLINK_NOFOLLOW | AT_EMPTY_PATH))
++		return -EINVAL;
++
++	if (!(flags & AT_SYMLINK_NOFOLLOW))
++		lookup_flags |= LOOKUP_FOLLOW;
++	if (flags & AT_EMPTY_PATH)
++		lookup_flags |= LOOKUP_EMPTY;
++
++retry:
++	error = user_path_at(fd, pathname, lookup_flags, &path);
++	if (error)
++		return error;
++	error = mnt_want_write(path.mnt);
++	if (!error) {
++		error = removexattr(path.dentry, name);
++		mnt_drop_write(path.mnt);
++	}
++	path_put(&path);
++	if (retry_estale(error, lookup_flags)) {
++		lookup_flags |= LOOKUP_REVAL;
++		goto retry;
++	}
++	return error;
++}
+ 
+ static const char *
+ strcmp_prefix(const char *a, const char *a_prefix)
+diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
+index c2b66a2..daf1856 100644
+--- a/include/linux/syscalls.h
++++ b/include/linux/syscalls.h
+@@ -430,23 +430,32 @@ asmlinkage long sys_lsetxattr(const char __user *path, const char __user *name,
+ 			      const void __user *value, size_t size, int flags);
+ asmlinkage long sys_fsetxattr(int fd, const char __user *name,
+ 			      const void __user *value, size_t size, int flags);
++asmlinkage long sys_fsetxattrat(int fd, const char __user *pathname,
++				const char __user *name,
++				const void __user *value, size_t size, int flags);
+ asmlinkage long sys_getxattr(const char __user *path, const char __user *name,
+ 			     void __user *value, size_t size);
+ asmlinkage long sys_lgetxattr(const char __user *path, const char __user *name,
+ 			      void __user *value, size_t size);
+ asmlinkage long sys_fgetxattr(int fd, const char __user *name,
+ 			      void __user *value, size_t size);
++asmlinkage long sys_fgetxattrat(int fd, const char __user *pathname,
++				const char __user *name,
++				void __user *value, size_t size, int flags);
+ asmlinkage long sys_listxattr(const char __user *path, char __user *list,
+ 			      size_t size);
+ asmlinkage long sys_llistxattr(const char __user *path, char __user *list,
+ 			       size_t size);
+ asmlinkage long sys_flistxattr(int fd, char __user *list, size_t size);
++asmlinkage long sys_flistxattrat(int fd, const char __user *pathname,
++				 char __user *list, size_t size, int flags);
+ asmlinkage long sys_removexattr(const char __user *path,
+ 				const char __user *name);
+ asmlinkage long sys_lremovexattr(const char __user *path,
+ 				 const char __user *name);
+ asmlinkage long sys_fremovexattr(int fd, const char __user *name);
+-
++asmlinkage long sys_fremovexattrat(int fd, const char __user *pathname,
++				   const char __user *name, int flags);
+ asmlinkage long sys_brk(unsigned long brk);
+ asmlinkage long sys_mprotect(unsigned long start, size_t len,
+ 				unsigned long prot);
+-- 
+2.8.1
+

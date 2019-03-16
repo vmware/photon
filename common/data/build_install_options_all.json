@@ -1,41 +1,23 @@
 {
     "iso" : {
         "title" : "ISO Packages",
-        "file" : "packages_iso.json",
+        "packagelist_file" : "packages_iso.json",
         "visible" : false,
-        "include" : [],
-        "additional-files" : ["COPYING","NOTICE"]
+        "additional-files" : ["open_source_license.txt","NOTICE"]
     },
     "minimal" : {
         "title" : "1. Photon Minimal",
-        "file" : "packages_minimal.json",
-        "visible" : true,
-        "include" : []
+        "packagelist_file" : "packages_minimal.json",
+        "visible" : true
     },
-    "full" : {
-        "title" : "2. Photon Full",
-        "file" : "packages_full.json",
-        "visible" : true,
-        "include" : ["minimal"]
-    },
-    "ostree_host" : {
-        "title" : "3. Photon OSTree Host",
-        "file" : "packages_ostree_host.json",
-        "visible" : true,
-        "include" : [],
-        "additional-files" : ["ostree-repo.tar.gz"]
-    },
-    "ostree_server" : {
-        "title" : "4. Photon OSTree Server",
-        "file" : "packages_ostree_server.json",
-        "visible" : true,
-        "include" : ["minimal"],
-        "additional-files" : ["ostree-repo.tar.gz"]
+    "developer" : {
+        "title" : "2. Photon Developer",
+        "packagelist_file" : "packages_developer.json",
+        "visible" : true
     },
     "appliance" : {
         "title" : "Minimal packages to support appliances.",
-        "file" : "packages_appliance.json",
-        "visible" : false,
-        "include" : []
+        "packagelist_file" : "packages_appliance.json",
+        "visible" : false
     }
 }

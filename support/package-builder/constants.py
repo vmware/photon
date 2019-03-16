@@ -1,84 +1,48 @@
-from SpecData import SerializableSpecObjectsUtils
-from SpecUtils import Specutils
+from Logger import Logger
 
 class constants(object):
-    specPath=""
-    sourcePath=""
-    rpmPath=""
-    logPath=""
-    dist=""
-    buildNumber="0000000"
-    releaseVersion="NNNnNNN"
-    topDirPath=""
-    specData=None
-    buildRootPath="/mnt"
-    prevPublishRPMRepo=""
-    prevPublishXRPMRepo=""
-    pullsourcesConfig=""
-    buildPatch=False
-    inputRPMSPath=""
-    rpmCheck=False
-    sourceRpmPath=""
-    noDepsPackageList=["texinfo","bzip2","gettext","nspr","xz","bison","go"]
-    publishBuildDependencies=False
-    packageWeightsPath=None
-    listToolChainPackages=[
-        "linux-api-headers",
-        "glibc",
-        "zlib",
-        "file",
-        "binutils",
-        "gmp",
-        "mpfr",
-        "mpc",
-        "gcc",
-        "pkg-config",
-        "ncurses",
-        "bash",
-        "bzip2",
-        "sed",
-        "procps-ng",
-        "coreutils",
-        "m4",
-        "grep",
-        "readline",
-        "diffutils",
-        "gawk",
-        "findutils",
-        "gettext",
-        "gzip",
-        "make",
-        "patch",
-        "util-linux",
-        "util-linux-devel",
-        "tar",
-        "xz",
-        "libtool",
-        "flex",
-        "flex-devel",
-        "bison",
-        "lua",
-        "popt",
-        "nspr",
-        "sqlite-autoconf",
-        "nss",
-        "elfutils",
-        "expat",
-        "libffi",
-        "libpipeline",
-        "gdbm",
-        "perl",
-        "texinfo",
-        "autoconf",
-        "automake",
-        "openssl",
-        "python2",
-        "rpm",
-        "groff",
-        "man-pages",
-        "cpio"]
+    specPath = ""
+    sourcePath = ""
+    rpmPath = ""
+    logPath = ""
+    logLevel = "info"
+    topDirPath = ""
+    buildRootPath = "/mnt"
+    prevPublishRPMRepo = ""
+    prevPublishXRPMRepo = ""
+    pullsourcesURL = ""
+    extrasourcesURLs = {}
+    buildPatch = False
+    inputRPMSPath = ""
+    rpmCheck = False
+    sourceRpmPath = ""
+    publishBuildDependencies = False
+    packageWeightsPath = None
+    dockerUnixSocket = "/var/run/docker.sock"
+    buildContainerImage = "photon_build_container:latest"
+    userDefinedMacros = {}
+    dist = None
+    buildNumber = None
+    releaseVersion = None
+    katBuild = None
+    testForceRPMS = []
+    tmpDirPath = "/dev/shm"
+    buildOptions = {}
+    # will be extended later from listMakeCheckRPMPkgtoInstall
+    listMakeCheckRPMPkgWithVersionstoInstall = None
 
-    listCoreToolChainRPMPackages=[
+    noDepsPackageList = [
+        "texinfo",
+        "bzip2",
+        "gettext",
+        "nspr",
+        "xz",
+        "bison",
+        "go"]
+
+    # These packages will be built in first order as build-core-toolchain stage
+    listCoreToolChainPackages = [
+        "filesystem",
         "linux-api-headers",
         "glibc",
         "glibc-devel",
@@ -105,57 +69,70 @@ class constants(object):
         "readline",
         "bash"]
 
-    # List of X library RPMS that will be installed in a chroot prior to build openjdk & openjre package. 
-    listToolChainXRPMsToInstall=[
-        "glib-devel",
-        "icu-devel",
-        "openjdk",
-        "openjre",
-        "icu",
-        "cups",
-        "cups-devel",
-        "freetype2",
-        "freetype2-devel",
-        "xorg-proto-devel",
-        "libXtst",
-        "libXtst-devel",
-        "libXfixes",
-        "libXfixes-devel",
-        "libXi",
-        "libXi-devel",
-        "harfbuzz",
-        "harfbuzz-devel",
-        "alsa-lib",
-        "alsa-lib-devel",
-        "xcb-proto",
-        "libXdmcp-devel",
-        "libXau-devel",
-        "util-macros",
-        "xtrans",
-        "libxcb-devel",
-        "fontconfig-devel",
-        "proto",
-        "libXdmcp",
-        "libxcb",
-        "libXau",
-        "fontconfig",
-        "xtrans-devel",
-        "libX11",
-        "libX11-devel",
-        "libXext",
-        "libXext-devel",
-        "libICE-devel",
-        "libSM",
-        "libICE",
-        "libSM-devel",
-        "libXt",
-        "libXmu",
-        "libXt-devel",
-        "libXmu-devel",
-        "libXrender",
-        "libXrender-devel"]
+    # These packages will be built in a second stage to replace publish RPMS
+    listToolChainPackages = [
+        "filesystem",
+        "linux-api-headers",
+        "glibc",
+        "zlib",
+        "file",
+        "binutils",
+        "gmp",
+        "mpfr",
+        "mpc",
+        "gcc",
+        "pkg-config",
+        "ncurses",
+        "bash",
+        "bzip2",
+        "sed",
+        "procps-ng",
+        "coreutils",
+        "m4",
+        "grep",
+        "readline",
+        "diffutils",
+        "gawk",
+        "findutils",
+        "gettext",
+        "gzip",
+        "make",
+        "patch",
+        "util-linux",
+        "util-linux-devel",
+        "tar",
+        "xz",
+        "libtool",
+        "flex",
+        "bison",
+        "lua",
+        "popt",
+        "nspr",
+        "sqlite-autoconf",
+        "nss",
+        "elfutils",
+        "expat",
+        "libffi",
+        "libpipeline",
+        "gdbm",
+        "perl",
+        "texinfo",
+        "autoconf",
+        "automake",
+        "openssl",
+        "openssl-devel",
+        "python2",
+        "rpm",
+        "groff",
+        "man-pages",
+        "cpio"]
 
-    listToolChainRPMPkgsToInstall=[
+    # List or RPMS that will be installed in a chroot prior to build each
+    # package. This list should be ordered by install order. On a stage1
+    # and stage2 published rpms will/might be used after stage2 only local
+    # RPMS will be used
+    listToolChainRPMsToInstall = [
+        "filesystem",
         "linux-api-headers",
         "glibc",
         "glibc-devel",
@@ -179,6 +156,7 @@ class constants(object):
         "gcc",
         "pkg-config",
         "ncurses",
+        "ncurses-devel",
         "bash",
         "bzip2",
         "bzip2-devel",
@@ -209,97 +187,13 @@ class constants(object):
         "sqlite-autoconf",
         "nss",
         "elfutils-libelf",
+        "expat",
+        "libffi",
         "libpipeline",
         "gdbm",
         "perl",
         "texinfo",
         "libcap",
-        "rpm",
-        "rpm-build",
-        "rpm-devel",
-        "autoconf",
-        "automake",
-        "groff",
-        "man-pages",
-        "elfutils",
-        "cpio",
-        "go",
-        "expat",
-        "libffi",
-        "openssl",
-        "openssl-devel",
-        "python2",
-        "python2-libs",
-        "python2-devel"]
-
-    listToolChainRPMPkgsToBuild=[
-        "linux-api-headers",
-        "glibc",
-        "glibc-devel",
-        "zlib",
-        "zlib-devel",
-        "file",
-        "binutils",
-        "binutils-devel",
-        "gmp",
-        "gmp-devel",
-        "mpfr",
-        "mpfr-devel",
-        "mpc",
-        "libgcc",
-        "libgcc-devel",
-        "libgcc-atomic",
-        "libstdc++",
-        "libstdc++-devel",
-        "libgomp",
-        "libgomp-devel",
-        "gcc",
-        "pkg-config",
-        "ncurses",
-        "bash",
-        "bzip2",
-        "sed",
-        "ncurses-devel",
-        "procps-ng",
-        "coreutils",
-        "m4",
-        "grep",
-        "readline",
-        "diffutils",
-        "gawk",
-        "findutils",
-        "gettext",
-        "gzip",
-        "make",
-        "patch",
-        "util-linux",
-        "util-linux-devel",
-        "tar",
-        "xz",
-        "libtool",
-        "flex",
-        "flex-devel",
-        "bison",
-        "readline-devel",
-        "lua",
-        "lua-devel",
-        "popt",
-        "popt-devel",
-        "nspr",
-        "sqlite-autoconf",
-        "nss",
-        "nss-devel",
-        "bzip2-devel",
-        "elfutils-libelf",
-        "elfutils",
-        "elfutils-libelf-devel",
-        "elfutils-devel",
-        "expat",
-        "libffi",
-        "libpipeline",
-        "gdbm",
-        "perl",
-        "texinfo",
         "autoconf",
         "automake",
         "openssl",
@@ -307,86 +201,260 @@ class constants(object):
         "python2",
         "python2-libs",
         "python2-devel",
-        "libcap",
+        "groff",
+        "man-pages",
+        "elfutils",
         "rpm",
         "rpm-build",
         "rpm-devel",
-        "groff",
-        "man-pages",
-        "cpio"]
+        "cpio",
+        "go"]
 
+    # List of RPMs which are not published. They will be created during the
+    # build process
+    listOfRPMsProvidedAfterBuild = [
+        "util-linux-devel",
+        "flex-devel",
+        "nspr",
+        "glibc",
+        "bzip2-devel",
+        "expat",
+        "ncurses-devel",
+        "nss",
+        "xz-devel",
+        "file",
+        "openssl",
+        "openssl-devel",
+        "rpm",
+        "rpm-devel"]
+
+    # List of packages that will be installed in addition for each
+    # package to make check
+    listMakeCheckRPMPkgtoInstall = [
+        "python2",
+        "python2-devel",
+        "python2-libs",
+        "python2-tools",
+        "PyYAML",
+        "libyaml",
+        "libffi",
+        "python-setuptools",
+        "python3-setuptools",
+        "ca-certificates",
+        "linux",
+        "createrepo_c",
+        "sudo",
+        "ruby",
+        "curl",
+        "pcre-devel",
+        "boost-devel",
+        "which",
+        "go",
+        "e2fsprogs-devel",
+        "shadow",
+        "check",
+        "libacl-devel",
+        "device-mapper",
+        "wget",
+        "tar",
+        "pkg-config",
+        "git",
+        "openssl",
+        "openssl-devel",
+        "net-tools",
+        "less",
+        "iana-etc",
+        "libdb",
+        "rpm-devel",
+        "rpm",
+        "libxml2",
+        "python-xml",
+        "python3-xml",
+        "libacl",
+        "tzdata",
+        "libgcrypt-devel",
+        "Linux-PAM",
+        "unzip",
+        "systemd-devel",
+        "gnupg",
+        "ncurses-terminfo"]
+
+    # List of packages that requires privileged docker
+    # to run make check.
+    listReqPrivilegedDockerForTest = [
+        "elfutils", # SYS_PTRACE
+        "gdb",
+        "glibc",
+        "tar"]
+
+    # .spec file might contain lines such as
+    # Requires(post):/sbin/useradd
+    # Build system should interpret it as
+    # Requires: shadow
+    providedBy = {
+        "/usr/sbin/useradd":"shadow",
+        "/usr/sbin/userdel":"shadow",
+        "/usr/sbin/groupadd":"shadow",
+        "/sbin/service":"initscripts",
+        "/usr/bin/which":"which",
+        "/usr/bin/python":"python2",
+        "/bin/python":"python2",
+        "/bin/python2":"python2",
+        "/bin/python3":"python3",
+        "/bin/awk":"gawk",
+        "/bin/gawk":"gawk",
+        "/bin/sed":"sed",
+        "/bin/grep":"grep",
+        "/bin/sh":"bash",
+        "/bin/bash":"bash",
+        "/bin/zsh":"zsh",
+        "/bin/tcsh":"tcsh",
+        "/bin/csh":"csh",
+        "/bin/perl":"perl",
+        "/bin/mergerepo":"createrepo_c",
+        "/bin/modifyrepo":"createrepo_c",
+        "/bin/false":"coreutils",
+        "/bin/ln":"coreutils",
+        "/bin/chown":"coreutils",
+        "/bin/cp":"coreutils",
+        "/bin/rm":"coreutils",
+        "/bin/mv":"coreutils"
+    }
 
     @staticmethod
-    def initialize(options):
-        constants.dist = options.dist
-        constants.buildNumber = options.buildNumber
-        constants.releaseVersion = options.releaseVersion
-        constants.specPath = options.specPath
-        constants.sourcePath = options.sourcePath
-        constants.rpmPath = options.rpmPath
-        constants.sourceRpmPath = options.sourceRpmPath
-        constants.topDirPath = options.topDirPath
-        constants.logPath = options.logPath
-        constants.prevPublishRPMRepo=options.publishRPMSPath
-        constants.prevPublishXRPMRepo = options.publishXRPMSPath
-        constants.buildRootPath=options.buildRootPath
-        constants.pullsourcesConfig = options.pullsourcesConfig
-        constants.inputRPMSPath=options.inputRPMSPath
-        constants.rpmCheck = options.rpmCheck
-        constants.packageWeightsPath=options.packageWeightsPath
-        constants.publishBuildDependencies=options.publishBuildDependencies
-        constants.specData = SerializableSpecObjectsUtils(constants.logPath)
-        constants.updateRPMMacros(options)
-        # Perform full parsing now
-        constants.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
-        
+    def setSpecPath(specPath):
+        constants.specPath = specPath
+
     @staticmethod
-    def updateRPMMacros(options):
-        if options.katBuild != None:
-            constants.specData.addMacro("kat_build", options.katBuild)
+    def setSourcePath(sourcePath):
+        constants.sourcePath = sourcePath
 
-        #adding distribution rpm macro
-        constants.specData.addMacro("dist",constants.dist)
+    @staticmethod
+    def setRpmPath(rpmPath):
+        constants.rpmPath = rpmPath
 
-        #adding buildnumber rpm macro
-        constants.specData.addMacro("photon_build_number",constants.buildNumber)
+    @staticmethod
+    def setSourceRpmPath(sourceRpmPath):
+        constants.sourceRpmPath = sourceRpmPath
 
-        #adding releasenumber rpm macro
-        constants.specData.addMacro("photon_release_version",constants.releaseVersion)
+    @staticmethod
+    def setTopDirPath(topDirPath):
+        constants.topDirPath = topDirPath
 
-        #adding check rpm macro
-        constants.specData.addMacro("with_check","0")
+    @staticmethod
+    def setLogLevel(logLevel):
+        constants.logLevel = logLevel
 
-	#adding openjre version rpm macro
-        spec = Specutils(constants.specPath + "/openjdk/openjdk.spec")
-        javaversion = spec.getVersion()
-        constants.specData.addMacro("JAVA_VERSION",javaversion)
+    @staticmethod
+    def setLogPath(logPath):
+        constants.logPath = logPath
 
-	#adding openjre 9 version rpm macro
-        spec = Specutils(constants.specPath + "/openjdk9/openjdk9.spec")
-        javaversion9 = spec.getVersion()
-        constants.specData.addMacro("JAVA_VERSION_9",javaversion9)
+    @staticmethod
+    def setPrevPublishRPMRepo(prevPublishRPMRepo):
+        constants.prevPublishRPMRepo = prevPublishRPMRepo
 
-	#adding openjre 10 version rpm macro
-        spec = Specutils(constants.specPath + "/openjdk10/openjdk10.spec")
-        javaversion10 = spec.getVersion()
-        constants.specData.addMacro("JAVA_VERSION_10",javaversion10)
-        
-        #adding kernelversion rpm macro
-        spec = Specutils(constants.specPath + "/linux/linux.spec")
-        kernelversion = spec.getVersion()
-        constants.specData.addMacro("KERNEL_VERSION",kernelversion)
+    @staticmethod
+    def setPrevPublishXRPMRepo(prevPublishXRPMRepo):
+        constants.prevPublishXRPMRepo = prevPublishXRPMRepo
 
-        #adding kernelrelease rpm macro
-        kernelrelease = spec.getRelease()
-        constants.specData.addMacro("KERNEL_RELEASE",kernelrelease)
-       
-        #adding kernelsubrelease rpm macro
-        kernelversion = kernelversion.replace(".","")
-        if kernelversion.isdigit():
-            kernelversion = int(kernelversion) << 8
-        kernelsubrelease = str(kernelversion)+kernelrelease.split('.')[0]
-        if kernelsubrelease:
-            kernelsubrelease = "."+kernelsubrelease
-            constants.specData.addMacro("kernelsubrelease",kernelsubrelease) 
+    @staticmethod
+    def setBuildRootPath(buildRootPath):
+        constants.buildRootPath = buildRootPath
 
+    @staticmethod
+    def setPullSourcesURL(url):
+        constants.pullsourcesURL = url
+
+    @staticmethod
+    def setExtraSourcesURLs(packageName, urls):
+        constants.extrasourcesURLs[packageName] = urls
+
+    @staticmethod
+    def getPullSourcesURLs(packageName):
+        urls=[]
+        urls.append(constants.pullsourcesURL)
+        if packageName in constants.extrasourcesURLs:
+            urls.extend(constants.extrasourcesURLs[packageName])
+        return urls
+
+    @staticmethod
+    def setInputRPMSPath(inputRPMSPath):
+        constants.inputRPMSPath = inputRPMSPath
+
+    @staticmethod
+    def setRPMCheck(rpmCheck):
+        constants.rpmCheck = rpmCheck
+
+    @staticmethod
+    def setRpmCheckStopOnError(rpmCheckStopOnError):
+        constants.rpmCheckStopOnError = rpmCheckStopOnError
+
+    @staticmethod
+    def setPublishBuildDependencies(publishBuildDependencies):
+        constants.publishBuildDependencies = publishBuildDependencies
+
+    @staticmethod
+    def setPackageWeightsPath(packageWeightsPath):
+        constants.packageWeightsPath = packageWeightsPath
+
+    @staticmethod
+    def setDist(dist):
+        constants.dist = dist
+
+    @staticmethod
+    def setBuildNumber(buildNumber):
+        constants.buildNumber = buildNumber
+
+    @staticmethod
+    def setReleaseVersion(releaseVersion):
+        constants.releaseVersion = releaseVersion
+
+    @staticmethod
+    def setKatBuild(katBuild):
+        constants.katBuild = katBuild
+
+    @staticmethod
+    def initialize():
+        if constants.rpmCheck:
+            constants.testLogger = Logger.getLogger("MakeCheckTest",
+                                                    constants.logPath, constants.logLevel)
+            constants.addMacro("with_check", "1")
+        else:
+            constants.addMacro("with_check", "0")
+
+        # adding distribution rpm macro
+        if constants.dist is not None:
+            constants.addMacro("dist", constants.dist)
+
+        # adding buildnumber rpm macro
+        if constants.buildNumber is not None:
+            constants.addMacro("photon_build_number", constants.buildNumber)
+
+        # adding releasenumber rpm macro
+        if constants.releaseVersion is not None:
+            constants.addMacro("photon_release_version", constants.releaseVersion)
+
+        if constants.katBuild is not None:
+            constants.addMacro("kat_build", constants.katBuild)
+
+    @staticmethod
+    def setTestForceRPMS(listsPackages):
+        constants.testForceRPMS = listsPackages
+
+    @staticmethod
+    def addMacro(macroName, macroValue):
+        constants.userDefinedMacros[macroName] = macroValue
+
+    @staticmethod
+    def setBuildOptions(options):
+        constants.buildOptions = options
+
+    @staticmethod
+    def getAdditionalMacros(package):
+        macros = {}
+        if package in constants.buildOptions.keys():
+            pkg = constants.buildOptions[package]
+            for m in pkg["macros"]:
+                k, v = m.split(' ', 1)
+                macros[k] = v
+        return macros

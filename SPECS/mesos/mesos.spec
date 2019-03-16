@@ -3,7 +3,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	1.2.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -11,8 +11,8 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha1 mesos=bbcec6f04bb629a16a5ea24a8cde3f3e9f75300e
-BuildRequires:	openjre >= %{JAVA_VERSION}
-BuildRequires:  openjdk >= %{JAVA_VERSION}
+BuildRequires:	openjre
+BuildRequires:  openjdk
 BuildRequires:	curl
 BuildRequires:	apache-maven >= 3.3.3
 BuildRequires:	apr-devel >= 1.5.2
@@ -68,21 +68,18 @@ sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/Makefil
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libprocess/3rdparty/Makefile.am
 sed -i "/xlocale.h/d" 3rdparty/stout/include/stout/jsonify.hpp
 
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
-./configure \
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+%configure \
 	CFLAGS="%{optflags} -Wno-deprecated-declarations"  \
 	CXXFLAGS="%{optflags} -Wno-deprecated-declarations" \
-	--disable-silent-rules \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir}
+	--disable-silent-rules
 make
 
 %check
 make check
 
 %install
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 make DESTDIR=%{buildroot} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 mv %{buildroot}%{python2_sitelib}/mesos %{buildroot}/python-mesos
@@ -99,7 +96,7 @@ find %{buildroot}%{python2_sitelib}/mesos -name '*.pyc' -delete
 %{_sbindir}/mesos-*
 %{_libdir}/libmesos*
 %{_libexecdir}/mesos/mesos-*
-%{_prefix}/etc/mesos/*
+%{_sysconfdir}/mesos/*
 %{_prefix}/share/mesos/*
 %{_libdir}/libload_qos_controller-*.so
 %{_libdir}/libload_qos_controller.so
@@ -117,13 +114,15 @@ find %{buildroot}%{python2_sitelib}/mesos -name '*.pyc' -delete
 %{_includedir}/*
 %{_libdir}/libfixed_resource_estimator*
 %{_libdir}/pkgconfig/mesos.pc
-%{_prefix}/etc/mesos/*
+%{_sysconfdir}/mesos/*
 %exclude %{_libdir}/debug/
 
 %files python
 %{python2_sitelib}/mesos/*
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 1.2.2-3
+-   Removed JAVA_VERSION macro
 *   Tue Jan 23 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.2-2
 -   Add serf-devel to BuildRequires.
 *       Tue Oct 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.2-1
@@ -147,7 +146,7 @@ find %{buildroot}%{python2_sitelib}/mesos -name '*.pyc' -delete
 *	Fri Sep 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.24.0-1
 -	Upgrade to mesos 0.24.0
 *	Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar.com> 0.23.0-3
--	Updated the dependencies after repackaging the openjdk. 
+-	Updated the dependencies after repackaging the openjdk.
 *	Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-2
 -	Move headers, pc, dev libs into devel pkg.
 *	Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-1

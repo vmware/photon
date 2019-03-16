@@ -1,164 +1,216 @@
+import sys
+import os.path
 from PackageUtils import PackageUtils
 from Logger import Logger
-from ChrootUtils import ChrootUtils
 from ToolChainUtils import ToolChainUtils
 from CommandUtils import CommandUtils
-import os.path
 from constants import constants
-import shutil
+from SpecData import SPECS
+from StringUtils import StringUtils
+from Sandbox import Chroot, Container
 
 class PackageBuilder(object):
-
-    def __init__(self,mapPackageToCycles,listAvailableCyclicPackages,listBuildOptionPackages,pkgBuildOptionFile,logName=None,logPath=None):
-        if logName is None:
-            logName = "PackageBuilder"
-        if logPath is None:
-            logPath = constants.logPath
-        self.logName=logName
-        self.logPath=logPath
-        self.logger=Logger.getLogger(logName,logPath)
+    def __init__(self, mapPackageToCycles, sandboxType):
+        # will be initialized in buildPackageFunction()
+        self.logName = None
+        self.logPath = None
+        self.logger = None
+        self.package = None
+        self.version = None
+        self.doneList = None
+        self.sandboxType = sandboxType
+        self.sandbox = None
+        self.listBuildOptionPackages = None
         self.mapPackageToCycles = mapPackageToCycles
-        self.listAvailableCyclicPackages = listAvailableCyclicPackages
-        self.listNodepsPackages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go"]
-        self.listBuildOptionPackages=listBuildOptionPackages
-        self.pkgBuildOptionFile=pkgBuildOptionFile
+        self.listNodepsPackages = ["glibc", "gmp", "zlib", "file", "binutils", "mpfr",
+                                   "mpc", "gcc", "ncurses", "util-linux", "groff", "perl",
+                                   "texinfo", "rpm", "openssl", "go"]
 
-    def prepareBuildRoot(self,chrootName,packageName, isToolChainPackage=False):
-        chrootID=None
-        try:
-            chrUtils = ChrootUtils(self.logName,self.logPath)
-            returnVal,chrootID = chrUtils.createChroot(chrootName)
-            self.logger.debug("Created new chroot: " + chrootID)
-            if not returnVal:
-                raise Exception("Unable to prepare build root")
-            tUtils=ToolChainUtils(self.logName,self.logPath)
-#            if isToolChainPackage:
-#                tUtils.installCoreToolChainPackages(chrootID)
-#            else:
-            tUtils.installToolChain(chrootID, packageName, self.listBuildOptionPackages, self.pkgBuildOptionFile)
-        except Exception as e:
-            if chrootID is not None:
-                self.logger.debug("Deleting chroot: " + chrootID)
-                chrUtils.destroyChroot(chrootID)
-            raise e
-        return chrootID
-
-    def findPackageNameFromRPMFile(self,rpmfile):
-        rpmfile=os.path.basename(rpmfile)
-        releaseindex=rpmfile.rfind("-")
-        if releaseindex == -1:
-            self.logger.error("Invalid rpm file:"+rpmfile)
-            return None
-        versionindex=rpmfile[0:releaseindex].rfind("-")
-        if versionindex == -1:
-            self.logger.error("Invalid rpm file:"+rpmfile)
-            return None
-        packageName=rpmfile[0:versionindex]
-        return packageName
-
-    def findInstalledPackages(self,chrootID):
-        pkgUtils = PackageUtils(self.logName,self.logPath)
-        listInstalledRPMs=pkgUtils.findInstalledRPMPackages(chrootID)
-        listInstalledPackages=[]
-        for installedRPM in listInstalledRPMs:
-            packageName=self.findPackageNameFromRPMFile(installedRPM)
-            if packageName is not None:
-                listInstalledPackages.append(packageName)
-        return listInstalledPackages
-
-    def buildPackageThreadAPI(self,package,outputMap, threadName,):
-        try:
-            self.buildPackage(package)
-            outputMap[threadName]=True
-        except Exception as e:
-            self.logger.error(e)
-            outputMap[threadName]=False
-
-    def checkIfPackageIsAlreadyBuilt(self, package):
-        basePkg=constants.specData.getSpecName(package)
-        listRPMPackages=constants.specData.getRPMPackages(basePkg)
-        packageIsAlreadyBuilt=True
-        pkgUtils = PackageUtils(self.logName,self.logPath)
-        for pkg in listRPMPackages:
-            if pkgUtils.findRPMFileForGivenPackage(pkg) is None:
-                packageIsAlreadyBuilt=False
-                break
-        return packageIsAlreadyBuilt
-
-    def buildPackage(self, package):
+    def build(self, pkg, doneList):
+        packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
         #do not build if RPM is already built
-        if self.checkIfPackageIsAlreadyBuilt(package):
-            self.logger.info("Skipping building the package:"+package)
-            return
+        #test only if the package is in the testForceRPMS with rpmCheck
+        #build only if the package is not in the testForceRPMS with rpmCheck
 
-        #should initialize a logger based on package name
-        chrUtils = ChrootUtils(self.logName,self.logPath)
-        chrootName="build-"+package
-        chrootID=None
-        isToolChainPackage=False
-        if package in constants.listToolChainPackages:
-            isToolChainPackage=True
+        if not constants.rpmCheck or packageName in constants.testForceRPMS:
+            if self._checkIfPackageIsAlreadyBuilt(packageName, packageVersion, doneList):
+                return
+
+        self._buildPackagePrepareFunction(packageName, packageVersion, doneList)
         try:
-            chrootID = self.prepareBuildRoot(chrootName, package, isToolChainPackage)
-            destLogPath=constants.logPath+"/build-"+package
-            if not os.path.isdir(destLogPath):
-                cmdUtils = CommandUtils()
-                cmdUtils.runCommandInShell("mkdir -p "+destLogPath)
-
-            listInstalledPackages=self.findInstalledPackages(chrootID)
-            self.logger.info("List of installed packages")
-            self.logger.info(listInstalledPackages)
-            listDependentPackages=self.findBuildTimeRequiredPackages(package)
-
-            pkgUtils = PackageUtils(self.logName,self.logPath)
-            if len(listDependentPackages) != 0:
-                self.logger.info("Installing the build time dependent packages......")
-                for pkg in listDependentPackages:
-                    self.installPackage(pkgUtils, pkg,chrootID,destLogPath,listInstalledPackages)
-                pkgUtils.installRPMSInAOneShot(chrootID,destLogPath)
-                self.logger.info("Finished installing the build time dependent packages......")
-            pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
-            pkgUtils.buildRPMSForGivenPackage(package,chrootID,self.listBuildOptionPackages,self.pkgBuildOptionFile,destLogPath)
-            self.logger.info("Successfully built the package:"+package)
+            self._buildPackage()
         except Exception as e:
-            self.logger.error("Failed while building package:" + package)
-            self.logger.debug("Chroot with ID: " + chrootID + " not deleted for debugging.")
-            logFileName = os.path.join(destLogPath, package + ".log")
-            fileLog = os.popen('tail -n 20 ' + logFileName).read()
-            self.logger.debug(fileLog)
+            # TODO: self.logger might be None
+            self.logger.exception(e)
             raise e
-        if chrootID is not None:
-            chrUtils.destroyChroot(chrootID)
+
+    def _buildPackage(self):
+        try:
+            self.sandbox.create(self.package + "-" + self.version)
+
+            tUtils = ToolChainUtils(self.logName, self.logPath)
+            if self.sandbox.hasToolchain():
+                tUtils.installExtraToolchainRPMS(self.sandbox, self.package, self.version)
+            else:
+                tUtils.installToolchainRPMS(self.sandbox, self.package,
+self.version, availablePackages=self.doneList)
+            self.listBuildOptionPackages = tUtils.get_packages_with_build_options()
+            listDependentPackages, listTestPackages, listInstalledPackages, listInstalledRPMs = (
+                self._findDependentPackagesAndInstalledRPM(self.sandbox))
+
+            pkgUtils = PackageUtils(self.logName, self.logPath)
+
+            if listDependentPackages:
+                self.logger.debug("Installing the build time dependent packages......")
+                for pkg in listDependentPackages:
+                    packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
+                    self._installPackage(pkgUtils, packageName, packageVersion, self.sandbox, self.logPath,listInstalledPackages, listInstalledRPMs)
+                for pkg in listTestPackages:
+                    flag = False
+                    packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
+                    for depPkg in listDependentPackages:
+                        depPackageName, depPackageVersion = StringUtils.splitPackageNameAndVersion(depPkg)
+                        if depPackageName == packageName:
+                            flag = True
+                            break;
+                    if flag == False:
+                        self._installPackage(pkgUtils, packageName,packageVersion, self.sandbox, self.logPath,listInstalledPackages, listInstalledRPMs)
+                pkgUtils.installRPMSInOneShot(self.sandbox)
+                self.logger.debug("Finished installing the build time dependent packages....")
+
+            pkgUtils.adjustGCCSpecs(self.sandbox, self.package, self.version)
+            pkgUtils.buildRPMSForGivenPackage(self.sandbox, self.package, self.version,
+                                              self.logPath)
+            self.logger.debug("Successfully built the package: " + self.package)
+        except Exception as e:
+            self.logger.error("Failed while building package: " + self.package)
+            self.logger.debug("Sandbox: " + self.sandbox.getID() +
+                              " not deleted for debugging.")
+            logFileName = os.path.join(self.logPath, self.package + ".log")
+            fileLog = os.popen('tail -n 100 ' + logFileName).read()
+            self.logger.info(fileLog)
+            raise e
+        if self.sandbox:
+            self.sandbox.destroy()
+
+    def _buildPackagePrepareFunction(self, package, version, doneList):
+        self.package = package
+        self.version = version
+        self.logName = "build-" + package + "-" + version
+        self.logPath = constants.logPath + "/" + package + "-" + version
+        if not os.path.isdir(self.logPath):
+            cmdUtils = CommandUtils()
+            cmdUtils.runCommandInShell("mkdir -p " + self.logPath)
+        self.logger = Logger.getLogger(self.logName, self.logPath, constants.logLevel)
+        self.doneList = doneList
+
+        if self.sandboxType == "chroot":
+            sandbox = Chroot(self.logger)
+        elif self.sandboxType == "container":
+            sandbox = Container(self.logger)
+        else:
+            raise Exception("Unknown sandbox type: " + sandboxType)
+
+        self.sandbox = sandbox
+
+    def _findPackageNameAndVersionFromRPMFile(self, rpmfile):
+        rpmfile = os.path.basename(rpmfile)
+        releaseindex = rpmfile.rfind("-")
+        if releaseindex == -1:
+            self.logger.error("Invalid rpm file:" + rpmfile)
+            return None
+        pkg = rpmfile[0:releaseindex]
+        return pkg
+
+    def _findInstalledPackages(self, sandbox):
+        pkgUtils = PackageUtils(self.logName, self.logPath)
+        listInstalledRPMs = pkgUtils.findInstalledRPMPackages(sandbox)
+        listInstalledPackages = []
+        for installedRPM in listInstalledRPMs:
+            pkg = self._findPackageNameAndVersionFromRPMFile(installedRPM)
+            if pkg is not None:
+                listInstalledPackages.append(pkg)
+        return listInstalledPackages, listInstalledRPMs
+
+    def _checkIfPackageIsAlreadyBuilt(self, package, version, doneList):
+        basePkg = SPECS.getData().getSpecName(package) + "-" + version
+        return basePkg in doneList
 
 
-    def findRunTimeRequiredRPMPackages(self,rpmPackage):
-        listRequiredPackages=constants.specData.getRequiresForPackage(rpmPackage)
-        return listRequiredPackages
+    def _findRunTimeRequiredRPMPackages(self, rpmPackage, version):
+        return SPECS.getData().getRequiresForPackage(rpmPackage, version)
 
-    def findBuildTimeRequiredPackages(self,package):
-        listRequiredPackages=constants.specData.getBuildRequiresForPackage(package)
-        return listRequiredPackages
+    def _findBuildTimeRequiredPackages(self):
+        return SPECS.getData().getBuildRequiresForPackage(self.package, self.version)
 
-    def installPackage(self,pkgUtils,package,chrootID,destLogPath,listInstalledPackages):
-        if package in listInstalledPackages:
-            return
-        self.installDependentRunTimePackages(pkgUtils,package,chrootID,destLogPath,listInstalledPackages)
-        noDeps=False
-        if self.mapPackageToCycles.has_key(package):
+    def _findBuildTimeCheckRequiredPackages(self):
+        return SPECS.getData().getCheckBuildRequiresForPackage(self.package, self.version)
+
+    def _installPackage(self, pkgUtils, package, packageVersion, sandbox, destLogPath,
+                        listInstalledPackages, listInstalledRPMs):
+        rpmfile = pkgUtils.findRPMFile(package,packageVersion);
+        if rpmfile is None:
+            self.logger.error("No rpm file found for package: " + package + "-" + packageVersion)
+            raise Exception("Missing rpm file")
+        specificRPM = os.path.basename(rpmfile.replace(".rpm", ""))
+        pkg = package+"-"+packageVersion
+        if pkg in listInstalledPackages:
+                return
+        # For linux packages, install the gcc dependencies from publish rpms
+        if self.package in self.listBuildOptionPackages:
+            if SPECS.getData().getSpecName(package) == "gcc":
+                tUtils=ToolChainUtils(self.logName,self.logPath)
+                overridenPkgVer = tUtils.getOverridenPackageVersion(self.package, package)
+                overridenPkg = package+"-"+overridenPkgVer
+                self.logger.info("Ankit02:overridenPkg:"+str(overridenPkg)+" pkg:"+str(self.package)+" list:"+str(listInstalledPackages))
+                if overridenPkg in listInstalledPackages:
+                    return
+
+        # mark it as installed -  to avoid cyclic recursion
+        listInstalledPackages.append(pkg)
+        listInstalledRPMs.append(specificRPM)
+        self._installDependentRunTimePackages(pkgUtils, package, packageVersion, sandbox, destLogPath,
+                                              listInstalledPackages, listInstalledRPMs)
+        noDeps = False
+        if (package in self.mapPackageToCycles or
+                package in self.listNodepsPackages or
+                package in constants.noDepsPackageList):
             noDeps = True
-        if package in self.listNodepsPackages:
-            noDeps=True
-        if package in constants.noDepsPackageList:
-            noDeps=True
-        pkgUtils.installRPM(package,chrootID,noDeps,destLogPath)
-        listInstalledPackages.append(package)
+        pkgUtils.prepRPMforInstall(package,packageVersion, noDeps, destLogPath)
 
-    def installDependentRunTimePackages(self,pkgUtils,package,chrootID,destLogPath,listInstalledPackages):
-        listRunTimeDependentPackages=self.findRunTimeRequiredRPMPackages(package)
-        if len(listRunTimeDependentPackages) != 0:
+    def _installDependentRunTimePackages(self, pkgUtils, package, packageVersion, sandbox, destLogPath,
+                                         listInstalledPackages, listInstalledRPMs):
+        listRunTimeDependentPackages = self._findRunTimeRequiredRPMPackages(package, packageVersion)
+        if listRunTimeDependentPackages:
             for pkg in listRunTimeDependentPackages:
-                if self.mapPackageToCycles.has_key(pkg) and pkg not in self.listAvailableCyclicPackages:
+                if pkg in self.mapPackageToCycles:
                     continue
-                if pkg in listInstalledPackages:
+                packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
+                rpmfile = pkgUtils.findRPMFile(packageName, packageVersion)
+                if rpmfile is None:
+                    self.logger.error("No rpm file found for package: " + packageName + "-" + packageVersion)
+                    raise Exception("Missing rpm file")
+                latestPkgRPM = os.path.basename(rpmfile).replace(".rpm", "")
+                if pkg in listInstalledPackages and latestPkgRPM in listInstalledRPMs:
                     continue
-                self.installPackage(pkgUtils,pkg,chrootID,destLogPath,listInstalledPackages)
+                self._installPackage(pkgUtils, packageName,packageVersion, sandbox, destLogPath,listInstalledPackages, listInstalledRPMs)
+
+    def _findDependentPackagesAndInstalledRPM(self, sandbox):
+        listInstalledPackages, listInstalledRPMs = self._findInstalledPackages(sandbox)
+        listDependentPackages = self._findBuildTimeRequiredPackages()
+        listTestPackages=[]
+        if constants.rpmCheck and self.package in constants.testForceRPMS:
+            # One time optimization
+            if constants.listMakeCheckRPMPkgWithVersionstoInstall is None:
+                constants.listMakeCheckRPMPkgWithVersionstoInstall=[]
+                for package in constants.listMakeCheckRPMPkgtoInstall:
+                    version = SPECS.getData().getHighestVersion(package)
+                    constants.listMakeCheckRPMPkgWithVersionstoInstall.append(package+"-"+version)
+
+            listDependentPackages.extend(self._findBuildTimeCheckRequiredPackages())
+            testPackages = (set(constants.listMakeCheckRPMPkgWithVersionstoInstall) -
+                            set(listInstalledPackages) -
+                            set([self.package+"-"+self.version]))
+            listTestPackages=list(set(testPackages))
+            listDependentPackages = list(set(listDependentPackages))
+        return listDependentPackages, listTestPackages, listInstalledPackages, listInstalledRPMs
