@@ -1,3 +1,19 @@
 {
-    "packages":["sudo", "tar", "which", "google-daemon", "google-startup-scripts", "kubernetes", "perl-DBD-SQLite", "perl-DBIx-Simple", "perl", "ntp"]
+    "packages":[
+                "minimal",
+                "linux",
+                "initramfs",
+                "sudo",
+                "tar",
+                "which",
+                "google-daemon",
+                "google-startup-scripts",
+                "kubernetes",
+                "gawk",
+                "gptfdisk",
+                "perl-DBD-SQLite",
+                "perl-DBIx-Simple",
+                "perl",
+                "ntp"
+                ]
 }

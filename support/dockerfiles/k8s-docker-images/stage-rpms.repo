@@ -1,0 +1,7 @@
+[stage-rpms]
+name=stage-rpms
+baseurl=http://ETH0_IP:62965/tmp/RPMS
+gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+gpgcheck=0
+enabled=1
+skip_if_unavailable=True

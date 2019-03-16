@@ -1,7 +1,7 @@
 Summary:	Apache Commons Daemon
 Name:		commons-daemon
 Version:	1.0.15
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	Apache
 URL:		http://commons.apache.org/proper/commons-daemon
 Group:		Applications/System
@@ -27,7 +27,7 @@ code to control a Java daemon from a Unix operating system.
 rm -rf %{buildroot}
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 ant dist
 
 export CFLAGS=-m64
@@ -40,7 +40,7 @@ cd src/native/unix && ./configure && make
 cd $CURDIR
 
 %install
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 DIST_DIR=%{buildroot}%{_datadir}/java
 
 mkdir -p -m 755 $DIST_DIR
@@ -58,6 +58,8 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 1.0.15-12
+-   Removed JAVA_VERSION macro
 *   Tue Jun 20 2017 Divya Thaluru <dthaluru@vmware.com> 1.0.15-11
 -   Packaged jar files to /usr/share/java
 -   Removed version information from jar files
@@ -79,6 +81,6 @@ chmod -R 755 $DIST_DIR
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.0.15-3
 -   Changing path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0.15-2
--   Updated dependencies after repackaging openjdk. 
+-   Updated dependencies after repackaging openjdk.
 *   Wed Jul 15 2015 Sriram Nambakam <snambakam@vmware.com> 1.0.15-1
 -   Initial commit

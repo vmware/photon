@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        2.6.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -17,6 +17,17 @@ BuildRequires:  libstdc++
 BuildRequires:  curl
 BuildRequires:  make
 BuildRequires:  unzip
+BuildRequires:  python2
+BuildRequires:  python2-libs
+BuildRequires:  python2-devel
+BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-devel
+BuildRequires:  python-setuptools
+BuildRequires:  openjre
+BuildRequires:  openjdk
+BuildRequires:  apache-maven >= 3.3.3
 
 %description
 Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data. You can find protobuf's documentation on the Google Developers site.
@@ -41,10 +52,6 @@ The protobuf-static package contains static protobuf libraries.
 %package        python
 Summary:        protobuf python lib
 Group:          Development/Libraries
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
 Requires:       python2
 Requires:       python2-libs
 Requires:       protobuf = %{version}-%{release}
@@ -55,10 +62,6 @@ This contains protobuf python libraries.
 %package        python3
 Summary:        protobuf python3 lib
 Group:          Development/Libraries
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-devel
-BuildRequires:  python-setuptools
 Requires:       python3
 Requires:       python3-libs
 Requires:       protobuf = %{version}-%{release}
@@ -69,10 +72,7 @@ This contains protobuf python3 libraries.
 %package        java
 Summary:        protobuf java
 Group:          Development/Libraries
-BuildRequires:  openjre >= %{JAVA_VERSION}
-BuildRequires:  openjdk >= %{JAVA_VERSION}
-BuildRequires:  apache-maven >= 3.3.3
-Requires:       openjre >= %{JAVA_VERSION}
+Requires:       openjre
 
 %description    java
 This contains protobuf java package.
@@ -82,7 +82,7 @@ This contains protobuf java package.
 autoreconf -iv
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 %configure --disable-silent-rules
 
 make %{?_smp_mflags}
@@ -146,6 +146,8 @@ make check
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 2.6.1-5
+-   Moved BuildRequires from subpackages to top
 *   Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6.1-4
 -   Use JAVA_VERSION macro instead of hard coded version.
 *   Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-3

@@ -1,0 +1,78 @@
+{
+    "openssl": {
+        "pullsources": [
+              "https://build-artifactory.eng.vmware.com/artifactory/openssl-fips"
+        ],
+        "macros": [
+          "with_fips 1"
+        ],
+        "override_toolchain": []
+    },
+    "perl-Net-SSLeay": {
+        "pullsources": [
+          "https://build-artifactory.eng.vmware.com/artifactory/openssl-fips"
+        ],
+        "macros": ["with_fips 1"],
+        "override_toolchain": []
+    },
+
+    "dummy_package": {
+        "files": [
+                     {"src": "path_to_file1_to_be_copied", "dst": "file1_destination"},
+                     {"src": "path_to_file2_to_be_copied", "dst": "file2_destination"}
+        ],
+        "pullsources": ["url1", "url2"],
+        "macros": ["macro1 value1","macro2 value2"],
+        "override_toolchain": [
+                     {"package": "package_name", "version": "version_to_use"}
+        ]
+    },
+
+    "linux-api-headers": {
+        "files": [],
+        "pullsources": [],
+        "macros": [],
+        "override_toolchain": [
+                     {"package": "gcc", "version": "7.3.0"},
+                     {"package": "libgcc", "version": "7.3.0"},
+                     {"package": "libgcc-devel", "version": "7.3.0"},
+                     {"package": "libgcc-atomic", "version": "7.3.0"},
+                     {"package": "libstdc++", "version": "7.3.0"},
+                     {"package": "libstdc++-devel", "version": "7.3.0"},
+                     {"package": "libgomp", "version": "7.3.0"},
+                     {"package": "libgomp-devel", "version": "7.3.0"}
+        ]
+    },
+
+    "linux": {
+        "files": [],
+        "pullsources": [],
+        "macros": [],
+        "override_toolchain": [
+                     {"package": "gcc", "version": "7.3.0"},
+                     {"package": "libgcc", "version": "7.3.0"},
+                     {"package": "libgcc-devel", "version": "7.3.0"},
+                     {"package": "libgcc-atomic", "version": "7.3.0"},
+                     {"package": "libstdc++", "version": "7.3.0"},
+                     {"package": "libstdc++-devel", "version": "7.3.0"},
+                     {"package": "libgomp", "version": "7.3.0"},
+                     {"package": "libgomp-devel", "version": "7.3.0"}
+        ]
+    },
+
+    "linux-esx": {
+        "files": [],
+        "pullsources": [],
+        "macros": [],
+        "override_toolchain": [
+                     {"package": "gcc", "version": "7.3.0"},
+                     {"package": "libgcc", "version": "7.3.0"},
+                     {"package": "libgcc-devel", "version": "7.3.0"},
+                     {"package": "libgcc-atomic", "version": "7.3.0"},
+                     {"package": "libstdc++", "version": "7.3.0"},
+                     {"package": "libstdc++-devel", "version": "7.3.0"},
+                     {"package": "libgomp", "version": "7.3.0"},
+                     {"package": "libgomp-devel", "version": "7.3.0"}
+        ]
+    }
+}

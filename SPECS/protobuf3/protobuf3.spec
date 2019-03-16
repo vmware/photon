@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf3
 Version:        3.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -18,6 +18,18 @@ BuildRequires:  libstdc++
 BuildRequires:  curl
 BuildRequires:  make
 BuildRequires:  unzip
+BuildRequires:  python2
+BuildRequires:  python2-libs
+BuildRequires:  python2-devel
+BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-devel
+BuildRequires:  python-setuptools
+BuildRequires:  chkconfig
+BuildRequires:  openjre
+BuildRequires:  openjdk
+BuildRequires:  apache-maven >= 3.3.3
 Provides:       protobuf
 Conflicts:      protobuf < %{version}
 Obsoletes:      protobuf < %{version}
@@ -51,10 +63,6 @@ The protobuf-static package contains static protobuf libraries.
 %package        python
 Summary:        protobuf3 python lib
 Group:          Development/Libraries
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
 Requires:       python2
 Requires:       python2-libs
 Requires:       protobuf3 = %{version}-%{release}
@@ -68,10 +76,6 @@ This contains protobuf python libraries.
 %package        python3
 Summary:        protobuf3 python3 lib
 Group:          Development/Libraries
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-devel
-BuildRequires:  python-setuptools
 Requires:       python3
 Requires:       python3-libs
 Requires:       protobuf3 = %{version}-%{release}
@@ -85,11 +89,7 @@ This contains protobuf python3 libraries.
 %package        java
 Summary:        protobuf3 java
 Group:          Development/Libraries
-BuildRequires:  chkconfig
-BuildRequires:  openjre >= %{JAVA_VERSION}
-BuildRequires:  openjdk >= %{JAVA_VERSION}
-BuildRequires:  apache-maven >= 3.3.3
-Requires:       openjre >= %{JAVA_VERSION}
+Requires:       openjre
 Provides:       protobuf-java
 Conflicts:      protobuf-java < %{version}
 Obsoletes:      protobuf-java < %{version}
@@ -102,7 +102,7 @@ This contains protobuf java package.
 autoreconf -iv
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 %configure --disable-silent-rules
 make %{?_smp_mflags}
 pushd python
@@ -166,6 +166,8 @@ make check
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 3.0.0-4
+-   Moved BuildRequires from sub packages to top
 *   Fri Aug 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-3
 -   Add conflicts.
 *   Wed Jul 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-2

@@ -4,6 +4,7 @@
                      {"src": "path_to_file1_to_be_copied", "dst": "file1_destination"},
                      {"src": "path_to_file2_to_be_copied", "dst": "file2_destination"}
         ],
+        "pullsources": ["url1", "url2"],
         "macros": ["macro1 value1","macro2 value2"],
         "override_toolchain": [
                      {"package": "package_name", "version": "version_to_use"}
@@ -12,6 +13,7 @@
 
     "linux-api-headers": {
         "files": [],
+        "pullsources": [],
         "macros": [],
         "override_toolchain": [
                      {"package": "gcc", "version": "7.3.0"},
@@ -27,6 +29,7 @@
 
     "linux": {
         "files": [],
+        "pullsources": [],
         "macros": [],
         "override_toolchain": [
                      {"package": "gcc", "version": "7.3.0"},
@@ -42,6 +45,7 @@
 
     "linux-esx": {
         "files": [],
+        "pullsources": [],
         "macros": [],
         "override_toolchain": [
                      {"package": "gcc", "version": "7.3.0"},

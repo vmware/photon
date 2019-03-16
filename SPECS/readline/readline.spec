@@ -1,7 +1,7 @@
 Summary:	Command-line editing and history capabilities
 Name:		readline
 Version:	6.3
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3+
 URL:		http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:		Applications/System
@@ -10,8 +10,8 @@ Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/readline/%{name}-%{version}.tar.gz
 %define sha1 readline=017b92dc7fd4e636a2b5c9265a77ccc05798c9e1
 Patch:		http://www.linuxfromscratch.org/patches/lfs/development/readline-6.3-upstream_fixes-3.patch
-BuildRequires:	ncurses-devel >= 6.0-3
-Requires:	ncurses >= 6.0-3
+#BuildRequires:	ncurses-devel
+Requires:	ncurses
 %description
 The Readline package is a set of libraries that offers command-line
 editing and history capabilities.
@@ -19,15 +19,14 @@ editing and history capabilities.
 Summary:	Header and development files for readline
 Requires:	%{name} = %{version}
 %description	devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 %prep
 %setup -q
 sed -i '/MV.*old/d' Makefile.in
 sed -i '/{OLDSUFF}/c:' support/shlib-install
 %patch -p1
 %build
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--disable-silent-rules
 make SHLIB_LIBS=-lncurses
 %install
@@ -93,6 +92,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/libhistory.so
 %{_libdir}/libreadline.so
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 6.3-6
+-   Added %configure
 *   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3-5
 -   Use specified version of ncurses wich has long chtype and mmask_t
     (see ncurses changelog)
