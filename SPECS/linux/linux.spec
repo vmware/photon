@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.26
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -412,7 +412,6 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %files tools
 %defattr(-,root,root)
 /usr/libexec
-%exclude %{_libdir}/debug
 %ifarch x86_64
 /usr/lib64/traceevent
 %endif
@@ -438,6 +437,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Mar 15 2019 Ajay Kaher <akaher@vmware.com> 4.19.26-2
+-   Remove debug dir from linux-tools
 *   Tue Mar 05 2019 Ajay Kaher <akaher@vmware.com> 4.19.26-1
 -   Update to version 4.19.26
 *   Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.15-3
