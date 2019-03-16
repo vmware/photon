@@ -1,7 +1,7 @@
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
 Version:        2.0.24
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://sourceforge.net/projects/openipmi/
 License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
@@ -72,15 +72,14 @@ This package contains a network IPMI listener.
 # USERFIX: Things you might have to add to configure:
 #  --with-tclcflags='-I /usr/include/tclN.M' --with-tcllibs=-ltclN.M
 #    Obviously, replace N.M with the version of tcl on your system.
-./configure                                 \
+%configure                                 \
     --prefix=/usr                           \
     --with-tcl=no                           \
     --disable-static                        \
     --with-tkinter=no                       \
     --docdir=%{_docdir}/%{name}-%{version}  \
     --with-perl=yes                         \
-    --with-perlinstall=%{perl_vendorarch}   \
-    --sysconfdir=%{_sysconfdir}
+    --with-perlinstall=%{perl_vendorarch}
 make
 
 %install
@@ -130,7 +129,7 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 
 %files python
 %defattr(-,root,root)
-%{_libdir}/python*/site-packages/*OpenIPMI.*
+%{python_sitearch}/*OpenIPMI.*
 %doc swig/OpenIPMI.i
 
 %files devel
@@ -175,6 +174,8 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 2.0.24-3
+-   Added %configure
 *   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-2
 -   openipmi-devel requires ncurses-devel
 *   Mon Sep 11 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-1

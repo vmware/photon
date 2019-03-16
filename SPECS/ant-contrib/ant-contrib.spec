@@ -1,7 +1,7 @@
 Summary:	Ant contrib
 Name:		ant-contrib
 Version:	1.0b3
-Release:	13%{?dist}
+Release:	14%{?dist}
 License:	Apache
 URL:		http://ant-contrib.sourceforget.net
 Group:		Applications/System
@@ -28,11 +28,11 @@ find . -name '*.jar' -or -name '*.class' -exec rm -rf {} +
 rm -rf %{buildroot}
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 ant -Ddist.dir="." -Dproject.version=%{version} dist
 
 %install
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 mkdir -p -m 700 %{buildroot}/var/opt
 cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.tar.gz --wildcards "*.jar"
 %files
@@ -43,10 +43,12 @@ cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.
 %{_prefix}/lib/*.jar
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 1.0b3-14
+-   Removed JAVA_VERSION macro
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 1.0b3-13
 -   Removed dependency on ANT_HOME
 *   Fri May 19 2017 Harish Udiaya Kumar <hudaiyakumar@vmware.com> 1.0b3-12
--   Use java alternatives 
+-   Use java alternatives
 *   Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0b3-11
 -   Use java_macros to determine the version on updating java to 1.8.0.131
 *   Fri Apr 07 2017 Divya Thaluru <dthaluru@vmware.com> 1.0b3-10
@@ -66,6 +68,6 @@ cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.0b3.0-2
 -   Change path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0b3.0-1
--   Updated dependencies after repackaging openjdk. 
+-   Updated dependencies after repackaging openjdk.
 *   Tue Jun 9 2015 Sriram Nambakam <snambakam@vmware.com> 1.0b3.0-0
 -   Initial commit

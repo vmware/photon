@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.10.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -51,7 +51,7 @@ ANT_DIST_DIR=%{buildroot}%{_prefix}
 cp -v ./hamcrest-1.3/hamcrest-core-1.3.jar ./lib/optional
 
 mkdir -p -m 700 $ANT_DIST_DIR
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 ./bootstrap.sh && ./build.sh -Ddist.dir=$ANT_DIST_DIR
 
 %install
@@ -110,6 +110,8 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_bindir}/runant.pl
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 1.10.1-2
+-   Removed JAVA_VERSION macro
 *   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 1.10.1-1
 -   Upgraded to 1.10.1 release
 *   Fri Jun 22 2018 Keerthana K <keerthanak@vmware.com> 1.9.6-10

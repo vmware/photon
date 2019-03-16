@@ -7,7 +7,7 @@
         "locale-gen.sh", "version-check",
         "config.inc", "function.inc",
         "mkinitramfs", "init.in",
-        "mk-finalize-system.sh", "mk-install-package.sh"
+        "mk-finalize-system.sh"
     ],
     "iso_tools": [
         "boot", "../stage/RPMS"

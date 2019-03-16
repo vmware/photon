@@ -3,7 +3,7 @@
 Summary: 	Creates a common metadata repository
 Name: 		createrepo
 Version: 	0.10.4
-Release: 	2%{?dist}
+Release: 	3%{?dist}
 License:	GPLv2+
 Group: 		System Environment/Base
 Vendor:		VMware, Inc.
@@ -11,7 +11,7 @@ Distribution: 	Photon
 Source0: 	%{name}-%{version}.tar.gz
 %define sha1 createrepo=b4e88b3a8cb4b4ef7154991d33948e3d05bd9663
 URL: 		http://createrepo.baseurl.org/download/
-BuildArchitectures: noarch
+BuildArch: noarch
 Requires: python2 >= 2.1, rpm-devel, rpm >= 0:4.1.1, libxml2
 Requires: yum-metadata-parser, yum >= 3.2.7
 Requires: bash
@@ -49,6 +49,8 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{python_sitelib}/createrepo
 
 %changelog
+* Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 0.10.4-3
+- Replaced BuildArchitecture to BuildArch
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.10.4-2
 -	GA - Bump release of all rpms
 * Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 0.10.4
@@ -63,7 +65,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 - 0.4.10
 
 * Wed May 16 2007 Paul Nasrat <pnasrat at redhat.com>
-- 0.4.9 
+- 0.4.9
 
 * Mon Feb 12 2007 Seth Vidal <skvidal at linux.duke.edu>
 - 0.4.8
@@ -98,7 +100,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 * Thu Oct 21 2004 Seth Vidal <skvidal@phy.duke.edu>
-- ghost files not being added into primary file list if 
+- ghost files not being added into primary file list if
   matching regex
 - 0.4.1
 
@@ -144,7 +146,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 - 0.3
 
 * Tue Jan 13 2004 Seth Vidal <skvidal@phy.duke.edu>
-- 0.2 - 
+- 0.2 -
 
 * Sat Jan 10 2004 Seth Vidal <skvidal@phy.duke.edu>
 - first packaging
