@@ -3,7 +3,7 @@
 Summary:	OpenJDK
 Name:		openjdk10
 Version:	1.10.0.23
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -22,6 +22,7 @@ BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel elfut
 Requires:       openjre10 = %{version}-%{release}
 Requires:       chkconfig
 AutoReqProv: 	no
+%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp,libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel,libXmu-devel, libXrender, libXrender-devel
 %define bootstrapjdkversion 1.8.0.112
 %define jdk_major_version 1.10.0
 %description
@@ -56,7 +57,7 @@ This package provides the runtime library class sources.
 chmod a+x ./configure
 unset JAVA_HOME &&
 ENABLE_HEADLESS_ONLY="true" &&
-./configure \
+sh configure \
 	--with-target-bits=64 \
         --with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
 	--enable-headless-only \
@@ -79,7 +80,7 @@ make \
 
 %install
 unset JAVA_HOME &&
-make install 
+make install
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
@@ -146,7 +147,7 @@ alternatives --remove java %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/java
 
 %clean
 rm -rf %{buildroot}/*
-rm -rf %{_libdir}/jvm/OpenJDK-* 
+rm -rf %{_libdir}/jvm/OpenJDK-*
 
 %files
 %defattr(-,root,root)
@@ -216,6 +217,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{version}/lib/src.zip
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 1.10.0.23-3
+-   Added ExtraBuildRequires macro
 *   Tue Jul 31 2018 Tapas Kundu <tkundu@vmware.com> 1.10.0.23-2
 -   Removed installing openjdk9 with openjdk10 and removed obsolete for openjdk.
 *   Mon Jul 16 2018 Tapas Kundu <tkundu@vmware.com> 1.10.0.23-1

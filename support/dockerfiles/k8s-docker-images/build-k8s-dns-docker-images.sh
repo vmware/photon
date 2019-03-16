@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+source common.inc
+
 DIST_TAG=$1
 DIST_VER=$2
 SPEC_DIR=$3
@@ -35,6 +37,8 @@ cp ${K8S_DNS_RPM_FILE} tmp/k8dns/
 pushd ./tmp/k8dns
 rpm2cpio ${K8S_DNS_RPM} | cpio -vid
 popd
+
+setup_repo
 
 for K8S_BIN in ${K8S_DNS_BINS[*]}; do
     IMG_NAME=vmware/photon-${DIST_VER}-k8s-dns-${K8S_BIN}-amd64:${K8S_DNS_VER}

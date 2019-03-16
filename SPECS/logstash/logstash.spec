@@ -1,7 +1,7 @@
 Summary:	Logstash is a tool for managing events and logs.
 Name:           logstash
 Version:        6.4.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -32,13 +32,13 @@ Logstash is a tool to collect, process, and forward events and log messages. Col
 %build
 export OSS=true
 export LC_ALL=en_US.UTF-8
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 #Note: Only Building and Packaging Apache Licensed OSS part of Logstash. It doesn't include x-pack coponent of Elastic
 ./gradlew assembleOssTarDistribution
 
 %install
 export LC_ALL=en_US.UTF-8
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 rm -rf %{buildroot}
 install -vdm 755 %{buildroot}%{_sysconfdir}/%{name}/conf.d
 install -vdm 755 %{buildroot}/var/lib/%{name}
@@ -114,6 +114,8 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 6.4.3-2
+-   Removed JAVA_VERSION macro
 *   Wed Feb 13 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-1
 -   Upgraded to 6.4.3 for kibana,elasticsearch compatibility
 *   Fri Feb 08 2019 Ankit Jain <ankitja@vmware.com> 6.4.1-2

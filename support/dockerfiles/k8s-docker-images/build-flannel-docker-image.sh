@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+source common.inc
+
 DIST_TAG=$1
 DIST_VER=$2
 SPEC_DIR=$3
@@ -34,6 +36,9 @@ cp ${FLANNEL_RPM_FILE} tmp/flannel/
 pushd ./tmp/flannel
 rpm2cpio ${FLANNEL_RPM} | cpio -vid
 popd
+
+setup_repo
+
 docker build --rm -t ${IMG_NAME} -f Dockerfile.flannel .
 docker save -o ${FLANNEL_TAR} ${IMG_NAME}
 gzip ${FLANNEL_TAR}

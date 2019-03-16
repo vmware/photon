@@ -5,9 +5,7 @@ import commons
 install_phase = commons.POST_INSTALL
 enabled = True
 
-def execute(name, ks_config, config, root):
-    if ks_config and 'public_key' in ks_config:
-        config['public_key'] = ks_config['public_key']
+def execute(config, root):
     if 'public_key' not in config:
         return
 
@@ -20,8 +18,9 @@ def execute(name, ks_config, config, root):
         os.makedirs(authorized_keys_dir)
     with open(authorized_keys_filename, "a") as destination:
         destination.write(config['public_key'] + "\n")
-    os.chmod(authorized_keys_filename, 0600)
+    os.chmod(authorized_keys_filename, 0o600)
 
     # Change the sshd config to allow root login
-    process = subprocess.Popen(["sed", "-i", "s/^\\s*PermitRootLogin\s\+no/PermitRootLogin yes/", sshd_config_filename])
+    process = subprocess.Popen(["sed", "-i", "s/^\\s*PermitRootLogin\s\+no/PermitRootLogin yes/",
+                                sshd_config_filename])
     return process.wait()
