@@ -1,3 +1,5 @@
+# Photon Base Build Container
+
 FROM scratch
 
 MAINTAINER kulkarniv@vmware.com

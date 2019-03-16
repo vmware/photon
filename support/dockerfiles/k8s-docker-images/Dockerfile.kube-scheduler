@@ -1,3 +1,5 @@
+# Photon Base Build Container
+
 FROM vmware/photon:1.0
 
 MAINTAINER kulkarniv@vmware.com

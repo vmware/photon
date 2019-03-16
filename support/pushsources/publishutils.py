@@ -13,7 +13,7 @@ class publishUtils:
     @staticmethod
     def stripBegin(str, strToStrip):
         index = str.find(strToStrip, 0, len(str))
-        if(index >= 0):
+        if index >= 0:
             index = index + len(strToStrip)
             return str[index:].lstrip('/')
         return str

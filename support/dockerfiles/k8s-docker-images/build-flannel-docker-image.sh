@@ -34,6 +34,7 @@ cp ${FLANNEL_RPM_FILE} tmp/flannel/
 pushd ./tmp/flannel
 rpm2cpio ${FLANNEL_RPM} | cpio -vid
 popd
+
 docker build --rm -t ${IMG_NAME} -f Dockerfile.flannel .
 docker save -o ${FLANNEL_TAR} ${IMG_NAME}
 gzip ${FLANNEL_TAR}

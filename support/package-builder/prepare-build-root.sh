@@ -20,16 +20,10 @@ fi
 BUILDROOT=$1
 PARENT=/usr/src/photon
 
-
 if mountpoint ${BUILDROOT}/run	>/dev/null 2>&1; then umount ${BUILDROOT}/run; fi
 if mountpoint ${BUILDROOT}/sys	>/dev/null 2>&1; then umount ${BUILDROOT}/sys; fi
 if mountpoint ${BUILDROOT}/proc	>/dev/null 2>&1; then umount ${BUILDROOT}/proc; fi
-if mountpoint ${BUILDROOT}/dev/pts	>/dev/null 2>&1; then umount ${BUILDROOT}/dev/pts; fi
-if mountpoint ${BUILDROOT}/dev	>/dev/null 2>&1; then umount ${BUILDROOT}/dev; fi
-
-
-#copy localegen files.
-cp ./locale* ${BUILDROOT}${PARENT}/
+if mountpoint ${BUILDROOT}/dev	>/dev/null 2>&1; then umount -R ${BUILDROOT}/dev; fi
 
 cp /etc/resolv.conf ${BUILDROOT}/etc/
 
@@ -45,8 +39,7 @@ if [ ${EUID} -eq 0 ] ; then
 #
 #	Mount kernel filesystem
 #
-    if ! mountpoint ${BUILDROOT}/dev	>/dev/null 2>&1; then mount --bind /dev ${BUILDROOT}/dev; fi
-#    if ! mountpoint ${BUILDROOT}/dev/pts	>/dev/null 2>&1; then mount -t devpts devpts ${BUILDROOT}/dev/pts -o gid=5,mode=620; fi
+    if ! mountpoint ${BUILDROOT}/dev	>/dev/null 2>&1; then mount --rbind /dev ${BUILDROOT}/dev; mount --make-rslave ${BUILDROOT}/dev; fi
     if ! mountpoint ${BUILDROOT}/proc	>/dev/null 2>&1; then mount -t proc proc ${BUILDROOT}/proc; fi
     if ! mountpoint ${BUILDROOT}/sys 	>/dev/null 2>&1; then mount -t sysfs sysfs ${BUILDROOT}/sys; fi
     if ! mountpoint ${BUILDROOT}/run	>/dev/null 2>&1; then mount -t tmpfs tmpfs ${BUILDROOT}/run; fi

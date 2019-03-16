@@ -238,7 +238,7 @@ if __name__ == '__main__':
             config = (JsonWrapper(args[0])).read()
             config['disk'], success = create_vmdk_and_partition(config, options.vmdk_path)
             if not success:
-                print "Unexpected failure, please check the logs"
+                print("Unexpected failure, please check the logs")
                 sys.exit(1)
 
             config['iso_system'] = False

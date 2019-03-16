@@ -4,7 +4,7 @@
 Summary:	Java Native Access
 Name:		jna
 Version:	4.2.1
-Release:	10%{?dist}
+Release:	11%{?dist}
 License:	Apache
 URL:		http://github.com/twall/jna
 Group:		Applications/System
@@ -40,7 +40,7 @@ Sources for JNA
 rm -rf %{buildroot}
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 # Intermittent issue happens:
 #
 # BUILD FAILED
@@ -52,7 +52,7 @@ ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelea
 ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
 
 %install
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 export JNA_DIST_DIR=%{buildroot}%{_prefix}
 
 mkdir -p -m 700 $JNA_DIST_DIR
@@ -77,6 +77,8 @@ ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*sources.jar
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 4.2.1-11
+-   Removed JAVA_VERSION macro
 *   Thu Aug 17 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.1-10
 -   Remove clover.jar from jna-devel
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 4.2.1-9

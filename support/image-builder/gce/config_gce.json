@@ -1,0 +1,20 @@
+{
+    "image_type": "gce",
+    "hostname": "photon-machine",
+    "password": 
+        {
+            "crypted": false,
+            "text": "PASSWORD"
+        },
+    "packagelist_file": "packages_gce.json",
+    "size": {"root": "16", "swap": "0"},
+    "public_key":"<ssh-key-here>",
+    "postinstallscripts": [ "gce-patch.sh", "../password-expiry.sh" ],
+    "additionalfiles": [
+                            {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"},
+                            {"ntpd.service": "/usr/lib/systemd/system/ntpd.service"}
+                       ],
+    "artifacttype": "tgz",
+    "keeprawdisk": false
+}
+
