@@ -1,5 +1,5 @@
-INCLUDEDIR=/usr/include
-LIBDIR=/usr/lib/vmware
+INCLUDEDIR=/usr/lib/vmware-vix-disklib/include
+LIBDIR=/usr/lib/vmware-vix-disklib/lib64
 
 all: vix-disklib-util
 

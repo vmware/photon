@@ -3,7 +3,7 @@
 Summary:        Elastic Search
 Name:           elasticsearch
 Version:        6.4.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
@@ -38,10 +38,10 @@ Elasticsearch is a highly distributed RESTful search engine built for the cloud.
 %build
 export LANG="en_US.UTF-8"
 export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION_10}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 export PATH=$JAVA_HOME/bin:$PATH
 export _JAVA_OPTIONS="-Xmx10g"
-cp %{SOURCE1} /usr/lib/jvm/OpenJDK-%{JAVA_VERSION_10}/lib/security/
+cp %{SOURCE1} $JAVA_HOME/lib/security/
 ./gradlew assemble
 
 %install
@@ -119,6 +119,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 6.4.3-2
+-   Removed JAVA_VERSION macro
 *    Wed Feb 13 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-1
 -    Upgrade to 6.4.3 for CVE-2018-17244
 *    Wed Dec 19 2018 Siju Maliakkal <smaliakkal@vmware.com> 6.4.1-1

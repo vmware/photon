@@ -1,9 +1,9 @@
-%define _use_internal_dependency_generator 0 
+%define _use_internal_dependency_generator 0
 %global security_hardening none
 Summary:	OpenJDK
 Name:		openjdk
 Version:	1.8.0.202
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -25,6 +25,7 @@ Requires:       freetype2
 Requires:       openjre = %{version}-%{release}
 Requires:       chkconfig
 AutoReqProv: 	no
+%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp,libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel
 %define bootstrapjdkversion 1.8.0.112
 %description
 The OpenJDK package installs java class library and javac java compiler.
@@ -37,7 +38,7 @@ Requires:       chkconfig
 It contains the libraries files for Java runtime environment
 
 %package	sample
-Summary:	Sample java applications. 
+Summary:	Sample java applications.
 Group:          Development/Languages/Java
 Requires:       %{name} = %{version}-%{release}
 %description	sample
@@ -68,7 +69,7 @@ sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJ
 chmod a+x ./configure
 rm jdk/src/solaris/native/sun/awt/CUPSfuncs.c
 unset JAVA_HOME &&
-./configure \
+sh configure \
 	CUPS_NOT_NEEDED=yes \
 	--with-target-bits=64 \
 	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
@@ -149,7 +150,7 @@ alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{version}/jr
   --slave %{_bindir}/rmiregistry rmiregistry %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/rmiregistry \
   --slave %{_bindir}/servertool servertool %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/servertool \
   --slave %{_bindir}/tnameserv tnameserv %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/tnameserv \
-  --slave %{_bindir}/unpack200 unpack200 %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/unpack200 
+  --slave %{_bindir}/unpack200 unpack200 %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/unpack200
 /sbin/ldconfig
 
 %postun
@@ -232,6 +233,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*       Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 1.8.0.202-2
+-       Added ExtraBuildRequires macro
 *       Fri Jan 18 2019 Srinidhi Rao <srinidhir@vmware.com> 1.8.0.202-1
 -       Upgraded to version 1.8.0.202
 *       Thu Oct 18 2018 Tapas Kundu <tkundu@vmware.com> 1.8.0.192-1
@@ -251,7 +254,7 @@ rm -rf %{buildroot}/*
 *	Fri Jul 21 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-1
 -	Upgraded to version 1.8.0.141-1
 *	Thu Jul 6 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-4
--	Build AWT libraries as well. 
+-	Build AWT libraries as well.
 *	Mon May 22 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-3
 -	Use java alternatives.
 *	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-2

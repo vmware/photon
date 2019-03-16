@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.37
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -40,7 +40,7 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
 %patch0 -p1
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
 
 %install
@@ -102,6 +102,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 8.5.37-2
+-   Removed JAVA_VERSION macro
 *   Thu Jan 10 2019 Dweep Advani <dadvani@vmware.com> 8.5.37-1
 -   Updated to 8.5.37 release.
 *   Mon Dec 10 2018 Dweep Advani <dadvani@vmware.com> 8.5.35-1
@@ -162,6 +164,6 @@ rm -rf %{buildroot}/*
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 7.0.63-3
 -   Change path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 7.0.63-2
--   Updated dependency after repackaging openjdk. 
+-   Updated dependency after repackaging openjdk.
 *   Wed Jul 8 2015 Sriram Nambakam <snambakam@vmware.com> 7.0.63
 -   Initial build.  First version

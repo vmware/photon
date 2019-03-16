@@ -1,9 +1,11 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 # Got this spec from http://downloads.sourceforge.net/cracklib/cracklib-2.9.6.tar.gz
 
 Summary:	A password strength-checking library.
 Name:		cracklib
 Version:	2.9.6
-Release:	3%{?dist}
+Release:	4%{?dist}
 Group:		System Environment/Libraries
 Source:		cracklib-%{version}.tar.gz
 %define sha1 cracklib-2.9.6=9199e7b8830717565a844430653f5a90a04fcd65
@@ -18,14 +20,18 @@ Distribution: Photon
 BuildRequires: python2
 BuildRequires: python2-libs
 BuildRequires: python2-devel
+BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-devel
 
 %description
 CrackLib tests passwords to determine whether they match certain
 security-oriented characteristics. You can use CrackLib to stop
 users from choosing passwords which would be easy to guess. CrackLib
-performs certain tests: 
+performs certain tests:
 
-* It tries to generate words from a username and gecos entry and 
+* It tries to generate words from a username and gecos entry and
   checks those words against the password;
 * It checks for simplistic patterns in passwords;
 * It checks for the password in a dictionary.
@@ -74,6 +80,16 @@ Requires:   python2-libs
 %description python
 The cracklib python module
 
+%package -n python3-cracklib
+Summary:        The cracklib python module
+Group:          Development/Languages/Python
+Requires:   cracklib
+Requires:   python3
+Requires:   python3-libs
+
+%description -n python3-cracklib
+The cracklib python3 module
+
 %package lang
 Summary:    The CrackLib language pack.
 Group:      System Environment/Libraries
@@ -97,9 +113,13 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure \
   --libdir=%{_libdir} \
   --libexecdir=%{_libdir} \
   --datadir=%{_datadir} \
-  --with-python
+  --without-python
 
 make
+pushd python
+python2 setup.py build
+python3 setup.py build
+popd
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -113,13 +133,18 @@ ln -s cracklib-packer $RPM_BUILD_ROOT/%{_sbindir}/packer
 ln -sf ../..%{_datadir}/cracklib/pw_dict.pwd $RPM_BUILD_ROOT/usr/lib/cracklib_dict.pwd
 ln -sf ../..%{_datadir}/cracklib/pw_dict.pwi $RPM_BUILD_ROOT/usr/lib/cracklib_dict.pwi
 ln -sf ../..%{_datadir}/cracklib/pw_dict.hwm $RPM_BUILD_ROOT/usr/lib/cracklib_dict.hwm
+pushd python
+python2 setup.py install --skip-build --root %{buildroot}
+python3 setup.py install --skip-build --root %{buildroot}
+popd
+
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post -p /sbin/ldconfig
 
-%postun -p /sbin/ldconfig 
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -136,7 +161,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %files python
 %defattr(-,root,root)
-%{_libdir}/python*
+%{python2_sitelib}/*
+
+%files -n python3-cracklib
+%defattr(-,root,root)
+%{python3_sitelib}/*
 
 %files dicts
 %defattr(-,root,root)
@@ -153,6 +182,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/locale/*
 
 %changelog
+*   Tue Mar 12 2019 Ankit Jain <ankitja@vmware.com> 2.9.6-4
+-   Move python2 requires to python subpackage and added python3.
 *	Sat Apr 15 2017 Bo Gan <ganb@vmware.com> 2.9.6-3
 -	Fix CVE-2016-6318
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.6-2

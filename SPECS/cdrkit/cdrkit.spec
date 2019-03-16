@@ -1,7 +1,7 @@
 Summary: 	Utilities for writing cds.
 Name: 		cdrkit
 Version: 	1.1.11
-Release: 	3%{?dist}
+Release: 	4%{?dist}
 License: 	GPLv2+
 Group: 		System Environment/Base
 Vendor:		VMware, Inc.
@@ -10,7 +10,7 @@ Source0: 	%{name}-%{version}.tar.gz
 %define sha1 cdrkit=3f7ddc06db0272942e1a4cd98c3c96462df77387
 URL:  		http://gd.tuwien.ac.at/utils/schilling/cdrtools/
 Patch0:		cdrkit-1.1.9-efi-boot.patch
-BuildArchitectures: x86_64
+BuildArch: x86_64
 Requires: 	bash
 Requires: 	libcap
 BuildRequires: 	cmake
@@ -38,6 +38,8 @@ ln -s  genisoimage  %{buildroot}%{_prefix}/bin/mkisofs
 %{_sbindir}/*
 %{_datadir}/man/*
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 1.1.11-4
+-   Replaced BuildArchitectures as BuildArch
 *   Mon Mar 6 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.11-3
 -   Support for efi boot (.patch)
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.11-2

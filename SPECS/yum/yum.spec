@@ -1,7 +1,7 @@
 Summary:        RPM installer/updater
 Name:           yum
 Version:        3.4.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Source0:        %{name}-%{version}.tar.gz
@@ -37,11 +37,11 @@ Provides:       yum-allow-downgrade
 Provides:       yum-plugin-allow-downgrade
 Provides:       yum-protect-packages
 Provides:       yum-plugin-protect-packages
-BuildArchitectures: noarch
+BuildArch:      noarch
 
 %description
 Yum is a utility that can check for and automatically download and
-install updated RPM packages. Dependencies are obtained and downloaded 
+install updated RPM packages. Dependencies are obtained and downloaded
 automatically, prompting the user for permission as necessary.
 
 # %package updatesd
@@ -49,15 +49,15 @@ automatically, prompting the user for permission as necessary.
 # Group: Applications/System
 # Requires: yum = %{version}-%{release}
 # Requires: dbus-python
-# Requires(preun): /sbin/chkconfig 
+# Requires(preun): /sbin/chkconfig
 # Requires(preun): /sbin/service
-# Requires(postun): /sbin/chkconfig 
+# Requires(postun): /sbin/chkconfig
 # Requires(postun): /sbin/service
 
 
 # %description updatesd
-# yum-updatesd provides a daemon which checks for available updates and 
-# can notify you when they are available via email, syslog or dbus. 
+# yum-updatesd provides a daemon which checks for available updates and
+# can notify you when they are available via email, syslog or dbus.
 
 
 # %package cron
@@ -120,9 +120,9 @@ touch $RPM_BUILD_ROOT/var/lib/yum/uuid
 # # if an upgrade:
 # if [ "$1" -ge "1" ]; then
 # # if there's a /etc/rc.d/init.d/yum file left, assume that there was an
-# # older instance of yum-cron which used this naming convention.  Clean 
+# # older instance of yum-cron which used this naming convention.  Clean
 # # it up, do a conditional restart
-#  if [ -f /etc/init.d/yum ]; then 
+#  if [ -f /etc/init.d/yum ]; then
 # # was it on?
 #   /sbin/chkconfig yum
 #   RETVAL=$?
@@ -135,7 +135,7 @@ touch $RPM_BUILD_ROOT/var/lib/yum/uuid
 # # remove it from the service list
 #   /sbin/chkconfig --del yum
 #  fi
-# fi 
+# fi
 # exit 0
 
 # %preun cron
@@ -146,7 +146,7 @@ touch $RPM_BUILD_ROOT/var/lib/yum/uuid
 #  /sbin/service yum-cron stop 1> /dev/null 2>&1
 # fi
 # exit 0
-# 
+#
 # %postun cron
 # # If there's a yum-cron package left after uninstalling one, do a
 # # conditional restart of the service
@@ -200,6 +200,8 @@ touch $RPM_BUILD_ROOT/var/lib/yum/uuid
 %exclude %{_mandir}/man*/yum-updatesd*
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 3.4.3-8
+-   Replaced BuildArchitecture to BuildArch
 *   Wed Mar 29 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.3-7
 -   Added python-rpm to requires.
 *   Mon Jun 06 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.3-6

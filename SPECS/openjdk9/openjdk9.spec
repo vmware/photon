@@ -3,7 +3,7 @@
 Summary:	OpenJDK
 Name:		openjdk9
 Version:	1.9.0.181
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -23,6 +23,7 @@ BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel
 Requires:       openjre9 = %{version}-%{release}
 Requires:       chkconfig
 AutoReqProv: 	no
+%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp,libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel,libXmu-devel, libXrender, libXrender-devel
 %define bootstrapjdkversion 1.8.0.112
 %define jdk_major_version 1.9.0
 %description
@@ -57,7 +58,7 @@ This package provides the runtime library class sources.
 chmod a+x ./configure
 unset JAVA_HOME &&
 ENABLE_HEADLESS_ONLY="true" &&
-./configure \
+sh configure \
 	--with-target-bits=64 \
 	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
 	--enable-headless-only \
@@ -221,6 +222,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{version}/lib/src.zip
 
 %changelog
+*   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 1.9.0.181-3
+-   Added ExtraBuildrequires macro
 *   Wed Aug 1 2018 Tapas Kundu <tkundu@vmware.com> 1.9.0.181-2
 -   Removed the obsolete for openjdk.
 *   Fri Jul 20 2018 Tapas Kundu <tkundu@vmware.com> 1.9.0.181-1

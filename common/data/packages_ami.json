@@ -1,3 +1,10 @@
 {
-    "packages":["sudo", "tar"]
+    "packages":[
+                "minimal",
+                "initramfs",
+                "sudo",
+                "gawk",
+                "gptfdisk",
+                "tar"
+                ]
 }
