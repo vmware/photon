@@ -54,7 +54,7 @@ x86_64/sqlite-autoconf-3.11.0-1.ph1.x86_64.rpm
 x86_64/flex-2.5.39-1.ph1.x86_64.rpm
 x86_64/libstdc++-devel-5.3.0-4.ph1.x86_64.rpm
 x86_64/libstdc++-devel-7.3.0-1.ph1.x86_64.rpm
-x86_64/openssl-1.0.2g-1.ph1.x86_64.rpm
+x86_64/openssl-1.1.1b-1.ph1.x86_64.rpm
 x86_64/elfutils-0.165-1.ph1.x86_64.rpm
 x86_64/expat-2.1.0-1.ph1.x86_64.rpm
 x86_64/popt-1.16-1.ph1.x86_64.rpm
@@ -73,7 +73,7 @@ x86_64/libgcc-5.3.0-4.ph1.x86_64.rpm
 x86_64/libgcc-7.3.0-1.ph1.x86_64.rpm
 x86_64/gzip-1.6-1.ph1.x86_64.rpm
 x86_64/elfutils-libelf-devel-0.165-1.ph1.x86_64.rpm
-x86_64/openssl-devel-1.0.2g-1.ph1.x86_64.rpm
+x86_64/openssl-devel-1.1.1b-1.ph1.x86_64.rpm
 x86_64/pkg-config-0.28-1.ph1.x86_64.rpm
 x86_64/popt-devel-1.16-1.ph1.x86_64.rpm
 x86_64/flex-devel-2.5.39-1.ph1.x86_64.rpm

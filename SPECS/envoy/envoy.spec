@@ -5,8 +5,10 @@ Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/lyft/envoy
 Source0:        %{name}-v%{version}.tar.gz
+#%define sha1    envoy=c993825bb8d4745f9f3c20a29a2a58f379099fc9
 %define sha1    envoy=725806d38c33d82177f99ae57fd27516adacd604
 Source1:        cotire.cmake
+#Patch0:         openssl_compability.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -38,6 +40,7 @@ BuildRequires:  rapidjson-devel
 BuildRequires:  spdlog
 BuildRequires:  tclap
 BuildRequires:  which
+BuildRequires:  docker
 Requires:       c-ares >= 1.11.0
 Requires:       gperftools
 Requires:       http-parser
@@ -53,6 +56,7 @@ Envoy is a L7 proxy and communication bus designed for large modern service orie
 
 %prep
 %setup -q
+#%patch0 -p1
 cp %{SOURCE1} %{_builddir}/%{name}-%{version}/
 git init .
 git add .
@@ -108,5 +112,7 @@ cp ../configs/* %{buildroot}%{_sysconfdir}/envoy
 %{_bindir}/envoy.dbg
 
 %changelog
+#*    Fri Mar 10 2019 Tapas Kundu <tkundu@vmware.com> 1.9.0-1
+#-    Updated to 1.9.0
 *    Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-1
 -    Initial version of envoy package for Photon.

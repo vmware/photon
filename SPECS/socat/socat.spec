@@ -9,6 +9,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          http://www.dest-unreach.org/socat/download/%{name}-%{version}.tar.bz2
 %define sha1      socat=2a5a6013dff9b4954303c6fd5680a86cfd66aa64
+Patch0:           openssl-1.1.patch
 BuildRequires:    openssl-devel
 Requires:         openssl
 
@@ -17,6 +18,7 @@ Socat is a command line based utility that establishes two bidirectional byte st
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 ./configure --prefix=%{_prefix} --sysconfdir=%{_sysconfdir}
@@ -40,5 +42,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+#*   Wed Mar 06 2019 Tapas Kundu <tkundu@vmware.com> 2.0.0.b9-1
+#-   Updating to 2.0.0.b9 release
 *   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  1.7.3.1-1
 -   Initial build.

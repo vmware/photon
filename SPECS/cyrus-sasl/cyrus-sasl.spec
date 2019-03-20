@@ -1,16 +1,16 @@
 Summary:	Cyrus Simple Authentication Service Layer (SASL) library
 Name:		cyrus-sasl
-Version:	2.1.26
-Release:	10%{?dist}
+Version:	2.1.27
+Release:	1%{?dist}
 License:	Custom
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
-%define sha1 cyrus-sasl=d6669fb91434192529bd13ee95737a8a5040241c
-Patch0:		http://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.26-fixes-3.patch
-Patch1:         cyrus-sasl-mem-leak-fix.patch
+%define sha1 cyrus-sasl=fbfe6f298b0d2efcdab6a40bf47e16d003ae5dc6
+#Patch0:		http://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.26-fixes-3.patch
+#Patch1:         cyrus-sasl-mem-leak-fix.patch
 BuildRequires:  systemd
 BuildRequires:	openssl-devel
 BuildRequires:  krb5 >= 1.12
@@ -30,12 +30,12 @@ If its use is negotiated, a security layer is inserted between the
 protocol and the connection.
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
+#%patch0 -p1
+#%patch1 -p1
 %build
 autoreconf -fi
 pushd saslauthd
-autoreconf -fi
+#autoreconf -fi
 popd
 ./configure \
 	CFLAGS="%{optflags} -fPIC" \
@@ -128,6 +128,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/licenses/%{name}/LICENSE
 %{_mandir}/man8/saslauthd.8.gz
 %changelog
+*   Tue Mar 05 2019 Tapas Kundu <tkundu@vmware.com> 2.1.27-1
+-   Updating to 2.1.27
 *   Tue Nov 21 2017 Anish Swaminathan <anishs@vmware.com>  2.1.26-10
 -   Update patch for memory leak fix
 *   Tue Oct 10 2017 Anish Swaminathan <anishs@vmware.com>  2.1.26-9

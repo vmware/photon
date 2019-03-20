@@ -103,7 +103,8 @@ class constants(object):
         "pkg-config",
         "ncurses",
         "readline",
-        "bash"]
+        "bash",
+        "vim"]
 
     # List of X library RPMS that will be installed in a chroot prior to build openjdk & openjre package. 
     listToolChainXRPMsToInstall=[

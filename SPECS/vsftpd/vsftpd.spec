@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://security.appspot.com/downloads/%{name}-%{version}.tar.gz
 %define sha1    vsftpd=d5f5a180dbecd0fbcdc92bf0ba2fc001c962b55a
-BuildRequires:  libcap-devel Linux-PAM openssl-devel
+BuildRequires:  libcap-devel Linux-PAM openssl-devel vim curl
 Requires:       libcap Linux-PAM openssl
 %description
 Very secure and very small FTP daemon.

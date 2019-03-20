@@ -1,6 +1,6 @@
 Summary:    Management tools and libraries relating to cryptography
 Name:       openssl
-Version:    1.0.2q
+Version:    1.1.1b
 Release:    1%{?dist}
 License:    OpenSSL
 URL:        http://www.openssl.org
@@ -8,11 +8,11 @@ Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1 openssl=692f5f2f1b114f8adaadaa3e7be8cce1907f38c5
-Patch0:     c_rehash.patch
-Patch1:     openssl-ipv6apps.patch
-Patch2:     openssl-init-conslidate.patch
-Patch3:     openssl-drbg-default-read-system-fips.patch
+%define sha1 openssl=e9710abf5e95c48ebf47991b10cbb48c09dae102
+#Patch0:     c_rehash.patch
+#Patch1:     openssl-ipv6apps.patch
+#Patch2:     openssl-init-conslidate.patch
+#Patch3:     openssl-drbg-default-read-system-fips.patch
 Requires:   bash glibc libgcc
 
 %description
@@ -49,26 +49,31 @@ Perl scripts that convert certificates and keys to various formats.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+#%patch0 -p1
+#%patch1 -p1
+#%patch2 -p1
+#%patch3 -p1
 
 %build
 export CFLAGS="%{optflags}"
 ./config \
     --prefix=%{_prefix} \
-    --libdir=lib \
+    --libdir=%{_libdir} \
     --openssldir=/%{_sysconfdir}/ssl \
-    shared \
-    zlib-dynamic \
+    --shared \
+    enable-ssl2 \
+    enable-ssl3 \
+    enable-ssl3-method \
+    enable-deprecated \
+    enable-egd \
         %{?_with_fips} \
-    -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
+    -Wa,--noexecstack 
 # does not support -j yet
 make
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make INSTALL_PREFIX=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
+make DESTDIR=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
+#make INSTALL_PREFIX=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
 ln -sf %{_libdir}/libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
 ln -sf %{_libdir}/libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
 
@@ -82,20 +87,21 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/ssl/certs
-%{_sysconfdir}/ssl/misc/CA.sh
-%{_sysconfdir}/ssl/misc/c_hash
-%{_sysconfdir}/ssl/misc/c_info
-%{_sysconfdir}/ssl/misc/c_issuer
-%{_sysconfdir}/ssl/misc/c_name
+%{_sysconfdir}/ssl/misc/CA.pl
+%{_sysconfdir}/ssl/ct_log_list.cnf
+%{_sysconfdir}/ssl/ct_log_list.cnf.dist
+%{_sysconfdir}/ssl/misc/tsget.pl
+%{_sysconfdir}/ssl/openssl.cnf.dist
 %{_sysconfdir}/ssl/openssl.cnf
 %{_sysconfdir}/ssl/private
 %{_bindir}/openssl
 %{_libdir}/*.so.*
-%{_libdir}/engines/*
+%{_libdir}/engines*/*
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 %{_mandir}/man5/*
 %{_mandir}/man7/*
+%exclude %{_docdir}/*
 
 %files devel
 %{_includedir}/*
@@ -112,6 +118,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Fri Mar 01 2019 Tapas Kundu <tkundu@vmware.com> 1.1.1a-1
+-   Updated to 1.1.1a release
 *   Thu Dec 06 2018 Sujay G <gsujay@vmware.com> 1.0.2q-1
 -   Upgrade to 1.0.2q
 *   Fri Aug 17 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.0.2p-1

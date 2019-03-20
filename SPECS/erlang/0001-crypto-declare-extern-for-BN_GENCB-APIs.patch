@@ -1,0 +1,26 @@
+From 3dc2203e4873308109fb3323582846ad54be4f5a Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhir@vmware.com>
+Date: Mon, 4 Mar 2019 11:20:47 +0530
+Subject: [PATCH] crypto: declare extern for BN_GENCB APIS
+
+---
+ lib/crypto/c_src/crypto.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/lib/crypto/c_src/crypto.c b/lib/crypto/c_src/crypto.c
+index df60773..d9cb2e6 100644
+--- a/lib/crypto/c_src/crypto.c
++++ b/lib/crypto/c_src/crypto.c
+@@ -323,6 +323,9 @@ do {							\
+     }                                                   \
+  } while (0)
+ 
++extern void *BN_GENCB_get_arg(BN_GENCB *cb);
++extern void BN_GENCB_free(BN_GENCB *cb);
++extern BN_GENCB *BN_GENCB_new(void);
+ 
+ #ifdef NEED_EVP_COMPATIBILITY_FUNCTIONS
+ /*
+-- 
+2.7.4
+

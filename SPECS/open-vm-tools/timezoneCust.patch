@@ -1,0 +1,14 @@
+diff -ru gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh gosc-scripts-modify/imc-shell/imgcust-scripts/PhotonCustomization.sh
+--- gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh	2016-04-29 14:10:39.000000000 -0700
++++ gosc-scripts-modify/imc-shell/imgcust-scripts/PhotonCustomization.sh	2017-04-21 00:10:03.346609511 -0700
+@@ -31,8 +31,10 @@
+     Debug "Not changing UTC"
+   elif [[ $utc == 1 ]]; then
+     Exec '/usr/bin/timedatectl set-local-rtc 0' '' ''
++    Exec '/usr/sbin/hwclock --systohc' '' ''
+   else
+     Exec '/usr/bin/timedatectl set-local-rtc 1' '' ''
++    Exec '/usr/sbin/hwclock --systohc' '' ''
+   fi
+ 
+   local tz=$(ConfigFile_GetTimeZone)

@@ -1,7 +1,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
-Version:        2.6.1
-Release:        5%{?dist}
+Version:        2.11.0
+Release:        1%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -9,10 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-Patch0:         ovs-CVE-2017-9264.patch
-Patch1:         OVS-CVE-2017-9263.patch
-Patch2:         OVS-CVE-2017-14970.patch
-%define sha1    openvswitch=2865fe03b3906b5aea984102c4b65772b5dd7450
+#Patch0:         ovs-CVE-2017-9264.patch
+#Patch1:         OVS-CVE-2017-9263.patch
+#Patch2:         OVS-CVE-2017-14970.patch
+#Patch3:         openvswitch_fix_for_openssl111.patch
+%define sha1    openvswitch=a5fa22b1e428d899e169c47488e923a45aaa733e
 
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
@@ -27,7 +28,7 @@ BuildRequires:  python-pip
 BuildRequires:  python-six
 BuildRequires:  python-xml
 BuildRequires:  python-setuptools
-
+BuildRequires:  vim
 Requires:       libgcc-atomic
 Requires:       libcap-ng
 Requires:       openssl
@@ -59,9 +60,10 @@ It contains the documentation and manpages for openvswitch.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p0
-%patch2 -p1
+#%patch0 -p1
+#%patch1 -p0
+#%patch2 -p1
+#%patch3 -p0
 
 %build
 ./configure \
@@ -73,7 +75,6 @@ It contains the documentation and manpages for openvswitch.
         --localstatedir=/var \
         --enable-ssl \
         --enable-shared
-
 make %{_smp_mflags}
 
 %install
@@ -123,6 +124,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/openvswitch/python/*
 /usr/share/openvswitch/scripts/ovs-*
 /usr/share/openvswitch/scripts/ovn-*
+/usr/share/openvswitch/scripts/ovndb-servers.ocf
 
 %files devel
 %{_includedir}/ovn/*.h
@@ -134,15 +136,21 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files doc
 /usr/share/man/man1/ovs-*.1.gz
 /usr/share/man/man1/ovsdb-*.1.gz
+/usr/share/man/man1/ovn-detrace.1.gz
 /usr/share/man/man5/ovs-vswitchd.conf.db.5.gz
 /usr/share/man/man5/ovn-*.5.gz
 /usr/share/man/man5/vtep.5.gz
+/usr/share/man/man5/ovsdb-server.5.gz
 /usr/share/man/man7/ovn-architecture.7.gz
+/usr/share/man/man7/ovs-actions.7.gz
+/usr/share/man/man7/ovs-fields.7.gz
 /usr/share/man/man8/ovs-*.8.gz
 /usr/share/man/man8/ovn-*.8.gz
 /usr/share/man/man8/vtep-ctl.8.gz
 
 %changelog
+*   Fri Mar 08 2019 Tapas Kundu <tkundu@vmware.com> 2.11.0-1
+-   Fix build error with openssl 1.1.1
 *   Thu Nov 09 2017 Xiaolin Li <xiaolinl@vmware.com> 2.6.1-5
 -   Fix CVE-2017-14970
 *   Wed Oct 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.6.1-4

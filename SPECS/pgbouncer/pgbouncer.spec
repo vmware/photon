@@ -1,11 +1,11 @@
 Summary:	Connection pooler for PostgreSQL.
 Name:		pgbouncer
-Version:	1.7.2
-Release:	4%{?dist}
+Version:	1.9.0
+Release:	1%{?dist}
 License:	BSD
 URL:		https://wiki.postgresql.org/wiki/PgBouncer
 Source0:        https://pgbouncer.github.io/downloads/files/1.7.2/%{name}-%{version}.tar.gz
-%define sha1 pgbouncer=d9bb29da15d90713e2399af3ebf5019da5cbe2d6
+%define sha1 pgbouncer=284dd692437f4454e4f787832f4912d2eb219b25
 Group:		Application/Databases.
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -87,6 +87,8 @@ fi
 /var/run/pgbouncer
 
 %changelog
+*       Sun Mar 10 2019 Tapas Kundu <tkundu@vmware.com> 1.9.0-1
+-       Updated to 1.9.0
 *	Thu	Apr 20	2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.2-4
 -	Updated the requires + release bump for building with new libevent
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.2-3

@@ -1,0 +1,25 @@
+--- a/modules/afmongodb/mongo-c-driver/src/mongoc/mongoc-scram.c_org	2019-03-10 21:53:35.432889730 +0000
++++ b/modules/afmongodb/mongo-c-driver/src/mongoc/mongoc-scram.c	2019-03-10 21:55:38.092893191 +0000
+@@ -308,10 +308,9 @@ _mongoc_scram_sha1 (const unsigned char
+                     const size_t         input_len,
+                     unsigned char       *output)
+ {
+-   EVP_MD_CTX digest_ctx;
++   EVP_MD_CTX *digest_ctx;
+    bool rval = false;
+-
+-   EVP_MD_CTX_init (&digest_ctx);
++   digest_ctx = EVP_MD_CTX_new();
+ 
+    if (1 != EVP_DigestInit_ex (&digest_ctx, EVP_sha1 (), NULL)) {
+       goto cleanup;
+@@ -324,8 +323,7 @@ _mongoc_scram_sha1 (const unsigned char
+    rval = (1 == EVP_DigestFinal_ex (&digest_ctx, output, NULL));
+ 
+ cleanup:
+-   EVP_MD_CTX_cleanup (&digest_ctx);
+-
++   EVP_MD_CTX_free(digest_ctx);
+    return rval;
+ }
+ 
