@@ -1,14 +1,14 @@
 Summary:        The Apache Portable Runtime Utility Library
 Name:           apr-util
-Version:        1.5.4
-Release:        8%{?dist}
+Version:        1.6.1
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            https://apr.apache.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
-%define sha1 apr-util=72cc3ac693b52fb831063d5c0de18723bc8e0095
+%define sha1 apr-util=5bae4ff8f1dad3d7091036d59c1c0b2e76903bf4
 %define         apuver    1
 
 BuildRequires:  apr-devel
@@ -111,6 +111,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/apr-util-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+*   Sun Mar 10 2019 Tapas Kundu <tkundu@vmware.com> 1.6.1-1
+-   Updated to 1.6.1
 *   Thu Apr 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.4-8
 -   BuildRequires postgresql-devel.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.4-7

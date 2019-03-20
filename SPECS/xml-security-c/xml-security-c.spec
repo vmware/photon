@@ -1,14 +1,14 @@
 Summary:        C++ XML Signature and Encryption library.
 Name:           xml-security-c
-Version:        1.7.3
-Release:        3%{?dist}
+Version:        2.0.2
+Release:        1%{?dist}
 License:        Apache Software License
 URL:            http://santuario.apache.org/index.html
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://apache.mirrors.lucidnetworks.net/santuario/c-library/%{name}-%{version}.tar.gz
-%define sha1 xml-security-c=bcbe98e0bd3695a0b961a223cce53e2f35c4681b
+%define sha1 xml-security-c=281efe6701397036af420244be26815589cec982
 Requires:       openssl
 Requires:       xerces-c
 BuildRequires:  openssl-devel
@@ -34,12 +34,16 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so.*
+%{_libdir}/libxml-security-c.la
+%exclude %{_libdir}/pkgconfig/xml-security-c.pc
 %files  devel
 %defattr(-,root,root)
 %{_libdir}/*.so
 %{_libdir}/*.a
 %{_includedir}/*
 %changelog
+*   Tue Mar 05 2019 Tapas Kundu <tkundu@vmware.com> 2.0.2-1
+-   Update to 2.0.2
 *   Wed Apr 18 2018 Xiaolin Li <xiaolinl@vmware.com> 1.7.3-3
 -   Rebuild with xerces-c 3.2.1
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.3-2

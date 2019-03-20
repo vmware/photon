@@ -1,7 +1,7 @@
 Summary:	An Event notification library.
 Name:		libevent
 Version:	2.1.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://libevent.org
 Source0:	https://github.com/%{name}/%{name}/releases/download/release-%{version}-stable/%{name}-%{version}-stable.tar.gz
@@ -55,6 +55,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/libevent_extra.pc
 
 %changelog
+*   Wed Mar 20 2019 Tapas Kundu <tkundu@vmware.com> 2.1.8-2
+-   Bumped up to use latest openssl
 *	Mon Apr 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.1.8-1
 -	Upgraded to version 2.1.8. (fixes CVE-2016-10195)
 *	Tue Jul 26 2016 Divya Thaluru <dthaluru@vmware.com> 2.0.22-4

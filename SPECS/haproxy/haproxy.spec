@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        1.8.14
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -58,6 +58,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Wed Mar 20 2019 Tapas Kundu <tkundu@vmware.com> 1.8.14-3
+-   Bumped up to use latest openssl
 *   Tue Jan 29 2019 Ajay Kaher <akaher@vmware.com> 1.8.14-2
 -   Build with USE_SYSTEMD=1 to fix service startup
 *   Tue Dec 04 2018 Ajay Kaher <akaher@vmware.com> 1.8.14-1

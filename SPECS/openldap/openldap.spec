@@ -1,18 +1,18 @@
 %global _default_patch_fuzz 2
+%global debug_package %{nil}
 Summary:	OpenLdap-2.4.43
 Name:		openldap
-Version:	2.4.43
-Release:	3%{?dist}
+Version:	2.4.46
+Release:	1%{?dist}
 License:	OpenLDAP
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
-%define sha1 openldap=3b52924df2f45e81f25ecbe37551bc837d090cfa
-Patch0:		openldap-2.4.43-consolidated-1.patch
-Patch1:     openldap-CVE-2017-9287.patch
-Patch2:		openldap-2.4.40-gssapi-1.patch
+%define sha1 openldap=a9ae2273eb9bdd70090dafe0d018a3132606bef6
+Patch0:		openldap-2.4.40-gssapi-1.patch
+Patch1:        openldap-2.4.44-consolidated-2.patch
 Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
 BuildRequires:  cyrus-sasl >= 2.1
 BuildRequires:  openssl-devel >= 1.0.1
@@ -28,7 +28,6 @@ over the Internet. The openldap package contains configuration files,
 libraries, and documentation for OpenLDAP.
 %prep
 %setup -q
-%patch2 -p1
 %patch0 -p1
 %patch1 -p1
 %build
@@ -73,6 +72,8 @@ rm -rf %{buildroot}/*
 /etc/openldap/*
 
 %changelog
+*       Tue Mar 05 2019 Tapas Kundu <tkundu@vmware.com> 2.4.46-1
+-       Updated to 2.4.46
 *	Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.43-3
 -	Applied patch for CVE-2017-9287
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.43-2

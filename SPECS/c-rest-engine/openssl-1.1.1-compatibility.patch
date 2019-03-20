@@ -1,0 +1,11 @@
+--- a/configure.ac	2019-03-06 14:53:06.982425682 +0000
++++ b/configure.ac	2019-03-06 14:50:52.046421874 +0000
+@@ -27,7 +27,7 @@ CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_GNU_
+ CFLAGS=""
+ 
+ AM_CPPFLAGS="$AM_CPPFLAGS -I${top_srcdir}/include"
+-AM_CFLAGS="$AM_CFLAGS -Wall -Werror -fno-strict-aliasing"
++AM_CFLAGS="$AM_CFLAGS -Wall -Werror -fno-strict-aliasing -Wno-unused-function"
+ 
+ AC_SUBST(AM_CPPFLAGS)
+ AC_SUBST(AM_CFLAGS)

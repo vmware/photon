@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.3.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
@@ -54,6 +54,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Wed Mar 20 2019 Tapas Kundu <tkundu@vmware.com> 3.3.1-3
+-   Bumped up to use latest openssl
 *   Fri Mar 08 2019 Ankit Jain <ankitja@vmware.com> 3.3.1-2
 -   Fix for CVE-2018-1000877 and CVE-2018-1000878
 *   Thu Apr 06 2017 Divya Thaluru <dthaluru@vmware.com> 3.3.1-1

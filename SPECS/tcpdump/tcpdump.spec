@@ -1,10 +1,10 @@
-Summary:        Packet Analyzer
-Name:           tcpdump
-Version:        4.9.2
-Release:        2%{?dist}
-License:        BSD
-URL:            http://www.tcpdump.org
-Source0:        http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
+Summary:	Packet Analyzer
+Name:		tcpdump
+Version:	4.9.2
+Release:	3%{?dist}
+License:	BSD
+URL:		http://www.tcpdump.org
+Source0:	http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
 %define sha1 tcpdump=e2db246a9dd19278bac1a5ff875106c75e0a16d4
 Patch0:          CVE-2018-19519.patch
 Group:          Networking
@@ -38,6 +38,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man1/*
 
 %changelog
+*   Wed Mar 20 2019 Tapas Kundu <tkundu@vmware.com> 4.9.2-3
+-   Bumped up to use latest openssl
 *   Thu Mar 14 2019 Michelle Wang <michellew@vmware.com> 4.9.2-2
 -   Add patch CVE-2018-19519
 *   Fri Sep 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.2-1

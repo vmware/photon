@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p12
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -144,6 +144,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Mon Mar 25 2019 Tapas Kundu <tkundu@vmware.com> 4.2.8p12-4
+-   Bumped up to use latest openssl
 *   Thu Mar 21 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.2.8p12-3
 -   Created drift directory owned by ntp
 *   Tue Mar 19 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.2.8p12-2

@@ -1,6 +1,6 @@
 Name:          emqttd
 Version:       2.3.11
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       emqttd
 License:       Apache License Version 2.0
 Group:	       System Environment/Daemons
@@ -13,6 +13,7 @@ Source1:       emqttd.service
 Patch0:        vars.config.patch
 BuildRequires: erlang
 BuildRequires: git
+BuildRequires: openssl-devel
 Requires:      shadow gawk sed
 
 %description
@@ -112,6 +113,8 @@ exit 0
 rm -rf %{buildroot}
 
 %changelog
+*   Sun Mar 17 2019 Tapas Kundu <tkundu@vmware.com> 2.3.11-2
+-   Added openssl-devel as build requires
 *   Wed Sep 19 2018 Vinothkumar D <vinothkumard@vmware.com> 2.3.11-1
 -   Upgraded to version 2.3.11
 *   Thu Dec 07 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-1

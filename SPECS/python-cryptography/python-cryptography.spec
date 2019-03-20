@@ -3,17 +3,17 @@
 
 Summary:        Python cryptography library
 Name:           python-cryptography
-Version:        1.7.2
-Release:        5%{?dist}
+Version:        2.3.1
+Release:        1%{?dist}
 Url:            https://cryptography.io
 License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
-%define sha1    cryptography=2b5bc62fda71992633f83164b1a74c16a784acdf
+%define sha1    cryptography=c550f9ba5a46ad33a0568edc2b9d0f4af3e4adab
 #https://github.com/pyca/cryptography/pull/3278/commits/6779428e804d17cfb9f23a618b38e1089de93bdd
-Patch0:         clear_error_queue_at_startup.patch
+#Patch0:         clear_error_queue_at_startup.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -53,7 +53,7 @@ Python 3 version.
 
 %prep
 %setup -q -n cryptography-%{version}
-%patch0 -p1
+#%patch0 -p1
 
 %build
 python setup.py build
@@ -72,6 +72,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Mar 06 2019 Tapas Kundu <tkundu@vmware.com> 2.3.1-1
+-   Updating to 2.3.1
 *   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 1.7.2-5
 -   Release bump to use python 3.5.4.
 *   Tue Jun 20 2017 Rongrong Qiu <rqiu@vmware.com> 1.7.2-4

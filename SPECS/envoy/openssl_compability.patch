@@ -1,0 +1,27 @@
+--- a/source/common/ssl/context_impl.cc	2019-03-12 18:59:17.794875517 +0000
++++ b/source/common/ssl/context_impl.cc	2019-03-12 19:06:05.454887020 +0000
+@@ -38,11 +38,20 @@ DH* get_dh2048() {
+   static unsigned char dh2048_g[] = {
+       0x02,
+   };
+-
++  BIGNUM *bp, *bg;
+   DH* dh = DH_new();
+-  dh->p = BN_bin2bn(dh2048_p, sizeof(dh2048_p), nullptr);
+-  dh->g = BN_bin2bn(dh2048_g, sizeof(dh2048_g), nullptr);
+-  RELEASE_ASSERT(dh->p != nullptr && dh->g != nullptr);
++  bp = BN_bin2bn(dh2048_p, sizeof(dh2048_p), nullptr);
++  bg = BN_bin2bn(dh2048_g, sizeof(dh2048_g), nullptr);
++  if((dh2048_p == nullptr) || (dh2048_g == nullptr)) {
++    BN_free(bp);
++    BN_free(bg);
++    DH_free(dh);
++    return nullptr;
++  }
++  //dh->p = BN_bin2bn(dh2048_p, sizeof(dh2048_p), nullptr);
++  //dh->g = BN_bin2bn(dh2048_g, sizeof(dh2048_g), nullptr);
++  DH_set0_pqg(dh, bp, nullptr, bg);
++  //RELEASE_ASSERT(dh->p != nullptr && dh->g != nullptr);
+   return dh;
+ }
+ 

@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.5.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -205,6 +205,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Wed Mar 20 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-5
+-   Bumped up to use latest openssl
 *   Wed Mar 13 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-4
 -   Fix for CVE-2019-9636
 *   Mon Feb 11 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-3

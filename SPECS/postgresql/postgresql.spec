@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        9.6.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -139,6 +139,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpq*.so
 
 %changelog
+*   Wed Mar 20 2019 Tapas Kundu <tkundu@vmware.com> 9.6.10-2
+-   Bumped up to use latest openssl
 *   Tue Aug 21 2018 Keerthana K <keerthanak@vmware.com> 9.6.10-1
 -   Updated to version 9.6.10 to fix CVE-2018-10915, CVE-2018-10925.
 *   Mon Jun 04 2018 Xiaolin Li <xiaolinl@vmware.com> 9.6.9-1
