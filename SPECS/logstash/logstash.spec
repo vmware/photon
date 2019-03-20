@@ -1,7 +1,7 @@
 Summary:	Logstash is a tool for managing events and logs.
 Name:           logstash
 Version:        6.4.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -12,6 +12,7 @@ Source0:        %{name}-%{version}.tar.gz
 Source1:        %{name}.service
 Source2:        %{name}.conf
 BuildArch:      x86_64
+Patch0:         logstash-update-java-dependencies.patch
 BuildRequires:	openjdk8
 BuildRequires:	ruby
 BuildRequires:  git
@@ -28,6 +29,7 @@ Logstash is a tool to collect, process, and forward events and log messages. Col
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 export OSS=true
@@ -112,6 +114,8 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+*   Wed Mar 20 2019 Ankit Jain <ankitja@vmware.com> 6.4.3-2
+-   Updated the Java dependencies
 *   Wed Feb 13 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-1
 -   Upgrade to 6.4.3 for kibana,elasticsearch compatibility
 *   Wed Jan 23 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.1-1
