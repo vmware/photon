@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.17.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
@@ -87,6 +87,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Wed Mar 20 2019 Tapas Kundu <tkundu@vmware.com> 2.17.1-3
+-   Bumped up to use latest openssl
 *   Wed Jun 06 2018 Xiaolin Li <xiaolinl@vmware.com> 2.17.1-2
 -   Bump release after upgraded perl to 5.24.1
 *   Thu May 31 2018 Xiaolin Li <xiaolinl@vmware.com> 2.17.1-1

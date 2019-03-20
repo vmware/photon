@@ -1,0 +1,15 @@
+--- a/lib/compat/openssl_support.c	2019-03-12 14:49:05.989047108 +0000
++++ b/lib/compat/openssl_support.c	2019-03-12 14:49:58.677048595 +0000
+@@ -214,6 +214,7 @@ int DH_set0_pqg(DH *dh, BIGNUM *p, BIGNU
+ }
+ #endif
+ 
++#if 0
+ #if !SYSLOG_NG_HAVE_DECL_BN_GET_RFC3526_PRIME_2048
+ BIGNUM *
+ BN_get_rfc3526_prime_2048(BIGNUM *bn)
+@@ -221,3 +222,4 @@ BN_get_rfc3526_prime_2048(BIGNUM *bn)
+   return get_rfc3526_prime_2048(bn);
+ }
+ #endif
++#endif

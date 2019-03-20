@@ -4,14 +4,24 @@
 Summary:        ipmitool - Utility for IPMI control
 Name:           ipmitool
 Version:        1.8.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        %{name}-%{version}.tar.bz2
-%define sha1    ipmitool=ff4781bb78f264d44fa4bf1767f268d4079d87ba
+Source0:        %{name}.tar.gz
+%define sha1    ipmitool=63d53065160d8863999b876d1761589955328c33
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: libtool
+BuildRequires: glib
+BuildRequires: glibc
+BuildRequires: cmake
+BuildRequires: openssl-devel
+BuildRequires: curl
+Requires:      openssl
+Requires:      curl
 
 %description
 This package contains a utility for interfacing with devices that support
@@ -29,9 +39,10 @@ Log (SEL), printing Field Replaceable Unit (FRU) information, reading and
 setting LAN configuration, and chassis power control.
 
 %prep
-%setup -q
+%setup -q -n %{name}
 
 %build
+./bootstrap
 ./configure --with-kerneldir \
     --with-rpm-distro= \
     --prefix=%{_prefix} \
@@ -60,5 +71,7 @@ mkdir -p %{buildroot}/lib/systemd/system
 %doc %{_datadir}/doc/ipmitool
 
 %changelog
+*   Sun Mar 17 2019 Tapas Kundu <tkundu@vmware.com> 1.8.18-2
+-   Updated source to build with openssl 1.1.1
 *   Fri Aug 25 2017 Xiaolin Li <xiaolinl@vmware.com> 1.8.18-1
 -   Initial build.  First version

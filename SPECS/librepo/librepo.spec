@@ -5,7 +5,7 @@
 Summary:       	Repodata downloading library
 Name:          	librepo
 Version:       	1.7.17
-Release:       	3%{?dist}
+Release:       	4%{?dist}
 License:       	LGPLv2+
 URL:           	https://github.com/Tojaj/librepo/
 Group:         	System Environment/Libraries
@@ -74,6 +74,8 @@ cp %{_builddir}/%{librepo_name}-%{version}/librepo/*.h %{buildroot}%{_includedir
 %{_includedir}/librepo/*.h
 
 %changelog
+*   Wed Mar 20 2019 Tapas Kundu <tkundu@vmware.com> 1.7.17-4
+-   Bumped up to use latest openssl
 * Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 1.7.17-3
 - Release bump for expat version update
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.17-2

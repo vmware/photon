@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.59.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -90,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 
 %changelog
+*   Wed Mar 20 2019 Tapas Kundu <tkundu@vmware.com> 7.59.0-7
+-   Bumped up to use latest openssl
 *   Thu Feb 14 2019 Dweep Advani <dadvani@vmware.com> 7.59.0-6
 -   Fixed CVE-2019-3822 and CVE-2019-3823
 *   Wed Jan 30 2019 Dweep Advani <dadvani@vmware.com> 7.59.0-5

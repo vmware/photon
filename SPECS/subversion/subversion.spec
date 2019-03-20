@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.9.4
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
@@ -62,6 +62,8 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_datadir}/pkgconfig/*.pc
 
 %changelog
+*   Wed Mar 20 2019 Tapas Kundu <tkundu@vmware.com> 1.9.4-7
+-   Bumped up to use latest openssl
 *   Thu Feb 01 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-6
 -   Move pkgconfig files to devel package.
 *   Mon Jan 22 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-5

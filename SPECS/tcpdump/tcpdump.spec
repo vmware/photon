@@ -1,7 +1,7 @@
 Summary:	Packet Analyzer
 Name:		tcpdump
 Version:	4.9.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://www.tcpdump.org
 Source0:	http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
@@ -32,6 +32,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_sbindir}/*
 %{_mandir}/man1/*
 %changelog
+*   Wed Mar 20 2019 Tapas Kundu <tkundu@vmware.com> 4.9.2-2
+-   Bumped up to use latest openssl
 *   Fri Sep 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.2-1
 -   Updating version to 4.9.2
 *   Thu Sep 07 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.1-2

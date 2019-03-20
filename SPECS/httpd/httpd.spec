@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.37
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -11,7 +11,6 @@ Source0:        http://apache.mirrors.hoobly.com//httpd/%{name}-%{version}.tar.b
 %define sha1    httpd=4a38471de821288b0300148016f2b03dfee8adf2
 Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.27-blfs_layout-1.patch
 Patch1:         httpd-uncomment-ServerName.patch
-BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  apr
@@ -27,6 +26,7 @@ Requires:       openldap
 Requires:       lua
 Requires:       shadow
 Provides:       apache2
+
 %description
 The Apache HTTP Server.
 
@@ -57,6 +57,7 @@ The httpd-tools of httpd.
 %patch1 -p1
 
 %build
+
 ./configure --prefix=%{_sysconfdir}/httpd \
             --exec-prefix=%{_prefix} \
             --bindir=%{_bindir}                             \
@@ -70,7 +71,8 @@ The httpd-tools of httpd.
             --enable-mods-shared="all cgi"                  \
             --enable-mpms-shared=all                        \
             --with-apr=%{_prefix}                           \
-            --with-apr-util=%{_prefix}
+            --with-apr-util=%{_prefix}                      \
+            --with-ssl=/usr/include
 
 make %{?_smp_mflags}
 
@@ -176,6 +178,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Sun Mar 10 2019 Tapas Kundu <tkundu@vmware.com> 2.4.37-2
+-   Build with openssl 1.1.1
 *   Wed Jan 09 2019 Anish Swaminathan <anishs@vmware.com> 2.4.37-1
 -   Updated to version 2.4.37, fix CVE-2018-11763
 *   Wed Aug 29 2018 Tapas Kundu <tkundu@vmware.com> 2.4.34-1

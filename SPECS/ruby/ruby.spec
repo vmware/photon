@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.5.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -49,6 +49,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Wed Mar 20 2019 Tapas Kundu <tkundu@vmware.com> 2.5.3-2
+-   Bumped up to use latest openssl
 *   Wed Jan 02 2019 Sujay G <gsujay@vmware.com> 2.5.3-1
 -   Bump ruby version to 2.5.3, to fix CVE-2018-16395 & CVE-2018-16396
 *   Fri Apr 27 2018 Xiaolin Li <xiaolinl@vmware.com> 2.4.4-1

@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.2
-Release:       5%{?dist}
+Release:       6%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache 2.0
@@ -18,6 +18,8 @@ Patch2:        typo_fixes.patch
 Patch3:        ssl_read_error.patch
 Patch4:        persistent_connection.patch
 Patch5:        fd_leak.patch
+Patch6:        include_time_header.patch
+Patch7:        openssl-1.1.1-compatibility.patch 
 %define sha1   c-rest-engine=25aa9d1f2680e26114dee18365c510692552f8e4
 
 %description
@@ -42,6 +44,8 @@ development libs and header files for c-rest-engine
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
+%patch7 -p1
 
 %build
 cd build
@@ -74,6 +78,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Wed Mar 06 2019 Tapas Kundu <tkundu@vmware.com> 1.2-6
+-  Added patch for compatiable for openssl 1.1.1b
 *  Wed May 09 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-5
 -  Adding patch for file decriptor leak issue.
 *  Thu Mar 22 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-4

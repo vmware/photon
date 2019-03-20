@@ -1,0 +1,27 @@
+--- a/lib/dhparams.c	2019-03-08 13:40:09.415178231 +0000
++++ b/lib/dhparams.c	2019-03-08 13:40:41.811179145 +0000
+@@ -1,5 +1,5 @@
+ #include "lib/dhparams.h"
+-static DH *get_dh1024(void)
++DH *get_dh1024(void)
+ {
+     static unsigned char dhp_1024[] = {
+         0xF4, 0x88, 0xFD, 0x58, 0x4E, 0x49, 0xDB, 0xCD, 0x20, 0xB4,
+@@ -35,7 +35,7 @@ static DH *get_dh1024(void)
+     }
+     return dh;
+ }
+-static DH *get_dh2048(void)
++DH *get_dh2048(void)
+ {
+     static unsigned char dhp_2048[] = {
+         0xF6, 0x42, 0x57, 0xB7, 0x08, 0x7F, 0x08, 0x17, 0x72, 0xA2,
+@@ -84,7 +84,7 @@ static DH *get_dh2048(void)
+     }
+     return dh;
+ }
+-static DH *get_dh4096(void)
++DH *get_dh4096(void)
+ {
+     static unsigned char dhp_4096[] = {
+         0xFA, 0x14, 0x72, 0x52, 0xC1, 0x4D, 0xE1, 0x5A, 0x49, 0xD4,

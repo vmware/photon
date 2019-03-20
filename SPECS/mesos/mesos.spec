@@ -3,7 +3,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	1.5.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -124,6 +124,8 @@ find %{buildroot}%{python2_sitelib}/mesos -name '*.pyc' -delete
 %{python2_sitelib}/mesos/*
 
 %changelog
+*       Wed Mar 20 2019 Tapas Kundu <tkundu@vmware.com> 1.5.2-2
+-       Bumped up to use latest openssl
 *	Wed Feb 27 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.2-1
 -	Update to 1.5.2. Includes fix for CVE-2018-1330
 *       Tue Jan 23 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.2-2
