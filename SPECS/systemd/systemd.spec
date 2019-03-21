@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          51%{?dist}
+Release:          52%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -52,6 +52,8 @@ Patch34:          systemd-228-CVE-2018-16864.patch
 Patch35:          systemd-228-CVE-2018-16865.patch
 Patch36:          systemd-228-CVE-2018-16866.patch
 Patch37:          systemd-228-fix-handler-route-remove.patch
+Patch38:          systemd-228-CVE-2018-6954.patch
+Patch39:          systemd-228-CVE-2018-6954_1.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -123,6 +125,8 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch35 -p1
 %patch36 -p1
 %patch37 -p1
+%patch38 -p1
+%patch39 -p1
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -263,6 +267,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*    Tue Mar 19 2019 Keerthana K <keerthanak@vmware.com> 228-52
+-    Fix CVE-2018-6954
 *    Thu Feb 21 2019 Anish Swaminathan <anishs@vmware.com>  228-51
 -    Fix handler typo for route_remove
 *    Thu Jan 10 2019 Anish Swaminathan <anishs@vmware.com>  228-50
