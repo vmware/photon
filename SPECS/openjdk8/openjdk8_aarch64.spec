@@ -1,35 +1,21 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
-%define _jdk_update 151
+%define _jdk_update 181
 %define _jdk_build 13
 %define _repo_ver aarch64-jdk8u%{_jdk_update}-b%{_jdk_build}
-%define _url_src http://hg.openjdk.java.net/aarch64-port/jdk8u
+%define _url_src https://github.com/AdoptOpenJDK/openjdk-aarch64-jdk8u/
 
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.151
-Release:	3%{?dist}
+Version:	1.8.0.181
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		http://hg.openjdk.java.net/aarch64-port/jdk8u/
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	%{_url_src}/archive/jdk8u-%{_repo_ver}.tar.bz2
-%define sha1 jdk8u=d92f2f3633ca1f376dddc1d3c6d7ec53a54d7d63
-Source1:	%{_url_src}/corba/archive/corba-%{_repo_ver}.tar.bz2
-%define sha1 corba=a8cfcc8cd8817560059d7d121bb774334ae012b0
-Source2:	%{_url_src}/hotspot/archive/hotspot-%{_repo_ver}.tar.bz2
-%define sha1 hotspot=c9378ab34ee281e196206214ffe3174b2dfd2d80
-Source3:	%{_url_src}/jdk/archive/jdk-%{_repo_ver}.tar.bz2
-%define sha1 jdk-aarch64=5cc629011f0e6c2aa522e4ca6c8b602912431cbd
-Source4:	%{_url_src}/jaxws/archive/jaxws-%{_repo_ver}.tar.bz2
-%define sha1 jaxws=d3fd7bca75d6e8125c7968c9242129477d0fc0cb
-Source5:	%{_url_src}/jaxp/archive/jaxp-%{_repo_ver}.tar.bz2
-%define sha1 jaxp=229a83f8687bae8c1c51f2ea0010f3d2cf896072
-Source6:	%{_url_src}/langtools/archive/langtools-%{_repo_ver}.tar.bz2
-%define sha1 langtools=ec34f7adc4f66b687a33e1c8fbf0a4e44dafb0c1
-Source7:	%{_url_src}/nashorn/archive/nashorn-%{_repo_ver}.tar.bz2
-%define sha1 nashorn=aaf4d057bb3e5d8700f6b6d11d38fb9519c2ab29
+Source0:	%{_url_src}/archive/%{_repo_ver}.tar.gz
+%define sha1 %{_repo_ver}=058c0328698dcec3eb584d216c81a9ca47b87ecd
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
 BuildArch:      aarch64
@@ -86,11 +72,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -qn jdk8u-%{_repo_ver} -b1 -b2 -b3 -b4 -b5 -b6 -b7
-for subrepo in corba hotspot jdk jaxws jaxp langtools nashorn
-do
-    mv ../${subrepo}-%{_repo_ver} ${subrepo}
-done
+%setup -qn openjdk-aarch64-jdk8u-%{_repo_ver}
 %patch0 -p1
 %patch1 -p1
 rm jdk/src/solaris/native/sun/awt/CUPSfuncs.c
@@ -262,6 +244,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Thu Mar 21 2019 Ajay Kaher <akaher@vmware.com> 1.8.0.181-1
+-   Update to version 1.8.0.181
 *   Mon Oct 29 2018 Ajay Kaher <akaher@vmware.com> 1.8.0.151-3
 -   Adding BuildArch
 *   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.151-2
