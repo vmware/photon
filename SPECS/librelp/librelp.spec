@@ -1,12 +1,11 @@
 Summary:        RELP Library
 Name:           librelp
-Version:        1.2.9
-Release:        3%{?dist}
+Version:        1.2.17
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://www.librelp.com
 Source0:        http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
-%define sha1 librelp=d8b61789a2775bbff08c1ac05b658a52afa4d729
-Patch0:         librelp-CVE-2018-1000140.patch
+%define sha1 librelp=701d69e7723fe614b96750af8cba5ee9a54085fe
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -29,7 +28,7 @@ developing applications that use librelp.
 
 %prep
 %setup -q
-%patch0 -p1
+autoreconf -fiv
 %build
 ./configure \
         --prefix=%{_prefix}
@@ -51,6 +50,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*   Fri Mar 22 2019 Keerthana K <keerthanak@vmware.com> 1.2.17-1
+-   Updated to version 1.2.17
 *   Fri Apr 20 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.9-3
 -   Fix CVE-2018-1000140
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.9-2
