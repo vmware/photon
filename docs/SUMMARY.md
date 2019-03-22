@@ -191,4 +191,6 @@
         - [Investigating the Guest Kernel](photon_troubleshoot/investigating-the-guest-kernel.md)
         - [Kernel Log Replication with VProbes](photon_troubleshoot/kernel-log-replication-with-vprobes.md)
     -   [Performance Issues](photon_troubleshoot/performance-issues.md)
+        - [General Guidelines](photon_troubleshoot/general_performance_guidelines.md)
+        - [Throughput Performance](photon_troubleshoot/throughput_performance.md)
 - [Security Advisories](https://github.com/vmware/photon/wiki/Security-Advisories)
