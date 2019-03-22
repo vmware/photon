@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p12
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -123,6 +123,7 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %dir /var/lib/ntp/drift
+%attr(0755, ntp, ntp) /var/lib/ntp/drift
 %attr(0750, root, root) %config(noreplace) /etc/ntp.conf
 %attr(0750, root, root) %config(noreplace) /etc/sysconfig/ntp
 /lib/systemd/system/ntpd.service
@@ -143,6 +144,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Thu Mar 21 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.2.8p12-3
+-   Created drift directory owned by ntp
 *   Tue Mar 19 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.2.8p12-2
 -   Created directory for drift file
 *   Wed Aug 22 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p12-1
