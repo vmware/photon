@@ -1,7 +1,7 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
 Version:        2.79
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            http://www.thekelleys.org.uk/dnsmasq/
@@ -13,11 +13,18 @@ Distribution:   Photon
 %description
 Dnsmasq a lightweight, caching DNS proxy with integrated DHCP server.
 
+%package        utils
+Summary:        Utilities for changing DHCP server leases
+
+%description    utils
+Utilities that use DHCP protocol to query and remove a DHCP server's leases
+
 %prep
 %setup -q
 
 %build
 make %{?_smp_mflags}
+make -C contrib/lease-tools %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
@@ -50,6 +57,16 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
+#dnsmasq-utils subpackage
+mkdir -p %{buildroot}%{_bindir}
+mkdir -p %{buildroot}%{_mandir}/man1
+install -m 755 contrib/lease-tools/dhcp_release %{buildroot}%{_bindir}/dhcp_release
+install -m 644 contrib/lease-tools/dhcp_release.1 %{buildroot}%{_mandir}/man1/dhcp_release.1
+install -m 755 contrib/lease-tools/dhcp_release6 %{buildroot}%{_bindir}/dhcp_release6
+install -m 644 contrib/lease-tools/dhcp_release6.1 %{buildroot}%{_mandir}/man1/dhcp_release6.1
+install -m 755 contrib/lease-tools/dhcp_lease_time %{buildroot}%{_bindir}/dhcp_lease_time
+install -m 644 contrib/lease-tools/dhcp_lease_time.1 %{buildroot}%{_mandir}/man1/dhcp_lease_time.1
+
 %post
 
 %clean
@@ -65,7 +82,14 @@ rm -rf %{buildroot}
 %dir %{_sharedstatedir}
 %config  /usr/share/dnsmasq/trust-anchors.conf
 
+%files utils
+%{_bindir}/*
+%{_mandir}/man1/*
+
+
 %changelog
+*   Tue Mar 26 2019 <ashwinh@vmware.com> 2.79-2
+-   Add dnsmasq-utils sub-package
 *   Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 2.79-1
 -   Upgrading to version 2.79
 *   Tue Feb 13 2018 Xiaolin Li <xiaolinl@vmware.com> 2.76-5
