@@ -14,7 +14,7 @@
 #################################################################################
 Name:       ceph
 Version:    12.2.4
-Release:    2%{?dist}
+Release:    3%{?dist}
 Epoch:      1
 Summary:    User space components of the Ceph file system
 License:    LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
@@ -26,6 +26,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 Patch0:     CVE-2018-10861.patch
 Patch1:     build_fix_CVE-2018-10861.patch
+Patch2:     CVE-2018-16889.patch
 #################################################################################
 # dependencies that apply across all distro families
 #################################################################################
@@ -462,6 +463,7 @@ python-rbd, python-rgw or python-cephfs instead.
 %setup -n ceph-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 %if %{with lowmem_builder}
@@ -1026,6 +1028,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+*   Mon Mar 25 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 12.2.4-3
+-   fix CVE-2018-16889
 *   Mon Oct 08 2018 Ankit Jain <ankitja@vmware.com> 12.2.4-2
 -   fix CVE-2018-10861
 *   Thu Apr 19 2018 Xiaolin Li <xiaolinl@vmware.com> 12.2.4-1
