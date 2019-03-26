@@ -49,4 +49,6 @@
         - [Investigating the Guest Kernel](investigating-the-guest-kernel.md)
         - [Kernel Log Replication with VProbes](kernel-log-replication-with-vprobes.md)
     -   [Performance Issues](performance-issues.md)
+        - [General Guidelines](general_performance_guidelines.md)
+        - [Throughput Performance](throughput_performance.md)
 
