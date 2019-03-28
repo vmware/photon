@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.2.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -115,6 +115,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Wed Mar 27 2019 Anish Swaminathan <anishs@vmware.com> 10.2.5-2
+-   Start vmtoolsd before cloud-init
 *   Fri Feb 01 2019 Ankit Jain <ankitja@vmware.com> 10.2.5-1
 -   Updating version to 10.2.5
 *   Fri Jun 22 2018 Keerthana K <keerthanak@vmware.com> 10.2.0-4
