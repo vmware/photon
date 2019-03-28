@@ -3,17 +3,24 @@
 
 Name:           PyYAML
 Version:        3.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT
+Vendor:         VMware, Inc.
+Distribution:   Photon
 URL:            http://pyyaml.org/
 Source0:        http://pyyaml.org/download/pyyaml/%{name}-%{version}.tar.gz
 %define sha1 PyYAML=22f95fe2f5ef29ab17110f92c7186e2cfde6b419
+Patch0:         PyYAML-CVE-2017-18342.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
+BuildRequires:  libyaml-devel
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 BuildRequires:  libyaml-devel
 
 Requires:       python2
@@ -35,11 +42,6 @@ configuration files to object serialization and persistence.
 
 %package -n     python3-PyYAML
 Summary:        python3-PyYAML
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  libyaml-devel
-
 Requires:       python3
 Requires:       python3-libs
 Requires:       libyaml
@@ -50,6 +52,7 @@ Python 3 version.
 
 %prep
 %setup -q -n PyYAML-%{version}
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -90,6 +93,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Thu Mar 28 2019 Ankit Jain <ankitja@vmware.com> 3.13-2
+-   Fix for CVE-2017-18342
 *   Thu Sep 20 2018 Tapas Kundu <tkundu@vmware.com> 3.13-1
 -   Updated to release 3.13
 *   Tue May 16 2017 Kumar Kaushik <kaushikk@vmware.com> 3.12-2
