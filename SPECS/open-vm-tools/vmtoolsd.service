@@ -3,7 +3,8 @@ Description=Service for virtual machines hosted on VMware
 Documentation=http://github.com/vmware/open-vm-tools
 ConditionVirtualization=vmware
 Requires=vgauthd.service
-After=cloud-final.service
+DefaultDependencies=no
+Before=cloud-init-local.service
 
 [Service]
 ExecStart=/usr/bin/vmtoolsd
