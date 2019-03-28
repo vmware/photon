@@ -1,0 +1,131 @@
+diff -ruN a/buildSrc/version.properties b/buildSrc/version.properties
+--- a/buildSrc/version.properties	2018-10-30 18:15:01.000000000 +0000
++++ b/buildSrc/version.properties	2019-03-27 23:55:17.135934536 +0000
+@@ -12,6 +12,11 @@
+ 
+ # when updating the JNA version, also update the version in buildSrc/build.gradle
+ jna               = 4.5.1
++# when updating this version, you need to ensure compatibility with:
++#  - plugins/ingest-attachment (transitive dependency, check the upstream POM)
++#  - distribution/tools/plugin-cli
++#  - x-pack/plugin/security
++bouncycastle      = 1.61
+ 
+ # test dependencies
+ randomizedrunner  = 2.5.2
+diff -ruN a/distribution/tools/plugin-cli/build.gradle b/distribution/tools/plugin-cli/build.gradle
+--- a/distribution/tools/plugin-cli/build.gradle	2018-10-30 18:15:01.000000000 +0000
++++ b/distribution/tools/plugin-cli/build.gradle	2019-03-27 23:59:48.427944239 +0000
+@@ -24,8 +24,8 @@
+ dependencies {
+   compileOnly "org.elasticsearch:elasticsearch:${version}"
+   compileOnly "org.elasticsearch:elasticsearch-cli:${version}"
+-  compile "org.bouncycastle:bcpg-jdk15on:1.59"
+-  compile "org.bouncycastle:bcprov-jdk15on:1.59"
++  compile "org.bouncycastle:bcpg-jdk15on:${versions.bouncycastle}"
++  compile "org.bouncycastle:bcprov-jdk15on:${versions.bouncycastle}"
+   testCompile "org.elasticsearch.test:framework:${version}"
+   testCompile 'com.google.jimfs:jimfs:1.1'
+   testCompile 'com.google.guava:guava:18.0'
+diff -ruN a/distribution/tools/plugin-cli/licenses/bcpg-jdk15on-1.59.jar.sha1 b/distribution/tools/plugin-cli/licenses/bcpg-jdk15on-1.59.jar.sha1
+--- a/distribution/tools/plugin-cli/licenses/bcpg-jdk15on-1.59.jar.sha1	2018-10-30 18:15:01.000000000 +0000
++++ b/distribution/tools/plugin-cli/licenses/bcpg-jdk15on-1.59.jar.sha1	1970-01-01 00:00:00.000000000 +0000
+@@ -1 +0,0 @@
+-ee93e5376bb6cf0a15c027b5f5e4393f2738e709
+\ No newline at end of file
+diff -ruN a/distribution/tools/plugin-cli/licenses/bcpg-jdk15on-1.61.jar.sha1 b/distribution/tools/plugin-cli/licenses/bcpg-jdk15on-1.61.jar.sha1
+--- a/distribution/tools/plugin-cli/licenses/bcpg-jdk15on-1.61.jar.sha1	1970-01-01 00:00:00.000000000 +0000
++++ b/distribution/tools/plugin-cli/licenses/bcpg-jdk15on-1.61.jar.sha1	2019-03-28 00:10:40.207967548 +0000
+@@ -0,0 +1 @@
++422656435514ab8a28752b117d5d2646660a0ace
+diff -ruN a/distribution/tools/plugin-cli/licenses/bcprov-jdk15on-1.59.jar.sha1 b/distribution/tools/plugin-cli/licenses/bcprov-jdk15on-1.59.jar.sha1
+--- a/distribution/tools/plugin-cli/licenses/bcprov-jdk15on-1.59.jar.sha1	2018-10-30 18:15:01.000000000 +0000
++++ b/distribution/tools/plugin-cli/licenses/bcprov-jdk15on-1.59.jar.sha1	1970-01-01 00:00:00.000000000 +0000
+@@ -1 +0,0 @@
+-2507204241ab450456bdb8e8c0a8f986e418bd99
+\ No newline at end of file
+diff -ruN a/distribution/tools/plugin-cli/licenses/bcprov-jdk15on-1.61.jar.sha1 b/distribution/tools/plugin-cli/licenses/bcprov-jdk15on-1.61.jar.sha1
+--- a/distribution/tools/plugin-cli/licenses/bcprov-jdk15on-1.61.jar.sha1	1970-01-01 00:00:00.000000000 +0000
++++ b/distribution/tools/plugin-cli/licenses/bcprov-jdk15on-1.61.jar.sha1	2019-03-28 00:12:40.607971854 +0000
+@@ -0,0 +1 @@
++00df4b474e71be02c1349c3292d98886f888d1f7
+diff -ruN a/plugins/ingest-attachment/build.gradle b/plugins/ingest-attachment/build.gradle
+--- a/plugins/ingest-attachment/build.gradle	2018-10-30 18:15:01.000000000 +0000
++++ b/plugins/ingest-attachment/build.gradle	2019-03-28 00:15:49.211978599 +0000
+@@ -25,7 +25,6 @@
+ versions << [
+   'tika': '1.19.1',
+   'pdfbox': '2.0.12',
+-  'bouncycastle': '1.59',
+   'poi': '4.0.0',
+   'mime4j': '0.8.2'
+ ]
+diff -ruN a/plugins/ingest-attachment/licenses/bcmail-jdk15on-1.59.jar.sha1 b/plugins/ingest-attachment/licenses/bcmail-jdk15on-1.59.jar.sha1
+--- a/plugins/ingest-attachment/licenses/bcmail-jdk15on-1.59.jar.sha1	2018-10-30 18:15:01.000000000 +0000
++++ b/plugins/ingest-attachment/licenses/bcmail-jdk15on-1.59.jar.sha1	1970-01-01 00:00:00.000000000 +0000
+@@ -1 +0,0 @@
+-db389ade95f48592908a84e7050a691c8834723c
+\ No newline at end of file
+diff -ruN a/plugins/ingest-attachment/licenses/bcmail-jdk15on-1.61.jar.sha1 b/plugins/ingest-attachment/licenses/bcmail-jdk15on-1.61.jar.sha1
+--- a/plugins/ingest-attachment/licenses/bcmail-jdk15on-1.61.jar.sha1	1970-01-01 00:00:00.000000000 +0000
++++ b/plugins/ingest-attachment/licenses/bcmail-jdk15on-1.61.jar.sha1	2019-03-28 00:17:33.367982324 +0000
+@@ -0,0 +1 @@
++69a1ea4bead1baadd1a1e00526de050c62ea7d82
+diff -ruN a/plugins/ingest-attachment/licenses/bcpkix-jdk15on-1.59.jar.sha1 b/plugins/ingest-attachment/licenses/bcpkix-jdk15on-1.59.jar.sha1
+--- a/plugins/ingest-attachment/licenses/bcpkix-jdk15on-1.59.jar.sha1	2018-10-30 18:15:01.000000000 +0000
++++ b/plugins/ingest-attachment/licenses/bcpkix-jdk15on-1.59.jar.sha1	1970-01-01 00:00:00.000000000 +0000
+@@ -1 +0,0 @@
+-9cef0aab8a4bb849a8476c058ce3ff302aba3fff
+\ No newline at end of file
+diff -ruN a/plugins/ingest-attachment/licenses/bcpkix-jdk15on-1.61.jar.sha1 b/plugins/ingest-attachment/licenses/bcpkix-jdk15on-1.61.jar.sha1
+--- a/plugins/ingest-attachment/licenses/bcpkix-jdk15on-1.61.jar.sha1	1970-01-01 00:00:00.000000000 +0000
++++ b/plugins/ingest-attachment/licenses/bcpkix-jdk15on-1.61.jar.sha1	2019-03-28 00:19:03.671985553 +0000
+@@ -0,0 +1 @@
++89bb3aa5b98b48e584eee2a7401b7682a46779b4
+diff -ruN a/plugins/ingest-attachment/licenses/bcprov-jdk15on-1.59.jar.sha1 b/plugins/ingest-attachment/licenses/bcprov-jdk15on-1.59.jar.sha1
+--- a/plugins/ingest-attachment/licenses/bcprov-jdk15on-1.59.jar.sha1	2018-10-30 18:15:01.000000000 +0000
++++ b/plugins/ingest-attachment/licenses/bcprov-jdk15on-1.59.jar.sha1	1970-01-01 00:00:00.000000000 +0000
+@@ -1 +0,0 @@
+-2507204241ab450456bdb8e8c0a8f986e418bd99
+\ No newline at end of file
+diff -ruN a/plugins/ingest-attachment/licenses/bcprov-jdk15on-1.61.jar.sha1 b/plugins/ingest-attachment/licenses/bcprov-jdk15on-1.61.jar.sha1
+--- a/plugins/ingest-attachment/licenses/bcprov-jdk15on-1.61.jar.sha1	1970-01-01 00:00:00.000000000 +0000
++++ b/plugins/ingest-attachment/licenses/bcprov-jdk15on-1.61.jar.sha1	2019-03-28 00:20:50.343989368 +0000
+@@ -0,0 +1 @@
++00df4b474e71be02c1349c3292d98886f888d1f7
+diff -ruN a/x-pack/plugin/security/cli/build.gradle b/x-pack/plugin/security/cli/build.gradle
+--- a/x-pack/plugin/security/cli/build.gradle	2018-10-30 18:15:01.000000000 +0000
++++ b/x-pack/plugin/security/cli/build.gradle	2019-03-28 00:24:13.715996641 +0000
+@@ -5,8 +5,8 @@
+ dependencies {
+     compileOnly "org.elasticsearch:elasticsearch:${version}"
+     compileOnly project(path: xpackModule('core'), configuration: 'shadow')
+-    compile 'org.bouncycastle:bcprov-jdk15on:1.59'
+-    compile 'org.bouncycastle:bcpkix-jdk15on:1.59'
++    compile "org.bouncycastle:bcpkix-jdk15on:${versions.bouncycastle}"
++    compile "org.bouncycastle:bcprov-jdk15on:${versions.bouncycastle}"    
+     testImplementation 'com.google.jimfs:jimfs:1.1'
+     testCompile "junit:junit:${versions.junit}"
+     testCompile "org.hamcrest:hamcrest-all:${versions.hamcrest}"
+diff -ruN a/x-pack/plugin/security/cli/licenses/bcpkix-jdk15on-1.59.jar.sha1 b/x-pack/plugin/security/cli/licenses/bcpkix-jdk15on-1.59.jar.sha1
+--- a/x-pack/plugin/security/cli/licenses/bcpkix-jdk15on-1.59.jar.sha1	2018-10-30 18:15:01.000000000 +0000
++++ b/x-pack/plugin/security/cli/licenses/bcpkix-jdk15on-1.59.jar.sha1	1970-01-01 00:00:00.000000000 +0000
+@@ -1 +0,0 @@
+-9cef0aab8a4bb849a8476c058ce3ff302aba3fff
+\ No newline at end of file
+diff -ruN a/x-pack/plugin/security/cli/licenses/bcpkix-jdk15on-1.61.jar.sha1 b/x-pack/plugin/security/cli/licenses/bcpkix-jdk15on-1.61.jar.sha1
+--- a/x-pack/plugin/security/cli/licenses/bcpkix-jdk15on-1.61.jar.sha1	1970-01-01 00:00:00.000000000 +0000
++++ b/x-pack/plugin/security/cli/licenses/bcpkix-jdk15on-1.61.jar.sha1	2019-03-28 00:27:14.016003089 +0000
+@@ -0,0 +1 @@
++89bb3aa5b98b48e584eee2a7401b7682a46779b4
+diff -ruN a/x-pack/plugin/security/cli/licenses/bcprov-jdk15on-1.59.jar.sha1 b/x-pack/plugin/security/cli/licenses/bcprov-jdk15on-1.59.jar.sha1
+--- a/x-pack/plugin/security/cli/licenses/bcprov-jdk15on-1.59.jar.sha1	2018-10-30 18:15:01.000000000 +0000
++++ b/x-pack/plugin/security/cli/licenses/bcprov-jdk15on-1.59.jar.sha1	1970-01-01 00:00:00.000000000 +0000
+@@ -1 +0,0 @@
+-2507204241ab450456bdb8e8c0a8f986e418bd99
+\ No newline at end of file
+diff -ruN a/x-pack/plugin/security/cli/licenses/bcprov-jdk15on-1.61.jar.sha1 b/x-pack/plugin/security/cli/licenses/bcprov-jdk15on-1.61.jar.sha1
+--- a/x-pack/plugin/security/cli/licenses/bcprov-jdk15on-1.61.jar.sha1	1970-01-01 00:00:00.000000000 +0000
++++ b/x-pack/plugin/security/cli/licenses/bcprov-jdk15on-1.61.jar.sha1	2019-03-28 00:28:22.732005547 +0000
+@@ -0,0 +1 @@
++00df4b474e71be02c1349c3292d98886f888d1f7
