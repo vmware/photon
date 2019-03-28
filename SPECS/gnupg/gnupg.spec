@@ -1,13 +1,12 @@
 Summary:	OpenPGP standard implementation used for encrypted communication and data storage.
 Name:		gnupg
-Version:	2.1.20
-Release:	2%{?dist}
+Version:	2.2.15
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		https://gnupg.org/index.html
 Group:		Applications/Cryptography.
 Source0:        https://gnupg.org/ftp/gcrypt/gnupg/%{name}-%{version}.tar.bz2
-Patch0:         CVE-2018-12020.patch
-%define sha1 gnupg=500ddae8e4225ae2e300934090f9b9a427b8def1
+%define sha1 gnupg=1909afdad3cf29583126c471298da290399270f4
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	zlib-devel
@@ -20,9 +19,10 @@ BuildRequires:  libksba >= 1.0.7
 BuildRequires:  libgcrypt >= 1.7.0
 BuildRequires:  libgcrypt-devel
 BuildRequires:  libgpg-error >= 1.24
+BuildRequires:  libassuan >= 2.5.0
 Requires:       libksba
 Requires:       npth
-Requires:       libassuan
+Requires:       libassuan >= 2.5.0
 Requires:       pinentry
 Provides:       gpg
 
@@ -59,6 +59,8 @@ make DESTDIR=%{buildroot} install
 %exclude %{_infodir}/dir
 %exclude /usr/share/doc/*
 %changelog
+*       Thu Mar 28 2019 Ashwin H <ashwinh@vmware.com> 2.2.15-1
+-       Update to 2.2.15 which has Fix for CVE-2018-1000858
 *       Fri Feb 01 2019 Ashwin H <ashwinh@vmware.com> 2.1.20-2
 -       Fix CVE-2018-12020
 *       Mon Jul 31 2017 Kumar Kaushik <kaushikk@vmware.com> 2.1.20-1
