@@ -1,13 +1,12 @@
 Summary:	OpenPGP standard implementation used for encrypted communication and data storage.
 Name:		gnupg
-Version:	2.1.20
-Release:	4%{?dist}
+Version:	2.2.15
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		https://gnupg.org/index.html
 Group:		Applications/Cryptography.
 Source0:        https://gnupg.org/ftp/gcrypt/gnupg/%{name}-%{version}.tar.bz2
-Patch0:         CVE-2018-12020.patch
-%define sha1 gnupg=500ddae8e4225ae2e300934090f9b9a427b8def1
+%define sha1 gnupg=1909afdad3cf29583126c471298da290399270f4
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	zlib-devel
@@ -20,10 +19,11 @@ BuildRequires:  libksba >= 1.0.7
 BuildRequires:  libgcrypt >= 1.7.0
 BuildRequires:  libgcrypt-devel
 BuildRequires:  libgpg-error >= 1.24
+BuildRequires:  libassuan >= 2.5.0
 Requires:       libksba
 Requires:       libgcrypt >= 1.7.0
 Requires:       npth
-Requires:       libassuan
+Requires:       libassuan >= 2.5.0
 Requires:       pinentry
 Provides:       gpg
 
@@ -37,7 +37,6 @@ a command line tool with features for easy integration with other applications.
 
 %prep
 %setup -q -n %{name}-%{version}
-%patch0 -p1
 
 %build
 ./configure --prefix=%{_prefix}      \
@@ -61,6 +60,8 @@ make DESTDIR=%{buildroot} install
 %exclude /usr/share/doc/*
 
 %changelog
+*   Thu Mar 28 2019 Ashwin H <ashwinh@vmware.com> 2.2.15-1
+-   Update to 2.2.15 which has Fix for CVE-2018-1000858
 *   Thu Jan 31 2019 Ashwin H <ashwinh@vmware.com> 2.1.20-4
 -   Fix CVE-2018-12020
 *   Wed Aug 30 2017 Alexey Makhalov <amakhalov@vmware.com> 2.1.20-3
