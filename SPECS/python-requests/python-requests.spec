@@ -4,7 +4,7 @@
 Summary:        Awesome Python HTTP Library That's Actually Usable
 Name:           python-requests
 Version:        2.19.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -12,6 +12,7 @@ Distribution:   Photon
 Url:            http://python-requests.org
 Source0:        http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
 Patch0:         make_check_add_pipfile.patch
+Patch1:         CVE-2018-18074.patch
 %define sha1    requests=b6e6ed992c86835aa1a7d7a81fec2aee0d385416
 
 BuildRequires:  python2
@@ -27,6 +28,19 @@ BuildRequires:  python-urllib3
 BuildRequires:  python-chardet
 BuildRequires:  python-certifi
 BuildRequires:  python-idna
+%endif
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  python3-atomicwrites
+BuildRequires:  python3-pytest
+BuildRequires:  python3-attrs
+BuildRequires:  python3-urllib3
+BuildRequires:  python3-chardet
+BuildRequires:  python3-certifi
+BuildRequires:  python3-idna
 %endif
 Requires:       python2
 Requires:       python2-libs
@@ -64,19 +78,6 @@ Features:
 
 %package -n     python3-requests
 Summary:        python-requests
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-%if %{with_check}
-BuildRequires:  python3-atomicwrites
-BuildRequires:  python3-pytest
-BuildRequires:  python3-attrs
-BuildRequires:  python3-urllib3
-BuildRequires:  python3-chardet
-BuildRequires:  python3-certifi
-BuildRequires:  python3-idna
-%endif
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-urllib3
@@ -91,6 +92,7 @@ Python 3 version.
 %prep
 %setup -q -n requests-%{version}
 %patch0 -p1
+%patch1 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -130,6 +132,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Mar 28 2019 Tapas Kundu <tkundu@vmware.com> 2.19.1-4
+-   Fix for CVE-2018-18074
 *   Thu Dec 06 2018 Ashwin H <ashwinh@vmware.com> 2.19.1-3
 -   Add %check
 *   Thu Sep 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.19.1-2
