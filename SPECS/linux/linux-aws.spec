@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.32
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -34,7 +34,11 @@ Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
 Patch31:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+# RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+# Fix CVE-2019-10125
+Patch33:        0001-aio-simplify-and-fix-fget-fput-for-io_submit.patch
+
 
 # Amazon AWS
 Patch101: 0002-watchdog-Disable-watchdog-on-virtual-machines.patch
@@ -152,6 +156,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
+%patch33 -p1
 
 %patch101 -p1
 %patch102 -p1
@@ -356,6 +361,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/perf/include/bpf/*
 
 %changelog
+*   Fri Mar 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-2
+-   Fix CVE-2019-10125
 *   Wed Mar 27 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-1
 -   Update to version 4.19.32
 *   Thu Mar 14 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.29-1

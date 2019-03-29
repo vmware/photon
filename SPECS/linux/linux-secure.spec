@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.32
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -37,7 +37,11 @@ Patch31:        kvm-dont-accept-wrong-gsi-values.patch
 Patch32:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch33:        4.17-0002-apparmor-af_unix-mediation.patch
 Patch34:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+# RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch35:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+# Fix CVE-2019-10125
+Patch36:        0001-aio-simplify-and-fix-fget-fput-for-io_submit.patch
+
 
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
@@ -108,6 +112,7 @@ The Linux package contains the Linux kernel doc files
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
+%patch36 -p1
 
 pushd ..
 %patch99 -p0
@@ -235,6 +240,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Mar 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-2
+-   Fix CVE-2019-10125
 *   Wed Mar 27 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-1
 -   Update to version 4.19.32
 *   Thu Mar 14 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.29-1
