@@ -1,11 +1,11 @@
 Summary:      Enhanced seccomp library
 Name:         libseccomp
-Version:      2.3.2
+Version:      2.4.0
 Release:      1%{?dist}
 License:      LGPLv2
 Group:        System Environment/Libraries
 Source0:      https://github.com/seccomp/libseccomp/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1 libseccomp=6eb7fa147008f4ae189d56c2ea801a619bb08cd0
+%define sha1 libseccomp=a0d0d6e2dc32722d59b2728fe515cdffd106a436
 Url:          https://github.com/seccomp/libseccomp/wiki
 Vendor:       VMware, Inc.
 Distribution: Photon
@@ -64,9 +64,11 @@ make check
 %{_mandir}/man3/*
 
 %changelog
-*	Tue Apr 11 2017 Harish Udaiya KUmar <hudaiyakumar@vmware.com> 2.3.2-1
--	Updated to version 2.3.2
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.3-2
--	GA - Bump release of all rpms
-* Sat Jan 16 2016 Fabio Rapposelli <fabio@vmware.com> - 2.2.3-1
-- First release of the package
+*  Fri Mar 29 2019 Michelle Wang <michellew@vmware.com> 2.4.0-1
+-  Updated to version 2.4.0 for CVE-2019-9893
+*  Tue Apr 11 2017 Harish Udaiya KUmar <hudaiyakumar@vmware.com> 2.3.2-1
+-  Updated to version 2.3.2
+*  Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.3-2
+-  GA - Bump release of all rpms
+*  Sat Jan 16 2016 Fabio Rapposelli <fabio@vmware.com> - 2.2.3-1
+-  First release of the package
