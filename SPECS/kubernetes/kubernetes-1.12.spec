@@ -1,11 +1,11 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.12.5
+Version:        1.12.7
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=c8fce9da61407d6d8dee5939e12899d50ff0f065
+%define sha1    kubernetes-%{version}.tar.gz=62cbd12425af750b4134acdfa713a760b2d27438
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         k8s-1.12-vke.patch
@@ -207,6 +207,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Tue Feb 18 2019 Girish Sadhani <gsadhani@vmware.com> 1.12.7-1
+-   Upgrade to 1.12.7 with VMware Cloud PKS patch (f40534d)
 *   Tue Feb 18 2019 Sudhir Samrit <ssamrit@vmware.com> 1.12.5-1
 -   Upgrade to 1.12.5 with VMware Cloud PKS patch (f41ce96)
 *   Tue Jan 22 2019 Sudhir Samrit <ssamrit@vmware.com> 1.12.3-1

@@ -1,7 +1,7 @@
-From e99be32ec7ffe567fc0785d251c2d984d99eb517 Mon Sep 17 00:00:00 2001
-From: ssamrit <ssamrit@vmware.com>
-Date: Mon, 18 Feb 2019 16:13:37 +0530
-Subject: [PATCH] VCP patch for K8s v1.12.5
+From e17f6849be634759ed4c6e9352b2494f18a27838 Mon Sep 17 00:00:00 2001
+From: Girish Sadhani <gsadhani@vmware.com>
+Date: Fri, 29 Mar 2019 11:42:45 +0530
+Subject: [PATCH] VCP patch for K8s v1.12.7 (f40534d)
 
 ---
  api/api-rules/violation_exceptions.list       |    2 +
@@ -54,11 +54,11 @@ Subject: [PATCH] VCP patch for K8s v1.12.5
  plugin/pkg/admission/vke/admission_test.go    |  995 ++++++
  plugin/pkg/auth/authorizer/vke/BUILD          |   40 +
  plugin/pkg/auth/authorizer/vke/OWNERS         |    2 +
- .../pkg/auth/authorizer/vke/vke_authorizer.go |  125 +
- .../authorizer/vke/vke_authorizer_test.go     |  230 ++
+ .../pkg/auth/authorizer/vke/vke_authorizer.go |  138 +
+ .../authorizer/vke/vke_authorizer_test.go     |  237 ++
  .../src/k8s.io/api/core/v1/generated.pb.go    | 2679 +++++++++--------
  staging/src/k8s.io/api/core/v1/types.go       |   24 +-
- 54 files changed, 7374 insertions(+), 1214 deletions(-)
+ 54 files changed, 7394 insertions(+), 1214 deletions(-)
  create mode 100644 pkg/cloudprovider/providers/cascade/BUILD
  create mode 100644 pkg/cloudprovider/providers/cascade/OWNERS
  create mode 100644 pkg/cloudprovider/providers/cascade/apitypes.go
@@ -3183,10 +3183,10 @@ index 54d0a62770..73a763ff14 100644
  // IsValidAuthorizationMode returns true if the given authorization mode is a valid one for the apiserver
  func IsValidAuthorizationMode(authzMode string) bool {
 diff --git a/pkg/kubeapiserver/options/plugins.go b/pkg/kubeapiserver/options/plugins.go
-index abcb5b4673..292fcdd1dc 100644
+index fbfefc598f..daf54158b1 100644
 --- a/pkg/kubeapiserver/options/plugins.go
 +++ b/pkg/kubeapiserver/options/plugins.go
-@@ -57,6 +57,7 @@ import (
+@@ -58,6 +58,7 @@ import (
  	"k8s.io/apiserver/pkg/admission/plugin/namespace/lifecycle"
  	mutatingwebhook "k8s.io/apiserver/pkg/admission/plugin/webhook/mutating"
  	validatingwebhook "k8s.io/apiserver/pkg/admission/plugin/webhook/validating"
@@ -3194,7 +3194,7 @@ index abcb5b4673..292fcdd1dc 100644
  	utilfeature "k8s.io/apiserver/pkg/util/feature"
  	"k8s.io/kubernetes/pkg/features"
  )
-@@ -93,6 +94,7 @@ var AllOrderedPlugins = []string{
+@@ -95,6 +96,7 @@ var AllOrderedPlugins = []string{
  	initialization.PluginName,               // Initializers
  	validatingwebhook.PluginName,            // ValidatingAdmissionWebhook
  	resourcequota.PluginName,                // ResourceQuota
@@ -3202,7 +3202,7 @@ index abcb5b4673..292fcdd1dc 100644
  	deny.PluginName,                         // AlwaysDeny
  }
  
-@@ -125,6 +127,7 @@ func RegisterAllAdmissionPlugins(plugins *admission.Plugins) {
+@@ -128,6 +130,7 @@ func RegisterAllAdmissionPlugins(plugins *admission.Plugins) {
  	setdefault.Register(plugins)
  	resize.Register(plugins)
  	storageobjectinuseprotection.Register(plugins)
@@ -6251,10 +6251,10 @@ index 0000000000..c3a4ed77dc
 +- ashokc
 diff --git a/plugin/pkg/auth/authorizer/vke/vke_authorizer.go b/plugin/pkg/auth/authorizer/vke/vke_authorizer.go
 new file mode 100644
-index 0000000000..6d7f9ae2b8
+index 0000000000..e741499525
 --- /dev/null
 +++ b/plugin/pkg/auth/authorizer/vke/vke_authorizer.go
-@@ -0,0 +1,125 @@
+@@ -0,0 +1,138 @@
 +package vke
 +
 +import (
@@ -6272,8 +6272,8 @@ index 0000000000..6d7f9ae2b8
 +	systemNodePrefix    = "system:node:"
 +	systemWorkerGroup   = "system:worker"
 +	masterPrefix        = "master-"
++	impersonateVerb     = "impersonate"
 +)
-+
 +
 +// VKEAuthorizer authorizes requests which comes from nodes using certificates.
 +// If a request is from a node which is not a part of the cluster, reject.
@@ -6315,6 +6315,11 @@ index 0000000000..6d7f9ae2b8
 +	// and the node restriction admission controller and modify the master node.
 +	if isWorkerWithoutNodeNameRestriction(attrs) {
 +		glog.V(2).Infof("VKE authorizer: DENY the request because the node name restriction is not met")
++		return authorizer.DecisionDeny, "", nil
++	}
++
++	if impersonatesUser(attrs) {
++		glog.V(2).Infof("VKE authorizer: DENY the request because the request impersonates another user")
 +		return authorizer.DecisionDeny, "", nil
 +	}
 +
@@ -6367,6 +6372,15 @@ index 0000000000..6d7f9ae2b8
 +	return false
 +}
 +
++// impersonatesUser checks if the user is trying to impersonate a user or group.
++func impersonatesUser(attrs authorizer.Attributes) bool {
++	if attrs.GetVerb() == impersonateVerb {
++		return true
++	}
++
++	return false
++}
++
 +// isProxyRequestToMasterNode checks if the request is made to exec, run or attach to a container on the master node. We
 +// need this check because we do not want to allow a user to exec into a privileged pod on the master node.
 +func isProxyRequestToMasterNode(attrs authorizer.Attributes) bool {
@@ -6379,13 +6393,12 @@ index 0000000000..6d7f9ae2b8
 +	}
 +	return false
 +}
-+
 diff --git a/plugin/pkg/auth/authorizer/vke/vke_authorizer_test.go b/plugin/pkg/auth/authorizer/vke/vke_authorizer_test.go
 new file mode 100644
-index 0000000000..6aba9ecec9
+index 0000000000..a88270c87d
 --- /dev/null
 +++ b/plugin/pkg/auth/authorizer/vke/vke_authorizer_test.go
-@@ -0,0 +1,230 @@
+@@ -0,0 +1,237 @@
 +package vke
 +
 +import (
@@ -6604,6 +6617,13 @@ index 0000000000..6aba9ecec9
 +			name:   "allowed: run using proxy resource on worker",
 +			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "create", Resource: "nodes", Name: "worker-0", Path: workerProxyRunPath},
 +			expect: authorizer.DecisionNoOpinion,
++		},
++
++		// Deny requests which try to impersonate a user.
++		{
++			name:   "denied: impersonate another user",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "impersonate", Resource: "nodes", Name: "worker-0", Path: workerProxyExecPath},
++			expect: authorizer.DecisionDeny,
 +		},
 +	}
 +
@@ -11114,5 +11134,5 @@ index d9a57bd06d..7bf685f077 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 -- 
-2.17.1
+2.21.0
 
