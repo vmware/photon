@@ -1,7 +1,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.37.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
@@ -36,8 +36,7 @@ It offers high-performance, great security features and a modular design. While 
 autoreconf -fvi
 %build
 sed -i 's/libsystemd-journal/libsystemd/' configure
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --enable-relp \
     --enable-gnutls\
     --enable-imfile \
@@ -51,6 +50,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 install -vd %{buildroot}%{_libdir}/systemd/system/
 install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
+install -vd %{buildroot}%{_sysconfdir}/rsyslog.d
 rm -f %{buildroot}/lib/systemd/system/rsyslog.service
 install -p -m 644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/
 install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
@@ -78,9 +78,12 @@ make %{?_smp_mflags} check
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_libdir}/systemd/system/rsyslog.service
+%dir %{_sysconfdir}/rsyslog.d
 %{_sysconfdir}/systemd/journald.conf.d/*
 %{_sysconfdir}/rsyslog.conf
 %changelog
+*   Fri Mar 29 2019 Keerthana K <keerthanak@vmware.com> 8.37.0-2
+-   Adding rsyslog.d directory
 *   Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 8.37.0-1
 -   Updated to version 8.37.0
 *   Thu Apr 12 2018 Xiaolin Li <xiaolinl@vmware.com> 8.26.0-5
