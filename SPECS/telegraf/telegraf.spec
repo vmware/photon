@@ -1,7 +1,7 @@
 Summary:        agent for collecting, processing, aggregating, and writing metrics.
 Name:           telegraf
 Version:        1.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/influxdata/telegraf
 Source0:        https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
@@ -70,7 +70,7 @@ popd
 install -m 755 -D ${GOPATH}/src/github.com/influxdata/telegraf/telegraf %{buildroot}%{_bindir}/telegraf
 install -m 755 -D ${GOPATH}/src/github.com/influxdata/telegraf/scripts/telegraf.service %{buildroot}%{_unitdir}/telegraf.service
 install -m 755 -D ${GOPATH}/src/github.com/influxdata/telegraf/etc/logrotate.d/%{name} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
-install -m 755 -D %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}/telegraf.conf
+install -m 755 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/telegraf.conf
 
 %clean
 rm -rf %{buildroot}/*
@@ -103,6 +103,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+*   Fri Mar 29 2019 Keerthana K <keerthanak@vmware.com> 1.10.0-2
+-   Fix conf file source number.
 *   Thu Mar 14 2019 Keerthana K <keerthanak@vmware.com> 1.10.0-1
 -   Update to 1.10.0 and its plugin version to 1.4.0.
 *   Fri Apr 20 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.5.3-1
