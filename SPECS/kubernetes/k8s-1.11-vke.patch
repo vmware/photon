@@ -1,7 +1,7 @@
-From d1709a72244e4edf40bddacc26adfceff3561f2f Mon Sep 17 00:00:00 2001
-From: abhishek rathore <arathore@vmware.com>
-Date: Fri, 22 Feb 2019 12:12:09 +0530
-Subject: [PATCH] VCP patch for K8s v1.11.7 (2c62ea46)
+From 5e97da50d3f61dac9d7f4a398e59eb3e0271f49b Mon Sep 17 00:00:00 2001
+From: ejohn <ejohn@vmware.com>
+Date: Fri, 29 Mar 2019 17:43:54 +0530
+Subject: [PATCH] VCP patch for K8s v1.11.9 (077135f)
 
 ---
  api/swagger-spec/apps_v1alpha1.json           |   21 +
@@ -11101,5 +11101,5 @@ index d9f4869fbc..5417d75199 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 -- 
-2.17.2 (Apple Git-113)
+2.19.1
 
