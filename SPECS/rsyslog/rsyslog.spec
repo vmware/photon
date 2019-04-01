@@ -1,13 +1,14 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.37.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
 %define sha1    rsyslog=7541e3cf6facbab19792ff8d9d7f4cd3fbb1c634
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
+Source3:        rsyslog.conf
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -51,9 +52,11 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 install -vd %{buildroot}%{_libdir}/systemd/system/
 install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
+install -vd %{buildroot}%{_sysconfdir}/rsyslog.d
 rm -f %{buildroot}/lib/systemd/system/rsyslog.service
 install -p -m 644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/
 install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
+install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/rsyslog.conf
 find %{buildroot} -name '*.la' -delete
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
@@ -75,8 +78,12 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_libdir}/systemd/system/rsyslog.service
+%dir %{_sysconfdir}/rsyslog.d/
 %{_sysconfdir}/systemd/journald.conf.d/*
+%config(noreplace) %{_sysconfdir}/rsyslog.conf
 %changelog
+*   Mon Apr 01 2019 Keerthana K <keerthanak@vmware.com> 8.37.0-2
+-   Adding rsyslog.d folder to fix service start issue.
 *   Fri Mar 22 2019 Keerthana K <keerthanak@vmware.com> 8.37.0-1
 -   Update to version 8.37.0
 *   Thu Feb 14 2019 Keerthana K <keerthanak@vmware.com> 8.15.0-9
