@@ -1,23 +1,22 @@
 Name:            kibana
 Summary:         Browser-based analytics and search dashboard for Elasticsearch.
-Version:         6.4.3
-Release:         2%{?dist}
+Version:         6.7.0
+Release:         1%{?dist}
 License:         Apache License Version 2.0
 URL:             https://www.elastic.co/products/kibana
 Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}.tar.gz
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Daemons
-%define sha1     kibana=a882485146299406487d9015ad1afd3ec57b65b8
-Patch0:		 kibana-CVE-2019-7609.patch
+%define sha1     %{name}-%{version}=36bc3dea07c787c395d1b6aaf46e2ade93c5b7a9
 BuildRequires:   git
 BuildRequires:   yarn
-BuildRequires:   nodejs
+BuildRequires:   nodejs10
 BuildRequires:   zip
 BuildRequires:   photon-release
 BuildRequires:   systemd
 Requires:        systemd
-Requires:        nodejs
+Requires:        nodejs10
 Requires:        elasticsearch
 
 %global debug_package %{nil}
@@ -27,14 +26,21 @@ Kibana is a window into the Elastic Stack.
 It enables visual exploration and real-time analysis of your data in Elasticsearch.
 
 %prep
+# During building, it looks .git/hooks in the root path
+# But tar.gz file  from github/kibana/tag doesn't provide .git/hooks
+# inside it. so did below steps to create the tar
+# 1) git clone https://github.com/elastic/kibana.git kibana-%{version}
+# 2) cd kibana-%{version}
+# 3) git checkout tags/v6.7.0 -b 6.7.0
+# 4) cd ..
+# 5) tar -zcvf kibana-6.7.0.tar.gz kibana-%{version}
 %setup -q -n %{name}-%{version}
-%patch0	-p1
 
 yarn kbn bootstrap
 
 %build
 export PATH=${PATH}:/usr/bin
-yarn build --skip-os-packages
+yarn build --oss --skip-os-packages
 
 %install
 mkdir -p %{buildroot}%{_datadir}/%{name}
@@ -47,7 +53,6 @@ cp -r build/kibana-oss/bin %{buildroot}%{_datadir}/%{name}
 cp -r build/kibana-oss/src %{buildroot}%{_datadir}/%{name}
 cp -r build/kibana-oss/node_modules %{buildroot}%{_datadir}/%{name}
 cp -r build/kibana-oss/webpackShims %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/yarn.lock %{buildroot}%{_datadir}/%{name}
 cp -r build/kibana-oss/optimize %{buildroot}%{_datadir}/%{name}
 
 chmod -R 755 %{buildroot}%{_datadir}/%{name}
@@ -111,12 +116,13 @@ exit
 %{_sysconfdir}/default/%{name}
 %{_sysconfdir}/init.d/%{name}
 %{_sysconfdir}/%{name}/%{name}.yml
-%{_datadir}/%{name}/yarn.lock
 %{_datadir}/%{name}/package.json
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}
 
 %changelog
+*   Tue Apr 02 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-1
+-   Updated to version 6.7.0
 *   Mon Apr 01 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-2
 -   Applied Patch for CVE-2019-7609
 *   Wed Feb 13 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-1

@@ -1,14 +1,14 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
-Name:           nodejs
-Version:        8.11.4
-Release:        2%{?dist}
+Name:           nodejs10
+Version:        10.15.2
+Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
-Source0:        https://nodejs.org/download/release/v8.3.0/node-v%{version}.tar.xz
-%define         sha1 node=195b6e6b53d04659cd6ee6afa203ad486d6eb758
+Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
+%define         sha1 node=e1523b5b5bec534cc570b79c9a1eb9273a47564a
 BuildArch:      x86_64
 
 BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
@@ -17,9 +17,9 @@ Requires:       coreutils >= 8.22, openssl >= 1.0.1
 # Kibana Requires nodejs10
 # kubernetes-dashboard Requires nodejs-8
 # Only one of the nodejs version can exist in system
-# Thus obsoleting nodejs10 if nodejs-8 need to be installed
-# And in nodejs10.spec, obsoleting nodejs-8 if nodejs10 need to be installed
-Obsoletes:      nodejs10
+# Thus obsoleting nodejs if nodejs10 need to be installed
+# And in nodejs.spec, obsoleting nodejs10 if nodejs-8 need to be installed
+Obsoletes:      nodejs
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -37,9 +37,7 @@ for developing applications that use nodejs.
 %setup -q -n node-v%{version}
 
 %build
-./configure --prefix=%{_prefix} \
-           --shared-openssl \
-           --shared-zlib
+./configure --prefix=%{_prefix}
 
 make %{?_smp_mflags}
 
@@ -78,13 +76,5 @@ make  %{?_smp_mflags} test
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
-*   Tue Apr 16 2019 Ankit Jain <ankitja@vmware.com> 8.11.4-2
--   Added obsoletes to downgrade nodejs10 to nodejs8
-*   Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 8.11.4-1
--   Updated to version 8.11.4 to fix CVE-2018-7161 and CVE-2018-7167
-*   Mon Jul 16 2018 Keerthana K <keerthanak@vmware.com> 8.11.0-1
--   Updated to version 8.11.0
-*   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 8.3.0-1
--   Updated to version 8.3.0
-*   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 7.7.4-1
--   Initial packaging for Photon
+*   Tue Apr 02 2019 Ankit Jain <ankitja@vmware.com> 10.15.2-1
+-   Initial Version
