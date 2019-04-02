@@ -1,7 +1,7 @@
 Name:            kibana
 Summary:         Browser-based analytics and search dashboard for Elasticsearch.
 Version:         6.4.3
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         Apache License Version 2.0
 URL:             https://www.elastic.co/products/kibana
 Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}.tar.gz
@@ -9,6 +9,7 @@ Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Daemons
 %define sha1     kibana=a882485146299406487d9015ad1afd3ec57b65b8
+Patch0:		 kibana-CVE-2019-7609.patch
 BuildRequires:   git
 BuildRequires:   yarn
 BuildRequires:   nodejs
@@ -27,6 +28,8 @@ It enables visual exploration and real-time analysis of your data in Elasticsear
 
 %prep
 %setup -q -n %{name}-%{version}
+%patch0	-p1
+
 yarn kbn bootstrap
 
 %build
@@ -114,6 +117,8 @@ exit
 %{_datadir}/%{name}
 
 %changelog
+*   Mon Apr 01 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-2
+-   Applied Patch for CVE-2019-7609
 *   Wed Feb 13 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-1
 -   Upgrade to 6.4.3 CVE-2018-17245,CVE-2018-17246
 *   Wed Jan 23 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.1-1
