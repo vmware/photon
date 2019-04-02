@@ -1,11 +1,11 @@
 Summary:        Overlay network for containers based on etcd
 Name:           flannel
-Version:        0.10.0
+Version:        0.11.0
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/coreos/flannel
-Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.tar.gz
-%define sha1 flannel=a97bd19663bbb4fabee7a3cd89b45f2fce9fe2c8
+Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.zip
+%define sha1 flannel=4f885d6a3aa630e6d0213be4f9fa472e870dadda
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -93,6 +93,8 @@ GOPATH=%{_builddir} make test
 %config(noreplace) %{_sysconfdir}/flannel/flanneld.conf
 
 %changelog
+*   Tue Apr 02 2019 Ashwin H <ashwinh@vmware.com> 0.11.0-1
+-   Update Flannel to 0.11.0.
 *   Wed Oct 03 2018 Dheeraj Shetty <dheerajs@vmware.com> 0.10.0-1
 -   Flannel 0.10.0.
 *   Tue Dec 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.1-1
