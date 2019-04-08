@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.52
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -153,8 +153,10 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %package tools
 Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
 Group:          System/Tools
-Requires:       %{name} = %{version}-%{release}
+Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-aws = %{version})
 Requires:       audit
+Obsoletes:      linux-aws-tools <= 4.19.52-1
+Provides:       linux-aws-tools
 %description tools
 This package contains the 'perf' performance analysis tools for Linux kernel.
 
@@ -463,6 +465,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Jun 27 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-3
+-   Deprecate linux-aws-tools in favor of linux-tools.
 *   Thu Jun 20 2019 Tapas Kundu <tkundu@vmware.com> 4.19.52-2
 -   Enabled CONFIG_I2C_CHARDEV to support lm-sensors
 *   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-1
