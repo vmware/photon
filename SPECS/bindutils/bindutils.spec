@@ -1,7 +1,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.10.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}-P8/bind-%{version}-P1.tar.gz
@@ -32,43 +32,19 @@ make -C bin/dig DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 mkdir -p %{buildroot}/%{_sysconfdir}
 mkdir -p %{buildroot}/%{_prefix}/lib/tmpfiles.d
-cat << EOF >> %{buildroot}/%{_sysconfdir}/named.conf
-zone "." in {
-    type master;
-    allow-update {none;}; // no DDNS by default
-};
-EOF
-echo "d /run/named 0755 named named - -" > %{buildroot}/%{_prefix}/lib/tmpfiles.d/named.conf
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
-%pre
-if ! getent group named >/dev/null; then
-    groupadd -r named
-fi
-if ! getent passwd named >/dev/null; then
-    useradd -g named -d /var/lib/bind\
-        -s /bin/false -M -r named
-fi
 %post -p /sbin/ldconfig
-
-%postun 
-/sbin/ldconfig
-if getent passwd named >/dev/null; then
-    userdel named
-fi
-if getent group named >/dev/null; then
-    groupdel named
-fi
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/man1/*
-%{_sysconfdir}/*
-%{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Mon Apr 08 2019 Ajay Kaher <akaher@vmware.com> 9.10.6-2
+-   Removed named.conf, not require for bind client
 *   Mon Feb 12 2018 Xiaolin Li <xiaolinl@vmware.com> 9.10.6-1
 -   Upgrading version to 9.10.6-P1, fix CVE-2017-3145
 *   Thu Jun 15 2017 Kumar Kaushik <kaushikk@vmware.com> 9.10.4-2
