@@ -1,0 +1,110 @@
+From 5aac815209f36bbfd1f696ac1cb8b65bf48fe102 Mon Sep 17 00:00:00 2001
+From: Hou Tao <houtao1@huawei.com>
+Date: Fri, 1 Feb 2019 19:22:57 +0800
+Subject: [PATCH] Fix get_user_pages() autoconf test for 4.4.y kernel
+Fix get_user_pages() autoconf test for 4.4.y kernel
+    
+    The following kernel commit has been back-ported to linux-4.4.y kernel:
+    
+        commit 8e50b8b07f462ab4b91bc1491b1c91bd75e4ad40
+        Author: Lorenzo Stoakes <lstoakes@gmail.com>
+        Date:   Thu Oct 13 01:20:16 2016 +0100
+    
+        mm: replace get_user_pages() write/force parameters with gup_flags
+    
+        commit 768ae309a96103ed02eb1e111e838c87854d8b51 upstream.
+    
+        This removes the 'write' and 'force' from get_user_pages() and replaces
+        them with 'gup_flags' to make the use of FOLL_FORCE explicit in callers
+        as use of this flag can result in surprising behaviour (and hence bugs)
+        within the mm subsystem.
+    
+    And it changes the function signature of get_user_pages(), so introduce
+    an extra flag STAPCONF_GET_USER_PAGES_FLAGS and the corresponding test program
+    to fix it.
+    
+    Signed-off-by: Hou Tao <houtao1@huawei.com>
+    
+    [Keerthana K] Backported the patch to systemtap version 3.0.
+    
+    Signed-off-by: Keerthana K <keerthanak@vmware.com>
+
+---
+--- a/buildrun.cxx	2016-03-28 06:03:04.000000000 +0530
++++ b/buildrun.cxx	2019-04-09 09:17:43.705203922 +0530
+@@ -452,6 +452,8 @@
+ 		  "STAPCONF_MODULE_LAYOUT", NULL);
+   output_autoconf(s, o, "autoconf-mod_kallsyms.c",
+ 		  "STAPCONF_MOD_KALLSYMS", NULL);
++  output_autoconf(s, o, "autoconf-get_user_pages-flags.c",
++		  "STAPCONF_GET_USER_PAGES_FLAGS", NULL);
+ 
+   o << module_cflags << " += -include $(STAPCONF_HEADER)" << endl;
+ 
+--- a/runtime/linux/access_process_vm.h	2016-03-28 06:03:04.000000000 +0530
++++ b/runtime/linux/access_process_vm.h	2019-04-09 09:29:58.263908306 +0530
+@@ -31,8 +31,14 @@
+     {
+       int bytes, ret, offset;
+       void *maddr;
+-
++#if defined(STAPCONF_GET_USER_PAGES_FLAGS)
++      unsigned int flags = FOLL_FORCE;
++      if (write)
++	  flags |= FOLL_WRITE;
++      ret = get_user_pages (tsk, mm, addr, 1, flags, &page, &vma);
++#else
+       ret = get_user_pages (tsk, mm, addr, 1, write, 1, &page, &vma);
++#endif
+       if (ret <= 0)
+ 	break;
+ 
+diff --git a/runtime/linux/autoconf-get_user_pages-flags.c b/runtime/linux/autoconf-get_user_pages-flags.c
+new file mode 100644
+index 000000000..f135afa11
+--- /dev/null
++++ b/runtime/linux/autoconf-get_user_pages-flags.c
+@@ -0,0 +1,41 @@
++#include <linux/mm.h>
++
++//
++// The following kernel commit changed the get_user_pages() function signature
++// on linux-4.4.y:
++//
++// commit 8e50b8b07f462ab4b91bc1491b1c91bd75e4ad40
++// Author: Lorenzo Stoakes <lstoakes@gmail.com>
++// Date:   Thu Oct 13 01:20:16 2016 +0100
++//
++//     mm: replace get_user_pages() write/force parameters with gup_flags
++//
++//     commit 768ae309a96103ed02eb1e111e838c87854d8b51 upstream.
++//
++//     This removes the 'write' and 'force' from get_user_pages() and replaces
++//     them with 'gup_flags' to make the use of FOLL_FORCE explicit in callers
++//     as use of this flag can result in surprising behaviour (and hence bugs)
++//     within the mm subsystem.
++//
++// This changed the function signature from:
++//
++// long get_user_pages(struct task_struct *tsk, struct mm_struct *mm,
++//                     unsigned long start, unsigned long nr_pages,
++//                     int write, int force, struct page **pages,
++//                     struct vm_area_struct **vmas);
++//
++// to:
++//
++// long get_user_pages(struct task_struct *tsk, struct mm_struct *mm,
++//                     unsigned long start, unsigned long nr_pages,
++//                     unsigned int gup_flags, struct page **pages,
++//                     struct vm_area_struct **vmas);
++//
++
++long gupr_wrapper(struct task_struct *tsk, struct mm_struct *mm,
++		  unsigned long start, unsigned long nr_pages,
++		  unsigned int gup_flags, struct page **pages,
++		  struct vm_area_struct **vmas)
++{
++    return get_user_pages(tsk, mm, start, nr_pages, gup_flags, pages, vmas);
++}
+-- 
+2.16.2.dirty

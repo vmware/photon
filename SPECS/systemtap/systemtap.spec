@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       3.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -17,6 +17,7 @@ URL:           http://sourceware.org/systemtap/
 Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
 %define sha1 systemtap=5ef3a2d9945b0f6bae0061e33811e25e5138f5b7
 License:       GPLv2+
+Patch0:        systemtap-fix-get-user-pages.patch
 
 BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
@@ -97,6 +98,7 @@ SystemTap server is the server component of an instrumentation system for system
 
 %prep
 %setup -q
+%patch0 -p1
 sed -i "s#"kernel"#"linux"#g" stap-prep
 sed -i "s#"devel"#"dev"#g" stap-prep
 
@@ -329,6 +331,8 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
+*       Tue Apr 09 2019 Keerthana K <keerthanak@vmware.com> 3.0-2
+-       Fix get_user_pages for kernel 4.4.y
 * 	Fri Jul 22 2016 Divya Thaluru <dthaluru@vmware.com> 3.0-1 
 -	Updated version to 3.0
 -	Removing patch to enable kernel (fix is present in upstream)
