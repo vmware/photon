@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.32
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -442,6 +442,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Apr 11 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-3
+-   Update config_aarch64 to fix ARM64 build.
 *   Fri Mar 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-2
 -   Fix CVE-2019-10125
 *   Wed Mar 27 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-1
