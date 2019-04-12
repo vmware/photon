@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        1.2.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -31,6 +31,7 @@ Patch0:         tdnf_add_retry_to_downloads.patch
 Patch1:         tdnf_fix_curl_getinfo_type.patch
 Patch2:         tdnf-updateinfo.patch
 Patch3:         tdnf-perm.patch
+Patch4:         tdnf-added-skip-options-to-check.patch
 
 %description
 tdnf is a yum/dnf equivalent
@@ -58,6 +59,7 @@ Library providing cli libs for tdnf like clients.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 sed -i 's/tdnf, 1.2.0/tdnf, 1.2.3/' configure.ac
@@ -159,6 +161,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Thu Apr 11 2019 Ankit Jain <ankitja@vmware.com> 1.2.3-7
+-   Added skipconflicts and skipobsoletes to check command.
 *   Fri Jan 04 2019 Keerthana K <keerthanak@vmware.com> 1.2.3-6
 -   patch to error out early for permission issues.
 *   Sat Oct 27 2018 Keerthana K <keerthanak@vmware.com> 1.2.3-5

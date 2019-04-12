@@ -1,0 +1,437 @@
+From 7f798f4dac63265557271b0d66777b5e93cf2181 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Mon, 25 Mar 2019 06:27:32 +0000
+Subject: [PATCH] tdnf: Added options skipconflicts, skipobsoletes to check
+ command
+
+Option Added to check command:
+------------------------------
+--skipconflicts: "tdnf check --skipconflicts" will hide the
+conflict problems from the report and display it.
+
+--skipobsoletes: "tdnf check --skipobsoletes" will hide the
+obsoletes problems from the report and display it
+
+If both options are given to check command, then it will display
+the problems except conflicts and obsoletes problems
+
+Additional Change:
+-----------------
+* replaced existing getopt_long call with getopt_long_only
+Issue with getopt_long:
+----------------------
+** "tdnf check --sk" , it will parse --sk as --skipconflicts
+*** --skip also it will parse as --skipconflicts as it occurs first in list
+
+Fix with getopt_long_only:
+-------------------------
+** "tdnf check --skip" will give command error
+*** --skipc will parse as --skipconflicts
+*** --skipo will parse as --skipobsoletes
+
+To differentiate between --skipconflicts and --skipobsoletes
+replaced getopt_long with getopt_long_only
+
+Change-Id: I247613322c22d88dd8d1f0f4d786e5fe74cd3392
+---
+ client/api.c              | 81 +++++++++++++++++++++++++++++++++++++++++++----
+ client/goal.c             | 64 ++++++++++++++++++++++++++++++++++---
+ client/prototypes.h       |  9 +++++-
+ include/tdnftypes.h       | 10 +++++-
+ tests/testsuite.at        |  1 +
+ tools/cli/lib/parseargs.c | 32 +++++++++++++++----
+ 6 files changed, 177 insertions(+), 20 deletions(-)
+
+diff --git a/client/api.c b/client/api.c
+index 3a57987..53333ae 100644
+--- a/client/api.c
++++ b/client/api.c
+@@ -177,6 +177,71 @@ FTSEntcmp(const FTSENT **ppEntFirst, const FTSENT **ppEntSecond)
+     return strcmp((*ppEntFirst)->fts_name, (*ppEntSecond)->fts_name);
+ }
+ 
++/**
++ * Use case : tdnf check --skipconflicts --skipobsoletes
++ *            tdnf check --skipconflicts
++ *            tdnf check --skipobsoletes
++ *            tdnf check
++ * Description: This will verify if "tdnf check" command
++ *              is given with --skipconflicts or --skipobsoletes
++ *              or with both option, then set the problem type
++ *              variable accordingly.
++ * Arguments:
++ *     pTdnf: Handler for TDNF command
++ *     pdwSkipProblem: enum value which tells which kind of problem is set
++ *
++ * Return:
++ *         0 : if success
++ *         non zero: if error occurs
++ *
++ */
++uint32_t
++TDNFGetSkipProblemOption(
++    PTDNF pTdnf,
++    TDNF_SKIPPROBLEM_TYPE *pdwSkipProblem
++    )
++{
++    uint32_t dwError = 0;
++    PTDNF_CMD_OPT pSetOpt = NULL;
++    TDNF_SKIPPROBLEM_TYPE dwSkipProblem = SKIPPROBLEM_NONE;
++
++    if(!pTdnf || !pTdnf->pArgs || !pdwSkipProblem)
++    {
++        dwError = ERROR_TDNF_INVALID_PARAMETER;
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
++
++    if (!strcasecmp(pTdnf->pArgs->ppszCmds[0], "check"))
++    {
++      pSetOpt = pTdnf->pArgs->pSetOpt;
++
++      while(pSetOpt)
++      {
++          if(pSetOpt->nType == CMDOPT_KEYVALUE &&
++            !strcasecmp(pSetOpt->pszOptName, "skipconflicts"))
++          {
++              dwSkipProblem |= SKIPPROBLEM_CONFLICTS;
++          }
++          if(pSetOpt->nType == CMDOPT_KEYVALUE &&
++           !strcasecmp(pSetOpt->pszOptName, "skipobsoletes"))
++          {
++             dwSkipProblem |= SKIPPROBLEM_OBSOLETES;
++          }
++          pSetOpt = pSetOpt->pNext;
++      }
++    }
++    *pdwSkipProblem = dwSkipProblem;
++cleanup:
++    return dwError;
++
++error:
++    if(pdwSkipProblem)
++    {
++       *pdwSkipProblem = SKIPPROBLEM_NONE;
++    }
++    goto cleanup;
++}
++
+ //check a local rpm folder for dependency issues.
+ uint32_t
+ TDNFCheckLocalPackages(
+@@ -197,6 +262,7 @@ TDNFCheckLocalPackages(
+     int nIsDir = 0;
+     char* pszLocalPathCopy = NULL;
+     char *pszPathlist[2] = {NULL, NULL};
++    TDNF_SKIPPROBLEM_TYPE dwSkipProblem = SKIPPROBLEM_NONE;
+ 
+     if(!pTdnf || !pszLocalPath)
+     {
+@@ -265,7 +331,7 @@ TDNFCheckLocalPackages(
+ 
+         printf ("%s\n", pEnt->fts_path);
+     }
+-    
++
+     fprintf(stdout, "Found %d packages\n", hy_packagelist_count(hPkgList));
+ 
+     hGoal = hy_goal_create(hSack);
+@@ -280,11 +346,12 @@ TDNFCheckLocalPackages(
+         dwError = hy_goal_install(hGoal, hPkg);
+         BAIL_ON_TDNF_HAWKEY_ERROR(dwError);
+     }
+-    
++
+     dwError = hy_goal_run_flags(hGoal, HY_ALLOW_UNINSTALL);
+     if(dwError)
+     {
+-        TDNFGoalReportProblems(hGoal);
++        TDNFGetSkipProblemOption(pTdnf, &dwSkipProblem);
++        TDNFGoalReportProblems(hGoal, dwSkipProblem);
+         BAIL_ON_TDNF_HAWKEY_ERROR(dwError);
+     }
+ 
+@@ -598,7 +665,7 @@ cleanup:
+     {
+         hy_query_free(hQuery);
+     }
+-  
++
+     return dwError;
+ error:
+     if(ppPkgInfo)
+@@ -853,8 +920,8 @@ error:
+     goto cleanup;
+ }
+ 
+-//Resolve alter command before presenting 
+-//the goal steps to user for approval 
++//Resolve alter command before presenting
++//the goal steps to user for approval
+ uint32_t
+ TDNFResolve(
+     PTDNF pTdnf,
+@@ -920,7 +987,7 @@ TDNFResolve(
+     dwError = TDNFCheckProtectedPkgs(pSolvedPkgInfo);
+     BAIL_ON_TDNF_ERROR(dwError);
+ 
+-    pSolvedPkgInfo->nNeedAction = 
++    pSolvedPkgInfo->nNeedAction =
+         pSolvedPkgInfo->pPkgsToInstall ||
+         pSolvedPkgInfo->pPkgsToUpgrade ||
+         pSolvedPkgInfo->pPkgsToDowngrade ||
+diff --git a/client/goal.c b/client/goal.c
+index 54d29a5..42e1097 100644
+--- a/client/goal.c
++++ b/client/goal.c
+@@ -32,6 +32,7 @@ TDNFGoal(
+     HyGoal hGoal = NULL;
+     HyPackage hPkg = NULL;
+     PTDNF_SOLVED_PKG_INFO pInfoTemp = NULL;
++    TDNF_SKIPPROBLEM_TYPE dwSkipProblem = SKIPPROBLEM_NONE;
+ 
+     int nFlags = 0;
+     int i = 0;
+@@ -108,7 +109,8 @@ cleanup:
+ error:
+     if(hGoal)
+     {
+-        TDNFGoalReportProblems(hGoal);
++        TDNFGetSkipProblemOption(pTdnf, &dwSkipProblem);
++        TDNFGoalReportProblems(hGoal, dwSkipProblem);
+         hy_goal_free(hGoal);
+     }
+     goto cleanup;
+@@ -310,13 +312,43 @@ error:
+     goto cleanup;
+ }
+ 
++/**
++ * Description: This function should check problem type and
++ *              skipProblemType if both matches then return true
++ *              else return false
++ * Arguments:
++ *        char * : Solver problem type
++ *        TDNF_SKIPPROBLEM_TYPE: user specified problem type
++ * Return:
++ *      1 : if solver problem type and user specified problem matches
++ *      0 : if not matches
++ */
++static uint32_t
++__should_skip(
++    char *pszProblem,
++    TDNF_SKIPPROBLEM_TYPE dwSkipProblem
++    )
++{
++    uint32_t dwResult = 0;
++    if (((dwSkipProblem == SKIPPROBLEM_CONFLICTS) && (strstr(pszProblem, "conflicts"))) ||
++        ((dwSkipProblem == SKIPPROBLEM_OBSOLETES) && (strstr(pszProblem, "obsoletes"))) ||
++        ((dwSkipProblem == (SKIPPROBLEM_CONFLICTS | SKIPPROBLEM_OBSOLETES)) && ((strstr(pszProblem, "conflicts")) || (strstr(pszProblem, "obsoletes")))))
++    {
++        dwResult = 1;
++    }
++    return dwResult;
++}
++
+ uint32_t
+ TDNFGoalReportProblems(
+-    HyGoal hGoal
++    HyGoal hGoal,
++    TDNF_SKIPPROBLEM_TYPE dwSkipProblem
+     )
+ {
+     uint32_t dwError = 0;
++    uint32_t dwSkipProbCount = 0;
+     int i = 0;
++    int j = 0;
+     int nCount = 0;
+     char* pszProblem = NULL;
+ 
+@@ -327,14 +359,36 @@ TDNFGoalReportProblems(
+     }
+ 
+     nCount = hy_goal_count_problems(hGoal);
+-    if(nCount > 0)
++    /**
++     * Below condition check is added to count the number of skip problems
++     * */
++    if((nCount > 0) && (dwSkipProblem != SKIPPROBLEM_NONE))
+     {
+-        fprintf(stderr, "Found %d problem(s) while resolving\n", nCount);
+         for(; i < nCount; ++i)
+         {
+             pszProblem = hy_goal_describe_problem(hGoal, i);
+-            fprintf(stderr, "%d. %s\n", i+1, pszProblem);
++            if (__should_skip(pszProblem, dwSkipProblem))
++            {
++              dwSkipProbCount++;
++            }
++            hy_free(pszProblem);
++            pszProblem = NULL;
++        }
++    }
+ 
++    if(nCount > 0)
++    {
++        fprintf(stderr, "Found %d problem(s) while resolving\n", nCount - dwSkipProbCount);
++        for(i = 0; i < nCount; ++i)
++        {
++            pszProblem = hy_goal_describe_problem(hGoal, i);
++            if (__should_skip(pszProblem, dwSkipProblem))
++            {
++                hy_free(pszProblem);
++                pszProblem = NULL;
++                continue;
++            }
++            fprintf(stderr, "%d. %s\n", ++j, pszProblem);
+             hy_free(pszProblem);
+             pszProblem = NULL;
+         }
+diff --git a/client/prototypes.h b/client/prototypes.h
+index 489bc3e..0c42642 100644
+--- a/client/prototypes.h
++++ b/client/prototypes.h
+@@ -310,7 +310,8 @@ TDNFGoal(
+ 
+ uint32_t
+ TDNFGoalReportProblems(
+-    HyGoal hGoal
++    HyGoal hGoal,
++    TDNF_SKIPPROBLEM_TYPE dwSkipProblem
+     );
+ 
+ uint32_t
+@@ -924,3 +925,9 @@ TDNFGetUpdatePkgs(
+     uint32_t *pdwCount
+     );
+ 
++uint32_t
++TDNFGetSkipProblemOption(
++    PTDNF pTdnf,
++    TDNF_SKIPPROBLEM_TYPE *pdwSkipProblem
++    );
++
+diff --git a/include/tdnftypes.h b/include/tdnftypes.h
+index 41b869f..e306ecf 100644
+--- a/include/tdnftypes.h
++++ b/include/tdnftypes.h
+@@ -142,6 +142,14 @@ typedef enum
+     CMDOPT_DISABLEREPO
+ }TDNF_CMDOPT_TYPE;
+ 
++// skip problem type
++typedef enum
++{
++    SKIPPROBLEM_NONE=0,
++    SKIPPROBLEM_CONFLICTS,
++    SKIPPROBLEM_OBSOLETES
++}TDNF_SKIPPROBLEM_TYPE;
++
+ typedef struct _TDNF_ *PTDNF;
+ 
+ typedef struct _TDNF_PKG_INFO
+@@ -257,7 +265,7 @@ typedef struct _TDNF_CLEAN_INFO
+     int nRpmDbFilesRemoved;
+     int nMetadataFilesRemoved;
+     int nDbCacheFilesRemoved;
+-    int nPackageFilesRemoved;    
++    int nPackageFilesRemoved;
+ }TDNF_CLEAN_INFO, *PTDNF_CLEAN_INFO;
+ 
+ typedef struct _TDNF_ERROR_DESC
+diff --git a/tests/testsuite.at b/tests/testsuite.at
+index ed4ba2b..ab7c691 100644
+--- a/tests/testsuite.at
++++ b/tests/testsuite.at
+@@ -13,3 +13,4 @@ m4_include([install.at])
+ m4_include([erase.at])
+ m4_include([update.at])
+ m4_include([downgrade.at])
++m4_include([check.at])
+diff --git a/tools/cli/lib/parseargs.c b/tools/cli/lib/parseargs.c
+index 40cb73b..efe668b 100644
+--- a/tools/cli/lib/parseargs.c
++++ b/tools/cli/lib/parseargs.c
+@@ -41,7 +41,7 @@ static struct option pstOptions[] =
+     {"installroot",   required_argument, 0, 'i'},          //--installroot
+     {"nogpgcheck",    no_argument, &_opt.nNoGPGCheck, 1},  //--nogpgcheck
+     {"quiet",         no_argument, &_opt.nQuiet, 1},       //--nogpgcheck
+-    {"refresh",       no_argument, &_opt.nRefresh, 1},     //--refresh 
++    {"refresh",       no_argument, &_opt.nRefresh, 1},     //--refresh
+     {"releasever",    required_argument, 0, 0},            //--releasever
+     {"rpmverbosity",  required_argument, 0, 0},            //--rpmverbosity
+     {"setopt",        required_argument, 0, 0},            //--set or override options
+@@ -54,6 +54,8 @@ static struct option pstOptions[] =
+     {"security",      no_argument, 0, 0},                  //--security
+     {"sec-severity",  required_argument, 0, 0},            //--sec-severity
+     {"retry",         required_argument, 0, 0},            //--retry
++    {"skipconflicts", no_argument, 0, 0},                  //--skipconflicts to skip conflict problems
++    {"skipobsoletes", no_argument, 0, 0},                  //--skipobsoletes to skip obsolete problems
+     {0, 0, 0, 0}
+ };
+ 
+@@ -86,8 +88,8 @@ TDNFCliParseArgs(
+     opterr = 0;//tell getopt to not print errors
+     while (1)
+     {
+-                
+-            nOption = getopt_long (
++
++            nOption = getopt_long_only (
+                            argc,
+                            argv,
+                            "46bCc:d:e:hi:qvxy",
+@@ -95,7 +97,7 @@ TDNFCliParseArgs(
+                            &nOptionIndex);
+             if (nOption == -1)
+                 break;
+-                
++
+             switch (nOption)
+             {
+                 case 0:
+@@ -175,7 +177,7 @@ TDNFCliParseArgs(
+                                 sizeof(char*),
+                                 (void**)&pCmdArgs->ppszCmds);
+         BAIL_ON_CLI_ERROR(dwError);
+-        
++
+         while (optind < argc)
+         {
+             dwError = TDNFAllocateString(
+@@ -338,6 +340,24 @@ ParseOption(
+                       &pCmdArgs->pszReleaseVer);
+         BAIL_ON_CLI_ERROR(dwError);
+     }
++    else if(!strcasecmp(pszName, "skipconflicts"))
++    {
++        dwError = AddSetOptWithValues(
++                      pCmdArgs,
++                      CMDOPT_KEYVALUE,
++                      pszName,
++                      "1");
++        BAIL_ON_CLI_ERROR(dwError);
++    }
++    else if(!strcasecmp(pszName, "skipobsoletes"))
++    {
++        dwError = AddSetOptWithValues(
++                      pCmdArgs,
++                      CMDOPT_KEYVALUE,
++                      pszName,
++                      "1");
++        BAIL_ON_CLI_ERROR(dwError);
++    }
+     else if(!strcasecmp(pszName, "setopt"))
+     {
+         if(!optarg)
+@@ -382,7 +402,7 @@ ParseRpmVerbosity(
+         char* pszTypeName;
+         int nType;
+     };
+-    struct stTemp  stTypes[] = 
++    struct stTemp  stTypes[] =
+     {
+         {"emergency",  TDNF_RPMLOG_EMERG},
+         {"alert",      TDNF_RPMLOG_ALERT},
+-- 
+2.7.4
+
