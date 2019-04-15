@@ -1,15 +1,16 @@
-%define sourcever 3260000
+%define sourcever 3270200
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite-autoconf
-Version:        3.26.0
+Version:        3.27.2
 Release:        1%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://sqlite.org/2018/%{name}-3260000.tar.gz
-%define sha1    sqlite=9af2df1a6da5db6e2ecf3f463625f16740e036e9
+Source0:        http://sqlite.org/2018/%{name}-3270200.tar.gz
+%define sha1    sqlite=5f5750e3f39b7b60394a2fb6ddb2371f848670e6
+Patch0:         CVE-2019-9936.patch
 Obsoletes:      libsqlite
 Provides:       sqlite3
 
@@ -20,6 +21,7 @@ C/C++ interface specs and other miscellaneous documentation.
 
 %prep
 %setup -q -n %{name}-%{sourcever}
+%patch0 -p1
 
 %build
 ./configure \
@@ -65,6 +67,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+*   Mon Apr 15 2019 Michelle Wang <michellew@vmware.com> 3.27.2-1
+-   Upgrade to 3.27.2 for CVE-2019-9936.
 *   Wed Feb 3 2019 Michelle Wang <michellew@vmware.com> 3.26.0-1
 -   Upgrade to 3.26.0 for a critical Vulnerability named 'Magallan'.
 *   Thu May 31 2018 Xiaolin Li <xiaolinl@vmware.com> 3.22.0-3
