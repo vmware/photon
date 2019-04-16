@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        1.8.14
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -11,6 +11,7 @@ Source0:        http://www.haproxy.org/download/1.8/src/%{name}-%{version}.tar.g
 %define sha1 haproxy=589c6f933d73e8d6ba5307c8304cafb80e968481
 Patch0:         haproxy_CVE_2018_20102.patch
 Patch1:         haproxy_CVE_2018_20103.patch
+Patch2:		haproxy-CVE-2018-20615.patch
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  lua-devel
@@ -34,6 +35,7 @@ Requires:       %{name} = %{version}-%{release}
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 make %{?_smp_mflags} TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 \
@@ -62,6 +64,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Tue Apr 16 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.8.14-3
+-   Applied patch for CVE-2018-20615
 *   Thu Feb 28 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.14-2
 -   Patch for CVE_2018_20102
 -   Patch for CVE_2018_20103
