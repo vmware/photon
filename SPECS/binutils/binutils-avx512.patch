@@ -1,0 +1,124 @@
+From 2069ccaf8dc28ea699bd901fdd35d90613e4402a Mon Sep 17 00:00:00 2001
+From: Jan Beulich <jbeulich@novell.com>
+Date: Tue, 31 Jul 2018 11:04:34 +0200
+Subject: [PATCH] x86: don't mistakenly scale non-8-bit displacements
+
+PR gas/23465
+
+In commit b5014f7af2 I've removed (instead of replaced) a conditional,
+resulting in addressing forms not allowing 8-bit displacements to now
+get their displacements scaled under certain circumstances. Re-add the
+missing conditional.
+---
+ gas/config/tc-i386.c                      |  3 ++-
+ gas/testsuite/gas/i386/evex-no-scale-32.d | 13 +++++++++++++
+ gas/testsuite/gas/i386/evex-no-scale-64.d | 15 +++++++++++++++
+ gas/testsuite/gas/i386/evex-no-scale.s    | 19 +++++++++++++++++++
+ gas/testsuite/gas/i386/i386.exp           |  2 ++
+ 6 files changed, 60 insertions(+), 1 deletion(-)
+ create mode 100644 gas/testsuite/gas/i386/evex-no-scale-32.d
+ create mode 100644 gas/testsuite/gas/i386/evex-no-scale-64.d
+ create mode 100644 gas/testsuite/gas/i386/evex-no-scale.s
+
+diff --git a/gas/config/tc-i386.c b/gas/config/tc-i386.c
+index 2d20f1c..bd179c1 100644
+--- a/gas/config/tc-i386.c
++++ b/gas/config/tc-i386.c
+@@ -7857,7 +7857,8 @@ output_disp (fragS *insn_start_frag, offsetT insn_start_off)
+ 	      int size = disp_size (n);
+ 	      offsetT val = i.op[n].disps->X_add_number;
+ 
+-	      val = offset_in_range (val >> i.memshift, size);
++	      val = offset_in_range (val >> (size == 1 ? i.memshift : 0),
++				     size);
+ 	      p = frag_more (size);
+ 	      md_number_to_chars (p, val, size);
+ 	    }
+diff --git a/gas/testsuite/gas/i386/evex-no-scale-32.d b/gas/testsuite/gas/i386/evex-no-scale-32.d
+new file mode 100644
+index 0000000..e6116bc
+--- /dev/null
++++ b/gas/testsuite/gas/i386/evex-no-scale-32.d
+@@ -0,0 +1,13 @@
++#source: evex-no-scale.s
++#objdump: -dw
++#name: ix86 EVEX no disp scaling
++
++.*: +file format .*
++
++Disassembly of section .text:
++
++0+ <disp>:
++ +[a-f0-9]+:	62 f1 7c 48 28 04 05 40 00 00 00 	vmovaps 0x40\(,%eax,1\),%zmm0
++ +[a-f0-9]+:	62 f1 7c 48 28 04 25 40 00 00 00 	vmovaps 0x40\(,%eiz,1\),%zmm0
++ +[a-f0-9]+:	62 f1 7c 48 28 05 40 00 00 00 	vmovaps 0x40,%zmm0
++ +[a-f0-9]+:	67 62 f1 7c 48 28 06 40 00 	vmovaps 0x40,%zmm0
+diff --git a/gas/testsuite/gas/i386/evex-no-scale-64.d b/gas/testsuite/gas/i386/evex-no-scale-64.d
+new file mode 100644
+index 0000000..b66f15b
+--- /dev/null
++++ b/gas/testsuite/gas/i386/evex-no-scale-64.d
+@@ -0,0 +1,15 @@
++#source: evex-no-scale.s
++#objdump: -dw
++#name: x86-64 EVEX no disp scaling
++
++.*: +file format .*
++
++Disassembly of section .text:
++
++0+ <disp>:
++ +[a-f0-9]+:	62 f1 7c 48 28 05 00 fc ff ff 	vmovaps -0x400\(%rip\),%zmm0        # .*
++ +[a-f0-9]+:	62 f1 7c 48 28 04 05 40 00 00 00 	vmovaps 0x40\(,%rax,1\),%zmm0
++ +[a-f0-9]+:	62 f1 7c 48 28 04 25 40 00 00 00 	vmovaps 0x40,%zmm0
++ +[a-f0-9]+:	67 62 f1 7c 48 28 04 05 40 00 00 00 	vmovaps 0x40\(,%eax,1\),%zmm0
++ +[a-f0-9]+:	67 62 f1 7c 48 28 04 25 40 00 00 00 	addr32 vmovaps 0x40,%zmm0
++ +[a-f0-9]+:	62 f1 7c 48 28 04 25 40 00 00 00 	vmovaps 0x40,%zmm0
+diff --git a/gas/testsuite/gas/i386/evex-no-scale.s b/gas/testsuite/gas/i386/evex-no-scale.s
+new file mode 100644
+index 0000000..ed0f231
+--- /dev/null
++++ b/gas/testsuite/gas/i386/evex-no-scale.s
+@@ -0,0 +1,19 @@
++	.allow_index_reg
++	.section .probe, "", @progbits
++.Lprobe_64bit:
++	inc	%eax
++.equiv is_64bit, (. - .Lprobe_64bit) / 2
++
++	.text
++disp:
++.if is_64bit
++	vmovaps	-1024(%rip), %zmm0
++	vmovaps	64(,%rax), %zmm0
++	vmovaps	64(,%riz), %zmm0
++.endif
++	vmovaps	64(,%eax), %zmm0
++	vmovaps	64(,%eiz), %zmm0
++	vmovaps	64, %zmm0
++.if !is_64bit
++	addr16 vmovaps 64, %zmm0
++.endif
+diff --git a/gas/testsuite/gas/i386/i386.exp b/gas/testsuite/gas/i386/i386.exp
+index 9cc927a..88d0121 100644
+--- a/gas/testsuite/gas/i386/i386.exp
++++ b/gas/testsuite/gas/i386/i386.exp
+@@ -224,6 +224,7 @@ if [expr ([istarget "i*86-*-*"] ||  [istarget "x86_64-*-*"]) && [gas_32_check]]
+     run_dump_test "evex-lig512-intel"
+     run_dump_test "evex-wig1"
+     run_dump_test "evex-wig1-intel"
++    run_dump_test "evex-no-scale-32"
+     run_dump_test "sse2avx"
+     run_list_test "inval-avx" "-al"
+     run_list_test "inval-avx512f" "-al"
+@@ -733,6 +734,7 @@ if [expr ([istarget "i*86-*-*"] || [istarget "x86_64-*-*"]) && [gas_64_check]] t
+     run_dump_test "x86-64-evex-lig512-intel"
+     run_dump_test "x86-64-evex-wig1"
+     run_dump_test "x86-64-evex-wig1-intel"
++    run_dump_test "evex-no-scale-64"
+     run_dump_test "x86-64-sse2avx"
+     run_list_test "x86-64-inval-avx" "-al"
+     run_list_test "x86-64-inval-avx512f" "-al"
+-- 
+2.9.3
+
