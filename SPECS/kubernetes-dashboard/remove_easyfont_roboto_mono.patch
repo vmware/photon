@@ -1,0 +1,11 @@
+--- package.json	2019-04-17 22:35:09.152713946 +0000
++++ package.json	2019-04-17 22:35:26.876713633 +0000
+@@ -155,7 +155,6 @@
+     "postinstall": "build/postinstall.sh"
+   },
+   "napa": {
+-    "cljsjs-packages-externs": "git+https://github.com/cljsjs/packages.git#0c44b38658ad789a45d342bff4f13706276f293a",
+-    "easyfont-roboto-mono": "git+https://github.com/easyfont/roboto-mono.git#fa7971ea56f68bfdb2771f9cb560c99aca0164c1"
++    "cljsjs-packages-externs": "git+https://github.com/cljsjs/packages.git#0c44b38658ad789a45d342bff4f13706276f293a"
+   }
+ }
