@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.22
-Release:        25%{?dist}
+Release:        26%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -238,6 +238,8 @@ popd
 %{_datarootdir}/locale/locale.alias
 
 %changelog
+*   Wed Apr 17 2019 Ashwin H <ashwinh@vmware.com> 2.22-26
+-   Bump up release number to fix AVX512 instruction generation.
 *   Fri Mar 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.22-25
 -   Fix CVE-2019-9169
 *   Wed Feb 13 2019 Alexey Makhalov <amakhalov@vmware.com> 2.22-24

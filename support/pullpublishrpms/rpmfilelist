@@ -3,7 +3,7 @@ noarch/man-pages-3.59-1.ph1.noarch.rpm
 x86_64/python2-devel-2.7.11-1.ph1.x86_64.rpm
 x86_64/nspr-4.11-1.ph1.x86_64.rpm
 x86_64/rpm-4.11.2-14.ph1.x86_64.rpm
-x86_64/binutils-devel-2.30-2.ph1.x86_64.rpm
+x86_64/binutils-devel-2.30-6.ph1.x86_64.rpm
 x86_64/nss-3.21-1.ph1.x86_64.rpm
 x86_64/mpfr-devel-3.1.3-1.ph1.x86_64.rpm
 x86_64/cpio-2.12-1.ph1.x86_64.rpm
@@ -65,7 +65,7 @@ x86_64/python2-2.7.11-1.ph1.x86_64.rpm
 x86_64/elfutils-devel-0.165-1.ph1.x86_64.rpm
 x86_64/patch-2.7.5-1.ph1.x86_64.rpm
 x86_64/xz-5.2.2-1.ph1.x86_64.rpm
-x86_64/binutils-2.30-2.ph1.x86_64.rpm
+x86_64/binutils-2.30-6.ph1.x86_64.rpm
 x86_64/libgomp-devel-5.3.0-4.ph1.x86_64.rpm
 x86_64/libgomp-devel-7.3.0-1.ph1.x86_64.rpm
 x86_64/bzip2-devel-1.0.6-4.ph1.x86_64.rpm
