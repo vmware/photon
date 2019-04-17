@@ -3,7 +3,7 @@
 
 Name:           PyYAML
 Version:        3.12
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT
@@ -11,7 +11,9 @@ URL:            http://pyyaml.org/
 Source0:        http://pyyaml.org/download/pyyaml/%{name}-%{version}.tar.gz
 %define sha1 PyYAML=cb7fd3e58c129494ee86e41baedfec69eb7dafbe
 Patch0:         PyYAML-CVE-2017-18342.patch
-
+Patch1:         ConstructorError_fix.patch
+Patch2:         change_default_loader.patch
+Patch3:         PyYAML-lib3-CVE-2017-18342.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -52,6 +54,10 @@ Python 3 version.
 %prep
 %setup -q -n PyYAML-%{version}
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -92,6 +98,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Tue Apr 16 2019 Tapas Kundu <tkundu@vmware.com> 3.12-4
+-   Added lib3 changes for CVE-2017-18342
+-   change default loader for yaml.add_constructor
+-   Add custom constructors to multiple loaders
 *   Thu Mar 28 2019 Ankit Jain <ankitja@vmware.com> 3.12-3
 -   Fix for CVE-2017-18342
 *   Tue May 16 2017 Kumar Kaushik <kaushikk@vmware.com> 3.12-2
