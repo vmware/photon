@@ -37,9 +37,11 @@ mkdir -p /tmp/photonUsb
     
     `cd /tmp/photonUsb`
 
-    Add the below (highlighted) parameters to the linux cmd line in `boot/grub2/grub.cfg`
-    
-    `linux /isolinux/vmlinuz root=/dev/ram0 loglevel=3 photon.media=UUID=$photondisk` **`ks=cdrom:/isolinux/sample_ks.cfg console=ttyS0,115200n8`**
+    Add the below parameters to the linux cmd line in `boot/grub2/grub.cfg`
+   
+    ```
+    linux /isolinux/vmlinuz root=/dev/ram0 loglevel=3 photon.media=UUID=$photondisk ks=cdrom:/isolinux/sample_ks.cfg console=ttyS0,115200n8
+    ```
 
 1. Edit the `isolinux/sample_ks.cfg`  as follows:
 
