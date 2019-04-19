@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          10%{?dist}
+Release:          11%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -29,6 +29,7 @@ Patch9:           systemd-239-CVE-2018-15687.patch
 Patch10:          systemd-239-CVE-2018-16864.patch
 Patch11:          systemd-239-CVE-2018-16865.patch
 Patch12:          systemd-239-CVE-2018-16866.patch
+Patch13:          systemd-239-CVE-2019-3842.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -96,6 +97,7 @@ EOF
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch13 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -262,6 +264,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Thu Apr 18 2019 Anish Swaminathan <anishs@vmware.com>  239-11
+-    Fix CVE-2019-3842
 *    Thu Jan 10 2019 Anish Swaminathan <anishs@vmware.com>  239-10
 -    Fix CVE-2018-16864, CVE-2018-16865, CVE-2018-16866
 *    Wed Jan 09 2019 Keerthana K <keerthanak@vmware.com> 239-9
