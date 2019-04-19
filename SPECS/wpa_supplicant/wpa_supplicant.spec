@@ -1,7 +1,7 @@
 Summary:          WPA client
 Name:             wpa_supplicant
 Version:          2.7
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
@@ -9,6 +9,10 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          https://w1.fi/releases/%{name}-%{version}.tar.gz
 %define sha1 wpa=3c3c2c6bc493fb32b919d9b410768324f3729e25
+Patch0:		  wpa_supplicant-CVE-2019-9496.patch
+Patch1:	  	  wpa_supplicant-CVE-2019-9497.patch
+Patch2:		  wpa_supplicant-CVE-2019-9498.patch
+Patch3:		  wpa_supplicant-CVE-2019-9499.patch
 BuildRequires:    libnl-devel openssl-devel
 Requires:         libnl
 Requires:         openssl
@@ -18,6 +22,11 @@ WPA Supplicant is a Wi-Fi Protected Access (WPA) client and IEEE 802.1X supplica
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+
 
 %build
 cat > wpa_supplicant/.config << "EOF"
@@ -94,6 +103,8 @@ EOF
 %{_sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 
 %changelog
+*   Fri Apr 19 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.7-2
+-   Fix CVE-2019-9496 CVE-2019-9497 CVE-2019-9498 CVE-2019-9499
 *   Thu Jan 3 2019 Michelle Wang <michellew@vmware.com> 2.7-1
 -   Update version to 2.7.
 *   Fri Aug 17 2018 Alexey Makhalov <amakhalov@vmware.com> 2.6-2
