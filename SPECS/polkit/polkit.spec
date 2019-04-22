@@ -1,12 +1,13 @@
 Summary:       A toolkit for defining and handling authorizations.
 Name:          polkit
 Version:       0.113
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       LGPLv2+
 URL:           https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
 Source0:       https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
+Patch0:        polkit-CVE-2018-19788.patch
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: expat-devel
@@ -38,6 +39,7 @@ header files and libraries for polkit
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 ./configure \
@@ -115,6 +117,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Apr 22 2019 <ppadmavilasom@vmware.com> 0.113-3
+-   Apply fix for CVE-2018-19788
 *   Thu Oct 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.113-2
 -   Enable PAM and systemd.
 *   Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.113-1
