@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        1.2.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -13,6 +13,7 @@ Group:          Applications/RPM
 Requires:       hawkey >= 2017.1-6
 Requires:       rpm-libs
 Requires:       curl
+Requires:       tdnf-cli-libs = %{version}-%{release}
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
 BuildRequires:  hawkey-devel >= 2017.1-6
@@ -161,6 +162,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Mon Apr 22 2019 Ankit Jain <ankitja@vmware.com> 1.2.3-8
+-   Added Requires tdnf-cli-libs
 *   Thu Apr 11 2019 Ankit Jain <ankitja@vmware.com> 1.2.3-7
 -   Added skipconflicts and skipobsoletes to check command.
 *   Fri Jan 04 2019 Keerthana K <keerthanak@vmware.com> 1.2.3-6
