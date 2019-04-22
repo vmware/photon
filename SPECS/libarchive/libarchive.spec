@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.3.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
@@ -11,6 +11,10 @@ Source0:    http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
 %define sha1 libarchive=d5616f81804aba92547629c08a3ccff86c2844ae
 Patch0:     libarchive-CVE-2018-1000877.patch
 Patch1:     libarchive-CVE-2018-1000878.patch
+Patch2:	    libarchive-CVE-2018-1000879.patch
+Patch3:	    libarchive-CVE-2018-1000880.patch
+Patch4:     libarchive-CVE-2019-1000019.patch
+Patch5:	    libarchive-CVE-2019-1000020.patch
 
 %description
 Multi-format archive and compression library
@@ -25,6 +29,10 @@ It contains the libraries and header files to create applications
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -54,6 +62,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Apr 22 2019 Siju Maliakkal <smaliakkal@vmware.com> 3.3.1-3
+-   Fix CVE-2018-1000879 CVE-2018-1000880 CVE-2019-1000019 CVE-2019-1000020
 *   Fri Mar 08 2019 Ankit Jain <ankitja@vmware.com> 3.3.1-2
 -   Fix for CVE-2018-1000877 and CVE-2018-1000878
 *   Thu Apr 06 2017 Divya Thaluru <dthaluru@vmware.com> 3.3.1-1
