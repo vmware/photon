@@ -1,7 +1,7 @@
 Summary:    Photon upgrade scripts
 Name:       photon-upgrade
 Version:    1.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache License
 Group:      System Environment/Base
 Source0:    photon-upgrade.sh
@@ -32,5 +32,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/*
 
 %changelog
+*       Mon Apr 22 2019 Dweep Advani <dadvani@vmware.com> 1.0-2
+-       Fixed upgrade issues
 *       Fri Oct 19 2018 Dweep Advani <dadvani@vmware.com> 1.0-1
 -       Initial Photon 2.0 to 3.0 upgrade package

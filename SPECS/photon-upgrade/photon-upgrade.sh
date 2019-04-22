@@ -1,10 +1,10 @@
 #!/bin/bash
 
-FROM_VERSION="$(awk '/VMware Photon OS /{print $4}' /etc/photon-release)"
+FROM_VERSION="$(grep '^VMware Photon' /etc/photon-release | cut -d ' ' -f 4)"
 TO_VERSION='3.0'
 
 # The package list of deprecated packages from 2.0 to 3.0
-depPkgsFrom2To3='urlgrabber librepo ceph-deploy conntrack-tools libhif yum createrepo ceph ostree micro-config-drive gmock deltarpm rpm-ostree kibana docker-volume-vsphere yarn mesos yum-metadata-parser'
+depPkgsFrom2To3='urlgrabber librepo ceph-deploy libhif yum createrepo ceph ostree micro-config-drive deltarpm rpm-ostree docker-volume-vsphere mesos yum-metadata-parser python3-yum-metadata-parser'
 
 #Some packages are deprecaed from 3.0, lets remove them before moving to 3.0
 function remove_unsupported_pkgs() {
