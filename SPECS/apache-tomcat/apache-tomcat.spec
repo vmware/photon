@@ -1,6 +1,6 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.37
+Version:        8.5.40
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -9,10 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1    apache-tomcat=adfd9e4c27502e5d41cb7b77a2a8c8f680258c53
+%define sha1    apache-tomcat=a7914b60c94cf3740ea4e79af9f993d104dcfefb
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=f13bf2eaf717564f572eeebaf2efcac483e6f9b9
+%define sha1    base=98fdf09166863b3c8283f6b37a226292f52f04a2
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
@@ -101,6 +101,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Tue Apr 23 2019 Dweep Advani <dadvani@vmware.com> 8.5.40-1
+-   Upgrading to version 8.5.40
 *   Thu Jan 10 2019 Dweep Advani <dadvani@vmware.com> 8.5.37-1
 -   Upgrade to version 8.5.37
 *   Fri Dec 07 2018 Dweep Advani <dadvani@vmware.com> 8.5.35-1
