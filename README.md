@@ -3,12 +3,12 @@
 # Photon OS: Linux Container Host
 
 ### Contents
-- [What is Photon OS](#what-is-photon)
-- [Getting Photon OS](#getting-photon)
+- [What is Photon OS](#what-is-photon-os)
+- [Getting Photon OS](#getting-photon-os)
 - [Getting Started](#getting-started)
 - [Contributing](#contributing)
 - [License](#license)
-- [Photon OS Resources](#resources)
+- [Photon OS Resources](#photon-os-resources)
 
 ## What is Photon OS?
 Photon OS&trade; is an open source Linux container host optimized for cloud-native applications, cloud platforms, and VMware infrastructure. Photon OS provides a secure run-time environment for efficiently running containers. Some of the key highlights of Photon OS are:
