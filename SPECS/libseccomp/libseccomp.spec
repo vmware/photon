@@ -1,11 +1,11 @@
 Summary:      Enhanced seccomp library
 Name:         libseccomp
-Version:      2.2.3
-Release:      2%{?dist}
+Version:      2.4.0
+Release:      1%{?dist}
 License:      LGPLv2
 Group:        System Environment/Libraries
 Source0:      https://github.com/seccomp/libseccomp/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1 libseccomp=a2abb98d506d6a2b8a5fadc35496905e98d999ee
+%define sha1  libseccomp=a0d0d6e2dc32722d59b2728fe515cdffd106a436
 Url:          https://github.com/seccomp/libseccomp/wiki
 Vendor:       VMware, Inc.
 Distribution: Photon
@@ -17,7 +17,7 @@ is designed to abstract away the underlying BPF based syscall filter language
 and present a more conventional function-call based filtering interface that
 should be familiar to, and easily adopted by application developers.
 
-%package devel
+%package  devel
 Summary:  Development files used to build applications with libseccomp support
 Group:    Development/Libraries
 Provides: pkgconfig(libseccomp)
@@ -30,14 +30,11 @@ needed for developing secure applications.
 %setup -q
 
 %build
-./configure --prefix="%{_prefix}" --libdir="%{_libdir}"
-CFLAGS="%{optflags}" make V=1 %{?_smp_mflags}
+%configure
+make V=1 %{?_smp_mflags}
 
 %install
 rm -rf "%{buildroot}"
-mkdir -p "%{buildroot}/%{_libdir}"
-mkdir -p "%{buildroot}/%{_includedir}"
-mkdir -p "%{buildroot}/%{_mandir}"
 make V=1 DESTDIR="%{buildroot}" install
 
 %check
@@ -50,7 +47,7 @@ make check
 %files
 %doc LICENSE
 %doc CREDITS
-%doc README
+%doc README.md
 %{_libdir}/libseccomp.so.*
 %{_libdir}/libseccomp.a
 %{_libdir}/libseccomp.la
@@ -64,7 +61,9 @@ make check
 %{_mandir}/man3/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.3-2
--	GA - Bump release of all rpms
-* Sat Jan 16 2016 Fabio Rapposelli <fabio@vmware.com> - 2.2.3-1
-- First release of the package
+*  Fri Mar 29 2019 Michelle Wang <michellew@vmware.com> 2.4.0-1
+-  Upgrade to 2.4.0 for CVE-2019-9893
+*  Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.3-2
+-  GA - Bump release of all rpms
+*  Sat Jan 16 2016 Fabio Rapposelli <fabio@vmware.com> 2.2.3-1
+-  First release of the package
