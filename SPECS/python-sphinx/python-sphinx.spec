@@ -4,7 +4,7 @@
 Summary:       Python documentation generator
 Name:          python-sphinx
 Version:       1.5.3
-Release:       5%{?dist}
+Release:       6%{?dist}
 Group:         Development/Tools
 License:       BSD-2-Clause
 URL:           http://www.vmware.com
@@ -41,7 +41,7 @@ Requires:      python-imagesize
 Requires:      python-requests
 Requires:      python-snowballstemmer
 Requires:      python-typing
-
+Requires:      python-setuptools
 BuildArch:      noarch
 
 %description
@@ -80,6 +80,7 @@ Requires:      python3-alabaster
 Requires:      python3-imagesize
 Requires:      python3-requests
 Requires:      python3-snowballstemmer
+Requires:      python3-setuptools
 
 %description -n python3-sphinx
 
@@ -128,6 +129,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Apr 23 2019 Tapas Kundu <tkundu@vmware.com> 1.5.3-6
+-   Added python-setuptools and python3-setuptools in requires
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.3-5
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.3-4
