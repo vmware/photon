@@ -1,7 +1,7 @@
 Summary:	Displays information about running processes
 Name:		psmisc
 Version:	23.2
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://psmisc.sourceforge.net/
 Group:		Applications/System
@@ -46,6 +46,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Tue Apr 23 2019 Ajay Kaher <akaher@vmware.com> 23.2-4
+- Fix peekfd_arm64.patch
 * Wed Mar 20 2019 Ajay Kaher <akaher@vmware.com> 23.2-3
 - Add ARM64 support for peekfd
 * Tue Oct 2 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 23.2-2

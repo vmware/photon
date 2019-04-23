@@ -13,10 +13,10 @@ with SYSCALL entry to retrive orig_x0 at the time of SYSCALL exit.
 
 Signed-off-by: Ajay Kaher <akaher@vmware.com>
 
-diff -Naur psmisc-23.2/configure.ac psmisc-23.2_new/configure.ac
+diff -Naurp psmisc-23.2/configure.ac psmisc-23.2_new/configure.ac
 --- psmisc-23.2/configure.ac	2017-09-18 20:45:50.228296414 +0000
-+++ psmisc-23.2_new/configure.ac	2019-03-20 11:30:55.028774094 +0000
-@@ -131,6 +131,7 @@
++++ psmisc-23.2_new/configure.ac	2019-04-23 07:14:36.562605155 +0000
+@@ -131,6 +131,7 @@ AC_CHECK_MEMBERS([struct user_regs_struc
  AC_CHECK_MEMBERS([struct pt_regs.orig_gpr3,
  		struct pt_regs.gpr], [],[], [#include <linux/ptrace.h>])
  AC_CHECK_MEMBERS([struct pt_regs.uregs],[],[], [#include <asm/ptrace.h>])
@@ -24,7 +24,7 @@ diff -Naur psmisc-23.2/configure.ac psmisc-23.2_new/configure.ac
  AC_CHECK_MEMBERS([struct pt_regs.regs,
                    struct pt_regs.cp0_status],[],[], [#include <asm/ptrace.h>])
  AC_CHECK_MEMBERS([struct pt_regs.orig_d0,
-@@ -163,6 +164,8 @@
+@@ -163,6 +164,8 @@ AM_CONDITIONAL(WANT_PEEKFD_PPC,
     test $ac_cv_member_struct_pt_regs_gpr = yes )
  AM_CONDITIONAL(WANT_PEEKFD_ARM,
     test $ac_cv_member_struct_pt_regs_uregs = yes)
@@ -33,10 +33,10 @@ diff -Naur psmisc-23.2/configure.ac psmisc-23.2_new/configure.ac
  AM_CONDITIONAL(WANT_PEEKFD_MIPS,
     test $build_cpu = mipsel &&
     test $ac_cv_member_struct_pt_regs_regs = yes &&
-diff -Naur psmisc-23.2/Makefile.am psmisc-23.2_new/Makefile.am
+diff -Naurp psmisc-23.2/Makefile.am psmisc-23.2_new/Makefile.am
 --- psmisc-23.2/Makefile.am	2018-08-13 11:24:42.703619589 +0000
-+++ psmisc-23.2_new/Makefile.am	2019-03-20 11:31:19.157223567 +0000
-@@ -40,6 +40,12 @@
++++ psmisc-23.2_new/Makefile.am	2019-04-23 07:14:36.566605230 +0000
+@@ -40,6 +40,12 @@ if WANT_PEEKFD_ARM
    bin_PROGRAMS += src/peekfd
    AM_CPPFLAGS += -DARM
  endif
@@ -49,19 +49,19 @@ diff -Naur psmisc-23.2/Makefile.am psmisc-23.2_new/Makefile.am
  if WANT_PEEKFD_MIPS
    bin_PROGRAMS += src/peekfd
    AM_CPPFLAGS += -DMIPS
-diff -Naur psmisc-23.2/src/peekfd.c psmisc-23.2_new/src/peekfd.c
+diff -Naurp psmisc-23.2/src/peekfd.c psmisc-23.2_new/src/peekfd.c
 --- psmisc-23.2/src/peekfd.c	2018-08-13 11:24:56.871341954 +0000
-+++ psmisc-23.2_new/src/peekfd.c	2019-03-20 11:45:43.989250764 +0000
-@@ -35,9 +35,17 @@
++++ psmisc-23.2_new/src/peekfd.c	2019-04-23 09:41:47.457374566 +0000
+@@ -35,9 +35,16 @@
  #include <getopt.h>
  #include <ctype.h>
  #include <dirent.h>
+-
 +#include <stdint.h>
 +#include <errno.h>
 +#include <string.h>
-
  #include "i18n.h"
-
+ 
 +#ifdef ARM64
 +#include <sys/uio.h>
 +#include <linux/elf.h>
@@ -70,7 +70,7 @@ diff -Naur psmisc-23.2/src/peekfd.c psmisc-23.2_new/src/peekfd.c
  #ifdef I386
  	#define REG_ORIG_ACCUM orig_eax
  	#define REG_ACCUM eax
-@@ -72,6 +80,16 @@
+@@ -72,6 +79,16 @@
  	#define REG_PARAM1 ARM_ORIG_r0
  	#define REG_PARAM2 ARM_r1
  	#define REG_PARAM3 ARM_r2
@@ -87,10 +87,10 @@ diff -Naur psmisc-23.2/src/peekfd.c psmisc-23.2_new/src/peekfd.c
  #elif defined(MIPS)
  #ifndef MIPSEL
  #error only little endian supported
-@@ -94,6 +112,59 @@
+@@ -94,6 +111,59 @@ int num_attached_pids = 0;
  pid_t attached_pids[MAX_ATTACHED_PIDS];
  int *fds = NULL;
-
+ 
 +#ifdef ARM64
 +struct user_pt_regs_node {
 +	struct user_pt_regs regs;
@@ -147,10 +147,10 @@ diff -Naur psmisc-23.2/src/peekfd.c psmisc-23.2_new/src/peekfd.c
  void detach(int signum) {
  	int i;
  	for (i = 0; i < num_attached_pids; i++)	
-@@ -260,6 +331,10 @@
+@@ -260,6 +330,10 @@ int main(int argc, char **argv)
  	unsigned char *lastbuf = NULL;
  	unsigned long last_buf_size = -1;
-
+ 
 +#ifdef ARM64
 +	struct user_pt_regs_node* user_pt_regs_head = NULL;
 +#endif
@@ -158,7 +158,7 @@ diff -Naur psmisc-23.2/src/peekfd.c psmisc-23.2_new/src/peekfd.c
  	for(;;) {
  		int status;
  		pid_t pid = wait(&status);
-@@ -274,6 +349,18 @@
+@@ -274,6 +348,18 @@ int main(int argc, char **argv)
  #elif defined(ARM)
  			struct pt_regs regs;
  			ptrace(PTRACE_GETREGS, pid, 0, &regs);
@@ -171,15 +171,15 @@ diff -Naur psmisc-23.2/src/peekfd.c psmisc-23.2_new/src/peekfd.c
 +
 +			if (ptrace(PTRACE_GETREGSET, pid, (void*) NT_PRSTATUS, (void*) &io) == -1) {
 +				printf("ARM64: PTRACE_GETREGSET: %s\n", strerror(errno));
-+				return errno;
++				continue;
 +			}
 +
  #elif defined(MIPS)
  			struct pt_regs regs;
  			long pc = ptrace(PTRACE_PEEKUSER, pid, 64, 0);
-@@ -287,12 +374,26 @@
+@@ -287,12 +373,26 @@ int main(int argc, char **argv)
  			ptrace(PTRACE_GETREGS, pid, 0, &regs);
- #endif
+ #endif		
  			/*unsigned int b = ptrace(PTRACE_PEEKTEXT, pid, regs.eip, 0);*/
 -			if ((follow_forks && regs.REG_ORIG_ACCUM == SYS_fork)
 -			 || (follow_clones && regs.REG_ORIG_ACCUM == SYS_clone)) {
@@ -206,7 +206,7 @@ diff -Naur psmisc-23.2/src/peekfd.c psmisc-23.2_new/src/peekfd.c
  				for (i = 0; i < numfds; i++)
  					if (fds[i] == (int)regs.REG_PARAM1)
  						break;
-@@ -348,7 +449,12 @@
+@@ -348,7 +448,12 @@ int main(int argc, char **argv)
  					fflush(stdout);
  				}
  			}
