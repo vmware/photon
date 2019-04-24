@@ -1,7 +1,7 @@
 Summary:  Bourne-Again SHell
 Name:     bash
 Version:  4.3.48
-Release:  2%{?dist}
+Release:  3%{?dist}
 License:  GPLv3
 URL:      https://www.gnu.org/software/bash/
 Group:    System Environment/Base
@@ -65,6 +65,7 @@ Patch440: bash-CVE-2016-9401.patch
 
 Patch500:   fix-save_bash_input-segfault.patch
 Patch501:   bash-4.3.patch
+Patch502:   bash-CVE-2019-9924.patch
 
 Provides: /bin/sh
 Provides: /bin/bash
@@ -135,6 +136,7 @@ These are the additional language files of bash.
 %patch440 -p0
 %patch500 -p1
 %patch501 -p1
+%patch502 -p1
 
 %build
 %configure --bindir=/bin \
@@ -414,6 +416,8 @@ fi
 #%defattr(-,root,root)
 
 %changelog
+*   Wed Apr 24 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.3.48-3
+-   Fix CVE-2019-9924
 *   Mon Nov 13 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.48-2
 -   Fix CVE-2016-9401.
 *   Thu Oct 19 2017 Bo Gan <ganb@vmware.com> 4.3.48-1
