@@ -187,7 +187,6 @@
         "urlgrabber",
         "yum-metadata-parser",
         "yum",
-        "rocket",
         "strace",
         "cracklib-python",
         "haveged",
