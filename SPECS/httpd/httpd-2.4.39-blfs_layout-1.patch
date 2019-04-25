@@ -3,15 +3,16 @@ Date:                    2013-04-17
 Initial Package Version: 2.4.4
 Comment:                 rediffed for version 2.4.10 (Fernando de Oliveira
                          <famobr at yahoo dot com dot br>)
+                         rediffed for version 2.4.34 (thomas)
 Upstream Status:         Not applicable
 Origin:                  Self
 Description:             Patches the build system to install stuff into BLFS
                          specific paths, and adjusts proper permissions
                          on installed files and directories.
 
-diff -Naur httpd-2.4.10.orig/config.layout httpd-2.4.10/config.layout
---- httpd-2.4.10.orig/config.layout	2012-04-17 11:01:41.000000000 -0300
-+++ httpd-2.4.10/config.layout	2014-07-23 09:06:17.325921549 -0300
+diff -Naur httpd-2.4.34.orig/config.layout httpd-2.4.34/config.layout
+--- httpd-2.4.34.orig/config.layout	2018-02-09 11:30:35.000000000 +0100
++++ httpd-2.4.34/config.layout	2018-07-15 07:31:23.216202917 +0200
 @@ -9,6 +9,30 @@
  ##    (This may become a configurable parameter at some point.)
  ##
@@ -43,10 +44,10 @@ diff -Naur httpd-2.4.10.orig/config.layout httpd-2.4.10/config.layout
  #   Classical Apache path layout.
  <Layout Apache>
      prefix:        /usr/local/apache2
-diff -Naur httpd-2.4.10.orig/configure httpd-2.4.10/configure
---- httpd-2.4.10.orig/configure	2014-07-15 14:15:03.000000000 -0300
-+++ httpd-2.4.10/configure	2014-07-23 09:06:17.337921270 -0300
-@@ -33031,17 +33031,17 @@
+diff -Naur httpd-2.4.34.orig/configure httpd-2.4.34/configure
+--- httpd-2.4.34.orig/configure	2018-07-10 15:55:14.000000000 +0200
++++ httpd-2.4.34/configure	2018-07-15 07:31:23.232202853 +0200
+@@ -39653,17 +39653,17 @@
  
  
  cat >>confdefs.h <<_ACEOF
@@ -67,10 +68,10 @@ diff -Naur httpd-2.4.10.orig/configure httpd-2.4.10/configure
  _ACEOF
  
  
-diff -Naur httpd-2.4.10.orig/configure.in httpd-2.4.10/configure.in
---- httpd-2.4.10.orig/configure.in	2014-02-20 16:36:12.000000000 -0300
-+++ httpd-2.4.10/configure.in	2014-07-23 09:06:17.338921244 -0300
-@@ -826,11 +826,11 @@
+diff -Naur httpd-2.4.34.orig/configure.in httpd-2.4.34/configure.in
+--- httpd-2.4.34.orig/configure.in	2018-05-30 21:09:00.000000000 +0200
++++ httpd-2.4.34/configure.in	2018-07-15 07:31:23.235202841 +0200
+@@ -871,11 +871,11 @@
  echo $MODLIST | $AWK -f $srcdir/build/build-modules-c.awk > modules.c
  
  APR_EXPAND_VAR(ap_prefix, $prefix)
@@ -85,9 +86,9 @@ diff -Naur httpd-2.4.10.orig/configure.in httpd-2.4.10/configure.in
  	[Location of the MIME types config file, relative to the Apache root directory])
  
  perlbin=`$ac_aux_dir/PrintPath perl`
-diff -Naur httpd-2.4.10.orig/docs/conf/httpd.conf.in httpd-2.4.10/docs/conf/httpd.conf.in
---- httpd-2.4.10.orig/docs/conf/httpd.conf.in	2012-11-08 00:05:38.000000000 -0300
-+++ httpd-2.4.10/docs/conf/httpd.conf.in	2014-07-23 09:06:17.339921217 -0300
+diff -Naur httpd-2.4.34.orig/docs/conf/httpd.conf.in httpd-2.4.34/docs/conf/httpd.conf.in
+--- httpd-2.4.34.orig/docs/conf/httpd.conf.in	2016-08-17 01:12:07.000000000 +0200
++++ httpd-2.4.34/docs/conf/httpd.conf.in	2018-07-15 07:31:23.236202837 +0200
 @@ -28,7 +28,7 @@
  # same ServerRoot for multiple httpd daemons, you will need to change at
  # least PidFile.
@@ -151,19 +152,19 @@ diff -Naur httpd-2.4.10.orig/docs/conf/httpd.conf.in httpd-2.4.10/docs/conf/http
  </IfModule>
  
  <IfModule alias_module>
-diff -Naur httpd-2.4.10.orig/include/ap_config_layout.h.in httpd-2.4.10/include/ap_config_layout.h.in
---- httpd-2.4.10.orig/include/ap_config_layout.h.in	2006-07-11 17:55:32.000000000 -0300
-+++ httpd-2.4.10/include/ap_config_layout.h.in	2014-07-23 09:06:17.340921189 -0300
+diff -Naur httpd-2.4.34.orig/include/ap_config_layout.h.in httpd-2.4.34/include/ap_config_layout.h.in
+--- httpd-2.4.34.orig/include/ap_config_layout.h.in	2006-07-11 22:55:32.000000000 +0200
++++ httpd-2.4.34/include/ap_config_layout.h.in	2018-07-15 07:31:23.237202833 +0200
 @@ -60,5 +60,6 @@
  #define DEFAULT_REL_LOGFILEDIR "@rel_logfiledir@"
  #define DEFAULT_EXP_PROXYCACHEDIR "@exp_proxycachedir@"
  #define DEFAULT_REL_PROXYCACHEDIR "@rel_proxycachedir@"
-+#define DEFAULT_PIDLOG "/var/run/httpd.pid"
++#define DEFAULT_PIDLOG "/var/run/httpd/httpd.pid"
  
  #endif /* AP_CONFIG_LAYOUT_H */
-diff -Naur httpd-2.4.10.orig/include/httpd.h httpd-2.4.10/include/httpd.h
---- httpd-2.4.10.orig/include/httpd.h	2014-07-12 15:19:16.000000000 -0300
-+++ httpd-2.4.10/include/httpd.h	2014-07-23 09:06:17.341921161 -0300
+diff -Naur httpd-2.4.34.orig/include/httpd.h httpd-2.4.34/include/httpd.h
+--- httpd-2.4.34.orig/include/httpd.h	2018-05-31 15:19:12.000000000 +0200
++++ httpd-2.4.34/include/httpd.h	2018-07-15 07:31:23.238202829 +0200
 @@ -109,7 +109,7 @@
  #define DOCUMENT_LOCATION  HTTPD_ROOT "/docs"
  #else
@@ -173,10 +174,10 @@ diff -Naur httpd-2.4.10.orig/include/httpd.h httpd-2.4.10/include/httpd.h
  #endif
  #endif /* DOCUMENT_LOCATION */
  
-diff -Naur httpd-2.4.10.orig/Makefile.in httpd-2.4.10/Makefile.in
---- httpd-2.4.10.orig/Makefile.in	2012-12-17 08:50:41.000000000 -0300
-+++ httpd-2.4.10/Makefile.in	2014-07-23 09:06:17.341921161 -0300
-@@ -91,9 +91,9 @@
+diff -Naur httpd-2.4.34.orig/Makefile.in httpd-2.4.34/Makefile.in
+--- httpd-2.4.34.orig/Makefile.in	2018-05-30 21:09:00.000000000 +0200
++++ httpd-2.4.34/Makefile.in	2018-07-15 07:31:23.244202804 +0200
+@@ -121,9 +121,9 @@
  	    done ; \
  	done ; \
  	if test -f "$(builddir)/envvars-std"; then \
@@ -189,7 +190,7 @@ diff -Naur httpd-2.4.10.orig/Makefile.in httpd-2.4.10/Makefile.in
  	    fi ; \
  	fi
  
-@@ -145,7 +145,7 @@
+@@ -175,7 +175,7 @@
  	    if test -d $(htdocs-srcdir) && test "x$(RSYNC)" != "x" && test -x $(RSYNC) ; then \
  		$(RSYNC) --exclude .svn -rlpt --numeric-ids $(htdocs-srcdir)/ $(DESTDIR)$(htdocsdir)/; \
  	    else \
@@ -198,7 +199,7 @@ diff -Naur httpd-2.4.10.orig/Makefile.in httpd-2.4.10/Makefile.in
  		cd $(DESTDIR)$(htdocsdir) && find . -name ".svn" -type d -print | xargs rm -rf 2>/dev/null || true; \
  	    fi; \
  	fi
-@@ -156,7 +156,7 @@
+@@ -186,7 +186,7 @@
          else \
  	    echo Installing error documents ; \
  	    $(MKINSTALLDIRS) $(DESTDIR)$(errordir) ; \
@@ -207,7 +208,7 @@ diff -Naur httpd-2.4.10.orig/Makefile.in httpd-2.4.10/Makefile.in
  	    test "x$(errordir)" != "x" && cd $(DESTDIR)$(errordir) && find . -name ".svn" -type d -print | xargs rm -rf 2>/dev/null || true; \
  	fi
  
-@@ -166,7 +166,7 @@
+@@ -196,7 +196,7 @@
          else \
  	    echo Installing icons ; \
  	    $(MKINSTALLDIRS) $(DESTDIR)$(iconsdir) ; \
@@ -216,7 +217,7 @@ diff -Naur httpd-2.4.10.orig/Makefile.in httpd-2.4.10/Makefile.in
  	    test "x$(iconsdir)" != "x" && cd $(DESTDIR)$(iconsdir) && find . -name ".svn" -type d -print | xargs rm -rf 2>/dev/null || true; \
  	fi
  
-@@ -176,7 +176,7 @@
+@@ -206,7 +206,7 @@
  	else \
  	   echo Installing CGIs ; \
  	   $(MKINSTALLDIRS) $(DESTDIR)$(cgidir) ; \
@@ -225,7 +226,7 @@ diff -Naur httpd-2.4.10.orig/Makefile.in httpd-2.4.10/Makefile.in
  	   test "x$(cgidir)" != "x" && cd $(DESTDIR)$(cgidir) && find . -name ".svn" -type d -print | xargs rm -rf 2>/dev/null || true; \
  	fi
  
-@@ -229,12 +229,12 @@
+@@ -260,12 +260,12 @@
  	@test -d $(DESTDIR)$(mandir)/man1 || $(MKINSTALLDIRS) $(DESTDIR)$(mandir)/man1
  	@test -d $(DESTDIR)$(mandir)/man8 || $(MKINSTALLDIRS) $(DESTDIR)$(mandir)/man8
  	@test -d $(DESTDIR)$(manualdir)   || $(MKINSTALLDIRS) $(DESTDIR)$(manualdir)
@@ -241,9 +242,9 @@ diff -Naur httpd-2.4.10.orig/Makefile.in httpd-2.4.10/Makefile.in
  	  cd $(DESTDIR)$(manualdir) && find . -name ".svn" -type d -print | xargs rm -rf 2>/dev/null || true; \
  	fi
  
-diff -Naur httpd-2.4.10.orig/support/apachectl.in httpd-2.4.10/support/apachectl.in
---- httpd-2.4.10.orig/support/apachectl.in	2012-02-01 00:47:28.000000000 -0300
-+++ httpd-2.4.10/support/apachectl.in	2014-07-23 09:06:17.342921133 -0300
+diff -Naur httpd-2.4.34.orig/support/apachectl.in httpd-2.4.34/support/apachectl.in
+--- httpd-2.4.34.orig/support/apachectl.in	2012-02-01 04:47:28.000000000 +0100
++++ httpd-2.4.34/support/apachectl.in	2018-07-15 07:31:23.244202804 +0200
 @@ -45,8 +45,8 @@
  HTTPD='@exp_sbindir@/@progname@'
  #
@@ -255,9 +256,9 @@ diff -Naur httpd-2.4.10.orig/support/apachectl.in httpd-2.4.10/support/apachectl
  fi
  #
  # a command that outputs a formatted text version of the HTML at the
-diff -Naur httpd-2.4.10.orig/support/Makefile.in httpd-2.4.10/support/Makefile.in
---- httpd-2.4.10.orig/support/Makefile.in	2012-12-11 07:37:25.000000000 -0300
-+++ httpd-2.4.10/support/Makefile.in	2014-07-23 09:06:17.342921133 -0300
+diff -Naur httpd-2.4.34.orig/support/Makefile.in httpd-2.4.34/support/Makefile.in
+--- httpd-2.4.34.orig/support/Makefile.in	2018-02-09 11:17:30.000000000 +0100
++++ httpd-2.4.34/support/Makefile.in	2018-07-15 07:31:23.245202800 +0200
 @@ -16,23 +16,23 @@
  	@test -d $(DESTDIR)$(bindir) || $(MKINSTALLDIRS) $(DESTDIR)$(bindir)
  	@test -d $(DESTDIR)$(sbindir) || $(MKINSTALLDIRS) $(DESTDIR)$(sbindir)

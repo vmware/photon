@@ -1,17 +1,16 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.34
-Release:        4%{?dist}
+Version:        2.4.39
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://apache.mirrors.hoobly.com//httpd/%{name}-%{version}.tar.bz2
-%define sha1    httpd=94d6e274273903ed153479c7701fa03761abf93d
-Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.27-blfs_layout-1.patch
+Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.bz2
+%define sha1    httpd=75695bb7bb589c308755bf496de8b34522133865
+Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/%{name}-%{version}-blfs_layout-1.patch
 Patch1:         httpd-uncomment-ServerName.patch
-Patch2:         httpd-CVE-2018-11763.patch
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -60,7 +59,6 @@ The httpd-tools of httpd.
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 
 %build
 %configure \
@@ -87,7 +85,7 @@ After=network.target remote-fs.target nss-lookup.target
 
 [Service]
 Type=forking
-PIDFile=/var/run/httpd.pid
+PIDFile=/var/run/httpd/httpd.pid
 ExecStart=/usr/sbin/httpd -k start
 ExecStop=/usr/sbin/httpd -k stop
 ExecReload=/usr/sbin/httpd -k graceful
@@ -121,6 +119,7 @@ if [ $1 -eq 1 ]; then
 fi
 
 ln -sf /etc/httpd/conf/mime.types /etc/mime.types
+mkdir -p /var/run/httpd
 %systemd_post httpd.service
 
 %preun
@@ -180,6 +179,10 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Thu Apr 25 2019 Dweep Advani <dadvani@vmware.com> 2.4.39-1
+-   Upgrading to 2.4.39 for fixing multiple CVEs
+-   (1) CVE-2018-17189 (2) CVE-2018-17199 (3) CVE-2019-0190
+-   (4) CVE-2019-0211 (5) CVE-2019-0215 (6) CVE-2019-0217
 *   Thu Mar 13 2019 Michelle Wang <michellew@vmware.com> 2.4.34-4
 -   Fix configure for rel_libexecdir variable with RPMS layout
 *   Thu Mar 7 2019 Michelle Wang <michellew@vmware.com> 2.4.34-3
