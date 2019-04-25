@@ -1,15 +1,15 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.37
+Version:        2.4.39
 Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://apache.mirrors.hoobly.com//httpd/%{name}-%{version}.tar.bz2
-%define sha1    httpd=4a38471de821288b0300148016f2b03dfee8adf2
-Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.27-blfs_layout-1.patch
+Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.bz2
+%define sha1    httpd=75695bb7bb589c308755bf496de8b34522133865
+Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/%{name}-%{version}-blfs_layout-1.patch
 Patch1:         httpd-uncomment-ServerName.patch
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
@@ -87,7 +87,7 @@ After=network.target remote-fs.target nss-lookup.target
 
 [Service]
 Type=forking
-PIDFile=/var/run/httpd.pid
+PIDFile=/var/run/httpd/httpd.pid
 ExecStart=/usr/sbin/httpd -k start
 ExecStop=/usr/sbin/httpd -k stop
 ExecReload=/usr/sbin/httpd -k graceful
@@ -121,6 +121,7 @@ if [ $1 -eq 1 ]; then
 fi
 
 ln -sf /etc/httpd/conf/mime.types /etc/mime.types
+mkdir -p /var/run/httpd
 %systemd_post httpd.service
 
 %preun
@@ -181,6 +182,10 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Thu Apr 25 2019 Dweep Advani <dadvani@vmware.com> 2.4.39-1
+-   Upgrading to 2.4.39 for fixing multiple CVEs
+-   (1) CVE-2018-17189 (2) CVE-2018-17199 (3) CVE-2019-0190
+-   (4) CVE-2019-0211 (5) CVE-2019-0215 (6) CVE-2019-0217
 *   Wed Jan 09 2019 Anish Swaminathan <anishs@vmware.com> 2.4.37-1
 -   Updated to version 2.4.37, fix CVE-2018-11763
 *   Wed Aug 29 2018 Tapas Kundu <tkundu@vmware.com> 2.4.34-1
