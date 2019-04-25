@@ -4,7 +4,7 @@
 Summary:	OpenJDK
 Name:		openjdk11
 Version:	1.11.0.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU General Public License V2
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -23,10 +23,6 @@ BuildRequires:  freetype2
 BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel elfutils-libelf-devel
 BuildRequires:  openjdk10
 Requires:       chkconfig
-Obsoletes:      openjdk <= %{version}
-Obsoletes:      openjdk-sample <= %{version}
-Obsoletes:      openjdk-src <= %{version}
-Obsoletes:      openjdk-doc <= %{version}
 AutoReqProv: 	no
 %description
 The OpenJDK package installs java class library and javac java compiler.
@@ -34,7 +30,6 @@ The OpenJDK package installs java class library and javac java compiler.
 %package		doc
 Summary:		Documentation and demo applications for openjdk
 Group:          Development/Languages/Java
-Obsoletes:      openjdk-doc <= %{version}
 Requires:       %{name} = %{version}-%{release}
 %description	doc
 It contains the documentation and demo applications for openjdk
@@ -42,7 +37,6 @@ It contains the documentation and demo applications for openjdk
 %package 		src
 Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
-Obsoletes:      openjdk-src <= %{version}
 Requires:       %{name} = %{version}-%{release}
 %description	src
 This package provides the runtime library class sources.
@@ -181,5 +175,7 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{version}/lib/src.zip
 
 %changelog
+*   Thu Apr 25 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.2-2
+-   Removed obsolete for openjdk
 *   Tue Feb 12 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.2-1
 -   Initial build. First version
