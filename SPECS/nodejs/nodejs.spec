@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        10.14.1
+Version:        10.15.2
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
-%define         sha1 node=ef39d1c5d87e018c0daf22fbdf38c31cfdfce901
+%define         sha1 node=e1523b5b5bec534cc570b79c9a1eb9273a47564a
 
 BuildRequires:  coreutils >= 8.22, zlib
 Requires:       (coreutils >= 8.22 or toybox)
@@ -29,8 +29,7 @@ for developing applications that use nodejs.
 %setup -q -n node-v%{version}
 
 %build
-sh configure --prefix=%{_prefix} \
-	     --shared-zlib
+sh configure --prefix=%{_prefix}
 
 make %{?_smp_mflags}
 
@@ -68,6 +67,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 10.15.2-1
+-   Updated to 10.15.2
 *   Tue Jan 08 2019 Siju Maliakkal <smaliakkal@vmware.com> 10.14.1-1
 -   Upgrade to 10.14.1 LTS
 *   Thu Sep 20 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.11.2-1

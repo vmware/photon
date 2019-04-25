@@ -140,7 +140,13 @@ class Chroot(Sandbox):
                                        stderr=subprocess.PIPE)
             retval = process.wait()
             if retval != 0:
-                raise Exception("Unable to unmount " + mountpoint)
+                # Try unmount with lazy umount
+                cmd = "umount -l " + mountpoint
+                process = subprocess.Popen("%s" %cmd, shell=True, stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE)
+                retval = process.wait()
+                if retval != 0:
+                    raise Exception("Unable to unmount " + mountpoint)
 
     def _findmountpoints(self, chrootPath):
         if not chrootPath.endswith("/"):

@@ -2,20 +2,19 @@
 
 Summary:        Elastic Search
 Name:           elasticsearch
-Version:        6.4.3
-Release:        2%{?dist}
+Version:        6.7.0
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}.tar.gz=44f99fca3ad7373c4e3fd73b7a396ed7e1e2519a
+%define sha1    %{name}-%{version}.tar.gz=e11320399dd707cff8416d672b6f8146e74cf8c8
 Source1:        cacerts
 %define sha1    cacerts=f584c7c1f48c552f39acfb5560a300a657d9f3bb
-Patch0:		bcupgrade.patch
 Group:          Development/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      x86_64
-BuildRequires:  openjdk10
+BuildRequires:  openjdk11
 BuildRequires:  unzip
 BuildRequires:  curl
 BuildRequires:  which
@@ -36,7 +35,6 @@ Elasticsearch is a highly distributed RESTful search engine built for the cloud.
 
 %prep
 %setup -qn %{name}-%{version}
-%patch0 -p1
 
 %build
 export LANG="en_US.UTF-8"
@@ -120,6 +118,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+* Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-1
+- Updated to 6.7.0
 * Fri Mar 29 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-2
 - Patched to upgrade bouncycastle version to 1.61
 * Wed Feb 13 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-1
