@@ -1,13 +1,13 @@
 Summary:        Calico networking for CNI
 Name:           calico-cni
-Version:        1.11.2
-Release:        2%{?dist}
+Version:        3.6.1
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/projectcalico/cni-plugin
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 calico-cni=c12ce655eb5b1cd42c3976d6bf4ac3ebcbc4dc86
+%define sha1 calico-cni=e60d82f07543229e1249fe377840ff0b3a019f8f
 Source1:        %{name}-vendor-cache-%{version}.tar.gz
-%define sha1 calico-cni-vendor-cache=7c64de41b90cc74231090441ff359936689737df
+%define sha1 calico-cni-vendor-cache=9be4dba31d2ca0a9154a5b8a6f722b1f19c8abd1
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -39,8 +39,8 @@ mkdir -p ~/.glide
 tar -C ~/.glide -xf %{SOURCE1}
 glide install --strip-vendor
 mkdir -p dist
-CGO_ENABLED=0 go build -v -i -o dist/calico -ldflags "-X main.VERSION= -s -w" calico.go
-CGO_ENABLED=0 go build -v -i -o dist/calico-ipam -ldflags "-X main.VERSION= -s -w" ipam/calico-ipam.go
+CGO_ENABLED=0 go build -v -i -o dist/calico -ldflags "-X main.VERSION= -s -w" cmd/calico/calico.go
+CGO_ENABLED=0 go build -v -i -o dist/calico-ipam -ldflags "-X main.VERSION= -s -w" cmd/calico-ipam/calico-ipam.go
 
 %install
 cd ../build/src/github.com/projectcalico/cni-plugin
@@ -59,6 +59,8 @@ install -vpm 0755 -t %{buildroot}/usr/share/calico-cni/k8s/ k8s-install/scripts/
 /usr/share/calico-cni/k8s/calico.conf.default
 
 %changelog
+*   Thu Apr 11 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-1
+-   Update to 3.6.1
 *   Mon Aug 06 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.11.2-2
 -   Build using go version 1.9.4
 *   Tue Mar 20 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.11.2-1

@@ -2,6 +2,11 @@ FROM k8s-base-image:2.0
 
 MAINTAINER kulkarniv@vmware.com
 
+
+COPY [ "./stage-rpms-tdnf.conf", "./tmp/stage-rpms.repo", "/tmp/tdnf/" ]
+RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf erase -y toybox
+RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y coreutils sed --refresh
+
 COPY [ "./tmp/calico/opt/cni/bin/calico", \
        "./tmp/calico/opt/cni/bin/calico-ipam", \
        "./tmp/calico/opt/cni/bin/portmap", \
