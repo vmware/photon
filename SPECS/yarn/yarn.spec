@@ -1,7 +1,7 @@
 Summary:        Fast, reliable, and secure dependency management.
 Name:           yarn
 Version:        1.10.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD 2-Clause
 URL:            https://yarnpkg.com
 Source0:        https://github.com/yarnpkg/yarn/archive/%{name}-%{version}.tar.gz
@@ -9,7 +9,7 @@ Source0:        https://github.com/yarnpkg/yarn/archive/%{name}-%{version}.tar.g
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Developement/Languages/NodeJs
-BuildRequires:  nodejs
+BuildRequires:  nodejs = 8.11.4
 
 %global debug_package %{nil}
 
@@ -43,6 +43,8 @@ ln -sf %{_libdir}/node_modules/%{name}/bin/yarn.js %{buildroot}%{_bindir}/yarnpk
 %{_libdir}/node_modules/%{name}
 
 %changelog
+*   Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 1.10.1-2
+*   Added version to the nodejs
 *   Mon Feb 11 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.10.1-1
 -   Upgrade to 1.10.1 for buildrequirement of kibana
 *   Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 1.6.0-1

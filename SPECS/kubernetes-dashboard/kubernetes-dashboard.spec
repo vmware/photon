@@ -1,7 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        1.10.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-%{version}.tar.gz
@@ -17,10 +17,10 @@ BuildRequires:  git
 BuildRequires:  glibc-devel
 BuildRequires:  go
 BuildRequires:  linux-api-headers
-BuildRequires:  nodejs
+BuildRequires:  nodejs = 8.11.4
 BuildRequires:  openjre8
 BuildRequires:  which
-Requires:       nodejs
+Requires:       nodejs = 8.11.4
 Requires:       openjre8
 
 %description
@@ -57,6 +57,8 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
+*    Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 1.10.1-3
+-    Added version number to Requires of nodejs
 *    Wed Apr 17 2019 Michelle Wang <michellew@vmware.com> 1.10.1-2
 -    Convert roboto-mono into a source
 -    due to source code not available on github

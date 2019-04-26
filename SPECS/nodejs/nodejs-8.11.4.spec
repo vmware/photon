@@ -1,17 +1,18 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        10.15.2
+Version:        8.11.4
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
-Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
-%define         sha1 node=e1523b5b5bec534cc570b79c9a1eb9273a47564a
+Source0:        https://nodejs.org/download/release/v8.3.0/node-v%{version}.tar.xz
+%define         sha1 node=195b6e6b53d04659cd6ee6afa203ad486d6eb758
 
-BuildRequires:  coreutils >= 8.22, zlib
+BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
 Requires:       (coreutils >= 8.22 or toybox)
+Requires:       openssl >= 1.0.1
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -29,7 +30,9 @@ for developing applications that use nodejs.
 %setup -q -n node-v%{version}
 
 %build
-sh configure --prefix=%{_prefix}
+./configure --prefix=%{_prefix} \
+           --shared-openssl \
+           --shared-zlib
 
 make %{?_smp_mflags}
 
@@ -67,8 +70,6 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
-*   Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 10.15.2-1
--   Updated to 10.15.2
 *   Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 8.11.4-1
 -   Updated to version 8.11.4 to fix CVE-2018-7161 and CVE-2018-7167.
 *   Wed Feb 14 2018 Xiaolin Li <xiaolinl@vmware.com> 8.3.0-1
