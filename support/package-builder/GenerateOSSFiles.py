@@ -226,10 +226,10 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, dist_tag, logger, singleFile
                 yamlFile = open(yamlSrpmDir + "/" + ossname + "-" + ossversion + "-"
                                 + ossrelease + ".yaml", "w")
 
-            yamlFile.write("baseos:" + ossname + ":" + ossversion + "-" + ossrelease + ":\n")
+            yamlFile.write("baseos:" + ossname + ":" + ossversion + "-" + ossrelease + dist_tag +  ":\n")
             yamlFile.write("  repository: BaseOS\n")
             yamlFile.write("  name: '" + ossname + "'\n")
-            yamlFile.write("  version: '" + ossversion + "-" + ossrelease + "'\n")
+            yamlFile.write("  version: '" + ossversion + "-" + ossrelease + dist_tag +"'\n")
             yamlFile.write("  url: 'http://www.vmware.com'\n")
             yamlFile.write("  baseos-style: rpm\n")
             yamlFile.write("  baseos-source: '" + str(srpmName) + "'\n")
