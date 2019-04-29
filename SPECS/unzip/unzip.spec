@@ -1,7 +1,7 @@
 Summary:        Unzip-6.0
 Name:           unzip
 Version:        6.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        BSD
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://downloads.sourceforge.net/infozip/unzip60.tar.gz
@@ -32,19 +32,11 @@ with PKZIP or Info-ZIP utilities, primarily in a DOS environment.
 %patch5 -p1
 
 %build
-case `uname -m` in
-  i?86)
-    sed -i -e 's/DASM_CRC"/DASM_CRC -DNO_LCHMOD"/' unix/Makefile
-    make -f unix/Makefile linux %{?_smp_mflags}
-    ;;
-  *)
-    sed -i -e 's/CFLAGS="-O -Wall/& -DNO_LCHMOD/' unix/Makefile
+    sed -i -e 's/CFLAGS="-O -Wall/& -DNO_LCHMOD -DLARGE_FILE_SUPPORT -DZIP64_SUPPORT/' unix/Makefile
     sed -i 's/CFLAGS="-O -Wall/CFLAGS="-O -g -Wall/' unix/Makefile
     sed -i 's/LF2 = -s/LF2 =/' unix/Makefile
     sed -i 's|STRIP = strip|STRIP = /bin/true|' unix/Makefile
     make -f unix/Makefile linux_noasm %{?_smp_mflags}
-    ;;
-esac
 
 %install
 install -v -m755 -d %{buildroot}%{_bindir}
@@ -63,6 +55,8 @@ make %{?_smp_mflags}  check
 %{_bindir}/*
 
 %changelog
+*   Mon Apr 29 2019 Ashwin H <ashwinh@vmware.com> 6.0-12
+-   Making unzip work with large file
 *   Thu Jan 24 2019 Ankit Jain <ankitja@vmware.com> 6.0-11
 -   Fix for CVE-2018-18384
 *   Thu Nov 02 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-10
