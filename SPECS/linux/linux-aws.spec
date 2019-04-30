@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.40
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,6 +12,7 @@ Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar
 %define sha1 linux=c04181c3736e5b85d349f9b58d406d4c18ad4958
 Source1:	config-aws
 Source2:	initramfs.trigger
+Source3:        update_photon_cfg.postun
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -83,6 +84,7 @@ BuildRequires:  procps-ng-devel
 BuildRequires:	audit-devel
 Requires:       filesystem kmod
 Requires(post):(coreutils or toybox)
+Requires(postun):(coreutils or toybox)
 %define uname_r %{version}-%{release}-aws
 
 %description
@@ -286,6 +288,7 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
 
 %include %{SOURCE2}
+%include %{SOURCE3}
 
 %post
 /sbin/depmod -aq %{uname_r}
@@ -357,6 +360,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/perf/include/bpf/*
 
 %changelog
+*   Tue May 14 2019 Keerthana K <keerthanak@vmware.com> 4.19.40-2
+-   Fix to parse through /boot folder and update symlink (/boot/photon.cfg) if
+-   mulitple kernels are installed and current linux kernel is removed.
 *   Tue May 07 2019 Ajay Kaher <akaher@vmware.com> 4.19.40-1
 -   Update to version 4.19.40
 *   Fri Mar 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-2

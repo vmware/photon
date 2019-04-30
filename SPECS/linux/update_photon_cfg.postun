@@ -1,0 +1,9 @@
+%postun
+if [ ! -e /boot/photon.cfg ]
+then
+     if [ `ls /boot/linux-*.cfg 1> /dev/null 2>&1` ]
+     then
+          list=`ls -tu /boot/linux-*.cfg | head -n1`
+          test -n "$list" && ln -sf "$list" /boot/photon.cfg
+     fi
+fi
