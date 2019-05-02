@@ -1,8 +1,8 @@
-%define _use_internal_dependency_generator 0 
+%define _use_internal_dependency_generator 0
 %global security_hardening none
 Summary:	OpenJDK
 Name:		openjdk
-Version:	1.8.0.202
+Version:	1.8.0.212
 Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
@@ -10,7 +10,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
-%define sha1    openjdk=2cc98fa932f62258342b793edbbf3fe577a0e594
+%define sha1    openjdk=43e9e7bf0c311c5067f660afc46e3241b585c11e
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
 BuildRequires:  pcre-devel
@@ -202,6 +202,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/bin/wsgen
 %{_libdir}/jvm/OpenJDK-%{version}/bin/wsimport
 %{_libdir}/jvm/OpenJDK-%{version}/bin/xjc
+%{_libdir}/jvm/OpenJDK-%{version}/bin/clhsdb
+%{_libdir}/jvm/OpenJDK-%{version}/bin/hsdb
 
 %files	-n openjre
 %defattr(-,root,root)
@@ -232,6 +234,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*       Thu May 02 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0.212-1
+-   	Upgrade to version 1.8.0.212
+-   	Add new clhsdb and hsdb binaries.
+-       Fix CVE-2019-2602, CVE-2019-2697, CVE-2019-2698.
 *       Fri Jan 18 2019 Srinidhi Rao <srinidhir@vmware.com> 1.8.0.202-1
 -       Upgraded to version 1.8.0.202
 *       Thu Oct 18 2018 Tapas Kundu <tkundu@vmware.com> 1.8.0.192-1
