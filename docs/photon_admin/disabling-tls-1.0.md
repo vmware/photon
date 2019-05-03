@@ -6,7 +6,7 @@ On Photon OS, SSL 3.0, which contains a known vulnerability, is disabled by defa
 
 However, TLS 1.0, which also contains known vulnerabilities, is enabled by default.
 
-To turn off TLS 1.0, perform the follwoing steps:
+To turn off TLS 1.0, perform the following steps:
 
 
 1. Create a directory named `/etc/gnutls`.
