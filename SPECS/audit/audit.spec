@@ -4,7 +4,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=026235ab9e8b19f6c2b1112ce13d180f35cf0ff4
 License:        GPLv2+
@@ -20,6 +20,10 @@ BuildRequires:  libcap-ng-devel
 BuildRequires:  swig
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 Requires:       systemd
 Requires:       krb5
 Requires:       openldap
@@ -42,8 +46,6 @@ The libraries and header files needed for audit development.
 %package        python
 Summary:        Python bindings for libaudit
 License:        LGPLv2+
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
 Requires:       %{name} = %{version}-%{release}
 Requires:       python2
 
@@ -54,8 +56,6 @@ and libauparse.
 %package  -n    python3-audit
 Summary:        Python3 bindings for libaudit
 License:        LGPLv2+
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3
 
@@ -67,12 +67,8 @@ and libauparse.
 %setup -q
 
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --exec_prefix=/usr \
-    --sbindir=%{_sbindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=%{_sysconfdir} \
     --with-python=yes \
     --with-python3=yes \
     --with-libwrap \
@@ -91,7 +87,6 @@ mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/audit/rules.d}
 mkdir -p %{buildroot}/%{_var}/opt/audit/log
 mkdir -p %{buildroot}/%{_var}/log
 mkdir -p %{buildroot}/%{_var}/spool/audit
-ln -sfv %{_var}/opt/audit/log %{buildroot}/%{_var}/log/audit
 make install DESTDIR=%{buildroot}
 
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
@@ -100,7 +95,20 @@ echo "disable auditd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-
 %check
 make %{?_smp_mflags} check
 
+%pre
+if [ ! -d "%{_var}/opt/audit/log" ]
+then
+    if [ -d "%{_var}/log/audit" ]
+    then
+        mkdir -p "%{_var}/opt/audit/log" && \
+          cp -rf %{_var}/log/audit/* %{_var}/opt/audit/log && \
+            rm -rf "%{_var}/log/audit"
+    fi
+fi
+
+
 %post
+ln -sfv %{_var}/opt/audit/log %{_var}/log/audit
 /sbin/ldconfig
 %systemd_post  auditd.service
 
@@ -123,7 +131,7 @@ make %{?_smp_mflags} check
 %{_mandir}/man7/*
 %{_mandir}/man8/*
 %dir %{_var}/opt/audit/log
-%{_var}/log/audit
+%ghost %{_var}/log/audit
 %{_var}/spool/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit/rules.d
@@ -161,6 +169,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+*   Fri May 03 2019 Dweep Advani <dadvani@vmware.com> 2.8.4-2
+-   Fixed type conflicts of log directory during upgrade
 *   Mon Sep 3 2018 Keerthana K <keerthanak@vmware.com> 2.8.4-1
 -   Updated to version 2.8.4.
 *   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-4
