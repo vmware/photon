@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 #
 #    Author: Sharath George <sharathg@vmware.com>
 
