@@ -3,7 +3,7 @@
 Summary:        A free, distributed source control management tool.
 Name:           mercurial
 Version:        4.5.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            https://www.mercurial-scm.org
 Group:          System Environment/Security
@@ -12,6 +12,10 @@ Distribution:   Photon
 Source0:        https://www.mercurial-scm.org/release/%{name}-%{version}.tar.gz
 %define sha1    mercurial=465216f1fabc571a8de731531e2aa0aa12833e56
 Patch0:         mercurial-disable-zstd.patch
+Patch1:         mercurial-fix-CVE-2018-17983.patch
+Patch2:         mercurial-fix-CVE-2018-13347.patch
+Patch3:         mercurial-fix-CVE-2018-13346.patch
+Patch4:         mercurial-fix-CVE-2018-13348.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -24,6 +28,10 @@ Mercurial is written in Python and is used by projects such as Mozilla and Vim.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 make build
@@ -59,6 +67,8 @@ rm -rf %{buildroot}/*
 %{python2_sitelib}/*
 
 %changelog
+*   Mon May 06 2019 Keerthana K <keerthanak@vmware.com> 4.5.3-2
+-   Fix CVE-2018-17983, CVE-2018-13346, CVE-2018-13347, CVE-2018-13348
 *   Mon Apr 16 2018 Xiaolin Li <xiaolinl@vmware.com> 4.5.3-1
 -   Update version to 4.5.3 for CVE-2018-1000132
 *   Tue Nov 14 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-2
