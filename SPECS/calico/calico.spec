@@ -1,11 +1,13 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/calico
 Source0:        %{name}-%{version}.tar.gz
 %define sha1 calico=43310c3ae20b7806ae030d11ae99c135a35badac
+Source1:         go-27704.patch
+Source2:         go-27842.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -26,6 +28,10 @@ mkdir -p ${GOPATH}/src/github.com/projectcalico/node
 cp -r * ${GOPATH}/src/github.com/projectcalico/node
 pushd ${GOPATH}/src/github.com/projectcalico/node
 glide install --strip-vendor
+pushd vendor/golang.org/x/net
+patch -p1 < %{SOURCE1}
+patch -p1 < %{SOURCE2}
+popd
 mkdir -p dist
 mkdir -p .go-pkg-cache
 GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -v -i -o dist/calico-node cmd/calico-node/main.go
@@ -47,6 +53,8 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
+*   Fri May 03 2019 Bo Gan <ganb@vmware.com> 3.6.1-2
+-   Fix CVE-2018-17846 and CVE-2018-17143
 *   Thu Apr 11 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-1
 -   Update to 3.6.1
 *   Mon Aug 06 2018 Dheeraj Shetty <dheerajs@vmware.com> 2.6.7-2
