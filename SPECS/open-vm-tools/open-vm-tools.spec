@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.3.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -17,6 +17,7 @@ Patch0:         GOSC-libDeploy.patch
 Patch1:         IPv6Support.patch
 Patch2:         hostnameReCustomizationFix.patch
 Patch3:         PureIPv6-hosts.patch
+Patch4:         ProcessEtcHosts.patch
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  libxml2-devel
@@ -49,6 +50,7 @@ VmWare virtualization user mode tools
 %patch1 -p0
 %patch2 -p0
 %patch3 -p0
+%patch4 -p1
 %build
 touch ChangeLog
 autoreconf -i
@@ -103,6 +105,8 @@ fi
 
 
 %changelog
+*   Tue May 21 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-2
+-   Change processing of /etc/hosts file similar to Perl customization.
 *   Wed May 08 2019 Ankit Jain <ankitja@vmware.com> 10.3.10-1
 -   Updating version to 10.3.10
 *   Thu Feb 07 2019 Ankit Jain <ankitja@vmware.com> 10.2.5-1
