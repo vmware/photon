@@ -1,14 +1,14 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        10.2.5
-Release:        2%{?dist}
+Version:        10.3.10
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 open-vm-tools=f2eea3df2145bf898acd2f021bb1c745774d8222
+%define sha1 open-vm-tools=de11691d0d2149d7cff4d3a17e9a74bb5bdbab05
 Source1:        gosc-scripts-1.2.tar.gz
 %define sha1 gosc-scripts-1.2=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
@@ -21,6 +21,9 @@ Patch4:         timezoneCust.patch
 Patch5:         gosc-post-custom.patch
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
+BuildRequires:  libxml2-devel
+BuildRequires:  xmlsec1-devel
+BuildRequires:  libltdl-devel
 BuildRequires:  xml-security-c-devel
 BuildRequires:  libdnet-devel
 BuildRequires:  libmspack-devel
@@ -115,6 +118,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Tue May 07 2019 Ankit Jain <ankitja@vmware.com> 10.3.10-1
+-   Updating version to 10.3.10
 *   Wed Mar 27 2019 Anish Swaminathan <anishs@vmware.com> 10.2.5-2
 -   Start vmtoolsd before cloud-init
 *   Fri Feb 01 2019 Ankit Jain <ankitja@vmware.com> 10.2.5-1
