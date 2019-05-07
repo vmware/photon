@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.32
-Release:        3%{?dist}
+Version:        4.19.40
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b5267a7e170d2ac0dd51f14c65a4832eb379fb19
+%define sha1 linux=c04181c3736e5b85d349f9b58d406d4c18ad4958
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -40,8 +40,6 @@ Patch25:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.p
 Patch26:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch27:        4.17-0002-apparmor-af_unix-mediation.patch
 Patch28:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
-# Fix CVE-2019-10125
-Patch29:        0001-aio-simplify-and-fix-fget-fput-for-io_submit.patch
 
 BuildArch:     x86_64
 BuildRequires: bc
@@ -100,7 +98,6 @@ The Linux package contains the Linux kernel doc files
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
-%patch29 -p1
 
 %build
 # patch vmw_balloon driver
@@ -197,6 +194,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 07 2019 Ajay Kaher <akaher@vmware.com> 4.19.40-1
+-   Update to version 4.19.40
 *   Fri May 03 2019 Ajay Kaher <akaher@vmware.com> 4.19.32-3
 -   Enable SELinux kernel config
 *   Fri Mar 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-2

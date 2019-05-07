@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.32
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.40
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b5267a7e170d2ac0dd51f14c65a4832eb379fb19
+%define sha1 linux=c04181c3736e5b85d349f9b58d406d4c18ad4958
 Source1:        config-secure
 Source2:        initramfs.trigger
 # common
@@ -39,9 +39,6 @@ Patch33:        4.17-0002-apparmor-af_unix-mediation.patch
 Patch34:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch35:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
-# Fix CVE-2019-10125
-Patch36:        0001-aio-simplify-and-fix-fget-fput-for-io_submit.patch
-
 
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
@@ -112,7 +109,6 @@ The Linux package contains the Linux kernel doc files
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
-%patch36 -p1
 
 pushd ..
 %patch99 -p0
@@ -240,6 +236,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 07 2019 Ajay Kaher <akaher@vmware.com> 4.19.40-1
+-   Update to version 4.19.40
 *   Fri Mar 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-2
 -   Fix CVE-2019-10125
 *   Wed Mar 27 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-1
