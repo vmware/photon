@@ -1,20 +1,20 @@
 Summary:	Apache Maven
 Name:		apache-maven
-Version:	3.3.9
-Release:	10%{?dist}
+Version:	3.5.4
+Release:	1%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-BuildArch:       noarch
 Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version}-src.tar.gz
-%define sha1 apache-maven=1912316078f1f7041dd8cd2580f210d30f898162
+%define sha1 apache-maven=04aefb9462af8cf7ca93808cd246f4c28b8ae4a1
 BuildRequires: openjre
 BuildRequires: openjdk
 BuildRequires: apache-ant
 BuildRequires: wget >= 1.15
 Requires: openjre
+Requires: which
 
 %define _prefix /var/opt/%{name}
 %define _bindir %{_prefix}/bin
@@ -26,7 +26,7 @@ The Maven package contains binaries for a build system
 %prep
 
 %setup -q
-find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
+#find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
 
 %clean
 rm -rf %{buildroot}
@@ -36,7 +36,8 @@ MAVEN_DIST_DIR=%{buildroot}%{_prefix}
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 
 sed -i 's/www.opensource/opensource/g' DEPENDENCIES
-ant -Dmaven.home=$MAVEN_DIST_DIR
+
+mvn -DdistributionTargetDir=$MAVEN_DIST_DIR clean package
 
 %install
 mkdir -p %{buildroot}%{_datadir}/java/maven
@@ -72,8 +73,11 @@ done
 %{_prefix}/conf/logging/simplelogger.properties
 %{_prefix}/conf/settings.xml
 %{_prefix}/conf/toolchains.xml
+%exclude %{_libdir}/jansi-native
 
 %changelog
+*   Tue May 07 2019 Tapas Kundu <tkundu@vmware.com> 3.5.4-1
+-   Updated apache-maven to version 3.5.4
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 3.3.9-10
 -   Removed dependency on ANT_HOME
 -   Removed apache-maven profile file

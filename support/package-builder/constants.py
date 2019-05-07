@@ -230,7 +230,8 @@ class constants(object):
         "openssl-devel",
         "python2",
         "python2-libs",
-        "python2-devel"]
+        "python2-devel",
+        "apache-maven"]
 
     listToolChainRPMPkgsToBuild=[
         "linux-api-headers",
