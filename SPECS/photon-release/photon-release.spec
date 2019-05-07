@@ -1,13 +1,15 @@
-Summary:    Photon release files
-Name:       photon-release
-Version:    3.0
-Release:    2%{?dist}
-License:    Apache License
-Group:      System Environment/Base
-URL:        https://vmware.github.io/photon/
-Vendor:     VMware, Inc.
+Summary:        Photon release files
+Name:           photon-release
+Version:        3.0
+Release:        3%{?dist}
+License:        Apache License
+Group:          System Environment/Base
+URL:            https://vmware.github.io/photon/
+Source0:        photon-release-3.0.tar.gz
+%define sha1 photon-release=ced639518d32f9ac8ff00a71853812057db3ab3c
+Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildArch:  noarch
+BuildArch:      noarch
 
 %description
 Photon release files such as yum configs and other /etc/ release related files
@@ -64,6 +66,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/issue.net
 
 %changelog
+*       Tue May 7 2019 Michelle Wang <michellew@vmware.com> 3.0-3
+-       Add sources0 for OSSTP tickets
 *       Fri Sep 28 2018 Ajay Kaher <akaher@vmware.com> 3.0-2
 -       Fix for aarch64
 *       Mon Sep 24 2018 Anish Swaminathan <anishs@vmware.com> 3.0-1

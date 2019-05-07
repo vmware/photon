@@ -1,40 +1,42 @@
-Summary:	Photon repo files, gpg keys
-Name:		photon-repos
-Version:	3.0
-Release:	2%{?dist}
-License:	Apache License
-Group:		System Environment/Base
-URL:		https://vmware.github.io/photon/
-Source0:        VMWARE-RPM-GPG-KEY
-Source1:        photon.repo
-Source2:        photon-updates.repo
-Source3:        photon-iso.repo
-Source4:        photon-debuginfo.repo
-Source5:        photon-extras.repo
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Provides:	photon-repos
-BuildArch:	noarch
+Summary:        Photon repo files, gpg keys
+Name:           photon-repos
+Version:        3.0
+Release:        3%{?dist}
+License:        Apache License
+Group:          System Environment/Base
+URL:            https://vmware.github.io/photon/
+Source0:        photon-repos-3.0.tar.gz
+%define sha1 photon-repos=6dcaac0748e7fba12c4f5f01f05f6aeae5ec7fa3
+Source1:        VMWARE-RPM-GPG-KEY
+Source2:        photon.repo
+Source3:        photon-updates.repo
+Source4:        photon-iso.repo
+Source5:        photon-debuginfo.repo
+Source6:        photon-extras.repo
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Provides:       photon-repos
+BuildArch:      noarch
 
 %description
 Photon repo files and gpg keys 
 
 %build
-sed -i 's/_arch/%{_arch}/g' %{SOURCE1} \
-         %{SOURCE2} %{SOURCE3} \
-         %{SOURCE4} %{SOURCE5}
+sed -i 's/_arch/%{_arch}/g' %{SOURCE2} \
+         %{SOURCE3} %{SOURCE4} \
+         %{SOURCE5} %{SOURCE6}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d -m 755 $RPM_BUILD_ROOT/etc/yum.repos.d
-install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/yum.repos.d
 install -m 644 %{SOURCE2} $RPM_BUILD_ROOT/etc/yum.repos.d
 install -m 644 %{SOURCE3} $RPM_BUILD_ROOT/etc/yum.repos.d
 install -m 644 %{SOURCE4} $RPM_BUILD_ROOT/etc/yum.repos.d
 install -m 644 %{SOURCE5} $RPM_BUILD_ROOT/etc/yum.repos.d
+install -m 644 %{SOURCE6} $RPM_BUILD_ROOT/etc/yum.repos.d
 
 install -d -m 755 $RPM_BUILD_ROOT/etc/pki/rpm-gpg
-install -m 644 %{SOURCE0} $RPM_BUILD_ROOT/etc/pki/rpm-gpg
+install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/pki/rpm-gpg
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -50,6 +52,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
+*   Tue May 7 2019 Michelle Wang <michellew@vmware.com> 3.0-3
+-   Add sources0 for OSSTP tickets
 *   Mon Oct 1 2018 Ajay Kaher <akaher@vmware.com> 3.0-2
 -   Fix arch name in repos
 *   Mon Sep 24 2018 Anish Swaminathan <anishs@vmware.com> 3.0-1
