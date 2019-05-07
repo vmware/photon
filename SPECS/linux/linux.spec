@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.19.32
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.40
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b5267a7e170d2ac0dd51f14c65a4832eb379fb19
+%define sha1 linux=c04181c3736e5b85d349f9b58d406d4c18ad4958
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -44,8 +44,6 @@ Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
 Patch31:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
-# Fix CVE-2019-10125
-Patch33:        0001-aio-simplify-and-fix-fget-fput-for-io_submit.patch
 
 %ifarch aarch64
 # NXP LS1012a FRWY patches
@@ -183,7 +181,6 @@ Kernel Device Tree Blob files for NXP ls1012a FRWY board
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
-%patch33 -p1
 
 %ifarch aarch64
 # NXP FSL_PPFE Driver patches
@@ -442,6 +439,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue May 07 2019 Ajay Kaher <akaher@vmware.com> 4.19.40-1
+-   Update to version 4.19.40
 *   Thu Apr 11 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-3
 -   Update config_aarch64 to fix ARM64 build.
 *   Fri Mar 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-2

@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.32
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.40
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b5267a7e170d2ac0dd51f14c65a4832eb379fb19
+%define sha1 linux=c04181c3736e5b85d349f9b58d406d4c18ad4958
 Source1:	config-aws
 Source2:	initramfs.trigger
 # common
@@ -36,9 +36,6 @@ Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
 Patch31:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
-# Fix CVE-2019-10125
-Patch33:        0001-aio-simplify-and-fix-fget-fput-for-io_submit.patch
-
 
 # Amazon AWS
 Patch101: 0002-watchdog-Disable-watchdog-on-virtual-machines.patch
@@ -156,7 +153,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
-%patch33 -p1
 
 %patch101 -p1
 %patch102 -p1
@@ -361,6 +357,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_libdir}/perf/include/bpf/*
 
 %changelog
+*   Tue May 07 2019 Ajay Kaher <akaher@vmware.com> 4.19.40-1
+-   Update to version 4.19.40
 *   Fri Mar 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-2
 -   Fix CVE-2019-10125
 *   Wed Mar 27 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-1
