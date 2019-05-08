@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -127,7 +127,7 @@ touch %{buildroot}/var/log/wtmp
 #	Configuration files
 #
 cat > %{buildroot}/etc/passwd <<- "EOF"
-root::0:0:root:/root:/bin/bash
+root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/dev/null:/bin/false
 daemon:x:6:6:Daemon User:/dev/null:/bin/false
 messagebus:x:18:18:D-Bus Message Daemon User:/var/run/dbus:/bin/false
@@ -585,6 +585,8 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
+*   Wed May 8 2019 Alexey Makhalov <amakhalov@vmware.com> 1.1-4
+-   Use 'x' as a root password placeholder
 *   Wed Mar 28 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1-3
 -   Do not package /var/run as a folder
 *   Thu Oct 19 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.1-2
