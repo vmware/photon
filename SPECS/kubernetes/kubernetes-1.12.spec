@@ -7,12 +7,12 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.12.5
-Release:        2%{?dist}
+Version:        1.12.7
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=c8fce9da61407d6d8dee5939e12899d50ff0f065
+%define sha1    kubernetes-%{version}.tar.gz=62cbd12425af750b4134acdfa713a760b2d27438
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         go-27704.patch
@@ -228,6 +228,8 @@ fi
 %endif
 
 %changelog
+*   Wed May 08 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-1
+-   Update to 1.12.7
 *   Thu Feb 28 2019 Ashwin H <ashwinh@vmware.com> 1.12.5-2
 -   Fix build error for ARM.
 *   Thu Feb 21 2019 Ashwin H <ashwinh@vmware.com> 1.12.5-1

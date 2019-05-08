@@ -16,8 +16,7 @@ COPY [ "./tmp/calico/usr/share/calico/docker/fs/sbin/restart-calico-confd", \
        "./tmp/calico/usr/share/calico/docker/fs/sbin/start_runit", \
        "./tmp/calico/usr/share/calico/docker/fs/sbin/versions", \
        "/usr/sbin/" ]
-COPY [ "./tmp/calico/usr/bin/allocate-ipip-addr", \
-       "./tmp/calico/usr/bin/startup", \
+COPY [ "./tmp/calico/usr/bin/calico-node", \
        "./tmp/calico/usr/bin/calico-bgp-daemon", \
        "./tmp/calico/usr/bin/gobgp", \
        "./tmp/calico/usr/bin/bird", \
