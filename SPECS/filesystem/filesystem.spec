@@ -1,7 +1,7 @@
 Summary:        Default file system
 Name:           filesystem
 Version:        1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3
 Group:          System Environment/Base
 Source:         %{name}-%{version}.tar.gz
@@ -72,7 +72,7 @@ touch %{buildroot}/var/log/{btmp,lastlog,wtmp}
 #	Configuration files
 #
 cat > %{buildroot}/etc/passwd <<- "EOF"
-root::0:0:root:/root:/bin/bash
+root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/dev/null:/bin/false
 daemon:x:6:6:Daemon User:/dev/null:/bin/false
 messagebus:x:18:18:D-Bus Message Daemon User:/var/run/dbus:/bin/false
@@ -544,6 +544,8 @@ EOF
 %endif
 
 %changelog
+*   Wed May 8 2019 Alexey Makhalov <amakhalov@vmware.com> 1.1-3
+-   Use 'x' as a root password placeholder
 *   Wed Oct 3 2018 Michelle Wang <michellew@vmware.com>  1.1-2
 -   Add source for filesystem in order to file OSSTP ticket.
 *   Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  1.1-1
