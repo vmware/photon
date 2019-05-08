@@ -1,7 +1,8 @@
-diff -rup open-vm-tools-stable-10.2.0/open-vm-tools/libDeployPkg/linuxDeployment.c open-vm-tools-stable-10.2.0-modified/open-vm-tools/libDeployPkg/linuxDeployment.c
---- open-vm-tools-stable-10.2.0/open-vm-tools/libDeployPkg/linuxDeployment.c	2017-12-15 13:11:49.000000000 -0800
-+++ open-vm-tools-stable-10.2.0-modified/open-vm-tools/libDeployPkg/linuxDeployment.c	2018-03-21 15:36:36.512716686 -0700
-@@ -593,13 +593,17 @@ GetPackageInfo(const char* packageName,
+diff --git a/open-vm-tools/libDeployPkg/linuxDeployment.c b/open-vm-tools/libDeployPkg/linuxDeployment.c
+index 6e22aac..d49259f 100644
+--- a/open-vm-tools/libDeployPkg/linuxDeployment.c
++++ b/open-vm-tools/libDeployPkg/linuxDeployment.c
+@@ -596,13 +596,17 @@ GetPackageInfo(const char* packageName,
     close(fd);
  
     // Create space and copy the command
@@ -21,14 +22,14 @@ diff -rup open-vm-tools-stable-10.2.0/open-vm-tools/libDeployPkg/linuxDeployment
     *archiveType = hdr.payloadType;
     *flags = hdr.reserved;
  
-@@ -1190,6 +1194,19 @@ Deploy(const char* packageName)
+@@ -1223,6 +1227,19 @@ Deploy(const char* packageName)
        free(command);
-       deployPkgStatus = CloudInitSetup(tmpDirPath);
+       deployPkgStatus = CloudInitSetup(imcDirPath);
     } else {
 +       if ((strstr(command, "scripts/Customize.pl") != NULL) || (strstr(command, "scripts/customize.sh") != NULL)) {
 +          free (command);
 +          char PHOTON_OS_LAUNCH_COMMAND[256];
-+          sprintf(PHOTON_OS_LAUNCH_COMMAND, "/bin/bash /usr/share/open-vm-tools/GOSC/gosc-scripts/imc-shell/imgcust-scripts/customize.sh %s/cust.cfg", tmpDirPath);
++          sprintf(PHOTON_OS_LAUNCH_COMMAND, "/bin/bash /usr/share/open-vm-tools/GOSC/gosc-scripts/imc-shell/imgcust-scripts/customize.sh %s/cust.cfg", imcDirPath);
 +
 +          // The command will be parsed alter and can be of arbitrary length
 +          command = strdup(PHOTON_OS_LAUNCH_COMMAND);
@@ -39,5 +40,5 @@ diff -rup open-vm-tools-stable-10.2.0/open-vm-tools/libDeployPkg/linuxDeployment
 +          _DeployPkg_SkipReboot(true);
 +      }
        sLog(log_info, "Executing traditional GOSC workflow");
-       deploymentResult = ForkExecAndWaitCommand(command);
+       deploymentResult = ForkExecAndWaitCommand(command, false);
        free(command);
