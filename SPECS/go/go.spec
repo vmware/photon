@@ -1,36 +1,35 @@
-
 %global goroot          /usr/lib/golang
 %global gopath          %{_datadir}/gocode
+%ifarch aarch64
+%global gohostarch      arm64
+%else
 %global gohostarch      amd64
+%endif
+%define debug_package %{nil}
+%define __strip /bin/true
 
 # rpmbuild magic to keep from having meta dependency on libc.so.6
-%define _use_internal_dependency_generator 0
-%define __find_requires %{nil}
+#%define _use_internal_dependency_generator 0
+#%define __find_requires %{nil}
 
-Summary:        Go 
+Summary:        Go
 Name:           go
-Version:        1.9.4
-Release:        2%{?dist}
+Version:        1.11.9
+Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
-%define sha1    go=12b0ecee83525cd594f4fbf30380d4832e06f189
-Patch0:         go_imports_fix.patch
-Patch1:         CVE-2018-7187.patch 
-BuildRequires:  mercurial
-Requires:       mercurial
+%define sha1    go=3790ca6533cce6933eafd34b2a74a7025e3caba7
 Requires:       glibc
 
 %description
-Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.  
+Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.
 
 %prep
 %setup -qn %{name}
-%patch0 -p1
-%patch1 -p1
 
 %build
 export GOHOSTOS=linux
@@ -40,7 +39,7 @@ export GOROOT_BOOTSTRAP=%{goroot}
 export GOROOT="`pwd`"
 export GOPATH=%{gopath}
 export GOROOT_FINAL=%{_bindir}/go
-rm -f  %{gopath}/src/runtime/*.c 
+rm -f  %{gopath}/src/runtime/*.c
 pushd src
 ./make.bash --no-clean
 popd
@@ -62,8 +61,10 @@ rm -rfv %{buildroot}%{goroot}/doc/Makefile
 # put binaries to bindir, linked to the arch we're building,
 # leave the arch independent pieces in %{goroot}
 mkdir -p %{buildroot}%{goroot}/bin/linux_%{gohostarch}
-mv %{buildroot}%{goroot}/bin/go %{buildroot}%{goroot}/bin/linux_%{gohostarch}/go
-mv %{buildroot}%{goroot}/bin/gofmt %{buildroot}%{goroot}/bin/linux_%{gohostarch}/gofmt
+ln -sfv ../go %{buildroot}%{goroot}/bin/linux_%{gohostarch}/go
+ln -sfv ../gofmt %{buildroot}%{goroot}/bin/linux_%{gohostarch}/gofmt
+ln -sfv %{goroot}/bin/gofmt %{buildroot}%{_bindir}/gofmt
+ln -sfv %{goroot}/bin/go %{buildroot}%{_bindir}/go
 
 # ensure these exist and are owned
 mkdir -p %{buildroot}%{gopath}/src/github.com/
@@ -71,11 +72,7 @@ mkdir -p %{buildroot}%{gopath}/src/bitbucket.org/
 mkdir -p %{buildroot}%{gopath}/src/code.google.com/
 mkdir -p %{buildroot}%{gopath}/src/code.google.com/p/
 
-
-ln -sfv ../../%{goroot}/bin/linux_%{gohostarch}/gofmt %{buildroot}%{_bindir}/gofmt
-ln -sfv ../../%{goroot}/bin/linux_%{gohostarch}/go %{buildroot}%{_bindir}/go
-
-install -vdm644 %{buildroot}/etc/profile.d
+install -vdm755 %{buildroot}/etc/profile.d
 cat >> %{buildroot}/etc/profile.d/go-exports.sh <<- "EOF"
 export GOROOT=%{goroot}
 export GOPATH=%{_datadir}/gocode
@@ -83,13 +80,10 @@ export GOHOSTOS=linux
 export GOHOSTARCH=%{gohostarch}
 export GOOS=linux
 EOF
-chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
+#chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
 
 
-%{_fixperms} %{buildroot}/*
-
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+#%{_fixperms} %{buildroot}/*
 
 %post -p /sbin/ldconfig
 
@@ -117,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Wed Apr 24 2019 <ashwinh@vmware.com> 1.11.9-1
+-   Upgrade to 1.11.9
 *   Mon Apr 02 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.4-2
 -   Fix for CVE-2018-7187
 *   Thu Mar 15 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-1

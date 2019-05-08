@@ -2,7 +2,7 @@ FROM vmware/photon:1.0
 
 MAINTAINER kulkarniv@vmware.com
 
-RUN tdnf install -y sed net-tools
+RUN tdnf install -y sed net-tools coreutils
 COPY [ "./tmp/calico/opt/cni/bin/calico", \
        "./tmp/calico/opt/cni/bin/calico-ipam", \
        "./tmp/calico/opt/cni/bin/portmap", \

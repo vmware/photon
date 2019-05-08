@@ -1,0 +1,104 @@
+From 33212fecc411a7de5dba5f48f31218c0dfa24867 Mon Sep 17 00:00:00 2001
+From: Adam Kaplan <adam.kaplan@redhat.com>
+Date: Thu, 1 Nov 2018 11:28:15 -0400
+Subject: [PATCH] Check for nil in filepath.Walk funcs
+
+Fixes #1025
+---
+ dependency/resolver.go | 9 +++++++++
+ godep/strip/strip.go   | 9 ++++++++-
+ path/strip.go          | 4 ++++
+ tree/tree.go           | 4 ++++
+ 4 files changed, 25 insertions(+), 1 deletion(-)
+
+diff --git a/dependency/resolver.go b/dependency/resolver.go
+index 35bd474a..07ad6b70 100644
+--- a/dependency/resolver.go
++++ b/dependency/resolver.go
+@@ -5,6 +5,7 @@ import (
+ 	"errors"
+ 	"runtime"
+ 	"sort"
++
+ 	//"go/build"
+ 	"os"
+ 	"path/filepath"
+@@ -270,6 +271,10 @@ func (r *Resolver) ResolveLocal(deep bool) ([]string, []string, error) {
+ 		if err != nil && err != filepath.SkipDir {
+ 			return err
+ 		}
++		// Skip if FileInfo is nil
++		if fi == nil {
++			return nil
++		}
+ 		pt := strings.TrimPrefix(path, r.basedir+string(os.PathSeparator))
+ 		pt = strings.TrimSuffix(pt, string(os.PathSeparator))
+ 		if r.Config.HasExclude(pt) {
+@@ -701,6 +706,10 @@ func (r *Resolver) resolveList(queue *list.List, testDeps, addTest bool) ([]stri
+ 				return err
+ 			}
+ 
++			// Skip if FileInfo is nil
++			if fi == nil {
++
++			}
+ 			// Skip files.
+ 			if !fi.IsDir() {
+ 				return nil
+diff --git a/godep/strip/strip.go b/godep/strip/strip.go
+index 39d54e1a..ad23fdfb 100644
+--- a/godep/strip/strip.go
++++ b/godep/strip/strip.go
+@@ -58,7 +58,10 @@ func stripGodepWorkspaceHandler(path string, info os.FileInfo, err error) error
+ 	if path == vPath {
+ 		return nil
+ 	}
+-
++	// Skip if FileInfo is nil
++	if info == nil {
++		return nil
++	}
+ 	name := info.Name()
+ 	p := filepath.Dir(path)
+ 	pn := filepath.Base(p)
+@@ -81,6 +84,10 @@ func stripGodepWorkspaceHandler(path string, info os.FileInfo, err error) error
+ }
+ 
+ func rewriteGodepfilesHandler(path string, info os.FileInfo, err error) error {
++	// Skip if filepath is nil
++	if info == nil {
++		return nil
++	}
+ 	name := info.Name()
+ 
+ 	if info.IsDir() {
+diff --git a/path/strip.go b/path/strip.go
+index bae8777f..54704f2a 100644
+--- a/path/strip.go
++++ b/path/strip.go
+@@ -19,6 +19,10 @@ func getWalkFunction(searchPath string, removeAll func(p string) error) func(pat
+ 		if path == searchPath {
+ 			return nil
+ 		}
++		// Skip if FileInfo is nil
++		if info == nil {
++			return nil
++		}
+ 
+ 		if info.Name() == "vendor" && info.IsDir() {
+ 			msg.Info("Removing: %s", path)
+diff --git a/tree/tree.go b/tree/tree.go
+index 1e0b101a..3c0f405f 100644
+--- a/tree/tree.go
++++ b/tree/tree.go
+@@ -48,6 +48,10 @@ func walkDeps(b *util.BuildCtxt, base, myName string) []string {
+ 		if err != nil {
+ 			return err
+ 		}
++		// Skip if FileInfo is nil
++		if fi == nil {
++			return nil
++		}
+ 
+ 		if !dependency.IsSrcDir(fi) {
+ 			if fi.IsDir() {

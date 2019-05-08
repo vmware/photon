@@ -1,19 +1,18 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.9.6
-Release:        2%{?dist}
+Version:        1.12.7
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
-Source0:        kubernetes-v%{version}.tar.gz
-%define sha1    kubernetes-v%{version}.tar.gz=6996c0690a38cda1ae5479a4dde7ebfeb590e5fb
+Source0:        kubernetes-%{version}.tar.gz
+%define sha1    kubernetes-%{version}.tar.gz=62cbd12425af750b4134acdfa713a760b2d27438
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
-Patch0:         k8s-cascade.patch
-Patch1:         CVE-2018-1002105.patch
+Patch0:         k8s-1.12-vke.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  go
+BuildRequires:  go >= 1.10.2
 BuildRequires:  rsync
 BuildRequires:  which
 Requires:       cni
@@ -22,10 +21,11 @@ Requires:       etcd >= 3.0.4
 Requires:       ethtool
 Requires:       iptables
 Requires:       iproute2
-Requires:       shadow
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 Requires:       socat
-Requires:       systemd
 Requires:       util-linux
+Requires:       cri-tools
 
 %description
 Kubernetes is an open source implementation of container cluster management.
@@ -36,6 +36,12 @@ Group:          Development/Tools
 Requires:       %{name} = %{version}
 %description    kubeadm
 kubeadm is a tool that enables quick and easy deployment of a kubernetes cluster.
+
+%package	kubectl-extras
+Summary:	kubectl binaries for extra platforms
+Group:		Development/Tools
+%description	kubectl-extras
+Contains kubectl binaries for additional platforms.
 
 %package        pause
 Summary:        pause binary
@@ -50,7 +56,6 @@ tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 cd %{name}-%{version}
 %patch0 -p1
-%patch1 -p1
 
 %build
 make
@@ -59,17 +64,27 @@ mkdir -p bin
 gcc -Os -Wall -Werror -static -o bin/pause-amd64 pause.c
 strip bin/pause-amd64
 popd
+make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/amd64 windows/amd64"
 
 %install
 install -vdm644 %{buildroot}/etc/profile.d
 install -m 755 -d %{buildroot}%{_bindir}
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes/darwin/amd64
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes/linux/amd64
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes/windows/amd64
 
-binaries=(cloud-controller-manager hyperkube kube-aggregator kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
+binaries=(cloud-controller-manager hyperkube kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
   install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/amd64/${bin}
 done
 install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-amd64
+
+# kubectl-extras
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/darwin/amd64/ _output/local/bin/darwin/amd64/kubectl
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/linux/amd64/ _output/local/bin/linux/amd64/kubectl
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/windows/amd64/ _output/local/bin/windows/amd64/kubectl.exe
 
 # kubeadm install
 install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
@@ -127,8 +142,7 @@ systemctl daemon-reload
 %post kubeadm
 systemctl daemon-reload
 systemctl stop kubelet
-systemctl enable docker kubelet
-systemctl start docker
+systemctl enable kubelet
 
 %preun kubeadm
 if [ $1 -eq 0 ]; then
@@ -152,7 +166,6 @@ fi
 %defattr(-,root,root)
 %{_bindir}/cloud-controller-manager
 %{_bindir}/hyperkube
-%{_bindir}/kube-aggregator
 %{_bindir}/kube-apiserver
 %{_bindir}/kube-controller-manager
 %{_bindir}/kubelet
@@ -187,7 +200,15 @@ fi
 %defattr(-,root,root)
 %{_bindir}/pause-amd64
 
+%files kubectl-extras
+%defattr(-,root,root)
+/opt/vmware/kubernetes/darwin/amd64/kubectl
+/opt/vmware/kubernetes/linux/amd64/kubectl
+/opt/vmware/kubernetes/windows/amd64/kubectl.exe
+
 %changelog
+*   Tue May 07 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-1
+-   Upgrade to k8s 1.12.7
 *   Thu Dec 20 2018 Ashwin H <ashwinh@vmware.com> 1.9.6-2
 -   Fix CVE-2018-1002105
 *   Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.9.6-1
