@@ -1,19 +1,24 @@
+%global git_commit e95ef6bc43daeda16451ad4ef20979d8e07a5299
+
 Summary:        C++ L7 proxy and communication bus
 Name:           envoy
-Version:        1.2.0
+Version:        1.10.0
 Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/lyft/envoy
 Source0:        %{name}-v%{version}.tar.gz
-%define sha1    envoy=725806d38c33d82177f99ae57fd27516adacd604
-Source1:        cotire.cmake
+%define sha1    envoy=d2b3d504de30507ef72604288eece9d6ec735de8
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+BuildRequires:	bazel
 BuildRequires:  backward-cpp
 BuildRequires:  c-ares-devel >= 1.11.0
 BuildRequires:  cmake
+BuildRequires:  automake
+BuildRequires:  autoconf
 BuildRequires:  clang
+BuildRequires:	go
 BuildRequires:  gcovr
 BuildRequires:  python3-gcovr
 BuildRequires:  gcc
@@ -38,6 +43,8 @@ BuildRequires:  rapidjson-devel
 BuildRequires:  spdlog
 BuildRequires:  tclap
 BuildRequires:  which
+BuildRequires:	ninja-build
+BuildRequires:	curl
 Requires:       c-ares >= 1.11.0
 Requires:       gperftools
 Requires:       http-parser
@@ -52,61 +59,30 @@ Requires:       protobuf
 Envoy is a L7 proxy and communication bus designed for large modern service oriented architectures.
 
 %prep
-%setup -q
-cp %{SOURCE1} %{_builddir}/%{name}-%{version}/
-git init .
-git add .
-git -c user.name='Envoy Builder' -c user.email='nobody@noorg.org' commit -m 'Envoy Sources %{name}%{version}'
-git -c user.name='Envoy Builder' -c user.email='nobody@noorg.org' tag -a 'v%{version}' -m '%{name}%{version}'
-git checkout 'v%{version}'
-sed -i "s#-Werror##g" common.cmake
-sed -i "s#static-libstdc++#lstdc++#g" CMakeLists.txt
+%setup -q -c -n %{name}-v%{version}
 
 %build
-export CC=`which gcc`
-export CXX=`which g++`
-export LD_LIBRARY_PATH=%{_libdir}:$(LD_LIBRARY_PATH)
-mkdir -p build
-cd build
-cmake \
-    -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
-    -DCLANG-FORMAT:FILEPATH=clang-format \
-    -DENVOY_COTIRE_MODULE_DIR:FILEPATH=%{_builddir}/%{name}-%{version} \
-    -DENVOY_PROTOBUF_INCLUDE_DIR:FILEPATH=%{_includedir} \
-    -DENVOY_PROTOBUF_PROTOC:FILEPATH=%{_bindir}/protoc \
-    -DENVOY_EXE_EXTRA_LINKER_FLAGS:STRING=-L%{_libdir} \
-    -DENVOY_TEST_EXTRA_LINKER_FLAGS:STRING=-L%{_libdir} \
-    -DENVOY_DEBUG:BOOL=OFF \
-    -DENVOY_STRIP:BOOL=ON \
-    ..
-cmake -L ..
-make %{?_smp_mflags}
-make all_pch
-make envoy
-make envoy-server
-make envoy-test
-make envoy-common
+cd envoy-%{version}
+echo -n "%{git_commit}" > SOURCE_VERSION
+echo $GOPATH
+go get -u github.com/bazelbuild/buildtools/buildifier
+export BUILDIFIER_BIN=$GOPATH/bin/buildifier
+bazel build //source/exe:envoy-static
 
 %install
-cd build
-make preinstall
+cd envoy-%{version}
 mkdir -p %{buildroot}%{_sysconfdir}/envoy
 mkdir -p %{buildroot}%{_bindir}
-cp source/exe/envoy %{buildroot}%{_bindir}
-cp test/envoy-test %{buildroot}%{_bindir}
-cp source/exe/envoy.dbg %{buildroot}%{_bindir}
-cp ../configs/* %{buildroot}%{_sysconfdir}/envoy
+cp -pav bazel-bin/source/exe/envoy-static %{buildroot}/%{_bindir}/envoy
+cp -rf configs/* %{buildroot}%{_sysconfdir}/envoy
 
 %files
 %defattr(-,root,root)
 %{_bindir}/envoy
 %config(noreplace) %{_sysconfdir}/envoy/*
 
-%files debuginfo
-%defattr(-,root,root)
-%{_bindir}/envoy-test
-%{_bindir}/envoy.dbg
-
 %changelog
+*    Tue May 07 2019 Harinadh Dommaraju <hdommaraju@vmware.c0m> 1.10.0-1
+-    Upgraded package from 1.2.0 to 1.10.0 to fix CVE-2019-9901
 *    Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-1
 -    Initial version of envoy package for Photon.
