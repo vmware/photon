@@ -31,6 +31,7 @@ Patch13:        glibc-fix-CVE-2018-11237.patch
 Patch14:        glibc-Check-length-of-ifname-before-copying-it-into-to-ifreq-structure.patch
 Patch15:        glibc-fix-CVE-2018-19591.patch
 Patch16:        CVE-2019-9169.patch
+Patch17:        glibc-fix-CVE-2009-5155.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -101,6 +102,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
