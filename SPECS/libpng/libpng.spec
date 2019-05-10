@@ -1,13 +1,14 @@
 Summary:	contains libraries for reading and writing PNG files.
 Name:		libpng
 Version:	1.6.27
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	libpng
 URL:		http://www.libpng.org/
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://downloads.sourceforge.net/libpng/%{name}-%{version}.tar.xz
+Patch0:		libpng-CVE-2019-7317.patch
 %define sha1 libpng=af5d742f5d0a6492133aed7790bb43e8854cca64
 Provides:	pkgconfig(libpng)
 Provides:	pkgconfig(libpng16)
@@ -21,7 +22,8 @@ Requires:	%{name} = %{version}-%{release}
 It contains the libraries and header files to create applications 
 
 %prep
-%setup -q 
+%setup -q
+%patch0 -p1
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -54,6 +56,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*	Fri May 10 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.6.27-2
+-	Fix for CVE-2019-7317
 *       Thu Feb 23 2017 Divya Thaluru <dthaluru@vmware.com> 1.6.27-1
 -       Updated to version 1.6.27
 *       Mon Sep 12 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.23-2
