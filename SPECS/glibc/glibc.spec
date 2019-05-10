@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.26
-Release:        15%{?dist}
+Release:        16%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -307,6 +307,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Fri May 10 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.26-16
+-   Fix CVE-2009-5155
 *   Fri Mar 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.26-15
 -   Fix CVE-2019-9169
 *   Wed Feb 13 2019 Alexey Makhalov <amakhalov@vmware.com> 2.26-14
