@@ -4,7 +4,7 @@
 Summary:	OpenJDK
 Name:		openjdk11
 Version:	1.11.0.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GNU General Public License V2
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -53,10 +53,10 @@ This package provides the runtime library class sources.
 %setup -qn openjdk-%{version}
 
 %build
-chmod a+x ./configure
+chmod a+x ./configur*
 unset JAVA_HOME &&
 ENABLE_HEADLESS_ONLY="true" &&
-%configure \
+./configur* \
 	--with-target-bits=64 \
 	--enable-headless-only \
         --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
@@ -183,6 +183,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{version}/lib/src.zip
 
 %changelog
+*   Fri May 10 2019 Michelle Wang <michellew@vmware.com> 1.11.0.2-3
+-   Update config in spec
 *   Fri May 10 2019 Michelle Wang <michellew@vmware.com> 1.11.0.2-2
 -   Add BuildArch setting in spec
 *   Thu Apr 25 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.2-1
