@@ -4,7 +4,7 @@
 Summary:	OpenJDK
 Name:		openjdk11
 Version:	1.11.0.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU General Public License V2
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -12,6 +12,7 @@ Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk/jdk11/openjdk-%{version}.tar.gz
 %define sha1 openjdk-1.11.0=aa24e47c3e67c3ef6c7eceaebb21123a67ab8fea
+BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -55,7 +56,7 @@ This package provides the runtime library class sources.
 chmod a+x ./configure
 unset JAVA_HOME &&
 ENABLE_HEADLESS_ONLY="true" &&
-./configure \
+%configure \
 	--with-target-bits=64 \
 	--enable-headless-only \
         --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
@@ -182,5 +183,7 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{version}/lib/src.zip
 
 %changelog
+*   Fri May 10 2019 Michelle Wang <michellew@vmware.com> 1.11.0.2-2
+-   Add BuildArch setting in spec
 *   Thu Apr 25 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.2-1
 -   Initial build. First version
