@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.173
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -44,6 +44,10 @@ Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch24:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch25:        0002-allow-also-ecb-cipher_null.patch
 Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+
+# Fix CVE-2019-11599
+Patch27:        0001_coredump_fix_race_condition_between_mmget_not_zero_get_task_mm.patch
+
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 Patch30:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
@@ -179,6 +183,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
+%patch27 -p1
 %patch28 -p1
 %patch30 -p1
 %patch31 -p1
@@ -373,6 +378,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue May 14 2019 Ajay Kaher <akaher@vmware.com> 4.9.173-2
+-   Fix CVE-2019-11599
 *   Wed May 08 2019 Ajay Kaher <akaher@vmware.com> 4.9.173-1
 -   Update to version 4.9.173
 *   Fri Apr 05 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.168-1
