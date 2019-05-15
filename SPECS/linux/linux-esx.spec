@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.178
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -41,6 +41,9 @@ Patch27:       0001-net-create-skb_gso_validate_mac_len.patch
 Patch28:       0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
 # Fix for CVE-2018-8043
 Patch30:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
+
+# Fix CVE-2019-11599
+Patch31:        0001_coredump_fix_race_condition_between_mmget_not_zero_get_task_mm.patch
 
 Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
@@ -126,6 +129,7 @@ The Linux package contains the Linux kernel doc files
 %patch27 -p1
 %patch28 -p1
 %patch30 -p1
+%patch31 -p1
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
@@ -229,6 +233,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 14 2019 Ajay Kaher <akaher@vmware.com> 4.4.178-2
+-   Fix CVE-2019-11599
 *   Fri Apr 05 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.178-1
 -   Update to version 4.4.178
 *   Wed Mar 27 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.177-1
