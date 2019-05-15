@@ -3,7 +3,7 @@
 Summary:        U-Boot EFI firmware
 Name:		u-boot
 Version:	2019.01
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
@@ -17,6 +17,10 @@ Patch1:		0004-Fix-MMC1-external-SD-slot-on-Samsun.patch
 Patch2:		0005-Fix-no-usb.patch
 Patch3:         add_tcp_wget_support.patch
 Patch4:         add-saveenv-in-bootcmd.patch
+
+# CVE-2019-11059
+Patch5:         0001-Fix_ext4_block_group_descriptor_sizing.patch
+
 Group:          Development/Tools
 BuildArch:      aarch64
 
@@ -37,6 +41,7 @@ env variables from linux shell prompt.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 cp %{SOURCE1} configs/
@@ -58,6 +63,8 @@ install -D -m 0644 %{SOURCE2} %{buildroot}/etc/fw_env.config
 /usr/bin/fw_setenv
 
 %changelog
+*   Wed May 15 2019 Ajay Kaher <akaher@vmware.com> 2019.01-2
+-   Fix CVE-2019-11059
 *   Fri Feb 22 2019 Tapas Kundu <tkundu@vmware.com> 2019.01-1
 -   Updating to 2019.01
 -   Added patch for tcp and wget support
