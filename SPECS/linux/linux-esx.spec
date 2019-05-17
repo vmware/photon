@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.178
-Release:       2%{?dist}
+Version:       4.4.180
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=66d5effd2d6e96ce918794c27744664595872212
+%define sha1 linux=ecd7f8b2d806f899c888f4848403c51b4c807fa7
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -233,6 +233,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri May 17 2019 Ajay Kaher <akaher@vmware.com> 4.4.180-1
+-   Update to version 4.4.180
 *   Tue May 14 2019 Ajay Kaher <akaher@vmware.com> 4.4.178-2
 -   Fix CVE-2019-11599
 *   Fri Apr 05 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.178-1

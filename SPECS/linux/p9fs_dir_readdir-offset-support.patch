@@ -42,9 +42,9 @@ index 5cc00e56206e..a876cc9a473a 100644
 @@ -162,6 +164,7 @@ static int v9fs_dir_readdir(struct file *file, struct dir_context *ctx)
  				return 0;
  
- 			rdir->head += reclen;
-+			rdir->pos += reclen;
- 			ctx->pos += reclen;
+ 			rdir->head += err;
++			rdir->pos += err;
+ 			ctx->pos += err;
  		}
  	}
 @@ -191,7 +194,7 @@ static int v9fs_dir_readdir_dotl(struct file *file, struct dir_context *ctx)
