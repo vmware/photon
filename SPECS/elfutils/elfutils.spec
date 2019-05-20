@@ -2,13 +2,15 @@
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
 Version:	0.174
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 URL:    	https://sourceware.org/elfutils
 Source0:	https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
 %define sha1 elfutils=95899ce5fa55002e46bf4e02d01a249516e296fd
 Patch0:         CVE-2018-18310.patch
+Patch1:         CVE-2018-18520.patch
+Patch2:         CVE-2018-18521.patch
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -107,6 +109,8 @@ These are the additional language files of elfutils.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 %build
 %configure --program-prefix=%{_programprefix}
 make %{?_smp_mflags}
@@ -197,6 +201,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root)
 
 %changelog
+* Mon May 20 2019 Sujay G <gsujay@vmware.com> 0.174-3
+- Fix for CVE-2018-18520 & CVE-2018-18521
 * Thu Jan 24 2019 Keerthana K <keerthanak@vmware.com> 0.174-2
 - Fix for CVE-2018-18310
 * Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 0.174-1
