@@ -1,0 +1,715 @@
+From 8bdbdb8168511018d44ef014ae21da619ae73c24 Mon Sep 17 00:00:00 2001
+From: Legrandin <helderijs@gmail.com>
+Date: Mon, 20 May 2013 12:43:44 +0200
+Subject: [PATCH] Add EAX authenticated encryption mode
+
+[dlitz@dlitz.net: Included changes from the following commits from the author's pull request:]
+- [9c13f9c] Rename 'IV' parameter to 'nonce' for AEAD modes.
+- [ca460a7] Made blockalgo.py more PEP-8 compliant; The second parameter
+            of the _GHASH constructor is now the length of the block
+            (block_size) and not the full module.
+[dlitz@dlitz.net: Fixed unresolved conflict in lib/Crypto/Cipher/blockalgo.py]
+
+
+--- a/lib/Crypto/Cipher/AES.py_org	2019-05-20 18:32:03.837094052 +0530
++++ b/lib/Crypto/Cipher/AES.py	2019-05-20 18:37:49.713100961 +0530
+@@ -113,14 +113,17 @@ def new(key, *args, **kwargs):
+       
+         For all other modes, it must be 16 bytes long.
+       nonce : byte string
+-        (*Only* `MODE_CCM`).
++        (*Only* `MODE_CCM`, `MODE_EAX`).
+ 
+         A mandatory value that must never be reused for any other encryption.
+ 
+         For `MODE_CCM`, its length must be in the range ``[7..13]``.
+         11 or 12 bytes are reasonable values in general. Bear in
+         mind that with CCM there is a trade-off between nonce length and
+-        maximum message size. 
++        maximum message size.
++        For the other modes, there are no restrictions on its length,
++        but it is recommended to use at least 16 bytes.
++
+       counter : callable
+         (*Only* `MODE_CTR`). A stateful function that returns the next
+         *counter block*, which is a byte string of `block_size` bytes.
+@@ -129,6 +132,9 @@ def new(key, *args, **kwargs):
+         (*Only* `MODE_CFB`).The number of bits the plaintext and ciphertext
+         are segmented in.
+         It must be a multiple of 8. If 0 or not specified, it will be assumed to be 8.
++        (*Only* `MODE_EAX`). Length of the MAC, in bytes. It must be no
++        larger than 16 bytes (which is the default).
++
+       mac_len : integer
+         (*Only* `MODE_CCM`). Length of the MAC, in bytes. It must be even and in
+         the range ``[4..16]``. The default is 16.
+@@ -158,6 +164,8 @@ MODE_CTR = 6
+ MODE_OPENPGP = 7
+ #: Counter with CBC-MAC (CCM) Mode. See `blockalgo.MODE_CCM`.
+ MODE_CCM = 8
++#: EAX Mode. See `blockalgo.MODE_EAX`.
++MODE_EAX = 9
+ #: Size of a data block (in bytes)
+ block_size = 16
+ #: Size of a key (in bytes)
+--- a/lib/Crypto/Cipher/ARC2.py_org	2019-05-20 18:38:03.249101231 +0530
++++ b/lib/Crypto/Cipher/ARC2.py	2019-05-20 18:41:18.657105135 +0530
+@@ -82,6 +82,8 @@ def new(key, *args, **kwargs):
+         The chaining mode to use for encryption or decryption.
+         Default is `MODE_ECB`.
+       IV : byte string
++        *Only* `MODE_CBC`, `MODE_CFB`, `MODE_OFB`, `MODE_OPENPGP`).
++
+         The initialization vector to use for encryption or decryption.
+         
+         It is ignored for `MODE_ECB` and `MODE_CTR`.
+@@ -91,12 +93,20 @@ def new(key, *args, **kwargs):
+         actually the *encrypted* IV which was prefixed to the ciphertext).
+         It is mandatory.
+        
+-        For all other modes, it must be `block_size` bytes longs. It is optional and
+-        when not present it will be given a default value of all zeroes.
++        For all other modes, it must be 8 bytes long.
++      nonce : byte string
++        (*Only* `MODE_EAX`).
++        A mandatory value that must never be reused for any other encryption.
++        There are no restrictions on its length, but it is recommended to
++        use at least 16 bytes.
++
+       counter : callable
+         (*Only* `MODE_CTR`). A stateful function that returns the next
+         *counter block*, which is a byte string of `block_size` bytes.
+         For better performance, use `Crypto.Util.Counter`.
++      mac_len : integer
++        (*Only* `MODE_EAX`). Length of the MAC, in bytes.
++        It must be no larger than 8 (which is the default).
+       segment_size : integer
+         (*Only* `MODE_CFB`).The number of bits the plaintext and ciphertext
+         are segmented in.
+@@ -123,6 +133,8 @@ MODE_OFB = 5
+ MODE_CTR = 6
+ #: OpenPGP Mode. See `blockalgo.MODE_OPENPGP`.
+ MODE_OPENPGP = 7
++#: EAX Mode. See `blockalgo.MODE_EAX`.
++MODE_EAX = 9
+ #: Size of a data block (in bytes)
+ block_size = 8
+ #: Size of a key (in bytes)
+--- a/lib/Crypto/Cipher/Blowfish.py_org	2019-05-20 18:41:32.689105415 +0530
++++ b/lib/Crypto/Cipher/Blowfish.py	2019-05-20 18:44:12.089108599 +0530
+@@ -76,6 +76,8 @@ def new(key, *args, **kwargs):
+         The chaining mode to use for encryption or decryption.
+         Default is `MODE_ECB`.
+       IV : byte string
++        (*Only* `MODE_CBC`, `MODE_CFB`, `MODE_OFB`, `MODE_OPENPGP`).
++
+         The initialization vector to use for encryption or decryption.
+         
+         It is ignored for `MODE_ECB` and `MODE_CTR`.
+@@ -85,12 +87,21 @@ def new(key, *args, **kwargs):
+         actually the *encrypted* IV which was prefixed to the ciphertext).
+         It is mandatory.
+        
+-        For all other modes, it must be `block_size` bytes longs. It is optional and
+-        when not present it will be given a default value of all zeroes.
++        For all other modes, it must be 8 bytes long.
++      nonce : byte string
++        (*Only* `MODE_EAX`).
++        A mandatory value that must never be reused for any other encryption.
++        There are no restrictions on its length, but it is recommended to
++        use at least 16 bytes.
++
+       counter : callable
+         (*Only* `MODE_CTR`). A stateful function that returns the next
+         *counter block*, which is a byte string of `block_size` bytes.
+         For better performance, use `Crypto.Util.Counter`.
++      mac_len : integer
++        (*Only* `MODE_EAX`). Length of the MAC, in bytes.
++        It must be no larger than 8 (which is the default).
++
+       segment_size : integer
+         (*Only* `MODE_CFB`).The number of bits the plaintext and ciphertext
+         are segmented in.
+@@ -114,6 +125,8 @@ MODE_OFB = 5
+ MODE_CTR = 6
+ #: OpenPGP Mode. See `blockalgo.MODE_OPENPGP`.
+ MODE_OPENPGP = 7
++#: EAX Mode. See `blockalgo.MODE_EAX`.
++MODE_EAX = 9
+ #: Size of a data block (in bytes)
+ block_size = 8
+ #: Size of a key (in bytes)
+--- a/lib/Crypto/Cipher/CAST.py_org	2019-05-20 18:44:27.617108909 +0530
++++ b/lib/Crypto/Cipher/CAST.py	2019-05-20 18:46:21.029111174 +0530
+@@ -79,6 +79,7 @@ def new(key, *args, **kwargs):
+         The chaining mode to use for encryption or decryption.
+         Default is `MODE_ECB`.
+       IV : byte string
++        (*Only* `MODE_CBC`, `MODE_CFB`, `MODE_OFB`, `MODE_OPENPGP`).
+         The initialization vector to use for encryption or decryption.
+         
+         It is ignored for `MODE_ECB` and `MODE_CTR`.
+@@ -88,12 +89,20 @@ def new(key, *args, **kwargs):
+         actually the *encrypted* IV which was prefixed to the ciphertext).
+         It is mandatory.
+        
+-        For all other modes, it must be `block_size` bytes longs. It is optional and
+-        when not present it will be given a default value of all zeroes.
++        For all other modes, it must be 8 bytes long.
++      nonce : byte string
++        (*Only* `MODE_EAX`).
++        A mandatory value that must never be reused for any other encryption.
++        There are no restrictions on its length, but it is recommended to
++        use at least 16 bytes.
+       counter : callable
+         (*Only* `MODE_CTR`). A stateful function that returns the next
+         *counter block*, which is a byte string of `block_size` bytes.
+         For better performance, use `Crypto.Util.Counter`.
++      mac_len : integer
++        (*Only* `MODE_EAX`). Length of the MAC, in bytes.
++        It must be no larger than 8 (which is the default).
++
+       segment_size : integer
+         (*Only* `MODE_CFB`).The number of bits the plaintext and ciphertext
+         are segmented in.
+@@ -117,6 +126,8 @@ MODE_OFB = 5
+ MODE_CTR = 6
+ #: OpenPGP Mode. See `blockalgo.MODE_OPENPGP`.
+ MODE_OPENPGP = 7
++#: EAX Mode. See `blockalgo.MODE_EAX`.
++MODE_EAX = 9
+ #: Size of a data block (in bytes)
+ block_size = 8
+ #: Size of a key (in bytes)
+--- a/lib/Crypto/Cipher/DES.py_org	2019-05-20 18:46:52.333111800 +0530
++++ b/lib/Crypto/Cipher/DES.py	2019-05-20 18:48:59.445114339 +0530
+@@ -74,6 +74,7 @@ def new(key, *args, **kwargs):
+         The chaining mode to use for encryption or decryption.
+         Default is `MODE_ECB`.
+       IV : byte string
++        (*Only* `MODE_CBC`, `MODE_CFB`, `MODE_OFB`, `MODE_OPENPGP`).
+         The initialization vector to use for encryption or decryption.
+         
+         It is ignored for `MODE_ECB` and `MODE_CTR`.
+@@ -83,12 +84,19 @@ def new(key, *args, **kwargs):
+         actually the *encrypted* IV which was prefixed to the ciphertext).
+         It is mandatory.
+        
+-        For all other modes, it must be `block_size` bytes longs. It is optional and
+-        when not present it will be given a default value of all zeroes.
++        For all other modes, it must be 8 bytes long.
++      nonce : byte string
++        (*Only* `MODE_EAX`).
++        A mandatory value that must never be reused for any other encryption.
++        There are no restrictions on its length, but it is recommended to
++        use at least 16 bytes.
+       counter : callable
+         (*Only* `MODE_CTR`). A stateful function that returns the next
+         *counter block*, which is a byte string of `block_size` bytes.
+         For better performance, use `Crypto.Util.Counter`.
++      mac_len : integer
++        (*Only* `MODE_EAX`). Length of the MAC, in bytes.
++        It must be no larger than 8 (which is the default).
+       segment_size : integer
+         (*Only* `MODE_CFB`).The number of bits the plaintext and ciphertext
+         are segmented in.
+@@ -112,6 +120,8 @@ MODE_OFB = 5
+ MODE_CTR = 6
+ #: OpenPGP Mode. See `blockalgo.MODE_OPENPGP`.
+ MODE_OPENPGP = 7
++#: EAX Mode. See `blockalgo.MODE_EAX`.
++MODE_EAX = 9
+ #: Size of a data block (in bytes)
+ block_size = 8
+ #: Size of a key (in bytes)
+--- a/lib/Crypto/Cipher/DES3.py_org	2019-05-20 18:49:14.581114641 +0530
++++ b/lib/Crypto/Cipher/DES3.py	2019-05-20 18:51:41.945117585 +0530
+@@ -87,6 +87,7 @@ def new(key, *args, **kwargs):
+         The chaining mode to use for encryption or decryption.
+         Default is `MODE_ECB`.
+       IV : byte string
++        (*Only* `MODE_CBC`, `MODE_CFB`, `MODE_OFB`, `MODE_OPENPGP`).
+         The initialization vector to use for encryption or decryption.
+         
+         It is ignored for `MODE_ECB` and `MODE_CTR`.
+@@ -96,12 +97,19 @@ def new(key, *args, **kwargs):
+         actually the *encrypted* IV which was prefixed to the ciphertext).
+         It is mandatory.
+        
+-        For all other modes, it must be `block_size` bytes longs. It is optional and
+-        when not present it will be given a default value of all zeroes.
++        For all other modes, it must be 8 bytes long.
++      nonce : byte string
++        (*Only* `MODE_EAX`).
++        A mandatory value that must never be reused for any other encryption.
++        There are no restrictions on its length, but it is recommended to
++        use at least 16 bytes.
+       counter : callable
+         (*Only* `MODE_CTR`). A stateful function that returns the next
+-        *counter block*, which is a byte string of `block_size` bytes.
++        *counter block*, which is a byte string of 8 bytes.
+         For better performance, use `Crypto.Util.Counter`.
++      mac_len : integer
++        (*Only* `MODE_EAX`). Length of the MAC, in bytes.
++        It must be no larger than 8 (which is the default).
+       segment_size : integer
+         (*Only* `MODE_CFB`).The number of bits the plaintext and ciphertext
+         are segmented in.
+@@ -127,6 +135,8 @@ MODE_OFB = 5
+ MODE_CTR = 6
+ #: OpenPGP Mode. See `blockalgo.MODE_OPENPGP`.
+ MODE_OPENPGP = 7
++#: EAX Mode. See `blockalgo.MODE_EAX`.
++MODE_EAX = 9
+ #: Size of a data block (in bytes)
+ block_size = 8
+ #: Size of a key (in bytes)
+--- a/lib/Crypto/Cipher/blockalgo.py_org	2019-05-20 18:51:54.965117845 +0530
++++ b/lib/Crypto/Cipher/blockalgo.py	2019-05-20 19:10:34.337140204 +0530
+@@ -29,7 +29,9 @@ from binascii import unhexlify
+ 
+ from Crypto.Util import Counter
+ from Crypto.Util.strxor import strxor
+-from Crypto.Util.number import long_to_bytes
++from Crypto.Util.number import long_to_bytes, bytes_to_long
++import Crypto.Util.Counter
++from Crypto.Hash import CMAC
+ 
+ #: *Electronic Code Book (ECB)*.
+ #: This is the simplest encryption mode. Each of the plaintext blocks
+@@ -179,6 +181,32 @@ MODE_OPENPGP = 7
+ #: .. _AEAD: http://blog.cryptographyengineering.com/2012/05/how-to-choose-authenticated-encryption.html
+ MODE_CCM = 8
+ 
++#: *EAX*. This is an Authenticated Encryption with Associated Data
++#: (`AEAD`_) mode. It provides both confidentiality and authenticity.
++#:
++#: The header of the message may be left in the clear, if needed, and it will
++#: still be subject to authentication.
++#:
++#: The decryption step tells the receiver if the message comes from a source
++#: that really knowns the secret key.
++#: Additionally, decryption detects if any part of the message - including the
++#: header - has been modified or corrupted.
++#:
++#: This mode requires a nonce. The nonce shall never repeat for two
++#: different messages encrypted with the same key, but it does not need to
++#: be random.
++#
++#: This mode is only available for ciphers that operate on 64 or
++#: 128 bits blocks.
++#:
++#: There are no official standards defining EAX. The implementation is based on
++#: `a proposal`__ that was presented to NIST.
++#:
++#: .. _AEAD: http://blog.cryptographyengineering.com/2012/05/how-to-choose-authenticated-encryption.html
++#: .. __: http://csrc.nist.gov/groups/ST/toolkit/BCM/documents/proposedmodes/eax/eax-spec.pdf
++MODE_EAX = 9
++
++
+ 
+ def _getParameter(name, index, args, kwargs, default=None):
+     """Find a parameter in tuple and dictionary arguments a function receives"""
+@@ -229,10 +257,44 @@ class BlockAlgo:
+ 
+         elif self.mode == MODE_OPENPGP:
+             self._start_PGP(factory, key, *args, **kwargs)
++        elif self.mode == MODE_EAX:
++            self._start_eax(factory, key, *args, **kwargs)
+         else:            
+             self._cipher = factory.new(key, *args, **kwargs)
+             self.IV = self._cipher.IV
+ 
++    def _start_eax(self, factory, key, *args, **kwargs):
++
++        self.nonce = _getParameter('nonce', 1, args, kwargs)
++        if not self.nonce:
++            raise ValueError("MODE_EAX requires a nonce")
++
++        # Allowed transitions after initialization
++        self._next = [self.update, self.encrypt, self.decrypt,
++                      self.digest, self.verify]
++
++        self._mac_len = kwargs.get('mac_len', self.block_size)
++        if not (self._mac_len and 4 <= self._mac_len <= self.block_size):
++            raise ValueError("Parameter 'mac_len' must not be larger than %d"
++                             % self.block_size)
++
++        self._omac = [
++                CMAC.new(key, bchr(0) * (self.block_size - 1) + bchr(i),
++                         ciphermod=factory)
++                for i in xrange(0, 3)
++                ]
++
++        # Compute MAC of nonce
++        self._omac[0].update(self.nonce)
++
++        # MAC of the nonce is also the initial counter for CTR encryption
++        counter_int = bytes_to_long(self._omac[0].digest())
++        counter_obj = Crypto.Util.Counter.new(
++                        self.block_size * 8,
++                        initial_value=counter_int,
++                        allow_wraparound=True)
++        self._cipher = factory.new(key, MODE_CTR, counter=counter_obj)
++
+     def _start_PGP(self, factory, key, *args, **kwargs):
+         # OPENPGP mode. For details, see 13.9 in RCC4880.
+         #
+@@ -341,7 +403,7 @@ class BlockAlgo:
+     def update(self, assoc_data):
+         """Protect associated data
+ 
+-        When using an AEAD mode like CCM, and if there is any associated data,
++        When using an AEAD mode like CCM or EAX, and if there is any associated data,
+         the caller has to invoke this function one or more times, before
+         using ``decrypt`` or ``encrypt``.
+ 
+@@ -349,7 +411,7 @@ class BlockAlgo:
+         will not be encrypted and will be transmitted in the clear.
+         However, the receiver is still able to detect any modification to it.
+         In CCM, the *associated data* is also called *additional authenticated
+-        data*.
++        data*. In EAX, the *associated data* is called *header*.
+ 
+         If there is no associated data, this method must not be called.
+ 
+@@ -361,11 +423,11 @@ class BlockAlgo:
+             A piece of associated data. There are no restrictions on its size.
+         """
+ 
+-        if self.mode == MODE_CCM:
++        if self.mode in (MODE_CCM, MODE_EAX):
+             if self.update not in self._next:
+                 raise TypeError("update() can only be called immediately after initialization")
+-            self._next = [ self.update, self.encrypt, self.decrypt,
+-                    self.digest, self.verify ]
++            self._next = [self.update, self.encrypt, self.decrypt,
++                          self.digest, self.verify]
+         return self._update(assoc_data)
+ 
+     def _update(self, assoc_data, do_zero_padding=False):
+@@ -391,6 +453,10 @@ class BlockAlgo:
+                 self._assoc_buffer = [buf[aligned_data:]]
+                 self._assoc_buffer_len -= aligned_data
+             return
++        if self.mode == MODE_EAX:
++            self._omac[1].update(assoc_data)
++            return
++
+         raise ValueError("update() not supported by this mode of operation")
+  
+ 
+@@ -418,7 +484,7 @@ class BlockAlgo:
+          - For `MODE_CFB`, *plaintext* length (in bytes) must be a multiple
+            of *segment_size*/8.
+ 
+-         - For `MODE_CTR` and `MODE_CCM`, *plaintext* can be of any length.
++         - For `MODE_CTR` and `MODE_CCM` and `MODE_EAX`, *plaintext* can be of any length.
+ 
+          - For `MODE_OPENPGP`, *plaintext* must be a multiple of *block_size*,
+            unless it is the last chunk of the message.
+@@ -451,12 +517,12 @@ class BlockAlgo:
+                 self._done_first_block = True
+             return res
+ 
+-        if self.mode == MODE_CCM:
++        if self.mode in (MODE_CCM, MODE_EAX):
+ 
+             if self.encrypt not in self._next:
+                 raise TypeError("encrypt() can only be called after initialization or an update()")
+             self._next = [self.encrypt, self.digest]
+-
++        if self.mode == MODE_CCM:
+             if self._assoc_len is None:
+                 self._start_ccm(assoc_len=self._assoc_buffer_len)
+             if self._msg_len is None:
+@@ -468,7 +534,12 @@ class BlockAlgo:
+ 
+             self._update(plaintext)
+ 
+-        return self._cipher.encrypt(plaintext)
++        ct = self._cipher.encrypt(plaintext)
++
++        if self.mode == MODE_EAX:
++            self._omac[2].update(ct)
++
++        return ct
+ 
+     def decrypt(self, ciphertext):
+         """Decrypt data with the key and the parameters set at initialization.
+@@ -494,7 +565,7 @@ class BlockAlgo:
+          - For `MODE_CFB`, *ciphertext* length (in bytes) must be a multiple
+            of *segment_size*/8.
+ 
+-         - For `MODE_CTR` and `MODE_CCM`, *ciphertext* can be of any length.
++         - For `MODE_CTR` and `MODE_CCM` and `MODE_EAX`, *ciphertext* can be of any length.
+ 
+          - For `MODE_OPENPGP`, *plaintext* must be a multiple of *block_size*,
+            unless it is the last chunk of the message.
+@@ -519,21 +590,24 @@ class BlockAlgo:
+                 res = self._cipher.decrypt(ciphertext)
+             return res
+ 
+-        if self.mode == MODE_CCM:
++        if self.mode in (MODE_CCM, MODE_EAX):
+ 
+             if self.decrypt not in self._next:
+                 raise TypeError("decrypt() can only be called after initialization or an update()")
+             self._next = [self.decrypt, self.verify]
+ 
+-            if self._assoc_len is None:
+-                self._start_ccm(assoc_len=self._assoc_buffer_len)
+-            if self._msg_len is None:
+-                self._start_ccm(msg_len=len(ciphertext))
+-                self._next = [self.verify]
+-            if not self._done_assoc_data:
+-                self._update(b(""), do_zero_padding=True)
+-                self._done_assoc_data = True
++            if self.mode == MODE_CCM:
++                if self._assoc_len is None:
++                    self._start_ccm(assoc_len=self._assoc_buffer_len)
++                if self._msg_len is None:
++                    self._start_ccm(msg_len=len(ciphertext))
++                    self._next = [self.verify]
++                if not self._done_assoc_data:
++                    self._update(b(""), do_zero_padding=True)
++                    self._done_assoc_data = True
+ 
++            if self.mode == MODE_EAX:
++                self._omac[2].update(ciphertext)
+         pt = self._cipher.decrypt(ciphertext)
+ 
+         if self.mode == MODE_CCM:
+@@ -544,7 +618,7 @@ class BlockAlgo:
+     def digest(self):
+         """Compute the *binary* MAC tag in an AEAD mode.
+ 
+-        When using an AEAD mode like CCM, the caller invokes this function
++        When using an AEAD mode like CCM or EAX, the caller invokes this function
+         at the very end.
+ 
+         This method returns the MAC that shall be sent to the receiver,
+@@ -553,19 +627,28 @@ class BlockAlgo:
+         :Return: the MAC, as a byte string.
+         """
+ 
+-        if self.mode == MODE_CCM:
++        if self.mode in (MODE_CCM, MODE_EAX):
+ 
+             if self.digest not in self._next:
+                 raise TypeError("digest() cannot be called when decrypting or validating a message")
+             self._next = [self.digest]
+ 
+-            if self._assoc_len is None:
+-                self._start_ccm(assoc_len=self._assoc_buffer_len)
+-            if self._msg_len is None:
+-                self._start_ccm(msg_len=0)
+-            self._update(b(""), do_zero_padding=True)
++            if self.mode == MODE_CCM:
+ 
+-            return strxor(self._t, self._s_0)[:self._mac_len]
++                if self._assoc_len is None:
++                    self._start_ccm(assoc_len=self._assoc_buffer_len)
++                if self._msg_len is None:
++                    self._start_ccm(msg_len=0)
++                self._update(b(""), do_zero_padding=True)
++                tag = strxor(self._t, self._s_0)[:self._mac_len]
++
++            if self.mode == MODE_EAX:
++
++                tag = bchr(0) * self.block_size
++                for i in xrange(3):
++                    tag = strxor(tag, self._omac[i].digest())
++
++            return tag
+ 
+         raise TypeError("digest() not supported by this mode of operation")
+ 
+@@ -581,7 +664,7 @@ class BlockAlgo:
+     def verify(self, mac_tag):
+         """Validate the *binary* MAC tag in an AEAD mode.
+ 
+-        When using an AEAD mode like CCM, the caller invokes this function
++        When using an AEAD mode like CCM or EAX, the caller invokes this function
+         at the very end.
+ 
+         This method checks if the decrypted message is indeed valid
+@@ -596,17 +679,26 @@ class BlockAlgo:
+             or the key is incorrect.
+         """
+ 
+-        if self.mode == MODE_CCM:
++        if self.mode in (MODE_CCM, MODE_EAX):
+             if self.verify not in self._next:
+                 raise TypeError("verify() cannot be called when encrypting a message")
+             self._next = [self.verify]
+ 
+-            if self._assoc_len is None:
+-                self._start_ccm(assoc_len=self._assoc_buffer_len)
+-            if self._msg_len is None:
+-                self._start_ccm(msg_len=0)
+-            self._update(b(""), do_zero_padding=True)
+-            u = strxor(self._t, self._s_0)[:self._mac_len]
++            if self.mode == MODE_CCM:
++
++                if self._assoc_len is None:
++                    self._start_ccm(assoc_len=self._assoc_buffer_len)
++                if self._msg_len is None:
++                    self._start_ccm(msg_len=0)
++                self._update(b(""), do_zero_padding=True)
++                u = strxor(self._t, self._s_0)[:self._mac_len]
++
++            if self.mode == MODE_EAX:
++
++                u = bchr(0)*self.block_size
++                for i in xrange(3):
++                    u = strxor(u, self._omac[i].digest())
++                u = u[:self._mac_len]
+ 
+             res = 0
+             # Constant-time comparison
+--- a/lib/Crypto/SelfTest/Cipher/common.py_org	2019-05-20 19:10:52.217140561 +0530
++++ b/lib/Crypto/SelfTest/Cipher/common.py	2019-05-20 19:14:00.593144324 +0530
+@@ -354,12 +354,12 @@ class CCMSplitEncryptionTest(unittest.Te
+ class AEADTests(unittest.TestCase):
+     """Tests generic to all AEAD modes"""
+ 
+-    def __init__(self, module, mode_name):
++    def __init__(self, module, mode_name, key_size):
+         unittest.TestCase.__init__(self)
+         self.module = module
+         self.mode_name = mode_name
+         self.mode = getattr(module, mode_name)
+-        self.key = b('\xFF')*16
++        self.key = b('\xFF')*key_size
+         self.iv = b('\x00')*10
+         self.description = "AEAD Test"
+ 
+@@ -642,7 +642,7 @@ def make_block_tests(module, module_name
+             ]
+             extra_tests_added = 1
+         # Extract associated data and MAC for AEAD modes
+-        if p_mode == 'CCM':
++        if p_mode in ('CCM', 'EAX'):
+             assoc_data, params['plaintext'] = params['plaintext'].split('|')
+             assoc_data2, params['ciphertext'], params['mac'] = params['ciphertext'].split('|')
+             params['assoc_data'] = assoc_data
+@@ -669,10 +669,16 @@ def make_block_tests(module, module_name
+             CCMMACLengthTest(module),
+             CCMSplitEncryptionTest(module),
+         ]
+-    for aead_mode in ("MODE_CCM",):
++    for aead_mode in ("MODE_CCM","MODE_EAX"):
+         if hasattr(module, aead_mode):
+-            tests += [
+-                AEADTests(module, aead_mode),
++            key_sizes = []
++            try:
++                key_sizes += module.key_size
++            except TypeError:
++                key_sizes = [ module.key_size ]
++            for ks in key_sizes:
++                tests += [
++                    AEADTests(module, aead_mode, ks),                
+                 ]
+     return tests
+ 
+--- a/lib/Crypto/SelfTest/Cipher/test_AES.py_org	2019-05-20 19:14:15.181144616 +0530
++++ b/lib/Crypto/SelfTest/Cipher/test_AES.py	2019-05-20 19:15:39.285146296 +0530
+@@ -1651,6 +1651,85 @@ test_data = [
+       'RFC3610 Packet Vector #24',
+       dict(mode='CCM', nonce='008d493b30ae8b3c9696766cfa')
+     ),
++    # Test vectors for EAX taken from http://www.cs.ucdavis.edu/~rogaway/papers/eax.pdf
++    # This is a list of tuples with 5 items:
++    #
++    #  1. Header + '|' + plaintext
++    #  2. Header + '|' + ciphertext + '|' + MAC
++    #  3. AES-128 key
++    #  4. Description
++    #  5. Dictionary of parameters to be passed to AES.new(). It must
++    #     include the nonce.
++    #
++    ( '6bfb914fd07eae6b|',
++      '6bfb914fd07eae6b||e037830e8389f27b025a2d6527e79d01',
++      '233952dee4d5ed5f9b9c6d6ff80ff478',
++      'EAX spec Appendix G',
++      dict(mode='EAX', nonce='62EC67F9C3A4A407FCB2A8C49031A8B3')
++    ),
++
++    ( 'fa3bfd4806eb53fa|f7fb',
++      'fa3bfd4806eb53fa|19dd|5c4c9331049d0bdab0277408f67967e5',
++      '91945d3f4dcbee0bf45ef52255f095a4',
++      'EAX spec Appendix G',
++      dict(mode='EAX', nonce='BECAF043B0A23D843194BA972C66DEBD')
++    ),
++
++    ( '234a3463c1264ac6|1a47cb4933',
++      '234a3463c1264ac6|d851d5bae0|3a59f238a23e39199dc9266626c40f80',
++      '01f74ad64077f2e704c0f60ada3dd523',
++      'EAX spec Appendix G',
++      dict(mode='EAX', nonce='70C3DB4F0D26368400A10ED05D2BFF5E')
++    ),
++
++    ( '33cce2eabff5a79d|481c9e39b1',
++      '33cce2eabff5a79d|632a9d131a|d4c168a4225d8e1ff755939974a7bede',
++      'd07cf6cbb7f313bdde66b727afd3c5e8',
++      'EAX spec Appendix G',
++      dict(mode='EAX', nonce='8408DFFF3C1A2B1292DC199E46B7D617')
++    ),
++
++    ( 'aeb96eaebe2970e9|40d0c07da5e4',
++      'aeb96eaebe2970e9|071dfe16c675|cb0677e536f73afe6a14b74ee49844dd',
++      '35b6d0580005bbc12b0587124557d2c2',
++      'EAX spec Appendix G',
++      dict(mode='EAX', nonce='FDB6B06676EEDC5C61D74276E1F8E816')
++    ),
++
++    ( 'd4482d1ca78dce0f|4de3b35c3fc039245bd1fb7d',
++      'd4482d1ca78dce0f|835bb4f15d743e350e728414|abb8644fd6ccb86947c5e10590210a4f',
++      'bd8e6e11475e60b268784c38c62feb22',
++      'EAX spec Appendix G',
++      dict(mode='EAX', nonce='6EAC5C93072D8E8513F750935E46DA1B')
++    ),
++
++    ( '65d2017990d62528|8b0a79306c9ce7ed99dae4f87f8dd61636',
++      '65d2017990d62528|02083e3979da014812f59f11d52630da30|137327d10649b0aa6e1c181db617d7f2',
++      '7c77d6e813bed5ac98baa417477a2e7d',
++      'EAX spec Appendix G',
++      dict(mode='EAX', nonce='1A8C98DCD73D38393B2BF1569DEEFC19')
++    ),
++
++    ( '54b9f04e6a09189a|1bda122bce8a8dbaf1877d962b8592dd2d56',
++      '54b9f04e6a09189a|2ec47b2c4954a489afc7ba4897edcdae8cc3|3b60450599bd02c96382902aef7f832a',
++      '5fff20cafab119ca2fc73549e20f5b0d',
++      'EAX spec Appendix G',
++      dict(mode='EAX', nonce='DDE59B97D722156D4D9AFF2BC7559826')
++    ),
++
++    ( '899a175897561d7e|6cf36720872b8513f6eab1a8a44438d5ef11',
++      '899a175897561d7e|0de18fd0fdd91e7af19f1d8ee8733938b1e8|e7f6d2231618102fdb7fe55ff1991700',
++      'a4a4782bcffd3ec5e7ef6d8c34a56123',
++      'EAX spec Appendix G',
++      dict(mode='EAX', nonce='B781FCF2F75FA5A8DE97A9CA48E522EC')
++    ),
++
++    ( '126735fcc320d25a|ca40d7446e545ffaed3bd12a740a659ffbbb3ceab7',
++      '126735fcc320d25a|cb8920f87a6c75cff39627b56e3ed197c552d295a7|cfc46afc253b4652b1af3795b124ab6e',
++      '8395fcf1e95bebd697bd010bc766aac3',
++      'EAX spec Appendix G',
++      dict(mode='EAX', nonce='22E7ADD93CFC6393C57EC0B3C17D6B44')
++    ),
+ ]
+ 
+ def get_tests(config={}):
+--- a/pct-speedtest.py_org	2019-05-20 19:15:48.605146482 +0530
++++ b/pct-speedtest.py	2019-05-20 19:17:37.709148661 +0530
+@@ -212,6 +212,8 @@ class Benchmark:
+             self.test_encryption("%s-OPENPGP" % (cipher_name,), module, key_bytes, module.MODE_OPENPGP)
+             if hasattr(module, "MODE_CCM"):
+                 self.test_encryption("%s-CCM" % (cipher_name,), module, key_bytes, module.MODE_CCM)
++            if hasattr(module, "MODE_EAX"):
++                self.test_encryption("%s-EAX" % (cipher_name,), module, key_bytes, module.MODE_EAX)
+         for cipher_name, module, key_bytes in stream_specs:
+             self.test_key_setup(cipher_name, module, key_bytes, None)
+             self.test_encryption(cipher_name, module, key_bytes, None)
