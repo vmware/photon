@@ -7,21 +7,20 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.11.3
-Release:        3%{?dist}
+Version:        1.12.7
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=60914656f6204ad95555b767181648eeef899dc0
+%define sha1    kubernetes-%{version}.tar.gz=62cbd12425af750b4134acdfa713a760b2d27438
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
-Patch0:         k8s-1.11-vke.patch
-Patch1:         go-27704.patch
-Patch2:         go-27842.patch
+Patch0:         go-27704.patch
+Patch1:         go-27842.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  go >= 1.10
+BuildRequires:  go >= 1.10.2
 BuildRequires:  rsync
 BuildRequires:  which
 Requires:       cni
@@ -64,11 +63,10 @@ cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 cd %{name}-%{version}
-%patch0 -p1
 
 pushd vendor/golang.org/x/net
+%patch0 -p1
 %patch1 -p1
-%patch2 -p1
 popd
 
 %build
@@ -93,7 +91,7 @@ install -m 755 -d %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}
 install -m 755 -d %{buildroot}/opt/vmware/kubernetes/windows/%{archname}
 %endif
 
-binaries=(cloud-controller-manager hyperkube kube-aggregator kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
+binaries=(cloud-controller-manager hyperkube kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
   install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/${bin}
@@ -187,7 +185,6 @@ fi
 %defattr(-,root,root)
 %{_bindir}/cloud-controller-manager
 %{_bindir}/hyperkube
-%{_bindir}/kube-aggregator
 %{_bindir}/kube-apiserver
 %{_bindir}/kube-controller-manager
 %{_bindir}/kubelet
@@ -231,9 +228,9 @@ fi
 %endif
 
 %changelog
-*   Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 1.11.3-3
--   Fix CVE-2018-17846 and CVE-2018-17143
-*   Fri Oct 26 2018 Ajay Kaher <akaher@vmware.com> 1.11.3-2
--   Fix for aarch64
-*   Tue Oct 23 2018 Michelle Wang <michellew@vmware.com> 1.11.3-1
--   Add k8s version 1.11.3 with vke patch (350444)
+*   Wed May 08 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-1
+-   Update to 1.12.7
+*   Thu Feb 28 2019 Ashwin H <ashwinh@vmware.com> 1.12.5-2
+-   Fix build error for ARM.
+*   Thu Feb 21 2019 Ashwin H <ashwinh@vmware.com> 1.12.5-1
+-   Update to 1.12.5-1
