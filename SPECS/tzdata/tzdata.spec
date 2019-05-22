@@ -1,14 +1,14 @@
 Summary:        Time zone data
 Name:           tzdata
-Version:        2017b
-Release:        3%{?dist}
+Version:        2019a
+Release:        1%{?dist}
 URL:            http://www.iana.org/time-zones
 License:        Public Domain
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
-%define sha1    tzdata=0f13bbb641f5742796609d3484006fe01fa654f1
+%define sha1    tzdata=29cdb003e84a597a0253433401601e67865faa08
 BuildArch:      noarch
 
 %description
@@ -42,6 +42,8 @@ ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 %{_datadir}/*
 
 %changelog
+*   Wed May 22 2019 Gerrit Photon <photon-checkins@vmware.com> 2019a-1
+-   Automatic Version Bump
 *   Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 2017b-3
 -   Add zone1970.tab to zoneinfo
 *   Mon May 01 2017 Bo Gan <ganb@vmware.com> 2017b-2
