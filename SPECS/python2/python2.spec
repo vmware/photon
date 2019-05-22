@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.15
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -15,6 +15,7 @@ Patch2:         python2-support-photon-platform.patch
 Patch3:         CVE-2018-14647.patch
 Patch4:         CVE-2019-9636.patch
 Patch5:         CVE-2019-9948.patch
+Patch6:         CVE-2019-9740.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
@@ -240,6 +241,9 @@ make test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Wed May 22 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-6
+-   Patched reworked changes for CVE-2019-9948
+-   Patch for CVE-2019-9740
 *   Thu Mar 28 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-5
 -   Fix for CVE-2019-9948
 *   Tue Mar 12 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-4
