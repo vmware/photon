@@ -1,0 +1,78 @@
+From 2be7cfed995e25de1ffaffe14cc065b7ffb528e0 Mon Sep 17 00:00:00 2001
+From: Daniel Jordan <daniel.m.jordan@oracle.com>
+Date: Wed, 2 Aug 2017 13:31:47 -0700
+Subject: mm/hugetlb.c: __get_user_pages ignores certain follow_hugetlb_page
+ errors
+
+commit 2be7cfed995e25de1ffaffe14cc065b7ffb528e0 upstream.
+
+Commit 9a291a7c9428 ("mm/hugetlb: report -EHWPOISON not -EFAULT when
+FOLL_HWPOISON is specified") causes __get_user_pages to ignore certain
+errors from follow_hugetlb_page.  After such error, __get_user_pages
+subsequently calls faultin_page on the same VMA and start address that
+follow_hugetlb_page failed on instead of returning the error immediately
+as it should.
+
+In follow_hugetlb_page, when hugetlb_fault returns a value covered under
+VM_FAULT_ERROR, follow_hugetlb_page returns it without setting nr_pages
+to 0 as __get_user_pages expects in this case, which causes the
+following to happen in __get_user_pages: the "while (nr_pages)" check
+succeeds, we skip the "if (!vma..." check because we got a VMA the last
+time around, we find no page with follow_page_mask, and we call
+faultin_page, which calls hugetlb_fault for the second time.
+
+This issue also slightly changes how __get_user_pages works.  Before, it
+only returned error if it had made no progress (i = 0).  But now,
+follow_hugetlb_page can clobber "i" with an error code since its new
+return path doesn't check for progress.  So if "i" is nonzero before a
+failing call to follow_hugetlb_page, that indication of progress is lost
+and __get_user_pages can return error even if some pages were
+successfully pinned.
+
+To fix this, change follow_hugetlb_page so that it updates nr_pages,
+allowing __get_user_pages to fail immediately and restoring the "error
+only if no progress" behavior to __get_user_pages.
+
+Tested that __get_user_pages returns when expected on error from
+hugetlb_fault in follow_hugetlb_page.
+
+Fixes: 9a291a7c9428 ("mm/hugetlb: report -EHWPOISON not -EFAULT when FOLL_HWPOISON is specified")
+Link: http://lkml.kernel.org/r/1500406795-58462-1-git-send-email-daniel.m.jordan@oracle.com
+Signed-off-by: Daniel Jordan <daniel.m.jordan@oracle.com>
+Acked-by: Punit Agrawal <punit.agrawal@arm.com>
+Cc: Andrea Arcangeli <aarcange@redhat.com>
+Cc: "Aneesh Kumar K.V" <aneesh.kumar@linux.vnet.ibm.com>
+Cc: Gerald Schaefer <gerald.schaefer@de.ibm.com>
+Cc: James Morse <james.morse@arm.com>
+Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
+Cc: zhong jiang <zhongjiang@huawei.com>
+Cc: <stable@vger.kernel.org>	[4.12.x]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+[Ajay: Intentionally skipped the second hunk since it depends on 
+ many more patches that are unrelated to the CVE-2019-11487]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+diff -Nurp linux-4.9.178/mm/hugetlb.c linux-4.9.178_CVE-2019-11487/mm/hugetlb.c
+--- linux-4.9.178/mm/hugetlb.c	2019-05-30 15:12:04.123084016 +0530
++++ linux-4.9.178_CVE-2019-11487/mm/hugetlb.c	2019-05-30 12:53:33.959457216 +0530
+@@ -3993,6 +3993,7 @@ long follow_hugetlb_page(struct mm_struc
+ 	unsigned long vaddr = *position;
+ 	unsigned long remainder = *nr_pages;
+ 	struct hstate *h = hstate_vma(vma);
++	int err = -EFAULT;
+ 
+ 	while (vaddr < vma->vm_end && remainder) {
+ 		pte_t *pte;
+@@ -4103,7 +4104,7 @@ same_page:
+ 	*nr_pages = remainder;
+ 	*position = vaddr;
+ 
+-	return i ? i : -EFAULT;
++	return i ? i : err;
+ }
+ 
+ #ifndef __HAVE_ARCH_FLUSH_HUGETLB_TLB_RANGE

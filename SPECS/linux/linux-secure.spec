@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.178
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -58,6 +58,7 @@ Patch32:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
 Patch33:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 Patch34:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch35:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
+
 # Fix for CVE-2018-8043
 Patch40:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 Patch44:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -73,6 +74,13 @@ Patch50:        0003-xfs-enhance-dinode-verifier.patch
 Patch51:        fix_use_after_free_in_sockfs_setattr.patch
 # Fix for CVE-2018-16882
 Patch52:        0001-KVM_Fix_UAF_in_nested_posted_interrupt_processing.patch
+
+# Fix fir CVE-2019-11487
+Patch53:        0001-mm_make_page_ref_count_overflow_check_tighter_and_more_explicit.patch
+Patch54:        0002-mm_gup_ensure_real_head_page_is_ref_counted_when_using_hugepages.patch
+Patch55:        0003-mm_hugetlb_get_user_pages_ignores_certain_follow_hugetlb_page_errors.patch
+Patch56:        0004-mm_prevent_get_user_pages_from_overflowing_page_refcount.patch
+Patch57:        0005-fs_prevent_page_refcount_overflow_in_pipe_buf_get.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -199,6 +207,11 @@ EOF
 %patch50 -p1
 %patch51 -p1
 %patch52 -p1
+%patch53 -p1
+%patch54 -p1
+%patch55 -p1
+%patch56 -p1
+%patch57 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -333,6 +346,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu May 30 2019 Ajay Kaher <akaher@vmware.com> 4.9.178-4
+-   Fix CVE-2019-11487
 *   Thu May 30 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.178-3
 -   Change default I/O scheduler to 'deadline' to fix performance issue.
 *   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 4.9.178-2

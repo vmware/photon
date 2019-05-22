@@ -1,0 +1,48 @@
+commit f958d7b528b1b40c44cfda5eabe2d82760d868c3
+Author: Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu Apr 11 10:06:20 2019 -0700
+
+    commit f958d7b528b1b40c44cfda5eabe2d82760d868c3 upsteam.
+
+    mm: make page ref count overflow check tighter and more explicit
+
+    We have a VM_BUG_ON() to check that the page reference count doesn't
+    underflow (or get close to overflow) by checking the sign of the count.
+
+    That's all fine, but we actually want to allow people to use a "get page
+    ref unless it's already very high" helper function, and we want that one
+    to use the sign of the page ref (without triggering this VM_BUG_ON).
+
+    Change the VM_BUG_ON to only check for small underflows (or _very_ close
+    to overflowing), and ignore overflows which have strayed into negative
+    territory.
+
+    Acked-by: Matthew Wilcox <willy@infradead.org>
+    Cc: Jann Horn <jannh@google.com>
+    Cc: stable@kernel.org
+    Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+    Signed-off-by: Ajay Kaher <akaher@vmware.com>
+
+diff -Nurp linux-4.9.173/include/linux/mm.h linux-4.9.173_CVE-2019-11487/include/linux/mm.h
+--- linux-4.9.173/include/linux/mm.h	2019-05-04 12:19:10.000000000 +0530
++++ linux-4.9.173_CVE-2019-11487/include/linux/mm.h	2019-05-26 18:56:24.854286636 +0530
+@@ -763,6 +763,10 @@ static inline bool is_zone_device_page(c
+ }
+ #endif
+ 
++/* 127: arbitrary random number, small enough to assemble well */
++#define page_ref_zero_or_close_to_overflow(page) \
++	((unsigned int) page_ref_count(page) + 127u <= 127u)
++
+ static inline void get_page(struct page *page)
+ {
+ 	page = compound_head(page);
+@@ -770,7 +774,7 @@ static inline void get_page(struct page
+ 	 * Getting a normal page or the head of a compound page
+ 	 * requires to already have an elevated page->_refcount.
+ 	 */
+-	VM_BUG_ON_PAGE(page_ref_count(page) <= 0, page);
++	VM_BUG_ON_PAGE(page_ref_zero_or_close_to_overflow(page), page);
+ 	page_ref_inc(page);
+ 
+ 	if (unlikely(is_zone_device_page(page)))

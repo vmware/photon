@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.178
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -56,6 +56,7 @@ Patch31:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 # To fix kernel PANIC in cascade
 Patch32:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
+
 # Fix for CVE-2018-8043
 Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
@@ -80,6 +81,13 @@ Patch54:        0004-PCI-hv-Use-effective-affinity-mask.patch
 Patch55:        0005-x86-irq-implement-irq_data_get_effective_affinity.patch
 #Fix CVE-2019-8912
 Patch56:        fix_use_after_free_in_sockfs_setattr.patch
+
+# Fix fir CVE-2019-11487
+Patch57:        0001-mm_make_page_ref_count_overflow_check_tighter_and_more_explicit.patch
+Patch58:        0002-mm_gup_ensure_real_head_page_is_ref_counted_when_using_hugepages.patch
+Patch59:        0003-mm_hugetlb_get_user_pages_ignores_certain_follow_hugetlb_page_errors.patch
+Patch60:        0004-mm_prevent_get_user_pages_from_overflowing_page_refcount.patch
+Patch61:        0005-fs_prevent_page_refcount_overflow_in_pipe_buf_get.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -206,6 +214,11 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
+%patch57 -p1
+%patch58 -p1
+%patch59 -p1
+%patch60 -p1
+%patch61 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -381,6 +394,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu May 30 2019 Ajay Kaher <akaher@vmware.com> 4.9.178-4
+-   Fix CVE-2019-11487
 *   Thu May 30 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.178-3
 -   Change default I/O scheduler to 'deadline' to fix performance issue.
 *   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 4.9.178-2

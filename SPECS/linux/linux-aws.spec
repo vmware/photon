@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.178
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -52,6 +52,7 @@ Patch30:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
 Patch31:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 Patch32:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
+
 # Fix for CVE-2018-8043
 Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -67,6 +68,13 @@ Patch48:        0003-xfs-enhance-dinode-verifier.patch
 Patch49:        fix_use_after_free_in_sockfs_setattr.patch
 # Fix for CVE-2018-16882
 Patch50:        0001-KVM_Fix_UAF_in_nested_posted_interrupt_processing.patch
+
+# Fix fir CVE-2019-11487
+Patch51:        0001-mm_make_page_ref_count_overflow_check_tighter_and_more_explicit.patch
+Patch52:        0002-mm_gup_ensure_real_head_page_is_ref_counted_when_using_hugepages.patch
+Patch53:        0003-mm_hugetlb_get_user_pages_ignores_certain_follow_hugetlb_page_errors.patch
+Patch54:        0004-mm_prevent_get_user_pages_from_overflowing_page_refcount.patch
+Patch55:        0005-fs_prevent_page_refcount_overflow_in_pipe_buf_get.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -233,6 +241,11 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch48 -p1
 %patch49 -p1
 %patch50 -p1
+%patch51 -p1
+%patch52 -p1
+%patch53 -p1
+%patch54 -p1
+%patch55 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -443,6 +456,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed May 29 2019 Ajay Kaher <akaher@vmware.com> 4.9.178-4
+-   Fix CVE-2019-11487
 *   Wed May 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.178-3
 -   Fix CVE-2019-11191 by deprecating a.out file format support.
 *   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 4.9.178-2

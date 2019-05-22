@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.178
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -48,6 +48,7 @@ Patch30:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
 Patch31:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 Patch32:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
+
 # Fix for CVE-2018-8043
 Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -61,6 +62,13 @@ Patch47:        0002-xfs-verify-dinode-header-first.patch
 Patch48:        0003-xfs-enhance-dinode-verifier.patch
 #Fix CVE-2019-8912
 Patch49:        fix_use_after_free_in_sockfs_setattr.patch
+
+# Fix fir CVE-2019-11487
+Patch50:        0001-mm_make_page_ref_count_overflow_check_tighter_and_more_explicit.patch
+Patch51:        0002-mm_gup_ensure_real_head_page_is_ref_counted_when_using_hugepages.patch
+Patch52:        0003-mm_hugetlb_get_user_pages_ignores_certain_follow_hugetlb_page_errors.patch
+Patch53:        0004-mm_prevent_get_user_pages_from_overflowing_page_refcount.patch
+Patch54:        0005-fs_prevent_page_refcount_overflow_in_pipe_buf_get.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -137,6 +145,11 @@ The Linux package contains the Linux kernel doc files
 %patch47 -p1
 %patch48 -p1
 %patch49 -p1
+%patch50 -p1
+%patch51 -p1
+%patch52 -p1
+%patch53 -p1
+%patch54 -p1
 
 %build
 
@@ -232,6 +245,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 28 2019 Ajay Kaher <akaher@vmware.com> 4.9.178-3
+-   Fix CVE-2019-11487
 *   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 4.9.178-2
 -   Fix to parse through /boot folder and update symlink (/boot/photon.cfg) if
 -   mulitple kernels are installed and current linux kernel is removed.
