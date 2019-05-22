@@ -1,34 +1,38 @@
-Summary:  Certificate Authority certificates 
-Name:   ca-certificates
-Version:  20180919
-Release:  1%{?dist}
-License:  Custom
+Summary:        Certificate Authority certificates
+Name:           ca-certificates
+Version:        20190521
+Release:        1%{?dist}
+License:        Custom
 # http://anduin.linuxfromscratch.org/BLFS/other/certdata.txt
-URL:    http://anduin.linuxfromscratch.org/BLFS/other/
-Group:    System Environment/Security
-Vendor:   VMware, Inc.
-Distribution: Photon
-Source0:  certdata.txt
-Requires:   openssl
+URL:            http://anduin.linuxfromscratch.org/BLFS/other/
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        certdata.txt
+Requires:       openssl
 BuildRequires:  openssl
-Requires:   ca-certificates-pki = %{version}-%{release}
+Requires:       ca-certificates-pki = %{version}-%{release}
 Requires(post): /bin/ln
 Provides:       ca-certificates-mozilla
+
 %description
 The Public Key Inrastructure is used for many security issues in a
 Linux system. In order for a certificate to be trusted, it must be
 signed by a trusted agent called a Certificate Authority (CA). The
 certificates loaded by this section are from the list on the Mozilla
-version control system and formats it into a form used by 
+version control system and formats it into a form used by
 OpenSSL-1.0.1e. The certificates can also be used by other applications
 either directly of indirectly through openssl.
+
 %package pki
 Summary:  Certificate Authority certificates (pki tls certs)
 Group:    System Environment/Security
+
 %description pki
 Certificate Authority certificates (pki tls certs)
 
 %prep -p exit
+
 %build
 [ %{builddir} != "/"] && rm -rf %{builddir}/*
 install -vdm 755 %{_builddir}/bin/
@@ -215,6 +219,7 @@ printf "Build portion completed\n"
 
 sed -i 's|CONVERTSCRIPT="bin/make-cert.pl"|CONVERTSCRIPT="/bin/make-cert.pl"|' bin/make-ca.sh
 sed -i 's|DIR=certs|DIR=/etc/ssl/certs|' bin/remove-expired-certs.sh
+
 %install
 SSLDIR=/etc/ssl
 install -d %{buildroot}/${SSLDIR}/certs
@@ -228,10 +233,12 @@ install -Dm644 bin/make-ca.sh %{buildroot}/bin/make-ca.sh
 install -Dm644 bin/make-cert.pl %{buildroot}/bin/make-cert.pl
 install -Dm644 bin/remove-expired-certs.sh %{buildroot}/bin/remove-expired-certs.sh
 %{_fixperms} %{buildroot}/*
-%post 
+
+%post
 cd /etc/ssl/certs;
 for file in *.pem; do ln -sf $file `openssl x509 -hash -noout -in $file`.0; done
 exit 0
+
 %clean
 %files
 %defattr(-,root,root)
@@ -239,10 +246,14 @@ exit 0
 /bin/make-ca.sh
 /bin/remove-expired-certs.sh
 /bin/make-cert.pl
+
 %files pki
 %defattr(-,root,root)
 /etc/pki/tls/certs/ca-bundle.crt
+
 %changelog
+* Wed May 22 2019 Gerrit Photon <photon-checkins@vmware.com> 20190521-1
+- Automatic Version Bump
 * Tue Sep 25 2018 Ankit Jain <ankitja@vmware.com> 20180919-1
 - Updating mozilla certdata.txt to latest revision
 * Wed May  3 2017 Bo Gan <ganb@vmware.com> 20170406-3
@@ -255,7 +266,7 @@ exit 0
 - GA - Bump release of all rpms
 * Wed Feb 10 2016 Anish Swaminathan <anishs@vmware.com> 20160109-4
 - Add Provides field
-* Mon Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 20160109-3
+* Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 20160109-3
 - Force create links for certificates
 * Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 20160109-2
 - Remove c_rehash dependency
