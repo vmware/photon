@@ -1,14 +1,16 @@
 # -*- rpm-spec-*-
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
-Version:	0.169
-Release:	3%{?dist}
+Version:	0.174
+Release:	1%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 URL:    	https://sourceware.org/elfutils
 Source0:	https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 elfutils=4977019aece471362dbdd28a27ef1030471dff84
-Patch0:		cve-2018-16402.patch
+%define sha1 elfutils=95899ce5fa55002e46bf4e02d01a249516e296fd
+Patch0:         CVE-2018-18310.patch
+Patch1:         CVE-2018-18520.patch
+Patch2:         CVE-2018-18521.patch
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -107,6 +109,8 @@ These are the additional language files of elfutils.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 %configure --program-prefix=%{_programprefix}
@@ -198,6 +202,11 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root)
 
 %changelog
+* Wed May 22 2019 Sujay G <gsujay@vmware.com> 0.174-1
+- Upated to version 0.174
+- Remove patch files cve-2014-0172.patch, cve-2018-16402.patch
+  Since they are fixed in version 0.174
+  Fix for CVE-2018-18310.patch, CVE-2018-18520 & CVE-2018-18521
 * Tue Nov 6 2018 Sujay G <gsujay@vmware.com> 0.169-3
 - Added patch for CVE-2018-16402 Vulnerability
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 0.169-2
