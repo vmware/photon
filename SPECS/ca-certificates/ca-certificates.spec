@@ -1,6 +1,6 @@
 Summary:	Certificate Authority certificates 
 Name:		ca-certificates
-Version:	20190509
+Version:	20190521
 Release:	1%{?dist}
 License:	Custom
 # http://anduin.linuxfromscratch.org/BLFS/other/certdata.txt
@@ -235,6 +235,8 @@ exit 0
 /bin/make-cert.pl
 
 %changelog
+*       Wed May 22 2019 Gerrit Photon <photon-checkins@vmware.com> 20190521-1
+-       Automatic Version Bump
 *       Fri May 10 2019 Ankit Jain <ankitja@vmware.com> 20190509-1
 -       Updating mozilla certdata.txt to latest rev.
 *       Wed Oct 03 2018 Ankit Jain <ankitja@vmware.com> 20180919-1
