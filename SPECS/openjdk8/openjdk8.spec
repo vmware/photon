@@ -3,14 +3,14 @@
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	1.8.0.212
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
-%define sha1    openjdk=43e9e7bf0c311c5067f660afc46e3241b585c11e
+Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}-b04.tar.gz
+%define sha1    openjdk=e619f3fca5d8b808760e3c74703e8d3e698414bc
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
 Patch2:         remove-cups.patch
@@ -64,7 +64,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -qn openjdk-%{version}
+%setup -qn openjdk-%{version}-b04
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -240,6 +240,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Tue May 21 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0.212-2
+-   Upgrade to version 1.8.0.212 b04
+-   Included fix for performance regression.
 *   Thu May 09 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0.212-1
 -   Upgrade to version 1.8.0.212
 -   Add new clhsdb and hsdb binaries.
