@@ -8,7 +8,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.12.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -17,6 +17,7 @@ Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         go-27704.patch
 Patch1:         go-27842.patch
+Patch2:         CVE-2019-11244.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -68,6 +69,7 @@ pushd vendor/golang.org/x/net
 %patch0 -p1
 %patch1 -p1
 popd
+%patch2 -p1
 
 %build
 make
@@ -228,6 +230,8 @@ fi
 %endif
 
 %changelog
+*   Thu May 23 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-2
+-   Fix CVE-2019-11244.patch
 *   Wed May 08 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-1
 -   Update to 1.12.7
 *   Thu Feb 28 2019 Ashwin H <ashwinh@vmware.com> 1.12.5-2
