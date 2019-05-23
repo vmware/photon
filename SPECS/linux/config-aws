@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.9.120 Kernel Configuration
+# Linux/x86 4.9.178 Kernel Configuration
 #
 CONFIG_64BIT=y
 CONFIG_X86_64=y
@@ -789,7 +789,7 @@ CONFIG_BINFMT_SCRIPT=y
 CONFIG_BINFMT_MISC=m
 CONFIG_COREDUMP=y
 CONFIG_IA32_EMULATION=y
-CONFIG_IA32_AOUT=m
+# CONFIG_IA32_AOUT is not set
 # CONFIG_X86_X32 is not set
 CONFIG_COMPAT=y
 CONFIG_COMPAT_FOR_U64_ALIGNMENT=y
