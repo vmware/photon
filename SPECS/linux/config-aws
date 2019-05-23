@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.19.26 Kernel Configuration
+# Linux/x86 4.19.40 Kernel Configuration
 #
 
 #
@@ -626,7 +626,7 @@ CONFIG_AMD_NB=y
 # Binary Emulations
 #
 CONFIG_IA32_EMULATION=y
-CONFIG_IA32_AOUT=m
+# CONFIG_IA32_AOUT is not set
 # CONFIG_X86_X32 is not set
 CONFIG_COMPAT_32=y
 CONFIG_COMPAT=y
