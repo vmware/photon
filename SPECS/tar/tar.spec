@@ -1,7 +1,7 @@
 Summary:	Archiving program
 Name:		tar
 Version:	1.30
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/tar
 Group:		Applications/System
@@ -10,12 +10,15 @@ Distribution: 	Photon
 Source0:	tar/%{name}-%{version}.tar.xz
 %define sha1 tar=0d442c4565f8131745a5dff1cd08f7eaa797f679
 Patch0:		tar-CVE-2019-9923.patch
+Patch1:         tar-CVE-2018-20482.patch
 %description
 Contains GNU archiving program
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
+autoreconf -i --force
 FORCE_UNSAFE_CONFIGURE=1  ./configure \
 	--prefix=%{_prefix} \
 	--bindir=/bin \
@@ -37,6 +40,8 @@ make  %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*       Fri May 24 2019 Keerthana K <keerthanak@vmware.com> 1.30-3
+-       Fix CVE-2018-20482
 *	Wed Apr 24 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.30-2
 -	Fix CVE-2019-9923
 *       Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 1.30-1
