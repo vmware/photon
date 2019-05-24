@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.180
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -394,6 +394,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Jun 07 2019 Tapas Kundu <tkundu@vmware.com> 4.9.180-2
+-   Enabled CONFIG_I2C_CHARDEV to support lm-sensors
 *   Mon Jun 03 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.180-1
 -   Update to version 4.9.180
 *   Thu May 30 2019 Ajay Kaher <akaher@vmware.com> 4.9.178-4
