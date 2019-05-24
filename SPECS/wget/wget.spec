@@ -1,17 +1,14 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
-Version:        1.19.1
-Release:        4%{?dist}
+Version:        1.20.3
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.xz
-%define sha1    wget=cde25e99c144191644406793cbd1c69c102c6970
-Patch0:         wget-CVE-2017-13089.patch
-Patch1:         wget-CVE-2017-13090.patch
-Patch2:         wget-CVE-2017-6508.patch
+Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.gz
+%define sha1    wget=2b886eab5b97267cc358ab35e42d14d33d6dfc95
 Requires:       openssl
 BuildRequires:  openssl-devel
 %if %{with_check}
@@ -23,9 +20,6 @@ The Wget package contains a utility useful for non-interactive
 downloading of files from the Web.
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 ./configure \
@@ -62,6 +56,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_mandir}/man1/*
 %changelog
+*   Thu May 23 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.20.3-1
+-   Updated to latest version. Fix CVE-2019-5953, CVE-2018-20483
 *   Tue Dec 19 2017 Xiaolin Li <xiaolinl@vmware.com> 1.19.1-4
 -   Fix CVE-2017-6508
 *   Mon Nov 20 2017 Xiaolin Li <xiaolinl@vmware.com> 1.19.1-3
