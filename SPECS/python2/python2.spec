@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.15
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -107,6 +107,7 @@ to build python programs.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -225,6 +226,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Sat May 25 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-7
+-   Added patch for CVE-2019-9740
 *   Wed May 22 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-6
 -   Patched reworked changes for CVE-2019-9948
 -   Patch for CVE-2019-9740
