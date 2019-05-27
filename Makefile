@@ -314,7 +314,7 @@ check: packages
 #===============================================================================
 all: iso photon-docker-image k8s-docker-images all-images src-iso
 
-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
 	@echo "Building Photon Full ISO..."
 	@cd $(PHOTON_IMAGE_BUILDER_DIR) && \
 	sudo $(PHOTON_IMAGE_BUILDER) \
@@ -421,6 +421,14 @@ k8s-docker-images: start-docker photon-docker-image
 	./build-k8s-heapster-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
 	./build-k8s-nginx-ingress.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)  && \
 	./build-wavefront-proxy-docker-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)
+
+ostree-repo: $(PHOTON_PACKAGES)
+	@echo "Creating OSTree repo from local RPMs in ostree-repo.tar.gz..."
+	@if [ -f  $(PHOTON_STAGE)/ostree-repo.tar.gz ]; then \
+		echo "ostree-repo.tar.gz already present, not creating again..."; \
+	else \
+		$(SRCROOT)/support/image-builder/ostree-tools/make-ostree-image.sh $(SRCROOT); \
+	fi
 #===============================================================================
 
 # Set up Build environment

@@ -3,6 +3,7 @@
 #    Author: Touseef Liaqat <tliaqat@vmware.com>
 
 from installer import Installer
+from ostreeinstaller import OstreeInstaller
 
 class InstallerContainer(object):
     def __init__(self, install_config, maxy=0, maxx=0,
@@ -19,7 +20,12 @@ class InstallerContainer(object):
 
     def install(self, params):
         installer = None
-        installer = Installer(self.install_config, self.maxy, self.maxx,
+
+        if self.install_config.get('type', '') == "ostree_host":
+            installer = OstreeInstaller(self.install_config, self.maxy, self.maxx,
+                              self.iso_installer, self.rpm_path, self.log_path, self.log_level)
+        else:
+            installer = Installer(self.install_config, self.maxy, self.maxx,
                               self.iso_installer, self.rpm_path, self.log_path, self.log_level)
 
         return installer.install(params)

@@ -4,6 +4,6 @@
                   "shadow","coreutils","grep","readline","findutils","xz","util-linux","e2fsprogs",
                   "libffi","expat","linux","cpio","Linux-PAM","attr","libcap", "systemd","dbus",
                   "gzip", "sqlite","nspr","nss","popt","lua","rpm","gptfdisk","tar",
-                  "hawkey", "python3","python3-libs","pcre","glib", "tdnf", "python3-requests",
-                  "grub2-pc", "grub2-efi", "efivar", "efibootmgr", "dracut", "curl", "dosfstools"]
+                  "hawkey", "python3","python3-libs","pcre","glib", "tdnf", "python3-requests", "grub2",
+                  "grub2-pc", "grub2-efi", "efivar", "efibootmgr", "dracut", "curl", "dosfstools", "ostree", "ostree-grub2", "ostree-libs"]
 }

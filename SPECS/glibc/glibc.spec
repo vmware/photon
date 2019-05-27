@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -134,27 +134,31 @@ cp -v %{SOURCE1} %{buildroot}/sbin
 #       Remove unwanted cruft
 rm -rf %{buildroot}%{_infodir}
 #       Install configuration files
+
+# Spaces should not be used in nsswitch.conf in the begining of new line
+# Only tab should be used as it expects the same in source code.
+# Otherwise "altfiles" will not be added. which may cause dbus.service failure
 cat > %{buildroot}%{_sysconfdir}/nsswitch.conf <<- "EOF"
 #       Begin /etc/nsswitch.conf
 
-        passwd: files
-        group: files
-        shadow: files
+	passwd: files
+	group: files
+	shadow: files
 
-        hosts: files dns
-        networks: files
+	hosts: files dns
+	networks: files
 
-        protocols: files
-        services: files
-        ethers: files
-        rpc: files
+	protocols: files
+	services: files
+	ethers: files
+	rpc: files
 #       End /etc/nsswitch.conf
 EOF
 cat > %{buildroot}%{_sysconfdir}/ld.so.conf <<- "EOF"
 #       Begin /etc/ld.so.conf
-        /usr/local/lib
-        /opt/lib
-        include /etc/ld.so.conf.d/*.conf
+	/usr/local/lib
+	/opt/lib
+	include /etc/ld.so.conf.d/*.conf
 EOF
 popd
 %find_lang %{name} --all-name
@@ -277,6 +281,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Fri Jul 12 2019 Ankit Jain <ankitja@vmware.com> 2.28-4
+-   Replaced spaces with tab in nsswitch.conf file
 *   Fri Mar 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.28-3
 -   Fix CVE-2019-9169
 *   Tue Jan 22 2019 Anish Swaminathan <anishs@vmware.com> 2.28-2
