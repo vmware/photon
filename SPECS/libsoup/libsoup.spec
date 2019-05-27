@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.53.90
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -11,6 +11,7 @@ Source0:    http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.50/%{name}-%{versio
 %define sha1 libsoup=d8511f0a8a07e4f5125c9354be7d43d62ea55eb3
 Patch0:          CVE-2017-2885.patch
 Patch1:          CVE-2018-12910.patch
+Patch2:          CVE-2018-11713.patch
 BuildRequires:   glib
 BuildRequires:   glib-devel
 BuildRequires:   gobject-introspection
@@ -54,6 +55,7 @@ These are the additional language files of libsoup.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -88,6 +90,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %defattr(-,root,root)
 
 %changelog
+*   Mon May 27 2019 Keerthana K <keerthanak@vmware.com> 2.53.90-5
+-   Fix CVE-2018-11713
 *   Mon Sep 03 2018 Ankit Jain <ankitja@vmware.com> 2.53.90-4
 -   Fix for CVE-2018-12910
 *   Mon Jun 18 2018 Tapas Kundu <tkundu@vmware.com> 2.53.90-3
