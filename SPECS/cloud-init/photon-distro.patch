@@ -1,7 +1,7 @@
 diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/cloudinit/distros/photon.py
 --- cloud-init-0.7.9/cloudinit/distros/photon.py	1970-01-01 05:30:00.000000000 +0530
 +++ cloud-init-0.7.9-new/cloudinit/distros/photon.py	2019-03-15 02:04:38.050451527 +0530
-@@ -0,0 +1,320 @@
+@@ -0,0 +1,321 @@
 +# vi: ts=4 expandtab
 +#
 +# Copyright (C) 2017 VMware Inc.
@@ -104,6 +104,7 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +                    route_index += 1
 +
 +            if info.get('auto'):
++                util.delete_dir_contents(self.network_conf_dir)
 +                self._write_interface_file(net_fn, net_cfg, route_entry)
 +            if 'dns-nameservers' in info:
 +                nameservers.extend(info['dns-nameservers'])
