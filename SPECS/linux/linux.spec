@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.180
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,6 +14,7 @@ Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
 %define sha1 ena_linux=84138e8d7eb230b45cb53835edf03ca08043d471
+Source3:        update_photon_cfg.postun
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch2:         linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
@@ -85,6 +86,7 @@ BuildRequires:  openssl-devel audit-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  elfutils-libelf-devel
 Requires:       filesystem kmod coreutils
+Requires(postun): coreutils
 %define uname_r %{version}-%{release}
 
 %description
@@ -279,6 +281,8 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 # Linux version that was affected is 4.4.26
 make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
 
+%include %{SOURCE3}
+
 %post
 /sbin/depmod -a %{uname_r}
 ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
@@ -337,6 +341,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 4.4.180-2
+-   Fix to parse through /boot folder and update symlink (/boot/photon.cfg) if
+-   mulitple kernels are installed and current linux kernel is removed.
 *   Fri May 17 2019 Ajay Kaher <akaher@vmware.com> 4.4.180-1
 -   Update to version 4.4.180
 *   Tue May 14 2019 Ajay Kaher <akaher@vmware.com> 4.4.178-2

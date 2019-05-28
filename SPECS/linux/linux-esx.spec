@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.180
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -11,6 +11,7 @@ Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=ecd7f8b2d806f899c888f4848403c51b4c807fa7
 Source1:       config-esx
+Source2:       update_photon_cfg.postun
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch2:        linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
@@ -78,6 +79,7 @@ BuildRequires: Linux-PAM
 BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
 Requires:      filesystem kmod coreutils
+Requires(postun): coreutils
 %define uname_r %{version}-%{release}-esx
 
 %description
@@ -209,6 +211,8 @@ cp .config %{buildroot}/usr/src/linux-headers-%{uname_r}
 ln -sf /usr/src/linux-headers-%{uname_r} %{buildroot}/lib/modules/%{uname_r}/build
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
+%include %{SOURCE2}
+
 %post
 /sbin/depmod -a %{uname_r}
 ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
@@ -233,6 +237,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 4.4.180-2
+-   Fix to parse through /boot folder and update symlink (/boot/photon.cfg) if
+-   mulitple kernels are installed and current linux kernel is removed.
 *   Fri May 17 2019 Ajay Kaher <akaher@vmware.com> 4.4.180-1
 -   Update to version 4.4.180
 *   Tue May 14 2019 Ajay Kaher <akaher@vmware.com> 4.4.178-2
