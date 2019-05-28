@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.178
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,6 +15,7 @@ Source2:	initramfs.trigger
 %define ena_version 1.1.3
 Source3:       https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
 %define sha1 ena_linux=84138e8d7eb230b45cb53835edf03ca08043d471
+Source4:        update_photon_cfg.postun
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
 Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
@@ -103,6 +104,7 @@ BuildRequires:  procps-ng-devel
 BuildRequires:	audit-devel
 Requires:       filesystem kmod
 Requires(post):(coreutils or toybox)
+Requires(postun):(coreutils or toybox)
 %define uname_r %{version}-%{release}
 
 %description
@@ -316,6 +318,7 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
 
 %include %{SOURCE2}
+%include %{SOURCE4}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -378,6 +381,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 4.9.178-2
+-   Fix to parse through /boot folder and update symlink (/boot/photon.cfg) if
+-   mulitple kernels are installed and current linux kernel is removed.
 *   Fri May 24 2019 srinidhira0 <srinidhir@vmware.com> 4.9.178-1
 -   Update to version 4.9.178
 *   Tue May 14 2019 Ajay Kaher <akaher@vmware.com> 4.9.173-2

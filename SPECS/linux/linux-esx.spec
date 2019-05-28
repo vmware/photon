@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.178
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,6 +12,7 @@ Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar
 %define sha1 linux=09bc493b925bfb0dd14935cccc241789e93a76a5
 Source1:        config-esx
 Source2:        initramfs.trigger
+Source3:        update_photon_cfg.postun
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
 Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
@@ -75,6 +76,7 @@ BuildRequires: procps-ng-devel
 BuildRequires: lz4
 Requires:      filesystem kmod
 Requires(post):(coreutils or toybox)
+Requires(postun):(coreutils or toybox)
 %define uname_r %{version}-%{release}-esx
 
 %description
@@ -203,6 +205,7 @@ ln -sf /usr/src/linux-headers-%{uname_r} %{buildroot}/lib/modules/%{uname_r}/bui
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %include %{SOURCE2}
+%include %{SOURCE3}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -229,6 +232,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 4.9.178-2
+-   Fix to parse through /boot folder and update symlink (/boot/photon.cfg) if
+-   mulitple kernels are installed and current linux kernel is removed.
 *   Fri May 24 2019 srinidhira0 <srinidhir@vmware.com> 4.9.178-1
 -   Update to version 4.9.178
 *   Tue May 14 2019 Ajay Kaher <akaher@vmware.com> 4.9.173-2

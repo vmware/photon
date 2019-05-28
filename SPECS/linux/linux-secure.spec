@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.178
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -14,6 +14,7 @@ Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
 Source3:        initramfs.trigger
+Source4:        update_photon_cfg.postun
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
 Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
@@ -97,6 +98,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 Requires:       filesystem kmod
 Requires(post):(coreutils or toybox)
+Requires(postun):(coreutils or toybox)
 %define uname_r %{version}-%{release}-secure
 
 %description
@@ -295,6 +297,7 @@ ln -sf /usr/src/linux-headers-%{uname_r} %{buildroot}/lib/modules/%{uname_r}/bui
 
 
 %include %{SOURCE3}
+%include %{SOURCE4}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -330,6 +333,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 4.9.178-2
+-   Fix to parse through /boot folder and update symlink (/boot/photon.cfg) if
+-   mulitple kernels are installed and current linux kernel is removed.
 *   Fri May 24 2019 srinidhira0 <srinidhir@vmware.com> 4.9.178-1
 -   Update to version 4.9.178
 *   Tue May 14 2019 Ajay Kaher <akaher@vmware.com> 4.9.173-2
