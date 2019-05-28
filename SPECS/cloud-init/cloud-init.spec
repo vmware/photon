@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        18.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -147,6 +147,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 18.3-3
+-   Delete the contents of network directory before adding the custom network files.
 *   Tue Dec 04 2018 Ajay Kaher <akaher@vmware.com> 18.3-2
 -   Fix auto startup at boot time
 *   Wed Oct 24 2018 Ajay Kaher <akaher@vmware.com> 18.3-1
