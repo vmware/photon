@@ -1,7 +1,7 @@
 Summary:          WPA client
 Name:             wpa_supplicant
 Version:          2.7
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
@@ -9,10 +9,15 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          https://w1.fi/releases/%{name}-%{version}.tar.gz
 %define sha1 wpa=3c3c2c6bc493fb32b919d9b410768324f3729e25
-Patch0:		  wpa_supplicant-CVE-2019-9496.patch
-Patch1:	  	  wpa_supplicant-CVE-2019-9497.patch
-Patch2:		  wpa_supplicant-CVE-2019-9498.patch
-Patch3:		  wpa_supplicant-CVE-2019-9499.patch
+Patch0:           wpa_supplicant-CVE-2019-9496.patch
+Patch1:           wpa_supplicant-CVE-2019-9497.patch
+Patch2:           wpa_supplicant-CVE-2019-9498.patch
+Patch3:           wpa_supplicant-CVE-2019-9499.patch
+Patch4:           wpa_supplicant-CVE-2019-9495-0001-OpenSSL-Use-constant-time-operations-for-private-big.patch
+Patch5:           wpa_supplicant-CVE-2019-9495-0003-OpenSSL-Use-constant-time-selection-for-crypto_bignu.patch
+Patch6:           wpa_supplicant-CVE-2019-9495-0002-Add-helper-functions-for-constant-time-operations.patch
+Patch7:           wpa_supplicant-CVE-2019-9495-0004-EAP-pwd-Use-constant-time-and-memory-access-for-find.patch
+
 BuildRequires:    libnl-devel openssl-devel
 Requires:         libnl
 Requires:         openssl
@@ -26,7 +31,10 @@ WPA Supplicant is a Wi-Fi Protected Access (WPA) client and IEEE 802.1X supplica
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
 
 %build
 cat > wpa_supplicant/.config << "EOF"
@@ -103,6 +111,8 @@ EOF
 %{_sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 
 %changelog
+*   Wed May 29 2019 Michelle Wang <michellew@vmware.com> 2.7-3
+-   Fix CVE-2019-9495
 *   Fri Apr 19 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.7-2
 -   Fix CVE-2019-9496 CVE-2019-9497 CVE-2019-9498 CVE-2019-9499
 *   Thu Jan 3 2019 Michelle Wang <michellew@vmware.com> 2.7-1
