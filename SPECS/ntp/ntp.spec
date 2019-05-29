@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -24,9 +24,9 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires:       openssl
 Requires:       libcap >= 2.24
 %description
-The ntp package contains a client and server to keep the time 
-synchronized between various computers over a network. This 
-package is the official reference implementation of the 
+The ntp package contains a client and server to keep the time
+synchronized between various computers over a network. This
+package is the official reference implementation of the
 NTP protocol.
 
 %package        perl
@@ -50,7 +50,7 @@ state of the NTP daemon running on the local machine.
 %setup -q -a 1
 
 %build
-./configure \
+sh configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --disable-silent-rules \
@@ -70,6 +70,7 @@ install -v -m755    -d %{buildroot}%{_datadir}/doc/%{name}-%{version}
 cp -v -R html/*     %{buildroot}%{_datadir}/doc/%{name}-%{version}/
 install -vdm 755 %{buildroot}/etc
 
+mkdir -p %{buildroot}/var/lib/ntp/drift
 mkdir -p %{buildroot}/etc/sysconfig
 cp %{SOURCE2} %{buildroot}/etc/sysconfig/ntp
 pushd ntpstat-master
@@ -120,7 +121,7 @@ if ! getent passwd ntp >/dev/null; then
     useradd -c "Network Time Protocol" -d /var/lib/ntp -u 87 -g ntp -s /bin/false ntp
 fi
 %post
-%{_sbindir}/ldconfig 
+%{_sbindir}/ldconfig
 %systemd_post ntpd.service
 
 %preun
@@ -133,6 +134,8 @@ fi
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
+%dir /var/lib/ntp/drift
+%attr(0755, ntp, ntp) /var/lib/ntp/drift
 %attr(0750, root, root) %config(noreplace) /etc/ntp.conf
 %attr(0750, root, root) %config(noreplace) /etc/sysconfig/ntp
 /lib/systemd/system/ntpd.service
@@ -173,6 +176,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Wed May 29 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.2.8p12-2
+-   PR#2355310  created drift directory owning ntp user
 *   Fri Aug 24 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p12-1
 -   Upgrade version to 4.2.8p12.
 *   Mon Mar 05 2018 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p11-1
