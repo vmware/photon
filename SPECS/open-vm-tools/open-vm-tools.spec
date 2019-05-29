@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.3.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -41,6 +41,8 @@ Requires:       glib
 Requires:       xml-security-c
 Requires:       openssl
 Requires:       systemd
+Requires:       xmlsec1
+
 %description
 VmWare virtualization user mode tools
 %prep
@@ -105,6 +107,8 @@ fi
 
 
 %changelog
+*   Wed May 29 2019 Michelle Wang <michellew@vmware.com> 10.3.10-3
+-   Adding xmlsec1 in Requires
 *   Tue May 21 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-2
 -   Change processing of /etc/hosts file similar to Perl customization.
 *   Wed May 08 2019 Ankit Jain <ankitja@vmware.com> 10.3.10-1
