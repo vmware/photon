@@ -5,7 +5,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -202,6 +202,8 @@ systemctl daemon-reload >/dev/null 2>&1 || :
 
 
 %changelog
+*   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 0.7.9-5
+-   Delete the contents of network directory before adding the custom network files.
 *   Tue Oct 17 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.7.9-4
 -   Support configuration of systemd resolved.conf
 *   Fri Jul 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.9-3
