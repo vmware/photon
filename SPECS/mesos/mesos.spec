@@ -2,7 +2,7 @@
 
 Summary:        Mesos
 Name:           mesos
-Version:        1.5.2
+Version:        1.5.3
 Release:        1%{?dist}
 License:        Apache
 URL:            http://mesos.apache.org
@@ -10,7 +10,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1    mesos=3709a2a8093493934e4c8e0d34114fc55cf22dfc
+%define sha1    mesos=a52306af26153b514e44c1fe89c1857b5410c20e
 BuildRequires:  openjre8 >= 1.8.0.45
 BuildRequires:  openjdk8 >= 1.8.0.45
 BuildRequires:  curl-devel
@@ -104,6 +104,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Mon May 30 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.5.3-1
+-   Update to 1.5.3 includes fix for CVE-2019-0204
 *   Wed Feb 27 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.2-1
 -   Update to 1.5.2. Includes fix for CVE-2018-1330
 *   Tue Jan 23 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.2-2
