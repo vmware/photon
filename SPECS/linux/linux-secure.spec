@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.178
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -333,6 +333,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu May 30 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.178-3
+-   Change default I/O scheduler to 'deadline' to fix performance issue.
 *   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 4.9.178-2
 -   Fix to parse through /boot folder and update symlink (/boot/photon.cfg) if
 -   mulitple kernels are installed and current linux kernel is removed.
