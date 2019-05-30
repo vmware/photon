@@ -82,13 +82,33 @@ class Scheduler(object):
         Scheduler.sortedList = sortedList
 
         Scheduler.listOfAlreadyBuiltPackages = listOfAlreadyBuiltPackages
-        for x in Scheduler.sortedList:
-            if x not in Scheduler.listOfAlreadyBuiltPackages or x in constants.testForceRPMS:
-                Scheduler.listOfPackagesToBuild.append(x)
+
+        for pkg in Scheduler.sortedList:
+            pkgName, pkgVersion = StringUtils.splitPackageNameAndVersion(pkg)
+            if (pkg not in Scheduler.listOfAlreadyBuiltPackages
+               or pkgName in constants.testForceRPMS):
+                Scheduler.listOfPackagesToBuild.append(pkg)
+
         Scheduler.listOfPackagesCurrentlyBuilding = set()
         Scheduler.listOfPackagesNextToBuild = PriorityQueue()
         Scheduler.listOfFailedPackages = []
-        Scheduler._setPriorities()
+
+        # When performing (only) make-check, package dependencies are
+        # irrelevant; i.e., all the packages can be "make-checked" in
+        # parallel. So skip building the dependency graph. This is not
+        # merely an optimization! A given package can define
+        # additional packages to be installed in its build environment
+        # when performing a make-check, under %if %{with_check}.
+        # However, these are not really build-time-dependencies in the
+        # usual sense; i.e., there is no ordering requirement when
+        # building these packages; they only make sense when running a
+        # `make check`. Hence, trying to build a dependency graph out
+        # of them will result in anomalies such as cycles in the
+        # graph. So skip building the graph altogether and schedule
+        # all the `make check`s in parallel.
+        skipGraphBuild = constants.rpmCheck
+        Scheduler._setPriorities(skipGraphBuild)
+
         if constants.publishBuildDependencies:
             # This must be called only after calling _setPriorities(),
             # which builds the dependency graph.
@@ -542,13 +562,17 @@ class Scheduler(object):
 
 
     @staticmethod
-    def _setPriorities():
-        Scheduler._parseWeights()
-        Scheduler._buildGraph()
+    def _setPriorities(skipGraphBuild):
+        if skipGraphBuild:
+            for package in Scheduler.sortedList:
+                Scheduler.priorityMap[package] = 0
+        else:
+            Scheduler._parseWeights()
+            Scheduler._buildGraph()
 
-        for package in Scheduler.sortedList:
-            pkgNode = Scheduler.mapPackagesToGraphNodes[package]
-            Scheduler.priorityMap[package] = pkgNode.criticalChainWeight
+            for package in Scheduler.sortedList:
+                pkgNode = Scheduler.mapPackagesToGraphNodes[package]
+                Scheduler.priorityMap[package] = pkgNode.criticalChainWeight
 
         Scheduler.logger.debug("set Priorities: Priority of all packages")
         Scheduler.logger.debug(Scheduler.priorityMap)
