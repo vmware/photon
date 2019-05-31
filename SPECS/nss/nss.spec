@@ -1,6 +1,6 @@
 Summary:        Security client
 Name:           nss
-Version:        3.31.1
+Version:        3.44
 Release:        1%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/mozilla.org/security/nss/
@@ -8,8 +8,8 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nss=cd62556e63ad29c42e43e05c0a8bf2398d19059c
-Patch:          nss-3.31-standalone-1.patch
+%define sha1    nss=11eab8681754472a9d1eb196e3c604d794ebe7f3
+Patch:          nss-3.44-standalone-1.patch
 Requires:       nspr
 Requires:       sqlite-autoconf
 BuildRequires:  nspr
@@ -43,6 +43,7 @@ make VERBOSE=1 BUILD_OPT=1 \
     ZLIB_LIBS=-lz \
     $([ $(uname -m) = x86_64 ] && echo USE_64=1) \
     $([ -f %{_includedir}/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1)
+
 %install
 cd nss
 cd ../dist
@@ -56,7 +57,15 @@ chmod 644 %{buildroot}%{_includedir}/nss/*
 install -v -m755 Linux*/bin/{certutil,nss-config,pk12util} %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_libdir}/pkgconfig
 install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
-%post   -p /sbin/ldconfig
+
+%check
+cd nss/tests
+chmod g+w . -R
+useradd test -G root -m
+HOST=localhost DOMSUF=localdomain BUILD_OPT=1
+sudo -u test ./all.sh && userdel test -r -f
+
+%post -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -70,6 +79,8 @@ install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Wed May 29 2019 Michelle Wang <michellew@vmware.com> 3.44-1
+-   Upgrade to 3.44 for CVE-2018-12404
 *   Tue May 29 2018 Xiaolin Li <xiaolinl@vmware.com> 3.31.1-1
 -   Upgrade to 3.31.1
 *   Tue Jun 20 2017 Xiaolin Li <xiaolinl@vmware.com> 3.31-1
