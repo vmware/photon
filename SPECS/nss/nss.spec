@@ -1,15 +1,15 @@
 Summary:        Security client
 Name:           nss
-Version:        3.31.1
+Version:        3.44
 Release:        1%{?dist}
 License:        MPLv2.0
-URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_31_1_RTM/src/%{name}-%{version}.tar.gz
+URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_44_1_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nss=cd62556e63ad29c42e43e05c0a8bf2398d19059c
-Patch:          nss-3.31-standalone-1.patch
+%define sha1    nss=11eab8681754472a9d1eb196e3c604d794ebe7f3
+Patch:          nss-3.44-standalone-1.patch
 Requires:       nspr
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -52,6 +52,7 @@ make VERBOSE=1 BUILD_OPT=1 \
     ZLIB_LIBS=-lz \
     $([ $(uname -m) = x86_64 ] && echo USE_64=1) \
     $([ -f %{_includedir}/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1)
+
 %install
 cd nss
 cd ../dist
@@ -97,6 +98,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Wed May 29 2019 Michelle Wang <michellew@vmware.com> 3.44-1
+-   Upgrade to 3.44 for CVE-2018-12404
 *   Tue May 29 2018 Xiaolin Li <xiaolinl@vmware.com> 3.31.1-1
 -   Upgrade to 3.31.1
 *   Fri Jul 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.31-3
