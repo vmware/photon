@@ -1,15 +1,15 @@
 Summary:        Security client
 Name:           nss
-Version:        3.39
+Version:        3.44
 Release:        1%{?dist}
 License:        MPLv2.0
-URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_39_RTM/src/%{name}-%{version}.tar.gz
+URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_44_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nss=351e0e9607ead50174efe5f5107e2dc97e7358f2
-Patch:          nss-standalone-1.patch
+%define sha1    nss=11eab8681754472a9d1eb196e3c604d794ebe7f3
+Patch:          nss-3.44-standalone-1.patch
 Requires:       nspr
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -43,6 +43,7 @@ This package contains minimal set of shared nss libraries.
 %prep
 %setup -q
 %patch -p1
+
 %build
 cd nss
 # -j is not supported by nss
@@ -52,6 +53,7 @@ make VERBOSE=1 BUILD_OPT=1 \
     ZLIB_LIBS=-lz \
     USE_64=1 \
     $([ -f %{_includedir}/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1)
+
 %install
 cd nss
 cd ../dist
@@ -97,6 +99,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Wed May 29 2019 Michelle Wang <michellew@vmware.com> 3.44-1
+-   Upgrade to 3.44 for CVE-2018-12404
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.39-1
 -   Upgrade to 3.39.
 *   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 3.31-5
@@ -115,7 +119,7 @@ sudo -u test ./all.sh && userdel test -r -f
 -   Added libs subpackage to reduce tdnf dependent tree
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.25-3
 -   Use sqlite-libs as runtime dependency
-*   Mon Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2
+*   Tue Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2
 -   Modified %check
 *   Tue Jul 05 2016 Anish Swaminathan <anishs@vmware.com> 3.25-1
 -   Upgrade to 3.25

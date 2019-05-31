@@ -1,6 +1,6 @@
 Summary:        Platform-neutral API
 Name:           nspr
-Version:        4.20
+Version:        4.21
 Release:        1%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/mozilla.org
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.mozilla.org/pub/nspr/releases/v%{version}/src/%{name}-%{version}.tar.gz
-%define sha1    nspr=ef1e2ca3205fd1658a69ada2e0436266ca3065b5
+%define sha1    nspr=0ae8c710a52775e209b96aa6220362837b79b6c3
 
 %description
 Netscape Portable Runtime (NSPR) provides a platform-neutral API
@@ -17,6 +17,7 @@ for system level and libc like functions.
 %package        devel
 Summary:        Header and development files for nspr
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 It contains the libraries and header files to create applications
 
@@ -28,9 +29,7 @@ sed -i 's#$(LIBRARY) ##' config/rules.mk
 
 %build
 cd nspr
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
+%configure \
     --with-mozilla \
     --with-pthreads \
     $([ $(uname -m) = x86_64 ] && echo --enable-64bit) \
@@ -58,6 +57,8 @@ make DESTDIR=%{buildroot} install
 %{_datarootdir}/aclocal/*
 
 %changelog
+*   Fri May 31 2019 Michelle Wang <michellew@vmware.com> 4.21-1
+-   Upgrade to 4.21 for nss upgrade to 3.44
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.20-1
 -   Upgrade to 4.20.
 *   Tue Jun 20 2017 Xiaolin Li <xiaolinl@vmware.com> 4.15-1
