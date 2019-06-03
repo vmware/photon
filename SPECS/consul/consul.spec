@@ -1,7 +1,7 @@
 Summary:        Consul is a tool for service discovery and configuration.
 Name:           consul
 Version:        1.2.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -10,6 +10,7 @@ URL:		https://github.com/hashicorp/consul/archive/v%{version}.tar.gz
 Source0:	%{name}-%{version}.tar.gz
 %define sha1 %{name}-%{version}.tar.gz=c507e1c0b31fa02dd5ba3f8a3a981e6f7b0c464d
 Source1:        %{name}.service
+Patch0:		consul-CVE-2018-19653.patch
 BuildRequires:  unzip
 BuildRequires:  systemd
 BuildRequires:  go
@@ -28,6 +29,7 @@ Consul provides several key features:
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 export LANG=en_US.UTF-8
@@ -101,6 +103,8 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/%{name}.d
 
 %changelog
+*  Mon Jun 03 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.2.3-2
+-  Applied patch for CVE-2018-19653
 *  Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.2.3-1
 -  Upgraded to version 1.2.3
 *  Mon Jul 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
