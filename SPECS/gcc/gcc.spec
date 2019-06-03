@@ -2,7 +2,7 @@
 Summary:	Contains the GNU compiler collection
 Name:		gcc
 Version:	5.3.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
@@ -183,9 +183,11 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %ifarch x86_64
 %{_lib64dir}/libstdc++.so
 %{_lib64dir}/libstdc++.la
+%{_lib64dir}/libstdc++.a
 %else
 %{_libdir}/libstdc++.so
 %{_libdir}/libstdc++.la
+%{_lib64dir}/libstdc++.a
 %endif
 
 %{_includedir}/c++/*
@@ -213,6 +215,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 
 %changelog
+*   Mon Jun 03 2019 Harinadh Donmaraju <hdommaraju@vmware.com> 5.3.0-6
+-   Updated for packaging with static files
 *   Thu Jun 14 2018 Keerthana K <keerthanak@vmware.com> 5.3.0-5
 -   Fix for CVE-2017-11671.
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 5.3.0-4
