@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.8p1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -21,6 +21,7 @@ Patch4:         openssh-CVE-2019-6109.patch
 Patch5:         openssh-CVE-2019-6109-progressmeter.patch
 Patch6:         openssh-CVE-2019-6111.patch
 Patch7:         openssh-CVE-2019-6111-filenames.patch
+Patch8:         scp-name-validator-CVE-2019-6110.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
@@ -62,6 +63,7 @@ tar xf %{SOURCE1} --no-same-owner
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 %build
 %configure \
     --sysconfdir=/etc/ssh \
@@ -184,6 +186,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Mon Jun 03 2019 Ankit Jain <ankitja@vmware.comm> 7.8p1-4
+-   Fix for CVE-2019-6110.
 *   Thu May 09 2019 Ankit Jain <ankitja@vmware.comm> 7.8p1-3
 -   Fix CVE-2019-6109 and CVE-2019-6111.
 *   Thu Feb 14 2019 Ankit Jain <ankitja@vmware.comm> 7.8p1-2
