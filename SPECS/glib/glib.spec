@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.58.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
 Group:		Applications/System
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.58/%{name}-%{version}.tar.xz
 %define sha1 glib=c00e433c56e0ba3541abc5222aeca4136de10fb8
+Patch0:         glib-CVE-2019-12450.patch
 BuildRequires:	pcre-devel
 BuildRequires:	libffi-devel
 BuildRequires:	pkg-config
@@ -51,6 +52,8 @@ Gsettings schemas compiling tool
 
 %prep
 %setup -q
+%patch0 -p1
+
 %build
 ./autogen.sh
 %configure --with-pcre=system
@@ -90,6 +93,8 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+*   Mon Jun 03 2019 Ankit Jain <ankitja@vmware.com> 2.58.0-3
+-   Fix for CVE-2019-12450
 *   Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 2.58.0-2
 -   glib-devel requires python-xml.
 *   Tue Sep 11 2018 Anish Swaminathan <anishs@vmware.com> 2.58.0-1
