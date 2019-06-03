@@ -1,7 +1,7 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
 Version:        4.0.10
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        libtiff
 URL:            https://gitlab.com/libtiff/libtiff
 Group:          System Environment/Libraries
@@ -12,6 +12,7 @@ Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff
 Patch0:         CVE-2018-12900.patch
 Patch1:         CVE-2019-6128.patch
 Patch2:         CVE-2019-17546.patch
+Patch3:         CVE-2019-7663.patch
 BuildRequires:  libjpeg-turbo-devel
 Requires:       libjpeg-turbo
 %description
@@ -29,6 +30,7 @@ It contains the libraries and header files to create applications
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 %build
 sh autogen.sh
 %configure \
@@ -63,6 +65,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Fri Mar 13 2020 Keerthana K <keerthanak@vmware.com> 4.0.10-5
+-   Fix CVE-2019-7663.
 *   Thu Mar 05 2020 Keerthana K <keerthanak@vmware.com> 4.0.10-4
 -   Fix CVE-2019-17546.
 *   Tue Feb 05 2019 Keerthana K <keerthanak@vmware.com> 4.0.10-3
