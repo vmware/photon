@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.178
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.180
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=09bc493b925bfb0dd14935cccc241789e93a76a5
+%define sha1 linux=e50245960324896fd7715ee31a9089e4620b08fd
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -394,6 +394,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Jun 03 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.180-1
+-   Update to version 4.9.180
 *   Thu May 30 2019 Ajay Kaher <akaher@vmware.com> 4.9.178-4
 -   Fix CVE-2019-11487
 *   Thu May 30 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.178-3
