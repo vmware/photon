@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.31
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -15,6 +15,10 @@ Patch2:         binutils-CVE-2018-18607.patch
 Patch3:         binutils-CVE-2018-18606.patch
 Patch4:         binutils-CVE-2018-19931.patch
 Patch5:         binutils-CVE-2018-1000876.patch
+Patch6:         binutils-CVE-2018-19932.patch
+Patch7:         binutils-CVE-2018-20002.patch
+Patch8:         binutils-CVE-2019-9071.patch
+Patch9:         binutils-CVE-2019-9073.patch
 
 %description
 The Binutils package contains a linker, an assembler,
@@ -23,7 +27,7 @@ and other tools for handling object files.
 Summary:    Header and development files for binutils
 Requires:   %{name} = %{version}
 %description    devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 for handling compiled objects.
 %prep
 %setup -q
@@ -33,6 +37,10 @@ for handling compiled objects.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
 
 %build
 install -vdm 755 ../binutils-build
@@ -123,6 +131,8 @@ make %{?_smp_mflags} check
 %{_lib64dir}/libiberty.a
 
 %changelog
+*   Mon Jun 03 2019 Vikash Bansal <bvikas@vmware.com> 2.31-4
+-   Fix CVE-2018-19932, CVE-2018-20002, CVE-2019-9071 & CVE-2019-9073
 *   Wed Feb 13 2019 Alexey Makhalov <amakhalov@vmware.com> 2.31-3
 -   Fix CVE-2018-19931 and CVE-2018-1000876
 *   Wed Jan 02 2019 Ankit Jain <ankitja@vmware.com> 2.31-2
