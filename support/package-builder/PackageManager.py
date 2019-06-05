@@ -66,9 +66,11 @@ class PackageManager(object):
     def buildPackages(self, listPackages, buildThreads):
         if constants.rpmCheck:
             constants.rpmCheck = False
+            constants.addMacro("with_check", "0")
             self.buildToolChainPackages(buildThreads)
             self._buildTestPackages(buildThreads)
             constants.rpmCheck = True
+            constants.addMacro("with_check", "1")
             self._buildGivenPackages(listPackages, buildThreads)
         else:
             self.buildToolChainPackages(buildThreads)
@@ -128,8 +130,11 @@ class PackageManager(object):
                     not constants.rpmCheck):
                 listPackagesToBuild.remove(pkg)
 
-        if not self._readPackageBuildData(listPackagesToBuild):
-            return False
+        if constants.rpmCheck:
+            self.sortedPackageList = listPackagesToBuild
+        else:
+            if not self._readPackageBuildData(listPackagesToBuild):
+                return False
 
         if self.sortedPackageList:
             self.logger.info("List of packages yet to be built...")

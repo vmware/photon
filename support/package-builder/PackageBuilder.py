@@ -31,7 +31,7 @@ class PackageBuilder(object):
         #test only if the package is in the testForceRPMS with rpmCheck
         #build only if the package is not in the testForceRPMS with rpmCheck
 
-        if not constants.rpmCheck or packageName in constants.testForceRPMS:
+        if not (constants.rpmCheck or packageName in constants.testForceRPMS):
             if self._checkIfPackageIsAlreadyBuilt(packageName, packageVersion, doneList):
                 return
 
