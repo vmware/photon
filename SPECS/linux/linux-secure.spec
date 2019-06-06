@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.182
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -93,6 +93,8 @@ Patch73: 0003-UBUNTU-SAUCE-apparmor-Add-the-ability-to-mediate-mou.patch
 
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
+
+Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -229,6 +231,9 @@ EOF
 pushd ..
 %patch99 -p0
 popd
+
+%patch111 -p1
+
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
@@ -350,6 +355,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.9.182-2
+-   Fix 9p vsock 16bit port number issue.
 *   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.182-1
 -   Update to version 4.9.182
 -   Fix CVE-2019-12456, CVE-2019-12379, CVE-2019-12381, CVE-2019-12382,

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.182
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -98,6 +98,7 @@ Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
 Patch72: 0002-apparmor-Fix-quieting-of-audit-messages-for-network-.patch
 Patch73: 0003-UBUNTU-SAUCE-apparmor-Add-the-ability-to-mediate-mou.patch
 
+Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -229,6 +230,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
+
+%patch111 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -400,6 +403,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.9.182-3
+-   Fix 9p vsock 16bit port number issue.
 *   Thu Jun 27 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.182-2
 -   Deprecate linux-aws-tools in favor of linux-tools.
 *   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.182-1

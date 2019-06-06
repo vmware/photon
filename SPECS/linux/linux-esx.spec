@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.182
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -27,15 +27,16 @@ Patch9:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch11:        vsock-transport-for-9p.patch
 Patch12:        x86-vmware-sta.patch
+Patch13:        9p-trans_fd-extend-port-variable-to-u32.patch
 # -esx
-Patch13:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
-Patch14:        01-clear-linux.patch
-Patch15:        02-pci-probe.patch
-Patch16:        03-poweroff.patch
-Patch17:        04-quiet-boot.patch
-Patch18:        05-pv-ops-clocksource.patch
-Patch19:        06-pv-ops-boot_clock.patch
-Patch20:        07-vmware-only.patch
+Patch14:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
+Patch15:        01-clear-linux.patch
+Patch16:        02-pci-probe.patch
+Patch17:        03-poweroff.patch
+Patch18:        04-quiet-boot.patch
+Patch19:        05-pv-ops-clocksource.patch
+Patch20:        06-pv-ops-boot_clock.patch
+Patch21:        07-vmware-only.patch
 Patch22:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 
 # Fix CVE-2019-11599
@@ -134,6 +135,7 @@ The Linux package contains the Linux kernel doc files
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
+%patch21 -p1
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
@@ -250,6 +252,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.9.182-2
+-   Fix 9p vsock 16bit port number issue.
 *   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.182-1
 -   Update to version 4.9.182
 -   Fix CVE-2019-12456, CVE-2019-12379, CVE-2019-12381, CVE-2019-12382,
