@@ -3,7 +3,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.0.0533
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -13,6 +13,7 @@ Source0:        %{name}-%{version}.tar.gz
 %define sha1    vim=6169cece15cb139db3ceff9c9ba2bf74013b1e02
 BuildRequires:  ncurses-devel
 Patch0:         CVE-2017-17087.patch
+Patch1:		vim-CVE-2019-12735.patch
 
 %description
 The Vim package contains a powerful text editor.
@@ -28,6 +29,7 @@ The vim extra package contains a extra files for powerful text editor.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 %build
@@ -181,6 +183,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+*   Thu Jun 06 2019 Siju Maliakkal <smaliakkal@vmwre.com> 8.0.0533-7
+-   Fix for CVE-2019-12735
 *   Tue Jan 29 2019 Dweep Advani <dadvani@vmware.com> 8.0.0533-6
 -   Fixed swap file creation error for custom login shell
 *   Thu Jul 12 2018 Tapas Kundu <tkundu@vmware.com> 8.0.0533-5
