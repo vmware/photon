@@ -1,0 +1,30 @@
+From 5bc8546db478209bb5eba4b225c1516689735ff3 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Wed, 5 Jun 2019 17:17:28 -0700
+Subject: [PATCH] 9p: trans_fd: extend port variable to u32
+
+This patch is an addition to vsock transport for 9p patch.
+vsock layer uses 32 bits for the port number but trans_fd
+options parser limits it to 16 bits. It is safe to extend
+it since it is internal structure and does not break
+existing code.
+---
+ net/9p/trans_fd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+index 236c6611f3fb..0f578af2fba7 100644
+--- a/net/9p/trans_fd.c
++++ b/net/9p/trans_fd.c
+@@ -64,7 +64,7 @@
+ struct p9_fd_opts {
+ 	int rfd;
+ 	int wfd;
+-	u16 port;
++	u32 port;
+ 	bool privport;
+ };
+ 
+-- 
+2.11.0
+

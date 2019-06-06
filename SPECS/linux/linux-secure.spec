@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.52
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -22,8 +22,9 @@ Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         4.18-x86-vmware-STA-support.patch
+Patch7:	        9p-trans_fd-extend-port-variable-to-u32.patch
 # secure
-Patch7:         0001-bpf-ext4-bonding-Fix-compilation-errors.patch
+Patch12:        0001-bpf-ext4-bonding-Fix-compilation-errors.patch
 Patch13:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
 Patch14:        0002-Added-PAX_RANDKSTACK.patch
 Patch15:        0003-Added-rap_plugin.patch
@@ -114,6 +115,7 @@ The Linux package contains the Linux kernel doc files
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch12 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
@@ -260,6 +262,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.52-2
+-   Fix 9p vsock 16bit port issue.
 *   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-1
 -   Update to version 4.19.52
 -   Fix CVE-2019-12456, CVE-2019-12379, CVE-2019-12380, CVE-2019-12381,

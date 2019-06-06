@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.52
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -28,6 +28,7 @@ Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         4.18-x86-vmware-STA-support.patch
+Patch7:	        9p-trans_fd-extend-port-variable-to-u32.patch
 # ttyXRUSB support
 Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
 #HyperV patches
@@ -188,6 +189,7 @@ Kernel Device Tree Blob files for NXP ls1012a FRWY board
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 %patch11 -p1
 %patch13 -p1
 %patch24 -p1
@@ -463,6 +465,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.52-3
+-   Fix 9p vsock 16bit port issue.
 *   Thu Jun 20 2019 Tapas Kundu <tkundu@vmware.com> 4.19.52-2
 -   Enabled CONFIG_I2C_CHARDEV to support lm-sensors
 *   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-1
