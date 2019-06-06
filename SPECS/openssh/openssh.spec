@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.4p1
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -21,6 +21,7 @@ Patch6:         openssh-CVE-2019-6109.patch
 Patch7:         openssh-CVE-2019-6109-progressmeter.patch
 Patch8:         openssh-CVE-2019-6111.patch
 Patch9:         openssh-CVE-2019-6111-filenames.patch
+Patch10:        scp-name-validator-CVE-2019-6110.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM
 BuildRequires:  krb5
@@ -48,6 +49,7 @@ tar xf %{SOURCE1}
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 %build
 ./configure \
     CFLAGS="%{optflags}" \
@@ -156,6 +158,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*   Thu Jun 06 2019 Ankit Jain <ankitja@vmware.comm> 7.4p1-10
+-   Fix for CVE-2019-6110.
 *   Thu May 09 2019 Ankit Jain <ankitja@vmware.comm> 7.4p1-9
 -   Fix CVE-2019-6109 and CVE-2019-6111.
 *   Wed Feb 13 2019 Ankit Jain <ankitja@vmware.comm> 7.4p1-8
