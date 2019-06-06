@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.03.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -16,6 +16,8 @@ Source0:        https://github.com/docker/docker-ce/archive/docker-%{version}-ce
 Source99:       default-disable.preset
 Patch0:         fix-apparmor-not-being-applied-to-exec-processes.patch
 Patch1:         CVE-2019-5736.patch
+Patch10:        CVE-2018-15664_1.patch
+Patch11:        CVE-2018-15664_2.patch
 Patch99:        remove-firewalld.patch
 
 BuildRequires:  systemd
@@ -63,6 +65,11 @@ mkdir docker
 
 ln -snrf "$OLDPWD/components/engine" docker/docker
 ln -snrf "$OLDPWD/components/cli" docker/cli
+
+pushd docker/docker
+%patch10 -p1
+%patch11 -p1
+popd
 
 %build
 export GOPATH="/go"
@@ -192,6 +199,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Wed Jun 4 2019 Bo Gan <ganb@vmware.com> 18.03.0-5
+-   Fix CVE-2018-15664
 *   Thu Feb 14 2019 Bo Gan <ganb@vmware.com> 18.03.0-4
 -   Fix docker version string
 *   Mon Feb 11 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 18.03.0-3
