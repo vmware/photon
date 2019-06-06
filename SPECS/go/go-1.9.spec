@@ -14,7 +14,7 @@
 Summary:        Go
 Name:           go
 Version:        1.9.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -24,6 +24,8 @@ Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
 %define sha1    go=388bb51899059e979b81473998f4e955c2af99ca
 Patch0:         go-1.9-CVE-2019-16875.patch
 Patch1:         go-1.9-CVE-2019-6486.patch
+Patch2:         go-1.9-CVE-2018-16874.patch
+Patch3:         go-1.9-CVE-2018-16873.patch
 Requires:       glibc
 # to avoid cyclic dependency use prebuilt publish go rpm
 %define ExtraBuildRequires go
@@ -35,6 +37,8 @@ Go is an open source programming language that makes it easy to build simple, re
 %setup -qn %{name}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 export GOHOSTOS=linux
@@ -116,6 +120,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Mon Jun 24 2019 Ashwin H <ashwinh@vmware.com> 1.9.7-4
+-   Fix CVE-2018-16873 CVE-2018-16874
 *   Wed Jun 05 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.9.7-3
 -   Fix for CVE-2019-6486
 *   Wed Jun 05 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.9.7-2
