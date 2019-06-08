@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.79
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -31,6 +31,7 @@ Patch5:         vsock-transport-for-9p.patch
 Patch6:         4.18-x86-vmware-STA-support.patch
 Patch7:	        9p-trans_fd-extend-port-variable-to-u32.patch
 Patch8:         perf-scripts-python-Convert-python2-scripts-to-python3.patch
+Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 # ttyXRUSB support
 Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
 #HyperV patches
@@ -223,6 +224,7 @@ Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 %patch11 -p1
 %patch13 -p1
 %patch24 -p1
@@ -528,6 +530,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Nov 07 2019 Jorgen Hansen (VMware) <jhansen@vmware.com> 4.19.79-3
+-   Fix vsock QP detach with outgoing data
 *   Thu Oct 24 2019 Ajay Kaher <akaher@vmware.com> 4.19.79-2
 -   Enabled WiFi and BT config for Dell 5K.
 *   Tue Oct 15 2019 Ajay Kaher <akaher@vmware.com> 4.19.79-1

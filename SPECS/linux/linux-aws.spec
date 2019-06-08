@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.79
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -23,6 +23,7 @@ Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         4.18-x86-vmware-STA-support.patch
+Patch7:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 #HyperV patches
 Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
@@ -154,6 +155,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 %patch13 -p1
 %patch24 -p1
 %patch26 -p1
@@ -360,6 +362,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Nov 07 2019 Jorgen Hansen (VMware) <jhansen@vmware.com> 4.19.79-2
+-   Fix vsock QP detach with outgoing data
 *   Tue Oct 15 2019 Ajay Kaher <akaher@vmware.com> 4.19.79-1
 -   Update to version 4.19.79
 -   Fix CVE-2019-17133

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.79
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -24,6 +24,7 @@ Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         4.18-x86-vmware-STA-support.patch
 Patch7:	        9p-trans_fd-extend-port-variable-to-u32.patch
+Patch8:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 # secure
 Patch12:        0001-bpf-ext4-bonding-Fix-compilation-errors.patch
 Patch13:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
@@ -116,6 +117,7 @@ The Linux package contains the Linux kernel doc files
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
@@ -265,6 +267,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Nov 07 2019 Jorgen Hansen (VMware) <jhansen@vmware.com> 4.19.79-2
+-   Fix vsock QP detach with outgoing data
 *   Tue Oct 15 2019 Ajay Kaher <akaher@vmware.com> 4.19.79-1
 -   Update to version 4.19.79
 -   Fix CVE-2019-17133

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.79
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -25,6 +25,7 @@ Patch5:         vsock-transport-for-9p.patch
 Patch6:         4.18-x86-vmware-STA-support.patch
 Patch7:	        9p-trans_fd-extend-port-variable-to-u32.patch
 Patch8:         init-do_mounts-recreate-dev-root.patch
+Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 
 # -esx
 Patch13:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
@@ -108,6 +109,7 @@ The Linux package contains the Linux kernel doc files
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
@@ -231,6 +233,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Nov 07 2019 Jorgen Hansen (VMware) <jhansen@vmware.com> 4.19.79-2
+-   Fix vsock QP detach with outgoing data
 *   Tue Oct 15 2019 Ajay Kaher <akaher@vmware.com> 4.19.79-1
 -   Update to version 4.19.79
 -   Fix CVE-2019-17133
