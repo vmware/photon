@@ -1,0 +1,254 @@
+commit 48d7c64805757d6c631a4ea2e973652f59058ac3
+Author: Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl>
+Date:   Tue Apr 25 23:44:34 2017 -0400
+
+    basic: add readdir_no_dot and safe_glob functions
+    
+    safe_glob filters out "." and "..".
+    
+    This converts all users of glob_extend() and glob_exists() to safe_glob.
+
+diff --git a/src/basic/dirent-util.c b/src/basic/dirent-util.c
+index 6b9d26773e..5bf58bcdc3 100644
+--- a/src/basic/dirent-util.c
++++ b/src/basic/dirent-util.c
+@@ -75,3 +75,14 @@ bool dirent_is_file_with_suffix(const struct dirent *de, const char *suffix) {
+ 
+         return endswith(de->d_name, suffix);
+ }
++
++struct dirent* readdir_no_dot(DIR *dirp) {
++        struct dirent* d;
++
++        for (;;) {
++                d = readdir(dirp);
++                if (d && dot_or_dot_dot(d->d_name))
++                        continue;
++                return d;
++        }
++}
+diff --git a/src/basic/dirent-util.h b/src/basic/dirent-util.h
+index b91d04908f..18b9db9b28 100644
+--- a/src/basic/dirent-util.h
++++ b/src/basic/dirent-util.h
+@@ -31,6 +31,8 @@ int dirent_ensure_type(DIR *d, struct dirent *de);
+ bool dirent_is_file(const struct dirent *de) _pure_;
+ bool dirent_is_file_with_suffix(const struct dirent *de, const char *suffix) _pure_;
+ 
++struct dirent* readdir_no_dot(DIR *dirp);
++
+ #define FOREACH_DIRENT(de, d, on_error)                                 \
+         for (errno = 0, de = readdir(d);; errno = 0, de = readdir(d))   \
+                 if (!de) {                                              \
+diff --git a/src/basic/glob-util.c b/src/basic/glob-util.c
+index 007198c269..f611c42e4c 100644
+--- a/src/basic/glob-util.c
++++ b/src/basic/glob-util.c
+@@ -17,54 +17,70 @@
+   along with systemd; If not, see <http://www.gnu.org/licenses/>.
+ ***/
+ 
++#include <dirent.h>
+ #include <errno.h>
+ #include <glob.h>
++#include <sys/types.h>
+ 
++#include "dirent-util.h"
+ #include "glob-util.h"
+ #include "macro.h"
++#include "path-util.h"
+ #include "strv.h"
+ 
+-int glob_exists(const char *path) {
+-        _cleanup_globfree_ glob_t g = {};
++int safe_glob(const char *path, int flags, glob_t *pglob) {
+         int k;
+ 
+-        assert(path);
++        /* We want to set GLOB_ALTDIRFUNC ourselves, don't allow it to be set. */
++        assert(!(flags & GLOB_ALTDIRFUNC));
++
++        if (!pglob->gl_closedir)
++                pglob->gl_closedir = (void (*)(void *)) closedir;
++        if (!pglob->gl_readdir)
++                pglob->gl_readdir = (struct dirent *(*)(void *)) readdir_no_dot;
++        if (!pglob->gl_opendir)
++                pglob->gl_opendir = (void *(*)(const char *)) opendir;
++        if (!pglob->gl_lstat)
++                pglob->gl_lstat = lstat;
++        if (!pglob->gl_stat)
++                pglob->gl_stat = stat;
+ 
+         errno = 0;
+-        k = glob(path, GLOB_NOSORT|GLOB_BRACE, NULL, &g);
++        k = glob(path, flags | GLOB_ALTDIRFUNC, NULL, pglob);
+ 
+         if (k == GLOB_NOMATCH)
+-                return 0;
++                return -ENOENT;
+         if (k == GLOB_NOSPACE)
+                 return -ENOMEM;
+         if (k != 0)
+                 return errno > 0 ? -errno : -EIO;
++        if (strv_isempty(pglob->gl_pathv))
++                return -ENOENT;
+ 
+-        return !strv_isempty(g.gl_pathv);
++        return 0;
+ }
+ 
+-int glob_extend(char ***strv, const char *path) {
++int glob_exists(const char *path) {
+         _cleanup_globfree_ glob_t g = {};
+         int k;
+-        char **p;
+ 
+-        errno = 0;
+-        k = glob(path, GLOB_NOSORT|GLOB_BRACE, NULL, &g);
++        assert(path);
+ 
+-        if (k == GLOB_NOMATCH)
+-                return -ENOENT;
+-        if (k == GLOB_NOSPACE)
+-                return -ENOMEM;
+-        if (k != 0)
+-                return errno > 0 ? -errno : -EIO;
+-        if (strv_isempty(g.gl_pathv))
+-                return -ENOENT;
++        k = safe_glob(path, GLOB_NOSORT|GLOB_BRACE, &g);
++        if (k == -ENOENT)
++                return false;
++        if (k < 0)
++                return k;
++        return true;
++}
++
++int glob_extend(char ***strv, const char *path) {
++        _cleanup_globfree_ glob_t g = {};
++        int k;
+ 
+-        STRV_FOREACH(p, g.gl_pathv) {
+-                k = strv_extend(strv, *p);
+-                if (k < 0)
+-                        return k;
+-        }
++        k = safe_glob(path, GLOB_NOSORT|GLOB_BRACE, &g);
++        if (k < 0)
++                return k;
+ 
+-        return 0;
++        return strv_extend_strv(strv, g.gl_pathv, false);
+ }
+diff --git a/src/basic/glob-util.h b/src/basic/glob-util.h
+index 5d8fb47a26..e1f6083afa 100644
+--- a/src/basic/glob-util.h
++++ b/src/basic/glob-util.h
+@@ -19,12 +19,16 @@
+   along with systemd; If not, see <http://www.gnu.org/licenses/>.
+ ***/
+ 
++#include <glob.h>
+ #include <stdbool.h>
+ #include <string.h>
+ 
+ #include "macro.h"
+ #include "string-util.h"
+ 
++/* Note: this function modifies pglob to set various functions. */
++int safe_glob(const char *path, int flags, glob_t *pglob);
++
+ int glob_exists(const char *path);
+ int glob_extend(char ***strv, const char *path);
+ 
+diff --git a/src/test/test-glob-util.c b/src/test/test-glob-util.c
+index 9eea3eb608..af866e004b 100644
+--- a/src/test/test-glob-util.c
++++ b/src/test/test-glob-util.c
+@@ -18,12 +18,17 @@
+ ***/
+ 
+ #include <fcntl.h>
++#include <glob.h>
++#include <sys/stat.h>
+ #include <unistd.h>
+ 
+ #include "alloc-util.h"
++#include "dirent-util.h"
+ #include "fileio.h"
++#include "fs-util.h"
+ #include "glob-util.h"
+ #include "macro.h"
++#include "rm-rf.h"
+ 
+ static void test_glob_exists(void) {
+         char name[] = "/tmp/test-glob_exists.XXXXXX";
+@@ -43,8 +48,69 @@ static void test_glob_exists(void) {
+         assert_se(r == 0);
+ }
+ 
++static void test_glob_no_dot(void) {
++        char template[] = "/tmp/test-glob-util.XXXXXXX";
++        const char *fn;
++
++        _cleanup_globfree_ glob_t g = {
++                .gl_closedir = (void (*)(void *)) closedir,
++                .gl_readdir = (struct dirent *(*)(void *)) readdir_no_dot,
++                .gl_opendir = (void *(*)(const char *)) opendir,
++                .gl_lstat = lstat,
++                .gl_stat = stat,
++        };
++
++        int r;
++
++        assert_se(mkdtemp(template));
++
++        fn = strjoina(template, "/*");
++        r = glob(fn, GLOB_NOSORT|GLOB_BRACE|GLOB_ALTDIRFUNC, NULL, &g);
++        assert_se(r == GLOB_NOMATCH);
++
++        fn = strjoina(template, "/.*");
++        r = glob(fn, GLOB_NOSORT|GLOB_BRACE|GLOB_ALTDIRFUNC, NULL, &g);
++        assert_se(r == GLOB_NOMATCH);
++
++        (void) rm_rf(template, REMOVE_ROOT|REMOVE_PHYSICAL);
++}
++
++static void test_safe_glob(void) {
++        char template[] = "/tmp/test-glob-util.XXXXXXX";
++        const char *fn, *fn2, *fname;
++
++        _cleanup_globfree_ glob_t g = {};
++        int r;
++
++        assert_se(mkdtemp(template));
++
++        fn = strjoina(template, "/*");
++        r = safe_glob(fn, 0, &g);
++        assert_se(r == -ENOENT);
++
++        fn2 = strjoina(template, "/.*");
++        r = safe_glob(fn2, GLOB_NOSORT|GLOB_BRACE, &g);
++        assert_se(r == -ENOENT);
++
++        fname = strjoina(template, "/.foobar");
++        assert_se(touch(fname) == 0);
++
++        r = safe_glob(fn, 0, &g);
++        assert_se(r == -ENOENT);
++
++        r = safe_glob(fn2, GLOB_NOSORT|GLOB_BRACE, &g);
++        assert_se(r == 0);
++        assert_se(g.gl_pathc == 1);
++        assert_se(streq(g.gl_pathv[0], fname));
++        assert_se(g.gl_pathv[1] == NULL);
++
++        (void) rm_rf(template, REMOVE_ROOT|REMOVE_PHYSICAL);
++}
++
+ int main(void) {
+         test_glob_exists();
++        test_glob_no_dot();
++        test_safe_glob();
+ 
+         return 0;
+ }
