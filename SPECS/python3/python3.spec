@@ -1,21 +1,17 @@
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.7.0
-Release:        6%{?dist}
+Version:        3.7.3
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=653cffa5b9f2a28150afe4705600d2e55d89b564
+%define sha1    Python=e3584650a06ae2765da0678176deae9d133f1b3d
 Patch0:         cgi3.patch
 Patch1:         python3-support-photon-platform.patch
-Patch2:         CVE-2018-14647.patch
-Patch3:         CVE-2018-20406.patch
-Patch4:         CVE-2019-9636.patch
-Patch5:         CVE-2019-5010.patch
-Patch6:         CVE-2019-9740.patch
+Patch2:         CVE-2019-9740.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel
@@ -137,10 +133,6 @@ The test package contains all regression tests for Python as well as the modules
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -253,20 +245,22 @@ rm -rf %{buildroot}/*
 %files pip
 %defattr(-,root,root,755)
 %{_libdir}/python3.7/site-packages/pip/*
-%{_libdir}/python3.7/site-packages/pip-10.0.1.dist-info/*
+%{_libdir}/python3.7/site-packages/pip-19.0.3.dist-info/*
 %{_bindir}/pip*
 
 %files setuptools
 %defattr(-,root,root,755)
 %{_libdir}/python3.7/site-packages/pkg_resources/*
 %{_libdir}/python3.7/site-packages/setuptools/*
-%{_libdir}/python3.7/site-packages/setuptools-39.0.1.dist-info/*
+%{_libdir}/python3.7/site-packages/setuptools-40.8.0.dist-info/*
 %{_bindir}/easy_install-3.7
 
 %files test
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Mon Jun 10 2019 Tapas Kundu <tkundu@vmware.com> 3.7.3-1
+-   Update to Python 3.7.3 release
 *   Thu May 23 2019 Tapas Kundu <tkundu@vmware.com> 3.7.0-6
 -   Fix for CVE-2019-5010
 -   Fix for CVE-2019-9740
