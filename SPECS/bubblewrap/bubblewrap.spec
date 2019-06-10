@@ -1,7 +1,7 @@
 Summary:        setuid implementation of a subset of user namespaces.
 Name:           bubblewrap
 Version:        0.1.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/bubblewrap
 Group:          Applications/System
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/projectatomic/bubblewrap/releases/download/v%{version}/bubblewrap-%{version}.tar.xz
 %define sha1    bubblewrap=02fed0d0f7402b18d63fef721fd242e942180715
+Patch0:         bubblewrap-CVE-2019-12439.patch
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -21,8 +22,9 @@ The original bubblewrap code existed before user namespaces - it inherits code f
 
 %prep
 %setup -q
-%build
+%patch0 -p1
 
+%build
 ./configure \
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
@@ -47,5 +49,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/bash-completion/completions/bwrap
 
 %changelog
+*   Mon Jun 10 2019 Ankit Jain <ankitja@vmware.com> 0.1.8-2
+-   Fix for CVE-2019-12439
 *   Thu Aug 03 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.8-1
 -   Initial build.  First version
