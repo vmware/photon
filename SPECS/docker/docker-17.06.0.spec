@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        17.06.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -30,6 +30,10 @@ Patch0:         remove-firewalld.patch
 Patch1:         CVE-2017-14992.patch
 Patch2:         fix-apparmor-not-being-applied-to-exec-processes.patch
 Patch3:         CVE-2019-5736-v17.06.patch
+
+Patch10:        CVE-2018-15664_1706_1.patch
+Patch11:        CVE-2018-15664_1706_2.patch
+Patch12:        CVE-2018-15664_1706_3.patch
 
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -82,6 +86,9 @@ ln -s docker-ce/components/packaging packaging
 %patch1 -p2
 %patch2 -p2
 %patch3 -p1
+%patch10 -p2
+%patch11 -p2
+%patch12 -p2
 
 mkdir -p /go/src/github.com
 cd /go/src/github.com
@@ -229,6 +236,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Wed Jun 10 2019 Bo Gan <ganb@vmware.com> 17.06.0-10
+-   Fix CVE-2018-15664
 *   Tue Feb 12 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 17.06.0-9
 -   Patch runc for CVE-2019-5736
 *   Wed Sep 19 2018 Bo Gan <ganb@vmware.com> 17.06.0-8
