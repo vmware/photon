@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.180
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.181
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=ecd7f8b2d806f899c888f4848403c51b4c807fa7
+%define sha1 linux=306dd4ba19fe20f75b6465a43df7c2d2e0353c3a
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -36,9 +36,6 @@ Patch16:        vsock-transport-for-9p.patch
 #allow some algorithms in FIPS mode
 Patch17:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch18:        0002-allow-also-ecb-cipher_null.patch
-# Fixes for CVE-2018-1000026
-Patch19:        0001-net-create-skb_gso_validate_mac_len.patch
-Patch20:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
 # Fix for CVE-2018-8043
 Patch22:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
@@ -162,8 +159,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
-%patch19 -p1
-%patch20 -p1
 %patch22 -p1
 %patch23 -p1
 %patch26 -p1
@@ -341,6 +336,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Jun 11 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.181-1
+-   Update to version 4.4.181
 *   Tue May 28 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.180-3
 -   Change default I/O scheduler to 'deadline' to fix performance issue.
 *   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 4.4.180-2

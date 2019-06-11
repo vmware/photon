@@ -72,13 +72,19 @@ Cc: <stable@vger.kernel.org>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Ajay Kaher <akaher@vmware.com>
-
 ---
 
-diff -Nurp linux-4.4.171/fs/proc/task_mmu.c linux-4.4.171_CVE-2019-11599/fs/proc/task_mmu.c
---- linux-4.4.171/fs/proc/task_mmu.c	2019-01-17 02:46:12.000000000 +0530
-+++ linux-4.4.171_CVE-2019-11599/fs/proc/task_mmu.c	2019-05-15 04:19:42.269103234 +0530
-@@ -947,6 +947,24 @@ static ssize_t clear_refs_write(struct f
+ fs/proc/task_mmu.c    | 18 ++++++++++++++++++
+ fs/userfaultfd.c      |  7 +++++++
+ include/linux/sched.h | 21 +++++++++++++++++++++
+ mm/mmap.c             |  7 ++++++-
+ 4 files changed, 52 insertions(+), 1 deletion(-)
+
+diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
+index 75691a2..ad1ccdce 100644
+--- a/fs/proc/task_mmu.c
++++ b/fs/proc/task_mmu.c
+@@ -947,6 +947,24 @@ static ssize_t clear_refs_write(struct file *file, const char __user *buf,
  					continue;
  				up_read(&mm->mmap_sem);
  				down_write(&mm->mmap_sem);
@@ -103,10 +109,11 @@ diff -Nurp linux-4.4.171/fs/proc/task_mmu.c linux-4.4.171_CVE-2019-11599/fs/proc
  				for (vma = mm->mmap; vma; vma = vma->vm_next) {
  					vma->vm_flags &= ~VM_SOFTDIRTY;
  					vma_set_page_prot(vma);
-diff -Nurp linux-4.4.171/fs/userfaultfd.c linux-4.4.171_CVE-2019-11599/fs/userfaultfd.c
---- linux-4.4.171/fs/userfaultfd.c	2019-01-17 02:46:12.000000000 +0530
-+++ linux-4.4.171_CVE-2019-11599/fs/userfaultfd.c	2019-05-15 04:09:38.269119383 +0530
-@@ -443,6 +443,8 @@ static int userfaultfd_release(struct in
+diff --git a/fs/userfaultfd.c b/fs/userfaultfd.c
+index e935412..f187e02 100644
+--- a/fs/userfaultfd.c
++++ b/fs/userfaultfd.c
+@@ -446,6 +446,8 @@ static int userfaultfd_release(struct inode *inode, struct file *file)
  	 * taking the mmap_sem for writing.
  	 */
  	down_write(&mm->mmap_sem);
@@ -115,36 +122,37 @@ diff -Nurp linux-4.4.171/fs/userfaultfd.c linux-4.4.171_CVE-2019-11599/fs/userfa
  	prev = NULL;
  	for (vma = mm->mmap; vma; vma = vma->vm_next) {
  		cond_resched();
-@@ -465,6 +467,7 @@ static int userfaultfd_release(struct in
+@@ -468,6 +470,7 @@ static int userfaultfd_release(struct inode *inode, struct file *file)
  		vma->vm_flags = new_flags;
  		vma->vm_userfaultfd_ctx = NULL_VM_UFFD_CTX;
  	}
 +skip_mm:
  	up_write(&mm->mmap_sem);
- 
- 	/*
-@@ -761,6 +764,8 @@ static int userfaultfd_register(struct u
- 	end = start + uffdio_register.range.len;
- 
- 	down_write(&mm->mmap_sem);
-+	if (!mmget_still_valid(mm))
-+		goto out_unlock;
- 	vma = find_vma_prev(mm, start, &prev);
- 
- 	ret = -ENOMEM;
-@@ -903,6 +908,8 @@ static int userfaultfd_unregister(struct
- 	end = start + uffdio_unregister.len;
+ 	mmput(mm);
+ wakeup:
+@@ -769,6 +772,8 @@ static int userfaultfd_register(struct userfaultfd_ctx *ctx,
+ 		goto out;
  
  	down_write(&mm->mmap_sem);
 +	if (!mmget_still_valid(mm))
 +		goto out_unlock;
  	vma = find_vma_prev(mm, start, &prev);
+ 	if (!vma)
+ 		goto out_unlock;
+@@ -914,6 +919,8 @@ static int userfaultfd_unregister(struct userfaultfd_ctx *ctx,
+ 		goto out;
  
- 	ret = -ENOMEM;
-diff -Nurp linux-4.4.171/include/linux/sched.h linux-4.4.171_CVE-2019-11599/include/linux/sched.h
---- linux-4.4.171/include/linux/sched.h	2019-01-17 02:46:12.000000000 +0530
-+++ linux-4.4.171_CVE-2019-11599/include/linux/sched.h	2019-05-15 15:54:37.435988459 +0530
-@@ -2611,6 +2611,27 @@ static inline void mmdrop(struct mm_stru
+ 	down_write(&mm->mmap_sem);
++	if (!mmget_still_valid(mm))
++		goto out_unlock;
+ 	vma = find_vma_prev(mm, start, &prev);
+ 	if (!vma)
+ 		goto out_unlock;
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 315df14..b21c631 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -2620,6 +2620,27 @@ static inline void mmdrop(struct mm_struct *mm)
  		__mmdrop(mm);
  }
  
@@ -169,12 +177,13 @@ diff -Nurp linux-4.4.171/include/linux/sched.h linux-4.4.171_CVE-2019-11599/incl
 +        return likely(!mm->core_state);
 +}
 +
- /* mmput gets rid of the mappings and all user-space */
- extern void mmput(struct mm_struct *);
- /* Grab a reference to a task's mm, if it is not already going away */
-diff -Nurp linux-4.4.171/mm/mmap.c linux-4.4.171_CVE-2019-11599/mm/mmap.c
---- linux-4.4.171/mm/mmap.c	2019-01-17 02:46:12.000000000 +0530
-+++ linux-4.4.171_CVE-2019-11599/mm/mmap.c	2019-05-15 03:57:01.993139603 +0530
+ static inline bool mmget_not_zero(struct mm_struct *mm)
+ {
+ 	return atomic_inc_not_zero(&mm->mm_users);
+diff --git a/mm/mmap.c b/mm/mmap.c
+index baa4c12..b38b9eb 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
 @@ -42,6 +42,7 @@
  #include <linux/memory.h>
  #include <linux/printk.h>
@@ -183,7 +192,7 @@ diff -Nurp linux-4.4.171/mm/mmap.c linux-4.4.171_CVE-2019-11599/mm/mmap.c
  
  #include <asm/uaccess.h>
  #include <asm/cacheflush.h>
-@@ -2399,7 +2400,8 @@ find_extend_vma(struct mm_struct *mm, un
+@@ -2398,7 +2399,8 @@ find_extend_vma(struct mm_struct *mm, unsigned long addr)
  	vma = find_vma_prev(mm, addr, &prev);
  	if (vma && (vma->vm_start <= addr))
  		return vma;
@@ -193,7 +202,7 @@ diff -Nurp linux-4.4.171/mm/mmap.c linux-4.4.171_CVE-2019-11599/mm/mmap.c
  		return NULL;
  	if (prev->vm_flags & VM_LOCKED)
  		populate_vma_page_range(prev, addr, prev->vm_end, NULL);
-@@ -2425,6 +2427,9 @@ find_extend_vma(struct mm_struct *mm, un
+@@ -2424,6 +2426,9 @@ find_extend_vma(struct mm_struct *mm, unsigned long addr)
  		return vma;
  	if (!(vma->vm_flags & VM_GROWSDOWN))
  		return NULL;
@@ -203,3 +212,5 @@ diff -Nurp linux-4.4.171/mm/mmap.c linux-4.4.171_CVE-2019-11599/mm/mmap.c
  	start = vma->vm_start;
  	if (expand_stack(vma, addr))
  		return NULL;
+-- 
+2.7.4

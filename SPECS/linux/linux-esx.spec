@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.180
-Release:       2%{?dist}
+Version:       4.4.181
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=ecd7f8b2d806f899c888f4848403c51b4c807fa7
+%define sha1 linux=306dd4ba19fe20f75b6465a43df7c2d2e0353c3a
 Source1:       config-esx
 Source2:       update_photon_cfg.postun
 Patch0:        double-tcp_mem-limits.patch
@@ -37,9 +37,6 @@ Patch22:       vsock-transport-for-9p.patch
 Patch23:       p9fs_dir_readdir-offset-support.patch
 Patch24:       Implement-the-f-xattrat-family-of-functions.patch
 Patch26:       init-do_mounts-recreate-dev-root.patch
-# Fixes for CVE-2018-1000026
-Patch27:       0001-net-create-skb_gso_validate_mac_len.patch
-Patch28:       0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
 # Fix for CVE-2018-8043
 Patch30:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
@@ -128,8 +125,6 @@ The Linux package contains the Linux kernel doc files
 %patch23 -p1
 %patch24 -p1
 %patch26 -p1
-%patch27 -p1
-%patch28 -p1
 %patch30 -p1
 %patch31 -p1
 %patch34 -p1
@@ -237,6 +232,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 11 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.181-1
+-   Update to version 4.4.181
 *   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 4.4.180-2
 -   Fix to parse through /boot folder and update symlink (/boot/photon.cfg) if
 -   mulitple kernels are installed and current linux kernel is removed.
