@@ -240,7 +240,8 @@ class PackageUtils(object):
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             self.logger.debug("#" * (68 + 2 * len(package)))
-            if not SPECS.getData().isCheckAvailable(package, version):
+            if (not SPECS.getData().isCheckAvailable(package, version)) or \
+                    (package in constants.listMakeCheckPkgToSkip):
                 self.logger.info("####### " + package +
                                  " MakeCheck is not available. Skipping MakeCheck TEST for " +
                                  package + " #######")
@@ -264,7 +265,8 @@ class PackageUtils(object):
         returnVal = sandbox.run(rpmBuildcmd, logfile = logFile)
 
         if constants.rpmCheck and package in constants.testForceRPMS:
-            if not SPECS.getData().isCheckAvailable(package, version):
+            if (not SPECS.getData().isCheckAvailable(package, version)) or \
+                    (package in constants.listMakeCheckPkgToSkip):
                 constants.testLogger.info(package + " : N/A")
             elif returnVal == 0:
                 constants.testLogger.info(package + " : PASS")

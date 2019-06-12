@@ -1,7 +1,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.11.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -20,6 +20,9 @@ BuildRequires:  rpm-devel
 BuildRequires:  xz-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  python3-devel
+%if %{with_check}
+Requires:       libxml2
+%endif
 Obsoletes:      createrepo
 Provides:       createrepo
 Provides:       /bin/mergerepo
@@ -74,6 +77,8 @@ ln -sf %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 %{_lib64dir}/pkgconfig/%{name}.pc
 
 %changelog
+*   Wed Jun 19 2019 Ankit Jain <ankitja@vmware.com> 0.11.1-2
+-   Added libxml2 as Requires for makecheck.
 *   Tue Sep 04 2018 Keerthana K <keerthanak@vmware.com> 0.11.1-1
 -   Updated to version 0.11.1.
 *   Mon Jun 04 2018 Xiaolin Li <xiaolinl@vmware.com> 0.10.0-2
