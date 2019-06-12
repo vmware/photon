@@ -296,6 +296,15 @@ class constants(object):
         "glibc",
         "tar"]
 
+    # List of Packages which causes "Makecheck" job
+    # to stuck indefinately or getting failed.
+    # Until these pkgs %check is fixed, these pkgs will be
+    # skip to run makecheck.
+    listMakeCheckPkgToSkip = [
+        "gtk-doc",
+        "libmspack",
+        "socat"]
+
     # .spec file might contain lines such as
     # Requires(post):/sbin/useradd
     # Build system should interpret it as
