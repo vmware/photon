@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.5.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -26,7 +26,8 @@ This is useful for object-oriented scripting.
 %build
 %configure \
         --enable-shared \
-        --docdir=%{_docdir}/%{name}-%{version}
+        --docdir=%{_docdir}/%{name}-%{version} \
+        --with-compress-debug-sections=no
 make %{?_smp_mflags} COPY="cp -p"
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -52,6 +53,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Thu Jun 13 2019 Sujay G <gsujay@vmware.com> 2.5.3-2
+-   Fixed ruby build issue, due to elfutils upgrade.
 *   Tue Jan 01 2019 Sujay G <gsujay@vmware.com> 2.5.3-1
 -   Update to version 2.5.3, to fix CVE-2018-16395 & CVE-2018-16396
 *   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 2.5.1-1
