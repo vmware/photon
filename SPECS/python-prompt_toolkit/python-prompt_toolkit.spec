@@ -3,15 +3,15 @@
 
 Summary:        Library for building powerful interactive command lines in Python.
 Name:           python-prompt_toolkit
-Version:        2.0.4
-Release:        2%{?dist}
+Version:        2.0.9
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/prompt_toolkit
 Source0:        https://files.pythonhosted.org/packages/source/p/prompt_toolkit/prompt_toolkit-%{version}.tar.gz
-%define sha1    prompt_toolkit=5ac2c31dd9f443da4aa143dde56a8b5c44a254c5
+%define sha1    prompt_toolkit=485cfaff9afebb172c6ea6c5f7d8ce19cd9c94ae
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -93,6 +93,8 @@ PYTHONPATH=. python2 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 13 2019 Tapas Kundu <tkundu@vmware.com> 2.0.9-1
+-   Update to release 2.0.9
 *   Fri Dec 07 2018 Tapas Kundu <tkundu@vmware.com> 2.0.4-2
 -   Fix makecheck
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.0.4-1
