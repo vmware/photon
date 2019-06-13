@@ -5,7 +5,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -202,6 +202,10 @@ systemctl daemon-reload >/dev/null 2>&1 || :
 
 
 %changelog
+*   Wed Jun 12 2019 Keerthana K <keerthanak@vmware.com> 0.7.9-6
+-   Fix to delete the contents of /etc/systemd/network dir at the beginning
+-   of write_network instead of looping through each NIC and delete the contents
+-   before writing a custom network file.
 *   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 0.7.9-5
 -   Delete the contents of network directory before adding the custom network files.
 *   Tue Oct 17 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.7.9-4

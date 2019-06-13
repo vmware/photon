@@ -57,6 +57,7 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +        entries = net_util.translate_network(settings)
 +        LOG.debug("Translated ubuntu style network settings %s into %s",
 +                  settings, entries)
++        util.delete_dir_contents(self.network_conf_dir)
 +        route_entries = []
 +        route_entries = translate_routes(settings)
 +        dev_names = entries.keys()
@@ -103,7 +104,6 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +                    route_index += 1
 +
 +            if info.get('auto'):
-+                util.delete_dir_contents(self.network_conf_dir)
 +                self._write_interface_file(net_fn, net_cfg, route_entry)
 +            if 'dns-nameservers' in info:
 +                nameservers.extend(info['dns-nameservers'])
