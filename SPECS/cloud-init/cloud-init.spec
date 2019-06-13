@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        18.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -147,6 +147,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Thu Jun 13 2019 Keerthana K <keerthanak@vmware.com> 18.3-4
+-   Fix to delete the contents of /etc/systemd/network dir at the beginning
+-   of write_network instead of looping through each NIC and delete the contents
+-   before writing a custom network file.
 *   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 18.3-3
 -   Delete the contents of network directory before adding the custom network files.
 *   Tue Dec 04 2018 Ajay Kaher <akaher@vmware.com> 18.3-2
