@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
-Version:        0.19.1
+Version:        0.26.0
 Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/
@@ -9,7 +9,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
-%define sha1    sysdig=425ea9fab8e831274626a9c9e65f0dfb4f9bc019
+%define sha1    sysdig=0104006492afeda870b6b08a5d1f8e76d84559ff
 BuildRequires:  cmake 
 BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:  openssl-devel
@@ -17,11 +17,20 @@ BuildRequires:  curl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  wget
+BuildRequires:  grpc-devel
+BuildRequires:  which
+BuildRequires:  protobuf-devel
+BuildRequires:  c-ares-devel
+BuildRequires:  jq-devel
 Requires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 Requires:       zlib
 Requires:       ncurses
 Requires:       openssl
 Requires:       curl
+Requires:       protobuf
+Requires:       grpc
+Requires:       c-ares
+Requires:       jq
 
 %description
  Sysdig is open source, system-level exploration: capture system state and activity from a running Linux instance, then save, filter and analyze. Sysdig is scriptable in Lua and includes a command line interface and a powerful interactive UI, csysdig, that runs in your terminal
@@ -33,6 +42,8 @@ Requires:       curl
 # fix for linux-4.9
 sed -i 's|task_thread_info(current)->status|current->thread.status|g' driver/main.c
 sed -i 's|task_thread_info(task)->status|current->thread.status|g' driver/ppm_syscall.h
+sed -i '/#include <stdlib.h>/a #include<sys/sysmacros.h>' userspace/libscap/scap_fds.c
+sed -i '/"${B64_LIB}"/a   "${CURL_LIBRARIES}"' userspace/libsinsp/CMakeLists.txt
 
 mkdir build
 cd build
@@ -41,11 +52,14 @@ cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DUSE_BUNDLED_OPENSSL=OFF \
     -DUSE_BUNDLED_CURL=OFF \
+    -DUSE_BUNDLED_JQ=OFF \
     -DUSE_BUNDLED_ZLIB=OFF \
+    -DUSE_BUNDLED_PROTOBUF=OFF \
+    -DUSE_BUNDLED_GRPC=OFF \
+    -DUSE_BUNDLED_CARES=OFF \
     -DUSE_BUNDLED_NCURSES=OFF ..
 
 make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
-
 %install
 cd build
 make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
@@ -74,6 +88,8 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/sysdig-probe.ko
 
 %changelog
+*   Mon Jun 24 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 0.26.0-1
+-   Fix for CVE-2019-8339
 *   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 0.19.1-1
 -   Update to version 0.19.1
 *   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.15.1-1
