@@ -1,0 +1,47 @@
+From 8d0fb52e711353f51e98d12ebe7215ec114670a6 Mon Sep 17 00:00:00 2001
+From: Gen Zhang <blackgod016574@gmail.com>
+Date: Thu, 30 May 2019 09:10:30 +0800
+Subject: [PATCH] scsi: mpt3sas_ctl: fix double-fetch bug in _ctl_ioctl_main()
+
+[ This patch is not yet upstream; however, it has been accepted into
+the scsi maintainer's queue. ]
+
+In _ctl_ioctl_main(), 'ioctl_header' is fetched the first time from
+userspace. 'ioctl_header.ioc_number' is then checked. The legal result is
+saved to 'ioc'. Then, in condition MPT3COMMAND, the whole struct is fetched
+again from the userspace. Then _ctl_do_mpt_command() is called, 'ioc' and
+'karg' as inputs.
+
+However, a malicious user can change the 'ioc_number' between the two
+fetches, which will cause a potential security issues.  Moreover, a
+malicious user can provide a valid 'ioc_number' to pass the check in first
+fetch, and then modify it in the second fetch.
+
+To fix this, we need to recheck the 'ioc_number' in the second fetch.
+
+Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
+Acked-by: Suganath Prabu S <suganath-prabu.subramani@broadcom.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/scsi/mpt3sas/mpt3sas_ctl.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/scsi/mpt3sas/mpt3sas_ctl.c b/drivers/scsi/mpt3sas/mpt3sas_ctl.c
+index 4ccde5a..bd840a0 100644
+--- a/drivers/scsi/mpt3sas/mpt3sas_ctl.c
++++ b/drivers/scsi/mpt3sas/mpt3sas_ctl.c
+@@ -2273,6 +2273,10 @@ _ctl_ioctl_main(struct file *file, unsigned int cmd, void __user *arg,
+ 			break;
+ 		}
+ 
++		if (karg.hdr.ioc_number != ioctl_header.ioc_number) {
++			ret = -EINVAL;
++			break;
++		}
+ 		if (_IOC_SIZE(cmd) == sizeof(struct mpt3_ioctl_command)) {
+ 			uarg = arg;
+ 			ret = _ctl_do_mpt_command(ioc, karg, &uarg->mf);
+-- 
+2.7.4
+

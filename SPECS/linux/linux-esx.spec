@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.181
+Version:       4.4.182
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=306dd4ba19fe20f75b6465a43df7c2d2e0353c3a
+%define sha1 linux=606fbfe8fa1ce55180ba5e0b3fe4ee0c85d86328
 Source1:       config-esx
 Source2:       update_photon_cfg.postun
 Patch0:        double-tcp_mem-limits.patch
@@ -60,6 +60,20 @@ Patch48:        0008-xfs-enhance-dinode-verifier.patch
 Patch49:        net-9p-vdfs-zerocopy.patch
 #Fix CVE-2019-8912
 Patch50:        fix_use_after_free_in_sockfs_setattr.patch
+# Fix for CVE-2019-12456
+Patch51:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
+# Fix for CVE-2018-16597
+Patch52:        0001-ovl-modify-ovl_permission-to-do-checks-on-two-inodes.patch
+# Fix for CVE-2018-19407
+Patch53:        0001-KVM-X86-Fix-scan-ioapic-use-before-initialization.patch
+# Fix for CVE-2019-12379
+Patch54:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+# Fix for CVE-2019-12381
+Patch55:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
+# Fix for CVE-2019-12382
+Patch56:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
+# Fix for CVE-2019-12378
+Patch57:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -140,6 +154,13 @@ The Linux package contains the Linux kernel doc files
 %patch48 -p1
 %patch49 -p1
 %patch50 -p1
+%patch51 -p1
+%patch52 -p1
+%patch53 -p1
+%patch54 -p1
+%patch55 -p1
+%patch56 -p1
+%patch57 -p1
 
 %patch67 -p1
 
@@ -232,6 +253,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.182-1
+-   Update to version 4.4.182
+-   Fix CVE-2019-12456, CVE-2018-16597, CVE-2018-19407, CVE-2019-12379,
+-   CVE-2019-12381, CVE-2019-12382, CVE-2019-12378
 *   Tue Jun 11 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.181-1
 -   Update to version 4.4.181
 *   Tue May 28 2019 Keerthana K <keerthanak@vmware.com> 4.4.180-2

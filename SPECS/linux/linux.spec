@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.181
+Version:    	4.4.182
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=306dd4ba19fe20f75b6465a43df7c2d2e0353c3a
+%define sha1 linux=606fbfe8fa1ce55180ba5e0b3fe4ee0c85d86328
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -62,6 +62,20 @@ Patch42:        net-9p-vdfs-zerocopy.patch
 Patch43:        0001-KVM_Fix_UAF_in_nested_posted_interrupt_processing.patch
 #Fix CVE-2019-8912
 Patch44:        fix_use_after_free_in_sockfs_setattr.patch
+# Fix for CVE-2019-12456
+Patch45:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
+# Fix for CVE-2018-16597
+Patch46:        0001-ovl-modify-ovl_permission-to-do-checks-on-two-inodes.patch
+# Fix for CVE-2018-19407
+Patch47:        0001-KVM-X86-Fix-scan-ioapic-use-before-initialization.patch
+# Fix for CVE-2019-12379
+Patch48:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+# Fix for CVE-2019-12381
+Patch49:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
+# Fix for CVE-2019-12382
+Patch50:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
+# Fix for CVE-2019-12378
+Patch51:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -176,6 +190,13 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch42 -p1
 %patch43 -p1
 %patch44 -p1
+%patch45 -p1
+%patch46 -p1
+%patch47 -p1
+%patch48 -p1
+%patch49 -p1
+%patch50 -p1
+%patch51 -p1
 
 %patch67 -p1
 
@@ -336,6 +357,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.182-1
+-   Update to version 4.4.182
+-   Fix CVE-2019-12456, CVE-2018-16597, CVE-2018-19407, CVE-2019-12379,
+-   CVE-2019-12381, CVE-2019-12382, CVE-2019-12378
 *   Tue Jun 11 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.181-1
 -   Update to version 4.4.181
 *   Tue May 28 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.180-3
