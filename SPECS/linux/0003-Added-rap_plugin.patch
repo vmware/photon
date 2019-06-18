@@ -1234,7 +1234,7 @@ index 7948a17febb4..bc2b010b3d76 100644
 +
  #endif /* _ASM_X86_MODULE_H */
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 3aac91ca8909..fb9d908784a6 100644
+index 8673319..173bf54 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -292,11 +292,17 @@ static __init int activate_jump_labels(void)
@@ -1270,13 +1270,13 @@ index c88c23c658c1..7a0b8f22ced5 100644
  	return __e820__mapped_all(start, end, type);
  }
 diff --git a/arch/x86/kernel/ftrace_64.S b/arch/x86/kernel/ftrace_64.S
-index 91b2cff4b79a..7aeca3f7541c 100644
+index 75f2b36..cfd00e5 100644
 --- a/arch/x86/kernel/ftrace_64.S
 +++ b/arch/x86/kernel/ftrace_64.S
 @@ -186,7 +186,7 @@ GLOBAL(ftrace_graph_call)
- #endif
- 
- /* This is weak to keep gas from relaxing the jumps */
+  * This is weak to keep gas from relaxing the jumps.
+  * It is also used to copy the retq for trampolines.
+  */
 -WEAK(ftrace_stub)
 +RAP_WEAK(ftrace_stub)
  	retq
@@ -5384,11 +5384,11 @@ index 2ff814c92f7f..a74ce003f47a 100644
  	static inline long __do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
  #endif /* __SYSCALL_DEFINEx */
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 3f5bf1af0826..91029cc72349 100644
+index bad9985..cba5751 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -577,6 +577,8 @@ int bpf_get_kallsym(unsigned int symnum, unsigned long *value, char *type,
- 	return ret;
+@@ -612,6 +612,8 @@ static void bpf_jit_uncharge_modmem(u32 pages)
+ 	atomic_long_sub(pages, &bpf_jit_current);
  }
  
 +extern long __rap_hash___bpf_prog_run;
@@ -5396,8 +5396,8 @@ index 3f5bf1af0826..91029cc72349 100644
  struct bpf_binary_header *
  bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
  		     unsigned int alignment,
-@@ -600,11 +602,24 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
- 	hdr->pages = size / PAGE_SIZE;
+@@ -641,11 +643,24 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
+ 	hdr->pages = pages;
  	hole = min_t(unsigned int, size - (proglen + sizeof(*hdr)),
  		     PAGE_SIZE - sizeof(*hdr));
 +#ifdef CONFIG_PAX_RAP

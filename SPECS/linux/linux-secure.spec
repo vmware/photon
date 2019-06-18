@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.40
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.52
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c04181c3736e5b85d349f9b58d406d4c18ad4958
+%define sha1 linux=0fc8eeba8a8a710c95d71f140dfdc4bdff735248
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -40,6 +40,20 @@ Patch33:        4.17-0002-apparmor-af_unix-mediation.patch
 Patch34:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch35:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+# Fix for CVE-2019-12456
+Patch36:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
+# Fix for CVE-2019-12379
+Patch37:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+# Fix for CVE-2019-12380
+Patch38:        0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
+# Fix for CVE-2019-12381
+Patch39:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
+# Fix for CVE-2019-12382
+Patch40:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
+# Fix for CVE-2019-12378
+Patch41:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
+# Fix for CVE-2019-12455
+Patch42:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
@@ -111,6 +125,13 @@ The Linux package contains the Linux kernel doc files
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
+%patch36 -p1
+%patch37 -p1
+%patch38 -p1
+%patch39 -p1
+%patch40 -p1
+%patch41 -p1
+%patch42 -p1
 
 pushd ..
 %patch99 -p0
@@ -239,6 +260,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-1
+-   Update to version 4.19.52
+-   Fix CVE-2019-12456, CVE-2019-12379, CVE-2019-12380, CVE-2019-12381,
+-   CVE-2019-12382, CVE-2019-12378, CVE-2019-12455
 *   Tue May 28 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.40-3
 -   Change default I/O scheduler to 'deadline' to fix performance issue.
 *   Tue May 14 2019 Keerthana K <keerthanak@vmware.com> 4.19.40-2

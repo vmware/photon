@@ -449,7 +449,7 @@ index 0487e6a..76529de 100644
 +	if (!info->nr_rings || !blkfront_use_blk_mq)
  		info->nr_rings = 1;
  
- 	info->rinfo = kcalloc(info->nr_rings,
+ 	info->rinfo = kvcalloc(info->nr_rings,
 @@ -1955,7 +2090,8 @@ static int negotiate_mq(struct blkfront_info *info)
  		INIT_LIST_HEAD(&rinfo->grants);
  		rinfo->dev_info = info;

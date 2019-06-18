@@ -1,0 +1,90 @@
+From f4756d57543226f5cd5e0b332b9830bdf7e56412 Mon Sep 17 00:00:00 2001
+From: Gen Zhang <blackgod016574@gmail.com>
+Date: Sat, 25 May 2019 13:25:58 +0200
+Subject: [PATCH] efi/x86/Add missing error handling to old_memmap 1:1 mapping
+ code
+
+commit 4e78921ba4dd0aca1cc89168f45039add4183f8e upstream.
+
+The old_memmap flow in efi_call_phys_prolog() performs numerous memory
+allocations, and either does not check for failure at all, or it does
+but fails to propagate it back to the caller, which may end up calling
+into the firmware with an incomplete 1:1 mapping.
+
+So let's fix this by returning NULL from efi_call_phys_prolog() on
+memory allocation failures only, and by handling this condition in the
+caller. Also, clean up any half baked sets of page tables that we may
+have created before returning with a NULL return value.
+
+Note that any failure at this level will trigger a panic() two levels
+up, so none of this makes a huge difference, but it is a nice cleanup
+nonetheless.
+
+[ardb: update commit log, add efi_call_phys_epilog() call on error path]
+
+Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
+Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Rob Bradford <robert.bradford@intel.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: linux-efi@vger.kernel.org
+Link: http://lkml.kernel.org/r/20190525112559.7917-2-ard.biesheuvel@linaro.org
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ arch/x86/platform/efi/efi.c    | 2 ++
+ arch/x86/platform/efi/efi_64.c | 9 ++++++---
+ 2 files changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/platform/efi/efi.c b/arch/x86/platform/efi/efi.c
+index 9061bab..353019d 100644
+--- a/arch/x86/platform/efi/efi.c
++++ b/arch/x86/platform/efi/efi.c
+@@ -86,6 +86,8 @@ static efi_status_t __init phys_efi_set_virtual_address_map(
+ 	pgd_t *save_pgd;
+ 
+ 	save_pgd = efi_call_phys_prolog();
++	if (!save_pgd)
++		return EFI_ABORTED;
+ 
+ 	/* Disable interrupts around EFI calls: */
+ 	local_irq_save(flags);
+diff --git a/arch/x86/platform/efi/efi_64.c b/arch/x86/platform/efi/efi_64.c
+index ee5d08f..dfc809b 100644
+--- a/arch/x86/platform/efi/efi_64.c
++++ b/arch/x86/platform/efi/efi_64.c
+@@ -84,13 +84,15 @@ pgd_t * __init efi_call_phys_prolog(void)
+ 
+ 	if (!efi_enabled(EFI_OLD_MEMMAP)) {
+ 		efi_switch_mm(&efi_mm);
+-		return NULL;
++		return efi_mm.pgd;
+ 	}
+ 
+ 	early_code_mapping_set_exec(1);
+ 
+ 	n_pgds = DIV_ROUND_UP((max_pfn << PAGE_SHIFT), PGDIR_SIZE);
+ 	save_pgd = kmalloc_array(n_pgds, sizeof(*save_pgd), GFP_KERNEL);
++	if (!save_pgd)
++		return NULL;
+ 
+ 	/*
+ 	 * Build 1:1 identity mapping for efi=old_map usage. Note that
+@@ -138,10 +140,11 @@ pgd_t * __init efi_call_phys_prolog(void)
+ 		pgd_offset_k(pgd * PGDIR_SIZE)->pgd &= ~_PAGE_NX;
+ 	}
+ 
+-out:
+ 	__flush_tlb_all();
+-
+ 	return save_pgd;
++out:
++	efi_call_phys_epilog(save_pgd);
++	return NULL;
+ }
+ 
+ void __init efi_call_phys_epilog(pgd_t *save_pgd)
+-- 
+2.7.4
+
