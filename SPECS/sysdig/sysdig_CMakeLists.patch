@@ -1,0 +1,40 @@
+--- CMakeLists_org.txt	2019-08-07 00:46:27.635758825 +0530
++++ CMakeLists.txt	2019-08-07 00:47:11.743760521 +0530
+@@ -460,8 +460,15 @@
+ 		set(PROTOC "${PROTOBUF_SRC}/target/bin/protoc")
+ 		set(PROTOBUF_INCLUDE "${PROTOBUF_SRC}/target/include")
+ 		set(PROTOBUF_LIB "${PROTOBUF_SRC}/target/lib/libprotobuf.a")
++		set(PROTOBUF_DEPENDENCIES "")
++                if(USE_BUNDLED_OPENSSL)
++                        list(APPEND PROTOBUF_DEPENDENCIES "openssl")
++                endif()
++                if(USE_BUNDLED_ZLIB)
++                        list(APPEND PROTOBUF_DEPENDENCIES "zlib")
++		endif()
+ 		ExternalProject_Add(protobuf
+-		DEPENDS openssl zlib
++		DEPENDS ${PROTOBUF_DEPENDENCIES}
+ 		URL "http://download.sysdig.com/dependencies/protobuf-cpp-3.5.0.tar.gz"
+ 		URL_MD5 "e4ba8284a407712168593e79e6555eb2"
+ 		# TODO what if using system zlib?
+@@ -504,8 +511,19 @@
+ 
+ 		get_filename_component(PROTOC_DIR ${PROTOC} PATH)
+ 
++		set(GRPC_DEPENDENCIES "")
++                if(USE_BUNDLED_PROTOBUF)
++                        list(APPEND GRPC_DEPENDENCIES "protobuf")
++                endif()
++                if(USE_BUNDLED_ZLIB)
++                        list(APPEND GRPC_DEPENDENCIES "zlib")
++                endif()
++                if(USE_BUNDLED_CARES)
++                        list(APPEND GRPC_DEPENDENCIES "c-ares")
++                endif()
++
+ 		ExternalProject_Add(grpc
+-		DEPENDS protobuf zlib c-ares
++		DEPENDS ${GRPC_DEPENDENCIES}
+ 		URL "http://download.draios.com/dependencies/grpc-1.8.1.tar.gz"
+ 		URL_MD5 "2fc42c182a0ed1b48ad77397f76bb3bc"
+ 		CONFIGURE_COMMAND ""
