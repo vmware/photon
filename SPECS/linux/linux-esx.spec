@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.40
-Release:        2%{?dist}
+Version:        4.19.52
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c04181c3736e5b85d349f9b58d406d4c18ad4958
+%define sha1 linux=0fc8eeba8a8a710c95d71f140dfdc4bdff735248
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -32,6 +32,7 @@ Patch17:        04-quiet-boot.patch
 Patch18:        05-pv-ops-clocksource.patch
 Patch19:        06-pv-ops-boot_clock.patch
 Patch20:        07-vmware-only.patch
+
 Patch22:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
@@ -41,6 +42,20 @@ Patch25:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.p
 Patch26:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch27:        4.17-0002-apparmor-af_unix-mediation.patch
 Patch28:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+# Fix for CVE-2019-12456
+Patch29:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
+# Fix for CVE-2019-12379
+Patch30:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+# Fix for CVE-2019-12380
+Patch31:        0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
+# Fix for CVE-2019-12381
+Patch32:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
+# Fix for CVE-2019-12382
+Patch33:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
+# Fix for CVE-2019-12378
+Patch34:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
+# Fix for CVE-2019-12455
+Patch35:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 
 BuildArch:     x86_64
 BuildRequires: bc
@@ -100,6 +115,13 @@ The Linux package contains the Linux kernel doc files
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
+%patch29 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
+%patch33 -p1
+%patch34 -p1
+%patch35 -p1
 
 %build
 # patch vmw_balloon driver
@@ -197,6 +219,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-1
+-   Update to version 4.19.52
+-   Fix CVE-2019-12456, CVE-2019-12379, CVE-2019-12380, CVE-2019-12381,
+-   CVE-2019-12382, CVE-2019-12378, CVE-2019-12455
 *   Tue May 14 2019 Keerthana K <keerthanak@vmware.com> 4.19.40-2
 -   Fix to parse through /boot folder and update symlink (/boot/photon.cfg) if
 -   mulitple kernels are installed and current linux kernel is removed.

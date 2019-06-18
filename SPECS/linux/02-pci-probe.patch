@@ -24,26 +24,27 @@ values at runtime.
 ---
  drivers/pci/pci.c   |   2 +
  drivers/pci/pci.h   |   2 +
- drivers/pci/probe.c | 377 +++++++++++++++++++++++++++++++++++++++++++++++++++-
- 3 files changed, 377 insertions(+), 4 deletions(-)
+ drivers/pci/probe.c | 376 +++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 376 insertions(+), 4 deletions(-)
 
-
-diff -ur linux-4.19.26/drivers/pci/pci.c linux-4.19.26_new/drivers/pci/pci.c
---- linux-4.19.26/drivers/pci/pci.c	2019-02-27 14:39:03.000000000 +0530
-+++ linux-4.19.26_new/drivers/pci/pci.c	2019-03-05 07:47:24.981001824 +0530
-@@ -6115,6 +6115,8 @@
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 61f2ef2..a97aa51 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -6136,6 +6136,8 @@ static int __init pci_setup(char *str)
+ 				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
  			} else if (!strncmp(str, "disable_acs_redir=", 18)) {
- 				disable_acs_redir_param =
- 					kstrdup(str + 18, GFP_KERNEL);
+ 				disable_acs_redir_param = str + 18;
 +			} else if (!strncmp(str, "scan_all", 8)) {
 +				pci_scan_all();
  			} else {
  				printk(KERN_ERR "PCI: Unknown option `%s'\n",
  						str);
-diff -ur linux-4.19.26/drivers/pci/pci.h linux-4.19.26_new/drivers/pci/pci.h
---- linux-4.19.26/drivers/pci/pci.h	2019-02-27 14:39:03.000000000 +0530
-+++ linux-4.19.26_new/drivers/pci/pci.h	2019-03-05 07:47:24.981001824 +0530
-@@ -147,6 +147,8 @@
+diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+index ab25752f..8b37f8a 100644
+--- a/drivers/pci/pci.h
++++ b/drivers/pci/pci.h
+@@ -147,6 +147,8 @@ void pci_no_msi(void);
  static inline void pci_no_msi(void) { }
  #endif
  
@@ -52,10 +53,11 @@ diff -ur linux-4.19.26/drivers/pci/pci.h linux-4.19.26_new/drivers/pci/pci.h
  static inline void pci_msi_set_enable(struct pci_dev *dev, int enable)
  {
  	u16 control;
-diff -ur linux-4.19.26/drivers/pci/probe.c linux-4.19.26_new/drivers/pci/probe.c
---- linux-4.19.26/drivers/pci/probe.c	2019-02-27 14:39:03.000000000 +0530
-+++ linux-4.19.26_new/drivers/pci/probe.c	2019-03-05 07:47:24.997001823 +0530
-@@ -168,6 +168,346 @@
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index fa4c386..9a3957a 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -168,6 +168,346 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
  
  #define PCI_COMMAND_DECODE_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_IO)
  
@@ -402,7 +404,7 @@ diff -ur linux-4.19.26/drivers/pci/probe.c linux-4.19.26_new/drivers/pci/probe.c
  /**
   * pci_read_base - Read a PCI BAR
   * @dev: the PCI device
-@@ -180,13 +520,20 @@
+@@ -180,13 +520,20 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
  int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		    struct resource *res, unsigned int pos)
  {
@@ -424,7 +426,7 @@ diff -ur linux-4.19.26/drivers/pci/probe.c linux-4.19.26_new/drivers/pci/probe.c
  	/* No printks while decoding is disabled! */
  	if (!dev->mmio_always_on) {
  		pci_read_config_word(dev, PCI_COMMAND, &orig_cmd);
-@@ -196,7 +543,6 @@
+@@ -196,7 +543,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		}
  	}
  
@@ -432,7 +434,7 @@ diff -ur linux-4.19.26/drivers/pci/probe.c linux-4.19.26_new/drivers/pci/probe.c
  
  	pci_read_config_dword(dev, pos, &l);
  	pci_write_config_dword(dev, pos, l | mask);
-@@ -212,6 +558,11 @@
+@@ -212,6 +558,11 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  	if (sz == 0xffffffff)
  		sz = 0;
  
@@ -444,7 +446,7 @@ diff -ur linux-4.19.26/drivers/pci/probe.c linux-4.19.26_new/drivers/pci/probe.c
  	/*
  	 * I don't know how l can have all bits set.  Copied from old code.
  	 * Maybe it fixes a bug on some ancient platform.
-@@ -316,8 +667,19 @@
+@@ -316,8 +667,19 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  fail:
  	res->flags = 0;
  out:
@@ -465,7 +467,7 @@ diff -ur linux-4.19.26/drivers/pci/probe.c linux-4.19.26_new/drivers/pci/probe.c
  
  	return (res->flags & IORESOURCE_MEM_64) ? 1 : 0;
  }
-@@ -1646,7 +2008,13 @@
+@@ -1651,7 +2013,13 @@ int pci_setup_device(struct pci_dev *dev)
  		if (class == PCI_CLASS_BRIDGE_PCI)
  			goto bad;
  		pci_read_irq(dev);
@@ -480,3 +482,6 @@ diff -ur linux-4.19.26/drivers/pci/probe.c linux-4.19.26_new/drivers/pci/probe.c
  
  		pci_subsystem_ids(dev, &dev->subsystem_vendor, &dev->subsystem_device);
  
+-- 
+2.7.4
+
