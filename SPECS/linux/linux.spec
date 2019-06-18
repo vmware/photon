@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.180
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.182
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=e50245960324896fd7715ee31a9089e4620b08fd
+%define sha1 linux=d34e92e2d688091a90d2f5aa2fd7eaec411b3f37
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -81,13 +81,17 @@ Patch54:        0004-PCI-hv-Use-effective-affinity-mask.patch
 Patch55:        0005-x86-irq-implement-irq_data_get_effective_affinity.patch
 #Fix CVE-2019-8912
 Patch56:        fix_use_after_free_in_sockfs_setattr.patch
+# Fix for CVE-2019-12456
+Patch57:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
+# Fix for CVE-2019-12379
+Patch58:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+# Fix for CVE-2019-12381
+Patch59:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
+# Fix for CVE-2019-12382
+Patch60:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
+# Fix for CVE-2019-12378
+Patch61:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 
-# Fix fir CVE-2019-11487
-Patch57:        0001-mm_make_page_ref_count_overflow_check_tighter_and_more_explicit.patch
-Patch58:        0002-mm_gup_ensure_real_head_page_is_ref_counted_when_using_hugepages.patch
-Patch59:        0003-mm_hugetlb_get_user_pages_ignores_certain_follow_hugetlb_page_errors.patch
-Patch60:        0004-mm_prevent_get_user_pages_from_overflowing_page_refcount.patch
-Patch61:        0005-fs_prevent_page_refcount_overflow_in_pipe_buf_get.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -394,6 +398,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.182-1
+-   Update to version 4.9.182
+-   Fix CVE-2019-12456, CVE-2019-12379, CVE-2019-12381, CVE-2019-12382,
+-   CVE-2019-12378
 *   Fri Jun 07 2019 Tapas Kundu <tkundu@vmware.com> 4.9.180-2
 -   Enabled CONFIG_I2C_CHARDEV to support lm-sensors
 *   Mon Jun 03 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.180-1

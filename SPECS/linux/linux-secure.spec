@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.180
+Version:        4.9.182
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=e50245960324896fd7715ee31a9089e4620b08fd
+%define sha1 linux=d34e92e2d688091a90d2f5aa2fd7eaec411b3f37
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -74,13 +74,17 @@ Patch50:        0003-xfs-enhance-dinode-verifier.patch
 Patch51:        fix_use_after_free_in_sockfs_setattr.patch
 # Fix for CVE-2018-16882
 Patch52:        0001-KVM_Fix_UAF_in_nested_posted_interrupt_processing.patch
+# Fix for CVE-2019-12456
+Patch53:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
+# Fix for CVE-2019-12379
+Patch54:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+# Fix for CVE-2019-12381
+Patch55:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
+# Fix for CVE-2019-12382
+Patch56:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
+# Fix for CVE-2019-12378
+Patch57:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 
-# Fix fir CVE-2019-11487
-Patch53:        0001-mm_make_page_ref_count_overflow_check_tighter_and_more_explicit.patch
-Patch54:        0002-mm_gup_ensure_real_head_page_is_ref_counted_when_using_hugepages.patch
-Patch55:        0003-mm_hugetlb_get_user_pages_ignores_certain_follow_hugetlb_page_errors.patch
-Patch56:        0004-mm_prevent_get_user_pages_from_overflowing_page_refcount.patch
-Patch57:        0005-fs_prevent_page_refcount_overflow_in_pipe_buf_get.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -346,6 +350,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.182-1
+-   Update to version 4.9.182
+-   Fix CVE-2019-12456, CVE-2019-12379, CVE-2019-12381, CVE-2019-12382,
+-   CVE-2019-12378
 *   Mon Jun 03 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.180-1
 -   Update to version 4.9.180
 *   Thu May 30 2019 Ajay Kaher <akaher@vmware.com> 4.9.178-4

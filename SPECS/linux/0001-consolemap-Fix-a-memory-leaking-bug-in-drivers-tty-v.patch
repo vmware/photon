@@ -1,0 +1,42 @@
+From 41759080b4c135340c8ff6f528c71ca0b0c69dc4 Mon Sep 17 00:00:00 2001
+From: Gen Zhang <blackgod016574@gmail.com>
+Date: Thu, 23 May 2019 08:34:52 +0800
+Subject: [PATCH] consolemap: Fix a memory leaking bug in
+ drivers/tty/vt/consolemap.c
+
+[ This patch is not yet upstream; however, it has been accepted into
+  the tty driver maintainer's queue. ]
+
+In function con_insert_unipair(), when allocation for p2 and p1[n]
+fails, ENOMEM is returned, but previously allocated p1 is not freed,
+remains as leaking memory. Thus we should free p1 as well when this
+allocation fails.
+
+Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/tty/vt/consolemap.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
+index 9d7ab7b..6bb2a9e 100644
+--- a/drivers/tty/vt/consolemap.c
++++ b/drivers/tty/vt/consolemap.c
+@@ -488,7 +488,11 @@ con_insert_unipair(struct uni_pagedir *p, u_short unicode, u_short fontpos)
+ 	p2 = p1[n = (unicode >> 6) & 0x1f];
+ 	if (!p2) {
+ 		p2 = p1[n] = kmalloc(64*sizeof(u16), GFP_KERNEL);
+-		if (!p2) return -ENOMEM;
++		if (!p2) {
++			kfree(p1);
++			p->uni_pgdir[n] = NULL;
++			return -ENOMEM;
++		}
+ 		memset(p2, 0xff, 64*sizeof(u16)); /* No glyphs for the characters (yet) */
+ 	}
+ 
+-- 
+2.7.4
+
