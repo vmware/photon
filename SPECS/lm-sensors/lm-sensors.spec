@@ -1,7 +1,7 @@
 Summary:        The lm_sensors package provides user-space support for the hardware monitoring drivers in the Linux kernel.
 Name:           lm-sensors
 Version:        3.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            https://github.com/lm-sensors/lm-sensors
 Group:          System Drivers
@@ -24,16 +24,18 @@ Requires:       linux >= 4.9.180-2
 The lm_sensors package provides user-space support for the hardware monitoring drivers in the Linux kernel.
 This is useful for monitoring the temperature of the CPU and adjusting the performance of some hardware (such as cooling fans).
 
-%package devel
-Summary: lm-sensors devel
-Group:   Development/Libraries
+%package   devel
+Summary:   lm-sensors devel
+Group:     Development/Libraries
+Requires:  lm-sensors = %{version}-%{release}
 
 %description devel
 lm-sensors devel
 
-%package doc
-Summary: lm-sensors docs
-Group:   Development/Libraries
+%package   doc
+Summary:   lm-sensors docs
+Group:     Development/Libraries
+Requires:  lm-sensors = %{version}-%{release}
 
 %description doc
 Documentation for lm-sensors.
@@ -85,5 +87,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Wed Jun 19 2019 Tapas Kundu <tkundu@vmware.com> 3.5.0-2
+- Added main pkg as requires to devel and doc
 * Fri May 24 2019 Tapas Kundu <tkundu@vmware.com> 3.5.0-1
 - Initial packaging with Photon OS.
