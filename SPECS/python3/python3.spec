@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.5.6
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -170,13 +170,14 @@ rm -rf %{buildroot}/*
 %dir %{_libdir}/python3.5/site-packages
 
 %{_libdir}/libpython3.so
-%{_libdir}/libpython3.5m.so
 %{_libdir}/libpython3.5m.so.1.0
 %{_libdir}/pkgconfig/python-3.5.pc
 %{_libdir}/pkgconfig/python-3.5m.pc
 %{_libdir}/pkgconfig/python3.pc
 %{_includedir}/python3.5m/pyconfig.h
 
+%ghost %{_libdir}/libpython3.5.so
+%{_libdir}/libpython3.5m.so
 %exclude %{_libdir}/python3.5/ctypes/test
 %exclude %{_libdir}/python3.5/distutils/tests
 %exclude %{_libdir}/python3.5/sqlite3/test
@@ -202,7 +203,6 @@ rm -rf %{buildroot}/*
 %exclude %{_includedir}/python3.5m/pyconfig.h
 
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
-%{_libdir}/libpython3.so
 %exclude %{_bindir}/2to3*
 %exclude %{_bindir}/idle*
 
@@ -214,6 +214,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Thu Aug 20 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-9
+-   Fix libpython3.so conflict
 *   Mon Jul 22 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-8
 -   Fix for CVE-2018-20852
 -   Excluded windows installer from python3 libs packaging.
