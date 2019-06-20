@@ -10,7 +10,7 @@
 Summary:        Go
 Name:           go
 Version:        1.9.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -23,6 +23,7 @@ Patch1:         CVE-2018-7187.patch
 Patch2:         go-1.9-CVE-2018-16875.patch
 Patch3:         CVE-2018-16874.patch
 Patch4:         CVE-2018-16873.patch
+Patch5:         go-CVE-2019-9741.patch
 Requires:       glibc
 
 %description
@@ -35,7 +36,7 @@ Go is an open source programming language that makes it easy to build simple, re
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
-
+%patch5 -p1
 %build
 export GOHOSTOS=linux
 export GOHOSTARCH=%{gohostarch}
@@ -118,6 +119,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Thu Jun 26 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.9.4-5
+-   Fix for CVE-2019-9741
 *   Mon Jun 24 2019 Ashwin H <ashwinh@vmware.com> 1.9.4-4
 -   Fix CVE-2018-16873 CVE-2018-16874
 *   Mon Jun 14 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.9.4-3

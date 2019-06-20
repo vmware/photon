@@ -13,7 +13,7 @@
 Summary:        Go
 Name:           go
 Version:        1.10.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -21,6 +21,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
 %define sha1    go=9fd36668e92ef906550181682b405cb38c7bc8ee
+Patch0:         go-CVE-2019-9741.patch
 Requires:       glibc
 
 %description
@@ -28,6 +29,7 @@ Go is an open source programming language that makes it easy to build simple, re
 
 %prep
 %setup -qn %{name}
+%patch0 -p1
 
 %build
 export GOHOSTOS=linux
@@ -109,5 +111,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Thu Jun 20 2019 harinadh Dommaraju <hdommaraju@vmware.com> 1.10.3-2
+-   Fix for CVE-2019-9741
 *   Mon Jun 18 2018 Tapas Kundu <tkundu@vmware.com> 1.10.3-1
 -   Initial build for 1.10.3
