@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.31.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -17,6 +17,13 @@ Patch1:         PR23685-buffer-overflow.patch
 Patch2:         PR23994-libffd-integer-overflow.patch
 Patch3:         binutils-CVE-2019-9075.patch
 Patch4:         binutils-CVE-2019-9077.patch
+Patch5:         binutils-CVE-2018-20623.patch
+Patch6:         binutils-CVE-2018-20671.patch
+Patch7:         binutils-CVE-2018-20651.patch
+Patch8:         binutils-CVE-2018-17794-18700-18701-18484.patch
+Patch9:         binutils-CVE-2019-9071.patch
+Patch10:        binutils-CVE-2019-9073.patch
+Patch11:        binutils-CVE-2019-9074.patch
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -36,6 +43,13 @@ for handling compiled objects.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
 
 %build
 %configure \
@@ -120,6 +134,9 @@ make %{?_smp_mflags} check
 %{_lib64dir}/libiberty.a
 
 %changelog
+*   Thu Jun 20 2019 Vikash Bansal <bvikas@vmware.com> 2.31.1-5
+-   Fix CVE-2018-20623, CVE-2018-20671, CVE-2018-20651,
+-   CVE-2018-17794-18700-18701-18484, CVE-2019-9071, CVE-2019-9073 and CVE-2019-9074
 *   Thu Mar 14 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.31.1-4
 -   Fix CVE-2019-9075 and CVE-2019-9077
 *   Tue Jan 22 2019 Anish Swaminathan <anishs@vmware.com> 2.31.1-3
