@@ -1,12 +1,12 @@
 Summary:	DBus for systemd
 Name:		dbus
-Version:	1.8.8
-Release:	6%{?dist}
+Version:	1.13.6
+Release:	1%{?dist}
 License:	GPLv2+ or AFL
 URL:		http://www.freedesktop.org/wiki/Software/dbus
 Group:		Applications/File
 Source0:	http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.gz
-%define sha1 dbus=e0d10e8b4494383c7e366ac80a942ba45a705a96
+%define sha1 dbus=368c14e3dde9524dd9d0775227ebf3932802c023
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	expat
@@ -30,43 +30,39 @@ It contains the libraries and header files to create applications
 ./configure --prefix=%{_prefix}                 \
             --sysconfdir=%{_sysconfdir}         \
             --localstatedir=%{_var}             \
-            --docdir=%{_datadir}/doc/dbus-1.8.8  \
+            --docdir=%{_datadir}/doc/dbus-1.13.6  \
             --with-console-auth-dir=/run/console
 
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 install -vdm755 %{buildroot}%{_lib}
-ln -sfv ../../lib/$(readlink %{buildroot}%{_libdir}/libdbus-1.so) %{buildroot}%{_libdir}/libdbus-1.so
-rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
-#ln -sv %{buildroot}%{_sysconfdir}/machine-id %{buildroot}%{_sharedstatedir}/dbus
+
+%check
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 /etc/*
-%{_libdir}/dbus-1.0/include/dbus/*
-#%{_libdir}/pkgconfig/*.pc
-%{_oldincludedir}/*
 %{_bindir}/*
 %{_lib}/*
 /lib/*
 %{_libexecdir}/*
 %{_docdir}/*
-%{_sharedstatedir}/*
-%exclude %{_libdir}/debug/*
-%exclude %{_libdir}/*.la
-%exclude %{_libdir}/*.a
-%exclude %{_libdir}/*.so
-%exclude %{_libdir}/pkgconfig/*.pc
+%{_datadir}/dbus-1
 
 %files	devel
 %defattr(-,root,root)
 %{_includedir}/*
+%{_datadir}/xml/dbus-1
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.la
 %{_libdir}/*.a
 %{_libdir}/*.so
 
 %changelog
+*   Wed Jun 19 2019 Sujay G <gsujay@vmware.com> 1.13.6-1
+-   Version bump to 1.13.6 to fix CVE-2014-7824 & CVE-2015-0245
 *   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 1.8.8-6
 -   Release bump for expat version update
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.8-5
