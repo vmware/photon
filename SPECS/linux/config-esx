@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.19.32 Kernel Configuration
+# Linux/x86 4.19.52 Kernel Configuration
 #
 
 #
@@ -30,9 +30,9 @@ CONFIG_HAVE_KERNEL_LZ4=y
 # CONFIG_KERNEL_GZIP is not set
 # CONFIG_KERNEL_BZIP2 is not set
 # CONFIG_KERNEL_LZMA is not set
-CONFIG_KERNEL_XZ=y
+# CONFIG_KERNEL_XZ is not set
 # CONFIG_KERNEL_LZO is not set
-# CONFIG_KERNEL_LZ4 is not set
+CONFIG_KERNEL_LZ4=y
 CONFIG_DEFAULT_HOSTNAME=""
 CONFIG_SWAP=y
 CONFIG_SYSVIPC=y
@@ -1909,7 +1909,7 @@ CONFIG_E1000E=m
 # Enable WiMAX (Networking options) to see the WiMAX drivers
 #
 # CONFIG_WAN is not set
-CONFIG_VMXNET3=m
+CONFIG_VMXNET3=y
 # CONFIG_FUJITSU_ES is not set
 # CONFIG_NETDEVSIM is not set
 # CONFIG_NET_FAILOVER is not set
