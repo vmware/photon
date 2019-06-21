@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.52
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -69,6 +69,7 @@ BuildRequires: libmspack-devel
 BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
+BuildRequires: lz4
 Requires:      filesystem kmod
 Requires(post):(coreutils or toybox)
 Requires(postun):(coreutils or toybox)
@@ -219,6 +220,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jun 21 2019 Srinidhi Rao <srinidhir@vmware.com> 4.19.52-2
+-   Use LZ4 compression and enable VMXNET3 as built-in for linux-esx
 *   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-1
 -   Update to version 4.19.52
 -   Fix CVE-2019-12456, CVE-2019-12379, CVE-2019-12380, CVE-2019-12381,
