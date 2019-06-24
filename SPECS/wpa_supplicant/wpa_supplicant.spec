@@ -1,7 +1,7 @@
 Summary:          WPA client
 Name:             wpa_supplicant
 Version:          2.7
-Release:          3%{?dist}
+Release:          4%{?dist}
 License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
@@ -17,6 +17,13 @@ Patch4:           wpa_supplicant-CVE-2019-9495-0001-OpenSSL-Use-constant-time-op
 Patch5:           wpa_supplicant-CVE-2019-9495-0003-OpenSSL-Use-constant-time-selection-for-crypto_bignu.patch
 Patch6:           wpa_supplicant-CVE-2019-9495-0002-Add-helper-functions-for-constant-time-operations.patch
 Patch7:           wpa_supplicant-CVE-2019-9495-0004-EAP-pwd-Use-constant-time-and-memory-access-for-find.patch
+Patch8:           wpa_supplicant-CVE-2019-9494-0005-SAE-Minimize-timing-differences-in-PWE-derivation.patch
+Patch9:           wpa_supplicant-CVE-2019-9494-0006-SAE-Avoid-branches-in-is_quadratic_residue_blind.patch
+Patch10:          wpa_supplicant-CVE-2019-9494-0007-SAE-Mask-timing-of-MODP-groups-22-23-24.patch
+Patch11:          wpa_supplicant-CVE-2019-9494-0008-SAE-Use-const_time-selection-for-PWE-in-FFC.patch
+Patch12:          wpa_supplicant-CVE-2019-9494-0009-SAE-Use-constant-time-operations-in-sae_test_pwd_see.patch
+Patch13:          wpa_supplicant-CVE-2019-11555-0001-EAP-pwd-server-Fix-reassembly-buffer-handling.patch
+Patch14:          wpa_supplicant-CVE-2019-11555-0003-EAP-pwd-peer-Fix-reassembly-buffer-handling.patch
 
 BuildRequires:    libnl-devel openssl-devel
 Requires:         libnl
@@ -35,6 +42,13 @@ WPA Supplicant is a Wi-Fi Protected Access (WPA) client and IEEE 802.1X supplica
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
 
 %build
 cat > wpa_supplicant/.config << "EOF"
@@ -111,6 +125,10 @@ EOF
 %{_sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 
 %changelog
+*   Mon Jun 24 2019 Michelle Wang <michellew@vmware.com> 2.7-4
+-   Add patch for CVE-2019-9494 and CVE-2019-11555
+-   Skip 001, 002 and 003 patch of CVE-2019-9494
+-   Since they are duplicate with those patches in CVE-2019-9495
 *   Wed May 29 2019 Michelle Wang <michellew@vmware.com> 2.7-3
 -   Fix CVE-2019-9495
 *   Fri Apr 19 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.7-2
