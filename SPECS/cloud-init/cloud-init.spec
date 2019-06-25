@@ -1,8 +1,8 @@
 %define python3_sitelib /usr/lib/python3.7/site-packages
 
 Name:           cloud-init
-Version:        18.3
-Release:        4%{?dist}
+Version:        19.1
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -10,7 +10,7 @@ URL:            http://launchpad.net/cloud-init
 Vendor:         VMware, Inc
 Distribution:   Photon
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 cloud-init=a317e2add93578d244328dcf97d46fad1c3140f9
+%define sha1 cloud-init=6de398dd755959dde47c8d6f6e255a0857017c44
 Source1:        cloud-photon.cfg
 Source2:        99-disable-networking-config.cfg
 
@@ -138,15 +138,17 @@ rm -rf $RPM_BUILD_ROOT
 /lib/systemd/system-generators/cloud-init-generator
 /lib/udev/rules.d/66-azure-ephemeral.rules
 /lib/systemd/system/*
-/etc/bash_completion.d/cloud-init
 %{_docdir}/cloud-init/*
 %{_libdir}/cloud-init/*
 %{python3_sitelib}/*
 %{_bindir}/cloud-init*
+%{_bindir}/cloud-id
+%{_datadir}/bash-completion/completions/cloud-init
 %dir /var/lib/cloud
 
-
 %changelog
+*   Tue Jun 25 2019 Keerthana K <keerthanak@vmware.com> 19.1-1
+-   Upgrade to version 19.1 and fix cloud-init GOS logic.
 *   Thu Jun 13 2019 Keerthana K <keerthanak@vmware.com> 18.3-4
 -   Fix to delete the contents of /etc/systemd/network dir at the beginning
 -   of write_network instead of looping through each NIC and delete the contents
