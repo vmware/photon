@@ -1,7 +1,7 @@
 Summary:        Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:           atftp
-Version:        0.7.1
-Release:        8%{?dist}
+Version:        0.7.2
+Release:        1%{?dist}
 URL:            http://sourceforge.net/projects/atftp
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          System Environment/Daemons
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sourceforge.net/projects/atftp/files/latest/download/%{name}-%{version}.tar.gz
 
-%define sha1 atftp=fc9e9f821dfd2f257b4a5c32b948ed60b4e31fd1
+%define sha1 atftp=a05ff68dfcdbe5368b57a955647450b798a07adc
 
 BuildRequires:  systemd
 Requires:       systemd
@@ -53,7 +53,7 @@ mkdir -p %{buildroot}/%{_var}/lib/tftpboot
 mkdir -p %{buildroot}/lib/systemd/system
 cat << EOF >> %{buildroot}/lib/systemd/system/atftpd.service
 [Unit]
-Description=The tftp server serves files using the trivial file transfer protocol. 
+Description=The tftp server serves files using the trivial file transfer protocol.
 
 [Service]
 EnvironmentFile=/etc/sysconfig/atftpd
@@ -130,10 +130,12 @@ fi
 
 
 %changelog
+*   Tue Jun 25 2019 Tapas Kundu <tkundu@vmware.com> 0.7.2-1
+-   Updated to release 0.7.2
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.1-8
 -   Remove shadow from requires and use explicit tools for post actions
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-7
--   Fixed logic to restart the active services after upgrade 
+-   Fixed logic to restart the active services after upgrade
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.1-6
 -   GA - Bump release of all rpms
 *   Fri May 6 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-5
