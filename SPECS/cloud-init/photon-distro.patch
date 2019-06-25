@@ -1,7 +1,7 @@
 diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/cloudinit/distros/photon.py
---- cloud-init-0.7.9/cloudinit/distros/photon.py	1969-12-31 16:00:00.000000000 -0800
-+++ cloud-init-0.7.9-new/cloudinit/distros/photon.py	2017-05-15 05:13:49.156848344 -0700
-@@ -0,0 +1,320 @@
+--- cloud-init-0.7.9/cloudinit/distros/photon.py        1969-12-31 16:00:00.000000000 -0800
++++ cloud-init-0.7.9-new/cloudinit/distros/photon.py    2017-05-15 05:13:49.156848344 -0700
+@@ -0,0 +1,335 @@
 +# vi: ts=4 expandtab
 +#
 +# Copyright (C) 2017 VMware Inc.
@@ -9,6 +9,7 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +#
 +
 +import os
++import fnmatch
 +
 +from cloudinit import distros
 +from cloudinit import helpers
@@ -16,6 +17,7 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +from cloudinit import util
 +from cloudinit.distros import net_util
 +from cloudinit.distros.parsers.hostname import HostnameConf
++from cloudinit.net.network_state import mask_to_net_prefix
 +
 +from cloudinit.settings import PER_INSTANCE
 +
@@ -57,7 +59,6 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +        entries = net_util.translate_network(settings)
 +        LOG.debug("Translated ubuntu style network settings %s into %s",
 +                  settings, entries)
-+        util.delete_dir_contents(self.network_conf_dir)
 +        route_entries = []
 +        route_entries = translate_routes(settings)
 +        dev_names = entries.keys()
@@ -66,9 +67,17 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +        searchdomains = []
 +        # Format for systemd
 +        for (dev, info) in entries.items():
++            if 'dns-nameservers' in info:
++                nameservers.extend(info['dns-nameservers'])
++            if 'dns-search' in info:
++                searchdomains.extend(info['dns-search'])
 +            if dev == 'lo':
 +                continue
-+            net_fn = self.network_conf_dir + str(dev_index) + '-' + dev + '.network'
++            net_fn = network_file_name(self.network_conf_dir, dev)
++            if not net_fn:
++               net_fn = self.network_conf_dir + str(dev_index) + '-' + dev + '.network'
++            else:
++                net_fn = self.network_conf_dir + net_fn
 +            dhcp_enabled = 'no'
 +            if info.get('bootproto') == 'dhcp':
 +                dhcp_enabled = 'yes'        
@@ -81,7 +90,7 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +            if info.get('address'):
 +                net_cfg['Address'] = "%s" % (info.get('address'))
 +                if info.get('netmask'):
-+                    net_cfg['Address'] += "/%s" % (info.get('netmask'))
++                    net_cfg['Address'] += "/%s" % (mask_to_net_prefix(info.get('netmask')))
 +            if info.get('gateway'):
 +                net_cfg['Gateway'] = info.get('gateway')
 +            if info.get('dns-nameservers'):
@@ -105,11 +114,6 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +
 +            if info.get('auto'):
 +                self._write_interface_file(net_fn, net_cfg, route_entry)
-+            if 'dns-nameservers' in info:
-+                nameservers.extend(info['dns-nameservers'])
-+            if 'dns-search' in info:
-+                searchdomains.extend(info['dns-search'])
-+            dev_index = dev_index + 1;
 +
 +        resolve_data = []
 +        new_resolve_data = []
@@ -146,6 +150,8 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +                content += "Address=%s\n" % (net_cfg['Address'])
 +            if 'Gateway' in net_cfg:
 +                content += "Gateway=%s\n" % (net_cfg['Gateway'])
++            if 'DHCP' in net_cfg and net_cfg['DHCP'] == 'no':
++                content += "DHCP=%s\n" % (net_cfg['DHCP'])
 +            route_index = 0
 +            found = True
 +            if route_entry:
@@ -322,3 +328,12 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +        else:
 +            out_ifaces[dev_name] = route_info
 +    return out_ifaces
++
++def network_file_name(dirname, dev_name):
++    network_file_pattern = "*"+dev_name+".network*"
++    for node in os.listdir(dirname):
++        node_fullpath = os.path.join(dirname, node)
++        if fnmatch.fnmatch(node, network_file_pattern):
++           util.del_file(node_fullpath)
++           return node
++    return ""
