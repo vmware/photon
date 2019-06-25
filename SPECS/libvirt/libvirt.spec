@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        3.2.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
@@ -27,6 +27,7 @@ BuildRequires:  parted
 BuildRequires:  python2-devel
 BuildRequires:  readline
 BuildRequires:  readline-devel
+BuildRequires:  dbus-devel
 Requires:       cyrus-sasl
 Requires:       device-mapper
 Requires:       gnutls
@@ -112,6 +113,8 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/*
 
 %changelog
+*   Tue Jun 25 2019 Sujay G <gsujay@vmware.com> 3.2.0-6
+-   Added dbus in build-requires, to support dbus version bump and utilization in libvirt.
 *   Fri May 24 2019 Siju Maliakkal <smaliakkal@vmware.com> 3.2.0-5
 -   Fix CVE-2019-3840
 *   Fri Apr 20 2018 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-4
