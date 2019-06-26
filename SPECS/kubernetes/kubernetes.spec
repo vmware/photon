@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.12.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -9,6 +9,7 @@ Source0:        kubernetes-%{version}.tar.gz
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         k8s-1.12-vke.patch
+Patch1:         k8s-1.12-CVE-2019-11244.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -56,6 +57,7 @@ tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 cd %{name}-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 make
@@ -207,6 +209,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Wed Jun 26 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-2
+-   Fix CVE-2019-11244
 *   Tue May 07 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-1
 -   Upgrade to k8s 1.12.7
 *   Thu Dec 20 2018 Ashwin H <ashwinh@vmware.com> 1.9.6-2
