@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        10.5
-Release:        2%{?dist}
+Version:        10.9
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -9,8 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=8c7b4406b0ba2987f4170657f89908ad47947429
-Patch0:         postgresql-CVE-2018-16850.patch
+%define sha1    postgresql=8c5f14580f52f6f98baf5c2b148eff8613c0e2d1
 # Common libraries needed
 BuildRequires:  krb5-devel
 BuildRequires:  libxml2-devel
@@ -54,7 +53,6 @@ developing applications that use postgresql.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h &&
@@ -159,6 +157,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Tue Jun 25 2019 Siju Maliakkal <smaliakkal@vmware.com> 10.9-1
+-   Upgrade to 10.9 for CVE-2019-10164
 *   Tue Apr 09 2019 Dweep Advani <dadvani@vmware.com> 10.5-2
 -   Fixed CVE-2018-16850
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 10.5-1
