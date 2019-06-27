@@ -1,0 +1,247 @@
+diff -rupN systemd-239-orig/src/network/networkd-address.c systemd-239/src/network/networkd-address.c
+--- systemd-239-orig/src/network/networkd-address.c	2019-06-25 19:58:15.776677784 +0530
++++ systemd-239/src/network/networkd-address.c	2019-06-25 19:58:09.981468443 +0530
+@@ -540,6 +540,11 @@ int address_configure(
+         assert(link->manager);
+         assert(link->manager->rtnl);
+ 
++        if (address->family == AF_INET6 && link_sysctl_ipv6_enabled(link) == 0) {
++                log_link_warning(link, "An IPv6 address is requested, but IPv6 is disabled by sysctl, ignoring.");
++                return 0;
++        }
++
+         /* If this is a new address, then refuse adding more than the limit */
+         if (address_get(link, address->family, &address->in_addr, address->prefixlen, NULL) <= 0 &&
+             set_size(link->addresses) >= ADDRESSES_PER_LINK_MAX)
+@@ -646,7 +651,7 @@ int address_configure(
+                 return log_error_errno(r, "Could not add address: %m");
+         }
+ 
+-        return 0;
++        return 1;
+ }
+ 
+ int config_parse_broadcast(
+diff -rupN systemd-239-orig/src/network/networkd-link.c systemd-239/src/network/networkd-link.c
+--- systemd-239-orig/src/network/networkd-link.c	2019-06-25 19:58:15.899673359 +0530
++++ systemd-239/src/network/networkd-link.c	2019-06-25 19:58:10.071472495 +0530
+@@ -24,6 +24,7 @@
+ #include "socket-util.h"
+ #include "stdio-util.h"
+ #include "string-table.h"
++#include "sysctl-util.h"
+ #include "udev-util.h"
+ #include "util.h"
+ #include "virt.h"
+@@ -40,6 +41,9 @@ static bool link_dhcp6_enabled(Link *lin
+         if (!link->network)
+                 return false;
+ 
++        if (link_sysctl_ipv6_enabled(link) == 0)
++                return false;
++
+         return link->network->dhcp & ADDRESS_FAMILY_IPV6;
+ }
+ 
+@@ -97,6 +101,9 @@ static bool link_ipv6ll_enabled(Link *li
+         if (streq_ptr(link->kind, "wireguard"))
+                 return false;
+ 
++        if (link_sysctl_ipv6_enabled(link) == 0)
++                return false;
++
+         return link->network->link_local & ADDRESS_FAMILY_IPV6;
+ }
+ 
+@@ -109,10 +116,27 @@ static bool link_ipv6_enabled(Link *link
+         if (link->network->bridge)
+                 return false;
+ 
++        if (link_sysctl_ipv6_enabled(link) == 0)
++                return false;
++
+         /* DHCPv6 client will not be started if no IPv6 link-local address is configured. */
+         return link_ipv6ll_enabled(link) || network_has_static_ipv6_addresses(link->network);
+ }
+ 
++int link_sysctl_ipv6_enabled(Link *link) {
++        _cleanup_free_ char *value = NULL;
++        int r;
++
++        r = sysctl_read_ip_property(AF_INET6, link->ifname, "disable_ipv6", &value);
++        if (r < 0)
++                return log_link_warning_errno(link, r,
++                                              "Failed to read net.ipv6.conf.%s.disable_ipv6 sysctl property: %m",
++                                              link->ifname);
++
++        link->sysctl_ipv6_enabled = value[0] == '0';
++        return link->sysctl_ipv6_enabled;
++}
++
+ static bool link_radv_enabled(Link *link) {
+         assert(link);
+ 
+@@ -188,6 +212,9 @@ static bool link_ipv6_forward_enabled(Li
+         if (link->network->ip_forward == _ADDRESS_FAMILY_BOOLEAN_INVALID)
+                 return false;
+ 
++        if (link_sysctl_ipv6_enabled(link) == 0)
++                return false;
++
+         return link->network->ip_forward & ADDRESS_FAMILY_IPV6;
+ }
+ 
+@@ -450,6 +477,7 @@ static int link_new(Manager *manager, sd
+         link->rtnl_extended_attrs = true;
+         link->ifindex = ifindex;
+         link->iftype = iftype;
++        link->sysctl_ipv6_enabled = -1;
+         link->ifname = strdup(ifname);
+         if (!link->ifname)
+                 return -ENOMEM;
+@@ -795,7 +823,8 @@ static int link_set_routing_policy_rule(
+                         return r;
+                 }
+ 
+-                link->routing_policy_rule_messages++;
++                if (r > 0)
++                        link->routing_policy_rule_messages++;
+         }
+ 
+         routing_policy_rule_purge(link->manager, link);
+@@ -855,7 +884,8 @@ static int link_enter_set_routes(Link *l
+                         return r;
+                 }
+ 
+-                link->route_messages++;
++                if (r > 0)
++                        link->route_messages++;
+         }
+ 
+         if (link->route_messages == 0) {
+@@ -1077,7 +1107,8 @@ static int link_enter_set_addresses(Link
+                         return r;
+                 }
+ 
+-                link->address_messages++;
++                if (r > 0)
++                        link->address_messages++;
+         }
+ 
+         LIST_FOREACH(labels, label, link->network->address_labels) {
+diff -rupN systemd-239-orig/src/network/networkd-link.h systemd-239/src/network/networkd-link.h
+--- systemd-239-orig/src/network/networkd-link.h	2019-06-25 19:58:15.873674294 +0530
++++ systemd-239/src/network/networkd-link.h	2019-06-25 19:58:10.043470841 +0530
+@@ -124,6 +124,8 @@ typedef struct Link {
+ 
+         Hashmap *bound_by_links;
+         Hashmap *bound_to_links;
++
++	int sysctl_ipv6_enabled;
+ } Link;
+ 
+ Link *link_unref(Link *link);
+@@ -163,6 +165,8 @@ int dhcp4_set_promote_secondaries(Link *
+ int dhcp6_configure(Link *link);
+ int dhcp6_request_address(Link *link, int ir);
+ 
++int link_sysctl_ipv6_enabled(Link *link);
++
+ const char* link_state_to_string(LinkState s) _const_;
+ LinkState link_state_from_string(const char *s) _pure_;
+ 
+diff -rupN systemd-239-orig/src/network/networkd-route.c systemd-239/src/network/networkd-route.c
+--- systemd-239-orig/src/network/networkd-route.c	2019-06-25 19:58:15.848675194 +0530
++++ systemd-239/src/network/networkd-route.c	2019-06-25 20:02:57.522231886 +0530
+@@ -502,6 +502,11 @@ int route_configure(
+         assert(link->ifindex > 0);
+         assert(IN_SET(route->family, AF_INET, AF_INET6));
+ 
++        if (route->family == AF_INET6 && link_sysctl_ipv6_enabled(link) == 0) {
++                log_link_warning(link, "An IPv6 route is requested, but IPv6 is disabled by sysctl, ignoring.");
++                return 0;
++        }
++
+         if (route_get(link, route->family, &route->dst, route->dst_prefixlen, route->tos, route->priority, route->table, NULL) <= 0 &&
+             set_size(link->routes) >= routes_max())
+                 return -E2BIG;
+@@ -667,7 +672,7 @@ int route_configure(
+         sd_event_source_unref(route->expire);
+         route->expire = TAKE_PTR(expire);
+ 
+-        return 0;
++        return 1;
+ }
+ 
+ int config_parse_gateway(
+diff -rupN systemd-239-orig/src/network/networkd-routing-policy-rule.c systemd-239/src/network/networkd-routing-policy-rule.c
+--- systemd-239-orig/src/network/networkd-routing-policy-rule.c	2019-06-25 19:58:15.890673682 +0530
++++ systemd-239/src/network/networkd-routing-policy-rule.c	2019-06-25 20:02:31.471228196 +0530
+@@ -451,6 +451,11 @@ int routing_policy_rule_configure(Routin
+         assert(link->manager);
+         assert(link->manager->rtnl);
+ 
++	if (rule->family == AF_INET6 && link_sysctl_ipv6_enabled(link) == 0) {
++                log_link_warning(link, "An IPv6 routing policy rule is requested, but IPv6 is disabled by sysctl, ignoring.");
++                return 0;
++        }
++
+         r = sd_rtnl_message_new_routing_policy_rule(link->manager->rtnl, &m, RTM_NEWRULE, rule->family);
+         if (r < 0)
+                 return log_error_errno(r, "Could not allocate RTM_NEWRULE message: %m");
+@@ -544,7 +549,7 @@ int routing_policy_rule_configure(Routin
+         if (r < 0)
+                 return log_error_errno(r, "Could not add rule : %m");
+ 
+-        return 0;
++        return 1;
+ }
+ 
+ static int parse_fwmark_fwmask(const char *s, uint32_t *fwmark, uint32_t *fwmask) {
+diff -rupN systemd-239-orig/src/shared/sysctl-util.c systemd-239/src/shared/sysctl-util.c
+--- systemd-239-orig/src/shared/sysctl-util.c	2019-06-25 19:58:16.274659445 +0530
++++ systemd-239/src/shared/sysctl-util.c	2019-06-25 19:58:10.412492632 +0530
+@@ -6,6 +6,7 @@
+ #include <string.h>
+ #include <unistd.h>
+ 
++#include "alloc-util.h"
+ #include "fd-util.h"
+ #include "fileio.h"
+ #include "log.h"
+@@ -69,3 +70,26 @@ int sysctl_read(const char *property, ch
+         p = strjoina("/proc/sys/", property);
+         return read_full_file(p, content, NULL);
+ }
++
++int sysctl_read_ip_property(int af, const char *ifname, const char *property, char **ret) {
++        _cleanup_free_ char *value = NULL;
++        const char *p;
++        int r;
++
++        assert(IN_SET(af, AF_INET, AF_INET6));
++        assert(property);
++
++        p = strjoina("/proc/sys/net/ipv", af == AF_INET ? "4" : "6",
++                     ifname ? "/conf/" : "", strempty(ifname),
++                     property[0] == '/' ? "" : "/", property);
++
++        r = read_one_line_file(p, &value);
++        if (r < 0)
++                return r;
++
++        if (ret)
++                *ret = TAKE_PTR(value);
++
++        return r;
++}
++
+diff -rupN systemd-239-orig/src/shared/sysctl-util.h systemd-239/src/shared/sysctl-util.h
+--- systemd-239-orig/src/shared/sysctl-util.h	2019-06-25 19:58:16.328657420 +0530
++++ systemd-239/src/shared/sysctl-util.h	2019-06-25 19:58:10.480496648 +0530
+@@ -4,4 +4,4 @@
+ char *sysctl_normalize(char *s);
+ int sysctl_read(const char *property, char **value);
+ int sysctl_write(const char *property, const char *value);
+-
++int sysctl_read_ip_property(int af, const char *ifname, const char *property, char **ret);
