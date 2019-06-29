@@ -61,6 +61,12 @@ CALICO_K8S_POLICY_VER_REL=${CALICO_K8S_POLICY_VER}-`cat ${SPEC_DIR}/calico-k8s-p
 CALICO_K8S_POLICY_RPM=calico-k8s-policy-${CALICO_K8S_POLICY_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_K8S_POLICY_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${CALICO_K8S_POLICY_RPM}
 
+KUBE_CONTROLLERS_VER=`cat ${SPEC_DIR}/kube-controllers/kube-controllers.spec | grep Version | cut -d: -f2 | tr -d ' '`
+KUBE_CONTROLLERS_VER_REL=${KUBE_CONTROLLERS_VER}-`cat ${SPEC_DIR}/kube-controllers/kube-controllers.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
+KUBE_CONTROLLERS_RPM=kube-controllers-${KUBE_CONTROLLERS_VER_REL}${DIST_TAG}.${ARCH}.rpm
+KUBE_CONTROLLERS_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${KUBE_CONTROLLERS_RPM}
+
+
 if [ ! -f ${CALICO_RPM_FILE} ]
 then
     echo "Calico RPM ${CALICO_RPM_FILE} not found. Exiting.."
@@ -121,12 +127,20 @@ then
     exit 1
 fi
 
+if [ ! -f ${KUBE_CONTROLLERS_RPM_FILE} ]
+then
+    echo "kube-controllers RPM ${KUBE_CONTROLLERS_RPM_FILE} not found. Exiting.."
+    exit 1
+fi
+
 CALICO_NODE_IMG_NAME=vmware/photon-${DIST_VER}-calico-node:v${CALICO_VER}
 CALICO_CNI_IMG_NAME=vmware/photon-${DIST_VER}-calico-cni:v${CALICO_CNI_VER}
 CALICO_K8S_POLICY_IMG_NAME=vmware/photon-${DIST_VER}-calico-kube-policy-controller:v${CALICO_K8S_POLICY_VER}
+KUBE_CONTROLLERS_IMG_NAME=vmware/photon-${DIST_VER}-kube-controllers:v${KUBE_CONTROLLERS_VER}
 CALICO_NODE_TAR=calico-node-v${CALICO_VER_REL}.tar
 CALICO_CNI_TAR=calico-cni-v${CALICO_CNI_VER_REL}.tar
 CALICO_K8S_POLICY_TAR=calico-k8s-policy-v${CALICO_K8S_POLICY_VER_REL}.tar
+KUBE_CONTROLLERS_TAR=kube-controllers-v${KUBE_CONTROLLERS_VER_REL}.tar
 
 NODE_IMG_ID=`docker images -q ${CALICO_NODE_IMG_NAME} 2> /dev/null`
 if [[ ! -z "${NODE_IMG_ID}" ]]; then
@@ -140,6 +154,12 @@ if [[ ! -z "${CNI_IMG_ID}" ]]; then
     docker rmi -f ${CALICO_CNI_IMG_NAME}
 fi
 
+KUBE_CONTROLLERS_IMG_ID=`docker images -q ${KUBE_CONTROLLERS_IMG_NAME} 2> /dev/null`
+if [[ ! -z "${KUBE_CONTROLLERS_IMG_ID}" ]]; then
+    echo "Removing image ${KUBE_CONTROLLERS_IMG_NAME}"
+    docker rmi -f ${KUBE_CONTROLLERS_IMG_NAME}
+fi
+
 mkdir -p tmp/calico
 cp ${CALICO_RPM_FILE} tmp/calico/
 cp ${CALICO_BGP_RPM_FILE} tmp/calico/
@@ -151,6 +171,7 @@ cp ${CALICO_LIBNET_RPM_FILE} tmp/calico/
 cp ${CALICO_CNI_RPM_FILE} tmp/calico/
 cp ${K8S_CNI_RPM_FILE} tmp/calico/
 cp ${CALICO_K8S_POLICY_RPM_FILE} tmp/calico/
+cp ${KUBE_CONTROLLERS_RPM_FILE} tmp/calico/
 pushd ./tmp/calico
 rpm2cpio ${CALICO_RPM} | cpio -vid
 rpm2cpio ${CALICO_BGP_RPM} | cpio -vid
@@ -162,6 +183,7 @@ rpm2cpio ${CALICO_LIBNET_RPM} | cpio -vid
 rpm2cpio ${CALICO_CNI_RPM} | cpio -vid
 rpm2cpio ${K8S_CNI_RPM} | cpio -vid
 rpm2cpio ${CALICO_K8S_POLICY_RPM} | cpio -vid
+rpm2cpio ${KUBE_CONTROLLERS_RPM} | cpio -vid
 popd
 
 setup_repo
@@ -180,5 +202,10 @@ docker build --rm -t ${CALICO_K8S_POLICY_IMG_NAME} -f Dockerfile.calico-k8s-poli
 docker save -o ${CALICO_K8S_POLICY_TAR} ${CALICO_K8S_POLICY_IMG_NAME}
 gzip ${CALICO_K8S_POLICY_TAR}
 mv -f ${CALICO_K8S_POLICY_TAR}.gz ${STAGE_DIR}/docker_images/
+
+docker build --rm -t ${KUBE_CONTROLLERS_IMG_NAME} -f Dockerfile.kube-controllers .
+docker save -o ${KUBE_CONTROLLERS_TAR} ${KUBE_CONTROLLERS_IMG_NAME}
+gzip ${KUBE_CONTROLLERS_TAR}
+mv -f ${KUBE_CONTROLLERS_TAR}.gz ${STAGE_DIR}/docker_images/
 
 rm -rf ./tmp
