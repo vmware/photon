@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          20%{?dist}
+Release:          21%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -40,6 +40,7 @@ Patch21:          systemd-233-CVE-2018-16866.patch
 Patch22:          systemd-233-CVE-2019-3842.patch
 Patch23:          systemd-233-safe-glob.patch
 Patch24:          systemd-233-CVE-2018-6954.patch
+Patch25:          systemd-233-CVE-2019-6454.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -118,6 +119,7 @@ sed -i "/xlocale.h/d" src/basic/parse-util.c
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
+%patch25 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -268,6 +270,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Mon Jul 01 2019 Susant Sahani <ssahani@vmware.com> 233-21
+-    Fix CVE-2019-6454.
 *    Mon Jun 10 2019 Keerthana K <keerthanak@vmware.com> 233-20
 -    Fix CVE-2018-6954 and add safe_glob patch which enhances the library.
 *    Thu Apr 18 2019 Anish Swaminathan <anishs@vmware.com>  233-19
@@ -393,13 +397,13 @@ rm -rf %{buildroot}/*
 *    Tue Aug 25 2015 Alexey Makhalov <amakhalov@vmware.com> 216-9
 -    Reduce systemd-networkd boot time (exclude if-rename patch).
 *    Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 216-8
--    Adding sysvinit support 
+-    Adding sysvinit support
 *    Mon Jul 06 2015 Kumar Kaushik <kaushikk@vmware.com> 216-7
 -    Fixing networkd/udev race condition for renaming interface.
 *    Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 216-6
 -    Remove debug files.
 *    Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 216-5
--    Building compat libs 
+-    Building compat libs
 *    Mon Jun 1 2015 Alexey Makhalov <amakhalov@vmware.com> 216-4
 -    gudev support
 *    Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 216-3
