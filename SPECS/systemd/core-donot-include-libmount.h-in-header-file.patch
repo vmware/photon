@@ -1,0 +1,43 @@
+diff -rupN systemd-228/src/core/dbus-execute.c systemd-228-fix-build-2/src/core/dbus-execute.c
+--- systemd-228/src/core/dbus-execute.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build-2/src/core/dbus-execute.c	2019-07-03 10:25:37.173672603 +0000
+@@ -19,6 +19,7 @@
+   along with systemd; If not, see <http://www.gnu.org/licenses/>.
+ ***/
+ 
++#include <sys/mount.h>
+ #include <sys/prctl.h>
+ 
+ #ifdef HAVE_SECCOMP
+diff -rupN systemd-228/src/core/manager.h systemd-228-fix-build-2/src/core/manager.h
+--- systemd-228/src/core/manager.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build-2/src/core/manager.h	2019-07-03 10:26:15.722373241 +0000
+@@ -23,7 +23,6 @@
+ 
+ #include <stdbool.h>
+ #include <stdio.h>
+-#include <libmount.h>
+ 
+ #include "sd-bus.h"
+ #include "sd-event.h"
+@@ -33,6 +32,8 @@
+ #include "list.h"
+ #include "ratelimit.h"
+ 
++struct libmnt_monitor;
++
+ /* Enforce upper limit how many names we allow */
+ #define MANAGER_MAX_NAMES 131072 /* 128K */
+ 
+diff -rupN systemd-228/src/core/mount.c systemd-228-fix-build-2/src/core/mount.c
+--- systemd-228/src/core/mount.c	2019-07-03 09:54:11.198568785 +0000
++++ systemd-228-fix-build-2/src/core/mount.c	2019-07-03 10:26:45.340170584 +0000
+@@ -24,6 +24,8 @@
+ #include <stdio.h>
+ #include <sys/epoll.h>
+ 
++#include <libmount.h>
++
+ #include "sd-messages.h"
+ 
+ #include "alloc-util.h"

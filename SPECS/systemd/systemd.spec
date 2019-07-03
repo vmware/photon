@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          53%{?dist}
+Release:          54%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -55,6 +55,9 @@ Patch37:          systemd-228-fix-handler-route-remove.patch
 Patch38:          systemd-228-CVE-2018-6954.patch
 Patch39:          systemd-228-CVE-2018-6954_1.patch
 Patch40:          systemd-228-CVE-2019-3842.patch
+Patch41:          build-sys-add-check-for-gperf-lookup-function-signat.patch
+Patch42:          core-donot-include-libmount.h-in-header-file.patch
+
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -129,6 +132,9 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch38 -p1
 %patch39 -p1
 %patch40 -p1
+%patch41 -p1
+%patch42 -p1
+
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -196,7 +202,7 @@ rm %{buildroot}/lib/systemd/system/default.target
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
 install -vdm 755 %{buildroot}/%{_sysconfdir}/systemd/network
 #
-#	7.2.2. Creating Network Interface Configuration Files"
+#       7.2.2. Creating Network Interface Configuration Files"
 #
 cat > %{buildroot}/%{_sysconfdir}/systemd/network/99-dhcp-en.network <<- "EOF"
 [Match]
@@ -269,6 +275,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*    Thu Jul 25 2019 Susant Sahani <ssahani@vmware.com>  228-54
+-    Fix Build upstream #5039 and #8507
 *    Thu Apr 18 2019 Anish Swaminathan <anishs@vmware.com>  228-53
 -    Fix CVE-2019-3842
 *    Tue Mar 19 2019 Keerthana K <keerthanak@vmware.com> 228-52
@@ -387,13 +395,13 @@ rm -rf %{buildroot}/*
 *    Tue Aug 25 2015 Alexey Makhalov <amakhalov@vmware.com> 216-9
 -    Reduce systemd-networkd boot time (exclude if-rename patch).
 *    Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 216-8
--    Adding sysvinit support 
+-    Adding sysvinit support
 *    Mon Jul 06 2015 Kumar Kaushik <kaushikk@vmware.com> 216-7
 -    Fixing networkd/udev race condition for renaming interface.
 *    Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 216-6
 -    Remove debug files.
 *    Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 216-5
--    Building compat libs 
+-    Building compat libs
 *    Mon Jun 1 2015 Alexey Makhalov <amakhalov@vmware.com> 216-4
 -    gudev support
 *    Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 216-3

@@ -1,0 +1,248 @@
+diff -rupN systemd-228/configure.ac systemd-228-fix-build/configure.ac
+--- systemd-228/configure.ac	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/configure.ac	2019-07-03 11:14:44.313076981 +0000
+@@ -254,6 +254,28 @@ AC_CHECK_SIZEOF(rlim_t,,[
+        #include <sys/resource.h>
+ ])
+ 
++GPERF_TEST="$(echo foo,bar | ${GPERF} -L ANSI-C)"
++	
++AC_COMPILE_IFELSE(
++	[AC_LANG_PROGRAM([
++	        #include <string.h>
++	        const char * in_word_set(const char *, size_t);
++	        $GPERF_TEST]
++	)],
++	[GPERF_LEN_TYPE=size_t],
++	[AC_COMPILE_IFELSE(
++	        [AC_LANG_PROGRAM([
++	                #include <string.h>
++	                const char * in_word_set(const char *, unsigned);
++	                $GPERF_TEST]
++	        )],
++	        [GPERF_LEN_TYPE=unsigned],
++	        [AC_MSG_ERROR([** unable to determine gperf len type])]
++	)]
++)
++	
++AC_DEFINE_UNQUOTED([GPERF_LEN_TYPE], [$GPERF_LEN_TYPE], [gperf len type])
++
+ # ------------------------------------------------------------------------------
+ # we use python to build the man page index
+ have_python=no
+diff -rupN systemd-228/src/basic/af-list.c systemd-228-fix-build/src/basic/af-list.c
+--- systemd-228/src/basic/af-list.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/basic/af-list.c	2019-07-03 11:14:44.313076981 +0000
+@@ -25,7 +25,7 @@
+ #include "af-list.h"
+ #include "util.h"
+ 
+-static const struct af_name* lookup_af(register const char *str, register unsigned int len);
++static const struct af_name* lookup_af(register const char *str, register GPERF_LEN_TYPE len);
+ 
+ #include "af-from-name.h"
+ #include "af-to-name.h"
+diff -rupN systemd-228/src/basic/arphrd-list.c systemd-228-fix-build/src/basic/arphrd-list.c
+--- systemd-228/src/basic/arphrd-list.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/basic/arphrd-list.c	2019-07-03 11:14:44.313076981 +0000
+@@ -25,7 +25,7 @@
+ #include "arphrd-list.h"
+ #include "util.h"
+ 
+-static const struct arphrd_name* lookup_arphrd(register const char *str, register unsigned int len);
++static const struct arphrd_name* lookup_arphrd(register const char *str, register GPERF_LEN_TYPE len);
+ 
+ #include "arphrd-from-name.h"
+ #include "arphrd-to-name.h"
+diff -rupN systemd-228/src/basic/cap-list.c systemd-228-fix-build/src/basic/cap-list.c
+--- systemd-228/src/basic/cap-list.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/basic/cap-list.c	2019-07-03 11:14:44.313076981 +0000
+@@ -26,7 +26,7 @@
+ #include "parse-util.h"
+ #include "util.h"
+ 
+-static const struct capability_name* lookup_capability(register const char *str, register unsigned int len);
++static const struct capability_name* lookup_capability(register const char *str, register GPERF_LEN_TYPE len);
+ 
+ #include "cap-from-name.h"
+ #include "cap-to-name.h"
+diff -rupN systemd-228/src/basic/errno-list.c systemd-228-fix-build/src/basic/errno-list.c
+--- systemd-228/src/basic/errno-list.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/basic/errno-list.c	2019-07-03 11:14:44.313076981 +0000
+@@ -25,7 +25,7 @@
+ #include "util.h"
+ 
+ static const struct errno_name* lookup_errno(register const char *str,
+-                                                 register unsigned int len);
++                                             register GPERF_LEN_TYPE len);
+ 
+ #include "errno-from-name.h"
+ #include "errno-to-name.h"
+diff -rupN systemd-228/src/core/load-fragment.h systemd-228-fix-build/src/core/load-fragment.h
+--- systemd-228/src/core/load-fragment.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/core/load-fragment.h	2019-07-03 11:14:44.313076981 +0000
+@@ -115,7 +115,7 @@ int config_parse_working_directory(const
+ int config_parse_fdname(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
+ 
+ /* gperf prototypes */
+-const struct ConfigPerfItem* load_fragment_gperf_lookup(const char *key, unsigned length);
++const struct ConfigPerfItem* load_fragment_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
+ extern const char load_fragment_gperf_nulstr[];
+ 
+ typedef enum Disabled {
+diff -rupN systemd-228/src/journal/journald-server.h systemd-228-fix-build/src/journal/journald-server.h
+--- systemd-228/src/journal/journald-server.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/journal/journald-server.h	2019-07-03 11:14:44.313076981 +0000
+@@ -162,7 +162,7 @@ void server_dispatch_message(Server *s,
+ void server_driver_message(Server *s, sd_id128_t message_id, const char *format, ...) _printf_(3,4);
+ 
+ /* gperf lookup function */
+-const struct ConfigPerfItem* journald_gperf_lookup(const char *key, unsigned length);
++const struct ConfigPerfItem* journald_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
+ 
+ int config_parse_storage(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
+ 
+diff -rupN systemd-228/src/login/logind.h systemd-228-fix-build/src/login/logind.h
+--- systemd-228/src/login/logind.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/login/logind.h	2019-07-03 11:14:44.313076981 +0000
+@@ -182,7 +182,7 @@ int manager_unit_is_active(Manager *mana
+ int manager_job_is_active(Manager *manager, const char *path);
+ 
+ /* gperf lookup function */
+-const struct ConfigPerfItem* logind_gperf_lookup(const char *key, unsigned length);
++const struct ConfigPerfItem* logind_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
+ 
+ int manager_set_lid_switch_ignore(Manager *m, usec_t until);
+ 
+diff -rupN systemd-228/src/network/networkd-conf.h systemd-228-fix-build/src/network/networkd-conf.h
+--- systemd-228/src/network/networkd-conf.h	2019-07-03 11:13:14.800849670 +0000
++++ systemd-228-fix-build/src/network/networkd-conf.h	2019-07-03 11:14:44.313076981 +0000
+@@ -30,7 +30,7 @@ typedef enum DuidConfigSource {
+ 
+ int manager_parse_config_file(Manager *m);
+ 
+-const struct ConfigPerfItem* networkd_gperf_lookup(const char *key, unsigned length);
++const struct ConfigPerfItem* networkd_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
+ 
+ int config_parse_duid_type(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
+ int config_parse_duid_rawdata(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
+diff -rupN systemd-228/src/network/networkd-netdev.h systemd-228-fix-build/src/network/networkd-netdev.h
+--- systemd-228/src/network/networkd-netdev.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/network/networkd-netdev.h	2019-07-03 11:15:29.269043966 +0000
+@@ -206,7 +206,7 @@ NetDevKind netdev_kind_from_string(const
+ int config_parse_netdev_kind(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
+ 
+ /* gperf */
+-const struct ConfigPerfItem* network_netdev_gperf_lookup(const char *key, unsigned length);
++const struct ConfigPerfItem* network_netdev_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
+ 
+ /* Macros which append INTERFACE= to the message */
+ 
+diff -rupN systemd-228/src/network/networkd-network.h systemd-228-fix-build/src/network/networkd-network.h
+--- systemd-228/src/network/networkd-network.h	2019-07-03 11:13:14.800849670 +0000
++++ systemd-228-fix-build/src/network/networkd-network.h	2019-07-03 11:14:44.313076981 +0000
+@@ -182,7 +182,7 @@ int config_parse_dhcp_server_ntp(const c
+ /* Legacy IPv4LL support */
+ int config_parse_ipv4ll(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
+ 
+-const struct ConfigPerfItem* network_network_gperf_lookup(const char *key, unsigned length);
++const struct ConfigPerfItem* network_network_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
+ 
+ extern const sd_bus_vtable network_vtable[];
+ 
+diff -rupN systemd-228/src/nspawn/nspawn-settings.h systemd-228-fix-build/src/nspawn/nspawn-settings.h
+--- systemd-228/src/nspawn/nspawn-settings.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/nspawn/nspawn-settings.h	2019-07-03 11:14:44.313076981 +0000
+@@ -81,7 +81,7 @@ bool settings_private_network(Settings *
+ 
+ DEFINE_TRIVIAL_CLEANUP_FUNC(Settings*, settings_free);
+ 
+-const struct ConfigPerfItem* nspawn_gperf_lookup(const char *key, unsigned length);
++const struct ConfigPerfItem* nspawn_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
+ 
+ int config_parse_capability(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
+ int config_parse_id128(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
+diff -rupN systemd-228/src/resolve/dns-type.c systemd-228-fix-build/src/resolve/dns-type.c
+--- systemd-228/src/resolve/dns-type.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/resolve/dns-type.c	2019-07-03 11:14:44.313076981 +0000
+@@ -27,7 +27,7 @@ typedef const struct {
+ } dns_type;
+ 
+ static const struct dns_type_name *
+-lookup_dns_type (register const char *str, register unsigned int len);
++lookup_dns_type (register const char *str, register GPERF_LEN_TYPE len);
+ 
+ #include "dns_type-from-name.h"
+ #include "dns_type-to-name.h"
+diff -rupN systemd-228/src/resolve/resolved-conf.h systemd-228-fix-build/src/resolve/resolved-conf.h
+--- systemd-228/src/resolve/resolved-conf.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/resolve/resolved-conf.h	2019-07-03 11:14:44.313076981 +0000
+@@ -26,7 +26,7 @@
+ int manager_parse_dns_server(Manager *m, DnsServerType type, const char *string);
+ int manager_parse_config_file(Manager *m);
+ 
+-const struct ConfigPerfItem* resolved_gperf_lookup(const char *key, unsigned length);
++const struct ConfigPerfItem* resolved_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
+ 
+ int config_parse_dnsv(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
+ int config_parse_support(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
+diff -rupN systemd-228/src/test/test-af-list.c systemd-228-fix-build/src/test/test-af-list.c
+--- systemd-228/src/test/test-af-list.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/test/test-af-list.c	2019-07-03 11:14:44.313076981 +0000
+@@ -24,7 +24,7 @@
+ #include "string-util.h"
+ #include "util.h"
+ 
+-static const struct af_name* lookup_af(register const char *str, register unsigned int len);
++static const struct af_name* lookup_af(register const char *str, register GPERF_LEN_TYPE len);
+ 
+ #include "af-from-name.h"
+ #include "af-list.h"
+diff -rupN systemd-228/src/test/test-arphrd-list.c systemd-228-fix-build/src/test/test-arphrd-list.c
+--- systemd-228/src/test/test-arphrd-list.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/test/test-arphrd-list.c	2019-07-03 11:14:44.313076981 +0000
+@@ -24,7 +24,7 @@
+ #include "string-util.h"
+ #include "util.h"
+ 
+-static const struct arphrd_name* lookup_arphrd(register const char *str, register unsigned int len);
++static const struct arphrd_name* lookup_arphrd(register const char *str, register GPERF_LEN_TYPE len);
+ 
+ #include "arphrd-from-name.h"
+ #include "arphrd-list.h"
+diff -rupN systemd-228/src/timesync/timesyncd-conf.h systemd-228-fix-build/src/timesync/timesyncd-conf.h
+--- systemd-228/src/timesync/timesyncd-conf.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/timesync/timesyncd-conf.h	2019-07-03 11:14:44.317076981 +0000
+@@ -25,7 +25,7 @@
+ 
+ #include "timesyncd-manager.h"
+ 
+-const struct ConfigPerfItem* timesyncd_gperf_lookup(const char *key, unsigned length);
++const struct ConfigPerfItem* timesyncd_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
+ 
+ int manager_parse_server_string(Manager *m, ServerType type, const char *string);
+ 
+diff -rupN systemd-228/src/udev/net/link-config.h systemd-228-fix-build/src/udev/net/link-config.h
+--- systemd-228/src/udev/net/link-config.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/udev/net/link-config.h	2019-07-03 11:14:44.317076981 +0000
+@@ -94,7 +94,7 @@ const char *mac_policy_to_string(MACPoli
+ MACPolicy mac_policy_from_string(const char *p) _pure_;
+ 
+ /* gperf lookup function */
+-const struct ConfigPerfItem* link_config_gperf_lookup(const char *key, unsigned length);
++const struct ConfigPerfItem* link_config_gperf_lookup(const char *key, GPERF_LEN_TYPE length);
+ 
+ int config_parse_mac_policy(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
+ int config_parse_name_policy(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
+diff -rupN systemd-228/src/udev/udev-builtin-keyboard.c systemd-228-fix-build/src/udev/udev-builtin-keyboard.c
+--- systemd-228/src/udev/udev-builtin-keyboard.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-fix-build/src/udev/udev-builtin-keyboard.c	2019-07-03 11:14:44.317076981 +0000
+@@ -29,7 +29,7 @@
+ #include "string-util.h"
+ #include "udev.h"
+ 
+-static const struct key *keyboard_lookup_key(const char *str, unsigned len);
++static const struct key *keyboard_lookup_key(const char *str, GPERF_LEN_TYPE len);
+ #include "keyboard-keys-from-name.h"
+ 
+ static int install_force_release(struct udev_device *dev, const unsigned *release, unsigned release_count) {
