@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.40
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -14,6 +14,7 @@ Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/
 Source1:        base-for-%{name}-%{version}.tar.gz
 %define sha1    base=98fdf09166863b3c8283f6b37a226292f52f04a2
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
+Patch1:         apache-tomcat-CVE-2019-10072.patch
 BuildRequires:  openjre
 BuildRequires:  openjdk
 BuildRequires:  apache-ant
@@ -38,6 +39,7 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 %setup -D -b 1 -n %{name}-%{version}-src
 %patch0 -p1
+%patch1 -p1
 
 %build
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
@@ -102,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Thu Jul 04 2019 Dweep Advani <dadvani@vmware.com> 8.5.40-2
+-   Fix CVE-2019-10072
 *   Tue Apr 23 2019 Dweep Advani <dadvani@vmware.com> 8.5.40-1
 -   Upgraded to version 8.5.40
 *   Thu Jan 10 2019 Dweep Advani <dadvani@vmware.com> 8.5.37-1
