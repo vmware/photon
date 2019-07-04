@@ -42,6 +42,18 @@ Change-Id: I247613322c22d88dd8d1f0f4d786e5fe74cd3392
  tools/cli/lib/parseargs.c | 32 +++++++++++++++----
  6 files changed, 177 insertions(+), 20 deletions(-)
 
+From fa91ec36fa37380427a9143db1da49a3dd825d7a Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Wed, 3 Jul 2019 17:27:19 +0530
+Subject: [PATCH] make check: Missed check.at to commit in previous
+ commit:7f798f4dac63265557271b0d66777b5e93cf2181
+
+Change-Id: I7f06e6478c10ab2bbe15cc955872caa0f7f7f452
+---
+ tests/check.at | 53 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
+ create mode 100644 tests/check.at
+
 diff --git a/client/api.c b/client/api.c
 index 3a57987..53333ae 100644
 --- a/client/api.c
@@ -432,6 +444,65 @@ index 40cb73b..efe668b 100644
      {
          {"emergency",  TDNF_RPMLOG_EMERG},
          {"alert",      TDNF_RPMLOG_ALERT},
+diff --git a/tests/check.at b/tests/check.at
+new file mode 100644
+index 0000000..17b54dd
+--- /dev/null
++++ b/tests/check.at
+@@ -0,0 +1,53 @@
++#
++# Copyright (C) 2015 VMware, Inc. All Rights Reserved.
++#
++# Licensed under the GNU Lesser General Public License v2.1 (the "License");
++# you may not use this file except in compliance with the License. The terms
++# of the License are located in the COPYING file of this distribution.
++#
++
++AT_BANNER(tdnf check tests)
++
++# Test tdnf check commands
++AT_SETUP([check])
++AT_KEYWORDS([check])
++AT_CHECK([
++TDNF_CHROOT_CLEAN
++TDNF_CHROOT_INIT
++TDNF_BUILD_INSTALL_RPMS
++TDNF_CLI_W_CHROOT check
++],
++[0],
++[ignore],
++[ignore])
++AT_CLEANUP
++
++AT_SETUP([check skipconflicts])
++AT_KEYWORDS([check])
++AT_CHECK([
++TDNF_CLI_W_CHROOT check --skipconflicts
++],
++[0],
++[ignore],
++[ignore])
++AT_CLEANUP
++
++AT_SETUP([check skipobsoletes])
++AT_KEYWORDS([check])
++AT_CHECK([
++TDNF_CLI_W_CHROOT check --skipobsoletes
++],
++[0],
++[ignore],
++[ignore])
++AT_CLEANUP
++
++AT_SETUP([check skipconflicts skipobsoletes])
++AT_KEYWORDS([check])
++AT_CHECK([
++TDNF_CLI_W_CHROOT check --skipconflicts --skipobsoletes
++],
++[0],
++[ignore],
++[ignore])
++AT_CLEANUP
 -- 
 2.7.4
 
