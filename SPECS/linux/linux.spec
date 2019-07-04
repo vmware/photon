@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.52
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -467,6 +467,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Jul 11 2019 Keerthana K <keerthanak@vmware.com> 4.19.52-5
+-   Enable kernel configs necessary for BPF Compiler Collection (BCC).
 *   Wed Jul 10 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-4
 -   Deprecate linux-aws-tools in favor of linux-tools.
 *   Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.52-3
