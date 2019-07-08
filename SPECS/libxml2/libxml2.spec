@@ -3,16 +3,15 @@
 
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.9.8
-Release:        2%{?dist}
+Version:        2.9.9
+Release:        1%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
-Patch0:         Fix_nullptr_deref_with_XPath_logic_ops.patch
-%define sha1    libxml2=66bcefd98a6b7573427cf66f9d3841b59eb5b8c3
+%define sha1    libxml2=96686d1dd9fddf3b35a28b1e2e4bbacac889add3
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  python3-devel
@@ -49,7 +48,6 @@ Static libraries and header files for the support library for libxml
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 %configure \
@@ -104,6 +102,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
 %changelog
+*   Mon Jul 07 2019 Sujay G <gsujay@vmware.com> 2.9.9-1
+-   Bump version to 2.9.9
 *   Fri Dec 07 2018 Dweep Advani <dadvani@vmware.com> 2.9.8-2
 -   Fix CVE-2018-14404 and improve build and install sections
 *   Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 2.9.8-1
