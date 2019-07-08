@@ -110,7 +110,7 @@ rm -rf %{buildroot}/*
 - Update to version 4.36
 * Fri Apr 20 2018 Dheeraj Shetty <dheerajs@vmware.com> 4.26-1
 - upgrade to 4.26
-* Mon Oct 08 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-4
+* Sun Oct 08 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-4
 - Add Docker related files to the package
 * Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-3
 - Fix for CVE-2017-9735

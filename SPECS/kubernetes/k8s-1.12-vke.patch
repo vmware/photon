@@ -1,7 +1,7 @@
-From e17f6849be634759ed4c6e9352b2494f18a27838 Mon Sep 17 00:00:00 2001
+From 8d00c9b35273b2429ddbc53a812af429f11689fc Mon Sep 17 00:00:00 2001
 From: Girish Sadhani <gsadhani@vmware.com>
-Date: Fri, 29 Mar 2019 11:42:45 +0530
-Subject: [PATCH] VCP patch for K8s v1.12.7 (f40534d)
+Date: Mon, 8 Jul 2019 11:40:17 +0530
+Subject: [PATCH] VCP patch for K8s v1.12.9 (42cb26f)
 
 ---
  api/api-rules/violation_exceptions.list       |    2 +

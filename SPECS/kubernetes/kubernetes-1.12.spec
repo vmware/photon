@@ -1,17 +1,16 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.12.7
-Release:        3%{?dist}
+Version:        1.12.9
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=62cbd12425af750b4134acdfa713a760b2d27438
+%define sha1    kubernetes-%{version}.tar.gz=336e4f1053b76e25d2f8ad1e5485b8fb8834b7e3
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         k8s-1.12-vke.patch
 Patch1:         go-27704.patch
 Patch2:         go-27842.patch
-Patch3:         k8s-1.12-CVE-2019-11244.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -64,7 +63,6 @@ pushd vendor/golang.org/x/net
 %patch1 -p1
 %patch2 -p1
 popd
-%patch3 -p1
 
 %build
 make
@@ -216,13 +214,15 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Mon Jul 08 2019 Girish Sadhani <gsadhani@vmware.com> 1.12.9-1
+-   Upgrade to 1.12.9 with VMware Cloud PKS patch (42cb26f)
 *   Thu May 23 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-3
 -   Fix CVE-2019-11244
 *   Fri May 03 2019 Bo Gan <ganb@vmware.com> 1.12.7-2
 -   Fix CVE-2018-17846 and CVE-2018-17143
-*   Tue Feb 18 2019 Girish Sadhani <gsadhani@vmware.com> 1.12.7-1
+*   Fri Mar 29 2019 Girish Sadhani <gsadhani@vmware.com> 1.12.7-1
 -   Upgrade to 1.12.7 with VMware Cloud PKS patch (f40534d)
-*   Tue Feb 18 2019 Sudhir Samrit <ssamrit@vmware.com> 1.12.5-1
+*   Mon Feb 18 2019 Sudhir Samrit <ssamrit@vmware.com> 1.12.5-1
 -   Upgrade to 1.12.5 with VMware Cloud PKS patch (f41ce96)
 *   Tue Jan 22 2019 Sudhir Samrit <ssamrit@vmware.com> 1.12.3-1
 -   Add k8s version 1.12.3 and VMware Cloud PKS patch (2801b93)
