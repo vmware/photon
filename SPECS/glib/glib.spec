@@ -1,21 +1,24 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
-Version:	2.52.1
-Release:	4%{?dist}
+Version:	2.58.3
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.52/%{name}-%{version}.tar.xz
-%define sha1 glib=ae55d5a476e7e9c08f06e22e9a723e4d0313a873
-Patch0:         glib-CVE-2018-16428.patch
-Patch1:         glib-CVE-2018-16429.patch
-Patch2:         glib-CVE-2019-12450.patch
+Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.58/%{name}-%{version}.tar.xz
+%define sha1 glib=9499377d09ad52d94b4ab9f38c4040e9dce875e5
+Patch0:         glib-CVE-2019-12450.patch
+Patch1:         glib-CVE-2019-13012.patch
 BuildRequires:	pcre-devel
 BuildRequires:	libffi-devel
 BuildRequires:	pkg-config
 BuildRequires:	cmake
+BuildRequires:  which
+BuildRequires:  python-xml
+BuildRequires:  python2 >= 2.7
+BuildRequires:  python2-libs >= 2.7
 Requires:	pcre-libs
 Requires:	libffi
 Provides:	pkgconfig(glib-2.0)
@@ -53,8 +56,8 @@ Gsettings schemas compiling tool
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 %build
+./autogen.sh
 ./configure --prefix=/usr --with-pcre=system 
 make %{?_smp_mflags}
 %install
@@ -92,6 +95,8 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+*   Mon Jul 08 2019 Ankit Jain <ankitja@vmware.com> 2.58.3-1
+-   Updated to 2.58.3 to fix CVE-2019-13012
 *   Mon Jun 03 2019 Ankit Jain <ankitja@vmware.com> 2.52.1-4
 -   Fix for CVE-2019-12450
 *   Fri Nov 02 2018 Keerthana K <keerthanak@vmware.com> 2.52.1-3

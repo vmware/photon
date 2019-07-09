@@ -1,0 +1,64 @@
+From 03b48a39347041112a36d379d8d3c969372255c6 Mon Sep 17 00:00:00 2001
+From: Ray Strode <rstrode@redhat.com>
+Date: Fri, 10 Nov 2017 09:23:15 -0500
+Subject: [PATCH] fdio: implement glnx_basename from scratch
+
+At the top of glnx-fdio.h there's this comment:
+
+/* When we include libgen.h because we need
+ * dirname() we immediately undefine
+ * basename() since libgen.h defines it as
+ * a macro to the XDG version which is really
+ * broken. */
+
+and then it does #undef basename to try to
+gain access to non-default basename implementation.
+
+The problem is that this trick doesn't work on
+some systems:
+
+./libglnx/glnx-fdio.h: In function 'glnx_basename':
+./libglnx/glnx-fdio.h:46:11: error: 'basename'
+undeclared (first use in this function)
+   return (basename) (path);
+
+Anyway, basename() is like 3 lines of code to
+implement, so this commit just does that instead
+of relying on glibc for it.
+---
+ glnx-fdio.h | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/libglnx/glnx-fdio.h b/libglnx/glnx-fdio.h
+index c3e7573..e6e6f12 100644
+--- a/libglnx/glnx-fdio.h
++++ b/libglnx/glnx-fdio.h
+@@ -28,12 +28,7 @@
+ #include <fcntl.h>
+ #include <string.h>
+ #include <sys/xattr.h>
+-/* From systemd/src/shared/util.h */
+-/* When we include libgen.h because we need dirname() we immediately
+- * undefine basename() since libgen.h defines it as a macro to the XDG
+- * version which is really broken. */
+ #include <libgen.h>
+-#undef basename
+ 
+ G_BEGIN_DECLS
+ 
+@@ -43,7 +38,14 @@ G_BEGIN_DECLS
+ static inline
+ const char *glnx_basename (const char *path)
+ {
+-  return (basename) (path);
++  gchar *base;
++
++  base = strrchr (path, G_DIR_SEPARATOR);
++
++  if (base)
++     return base + 1;
++
++  return path;
+ }
+ 
+ gboolean

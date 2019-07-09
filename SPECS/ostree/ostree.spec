@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2017.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
 %define sha1    ostree=eb3546c552849ace2f4e3701bc0b826611f569cc
 Source1:        91-ostree.preset
@@ -9,6 +9,7 @@ License:        LGPLv2+
 URL:            http://live.gnome.org/OSTree
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Patch0:         libglnx-basename-implementation.patch
 BuildRequires:  git
 BuildRequires:  which
 BuildRequires:  libgsystem-devel
@@ -68,6 +69,7 @@ The %{name}-devel package includes the header files for the %{name} library
 %setup -n %{name}-%{version}
 (git clone git://github.com/GNOME/libglnx libglnx && cd libglnx && git checkout 602fdd9)
 (git clone https://github.com/mendsley/bsdiff bsdiff && cd bsdiff && git checkout 1edf9f6)
+%patch0 -p1
 
 %build
 env NOCONFIGURE=1 ./autogen.sh
@@ -136,6 +138,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0/OSTree-1.0.gir
 
 %changelog
+*   Wed Jul 17 2019 Ankit Jain <ankitja@vmware.com> 2017.4-4
+-   Added a patch to implement its own glnx-basename()
 *   Thu Aug 23 2018 Tapas Kundu <tkundu@vmware.com> 2017.4-3
 -   Corrected the git clone path for libglnx.
 *	Mon May 08 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2017.4-2
