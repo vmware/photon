@@ -83,7 +83,7 @@ make check
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
-*   Thu Aug 19 2017 Chang Lee <changlee@vmware.com> 0.2.3-1
+*   Sat Aug 19 2017 Chang Lee <changlee@vmware.com> 0.2.3-1
 -   Updated to 0.2.3
 -   Disabled GLib-GObject-CRITICAL tests due to Segmentation fault in all tests
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 0.2.2-5

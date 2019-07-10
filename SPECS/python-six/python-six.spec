@@ -63,7 +63,7 @@ python3 test_six.py
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Jun 23 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.10.0-8
+*   Fri Jun 23 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.10.0-8
 -   Add python-setuptools to BuildRequires to avoid Update issues
 *   Wed Jun 21 2017 Xiaolin Li <xiaolinl@vmware.com> 1.10.0-7
 -   Fix make check.

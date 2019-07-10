@@ -121,7 +121,7 @@ rm -rf %{buildroot}/*
 -   Make service file a different source
 *   Tue Apr 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.7.3-6
 -   Patch to remove U64 typedef
-*   Mon Oct 04 2016 ChangLee <changLee@vmware.com> 5.7.3-5
+*   Tue Oct 04 2016 ChangLee <changLee@vmware.com> 5.7.3-5
 -   Modified %check
 *   Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 5.7.3-4
 -   Excluded the perllocal.pod log.

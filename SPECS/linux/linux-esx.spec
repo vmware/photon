@@ -378,7 +378,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   Add patches to fix CVE-2017-8824, CVE-2017-17448 and CVE-2017-17450.
 *   Thu Dec 21 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.71-1
 -   Version update
-*   Mon Dec 19 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-2
+*   Tue Dec 19 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-2
 -   Enable audit support (CONFIG_AUDIT=y)
 *   Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-1
 -   Version update

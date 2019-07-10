@@ -68,7 +68,7 @@ export GIO_EXTRA_MODULES=/usr/lib/gio/modules; make check
 %changelog
 *   Thu Aug 24 2017 Rongrong Qiu <rqiu@vmware.com> 2.50.1-2
 -   add buildrequires for make check for bug 1900286
-*   Thu May 26 2017 Harish Udaiya Kumar <hudaiykumar@vmware.com> 2.50.1-1
+*   Fri May 26 2017 Harish Udaiya Kumar <hudaiykumar@vmware.com> 2.50.1-1
 -   Downgrade to stable version 2.50.1
 *   Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.53.1-1
 -   Update to version 2.53.1
@@ -86,5 +86,5 @@ export GIO_EXTRA_MODULES=/usr/lib/gio/modules; make check
 -   Created devel subpackage. Added Summary.
 *   Tue Jun 23 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-2
 -   Added glib-schemas to build requirements.
-*   Fri Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.42.0-1
+*   Wed Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.42.0-1
 -   Initial version

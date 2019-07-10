@@ -159,7 +159,7 @@ make %{?_smp_mflags} check
 *   Mon Jun 25 2018 Keerthana K <keerthanak@vmware.com> 2.30-6
 -   Fixes for CVE-2018-6759, CVE-2018-6872, CVE-2018-7568, CVE-2018-7569,
 -   CVE-2018-7642, CVE-2018-8945, CVE-2018-10372, CVE-2018-10535.
-*   Thu Jun 12 2018 Keerthana K <keerthanak@vmware.com> 2.30-5
+*   Tue Jun 12 2018 Keerthana K <keerthanak@vmware.com> 2.30-5
 -   Fix CVE-2018-10373
 *   Tue Apr 17 2018 Xiaolin Li <xiaolinl@vmware.com> 2.30-4
 -   Fix CVE-2018-7643, CVE-2018-7208

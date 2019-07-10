@@ -98,7 +98,7 @@ popd
 -   Updated to version 2.13.0.
 *   Wed Mar 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.1-4
 -   Added python3 package.
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 2.9.1-3
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 2.9.1-3
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.1-2
 -   GA - Bump release of all rpms

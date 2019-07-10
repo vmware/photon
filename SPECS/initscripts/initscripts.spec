@@ -179,7 +179,7 @@ EOF
 %{_sysconfdir}/profile.d/debug*
 
 %changelog
-*   Tue Jan 05 2019 Ankit Jain <ankitja@vmware.com> 9.70-3
+*   Sat Jan 05 2019 Ankit Jain <ankitja@vmware.com> 9.70-3
 -   Added network configuration to fix "service --status-all"
 *   Tue Dec 26 2017 Divya Thaluru <dthaluru@vmware.com> 9.70-2
 -   Fixed return code in /etc/init.d/functions bash script

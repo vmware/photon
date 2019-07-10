@@ -64,7 +64,7 @@ rm -rf %{buildroot}/*
 %changelog
 *   Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 1.63.0-1
 -   Upgraded to version 1.63.0
-*   Wed Mar 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.60.0-3
+*   Thu Mar 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.60.0-3
 -   Build static libs in additon to shared.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.60.0-2
 -   GA - Bump release of all rpms

@@ -55,7 +55,7 @@ rm -rf $RPM_BUILD_ROOT
 -   Remove %check due to unstable check tests
 *   Thu Jun 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.10.2-4
 -   Use python2 explicitly to build
-*   Tue Jun 05 2017 Chang Lee <changlee@vmware.com> 3.10.2-3
+*   Mon Jun 05 2017 Chang Lee <changlee@vmware.com> 3.10.2-3
 -   Remove thread option in %check
 *   Thu May 25 2017 Xiaolin Li <xiaolinl@vmware.com> 3.10.2-2
 -   Added pycurl to requires.

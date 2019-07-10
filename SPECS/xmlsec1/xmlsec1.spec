@@ -78,5 +78,5 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_prefix}/share/man/man1/xmlsec1-config.1.gz
 
 %changelog
-*   Thu Jun 22 2018 Ankit Jain <ankitja@vmware.com> 1.2.26-1
+*   Fri Jun 22 2018 Ankit Jain <ankitja@vmware.com> 1.2.26-1
 -   Initial version

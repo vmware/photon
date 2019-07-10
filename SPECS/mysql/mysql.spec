@@ -68,7 +68,7 @@ make test
 %changelog
 *   Tue May 07 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.7.26-1
 -   Update to version 5.7.26 to fix CVE-2019-2632 and more
-*   Wed Feb 14 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.7.25-1
+*   Thu Feb 14 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.7.25-1
 -   Update to version 5.7.25 to fix CVE-2019-2534, CVE-2018-3155
 *   Mon Jul 30 2018 Ajay Kaher <akaher@vmware.com> 5.7.23-1
 -   Update to version 5.7.23 to fix CVE-2018-3070, CVE-2018-3073,

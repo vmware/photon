@@ -187,7 +187,7 @@ make %{?_smp_mflags} check
 -   BuildRequires Linux-PAM-devel
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-10
 -   Added -lang subpackage
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 4.2.1-9
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 4.2.1-9
 -   Modified %check
 *   Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-8
 -   Added logic to not replace pam.d conf files in upgrade scenario

@@ -103,7 +103,7 @@ rm -rf %{buildroot}/*
 -   Fix make check with non-root mode.
 *   Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.3-3
 -   Remove python2 from requires.
-*   Tue Apr 17 2017 Robert Qi <qij@vmware.com> 2.9.3-2
+*   Mon Apr 17 2017 Robert Qi <qij@vmware.com> 2.9.3-2
 -   Update since perl version got updated.
 *   Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.9.3-1
 -   Updated to version 2.9.3

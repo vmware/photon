@@ -1,13 +1,13 @@
 Summary:       A utility for creating TTY dialog boxes
 Name:          dialog
 Version:       1.3
-Release:       2.20170131%{?dist}
+%global dialogsubversion 20170131
+Release:       2.%{dialogsubversion}%{?dist}
 License:       LGPLv2
 URL:           http://invisible-island.net/dialog/dialog.html
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
-%global dialogsubversion 20170131
 Source0:       ftp://invisible-island.net/dialog/dialog-%{version}-20170131.tar.gz
 %define sha1 dialog=6c3282f6b8ef9e942c5a169ff93fb14ad80bddc4
 BuildRequires: ncurses-devel
@@ -85,5 +85,5 @@ rm -f %{buildroot}/%{_libdir}/libdialog.{,l}a
 %changelog
 *	Wed Apr 19 2017 Bo Gan <ganb@vmware.com> 1.3-2.20170131
 -	update to 20170131
-*	Fri May 30 2016 Nick Shi <nshi@vmware.com> 1.3-1.20160209
+*	Mon May 30 2016 Nick Shi <nshi@vmware.com> 1.3-1.20160209
 -	Initial version

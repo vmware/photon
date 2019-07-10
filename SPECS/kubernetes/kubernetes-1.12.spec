@@ -220,7 +220,7 @@ fi
 -   Fix CVE-2019-11244
 *   Fri May 03 2019 Bo Gan <ganb@vmware.com> 1.12.7-2
 -   Fix CVE-2018-17846 and CVE-2018-17143
-*   Fri Mar 29 2019 Girish Sadhani <gsadhani@vmware.com> 1.12.7-1
+*   Mon Feb 18 2019 Girish Sadhani <gsadhani@vmware.com> 1.12.7-1
 -   Upgrade to 1.12.7 with VMware Cloud PKS patch (f40534d)
 *   Mon Feb 18 2019 Sudhir Samrit <ssamrit@vmware.com> 1.12.5-1
 -   Upgrade to 1.12.5 with VMware Cloud PKS patch (f41ce96)

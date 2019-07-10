@@ -41,7 +41,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %changelog
 *   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 3.7.0-3
 -   Increment the release version as part of ruby upgrade
-*   Fri Aug 2 2017 Kumar Kaushik <kaushikk@vmware.com> 3.7.0-2
+*   Wed Aug 2 2017 Kumar Kaushik <kaushikk@vmware.com> 3.7.0-2
 -   Adding requires for test support.
 *   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.0-1
 -   Updated to version 3.7.0.

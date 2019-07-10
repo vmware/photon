@@ -82,7 +82,7 @@ fi
 %{_docdir}/*
 
 %changelog
-*	Thu Aug 18 2017 Rongrong Qiu <rqiu@vmware.com> 1.79.1-5
+*	Fri Aug 18 2017 Rongrong Qiu <rqiu@vmware.com> 1.79.1-5
 -	Update make check for bug 1635477
 *	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.79.1-4
 -	Fix arch

@@ -36,5 +36,5 @@ rm -rf %{buildroot}%{_infodir}
 - GA - Bump release of all rpms
 * Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-1
 - Update to 2.21-1.
-* Wed Oct 21 2014 Divya Thaluru <dthaluru@vmware.com> 2.20-1
+* Tue Oct 21 2014 Divya Thaluru <dthaluru@vmware.com> 2.20-1
 - Initial build. First version

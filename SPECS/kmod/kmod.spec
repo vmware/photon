@@ -66,7 +66,7 @@ find %{buildroot} -name '*.la' -delete
 -   Updated to version 24
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 21-4
 -   GA - Bump release of all rpms
-*   Wed Apr 21 2016 Anish Swaminathan <anishs@vmware.com> 21-3
+*   Thu Apr 21 2016 Anish Swaminathan <anishs@vmware.com> 21-3
 -   Add patch for return code fix in error path
 *   Fri Mar 25 2016 Alexey Makhalov <amakhalov@vmware.com> 21-2
 -   /bin/lsmod -> /sbin/lsmod

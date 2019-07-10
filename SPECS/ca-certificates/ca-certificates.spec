@@ -259,7 +259,7 @@ exit 0
 - GA - Bump release of all rpms
 * Wed Feb 10 2016 Anish Swaminathan <anishs@vmware.com> 20160109-4
 - Add Provides field
-* Mon Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 20160109-3
+* Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 20160109-3
 - Force create links for certificates
 * Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 20160109-2
 - Remove c_rehash dependency

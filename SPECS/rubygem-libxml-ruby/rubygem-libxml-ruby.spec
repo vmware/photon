@@ -36,7 +36,7 @@ rake test
 %changelog
 *   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 3.0.0-4
 -   Increment the release version as part of ruby upgrade
-*   Thu Sep 05 2017 Chang Lee <changlee@vmware.com> 3.0.0-3
+*   Tue Sep 05 2017 Chang Lee <changlee@vmware.com> 3.0.0-3
 -   Added %check without canonicalize tests
 *   Thu Apr 13 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.0.0-2
 -   Change ruby version in buildrequires and requires

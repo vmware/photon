@@ -95,7 +95,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
-*   Fri Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 5.2.2-2
+*   Thu Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 5.2.2-2
 -   Fixed make check error.
 *   Wed Apr 26 2017 Xialin Li <xiaolinl@vmware.com> 5.2.2-1
 -   Initial packaging for Photon

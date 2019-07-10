@@ -92,7 +92,7 @@ rm -rf %{buildroot}/*
 %{python2_sitelib}/*
 
 %changelog
-*   Thu Jul 10 2017 Chang Lee <changlee@vmware.com> 4.0.0-3
+*   Mon Jul 10 2017 Chang Lee <changlee@vmware.com> 4.0.0-3
 -   Commented out %check due to no test existence.
 *   Wed Jul 5 2017 Divya Thaluru <dthaluru@vmware.com> 4.0.0-2
 -   Added python-lldb package

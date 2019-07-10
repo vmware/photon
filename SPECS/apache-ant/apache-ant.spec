@@ -131,7 +131,7 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 -   GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.9.6-2
 -   Updated JAVA_HOME path to point to latest JDK.
-*   Tue Feb 29 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-1
+*   Mon Feb 29 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-1
 -   Updated to version 1.9.6
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.9.4-4
 -   Updated JAVA_HOME path to point to latest JDK.

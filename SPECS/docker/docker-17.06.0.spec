@@ -236,7 +236,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
-*   Wed Jun 10 2019 Bo Gan <ganb@vmware.com> 17.06.0-10
+*   Mon Jun 10 2019 Bo Gan <ganb@vmware.com> 17.06.0-10
 -   Fix CVE-2018-15664
 *   Tue Feb 12 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 17.06.0-9
 -   Patch runc for CVE-2019-5736

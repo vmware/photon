@@ -119,11 +119,11 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
-*   Thu Jun 26 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.9.4-5
+*   Wed Jun 26 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.9.4-5
 -   Fix for CVE-2019-9741
 *   Mon Jun 24 2019 Ashwin H <ashwinh@vmware.com> 1.9.4-4
 -   Fix CVE-2018-16873 CVE-2018-16874
-*   Mon Jun 14 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.9.4-3
+*   Fri Jun 14 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.9.4-3
 -   Fix for CVE-2018-16875
 *   Mon Apr 02 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.4-2
 -   Fix for CVE-2018-7187

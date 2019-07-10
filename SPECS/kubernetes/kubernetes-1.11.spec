@@ -223,7 +223,7 @@ fi
 -   Fix CVE-2019-11244
 *   Fri May 03 2019 Bo Gan <ganb@vmware.com> 1.11.9-2
 -   Fix CVE-2018-17846 and CVE-2018-17143
-*   Fri Apr 01 2019 Emil John <ejohn@vmware.com> 1.11.9-1
+*   Mon Apr 01 2019 Emil John <ejohn@vmware.com> 1.11.9-1
 -   VCP patch for K8s v1.11.9 (077135f)
 *   Fri Feb 22 2019 abhishek rathore <arathore@vmware.com> 1.11.7-1
 -   VCP patch for K8s v1.11.7 (2c62ea46)

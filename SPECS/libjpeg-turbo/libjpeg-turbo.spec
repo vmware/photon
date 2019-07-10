@@ -63,7 +63,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*   Fri Feb 02 2019 Sujay G <gsujay@vmware.com> 2.0.0-2
+*   Sat Feb 02 2019 Sujay G <gsujay@vmware.com> 2.0.0-2
 -   Corrected the libs location from /usr/lib64 to /usr/lib
 -   Fix CVE-2018-19664
 *   Tue Jan 22 2019 Sujay G <gsujay@vmware.com> 2.0.0-1

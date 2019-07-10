@@ -75,7 +75,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/mozjs185.pc
 
 %changelog
-*   Tue Oct 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.5-1
+*   Thu Oct 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.5-1
 -   mozjs v1.8.5.
 *   Fri May 22 2015 Alexey Makhalov <amakhalov@vmware.com> 17.0.0-1
 -   initial version

@@ -106,7 +106,7 @@ rm -rf %{buildroot}/*
 -   Add patch CVE-2019-9937
 *   Mon Apr 15 2019 Michelle Wang <michellew@vmware.com> 3.27.2-1
 -   Upgrade to 3.27.2 and add patch CVE-2019-9936.
-*   Wed Feb 3 2019 Michelle Wang <michellew@vmware.com> 3.26.0-1
+*   Sun Feb 3 2019 Michelle Wang <michellew@vmware.com> 3.26.0-1
 -   Upgrade to 3.26.0 for a critical Vulnerability named 'Magallan'.
 *   Thu May 31 2018 Xiaolin Li <xiaolinl@vmware.com> 3.22.0-3
 -   Change cflags.
@@ -125,7 +125,7 @@ rm -rf %{buildroot}/*
 -   Package rename: sqlite-autoconf -> sqlite
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.11.0-4
 -   Added -devel and -libs subpackages
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 3.11.0-3
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 3.11.0-3
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.11.0-2
 -   GA - Bump release of all rpms
@@ -133,5 +133,5 @@ rm -rf %{buildroot}/*
 -   Updated to version 3.11.0
 *   Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> - 3.8.3.1-2
 -   Fix versioning
-*   Mon Oct 7 2014 Divya Thaluru <dthaluru@vmware.com> 3080301-1
+*   Tue Oct 7 2014 Divya Thaluru <dthaluru@vmware.com> 3080301-1
 -   Initial build. First version

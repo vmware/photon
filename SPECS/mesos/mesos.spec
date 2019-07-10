@@ -104,7 +104,7 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
-*   Mon May 30 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.5.3-1
+*   Thu May 30 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.5.3-1
 -   Update to 1.5.3 includes fix for CVE-2019-0204
 *   Wed Feb 27 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.2-1
 -   Update to 1.5.2. Includes fix for CVE-2018-1330
