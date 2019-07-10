@@ -98,7 +98,7 @@ popd
 -   Backward compatibility interface.
 *   Sat Sep 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-5
 -   Retain current match conf when creating interface specific conf.
-*   Tue Aug 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-4
+*   Wed Aug 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-4
 -   Fix coverity issues.
 *   Thu May 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-3
 -   Fix handling of invalid match section config files.

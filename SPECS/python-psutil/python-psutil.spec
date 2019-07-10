@@ -101,7 +101,7 @@ LANG=en_US.UTF-8 make test PYTHON=python%{python3_version}
 -   Fix makecheck
 *   Wed Sep 12 2018 Tapas Kundu <tkundu@vmware.com> 5.4.7-1
 -   Updated to version 5.4.7
-*   Fri Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 5.2.2-2
+*   Thu Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 5.2.2-2
 -   Fixed make check error.
 *   Wed Apr 26 2017 Xialin Li <xiaolinl@vmware.com> 5.2.2-1
 -   Initial packaging for Photon

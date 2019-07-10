@@ -73,7 +73,7 @@ python3 test_six.py
 -   Fix makecheck
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.11.0-1
 -   Update to version 1.11.0
-*   Tue Jun 23 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.10.0-8
+*   Fri Jun 23 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.10.0-8
 -   Add python-setuptools to BuildRequires to avoid Update issues
 *   Wed Jun 21 2017 Xiaolin Li <xiaolinl@vmware.com> 1.10.0-7
 -   Fix make check.

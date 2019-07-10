@@ -183,7 +183,7 @@ fi
 -   Upgrading to 2.4.39 for fixing multiple CVEs
 -   (1) CVE-2018-17189 (2) CVE-2018-17199 (3) CVE-2019-0190
 -   (4) CVE-2019-0211 (5) CVE-2019-0215 (6) CVE-2019-0217
-*   Thu Mar 13 2019 Michelle Wang <michellew@vmware.com> 2.4.34-4
+*   Wed Mar 13 2019 Michelle Wang <michellew@vmware.com> 2.4.34-4
 -   Fix configure for rel_libexecdir variable with RPMS layout
 *   Thu Mar 7 2019 Michelle Wang <michellew@vmware.com> 2.4.34-3
 -   Update build configure for httpd to use RPM layout

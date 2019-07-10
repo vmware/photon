@@ -93,7 +93,7 @@ GOPATH=%{_builddir} make test
 %config(noreplace) %{_sysconfdir}/flannel/flanneld.conf
 
 %changelog
-*   Fri Mar 16 2019 Ashwin H <ashwinh@vmware.com> 0.11.0-1
+*   Sat Mar 16 2019 Ashwin H <ashwinh@vmware.com> 0.11.0-1
 -   Update Flannel to 0.11.0.
 *   Tue Dec 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.1-1
 -   Flannel 0.9.1.

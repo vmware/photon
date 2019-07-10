@@ -87,7 +87,7 @@ popd
 %changelog
 *   Wed Dec 19 2018 Tapas Kundu <tkundu@vmware.com> 2.2.0-2
 -   Fix makecheck
-*   Sat Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.2.0-1
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.2.0-1
 -   Updated to 2.2.0
 *   Mon Jul 17 2017 Divya Thaluru <dthaluru@vmware.com> 2.1.2-4
 -   Fixed check command to run unit tests

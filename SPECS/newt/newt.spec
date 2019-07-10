@@ -63,7 +63,7 @@ make %{?_smp_mflags} test
 %changelog
 *	Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.52.20-1
 -	Update to 0.52.20
-*       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 0.52.18-3
+*       Tue Oct 04 2016 ChangLee <changLee@vmware.com> 0.52.18-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.52.18-2
 -	GA - Bump release of all rpms

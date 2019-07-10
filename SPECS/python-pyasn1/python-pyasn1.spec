@@ -72,7 +72,7 @@ popd
 -   Update to version 0.4.4
 *   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 0.2.3-1
 -   Updated to version 0.2.3.
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 0.1.9-3
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 0.1.9-3
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.1.9-2
 -   GA - Bump release of all rpms

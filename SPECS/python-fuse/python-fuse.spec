@@ -41,7 +41,7 @@ easy_install py
 %{python2_sitelib}/fuse*
 
 %changelog
-*   Sat Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.3.1-1
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.3.1-1
 -   Updated to 0.3.1
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.2.1-2
 -   Change python to python2

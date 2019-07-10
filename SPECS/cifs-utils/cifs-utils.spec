@@ -47,7 +47,7 @@ make %{?_smp_mflags} check
 %{_includedir}/cifsidmap.h
 
 %changelog
-*       Fri Sep 07 2017 Ajay Kaher <akaher@vmware.com> 6.8-1
+*       Thu Sep 07 2017 Ajay Kaher <akaher@vmware.com> 6.8-1
 -       Upgraded to version 6.8
 *       Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 6.7-1
 -       Upgraded to version 6.7

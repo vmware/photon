@@ -36,7 +36,7 @@ rm -rf %{buildroot}/*
 %changelog
 *       Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.06-1
 -       Update to version 1.06
-*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 1.05-4
+*       Tue Oct 04 2016 ChangLee <changlee@vmware.com> 1.05-4
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.05-3
 -	GA - Bump release of all rpms

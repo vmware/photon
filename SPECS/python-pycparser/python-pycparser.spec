@@ -70,7 +70,7 @@ python2 all_tests.py
 -   Updated to version 2.17.
 *   Thu Feb 02 2017 Xiaolin Li <xiaolinl@vmware.com> 2.14-4
 -   Added python3 site-packages.
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 2.14-3
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 2.14-3
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.14-2
 -   GA - Bump release of all rpms

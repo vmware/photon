@@ -91,5 +91,5 @@ chmod +x %{buildroot}%{_libdir}/*
 -	Update to 20180621
 *	Wed Apr 19 2017 Bo Gan <ganb@vmware.com> 1.3-2.20170131
 -	update to 20170131
-*	Fri May 30 2016 Nick Shi <nshi@vmware.com> 1.3-1.20160209
+*	Mon May 30 2016 Nick Shi <nshi@vmware.com> 1.3-1.20160209
 -	Initial version

@@ -63,7 +63,7 @@ make DESTDIR=%{buildroot} install
 -   Update BuildRequires nasm only for x86_64.
 *   Thu Jan 10 2019 Sujay G <gsujay@vmware.com> 2.0.0-2
 -   Added patch to fix CVE-2018-20330
-*   Sun Sep 20 2018 Bo Gan <ganb@vmware.com> 2.0.0-1
+*   Thu Sep 20 2018 Bo Gan <ganb@vmware.com> 2.0.0-1
 -   Update to 2.0.0
 -   cmake build system
 *   Mon Dec 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-2

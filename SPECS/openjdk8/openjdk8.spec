@@ -244,7 +244,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
-*   Tue May 20 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0.212-2
+*   Mon May 20 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0.212-2
 -   Upgrade to version 1.8.0.212 b04
 -   Included fix for performance regression.
 *   Thu May 02 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0.212-1

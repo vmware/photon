@@ -117,7 +117,7 @@ popd
 %changelog
 *   Wed Dec 05 2018 Ashwin H <ashwinh@vmware.com> 0.5.1-2
 -   Add %check
-*   Sat Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.5.1-1
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.5.1-1
 -   Updated to 0.5.1
 *   Tue Aug 29 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.4.2-1
 -   Initial version of python ndg-httpsclient for PhotonOS.

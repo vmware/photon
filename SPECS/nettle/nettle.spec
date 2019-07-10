@@ -67,7 +67,7 @@ make %{?_smp_mflags} check
 -   Update version to 3.4
 *   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3-1
 -   Update to 3.3
-*   Mon Oct 04 2016 ChangLee <changLee@vmware.com> 3.2-3
+*   Tue Oct 04 2016 ChangLee <changLee@vmware.com> 3.2-3
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2-2
 -   GA - Bump release of all rpms

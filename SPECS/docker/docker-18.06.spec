@@ -224,7 +224,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
-*   Wed Jun 4 2019 Bo Gan <ganb@vmware.com> 18.06.2-3
+*   Tue Jun 4 2019 Bo Gan <ganb@vmware.com> 18.06.2-3
 -   Fix CVE-2018-15664
 *   Thu Feb 14 2019 Bo Gan <ganb@vmware.com> 18.06.2-2
 -   Fix docker version string
@@ -232,5 +232,5 @@ rm -rf %{buildroot}/*
 -   Upgrade Docker to fix CVE-2019-5736
 *   Mon Jan 21 2019 Bo Gan <ganb@vmware.com> 18.06.1-2
 -   Build using go 1.10.7
-*   Mon Jan 17 2019 Bo Gan <ganb@vmware.com> 18.06.1-1
+*   Thu Jan 17 2019 Bo Gan <ganb@vmware.com> 18.06.1-1
 -   Update to 18.06.1-ce

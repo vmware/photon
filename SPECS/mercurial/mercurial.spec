@@ -85,7 +85,7 @@ rm -rf %{buildroot}/*
 -   Apply CVE-2017-9462 patch
 *   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 4.1-1
 -   Update package version
-*   Mon Jan 22 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-6
+*   Sun Jan 22 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-6
 -   Install with setup.py.
 *   Tue Nov 22 2016 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-5
 -   Apply patches for CVE-2016-3068, CVE-2016-3069, CVE-2016-3105
