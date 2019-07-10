@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.52
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -154,8 +154,10 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %package tools
 Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
 Group:          System/Tools
-Requires:       %{name} = %{version}-%{release}
+Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-aws = %{version})
 Requires:       audit
+Obsoletes:      linux-aws-tools <= 4.19.52-1
+Provides:       linux-aws-tools
 %description tools
 This package contains the 'perf' performance analysis tools for Linux kernel.
 
@@ -465,6 +467,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Jul 10 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-4
+-   Deprecate linux-aws-tools in favor of linux-tools.
 *   Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.52-3
 -   Fix 9p vsock 16bit port issue.
 *   Thu Jun 20 2019 Tapas Kundu <tkundu@vmware.com> 4.19.52-2

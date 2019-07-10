@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.52
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -143,14 +143,6 @@ Requires:       %{name} = %{version}-%{release}
 Kernel driver for oprofile, a statistical profiler for Linux systems
 %endif
 
-%package tools
-Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
-Group:          System/Tools
-Requires:       %{name} = %{version}-%{release}
-Requires:       audit
-%description tools
-This package contains the 'perf' performance analysis tools for Linux kernel.
-
 
 %prep
 %setup -q -n linux-%{version}
@@ -220,7 +212,6 @@ archdir="x86"
 sed -i 's/CONFIG_LOCALVERSION="-aws"/CONFIG_LOCALVERSION="-%{release}-aws"/' .config
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
-make -C tools perf
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
@@ -306,7 +297,6 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 # disable (JOBS=1) parallel build to fix this issue:
 # fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
 # Linux version that was affected is 4.4.26
-make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
 
 %include %{SOURCE2}
 %include %{SOURCE3}
@@ -366,21 +356,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 %endif
 
-%files tools
-%defattr(-,root,root)
-/usr/libexec
-%exclude %{_libdir}/debug
-%ifarch x86_64
-/usr/lib64/traceevent
-%endif
-%{_bindir}
-/etc/bash_completion.d/*
-/usr/share/perf-core/strace/groups/file
-/usr/share/doc/*
-%{_libdir}/perf/examples/bpf/*
-%{_libdir}/perf/include/bpf/*
-
 %changelog
+*   Wed Jul 10 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-2
+-   Deprecate linux-aws-tools in favor of linux-tools.
 *   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-1
 -   Update to version 4.19.52
 -   Fix CVE-2019-12456, CVE-2019-12379, CVE-2019-12380, CVE-2019-12381,
