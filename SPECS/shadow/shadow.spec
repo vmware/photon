@@ -118,7 +118,7 @@ done
 %{_mandir}/*/*
 %config(noreplace) %{_sysconfdir}/pam.d/*
 %changelog
-*   Fri Jan 19 2019 Srinidhi Rao <srinidhir@vmware.com> 4.6-1
+*   Sat Jan 19 2019 Srinidhi Rao <srinidhir@vmware.com> 4.6-1
 -   Upgrading the version to 4.6.
 *   Mon Jul 30 2018 Tapas Kundu <tkundu@vmware.com> 4.2.1-13
 -   Added fix for CVE-2018-7169.

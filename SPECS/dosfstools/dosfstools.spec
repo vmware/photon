@@ -34,5 +34,5 @@ rm -rf %{buildroot}/*
 -   Update to version 4.1 for CVE-2016-4804, CVE-2015-8872
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.26-2
 -   GA - Bump release of all rpms
-*   Wed Jul 1 2014 Sharath George <sharathg@vmware.com> 3.0.26-1
+*   Tue Jul 1 2014 Sharath George <sharathg@vmware.com> 3.0.26-1
 -   Initial build.  First version

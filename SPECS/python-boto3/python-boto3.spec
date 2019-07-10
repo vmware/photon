@@ -74,5 +74,5 @@ popd
 %{python3_sitelib}/*
 
 %changelog
-*   Fri Jan 05 2017 Kumar Kaushik <kaushikk@vmware.com> 1.5.9-1
+*   Thu Jan 05 2017 Kumar Kaushik <kaushikk@vmware.com> 1.5.9-1
 -   Initial packaging for photon.

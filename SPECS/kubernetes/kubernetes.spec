@@ -221,7 +221,7 @@ fi
 -   Fix issue in Cascade cloud provider.
 *   Tue Jan 23 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-4
 -   Add Cascade cloud provider.
-*   Fri Nov 15 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-3
+*   Wed Nov 15 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-3
 -   Specify --kubeconfig to pass in config file.
 *   Fri Nov 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-2
 -   Specify API server via kubeconfig file.
@@ -231,7 +231,7 @@ fi
 -   Add k8s pause.
 *   Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.5-1
 -   k8s v1.7.5.
-*   Sat Aug 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-2
+*   Wed Aug 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-2
 -   Split kubeadm into its own pkg.
 *   Fri Jul 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-1
 -   Upgrade kubernetes to v1.7.0.

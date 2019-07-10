@@ -130,7 +130,7 @@ find %{buildroot}%{python2_sitelib}/mesos -name '*.pyc' -delete
 -	Update to 1.5.2. Includes fix for CVE-2018-1330
 *       Tue Jan 23 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.2-2
 -       Add serf-devel to BuildRequires.
-*       Tue Oct 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.2-1
+*       Wed Oct 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.2-1
 -       Updated to version 1.2.2
 *	Thu Sep 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-3
 -	fix conflicts with mesos-0.28

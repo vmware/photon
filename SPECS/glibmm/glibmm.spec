@@ -65,5 +65,5 @@ make DESTDIR=%{buildroot} install
 	Created devel subpackage. Added Summary.
 *	Tue Jun 23 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-2
 	Added glib-schemas to build requirements.
-*	Thu Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.42.0-1
+*	Wed Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.42.0-1
 	Initial version

@@ -44,5 +44,5 @@ install -Dpm0644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d/macros.ninja
 %{_libdir}/rpm/macros.d/macros.ninja
 
 %changelog
-*   Mon Jun 09 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.8.2-1
+*   Sun Jun 09 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.8.2-1
 -   Initial packaging for Photon-1.0

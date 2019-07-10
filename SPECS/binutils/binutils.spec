@@ -153,7 +153,7 @@ make %{?_smp_mflags} check
 -   Fix CVE-2018-20623.patch, CVE-2018-20671.patch & CVE-2018-20651.patch
 *   Mon Jun 03 2019 Vikash Bansal <bvikas@vmware.com> 2.31-7
 -   Fix CVE-2019-9074, CVE-2018-17358 & CVE-2018-17360
-*   Thu May 31 2019 Vikash Bansal <bvikas@vmware.com> 2.31-6
+*   Fri May 31 2019 Vikash Bansal <bvikas@vmware.com> 2.31-6
 -   Fix CVE-2018-19932, CVE-2018-20002, CVE-2019-9071 & CVE-2019-9073
 *   Tue Apr 16 2019 Ashwin H <ashwinh@vmware.com> 2.31-5
 -   Fix assembly code generation for AVX512

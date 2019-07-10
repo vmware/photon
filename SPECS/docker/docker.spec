@@ -199,7 +199,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
-*   Wed Jun 4 2019 Bo Gan <ganb@vmware.com> 18.03.0-5
+*   Tue Jun 4 2019 Bo Gan <ganb@vmware.com> 18.03.0-5
 -   Fix CVE-2018-15664
 *   Thu Feb 14 2019 Bo Gan <ganb@vmware.com> 18.03.0-4
 -   Fix docker version string

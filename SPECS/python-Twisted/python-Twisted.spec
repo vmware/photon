@@ -88,7 +88,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 -   Added python-netaddr and python-incremental to the requires.
 *   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 17.1.0-3
 -   Upgraded to 17.1.0.
-*   Tue Mar 15 2017 Xiaolin Li <xiaolinl@vmware.com> 16.6.0-1
+*   Wed Mar 15 2017 Xiaolin Li <xiaolinl@vmware.com> 16.6.0-1
 -   Downgraded to 16.6.0
 *   Tue Mar 14 2017 Anish Swaminathan <anishs@vmware.com> 17.1.0-2
 -   Change requires

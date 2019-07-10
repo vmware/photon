@@ -61,7 +61,7 @@ rm %{buildroot}/%{_libdir}/*.la
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*   Tue Jun 18 2018 Dweep Advani <dadvani@vmware.com> 1.23.1-2
+*   Mon Jun 18 2018 Dweep Advani <dadvani@vmware.com> 1.23.1-2
 -   Fix of CVE-2018-1000168.
 *   Tue Jun 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.23.1-1
 -   First version

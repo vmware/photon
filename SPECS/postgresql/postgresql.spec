@@ -183,5 +183,5 @@ rm -rf %{buildroot}/*
 -   Update to version 9.4.4.
 *   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 9.4.1-2
 -   Exclude /usr/lib/debug
-*   Tue May 15 2015 Sharath George <sharathg@vmware.com> 9.4.1-1
+*   Fri May 15 2015 Sharath George <sharathg@vmware.com> 9.4.1-1
 -   Initial build.  First version

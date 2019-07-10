@@ -266,7 +266,7 @@ rm -rf %{buildroot}
 -    Update rpm version in lock-step with lua update to 5.3.2
 *    Fri Apr 08 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.11.2-7
 -    Build rpm with capabilities.
-*    Thu Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
+*    Wed Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
 -    Moving build utils to a different package.
 *    Sat Jun 27 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-5
 -    Update rpm-system-configuring-scripts. Use tar --no-same-owner for rpmbuild.

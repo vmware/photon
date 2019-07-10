@@ -308,7 +308,7 @@ rm -rf %{buildroot}/*
 -    plymouth-start.service from all service files.
 *    Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-35
 -    Fix for CVE-2017-9445.
-*    Sat Jan 22 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-34
+*    Sun Jan 22 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-34
 -    Fix for CVE-2016-10156.
 *    Sat Jan 21 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-33
 -    Arm watchdog timer more frequently for virtual machine env.

@@ -99,7 +99,7 @@ unset BUILD_ZLIB BUILD_BZIP2
 -   CVE-2016-1238 patch from http://perl5.git.perl.org/perl.git/commit/cee96d52c39b1e7b36e1c62d38bcd8d86e9a41ab.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.22.1-3
 -   GA - Bump release of all rpms
-*   Thu Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 5.22.1-2
+*   Tue Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 5.22.1-2
 -   Enable threads
 *   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 5.22.1-1
 -   Update version

@@ -104,7 +104,7 @@ find %{buildroot} -name '*.la' -delete
 -  Fix 0 bytes error codition on socket read and write.
 *  Tue Oct 31 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1-1
 -  Async support.
-*  Thu Oct 20 2017 Kumar Kaushik <kaushikk@vmware.com> 1.0.5-1
+*  Fri Oct 20 2017 Kumar Kaushik <kaushikk@vmware.com> 1.0.5-1
 -  New API for peer info.
 *  Tue Sep 12 2017 Kumar Kaushik <kaushikk@vmware.com> 1.0.4-2
 -  Making default log level as ERROR.

@@ -36,5 +36,5 @@ make DESTDIR=%{buildroot} install
 -	GA - Bump release of all rpms
 *   Mon Feb 22 2016 XIaolin Li <xiaolinl@vmware.com> 2.6.2-1
 -   Updated to version 2.6.2
-*	Thu Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.4.0-1
+*	Wed Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.4.0-1
 	Initial version

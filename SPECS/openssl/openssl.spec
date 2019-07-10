@@ -144,7 +144,7 @@ rm -rf %{buildroot}/*
 -   Security bug fix, CVE-2016-2182.
 *   Tue Sep 20 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.2h-4
 -   Security bug fix, CVE-2016-6303.
-*   Fri Jun 22 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2h-3
+*   Wed Jun 22 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2h-3
 -   Add patches for using openssl_init under all initialization and changing default RAND
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.2h-2
 -   GA - Bump release of all rpms
