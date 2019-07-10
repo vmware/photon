@@ -1,7 +1,7 @@
 Summary:	Utilities for internationalization and localization
 Name:		gettext
 Version:	0.19.5.1
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/gettext
 Group:		Applications/System
@@ -37,17 +37,6 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/usr/share/doc/gettext-%{version}/examples
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name} --all-name
-# Removing vulnerable m4 from archive.dir.tar.xz
-cd gettext-tools/misc/
-mkdir archive-gettext
-tar -C archive-gettext -xvf archive.dir.tar.xz
-cd archive-gettext
-find . -name "m4" -type d -exec rm -r "{}" +
-rm -rf ../archive.dir.tar.xz
-tar cfJ ../archive.dir.tar.xz .
-cd ..
-rm -rf archive-gettext
-cp archive.dir.tar.xz %{buildroot}%{_datarootdir}/%{name}/archive.dir.tar.xz
 
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
@@ -66,10 +55,12 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datarootdir}/%{name}/*
 %{_mandir}/*/*
 %changelog
-* Fri May 24 2019 Ankit Jain <ankitja@vmware.com> 0.19.5.1-5
-- Removed vulnerable m4 version from archive.dir.tar.xz which
-- consists of data files from previous version of gettext
-- which has vulnerable versions of m4.
+* 	Thu Jul 18 2019 Ankit Jain <ankitja@vmware.com> 0.19.5.1-6
+- 	Reverted m4 removal changes
+* 	Fri May 24 2019 Ankit Jain <ankitja@vmware.com> 0.19.5.1-5
+- 	Removed vulnerable m4 version from archive.dir.tar.xz which
+- 	consists of data files from previous version of gettext
+- 	which has vulnerable versions of m4.
 *	Thu Mar 14 2019 Siju Maliakkal <smaliakkal@vmware.com> 0.19.5.1-4
 -	Fix CVE-2018-18751
 *       Wed May 23 2018 Xiaolin Li <xiaolinl@vmware.com> 0.19.5.1-3
