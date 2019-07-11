@@ -1,8 +1,8 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %define debug_package %{nil}
 
 Summary:        Distro - an OS platform information API
-Name:           python-distro
+Name:           python3-distro
 Version:        1.4.0
 Release:        2%{?dist}
 License:        ASL
@@ -13,15 +13,16 @@ Url:            https://pypi.python.org/pypi/distro
 Source0:        https://files.pythonhosted.org/packages/ca/e3/78443d739d7efeea86cbbe0216511d29b2f5ca8dbf51a6f2898432738987/distro-%{version}.tar.gz
 %define sha1    distro=d72ac60844b2b472fc815441afe60fc1da728926
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
-BuildRequires:  python-pip
+BuildRequires:  python3-pip
 %endif
 Requires:       photon-release
-Requires:       python2
-Requires:       python2-libs
+Requires:       python3
+Requires:       python3-libs
 BuildArch:      noarch
 
 %description
@@ -31,25 +32,22 @@ Distro provides information about the OS distribution it runs on, such as a reli
 %setup -q -n distro-%{version}
 
 %build
-python2 setup.py build
+python3 setup.py build
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-pip install tox
+pip3 install tox
 tox
 
 %files
 %defattr(-,root,root,-)
-%{python2_sitelib}/*
+%{python3_sitelib}/*
 %doc CHANGELOG.md CONTRIBUTORS.md README.md
 %license LICENSE
 /usr/bin/*
 
 %changelog
 *   Thu Jul 11 2019 Tapas Kundu <tkundu@vmware.com> 1.4.0-2
--   Updated to build python2 distro pkg.
--   Separated spec file for python3-distro.
-*   Tue Feb 12 2019 Tapas Kundu <tkundu@vmware.com> 1.4.0-1
--   Initial packaging for Photon
+-   Separate spec file for python3-distro package in Photon
