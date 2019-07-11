@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.182
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.185
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d34e92e2d688091a90d2f5aa2fd7eaec411b3f37
+%define sha1 linux=9db30f2036187de5cf50db1e3d8ad61ceea1aa74
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -403,6 +403,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Jul 11 2019 VIKASH BANSAL <bvikas@vmware.com> 4.9.185-1
+-   Update to version 4.9.185
 *   Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.9.182-3
 -   Fix 9p vsock 16bit port number issue.
 *   Thu Jun 27 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.182-2

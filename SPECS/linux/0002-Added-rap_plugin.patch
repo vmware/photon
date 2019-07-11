@@ -1792,7 +1792,7 @@ index 99635dd..fd78533 100644
 -static int param_set_kgdbts_var(const char *kmessage, struct kernel_param *kp)
 +static int param_set_kgdbts_var(const char *kmessage, const struct kernel_param *kp)
  {
- 	int len = strlen(kmessage);
+ 	size_t len = strlen(kmessage);
  
 diff --git a/drivers/mtd/devices/block2mtd.c b/drivers/mtd/devices/block2mtd.c
 index 7c887f1..62fd690 100644

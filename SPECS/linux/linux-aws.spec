@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.182
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.185
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d34e92e2d688091a90d2f5aa2fd7eaec411b3f37
+%define sha1 linux=9db30f2036187de5cf50db1e3d8ad61ceea1aa74
 Source1:	config-aws
 Source2:	initramfs.trigger
 Source3:	update_photon_cfg.postun
@@ -441,6 +441,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Thu Jul 11 2019 VIKASH BANSAL <bvikas@vmware.com> 4.9.185-1
+-   Update to version 4.9.185
 *   Thu Jun 27 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.182-2
 -   Deprecate linux-aws-tools in favor of linux-tools.
 *   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.182-1
