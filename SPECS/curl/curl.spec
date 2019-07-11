@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.59.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -18,7 +18,8 @@ Patch5:         curl-CVE-2018-16842.patch
 Patch6:         curl-CVE-2018-14618.patch
 Patch7:         curl-CVE-2019-3823.patch
 Patch8:         curl-CVE-2019-3822.patch
-Patch9:		curl-CVE-2019-5436.patch
+Patch9:         curl-CVE-2019-5436.patch
+Patch10:        curl-CVE-2018-16890.patch
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -61,6 +62,7 @@ This package contains minimal set of shared curl libraries.
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 
 %build
 ./configure \
@@ -113,6 +115,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Thu Jul 11 2019 Siddharth Chandrasekaran <csiddharth@vmware.com> 7.59.0-8
+-   Add patch for CVE-2018-16890
 *   Wed May 29 2019 Siju Maliakkal <smaliakkal@vmware.com> 7.59.0-7
 -   Patch for CVE-2019-5436
 *   Wed Feb 27 2019 Tapas Kundu <tkundu@vmware.com> 7.59.0-6
