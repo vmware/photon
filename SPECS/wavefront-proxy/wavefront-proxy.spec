@@ -1,7 +1,7 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
 Version:        4.36
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz 
@@ -45,7 +45,7 @@ sed -i 's/\/etc\/init.d\/$APP_BASE-proxy restart/ systemctl restart $APP_BASE-pr
 sed -i 's/-jar \/opt\/wavefront\/wavefront-proxy\/bin\/wavefront-push-agent.jar/-jar \/opt\/wavefront-push-agent.jar/' proxy/docker/run.sh
 
 %build
-mvn install
+mvn install -DskipTests
 
 %install
 install -m 755 -D pkg/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh %{buildroot}/opt/wavefront/%{name}/bin/autoconf-wavefront-proxy.sh
@@ -104,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/wavefront-proxy.service
 
 %changelog
+* Wed Jul 10 2019 Alexey Makhalov <amakhalov@vmware.com> 4.36-2
+- Skip tests during make install.
 * Thu Mar 14 2019 Keerthana K <keerthanak@vmware.com> 4.36-1
 - Update to version 4.36
 * Fri Apr 20 2018 Dheeraj Shetty <dheerajs@vmware.com> 4.26-1
