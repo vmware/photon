@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.182
+Version:       4.4.185
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=606fbfe8fa1ce55180ba5e0b3fe4ee0c85d86328
+%define sha1 linux=5d483c4716629607e9402b3c1d1caae9778cce30
 Source1:       config-esx
 Source2:       update_photon_cfg.postun
 Patch0:        double-tcp_mem-limits.patch
@@ -40,8 +40,6 @@ Patch26:       init-do_mounts-recreate-dev-root.patch
 # Fix for CVE-2018-8043
 Patch30:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
-# Fix CVE-2019-11599
-Patch31:        0001_coredump_fix_race_condition_between_mmget_not_zero_get_task_mm.patch
 
 Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
@@ -62,10 +60,6 @@ Patch49:        net-9p-vdfs-zerocopy.patch
 Patch50:        fix_use_after_free_in_sockfs_setattr.patch
 # Fix for CVE-2019-12456
 Patch51:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
-# Fix for CVE-2018-16597
-Patch52:        0001-ovl-modify-ovl_permission-to-do-checks-on-two-inodes.patch
-# Fix for CVE-2018-19407
-Patch53:        0001-KVM-X86-Fix-scan-ioapic-use-before-initialization.patch
 # Fix for CVE-2019-12379
 Patch54:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2019-12381
@@ -140,7 +134,6 @@ The Linux package contains the Linux kernel doc files
 %patch24 -p1
 %patch26 -p1
 %patch30 -p1
-%patch31 -p1
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
@@ -155,8 +148,6 @@ The Linux package contains the Linux kernel doc files
 %patch49 -p1
 %patch50 -p1
 %patch51 -p1
-%patch52 -p1
-%patch53 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -253,6 +244,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jul 10 2019 VIKASH BANSAL <bvikas@vmware.com> 4.4.185-1
+-   Update to version 4.4.185
 *   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.182-1
 -   Update to version 4.4.182
 -   Fix CVE-2019-12456, CVE-2018-16597, CVE-2018-19407, CVE-2019-12379,
