@@ -1,7 +1,7 @@
 Summary:	Logstash is a tool for managing events and logs.
 Name:           logstash
 Version:        6.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,9 +11,9 @@ Source0:        %{name}-%{version}.tar.gz
 %define sha1 %{name}-%{version}.tar.gz=7c009c19e8d7c733173b94b5152f48deee8a76ef
 Source1:        %{name}.service
 Source2:        %{name}.conf
-BuildRequires:	openjdk
+BuildRequires:	openjdk >= %{JAVA_VERSION}
 BuildRequires:	ruby
-Requires:	openjdk
+Requires:	openjdk >= %{JAVA_VERSION}
 Requires:	ruby
 Requires:       systemd
 Requires:       elasticsearch
@@ -112,6 +112,8 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+*   Sat Jul 13 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-2
+-   Added condition for JavaVersion in Requires
 *   Tue Apr 02 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-1
 -   Upgrade to 6.7.0
 *   Wed Feb 13 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-1
