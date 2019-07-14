@@ -1,7 +1,7 @@
-From 5e97da50d3f61dac9d7f4a398e59eb3e0271f49b Mon Sep 17 00:00:00 2001
-From: ejohn <ejohn@vmware.com>
-Date: Fri, 29 Mar 2019 17:43:54 +0530
-Subject: [PATCH] VCP patch for K8s v1.11.9 (077135f)
+From 424dba10b53ac7475627acb233b589ef670f87ba Mon Sep 17 00:00:00 2001
+From: emil john <ejohn@vmware.com>
+Date: Thu, 4 Jul 2019 16:26:23 +0530
+Subject: [PATCH] VCP patch for K8s v1.11.9 (6716390)
 
 ---
  api/swagger-spec/apps_v1alpha1.json           |   21 +
@@ -39,6 +39,9 @@ Subject: [PATCH] VCP patch for K8s v1.11.9 (077135f)
  pkg/kubeapiserver/authorizer/config.go        |    7 +
  pkg/kubeapiserver/authorizer/modes/modes.go   |    3 +-
  pkg/kubeapiserver/options/plugins.go          |    3 +
+ pkg/kubectl/cmd/BUILD                         |    1 +
+ pkg/kubectl/cmd/cp.go                         |   89 +-
+ pkg/kubectl/cmd/cp_test.go                    |  360 ++-
  pkg/printers/internalversion/describe.go      |   11 +
  pkg/security/podsecuritypolicy/util/util.go   |    3 +
  pkg/volume/cascade_disk/BUILD                 |   43 +
@@ -57,7 +60,7 @@ Subject: [PATCH] VCP patch for K8s v1.11.9 (077135f)
  .../authorizer/vke/vke_authorizer_test.go     |  230 ++
  .../src/k8s.io/api/core/v1/generated.pb.go    | 2686 +++++++++--------
  staging/src/k8s.io/api/core/v1/types.go       |   24 +-
- 53 files changed, 7363 insertions(+), 1216 deletions(-)
+ 56 files changed, 7664 insertions(+), 1365 deletions(-)
  create mode 100644 pkg/cloudprovider/providers/cascade/BUILD
  create mode 100644 pkg/cloudprovider/providers/cascade/OWNERS
  create mode 100644 pkg/cloudprovider/providers/cascade/apitypes.go
@@ -3191,6 +3194,581 @@ index abcb5b4673..292fcdd1dc 100644
  }
  
  // DefaultOffAdmissionPlugins get admission plugins off by default for kube-apiserver.
+diff --git a/pkg/kubectl/cmd/BUILD b/pkg/kubectl/cmd/BUILD
+index 0eac87025c..415dbab377 100644
+--- a/pkg/kubectl/cmd/BUILD
++++ b/pkg/kubectl/cmd/BUILD
+@@ -242,6 +242,7 @@ go_test(
+         "//vendor/k8s.io/metrics/pkg/apis/metrics/v1beta1:go_default_library",
+         "//vendor/k8s.io/metrics/pkg/client/clientset_generated/clientset/fake:go_default_library",
+         "//vendor/k8s.io/utils/exec:go_default_library",
++        "//vendor/github.com/stretchr/testify/require:go_default_library",
+     ],
+ )
+ 
+diff --git a/pkg/kubectl/cmd/cp.go b/pkg/kubectl/cmd/cp.go
+index 18cf278a2a..76434e0541 100644
+--- a/pkg/kubectl/cmd/cp.go
++++ b/pkg/kubectl/cmd/cp.go
+@@ -1,5 +1,5 @@
+ /*
+-Copyright 2016 The Kubernetes Authors.
++Copyright 2019 The Kubernetes Authors.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+@@ -401,9 +401,7 @@ func clean(fileName string) string {
+ 	return path.Clean(string(os.PathSeparator) + fileName)
+ }
+ 
+-func (o *CopyOptions) untarAll(reader io.Reader, destFile, prefix string) error {
+-	entrySeq := -1
+-
++func (o *CopyOptions) untarAll(reader io.Reader, destDir, prefix string) error {
+ 	// TODO: use compression here?
+ 	tarReader := tar.NewReader(reader)
+ 	for {
+@@ -414,52 +412,60 @@ func (o *CopyOptions) untarAll(reader io.Reader, destFile, prefix string) error
+ 			}
+ 			break
+ 		}
+-		entrySeq++
+-		mode := header.FileInfo().Mode()
+-		// all the files will start with the prefix, which is the directory where
++
++		// All the files will start with the prefix, which is the directory where
+ 		// they were located on the pod, we need to strip down that prefix, but
+-		// if the prefix is missing it means the tar was tempered with
++		// if the prefix is missing it means the tar was tempered with.
++		// For the case where prefix is empty we need to ensure that the path
++		// is not absolute, which also indicates the tar file was tempered with.
+ 		if !strings.HasPrefix(header.Name, prefix) {
+ 			return fmt.Errorf("tar contents corrupted")
+ 		}
+-		outFileName := path.Join(destFile, clean(header.Name[len(prefix):]))
+-		baseName := path.Dir(outFileName)
++
++		// basic file information
++		mode := header.FileInfo().Mode()
++		destFileName := path.Join(destDir, header.Name[len(prefix):])
++		baseName := path.Dir(destFileName)
++
+ 		if err := os.MkdirAll(baseName, 0755); err != nil {
+ 			return err
+ 		}
+ 		if header.FileInfo().IsDir() {
+-			if err := os.MkdirAll(outFileName, 0755); err != nil {
++			if err := os.MkdirAll(destFileName, 0755); err != nil {
+ 				return err
+ 			}
+ 			continue
+ 		}
+ 
+-		// handle coping remote file into local directory
+-		if entrySeq == 0 && !header.FileInfo().IsDir() {
+-			exists, err := dirExists(outFileName)
+-			if err != nil {
+-				return err
+-			}
+-			if exists {
+-				outFileName = filepath.Join(outFileName, path.Base(clean(header.Name)))
+-			}
++		// We need to ensure that the destination file is always within boundries
++		// of the destination directory. This prevents any kind of path traversal
++		// from within tar archive.
++		dir, file := filepath.Split(destFileName)
++		evaledPath, err := filepath.EvalSymlinks(dir)
++		if err != nil {
++			return err
++		}
++		// For scrutiny we verify both the actual destination as well as we follow
++		// all the links that might lead outside of the destination directory.
++		if !isDestRelative(destDir, destFileName) || !isDestRelative(destDir,filepath.Join(evaledPath, file)) {
++			fmt.Fprintf(o.IOStreams.ErrOut, "warning: link %q is pointing to %q which is outside target destination, skipping\n", destFileName, header.Linkname)
++			continue
+ 		}
+ 
+ 		if mode&os.ModeSymlink != 0 {
+ 			linkname := header.Linkname
+-			// error is returned if linkname can't be made relative to destFile,
+-			// but relative can end up being ../dir that's why we also need to
+-			// verify if relative path is the same after Clean-ing
+-			relative, err := filepath.Rel(destFile, linkname)
+-			if path.IsAbs(linkname) && (err != nil || relative != stripPathShortcuts(relative)) {
+-				fmt.Fprintf(o.IOStreams.ErrOut, "warning: link %q is pointing to %q which is outside target destination, skipping\n", outFileName, header.Linkname)
++			// We need to ensure that the link destination is always within boundries
++			// of the destination directory. This prevents any kind of path traversal
++			// from within tar archive.
++			if !isDestRelative(destDir, linkJoin(destFileName, linkname)) {
++				fmt.Fprintf(o.IOStreams.ErrOut, "warning: link %q is pointing to %q which is outside target destination, skipping\n", destFileName, header.Linkname)
+ 				continue
+ 			}
+-			if err := os.Symlink(linkname, outFileName); err != nil {
++			if err := os.Symlink(linkname, destFileName); err != nil {
+ 				return err
+ 			}
+ 		} else {
+-			outFile, err := os.Create(outFileName)
++			outFile, err := os.Create(destFileName)
+ 			if err != nil {
+ 				return err
+ 			}
+@@ -472,13 +478,30 @@ func (o *CopyOptions) untarAll(reader io.Reader, destFile, prefix string) error
+ 			}
+ 		}
+ 	}
++	return nil
++}
+ 
+-	if entrySeq == -1 {
+-		//if no file was copied
+-		errInfo := fmt.Sprintf("error: %s no such file or directory", prefix)
+-		return errors.New(errInfo)
++// linkJoin joins base and link to get the final path to be created.
++// It will consider whether link is an absolute path or not when returning result.
++func linkJoin(base, link string) string {
++	if filepath.IsAbs(link) {
++		return link
+ 	}
+-	return nil
++	return filepath.Join(base, link)
++}
++
++// isDestRelative returns true if dest is pointing outside the base directory,
++// false otherwise.
++func isDestRelative(base, dest string) bool {
++	fullPath := dest
++	if !filepath.IsAbs(dest) {
++		fullPath = filepath.Join(base, dest)
++	}
++	relative, err := filepath.Rel(base, fullPath)
++	if err != nil {
++		return false
++	}
++	return relative == "." || relative == stripPathShortcuts(relative)
+ }
+ 
+ func getPrefix(file string) string {
+diff --git a/pkg/kubectl/cmd/cp_test.go b/pkg/kubectl/cmd/cp_test.go
+index 8db9e218d6..3344c06797 100644
+--- a/pkg/kubectl/cmd/cp_test.go
++++ b/pkg/kubectl/cmd/cp_test.go
+@@ -1,5 +1,5 @@
+ /*
+-Copyright 2014 The Kubernetes Authors.
++Copyright 2019 The Kubernetes Authors.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+@@ -19,16 +19,18 @@ package cmd
+ import (
+ 	"archive/tar"
+ 	"bytes"
++	"fmt"
+ 	"io"
+ 	"io/ioutil"
+ 	"net/http"
+ 	"os"
+-	"os/exec"
+ 	"path"
+ 	"path/filepath"
+ 	"strings"
+ 	"testing"
+ 
++	"github.com/stretchr/testify/require"
++
+ 	"k8s.io/api/core/v1"
+ 	"k8s.io/apimachinery/pkg/api/errors"
+ 	"k8s.io/apimachinery/pkg/runtime"
+@@ -128,6 +130,68 @@ func TestGetPrefix(t *testing.T) {
+ 	}
+ }
+ 
++func TestIsDestRelative(t *testing.T) {
++	tests := []struct {
++		base     string
++		dest     string
++		relative bool
++	}{
++		{
++			base:     "/dir",
++			dest:     "../link",
++			relative: false,
++		},
++		{
++			base:     "/dir",
++			dest:     "../../link",
++			relative: false,
++		},
++		{
++			base:     "/dir",
++			dest:     "/link",
++			relative: false,
++		},
++		{
++			base:     "/dir",
++			dest:     "link",
++			relative: true,
++		},
++		{
++			base:     "/dir",
++			dest:     "int/file/link",
++			relative: true,
++		},
++		{
++			base:     "/dir",
++			dest:     "int/../link",
++			relative: true,
++		},
++		{
++			base:     "/dir",
++			dest:     "/dir/link",
++			relative: true,
++		},
++		{
++			base:     "/dir",
++			dest:     "/dir/int/../link",
++			relative: true,
++		},
++		{
++			base:     "/dir",
++			dest:     "/dir/../../link",
++			relative: false,
++		},
++	}
++
++	for i, test := range tests {
++		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
++			if test.relative != isDestRelative(test.base, test.dest) {
++				t.Errorf("unexpected result for: base %q, dest %q", test.base, test.dest)
++			}
++		})
++	}
++}
++
+ func checkErr(t *testing.T, err error) {
+ 	if err != nil {
+ 		t.Errorf("unexpected error: %v", err)
+@@ -324,118 +388,6 @@ func TestTarUntarWrongPrefix(t *testing.T) {
+ 	}
+ }
+ 
+-// TestCopyToLocalFileOrDir tests untarAll in two cases :
+-// 1: copy pod file to local file
+-// 2: copy pod file into local directory
+-func TestCopyToLocalFileOrDir(t *testing.T) {
+-	dir, err := ioutil.TempDir(os.TempDir(), "input")
+-	dir2, err2 := ioutil.TempDir(os.TempDir(), "output")
+-	if err != nil || err2 != nil {
+-		t.Errorf("unexpected error: %v | %v", err, err2)
+-		t.FailNow()
+-	}
+-	defer func() {
+-		if err := os.RemoveAll(dir); err != nil {
+-			t.Errorf("Unexpected error cleaning up: %v", err)
+-		}
+-		if err := os.RemoveAll(dir2); err != nil {
+-			t.Errorf("Unexpected error cleaning up: %v", err)
+-		}
+-	}()
+-
+-	files := []struct {
+-		name          string
+-		data          string
+-		dest          string
+-		destDirExists bool
+-	}{
+-		{
+-			name:          "foo",
+-			data:          "foobarbaz",
+-			dest:          "path/to/dest",
+-			destDirExists: false,
+-		},
+-		{
+-			name:          "dir/blah",
+-			data:          "bazblahfoo",
+-			dest:          "dest/file/path",
+-			destDirExists: true,
+-		},
+-	}
+-
+-	for _, file := range files {
+-		func() {
+-			// setup
+-			srcFilePath := filepath.Join(dir, file.name)
+-			destPath := filepath.Join(dir2, file.dest)
+-			if err := os.MkdirAll(filepath.Dir(srcFilePath), 0755); err != nil {
+-				t.Errorf("unexpected error: %v", err)
+-				t.FailNow()
+-			}
+-			srcFile, err := os.Create(srcFilePath)
+-			if err != nil {
+-				t.Errorf("unexpected error: %v", err)
+-				t.FailNow()
+-			}
+-			defer srcFile.Close()
+-
+-			if _, err := io.Copy(srcFile, bytes.NewBuffer([]byte(file.data))); err != nil {
+-				t.Errorf("unexpected error: %v", err)
+-				t.FailNow()
+-			}
+-			if file.destDirExists {
+-				if err := os.MkdirAll(destPath, 0755); err != nil {
+-					t.Errorf("unexpected error: %v", err)
+-					t.FailNow()
+-				}
+-			}
+-
+-			// start tests
+-			srcTarFilePath := filepath.Join(dir, file.name+".tar")
+-			// here use tar command to create tar file instead of calling makeTar func
+-			// because makeTar func can not generate correct header name
+-			err = exec.Command("tar", "cf", srcTarFilePath, srcFilePath).Run()
+-			if err != nil {
+-				t.Errorf("unexpected error: %v", err)
+-				t.FailNow()
+-			}
+-			srcTarFile, err := os.Open(srcTarFilePath)
+-			if err != nil {
+-				t.Errorf("unexpected error: %v", err)
+-				t.FailNow()
+-			}
+-			defer srcTarFile.Close()
+-
+-			opts := NewCopyOptions(genericclioptions.NewTestIOStreamsDiscard())
+-			if err := opts.untarAll(srcTarFile, destPath, getPrefix(srcFilePath)); err != nil {
+-				t.Errorf("unexpected error: %v", err)
+-				t.FailNow()
+-			}
+-
+-			actualDestFilePath := destPath
+-			if file.destDirExists {
+-				actualDestFilePath = filepath.Join(destPath, filepath.Base(srcFilePath))
+-			}
+-			_, err = os.Stat(actualDestFilePath)
+-			if err != nil && os.IsNotExist(err) {
+-				t.Errorf("expecting %s exists, but actually it's missing", actualDestFilePath)
+-			}
+-			destFile, err := os.Open(actualDestFilePath)
+-			if err != nil {
+-				t.Errorf("unexpected error: %v", err)
+-				t.FailNow()
+-			}
+-			defer destFile.Close()
+-			buff := &bytes.Buffer{}
+-			io.Copy(buff, destFile)
+-			if file.data != string(buff.Bytes()) {
+-				t.Errorf("expected: %s, actual: %s", file.data, string(buff.Bytes()))
+-			}
+-		}()
+-	}
+-
+-}
+-
+ func TestTarDestinationName(t *testing.T) {
+ 	dir, err := ioutil.TempDir(os.TempDir(), "input")
+ 	dir2, err2 := ioutil.TempDir(os.TempDir(), "output")
+@@ -531,7 +483,6 @@ func TestBadTar(t *testing.T) {
+ 		name string
+ 		body string
+ 	}{
+-		{"/prefix/../../../tmp/foo", "Up to temp"},
+ 		{"/prefix/foo/bar/../../home/bburns/names.txt", "Down and back"},
+ 	}
+ 	for _, file := range files {
+@@ -566,7 +517,6 @@ func TestBadTar(t *testing.T) {
+ 			t.Errorf("Error finding file: %v", err)
+ 		}
+ 	}
+-
+ }
+ 
+ func TestClean(t *testing.T) {
+@@ -592,6 +542,184 @@ func TestClean(t *testing.T) {
+ 	}
+ }
+ 
++func TestUntar(t *testing.T) {
++	testdir, err := ioutil.TempDir("", "test-untar")
++	require.NoError(t, err)
++	defer os.RemoveAll(testdir)
++	t.Logf("Test base: %s", testdir)
++
++	const (
++		dest = "base"
++	)
++
++	type file struct {
++		path       string
++		linkTarget string // For link types
++		expected   string // Expect to find the file here (or not, if empty)
++	}
++	files := []file{{
++		// Absolute file within dest
++		path:     filepath.Join(testdir, dest, "abs"),
++		expected: filepath.Join(testdir, dest, testdir, dest, "abs"),
++	}, { // Absolute file outside dest
++		path:     filepath.Join(testdir, "abs-out"),
++		expected: filepath.Join(testdir, dest, testdir, "abs-out"),
++	}, { // Absolute nested file within dest
++		path:     filepath.Join(testdir, dest, "nested/nest-abs"),
++		expected: filepath.Join(testdir, dest, testdir, dest, "nested/nest-abs"),
++	}, { // Absolute nested file outside dest
++		path:     filepath.Join(testdir, dest, "nested/../../nest-abs-out"),
++		expected: filepath.Join(testdir, dest, testdir, "nest-abs-out"),
++	}, { // Relative file inside dest
++		path:     "relative",
++		expected: filepath.Join(testdir, dest, "relative"),
++	}, { // Relative file outside dest
++		path:     "../unrelative",
++		expected: "",
++	}, { // Nested relative file inside dest
++		path:     "nested/nest-rel",
++		expected: filepath.Join(testdir, dest, "nested/nest-rel"),
++	}, { // Nested relative file outside dest
++		path:     "nested/../../nest-unrelative",
++		expected: "",
++	}}
++
++	mkExpectation := func(expected, suffix string) string {
++		if expected == "" {
++			return ""
++		}
++		return expected + suffix
++	}
++	mkBacktickExpectation := func(expected, suffix string) string {
++		dir, _ := filepath.Split(filepath.Clean(expected))
++		if len(strings.Split(dir, string(os.PathSeparator))) <= 1 {
++			return ""
++		}
++		return expected + suffix
++	}
++	links := []file{}
++	for _, f := range files {
++		links = append(links, file{
++			path:       f.path + "-innerlink",
++			linkTarget: "link-target",
++			expected:   mkExpectation(f.expected, "-innerlink"),
++		}, file{
++			path:       f.path + "-innerlink-abs",
++			linkTarget: filepath.Join(testdir, dest, "link-target"),
++			expected:   mkExpectation(f.expected, "-innerlink-abs"),
++		}, file{
++			path:       f.path + "-outerlink",
++			linkTarget: filepath.Join(backtick(f.path), "link-target"),
++			expected:   mkBacktickExpectation(f.expected, "-outerlink"),
++		}, file{
++			path:       f.path + "-outerlink-abs",
++			linkTarget: filepath.Join(testdir, "link-target"),
++			expected:   "",
++		})
++	}
++	files = append(files, links...)
++
++	// Test back-tick escaping through a symlink.
++	files = append(files,
++		file{
++			path:       "nested/again/back-link",
++			linkTarget: "../../nested",
++			expected:   filepath.Join(testdir, dest, "nested/again/back-link"),
++		},
++		file{
++			path:     "nested/again/back-link/../../../back-link-file",
++			expected: filepath.Join(testdir, dest, "back-link-file"),
++		})
++
++	// Test chaining back-tick symlinks.
++	files = append(files,
++		file{
++			path:       "nested/back-link-first",
++			linkTarget: "../",
++			expected:   filepath.Join(testdir, dest, "nested/back-link-first"),
++		},
++		file{
++			path:       "nested/back-link-first/back-link-second",
++			linkTarget: "../",
++			expected:   filepath.Join(testdir, dest, "back-link-second"),
++		},
++		file{
++			// This case is chaining together symlinks that step back, so that
++			// if you just look at the target relative to the path it appears
++			// inside the destination directory, but if you actually follow each
++			// step of the path you end up outside the destination directory.
++			path:       "nested/back-link-first/back-link-second/back-link-term",
++			linkTarget: "",
++			expected:   "",
++		})
++
++	files = append(files,
++		file{ // Relative directory path with terminating /
++			path:     "direct/dir/",
++			expected: "",
++		})
++
++	buf := &bytes.Buffer{}
++	tw := tar.NewWriter(buf)
++	expectations := map[string]bool{}
++	for _, f := range files {
++		if f.expected != "" {
++			expectations[f.expected] = false
++		}
++		if f.linkTarget == "" {
++			hdr := &tar.Header{
++				Name: f.path,
++				Mode: 0666,
++				Size: int64(len(f.path)),
++			}
++			require.NoError(t, tw.WriteHeader(hdr), f.path)
++			if !strings.HasSuffix(f.path, "/") {
++				_, err := tw.Write([]byte(f.path))
++				require.NoError(t, err, f.path)
++			}
++		} else {
++			hdr := &tar.Header{
++				Name:     f.path,
++				Mode:     int64(0777 | os.ModeSymlink),
++				Typeflag: tar.TypeSymlink,
++				Linkname: f.linkTarget,
++			}
++			require.NoError(t, tw.WriteHeader(hdr), f.path)
++		}
++	}
++	tw.Close()
++
++	opts := NewCopyOptions(genericclioptions.NewTestIOStreamsDiscard())
++
++	require.NoError(t, opts.untarAll(buf, filepath.Join(testdir, dest), ""))
++
++	filepath.Walk(testdir, func(path string, info os.FileInfo, err error) error {
++		if err != nil {
++			return err
++		}
++		if info.IsDir() {
++			return nil // Ignore directories.
++		}
++		if _, ok := expectations[path]; !ok {
++			t.Errorf("Unexpected file at %s", path)
++		} else {
++			expectations[path] = true
++		}
++		return nil
++	})
++	for path, found := range expectations {
++		if !found {
++			t.Errorf("Missing expected file %s", path)
++		}
++	}
++}
++
++// backtick returns a path to one directory up from the target
++func backtick(target string) string {
++	rel, _ := filepath.Rel(filepath.Dir(target), "../")
++	return rel
++}
++
+ func TestCopyToPod(t *testing.T) {
+ 	tf := cmdtesting.NewTestFactory().WithNamespace("test")
+ 	ns := legacyscheme.Codecs
 diff --git a/pkg/printers/internalversion/describe.go b/pkg/printers/internalversion/describe.go
 index c1b59cf96e..f6b18a7f16 100644
 --- a/pkg/printers/internalversion/describe.go
@@ -11101,5 +11679,5 @@ index d9f4869fbc..5417d75199 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 -- 
-2.19.1
+2.20.1 (Apple Git-117)
 
