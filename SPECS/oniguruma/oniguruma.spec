@@ -1,12 +1,13 @@
 Name:           oniguruma
 Version:        6.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Regular expressions library
 Group:          System Environment/Libraries
 License:        BSD
 URL:            https://github.com/kkos/oniguruma/
 Source0:        https://github.com/kkos/oniguruma/releases/download/v%{version}/onig-%{version}.tar.gz
 %define sha1    onig=1347cc424b8b631b3fe9b7972b27c797a0ffdd3e
+Patch0:         oniguruma-CVE-2019-13224.patch
 %description
 Oniguruma is a regular expressions library.
 The characteristics of this library is that different character encoding
@@ -15,6 +16,7 @@ for every regular expression object can be specified.
 
 %prep
 %setup -q -n onig-%{version}
+%patch0 -p1
 %build
 ./configure                    \
         --prefix=%{_prefix}    \
@@ -48,5 +50,7 @@ make  check
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Mon Jul 15 2019 Dweep Advani <dadvani@vmware.com> 6.5.0-2
+- Fixed CVE-2019-13224
 * Tue Aug 22 2017 Chang Lee <changlee@vmware.com> 6.5.0-1
 - Initial version
