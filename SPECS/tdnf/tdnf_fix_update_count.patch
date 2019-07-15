@@ -1,0 +1,55 @@
+From 7ce8b045ed8b03f8f322c0af2aa8f6a800459e55 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Wed, 03 Jul 2019 16:16:43 +0530
+Subject: [PATCH] tdnf update --sec-severity [value] prints "1 updates. No data available" when there are no updates.
+
+tdnf update command with sec-severity option does not print the updates
+correctly when there is no update. Instead it prints a wrong count as 1 updates.
+Fix is to count the updates which are valid for the condition and print
+the counter variable.
+
+Change-Id: I3b3ff69f5c57c32f2c834fec8d0c451944e46d43
+---
+
+diff --git a/client/api.c b/client/api.c
+index 53333ae..2e63d2a 100644
+--- a/client/api.c
++++ b/client/api.c
+@@ -1178,6 +1178,7 @@
+ 
+     char*  pszSeverity = NULL;
+     uint32_t dwSecurity = 0;
++    int nUpdates = 0;
+ 
+     if(!pTdnf || !ppszPackageNameSpecs || !ppUpdateInfo)
+     {
+@@ -1222,6 +1223,7 @@
+             BAIL_ON_TDNF_ERROR(dwError);
+             if(pInfo)
+             {
++                nUpdates++;
+                 pInfo->pNext = pUpdateInfos;
+                 pUpdateInfos = pInfo;
+                 pInfo = NULL;
+@@ -1236,7 +1236,7 @@
+     if(!pUpdateInfos)
+     {
+         printf(
+-            "\n%d updates. \n", nCount);
++            "\n%d updates. \n", nUpdates);
+         dwError = ERROR_TDNF_NO_DATA;
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+diff --git a/tests/update.at b/tests/update.at
+index 2cde6cb..6e0d94e 100644
+--- a/tests/update.at
++++ b/tests/update.at
+@@ -70,7 +70,7 @@
+ TDNF_CLI_W_CHROOT install tdnf-test-multiversion-1.0.1 -y
+ TDNF_CLI_W_CHROOT update --sec-severity 7.8 -y
+ ],
+-[125],
++[0],
+ [ignore],
+ [ignore])
+ AT_CLEANUP

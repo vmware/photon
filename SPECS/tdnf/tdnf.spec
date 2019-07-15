@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        1.2.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -33,6 +33,7 @@ Patch1:         tdnf_fix_curl_getinfo_type.patch
 Patch2:         tdnf-updateinfo.patch
 Patch3:         tdnf-perm.patch
 Patch4:         tdnf-added-skip-options-to-check.patch
+Patch5:         tdnf_fix_update_count.patch
 
 %description
 tdnf is a yum/dnf equivalent
@@ -61,6 +62,7 @@ Library providing cli libs for tdnf like clients.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 sed -i 's/tdnf, 1.2.0/tdnf, 1.2.3/' configure.ac
@@ -162,6 +164,9 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Mon Jul 15 2019 Keerthana K <keerthanak@vmware.com> 1.2.3-9
+-   Fix tdnf update command with sec-severity option as it prints
+-   wrong update count when there are no updates.
 *   Mon Apr 22 2019 Ankit Jain <ankitja@vmware.com> 1.2.3-8
 -   Added Requires tdnf-cli-libs
 *   Thu Apr 11 2019 Ankit Jain <ankitja@vmware.com> 1.2.3-7
