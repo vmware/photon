@@ -1,12 +1,12 @@
 Summary:	OpenPGP standard implementation used for encrypted communication and data storage.
 Name:		gnupg
-Version:	2.2.15
+Version:	2.2.17
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		https://gnupg.org/index.html
 Group:		Applications/Cryptography.
 Source0:        https://gnupg.org/ftp/gcrypt/gnupg/%{name}-%{version}.tar.bz2
-%define sha1 gnupg=1909afdad3cf29583126c471298da290399270f4
+%define sha1 gnupg=12c1cee8871c03f0315fc8f27876364b75c95b12
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	zlib-devel
@@ -58,6 +58,8 @@ make %{?_smp_mflags} check
 %exclude /usr/share/doc/*
 
 %changelog
+*   Tue Jul 16 2019 Ashwin H <ashwinh@vmware.com> 2.2.17-1
+-   2.2.17 released to fix CVE-2019-13050
 *   Wed Jul 10 2019 Ashwin H <ashwinh@vmware.com> 2.2.15-1
 -   Update to 2.2.15 which has Fix for CVE-2018-1000858
 *   Sat Oct 20 2018 Ankit Jain <ankitja@vmware.com> 2.2.10-1
