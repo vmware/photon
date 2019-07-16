@@ -1,7 +1,7 @@
 Summary:        Library providing support for "XML Signature" and "XML Encryption" standards
 Name:           xmlsec1
 Version:        1.2.26
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -22,6 +22,7 @@ standards "XML Digital Signature" and "XML Encryption".
 Summary: Libraries, includes, etc. to develop applications with XML Digital Signatures and XML Encryption support.
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
+Requires: nss-devel
 
 %description devel
 Libraries, includes, etc. you can use to develop applications with XML Digital
@@ -79,5 +80,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_prefix}/share/man/man1/xmlsec1-config.1.gz
 
 %changelog
+*   Tue Jul 16 2019 Ankit Jain <ankitja@vmware.com> 1.2.26-2
+-   Added nss-devel as requires
 *   Wed May 08 2019 Ankit Jain <ankitja@vmware.com> 1.2.26-1
 -   Initial version
