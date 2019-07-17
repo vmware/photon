@@ -1,7 +1,7 @@
 Summary:        Unzip-6.0
 Name:           unzip
 Version:        6.0
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        BSD
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://downloads.sourceforge.net/infozip/unzip60.tar.gz
@@ -9,7 +9,6 @@ Source0:        http://downloads.sourceforge.net/infozip/unzip60.tar.gz
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Patch0:         cve-2014-9636.patch
 Patch1:         cve-2015-1315.patch
 Patch2:         CVE-2015-7696-CVE-2015-7697.patch
@@ -17,6 +16,8 @@ Patch3:         unzip-CVE-2014-9844.patch
 Patch4:         unzip-CVE-2014-9913.patch
 Patch5:         unzip-CVE-2018-1000035.patch
 Patch6:         unzip_cfactor_overflow.patch
+Patch7:         CVE-2019-13232-0001-Fix-bug-in-undefer_input-that-misplaced-the-input-st.patch
+Patch8:         CVE-2019-13232-0001-Detect-and-reject-a-zip-bomb-using-overlapped-entrie.patch
 
 %description
 The UnZip package contains ZIP extraction utilities. These are useful
@@ -32,6 +33,8 @@ with PKZIP or Info-ZIP utilities, primarily in a DOS environment.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
+%patch8 -p1
 
 %build
 sed -i -e 's/CFLAGS="-O -Wall/& -DNO_LCHMOD -DLARGE_FILE_SUPPORT -DZIP64_SUPPORT/' unix/Makefile
@@ -57,6 +60,8 @@ make %{?_smp_mflags}  check
 %{_bindir}/*
 
 %changelog
+*   Wed Jul 17 2019 Michelle Wang <michellew@vmware.com> 6.0-14
+-   Fix for CVE-2019-13232
 *   Thu Jan 24 2019 Ankit Jain <ankitja@vmware.com> 6.0-13
 -   Fix for CVE-2018-18384
 *   Fri Jun 29 2018 Dweep Advani <dadvani@vmware.com> 6.0-12
