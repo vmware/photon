@@ -1,7 +1,7 @@
 Name:            kibana
 Summary:         Browser-based analytics and search dashboard for Elasticsearch.
 Version:         6.7.0
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         Apache License Version 2.0
 URL:             https://www.elastic.co/products/kibana
 Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}.tar.gz
@@ -45,16 +45,19 @@ yarn build --oss --skip-os-packages
 
 %install
 mkdir -p %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/LICENSE.txt %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/README.txt %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/NOTICE.txt %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/package.json %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/plugins %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/bin %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/src %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/node_modules %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/webpackShims %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/optimize %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/LICENSE.txt %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/README.txt %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/NOTICE.txt %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/package.json %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/plugins %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/bin %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/src %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/node_modules %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/webpackShims %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/optimize %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/node %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/built_assets %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/target %{buildroot}%{_datadir}/%{name}
 
 chmod -R 755 %{buildroot}%{_datadir}/%{name}
 
@@ -122,6 +125,9 @@ exit
 %{_datadir}/%{name}
 
 %changelog
+*   Thu Jul 18 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-2
+-   Added missing dll's & config files
+-   Packaged file from the correct oss build folder
 *   Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-1
 -   Updated to version 6.7.0
 *   Wed Apr 03 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-2
