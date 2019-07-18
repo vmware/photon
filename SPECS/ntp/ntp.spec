@@ -1,6 +1,6 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
-Version:        4.2.8p12
+Version:        4.2.8p13
 Release:        1%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
@@ -8,7 +8,7 @@ Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha1    ntp=316a0c823beb3ea12c8ce125442a0cda15c45d73
+%define sha1    ntp=cff200a987d64e891fb349a22313ecb0feaea090
 
 #https://github.com/darkhelmet/ntpstat
 Source1: ntpstat-master.zip
@@ -24,9 +24,9 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires:       openssl
 Requires:       libcap >= 2.24
 %description
-The ntp package contains a client and server to keep the time 
-synchronized between various computers over a network. This 
-package is the official reference implementation of the 
+The ntp package contains a client and server to keep the time
+synchronized between various computers over a network. This
+package is the official reference implementation of the
 NTP protocol.
 
 %package        perl
@@ -50,7 +50,7 @@ state of the NTP daemon running on the local machine.
 %setup -q -a 1
 
 %build
-./configure \
+sh configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --disable-silent-rules \
@@ -70,6 +70,7 @@ install -v -m755    -d %{buildroot}%{_datadir}/doc/%{name}-%{version}
 cp -v -R html/*     %{buildroot}%{_datadir}/doc/%{name}-%{version}/
 install -vdm 755 %{buildroot}/etc
 
+mkdir -p %{buildroot}/var/lib/ntp/drift
 mkdir -p %{buildroot}/etc/sysconfig
 cp %{SOURCE2} %{buildroot}/etc/sysconfig/ntp
 pushd ntpstat-master
@@ -120,7 +121,7 @@ if ! getent passwd ntp >/dev/null; then
     useradd -c "Network Time Protocol" -d /var/lib/ntp -u 87 -g ntp -s /bin/false ntp
 fi
 %post
-%{_sbindir}/ldconfig 
+%{_sbindir}/ldconfig
 %systemd_post ntpd.service
 
 %preun
@@ -133,6 +134,8 @@ fi
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
+%dir /var/lib/ntp/drift
+%attr(0755, ntp, ntp) /var/lib/ntp/drift
 %attr(0750, root, root) %config(noreplace) /etc/ntp.conf
 %attr(0750, root, root) %config(noreplace) /etc/sysconfig/ntp
 /lib/systemd/system/ntpd.service
@@ -173,6 +176,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Tue Jul 16 2019 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p13-1
+-   Upgrade to version 4.2.8p13
+-   Ported fix to created drift directory owning ntp user.
 *   Fri Aug 24 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p12-1
 -   Upgrade version to 4.2.8p12.
 *   Mon Mar 05 2018 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p11-1
