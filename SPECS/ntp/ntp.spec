@@ -1,14 +1,14 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
-Version:        4.2.8p12
-Release:        2%{?dist}
+Version:        4.2.8p13
+Release:        1%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha1    ntp=316a0c823beb3ea12c8ce125442a0cda15c45d73
+%define sha1    ntp=cff200a987d64e891fb349a22313ecb0feaea090
 
 #https://github.com/darkhelmet/ntpstat
 Source1: ntpstat-master.zip
@@ -176,6 +176,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Tue Jul 16 2019 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p13-1
+-   Upgrade to version 4.2.8p13
 *   Wed May 29 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.2.8p12-2
 -   PR#2355310  created drift directory owning ntp user
 *   Fri Aug 24 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p12-1
