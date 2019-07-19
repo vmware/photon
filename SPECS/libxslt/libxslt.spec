@@ -1,7 +1,7 @@
 Summary:        Libxslt-1.1.29
 Name:           libxslt
 Version:        1.1.32
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
 %define sha1    libxslt=c47969f16747a72f9095b6a7a56d3afdd1e6e9ac
 Patch0:		libxslt-CVE-2019-11068.patch
+Patch1:		libxslt-CVE-2019-13117.patch
 Requires:       libxml2-devel
 BuildRequires:  libxml2-devel
 %description
@@ -25,6 +26,7 @@ Header files for doing development with libxslt.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
 sh configure \
     --prefix=%{_prefix} \
@@ -64,6 +66,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Jul 18 2019 Shreyas Behera <shreyasb@vmware.com> 1.1.32-3
+-   Apply patch for CVE-2019-13117
 *   Fri Apr 12 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.1.32-2
 -   Applied patch for CVE-2019-11068
 *   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.1.32-1
