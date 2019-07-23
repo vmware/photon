@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -13,16 +13,18 @@ Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{na
 %define sha1 cloud-init=6de398dd755959dde47c8d6f6e255a0857017c44
 Source1:        cloud-photon.cfg
 Source2:        99-disable-networking-config.cfg
+Source3:        dscheck_VMwareGuestInfo
 
 Patch0:         photon-distro.patch
 Patch2:         vca-admin-pwd.patch
 Patch3:         photon-hosts-template.patch
-Patch5:         datasource-guestinfo.patch
+Patch5:         DataSourceVMwareGuestInfo.patch
 Patch6:         systemd-service-changes.patch
 Patch7:         makecheck.patch
 Patch8:         systemd-resolved-config.patch
 Patch9:         cloud-init-azureds.patch
 Patch10:        ds-identity.patch
+Patch11:        ds-guestinfo-photon.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -60,6 +62,8 @@ Requires:       python3-six
 Requires:       python3-setuptools
 Requires:       python3-xml
 Requires:       python3-jsonschema
+Requires:       python3-deepmerge
+Requires:       python3-netifaces
 BuildArch:      noarch
 
 %description
@@ -79,6 +83,7 @@ ssh keys and to let the user run various scripts.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
 
 find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -97,6 +102,7 @@ cp -p %{SOURCE1} %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
 
 # Disable networking config by cloud-init
 cp -p %{SOURCE2} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
+install -m 755 %{SOURCE3} $RPM_BUILD_ROOT/%{_bindir}/
 
 %check
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
@@ -143,10 +149,13 @@ rm -rf $RPM_BUILD_ROOT
 %{python3_sitelib}/*
 %{_bindir}/cloud-init*
 %{_bindir}/cloud-id
+%{_bindir}/dscheck_VMwareGuestInfo
 %{_datadir}/bash-completion/completions/cloud-init
 %dir /var/lib/cloud
 
 %changelog
+*   Tue Jul 23 2019 Keerthana K <keerthanak@vmware.com> 19.1-2
+-   support for additional features in VMGuestInfo Datasource.
 *   Tue Jun 25 2019 Keerthana K <keerthanak@vmware.com> 19.1-1
 -   Upgrade to version 19.1 and fix cloud-init GOS logic.
 *   Thu Jun 13 2019 Keerthana K <keerthanak@vmware.com> 18.3-4
