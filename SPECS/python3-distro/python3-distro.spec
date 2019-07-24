@@ -4,7 +4,7 @@
 Summary:        Distro - an OS platform information API
 Name:           python3-distro
 Version:        1.4.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -24,6 +24,7 @@ Requires:       photon-release
 Requires:       python3
 Requires:       python3-libs
 BuildArch:      noarch
+Obsoletes:      python-distro
 
 %description
 Distro provides information about the OS distribution it runs on, such as a reliable machine-readable ID, or version information.
@@ -49,5 +50,7 @@ tox
 /usr/bin/*
 
 %changelog
+*   Wed Jul 24 2019 Tapas Kundu <tkundu@vmware.com> 1.4.0-4
+-   Obsolete python-distro
 *   Thu Jul 18 2019 Tapas Kundu <tkundu@vmware.com> 1.4.0-3
 -   Separate spec file for python3-distro package in Photon
