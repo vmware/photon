@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.52
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -222,6 +222,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jul 30 2019 Keerthana K <keerthanak@vmware.com> 4.19.52-4
+-   Fix Postun scriplet
 *   Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.52-3
 -   Fix 9p vsock 16bit port issue.
 *   Fri Jun 21 2019 Srinidhi Rao <srinidhir@vmware.com> 4.19.52-2
