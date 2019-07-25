@@ -1,0 +1,74 @@
+From 1e4ec36b75960f9b9a7f9eeff95b5fd1dd154d90 Mon Sep 17 00:00:00 2001
+From: Will Deacon <will.deacon@arm.com>
+Date: Thu, 6 Jul 2017 15:39:36 -0700
+Subject: [PATCH 4/8] mm, gup: remove broken VM_BUG_ON_PAGE compound check for
+ hugepages
+
+commit a3e328556d41bb61c55f9dfcc62d6a826ea97b85 upstream.
+
+When operating on hugepages with DEBUG_VM enabled, the GUP code checks
+the compound head for each tail page prior to calling
+page_cache_add_speculative.  This is broken, because on the fast-GUP
+path (where we don't hold any page table locks) we can be racing with a
+concurrent invocation of split_huge_page_to_list.
+
+split_huge_page_to_list deals with this race by using page_ref_freeze to
+freeze the page and force concurrent GUPs to fail whilst the component
+pages are modified.  This modification includes clearing the
+compound_head field for the tail pages, so checking this prior to a
+successful call to page_cache_add_speculative can lead to false
+positives: In fact, page_cache_add_speculative *already* has this check
+once the page refcount has been successfully updated, so we can simply
+remove the broken calls to VM_BUG_ON_PAGE.
+
+Link: http://lkml.kernel.org/r/20170522133604.11392-2-punit.agrawal@arm.com
+Signed-off-by: Will Deacon <will.deacon@arm.com>
+Signed-off-by: Punit Agrawal <punit.agrawal@arm.com>
+Acked-by: Steve Capper <steve.capper@arm.com>
+Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Cc: Aneesh Kumar K.V <aneesh.kumar@linux.vnet.ibm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Hillf Danton <hillf.zj@alibaba-inc.com>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ mm/gup.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/mm/gup.c b/mm/gup.c
+index 45c544b..6e7cfaa 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -1136,7 +1136,6 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long addr,
+ 	page = head + ((addr & ~PMD_MASK) >> PAGE_SHIFT);
+ 	tail = page;
+ 	do {
+-		VM_BUG_ON_PAGE(compound_head(page) != head, page);
+ 		pages[*nr] = page;
+ 		(*nr)++;
+ 		page++;
+@@ -1183,7 +1182,6 @@ static int gup_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
+ 	page = head + ((addr & ~PUD_MASK) >> PAGE_SHIFT);
+ 	tail = page;
+ 	do {
+-		VM_BUG_ON_PAGE(compound_head(page) != head, page);
+ 		pages[*nr] = page;
+ 		(*nr)++;
+ 		page++;
+@@ -1226,7 +1224,6 @@ static int gup_huge_pgd(pgd_t orig, pgd_t *pgdp, unsigned long addr,
+ 	page = head + ((addr & ~PGDIR_MASK) >> PAGE_SHIFT);
+ 	tail = page;
+ 	do {
+-		VM_BUG_ON_PAGE(compound_head(page) != head, page);
+ 		pages[*nr] = page;
+ 		(*nr)++;
+ 		page++;
+-- 
+2.7.4
+

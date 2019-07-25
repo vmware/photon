@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.185
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -69,8 +69,18 @@ Patch56:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch57:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 
+# Fix for CVE-2019-11487
+Patch61:        0001-mm-make-page-ref-count-overflow-check-tighter-and-mo.patch
+Patch62:        0002-mm-add-try_get_page-helper-function.patch
+Patch63:        0003-mm-handle-PTE-mapped-tail-pages-in-gerneric-fast-gup.patch
+Patch64:        0004-mm-gup-remove-broken-VM_BUG_ON_PAGE-compound-check-f.patch
+Patch65:        0005-mm-gup-ensure-real-head-page-is-ref-counted-when-usi.patch
+Patch66:        0006-mm-prevent-get_user_pages-from-overflowing-page-refc.patch
+Patch67:        0007-pipe-add-pipe_buf_get-helper.patch
+Patch68:        0008-fs-prevent-page-refcount-overflow-in-pipe_buf_get.patch
+
 # For Spectre
-Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
+Patch70: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -153,7 +163,15 @@ The Linux package contains the Linux kernel doc files
 %patch56 -p1
 %patch57 -p1
 
+%patch61 -p1
+%patch62 -p1
+%patch63 -p1
+%patch64 -p1
+%patch65 -p1
+%patch66 -p1
 %patch67 -p1
+%patch68 -p1
+%patch70 -p1
 
 %build
 # patch vmw_balloon driver
@@ -244,6 +262,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jul 25 2019 Ajay Kaher <akaher@vmware.com> 4.4.185-2
+-   Fix CVE-2019-11487
 *   Wed Jul 10 2019 VIKASH BANSAL <bvikas@vmware.com> 4.4.185-1
 -   Update to version 4.4.185
 *   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.182-1

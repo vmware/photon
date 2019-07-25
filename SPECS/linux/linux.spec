@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.185
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -69,6 +69,16 @@ Patch49:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch50:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch51:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
+
+# Fix for CVE-2019-11487
+Patch52:        0001-mm-make-page-ref-count-overflow-check-tighter-and-mo.patch
+Patch53:        0002-mm-add-try_get_page-helper-function.patch
+Patch54:        0003-mm-handle-PTE-mapped-tail-pages-in-gerneric-fast-gup.patch
+Patch55:        0004-mm-gup-remove-broken-VM_BUG_ON_PAGE-compound-check-f.patch
+Patch56:        0005-mm-gup-ensure-real-head-page-is-ref-counted-when-usi.patch
+Patch57:        0006-mm-prevent-get_user_pages-from-overflowing-page-refc.patch
+Patch58:        0007-pipe-add-pipe_buf_get-helper.patch
+Patch59:        0008-fs-prevent-page-refcount-overflow-in-pipe_buf_get.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -187,7 +197,14 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch49 -p1
 %patch50 -p1
 %patch51 -p1
-
+%patch52 -p1
+%patch53 -p1
+%patch54 -p1
+%patch55 -p1
+%patch56 -p1
+%patch57 -p1
+%patch58 -p1
+%patch59 -p1
 %patch67 -p1
 
 %if 0%{?kat_build:1}
@@ -347,6 +364,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Jul 25 2019 Ajay Kaher <akaher@vmware.com> 4.4.185-2
+-   Fix CVE-2019-11487
 *   Wed Jul 10 2019 VIKASH BANSAL <bvikas@vmware.com> 4.4.185-1
 -   Update to version 4.4.185
 *   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.182-1
