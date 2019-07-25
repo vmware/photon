@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.185
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -364,6 +364,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Jul 25 2019 Keerthana K <keerthanak@vmware.com> 4.4.185-3
+-   Fix postun scriplet.
 *   Thu Jul 25 2019 Ajay Kaher <akaher@vmware.com> 4.4.185-2
 -   Fix CVE-2019-11487
 *   Wed Jul 10 2019 VIKASH BANSAL <bvikas@vmware.com> 4.4.185-1

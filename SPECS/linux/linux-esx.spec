@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.185
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -262,6 +262,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jul 25 2019 Keerthana K <keerthanak@vmware.com> 4.4.185-3
+-   Fix postun scriplet.
 *   Thu Jul 25 2019 Ajay Kaher <akaher@vmware.com> 4.4.185-2
 -   Fix CVE-2019-11487
 *   Wed Jul 10 2019 VIKASH BANSAL <bvikas@vmware.com> 4.4.185-1
