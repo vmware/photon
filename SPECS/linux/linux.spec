@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.185
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -403,6 +403,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Jul 25 2019 Keerthana K <keerthanak@vmware.com> 4.9.185-2
+-   Fix postun scriplet.
 *   Thu Jul 11 2019 VIKASH BANSAL <bvikas@vmware.com> 4.9.185-1
 -   Update to version 4.9.185
 *   Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.9.182-3
