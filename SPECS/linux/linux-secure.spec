@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.52
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -262,6 +262,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jul 30 2019 Keerthana K <keerthanak@vmware.com> 4.19.52-3
+-   Fix postun script.
 *   Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.52-2
 -   Fix 9p vsock 16bit port issue.
 *   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-1
