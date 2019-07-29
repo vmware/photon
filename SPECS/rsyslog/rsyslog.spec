@@ -1,11 +1,11 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
-Version:        8.37.0
-Release:        2%{?dist}
+Version:        8.1907.0
+Release:        1%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha1    rsyslog=7541e3cf6facbab19792ff8d9d7f4cd3fbb1c634
+%define sha1    rsyslog=d7a861810d1bdf80357cab08504589d336ea9b4b
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf
@@ -82,6 +82,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_sysconfdir}/systemd/journald.conf.d/*
 %config(noreplace) %{_sysconfdir}/rsyslog.conf
 %changelog
+*   Mon Jul 29 2019 Tapas Kundu <tkundu@vmware.com> 8.1907.0-1
+-   Updated to release 8.1907
 *   Mon Apr 01 2019 Keerthana K <keerthanak@vmware.com> 8.37.0-2
 -   Adding rsyslog.d folder to fix service start issue.
 *   Fri Mar 22 2019 Keerthana K <keerthanak@vmware.com> 8.37.0-1
