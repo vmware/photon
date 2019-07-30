@@ -1,9 +1,11 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
+%define jdk_major_version 1.8.0
+%define subversion 222
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.222
-Release:	1%{?dist}
+Version:	%{jdk_major_version}.%{subversion}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -106,64 +108,64 @@ make DESTDIR=%{buildroot} install \
 	DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
 	CLASSPATH=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre
 
-install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
-chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
+install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
+chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 install -vdm755 %{buildroot}%{_bindir}
 find /usr/local/jvm/openjdk-1.8.0-internal/jre/lib/amd64 -iname \*.diz -delete
-mv /usr/local/jvm/openjdk-1.8.0-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}/
+mv /usr/local/jvm/openjdk-1.8.0-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
 %post
-alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{version}/bin/javac 2000 \
-  --slave %{_bindir}/appletviewer appletviewer %{_libdir}/jvm/OpenJDK-%{version}/bin/appletviewer \
-  --slave %{_bindir}/extcheck extcheck %{_libdir}/jvm/OpenJDK-%{version}/bin/extcheck \
-  --slave %{_bindir}/idlj idlj %{_libdir}/jvm/OpenJDK-%{version}/bin/idlj \
-  --slave %{_bindir}/jar jar %{_libdir}/jvm/OpenJDK-%{version}/bin/jar \
-  --slave %{_bindir}/jarsigner jarsigner %{_libdir}/jvm/OpenJDK-%{version}/bin/jarsigner \
-  --slave %{_bindir}/javadoc javadoc %{_libdir}/jvm/OpenJDK-%{version}/bin/javadoc \
-  --slave %{_bindir}/javah javah %{_libdir}/jvm/OpenJDK-%{version}/bin/javah \
-  --slave %{_bindir}/javap javap %{_libdir}/jvm/OpenJDK-%{version}/bin/javap \
-  --slave %{_bindir}/jcmd jcmd %{_libdir}/jvm/OpenJDK-%{version}/bin/jcmd \
-  --slave %{_bindir}/jconsole jconsole %{_libdir}/jvm/OpenJDK-%{version}/bin/jconsole \
-  --slave %{_bindir}/jdb jdb %{_libdir}/jvm/OpenJDK-%{version}/bin/jdb \
-  --slave %{_bindir}/jdeps jdeps %{_libdir}/jvm/OpenJDK-%{version}/bin/jdeps \
-  --slave %{_bindir}/jhat jhat %{_libdir}/jvm/OpenJDK-%{version}/bin/jhat \
-  --slave %{_bindir}/jinfo jinfo %{_libdir}/jvm/OpenJDK-%{version}/bin/jinfo \
-  --slave %{_bindir}/jmap jmap %{_libdir}/jvm/OpenJDK-%{version}/bin/jmap \
-  --slave %{_bindir}/jps jps %{_libdir}/jvm/OpenJDK-%{version}/bin/jps \
-  --slave %{_bindir}/jrunscript jrunscript %{_libdir}/jvm/OpenJDK-%{version}/bin/jrunscript \
-  --slave %{_bindir}/jsadebugd jsadebugd %{_libdir}/jvm/OpenJDK-%{version}/bin/jsadebugd \
-  --slave %{_bindir}/jstack jstack %{_libdir}/jvm/OpenJDK-%{version}/bin/jstack \
-  --slave %{_bindir}/jstat jstat %{_libdir}/jvm/OpenJDK-%{version}/bin/jstat \
-  --slave %{_bindir}/jstatd jstatd %{_libdir}/jvm/OpenJDK-%{version}/bin/jstatd \
-  --slave %{_bindir}/native2ascii native2ascii %{_libdir}/jvm/OpenJDK-%{version}/bin/native2ascii \
-  --slave %{_bindir}/rmic rmic %{_libdir}/jvm/OpenJDK-%{version}/bin/rmic \
-  --slave %{_bindir}/schemagen schemagen %{_libdir}/jvm/OpenJDK-%{version}/bin/schemagen \
-  --slave %{_bindir}/serialver serialver %{_libdir}/jvm/OpenJDK-%{version}/bin/serialver \
-  --slave %{_bindir}/wsgen wsgen %{_libdir}/jvm/OpenJDK-%{version}/bin/wsgen \
-  --slave %{_bindir}/wsimport wsimport %{_libdir}/jvm/OpenJDK-%{version}/bin/wsimport \
-  --slave %{_bindir}/xjc xjc %{_libdir}/jvm/OpenJDK-%{version}/bin/xjc
+alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac 2000 \
+  --slave %{_bindir}/appletviewer appletviewer %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/appletviewer \
+  --slave %{_bindir}/extcheck extcheck %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/extcheck \
+  --slave %{_bindir}/idlj idlj %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/idlj \
+  --slave %{_bindir}/jar jar %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jar \
+  --slave %{_bindir}/jarsigner jarsigner %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jarsigner \
+  --slave %{_bindir}/javadoc javadoc %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javadoc \
+  --slave %{_bindir}/javah javah %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javah \
+  --slave %{_bindir}/javap javap %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javap \
+  --slave %{_bindir}/jcmd jcmd %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jcmd \
+  --slave %{_bindir}/jconsole jconsole %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jconsole \
+  --slave %{_bindir}/jdb jdb %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jdb \
+  --slave %{_bindir}/jdeps jdeps %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jdeps \
+  --slave %{_bindir}/jhat jhat %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jhat \
+  --slave %{_bindir}/jinfo jinfo %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jinfo \
+  --slave %{_bindir}/jmap jmap %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jmap \
+  --slave %{_bindir}/jps jps %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jps \
+  --slave %{_bindir}/jrunscript jrunscript %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jrunscript \
+  --slave %{_bindir}/jsadebugd jsadebugd %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jsadebugd \
+  --slave %{_bindir}/jstack jstack %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jstack \
+  --slave %{_bindir}/jstat jstat %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jstat \
+  --slave %{_bindir}/jstatd jstatd %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jstatd \
+  --slave %{_bindir}/native2ascii native2ascii %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/native2ascii \
+  --slave %{_bindir}/rmic rmic %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmic \
+  --slave %{_bindir}/schemagen schemagen %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/schemagen \
+  --slave %{_bindir}/serialver serialver %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/serialver \
+  --slave %{_bindir}/wsgen wsgen %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/wsgen \
+  --slave %{_bindir}/wsimport wsimport %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/wsimport \
+  --slave %{_bindir}/xjc xjc %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/xjc
 /sbin/ldconfig
 
 %post -n openjre8
-alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/java 2000 \
-  --slave %{_libdir}/jvm/jre jre %{_libdir}/jvm/OpenJDK-%{version}/jre \
-  --slave %{_bindir}/jjs jjs %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/jjs \
-  --slave %{_bindir}/keytool keytool %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/keytool \
-  --slave %{_bindir}/orbd orbd %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/orbd \
-  --slave %{_bindir}/pack200 pack200 %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/pack200 \
-  --slave %{_bindir}/rmid rmid %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/rmid \
-  --slave %{_bindir}/rmiregistry rmiregistry %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/rmiregistry \
-  --slave %{_bindir}/servertool servertool %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/servertool \
-  --slave %{_bindir}/tnameserv tnameserv %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/tnameserv \
-  --slave %{_bindir}/unpack200 unpack200 %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/unpack200
+alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/java 2000 \
+  --slave %{_libdir}/jvm/jre jre %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre \
+  --slave %{_bindir}/jjs jjs %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/jjs \
+  --slave %{_bindir}/keytool keytool %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/keytool \
+  --slave %{_bindir}/orbd orbd %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/orbd \
+  --slave %{_bindir}/pack200 pack200 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/pack200 \
+  --slave %{_bindir}/rmid rmid %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/rmid \
+  --slave %{_bindir}/rmiregistry rmiregistry %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/rmiregistry \
+  --slave %{_bindir}/servertool servertool %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/servertool \
+  --slave %{_bindir}/tnameserv tnameserv %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/tnameserv \
+  --slave %{_bindir}/unpack200 unpack200 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/unpack200
 /sbin/ldconfig
 
 %postun
-alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{version}/bin/javac
+alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac
 /sbin/ldconfig
 
 %postun -n openjre8
-alternatives --remove java %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/java
+alternatives --remove java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/java
 /sbin/ldconfig
 
 %clean
@@ -171,75 +173,78 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_libdir}/jvm/OpenJDK-%{version}/ASSEMBLY_EXCEPTION
-%{_libdir}/jvm/OpenJDK-%{version}/LICENSE
-%{_libdir}/jvm/OpenJDK-%{version}/release
-%{_libdir}/jvm/OpenJDK-%{version}/THIRD_PARTY_README
-%{_libdir}/jvm/OpenJDK-%{version}/lib
-%{_libdir}/jvm/OpenJDK-%{version}/include/
-%{_libdir}/jvm/OpenJDK-%{version}/bin/extcheck
-%{_libdir}/jvm/OpenJDK-%{version}/bin/idlj
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jar
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jarsigner
-%{_libdir}/jvm/OpenJDK-%{version}/bin/java-rmi.cgi
-%{_libdir}/jvm/OpenJDK-%{version}/bin/javac
-%{_libdir}/jvm/OpenJDK-%{version}/bin/javadoc
-%{_libdir}/jvm/OpenJDK-%{version}/bin/javah
-%{_libdir}/jvm/OpenJDK-%{version}/bin/javap
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jcmd
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jconsole
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jdb
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jdeps
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jhat
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jinfo
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jjs
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jmap
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jps
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jrunscript
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jsadebugd
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jstack
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jstat
-%{_libdir}/jvm/OpenJDK-%{version}/bin/jstatd
-%{_libdir}/jvm/OpenJDK-%{version}/bin/native2ascii
-%{_libdir}/jvm/OpenJDK-%{version}/bin/rmic
-%{_libdir}/jvm/OpenJDK-%{version}/bin/schemagen
-%{_libdir}/jvm/OpenJDK-%{version}/bin/serialver
-%{_libdir}/jvm/OpenJDK-%{version}/bin/wsgen
-%{_libdir}/jvm/OpenJDK-%{version}/bin/wsimport
-%{_libdir}/jvm/OpenJDK-%{version}/bin/xjc
-%{_libdir}/jvm/OpenJDK-%{version}/bin/clhsdb
-%{_libdir}/jvm/OpenJDK-%{version}/bin/hsdb
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/ASSEMBLY_EXCEPTION
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/LICENSE
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/release
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/THIRD_PARTY_README
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/include/
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/extcheck
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/idlj
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jar
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jarsigner
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/java-rmi.cgi
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javadoc
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javah
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javap
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jcmd
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jconsole
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jdb
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jdeps
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jhat
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jinfo
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jjs
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jmap
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jps
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jrunscript
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jsadebugd
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jstack
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jstat
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jstatd
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/native2ascii
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmic
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/schemagen
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/serialver
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/wsgen
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/wsimport
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/xjc
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/clhsdb
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/hsdb
 
 %files	-n openjre8
 %defattr(-,root,root)
-%dir %{_libdir}/jvm/OpenJDK-%{version}
-%{_libdir}/jvm/OpenJDK-%{version}/jre/
-%{_libdir}/jvm/OpenJDK-%{version}/bin/java
-%{_libdir}/jvm/OpenJDK-%{version}/bin/keytool
-%{_libdir}/jvm/OpenJDK-%{version}/bin/orbd
-%{_libdir}/jvm/OpenJDK-%{version}/bin/pack200
-%{_libdir}/jvm/OpenJDK-%{version}/bin/rmid
-%{_libdir}/jvm/OpenJDK-%{version}/bin/rmiregistry
-%{_libdir}/jvm/OpenJDK-%{version}/bin/servertool
-%{_libdir}/jvm/OpenJDK-%{version}/bin/tnameserv
-%{_libdir}/jvm/OpenJDK-%{version}/bin/unpack200
-%{_libdir}/jvm/OpenJDK-%{version}/lib/amd64/jli/
-%exclude %{_libdir}/jvm/OpenJDK-%{version}/lib/amd64/*.diz
+%dir %{_libdir}/jvm/OpenJDK-%{jdk_major_version}
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/java
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/keytool
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/orbd
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/pack200
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmid
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmiregistry
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/servertool
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/tnameserv
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/unpack200
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/amd64/jli/
+%exclude %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/amd64/*.diz
 
 %files sample
 %defattr(-,root,root)
-%{_libdir}/jvm/OpenJDK-%{version}/sample/
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/sample/
 
 %files doc
 %defattr(-,root,root)
-%{_libdir}/jvm/OpenJDK-%{version}/man/
-%{_libdir}/jvm/OpenJDK-%{version}/demo
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/man/
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/demo
 
 %files src
 %defattr(-,root,root)
-%{_libdir}/jvm/OpenJDK-%{version}/src.zip
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+*   Tue Sep 04 2019 Ankit Jain <ankitja@vmware.com> 1.8.0.222-2
+-   Divided version:majorversion+subversion to remove specific
+-   version java dependency from other packages
 *   Thu Aug 01 2019 Shreyas B. <shreyasb@vmware.com> 1.8.0.222-1
 -   Upgrade to version 1.8.0.222 b10 (jdk8u222-b10)
 -   Fix the check-system-ca-certs.patch.

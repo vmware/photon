@@ -4,7 +4,7 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        4.4.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        Apache
 URL:            http://github.com/twall/jna
 Group:          Applications/System
@@ -39,7 +39,7 @@ Sources for JNA
 rm -rf %{buildroot}
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 
 # Intermittent issue happens:
 #
@@ -52,7 +52,7 @@ ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelea
 ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
 
 %install
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 export JNA_DIST_DIR=%{buildroot}%{_prefix}
 
 mkdir -p -m 700 $JNA_DIST_DIR
@@ -83,6 +83,8 @@ ant
 %{_prefix}/*.aar
 
 %changelog
+*   Wed Jul 31 2019 Ankit Jain <ankitja@vmware.com> 4.4.0-10
+-   Modified the path of JAVA_HOME
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.0-9
 -   Remove BuildArch
 *   Thu Sep 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.4.0-8

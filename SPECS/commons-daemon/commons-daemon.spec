@@ -1,7 +1,7 @@
 Summary:	Apache Commons Daemon
 Name:		commons-daemon
 Version:	1.0.15
-Release:	12%{?dist}
+Release:	13%{?dist}
 License:	Apache
 URL:		http://commons.apache.org/proper/commons-daemon
 Group:		Applications/System
@@ -26,7 +26,7 @@ code to control a Java daemon from a Unix operating system.
 rm -rf %{buildroot}
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 ant dist
 
 export CFLAGS=-m64
@@ -39,7 +39,7 @@ cd src/native/unix && ./configure && make
 cd $CURDIR
 
 %install
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 DIST_DIR=%{buildroot}%{_datadir}/java
 
 mkdir -p -m 755 $DIST_DIR
@@ -56,6 +56,8 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+*   Wed Jul 31 2019 Ankit Jain <ankitja@vmware.com> 1.0.15-13
+-   Modified the path of JAVA_HOME
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0.15-12
 -   Remove BuildArch
 *   Tue Jun 20 2017 Divya Thaluru <dthaluru@vmware.com> 1.0.15-11

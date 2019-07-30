@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.10.1
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -48,7 +48,7 @@ rm -rf %{buildroot}
 %build
 ANT_DIST_DIR=%{buildroot}%{_prefix}
 cp -v ./hamcrest-1.3/hamcrest-core-1.3.jar ./lib/optional
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 mkdir -p -m 700 $ANT_DIST_DIR
 ./bootstrap.sh && ./build.sh -Ddist.dir=$ANT_DIST_DIR
 
@@ -108,6 +108,8 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_bindir}/runant.pl
 
 %changelog
+*   Wed Jul 31 2019 Ankit Jain <ankitja@vmware.com> 1.10.1-7
+-   Modified the path of JAVA_HOME
 *   Fri Jun 22 2018 Keerthana K <keerthanak@vmware.com> 1.10.1-6
 -   Fix for Zip slip vulnerability.
 *   Wed Jun 28 2017 Kumar Kaushik <kaushikk@vmware.com> 1.10.1-5

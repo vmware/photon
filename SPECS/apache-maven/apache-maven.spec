@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.5.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -33,7 +33,7 @@ rm -rf %{buildroot}
 
 %build
 MAVEN_DIST_DIR=%{buildroot}%{_prefix}
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 
 sed -i 's/www.opensource/opensource/g' DEPENDENCIES
 
@@ -76,6 +76,8 @@ done
 %exclude %{_libdir}/jansi-native
 
 %changelog
+*   Wed Jul 31 2019 Ankit Jain <ankitja@vmware.com> 3.5.0-6
+-   Modified the path of JAVA_HOME
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.0-5
 -   Remove BuildArch
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.0-4
