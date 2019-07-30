@@ -1,23 +1,17 @@
 Summary:        Management tools and libraries relating to cryptography
-Name:           openssl
-Version:        1.0.2s
-Release:        2%{?dist}
+Name:           nxtgn-openssl
+Version:        1.1.1b
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1    openssl=cf43d57a21e4baf420b3628677ebf1723ed53bc1
-Source1:        rehash_ca_certificates.sh
-%if 0%{?with_fips:1}
-Source100:      openssl-fips-2.0.9-lin64.tar.gz
-%define sha1    openssl-fips=e834d3678fb190f9483f48f037fb17041abba6a1
-%endif
-Patch0:         c_rehash.patch
-Patch1:         openssl-ipv6apps.patch
-Patch2:         openssl-init-conslidate.patch
-Patch3:         openssl-drbg-default-read-system-fips.patch
+Source0:        http://www.openssl.org/source/openssl-%{version}.tar.gz
+%define sha1    openssl=e9710abf5e95c48ebf47991b10cbb48c09dae102
+Source1:        nxtgn-rehash_ca_certificates.sh
+Patch1:         nxtgn-c_rehash.patch
+Patch2:         nxtgn-CVE-2019-1543.patch
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -30,64 +24,57 @@ functions to other packages, such as OpenSSH, email applications and
 web browsers (for accessing HTTPS sites).
 
 %package devel
-Summary: Development Libraries for openssl
+Summary: Development Libraries for nxtgn-openssl
 Group: Development/Libraries
-Requires: openssl = %{version}-%{release}
-Obsoletes:  nxtgn-openssl-devel
+Requires: nxtgn-openssl = %{version}-%{release}
+Obsoletes:  openssl-devel
 %description devel
 Header files for doing development with openssl.
 
 %package perl
-Summary: openssl perl scripts
+Summary: nxtgn openssl perl scripts
 Group: Applications/Internet
 Requires: perl
-Requires: openssl = %{version}-%{release}
+Requires: nxtgn-openssl = %{version}-%{release}
 %description perl
 Perl scripts that convert certificates and keys to various formats.
 
 %package c_rehash
-Summary: openssl perl scripts
+Summary: nxtgn openssl perl scripts
 Group: Applications/Internet
 Requires: perl
 Requires: perl-DBI
 Requires: perl-DBIx-Simple
 Requires: perl-DBD-SQLite
-Requires: openssl = %{version}-%{release}
+Requires: nxtgn-openssl = %{version}-%{release}
 %description c_rehash
 Perl scripts that convert certificates and keys to various formats.
 
 %prep
-%setup -q
-%patch0 -p1
+%setup -q -n openssl-%{version}
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 
 %build
-%if 0%{?with_fips:1}
-tar xf %{SOURCE100} --no-same-owner -C ..
-# Do not package it to src.rpm
-:> %{SOURCE100}
-%endif
 export CFLAGS="%{optflags}"
 ./config \
-    --prefix=/usr \
-    --libdir=lib \
-    --openssldir=/%{_sysconfdir}/ssl \
-    shared \
-    zlib-dynamic \
-%if 0%{?with_fips:1}
-    fips --with-fipsdir=%{_builddir}/openssl-fips-2.0.9 \
-%endif
-    -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
+    --prefix=%{_prefix} \
+    --libdir=%{_libdir} \
+    --openssldir=%{_sysconfdir}/nxtgn-openssl \
+    --shared \
 # does not support -j yet
 make
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make INSTALL_PREFIX=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
+make DESTDIR=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=nxtgn-openssl install
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
-ln -sf libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
-ln -sf libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
+
+mv %{buildroot}/%{_includedir}/openssl %{buildroot}/%{_includedir}/nxtgn-openssl
+mv %{buildroot}/%{_bindir}/openssl %{buildroot}/%{_bindir}/nxtgn-openssl
+mv %{buildroot}/%{_bindir}/c_rehash %{buildroot}/%{_bindir}/nxtgn-c_rehash
+
+ln -sf libssl.so.1.1* %{buildroot}%{_libdir}/libssl.so.1.1.0
+ln -sf libcrypto.so.1.1* %{buildroot}%{_libdir}/libcrypto.so.1.1.0
 
 %check
 make tests
@@ -99,43 +86,44 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/ssl/certs
-%{_sysconfdir}/ssl/misc/CA.sh
-%{_sysconfdir}/ssl/misc/c_hash
-%{_sysconfdir}/ssl/misc/c_info
-%{_sysconfdir}/ssl/misc/c_issuer
-%{_sysconfdir}/ssl/misc/c_name
-%{_sysconfdir}/ssl/openssl.cnf
-%{_sysconfdir}/ssl/private
-%{_bindir}/openssl
-%{_libdir}/*.so.*
-%{_libdir}/engines/*
-%{_mandir}/man1/*
-%{_mandir}/man5/*
-%{_mandir}/man7/*
+%{_sysconfdir}/nxtgn-openssl/certs
+%{_sysconfdir}/nxtgn-openssl/ct_log_list.cnf
+%{_sysconfdir}/nxtgn-openssl/ct_log_list.cnf.dist
+%{_sysconfdir}/nxtgn-openssl/openssl.cnf.dist
+%{_sysconfdir}/nxtgn-openssl/openssl.cnf
+%{_sysconfdir}/nxtgn-openssl/private
+%{_bindir}/nxtgn-openssl
+%{_libdir}/libssl.so.*
+%{_libdir}/libcrypto.so.*
+%{_libdir}/engines*/*
+%exclude %{_mandir}/man1/*
+%exclude %{_mandir}/man5/*
+%exclude %{_mandir}/man7/*
+%exclude %{_docdir}/*
 
 %files devel
-%{_includedir}/*
-%{_mandir}/man3/*
+%{_includedir}/nxtgn-openssl/
+%exclude %{_mandir}/man3/*
 %{_libdir}/pkgconfig/*.pc
-%{_libdir}/*.a
-%{_libdir}/*.so
+%{_libdir}/libssl.a
+%{_libdir}/libcrypto.a
+%{_libdir}/libssl.so
+%{_libdir}/libcrypto.so
 
 %files perl
-/%{_sysconfdir}/ssl/misc/tsget
-/%{_sysconfdir}/ssl/misc/CA.pl
+/%{_sysconfdir}/nxtgn-openssl/misc/tsget
+/%{_sysconfdir}/nxtgn-openssl/misc/tsget.pl
+/%{_sysconfdir}/nxtgn-openssl/misc/CA.pl
 
 %files c_rehash
-/%{_bindir}/c_rehash
-/%{_bindir}/rehash_ca_certificates.sh
+/%{_bindir}/nxtgn-c_rehash
+/%{_bindir}/nxtgn-rehash_ca_certificates.sh
 
 %changelog
-*   Fri Jul 26 2019 Srinidhi Rao <srinidhir@vmware.com> 1.0.2s-2
--   Increment the release version for nxtgn-openssl-1.1.1b compatibility
+*   Fri Jun 14 2019 Srinidhi Rao <srinidhir@vmware.com> 1.1.1b-1
+-   Update to 1.1.1b
 *   Fri Jun 07 2019 Tapas Kundu <tkundu@vmware.com> 1.0.2s-1
 -   Updated to 1.0.2s
-*   Mon Mar 25 2019 Tapas Kundu <tkundu@vmware.com> 1.0.2r-1
--   Updated to 1.0.2r for CVE-2019-1559
 *   Fri Dec 07 2018 Sujay G <gsujay@vmware.com> 1.0.2q-1
 -   Bump version to 1.0.2q
 *   Wed Oct 17 2018 Alexey Makhalov <amakhalov@vmware.com> 1.0.2p-2
