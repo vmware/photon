@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.185
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -252,6 +252,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jul 30 2019 Keerthana K <keerthanak@vmware.com> 4.9.185-2
+-   Fix postun script.
 *   Thu Jul 11 2019 VIKASH BANSAL <bvikas@vmware.com> 4.9.185-1
 -   Update to version 4.9.185
 *   Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.9.182-2
