@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        2.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -51,7 +51,7 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %defattr(-,root,root)
 %{_sbindir}/*
 %{_libdir}/systemd/system/haproxy.service
-%{_sysconfdir}/haproxy/haproxy.cfg
+%config(noreplace) %{_sysconfdir}/haproxy/haproxy.cfg
 
 %files doc
 %defattr(-,root,root,-)
@@ -59,6 +59,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Thu Aug 01 2019 Kuladeep Rayalla <krayalla@vmware.com> 2.0.3-2
+-   Retain the current configuration while updating haproxy to next version
 *   Fri Jul 26 2019 Kuladeep Rayalla <krayalla@vmware.com> 2.0.3-1
 -   Update to version 2.0.3
 *   Tue Jun 25 2019 Ashwin H <ashwinh@vmware.com> 2.0.0-1
