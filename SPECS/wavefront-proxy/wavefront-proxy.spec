@@ -1,11 +1,11 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
-Version:        4.32
-Release:        2%{?dist}
+Version:        4.39
+Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
-%define sha1    wavefront=216c16125c6308debcffc1d6bd3969b9ea5013eb
+%define sha1    wavefront=de9bd09c3311176cac2183ec031fd39b52a44c56
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -45,7 +45,11 @@ sed -i 's/\/etc\/init.d\/$APP_BASE-proxy restart/ systemctl restart $APP_BASE-pr
 sed -i 's/-jar \/opt\/wavefront\/wavefront-proxy\/bin\/wavefront-push-agent.jar/-jar \/opt\/wavefront-push-agent.jar/' proxy/docker/run.sh
 
 %build
+%if "%{_arch}" == "aarch64"
 mvn install -DskipTests
+%else
+mvn install
+%endif
 
 %install
 install -m 755 -D pkg/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh %{buildroot}/opt/wavefront/%{name}/bin/autoconf-wavefront-proxy.sh
@@ -104,6 +108,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/wavefront-proxy.service
 
 %changelog
+* Mon Jul 29 2019 Shreyas B. <shreyasb@vmware.com> 4.39-1
+- Updated to 4.39
 * Wed Jul 10 2019 Alexey Makhalov <amakhalov@vmware.com> 4.32-2
 - Skip tests during make install.
 * Thu Dec 06 2018 Ankit Jain <ankitja@vmware.com> 4.32-1
