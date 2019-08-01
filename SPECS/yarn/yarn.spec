@@ -1,7 +1,7 @@
 Summary:        Fast, reliable, and secure dependency management.
 Name:           yarn
 Version:        1.10.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD 2-Clause
 URL:            https://yarnpkg.com
 Source0:        https://github.com/yarnpkg/yarn/archive/%{name}-%{version}.tar.gz
@@ -9,6 +9,7 @@ Source0:        https://github.com/yarnpkg/yarn/archive/%{name}-%{version}.tar.g
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Developement/Languages/NodeJs
+BuildArch:      noarch
 BuildRequires:  nodejs = 8.11.4
 
 %global debug_package %{nil}
@@ -26,23 +27,33 @@ npm install
 
 %build
 npm run build
+npm prune --production
 
 %install
-mkdir -p %{buildroot}%{_libdir}/node_modules/%{name}
+mkdir -p %{buildroot}%{_datadir}/%{name}/bin
 mkdir -p %{buildroot}%{_bindir}
-cp -r src bin package.json node_modules lib %{buildroot}%{_libdir}/node_modules/%{name}
-ln -sf %{_libdir}/node_modules/%{name}/bin/yarn.js %{buildroot}%{_bindir}/yarn
-ln -sf %{_libdir}/node_modules/%{name}/bin/yarn.js %{buildroot}%{_bindir}/yarnpkg
+mkdir -p %{buildroot}%{_datadir}/%{name}/lib
+mkdir -p %{buildroot}%{_datadir}/%{name}/node_modules
+cp -pr bin/ lib/ node_modules/ %{buildroot}%{_datadir}/%{name}/
+cp package.json %{buildroot}%{_datadir}/%{name}/package.json
+ln -sf %{_datadir}/%{name}/bin/yarn %{buildroot}%{_bindir}/yarn
+ln -sf %{_datadir}/%{name}/bin/yarnpkg %{buildroot}%{_bindir}/yarnpkg
 
 %files
 %defattr(-,root,root,-)
 %doc LICENSE README.md
 %{_bindir}/yarn
 %{_bindir}/yarnpkg
-%dir %{_libdir}/node_modules/
-%{_libdir}/node_modules/%{name}
+%{_datadir}/%{name}/bin/*
+%{_datadir}/%{name}/package.json
+%{_datadir}/%{name}/lib/*
+%{_datadir}/%{name}/node_modules/*
+%exclude %{_datadir}/%{name}/node_modules/.bin/*
+%exclude %{_datadir}/%{name}/bin/yarn.ps1
 
 %changelog
+*   Tue Jul 30 2019 Keerthana K <keerthanak@vmware.com> 1.10.1-2
+-   Update BuildArch
 *   Wed Feb 13 2019 Siju Maliakkal <ssmaliakkal@vmware.com> 1.10.1-1
 -   Upgrade to 1.101.1 buildrequirement of kibana
 *   Wed Oct 24 2018 Keerthana K <keerthanak@vmware.com> 1.6.0-1
