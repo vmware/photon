@@ -1,7 +1,7 @@
-From bee2b9a18dbacf2985e4639051c3ae2e49f845fb Mon Sep 17 00:00:00 2001
+From 31a3596543c6c590be4ef08a043a7f1fb2ab5bfd Mon Sep 17 00:00:00 2001
 From: usahai <usahai@vmware.com>
-Date: Tue, 16 Apr 2019 14:23:26 +0530
-Subject: [PATCH] VCP patch for K8s v1.13.5
+Date: Thu, 1 Aug 2019 21:23:36 +0530
+Subject: [PATCH] VCP patch for K8s v1.13.6
 
 ---
  api/api-rules/violation_exceptions.list       |    2 +
@@ -115,7 +115,7 @@ index 4fae72c7a9..f8609e57ec 100644
  API rule violation: names_match,k8s.io/api/core/v1,VolumeSource,StorageOS
  API rule violation: names_match,k8s.io/api/policy/v1beta1,PodDisruptionBudgetStatus,PodDisruptionsAllowed
 diff --git a/api/openapi-spec/swagger.json b/api/openapi-spec/swagger.json
-index 4f4f5b0dce..62702699d7 100644
+index 8d9d78830a..a7b9412d27 100644
 --- a/api/openapi-spec/swagger.json
 +++ b/api/openapi-spec/swagger.json
 @@ -83764,6 +83764,22 @@
@@ -3406,10 +3406,10 @@ index fbfefc598f..9c188f2241 100644
  
  // DefaultOffAdmissionPlugins get admission plugins off by default for kube-apiserver.
 diff --git a/pkg/kubectl/describe/versioned/describe.go b/pkg/kubectl/describe/versioned/describe.go
-index 6f6dba6f0b..9b2c4ddc35 100644
+index d5cf0cbb79..4cbb01fcba 100644
 --- a/pkg/kubectl/describe/versioned/describe.go
 +++ b/pkg/kubectl/describe/versioned/describe.go
-@@ -804,6 +804,8 @@ func describeVolumes(volumes []corev1.Volume, w PrefixWriter, space string) {
+@@ -805,6 +805,8 @@ func describeVolumes(volumes []corev1.Volume, w PrefixWriter, space string) {
  			printFlockerVolumeSource(volume.VolumeSource.Flocker, w)
  		case volume.VolumeSource.Projected != nil:
  			printProjectedVolumeSource(volume.VolumeSource.Projected, w)
@@ -3418,7 +3418,7 @@ index 6f6dba6f0b..9b2c4ddc35 100644
  		default:
  			w.Write(LEVEL_1, "<unknown>\n")
  		}
-@@ -1245,6 +1247,13 @@ func printCSIPersistentVolumeAttributesMultilineIndent(w PrefixWriter, initialIn
+@@ -1246,6 +1248,13 @@ func printCSIPersistentVolumeAttributesMultilineIndent(w PrefixWriter, initialIn
  	}
  }
  
@@ -3432,7 +3432,7 @@ index 6f6dba6f0b..9b2c4ddc35 100644
  type PersistentVolumeDescriber struct {
  	clientset.Interface
  }
-@@ -1381,6 +1390,8 @@ func describePersistentVolume(pv *corev1.PersistentVolume, events *corev1.EventL
+@@ -1382,6 +1391,8 @@ func describePersistentVolume(pv *corev1.PersistentVolume, events *corev1.EventL
  			printFlockerVolumeSource(pv.Spec.Flocker, w)
  		case pv.Spec.CSI != nil:
  			printCSIPersistentVolumeSource(pv.Spec.CSI, w)
