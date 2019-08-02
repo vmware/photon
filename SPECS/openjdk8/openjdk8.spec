@@ -2,17 +2,17 @@
 %global security_hardening none
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.212
-Release:	2%{?dist}
+Version:	1.8.0.222
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}-b04.tar.gz
-%define sha1 openjdk=e619f3fca5d8b808760e3c74703e8d3e698414bc
+Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}-b10.tar.gz
+%define sha1 openjdk=f0d4b778c674b26ffee1119cda12ec1083118578
 Patch0:		Awt_build_headless_only.patch
-Patch1:		check-system-ca-certs.patch
+Patch1:		check-system-ca-certs-212-b04.patch
 BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
@@ -67,7 +67,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -qn openjdk-%{version}-b04
+%setup -qn openjdk-%{version}-b10
 %patch0 -p1
 %patch1 -p1
 rm jdk/src/solaris/native/sun/awt/CUPSfuncs.c
@@ -244,6 +244,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Thu Aug 01 2019 Shreyas B. <shreyasb@vmware.com> 1.8.0.222-1
+-   Upgrade to version 1.8.0.222 b10 (jdk8u222-b10)
+-   Fix diff for TrustStoreManager.java in file check-system-ca-certs.patch to check-system-ca-certs-212-b04.patch.
+-   Replace check-system-ca-certs.patch with check-system-ca-certs-212-b04.patch to build x64-86 binary.
 *   Tue May 20 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0.212-2
 -   Upgrade to version 1.8.0.212 b04
 -   Included fix for performance regression.
