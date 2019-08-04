@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.6.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -16,9 +16,10 @@ Source4:        ip4save
 Source5:        ip6save
 BuildRequires:  systemd
 Requires:       systemd
+Patch0:         iptables-CVE-2019-11360.patch
 %description
-The next part of this chapter deals with firewalls. The principal 
-firewall tool for Linux is Iptables. You will need to install 
+The next part of this chapter deals with firewalls. The principal
+firewall tool for Linux is Iptables. You will need to install
 Iptables if you intend on using any form of a firewall.
 
 %package        devel
@@ -29,6 +30,7 @@ It contains the libraries and header files to create applications.
 
 %prep
 %setup -q
+%patch0 -p1
 %build
 ./configure \
     CFLAGS="%{optflags}" \
@@ -97,6 +99,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Aug 05 2019 Shreyas B. <shreyasb@vmware.com> 1.6.1-5
+-   Apply fix for the CVE-2019-11360
 *   Thu Aug 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-4
 -   fix ip4save script for upgrade issues.
 *   Mon Jul 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-3
