@@ -1,7 +1,7 @@
 Summary:	Linux kernel packet control tool
 Name:		iptables
 Version:	1.6.0
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv2+
 URL:		http://www.netfilter.org/projects/iptables
 Group:		System Environment/Security
@@ -14,12 +14,14 @@ Source2:	iptables
 Source3:	iptables.stop
 BuildRequires:  systemd
 Requires:       systemd
+Patch0:         iptables-CVE-2019-11360.patch
 %description
-The next part of this chapter deals with firewalls. The principal 
-firewall tool for Linux is Iptables. You will need to install 
+The next part of this chapter deals with firewalls. The principal
+firewall tool for Linux is Iptables. You will need to install
 Iptables if you intend on using any form of a firewall.
 %prep
 %setup -q
+%patch0 -p1
 %build
 ./configure \
 	CFLAGS="%{optflags}" \
@@ -82,6 +84,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_mandir}/man8/*
 %changelog
+*   Wed Jul 31 2019 Shreyas B. <shreyasb@vmware.com> 1.6.0-7
+-   Apply fix for the CVE-2019-11360
 *   Wed Jan 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.6.0-6
 -   Flush iptables on service stop
 *   Tue Aug 30 2016 Anish Swaminathan <anishs@vmware.com> 1.6.0-5
