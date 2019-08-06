@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.52
-Release:        6%{?kat_build:.%kat_build}%{?dist}
+Release:        7%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -62,6 +62,10 @@ Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 
 %ifarch aarch64
+# Rpi of_configfs patches
+Patch40:        0001-OF-DT-Overlay-configfs-interface.patch
+Patch41:        0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
+
 # NXP LS1012a FRWY patches
 Patch51:        0001-staging-fsl_ppfe-eth-header-files-for-pfe-driver.patch
 Patch52:        0002-staging-fsl_ppfe-eth-introduce-pfe-driver.patch
@@ -210,6 +214,10 @@ Kernel Device Tree Blob files for NXP ls1012a FRWY board
 %patch39 -p1
 
 %ifarch aarch64
+# Rpi of_configfs patches
+%patch40 -p1
+%patch41 -p1
+
 # NXP FSL_PPFE Driver patches
 %patch51 -p1
 %patch52 -p1
@@ -467,6 +475,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Jul 30 2019 Ajay Kaher <akaher@vmware.com> 4.19.52-7
+-   Added of_configfs patches to dynamic load Overlays.
 *   Thu Jul 25 2019 Keerthana K <keerthanak@vmware.com> 4.19.52-6
 -   Fix postun scriplet.
 *   Thu Jul 11 2019 Keerthana K <keerthanak@vmware.com> 4.19.52-5
