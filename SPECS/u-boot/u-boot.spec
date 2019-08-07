@@ -3,7 +3,7 @@
 Summary:        U-Boot EFI firmware
 Name:		u-boot
 Version:	2019.01
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
@@ -20,6 +20,8 @@ Patch4:         add-saveenv-in-bootcmd.patch
 
 # CVE-2019-11059
 Patch5:         0001-Fix_ext4_block_group_descriptor_sizing.patch
+# CVE-2019-13103
+Patch6:		CVE-2019-13103-disk-stop_infinite_recursion_in_DOS.patch
 
 Group:          Development/Tools
 BuildArch:      aarch64
@@ -42,6 +44,7 @@ env variables from linux shell prompt.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %build
 cp %{SOURCE1} configs/
@@ -63,6 +66,8 @@ install -D -m 0644 %{SOURCE2} %{buildroot}/etc/fw_env.config
 /usr/bin/fw_setenv
 
 %changelog
+*   Wed Aug 07 2019 Kuladeep Rayalla <krayalla@vmware.com> 2019.01-3
+-   Fix CVE-2019-13103: disk: stop infinite recursion in DOS Partitions
 *   Wed May 15 2019 Ajay Kaher <akaher@vmware.com> 2019.01-2
 -   Fix CVE-2019-11059
 *   Fri Feb 22 2019 Tapas Kundu <tkundu@vmware.com> 2019.01-1
