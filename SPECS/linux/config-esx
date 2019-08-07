@@ -2068,7 +2068,6 @@ CONFIG_HW_RANDOM=m
 CONFIG_HW_RANDOM_RDRAND=m
 # CONFIG_HW_RANDOM_VIA is not set
 # CONFIG_NVRAM is not set
-# CONFIG_R3964 is not set
 # CONFIG_APPLICOM is not set
 # CONFIG_MWAVE is not set
 # CONFIG_RAW_DRIVER is not set
