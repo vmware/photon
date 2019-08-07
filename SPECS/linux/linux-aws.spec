@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.52
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.65
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=0fc8eeba8a8a710c95d71f140dfdc4bdff735248
+%define sha1 linux=598111781858ea0aaa328cfa0fec39264d2815d7
 Source1:	config-aws
 Source2:	initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -45,8 +45,6 @@ Patch34:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch35:        0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
 # Fix for CVE-2019-12381
 Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
-# Fix for CVE-2019-12382
-Patch37:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
@@ -165,7 +163,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
-%patch37 -p1
 %patch38 -p1
 %patch39 -p1
 
@@ -357,6 +354,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Aug 06 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.65-1
+-   Update to version 4.19.65
+-   Fix CVE-2019-1125 (SWAPGS)
 *   Tue Jul 30 2019 Keerthana K <keerthanak@vmware.com> 4.19.52-3
 -   Fix postun script.
 *   Wed Jul 10 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-2
