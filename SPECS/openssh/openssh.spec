@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.4p1
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -158,6 +158,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*   Wed Aug 07 2019 Anish Swaminathan <anishs@vmware.com> 7.4p1-11
+-   Check for fips mode before setting
 *   Thu Jun 06 2019 Ankit Jain <ankitja@vmware.comm> 7.4p1-10
 -   Fix for CVE-2019-6110.
 *   Thu May 09 2019 Ankit Jain <ankitja@vmware.comm> 7.4p1-9
