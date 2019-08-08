@@ -1,6 +1,6 @@
 Summary:        Time zone data
 Name:           tzdata
-Version:        2019a
+Version:        2019b
 Release:        1%{?dist}
 URL:            http://www.iana.org/time-zones
 License:        Public Domain
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
-%define sha1 tzdata=29cdb003e84a597a0253433401601e67865faa08
+%define sha1 tzdata=bfb2bc5def73d04553383da1043661909605dc1c
 BuildArch:      noarch
 %description
 Sources for time zone and daylight saving time data
@@ -55,6 +55,8 @@ fi
 %{_datadir}/*
 
 %changelog
+*   Thu Aug 08 2019 Gerrit Photon <photon-checkins@vmware.com> 2019b-1
+-   Automatic Version Bump
 *   Wed May 22 2019 Gerrit Photon <photon-checkins@vmware.com> 2019a-1
 -   Automatic Version Bump
 *   Wed Dec 07 2016 Anish Swaminathan <anishs@vmware.com> 2016h-2
