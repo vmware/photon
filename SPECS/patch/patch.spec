@@ -1,7 +1,7 @@
 Summary:        Program for modifying or creating files
 Name:           patch
 Version:        2.7.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        ftp://ftp.gnu.org/gnu/patch/%{name}-%{version}.tar.gz
@@ -9,6 +9,8 @@ Source0:        ftp://ftp.gnu.org/gnu/patch/%{name}-%{version}.tar.gz
 Patch0:		CVE-2018-6951.patch
 Patch1:		CVE-2018-1000156.patch
 Patch2:		CVE-2018-6952.patch
+Patch3:         CVE-2019-13636.patch
+Patch4:         CVE-2019-13638.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -23,6 +25,8 @@ file typically created by the diff program.
 %patch0	-p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 %configure --disable-silent-rules
@@ -41,6 +45,8 @@ make  %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*   Thu Aug 08 2019 Shreenidhi Shedi <sshedi@vmware.com> 2.7.6-4
+-   Fix for CVE-2019-13636, CVE-2019-13638
 *   Mon Nov 19 2018 Siju Maliakkal <smaliakkal@vmware.com> 2.7.6-3
 -   Add patches for CVE-2018-6951,CVE-2018-1000156,CVE-2018-6952
 *   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 2.7.6-2
