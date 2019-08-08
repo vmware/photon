@@ -47,7 +47,7 @@ diff -rup openssh-7.8p1/readconf.c openssh-7.8p1-new/readconf.c
 +			*intptr = value;
 +			/* Call FIPS_mode_set as soon as possible */
 +			if (*intptr == 1)
-+				if (!FIPS_mode_set(1))
++				if (!FIPS_mode() && !FIPS_mode_set(1))
 +					fatal("FIPS mode could not be set");
 +		}
 +		break;
@@ -155,7 +155,7 @@ diff -rup openssh-7.8p1/servconf.c openssh-7.8p1-new/servconf.c
 +			*intptr = value;
 +			/* Call FIPS_mode_set as soon as possible */
 +			if (*intptr == 1)
-+				if (!FIPS_mode_set(1))
++				if (!FIPS_mode() && !FIPS_mode_set(1))
 +					fatal("FIPS mode could not be set");
 +		}
 +		break;
