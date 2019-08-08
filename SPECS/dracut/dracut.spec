@@ -5,7 +5,7 @@
 
 Name:		dracut
 Version:	044
-Release:	3%{?dist}
+Release:	4%{?dist}
 Group:		System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -15,7 +15,8 @@ URL:		https://dracut.wiki.kernel.org/
 # http://git.kernel.org/?p=boot/dracut/dracut.git;a=snapshot;h=%{version};sf=tgz
 Source0:	http://www.kernel.org/pub/linux/utils/boot/dracut/dracut-%{version}.tar.xz
 %define sha1 dracut=e2ef763d25927f2dec8834bb2ee8b34a0fa14ffd
-Patch0:		https://www.gnu.org/licenses/lgpl-2.1.txt
+Source1:        https://www.gnu.org/licenses/lgpl-2.1.txt
+Patch0:         CVE-2016-8637.patch
 Summary:	dracut to create initramfs
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -43,7 +44,8 @@ This package contains tools to assemble the local initrd and host configuration.
 
 %prep
 %setup -q -n %{name}-%{version}
-cp %{PATCH0} .
+cp %{SOURCE1} .
+%patch0 -p1
 
 %build
 %configure --systemdsystemunitdir=%{_unitdir} --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) --libdir=%{_prefix}/lib \
@@ -145,6 +147,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*	Thu Aug 08 2019 Shreenidhi Shedi <sshedi@vmware.com> 044-4
+-	Fix for CVE-2016-8637
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 044-3
 -	GA - Bump release of all rpms
 *       Mon Apr 25 2016 Gengsheng Liu <gengshengl@vmware.com> 044-2
