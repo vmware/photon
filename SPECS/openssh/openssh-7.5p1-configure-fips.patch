@@ -70,7 +70,7 @@ index 7f401d6..2c970e2 100644
 +			*intptr = value;
 +			/* Call FIPS_mode_set as soon as possible */
 +			if (*intptr == 1)
-+				if (!FIPS_mode_set(1))
++				if (!FIPS_mode() && !FIPS_mode_set(1))
 +					fatal("FIPS mode could not be set");
 +		}
 +		break;
@@ -180,7 +180,7 @@ index 4e5401c..107647a 100644
 +			*intptr = value;
 +			/* Call FIPS_mode_set as soon as possible */
 +			if (*intptr == 1)
-+				if (!FIPS_mode_set(1))
++				if (!FIPS_mode() && !FIPS_mode_set(1))
 +					fatal("FIPS mode could not be set");
 +		}
 +		break;
