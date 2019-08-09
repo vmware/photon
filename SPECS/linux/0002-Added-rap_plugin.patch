@@ -111,6 +111,7 @@ Functions signature fixing is still required.
  drivers/scsi/qla2xxx/qla_target.c                  |   6 +-
  drivers/tty/serial/kgdboc.c                        |   2 +-
  drivers/video/console/dummycon.c                   |  76 ++-
+ fs/9p/vfs_addr.c                                   |   3 +-
  fs/afs/file.c                                      |   8 +-
  fs/afs/internal.h                                  |   2 +-
  fs/exofs/inode.c                                   |   7 +-
@@ -196,7 +197,7 @@ Functions signature fixing is still required.
  scripts/gcc-plugins/rap_plugin/sip.c               |  96 ++++
  security/Kconfig                                   |  19 +
  security/apparmor/lsm.c                            |  16 +-
- 191 files changed, 4543 insertions(+), 2284 deletions(-)
+ 192 files changed, 4544 insertions(+), 2286 deletions(-)
  create mode 100644 scripts/gcc-plugins/rap_plugin/Makefile
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap.h
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
@@ -1563,7 +1564,7 @@ index 4e0f8e7..bea71fb 100644
 -static int edac_set_poll_msec(const char *val, struct kernel_param *kp)
 +static int edac_set_poll_msec(const char *val, const struct kernel_param *kp)
  {
- 	unsigned long l;
+ 	unsigned int i;
  	int ret;
 diff --git a/drivers/firmware/dmi-id.c b/drivers/firmware/dmi-id.c
 index 44c0139..9cbd4a3 100644
@@ -4634,6 +4635,20 @@ index b90ef96..12f6ec5 100644
 +    .con_font_copy =	dummycon_font_copy,
  };
  EXPORT_SYMBOL_GPL(dummy_con);
+diff --git a/fs/9p/vfs_addr.c b/fs/9p/vfs_addr.c
+index 197069303510..793772d114db 100644
+--- a/fs/9p/vfs_addr.c
++++ b/fs/9p/vfs_addr.c
+@@ -123,8 +123,7 @@ static int v9fs_vfs_readpages(struct file *filp, struct address_space *mapping,
+ 	if (ret == 0)
+ 		return ret;
+ 
+-	ret = read_cache_pages(mapping, pages, v9fs_fid_readpage,
+-			filp->private_data);
++	ret = read_cache_pages(mapping, pages, v9fs_vfs_readpage, filp);
+ 	p9_debug(P9_DEBUG_VFS, "  = %d\n", ret);
+ 	return ret;
+ }
 diff --git a/fs/afs/file.c b/fs/afs/file.c
 index 6344aee..8f5a323 100644
 --- a/fs/afs/file.c
@@ -14011,7 +14026,7 @@ index cf0fa5d..73f7b0d 100644
  # define __safe
  # define __force
  # define __nocast
-@@ -223,27 +226,18 @@ void ftrace_likely_update(struct ftrace_branch_data *f, int val, int expect);
+@@ -244,27 +247,18 @@ void ftrace_likely_update(struct ftrace_branch_data *f, int val, int expect);
  
  #include <uapi/linux/types.h>
  
@@ -14047,21 +14062,20 @@ index cf0fa5d..73f7b0d 100644
 -
 -#ifdef CONFIG_KASAN
  /*
-  * This function is not 'inline' because __no_sanitize_address confilcts
+  * We can't declare function 'inline' because __no_sanitize_address confilcts
   * with inlining. Attempt to inline it may cause a build failure.
-@@ -253,29 +247,20 @@ void __read_once_size(const volatile void *p, void *res, int size)
- static __no_sanitize_address __maybe_unused
+@@ -279,27 +273,23 @@ void __read_once_size(const volatile void *p, void *res, int size)
+ # define __no_kasan_or_inline __no_sanitize_address __maybe_unused
+ #else
+ # define __no_kasan_or_inline __always_inline
++# define READ_ONCE_NOCHECK(x) READ_ONCE(x)
+ #endif
+ 
+ static __no_kasan_or_inline
  void __read_once_size_nocheck(const volatile void *p, void *res, int size)
  {
 -	__READ_ONCE_SIZE;
 -}
--#else
--static __always_inline
--void __read_once_size_nocheck(const volatile void *p, void *res, int size)
--{
--	__READ_ONCE_SIZE;
--}
--#endif
 -
 -static __always_inline void __write_once_size(volatile void *p, void *res, int size)
 -{
@@ -14081,15 +14095,12 @@ index cf0fa5d..73f7b0d 100644
  		barrier();
  	}
  }
-+#else
-+#define READ_ONCE_NOCHECK(x) READ_ONCE(x)
-+#endif
  
  /*
   * Prevent the compiler from merging or refetching reads or writes. The
-@@ -300,29 +285,15 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
-  * required ordering.
+@@ -300,22 +285,10 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
   */
+ #include <linux/kasan-checks.h>
  
 -#define __READ_ONCE(x, check)						\
 -({									\
@@ -14104,13 +14115,19 @@ index cf0fa5d..73f7b0d 100644
 +	__val;						\
  })
 -#define READ_ONCE(x) __READ_ONCE(x, 1)
- 
+-
 -/*
 - * Use READ_ONCE_NOCHECK() instead of READ_ONCE() if you need
 - * to hide memory access from KASAN.
 - */
 -#define READ_ONCE_NOCHECK(x) __READ_ONCE(x, 0)
--
+ 
+ static __no_kasan_or_inline
+ unsigned long read_word_at_a_time(const void *addr)
+@@ -325,12 +310,10 @@ unsigned long read_word_at_a_time(const void *addr)
+ 	return *(unsigned long *)addr;
+ }
+ 
 -#define WRITE_ONCE(x, val) \
 -({							\
 -	union { typeof(x) __val; char __c[1]; } __u =	\

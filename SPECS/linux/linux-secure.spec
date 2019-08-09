@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.185
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.189
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=9db30f2036187de5cf50db1e3d8ad61ceea1aa74
+%define sha1 linux=0b5cd4c9f2379a063dc392802bf5d5dabc07146e
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -48,9 +48,6 @@ Patch26:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch27:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch28:        0002-allow-also-ecb-cipher_null.patch
 Patch29:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-
-# Fix CVE-2019-11599
-Patch30:        0001_coredump_fix_race_condition_between_mmget_not_zero_get_task_mm.patch
 
 # Fix CVE-2017-1000252
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
@@ -198,7 +195,6 @@ EOF
 %patch27 -p1
 %patch28 -p1
 %patch29 -p1
-%patch30 -p1
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
@@ -355,6 +351,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Aug 12 2019 Alexey Makhalov <amakhalov@vmware.com> 4.9.189-1
+-   Update to version 4.9.189 to fix CVE-2019-1125
 *   Tue Jul 30 2019 Keerthana K <keerthanak@vmware.com> 4.9.185-2
 -   Fix postun script.
 *   Thu Jul 11 2019 VIKASH BANSAL <bvikas@vmware.com> 4.9.185-1
