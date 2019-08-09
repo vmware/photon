@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.185
-Release:       3%{?dist}
+Version:       4.4.189
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=5d483c4716629607e9402b3c1d1caae9778cce30
+%define sha1 linux=309c3c9e7e89e90b076eb09e7c626dedda70c9a2
 Source1:       config-esx
 Source2:       update_photon_cfg.postun
 Patch0:        double-tcp_mem-limits.patch
@@ -262,6 +262,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Aug 12 2019 Alexey Makhalov <amakhalov@vmware.com> 4.4.189-1
+-   Update to version 4.4.189 to fix CVE-2019-1125
 *   Thu Jul 25 2019 Keerthana K <keerthanak@vmware.com> 4.4.185-3
 -   Fix postun scriplet.
 *   Thu Jul 25 2019 Ajay Kaher <akaher@vmware.com> 4.4.185-2

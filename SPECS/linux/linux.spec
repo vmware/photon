@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.185
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.189
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=5d483c4716629607e9402b3c1d1caae9778cce30
+%define sha1 linux=309c3c9e7e89e90b076eb09e7c626dedda70c9a2
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -364,6 +364,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Aug 12 2019 Alexey Makhalov <amakhalov@vmware.com> 4.4.189-1
+-   Update to version 4.4.189 to fix CVE-2019-1125
 *   Thu Jul 25 2019 Keerthana K <keerthanak@vmware.com> 4.4.185-3
 -   Fix postun scriplet.
 *   Thu Jul 25 2019 Ajay Kaher <akaher@vmware.com> 4.4.185-2
