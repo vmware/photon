@@ -1,0 +1,53 @@
+--- a/buildSrc/version.properties_org	2019-08-09 16:10:58.844625343 +0000
++++ b/buildSrc/version.properties	2019-08-09 16:11:34.469689929 +0000
+@@ -7,7 +7,7 @@ jts               = 1.15.0
+ # note that ingest-geoip has a hard-coded version; if you modify this version,
+ # you should also inspect that version to see if it can be advanced along with
+ # the com.maxmind.geoip2:geoip2 dependency
+-jackson           = 2.8.11
++jackson           = 2.9.9
+ snakeyaml         = 1.17
+ icu4j             = 62.1
+ supercsv          = 2.4.0
+@@ -25,7 +25,7 @@ joda              = 2.10.1
+ #  - plugins/ingest-attachment (transitive dependency, check the upstream POM)
+ #  - distribution/tools/plugin-cli
+ #  - x-pack/plugin/security
+-bouncycastle      = 1.61
++bouncycastle      = 1.62
+ 
+ # test dependencies
+ randomizedrunner  = 2.7.1
+--- a/plugins/discovery-ec2/build.gradle_org	2019-08-09 16:42:26.079272046 +0000
++++ b/plugins/discovery-ec2/build.gradle	2019-08-09 16:42:52.088028497 +0000
+@@ -33,7 +33,7 @@ dependencies {
+   compile "org.apache.httpcomponents:httpcore:${versions.httpcore}"
+   compile "commons-logging:commons-logging:${versions.commonslogging}"
+   compile "commons-codec:commons-codec:${versions.commonscodec}"
+-  compile 'com.fasterxml.jackson.core:jackson-databind:2.8.11.3'
++  compile 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
+   compile "com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}"
+ }
+ 
+--- a/plugins/repository-s3/build.gradle_org	2019-08-09 16:43:12.352618496 +0000
++++ b/plugins/repository-s3/build.gradle	2019-08-09 16:47:36.632353290 +0000
+@@ -43,7 +43,7 @@ dependencies {
+   compile "commons-logging:commons-logging:${versions.commonslogging}"
+   compile "commons-codec:commons-codec:${versions.commonscodec}"
+   compile "com.fasterxml.jackson.core:jackson-core:${versions.jackson}"
+-  compile 'com.fasterxml.jackson.core:jackson-databind:2.8.11.3'
++  compile 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
+   compile "com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}"
+   compile "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:${versions.jackson}"
+   compile "joda-time:joda-time:${versions.joda}"
+--- a/modules/ingest-geoip/build.gradle_org	2019-08-09 16:47:44.756592050 +0000
++++ b/modules/ingest-geoip/build.gradle	2019-08-09 16:48:04.117161214 +0000
+@@ -27,7 +27,7 @@ dependencies {
+   compile ('com.maxmind.geoip2:geoip2:2.9.0')
+   // geoip2 dependencies:
+   compile("com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}")
+-  compile("com.fasterxml.jackson.core:jackson-databind:2.8.11.3")
++  compile("com.fasterxml.jackson.core:jackson-databind:2.9.9")
+   compile('com.maxmind.db:maxmind-db:1.2.2')
+ 
+   testCompile 'org.elasticsearch:geolite2-databases:20180911'
