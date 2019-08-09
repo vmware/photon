@@ -3,7 +3,7 @@
 Summary:        Elastic Search
 Name:           elasticsearch
 Version:        6.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
@@ -28,12 +28,14 @@ BuildRequires:  patch
 BuildRequires:  texinfo
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+Patch0:          update_jars.patch
 
 %description
 Elasticsearch is a highly distributed RESTful search engine built for the cloud.
 
 %prep
 %setup -qn %{name}-%{version}
+%patch0 -p1
 
 %build
 export LANG="en_US.UTF-8"
@@ -119,6 +121,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+*    Fri Aug 09 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-2
+-    Update jackson
 *    Tue Apr 02 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-1
 -    Updated to 6.7.0
 *    Wed Mar 27 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.3-2
