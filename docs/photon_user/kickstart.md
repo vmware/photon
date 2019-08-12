@@ -155,8 +155,9 @@ Now add a new item to the installation menu by modifying `isolinux/menu.cfg`:
     cat >> isolinux/menu.cfg << EOF
     label my_unattended
     	menu label ^My Unattended Install
+    	menu default
     	kernel vmlinuz
-    	append initrd=initrd.img root=/dev/ram0 ks=cdrom:/isolinux/my_ks.cfg loglevel=3
+    	append initrd=initrd.img root=/dev/ram0 loglevel=3 photon.media=cdrom
     EOF
 
 Finally, rebuild the ISO so that it includes your kickstart config file: 
