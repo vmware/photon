@@ -1,17 +1,14 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
-Version:        1.8.14
-Release:        4%{?dist}
+Version:        2.0.3
+Release:        1%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.haproxy.org/download/1.8/src/%{name}-%{version}.tar.gz
-%define sha1 haproxy=589c6f933d73e8d6ba5307c8304cafb80e968481
-Patch0:         haproxy_CVE_2018_20102.patch
-Patch1:         haproxy_CVE_2018_20103.patch
-Patch2:		haproxy-CVE-2018-20615.patch
+Source0:        http://www.haproxy.org/download/2.0/src/%{name}-%{version}.tar.gz
+%define sha1 haproxy=32426b727f88a90b0e8ed04190ba1d138d535394
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  lua-devel
@@ -33,12 +30,9 @@ Requires:       %{name} = %{version}-%{release}
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
-make %{?_smp_mflags} TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 \
+make %{?_smp_mflags} TARGET=linux-glibc USE_PCRE=1 USE_OPENSSL=1 \
         USE_GETADDRINFO=1 USE_ZLIB=1 USE_SYSTEMD=1
 make %{?_smp_mflags} -C contrib/systemd
 sed -i s/"local\/"/""/g contrib/systemd/haproxy.service
@@ -56,7 +50,7 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %defattr(-,root,root)
 %{_sbindir}/*
 %{_libdir}/systemd/system/haproxy.service
-%{_sysconfdir}/haproxy/haproxy.cfg
+%config(noreplace) %{_sysconfdir}/haproxy/haproxy.cfg
 
 %files doc
 %defattr(-,root,root,-)
@@ -64,6 +58,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Mon Aug 12 2019 Kuladeep Rayalla <krayalla@vmware.com> 2.0.3-1
+-   Update to version 2.0.3
 *   Wed Apr 17 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.8.14-4
 -   Patch for CVE-2018-20615
 *   Thu Feb 28 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.14-3
