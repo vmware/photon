@@ -4,7 +4,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=026235ab9e8b19f6c2b1112ce13d180f35cf0ff4
 License:        GPLv2+
@@ -101,7 +101,7 @@ then
     if [ -d "%{_var}/log/audit" ]
     then
         mkdir -p "%{_var}/opt/audit/log" && \
-          cp -rf %{_var}/log/audit/* %{_var}/opt/audit/log && \
+          cp -rf %{_var}/log/audit/ %{_var}/opt/audit/log && \
             rm -rf "%{_var}/log/audit"
     fi
 fi
@@ -169,6 +169,8 @@ ln -sfv %{_var}/opt/audit/log %{_var}/log/audit
 %{python3_sitelib}/*
 
 %changelog
+*   Sat Aug 10 2019 Dweep Advani <dadvani@vmware.com> 2.8.4-3
+-   Fixed the upgade failure due to empty /var/log/audit directory
 *   Fri May 03 2019 Dweep Advani <dadvani@vmware.com> 2.8.4-2
 -   Fixed type conflicts of log directory during upgrade
 *   Mon Sep 3 2018 Keerthana K <keerthanak@vmware.com> 2.8.4-1
