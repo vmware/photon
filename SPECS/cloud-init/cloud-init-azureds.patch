@@ -21,19 +21,19 @@ diff -rup cloud-init-18.3/cloudinit/sources/helpers/azure.py cloud-init-18.3-new
  
  from cloudinit.net import dhcp
  from cloudinit import stages
-@@ -18,9 +18,10 @@
+@@ -16,9 +17,10 @@ from xml.etree import ElementTree
+ 
  from cloudinit import url_helper
  from cloudinit import util
- from cloudinit.reporting import events
 +from io import StringIO
  
  LOG = logging.getLogger(__name__)
 -
 +NETWORKD_LEASES_DIR = '/run/systemd/netif/leases'
  
- azure_ds_reporter = events.ReportEventStack(
-     name="azure-ds",
-@@ -332,6 +333,32 @@
+ @contextmanager
+ def cd(newdir):
+@@ -281,6 +283,32 @@ class WALinuxAgentShim(object):
          return dhcp_options
  
      @staticmethod
@@ -63,9 +63,9 @@ diff -rup cloud-init-18.3/cloudinit/sources/helpers/azure.py cloud-init-18.3-new
 +        return ret
 +
 +    @staticmethod
-     @azure_ds_telemetry_reporter
      def _get_value_from_dhcpoptions(dhcp_options):
          if dhcp_options is None:
+             return None
 @@ -306,8 +334,9 @@ class WALinuxAgentShim(object):
              # Option-245 stored in /run/cloud-init/dhclient.hooks/<ifc>.json
              # a dhclient exit hook that calls cloud-init-dhclient-hook
