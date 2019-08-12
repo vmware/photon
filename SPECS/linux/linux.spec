@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.65
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -472,6 +472,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Aug 12 2019 Ajay Kaher <akaher@vmware.com> 4.19.65-2
+-   Fix config_aarch64 for v4.19.65
 *   Tue Aug 06 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.65-1
 -   Update to version 4.19.65
 -   Fix CVE-2019-1125 (SWAPGS)
