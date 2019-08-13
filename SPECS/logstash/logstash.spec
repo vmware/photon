@@ -1,7 +1,7 @@
 Summary:	Logstash is a tool for managing events and logs.
 Name:           logstash
 Version:        6.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -20,6 +20,7 @@ Requires:	ruby
 Requires:       systemd
 Requires:       elasticsearch
 Requires:       kibana
+Patch0:         jackson_update.patch
 
 %description
 Logstash is a server-side data processing pipeline that ingests data from a multitude of sources simultaneously, transforms it, and then sends it to your favorite "stash."
@@ -29,6 +30,7 @@ Logstash is a server-side data processing pipeline that ingests data from a mult
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 export OSS=true
@@ -113,6 +115,8 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+*   Tue Aug 13 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-3
+-   Updated jackson jar files
 *   Sat Jul 13 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-2
 -   Added condition for JavaVersion in Requires
 *   Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-1
