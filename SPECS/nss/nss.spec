@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.44
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_44_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
@@ -67,6 +67,15 @@ chmod 644 %{buildroot}%{_includedir}/nss/*
 install -v -m755 Linux*/bin/{certutil,nss-config,pk12util} %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_libdir}/pkgconfig
 install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
+%define __spec_install_post \
+  %{?__debug_package:%{__debug_install_post}} \
+  %{__arch_install_post} \
+  %{__os_install_post} \
+  LD_LIBRARY_PATH=%{buildroot}%{_libdir} Linux*/bin/shlibsign -i %{buildroot}%{_libdir}/libsoftokn3.so \
+  LD_LIBRARY_PATH=%{buildroot}%{_libdir} Linux*/bin/shlibsign -i %{buildroot}%{_libdir}/libnssdbm3.so \
+  LD_LIBRARY_PATH=%{buildroot}%{_libdir} Linux*/bin/shlibsign -i %{buildroot}%{_libdir}/libfreebl3.so \
+  LD_LIBRARY_PATH=%{buildroot}%{_libdir} Linux*/bin/shlibsign -i %{buildroot}%{_libdir}/libfreeblpriv3.so \
+%{nil}
 
 %check
 cd nss/tests
@@ -99,6 +108,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Fri Aug 09 2019 Ashwin H <ashwinh@vmware.com> 3.44-2
+-   Fix to enable nss in fips mode
 *   Wed May 29 2019 Michelle Wang <michellew@vmware.com> 3.44-1
 -   Upgrade to 3.44 for CVE-2018-12404
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.39-1
