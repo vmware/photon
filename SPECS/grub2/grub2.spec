@@ -3,7 +3,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.02
-Release:    12%{?dist}
+Release:    13%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -30,6 +30,7 @@ Patch15:    0139-Make-TPM-errors-less-fatal.patch
 Patch16:    0156-TPM-Fix-hash_log_extend_event-function-prototype.patch
 Patch17:    0157-TPM-Fix-compiler-warnings.patch
 Patch18:    0216-Disable-multiboot-multiboot2-and-linux16-modules-on-.patch
+Patch19:    0224-Rework-how-the-fdt-command-builds.patch
 %ifarch aarch64
 Patch100:   0001-efinet-do-not-start-EFI-networking-at-module-init-ti.patch
 %endif
@@ -85,6 +86,7 @@ Additional library files for grub
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
+%patch19 -p1
 %ifarch aarch64
 %patch100 -p1
 %endif
@@ -187,6 +189,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_datarootdir}/locale/*
 
 %changelog
+*   Wed Aug 14 2019 Alexey Makhalov <amakhalov@vmware.com> 2.02-13
+-   Add one more patch from fc30 to fix arm64 build.
 *   Thu Feb 21 2019 Alexey Makhalov <amakhalov@vmware.com> 2.02-12
 -   Update grub version from ~rc3 to release.
 -   Enhance SB + TPM support (19 patches from grub2-2.02-70.fc30)
