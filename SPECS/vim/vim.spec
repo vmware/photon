@@ -3,7 +3,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.1.0388
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -11,6 +11,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    vim=727cc80b05c99ba57eaf116faa04f184f5c1877a
+Patch0:		CVE-2019-12735.patch
+
 BuildRequires:  ncurses-devel
 
 %description
@@ -27,6 +29,8 @@ The vim extra package contains a extra files for powerful text editor.
 
 %prep
 %setup -q
+%patch0 -p1
+
 
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 %build
@@ -182,6 +186,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+*   Wed Aug 14 2019 Anisha Kumari <kanisha@vmware.com> 8.1.0388-4
+-   Fix for CVE-2019-12735.
 *   Tue Jan 29 2019 Dweep Advani <dadvani@vmware.com> 8.1.0388-3
 -   Fixed swap file creation error for custom login shell
 *   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 8.1.0388-2
@@ -216,3 +222,4 @@ fi
 -   Disable debug package. Use 'desert' colorscheme.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 7.4-1
 -   Initial build First version.
+
