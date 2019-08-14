@@ -52,6 +52,8 @@ class DependencyGraphNode(object):
         # sanity checks.
         self.numVisits = 0
 
+        # Internal flag to check if the package is built
+        self.built = 0
 
 class Scheduler(object):
 
@@ -121,6 +123,7 @@ class Scheduler(object):
             if package in Scheduler.listOfPackagesCurrentlyBuilding:
                 Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
                 Scheduler.listOfAlreadyBuiltPackages.add(package)
+                Scheduler._markPkgNodeAsBuilt(package)
 
     @staticmethod
     def notifyPackageBuildFailed(package):
@@ -227,6 +230,9 @@ class Scheduler(object):
                                        Scheduler._getWeight(package))
             Scheduler.mapPackagesToGraphNodes[package] = node
 
+            if package in Scheduler.listOfAlreadyBuiltPackages:
+                node.built = 1
+
         for package in Scheduler.sortedList:
             pkgNode = Scheduler.mapPackagesToGraphNodes[package]
             for childPackage in Scheduler._getBuildRequiredPackages(package):
@@ -253,6 +259,7 @@ class Scheduler(object):
         #
         for package in Scheduler.sortedList:
             pkgNode = Scheduler.mapPackagesToGraphNodes[package]
+
             for childPkgNode in pkgNode.buildRequiresPkgNodes:
                 pkgNode.childPkgNodes.add(childPkgNode)
                 childPkgNode.parentPkgNodes.add(pkgNode)
@@ -579,30 +586,36 @@ class Scheduler(object):
 
 
     @staticmethod
+    def _checkNextPackageIsReadyToBuild(package):
+        numOfChildren = 0
+        numOfChildrenBuilt = 0
+        pkgNode = Scheduler.mapPackagesToGraphNodes[package]
+        numOfChildren = len(pkgNode.childPkgNodes)
+        if pkgNode.built == 1:
+            Scheduler.logger.warning("This pkg %s-%s is already built," \
+                                     "but still present in listOfPackagesToBuild" \
+                                     % (pkgNode.packageName, pkgNode.packageVersion))
+            return False
+        if numOfChildren != 0:
+            for childPkgNode in pkgNode.childPkgNodes:
+                if childPkgNode.built == 1:
+                    numOfChildrenBuilt = numOfChildrenBuilt + 1
+
+        return numOfChildren == numOfChildrenBuilt
+
+    @staticmethod
+    def _markPkgNodeAsBuilt(package):
+        pkgNode = Scheduler.mapPackagesToGraphNodes[package]
+        Scheduler.logger.debug("Marking pkgNode as built = %s" % pkgNode.packageName)
+        pkgNode.built = 1
+
+
+    @staticmethod
     def _getListNextPackagesReadyToBuild():
         for pkg in Scheduler.listOfPackagesToBuild:
             if pkg in Scheduler.listOfPackagesCurrentlyBuilding:
                 continue
-            listRequiredSubPackages = list(set(SPECS.getData().getBuildRequiresForPkg(pkg) + \
-                                   SPECS.getData().getRequiresAllForPkg(pkg)))
-
-            # extend to full Requires tree
-            for p in listRequiredSubPackages:
-                reqs = SPECS.getData().getRequiresAllForPkg(p)
-                for r in reqs:
-                    if r not in listRequiredSubPackages:
-                        listRequiredSubPackages.append(r)
-
-            # convert subpackages to basepkg
-            listRequiredPackages = set()
-            for p in listRequiredSubPackages:
-                listRequiredPackages.add(SPECS.getData().getBasePkg(p))
-
-            canBuild = True
-            for reqPkg in listRequiredPackages:
-                if reqPkg not in Scheduler.listOfAlreadyBuiltPackages:
-                    canBuild = False
-                    break
-            if canBuild:
-                Scheduler.listOfPackagesNextToBuild.put((-Scheduler._getPriority(pkg), pkg))
-                Scheduler.logger.debug("Adding " + pkg + " to the schedule list")
+            if pkg not in Scheduler.listOfAlreadyBuiltPackages:
+                if Scheduler._checkNextPackageIsReadyToBuild(pkg):
+                    Scheduler.listOfPackagesNextToBuild.put((-Scheduler._getPriority(pkg), pkg))
+                    Scheduler.logger.debug("Adding " + pkg + " to the schedule list")
