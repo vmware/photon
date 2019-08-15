@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.65
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -58,36 +58,43 @@ Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
+# Secure boot uefi certificate import patches
+Patch40:        secure-boot-patches/0001-security-integrity-remove-unnecessary-init_keyring-v.patch
+Patch41:	secure-boot-patches/0002-integrity-Define-a-trusted-platform-keyring.patch
+Patch42:	secure-boot-patches/0003-integrity-Load-certs-to-the-platform-keyring.patch
+Patch43:	secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
+Patch44:	secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
+Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
-Patch40:        0001-OF-DT-Overlay-configfs-interface.patch
-Patch41:        0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
+Patch200:        0001-OF-DT-Overlay-configfs-interface.patch
+Patch201:        0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
 
 # NXP LS1012a FRWY patches
-Patch51:        0001-staging-fsl_ppfe-eth-header-files-for-pfe-driver.patch
-Patch52:        0002-staging-fsl_ppfe-eth-introduce-pfe-driver.patch
-Patch53:        0003-staging-fsl_ppfe-eth-fix-RGMII-tx-delay-issue.patch
-Patch54:        0004-staging-fsl_ppfe-eth-remove-unused-functions.patch
-Patch55:        0005-staging-fsl_ppfe-eth-fix-read-write-ack-idx-issue.patch
-Patch56:        0006-staging-fsl_ppfe-eth-Make-phy_ethtool_ksettings_get-.patch
-Patch57:        0007-staging-fsl_ppfe-eth-add-function-to-update-tmu-cred.patch
-Patch58:        0008-staging-fsl_ppfe-eth-Avoid-packet-drop-at-TMU-queues.patch
-Patch59:        0009-staging-fsl_ppfe-eth-Enable-PFE-in-clause-45-mode.patch
-Patch60:        0010-staging-fsl_ppfe-eth-Disable-autonegotiation-for-2.5.patch
-Patch61:        0011-staging-fsl_ppfe-eth-add-missing-included-header-fil.patch
-Patch62:        0012-staging-fsl_ppfe-eth-clean-up-iounmap-pfe-ddr_basead.patch
-Patch63:        0013-staging-fsl_ppfe-eth-calculate-PFE_PKT_SIZE-with-SKB.patch
-Patch64:        0014-staging-fsl_ppfe-eth-support-for-userspace-networkin.patch
-Patch65:        0015-staging-fsl_ppfe-eth-unregister-netdev-after-pfe_phy.patch
-Patch66:        0016-staging-fsl_ppfe-eth-HW-parse-results-for-DPDK.patch
-Patch67:        0017-staging-fsl_ppfe-eth-reorganize-pfe_netdev_ops.patch
-Patch68:        0018-staging-fsl_ppfe-eth-use-mask-for-rx-max-frame-len.patch
-Patch69:        0019-staging-fsl_ppfe-eth-define-pfe-ndo_change_mtu-funct.patch
-Patch70:        0020-staging-fsl_ppfe-eth-remove-jumbo-frame-enable-from-.patch
-Patch71:        0021-staging-fsl_ppfe-eth-disable-CRC-removal.patch
-Patch72:        0022-staging-fsl_ppfe-eth-handle-ls1012a-errata_a010897.patch
-Patch73:        0023-staging-fsl_ppfe-eth-Modify-Kconfig-to-enable-pfe-dr.patch
+Patch211:        0001-staging-fsl_ppfe-eth-header-files-for-pfe-driver.patch
+Patch212:        0002-staging-fsl_ppfe-eth-introduce-pfe-driver.patch
+Patch213:        0003-staging-fsl_ppfe-eth-fix-RGMII-tx-delay-issue.patch
+Patch214:        0004-staging-fsl_ppfe-eth-remove-unused-functions.patch
+Patch215:        0005-staging-fsl_ppfe-eth-fix-read-write-ack-idx-issue.patch
+Patch216:        0006-staging-fsl_ppfe-eth-Make-phy_ethtool_ksettings_get-.patch
+Patch217:        0007-staging-fsl_ppfe-eth-add-function-to-update-tmu-cred.patch
+Patch218:        0008-staging-fsl_ppfe-eth-Avoid-packet-drop-at-TMU-queues.patch
+Patch219:        0009-staging-fsl_ppfe-eth-Enable-PFE-in-clause-45-mode.patch
+Patch220:        0010-staging-fsl_ppfe-eth-Disable-autonegotiation-for-2.5.patch
+Patch221:        0011-staging-fsl_ppfe-eth-add-missing-included-header-fil.patch
+Patch222:        0012-staging-fsl_ppfe-eth-clean-up-iounmap-pfe-ddr_basead.patch
+Patch223:        0013-staging-fsl_ppfe-eth-calculate-PFE_PKT_SIZE-with-SKB.patch
+Patch224:        0014-staging-fsl_ppfe-eth-support-for-userspace-networkin.patch
+Patch225:        0015-staging-fsl_ppfe-eth-unregister-netdev-after-pfe_phy.patch
+Patch226:        0016-staging-fsl_ppfe-eth-HW-parse-results-for-DPDK.patch
+Patch227:        0017-staging-fsl_ppfe-eth-reorganize-pfe_netdev_ops.patch
+Patch228:        0018-staging-fsl_ppfe-eth-use-mask-for-rx-max-frame-len.patch
+Patch229:        0019-staging-fsl_ppfe-eth-define-pfe-ndo_change_mtu-funct.patch
+Patch230:        0020-staging-fsl_ppfe-eth-remove-jumbo-frame-enable-from-.patch
+Patch231:        0021-staging-fsl_ppfe-eth-disable-CRC-removal.patch
+Patch232:        0022-staging-fsl_ppfe-eth-handle-ls1012a-errata_a010897.patch
+Patch233:        0023-staging-fsl_ppfe-eth-Modify-Kconfig-to-enable-pfe-dr.patch
 %endif
 
 %if 0%{?kat_build:1}
@@ -209,36 +216,42 @@ Kernel Device Tree Blob files for NXP ls1012a FRWY board
 %patch36 -p1
 %patch38 -p1
 %patch39 -p1
+%patch40 -p1
+%patch41 -p1
+%patch42 -p1
+%patch43 -p1
+%patch44 -p1
+%patch45 -p1
 
 %ifarch aarch64
 # Rpi of_configfs patches
-%patch40 -p1
-%patch41 -p1
+%patch200 -p1
+%patch201 -p1
 
 # NXP FSL_PPFE Driver patches
-%patch51 -p1
-%patch52 -p1
-%patch53 -p1
-%patch54 -p1
-%patch55 -p1
-%patch56 -p1
-%patch57 -p1
-%patch58 -p1
-%patch59 -p1
-%patch60 -p1
-%patch61 -p1
-%patch62 -p1
-%patch63 -p1
-%patch64 -p1
-%patch65 -p1
-%patch66 -p1
-%patch67 -p1
-%patch68 -p1
-%patch69 -p1
-%patch70 -p1
-%patch71 -p1
-%patch72 -p1
-%patch73 -p1
+%patch211 -p1
+%patch212 -p1
+%patch213 -p1
+%patch214 -p1
+%patch215 -p1
+%patch216 -p1
+%patch217 -p1
+%patch218 -p1
+%patch219 -p1
+%patch220 -p1
+%patch221 -p1
+%patch222 -p1
+%patch223 -p1
+%patch224 -p1
+%patch225 -p1
+%patch226 -p1
+%patch227 -p1
+%patch228 -p1
+%patch229 -p1
+%patch230 -p1
+%patch231 -p1
+%patch232 -p1
+%patch233 -p1
 %endif
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -472,6 +485,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Aug 14 2019 Raejoon Jung <rjung@vmware.com> 4.19.65-3
+-   Backport of Secure Boot UEFI certificate import from v5.2
 *   Mon Aug 12 2019 Ajay Kaher <akaher@vmware.com> 4.19.65-2
 -   Fix config_aarch64 for v4.19.65
 *   Tue Aug 06 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.65-1

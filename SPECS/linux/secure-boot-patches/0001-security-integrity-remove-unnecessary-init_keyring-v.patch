@@ -1,0 +1,45 @@
+From 08b03834a826677149f559a922778689a9545e2e Mon Sep 17 00:00:00 2001
+From: Eric Biggers <ebiggers@google.com>
+Date: Wed, 3 Oct 2018 17:15:44 -0700
+Subject: [PATCH 1/6] security/integrity: remove unnecessary 'init_keyring'
+ variable
+
+The 'init_keyring' variable actually just gave the value of
+CONFIG_INTEGRITY_TRUSTED_KEYRING.  We should check the config option
+directly instead.  No change in behavior; this just simplifies the code.
+
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+---
+ security/integrity/digsig.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/security/integrity/digsig.c b/security/integrity/digsig.c
+index 9bb0a7f2863e..22110fa5ea3a 100644
+--- a/security/integrity/digsig.c
++++ b/security/integrity/digsig.c
+@@ -37,12 +37,6 @@ static const char *keyring_name[INTEGRITY_KEYRING_MAX] = {
+ 	"_module",
+ };
+ 
+-#ifdef CONFIG_INTEGRITY_TRUSTED_KEYRING
+-static bool init_keyring __initdata = true;
+-#else
+-static bool init_keyring __initdata;
+-#endif
+-
+ #ifdef CONFIG_IMA_KEYRINGS_PERMIT_SIGNED_BY_BUILTIN_OR_SECONDARY
+ #define restrict_link_to_ima restrict_link_by_builtin_and_secondary_trusted
+ #else
+@@ -85,7 +79,7 @@ int __init integrity_init_keyring(const unsigned int id)
+ 	struct key_restriction *restriction;
+ 	int err = 0;
+ 
+-	if (!init_keyring)
++	if (!IS_ENABLED(CONFIG_INTEGRITY_TRUSTED_KEYRING))
+ 		return 0;
+ 
+ 	restriction = kzalloc(sizeof(struct key_restriction), GFP_KERNEL);
+-- 
+2.17.1
+
