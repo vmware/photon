@@ -11,27 +11,27 @@ ARCH=x86_64
 #
 # Docker images for calico-node, calico-cni
 #
-CALICO_VER=`cat ${SPEC_DIR}/calico/calico.spec | grep Version | cut -d: -f2 | tr -d ' '`
+CALICO_VER=`cat ${SPEC_DIR}/calico/calico.spec | grep ^Version | cut -d: -f2 | tr -d ' '`
 CALICO_VER_REL=${CALICO_VER}-`cat ${SPEC_DIR}/calico/calico.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 CALICO_RPM=calico-${CALICO_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${CALICO_RPM}
 
-CALICO_BGP_VER=`cat ${SPEC_DIR}/calico-bgp-daemon/calico-bgp-daemon.spec | grep Version | cut -d: -f2 | tr -d ' '`
+CALICO_BGP_VER=`cat ${SPEC_DIR}/calico-bgp-daemon/calico-bgp-daemon.spec | grep ^Version | cut -d: -f2 | tr -d ' '`
 CALICO_BGP_VER_REL=${CALICO_BGP_VER}-`cat ${SPEC_DIR}/calico-bgp-daemon/calico-bgp-daemon.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 CALICO_BGP_RPM=calico-bgp-daemon-${CALICO_BGP_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_BGP_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${CALICO_BGP_RPM}
 
-GO_BGP_VER=`cat ${SPEC_DIR}/gobgp/gobgp.spec | grep Version | cut -d: -f2 | tr -d ' '`
+GO_BGP_VER=`cat ${SPEC_DIR}/gobgp/gobgp.spec | grep ^Version | cut -d: -f2 | tr -d ' '`
 GO_BGP_VER_REL=${GO_BGP_VER}-`cat ${SPEC_DIR}/gobgp/gobgp.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 GO_BGP_RPM=gobgp-${GO_BGP_VER_REL}${DIST_TAG}.${ARCH}.rpm
 GO_BGP_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${GO_BGP_RPM}
 
-CALICO_BIRD_VER=`cat ${SPEC_DIR}/calico-bird/calico-bird.spec | grep Version | cut -d: -f2 | tr -d ' '`
+CALICO_BIRD_VER=`cat ${SPEC_DIR}/calico-bird/calico-bird.spec | grep ^Version | cut -d: -f2 | tr -d ' '`
 CALICO_BIRD_VER_REL=${CALICO_BIRD_VER}-`cat ${SPEC_DIR}/calico-bird/calico-bird.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 CALICO_BIRD_RPM=calico-bird-${CALICO_BIRD_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_BIRD_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${CALICO_BIRD_RPM}
 
-CALICO_CONFD_VER=`cat ${SPEC_DIR}/calico-confd/calico-confd.spec | grep Version | cut -d: -f2 | tr -d ' '`
+CALICO_CONFD_VER=`cat ${SPEC_DIR}/calico-confd/calico-confd.spec | grep ^Version | cut -d: -f2 | tr -d ' '`
 CALICO_CONFD_VER_REL=${CALICO_CONFD_VER}-`cat ${SPEC_DIR}/calico-confd/calico-confd.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 CALICO_CONFD_RPM=calico-confd-${CALICO_CONFD_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_CONFD_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${CALICO_CONFD_RPM}
@@ -46,7 +46,7 @@ CALICO_LIBNET_VER_REL=${CALICO_LIBNET_VER}-`cat ${SPEC_DIR}/calico-libnetwork/ca
 CALICO_LIBNET_RPM=calico-libnetwork-${CALICO_LIBNET_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_LIBNET_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${CALICO_LIBNET_RPM}
 
-CALICO_CNI_VER=`cat ${SPEC_DIR}/calico-cni/calico-cni.spec | grep Version | cut -d: -f2 | tr -d ' '`
+CALICO_CNI_VER=`cat ${SPEC_DIR}/calico-cni/calico-cni.spec | grep ^Version | cut -d: -f2 | tr -d ' '`
 CALICO_CNI_VER_REL=${CALICO_CNI_VER}-`cat ${SPEC_DIR}/calico-cni/calico-cni.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 CALICO_CNI_RPM=calico-cni-${CALICO_CNI_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_CNI_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${CALICO_CNI_RPM}
@@ -56,7 +56,7 @@ K8S_CNI_VER_REL=${K8S_CNI_VER}-`cat ${SPEC_DIR}/cni/cni.spec | grep Release | cu
 K8S_CNI_RPM=cni-${K8S_CNI_VER_REL}${DIST_TAG}.${ARCH}.rpm
 K8S_CNI_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${K8S_CNI_RPM}
 
-CALICO_K8S_POLICY_VER=`cat ${SPEC_DIR}/calico-k8s-policy/calico-k8s-policy.spec | grep Version | cut -d: -f2 | tr -d ' '`
+CALICO_K8S_POLICY_VER=`cat ${SPEC_DIR}/calico-k8s-policy/calico-k8s-policy.spec | grep ^Version | cut -d: -f2 | tr -d ' '`
 CALICO_K8S_POLICY_VER_REL=${CALICO_K8S_POLICY_VER}-`cat ${SPEC_DIR}/calico-k8s-policy/calico-k8s-policy.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 CALICO_K8S_POLICY_RPM=calico-k8s-policy-${CALICO_K8S_POLICY_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_K8S_POLICY_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${CALICO_K8S_POLICY_RPM}

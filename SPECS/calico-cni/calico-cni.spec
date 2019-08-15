@@ -1,7 +1,7 @@
 Summary:        Calico networking for CNI
 Name:           calico-cni
 Version:        3.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/projectcalico/cni-plugin
 Source0:        %{name}-%{version}.tar.gz
@@ -59,6 +59,8 @@ install -vpm 0755 -t %{buildroot}/usr/share/calico-cni/k8s/ k8s-install/scripts/
 /usr/share/calico-cni/k8s/calico.conf.default
 
 %changelog
+*   Tue Aug 27 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 3.6.1-2
+-   version bump to build using go-1.9.4-6
 *   Thu Apr 11 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-1
 -   Update to 3.6.1
 *   Mon Aug 06 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.11.2-2
