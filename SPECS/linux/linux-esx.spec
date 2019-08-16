@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.65
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -55,6 +55,7 @@ Patch32:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch34:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch35:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
+Patch36:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
 
 BuildArch:     x86_64
 BuildRequires: bc
@@ -122,6 +123,7 @@ The Linux package contains the Linux kernel doc files
 %patch32 -p1
 %patch34 -p1
 %patch35 -p1
+%patch36 -p1
 
 %build
 # patch vmw_balloon driver
@@ -219,6 +221,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Aug 13 2019 Daniel Müller <danielmuller@vmware.com> 4.19.65-2
+-   Add patch "Remove OOM_SCORE_ADJ_MAX limit check"
 *   Tue Aug 06 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.65-1
 -   Update to version 4.19.65
 -   Fix CVE-2019-1125 (SWAPGS)
