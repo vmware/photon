@@ -31,10 +31,10 @@ CALICO_BIRD_VER_REL=${CALICO_BIRD_VER}-`cat ${SPEC_DIR}/calico-bird/calico-bird.
 CALICO_BIRD_RPM=calico-bird-${CALICO_BIRD_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_BIRD_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${CALICO_BIRD_RPM}
 
-CALICO_CONFD_VER=`cat ${SPEC_DIR}/calico-confd/calico-confd.spec | grep Version | cut -d: -f2 | tr -d ' '`
-CALICO_CONFD_VER_REL=${CALICO_CONFD_VER}-`cat ${SPEC_DIR}/calico-confd/calico-confd.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
-CALICO_CONFD_RPM=calico-confd-${CALICO_CONFD_VER_REL}${DIST_TAG}.${ARCH}.rpm
-CALICO_CONFD_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${CALICO_CONFD_RPM}
+CONFD_VER=`cat ${SPEC_DIR}/confd/confd.spec | grep Version | cut -d: -f2 | tr -d ' '`
+CONFD_VER_REL=${CONFD_VER}-`cat ${SPEC_DIR}/confd/confd.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
+CONFD_RPM=confd-${CONFD_VER_REL}${DIST_TAG}.${ARCH}.rpm
+CONFD_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${CONFD_RPM}
 
 CALICO_FELIX_VER=`cat ${SPEC_DIR}/calico-felix/calico-felix.spec | grep ^Version | cut -d: -f2 | tr -d ' '`
 CALICO_FELIX_VER_REL=${CALICO_FELIX_VER}-`cat ${SPEC_DIR}/calico-felix/calico-felix.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
@@ -85,9 +85,9 @@ then
     exit 1
 fi
 
-if [ ! -f ${CALICO_CONFD_RPM_FILE} ]
+if [ ! -f ${CONFD_RPM_FILE} ]
 then
-    echo "Calico confd RPM ${CALICO_CONFD_RPM_FILE} not found. Exiting.."
+    echo "confd RPM ${CONFD_RPM_FILE} not found. Exiting.."
     exit 1
 fi
 
@@ -145,7 +145,7 @@ cp ${CALICO_RPM_FILE} tmp/calico/
 cp ${CALICO_BGP_RPM_FILE} tmp/calico/
 cp ${GO_BGP_RPM_FILE} tmp/calico/
 cp ${CALICO_BIRD_RPM_FILE} tmp/calico/
-cp ${CALICO_CONFD_RPM_FILE} tmp/calico/
+cp ${CONFD_RPM_FILE} tmp/calico/
 cp ${CALICO_FELIX_RPM_FILE} tmp/calico/
 cp ${CALICO_LIBNET_RPM_FILE} tmp/calico/
 cp ${CALICO_CNI_RPM_FILE} tmp/calico/
@@ -156,7 +156,7 @@ rpm2cpio ${CALICO_RPM} | cpio -vid
 rpm2cpio ${CALICO_BGP_RPM} | cpio -vid
 rpm2cpio ${GO_BGP_RPM} | cpio -vid
 rpm2cpio ${CALICO_BIRD_RPM} | cpio -vid
-rpm2cpio ${CALICO_CONFD_RPM} | cpio -vid
+rpm2cpio ${CONFD_RPM} | cpio -vid
 rpm2cpio ${CALICO_FELIX_RPM} | cpio -vid
 rpm2cpio ${CALICO_LIBNET_RPM} | cpio -vid
 rpm2cpio ${CALICO_CNI_RPM} | cpio -vid
