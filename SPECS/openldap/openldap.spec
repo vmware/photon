@@ -1,18 +1,17 @@
 %global _default_patch_fuzz 2
-Summary:	OpenLdap-2.4.43
+Summary:	OpenLdap-2.4.48
 Name:		openldap
-Version:	2.4.44
-Release:	4%{?dist}
+Version:	2.4.48
+Release:	1%{?dist}
 License:	OpenLDAP
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
-%define sha1 openldap=016a738d050a68d388602a74b5e991035cdba149
+%define sha1 openldap=c1984e80f6db038b317bf931866adb38e5537dcd
 Patch0:		openldap-2.4.44-consolidated-2.patch
-Patch1:     openldap-CVE-2017-9287.patch
-Patch2:		openldap-2.4.40-gssapi-1.patch
+Patch1:		openldap-2.4.40-gssapi-1.patch
 Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
 BuildRequires:  cyrus-sasl >= 2.1
 BuildRequires:  openssl-devel >= 1.0.1
@@ -30,7 +29,6 @@ libraries, and documentation for OpenLDAP.
 
 %prep
 %setup -q
-%patch2 -p1
 %patch0 -p1
 %patch1 -p1
 %build
@@ -77,6 +75,8 @@ rm -rf %{buildroot}/*
 /etc/openldap/*
 
 %changelog
+*   Fri Aug 16 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.48-1
+-   upgrade to openldap 2.4.48
 *   Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 2.4.44-4
 -   export CPPFLAGS before invoking configure
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.44-3
