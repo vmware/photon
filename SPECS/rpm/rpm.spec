@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -28,6 +28,8 @@ Requires:       file
 Requires:       bash
 Requires:       elfutils-libelf
 Requires:       libcap
+Requires:	xz
+BuildRequires:	xz-devel
 BuildRequires:  lua-devel
 BuildRequires:  popt-devel
 BuildRequires:  nss-devel
@@ -238,6 +240,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Aug 19 2019 Kuladeep Rayalla <krayalla@vmware.com> 4.13.0.2-2
+-   Include PayloadIsXz support
 *   Sat Nov 03 2018 Tapas Kundu <tkundu@vmware.com> 4.13.0.2-1
 -   Updated to 4.13.0.2
 -   Fix CVE-2017-7501 and CVE-2017-7500
