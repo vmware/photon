@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -21,6 +21,8 @@ Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
 Requires:       libarchive
+Requires:	lua
+BuildRequires:	lua-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  libdb-devel
 BuildRequires:  popt-devel
@@ -55,6 +57,7 @@ Shared libraries librpm and librpmio
 
 %package build
 Requires:       perl
+Requires:	lua
 Requires:       %{name}-devel = %{version}-%{release}
 Requires:       elfutils-libelf
 Summary: Binaries, scripts and libraries needed to build rpms.
@@ -116,7 +119,7 @@ sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
         --disable-static \
         --enable-python \
         --with-cap \
-        --without-lua \
+	--with-lua \
         --disable-silent-rules \
         --with-external-db
 make %{?_smp_mflags}
@@ -258,6 +261,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Aug 19 2019 Kuladeep Rayalla <krayalla@vmware.com> 4.13.0.2-2
+-   Enable lua support
 *   Fri Nov 02 2018 Siju Maliakkal <smaliakkal@vmware.com> 4.13.0.2-1
 -   Updated to 4.13.0.2 to fix CVE-2017-7500
 *   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-7
