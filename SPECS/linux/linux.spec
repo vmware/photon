@@ -13,7 +13,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.87
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -138,7 +138,7 @@ Patch234:        0001-fsl_dpaa_mac-wait-for-phy-probe-to-complete.patch
 %endif
 
 %if 0%{?kat_build:1}
-Patch1000:	%{kat_build}.patch
+Patch1000:	fips-kat-tests.patch
 %endif
 Patch1001:	hmac_gen_kernel.patch
 
@@ -574,6 +574,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Jan 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.87-3
+-   Update fips Kat tests patch.
 *   Mon Dec 09 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.87-2
 -   Cross compilation support
 *   Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.19.87-1

@@ -25,7 +25,7 @@ class constants(object):
     dist = None
     buildNumber = None
     releaseVersion = None
-    katBuild = None
+    katBuild = False
     testForceRPMS = []
     tmpDirPath = "/dev/shm"
     buildOptions = {}
@@ -453,8 +453,8 @@ class constants(object):
         if constants.releaseVersion is not None:
             constants.addMacro("photon_release_version", constants.releaseVersion)
 
-        if constants.katBuild is not None:
-            constants.addMacro("kat_build", constants.katBuild)
+        if constants.katBuild:
+            constants.addMacro("kat_build", "1")
 
     @staticmethod
     def setTestForceRPMS(listsPackages):

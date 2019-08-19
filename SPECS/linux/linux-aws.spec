@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.87
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -97,7 +97,7 @@ Patch133: 0037-x86-tsc-avoid-system-instability-in-hibernation.patch
 Patch152: 0056-Amazon-ENA-driver-Update-to-version-1.6.0.patch
 
 %if 0%{?kat_build:1}
-Patch1000:	%{kat_build}.patch
+Patch1000:	fips-kat-tests.patch
 %endif
 
 Patch1001:	hmac_gen_kernel.patch
@@ -411,6 +411,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Dec 20 2019 Keerthana K <keerthanak@vmware.com> 4.19.87-2
+-   Update fips Kat tests.
 *   Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.19.87-1
 -   Update to version 4.19.87
 *   Thu Dec 05 2019 Ajay Kaher <akaher@vmware.com> 4.19.84-4

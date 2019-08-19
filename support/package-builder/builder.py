@@ -55,7 +55,7 @@ def main():
     parser.add_argument("-pw", "--package-weights-path", dest="packageWeightsPath",
                         default="../../common/data/packageWeights.json")
     parser.add_argument("-bt", "--build-type", dest="pkgBuildType", choices=['chroot', 'container'], default="chroot")
-    parser.add_argument("-F", "--kat-build", dest="katBuild", default=None)
+    parser.add_argument("-F", "--enable-katbuild", dest="katBuild", default=False, action="store_true")
     parser.add_argument("-ct", "--cross-target", dest="targetArch", choices=['x86_64', 'aarch64'], default=None)
     parser.add_argument("-pj", "--packages-json-input", dest="pkgJsonInput", default=None)
     parser.add_argument("PackageName", nargs='?')
