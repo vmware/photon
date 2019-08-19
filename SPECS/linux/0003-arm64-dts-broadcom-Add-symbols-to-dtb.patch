@@ -1,0 +1,26 @@
+From 78ecc3637471cf3d3ea033d0f2fd6339dd18b208 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Wed, 21 Aug 2019 13:54:04 +0530
+Subject: [PATCH] arm64: dts: broadcom: Add symbols to dtb.
+
+Overlays require symbols with-in dtb files.
+---
+ arch/arm64/boot/dts/broadcom/Makefile | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/broadcom/Makefile b/arch/arm64/boot/dts/broadcom/Makefile
+index 1193a9e..2987d44 100644
+--- a/arch/arm64/boot/dts/broadcom/Makefile
++++ b/arch/arm64/boot/dts/broadcom/Makefile
+@@ -4,3 +4,8 @@ dtb-$(CONFIG_ARCH_BCM2835) += bcm2837-rpi-3-b.dtb \
+ 
+ subdir-y	+= northstar2
+ subdir-y	+= stingray
++
++ifeq ($(CONFIG_ARCH_BCM2835),y)
++	DTC_FLAGS ?= -@
++endif
++
+-- 
+2.7.4
+

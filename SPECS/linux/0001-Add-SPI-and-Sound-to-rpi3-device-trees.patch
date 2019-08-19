@@ -1,0 +1,186 @@
+From 3bf2ec299d6c35543fd857bbec32c34bcbe51cea Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Mon, 19 Aug 2019 09:02:36 +0000
+Subject: [PATCH] Add SPI and Sound to rpi3 device trees
+
+Add SPI and Sound to rpi3 device trees
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+
+---
+ arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts | 50 +++++++++++++++++++++-
+ arch/arm/boot/dts/bcm2837-rpi-3-b.dts      | 47 +++++++++++++++++++-
+ arch/arm/boot/dts/bcm283x.dtsi             |  9 +++-
+ 3 files changed, 103 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+index 93762244b..da71029c4 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+@@ -35,6 +35,24 @@
+ 	};
+ };
+ 
++&gpio {
++	spi0_pins: spi0_pins {
++		brcm,pins = <9 10 11>;
++		brcm,function = <4>; /* alt0 */
++	};
++
++	spi0_cs_pins: spi0_cs_pins {
++		brcm,pins = <8 7>;
++		brcm,function = <1>; /* output */
++	};
++
++	audio_pins: audio_pins {
++		brcm,pins = <40 41>;
++		brcm,function = <4>;
++	};
++
++};
++
+ &firmware {
+ 	expgpio: gpio {
+ 		compatible = "raspberrypi,firmware-gpio";
+@@ -59,7 +77,7 @@
+ &pwm {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pwm0_gpio40 &pwm1_gpio41>;
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ /* SDHCI is used to control the SDIO for wireless */
+@@ -106,3 +124,33 @@
+ 	pinctrl-0 = <&uart1_gpio14>;
+ 	status = "okay";
+ };
++
++
++&spi0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi0_pins &spi0_cs_pins>;
++	cs-gpios = <&gpio 8 1>, <&gpio 7 1>;
++
++	spidev0: spidev@0{
++		compatible = "spidev";
++		reg = <0>;	/* CE0 */
++		#address-cells = <1>;
++		#size-cells = <0>;
++		spi-max-frequency = <125000000>;
++	};
++
++	spidev1: spidev@1{
++		compatible = "spidev";
++		reg = <1>;	/* CE1 */
++		#address-cells = <1>;
++		#size-cells = <0>;
++		spi-max-frequency = <125000000>;
++	};
++};
++
++&audio {
++	pinctrl-names = "default";
++	pinctrl-0 = <&audio_pins>;
++};
++
++
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
+index 89e6fd547..b1bb4e85a 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-3-b.dts
+@@ -30,6 +30,23 @@
+ 	};
+ };
+ 
++&gpio {
++	spi0_pins: spi0_pins {
++		brcm,pins = <9 10 11>;
++		brcm,function = <4>; /* alt0 */
++	};
++
++	spi0_cs_pins: spi0_cs_pins {
++		brcm,pins = <8 7>;
++		brcm,function = <1>; /* output */
++	};
++
++	audio_pins: audio_pins {
++		brcm,pins = <40 41>;
++		brcm,function = <4>;
++	};
++};
++
+ &firmware {
+ 	expgpio: gpio {
+ 		compatible = "raspberrypi,firmware-gpio";
+@@ -50,7 +67,7 @@
+ &pwm {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pwm0_gpio40 &pwm1_gpio41>;
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &hdmi {
+@@ -101,3 +118,31 @@
+ 	status = "okay";
+ 	bus-width = <4>;
+ };
++
++&spi0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi0_pins &spi0_cs_pins>;
++	cs-gpios = <&gpio 8 1>, <&gpio 7 1>;
++
++	spidev0: spidev@0{
++		compatible = "spidev";
++		reg = <0>;	/* CE0 */
++		#address-cells = <1>;
++		#size-cells = <0>;
++		spi-max-frequency = <125000000>;
++	};
++
++	spidev1: spidev@1{
++		compatible = "spidev";
++		reg = <1>;	/* CE1 */
++		#address-cells = <1>;
++		#size-cells = <0>;
++		spi-max-frequency = <125000000>;
++	};
++};
++
++&audio {
++	pinctrl-names = "default";
++	pinctrl-0 = <&audio_pins>;
++};
++
+diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
+index 31b29646b..39697f29d 100644
+--- a/arch/arm/boot/dts/bcm283x.dtsi
++++ b/arch/arm/boot/dts/bcm283x.dtsi
+@@ -416,7 +416,7 @@
+ 			status = "disabled";
+ 		};
+ 
+-		spi: spi@7e204000 {
++		spi0: spi@7e204000 {
+ 			compatible = "brcm,bcm2835-spi";
+ 			reg = <0x7e204000 0x1000>;
+ 			interrupts = <2 22>;
+@@ -634,6 +634,13 @@
+ 		vc4: gpu {
+ 			compatible = "brcm,bcm2835-vc4";
+ 		};
++		/* Onboard audio */
++		audio: audio {
++			compatible = "brcm,bcm2835-audio";
++			brcm,pwm-channels = <8>;
++			status = "disabled";
++		};
++
+ 	};
+ 
+ 	clocks {
+-- 
+2.19.0
+
