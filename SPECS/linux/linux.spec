@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.69
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -70,6 +70,15 @@ Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.
 # Rpi of_configfs patches
 Patch200:        0001-OF-DT-Overlay-configfs-interface.patch
 Patch201:        0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
+Patch202:        0003-arm64-dts-broadcom-Add-symbols-to-dtb.patch
+# Rpi add 'spidev' to spidev_dt_ids compatible list
+Patch203:        0001-spidev-Add-spidev-compatible-string-to-silence-warni.patch
+# Rpi device tree patch
+Patch204:        0001-Add-SPI-and-Sound-to-rpi3-device-trees.patch
+# Rpi Overlays
+Patch205:        0001-Infrastructure-to-compile-Overlays.patch
+Patch206:        0002-spi0-overlays-files.patch
+Patch207:        0003-audio-overlays-files.patch
 
 # NXP LS10XXa FRWY patches
 Patch211:        0001-staging-fsl_ppfe-eth-header-files-for-pfe-driver.patch
@@ -229,6 +238,12 @@ Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
 # Rpi of_configfs patches
 %patch200 -p1
 %patch201 -p1
+%patch202 -p1
+%patch203 -p1
+%patch204 -p1
+%patch205 -p1
+%patch206 -p1
+%patch207 -p1
 
 # NXP FSL_PPFE Driver patches
 %patch211 -p1
@@ -347,9 +362,12 @@ install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 
 %ifarch aarch64
 install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
-# Install DTB files
+# Install DTB and Overlays files
+install -vdm 755 %{buildroot}/boot/broadcom
+install -vdm 755 %{buildroot}/boot/broadcom/overlays
 install -vdm 755 %{buildroot}/boot/dtb
-install -vm 640 arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dtb %{buildroot}/boot/dtb/
+install -vm 640 arch/arm64/boot/dts/broadcom/*.dtb %{buildroot}/boot/broadcom/
+install -vm 640 arch/arm64/boot/dts/overlays/*.dtbo %{buildroot}/boot/broadcom/overlays/
 install -vm 640 arch/arm64/boot/dts/freescale/fsl-ls1012a-frwy.dtb %{buildroot}/boot/dtb/
 install -vm 640 arch/arm64/boot/dts/freescale/fsl-ls1046a-rdb.dtb %{buildroot}/boot/dtb/
 %endif
@@ -480,7 +498,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %ifarch aarch64
 %files dtb-rpi3
 %defattr(-,root,root)
-/boot/dtb/bcm2837-rpi-3-b.dtb
+/boot/broadcom/*
 
 %files dtb-ls1012afrwy
 %defattr(-,root,root)
@@ -490,6 +508,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Sep 05 2019 Ajay Kaher <akaher@vmware.com> 4.19.69-2
+-   Adding SPI and Audio interfaces in rpi3 device tree
+-   Adding spi0 and audio overlays
+-   Copying rpi dt in /boot/broadcom as u-boot picks from here
 *   Fri Aug 30 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.69-1
 -   Update to version 4.19.69
 *   Fri Aug 23 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.65-4
