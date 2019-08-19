@@ -62,8 +62,9 @@ PHOTON_RPMCHECK_FLAGS :=
 endif
 
 # KAT build for FIPS certification
-ifdef KAT_BUILD
-PHOTON_KAT_BUILD_FLAGS := --kat-build $(KAT_BUILD)
+# Use KAT_BUILD=enable to build a kat kernel. By default, KAT_BUILD is disabled.
+ifeq ($(KAT_BUILD),enable)
+PHOTON_KAT_BUILD_FLAGS := --enable-katbuild
 endif
 
 ifeq ($(BUILDDEPS),true)

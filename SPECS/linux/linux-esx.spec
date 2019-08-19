@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.87
-Release:        1%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -75,6 +75,10 @@ Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 Patch46:        0001-ath10k-fix-memory-leak.patch
 
 Patch1001:	hmac_gen_kernel.patch
+
+%if 0%{?kat_build:1}
+Patch1000:      fips-kat-tests.patch
+%endif
 
 BuildArch:     x86_64
 BuildRequires: bc
@@ -160,7 +164,11 @@ This Linux package contains hmac sha generator kernel module.
 %patch45 -p1
 %patch46 -p1
 
+%if 0%{?kat_build:1}
+%patch1000 -p1
+%endif
 %patch1001 -p1
+
 %build
 # patch vmw_balloon driver
 sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
@@ -279,6 +287,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Fri Dec 20 2019 Keerthana K <keerthanak@vmware.com> 4.19.87-2
+-   Update fips Kat tests.
 *   Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.19.87-1
 -   Update to version 4.19.87
 *   Tue Dec 03 2019 Keerthana K <keerthanak@vmware.com> 4.19.84-3
