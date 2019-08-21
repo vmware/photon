@@ -1,7 +1,7 @@
 Summary:    Glib networking modules
 Name:       glib-networking
 Version:    2.59.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/glib-networking
 Group:      System Environment/Development
@@ -56,6 +56,7 @@ DESTDIR=%{buildroot} ninja install
 %find_lang %{name}
 
 %check
+cd build
 ninja test
 
 %post   -p /sbin/ldconfig
@@ -70,6 +71,8 @@ ninja test
 %defattr(-,root,root)
 
 %changelog
+*       Wed Aug 21 2019 Ashwin H <ashwinh@vmware.com> 2.59.1-2
+-       make check fix to work with RPMCHECK flag
 *       Wed Nov 21 2018 Ashwin H <ashwinh@vmware.com> 2.59.1-1
 -       Updated to 2.59.1 for make check fixes
 *       Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 2.58.0-1
