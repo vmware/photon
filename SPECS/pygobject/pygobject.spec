@@ -3,7 +3,7 @@
 
 Name:           pygobject
 Version:        3.30.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python Bindings for GObject
 Group:          Development/Languages
 License:        LGPLv2+
@@ -81,7 +81,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 pytest
+$easy_install_2 pytest==4.6
 python2 setup.py test
 pushd ../p3dir
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
@@ -105,6 +105,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+*   Thu Aug 21 2019 Shreyas B. <shreyasb@vmware.com> 3.30.1-3
+-   Fix makecheck
 *   Thu Dec 06 2018 Tapas Kundu <tkundu@vmware.com> 3.30.1-2
 -   Fix makecheck
 *   Thu Sep 27 2018 Tapas Kundu <tkundu@vmware.com> 3.30.1-1
