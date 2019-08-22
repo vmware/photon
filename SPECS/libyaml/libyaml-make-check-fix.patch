@@ -1,0 +1,60 @@
+From 7c2e6f47e1b12ca3dfa9ea2f6c65e9bd8a02e8c8 Mon Sep 17 00:00:00 2001
+From: James Clarke <jrtc27@jrtc27.com>
+Date: Thu, 29 Jun 2017 02:24:53 +0100
+Subject: [PATCH 1/2] Revert "This code is not needed and breaks tests"
+
+This reverts commit 56400d976a1999156b1abfd674c3122843980260.
+---
+ src/emitter.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/emitter.c b/src/emitter.c
+index a5b7ff8..c593a7d 100644
+--- a/src/emitter.c
++++ b/src/emitter.c
+@@ -1946,6 +1946,10 @@ yaml_emitter_write_plain_scalar(yaml_emitter_t *emitter,
+ 
+     emitter->whitespace = 0;
+     emitter->indention = 0;
++    if (emitter->root_context)
++    {
++        emitter->open_ended = 1;
++    }
+ 
+     return 1;
+ }
+-- 
+2.13.2
+
+
+From e5ebb70a01cc0fbd9e519050d51d704f58c2a33d Mon Sep 17 00:00:00 2001
+From: James Clarke <jrtc27@jrtc27.com>
+Date: Thu, 29 Jun 2017 02:26:09 +0100
+Subject: [PATCH 2/2] Skip trailing document terminator at the end of the
+ stream
+
+---
+ src/emitter.c | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/src/emitter.c b/src/emitter.c
+index c593a7d..1502590 100644
+--- a/src/emitter.c
++++ b/src/emitter.c
+@@ -649,14 +649,6 @@ yaml_emitter_emit_document_start(yaml_emitter_t *emitter,
+ 
+     else if (event->type == YAML_STREAM_END_EVENT)
+     {
+-        if (emitter->open_ended)
+-        {
+-            if (!yaml_emitter_write_indicator(emitter, "...", 1, 0, 0))
+-                return 0;
+-            if (!yaml_emitter_write_indent(emitter))
+-                return 0;
+-        }
+-
+         if (!yaml_emitter_flush(emitter))
+             return 0;
+ 
+-- 
+2.13.2

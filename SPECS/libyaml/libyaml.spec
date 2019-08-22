@@ -1,7 +1,7 @@
 Summary:     Implementation of a YAML 1.1 parser and emitter
 Name:        libyaml
 Version:     0.2.1
-Release:     1%{?dist}
+Release:     2%{?dist}
 License:     MIT
 Group:       Development/Libraries
 URL:         http://pyyaml.org/wiki/LibYAML
@@ -9,6 +9,7 @@ Vendor:      VMware, Inc.
 Distribution:Photon
 Source0:     http://pyyaml.org/download/libyaml/yaml-%{version}.tar.gz
 %define      sha1 yaml=125a3113681f06320dcdfde48bab47cba9031263
+Patch0:      libyaml-make-check-fix.patch
 
 %description
 LibYAML is a C library implementation of a YAML 1.1 parser and emitter.
@@ -26,6 +27,7 @@ you will need to install %{name}-devel.
 
 %prep
 %setup -n yaml-%{version}
+%patch0 -p1
 
 %build
 %configure --disable-static
@@ -57,6 +59,8 @@ make %{?_smp_mflags} check
 %exclude %{_libdir}/*.la
 
 %changelog
+*       Thu Aug 22 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.2.1-2
+-       Fix PyYAML make check
 *       Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.2.1-1
 -       Update to version 0.2.1
 *       Fri Apr 14 2017 Kumar Kaushik <kaushikk@vmware.com> 0.1.7-1
