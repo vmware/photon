@@ -1,0 +1,410 @@
+From c8b0e368f61e5b8752a22ec16f26cf8f22afec9e Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Fri, 23 Aug 2019 12:20:39 +0530
+Subject: [PATCH] fs: ext4: cache extent data
+
+When a file contains extents, U-Boot currently reads extent-related data
+for each block in the file, even if that data is located in the same
+block each time. This significantly slows down loading of files that use
+extents. Implement a very dumb cache to prevent repeatedly reading the
+same block. Files with extents now load as fast as files without.
+
+Note: There are many cases where read_allocated_block() is called. This
+patch only addresses one of those places; all others still read redundant
+data in any case they did before. This is a minimal patch to fix the
+load command; other cases aren't fixed.
+
+Signed-off-by: Stephen Warren <swarren@nvidia.com>
+Signed-off-by: Ajay Kaher <akaher@vmware.com
+---
+ fs/ext4/ext4_common.c  | 45 ++++++++++++++++++++++++++------------------
+ fs/ext4/ext4_journal.c | 22 ++++++++++++----------
+ fs/ext4/ext4_write.c   |  6 +++---
+ fs/ext4/ext4fs.c       | 51 +++++++++++++++++++++++++++++++++++++++++++++-----
+ include/ext4fs.h       | 12 +++++++++++-
+ 5 files changed, 99 insertions(+), 37 deletions(-)
+
+diff --git a/fs/ext4/ext4_common.c b/fs/ext4/ext4_common.c
+index 67e2471..29308e3 100644
+--- a/fs/ext4/ext4_common.c
++++ b/fs/ext4/ext4_common.c
+@@ -510,7 +510,8 @@ restart:
+ 
+ restart_read:
+ 	/* read the block no allocated to a file */
+-	first_block_no_of_root = read_allocated_block(g_parent_inode, blk_idx);
++	first_block_no_of_root = read_allocated_block(g_parent_inode, blk_idx,
++						      NULL);
+ 	if (first_block_no_of_root <= 0)
+ 		goto fail;
+ 
+@@ -646,7 +647,7 @@ static int search_dir(struct ext2_inode *parent_inode, char *dirname)
+ 
+ 	/* get the block no allocated to a file */
+ 	for (blk_idx = 0; blk_idx < directory_blocks; blk_idx++) {
+-		blknr = read_allocated_block(parent_inode, blk_idx);
++		blknr = read_allocated_block(parent_inode, blk_idx, NULL);
+ 		if (blknr <= 0)
+ 			goto fail;
+ 
+@@ -943,7 +944,7 @@ int ext4fs_filename_unlink(char *filename)
+ 
+ 	/* read the block no allocated to a file */
+ 	for (blk_idx = 0; blk_idx < directory_blocks; blk_idx++) {
+-		blknr = read_allocated_block(g_parent_inode, blk_idx);
++		blknr = read_allocated_block(g_parent_inode, blk_idx, NULL);
+ 		if (blknr <= 0)
+ 			break;
+ 		inodeno = unlink_filename(filename, blknr);
+@@ -1522,7 +1523,7 @@ void ext4fs_allocate_blocks(struct ext2_inode *file_inode,
+ #endif
+ 
+ static struct ext4_extent_header *ext4fs_get_extent_block
+-	(struct ext2_data *data, char *buf,
++	(struct ext2_data *data, struct ext_block_cache *cache,
+ 		struct ext4_extent_header *ext_block,
+ 		uint32_t fileblock, int log2_blksz)
+ {
+@@ -1551,12 +1552,10 @@ static struct ext4_extent_header *ext4fs_get_extent_block
+ 
+ 		block = le16_to_cpu(index[i].ei_leaf_hi);
+ 		block = (block << 32) + le32_to_cpu(index[i].ei_leaf_lo);
+-
+-		if (ext4fs_devread((lbaint_t)block << log2_blksz, 0, blksz,
+-				   buf))
+-			ext_block = (struct ext4_extent_header *)buf;
+-		else
++		block <<= log2_blksz;
++		if (!ext_cache_read(cache, (lbaint_t)block, blksz))
+ 			return NULL;
++		ext_block = (struct ext4_extent_header *)cache->buf;
+ 	}
+ }
+ 
+@@ -1613,7 +1612,8 @@ int ext4fs_read_inode(struct ext2_data *data, int ino, struct ext2_inode *inode)
+ 	return 1;
+ }
+ 
+-long int read_allocated_block(struct ext2_inode *inode, int fileblock)
++long int read_allocated_block(struct ext2_inode *inode, int fileblock,
++			      struct ext_block_cache *cache)
+ {
+ 	long int blknr;
+ 	int blksz;
+@@ -1630,20 +1630,26 @@ long int read_allocated_block(struct ext2_inode *inode, int fileblock)
+ 
+ 	if (le32_to_cpu(inode->flags) & EXT4_EXTENTS_FL) {
+ 		long int startblock, endblock;
+-		char *buf = zalloc(blksz);
+-		if (!buf)
+-			return -ENOMEM;
++		struct ext_block_cache *c, cd;
+ 		struct ext4_extent_header *ext_block;
+ 		struct ext4_extent *extent;
+ 		int i;
++
++		if (cache) {
++			c = cache;
++		} else {
++			c = &cd;
++			ext_cache_init(c);
++		}
+ 		ext_block =
+-			ext4fs_get_extent_block(ext4fs_root, buf,
++			ext4fs_get_extent_block(ext4fs_root, c,
+ 						(struct ext4_extent_header *)
+ 						inode->b.blocks.dir_blocks,
+ 						fileblock, log2_blksz);
+ 		if (!ext_block) {
+ 			printf("invalid extent block\n");
+-			free(buf);
++			if (!cache)
++				ext_cache_fini(c);
+ 			return -EINVAL;
+ 		}
+ 
+@@ -1655,19 +1661,22 @@ long int read_allocated_block(struct ext2_inode *inode, int fileblock)
+ 
+ 			if (startblock > fileblock) {
+ 				/* Sparse file */
+-				free(buf);
++				if (!cache)
++					ext_cache_fini(c);
+ 				return 0;
+ 
+ 			} else if (fileblock < endblock) {
+ 				start = le16_to_cpu(extent[i].ee_start_hi);
+ 				start = (start << 32) +
+ 					le32_to_cpu(extent[i].ee_start_lo);
+-				free(buf);
++				if (!cache)
++					ext_cache_fini(c);
+ 				return (fileblock - startblock) + start;
+ 			}
+ 		}
+ 
+-		free(buf);
++		if (!cache)
++			ext_cache_fini(c);
+ 		return 0;
+ 	}
+ 
+diff --git a/fs/ext4/ext4_journal.c b/fs/ext4/ext4_journal.c
+index 148593d..6adbab9 100644
+--- a/fs/ext4/ext4_journal.c
++++ b/fs/ext4/ext4_journal.c
+@@ -347,7 +347,7 @@ void recover_transaction(int prev_desc_logical_no)
+ 	ext4fs_read_inode(ext4fs_root, EXT2_JOURNAL_INO,
+ 			  (struct ext2_inode *)&inode_journal);
+ 	blknr = read_allocated_block((struct ext2_inode *)
+-				     &inode_journal, i);
++				     &inode_journal, i, NULL);
+ 	ext4fs_devread((lbaint_t)blknr * fs->sect_perblk, 0, fs->blksz,
+ 		       temp_buff);
+ 	p_jdb = (char *)temp_buff;
+@@ -372,7 +372,7 @@ void recover_transaction(int prev_desc_logical_no)
+ 				be32_to_cpu(jdb->h_sequence)) == 0)
+ 				continue;
+ 		}
+-		blknr = read_allocated_block(&inode_journal, i);
++		blknr = read_allocated_block(&inode_journal, i, NULL);
+ 		ext4fs_devread((lbaint_t)blknr * fs->sect_perblk, 0,
+ 			       fs->blksz, metadata_buff);
+ 		put_ext4((uint64_t)((uint64_t)be32_to_cpu(tag->block) * (uint64_t)fs->blksz),
+@@ -419,7 +419,8 @@ int ext4fs_check_journal_state(int recovery_flag)
+ 	}
+ 
+ 	ext4fs_read_inode(ext4fs_root, EXT2_JOURNAL_INO, &inode_journal);
+-	blknr = read_allocated_block(&inode_journal, EXT2_JOURNAL_SUPERBLOCK);
++	blknr = read_allocated_block(&inode_journal, EXT2_JOURNAL_SUPERBLOCK,
++				     NULL);
+ 	ext4fs_devread((lbaint_t)blknr * fs->sect_perblk, 0, fs->blksz,
+ 		       temp_buff);
+ 	jsb = (struct journal_superblock_t *) temp_buff;
+@@ -443,7 +444,7 @@ int ext4fs_check_journal_state(int recovery_flag)
+ 
+ 	i = be32_to_cpu(jsb->s_first);
+ 	while (1) {
+-		blknr = read_allocated_block(&inode_journal, i);
++		blknr = read_allocated_block(&inode_journal, i, NULL);
+ 		memset(temp_buff1, '\0', fs->blksz);
+ 		ext4fs_devread((lbaint_t)blknr * fs->sect_perblk,
+ 			       0, fs->blksz, temp_buff1);
+@@ -537,7 +538,7 @@ end:
+ 		ext4_read_superblock((char *)fs->sb);
+ 
+ 		blknr = read_allocated_block(&inode_journal,
+-					 EXT2_JOURNAL_SUPERBLOCK);
++					 EXT2_JOURNAL_SUPERBLOCK, NULL);
+ 		put_ext4((uint64_t) ((uint64_t)blknr * (uint64_t)fs->blksz),
+ 			 (struct journal_superblock_t *)temp_buff,
+ 			 (uint32_t) fs->blksz);
+@@ -566,7 +567,7 @@ static void update_descriptor_block(long int blknr)
+ 
+ 	ext4fs_read_inode(ext4fs_root, EXT2_JOURNAL_INO, &inode_journal);
+ 	jsb_blknr = read_allocated_block(&inode_journal,
+-					 EXT2_JOURNAL_SUPERBLOCK);
++					 EXT2_JOURNAL_SUPERBLOCK, NULL);
+ 	ext4fs_devread((lbaint_t)jsb_blknr * fs->sect_perblk, 0, fs->blksz,
+ 		       temp_buff);
+ 	jsb = (struct journal_superblock_t *) temp_buff;
+@@ -618,7 +619,7 @@ static void update_commit_block(long int blknr)
+ 	ext4fs_read_inode(ext4fs_root, EXT2_JOURNAL_INO,
+ 			  &inode_journal);
+ 	jsb_blknr = read_allocated_block(&inode_journal,
+-					 EXT2_JOURNAL_SUPERBLOCK);
++					 EXT2_JOURNAL_SUPERBLOCK, NULL);
+ 	ext4fs_devread((lbaint_t)jsb_blknr * fs->sect_perblk, 0, fs->blksz,
+ 		       temp_buff);
+ 	jsb = (struct journal_superblock_t *) temp_buff;
+@@ -645,16 +646,17 @@ void ext4fs_update_journal(void)
+ 	long int blknr;
+ 	int i;
+ 	ext4fs_read_inode(ext4fs_root, EXT2_JOURNAL_INO, &inode_journal);
+-	blknr = read_allocated_block(&inode_journal, jrnl_blk_idx++);
++	blknr = read_allocated_block(&inode_journal, jrnl_blk_idx++, NULL);
+ 	update_descriptor_block(blknr);
+ 	for (i = 0; i < MAX_JOURNAL_ENTRIES; i++) {
+ 		if (journal_ptr[i]->blknr == -1)
+ 			break;
+-		blknr = read_allocated_block(&inode_journal, jrnl_blk_idx++);
++		blknr = read_allocated_block(&inode_journal, jrnl_blk_idx++,
++					     NULL);
+ 		put_ext4((uint64_t) ((uint64_t)blknr * (uint64_t)fs->blksz),
+ 			 journal_ptr[i]->buf, fs->blksz);
+ 	}
+-	blknr = read_allocated_block(&inode_journal, jrnl_blk_idx++);
++	blknr = read_allocated_block(&inode_journal, jrnl_blk_idx++, NULL);
+ 	update_commit_block(blknr);
+ 	printf("update journal finished\n");
+ }
+diff --git a/fs/ext4/ext4_write.c b/fs/ext4/ext4_write.c
+index a7f543f..8615689 100644
+--- a/fs/ext4/ext4_write.c
++++ b/fs/ext4/ext4_write.c
+@@ -479,7 +479,7 @@ static int ext4fs_delete_file(int inodeno)
+ 
+ 	/* release data blocks */
+ 	for (i = 0; i < no_blocks; i++) {
+-		blknr = read_allocated_block(&inode, i);
++		blknr = read_allocated_block(&inode, i, NULL);
+ 		if (blknr == 0)
+ 			continue;
+ 		if (blknr < 0)
+@@ -695,7 +695,7 @@ void ext4fs_deinit(void)
+ 		ext4fs_read_inode(ext4fs_root, EXT2_JOURNAL_INO,
+ 				  &inode_journal);
+ 		blknr = read_allocated_block(&inode_journal,
+-					EXT2_JOURNAL_SUPERBLOCK);
++					EXT2_JOURNAL_SUPERBLOCK, NULL);
+ 		ext4fs_devread((lbaint_t)blknr * fs->sect_perblk, 0, fs->blksz,
+ 			       temp_buff);
+ 		jsb = (struct journal_superblock_t *)temp_buff;
+@@ -776,7 +776,7 @@ static int ext4fs_write_file(struct ext2_inode *file_inode,
+ 		long int blknr;
+ 		int blockend = fs->blksz;
+ 		int skipfirst = 0;
+-		blknr = read_allocated_block(file_inode, i);
++		blknr = read_allocated_block(file_inode, i, NULL);
+ 		if (blknr <= 0)
+ 			return -1;
+ 
+diff --git a/fs/ext4/ext4fs.c b/fs/ext4/ext4fs.c
+index 2a28031..26db677 100644
+--- a/fs/ext4/ext4fs.c
++++ b/fs/ext4/ext4fs.c
+@@ -62,6 +62,9 @@ int ext4fs_read_file(struct ext2fs_node *node, loff_t pos,
+ 	lbaint_t delayed_next = 0;
+ 	char *delayed_buf = NULL;
+ 	short status;
++	struct ext_block_cache cache;
++
++	ext_cache_init(&cache);
+ 
+ 	if (blocksize <= 0)
+ 		return -1;
+@@ -77,9 +80,11 @@ int ext4fs_read_file(struct ext2fs_node *node, loff_t pos,
+ 		int blockoff = pos - (blocksize * i);
+ 		int blockend = blocksize;
+ 		int skipfirst = 0;
+-		blknr = read_allocated_block(&(node->inode), i);
+-		if (blknr < 0)
++		blknr = read_allocated_block(&node->inode, i, &cache);
++		if (blknr < 0) {
++			ext_cache_fini(&cache);
+ 			return -1;
++		}
+ 
+ 		blknr = blknr << log2_fs_blocksize;
+ 
+@@ -109,8 +114,10 @@ int ext4fs_read_file(struct ext2fs_node *node, loff_t pos,
+ 							delayed_skipfirst,
+ 							delayed_extent,
+ 							delayed_buf);
+-					if (status == 0)
++					if (status == 0) {
++						ext_cache_fini(&cache);
+ 						return -1;
++					}
+ 					previous_block_number = blknr;
+ 					delayed_start = blknr;
+ 					delayed_extent = blockend;
+@@ -136,8 +143,10 @@ int ext4fs_read_file(struct ext2fs_node *node, loff_t pos,
+ 							delayed_skipfirst,
+ 							delayed_extent,
+ 							delayed_buf);
+-				if (status == 0)
++				if (status == 0) {
++					ext_cache_fini(&cache);
+ 					return -1;
++				}
+ 				previous_block_number = -1;
+ 			}
+ 			/* Zero no more than `len' bytes. */
+@@ -153,12 +162,15 @@ int ext4fs_read_file(struct ext2fs_node *node, loff_t pos,
+ 		status = ext4fs_devread(delayed_start,
+ 					delayed_skipfirst, delayed_extent,
+ 					delayed_buf);
+-		if (status == 0)
++		if (status == 0) {
++			ext_cache_fini(&cache);
+ 			return -1;
++		}
+ 		previous_block_number = -1;
+ 	}
+ 
+ 	*actread  = len;
++	ext_cache_fini(&cache);
+ 	return 0;
+ }
+ 
+@@ -252,3 +264,32 @@ int ext4fs_uuid(char *uuid_str)
+ 	return -ENOSYS;
+ #endif
+ }
++
++void ext_cache_init(struct ext_block_cache *cache)
++{
++	memset(cache, 0, sizeof(*cache));
++}
++
++void ext_cache_fini(struct ext_block_cache *cache)
++{
++	free(cache->buf);
++	ext_cache_init(cache);
++}
++
++int ext_cache_read(struct ext_block_cache *cache, lbaint_t block, int size)
++{
++	/* This could be more lenient, but this is simple and enough for now */
++	if (cache->buf && cache->block == block && cache->size == size)
++		return 1;
++	ext_cache_fini(cache);
++	cache->buf = malloc(size);
++	if (!cache->buf)
++		return 0;
++	if (!ext4fs_devread(block, 0, size, cache->buf)) {
++		free(cache->buf);
++		return 0;
++	}
++	cache->block = block;
++	cache->size = size;
++	return 1;
++}
+diff --git a/include/ext4fs.h b/include/ext4fs.h
+index bb55639..bed4bee 100644
+--- a/include/ext4fs.h
++++ b/include/ext4fs.h
+@@ -116,6 +116,12 @@ struct ext_filesystem {
+ 	struct blk_desc *dev_desc;
+ };
+ 
++struct ext_block_cache {
++	char *buf;
++	lbaint_t block;
++	int size;
++};
++
+ extern struct ext2_data *ext4fs_root;
+ extern struct ext2fs_node *ext4fs_file;
+ 
+@@ -145,11 +151,15 @@ int ext4fs_size(const char *filename, loff_t *size);
+ void ext4fs_free_node(struct ext2fs_node *node, struct ext2fs_node *currroot);
+ int ext4fs_devread(lbaint_t sector, int byte_offset, int byte_len, char *buf);
+ void ext4fs_set_blk_dev(struct blk_desc *rbdd, disk_partition_t *info);
+-long int read_allocated_block(struct ext2_inode *inode, int fileblock);
++long int read_allocated_block(struct ext2_inode *inode, int fileblock,
++			      struct ext_block_cache *cache);
+ int ext4fs_probe(struct blk_desc *fs_dev_desc,
+ 		 disk_partition_t *fs_partition);
+ int ext4_read_file(const char *filename, void *buf, loff_t offset, loff_t len,
+ 		   loff_t *actread);
+ int ext4_read_superblock(char *buffer);
+ int ext4fs_uuid(char *uuid_str);
++void ext_cache_init(struct ext_block_cache *cache);
++void ext_cache_fini(struct ext_block_cache *cache);
++int ext_cache_read(struct ext_block_cache *cache, lbaint_t block, int size);
+ #endif
+-- 
+2.7.4
+
