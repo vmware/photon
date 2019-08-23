@@ -4,7 +4,7 @@
 Summary:        The Swiss Army knife of Python web development
 Name:           python-werkzeug
 Version:        0.14.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -56,7 +56,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 pytest hypothesis
+$easy_install_2 pytest==4.6
+$easy_install_2 hypothesis
 LANG=en_US.UTF-8 PYTHONPATH=./  python2 setup.py test
 
 %files
@@ -68,6 +69,9 @@ LANG=en_US.UTF-8 PYTHONPATH=./  python2 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Aug 23 2019 Tapas Kundu <tkundu@vmware.com> 0.14.1-3
+-   Fix make check
+-   Latest pytest is not compatible with python2.7
 *   Mon Dec 03 2018 Tapas Kundu <tkundu@vmware.com> 0.14.1-2
 -   Fix make check
 -   Moved buildrequires from subpackage

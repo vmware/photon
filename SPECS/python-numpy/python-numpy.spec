@@ -4,7 +4,7 @@
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python-numpy
 Version:        1.15.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -59,7 +59,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 nose pytest
+$easy_install_2 nose
+$easy_install_2 pytest==4.6
 mkdir test
 pushd test
 PYTHONPATH=%{buildroot}%{python2_sitelib} PATH=$PATH:%{buildroot}%{_bindir} python2 -c "import numpy; numpy.test()"
@@ -84,6 +85,9 @@ rm -rf test
 %{_bindir}/f2py3
 
 %changelog
+*   Fri Aug 23 2019 Tapas Kundu <tkundu@vmware.com> 1.15.1-3
+-   Latest pytest is not compatible with python2.7
+-   Fixed make check
 *   Mon Dec 03 2018 Tapas Kundu <tkundu@vmware.com> 1.15.1-2
 -   Fixed make check
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.15.1-1

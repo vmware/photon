@@ -3,14 +3,15 @@
 
 Name:           python-six
 Version:        1.11.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/source/s/six/six-%{version}.tar.gz
 Source0:        six-%{version}.tar.gz
 %define sha1    six=3647372a0e104e7b53bd477762392024e1083ac0
-
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
@@ -29,7 +30,7 @@ Requires:       python2-libs
 BuildArch:      noarch
 
 %description
-Six is a Python 2 and 3 compatibility library. It provides utility functions for smoothing over the differences between the Python versions with the goal of writing Python code that is compatible on both Python versions. 
+Six is a Python 2 and 3 compatibility library. It provides utility functions for smoothing over the differences between the Python versions with the goal of writing Python code that is compatible on both Python versions.
 
 %package -n     python3-six
 Summary:        python-six
@@ -53,7 +54,7 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 pytest
+$easy_install_2 pytest==4.6
 python2 test_six.py
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 pytest
@@ -69,6 +70,9 @@ python3 test_six.py
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Aug 23 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0-3
+-   Fix makecheck
+-   Latest pytest is not compatible with python2
 *   Mon Nov 26 2018 Tapas Kundu <tkundu@vmware.com> 1.11.0-2
 -   Fix makecheck
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.11.0-1

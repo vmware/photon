@@ -4,7 +4,7 @@
 Summary:        Core utilities for Python packages
 Name:           python-packaging
 Version:        17.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/packaging
 License:        BSD or ASL 2.0
 Group:          Development/Languages/Python
@@ -71,7 +71,8 @@ popd
 
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 pretend pytest
+$easy_install_2 pretend
+$easy_install_2 pytest==4.6
 PYTHONPATH=./ pytest
 
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
@@ -87,6 +88,9 @@ PYTHONPATH=./ pytest
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Aug 23 2019 Tapas Kundu <tkundu@vmware.com> 17.1-3
+-   Fix makecheck
+-   Latest pytest is not compatible with python2.7
 *   Fri Dec 07 2018 Tapas Kundu <tkundu@vmware.com> 17.1-2
 -   Fix makecheck
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 17.1-1
