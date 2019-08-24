@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.65
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -71,7 +71,7 @@ Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.
 Patch200:        0001-OF-DT-Overlay-configfs-interface.patch
 Patch201:        0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
 
-# NXP LS1012a FRWY patches
+# NXP LS10XXa FRWY patches
 Patch211:        0001-staging-fsl_ppfe-eth-header-files-for-pfe-driver.patch
 Patch212:        0002-staging-fsl_ppfe-eth-introduce-pfe-driver.patch
 Patch213:        0003-staging-fsl_ppfe-eth-fix-RGMII-tx-delay-issue.patch
@@ -95,6 +95,8 @@ Patch230:        0020-staging-fsl_ppfe-eth-remove-jumbo-frame-enable-from-.patch
 Patch231:        0021-staging-fsl_ppfe-eth-disable-CRC-removal.patch
 Patch232:        0022-staging-fsl_ppfe-eth-handle-ls1012a-errata_a010897.patch
 Patch233:        0023-staging-fsl_ppfe-eth-Modify-Kconfig-to-enable-pfe-dr.patch
+
+Patch234:        0001-fsl_dpaa_mac-wait-for-phy-probe-to-complete.patch
 %endif
 
 %if 0%{?kat_build:1}
@@ -179,11 +181,11 @@ Requires:       %{name} = %{version}-%{release}
 Kernel Device Tree Blob files for Raspberry Pi3
 
 %package dtb-ls1012afrwy
-Summary:        Kernel Device Tree Blob files for NXP ls1012a FRWY board
+Summary:        Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
 Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
 %description dtb-ls1012afrwy
-Kernel Device Tree Blob files for NXP ls1012a FRWY board
+Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
 
 %endif
 
@@ -252,6 +254,7 @@ Kernel Device Tree Blob files for NXP ls1012a FRWY board
 %patch231 -p1
 %patch232 -p1
 %patch233 -p1
+%patch234 -p1
 %endif
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -348,6 +351,7 @@ install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
 install -vdm 755 %{buildroot}/boot/dtb
 install -vm 640 arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dtb %{buildroot}/boot/dtb/
 install -vm 640 arch/arm64/boot/dts/freescale/fsl-ls1012a-frwy.dtb %{buildroot}/boot/dtb/
+install -vm 640 arch/arm64/boot/dts/freescale/fsl-ls1046a-rdb.dtb %{buildroot}/boot/dtb/
 %endif
 
 # Restrict the permission on System.map-X file
@@ -481,10 +485,15 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %files dtb-ls1012afrwy
 %defattr(-,root,root)
 /boot/dtb/fsl-ls1012a-frwy.dtb
+/boot/dtb/fsl-ls1046a-rdb.dtb
 
 %endif
 
 %changelog
+*   Fri Aug 23 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.65-4
+-   NXP ls1046a frwy board support.
+-   config_aarch64: add fsl_dpaa2 support.
+-   fix fsl_dpaa_mac initialization issue.
 *   Wed Aug 14 2019 Raejoon Jung <rjung@vmware.com> 4.19.65-3
 -   Backport of Secure Boot UEFI certificate import from v5.2
 *   Mon Aug 12 2019 Ajay Kaher <akaher@vmware.com> 4.19.65-2
