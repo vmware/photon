@@ -1,0 +1,26 @@
+From 28f610026d901660dd370862b62ec328727446a2 Mon Sep 17 00:00:00 2001
+From: Denis Ovsienko <denis@ovsienko.info>
+Date: Thu, 31 Aug 2017 21:15:37 +0100
+Subject: [PATCH] CVE-2017-16808/AoE: Add a missing bounds check.
+
+In aoev1_reserve_print() check bounds before trying to print an Ethernet
+address.
+
+This fixes a buffer over-read discovered by Bhargava Shastry,
+SecT/TU Berlin.
+---
+ print-aoe.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/print-aoe.c b/print-aoe.c
+index 97e93df2e..2c78a55d3 100644
+--- a/print-aoe.c
++++ b/print-aoe.c
+@@ -325,6 +325,7 @@ aoev1_reserve_print(netdissect_options *ndo,
+ 		goto invalid;
+ 	/* addresses */
+ 	for (i = 0; i < nmacs; i++) {
++		ND_TCHECK2(*cp, ETHER_ADDR_LEN);
+ 		ND_PRINT((ndo, "\n\tEthernet Address %u: %s", i, etheraddr_string(ndo, cp)));
+ 		cp += ETHER_ADDR_LEN;
+ 	}
