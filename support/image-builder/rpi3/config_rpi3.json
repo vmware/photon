@@ -1,20 +1,27 @@
 {
-	"image_type": "rpi3",
-	"hostname": "photon-machine",
-	"password":
-		{
-			"crypted": false,
-			"text": "PASSWORD"
-		},
-	"packagelist_file": "packages_rpi3.json",
-    "size": {"root": "1", "swap": "0"},
-    "boot":"efi",
-    "public_key":"<ssh-key-here>",
-    "postinstallscripts": ["rpi3-custom-patch.sh"],
-    "additionalfiles": [
+    "installer": {
+        "arch": "aarch64",
+        "bootmode": "efi",
+        "hostname": "photon-machine",
+        "packagelist_file": "packages_rpi3.json",
+        "partition_type": "msdos",
+        "partitions": [
+            {"mountpoint": "/boot/efi", "size": 30, "filesystem": "vfat"},
+            {"mountpoint": "/", "size": 0, "filesystem": "ext4"}
+        ],
+        "password": {
+            "age": 0,
+            "crypted": false,
+            "text": "changeme"
+        },
+        "additional_files": [
                             {"resizefs.sh": "/usr/local/bin/resizefs.sh"},
                             {"resizefs.service": "/lib/systemd/system/resizefs.service"}
-                       ],
+        ],
+        "postinstallscripts": ["rpi3-custom-patch.sh" ]
+    },
+    "image_type": "rpi3",
+    "size": 512,
     "artifacttype": "xz",
     "keeprawdisk": "true"
 }

@@ -1,49 +1,25 @@
 #!/usr/bin/python3
 
 import os
-import shutil
-import random
-import string
-import json
-from utils import Utils
 import sys
-import crypt
+import shutil
 import subprocess
 from argparse import ArgumentParser
+from utils import Utils
 import imagegenerator
 
-def runInstaller(options, config):
+def runInstaller(options, install_config, working_directory):
     try:
         sys.path.insert(0, options.installer_path)
         from installer import Installer
-        from packageselector import PackageSelector
     except:
         raise ImportError('Installer path incorrect!')
-    config["pkg_to_rpm_map_file"] = options.pkg_to_rpm_map_file
-    
-    # Check the installation type
-    option_list_json = Utils.jsonread(options.package_list_file)
-    options_sorted = option_list_json.items()
 
-    packages = []
-    if 'type' in config:
-        for install_option in options_sorted:
-            if install_option[0] == config['type']:
-                packages = PackageSelector.get_packages_to_install(install_option[1]['packagelist_file'],
-                                                               options.generated_data_path)
-                break
-    else:
-        if 'packagelist_file' in config:
-            packages = PackageSelector.get_packages_to_install(config['packagelist_file'],
-                                                               options.generated_data_path)
-        if 'additional_packages' in config:
-            packages = packages.extend(config['additional_packages'])
-
-    config['packages'] = packages
     # Run the installer
-    package_installer = Installer(config, rpm_path=options.rpm_path,
-                                  log_path=options.log_path, log_level=options.log_level)
-    return package_installer.install(None)
+    installer = Installer(working_directory=working_directory, rpm_path=options.rpm_path,
+                          log_path=options.log_path)
+    installer.configure(install_config)
+    installer.execute()
 
 def get_file_name_with_last_folder(filename):
     basename = os.path.basename(filename)
@@ -103,7 +79,7 @@ def make_debug_iso(working_directory, debug_iso_path, rpm_list):
     if os.path.exists(working_directory) and os.path.isdir(working_directory):
         shutil.rmtree(working_directory)
     process = subprocess.Popen(['mkdir', '-p', os.path.join(working_directory, "DEBUGRPMS")])
-    retval = process.wait()
+    process.wait()
     for rpmfile in rpm_list:
         if os.path.isfile(rpmfile):
             dirname = os.path.dirname(rpmfile)
@@ -111,50 +87,48 @@ def make_debug_iso(working_directory, debug_iso_path, rpm_list):
             dest_working_directory = os.path.join(working_directory, "DEBUGRPMS", lastfolder)
             if not os.path.isdir(dest_working_directory):
                 process = subprocess.Popen(['mkdir', dest_working_directory])
-                retval = process.wait()
+                process.wait()
             shutil.copy2(rpmfile, dest_working_directory)
     process = subprocess.Popen(['mkisofs', '-r', '-o', debug_iso_path, working_directory])
-    retval = process.wait()
+    process.wait()
     shutil.rmtree(working_directory)
 
 def make_src_iso(working_directory, src_iso_path, rpm_list):
     if os.path.exists(working_directory) and os.path.isdir(working_directory):
         shutil.rmtree(working_directory)
     process = subprocess.Popen(['mkdir', '-p', os.path.join(working_directory, "SRPMS")])
-    retval = process.wait()
+    process.wait()
     for rpmfile in rpm_list:
         if os.path.isfile(rpmfile):
             shutil.copy2(rpmfile, os.path.join(working_directory, "SRPMS"))
     process = subprocess.Popen(['mkisofs', '-r', '-o', src_iso_path, working_directory])
-    retval = process.wait()
+    process.wait()
     shutil.rmtree(working_directory)
 
 def createIso(options):
     working_directory = os.path.abspath(os.path.join(options.stage_path, "photon_iso"))
-    config = {}
-    config['iso_system'] = True
-    config['vmdk_install'] = False
-    config['type'] = 'iso'
-    config['working_directory'] = working_directory
-    result = runInstaller(options, config)
-    if not result:
-        raise Exception("Installation process failed")
+    script_directory = os.path.dirname(os.path.realpath(__file__))
     # Making the iso if needed
     if options.iso_path:
+        # Additional RPMs to copy to ISO's /RPMS/ folder
         rpm_list = " ".join(
             create_rpm_list_to_be_copied_to_iso(
                 options.pkg_to_rpm_map_file,
                 options.pkg_to_be_copied_conf_file, 1, options.generated_data_path))
+        # Additional files to copy to ISO's / folder
         files_to_copy = " ".join(
             create_additional_file_list_to_copy_in_iso(
                 os.path.abspath(options.stage_path), options.package_list_file))
 
-        process = subprocess.Popen([options.installer_path + '/mk-install-iso.sh', '-w',
-                                    working_directory, options.iso_path,
-                                    options.rpm_path, options.package_list_file,
-                                    rpm_list, options.stage_path, files_to_copy,
-                                    options.generated_data_path])
-        retval = process.wait()
+        retval = subprocess.call([script_directory + '/iso/mk-install-iso.sh',
+                                  options.installer_path,
+                                  working_directory, options.iso_path,
+                                  options.rpm_path, options.package_list_file,
+                                  rpm_list, options.stage_path, files_to_copy,
+                                  options.generated_data_path])
+
+        if retval:
+            raise Exception("Unable to create install ISO")
 
     if options.debug_iso_path:
         debug_rpm_list = create_rpm_list_to_be_copied_to_iso(
@@ -168,21 +142,7 @@ def createIso(options):
                                                        options.generated_data_path)
         make_src_iso(working_directory, options.src_iso_path, rpm_list)
     if os.path.exists(working_directory) and os.path.isdir(working_directory):
-        shutil.rmtree(working_directory) 
-
-def cryptPassword(config, passwordtext):
-    config['passwordtext'] = passwordtext
-    crypted = config['password']['crypted']
-    if config['password']['text'] == 'PASSWORD':
-        config['password'] = "".join([random.SystemRandom().choice(
-                string.ascii_letters + string.digits) for _ in range(16)])
-        if crypted:
-            config['password'] = crypt.crypt(
-                config['password'],
-                "$6$" + "".join([random.SystemRandom().choice(
-                    string.ascii_letters + string.digits) for _ in range(16)]))
-    else:
-        config['password'] = crypt.crypt(passwordtext, '$6$saltsalt$')
+        shutil.rmtree(working_directory)
 
 def replaceScript(script_dir, img, script_name, parent_script_dir=None):
     if not parent_script_dir:
@@ -215,102 +175,72 @@ def verifyImageTypeAndConfig(config_file, img_name):
             else:
                 return (False, config)
         return (True, config)
-    else:
-        if not config_file or config_file == '':
-            return (False, config)
-        else:
-            config = Utils.jsonread(config_file)
-            if 'image_type' not in config:
-                return (False, config)
-            else:
-                return (True, config)
+    if not config_file or config_file == '':
+        return (False, config)
 
-def create_vmdk_and_partition(config, vmdk_path, disk_setup_script):
-    partitions_data = {}
-    firmware = "bios"
-    if 'boot' in config:
-        if config['boot'] == 'efi':
-            firmware = "efi"
-        if config['boot'] == 'dualboot':
-            firmware = 'dualboot'
-    process = subprocess.Popen([disk_setup_script, '-rp', config['size']['root'], '-sp',
-                                config['size']['swap'], '-n', vmdk_path, '-fm', firmware],
-                               stdout=subprocess.PIPE)
-    count = 0
-
-    while True:
-        line = process.stdout.readline().decode()
-        if line == '':
-            retval = process.poll()
-            if retval is not None:
-                break
-        sys.stdout.write(line)
-        if line.startswith("DISK_DEVICE="):
-            partitions_data['disk'] = line.replace("DISK_DEVICE=", "").strip()
-            count += 1
-        elif line.startswith("ROOT_PARTITION="):
-            partitions_data['root'] = line.replace("ROOT_PARTITION=", "").strip()
-            partitions_data['boot'] = partitions_data['root']
-            partitions_data['bootdirectory'] = '/boot/'
-            partitions_data['partitions'] = [{'path': partitions_data['root'], 'mountpoint': '/',
-                                          'filesystem': 'ext4'}]
-            count += 1
-        elif line.startswith("ESP_PARTITION="):
-            partitions_data['esp'] = line.replace("ESP_PARTITION=", "").strip()
-            partitions_data['partitions'].append({'path': partitions_data['esp'], 'mountpoint': '/boot/esp',
-                                          'filesystem': 'vfat'})
-            count += 1
-    return partitions_data, count == 2 or count == 3
+    config = Utils.jsonread(config_file)
+    return ('image_type' in config, config)
 
 def createImage(options):
     (validImage, config) = verifyImageTypeAndConfig(options.config_file, options.img_name)
     if not validImage:
         raise Exception("Image type/config not supported")
-    
+
     if 'ova' in config['artifacttype'] and shutil.which("ovftool") is None:
         raise Exception("ovftool is not available")
-    workingDir = os.path.abspath(options.stage_path + "/" + config['image_type'])
+
+    install_config = config['installer']
+
+    image_type = config['image_type']
+    workingDir = os.path.abspath(options.stage_path + "/" + image_type)
     if os.path.exists(workingDir) and os.path.isdir(workingDir):
         shutil.rmtree(workingDir)
     os.mkdir(workingDir)
-    if 'password' in config:
-        cryptPassword(config, config['password']['text'])
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    # Use image specific scripts
-    disk_setup_script = replaceScript(script_dir, config['image_type'], "mk-setup-vmdk.sh")
-    disk_cleanup_script = replaceScript(script_dir, config['image_type'], "mk-clean-vmdk.sh")
-    grub_script = replaceScript(script_dir, config['image_type'], "mk-setup-grub.sh", options.installer_path)
-    prepare_script = replaceScript(script_dir, config['image_type'], "mk-prepare-system.sh", options.installer_path)
-    config['prepare_script'] = prepare_script
-    config['setup_grub_script'] = grub_script
-    
-    if options.additional_rpms_path:
-        os.mkdir(options.rpm_path + '/additional')
-        for item in os.listdir(options.additional_rpms_path):
-            s = os.path.join(options.additional_rpms_path, item)
-            d = os.path.join(options.rpm_path + '/additional', item)
-            shutil.copy2(s, d)
+
+    grub_script = replaceScript(script_dir, image_type, "mk-setup-grub.sh", options.installer_path)
+    install_config['setup_grub_script'] = grub_script
+
+    # Set absolute path for 'packagelist_file'
+    if 'packagelist_file' in install_config:
+        plf = install_config['packagelist_file']
+        if not plf.startswith('/'):
+            plf = os.path.join(options.generated_data_path, plf)
+        install_config['packagelist_file'] = plf
 
     os.chdir(workingDir)
-    vmdk_path = workingDir + "/photon-" + config['image_type']
-    config['disk'], success = create_vmdk_and_partition(config, vmdk_path, disk_setup_script)
-    if not success:
-        raise Exception("Unexpected failure in creating disk, please check the logs")
-        sys.exit(1)
-    config['iso_system'] = False
-    config['vmdk_install'] = True
-    result = runInstaller(options, config)
-    process = subprocess.Popen([disk_cleanup_script, config['disk']['disk']])
-    process.wait()
-    if not result:
-        raise Exception("Installation process failed")
+    image_file = workingDir + "/photon-" + image_type + ".raw"
+
+    # Create disk image
+    Utils.runshellcommand(
+        "dd if=/dev/zero of={} bs=1024 seek={} count=0".format(image_file, config['size'] * 1024))
+    Utils.runshellcommand(
+        "chmod 755 {}".format(image_file))
+
+    if 'log_level' not in install_config:
+        install_config['log_level'] = options.log_level
+
+    install_config['search_path'] = [
+        os.path.abspath(os.path.join(script_dir, image_type)),
+        os.path.abspath(script_dir),
+    ]
+
+    # Associating loopdevice to raw disk and save the name as a target's 'disk'
+    install_config['disk'] = (Utils.runshellcommand(
+        "losetup --show -f {}".format(image_file))).rstrip('\n')
+
+    # No return value, it throws exception on error.
+    runInstaller(options, install_config, workingDir)
+
+    # Detaching loop device from vmdk
+    Utils.runshellcommand("losetup -d {}".format(install_config['disk']))
+
     os.chdir(script_dir)
-    imagegenerator.generateImage(
-                                vmdk_path + '.raw',
-                                options.rpm_path + '/additional/',
-                                options.src_root + '/tools/bin/',
+    imagegenerator.createOutputArtifact(
+                                image_file,
+                                config,
                                 options.src_root,
-                                config
+                                options.src_root + '/tools/bin/'
                               )
 
 if __name__ == '__main__':
@@ -322,10 +252,9 @@ if __name__ == '__main__':
     parser.add_argument("-g", "--generated-data-path", dest="generated_data_path", default="../../stage/common/data")
     parser.add_argument("-s", "--stage-path", dest="stage_path", default="../../stage")
     parser.add_argument("-l", "--log-path", dest="log_path", default="../../stage/LOGS")
-    parser.add_argument("-y", "--log-level", dest="log_level")
+    parser.add_argument("-y", "--log-level", dest="log_level", default="debug")
     # Image builder args for ami, gce, azure, ova, rpi3 etc.
     parser.add_argument("-c", "--config-file", dest="config_file")
-    parser.add_argument("-a", "--additional-rpms-path", dest="additional_rpms_path")
     parser.add_argument("-i", "--img-name", dest="img_name")
     # ISO builder args
     parser.add_argument("-j", "--iso-path", dest="iso_path")
@@ -347,4 +276,4 @@ if __name__ == '__main__':
     elif options.config_file or options.img_name:
         createImage(options)
     else:
-        raise Exception("No supported image type defined") 
+        raise Exception("No supported image type defined")

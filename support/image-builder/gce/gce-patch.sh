@@ -103,3 +103,5 @@ EOF
 
 chmod a+x /usr/bin/gcloud
 chmod a+x /usr/bin/gsutil
+
+sed -i 's/$photon_cmdline $systemd_cmdline/init=\/lib\/systemd\/systemd loglevel=3 ro console=ttyS0,38400n8/' /boot/grub/grub.cfg

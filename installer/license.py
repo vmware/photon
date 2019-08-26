@@ -23,7 +23,7 @@ class License(object):
         self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx,
                              'Welcome to the Photon installer', False)
 
-    def display(self, params):
+    def display(self):
         accept_decline_items = [('<Accept>', self.accept_function),
                                 ('<Cancel>', self.exit_function)]
 

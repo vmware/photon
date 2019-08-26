@@ -10,14 +10,14 @@ from window import Window
 from confirmwindow import ConfirmWindow
 
 class ReadMulText(Action):
-    def __init__(self, maxy, maxx, y, install_config, field,
+    def __init__(self, maxy, maxx, y, config, field,
                  display_string, confirmation_error_msg,
                  echo_char, accepted_chars, validation_fn, conversion_fn,
                  can_cancel, default_string=None):
         self.maxy = maxy
         self.maxx = maxx
         self.y = y
-        self.install_config = install_config
+        self.config = config
         self.field = field
         self.horizontal_padding = 10
         self.confirmation_error_msg = confirmation_error_msg
@@ -105,7 +105,7 @@ class ReadMulText(Action):
                     self.shadowpanel.hide()
                     return ActionResult(False, None)
                 if self.confirmation_error_msg:
-                    if self.str != self.install_config[self.field]:
+                    if self.str != self.config[self.field]:
                         curses.curs_set(0)
                         conf_message_height = 8
                         conf_message_width = 48
@@ -197,9 +197,9 @@ class ReadMulText(Action):
         i = 0
         for string in self.display_string:
             if self.conversion_fn:
-                self.install_config[self.field+str(i)] = self.conversion_fn(self.str[i])
+                self.config[self.field+str(i)] = self.conversion_fn(self.str[i])
             else:
-                self.install_config[self.field+str(i)] = self.str[i]
+                self.config[self.field+str(i)] = self.str[i]
             i = i + 1
 
     def validate_input(self):

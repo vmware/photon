@@ -1,20 +1,27 @@
 {
-	"image_type": "ls1012afrwy",
-	"hostname": "photon-machine",
-	"password":
-		{
-			"crypted": false,
-			"text": "PASSWORD"
-		},
-    "packagelist_file": "packages_ls1012afrwy.json",
-    "size": {"root": "1", "swap": "0"},
-    "boot":"efi",
-    "public_key":"<ssh-key-here>",
-    "postinstallscripts": ["ls1012afrwy-custom-patch.sh"],
-    "additionalfiles": [
-                            {"resizefs.sh": "/usr/local/bin/resizefs.sh"},
-                            {"resizefs.service": "/lib/systemd/system/resizefs.service"}
-                       ],
+    "installer": {
+        "arch": "aarch64",
+        "bootmode": "efi",
+        "hostname": "photon-machine",
+        "packagelist_file": "packages_ls1012afrwy.json",
+        "partition_type": "msdos",
+        "partitions": [
+            {"mountpoint": "/boot/efi", "size": 12, "filesystem": "vfat", "fs_options": "-n EFI"},
+            {"mountpoint": "/", "size": 0, "filesystem": "ext4", "fs_options": "-F -O ^huge_file -b 4096 -L rootfs"}
+        ],
+        "password": {
+            "age": 0,
+            "crypted": false,
+            "text": "changeme"
+        },
+        "postinstallscripts": ["ls1012afrwy-custom-patch.sh" ],
+        "additional_files": [
+            {"resizefs.sh": "/usr/local/bin/resizefs.sh"},
+            {"resizefs.service": "/lib/systemd/system/resizefs.service"}
+        ]
+    },
+    "image_type": "ls1012afrwy",
+    "size": 512,
     "artifacttype": "xz",
     "keeprawdisk": "true"
 }

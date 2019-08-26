@@ -28,18 +28,16 @@ class PackageSelector(object):
                              can_go_next=True, position=1)
 
     @staticmethod
-    def get_packages_to_install(packagelist_file, output_data_path):
-        json_wrapper_package_list = JsonWrapper(os.path.join(output_data_path,
-                                                packagelist_file))
-        package_list_json = json_wrapper_package_list.read()
-        return package_list_json["packages"]
-
-    @staticmethod
-    def get_additional_files_to_copy_in_iso(install_option, base_path):
-        additional_files = []
-        if "additional-files" in install_option[1]:
-            additional_files = install_option[1]["additional-files"]
-        return additional_files
+    def get_packages_to_install(option, output_data_path):
+        if 'packagelist_file' in option:
+            json_wrapper_package_list = JsonWrapper(os.path.join(output_data_path,
+                                                option['packagelist_file']))
+            package_list_json = json_wrapper_package_list.read()
+            return package_list_json["packages"]
+        elif 'packages' in option:
+            return option["packages"]
+        else:
+            raise Exception("Install option '" + option['title'] + "' must have 'packagelist_file' or 'packages' property")
 
     def load_package_list(self, options_file):
         json_wrapper_option_list = JsonWrapper(options_file)
@@ -54,14 +52,11 @@ class PackageSelector(object):
         visible_options_cnt = 0
         for install_option in options_sorted:
             if install_option[1]["visible"] == True:
-                package_list = PackageSelector.get_packages_to_install(install_option[1]['packagelist_file'],
+                package_list = PackageSelector.get_packages_to_install(install_option[1],
                                                                        base_path)
-                additional_files = PackageSelector.get_additional_files_to_copy_in_iso(
-                    install_option, base_path)
                 self.package_menu_items.append((install_option[1]["title"],
                                                 self.exit_function,
-                                                [install_option[0],
-                                                 package_list, additional_files]))
+                                                [install_option[0], package_list]))
                 if install_option[0] == 'minimal':
                     default_selected = visible_options_cnt
                 visible_options_cnt = visible_options_cnt + 1
@@ -71,13 +66,15 @@ class PackageSelector(object):
                                  default_selected=default_selected, tab_enable=False)
 
     def exit_function(self, selected_item_params):
-        self.install_config['type'] = selected_item_params[0]
+        if selected_item_params[0] == 'ostree_host':
+            self.install_config['ostree'] = {}
+        else:
+            self.install_config.pop('ostree', None)
         self.install_config['packages'] = selected_item_params[1]
-        self.install_config['additional-files'] = selected_item_params[2]
         return ActionResult(True, {'custom': False})
 
-    def custom_packages(self, params):
+    def custom_packages(self):
         return ActionResult(True, {'custom': True})
 
-    def display(self, params):
+    def display(self):
         return self.window.do_action()

@@ -1,19 +1,15 @@
 {
+    "installer": {
+        "hostname": "photon-machine",
+        "postinstallscripts": [ "azure-patch.sh" ],
+        "additional_files": [
+            {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"}
+        ],
+        "packagelist_file": "packages_azure.json"
+    },
     "image_type": "azure",
-    "hostname": "photon-machine",
-    "password": 
-        {
-            "crypted": false,
-            "text": "PASSWORD"
-        },
-    "packagelist_file": "packages_azure.json",
-    "size": {"root": "16", "swap": "0"},
-    "public_key":"<ssh-key-here>",
-    "postinstallscripts": [ "azure-patch.sh", "../password-expiry.sh" ],
-    "additionalfiles": [
-                            {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"}
-                       ],
-    "artifacttype": "vhd",
+    "size": 16384,
+    "artifacttype": "vhd.gz",
     "keeprawdisk": false
 }
 
