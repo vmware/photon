@@ -4,7 +4,7 @@
 Summary:        Python Atomic file writes
 Name:           python-atomicwrites
 Version:        1.2.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -61,7 +61,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 funcsigs pathlib2 pluggy more-itertools
+$easy_install_2 funcsigs pathlib2 pluggy more-itertools==5.0
 cp tests/test_atomicwrites.py .
 python2 test_atomicwrites.py
 pushd ../p3dir
@@ -84,6 +84,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Aug 26 2019 Shreyas B. <shreyasb@vmware.com> 1.2.1-3
+-   Fixed make check
 *   Mon Nov 12 2018 Tapas Kundu <tkundu@vmware.com> 1.2.1-2
 -   Fixed make check
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.2.1-1
