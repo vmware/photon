@@ -16,6 +16,7 @@
 grub_efi_install()
 {
 	cp -r $SCRIPT_PATH/esp/ls1012afrwy_boot.scr $BUILDROOT/boot/esp/
+	cp -r $SCRIPT_PATH/esp/ls1046afrwy_boot.scr $BUILDROOT/boot/esp/
 	mkdir -p $BUILDROOT/boot/esp/EFI/BOOT/
         cp $INSTALLER_PATH/EFI_aarch64/BOOT/bootaa64.efi $BUILDROOT/boot/esp/EFI/BOOT/
 }
