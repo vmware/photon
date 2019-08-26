@@ -1,0 +1,13 @@
+diff --git a/dev-requirements.txt b/dev-requirements.txt
+index 8814627..08c3768 100644
+--- a/dev-requirements.txt
++++ b/dev-requirements.txt
+@@ -2,7 +2,7 @@
+ invoke>=1.0,<2.0
+ invocations>=1.2.0,<2.0
+ # NOTE: pytest-relaxed currently only works with pytest >=3, <3.3
+-pytest>=3.2,<3.3
++pytest==5.1
+ pytest-relaxed==1.1.4
+ # pytest-xdist for test dir watching and the inv guard task
+ pytest-xdist>=1.22,<2.0

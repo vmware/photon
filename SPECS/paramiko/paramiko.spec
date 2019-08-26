@@ -3,15 +3,15 @@
 Summary:        Python SSH module
 Name:           paramiko
 Version:        2.4.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.paramiko.org/
 Source0:        https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
-%define         sha1 paramiko=f9b9729b57f53f47ef09ae10af9bdc89a5c4201c
-
+%define sha1 paramiko=f9b9729b57f53f47ef09ae10af9bdc89a5c4201c
+Patch0: 	patch_for_dev-requirements.patch
 BuildArch:      noarch
 
 BuildRequires:  python-setuptools
@@ -25,6 +25,11 @@ BuildRequires:  python3-pycrypto > 2.1
 BuildRequires:  python3-cryptography
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  python3-pip
+BuildRequires:  python3-bcrypt
+BuildRequires:  python3-PyNaCl
+%endif
 Requires:       python2
 Requires:       pycrypto > 2.1
 Requires:       ecdsa > 0.11
@@ -51,10 +56,12 @@ Python 3 version.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 python2 setup.py build
 python3 setup.py build
+
 
 %install
 %{__rm} -rf %{buildroot}
@@ -67,8 +74,8 @@ python3 setup.py install -O1 --skip-build \
     --single-version-externally-managed
 
 %check
-LANG=en_US.UTF-8 python2 test.py
-LANG=en_US.UTF-8 python3 test.py
+pip3 install -r dev-requirements.txt
+pytest
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -84,6 +91,8 @@ LANG=en_US.UTF-8 python3 test.py
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Aug 23 2019 Anisha Kumari <kanisha@vmware.com> 2.4.2-3
+-   Added patch to update pytest version.
 *   Wed Mar 06 2019 Tapas Kundu <tkundu@vmware.com> 2.4.2-2
 -   Added bcrypt and PyNaCl to requires.
 *   Thu Jan 10 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.4.2-1
