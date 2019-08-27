@@ -3,7 +3,7 @@
 
 Name:           python-babel
 Version:        2.6.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        an integrated collection of utilities that assist in internationalizing and localizing Python applications
 License:        BSD3
 Group:          Development/Languages/Python
@@ -76,7 +76,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 pytest freezegun funcsigs pathlib2 pluggy utils
+$easy_install_2 pytest==4.6 freezegun funcsigs pathlib2 pluggy utils
 python2 setup.py test
 pushd ../p3dir
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
@@ -95,6 +95,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Aug 27 2019 Shreyas B. <shreyasb@vmware.com> 2.6.0-3
+-   Fixed make check errors.
 *   Tue Nov 13 2018 Tapas Kundu <tkundu@vmware.com> 2.6.0-2
 -   Fixed make check errors.
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.6.0-1
