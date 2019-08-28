@@ -1,14 +1,14 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.6.15
-Release:       3%{?dist}
+Version:       3.7.3
+Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       MPLv1.1
 URL:           https://github.com/rabbitmq/rabbitmq-server
-Source0:       http://www.rabbitmq.com/releases/rabbitmq-server/v%{version}/%{name}-%{version}.tar.xz
-%define sha1 rabbitmq=617cfba3406804b7cdc9999b88c06086e3705904
+source0:       https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
+%define sha1 rabbitmq=ea8049abde9155959ced8b22af838d1deb262433
 Source1:       rabbitmq.config
 Requires:      erlang
 Requires:      /bin/sed
@@ -17,8 +17,11 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 BuildRequires: erlang
 BuildRequires: rsync
 BuildRequires: zip
+BuildRequires: git
 BuildRequires: libxslt
+BuildRequires: xmlto
 BuildRequires: python-xml
+BuildRequires: elixir
 BuildArch:     noarch
 
 %description
@@ -101,6 +104,8 @@ rm -rf $RPM_BUILD_ROOT
 /var/lib/*
 
 %changelog
+* Mon Aug 19 2019 Keerthana K <keerthanak@vmware.com> 3.7.3-1
+- Update to version 3.7.3
 * Thu Jan 31 2019 Siju Maliakkal <smaliakkal@vmware.com> 3.6.15-3
 - Consuming erlang 19.3
 * Mon Sep 24 2018 Dweep Advani <dadvani@vmware.com> 3.6.15-2
