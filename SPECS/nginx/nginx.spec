@@ -1,20 +1,17 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.13.8
-Release:        7%{?dist}
+Version:        1.16.1
+Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nginx=a1f9348c9c46f449a0b549d0519dd34191d30cee
+%define sha1    nginx=77ce4d26481b62f7a9d83e399454df0912f01a4b
 Source1:        nginx.service
 Source2:        nginx-njs-0.2.1.tar.gz
 %define sha1    nginx-njs=fd8c3f2d219f175be958796e3beaa17f3b465126
-Patch0:         nginx-CVE-2018-16843.patch
-Patch1:         nginx-CVE-2018-16844.patch
-Patch2:		nginx-CVE-2018-16845.patch
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  which
@@ -23,9 +20,6 @@ NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 pushd ../
 mkdir nginx-njs
 tar -C nginx-njs -xf %{SOURCE2}
@@ -81,6 +75,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %dir %{_var}/log/nginx
 
 %changelog
+*   Thu Aug 29 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.16.1-1
+-   update version to 1.16.1
 *   Thu Feb 21 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.13.8-7
 -   Fix CVE-2018-15845
 *   Mon Dec 17 2018 Ankit Jain <ankitja@vmware.com> 1.13.8-6
