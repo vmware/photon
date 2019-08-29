@@ -1,20 +1,17 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.15.3
-Release:        6%{?dist}
+Version:        1.16.1
+Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nginx=584a585096cffa240a6224f718b4c0c83a7a5e36
+%define sha1    nginx=77ce4d26481b62f7a9d83e399454df0912f01a4b
 Source1:        nginx.service
 Source2:        nginx-njs-0.2.1.tar.gz
 %define sha1    nginx-njs=fd8c3f2d219f175be958796e3beaa17f3b465126
-Patch0:		nginx-CVE-2018-16845.patch
-patch1:         nginx-CVE-2018-16843.patch
-patch2:         nginx-CVE-2018-16844.patch
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  which
@@ -23,9 +20,6 @@ NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 pushd ../
 mkdir nginx-njs
 tar -C nginx-njs -xf %{SOURCE2}
@@ -82,6 +76,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %{_var}/log/nginx
 
 %changelog
+*   Thu Aug 29 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.16.1-1
+-   Update to version 1.16.1-1
 *   Fri Mar 15 2019 Keerthana K <keerthanak@vmware.com> 1.15.3-6
 -   Enable https_stub_status_module.
 *   Mon Feb 25 2019 Ankit Jain <ankitja@vmware.com> 1.15.3-5
