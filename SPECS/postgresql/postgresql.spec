@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        10.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -19,6 +19,7 @@ BuildRequires:  readline-devel
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  tzdata
+BuildRequires:  systemd-devel
 Requires:       krb5
 Requires:       libxml2
 Requires:       openldap
@@ -26,6 +27,7 @@ Requires:       openssl
 Requires:       readline
 Requires:       zlib
 Requires:       tzdata
+Requires:       systemd
 
 Requires:   %{name}-libs = %{version}-%{release}
 
@@ -63,6 +65,7 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
     --with-openssl \
     --with-gssapi \
     --with-readline \
+    --with-systemd \
     --with-system-tzdata=%{_datadir}/zoneinfo \
     --docdir=%{_docdir}/postgresql
 make %{?_smp_mflags}
@@ -157,6 +160,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Thu Aug 29 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 10.10-2
+-   configure with systemd
 *   Fri Aug 09 2019 Siju Maliakkal <smaliakkal@vmware.com> 10.10-1
 -   Upgrade to 10.10 for 2019-10208
 *   Tue Jun 25 2019 Siju Maliakkal <smaliakkal@vmware.com> 10.9-1
