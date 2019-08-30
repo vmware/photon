@@ -1,7 +1,7 @@
 Summary:        vSphere Docker Volume Service
 Name:           docker-volume-vsphere
 Version:        0.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/vmware/docker-volume-vsphere
 Group:          Applications/System
@@ -52,6 +52,8 @@ cp ./misc/scripts/install/docker-volume-vsphere.service %{buildroot}/%{_libdir}/
 /usr/local/bin/*
 
 %changelog
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 0.12-3
+-   Bump up version to compile with new go
 *   Thu Jun 01 2017 Xiaolin Li <xiaolinl@vmware.com> 0.12-2
 -   Use scripts from docker-volume-vsphere as post and preun scriptlets.
 *   Wed Mar 29 2017 Chang Lee <changlee@vmware.com> 0.12-1

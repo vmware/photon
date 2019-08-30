@@ -1,7 +1,7 @@
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
 Version:        1.14.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Source0:        kubernetes-dns-%{version}.tar.gz
@@ -64,6 +64,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/sidecar-e2e
 
 %changelog
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.14.10-2
+-   Bump up version to compile with new go
 *   Wed May 9 2018 Sharath George <sharathg@vmware.com> 1.14.10-1
 -   kubernetes-dns 1.14.10.
 *   Tue Mar 13 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.14.8-1

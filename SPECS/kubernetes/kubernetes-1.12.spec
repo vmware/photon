@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.12.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -214,6 +214,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.12.9-2
+-   Bump up version to compile with new go
 *   Mon Jul 08 2019 Girish Sadhani <gsadhani@vmware.com> 1.12.9-1
 -   Upgrade to 1.12.9 with VMware Cloud PKS patch (42cb26f)
 *   Thu May 23 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-3

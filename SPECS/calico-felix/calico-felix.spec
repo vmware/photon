@@ -1,7 +1,7 @@
 Summary:       A per-host daemon for Calico
 Name:          calico-felix
 Version:       2.6.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
@@ -58,6 +58,8 @@ install ${GOPATH}/src/github.com/projectcalico/felix/bin/calico-felix %{buildroo
 %{_bindir}/calico-felix
 
 %changelog
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 2.6.0-3
+-   Bump up version to compile with new go
 *    Fri May 03 2019 Bo Gan <ganb@vmware.com> 2.6.0-2
 -    Fix CVE-2018-17846 and CVE-2018-17143
 *    Fri Nov 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.0-1

@@ -1,7 +1,7 @@
 Summary:        CLI tool for spawning and running containers per OCI spec.
 Name:           runc
 Version:        0.1.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://runc.io/
 Source0:        https://github.com/opencontainers/runc/archive/%{name}-v%{version}.tar.gz
@@ -44,6 +44,8 @@ install -D -m0755 runc %{buildroot}%{_sbindir}/runc
 %{_sbindir}/runc
 
 %changelog
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 0.1.1-4
+-   Bump up version to compile with new go
 *   Mon Feb 11 2019 Bo Gan <ganb@vmware.com> 0.1.1-3
 -   Fix CVE-2019-5736
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.1-2

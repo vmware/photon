@@ -4,7 +4,7 @@
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.52.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
@@ -135,6 +135,8 @@ make  %{?_smp_mflags} check
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.52.1-5
+-   Bump up version to compile with new go
 *   Mon Aug 28 2017 Kumar Kaushik <kaushikk@vmware.com> 1.52.1-4
 -   Disabling make check for Regress-1.0.gir test, bug#1635886
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.52.1-3

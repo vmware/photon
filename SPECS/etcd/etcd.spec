@@ -1,7 +1,7 @@
 Summary:        Etcd-3.2.24
 Name:           etcd
 Version:        3.2.24
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
@@ -59,6 +59,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 
 %changelog
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 3.2.24-2
+-   Bump up version to compile with new go
 *   Wed Jan 23 2019 Tapas Kundu <tkundu@vmware.com> 3.2.24-1
 -   Updated to release 3.2.24
 *   Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 3.1.19-1

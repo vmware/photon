@@ -4,7 +4,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.7.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=7aaae7ea80f2280b25f243916e8d18b7338b5f53
 License:        GPLv2+
@@ -158,6 +158,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 2.7.5-4
+-   Bump up version to compile with new go
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-3
 -   Disabled audit service by default
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.5-2
