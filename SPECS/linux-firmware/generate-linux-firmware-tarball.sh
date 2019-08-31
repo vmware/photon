@@ -28,12 +28,14 @@ cp firmware-nonfree/LICENCE.broadcom_bcm43xx $DST/
 cp -a linux-firmware/rsi $DST/
 cp linux-firmware/rsi_91x.fw $DST/
 
-# NXP ls1012a FRWY requires:
+# NXP ls10XXa FRWY requires:
 cp qoriq-engine-pfe-bin/ls1012a/slow_path/ppfe_class_ls1012a.elf $DST/
 cp qoriq-engine-pfe-bin/ls1012a/slow_path/ppfe_tmu_ls1012a.elf $DST/
 cp qoriq-engine-pfe-bin/NXP-Binary-EULA.txt $DST/
 mkdir -p $DST/ath10k/QCA9377
 cp -a linux-firmware/ath10k/QCA9377/hw1.0 $DST/ath10k/QCA9377/
+mkdir -p $DST/ath10k/QCA6174
+cp -a linux-firmware/ath10k/QCA6174/hw2.1 $DST/ath10k/QCA6174/
 
 # Compulab Fitlet2 requires:
 mkdir $DST/i915
