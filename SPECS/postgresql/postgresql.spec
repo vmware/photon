@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        10.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -64,6 +64,7 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
     --with-libxml \
     --with-openssl \
     --with-gssapi \
+    --with-uuid=e2fs \
     --with-readline \
     --with-systemd \
     --with-system-tzdata=%{_datadir}/zoneinfo \
@@ -160,6 +161,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Mon Sep 02 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 10.10-3
+-   add uuid with e2fs configuration
 *   Thu Aug 29 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 10.10-2
 -   configure with systemd
 *   Fri Aug 09 2019 Siju Maliakkal <smaliakkal@vmware.com> 10.10-1
