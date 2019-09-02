@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.189
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -37,6 +37,8 @@ Patch22:       vsock-transport-for-9p.patch
 Patch23:       p9fs_dir_readdir-offset-support.patch
 Patch24:       Implement-the-f-xattrat-family-of-functions.patch
 Patch26:       init-do_mounts-recreate-dev-root.patch
+Patch27:       net-9p-vdfs-zerocopy.patch
+Patch28:       0001-Enable-cache-loose-for-vdfs-9p.patch
 # Fix for CVE-2018-8043
 Patch30:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
@@ -55,7 +57,6 @@ Patch45:        0005-xfs-sanity-check-inode-di_mode.patch
 Patch46:        0006-xfs-verify-dinode-header-first.patch
 Patch47:        0007-xfs-move-inode-fork-verifiers-to-xfs_dinode_verify.patch
 Patch48:        0008-xfs-enhance-dinode-verifier.patch
-Patch49:        net-9p-vdfs-zerocopy.patch
 #Fix CVE-2019-8912
 Patch50:        fix_use_after_free_in_sockfs_setattr.patch
 # Fix for CVE-2019-12456
@@ -143,6 +144,8 @@ The Linux package contains the Linux kernel doc files
 %patch23 -p1
 %patch24 -p1
 %patch26 -p1
+%patch27 -p1
+%patch28 -p1
 %patch30 -p1
 %patch34 -p1
 %patch35 -p1
@@ -155,7 +158,6 @@ The Linux package contains the Linux kernel doc files
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
-%patch49 -p1
 %patch50 -p1
 %patch51 -p1
 %patch54 -p1
@@ -262,6 +264,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Sep 02 2019  Mounesh Badiger <badigerm@vmware.com> 4.4.189-2
+-   9p: use loose cache only for metadata
 *   Mon Aug 12 2019 Alexey Makhalov <amakhalov@vmware.com> 4.4.189-1
 -   Update to version 4.4.189 to fix CVE-2019-1125
 *   Thu Jul 25 2019 Keerthana K <keerthanak@vmware.com> 4.4.185-3

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.189
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -36,6 +36,8 @@ Patch16:        vsock-transport-for-9p.patch
 #allow some algorithms in FIPS mode
 Patch17:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch18:        0002-allow-also-ecb-cipher_null.patch
+Patch19:	net-9p-vdfs-zerocopy.patch
+Patch20:        0001-Enable-cache-loose-for-vdfs-9p.patch
 # Fix for CVE-2018-8043
 Patch22:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
@@ -54,7 +56,6 @@ Patch38:        0005-xfs-sanity-check-inode-di_mode.patch
 Patch39:        0006-xfs-verify-dinode-header-first.patch
 Patch40:        0007-xfs-move-inode-fork-verifiers-to-xfs_dinode_verify.patch
 Patch41:        0008-xfs-enhance-dinode-verifier.patch
-Patch42:        net-9p-vdfs-zerocopy.patch
 # Fix for CVE-2018-16882
 Patch43:        0001-KVM_Fix_UAF_in_nested_posted_interrupt_processing.patch
 #Fix CVE-2019-8912
@@ -176,6 +177,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
+%patch19 -p1
+%patch20 -p1
 %patch22 -p1
 %patch26 -p1
 %patch27 -p1
@@ -189,7 +192,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch39 -p1
 %patch40 -p1
 %patch41 -p1
-%patch42 -p1
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
@@ -364,6 +366,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Sep 02 2019 Mounesh Badiger <badigerm@vmware.com> 4.4.189-2
+-   9p: use loose cache only for metadata
 *   Mon Aug 12 2019 Alexey Makhalov <amakhalov@vmware.com> 4.4.189-1
 -   Update to version 4.4.189 to fix CVE-2019-1125
 *   Thu Jul 25 2019 Keerthana K <keerthanak@vmware.com> 4.4.185-3
