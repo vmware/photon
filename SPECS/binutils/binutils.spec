@@ -1,36 +1,25 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
-Version:        2.31
-Release:        9%{?dist}
+Version:        2.32
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
-%define sha1    binutils=e1a564cd356d2126d2e9a59e8587757634e731aa
-Patch0:         binutils-CVE-2018-17794-18700-18701-18484.patch
-Patch1:         binutils-CVE-2018-18605.patch
-Patch2:         binutils-CVE-2018-18607.patch
-Patch3:         binutils-CVE-2018-18606.patch
-Patch4:         binutils-CVE-2018-19931.patch
-Patch5:         binutils-CVE-2018-1000876.patch
-Patch6:         binutils-CVE-2019-9075.patch
-Patch7:         binutils-CVE-2019-9077.patch
-Patch8:         binutils-avx512.patch
-Patch9:         binutils-CVE-2018-19932.patch
-Patch10:        binutils-CVE-2018-20002.patch
-Patch11:        binutils-CVE-2019-9071.patch
-Patch12:        binutils-CVE-2019-9073.patch
-Patch13:        binutils-CVE-2019-9074.patch
-Patch14:        binutils-CVE-2018-17358.patch
-Patch15:        binutils-CVE-2018-17360.patch
-Patch16:        binutils-CVE-2018-20623.patch
-Patch17:        binutils-CVE-2018-20671.patch
-Patch18:        binutils-CVE-2018-20651.patch
-Patch19:        binutils-CVE-2019-14250.patch
-Patch20:        binutils-CVE-2019-12972.patch
-Patch21:        binutils-CVE-2019-14444.patch
+%define sha1    binutils=cd45a512af1c8a508976c1beb4f5825b3bb89f4d
+
+Patch0:         binutils-CVE-2019-12972.patch
+Patch1:         binutils-CVE-2019-14444.patch
+Patch2:         binutils-CVE-2019-9071.patch
+Patch3:         binutils-CVE-2019-9073.patch
+Patch4:         binutils-CVE-2019-9074.patch
+Patch5:         binutils-CVE-2019-9075.patch
+Patch6:         binutils-CVE-2019-9077.patch
+Patch7:         binutils-CVE-2019-14250.patch
+Patch8:         binutils-sync-libiberty-add-no-recurse-limit-make-check-fix.patch
+Patch9:         binutils-CVE-2019-1010204.patch
 
 %description
 The Binutils package contains a linker, an assembler,
@@ -55,18 +44,6 @@ for handling compiled objects.
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
-%patch21 -p1
 
 %build
 install -vdm 755 ../binutils-build
@@ -142,6 +119,7 @@ make %{?_smp_mflags} check
 %{_libdir}/libopcodes-%{version}.so
 
 %files devel
+%{_includedir}/bfd_stdint.h
 %{_includedir}/plugin-api.h
 %{_includedir}/symcat.h
 %{_includedir}/bfd.h
@@ -155,6 +133,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libopcodes.so
 
 %changelog
+*   Tue Sep 03 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.32-1
+-   Update version to 2.32, fix CVE-2019-1010204, fix a make check failure
 *   Fri Aug 09 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.31-9
 -   Fix CVE-2019-14444, CVE-2019-14250, CVE-2019-12972
 *   Thu Jun 06 2019 Vikash Bansal <bvikas@vmware.com> 2.31-8
