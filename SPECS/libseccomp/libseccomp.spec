@@ -1,7 +1,7 @@
 Summary:      Enhanced seccomp library
 Name:         libseccomp
 Version:      2.4.0
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      LGPLv2
 Group:        System Environment/Libraries
 Source0:      https://github.com/seccomp/libseccomp/releases/download/v%{version}/%{name}-%{version}.tar.gz
@@ -9,6 +9,9 @@ Source0:      https://github.com/seccomp/libseccomp/releases/download/v%{version
 Url:          https://github.com/seccomp/libseccomp/wiki
 Vendor:       VMware, Inc.
 Distribution: Photon
+%if %{with_check}
+BuildRequires: which
+%endif
 
 %description
 The libseccomp library provides an easy to use, platform independent, interface
@@ -61,6 +64,8 @@ make check
 %{_mandir}/man3/*
 
 %changelog
+*  Tue Sep 3 2019 Michelle Wang <michellew@vmware.com> 2.4.0-2
+-  Fix make check for libseccomp
 *  Fri Mar 29 2019 Michelle Wang <michellew@vmware.com> 2.4.0-1
 -  Updated to version 2.4.0 for CVE-2019-9893
 *  Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 2.3.3-1
