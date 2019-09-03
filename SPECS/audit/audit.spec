@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.5
-Release:        6%{?dist}
+Release:        7%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=b684a8dca31776a4184044733cd5fd4b1b652298
 License:        GPLv2+
@@ -149,6 +149,8 @@ find %{buildroot} -name '*.la' -delete
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 2.5-7
+-   Bump up version to compile with new go
 *   Mon Jan 08 2018 Xiaolin Li <xiaolinl@vmware.com> 2.5-6
 -   Add gawk requirement.
 *   Fri Jun 02 2017 Xiaolin Li <xiaolinl@vmware.com> 2.5-5
