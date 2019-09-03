@@ -3,7 +3,7 @@
 
 Name:           python-bcrypt
 Version:        3.1.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Good password hashing for your software and your servers.
 License:        Apache License, Version 2.0
 Group:          Development/Languages/Python
@@ -27,7 +27,9 @@ BuildRequires:  python3-cffi
 BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
-
+%if %{with_check}
+BuildRequires:  curl-devel
+%endif
 
 %description
 Good password hashing for your software and your servers.
@@ -58,6 +60,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pytest==4.6
 python2 setup.py test
 
 %files
@@ -69,5 +73,7 @@ python2 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 03 2019 Shreyas B. <shreyasb@vmware.com> 3.1.6-2
+-   Fix make check errors.
 *   Wed Mar 06 2019 Tapas Kundu <tkundu@vmware.com> 3.1.6-1
 -   Initial packaging for Photon

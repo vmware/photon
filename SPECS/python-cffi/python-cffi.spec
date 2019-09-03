@@ -4,7 +4,7 @@
 Summary:        Interface for Python to call C code
 Name:           python-cffi
 Version:        1.11.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
@@ -64,7 +64,7 @@ popd
 
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 pytest
+$easy_install_2 pytest==4.6
 python2 setup.py test
 pushd ../p3dir
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
@@ -81,6 +81,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Sep 05 2019 Shreyas B. <shreyasb@vmware.com> 1.11.5-3
+-   Fixed make check errors.
 *   Thu Nov 15 2018 Tapas Kundu <tkundu@vmware.com> 1.11.5-2
 -   Fixed make check errors.
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.11.5-1
