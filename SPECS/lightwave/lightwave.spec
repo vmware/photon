@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -1392,6 +1392,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.3.1.34-4
+-   Bump up version to compile with new go
 *   Thu Jan 24 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1.34-3
 -   move vmcommon,ssooidc libs from lightwave-client to lightwave-client-libs
 *   Wed Dec 19 2018 Sriram Nambakam <snambakam@vmware.com> 1.3.1.34-2

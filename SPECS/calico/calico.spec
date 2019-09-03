@@ -1,7 +1,7 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/calico
 Source0:        %{name}-%{version}.tar.gz
@@ -47,6 +47,8 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-2
+-   Bump up version to compile with new go
 *   Wed May 08 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-1
 -   Update to 3.6.1
 *   Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 2.6.7-4

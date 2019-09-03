@@ -14,7 +14,7 @@
 Summary:        Go
 Name:           go
 Version:        1.9.7
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -27,6 +27,7 @@ Patch1:         go-1.9-CVE-2019-6486.patch
 Patch2:         go-1.9-CVE-2018-16874.patch
 Patch3:         go-1.9-CVE-2018-16873.patch
 Patch4:         go-CVE-2019-9741.patch
+Patch5:         go-CVE-2019-14809.patch
 Requires:       glibc
 # to avoid cyclic dependency use prebuilt publish go rpm
 %define ExtraBuildRequires go
@@ -122,6 +123,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Tue Sep 03 2019 Ashwin H <ashwinh@vmware.com> 1.9.7-6
+-   Fix CVE-2019-14809
 *   Wed Jun 26 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.9.7-5
 -   Fix for CVE-2019-9741
 *   Mon Jun 24 2019 Ashwin H <ashwinh@vmware.com> 1.9.7-4

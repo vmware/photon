@@ -1,7 +1,7 @@
 Summary:       BGP implementation in Go
 Name:          gobgp
 Version:       1.33
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
@@ -48,6 +48,8 @@ install ${GOPATH}/src/github.com/osrg/gobgp/dist/gobgpd %{buildroot}%{_bindir}/
 %doc LICENSE README.md
 
 %changelog
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.33-3
+-   Bump up version to compile with new go
 *   Mon Jan 21 2019 Bo Gan <ganb@vmware.com> 1.33-2
 -   Build using go 1.9.7
 *    Mon Sep 24 2018 Tapas Kundu <tkundu@vmware.com> 1.33-1
