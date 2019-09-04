@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.0.2t
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -29,6 +29,7 @@ web browsers (for accessing HTTPS sites).
 Summary: Development Libraries for openssl
 Group: Development/Libraries
 Requires: openssl = %{version}-%{release}
+Obsoletes:  nxtgn-openssl-devel
 %description devel
 Header files for doing development with openssl.
 
@@ -118,6 +119,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Thu Sep 26 2019 Tapas Kundu <tkundu@vmware.com> 1.0.2t-2
+-   OpenSSL devel conflicts nextgen-OpenSSL-devel
 *   Thu Sep 19 2019 Tapas Kundu <tkundu@vmware.com> 1.0.2t-1
 -   Updated to 1.0.2t
 -   Fix multiple CVEs
