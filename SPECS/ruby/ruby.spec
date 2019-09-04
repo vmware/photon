@@ -1,14 +1,14 @@
 Summary:        Ruby
 Name:           ruby
-Version:        2.5.3
-Release:        2%{?dist}
+Version:        2.5.4
+Release:        1%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://cache.ruby-lang.org/pub/ruby/2.5/%{name}-%{version}.tar.bz2
-%define sha1    ruby=d47ede7dab79de25fcc274dfcad0f92f389a4313
+%define sha1    ruby=ac3248a055b5317cec53d3f922559c5b4a67d410
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -53,6 +53,9 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Wed Sep 09 2019 Sujay G <gsujay@vmware.com> 2.5.4-1
+-   Bump version to 2.5.4
+-   Utilising latest tests from 2.5.4 fixes make check issues.
 *   Thu Jun 13 2019 Sujay G <gsujay@vmware.com> 2.5.3-2
 -   Fixed ruby build issue, due to elfutils upgrade.
 *   Tue Jan 01 2019 Sujay G <gsujay@vmware.com> 2.5.3-1
