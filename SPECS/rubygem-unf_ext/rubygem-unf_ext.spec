@@ -4,7 +4,7 @@
 
 Name: rubygem-unf_ext
 Version:        0.0.7.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Unicode Normalization Form support library for CRuby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -15,8 +15,6 @@ Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha1    unf_ext=e1d4eb2d5832e6c6f58c0384c3c33521042cc498
 BuildRequires:  ruby
 BuildRequires:  gmp-devel
-
-BuildArch: x86_64
 
 %description
 Unicode Normalization Form support library for CRuby.
@@ -34,5 +32,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 4 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.0.7.6-2
+-   Enabled build for non x86_64 build archs
 *   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.0.7.6-1
 -   Initial build
