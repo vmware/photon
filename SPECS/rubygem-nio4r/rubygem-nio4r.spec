@@ -4,7 +4,7 @@
 
 Name: rubygem-nio4r
 Version:        2.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cross-platform asynchronous I/O primitives for scalable network clients and servers.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -15,8 +15,6 @@ Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha1    nio4r=dbad76d9a1a7d130aebd1c6d1d5c59a0c2fcacb9
 BuildRequires:  gmp-devel
 BuildRequires:  ruby >= 2.3.0
-
-BuildArch: x86_64
 
 %description
 Cross-platform asynchronous I/O primitives for scalable network clients and servers.
@@ -35,5 +33,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 4 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 2.4.0-2
+-   Enabled build for non x86_64 build archs
 *   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 2.4.0-1
 -   Initial build
