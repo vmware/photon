@@ -1,6 +1,6 @@
 Name:           jemalloc
 Version:        4.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A general purpose malloc implementation that emphasizes fragmentation avoidance and scalable concurrency support.
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,7 +10,6 @@ URL:            https://github.com/jemalloc/jemalloc/
 Source0:        https://github.com/jemalloc/jemalloc/releases/download/%{version}/%{name}-%{version}.tar.bz2
 %define sha1 jemalloc=e7714d070c623bff9acf682e9d52c930e491acd8
 BuildRequires:  bzip2
-BuildArch: x86_64
 
 %description
 jemalloc is a general purpose malloc(3) implementation that emphasizes fragmentation avoidance
@@ -62,5 +61,7 @@ make %{?_smp_mflags}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*       Wed Sep 4 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 4.5.0-2
+-       Enabled build for non x86_64 build archs
 *       Fri Aug 23 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 4.5.0-1
 -       Initial build
