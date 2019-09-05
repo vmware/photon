@@ -2,10 +2,11 @@ diff --git a/cloudinit/sources/DataSourceVMwareGuestInfo.py b/cloudinit/sources/
 index e69de29..59dd685 100644
 --- a/cloudinit/sources/DataSourceVMwareGuestInfo.py
 +++ b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-@@ -108,6 +108,94 @@
+@@ -108,7 +108,99 @@
          # Get the vendor data.
          self.vendordata_raw = guestinfo('vendordata')
  
+-        return True
 +        hostname = get_guestinfo_value('hostname')
 +        if hostname:
 +            self.distro.set_hostname(hostname)
@@ -92,8 +93,13 @@ index e69de29..59dd685 100644
 +            else:
 +                found = False
 +            dev_index += 1
-+        self.distro.apply_network(network_settings, False)
++        if network_settings:
++            self.distro.apply_network(network_settings, False)
 +
-         return True
++        if self.metadata or self.userdata_raw or self.vendordata_raw or hostname or network_settings:
++           return True
++        else:
++           return False
  
      def setup(self, is_new_instance):
+         """setup(is_new_instance)

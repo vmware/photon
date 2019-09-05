@@ -2,7 +2,7 @@ diff --git a/cloudinit/sources/DataSourceVMwareGuestInfo.py b/cloudinit/sources/
 index e69de29..59dd685 100644
 --- a/cloudinit/sources/DataSourceVMwareGuestInfo.py
 +++ b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-@@ -0,0 +1,465 @@
+@@ -0,0 +1,483 @@
 +# Cloud-Init Datasource for VMware Guestinfo
 +#
 +# Copyright (c) 2018 VMware, Inc. All Rights Reserved.
@@ -374,6 +374,24 @@ index e69de29..59dd685 100644
 +
 +    return ipv4, ipv6
 +
++# patched socket.getfqdn() - see https://bugs.python.org/issue5004
++def getfqdn(name=''):
++    """Get fully qualified domain name from name.
++     An empty argument is interpreted as meaning the local host.
++    """
++    name = name.strip()
++    if not name or name == '0.0.0.0':
++        name = socket.gethostname()
++    try:
++        addrs = socket.getaddrinfo(name, None, 0, socket.SOCK_DGRAM, 0, socket.AI_CANONNAME)
++    except socket.error:
++        pass
++    else:
++        for addr in addrs:
++            if addr[3]:
++                name = addr[3]
++                break
++    return name
 +
 +def get_host_info():
 +    '''
@@ -390,7 +408,7 @@ index e69de29..59dd685 100644
 +        },
 +    }
 +
-+    hostname = socket.getfqdn()
++    hostname = getfqdn(socket.gethostname())
 +    if hostname:
 +        host_info['hostname'] = hostname
 +        host_info['local-hostname'] = hostname

@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        18.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -152,7 +152,11 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
-*   Mon Aug 12 2019 Tapas Kundu <keerthanak@vmware.com> 18.3-5
+*   Thu Sep 05 2019 Keerthana K <keerthanak@vmware.com> 18.3-6
+-   Fix socket.getfqdn() in DataSourceVMwareGuestInfo
+-   Return False when no data is found in get_data() of DataSourceVMwareGuestInfo.
+-   Disable manage_etc_hosts by default as cloud-init tries to write its default template /etc/hosts file if enabled.
+*   Mon Aug 12 2019 Keerthana K <keerthanak@vmware.com> 18.3-5
 -   Downgrade to 18.3 to fix azure dhcp lease issue.
 *   Tue Jul 23 2019 Keerthana K <keerthanak@vmware.com> 19.1-2
 -   support for additional features in VMGuestInfo Datasource.
