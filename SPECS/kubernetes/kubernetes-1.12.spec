@@ -7,17 +7,20 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.12.7
-Release:        3%{?dist}
+Version:        1.12.10
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=62cbd12425af750b4134acdfa713a760b2d27438
+%define sha1    kubernetes-%{version}.tar.gz=b58470cb234d312ff158c11d8911986f56943739
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         go-27704.patch
 Patch1:         go-27842.patch
-Patch2:         CVE-2019-11244.patch
+Patch2:         CVE-2019-11247-1.patch
+Patch3:         CVE-2019-11247-2.patch
+Patch4:         CVE-2019-11249-1.patch
+Patch5:         CVE-2019-11249-2.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -70,6 +73,9 @@ pushd vendor/golang.org/x/net
 %patch1 -p1
 popd
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 %build
 make
@@ -230,6 +236,8 @@ fi
 %endif
 
 %changelog
+*   Tue Sep 10 2019 Ashwin H <ashwinh@vmware.com> 1.12.10-1
+-   Update to 1.12.10 and Fix CVE-2019-11247, CVE-2019-11249
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-3
 -   Bump up version to compile with new go
 *   Thu May 23 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-2
