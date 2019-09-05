@@ -1,7 +1,7 @@
 Summary:	Library for the arithmetic of complex numbers
 Name:		mpc
 Version:	1.1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv3+
 URL:		http://www.multiprecision.org
 Group:		Applications/System
@@ -20,8 +20,7 @@ the result.
 %setup -q
 
 %build
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--disable-silent-rules
 make %{?_smp_mflags}
 
@@ -44,6 +43,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so.*
 
 %changelog
+*   Wed Sep 04 2019 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
+-   Bump up release number to get generic mtune option from gmp.h
 *   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.1.0-1
 -   Update to version 1.1.0
 *   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 1.0.3-3
