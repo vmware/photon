@@ -1,7 +1,7 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
 Version:        4.39
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
@@ -45,7 +45,7 @@ sed -i 's/\/etc\/init.d\/$APP_BASE-proxy restart/ systemctl restart $APP_BASE-pr
 sed -i 's/-jar \/opt\/wavefront\/wavefront-proxy\/bin\/wavefront-push-agent.jar/-jar \/opt\/wavefront-push-agent.jar/' proxy/docker/run.sh
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 %if "%{_arch}" == "aarch64"
 mvn install -DskipTests
 %else
@@ -109,6 +109,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/wavefront-proxy.service
 
 %changelog
+* Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 4.39-2
+- Modified the path of JAVA_HOME
 * Mon Jul 29 2019 Shreyas B. <shreyasb@vmware.com> 4.39-1
 - Updated to 4.39
 * Fri Jul 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.36-2

@@ -3,7 +3,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	1.5.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -68,7 +68,7 @@ sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/Makefil
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libprocess/3rdparty/Makefile.am
 sed -i "/xlocale.h/d" 3rdparty/stout/include/stout/jsonify.hpp
 
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 ./configure \
 	CFLAGS="%{optflags} -Wno-deprecated-declarations"  \
 	CXXFLAGS="%{optflags} -Wno-deprecated-declarations" \
@@ -82,7 +82,7 @@ make
 make check
 
 %install
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 make DESTDIR=%{buildroot} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 mv %{buildroot}%{python2_sitelib}/mesos %{buildroot}/python-mesos
@@ -124,6 +124,8 @@ find %{buildroot}%{python2_sitelib}/mesos -name '*.pyc' -delete
 %{python2_sitelib}/mesos/*
 
 %changelog
+*	Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 1.5.3-2
+-	Modified the path of JAVA_HOME
 *	Mon Jun 03 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.5.3-1
 -	Update to 1.5.3. Includes fix for CVE-2019-0204
 *	Wed Feb 27 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.2-1

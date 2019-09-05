@@ -1,7 +1,7 @@
 Summary:	Logstash is a tool for managing events and logs.
 Name:           logstash
 Version:        6.7.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,9 +11,9 @@ Source0:        %{name}-%{version}.tar.gz
 %define sha1 %{name}-%{version}.tar.gz=7c009c19e8d7c733173b94b5152f48deee8a76ef
 Source1:        %{name}.service
 Source2:        %{name}.conf
-BuildRequires:	openjdk >= %{JAVA_VERSION}
+BuildRequires:	openjdk
 BuildRequires:	ruby
-Requires:	openjdk >= %{JAVA_VERSION}
+Requires:	openjdk
 Requires:	ruby
 Requires:       systemd
 Requires:       elasticsearch
@@ -32,13 +32,13 @@ Logstash is a tool to collect, process, and forward events and log messages. Col
 %build
 export OSS=true
 export LC_ALL=en_US.UTF-8
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 #Note: Only Building and Packaging Apache Licensed OSS part of Logstash. It doesn't include x-pack coponent of Elastic
 ./gradlew assembleOssTarDistribution
 
 %install
 export LC_ALL=en_US.UTF-8
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 rm -rf %{buildroot}
 install -vdm 755 %{buildroot}%{_sysconfdir}/%{name}/conf.d
 install -vdm 755 %{buildroot}/var/lib/%{name}
@@ -114,6 +114,8 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+*   Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-5
+-   Modified the path of JAVA_HOME
 *   Wed Sep 04 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-4
 -   Bumping release to build with latest jdk8
 *   Fri Aug 09 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-3

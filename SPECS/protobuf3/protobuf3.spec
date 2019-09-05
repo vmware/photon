@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf3
 Version:        3.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -102,7 +102,7 @@ This contains protobuf java package.
 autoreconf -iv
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 %configure --disable-silent-rules
 make %{?_smp_mflags}
 pushd python
@@ -166,6 +166,8 @@ make check
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 3.0.0-4
+-   Modified the path of JAVA_HOME
 *   Fri Aug 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-3
 -   Add conflicts.
 *   Wed Jul 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-2

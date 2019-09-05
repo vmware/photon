@@ -1,7 +1,7 @@
 Summary:	Ant contrib
 Name:		ant-contrib
 Version:	1.0b3
-Release:	13%{?dist}
+Release:	14%{?dist}
 License:	Apache
 URL:		http://ant-contrib.sourceforget.net
 Group:		Applications/System
@@ -28,11 +28,11 @@ find . -name '*.jar' -or -name '*.class' -exec rm -rf {} +
 rm -rf %{buildroot}
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 ant -Ddist.dir="." -Dproject.version=%{version} dist
 
 %install
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 mkdir -p -m 700 %{buildroot}/var/opt
 cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.tar.gz --wildcards "*.jar"
 %files
@@ -43,6 +43,8 @@ cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.
 %{_prefix}/lib/*.jar
 
 %changelog
+*   Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 1.0b3-14
+-   Modified the path of JAVA_HOME
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 1.0b3-13
 -   Removed dependency on ANT_HOME
 *   Fri May 19 2017 Harish Udiaya Kumar <hudaiyakumar@vmware.com> 1.0b3-12

@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.5.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -33,7 +33,7 @@ rm -rf %{buildroot}
 
 %build
 MAVEN_DIST_DIR=%{buildroot}%{_prefix}
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 
 sed -i 's/www.opensource/opensource/g' DEPENDENCIES
 
@@ -76,6 +76,8 @@ done
 %exclude %{_libdir}/jansi-native
 
 %changelog
+*   Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 3.5.4-2
+-   Modified the path of JAVA_HOME
 *   Tue May 07 2019 Tapas Kundu <tkundu@vmware.com> 3.5.4-1
 -   Updated apache-maven to version 3.5.4
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 3.3.9-10

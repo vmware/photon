@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        2.6.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -69,10 +69,10 @@ This contains protobuf python3 libraries.
 %package        java
 Summary:        protobuf java
 Group:          Development/Libraries
-BuildRequires:  openjre >= %{JAVA_VERSION}
-BuildRequires:  openjdk >= %{JAVA_VERSION}
+BuildRequires:  openjre
+BuildRequires:  openjdk
 BuildRequires:  apache-maven >= 3.3.3
-Requires:       openjre >= %{JAVA_VERSION}
+Requires:       openjre
 
 %description    java
 This contains protobuf java package.
@@ -82,7 +82,7 @@ This contains protobuf java package.
 autoreconf -iv
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 %configure --disable-silent-rules
 
 make %{?_smp_mflags}
@@ -146,6 +146,8 @@ make check
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 2.6.1-5
+-   Modified the path of JAVA_HOME
 *   Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6.1-4
 -   Use JAVA_VERSION macro instead of hard coded version.
 *   Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-3

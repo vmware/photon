@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.40
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -42,7 +42,7 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
 %patch1 -p1
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
 
 %install
@@ -104,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 8.5.40-3
+-   Modified the path of JAVA_HOME
 *   Thu Jul 04 2019 Dweep Advani <dadvani@vmware.com> 8.5.40-2
 -   Fix CVE-2019-10072
 *   Tue Apr 23 2019 Dweep Advani <dadvani@vmware.com> 8.5.40-1
