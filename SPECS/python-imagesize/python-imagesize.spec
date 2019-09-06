@@ -3,7 +3,7 @@
 
 Name:           python-imagesize
 Version:        1.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        python module to analyze jpeg/jpeg2000/png/gif image header and return image size.
 License:        MIT
 Group:          Development/Languages/Python
@@ -20,6 +20,12 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-pytest
 Requires:       python2
 Requires:       python2-libs
+%if %{with_check}
+BuildRequires:  python-pip
+BuildRequires:  python3-pip
+BuildRequires:  python-attrs
+BuildRequires:  python3-attrs
+%endif
 
 BuildArch:      noarch
 
@@ -58,7 +64,15 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
+pip install pathlib2
+pip install funcsigs
+pip install pluggy
+pip install atomicwrites
 py.test2
+pip3 install pathlib2
+pip3 install funcsigs
+pip3 install pluggy
+pip3 install atomicwrites
 py.test3
 
 %files
@@ -70,6 +84,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 06 2019 Shreyas B. <shreyasb@vmware.com> 1.1.0-2
+-   Fixed makecheck errors.
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.1.0-1
 -   Update to version 1.1.0
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.1-3

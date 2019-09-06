@@ -4,7 +4,7 @@
 Summary:        provides a pure-Python implementation of immutable URLs
 Name:           python-hyperlink
 Version:        18.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -64,7 +64,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 pytest
+$easy_install_2 pytest==4.6
 pytest
 pushd ../p3dir
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
@@ -82,6 +82,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 06 2019 Shreyas B. <shreyasb@vmware.com> 18.0.0-3
+-   Fix make check.
 *   Thu Dec 06 2018 Tapas Kundu <tkundu@vmware.com> 18.0.0-2
 -   Fix make check.
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 18.0.0-1

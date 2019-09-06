@@ -4,7 +4,7 @@
 Summary:        Coroutine-based network library
 Name:           python-gevent
 Version:        1.3.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -52,6 +52,10 @@ BuildRequires: python3-test
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-greenlet
+%if %{with_check}
+BuildRequires:	openssl-devel
+BuildRequires:	curl-devel
+%endif
 
 %description -n python3-gevent
 Python 3 version.
@@ -89,6 +93,8 @@ PYTHONPATH=.. python3 testrunner.py --config known_failures.py
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 06 2019 Shreyas B. <shreyasb@vmware.com> 1.3.6-2
+-   Fixed make check errors.
 *   Wed Sep 12 2018 Tapas Kundu <tkundu@vmware.com> 1.3.6-1
 -   Updated to version 1.3.6
 *   Wed Sep 20 2017 Bo Gan <ganb@vmware.com> 1.2.1-6
