@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.72
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -19,6 +19,7 @@ Source4:	config_aarch64
 Source5:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
 %define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
 Source6:        update_photon_cfg.postun
+Source7:        check_for_config_applicability.inc
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -281,17 +282,17 @@ make mrproper
 %ifarch x86_64
 cp %{SOURCE1} .config
 arch="x86_64"
-archdir="x86"
 %endif
 
 %ifarch aarch64
 cp %{SOURCE4} .config
 arch="arm64"
-archdir="arm64"
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
-make LC_ALL= oldconfig
+
+%include %{SOURCE7}
+
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
 make -C tools perf
 %ifarch x86_64
@@ -325,6 +326,14 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
 %{nil}
 
 %install
+%ifarch x86_64
+archdir="x86"
+%endif
+
+%ifarch aarch64
+archdir="arm64"
+%endif
+
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
@@ -508,6 +517,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Sep 19 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.72-2
+-   Avoid oldconfig which leads to potential build hang
+-   Fix archdir usage
 *   Wed Sep 11 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.72-1
 -   Update to version 4.19.72
 *   Thu Sep 05 2019 Ajay Kaher <akaher@vmware.com> 4.19.69-2
