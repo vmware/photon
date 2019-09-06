@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.69
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,6 +13,7 @@ Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
+Source4:        check_for_config_applicability.inc
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -132,7 +133,9 @@ sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
 make mrproper
 cp %{SOURCE1} .config
 sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
-make LC_ALL= oldconfig
+
+%include %{SOURCE4}
+
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
 # Do not compress modules which will be loaded at boot time
@@ -221,6 +224,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Sep 05 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.69-2
+-   Avoid oldconfig which leads to potential build hang
 *   Fri Aug 30 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.69-1
 -   Update to version 4.19.69
 *   Fri Aug 23 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.65-3
