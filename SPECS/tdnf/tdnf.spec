@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        2.0.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -42,6 +42,7 @@ Patch6:         tdnf-fix-error-no-repo.patch
 Patch7:         tdnf-refresh-mkcache.patch
 Patch8:         tdnf-fix-gpgcheck.patch
 Patch9:         tdnf-added-skip-options-to-check.patch
+Patch10:        tdnf-check-Added-more-rules-for-skip-obsoletes.patch
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
@@ -74,6 +75,7 @@ Library providing cli libs for tdnf like clients.
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 
 %build
 autoreconf -i
@@ -174,6 +176,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Sun Sep 08 2019 Ankit Jain <ankitja@vmware.com> 2.0.0-11
+-   Added more rules for skipconflicts and skipobsoletes to check command.
 *   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 2.0.0-10
 -   Added skipconflicts and skipobsoletes to check command.
 *   Thu Mar 14 2019 Keerthana K <keerthanak@vmware.com> 2.0.0-9

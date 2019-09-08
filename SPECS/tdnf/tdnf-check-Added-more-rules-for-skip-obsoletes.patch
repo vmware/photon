@@ -1,0 +1,74 @@
+From d59c37b758445851c69fd0e20d7fd012490a775d Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Fri, 30 Aug 2019 17:31:48 +0530
+Subject: [PATCH] tdnf check: Added more rules for skip obsoletes and conflicts
+
+--skipobsoletes:
+Added rules SOLVER_RULE_PKG_OBSOLETES,SOLVER_RULE_PKG_IMPLICIT_OBSOLETES
+SOLVER_RULE_PKG_INSTALLED_OBSOLETES
+
+--skipconflicts:
+Added rules SOLVER_RULE_PKG_CONFLICTS, SOLVER_RULE_PKG_SELF_CONFLICT
+
+Change-Id: I0ce49cd518080494d93358652b6e960d0cfbb2c8
+---
+ solv/tdnfpackage.c | 42 ++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 38 insertions(+), 4 deletions(-)
+
+diff --git a/solv/tdnfpackage.c b/solv/tdnfpackage.c
+index a83fc9a..ee8541a 100644
+--- a/solv/tdnfpackage.c
++++ b/solv/tdnfpackage.c
+@@ -1525,11 +1525,45 @@ __should_skip(
+     )
+ {
+     uint32_t dwResult = 0;
+-    if (((dwSkipProblem == SKIPPROBLEM_CONFLICTS) && (type == SOLVER_RULE_PKG_CONFLICTS)) ||
+-        ((dwSkipProblem == SKIPPROBLEM_OBSOLETES) && (type == SOLVER_RULE_PKG_OBSOLETES)) ||
+-        ((dwSkipProblem == (SKIPPROBLEM_CONFLICTS | SKIPPROBLEM_OBSOLETES)) && ((type == SOLVER_RULE_PKG_OBSOLETES) || (type == SOLVER_RULE_PKG_CONFLICTS))))
++    if (dwSkipProblem == SKIPPROBLEM_CONFLICTS)
+     {
+-        dwResult = 1;
++        switch(type)
++        {
++             case SOLVER_RULE_PKG_CONFLICTS:
++             case SOLVER_RULE_PKG_SELF_CONFLICT:
++                 dwResult = 1;
++                 break;
++             default:
++                 break;
++        }
++    }
++    else if (dwSkipProblem == SKIPPROBLEM_OBSOLETES)
++    {
++        switch(type)
++        {
++             case SOLVER_RULE_PKG_OBSOLETES:
++             case SOLVER_RULE_PKG_IMPLICIT_OBSOLETES:
++             case SOLVER_RULE_PKG_INSTALLED_OBSOLETES:
++                 dwResult = 1;
++                 break;
++             default:
++                 break;
++        }
++    }
++    else if (dwSkipProblem == (SKIPPROBLEM_CONFLICTS | SKIPPROBLEM_OBSOLETES))
++    {
++        switch(type)
++        {
++             case SOLVER_RULE_PKG_CONFLICTS:
++             case SOLVER_RULE_PKG_SELF_CONFLICT:
++             case SOLVER_RULE_PKG_OBSOLETES:
++             case SOLVER_RULE_PKG_IMPLICIT_OBSOLETES:
++             case SOLVER_RULE_PKG_INSTALLED_OBSOLETES:
++                 dwResult = 1;
++                 break;
++             default:
++                 break;
++        }
+     }
+     return dwResult;
+ }
+-- 
+2.7.4
+
