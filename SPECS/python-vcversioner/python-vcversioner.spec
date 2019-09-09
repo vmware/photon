@@ -3,7 +3,7 @@
 
 Name:           python-vcversioner
 Version:        2.16.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python version extractor
 License:        ISC
 Group:          Development/Languages/Python
@@ -50,7 +50,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %check
 python2 setup.py test
 pushd ../p3dir
-python3 setup test
+python3 setup.py test
 popd
 
 %files
@@ -62,5 +62,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Sep 09 2019 Shreyas B. <shreyasb@vmware.com> 2.16.0.0-2
+-   Fix make check.
 *   Tue Oct 23 2018 Sujay G <gsujay@vmware.com> 2.16.0.0-1
 -   Initial version

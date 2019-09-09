@@ -3,7 +3,7 @@
 
 Name:           python-virtualenv
 Version:        16.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Virtual Python Environment builder
 License:        MIT
 Group:          Development/Languages/Python
@@ -20,6 +20,11 @@ BuildRequires:  python-pytest
 Requires:       python2
 Requires:       python2-libs
 BuildRequires:  python-setuptools
+%if %{with_check}
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+BuildRequires:  python-pip
+%endif
 
 BuildArch:      noarch
 
@@ -59,6 +64,8 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pytest==4.6
 python2 setup.py test
 pushd ../p3dir
 python3 setup.py test
@@ -74,6 +81,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Sep 09 2019 Shreyas B. <shreyasb@vmware.com> 16.0.0-2
+-   Fix make check.
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 16.0.0-1
 -   Update to version 16.0.0
 *   Fri Aug 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 15.1.0-1
