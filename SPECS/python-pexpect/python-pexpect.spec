@@ -4,7 +4,7 @@
 Summary:        Pexpect is a Pure Python Expect-like module
 Name:           python-pexpect
 Version:        4.6.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ISC
 Url:            https://github.com/pexpect/pexpect
 Group:          Development/Languages/Python
@@ -16,6 +16,8 @@ Patch0:         fix_test_before_across_chunks.patch
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 %if %{with_check}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
@@ -24,6 +26,11 @@ BuildRequires:  python-pytest
 BuildRequires:  python-attrs
 BuildRequires:  python-ptyprocess
 BuildRequires:  man-db
+BuildRequires:  python3-atomicwrites
+BuildRequires:  python3-pytest
+BuildRequires:  python3-attrs
+BuildRequires:  python3-ptyprocess
+BuildRequires:  python3-xml
 %endif
 Requires:       python2
 Requires:       python2-libs
@@ -39,16 +46,6 @@ were typing commands.
 
 %package -n python3-pexpect
 Summary:        Python3 package for pexpect
-BuildRequires:  python3-devel
-%if %{with_check}
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-atomicwrites
-BuildRequires:  python3-pytest
-BuildRequires:  python3-attrs
-BuildRequires:  python3-ptyprocess
-BuildRequires:  python3-xml
-%endif
-
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-ptyprocess
@@ -80,7 +77,7 @@ popd
 
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 pathlib2 funcsigs pluggy more_itertools
+$easy_install_2 pathlib2 funcsigs pluggy more_itertools==5.0
 LANG=en_US.UTF-8  PYTHONPATH=%{buildroot}%{python2_sitelib} \
 py.test2
 
@@ -97,6 +94,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Sep 09 2019 Tapas Kundu <tkundu@vmware.com> 4.6.0-3
+-   Fix make check
 *   Wed Dec 05 2018 Ashwin H <ashwinh@vmware.com> 4.6.0-2
 -   Add %check
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 4.6.0-1
