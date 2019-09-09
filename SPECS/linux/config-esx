@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.4.148 Kernel Configuration
+# Linux/x86 4.4.191 Kernel Configuration
 #
 CONFIG_64BIT=y
 CONFIG_X86_64=y
@@ -2583,7 +2583,7 @@ CONFIG_FIRMWARE_MEMMAP=y
 CONFIG_DMIID=y
 CONFIG_DMI_SYSFS=m
 CONFIG_DMI_SCAN_MACHINE_NON_EFI_FALLBACK=y
-# CONFIG_ISCSI_IBFT_FIND is not set
+# CONFIG_ISCSI_IBFT is not set
 # CONFIG_GOOGLE_FIRMWARE is not set
 
 #
@@ -2923,6 +2923,7 @@ CONFIG_TRACING_SUPPORT=y
 # CONFIG_TEST_KSTRTOX is not set
 # CONFIG_TEST_PRINTF is not set
 # CONFIG_TEST_RHASHTABLE is not set
+# CONFIG_TEST_HASH is not set
 # CONFIG_PROVIDE_OHCI1394_DMA_INIT is not set
 # CONFIG_DMA_API_DEBUG is not set
 # CONFIG_TEST_LKM is not set

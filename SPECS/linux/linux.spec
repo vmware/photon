@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.189
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.191
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=309c3c9e7e89e90b076eb09e7c626dedda70c9a2
+%define sha1 linux=1c73f1f2c9c83d82e27d0c3bf0b45509f9952356
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -366,6 +366,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Sep 09 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.191-1
+-   Update to version 4.4.191
 *   Mon Sep 02 2019 Mounesh Badiger <badigerm@vmware.com> 4.4.189-2
 -   9p: use loose cache only for metadata
 *   Mon Aug 12 2019 Alexey Makhalov <amakhalov@vmware.com> 4.4.189-1

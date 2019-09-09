@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.189
-Release:       2%{?dist}
+Version:       4.4.191
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=309c3c9e7e89e90b076eb09e7c626dedda70c9a2
+%define sha1 linux=1c73f1f2c9c83d82e27d0c3bf0b45509f9952356
 Source1:       config-esx
 Source2:       update_photon_cfg.postun
 Patch0:        double-tcp_mem-limits.patch
@@ -264,6 +264,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Sep 09 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.191-1
+-   Update to version 4.4.191
 *   Mon Sep 02 2019  Mounesh Badiger <badigerm@vmware.com> 4.4.189-2
 -   9p: use loose cache only for metadata
 *   Mon Aug 12 2019 Alexey Makhalov <amakhalov@vmware.com> 4.4.189-1
