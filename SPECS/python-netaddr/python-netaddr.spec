@@ -3,7 +3,7 @@
 
 Name:           python-netaddr
 Version:        0.7.19
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A network address manipulation library for Python
 License:        BSD
 Group:          Development/Languages/Python
@@ -59,7 +59,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 pytest
+$easy_install_2 pytest==4.6
 PYTHONPATH=./ python setup.py test
 pushd ../p3dir
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
@@ -79,6 +79,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Sep 09 2019 Shreyas B. <shreyasb@vmware.com> 0.7.19-7
+-   Fixed makecheck.
 *   Mon Dec 03 2018 Tapas Kundu <tkundu@vmware.com> 0.7.19-6
 -   Fixed make check.
 *   Tue Jul 25 2017 Divya Thaluru <dthaluru@vmware.com> 0.7.19-5

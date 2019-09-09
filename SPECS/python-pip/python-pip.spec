@@ -1,7 +1,7 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           python-pip
 Version:        18.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/pip
 Summary:        The PyPA recommended tool for installing Python packages.
 License:        MIT
@@ -49,10 +49,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 freezegun mock pretend virtualenv scripttest pytest pytest-capturelog
-
+$easy_install_2 freezegun mock pretend virtualenv scripttest pytest==4.6 pytest-capturelog
 python setup.py test
-
 
 %files
 %defattr(-,root,root)
@@ -60,6 +58,8 @@ python setup.py test
 %{_bindir}/*
 
 %changelog
+*   Mon Sep 09 2019 Shreyas B. <shreyasb@vmware.com> 18.0-3
+-   Fix makecheck.
 *   Mon Jan 14 2019 Tapas Kundu <tkundu@vmware.com> 18.0-2
 -   Fix make check
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 18.0-1

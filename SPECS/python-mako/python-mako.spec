@@ -3,7 +3,7 @@
 
 Name:           python-mako
 Version:        1.0.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python templating language
 License:        MIT
 Group:          Development/Languages/Python
@@ -15,6 +15,12 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-pytest
+
+%if %{with_check}
+BuildRequires:  python-markupsafe
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+%endif
 
 Requires:       python2
 Requires:       python2-libs
@@ -56,6 +62,11 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 nose
+$easy_install_2 httpretty
+$easy_install_2 mock
+$easy_install_2 pytest==4.6
 python2 setup.py test
 pushd ../p3dir
 python3 setup.py test
@@ -72,6 +83,8 @@ popd
 %{_bindir}/mako-render3
 
 %changelog
+*   Mon Sep 09 2019 Shreyas B. <shreyasb@vmware.com> 1.0.7-2
+-   Fix makecheck.
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.0.7-1
 -   Update to version 1.0.7
 *   Thu Jul 06 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0.6-5
