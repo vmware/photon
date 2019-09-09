@@ -3,7 +3,7 @@
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python-pyOpenSSL
 Version:        18.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -89,7 +89,7 @@ popd
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
 $easy_install_2 pretend
 $easy_install_2 flaky
-$easy_install_2 pytest
+$easy_install_2 pytest==4.6
 PATH=%{buildroot}%{_bindir}:${PATH} \
 LANG=en_US.UTF-8  PYTHONPATH=%{buildroot}%{python2_sitelib} \
     pytest
@@ -114,6 +114,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Sep 09 2019 Tapas Kundu <tkundu@vmware.com> 18.0.0-3
+-   Fix make check
 *   Fri Jan 11 2019 Tapas Kundu <tkundu@vmware.com> 18.0.0-2
 -   Fix makecheck
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 18.0.0-1
