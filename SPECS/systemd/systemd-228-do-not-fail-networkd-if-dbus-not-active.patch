@@ -1,0 +1,22 @@
+From bdf7c7de18506230e7ed0fab28278720ac3fbf86 Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Wed, 23 Aug 2017 12:36:36 +0900
+Subject: [PATCH] networkd: do not fail manager_connect_bus() if dbus is not
+ active yet
+
+Fixes #6618.
+---
+ src/network/networkd-manager.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/src/network/networkd-manager.c	2019-09-10 12:18:10.194272393 +0000
++++ b/src/network/networkd-manager.c	2019-09-10 12:18:43.114273973 +0000
+@@ -136,7 +136,7 @@ int manager_connect_bus(Manager *m) {
+         assert(m);
+
+         r = sd_bus_default_system(&m->bus);
+-        if (r == -ENOENT) {
++        if (r < 0) {
+                 /* We failed to connect? Yuck, we must be in early
+                  * boot. Let's try in 5s again. As soon as we have
+                  * kdbus we can stop doing this... */
