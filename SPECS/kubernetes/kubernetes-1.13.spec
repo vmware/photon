@@ -1,17 +1,16 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.13.6
-Release:        2%{?dist}
+Version:        1.13.10
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=c5a6a4fb2b0d6f295e5885467abf8d9ba343da7f
+%define sha1    kubernetes-%{version}.tar.gz=28708bfd50f6dcbcd54d9aba11d5143f7b48403f
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         k8s-1.13-vke.patch
 Patch1:         go-27704.patch
-Patch2:         go-27842.patch
-Patch3:         k8s-1.13-CVE-2019-11244.patch
+Patch2:         go-27842-k8s-1.13.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -66,7 +65,6 @@ pushd vendor/golang.org/x/net
 %patch1 -p1
 %patch2 -p1
 popd
-%patch3 -p1
 
 %build
 make
@@ -218,6 +216,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Tue Sep 10 2019 Ashwin H <ashwinh@vmware.com> 1.13.10-1
+-   Update to 1.13.10
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.13.6-2
 -   Bump up version to compile with new go
 *   Thu Aug 01 2019 Utkarsh Sahai <usahai@vmware.com> 1.13.6-1
