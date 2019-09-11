@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.19.69
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.72
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=14e09518cda257bd3d005be6bba1d80d6e9b1b31
+%define sha1 linux=677ee0d53d50007b58932023382da961f95ba772
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -508,6 +508,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Sep 11 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.72-1
+-   Update to version 4.19.72
 *   Thu Sep 05 2019 Ajay Kaher <akaher@vmware.com> 4.19.69-2
 -   Adding SPI and Audio interfaces in rpi3 device tree
 -   Adding spi0 and audio overlays
