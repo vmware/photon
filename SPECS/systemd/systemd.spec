@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          13%{?dist}
+Release:          14%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -33,6 +33,7 @@ Patch13:          systemd-239-CVE-2019-3842.patch
 Patch14:          systemd-239-CVE-2019-6454.patch
 Patch15:          systemd-239-CVE-2019-3833-3844.patch
 Patch16:          systemd-239-bz-2361840-sysctl-ipv6-disabled.patch
+Patch17:          systemd-239-CVE-2019-15718.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -104,6 +105,7 @@ EOF
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -270,6 +272,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Wed Sep 11 2019 Susant Sahani <ssahani@vmware.com>  239-14
+-    Fix CVE-2019-15718
 *    Fri Jun 28 2019 Susant Sahani <ssahani@vmware.com>  239-13
 -    Fix BZ-2361840
 *    Fri Jun 28 2019 Susant Sahani <ssahani@vmware.com>  239-12
