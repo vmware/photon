@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -33,6 +33,9 @@ Provides:       python-sqlite
 Provides:       python(abi)
 Provides:       /bin/python
 Provides:       /bin/python2
+%if %{with_check}
+BuildRequires:  iana-etc
+%endif
 
 %description
 The Python 2 package contains the Python development environment. It
@@ -138,6 +141,7 @@ export OPT="${CFLAGS}"
     --enable-unicode=ucs4 \
     --with-dbmliborder=gdbm:ndbm
 make %{?_smp_mflags}
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
@@ -162,7 +166,7 @@ find %{buildroot}%{_libdir} -name '*.pyo' -delete
 rm -rf %{buildroot}/*
 
 %check
-make test
+LANG=en_US.UTF-8 make %{?_smp_mflags} test
 
 %files
 %defattr(-, root, root)
@@ -244,6 +248,8 @@ make test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Mon Oct 21 2019 Shreyas B. <shreyasb@vmware.com> 2.7.16-2
+-   Fixed makecheck errors.
 *   Thu Oct 17 2019 Tapas Kundu <tkundu@vmware.com> 2.7.16-1
 -   Updated to 2.7.16
 *   Fri Oct 11 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-11
