@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.10.5
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -82,10 +82,14 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 #   - org.apache.tools.ant.types.selectors.OwnedBySelectorTest
 #   - org.apache.tools.ant.types.selectors.PosixGroupSelectorTest
 #   - org.apache.tools.mail.MailMessageTest
+#   - org.apache.tools.ant.AntClassLoaderTest
+#   - org.apache.tools.ant.taskdefs.optional.XsltTest
 if [ "$(stat -c %d:%i /)" != "$(stat -c %d:%i /proc/1/root/.)" ]; then
   rm -f src/tests/junit/org/apache/tools/ant/types/selectors/OwnedBySelectorTest.java \
         src/tests/junit/org/apache/tools/ant/types/selectors/PosixGroupSelectorTest.java \
-        src/tests/junit/org/apache/tools/mail/MailMessageTest.java
+        src/tests/junit/org/apache/tools/mail/MailMessageTest.java \
+        src/tests/junit/org/apache/tools/ant/AntClassLoaderTest.java \
+        src/tests/junit/org/apache/tools/ant/taskdefs/optional/XsltTest.java
 fi
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 bootstrap/bin/ant -v run-tests
@@ -118,6 +122,8 @@ bootstrap/bin/ant -v run-tests
 %{_bindir}/runant.pl
 
 %changelog
+*   Wed Sep 11 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.5-4
+-   Fix Make check
 *   Tue Dec 04 2018 Dweep Advani <dadvani@vmware.com> 1.10.5-3
 -   Adding MakeCheck tests
 *   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 1.10.5-2
