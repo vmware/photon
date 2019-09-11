@@ -1,7 +1,7 @@
 Summary:	The package automatically configure source code
 Name:		autoconf
 Version:	2.69
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	GPLv2
 URL:		http://www.gnu.org/software/autoconf
 Group:		System Environment/Base
@@ -10,7 +10,9 @@ Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/autoconf/%{name}-%{version}.tar.xz
 %define sha1 autoconf=e891c3193029775e83e0534ac0ee0c4c711f6d23
 Patch0:		autoconf-make-check.patch
-
+%if %{with_check}
+Patch1:         make-check-failure.patch
+%endif
 Requires:	perl
 BuildRequires:	m4
 Requires:	m4
@@ -22,6 +24,9 @@ automatically configure source code.
 %prep
 %setup -q
 %patch0 -p1
+%if %{with_check}
+%patch1 -p1
+%endif
 %build
 %configure \
 	--disable-silent-rules
@@ -39,6 +44,8 @@ make -k check %{?_smp_mflags}  TESTSUITEFLAGS="1-500"
 %{_mandir}/*/*
 %{_datarootdir}/autoconf/*
 %changelog
+*   Wed Sep 11 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 2.69-8
+-   Fix for make check failure
 *   Wed Oct 17 2018 Dweep Advani <dadvani@vmware.com> 2.69-7
 -   Build section is changed to used %configure
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.69-6
