@@ -6,7 +6,7 @@
 Summary:        Code coverage measurement for Python.
 Name:           python-coverage
 Version:        4.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -22,6 +22,10 @@ BuildRequires:  python-setuptools
 %if %{with_check}
 BuildRequires:  python-pytest
 BuildRequires:  python-six
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+BuildRequires:  python-pip
+BuildRequires:  iana-etc
 %endif
 Requires:       python2
 Requires:       python2-libs
@@ -66,6 +70,7 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
+easy_install pytest==4.6
 easy_install tox
 easy_install PyContracts
 LANG=en_US.UTF-8 tox -e py27
@@ -87,6 +92,8 @@ popd
 %{_bindir}/coverage-%{python3_version}
 
 %changelog
+*   Thu Sep 12 2019 Shreyas B. <shreyasb@vmware.com> 4.5.1-2
+-   Fixed makecheck errors.
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 4.5.1-1
 -   Updated to 4.5.1
 *   Thu Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.4-5
