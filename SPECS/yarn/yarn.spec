@@ -1,14 +1,17 @@
 Summary:        Fast, reliable, and secure dependency management.
 Name:           yarn
 Version:        1.10.1
-Release:        1%{?dist}
+Release:        4%{?dist}
 License:        BSD 2-Clause
 URL:            https://yarnpkg.com
 Source0:        https://github.com/yarnpkg/yarn/archive/%{name}-%{version}.tar.gz
 %define sha1    yarn=2f5d4c9e3fe876108d3e48db6645332195676e95
+Source1:        node_modules_yarn_1.10.1.tar.gz
+%define sha1    node_modules_yarn=81e9e4db4d99783baac50c0dd2aa410a8e465db7
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Developement/Languages/NodeJs
+Patch0:         CVE-2019-5448-forces-using-https-for-registries.patch
 BuildArch:      noarch
 BuildRequires:  nodejs = 8.11.4
 
@@ -23,7 +26,10 @@ Yarn uses checksums to verify the integrity of every installed package before it
 
 %prep
 %setup -q -n %{name}-%{version}
-npm install
+
+%patch0 -p1
+
+tar xf %{SOURCE1} --no-same-owner
 
 %build
 npm run build
@@ -52,6 +58,10 @@ ln -sf %{_datadir}/%{name}/bin/yarnpkg %{buildroot}%{_bindir}/yarnpkg
 %exclude %{_datadir}/%{name}/bin/yarn.ps1
 
 %changelog
+*   Wed Oct 09 2019 Tapas Kundu <tkundu@vmware.com> 1.10.1-4
+-   Use local repo for installing yarn
+*   Thu Sep 19 2019 Siddharth Chandrasekaran <csiddharth@vmware.com> 1.10.1-3
+-   Add patch to fix CVE-2019-5448
 *   Thu Sep 19 2019 Siju Maliakkal <ssmaliakkal@vmware.com> 1.10.1-1
 -   Upgrade to 1.10.1 buildrequirement of kibana, Merged from 3.0
 *   Wed Oct 24 2018 Keerthana K <keerthanak@vmware.com> 1.6.0-1
