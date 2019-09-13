@@ -1,7 +1,7 @@
 Summary:        The conntrack-tools are a set of userspace tools for Linux
 Name:           conntrack-tools
 Version:        1.4.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://conntrack-tools.netfilter.org
 Group:          System Environment/Base
@@ -26,6 +26,7 @@ Requires:       libnetfilter_cttimeout
 Requires:       libnetfilter_cthelper
 Requires:       libnetfilter_queue
 Requires:       systemd
+Provides:       conntrack
 
 %description
 The conntrack-tools are a set of free software userspace tools for Linux that allow system administrators interact with the Connection Tracking System, which is the module that provides stateful packet inspection for iptables. The conntrack-tools are the userspace daemon conntrackd and the command line interface conntrack.
@@ -112,6 +113,8 @@ exit
 %{_sharedstatedir}/conntrackd
 
 %changelog
+*   Wed Sep 11 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.5-2
+-   Add provides for conntrack
 *   Fri Mar 01 2019 Ankit Jain <ankitja@vmware.com> 1.4.5-1
 -   Initial build. First version
 
