@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2019.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -14,6 +14,8 @@ Source0:        https://github.com/ostreedev/ostree/archive/%{name}-%{version}.t
 BuildArch:      x86_64
 Source1:        91-ostree.preset
 Patch0:         dualboot-support.patch
+Patch1:         0001-ostree-Copying-photon-config-to-boot-directory.patch
+Patch2:         0002-ostree-Adding-load-env-to-menuentry.patch
 BuildRequires:  git
 BuildRequires:  autoconf automake libtool which
 BuildRequires:  gtk-doc
@@ -84,6 +86,8 @@ GRUB2 integration for OSTree
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 env NOCONFIGURE=1 ./autogen.sh
@@ -164,5 +168,8 @@ rm -rf %{buildroot}/lib
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+*   Fri Sep 13 2019 Ankit Jain <ankitja@vmware.com> 2019.2-2
+-   Added support to get kernel and systemd commandline param
+-   from photon.cfg and systemd.cfg
 *   Tue May 14 2019 Ankit Jain <ankitja@vmware.com> 2019.2-1
 -   Initial build. First version
