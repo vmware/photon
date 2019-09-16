@@ -2,7 +2,7 @@
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
 Version:        3.27.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
@@ -13,6 +13,7 @@ Source0:        http://sqlite.org/2018/%{name}-autoconf-%{sourcever}.tar.gz
 Patch0:         CVE-2019-9936.patch
 Patch1:         CVE-2019-9937.patch
 Patch2:         CVE-2019-8457.patch
+Patch3:         CVE-2019-16168.patch
 Obsoletes:      sqlite-autoconf
 Requires:       sqlite-libs = %{version}-%{release}
 Provides:       sqlite3
@@ -92,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0.8.6
 
 %changelog
+*   Mon Sep 16 2019 Michelle Wang <michellew@vmware.com> 3.27.2-4
+-   Add patch CVE-2019-16168.patch
 *   Wed Jun 5 2019 Michelle Wang <michellew@vmware.com> 3.27.2-3
 -   Add patch CVE-2019-8457.
 *   Thu Apr 25 2019 Michelle Wang <michellew@vmware.com> 3.27.2-2
