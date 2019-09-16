@@ -25,7 +25,7 @@
    compile "commons-logging:commons-logging:${versions.commonslogging}"
    compile "commons-codec:commons-codec:${versions.commonscodec}"
 -  compile 'com.fasterxml.jackson.core:jackson-databind:2.8.11.3'
-+  compile 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
++  compile 'com.fasterxml.jackson.core:jackson-databind:2.9.9.3'
    compile "com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}"
  }
  
@@ -36,7 +36,7 @@
    compile "commons-codec:commons-codec:${versions.commonscodec}"
    compile "com.fasterxml.jackson.core:jackson-core:${versions.jackson}"
 -  compile 'com.fasterxml.jackson.core:jackson-databind:2.8.11.3'
-+  compile 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
++  compile 'com.fasterxml.jackson.core:jackson-databind:2.9.9.3'
    compile "com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}"
    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:${versions.jackson}"
    compile "joda-time:joda-time:${versions.joda}"
@@ -47,7 +47,7 @@
    // geoip2 dependencies:
    compile("com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}")
 -  compile("com.fasterxml.jackson.core:jackson-databind:2.8.11.3")
-+  compile("com.fasterxml.jackson.core:jackson-databind:2.9.9")
++  compile("com.fasterxml.jackson.core:jackson-databind:2.9.9.3")
    compile('com.maxmind.db:maxmind-db:1.2.2')
  
    testCompile 'org.elasticsearch:geolite2-databases:20180911'
