@@ -168,14 +168,14 @@ def log(type, message):
     return retval
 
 def dump(type, filename):
-    command = ("journalctl -p {0} | grep --line-buffered \"{1}\" > {2}"
+    command = ("journalctl -p {0} | grep --line-buffered \"{1}\" >> {2}"
                .format(LOG_LEVEL_DESC[type], SIGNATURE, filename))
     process = subprocess.Popen([command], shell=True)
     retval = process.wait()
     return retval
 
 def dump(filename):
-    command = "journalctl | grep --line-buffered \"{0}\" > {1}".format(SIGNATURE, filename)
+    command = "journalctl | grep --line-buffered \"{0}\" >> {1}".format(SIGNATURE, filename)
     process = subprocess.Popen([command], shell=True)
     retval = process.wait()
     return retval

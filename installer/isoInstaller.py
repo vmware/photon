@@ -9,7 +9,7 @@ from installercontainer import InstallerContainer
 from iso_config import IsoConfig
 
 class IsoInstaller(object):
-    def __init__(self, stdscreen, options_file):
+    def __init__(self, stdscreen, options_file, rpms_path):
         self.screen = stdscreen
 
         # Init the colors
@@ -24,7 +24,7 @@ class IsoInstaller(object):
         self.screen.addstr(self.maxy - 1, 0, '  Arrow keys make selections; <Enter> activates.')
         curses.curs_set(0)
         config = IsoConfig()
-        rpm_path, install_config = config.Configure(options_file, self.maxy, self.maxx)
+        rpm_path, install_config = config.Configure(options_file, rpms_path, self.maxy, self.maxx)
 
         self.screen.clear()
         installer = InstallerContainer(
@@ -40,5 +40,6 @@ if __name__ == '__main__':
     usage = "Usage: %prog [options]"
     parser = ArgumentParser(usage)
     parser.add_argument("-j", "--json-file", dest="options_file", default="input.json")
+    parser.add_argument("-r", "--rpms-path", dest="rpms_path", default="../stage/RPMS")
     options = parser.parse_args()
-    curses.wrapper(IsoInstaller, options.options_file)
+    curses.wrapper(IsoInstaller, options.options_file, options.rpms_path)

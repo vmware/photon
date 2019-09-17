@@ -28,11 +28,16 @@ class PackageSelector(object):
                              can_go_next=True, position=1)
 
     @staticmethod
-    def get_packages_to_install(packagelist_file, output_data_path):
-        json_wrapper_package_list = JsonWrapper(os.path.join(output_data_path,
-                                                packagelist_file))
-        package_list_json = json_wrapper_package_list.read()
-        return package_list_json["packages"]
+    def get_packages_to_install(option, output_data_path):
+        if 'packagelist_file' in option:
+            json_wrapper_package_list = JsonWrapper(os.path.join(output_data_path,
+                                                option['packagelist_file']))
+            package_list_json = json_wrapper_package_list.read()
+            return package_list_json["packages"]
+        elif 'packages' in option:
+            return option["packages"]
+        else:
+            raise Exception("Install option '" + option['title'] + "' must have 'packagelist_file' or 'packages' property")
 
     @staticmethod
     def get_additional_files_to_copy_in_iso(install_option, base_path):
@@ -54,7 +59,7 @@ class PackageSelector(object):
         visible_options_cnt = 0
         for install_option in options_sorted:
             if install_option[1]["visible"] == True:
-                package_list = PackageSelector.get_packages_to_install(install_option[1]['packagelist_file'],
+                package_list = PackageSelector.get_packages_to_install(install_option[1],
                                                                        base_path)
                 additional_files = PackageSelector.get_additional_files_to_copy_in_iso(
                     install_option, base_path)

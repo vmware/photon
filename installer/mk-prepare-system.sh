@@ -13,6 +13,7 @@
 set -o errexit      # exit if error...insurance ;
 set -o nounset      # exit if variable not initalized
 set +h          # disable hashall
+set -x
 SCRIPT_PATH=$(dirname $(realpath -s $0))
 source $SCRIPT_PATH/config.inc
 source $SCRIPT_PATH/function.inc
@@ -32,7 +33,6 @@ if mountpoint ${BUILDROOT}/dev  >/dev/null 2>&1; then umount ${BUILDROOT}/dev; f
 sync
 [ ${EUID} -eq 0 ]   || fail "${PRGNAME}: Need to be root user: FAILURE"
 
-cd ${BUILDROOT} || fail "${PRGNAME}: Change directory: ${BUILDROOT}: FAILURE"
 if [[   $# -gt 0 ]] && [[ $1 == 'install' ]]; then
     mkdir -p ${BUILDROOT}/var/lib/rpm
     mkdir -p ${BUILDROOT}/cache/tdnf
@@ -42,7 +42,8 @@ if [[   $# -gt 0 ]] && [[ $1 == 'install' ]]; then
     mkswap -v1 ${BUILDROOT}/cache/swapfile
     swapon ${BUILDROOT}/cache/swapfile
     rpm   --root ${BUILDROOT} --initdb
-    tdnf install filesystem --installroot ${BUILDROOT} --nogpgcheck --assumeyes
+    # tdnf conf is created in working directory which is parent of buildroot
+    tdnf install filesystem --installroot ${BUILDROOT} --assumeyes -c ${BUILDROOT}/../tdnf.conf
 else
     RPM_PATH=$1 # Path to input rpms
     RPMPKG="$(readlink -f `find $RPM_PATH -name 'filesystem-[0-9]*.rpm' -print`)"

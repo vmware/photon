@@ -29,12 +29,12 @@ def runInstaller(options, config):
     if 'type' in config:
         for install_option in options_sorted:
             if install_option[0] == config['type']:
-                packages = PackageSelector.get_packages_to_install(install_option[1]['packagelist_file'],
+                packages = PackageSelector.get_packages_to_install(install_option[1],
                                                                options.generated_data_path)
                 break
     else:
         if 'packagelist_file' in config:
-            packages = PackageSelector.get_packages_to_install(config['packagelist_file'],
+            packages = PackageSelector.get_packages_to_install(config,
                                                                options.generated_data_path)
         if 'additional_packages' in config:
             packages = packages.extend(config['additional_packages'])

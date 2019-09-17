@@ -37,9 +37,9 @@ class IsoConfig(object):
         self.random_id = '%12x' % random.randrange(16**12)
         self.random_hostname = "photon-" + self.random_id.strip()
 
-    def Configure(self, options_file, maxy, maxx):
+    def Configure(self, options_file, rpms_path, maxy, maxx):
         ks_path = None
-        rpm_path = None
+        rpm_path = rpms_path
         ks_config = None
         cd_search = None
 

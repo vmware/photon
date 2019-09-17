@@ -56,9 +56,11 @@ grub_mbr_install()
 {
     $grubInstallCmd --target=i386-pc --force --boot-directory=$BUILDROOT/boot "$HDD"
 }
+
 set -o errexit        # exit if error...insurance ;)
 set -o nounset        # exit if variable not initalized
 set +h            # disable hashall
+set -x
 PRGNAME=${0##*/}    # script name minus the path
 SCRIPT_PATH=$(dirname $(realpath -s $0))
 INSTALLER_PATH=$SCRIPT_PATH
