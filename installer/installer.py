@@ -129,8 +129,7 @@ class Installer(object):
         Unmount the disk, eject cd and exit
         """
         command = [Installer.unmount_disk_command, '-w', self.photon_root]
-        if not self.install_config['iso_system']:
-            command.extend(self._generate_partitions_param(reverse=True))
+        command.extend(self._generate_partitions_param(reverse=True))
         process = subprocess.Popen(command, stdout=self.output, stderr=self.output)
         retval = process.wait()
         if retval != 0:
@@ -295,15 +294,14 @@ class Installer(object):
         Prepare the system to install photon
         """
         #Setup the disk
-        if not self.install_config['iso_system']:
-            command = [Installer.mount_command, '-w', self.photon_root]
-            command.extend(self._generate_partitions_param())
-            process = subprocess.Popen(command, stdout=self.output, stderr=self.output)
-            retval = process.wait()
-            if retval != 0:
-                modules.commons.log(modules.commons.LOG_INFO,
-                                    "Failed to setup the disk for installation")
-                self.exit_gracefully(None, None)
+        command = [Installer.mount_command, '-w', self.photon_root]
+        command.extend(self._generate_partitions_param())
+        process = subprocess.Popen(command, stdout=self.output, stderr=self.output)
+        retval = process.wait()
+        if retval != 0:
+            modules.commons.log(modules.commons.LOG_INFO,
+                                "Failed to setup the disk for installation")
+            self.exit_gracefully(None, None)
 
         if self.install_config['iso_installer']:
             self._bind_installer()
@@ -362,47 +360,19 @@ class Installer(object):
             if retval != 0:
                 modules.commons.log(modules.commons.LOG_ERROR,
                                     "Fail to remove the cache")
-        if not self.install_config['iso_system']:
-            # Execute post installation modules
-            self._execute_modules(modules.commons.POST_INSTALL)
-            if os.path.exists(modules.commons.KS_POST_INSTALL_LOG_FILE_NAME):
-                shutil.copy(modules.commons.KS_POST_INSTALL_LOG_FILE_NAME,
-                            self.photon_root + '/var/log/')
 
-            # install grub
-            if 'boot_partition_number' not in self.install_config['disk']:
-                self.install_config['disk']['boot_partition_number'] = 1
+        # Execute post installation modules
+        self._execute_modules(modules.commons.POST_INSTALL)
+        if os.path.exists(modules.commons.KS_POST_INSTALL_LOG_FILE_NAME):
+            shutil.copy(modules.commons.KS_POST_INSTALL_LOG_FILE_NAME,
+                        self.photon_root + '/var/log/')
 
-            try:
-                if self.install_config['boot'] == 'bios':
-                    process = subprocess.Popen(
-                        [self.setup_grub_command, '-w', self.photon_root,
-                         "bios", self.install_config['disk']['disk'],
-                         self.install_config['disk']['root'],
-                         self.install_config['disk']['boot'],
-                         self.install_config['disk']['bootdirectory'],
-                         str(self.install_config['disk']['boot_partition_number'])],
-                        stdout=self.output, stderr=self.output)
-                elif self.install_config['boot'] == 'efi':
-                    process = subprocess.Popen(
-                        [self.setup_grub_command, '-w', self.photon_root,
-                         "efi", self.install_config['disk']['disk'],
-                         self.install_config['disk']['root'],
-                         self.install_config['disk']['boot'],
-                         self.install_config['disk']['bootdirectory'],
-                         str(self.install_config['disk']['boot_partition_number'])],
-                        stdout=self.output, stderr=self.output)
-                elif self.install_config['boot'] == 'dualboot':
-                    process = subprocess.Popen(
-                        [self.setup_grub_command, '-w', self.photon_root,
-                         "dualboot", self.install_config['disk']['disk'],
-                         self.install_config['disk']['root'],
-                         self.install_config['disk']['boot'],
-                         self.install_config['disk']['bootdirectory'],
-                         str(self.install_config['disk']['boot_partition_number'])],
-                        stdout=self.output, stderr=self.output)
-            except:
-                #install bios if variable is not set.
+        # install grub
+        if 'boot_partition_number' not in self.install_config['disk']:
+            self.install_config['disk']['boot_partition_number'] = 1
+
+        try:
+            if self.install_config['boot'] == 'bios':
                 process = subprocess.Popen(
                     [self.setup_grub_command, '-w', self.photon_root,
                      "bios", self.install_config['disk']['disk'],
@@ -411,19 +381,47 @@ class Installer(object):
                      self.install_config['disk']['bootdirectory'],
                      str(self.install_config['disk']['boot_partition_number'])],
                     stdout=self.output, stderr=self.output)
+            elif self.install_config['boot'] == 'efi':
+                process = subprocess.Popen(
+                    [self.setup_grub_command, '-w', self.photon_root,
+                     "efi", self.install_config['disk']['disk'],
+                     self.install_config['disk']['root'],
+                     self.install_config['disk']['boot'],
+                     self.install_config['disk']['bootdirectory'],
+                     str(self.install_config['disk']['boot_partition_number'])],
+                    stdout=self.output, stderr=self.output)
+            elif self.install_config['boot'] == 'dualboot':
+                process = subprocess.Popen(
+                    [self.setup_grub_command, '-w', self.photon_root,
+                     "dualboot", self.install_config['disk']['disk'],
+                     self.install_config['disk']['root'],
+                     self.install_config['disk']['boot'],
+                     self.install_config['disk']['bootdirectory'],
+                     str(self.install_config['disk']['boot_partition_number'])],
+                    stdout=self.output, stderr=self.output)
+        except:
+            #install bios if variable is not set.
+            process = subprocess.Popen(
+                [self.setup_grub_command, '-w', self.photon_root,
+                 "bios", self.install_config['disk']['disk'],
+                 self.install_config['disk']['root'],
+                 self.install_config['disk']['boot'],
+                 self.install_config['disk']['bootdirectory'],
+                 str(self.install_config['disk']['boot_partition_number'])],
+                stdout=self.output, stderr=self.output)
+        retval = process.wait()
+
+        if retval != 0:
+            raise Exception("Bootloader (grub2) setup failed")
+
+        self._update_fstab()
+        if not self.install_config['iso_installer']:
+            process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")],
+                                       stdout=self.output, stderr=self.output)
             retval = process.wait()
-
             if retval != 0:
-                raise Exception("Bootloader (grub2) setup failed")
-
-            self._update_fstab()
-            if not self.install_config['iso_installer']:
-                process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")],
-                                           stdout=self.output, stderr=self.output)
-                retval = process.wait()
-                if retval != 0:
-                    modules.commons.log(modules.commons.LOG_ERROR,
-                                        "Fail to remove the installer directory")
+                modules.commons.log(modules.commons.LOG_ERROR,
+                                    "Fail to remove the installer directory")
 
     def _execute_modules(self, phase):
         """
@@ -594,9 +592,8 @@ class Installer(object):
         rpm_params = ['--nodeps', '--root', self.photon_root, '--dbpath',
                       '/var/lib/rpm']
 
-        if (('type' in self.install_config and
-             (self.install_config['type'] in ['micro', 'minimal'])) or
-                self.install_config['iso_system']):
+        if ('type' in self.install_config and
+             (self.install_config['type'] in ['micro', 'minimal'])):
             rpm_params.append('--excludedocs')
 
         modules.commons.log(modules.commons.LOG_INFO,

@@ -292,7 +292,6 @@ def createImage(options):
     if not success:
         raise Exception("Unexpected failure in creating disk, please check the logs")
         sys.exit(1)
-    config['iso_system'] = False
     config['vmdk_install'] = True
     result = runInstaller(options, config)
     process = subprocess.Popen([disk_cleanup_script, config['disk']['disk']])

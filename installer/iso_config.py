@@ -159,7 +159,6 @@ class IsoConfig(object):
         """Load configuration from file"""
         del options_file
         install_config = ks_config
-        install_config['iso_system'] = False
         if self.is_vmware_virtualization() and 'install_linux_esx' not in install_config:
             install_config['install_linux_esx'] = True
 
@@ -305,7 +304,7 @@ class IsoConfig(object):
         """Configuration through UI"""
         # This represents the installer screen, the bool indicated if
         # I can go back to this window or not
-        install_config = {'iso_system': False}
+        install_config = {}
         install_config['ui_install'] = True
         items, select_linux_index = self.add_ui_pages(options_file, maxy, maxx,
                                                       install_config)
