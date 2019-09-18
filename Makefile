@@ -113,7 +113,7 @@ LOGLEVEL?=info
 
 # Build targets for rpm build
 #-------------------------------------------------------------------------------
-packages-minimal: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
+packages-minimal: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
 	@echo "Building all minimal RPMS..."
 	@echo ""
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -136,7 +136,7 @@ packages-minimal: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SO
 		$(PACKAGE_WEIGHTS) \
 		--threads ${THREADS}
 
-packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) check-spec-files generate-dep-lists
+packages: check-docker-py check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) check-spec-files generate-dep-lists
 	@echo "Building all RPMS..."
 	@echo ""
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -164,7 +164,7 @@ packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(
 		$(PACKAGE_WEIGHTS) \
 		--threads ${THREADS}
 
-packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+packages-docker: check-docker-py check-docker-service check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@echo ""
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -191,7 +191,7 @@ packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE
 		$(PACKAGE_WEIGHTS) \
 		--threads ${THREADS}
 
-updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+updated-packages: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building only updated RPMS..."
 	@echo ""
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -215,7 +215,7 @@ updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_P
 		$(PACKAGE_WEIGHTS) \
 		--threads ${THREADS}
 
-tool-chain-stage1: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+tool-chain-stage1: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@echo ""
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -236,7 +236,7 @@ tool-chain-stage1: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_S
 		$(PHOTON_RPMCHECK_FLAGS) \
 		--tool-chain-stage stage1
 
-tool-chain-stage2: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+tool-chain-stage2: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@echo ""
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -314,7 +314,7 @@ check: packages
 #===============================================================================
 all: iso photon-docker-image k8s-docker-images all-images src-iso
 
-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
+iso: check-tools photon-stage $(PHOTON_PACKAGES) ostree-repo
 	@echo "Building Photon Full ISO..."
 	@cd $(PHOTON_IMAGE_BUILDER_DIR) && \
 	sudo $(PHOTON_IMAGE_BUILDER) \
@@ -329,7 +329,7 @@ iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
 		--pkg-to-rpm-map-file $(PHOTON_PKGINFO_FILE) > \
 		$(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-src-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+src-iso: check-tools photon-stage $(PHOTON_PACKAGES)
 	@echo "Building Photon Full Source ISO..."
 	@cd $(PHOTON_IMAGE_BUILDER_DIR) && \
 	sudo $(PHOTON_IMAGE_BUILDER) \
@@ -343,7 +343,7 @@ src-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 		--pkg-to-rpm-map-file $(PHOTON_PKGINFO_FILE) > \
 		$(PHOTON_LOGS_DIR)/sourceiso-installer.log 2>&1
 
-image: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(PHOTON_PACKAGES)
+image: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 	@echo "Building image using $(CONFIG)..."
 	@cd $(PHOTON_IMAGE_BUILDER_DIR)
 	$(PHOTON_IMAGE_BUILDER) \
@@ -355,7 +355,7 @@ image: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 		--rpm-path $(PHOTON_STAGE)/RPMS \
 		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
 
-all-images: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(PHOTON_PACKAGES)
+all-images: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 	@echo "Building all images - gce, ami, azure, ova..."
 	@cd $(PHOTON_IMAGE_BUILDER_DIR)
 	$(PHOTON_IMAGE_BUILDER) \
@@ -469,28 +469,19 @@ publish-x-rpms-cached:
 	cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
 	$(PHOTON_PULL_PUBLISH_X_RPMS) $(PHOTON_PUBLISH_XRPMS_DIR) $(PHOTON_PUBLISH_XRPMS_PATH)
 
-$(PHOTON_STAGE):
-	@echo "Creating staging folder..."
-	$(MKDIR) -p $(PHOTON_STAGE)
-	@echo "Creating chroot path..."
-	$(MKDIR) -p $(PHOTON_CHROOT_PATH)
-	@echo "Building RPMS folders..."
+photon-stage:
+	@echo "Creating staging folder and subitems..."
+	@test -d $(PHOTON_STAGE) || $(MKDIR) -p $(PHOTON_STAGE)
+	@test -d $(PHOTON_CHROOT_PATH) || $(MKDIR) -p $(PHOTON_CHROOT_PATH)
 	@test -d $(PHOTON_RPMS_DIR_NOARCH) || $(MKDIR) -p $(PHOTON_RPMS_DIR_NOARCH)
 	@test -d $(PHOTON_RPMS_DIR_ARCH) || $(MKDIR) -p $(PHOTON_RPMS_DIR_ARCH)
-	@echo "Building SRPMS folders..."
 	@test -d $(PHOTON_SRPMS_DIR) || $(MKDIR) -p $(PHOTON_SRPMS_DIR)
-	@echo "Building UPDATED_RPMS folders..."
 	@test -d $(PHOTON_UPDATED_RPMS_DIR_NOARCH) || $(MKDIR) -p $(PHOTON_UPDATED_RPMS_DIR_NOARCH)
 	@test -d $(PHOTON_UPDATED_RPMS_DIR_ARCH) || $(MKDIR) -p $(PHOTON_UPDATED_RPMS_DIR_ARCH)
-	@echo "Building SOURCES folder..."
 	@test -d $(PHOTON_SRCS_DIR) || $(MKDIR) -p $(PHOTON_SRCS_DIR)
-	@echo "Building LOGS folder..."
 	@test -d $(PHOTON_LOGS_DIR) || $(MKDIR) -p $(PHOTON_LOGS_DIR)
-	@echo "Creating COPYING file..."
 	@install -m 444 $(SRCROOT)/COPYING $(PHOTON_STAGE)/COPYING
-	@echo "Creating open_source_license.txt file..."
 	@install -m 444 $(SRCROOT)/installer/open_source_license.txt $(PHOTON_STAGE)/open_source_license.txt
-	@echo "Creating NOTICE file..."
 	@install -m 444 $(SRCROOT)/NOTICE $(PHOTON_STAGE)/NOTICE
 #_______________________________________________________________________________
 
