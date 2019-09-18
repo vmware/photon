@@ -478,16 +478,18 @@ class Installer(object):
         Setup the tdnf repo for installation
         """
         if self.install_config['iso_installer']:
+            keepcache = False
             self.window.show_window()
             self.progress_bar.initialize('Initializing installation...')
             self.progress_bar.show()
             with open(self.tdnf_repo_path, "w") as repo_file:
                 repo_file.write("[photon-local]\n")
-                repo_file.write("name=VMWare Photon 3.0 installer repo (x86_64)\n")
+                repo_file.write("name=VMWare Photon installer repo\n")
                 if self.rpm_path.startswith("https://") or self.rpm_path.startswith("http://"):
                     repo_file.write("baseurl={}\n".format(self.rpm_path.replace('/', r'\/')))
                 else:
                     repo_file.write("baseurl=file://{}\n".format(self.rpm_cache_dir))
+                    keepcache = True
                 repo_file.write("gpgcheck=0\nenabled=1\n")
             with open(self.tdnf_conf_path, "w") as conf_file:
                 conf_file.writelines([
@@ -495,6 +497,10 @@ class Installer(object):
                     "gpgcheck=0\n",
                     "installonly_limit=3\n",
                     "clean_requirements_on_remove=true\n"])
+                # baseurl and cachedir are bindmounted to rpm_path, we do not
+                # want input RPMS to be removed after installation.
+                if keepcache:
+                    conf_file.write("keepcache=1\n")
                 conf_file.write("repodir={}\n".format(self.working_directory))
                 conf_file.write("cachedir={}\n".format(self.rpm_cache_dir_short))
 
