@@ -2,19 +2,19 @@
 
 Summary:        Elastic Search
 Name:           elasticsearch
-Version:        6.4.1
+Version:        6.7.0
 Release:        1%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}.tar.gz=0cee8c50023e699b49eda523262bf1c212fb9714
+%define sha1    %{name}-%{version}.tar.gz=e11320399dd707cff8416d672b6f8146e74cf8c8
 Source1:        cacerts
 %define sha1    cacerts=f584c7c1f48c552f39acfb5560a300a657d9f3bb
 Group:          Development/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      x86_64
-BuildRequires:  openjdk10
+BuildRequires:  openjdk11
 BuildRequires:  unzip
 BuildRequires:  curl
 BuildRequires:  which
@@ -29,12 +29,14 @@ BuildRequires:  patch
 BuildRequires:  texinfo
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+Patch0:         update_jars.patch
 
 %description
 Elasticsearch is a highly distributed RESTful search engine built for the cloud.
 
 %prep
 %setup -qn %{name}-%{version}
+%patch0 -p1
 
 %build
 export LANG="en_US.UTF-8"
@@ -118,6 +120,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+* Wed Sep 18 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-1
+- Updated to 6.7.0, Merged changes from 3.0 branch
 * Tue Dec 18 2018 Siju Maliakkal <smaliakkal@vmware.com> 6.4.1-1
 - Upgrade elasticsearch to 6.4.1 to mitigate CVE-2018-3831
 * Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 6.4.0-3

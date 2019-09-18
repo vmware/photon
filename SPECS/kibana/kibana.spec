@@ -1,6 +1,6 @@
 Name:            kibana
 Summary:         Browser-based analytics and search dashboard for Elasticsearch.
-Version:         6.4.1
+Version:         6.7.0
 Release:         1%{?dist}
 License:         Apache License Version 2.0
 URL:             https://www.elastic.co/products/kibana
@@ -8,16 +8,16 @@ Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}.ta
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Daemons
-%define sha1     kibana=144d2a1e8958b07cf7ca0d51a9d58de0ac7ad123
+%define sha1     %{name}-%{version}=36bc3dea07c787c395d1b6aaf46e2ade93c5b7a9
 BuildArch:       x86_64
 BuildRequires:   git
 BuildRequires:   yarn
-BuildRequires:   nodejs = 8.11.4
+BuildRequires:   nodejs = 10.15.2
 BuildRequires:   zip
 BuildRequires:   photon-release
 BuildRequires:   systemd
 Requires:        systemd
-Requires:        nodejs
+Requires:        nodejs = 10.15.2
 Requires:        elasticsearch
 
 %global debug_package %{nil}
@@ -27,27 +27,38 @@ Kibana is a window into the Elastic Stack.
 It enables visual exploration and real-time analysis of your data in Elasticsearch.
 
 %prep
+# During building, it looks .git/hooks in the root path
+# But tar.gz file  from github/kibana/tag doesn't provide .git/hooks
+# inside it. so did below steps to create the tar
+# 1) git clone https://github.com/elastic/kibana.git kibana-%{version}
+# 2) cd kibana-%{version}
+# 3) git checkout tags/v6.7.0 -b 6.7.0
+# 4) cd ..
+# 5) tar -zcvf kibana-6.7.0.tar.gz kibana-%{version}
 %setup -q -n %{name}-%{version}
+
 yarn kbn bootstrap
 
 %build
 export PATH=${PATH}:/usr/bin
-yarn build --skip-os-packages
+yarn build --oss --skip-os-packages
 
 
 %install
 mkdir -p %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/LICENSE.txt %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/README.txt %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/NOTICE.txt %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/package.json %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/plugins %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/bin %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/src %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/node_modules %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/webpackShims %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/yarn.lock %{buildroot}%{_datadir}/%{name}
-cp -r build/kibana-oss/optimize %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/LICENSE.txt %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/README.txt %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/NOTICE.txt %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/package.json %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/plugins %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/bin %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/src %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/node_modules %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/webpackShims %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/optimize %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/node %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/built_assets %{buildroot}%{_datadir}/%{name}
+cp -r build/oss/%{name}-%{version}-SNAPSHOT-linux-x86_64/target %{buildroot}%{_datadir}/%{name}
 
 chmod -R 755 %{buildroot}%{_datadir}/%{name}
 
@@ -110,12 +121,13 @@ exit
 %{_sysconfdir}/default/%{name}
 %{_sysconfdir}/init.d/%{name}
 %{_sysconfdir}/%{name}/%{name}.yml
-%{_datadir}/%{name}/yarn.lock
 %{_datadir}/%{name}/package.json
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}
 
 %changelog
+*   Wed Sep 18 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-1
+-   Updated to version 6.7.0, Merged Changes from 3.0
 *   Tue Jan 22 2019 Siju Maliakkal <smaliakkal@vmware.com> 6.4.1-1
 -   Upgrade to 6.4.1 to mitigate CVE-2018-3830
 *   Mon Oct 29 2018 Ajay Kaher <akaher@vmware.com> 6.4.0-2

@@ -1,17 +1,16 @@
 Summary:	Logstash is a tool for managing events and logs.
 Name:           logstash
-Version:        6.4.1
-Release:        3%{?dist}
+Version:        6.7.0
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:		https://github.com/elastic/logstash/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}.tar.gz=8b35bfbe7657af4f61595301b0482f5f1b1460e0
+%define sha1 %{name}-%{version}.tar.gz=7c009c19e8d7c733173b94b5152f48deee8a76ef
 Source1:        %{name}.service
 Source2:        %{name}.conf
-Patch0:         logstash-update-java-dependencies.patch
 BuildArch:      x86_64
 BuildRequires:	openjdk8
 BuildRequires:	ruby
@@ -21,6 +20,7 @@ Requires:	ruby
 Requires:       systemd
 Requires:       elasticsearch
 Requires:       kibana
+Patch0:         jackson_update.patch
 
 %description
 Logstash is a tool to collect, process, and forward events and log messages. Collection is accomplished via configurable input plugins including raw socket/packet communication, file tailing, and several message bus clients. Once an input plugin has collected data it can be processed by any number of filters which modify and annotate the event data. Finally logstash routes events to output plugins which can forward the events to a variety of external programs including Elasticsearch, local files and several message bus implementations.
@@ -114,6 +114,8 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+*   Wed Sep 18 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-1
+-   Upgrade to 6.7.0, Merged Changes from 3.0
 *   Wed Sep 04 2019 Shreyas B. <shreyasb@vmware.com> 6.4.1-3
 -   Bumping up release to build with latest OpenJDK8
 *   Thu Feb 14 2019 Ankit Jain <ankitja@vmware.com> 6.4.1-2

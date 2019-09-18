@@ -1,18 +1,18 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
-%define jdk_major_version 1.10.0
-%define subversion 23
+%define jdk_major_version 1.11.0
+%define subversion 2
 Summary:	OpenJDK
-Name:		openjdk10
-Version:	1.10.0.23
-Release:	4%{?dist}
-License:	GNU GPL
+Name:		openjdk11
+Version:	1.11.0.2
+Release:	1%{?dist}
+License:	GNU General Public License V2
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.java.net/download/openjdk/jdk10/jdk10/openjdk-%{version}.tar.gz
-%define sha1 openjdk-1.10.0=d0b6193fd1687b23fb7553b62d32f0e7e0527ea8
+Source0:	http://www.java.net/download/openjdk/jdk/jdk11/openjdk-%{version}.tar.gz
+%define sha1 openjdk-1.11.0=aa24e47c3e67c3ef6c7eceaebb21123a67ab8fea
 BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
@@ -21,25 +21,18 @@ BuildRequires:	unzip
 BuildRequires:  zlib-devel
 BuildRequires:	ca-certificates
 BuildRequires:	chkconfig
-BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel
-Requires:       openjre10 = %{version}-%{release}
+BuildRequires:  freetype2
+BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel elfutils-libelf-devel
+BuildRequires:  openjdk10
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
 AutoReqProv: 	no
 %define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel
 %define bootstrapjdkversion 1.8.0.112
+%define jdk_major_version 1.11.0
 
 %description
 The OpenJDK package installs java class library and javac java compiler.
-
-%package	-n openjre10
-Summary:	Java runtime environment
-AutoReqProv: 	no
-Obsoletes:      openjre <= %{version}
-Requires:       chkconfig
-Requires:	libstdc++
-%description	-n openjre10
-It contains the libraries files for Java runtime environment
 
 %package		doc
 Summary:		Documentation and demo applications for openjdk
@@ -61,11 +54,11 @@ This package provides the runtime library class sources.
 %setup -qn openjdk-%{version}
 
 %build
+chmod a+x ./configur*
 unset JAVA_HOME &&
 ENABLE_HEADLESS_ONLY="true" &&
-sh configure \
+./configur* \
 	--with-target-bits=64 \
-	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
 	--enable-headless-only \
         --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
 	--with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
@@ -91,8 +84,7 @@ make install
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 install -vdm755 %{buildroot}%{_bindir}
-mv /usr/local/jvm/openjdk-10-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
-mv build/linux-x86_64-normal-server-release/images/jre %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+mv /usr/local/jvm/openjdk-11-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 cp README LICENSE ASSEMBLY_EXCEPTION %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
 %post
@@ -129,30 +121,13 @@ alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major
   --slave %{_bindir}/xjc xjc %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/xjc
 /sbin/ldconfig
 
-%post -n openjre10
-alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/java 2000 \
-  --slave %{_libdir}/jvm/jre jre %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre \
-  --slave %{_bindir}/jjs jjs %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/jjs \
-  --slave %{_bindir}/keytool keytool %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/keytool \
-  --slave %{_bindir}/orbd orbd %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/orbd \
-  --slave %{_bindir}/pack200 pack200 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/pack200 \
-  --slave %{_bindir}/rmid rmid %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/rmid \
-  --slave %{_bindir}/rmiregistry rmiregistry %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/rmiregistry \
-  --slave %{_bindir}/servertool servertool %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/servertool \
-  --slave %{_bindir}/tnameserv tnameserv %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/tnameserv \
-  --slave %{_bindir}/unpack200 unpack200 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/unpack200
-/sbin/ldconfig
-
 %postun
 alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac
 /sbin/ldconfig
 
-%postun -n openjre10
-alternatives --remove java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/java
-/sbin/ldconfig
-
 %clean
 rm -rf %{buildroot}/*
+rm -rf %{_libdir}/jvm/OpenJDK-*
 
 %files
 %defattr(-,root,root)
@@ -162,7 +137,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/release
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/include/
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/idlj
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jaotc
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jar
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jhsdb
@@ -171,7 +145,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jdeprscan
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javadoc
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javah
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javap
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jcmd
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jconsole
@@ -188,28 +161,17 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jstat
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jstatd
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmic
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/schemagen
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/serialver
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/wsgen
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/wsimport
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/xjc
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/conf
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jmods
-
-%files	-n openjre10
-%defattr(-,root,root)
-%dir %{_libdir}/jvm/OpenJDK-%{jdk_major_version}
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/java
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/keytool
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/orbd
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/pack200
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jjs
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/keytool
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/pack200
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmid
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmiregistry
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/servertool
-%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/tnameserv
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/unpack200
+
 
 %files doc
 %defattr(-,root,root)
@@ -222,12 +184,5 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
-*   Thu Sep 05 2019 Ankit Jain <ankitja@vmware.com> 1.10.0.23-4
--   Divided version:majorversion+subversion to remove specific
--   version java dependency from other packages
-*   Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 1.10.0.23-3
--   Add BuildArch
-*   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 1.10.0.23-2
--   Use ExtraBuildRequires
-*   Mon Apr 23 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.0.23-1
+*   Thu Apr 25 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.2-1
 -   Initial build. First version
