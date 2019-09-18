@@ -326,8 +326,7 @@ iso: check-tools photon-stage $(PHOTON_PACKAGES) ostree-repo
 		--srpm-path $(PHOTON_STAGE)/SRPMS \
 		--package-list-file $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
 		--generated-data-path $(PHOTON_STAGE)/common/data \
-		--pkg-to-rpm-map-file $(PHOTON_PKGINFO_FILE) > \
-		$(PHOTON_LOGS_DIR)/installer.log 2>&1
+		--pkg-to-rpm-map-file $(PHOTON_PKGINFO_FILE)
 
 src-iso: check-tools photon-stage $(PHOTON_PACKAGES)
 	@echo "Building Photon Full Source ISO..."
@@ -481,7 +480,6 @@ photon-stage:
 	@test -d $(PHOTON_SRCS_DIR) || $(MKDIR) -p $(PHOTON_SRCS_DIR)
 	@test -d $(PHOTON_LOGS_DIR) || $(MKDIR) -p $(PHOTON_LOGS_DIR)
 	@install -m 444 $(SRCROOT)/COPYING $(PHOTON_STAGE)/COPYING
-	@install -m 444 $(SRCROOT)/installer/open_source_license.txt $(PHOTON_STAGE)/open_source_license.txt
 	@install -m 444 $(SRCROOT)/NOTICE $(PHOTON_STAGE)/NOTICE
 #_______________________________________________________________________________
 

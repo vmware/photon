@@ -131,14 +131,7 @@ def make_src_iso(working_directory, src_iso_path, rpm_list):
 
 def createIso(options):
     working_directory = os.path.abspath(os.path.join(options.stage_path, "photon_iso"))
-    config = {}
-    config['iso_system'] = True
-    config['vmdk_install'] = False
-    config['type'] = 'iso'
-    config['working_directory'] = working_directory
-    result = runInstaller(options, config)
-    if not result:
-        raise Exception("Installation process failed")
+    script_directory = os.path.dirname(os.path.realpath(__file__))
     # Making the iso if needed
     if options.iso_path:
         rpm_list = " ".join(
@@ -149,12 +142,14 @@ def createIso(options):
             create_additional_file_list_to_copy_in_iso(
                 os.path.abspath(options.stage_path), options.package_list_file))
 
-        process = subprocess.Popen([options.installer_path + '/mk-install-iso.sh', '-w',
-                                    working_directory, options.iso_path,
-                                    options.rpm_path, options.package_list_file,
-                                    rpm_list, options.stage_path, files_to_copy,
-                                    options.generated_data_path])
-        retval = process.wait()
+        retval = subprocess.call([script_directory + '/iso/mk-install-iso.sh', options.installer_path,
+                         working_directory, options.iso_path,
+                         options.rpm_path, options.package_list_file,
+                         rpm_list, options.stage_path, files_to_copy,
+                         options.generated_data_path])
+
+        if retval:
+            raise Exception("Unable to create install ISO")
 
     if options.debug_iso_path:
         debug_rpm_list = create_rpm_list_to_be_copied_to_iso(
