@@ -4,7 +4,7 @@
 Summary:	The gcovr command provides a utility for managing the use of the GNU gcov utility
 Name:		gcovr
 Version:	4.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD Clause-3
 URL:		http://gcovr.com/
 Source0:	https://github.com/gcovr/gcovr/archive/%{name}-%{version}.tar.gz
@@ -22,6 +22,7 @@ BuildRequires:  python3-libs
 BuildRequires:	python3-setuptools
 BuildRequires:  python3-xml
 %if %{with_check}
+BuildRequires:  python-pip
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python-pytest
@@ -65,9 +66,7 @@ python2 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 
 
 %check
-easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 funcsigs pathlib2 pluggy utils atomicwrites more_itertools
-$easy_install_2 pyutilib
+pip install funcsigs pathlib2 pluggy utils atomicwrites more_itertools pyutilib
 python2 setup.py test
 pushd ../p3dir
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
@@ -89,6 +88,8 @@ popd
 %{python3_sitelib}*
 
 %changelog
+*   Wed Sep 18 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 4.1-3
+-   Fix for make check failure using pip instead of easy_install for python2
 *   Wed Nov 21 2018 Ashwin H <ashwinh@vmware.com> 4.1-2
 -   Fix gcovr %check
 *   Tue Sep 18 2018 Sujay G <gsujay@vmware.com> 4.1-1
