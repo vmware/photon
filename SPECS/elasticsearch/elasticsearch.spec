@@ -3,7 +3,7 @@
 Summary:        Elastic Search
 Name:           elasticsearch
 Version:        6.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
@@ -120,6 +120,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+*    Wed Sep 18 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-3
+-    Update jackson databind to 2.9.9.3
 *    Tue Aug 13 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-2
 -    Update jackson jars
 *    Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-1
