@@ -1,7 +1,7 @@
 Summary:        HA monitor built upon LVS, VRRP and services poller
 Name:           keepalived
 Version:        2.0.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://www.keepalived.org/
 Group:          Applications/System
@@ -11,7 +11,8 @@ Source0:        http://www.keepalived.org/software/%{name}-%{version}.tar.gz
 %define sha1    %{name}-%{version}=bbc7bae5266c8a752fb16f32355c41decf460f32
 Source1:        %{name}.service
 BuildRequires:  openssl-devel
-BuildRequires:  iptables-devel
+BuildRequires:  iptables-devel >= 1.8.3
+Requires:       iptables >= 1.8.3
 BuildRequires:  libmnl-devel
 BuildRequires:  ipset-devel
 BuildRequires:  libnl-devel
@@ -38,11 +39,7 @@ healthchecks and LVS directors failover.
 autoreconf -fi
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=%{_sysconfdir} \
+%configure \
     --with-systemdsystemunitdir=%{_unitdir} \
     --enable-snmp       \
     --enable-snmp-rfc
@@ -88,6 +85,8 @@ fi
 %{_mandir}/man8/%{name}.8*
 
 %changelog
+*   Tue Sep 17 2019 Shreyas B. <shreyasb@vmware.com> 2.0.16-2
+-   bump version to 2.0.16-2
 *   Fri May 10 2019 Ashwin H <ashwinh@vmware.com> 2.0.16-1
 -   Updated to version 2.0.16 - fix CVE-2018-19044,CVE-2018-19045,CVE-2018-19046
 *   Wed Sep 12 2018 Ankit Jain <ankitja@vmware.com> 2.0.7-1
