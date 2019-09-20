@@ -6,7 +6,7 @@
 Summary:        Code coverage measurement for Python.
 Name:           python-coverage
 Version:        4.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -22,17 +22,14 @@ BuildRequires:  python-setuptools
 %if %{with_check}
 BuildRequires:  python-pytest
 BuildRequires:  python-six
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+BuildRequires:  python-pip
+BuildRequires:  iana-etc
 %endif
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-xml
-
-%description
-Code coverage measurement for Python.
-Coverage.py measures code coverage, typically during test execution. It uses the code analysis tools and tracing hooks provided in the Python standard library to determine which lines are executable, and which have been executed.
-
-%package -n     python3-coverage
-Summary:        python-coverage
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -41,6 +38,13 @@ BuildRequires:  python3-xml
 BuildRequires:  python3-pytest
 BuildRequires:  python3-six
 %endif
+
+%description
+Code coverage measurement for Python.
+Coverage.py measures code coverage, typically during test execution. It uses the code analysis tools and tracing hooks provided in the Python standard library to determine which lines are executable, and which have been executed.
+
+%package -n     python3-coverage
+Summary:        python-coverage
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-xml
@@ -66,6 +70,7 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
+easy_install pytest==4.6
 easy_install tox
 easy_install PyContracts
 LANG=en_US.UTF-8 tox -e py27
@@ -87,6 +92,8 @@ popd
 %{_bindir}/coverage-%{python3_version}
 
 %changelog
+*   Mon Oct 21 2019 Shreyas B. <shreyasb@vmware.com> 4.5.1-2
+-   Fixed makecheck errors.
 *   Sat Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 4.5.1-1
 -   Updated to 4.5.1
 *   Thu Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.4-5
