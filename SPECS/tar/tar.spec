@@ -1,7 +1,7 @@
 Summary:	Archiving program
 Name:		tar
 Version:	1.29
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/tar
 Group:		Applications/System
@@ -11,12 +11,14 @@ Source0:	tar/%{name}-%{version}.tar.xz
 %define sha1 tar=03851c34c90f0656177f2dd375cd61bd1204c51d
 Patch0:		tar-CVE-2019-9923.patch
 Patch1:		tar-CVE-2018-20482.patch
+Patch2:         tar-CVE-2016-6321.patch
 %description
 Contains GNU archiving program
 %prep
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %build
 autoreconf -i --force
 FORCE_UNSAFE_CONFIGURE=1  ./configure \
@@ -40,6 +42,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*       Fri Sep 20 2019 Ankit Jain <ankitja@vmware.com> 1.29-4
+-       Fix CVE-2016-6321
 *       Thu May 23 2019 Keerthana K <keerthanak@vmware.com> 1.29-3
 -       Fix CVE-2018-20482
 *	Tue Apr 23 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.29-2
