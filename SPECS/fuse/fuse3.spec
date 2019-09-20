@@ -1,7 +1,7 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
 Version:        3.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL+
 Url:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
@@ -9,6 +9,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libfuse/libfuse/releases/download/fuse-%{version}/fuse-%{version}.tar.gz
 %define sha1    fuse=9362ce52c17c2865ba47f9d4fcb9f054c38bd1fc
+Patch0:         fuse-escaped-commas-CVE-2018-10906.patch
+Patch1:         fuse-refuse-unknown-options-CVE-2018-10906.patch
 
 %description
 With FUSE3 it is possible to implement a fully functional filesystem in a
@@ -24,6 +26,8 @@ It contains the libraries and header files to create fuse applications.
 
 %prep
 %setup -q -n fuse-%{version}
+%patch0 -p1
+%patch1 -p1
 
 %build
 ./configure --prefix=%{_prefix} --disable-static INIT_D_PATH=/tmp/init.d &&
@@ -53,6 +57,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/libfuse3.so
 
 %changelog
+*	  Fri Sep 20 2019 Ankit Jain <ankitja@vmware.com> 3.0.1-3
+-	  Fix for CVE-2018-10906, added two patches
 *   Wed Jul 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.0.1-2
 -   Move pkgconfig folder to devel package.
 *   Mon Apr 17 2017 Danut Moraru <dmoraru@vmware.com> 3.0.1-1

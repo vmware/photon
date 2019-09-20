@@ -1,7 +1,7 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse
 Version:        2.9.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL+
 Url:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
@@ -9,6 +9,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libfuse/libfuse/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
 %define sha1 fuse=cd174e3d37995a42fad32fac92f76cd18e24174f
+Patch0:         fuse-escaped-commas-CVE-2018-10906.patch
+Patch1:         fuse-refuse-unknown-options-CVE-2018-10906.patch
 
 %description
 With FUSE it is possible to implement a fully functional filesystem in a
@@ -23,6 +25,9 @@ It contains the libraries and header files to create fuse applications.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+
 %build
 ./configure --prefix=%{_prefix} --disable-static INIT_D_PATH=/tmp/init.d &&
 make %{?_smp_mflags}
@@ -53,6 +58,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/fuse.pc
 
 %changelog
+*	  Fri Sep 20 2019 Ankit Jain <ankitja@vmware.com> 2.9.7-3
+-	  Fix for CVE-2018-10906, added two patches
 *   Wed Jul 05 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.7-2
 -   Move pkgconfig folder to devel package.
 *   Mon Apr 17 2017 Danut Moraru <dmoraru@vmware.com> 2.9.7-1
