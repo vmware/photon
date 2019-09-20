@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2019.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
@@ -14,6 +14,7 @@ Source2:        libdnf-d8e481b.tar.gz
 %define sha1    libdnf=dde7dd434d715c46c7e91c179caccb6eaff2bdd5
 Source3:        mk-ostree-host.sh
 Source4:        function.inc
+Source5:        mkostreerepo
 BuildArch:      x86_64
 Patch0:         rpm-ostree-libdnf-build.patch
 Patch1:         rpm-ostree-disable-selinux.patch
@@ -91,6 +92,14 @@ Requires: %{name} = %{version}-%{release}
 %description host
 Includes the scripts for rpm-ostree host creation
 
+%package repo
+Summary: File for Repo Creation to act as server
+Group: Applications/System
+Requires: %{name} = %{version}-%{release}
+
+%description repo
+Includes the scripts for rpm-ostree repo creation to act as server
+
 %prep
 %setup -q
 tar xf /usr/src/photon/SOURCES/libglnx-470af87.tar.gz --no-same-owner
@@ -107,8 +116,10 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot} INSTALL="install -p -c"
 find %{buildroot} -name '*.la' -delete
 install -d %{buildroot}%{_bindir}/rpm-ostree-host
+install -d %{buildroot}%{_bindir}/rpm-ostree-server
 install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-host
 install -p -m 644 -D %{SOURCE4} %{buildroot}%{_bindir}/rpm-ostree-host
+install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 
 %check
 make check
@@ -142,6 +153,11 @@ make check
 %{_bindir}/rpm-ostree-host/mk-ostree-host.sh
 %{_bindir}/rpm-ostree-host/function.inc
 
+%files repo
+%{_bindir}/rpm-ostree-server/mkostreerepo
+
 %changelog
+*   Fri Sep 20 2019 Ankit Jain <ankitja@vmware.com> 2019.3-2
+-   Added script to create repo data to act as ostree-server
 *   Tue May 14 2019 Ankit Jain <ankitja@vmware.com> 2019.3-1
 -   Initial version of rpm-ostree
