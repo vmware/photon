@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.189
+Version:        4.9.193
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=0b5cd4c9f2379a063dc392802bf5d5dabc07146e
+%define sha1 linux=bb98f6446e4ace7cbd85911702905c89cc9ce796
 Source1:	config-aws
 Source2:	initramfs.trigger
 Source3:	update_photon_cfg.postun
@@ -437,6 +437,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Wed Sep 18 2019 bvikas <bvikas@vmware.com> 4.9.193-1
+-   Update to version 4.9.193
 *   Mon Aug 12 2019 Alexey Makhalov <amakhalov@vmware.com> 4.9.189-1
 -   Update to version 4.9.189 to fix CVE-2019-1125
 *   Tue Jul 30 2019 Keerthana K <keerthanak@vmware.com> 4.9.185-2

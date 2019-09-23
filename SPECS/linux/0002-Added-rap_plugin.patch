@@ -14451,11 +14451,11 @@ index 879ca84..d893396 100644
  #ifdef CONFIG_BPF_JIT
 +extern long __rap_hash___bpf_prog_run;
 +
- struct bpf_binary_header *
- bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
- 		     unsigned int alignment,
+ /* All BPF JIT sysctl knobs here. */
+ int bpf_jit_enable   __read_mostly = IS_BUILTIN(CONFIG_BPF_JIT_ALWAYS_ON);
+ int bpf_jit_harden   __read_mostly;
 @@ -231,11 +233,24 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
- 	hdr->pages = size / PAGE_SIZE;
+ 	hdr->pages = pages;
  	hole = min_t(unsigned int, size - (proglen + sizeof(*hdr)),
  		     PAGE_SIZE - sizeof(*hdr));
 +#ifdef CONFIG_PAX_RAP
@@ -14492,11 +14492,11 @@ index 879ca84..d893396 100644
  STACK_FRAME_NON_STANDARD(__bpf_prog_run); /* jump table */
  
  #else
--static unsigned int __bpf_prog_ret0(void *ctx, const struct bpf_insn *insn)
-+static unsigned int __bpf_prog_ret0(const struct sk_buff *ctx, const struct bpf_insn *insn)
+-static unsigned int __bpf_prog_ret0_warn(void *ctx,
++static unsigned int __bpf_prog_ret0_warn(const struct sk_buff *ctx,
+ 					 const struct bpf_insn *insn)
  {
- 	return 0;
- }
+ 	/* If this handler ever gets executed, then BPF_JIT_ALWAYS_ON
 @@ -979,9 +994,9 @@ static int bpf_check_tail_call(const struct bpf_prog *fp)
  struct bpf_prog *bpf_prog_select_runtime(struct bpf_prog *fp, int *err)
  {
@@ -14504,8 +14504,8 @@ index 879ca84..d893396 100644
 -	fp->bpf_func = (void *) __bpf_prog_run;
 +	fp->bpf_func = __bpf_prog_run;
  #else
--	fp->bpf_func = (void *) __bpf_prog_ret0;
-+	fp->bpf_func = __bpf_prog_ret0;
+-	fp->bpf_func = (void *) __bpf_prog_ret0_warn;
++	fp->bpf_func = __bpf_prog_ret0_warn;
  #endif
  
  	/* eBPF JITs can rewrite the program in case constant
