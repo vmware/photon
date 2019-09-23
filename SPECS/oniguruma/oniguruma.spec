@@ -1,6 +1,6 @@
 Name:           oniguruma
-Version:        6.9.0
-Release:        2%{?dist}
+Version:        6.9.3
+Release:        1%{?dist}
 License:        BSD
 Summary:        Regular expressions library
 Group:          System Environment/Libraries
@@ -8,8 +8,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/kkos/oniguruma/
 Source0:        https://github.com/kkos/oniguruma/releases/download/v%{version}/onig-%{version}.tar.gz
-%define sha1    onig=8e3e39e8e92f040939922ddc367a56c12bd4c4c3
-Patch0:         oniguruma-CVE-2019-13224.patch
+%define sha1    onig=f2bde879bb7334a1b0d7b5553a851a8d6374f28b
+
 %description
 Oniguruma is a regular expressions library.
 The characteristics of this library is that different character encoding
@@ -26,7 +26,7 @@ Development files for libonig
 
 %prep
 %setup -q -n onig-%{version}
-%patch0 -p1
+
 %build
 %configure                    \
         --disable-silent-rules \
@@ -42,7 +42,9 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 
 %check
 make  check
+
 %post -p /sbin/ldconfig
+
 %postun -p /sbin/ldconfig
 
 %files
@@ -62,6 +64,8 @@ make  check
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Sep 18 2019 Dweep Advani <dadvani@vmware.com> 6.9.3-1
+- Upgrading to 6.9.3 for fixing CVE-2019-13225 and CVE-2019-16163
 * Mon Jul 15 2019 Dweep Advani <dadvani@vmware.com> 6.9.0-2
 - Fixed CVE-2019-13224
 * Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 6.9.0-1
