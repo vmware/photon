@@ -1,13 +1,16 @@
 Summary:	Heapster enables Container Cluster Monitoring and Performance Analysis.
 Name:		heapster
 Version:    1.5.4
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:	Apache 2.0
 URL:		https://github.com/wavefrontHQ/cadvisor
 Source0:	https://github.com/kubernetes/heapster/archive/%{name}-%{version}.tar.gz
 %define sha1 heapster=102b8f21ecebc695987701b1d97f87dda1ea5645
 Patch0:         go-27704.patch
 Patch1:         go-27842.patch
+%if %{with_check}
+Patch2:         make-check-failure.patch
+%endif
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -24,7 +27,9 @@ pushd vendor/golang.org/x/net
 %patch0 -p1
 %patch1 -p1
 popd
-
+%if %{with_check}
+%patch2 -p1
+%endif
 %build
 mkdir -p $GOPATH/src/k8s.io/heapster
 cp -r . $GOPATH/src/k8s.io/heapster
@@ -47,6 +52,8 @@ make test-unit
 %{_bindir}/eventer
 
 %changelog
+*   Mon Sep 23 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 1.5.4-4
+-   Fix for make check failure
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.5.4-3
 -   Bump up version to compile with new go
 *   Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 1.5.4-2
