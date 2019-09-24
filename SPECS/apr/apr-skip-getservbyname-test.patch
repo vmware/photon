@@ -1,0 +1,27 @@
+diff --git a/test/testsock.c b/test/testsock.c
+index 09f2a9e..b1cf8ba 100644
+--- a/test/testsock.c
++++ b/test/testsock.c
+@@ -155,16 +155,22 @@ static void test_serv_by_name(abts_case *tc, void *data)
+     rv = apr_sockaddr_info_get(&sa, NULL, APR_UNSPEC, 0, 0, p);
+     APR_ASSERT_SUCCESS(tc, "Problem generating sockaddr", rv);
+ 
++    /* /etc/services is not available while compiling, so apr_getservbyname
++     * will always return APR_ENOENT. */
++#if 0
+     rv = apr_getservbyname(sa, "ftp");
+     APR_ASSERT_SUCCESS(tc, "Problem getting ftp service", rv);
+     ABTS_INT_EQUAL(tc, 21, sa->port);
++#endif
+ 
+     rv = apr_getservbyname(sa, "complete_and_utter_rubbish");
+     APR_ASSERT_SUCCESS(tc, "Problem getting non-existent service", !rv);
+ 
++#if 0
+     rv = apr_getservbyname(sa, "telnet");
+     APR_ASSERT_SUCCESS(tc, "Problem getting telnet service", rv);
+     ABTS_INT_EQUAL(tc, 23, sa->port);
++#endif
+ }
+ 
+ static apr_socket_t *setup_socket(abts_case *tc)

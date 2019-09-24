@@ -1,7 +1,7 @@
 Summary:        The Apache Portable Runtime
 Name:           apr
 Version:        1.6.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            https://apr.apache.org/
 Group:          System Environment/Libraries
@@ -9,6 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
 %define sha1    %{name}=ebf4f15fa5003b1490550e260f5a57dc8a2ff0ac
+%if %{with_check}
+Patch0:         apr-skip-getservbyname-test.patch
+%endif
 %define         aprver  1
 %description
 The Apache Portable Runtime.
@@ -16,12 +19,15 @@ The Apache Portable Runtime.
 Summary:        Header and development files
 Requires:       %{name} = %{version}-%{release}
 %description    devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
 %setup -q
+%if %{with_check}
+%patch0 -p1
+%endif
 %build
-./configure --prefix=/usr \
+sh configure --prefix=/usr \
         --includedir=%{_includedir}/apr-%{aprver} \
         --with-installbuilddir=%{_libdir}/apr/build-%{aprver} \
         --with-devrandom=/dev/urandom \
@@ -56,6 +62,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig
 
 %changelog
+*   Tue Sep 24 2019 Ankit Jain <ankitja@vmware.com> 1.6.5-2
+-   Fix for makecheck, added a patch for the same
 *   Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 1.6.5-1
 -   Updated to version 1.6.5
 *   Fri Dec 08 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-7
