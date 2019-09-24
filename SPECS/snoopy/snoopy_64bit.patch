@@ -1,0 +1,38 @@
+From e989f26006809ff235ff089ff543dfcbb1a6671c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Alexander=20F=20R=C3=B8dseth?=
+ <alexander.rodseth@appeartv.com>
+Date: Thu, 27 Jul 2017 14:34:11 +0200
+Subject: [PATCH] Make snoopy compile on 64-bit Arch Linux with GCC 7.1.1
+
+---
+ config.h.in              | 3 +--
+ src/datasource/cmdline.c | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/config.h.in b/config.h.in
+index 0a04963..649274f 100644
+--- a/config.h.in
++++ b/config.h.in
+@@ -121,8 +121,7 @@
+ /* Define to 1 if `vfork' works. */
+ #undef HAVE_WORKING_VFORK
+ 
+-/* Define to the sub-directory in which libtool stores uninstalled libraries.
+-   */
++/* Define to the sub-directory where libtool stores uninstalled libraries. */
+ #undef LT_OBJDIR
+ 
+ /* Name of package */
+diff --git a/src/datasource/cmdline.c b/src/datasource/cmdline.c
+index ba24b4b..c6a2ba4 100644
+--- a/src/datasource/cmdline.c
++++ b/src/datasource/cmdline.c
+@@ -68,7 +68,7 @@ int snoopy_datasource_cmdline (char * const result, char const * const arg)
+     snoopy_inputdatastorage = snoopy_inputdatastorage_get();
+ 
+     /* Count number of arguments */
+-    for (cmdLineArgCount=0 ; *(snoopy_inputdatastorage->argv+cmdLineArgCount) != '\0' ; cmdLineArgCount++);
++    for (cmdLineArgCount=0 ; *(snoopy_inputdatastorage->argv+cmdLineArgCount) != 0 ; cmdLineArgCount++);
+ 
+     /* Calculate memory requirement for cmdLine */
+     cmdLineSizeSum = 0;
