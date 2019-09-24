@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.87
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -73,6 +73,9 @@ Patch44:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19078
 Patch46:        0001-ath10k-fix-memory-leak.patch
+
+# Patch to call drbg and dh crypto tests from tcrypt
+Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 
 Patch1001:	hmac_gen_kernel.patch
 
@@ -163,6 +166,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch44 -p1
 %patch45 -p1
 %patch46 -p1
+%patch100 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -287,6 +291,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Thu Jan 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.87-3
+-   Modify tcrypt to remove tests for algorithms that are not supported in photon.
+-   Added tests for DH, DRBG algorithms.
 *   Fri Dec 20 2019 Keerthana K <keerthanak@vmware.com> 4.19.87-2
 -   Update fips Kat tests.
 *   Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.19.87-1
