@@ -4,7 +4,7 @@ Name:           linux-rt
 Version:        4.19.82
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt30
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -31,8 +31,6 @@ Patch7:         9p-trans_fd-extend-port-variable-to-u32.patch
 Patch8:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 # ttyXRUSB support
 Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
-#FIPS patches - allow some algorithms
-Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Out-of-tree patches from AppArmor:
 Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
@@ -405,7 +403,6 @@ The Linux package contains the Linux kernel doc files
 %patch7 -p1
 %patch8 -p1
 %patch11 -p1
-%patch24 -p1
 %patch26 -p1
 %patch29 -p1
 %patch30 -p1
@@ -855,6 +852,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri Jan 03 2020 Keerthana K <keerthanak@vmware.com> 4.19.82-3
+-   Remove FIPS patch that enables fips for algorithms which are not fips allowed.
 *   Wed Dec 12 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.82-2
 -   Fix patch that wont apply on 4.19.82. Revert when upgraded to 4.19.87 or more
 *   Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.82-1

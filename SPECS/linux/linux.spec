@@ -13,7 +13,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.87
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -62,8 +62,6 @@ Patch20:        0001-ath10k-fix-memory-leak.patch
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
-#FIPS patches - allow some algorithms
-Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2019-18814
 Patch27:        apparmor-Fix-use-after-free-in-aa_audit_rule_init.patch
@@ -94,6 +92,9 @@ Patch42:	secure-boot-patches/0003-integrity-Load-certs-to-the-platform-keyring.p
 Patch43:	secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
 Patch44:	secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
 Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
+
+# Patch to call drbg and dh crypto tests from tcrypt
+Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -262,7 +263,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
-%patch24 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -282,6 +282,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
+
+%patch100 -p1
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -574,6 +576,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Jan 03 2020 Keerthana K <keerthanak@vmware.com> 4.19.87-4
+-   Modify tcrypt to remove tests for algorithms that are not supported in photon.
+-   Added tests for DH, DRBG algorithms.
 *   Thu Jan 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.87-3
 -   Update fips Kat tests patch.
 *   Mon Dec 09 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.87-2

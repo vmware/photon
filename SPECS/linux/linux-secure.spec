@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.87
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -44,8 +44,6 @@ Patch20:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 Patch21:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19078
 Patch22:        0001-ath10k-fix-memory-leak.patch
-#FIPS patches - allow some algorithms
-Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2019-18814
 Patch27:        apparmor-Fix-use-after-free-in-aa_audit_rule_init.patch
@@ -72,6 +70,8 @@ Patch42:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
+# Patch to call drbg and dh crypto tests from tcrypt
+Patch100:       0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 
 Patch1001:	hmac_gen_kernel.patch
 
@@ -150,8 +150,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
-
-%patch24 -p1
 %patch26 -p1
 %patch27 -p1
 %patch31 -p1
@@ -169,6 +167,7 @@ This Linux package contains hmac sha generator kernel module.
 pushd ..
 %patch99 -p0
 popd
+%patch100 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -316,6 +315,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jan 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.87-3
+-   Modify tcrypt to remove tests for algorithms that are not supported in photon.
+-   Added tests for DH, DRBG algorithms.
 *   Fri Dec 20 2019 Keerthana K <keerthanak@vmware.com> 4.19.87-2
 -   Update fips Kat tests.
 *   Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.19.87-1

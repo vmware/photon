@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.87
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -42,8 +42,6 @@ Patch20:        0001-ath10k-fix-memory-leak.patch
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
-#FIPS patches - allow some algorithms
-Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2019-18814
 Patch27:        apparmor-Fix-use-after-free-in-aa_audit_rule_init.patch
@@ -67,6 +65,9 @@ Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
+
+# Patch to call drbg and dh crypto tests from tcrypt
+Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 
 # Amazon AWS
 Patch101: 0002-watchdog-Disable-watchdog-on-virtual-machines.patch
@@ -187,7 +188,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
-%patch24 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -201,6 +201,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch36 -p1
 %patch38 -p1
 %patch39 -p1
+
+%patch100 -p1
 
 %patch101 -p1
 %patch102 -p1
@@ -411,6 +413,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Jan 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.87-3
+-   Modify tcrypt to remove tests for algorithms that are not supported in photon.
+-   Added tests for DH, DRBG algorithms.
 *   Fri Dec 20 2019 Keerthana K <keerthanak@vmware.com> 4.19.87-2
 -   Update fips Kat tests.
 *   Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.19.87-1
