@@ -26,7 +26,7 @@ class IsoInstaller(object):
         config = IsoConfig()
         rpm_path, install_config = config.Configure(options_file, rpms_path, self.maxy, self.maxx)
 
-        self.screen.clear()
+        self.screen.erase()
         installer = InstallerContainer(
             install_config,
             self.maxy, self.maxx,
@@ -34,7 +34,7 @@ class IsoInstaller(object):
             rpm_path=rpm_path,
             log_path="/var/log")
 
-        installer.install(None)
+        installer.install()
 
 if __name__ == '__main__':
     usage = "Usage: %prog [options]"

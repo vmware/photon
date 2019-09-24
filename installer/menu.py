@@ -121,7 +121,7 @@ class Menu(Action):
                 self.window.addch(index + up + self.filled, self.width - 2, curses.ACS_CKBOARD)
 
     def refresh(self, highligh=True):
-        self.window.clear()
+#        self.window.clear()
         for index, item in enumerate(self.items_strings):
             if index < self.head_position:
                 continue

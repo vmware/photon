@@ -80,11 +80,15 @@ class Installer(object):
             self.output = None
         signal.signal(signal.SIGINT, self.exit_gracefully)
 
-    def install(self, params):
+    def install(self):
         """
         Install photon system and handle exception
         """
-        del params
+        if self.install_config['iso_installer']:
+            self.window.show_window()
+            self.progress_bar.initialize('Initializing installation...')
+            self.progress_bar.show()
+
         try:
             return self._unsafe_install()
         except Exception as inst:
@@ -98,6 +102,7 @@ class Installer(object):
         """
         Install photon system
         """
+        self._format_disk()
         self._setup_install_repo()
         self._initialize_system()
         self._install_packages()
@@ -139,6 +144,8 @@ class Installer(object):
             self.window.addstr(0, 0, 'Congratulations, Photon has been installed in {0} secs.\n\n'
                                'Press any key to continue to boot...'
                                .format(self.progress_bar.time_elapsed))
+            if 'ui_install' in self.install_config:
+                self.window.content_window().getch()
             self._eject_cdrom()
 
     def _create_installrpms_list(self):
@@ -304,6 +311,7 @@ class Installer(object):
             self.exit_gracefully(None, None)
 
         if self.install_config['iso_installer']:
+            self.progress_bar.update_message('Initializing system...')
             self._bind_installer()
             self._bind_repo_dir()
             process = subprocess.Popen([self.prepare_command, '-w',
@@ -471,15 +479,35 @@ class Installer(object):
         except KeyError:
             pass
 
+    def _format_disk(self):
+        """
+        Partition and format the disk
+        """
+        # skip partitioning if installer was called from image
+        if not self.install_config['iso_installer']:
+            return
+
+        self.progress_bar.update_message('Partitioning...')
+
+        if 'partitions' in self.install_config:
+            partitions = self.install_config['partitions']
+        else:
+            partitions = modules.commons.default_partitions
+
+        # do partitioning
+        partitions_data = modules.commons.partition_disk(self.install_config['disk'], partitions)
+
+        if partitions_data == None:
+            raise Exception("Partitioning failed.")
+        self.install_config['disk'] = partitions_data
+
+
     def _setup_install_repo(self):
         """
         Setup the tdnf repo for installation
         """
         if self.install_config['iso_installer']:
             keepcache = False
-            self.window.show_window()
-            self.progress_bar.initialize('Initializing installation...')
-            self.progress_bar.show()
             with open(self.tdnf_repo_path, "w") as repo_file:
                 repo_file.write("[photon-local]\n")
                 repo_file.write("name=VMWare Photon installer repo\n")
@@ -611,8 +639,6 @@ class Installer(object):
         Eject the cdrom on request
         """
         eject_cdrom = True
-        if 'ui_install' in self.install_config:
-            self.window.content_window().getch()
         if 'eject_cdrom' in self.install_config and not self.install_config['eject_cdrom']:
             eject_cdrom = False
         if eject_cdrom:

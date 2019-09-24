@@ -71,7 +71,7 @@ class Window(Action):
         self.shadowpanel = curses.panel.new_panel(self.shadowwin)
 
         self.action_panel = action_panel
-        self.refresh(0, True)
+#        self.refresh(0, True)
         self.hide_window()
 
     def update_next_item(self):
@@ -80,7 +80,7 @@ class Window(Action):
         self.tab_enabled = False
 
 
-    def next_function(self, params):
+    def next_function(self):
         return ActionResult(True, None)
 
     def set_action_panel(self, action_panel):
@@ -104,7 +104,7 @@ class Window(Action):
                 if self.menu_helper:
                     self.menu_helper(params)
 
-            result = self.items[self.position-1][1](None)
+            result = self.items[self.position-1][1]()
             if result.success:
                 self.hide_window()
                 self.action_panel.hide()
@@ -130,7 +130,7 @@ class Window(Action):
                     action_result.result['goNext']):
                 return ActionResult(True, None)
             if self.position != 0:    #saving the disk index
-                self.items[self.position-1][1](None)
+                self.items[self.position-1][1]()
             if self.items:
                 return self.update_menu(action_result)
             self.hide_window()
@@ -184,7 +184,7 @@ class Window(Action):
                             params = action_result.result['diskIndex']
                             if self.menu_helper:
                                 self.menu_helper(params)
-                        result = self.items[self.position-1][1](None)
+                        result = self.items[self.position-1][1]()
                         if result.success:
                             self.hide_window()
                             self.action_panel.hide()

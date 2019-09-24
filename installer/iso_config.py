@@ -15,6 +15,7 @@ import modules.commons
 from partitionISO import PartitionISO
 from packageselector import PackageSelector
 from windowstringreader import WindowStringReader
+from confirmwindow import ConfirmWindow
 from jsonwrapper import JsonWrapper
 from selectdisk import SelectDisk
 from license import License
@@ -70,6 +71,13 @@ class IsoConfig(object):
             install_config = self.ks_config(options_file, ks_config)
         else:
             install_config = self.ui_config(options_file, maxy, maxx)
+
+        self._add_default(install_config)
+
+        issue = self._check_install_config(install_config)
+        if issue:
+            raise Exception(issue)
+
         return rpm_path, install_config
 
     @staticmethod
@@ -172,18 +180,9 @@ class IsoConfig(object):
             package_list.extend(install_config['additional_packages'])
         install_config['packages'] = package_list
 
-        if 'partitions' in install_config:
-            partitions = install_config['partitions']
-        else:
-            partitions = modules.commons.default_partitions
-
-        install_config['disk'] = modules.commons.partition_disk(install_config['disk'], partitions)
-
         if "hostname" in install_config:
             evalhostname = os.popen('printf ' + install_config["hostname"].strip(" ")).readlines()
             install_config['hostname'] = evalhostname[0]
-        if "hostname" not in install_config or install_config['hostname'] == "":
-            install_config['hostname'] = "photon-" + self.random_id.strip()
 
         # crypt the password if needed
         if install_config['password']['crypted']:
@@ -306,15 +305,19 @@ class IsoConfig(object):
         # I can go back to this window or not
         install_config = {}
         install_config['ui_install'] = True
-        items, select_linux_index = self.add_ui_pages(options_file, maxy, maxx,
+        items = self.add_ui_pages(options_file, maxy, maxx,
                                                       install_config)
         index = 0
         while True:
-            result = items[index][0](None)
+            result = items[index][0]()
             if result.success:
                 index += 1
                 if index == len(items):
-                    break
+                    # confirm window
+                    if result.result['yes']:
+                        break
+                    else:
+                        exit(0)
             else:
                 index -= 1
                 while index >= 0 and items[index][1] is False:
@@ -380,23 +383,51 @@ class IsoConfig(object):
             None, # post processing of the input field
             'Please provide the Refspec in OSTree repo', 'OSTree Repo Refspec:', 2, install_config,
             "photon/3.0/x86_64/minimal")
+        confirm_window = ConfirmWindow(11, 60, maxy, maxx,
+                                      (maxy - 11) // 2 + 7,
+                                      'Start installation? All data on the selected disk will be lost.\n\n'
+                                      'Press <Yes> to confirm, or <No> to quit')
 
         items.append((license_agreement.display, False))
         items.append((select_disk.display, True))
         items.append((select_partition.display, False))
-        items.append((select_disk.guided_partitions, False))
         items.append((package_selector.display, True))
-        select_linux_index = -1
         if self.is_vmware_virtualization():
             linux_selector = LinuxSelector(maxy, maxx, install_config)
             items.append((linux_selector.display, True))
-            select_linux_index = items.index((linux_selector.display, True))
         items.append((hostname_reader.get_user_string, True))
         items.append((root_password_reader.get_user_string, True))
         items.append((confirm_password_reader.get_user_string, False))
         items.append((ostree_server_selector.display, True))
         items.append((ostree_url_reader.get_user_string, True))
         items.append((ostree_ref_reader.get_user_string, True))
+        items.append((confirm_window.do_action, True))
 
-        return items, select_linux_index
+        return items
+
+    def _add_default(self, install_config):
+        """
+        Add default install_config settings if not specified
+        """
+        # 'boot' mode
+        if 'boot' not in install_config:
+            arch = subprocess.check_output(['uname', '-m'], universal_newlines=True)
+            if "x86" in arch:
+                install_config['boot'] = 'dualboot'
+            else:
+                install_config['boot'] = 'efi'
+
+        # define 'hostname' as 'photon-<RANDOM STRING>'
+        if "hostname" not in install_config or install_config['hostname'] == "":
+            install_config['hostname'] = "photon-" + self.random_id.strip()
+
+    def _check_install_config(self, install_config):
+        """
+        Sanity check of install_config before its execution.
+        Return error string or None
+        """
+        if not 'disk' in install_config:
+            return "No disk configured"
+
+        return None
 

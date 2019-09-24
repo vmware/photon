@@ -35,10 +35,7 @@ class PartitionISO(object):
                              'Welcome to the Photon installer', False, can_go_next=False)
         Device.refresh_devices()
 
-    def display(self, params):
-        if 'skipPrevs' in self.install_config and self.install_config['skipPrevs'] == True:
-            self.delete()
-            return ActionResult(False, {'goBack':True})
+    def display(self):
         if 'autopartition' in self.install_config and self.install_config['autopartition'] == True:
             return ActionResult(True, None)
         if ('delete_partition' in self.install_config and
@@ -162,11 +159,11 @@ class PartitionISO(object):
             self.install_config['partitionsnumber'] = self.install_config['partitionsnumber'] + 1
 
         #parse the input in install config
-        return self.display(False)
+        return self.display()
 
     def delete_function(self):
         self.delete()
-        return self.display(False)
+        return self.display()
 
     def go_back(self):
         self.delete()
@@ -184,7 +181,7 @@ class PartitionISO(object):
                                            'Partition information cannot be empty',
                                            info=True)
             confirm_window.do_action()
-            return self.display(False)
+            return self.display()
         #must have /
         if not self.has_slash:
             window_height = 9
@@ -194,10 +191,25 @@ class PartitionISO(object):
                                            self.maxx, window_starty, 'Missing /',
                                            info=True)
             confirm_window.do_action()
-            return self.display(False)
+            return self.display()
 
         self.window.hide_window()
         self.text_pane.hide()
+
+        partitions = []
+        for i in range(int(self.install_config['partitionsnumber'])):
+            if len(self.install_config[str(i)+'partition_info'+str(0)]) == 0:
+                sizedata = 0
+            else:
+                sizedata = int(self.install_config[str(i) + 'partition_info' + str(0)])
+            mtdata = self.install_config[str(i) + 'partition_info' + str(2)]
+            typedata = self.install_config[str(i) + 'partition_info'+str(1)]
+
+            partitions = partitions + [{"mountpoint": mtdata,
+                                        "size": sizedata,
+                                        "filesystem": typedata},]
+        self.install_config['partitions'] = partitions
+
         return ActionResult(True, {'goNext':True})
 
     def delete(self):

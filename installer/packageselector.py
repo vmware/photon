@@ -81,8 +81,8 @@ class PackageSelector(object):
         self.install_config['additional-files'] = selected_item_params[2]
         return ActionResult(True, {'custom': False})
 
-    def custom_packages(self, params):
+    def custom_packages(self):
         return ActionResult(True, {'custom': True})
 
-    def display(self, params):
+    def display(self):
         return self.window.do_action()

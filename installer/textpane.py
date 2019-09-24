@@ -173,7 +173,7 @@ class TextPane(Action):
                 self.window.addch(index + up + self.filled, self.width - 2, curses.ACS_CKBOARD)
 
     def refresh(self):
-        self.window.clear()
+        self.window.erase()
         for index, line in enumerate(self.lines):
             if index < self.head_position:
                 continue

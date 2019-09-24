@@ -18,7 +18,7 @@ class InstallerContainer(object):
         self.log_path = log_path
         self.log_level = log_level
 
-    def install(self, params):
+    def install(self):
         installer = None
 
         if self.install_config.get('type', '') == "ostree_host":
@@ -28,4 +28,4 @@ class InstallerContainer(object):
             installer = Installer(self.install_config, self.maxy, self.maxx,
                               self.iso_installer, self.rpm_path, self.log_path, self.log_level)
 
-        return installer.install(params)
+        return installer.install()

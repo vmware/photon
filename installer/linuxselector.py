@@ -36,7 +36,7 @@ class LinuxSelector(object):
         self.install_config['install_linux_esx'] = is_linux_esx
         return ActionResult(True, None)
 
-    def display(self, params):
+    def display(self):
         self.window.addstr(0, 0, 'The installer has detected that you are installing')
         self.window.addstr(1, 0, 'Photon OS on a VMware hypervisor.')
         self.window.addstr(2, 0, 'Which type of Linux kernel would you like to install?')

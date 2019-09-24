@@ -35,7 +35,7 @@ class OSTreeServerSelector(object):
         self.install_config['default_repo'] = is_default_repo
         return ActionResult(True, None)
 
-    def display(self, params):
+    def display(self):
         if self.install_config['type'] == 'ostree_host':
             return self.window.do_action()
         return ActionResult(True, None)

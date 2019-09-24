@@ -43,7 +43,7 @@ def runInstaller(options, config):
     # Run the installer
     package_installer = Installer(config, rpm_path=options.rpm_path,
                                   log_path=options.log_path, log_level=options.log_level)
-    return package_installer.install(None)
+    return package_installer.install()
 
 def get_file_name_with_last_folder(filename):
     basename = os.path.basename(filename)
@@ -292,7 +292,6 @@ def createImage(options):
     if not success:
         raise Exception("Unexpected failure in creating disk, please check the logs")
         sys.exit(1)
-    config['vmdk_install'] = True
     result = runInstaller(options, config)
     process = subprocess.Popen([disk_cleanup_script, config['disk']['disk']])
     process.wait()

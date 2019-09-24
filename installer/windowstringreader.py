@@ -36,5 +36,5 @@ class WindowStringReader(object):
         self.window.set_action_panel(self.read_text)
         self.window.addstr(0, 0, self.display_string)
 
-    def get_user_string(self, params):
+    def get_user_string(self, params=None):
         return self.window.do_action()
