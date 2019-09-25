@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/shadow-maint/
 License:        BSD
 Group:          Applications/System
@@ -21,6 +21,7 @@ Source9:        system-auth
 Source10:       system-password
 Source11:       system-session
 Patch1:         chkname-allowcase.patch
+Patch2:         fix-segfault-PR2430117.patch
 BuildRequires:  cracklib
 BuildRequires:  cracklib-devel
 Requires:       cracklib
@@ -50,6 +51,7 @@ These are the additional language files of shadow.
 %prep
 %setup -q -n %{name}-%{version}
 %patch1 -p1
+%patch2 -p1
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in
 find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
 sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
@@ -167,6 +169,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Wed Sep 25 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.6-4
+-   Fix Segfault and memory leaks
 *   Wed Oct 24 2018 Michelle Wang <michellew@vmware.com> 4.6-3
 -   Add su and login into shadow-tool.
 *   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 4.6-2
