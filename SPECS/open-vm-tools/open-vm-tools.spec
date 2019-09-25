@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.3.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -19,6 +19,8 @@ Patch2:         PureIPv6-hosts.patch
 Patch3:         GOSC-libDeploy.patch
 Patch4:         timezoneCust.patch
 Patch5:         gosc-post-custom.patch
+Patch6:         fix-memleak-in-vix.patch
+Patch7:         gosc-enable-custom-scripts.patch
 BuildArch:      x86_64
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
@@ -65,6 +67,8 @@ It contains the libraries and header files to create applications.
 %patch3 -p2
 %patch4 -p0
 %patch5 -p0
+%patch6 -p2
+%patch7 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -136,6 +140,9 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Wed Sep 15 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-2
+-   Fix memory leak issues in vix.
+-   Added enable-custom-scripts parsing code in GOSC scripts.
 *   Wed May 08 2019 Ankit Jain <ankitja@vmware.com> 10.3.10-1
 -   Updating version to 10.3.10
 *   Wed Mar 27 2019 Anish Swaminathan <anishs@vmware.com> 10.3.0-4
