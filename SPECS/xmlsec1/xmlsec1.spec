@@ -1,7 +1,7 @@
 Summary:        Library providing support for "XML Signature" and "XML Encryption" standards
 Name:           xmlsec1
 Version:        1.2.26
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,6 +11,8 @@ Source0:        http://www.aleksey.com/xmlsec/download/%{name}-%{version}.tar.gz
 %define sha1 xmlsec1=d55d5be05eac1114e1d9b8655b602ce26f9f4a11
 BuildRequires: libxml2-devel
 BuildRequires: libltdl-devel
+Requires:      libxml2
+Requires:      libltdl
 
 %description
 XML Security Library is a C library based on LibXML2  and OpenSSL.
@@ -78,5 +80,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_prefix}/share/man/man1/xmlsec1-config.1.gz
 
 %changelog
+*   Thu Sep 26 2018 Ankit Jain <ankitja@vmware.com> 1.2.26-2
+-   Fix Requires
 *   Fri Jun 22 2018 Ankit Jain <ankitja@vmware.com> 1.2.26-1
 -   Initial version

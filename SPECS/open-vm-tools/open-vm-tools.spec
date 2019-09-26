@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.3.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -42,6 +42,7 @@ Requires:       xml-security-c
 Requires:       openssl
 Requires:       systemd
 Requires:       libstdc++
+Requires:       xmlsec1
 %description
 VmWare virtualization user mode tools
 
@@ -120,6 +121,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Thu Sep 26 2019 Ankit Jain <ankitja@vmware.com> 10.3.10-3
+-   Added requires xmlsec1
 *   Wed Sep 15 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-2
 -   Fix memory leak issues in vix.
 *   Tue May 07 2019 Ankit Jain <ankitja@vmware.com> 10.3.10-1
