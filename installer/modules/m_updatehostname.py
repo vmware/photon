@@ -5,11 +5,12 @@ import commons
 install_phase = commons.POST_INSTALL
 enabled = True
 
-def execute(config, root):
-    hostname = config['hostname']
+def execute(installer):
+    hostname = installer.install_config['hostname']
 
-    hostname_file = os.path.join(root, 'etc/hostname')
-    hosts_file    = os.path.join(root, 'etc/hosts')
+    installer.logger.info("Set /etc/hostname to " + hostname)
+    hostname_file = os.path.join(installer.photon_root, 'etc/hostname')
+    hosts_file    = os.path.join(installer.photon_root, 'etc/hosts')
 
     with open(hostname_file, 'wb') as outfile:
         outfile.write(hostname.encode())

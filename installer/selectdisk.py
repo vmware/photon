@@ -6,8 +6,6 @@ from device import Device
 from window import Window
 from actionresult import ActionResult
 from menu import Menu
-import modules.commons
-import subprocess
 
 class SelectDisk(object):
     def __init__(self, maxy, maxx, install_config):

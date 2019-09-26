@@ -11,7 +11,7 @@ from urllib.request import urlopen
 import random
 import requests
 import cracklib
-import modules.commons
+from logger import Logger
 from partitionISO import PartitionISO
 from packageselector import PackageSelector
 from windowstringreader import WindowStringReader
@@ -27,6 +27,7 @@ class IsoConfig(object):
     g_ostree_repo_url = None
     """This class handles iso installer configuration."""
     def __init__(self):
+        self.logger = None
         self.cd_mount_path = None
         self.alpha_chars = list(range(65, 91))
         self.alpha_chars.extend(range(97, 123))
@@ -38,7 +39,8 @@ class IsoConfig(object):
         self.random_id = '%12x' % random.randrange(16**12)
         self.random_hostname = "photon-" + self.random_id.strip()
 
-    def Configure(self, options_file, rpms_path, maxy, maxx):
+    def configure(self, options_file, rpms_path, maxy, maxx, log_path="../stage/LOGS"):
+        self.logger = Logger.get_logger(log_path)
         ks_path = None
         rpm_path = rpms_path
         ks_config = None
@@ -64,7 +66,8 @@ class IsoConfig(object):
         if rpm_path is None:
             # the rpms should be in the cd
             if self.cd_mount_path is None:
-                raise Exception("Please specify RPM repo location, as no cdrom is specified. (PXE?)")
+                self.logger.error("Please specify RPM repo location, as no cdrom is specified. (PXE?)")
+                raise Exception("RPM repo not found")
             rpm_path = os.path.join(self.cd_mount_path, "RPMS")
 
         if ks_config:
@@ -76,6 +79,7 @@ class IsoConfig(object):
 
         issue = self._check_install_config(install_config)
         if issue:
+            self.logger.error(issue)
             raise Exception(issue)
 
         return rpm_path, install_config
@@ -106,18 +110,14 @@ class IsoConfig(object):
                 except Exception as e:
                     err_msg = e
 
-                modules.commons.log(modules.commons.LOG_ERROR,
-                                    ks_file_error)
-                modules.commons.log(modules.commons.LOG_ERROR,
-                                    "error msg: {0}".format(err_msg))
-                print(ks_file_error)
-                print("retry in a second")
+                self.logger.warning(ks_file_error)
+                self.logger.warning("error msg: {0}".format(err_msg))
+                self.logger.warning("retry in a second")
                 time.sleep(wait)
                 wait = wait * 2
 
             # Something went wrong
-            print(ks_file_error)
-            print("exiting the installer, check the logs for more details")
+            self.logger.error(ks_file_error)
             raise Exception(err_msg)
         else:
             if path.startswith("cdrom:/"):
@@ -145,7 +145,7 @@ class IsoConfig(object):
         elif cd_search == "cdrom":
             cmdline.append('/dev/cdrom')
         else:
-            print("Unsupported installer media, check photon.media in kernel cmdline")
+            self.logger.error("Unsupported installer media, check photon.media in kernel cmdline")
             raise Exception("Can not mount the cd")
 
         cmdline.extend(['-o', 'ro', mount_path])
@@ -157,10 +157,10 @@ class IsoConfig(object):
             if retval == 0:
                 self.cd_mount_path = mount_path
                 return
-            print("Failed to mount the cd, retry in a second")
+            self.logger.error("Failed to mount the cd, retry in a second")
             time.sleep(1)
-        print("Failed to mount the cd, exiting the installer")
-        print("check the logs for more details")
+        self.logger.error("Failed to mount the cd, exiting the installer")
+        self.logger.error("check the logs for more details")
         raise Exception("Can not mount the cd")
 
     def ks_config(self, options_file, ks_config):

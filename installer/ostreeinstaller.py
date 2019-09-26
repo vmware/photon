@@ -198,15 +198,15 @@ class OstreeInstaller(Installer):
 
     def run(self, command, comment = None):
         if comment != None:
-            modules.commons.log(modules.commons.LOG_INFO, "Installer: {} ".format(comment))
+            self.logger.info("Installer: {} ".format(comment))
             self.progress_bar.update_loading_message(comment)
 
-        modules.commons.log(modules.commons.LOG_INFO, "Installer: {} ".format(command))
+        self.logger.info("Installer: {} ".format(command))
         process = subprocess.Popen([command], shell=True, stdout=subprocess.PIPE)
         out,err = process.communicate()
         if err != None and err != 0 and "systemd-tmpfiles" not in command:
-            modules.commons.log(modules.commons.LOG_ERROR, "Installer: failed in {} with error code {}".format(command, err))
-            modules.commons.log(modules.commons.LOG_ERROR, out)
+            self.logger.error("Installer: failed in {} with error code {}".format(command, err))
+            self.logger.error(out)
             self.exit_gracefully(None, None)
 
         return err

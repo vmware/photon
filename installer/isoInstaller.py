@@ -24,7 +24,7 @@ class IsoInstaller(object):
         self.screen.addstr(self.maxy - 1, 0, '  Arrow keys make selections; <Enter> activates.')
         curses.curs_set(0)
         config = IsoConfig()
-        rpm_path, install_config = config.Configure(options_file, rpms_path, self.maxy, self.maxx)
+        rpm_path, install_config = config.configure(options_file, rpms_path, self.maxy, self.maxx, log_path="/var/log")
 
         self.screen.erase()
         installer = InstallerContainer(
@@ -32,7 +32,8 @@ class IsoInstaller(object):
             self.maxy, self.maxx,
             True,
             rpm_path=rpm_path,
-            log_path="/var/log")
+            log_path="/var/log",
+            log_level="debug")
 
         installer.install()
 

@@ -17,8 +17,6 @@ set -x
 SCRIPT_PATH=$(dirname $(realpath -s $0))
 source $SCRIPT_PATH/config.inc
 PRGNAME=${0##*/}    # script name minus the path
-LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
-#LOGFILE=/dev/null      #   uncomment to disable log file
 [ ${EUID} -eq 0 ]   || fail "${PRGNAME}: Need to be root user: FAILURE"
 
 /sbin/ldconfig
@@ -36,8 +34,5 @@ rpm --import /etc/pki/rpm-gpg/*
 #  by default. Call localedef directly here to define locale environment.
 /usr/bin/localedef -c -i en_US -f UTF-8 en_US.UTF-8
 #/sbin/locale-gen.sh
-
-#TODO: This should be removed, systemd should be able to create this file
-#/usr/bin/touch /var/run/utmp
 
 exit 0

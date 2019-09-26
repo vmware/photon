@@ -17,8 +17,6 @@ set -x
 SCRIPT_PATH=$(dirname $(realpath -s $0))
 source $SCRIPT_PATH/config.inc
 PRGNAME=${0##*/}    # script name minus the path
-LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
-#LOGFILE=/dev/null      #   uncomment to disable log file
 [ ${EUID} -eq 0 ]   || fail "${PRGNAME}: Need to be root user: FAILURE"
 [ -z ${BUILDROOT} ] && fail "${PRGNAME}: Build root not set: FAILURE"
 
