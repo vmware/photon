@@ -93,8 +93,8 @@ class Installer(object):
         try:
             return self._unsafe_install()
         except Exception as inst:
+            self.logger.exception(repr(inst))
             if self.install_config['iso_installer']:
-                self.logger.exception(repr(inst))
                 self.exit_gracefully()
             else:
                 raise
@@ -152,47 +152,6 @@ class Installer(object):
             if 'ui_install' in self.install_config:
                 self.window.content_window().getch()
             self._eject_cdrom()
-
-    def _create_installrpms_list(self):
-        """
-        Prepare RPM list and copy rpms
-        """
-        # prepare the RPMs list
-        json_pkg_to_rpm_map = JsonWrapper(self.install_config["pkg_to_rpm_map_file"])
-        pkg_to_rpm_map = json_pkg_to_rpm_map.read()
-
-        self.rpms_tobeinstalled = []
-        selected_packages = self.install_config['packages']
-
-        for pkg in selected_packages:
-            versionindex = pkg.rfind("-")
-            if versionindex == -1:
-                raise Exception("Invalid pkg name: " + pkg)
-            package = pkg[:versionindex]
-            if pkg in pkg_to_rpm_map:
-                if pkg_to_rpm_map[pkg]['rpm'] is not None:
-                    name = pkg_to_rpm_map[pkg]['rpm']
-                    basename = os.path.basename(name)
-                    self.rpms_tobeinstalled.append({'filename': basename, 'path': name,
-                                                    'package' : package})
-
-    def _copy_files(self):
-        """
-        Copy the rpm files and instal scripts.
-        """
-        # Make the photon_root directory if not exits
-        retval = self.cmd.run(['mkdir', '-p', self.photon_root])
-        if retval != 0:
-            self.logger.error("Fail to create the root directory")
-            self.exit_gracefully()
-
-        # Copy the installer files
-        retval = self.cmd.run(['cp', '-r', os.path.dirname(__file__), self.photon_root])
-        if retval != 0:
-            self.logger.error("Fail to copy install scripts")
-            self.exit_gracefully()
-
-        self._create_installrpms_list()
 
     def _bind_installer(self):
         """
@@ -306,25 +265,20 @@ class Installer(object):
 
         if self.install_config['iso_installer']:
             self.progress_bar.update_message('Initializing system...')
-            self._bind_installer()
-            self._bind_repo_dir()
-            retval = self.cmd.run([self.prepare_command, '-w',
-                                        self.photon_root, 'install'])
-            if retval != 0:
-                self.logger.info("Failed to bind the installer and repo needed by tdnf")
-                self.exit_gracefully()
-        else:
-            self._copy_files()
-            #Setup the filesystem basics
-            retval = self.cmd.run([self.prepare_command, '-w', self.photon_root, self.rpm_path])
-            if retval != 0:
-                self.logger.info("Failed to setup the file systems basics")
-                self.exit_gracefully()
+        self._bind_installer()
+        self._bind_repo_dir()
+        retval = self.cmd.run([self.prepare_command, '-w', self.photon_root,
+                               self.working_directory, self.rpm_cache_dir])
+        if retval != 0:
+            self.logger.info("Failed to bind the installer and repo needed by tdnf")
+            self.exit_gracefully()
 
     def _finalize_system(self):
         """
         Finalize the system after the installation
         """
+        if self.install_config['iso_installer']:
+            self.progress_bar.show_loading('Finalizing installation')
         #Setup the disk
         retval = self.cmd.run([Installer.chroot_command, '-w', self.photon_root,
                                     Installer.finalize_command, '-w', self.photon_root])
@@ -332,17 +286,12 @@ class Installer(object):
             self.logger.error("Fail to setup the target system after the installation")
 
     def _cleanup_install_repo(self):
-        if self.install_config['iso_installer']:
-            self._unbind_installer()
-            self._unbind_repo_dir()
-            # Disable the swap file
-            retval = self.cmd.run(['swapoff', self.photon_root+'/cache/swapfile'])
-            if retval != 0:
-                self.logger.error("Fail to swapoff")
-            # remove the tdnf cache directory and the swapfile.
-            retval = self.cmd.run(['rm', '-rf', os.path.join(self.photon_root, "cache")])
-            if retval != 0:
-                self.logger.error("Fail to remove the cache")
+        self._unbind_installer()
+        self._unbind_repo_dir()
+        # remove the tdnf cache directory.
+        retval = self.cmd.run(['rm', '-rf', os.path.join(self.photon_root, "cache")])
+        if retval != 0:
+            self.logger.error("Fail to remove the cache")
 
     def _post_install(self):
         # install grub
@@ -362,10 +311,6 @@ class Installer(object):
             raise Exception("Bootloader (grub2) setup failed")
 
         self._update_fstab()
-        if not self.install_config['iso_installer']:
-            retval = self.cmd.run(['rm', '-rf', os.path.join(self.photon_root, "installer")])
-            if retval != 0:
-                self.logger.error("Fail to remove the installer directory")
 
     def _execute_modules(self, phase):
         """
@@ -438,40 +383,30 @@ class Installer(object):
         """
         Setup the tdnf repo for installation
         """
-        if self.install_config['iso_installer']:
-            keepcache = False
-            with open(self.tdnf_repo_path, "w") as repo_file:
-                repo_file.write("[photon-local]\n")
-                repo_file.write("name=VMWare Photon installer repo\n")
-                if self.rpm_path.startswith("https://") or self.rpm_path.startswith("http://"):
-                    repo_file.write("baseurl={}\n".format(self.rpm_path.replace('/', r'\/')))
-                else:
-                    repo_file.write("baseurl=file://{}\n".format(self.rpm_cache_dir))
-                    keepcache = True
-                repo_file.write("gpgcheck=0\nenabled=1\n")
-            with open(self.tdnf_conf_path, "w") as conf_file:
-                conf_file.writelines([
-                    "[main]\n",
-                    "gpgcheck=0\n",
-                    "installonly_limit=3\n",
-                    "clean_requirements_on_remove=true\n"])
-                # baseurl and cachedir are bindmounted to rpm_path, we do not
-                # want input RPMS to be removed after installation.
-                if keepcache:
-                    conf_file.write("keepcache=1\n")
-                conf_file.write("repodir={}\n".format(self.working_directory))
-                conf_file.write("cachedir={}\n".format(self.rpm_cache_dir_short))
+        keepcache = False
+        with open(self.tdnf_repo_path, "w") as repo_file:
+            repo_file.write("[photon-local]\n")
+            repo_file.write("name=VMWare Photon installer repo\n")
+            if self.rpm_path.startswith("https://") or self.rpm_path.startswith("http://"):
+                repo_file.write("baseurl={}\n".format(self.rpm_path.replace('/', r'\/')))
+            else:
+                repo_file.write("baseurl=file://{}\n".format(self.rpm_cache_dir))
+                keepcache = True
+            repo_file.write("gpgcheck=0\nenabled=1\n")
+        with open(self.tdnf_conf_path, "w") as conf_file:
+            conf_file.writelines([
+                "[main]\n",
+                "gpgcheck=0\n",
+                "installonly_limit=3\n",
+                "clean_requirements_on_remove=true\n"])
+            # baseurl and cachedir are bindmounted to rpm_path, we do not
+            # want input RPMS to be removed after installation.
+            if keepcache:
+                conf_file.write("keepcache=1\n")
+            conf_file.write("repodir={}\n".format(self.working_directory))
+            conf_file.write("cachedir={}\n".format(self.rpm_cache_dir_short))
 
     def _install_packages(self):
-        """
-        Install packages using tdnf or rpm command
-        """
-        if self.install_config['iso_installer']:
-            self._tdnf_install_packages()
-        else:
-            self._rpm_install_packages()
-
-    def _tdnf_install_packages(self):
         """
         Install packages using tdnf command
         """
@@ -480,6 +415,7 @@ class Installer(object):
         state = 0
         packages_to_install = {}
         total_size = 0
+        stderr = None
         self.logger.debug("tdnf install --installroot {0} {1} -c {2}"
                            .format(self.photon_root, " ".join(selected_packages),
                                             self.tdnf_conf_path))
@@ -487,78 +423,66 @@ class Installer(object):
                                    ['--installroot', self.photon_root,
                                     '--assumeyes', '-c', self.tdnf_conf_path],
                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        while True:
-            output = process.stdout.readline().decode()
-            if output == '':
-                retval = process.poll()
-                if retval is not None:
-                    break
-            if state == 0:
-                if output == 'Installing:\n':
-                    state = 1
-            elif state == 1: #N A EVR Size(readable) Size(in bytes)
-                if output == '\n':
-                    state = 2
-                    self.progress_bar.update_num_items(total_size)
+        if self.install_config['iso_installer']:
+            while True:
+                output = process.stdout.readline().decode()
+                if output == '':
+                    retval = process.poll()
+                    if retval is not None:
+                        stderr = process.communicate()[1]
+                        break
+                if state == 0:
+                    if output == 'Installing:\n':
+                        state = 1
+                elif state == 1: #N A EVR Size(readable) Size(in bytes)
+                    if output == '\n':
+                        state = 2
+                        self.progress_bar.update_num_items(total_size)
+                    else:
+                        info = output.split()
+                        package = '{0}-{1}.{2}'.format(info[0], info[2], info[1])
+                        packages_to_install[package] = int(info[5])
+                        total_size += int(info[5])
+                elif state == 2:
+                    if output == 'Downloading:\n':
+                        self.progress_bar.update_message('Preparing ...')
+                        state = 3
+                elif state == 3:
+                    self.progress_bar.update_message(output)
+                    if output == 'Running transaction\n':
+                        state = 4
                 else:
-                    info = output.split()
-                    package = '{0}-{1}.{2}'.format(info[0], info[2], info[1])
-                    packages_to_install[package] = int(info[5])
-                    total_size += int(info[5])
-            elif state == 2:
-                if output == 'Downloading:\n':
-                    self.progress_bar.update_message('Preparing ...')
-                    state = 3
-            elif state == 3:
-                self.progress_bar.update_message(output)
-                if output == 'Running transaction\n':
-                    state = 4
-            else:
-                self.logger.info("[tdnf] {0}".format(output))
-                prefix = 'Installing/Updating: '
-                if output.startswith(prefix):
-                    package = output[len(prefix):].rstrip('\n')
-                    self.progress_bar.increment(packages_to_install[package])
+                    self.logger.info("[tdnf] {0}".format(output))
+                    prefix = 'Installing/Updating: '
+                    if output.startswith(prefix):
+                        package = output[len(prefix):].rstrip('\n')
+                        self.progress_bar.increment(packages_to_install[package])
 
-                self.progress_bar.update_message(output)
+                    self.progress_bar.update_message(output)
+        else:
+            stdout,stderr = process.communicate()
+            self.logger.info(stdout.decode())
+            retval = process.returncode
+            # image creation. host's tdnf might not be available or can be outdated (Photon 1.0)
+            # retry with docker container
+            if retval != 0 and retval != 137:
+                self.logger.error(stderr.decode())
+                stderr = None
+                self.logger.info("Retry 'tdnf install' using docker image")
+                retval = self.cmd.run(['docker', 'run',
+                                   '-v', self.rpm_cache_dir+':'+self.rpm_cache_dir,
+                                   '-v', self.working_directory+':'+self.working_directory,
+                                   'photon:3.0',
+                                   'tdnf', 'install'] + selected_packages +
+                                   ['--installroot', self.photon_root,
+                                    '--assumeyes', '-c', self.tdnf_conf_path])
+
         # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
         if retval != 0 and retval != 137:
             self.logger.error("Failed to install some packages")
-            self.logger.error(process.communicate()[1].decode())
+            if stderr:
+                self.logger.error(stderr.decode())
             self.exit_gracefully()
-        self.progress_bar.show_loading('Finalizing installation')
-
-    def _rpm_install_packages(self):
-        """
-        Install packages using rpm command
-        """
-        rpms = []
-        for rpm in self.rpms_tobeinstalled:
-            # We already installed the filesystem in the preparation
-            if rpm['package'] == 'filesystem':
-                continue
-            rpms.append(rpm['filename'])
-        rpms = set(rpms)
-        rpm_paths = []
-        for root, _, files in os.walk(self.rpm_path):
-            for file in files:
-                if file in rpms:
-                    rpm_paths.append(os.path.join(root, file))
-
-        # --nodeps is for hosts which do not support rich dependencies
-        rpm_params = ['--nodeps', '--root', self.photon_root, '--dbpath',
-                      '/var/lib/rpm']
-
-        if ('type' in self.install_config and
-             (self.install_config['type'] in ['micro', 'minimal'])):
-            rpm_params.append('--excludedocs')
-
-        self.logger.info("installing packages {0}, with params {1}"
-                            .format(rpm_paths, rpm_params))
-        retval = self.cmd.run(['rpm', '-Uvh'] + rpm_params + rpm_paths)
-        if retval != 0:
-            self.exit_gracefully()
-
 
     def _eject_cdrom(self):
         """

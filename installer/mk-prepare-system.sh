@@ -25,6 +25,9 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
 [ ${EUID} -eq 0 ]   || fail "${PRGNAME}: Need to be root user: FAILURE"
 [ -z ${BUILDROOT} ] && fail "${PRGNAME}: Build root not set: FAILURE"
 
+WORKINGDIR=$1
+RPMS_PATH=$2
+
 if mountpoint ${BUILDROOT}/run  >/dev/null 2>&1; then umount ${BUILDROOT}/run; fi
 if mountpoint ${BUILDROOT}/sys  >/dev/null 2>&1; then umount ${BUILDROOT}/sys; fi
 if mountpoint ${BUILDROOT}/proc >/dev/null 2>&1; then umount ${BUILDROOT}/proc; fi
@@ -33,23 +36,13 @@ if mountpoint ${BUILDROOT}/dev  >/dev/null 2>&1; then umount ${BUILDROOT}/dev; f
 sync
 [ ${EUID} -eq 0 ]   || fail "${PRGNAME}: Need to be root user: FAILURE"
 
-if [[   $# -gt 0 ]] && [[ $1 == 'install' ]]; then
-    mkdir -p ${BUILDROOT}/var/lib/rpm
-    mkdir -p ${BUILDROOT}/cache/tdnf
-    #Setup the disk
-    dd if=/dev/zero of=${BUILDROOT}/cache/swapfile bs=1M count=64
-    chmod 600 ${BUILDROOT}/cache/swapfile
-    mkswap -v1 ${BUILDROOT}/cache/swapfile
-    swapon ${BUILDROOT}/cache/swapfile
-    rpm   --root ${BUILDROOT} --initdb
-    # tdnf conf is created in working directory which is parent of buildroot
-    tdnf install filesystem --installroot ${BUILDROOT} --assumeyes -c ${BUILDROOT}/../tdnf.conf
-else
-    RPM_PATH=$1 # Path to input rpms
-    RPMPKG="$(readlink -f `find $RPM_PATH -name 'filesystem-[0-9]*.rpm' -print`)"
-    [ -z ${RPMPKG} ] && fail "  Filesystem rpm package missing: Can not continue"
-    run_command "   Installing filesystem" "rpm -Uvh --nodeps --root ${BUILDROOT} --dbpath /var/lib/rpm ${RPMPKG}" "${LOGFILE}"
-fi
+mkdir -p ${BUILDROOT}/var/lib/rpm
+mkdir -p ${BUILDROOT}/cache/tdnf
+rpm   --root ${BUILDROOT} --initdb
+# tdnf conf is created in working directory which is parent of buildroot
+tdnf install filesystem --installroot ${BUILDROOT} --assumeyes -c ${WORKINGDIR}/tdnf.conf || \
+    docker run -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR photon:3.0 \
+	tdnf install filesystem --installroot ${BUILDROOT} --assumeyes -c ${WORKINGDIR}/tdnf.conf
  
 #   Ommited in the filesystem.spec file - not needed for booting
 [ -e ${BUILDROOT}/dev/console ] || mknod -m 600 ${BUILDROOT}/dev/console c 5 1
