@@ -14,7 +14,7 @@ This information is intended for Photon OS administrators and developers:
 
 |**Description of Task**|**Relevant Documentation**|
 |---|---|
-|Understand Photon OS.|[Overview of Photon OS](README.md)|
+|Understand Photon OS.|[Overview of Photon OS](Overview.md)|
 |Download and Install Photon OS.|[Installation Guide](photon_installation/README.md)|
 |Fundamentals of administering Photon OS. Basics of managing packages, controlling services with systemd, setting up networking, and initializing Photon OS. |[Administration Guide](photon_admin/README.md)|
 |Use Photon OS.|[User Guide](photon_user/README.md)|
