@@ -19,25 +19,17 @@ def runInstaller(options, config):
         from packageselector import PackageSelector
     except:
         raise ImportError('Installer path incorrect!')
-    config["pkg_to_rpm_map_file"] = options.pkg_to_rpm_map_file
     
     # Check the installation type
     option_list_json = Utils.jsonread(options.package_list_file)
     options_sorted = option_list_json.items()
 
     packages = []
-    if 'type' in config:
-        for install_option in options_sorted:
-            if install_option[0] == config['type']:
-                packages = PackageSelector.get_packages_to_install(install_option[1],
-                                                               options.generated_data_path)
-                break
-    else:
-        if 'packagelist_file' in config:
-            packages = PackageSelector.get_packages_to_install(config,
-                                                               options.generated_data_path)
-        if 'additional_packages' in config:
-            packages = packages.extend(config['additional_packages'])
+    if 'packagelist_file' in config:
+        packages = PackageSelector.get_packages_to_install(config,
+                                                           options.generated_data_path)
+    if 'additional_packages' in config:
+        packages = packages.extend(config['additional_packages'])
 
     config['packages'] = packages
     # Run the installer
@@ -222,12 +214,7 @@ def verifyImageTypeAndConfig(config_file, img_name):
 
 def create_vmdk_and_partition(config, vmdk_path, disk_setup_script):
     partitions_data = {}
-    firmware = "bios"
-    if 'boot' in config:
-        if config['boot'] == 'efi':
-            firmware = "efi"
-        if config['boot'] == 'dualboot':
-            firmware = 'dualboot'
+    firmware = config.get('boot', 'bios')
     process = subprocess.Popen([disk_setup_script, '-rp', config['size']['root'], '-sp',
                                 config['size']['swap'], '-n', vmdk_path, '-fm', firmware],
                                stdout=subprocess.PIPE)
@@ -241,18 +228,18 @@ def create_vmdk_and_partition(config, vmdk_path, disk_setup_script):
                 break
         sys.stdout.write(line)
         if line.startswith("DISK_DEVICE="):
-            partitions_data['disk'] = line.replace("DISK_DEVICE=", "").strip()
+            config['disk'] = line.replace("DISK_DEVICE=", "").strip()
             count += 1
         elif line.startswith("ROOT_PARTITION="):
             partitions_data['root'] = line.replace("ROOT_PARTITION=", "").strip()
             partitions_data['boot'] = partitions_data['root']
             partitions_data['bootdirectory'] = '/boot/'
-            partitions_data['partitions'] = [{'path': partitions_data['root'], 'mountpoint': '/',
+            config['partitions'] = [{'path': partitions_data['root'], 'mountpoint': '/',
                                           'filesystem': 'ext4'}]
             count += 1
         elif line.startswith("ESP_PARTITION="):
             partitions_data['esp'] = line.replace("ESP_PARTITION=", "").strip()
-            partitions_data['partitions'].append({'path': partitions_data['esp'], 'mountpoint': '/boot/esp',
+            config['partitions'].append({'path': partitions_data['esp'], 'mountpoint': '/boot/esp',
                                           'filesystem': 'vfat'})
             count += 1
     return partitions_data, count == 2 or count == 3
@@ -288,12 +275,12 @@ def createImage(options):
 
     os.chdir(workingDir)
     vmdk_path = workingDir + "/photon-" + config['image_type']
-    config['disk'], success = create_vmdk_and_partition(config, vmdk_path, disk_setup_script)
+    config['partitions_data'], success = create_vmdk_and_partition(config, vmdk_path, disk_setup_script)
     if not success:
         raise Exception("Unexpected failure in creating disk, please check the logs")
         sys.exit(1)
     result = runInstaller(options, config)
-    process = subprocess.Popen([disk_cleanup_script, config['disk']['disk']])
+    process = subprocess.Popen([disk_cleanup_script, config['disk']])
     process.wait()
     if not result:
         raise Exception("Installation process failed")

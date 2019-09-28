@@ -58,13 +58,11 @@ class SelectDisk(object):
         return self.window.do_action()
 
     def save_index(self, device_index):
-        self.install_config['diskindex'] = device_index
         self.install_config['disk'] = self.devices[device_index].path
         return ActionResult(True, None)
 
     def auto_function(self):    #default is no partition
         self.install_config['autopartition'] = True
-        self.install_config['partitionsnumber'] = 0
         return ActionResult(True, None)
 
     def custom_function(self):  #custom minimize partition number is 1

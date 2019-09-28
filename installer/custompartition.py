@@ -1,12 +1,12 @@
 from window import Window
 from windowstringreader import WindowStringReader
-from textpane import TextPane
+from partitionpane import PartitionPane
 from readmultext import ReadMulText
 from confirmwindow import ConfirmWindow
 from actionresult import ActionResult
 from device import Device
 
-class PartitionISO(object):
+class CustomPartition(object):
     def __init__(self, maxy, maxx, install_config):
         self.maxx = maxx
         self.maxy = maxy
@@ -21,15 +21,18 @@ class PartitionISO(object):
         self.text_starty = self.win_starty + 4
         self.text_height = self.win_height - 6
         self.text_width = self.win_width - 6
-        self.install_config['partitionsnumber'] = 0
+        self.cp_config = {}
+        self.cp_config['partitionsnumber'] = 0
         self.devices = Device.refresh_devices_bytes()
         self.has_slash = False
         self.has_remain = False
         self.has_empty = False
 
         self.disk_size = []
+        self.disk_to_index = {}
         for index, device in enumerate(self.devices):
             self.disk_size.append((device.path, int(device.size) / 1048576))
+            self.disk_to_index[device.path] = index
 
         self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx,
                              'Welcome to the Photon installer', False, can_go_next=False)
@@ -38,12 +41,8 @@ class PartitionISO(object):
     def display(self):
         if 'autopartition' in self.install_config and self.install_config['autopartition'] == True:
             return ActionResult(True, None)
-        if ('delete_partition' in self.install_config and
-                self.install_config['delete_partition'] == True):
-            self.delete()
-            self.install_config['delete_partition'] = False
 
-        self.device_index = self.install_config['diskindex']
+        self.device_index = self.disk_to_index[self.install_config['disk']]
 
         self.disk_buttom_items = []
         self.disk_buttom_items.append(('<Next>', self.next))
@@ -66,15 +65,14 @@ class PartitionISO(object):
                 " MB, Total size: "+
                 str(int(self.devices[self.device_index].size)/ 1048576) + " MB")
 
-        self.text_pane = TextPane(self.text_starty, self.maxx, self.text_width,
-                                  "EULA.txt", self.text_height, self.disk_buttom_items,
-                                  partition=True, popupWindow=True,
-                                  install_config=self.install_config,
+        self.partition_pane = PartitionPane(self.text_starty, self.maxx, self.text_width,
+                                  self.text_height, self.disk_buttom_items,
+                                  config=self.cp_config,
                                   text_items=self.text_items, table_space=self.table_space,
-                                  default_start=1, info=info,
+                                  info=info,
                                   size_left=str(self.disk_size[self.device_index][1]))
 
-        self.window.set_action_panel(self.text_pane)
+        self.window.set_action_panel(self.partition_pane)
 
         return self.window.do_action()
 
@@ -135,7 +133,7 @@ class PartitionISO(object):
     def create_function(self):
         self.window.hide_window()
 
-        self.install_config['partition_disk'] = self.devices[self.device_index].path
+        self.cp_config['partition_disk'] = self.devices[self.device_index].path
         self.partition_items = []
         self.partition_items.append(('Size in MB: ' +
                                      str(self.disk_size[self.device_index][1]) +
@@ -144,8 +142,8 @@ class PartitionISO(object):
         self.partition_items.append(('Mountpoint:'))
         self.create_window = ReadMulText(
             self.maxy, self.maxx, 0,
-            self.install_config,
-            str(self.install_config['partitionsnumber']) + 'partition_info',
+            self.cp_config,
+            str(self.cp_config['partitionsnumber']) + 'partition_info',
             self.partition_items,
             None,
             None,
@@ -156,7 +154,7 @@ class PartitionISO(object):
             )
         result = self.create_window.do_action()
         if result.success:
-            self.install_config['partitionsnumber'] = self.install_config['partitionsnumber'] + 1
+            self.cp_config['partitionsnumber'] = self.cp_config['partitionsnumber'] + 1
 
         #parse the input in install config
         return self.display()
@@ -168,11 +166,11 @@ class PartitionISO(object):
     def go_back(self):
         self.delete()
         self.window.hide_window()
-        self.text_pane.hide()
+        self.partition_pane.hide()
         return ActionResult(False, {'goBack':True})
 
     def next(self):
-        if self.install_config['partitionsnumber'] == 0:
+        if self.cp_config['partitionsnumber'] == 0:
             window_height = 9
             window_width = 40
             window_starty = (self.maxy-window_height) // 2 + 5
@@ -194,16 +192,16 @@ class PartitionISO(object):
             return self.display()
 
         self.window.hide_window()
-        self.text_pane.hide()
+        self.partition_pane.hide()
 
         partitions = []
-        for i in range(int(self.install_config['partitionsnumber'])):
-            if len(self.install_config[str(i)+'partition_info'+str(0)]) == 0:
+        for i in range(int(self.cp_config['partitionsnumber'])):
+            if len(self.cp_config[str(i)+'partition_info'+str(0)]) == 0:
                 sizedata = 0
             else:
-                sizedata = int(self.install_config[str(i) + 'partition_info' + str(0)])
-            mtdata = self.install_config[str(i) + 'partition_info' + str(2)]
-            typedata = self.install_config[str(i) + 'partition_info'+str(1)]
+                sizedata = int(self.cp_config[str(i) + 'partition_info' + str(0)])
+            mtdata = self.cp_config[str(i) + 'partition_info' + str(2)]
+            typedata = self.cp_config[str(i) + 'partition_info'+str(1)]
 
             partitions = partitions + [{"mountpoint": mtdata,
                                         "size": sizedata,
@@ -213,11 +211,11 @@ class PartitionISO(object):
         return ActionResult(True, {'goNext':True})
 
     def delete(self):
-        for i in range(int(self.install_config['partitionsnumber'])):
-            self.install_config[str(i)+'partition_info'+str(0)] = ''
-            self.install_config[str(i)+'partition_info'+str(1)] = ''
-            self.install_config[str(i)+'partition_info'+str(2)] = ''
-            self.install_config[str(i)+'partition_info'+str(3)] = ''
+        for i in range(int(self.cp_config['partitionsnumber'])):
+            self.cp_config[str(i)+'partition_info'+str(0)] = ''
+            self.cp_config[str(i)+'partition_info'+str(1)] = ''
+            self.cp_config[str(i)+'partition_info'+str(2)] = ''
+            self.cp_config[str(i)+'partition_info'+str(3)] = ''
         del self.disk_size[:]
         for index, device in enumerate(self.devices):
             self.disk_size.append((device.path, int(device.size) / 1048576))
@@ -225,4 +223,4 @@ class PartitionISO(object):
         self.has_slash = False
         self.has_remain = False
         self.has_empty = False
-        self.install_config['partitionsnumber'] = 0
+        self.cp_config['partitionsnumber'] = 0

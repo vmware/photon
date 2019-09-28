@@ -4,18 +4,26 @@ import curses
 from actionresult import ActionResult
 from action import Action
 
-class TextPane(Action):
-    def __init__(self, starty, maxx, width, text_file_path, height, menu_items):
+class PartitionPane(Action):
+    def __init__(self, starty, maxx, width, height, menu_items,
+                 config={}, text_items=[], table_space=0,
+                 info=[], size_left=[]):
         self.head_position = 0  #This is the start of showing
-        self.menu_position = 0
+        self.menu_position = 1
         self.lines = []
         self.menu_items = menu_items
+        self.text_items = text_items
+        self.table_space = table_space
+        self.info = info
+        self.size_left = size_left
+
         self.width = width
 
-        self.read_file(text_file_path, self.width - 3)
+        self.config = config
+        self.partition()
 
         self.num_items = len(self.lines)
-        self.text_height = height - 2
+        self.text_height = height - 4
 
         # Check if we need to add a scroll bar
         if self.num_items > self.text_height:
@@ -37,7 +45,7 @@ class TextPane(Action):
 
         self.window = curses.newwin(height, self.width)
         self.window.bkgd(' ', curses.color_pair(2))
-        self.popupWindow = False
+        self.popupWindow = True
 
         self.window.keypad(1)
         self.panel = curses.panel.new_panel(self.window)
@@ -46,38 +54,39 @@ class TextPane(Action):
         self.panel.hide()
         curses.panel.update_panels()
 
-    def read_file(self, text_file_path, line_width):
-        with open(text_file_path, "rb") as f:
-            for line in f:
-                # expand tab to 8 spaces.
-                try:
-                    line = line.decode(encoding='latin1')
-                except UnicodeDecodeError:
-                    pass
-                line = line.expandtabs()
-                indent = len(line) - len(line.lstrip())
-                actual_line_width = line_width - indent
-                line = line.strip()
-                # Adjust the words on the lines
-                while len(line) > actual_line_width:
-                    sep_index = actual_line_width
+    def partition(self):
+        if self.config == {}:
+            return
 
-                    while sep_index > 0 and line[sep_index-1] != ' ' and line[sep_index] != ' ':
-                        sep_index = sep_index - 1
+        tstring = ''
+        #calculate the start index for each item and draw the title
+        for index, item in enumerate(self.text_items):
+            tstring = tstring + item[0] + ' '*(item[1] - len(item[0])) + ' '*self.table_space
 
-                    current_line_width = sep_index
-                    if sep_index == 0:
-                        current_line_width = actual_line_width
-                    currLine = line[:current_line_width]
-                    line = line[current_line_width:]
-                    line = line.strip()
-
-                    # Lengthen the line with spaces
-                    self.lines.append(' ' * indent + currLine +
-                                      ' ' *(actual_line_width - len(currLine)))
-
-                # lengthen the line with spaces
-                self.lines.append(' ' * indent + line + ' ' *(actual_line_width - len(line)))
+        self.lines.append(tstring)
+        #draw the table
+        for i in range(int(self.config['partitionsnumber'])):
+            pdisk = self.config['partition_disk']
+            if len(pdisk) > self.text_items[0][1]:
+                pdisk = pdisk[-self.text_items[0][1]:]
+            psize = self.config[str(i)+'partition_info'+str(0)]
+            if len(psize) > self.text_items[1][1]:
+                psize = psize[-self.text_items[1][1]:]
+            if len(psize) == 0:
+                psize = '<' + self.size_left + '>'
+            ptype = self.config[str(i) + 'partition_info' + str(1)]
+            if len(ptype) > self.text_items[2][1]:
+                ptype = ptype[-self.text_items[2][1]:]
+            pmountpoint = self.config[str(i) + 'partition_info' + str(2)]
+            if len(pmountpoint) > self.text_items[3][1]:
+                pmountpoint = pmountpoint[-self.text_items[3][1]:]
+            pstring = (pdisk + ' '*(self.text_items[0][1] - len(pdisk)) +
+                       ' ' * self.table_space + psize +
+                       ' '*(self.text_items[1][1] - len(psize)) +
+                       ' ' * self.table_space + ptype +
+                       ' '*(self.text_items[2][1] - len(ptype) +
+                            self.table_space) + pmountpoint)
+            self.lines.append(pstring)
 
     def navigate(self, n):
         if self.show_scroll:
@@ -142,8 +151,10 @@ class TextPane(Action):
                 mode = curses.color_pair(3)
             else:
                 mode = curses.color_pair(2)
-            self.window.addstr(self.text_height + 1, xpos - len(item[0]) - 4, item[0], mode)
+            self.window.addstr(self.text_height + 3, xpos - len(item[0]) - 4, item[0], mode)
             xpos = xpos - len(item[0]) - 4
+
+        self.window.addstr(self.text_height+1, 5, self.info)
 
         self.render_scroll_bar()
 

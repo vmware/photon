@@ -234,19 +234,12 @@ fi
 rm -rf ${INITRD}/LOGS
 
 # Cleaning up
-#Remove our rpm database as it fills up the ramdisk
 for filename in ${INITRD}/usr/lib/*; do
     if [[ -f ${filename} ]]; then
         file ${filename} | grep ELF >/dev/null 2>&1 && strip $filename ||:
     fi;
 done
 
-#Remove our rpm database as it fills up the ramdisk
-for filename in $(find ${INITRD}/usr/lib/modules); do
-    if [[ -f ${filename} ]]; then
-        file ${filename} | grep ELF >/dev/null 2>&1 && strip $filename ||:
-    fi;
-done
 rm -rf ${INITRD}/home/*
 rm -rf ${INITRD}/var/lib/rpm
 rm -rf ${INITRD}/cache
@@ -304,7 +297,7 @@ for j in `ls ${INITRD}/usr/sbin/grub2*`; do
     fi
 done
 
-# TODO: mbassiouny, Find a clean way to do that
+# remove unused /usr/share
 for i in `ls ${INITRD}/usr/share/`; do
     if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' -a $i != 'factory' -a $i != 'dbus-1' ]; then
         rm -rf ${INITRD}/usr/share/$i

@@ -208,7 +208,7 @@ class Installer(object):
         with open(os.path.join(self.photon_root, "etc/fstab"), "w") as fstab_file:
             fstab_file.write("#system\tmnt-pt\ttype\toptions\tdump\tfsck\n")
 
-            for partition in self.install_config['disk']['partitions']:
+            for partition in self.install_config['partitions']:
                 options = 'defaults'
                 dump = 1
                 fsck = 2
@@ -244,7 +244,7 @@ class Installer(object):
         else:
             step = 1
         params = []
-        for partition in self.install_config['disk']['partitions'][::step]:
+        for partition in self.install_config['partitions'][::step]:
             if partition["filesystem"] == "swap":
                 continue
 
@@ -295,17 +295,17 @@ class Installer(object):
 
     def _post_install(self):
         # install grub
-        if 'boot_partition_number' not in self.install_config['disk']:
-            self.install_config['disk']['boot_partition_number'] = 1
+        if 'boot_partition_number' not in self.install_config['partitions_data']:
+            self.install_config['partitions_data']['boot_partition_number'] = 1
 
         retval = self.cmd.run(
             [self.setup_grub_command, '-w', self.photon_root,
              self.install_config.get('boot', 'bios'),
-             self.install_config['disk']['disk'],
-             self.install_config['disk']['root'],
-             self.install_config['disk']['boot'],
-             self.install_config['disk']['bootdirectory'],
-             str(self.install_config['disk']['boot_partition_number'])])
+             self.install_config['disk'],
+             self.install_config['partitions_data']['root'],
+             self.install_config['partitions_data']['boot'],
+             self.install_config['partitions_data']['bootdirectory'],
+             str(self.install_config['partitions_data']['boot_partition_number'])])
 
         if retval != 0:
             raise Exception("Bootloader (grub2) setup failed")
@@ -366,17 +366,15 @@ class Installer(object):
 
         self.progress_bar.update_message('Partitioning...')
 
-        if 'partitions' in self.install_config:
-            partitions = self.install_config['partitions']
-        else:
-            partitions = Installer.default_partitions
+        if 'partitions' not in self.install_config:
+            self.install_config['partitions'] = Installer.default_partitions
 
         # do partitioning
-        partitions_data = self.partition_disk(self.install_config['disk'], partitions)
+        partitions_data = self.partition_disk()
 
         if partitions_data == None:
             raise Exception("Partitioning failed.")
-        self.install_config['disk'] = partitions_data
+        self.install_config['partitions_data'] = partitions_data
 
 
     def _setup_install_repo(self):
@@ -513,10 +511,10 @@ class Installer(object):
             return (1, len(p['mountpoint']), p['mountpoint'])
         return (0, 0, "A")
 
-    def partition_disk(self, disk, partitions):
+    def partition_disk(self):
+        disk = self.install_config['disk']
+        partitions = self.install_config['partitions']
         partitions_data = {}
-        partitions_data['disk'] = disk
-        partitions_data['partitions'] = partitions
 
         # Clear the disk
         retval = self.cmd.run(['sgdisk', '-o', '-g', disk])

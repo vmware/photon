@@ -12,7 +12,7 @@ import random
 import requests
 import cracklib
 from logger import Logger
-from partitionISO import PartitionISO
+from custompartition import CustomPartition
 from packageselector import PackageSelector
 from windowstringreader import WindowStringReader
 from confirmwindow import ConfirmWindow
@@ -329,7 +329,7 @@ class IsoConfig(object):
         items = []
         license_agreement = License(maxy, maxx)
         select_disk = SelectDisk(maxy, maxx, install_config)
-        select_partition = PartitionISO(maxy, maxx, install_config)
+        custom_partition = CustomPartition(maxy, maxx, install_config)
         package_selector = PackageSelector(maxy, maxx, install_config, options_file)
         hostname_reader = WindowStringReader(
             maxy, maxx, 10, 70,
@@ -390,7 +390,7 @@ class IsoConfig(object):
 
         items.append((license_agreement.display, False))
         items.append((select_disk.display, True))
-        items.append((select_partition.display, False))
+        items.append((custom_partition.display, False))
         items.append((package_selector.display, True))
         if self.is_vmware_virtualization():
             linux_selector = LinuxSelector(maxy, maxx, install_config)

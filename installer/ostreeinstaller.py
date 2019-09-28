@@ -99,7 +99,7 @@ class OstreeInstaller(Installer):
 
         self._execute_modules(modules.commons.PRE_INSTALL)
 
-        disk_partition = self.install_config['disk']['disk']
+        disk_partition = self.install_config['disk']
         if re.search(r'mmcblk', disk_partition):
             disk = disk_partition + "p"
         else:
