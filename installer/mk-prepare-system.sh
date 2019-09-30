@@ -38,7 +38,7 @@ sync
 
 mkdir -p ${BUILDROOT}/var/lib/rpm
 mkdir -p ${BUILDROOT}/cache/tdnf
-rpm   --root ${BUILDROOT} --initdb
+rpm --root ${BUILDROOT} --initdb --dbpath /var/lib/rpm
 # tdnf conf is created in working directory which is parent of buildroot
 tdnf install filesystem --installroot ${BUILDROOT} --assumeyes -c ${WORKINGDIR}/tdnf.conf || \
     docker run -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR photon:3.0 \

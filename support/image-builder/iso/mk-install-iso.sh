@@ -55,7 +55,7 @@ clean_requirements_on_remove=true
 repodir=${WORKINGDIR}
 EOF
 
-rpm --root $INITRD --initdb
+rpm --root $INITRD --initdb --dbpath /var/lib/rpm
 
 PACKAGES="filesystem glibc zlib file gmp libgcc libstdc++ bash sed haveged ncurses-terminfo \
     bzip2 pkg-config python3-curses ncurses cracklib cracklib-dicts python3-cracklib \
