@@ -1,6 +1,6 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           nxtgn-openssl
-Version:        1.1.1b
+Version:        1.1.1d
 Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
@@ -8,10 +8,9 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/openssl-%{version}.tar.gz
-%define sha1    openssl=e9710abf5e95c48ebf47991b10cbb48c09dae102
+%define sha1    openssl=056057782325134b76d1931c48f2c7e6595d7ef4
 Source1:        nxtgn-rehash_ca_certificates.sh
 Patch1:         nxtgn-c_rehash.patch
-Patch2:         nxtgn-CVE-2019-1543.patch
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -53,7 +52,6 @@ Perl scripts that convert certificates and keys to various formats.
 %prep
 %setup -q -n openssl-%{version}
 %patch1 -p1
-%patch2 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -120,6 +118,9 @@ rm -rf %{buildroot}/*
 /%{_bindir}/nxtgn-rehash_ca_certificates.sh
 
 %changelog
+*   Mon Sep 30 2019 Tapas Kundu <tkundu@vmware.com> 1.1.1d-1
+-   Updated to 1.1.1d
+-   Fix CVE-2019-1549
 *   Fri Jun 14 2019 Srinidhi Rao <srinidhir@vmware.com> 1.1.1b-1
 -   Update to 1.1.1b
 *   Fri Jun 07 2019 Tapas Kundu <tkundu@vmware.com> 1.0.2s-1
