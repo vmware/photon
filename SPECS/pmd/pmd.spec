@@ -8,8 +8,8 @@
 
 Summary:        Photon Management Daemon
 Name:           pmd
-Version:        0.0.5
-Release:        9%{?dist}
+Version:        0.0.6
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -38,12 +38,10 @@ BuildRequires:  tdnf-devel >= 1.2.0
 BuildRequires:  lightwave-devel
 BuildRequires: python2-devel >= 2.7
 BuildRequires: python3-devel >= 3.5
-Source0:        %{name}-%{version}-3.tar.gz
-%define sha1    pmd=fe9b4b81410497d209fc4b6efb9574a049557b25
-Patch0:         pmd-update-to-c-rest-engine-1.1.patch
-Patch1:         pmd-rename-DNS_MODE_INVALID-with-DNS_MODE_UNKNOWN.patch
-Patch2:         pmd-duid-ifid.patch
-Patch3:         pmd-fw-bugfix.patch
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    pmd=a8a3a920647a80e08094d23437330fb498770700
+Patch0:         pmd-rename-DNS_MODE_INVALID-with-DNS_MODE_UNKNOWN.patch
+Patch1:         pmd-fw-bugfix.patch
 
 %description
 Photon Management Daemon
@@ -93,11 +91,9 @@ Python3 bindings for photon management daemon
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
 
 %build
-sed -i 's/pmd, 0.0.1/pmd, 0.0.5/' configure.ac
+sed -i 's/pmd, 0.0.1/pmd, 0.0.6/' configure.ac
 sed -i 's,-lcrypto,-lcrypto -lgssapi_krb5 @top_builddir@/client/libpmdclient.la,' server/Makefile.am
 autoreconf -mif
 %configure \
@@ -133,6 +129,8 @@ install -D -m 444 conf/api_sddl.conf %{buildroot}/etc/pmd/api_sddl.conf
 install -D -m 444 conf/restconfig.txt %{buildroot}/etc/pmd/restconfig.txt
 install -d -m 0755 %{buildroot}/usr/lib/tmpfiles.d/
 install -m 0644 conf/pmd-tmpfiles.conf %{buildroot}/usr/lib/tmpfiles.d/%{name}.conf
+install -d -m 0755 %{buildroot}/etc/pmd.roles.d/
+install -d -m 0755 %{buildroot}/etc/pmd.roles.plugins.d/
 
 # Pre-install
 %pre
@@ -292,6 +290,8 @@ rm -rf %{buildroot}/*
     %attr(0766, %{name}, %{name}) %dir /var/opt/%{name}/log
     %attr(0766, %{name}, %{name}) /var/log/%{name}
     %_tmpfilesdir/%{name}.conf
+    %dir /etc/pmd.roles.plugins.d/
+    %dir /etc/pmd.roles.d/
 
 %files libs
     %{_libdir}/libpmdclient.so*
@@ -312,6 +312,9 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*   Mon Sep 30 2019 Tapas Kundu <tkundu@vmware.com> 0.0.6-1
+-   Updated to release 0.0.6
+-   Included role mgmt changes.
 *   Wed Jan 23 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-9
 -   Fix a bug in firewall management persist commands
 *   Tue Dec 18 2018 Tapas Kundu <tkundu@vmware.com> 0.0.5-8
