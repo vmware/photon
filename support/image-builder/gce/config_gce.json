@@ -1,15 +1,11 @@
 {
+    "installer": {
+        "bootmode":"bios",
+        "hostname": "photon-machine",
+        "packagelist_file": "packages_gce.json"
+    },
     "image_type": "gce",
-    "hostname": "photon-machine",
-    "password": 
-        {
-            "crypted": false,
-            "text": "PASSWORD"
-        },
-    "packagelist_file": "packages_gce.json",
     "size": 16284,
-    "bootmode":"bios",
-    "public_key":"<ssh-key-here>",
     "postinstallscripts": [ "gce-patch.sh", "../password-expiry.sh" ],
     "additionalfiles": [
                             {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"},

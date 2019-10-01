@@ -1,0 +1,97 @@
+Kickstart config file is a json format with following possible parameters:
+
+'additional_packages' same as 'packages'
+
+'bootmode' (optional)
+	Sets the boot type to suppot: EFI, BIOS or both.
+	Acceptible values are: "bios", "efi", "dualboot"
+	"bios" will add special partition (very first) for first stage grub.
+	"efi" will add ESP (Efi Special Partition), format is as FAT and copy
+	there EFI binaries including grub.efi
+	"dualboot" will add two extra partitions for "bios" and "efi" modes.
+	This target will support both modes that can be switched in bios
+	settings without extra actions in the OS.
+	Default value: 'dualboot' for x86_64 and 'efi' for aarch64
+	Example: { 'bootmode': 'bios' }
+
+'disk' (required)
+	Target's disk device file path to install into, such as '/dev/sda'.
+	Loop device is also supported.
+	Example: { 'disk': '/dev/sdb' }
+
+'eject_cdrom' (optional)
+	Eject or not cdrom after installation completed.
+	Boolean: True or False
+	Default value: True
+	Example: { 'eject_cdrom': False }
+
+'hostname' (optional)
+	Set target host name.
+	Default value: 'photon-<randomized string>'
+	Example: { 'hostname': 'photon-machine' }
+
+'packagelist_file' (optional if 'packages' set)
+	Contains file name which has list of packages to install.
+	Example: { 'packagelist_file': 'packages_minimal.json' }
+
+'packages' (optional if 'packagelist_file' set)
+	Contains list of packages to install.
+	Example: { 'packages': ['minimal', 'linux', 'initramfs'] }
+
+'partition_type' (optional)
+	Set partition table type. Supported values are: "gpt", "msdos".
+	Default value: 'gpt'
+	Example: { 'partition_type': 'msdos' }
+
+'partitions' (optional)
+	Contains list of partitions to create.
+	Each partition is a dictionary of the following items:
+	'filesystem' (required)
+		Filesystem type. Supported values are: 'swap', 'ext4', 'fat'.
+	'mountpoint' (required for non 'swap' partitions)
+		Mount point for the partition.
+	'size' (required)
+		Size of the partition in MB. If 0 then partition is considered
+		as expansible to fill rest of the disk. Only one expansible
+		partition is allowed.
+	'fs_options' (optional)
+		Additional parameters for the mkfs command as a string
+	Default value: [{"mountpoint": "/", "size": 0, "filesystem": "ext4"}]
+	Example: { 'partitions' : [
+			{"mountpoint": "/", "size": 0, "filesystem": "ext4"},
+			{
+				"mountpoint": "/boot/esp",
+				"size": 12,
+				"filesystem": "fat",
+				"fs_options": "-n EFI"
+			},
+			{"size": 128, "filesystem": "swap"} ] }
+
+'password' (optional)
+	Set root password. It is dictionary of two items:
+	'text' (required) password plain text ('crypted' : false)
+			  of encrypted ('crypted': true)
+	'crypted' (required) how to interpret 'text' content
+	Default value: { "crypted": true, "text": "*"} }
+	    which means root is not allowed to login.
+	Example: { "password": {
+			"crypted": false,
+			"text": "changeme"} }
+
+'postinstall' (optional)
+	Contains list of lines to be executed as a single script on
+	the target after installation.
+	Example: { "postinstall": [
+			"#!/bin/sh",
+			"echo \"Hello World\" > /etc/postinstall" ] }
+
+'public_key' (optional)
+	To inject entry to authorized_keys as a string
+
+'shadow_password' (optional)
+	Contains encrypted root password <encrypted password here>.
+	Short form of: { "password": {
+				"crypted": true,
+				"text": "<encrypted password here>"} }
+
+For reference, look at 'sample_ks.cfg' file

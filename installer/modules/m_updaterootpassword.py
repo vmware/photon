@@ -8,7 +8,7 @@ install_phase = commons.POST_INSTALL
 enabled = True
 
 def execute(installer):
-    shadow_password = installer.install_config['password']
+    shadow_password = installer.install_config['shadow_password']
     installer.logger.info("Set root password")
 
     passwd_filename = os.path.join(installer.photon_root, 'etc/passwd')

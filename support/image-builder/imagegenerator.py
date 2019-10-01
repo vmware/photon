@@ -176,8 +176,9 @@ def generateImage(raw_image_path, additional_rpms_path, tools_bin_path, src_root
     working_directory = os.path.dirname(raw_image_path)
     mount_path = os.path.splitext(raw_image_path)[0]
     build_scripts_path = os.path.dirname(os.path.abspath(__file__))
+    # TODO: remove 'bootmode' -> partition_no hack
     root_partition_no = 2
-    if 'bootmode' in config and config['bootmode'] == 'dualboot':
+    if config['installer'].get('bootmode', '') == 'dualboot':
         root_partition_no = 3
 
     if os.path.exists(mount_path) and os.path.isdir(mount_path):
@@ -196,10 +197,6 @@ def generateImage(raw_image_path, additional_rpms_path, tools_bin_path, src_root
         (uuidval, partuuidval) = generateUuid(loop_device_path)
         # Prep the loop device
         prepLoopDevice(loop_device_path, mount_path)
-        # Clear the root password if not set explicitly from the config file
-        if config['passwordtext'] == 'PASSWORD':
-            Utils.replaceinfile(mount_path + "/etc/shadow",
-                                'root:.*?:', 'root:*:')
         # Clear machine-id so it gets regenerated on boot
         open(mount_path + "/etc/machine-id", "w").close()
         # Write fstab

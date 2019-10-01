@@ -1,15 +1,15 @@
 {
-    "image_type": "ova",
-    "hostname": "photon-machine",
-    "password": 
-        {
-            "crypted": true,
+    "installer": {
+        "bootmode":"dualboot",
+        "hostname": "photon-machine",
+        "packagelist_file": "packages_ova.json",
+        "password": {
+            "crypted": false,
             "text": "changeme"
-        },
-    "packagelist_file": "packages_ova.json",
+        }
+    },
+    "image_type": "ova",
     "size": 16384,
-    "bootmode":"dualboot",
-    "public_key":"<ssh-key-here>",
     "expirepassword": true,
     "artifacttype": "ova",
     "keeprawdisk": false

@@ -14,8 +14,9 @@ from actionresult import ActionResult
 
 class OstreeInstaller(Installer):
 
-    def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", log_level = "info"):
+    def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, interactive = False, rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", log_level = "info"):
         Installer.__init__(self, install_config, maxy, maxx, iso_installer, rpm_path, log_path, log_level)
+        self.interactive = interactive
         self.repo_config = {}
         self.repo_read_conf()
 
@@ -192,7 +193,7 @@ class OstreeInstaller(Installer):
         self.progress_bar.update_loading_message("Ready to restart")
         self.progress_bar.hide()
         self.window.addstr(0, 0, 'Congratulations, Photon RPM-OSTree Host has been installed in {0} secs.\n\nPress any key to continue to boot...'.format(self.progress_bar.time_elapsed))
-        if 'ui_install' in self.install_config:
+        if self.interactive:
             self.window.content_window().getch()
         return ActionResult(True, None)
 

@@ -12,30 +12,18 @@ import subprocess
 from argparse import ArgumentParser
 import imagegenerator
 
-def runInstaller(options, config):
+def runInstaller(options, install_config, working_directory):
     try:
         sys.path.insert(0, options.installer_path)
         from installer import Installer
-        from packageselector import PackageSelector
     except:
         raise ImportError('Installer path incorrect!')
 
-    # Check the installation type
-    option_list_json = Utils.jsonread(options.package_list_file)
-    options_sorted = option_list_json.items()
-
-    packages = []
-    if 'packagelist_file' in config:
-        packages = PackageSelector.get_packages_to_install(config,
-                                                           options.generated_data_path)
-    if 'additional_packages' in config:
-        packages = packages.extend(config['additional_packages'])
-
-    config['packages'] = packages
     # Run the installer
-    package_installer = Installer(config, rpm_path=options.rpm_path,
-                                  log_path=options.log_path, log_level=options.log_level)
-    return package_installer.install()
+    installer = Installer(working_directory = working_directory, rpm_path=options.rpm_path,
+                          log_path=options.log_path, log_level=options.log_level)
+    installer.configure(install_config)
+    return installer.execute()
 
 def get_file_name_with_last_folder(filename):
     basename = os.path.basename(filename)
@@ -159,20 +147,6 @@ def createIso(options):
     if os.path.exists(working_directory) and os.path.isdir(working_directory):
         shutil.rmtree(working_directory)
 
-def cryptPassword(config, passwordtext):
-    config['passwordtext'] = passwordtext
-    crypted = config['password']['crypted']
-    if config['password']['text'] == 'PASSWORD':
-        config['password'] = "".join([random.SystemRandom().choice(
-                string.ascii_letters + string.digits) for _ in range(16)])
-        if crypted:
-            config['password'] = crypt.crypt(
-                config['password'],
-                "$6$" + "".join([random.SystemRandom().choice(
-                    string.ascii_letters + string.digits) for _ in range(16)]))
-    else:
-        config['password'] = crypt.crypt(passwordtext, '$6$saltsalt$')
-
 def replaceScript(script_dir, img, script_name, parent_script_dir=None):
     if not parent_script_dir:
         parent_script_dir = script_dir
@@ -222,17 +196,17 @@ def createImage(options):
     if 'ova' in config['artifacttype'] and shutil.which("ovftool") is None:
         raise Exception("ovftool is not available")
 
+    install_config = config['installer']
+
     image_type = config['image_type']
     workingDir = os.path.abspath(options.stage_path + "/" + image_type)
     if os.path.exists(workingDir) and os.path.isdir(workingDir):
         shutil.rmtree(workingDir)
     os.mkdir(workingDir)
-    if 'password' in config:
-        cryptPassword(config, config['password']['text'])
     script_dir = os.path.dirname(os.path.realpath(__file__))
 
     grub_script = replaceScript(script_dir, image_type, "mk-setup-grub.sh", options.installer_path)
-    config['setup_grub_script'] = grub_script
+    install_config['setup_grub_script'] = grub_script
 
     if options.additional_rpms_path:
         os.mkdir(options.rpm_path + '/additional')
@@ -240,6 +214,13 @@ def createImage(options):
             s = os.path.join(options.additional_rpms_path, item)
             d = os.path.join(options.rpm_path + '/additional', item)
             shutil.copy2(s, d)
+
+    # Set absolute path for 'packagelist_file'
+    if 'packagelist_file' in install_config:
+        plf = install_config['packagelist_file']
+        if not plf.startswith('/'):
+            plf = os.path.join(options.generated_data_path, plf)
+        install_config['packagelist_file'] = plf
 
     os.chdir(workingDir)
     image_file = workingDir + "/photon-" + image_type + ".raw"
@@ -251,15 +232,15 @@ def createImage(options):
         "chmod 755 {}".format(image_file))
 
     # Associating loopdevice to raw disk and save the name as a target's 'disk'
-    config['disk'] = (Utils.runshellcommand(
+    install_config['disk'] = (Utils.runshellcommand(
         "losetup --show -f {}".format(image_file))).rstrip('\n')
 
-    result = runInstaller(options, config)
+    result = runInstaller(options, install_config, workingDir)
     if not result:
         raise Exception("Installation process failed")
 
     # Detaching loop device from vmdk
-    Utils.runshellcommand("losetup -d {}".format(config['disk']))
+    Utils.runshellcommand("losetup -d {}".format(install_config['disk']))
 
     os.chdir(script_dir)
     imagegenerator.generateImage(

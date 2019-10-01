@@ -1,20 +1,16 @@
 {
-	"image_type": "ls1012afrwy",
-	"hostname": "photon-machine",
-	"password":
-		{
-			"crypted": false,
-			"text": "PASSWORD"
-		},
-    "partition_type": "msdos",
-    "partitions": [
-                        {"mountpoint": "/boot/esp", "size": 12, "filesystem": "fat", "fs_options": "-n EFI"},
-                        {"mountpoint": "/", "size": 0, "filesystem": "ext4", "fs_options": "-F -O ^huge_file -b 4096 -L rootfs"}
-                    ],
-    "packagelist_file": "packages_ls1012afrwy.json",
+    "installer": {
+        "bootmode":"efi",
+        "hostname": "photon-machine",
+        "packagelist_file": "packages_ls1012afrwy.json",
+        "partition_type": "msdos",
+        "partitions": [
+            {"mountpoint": "/boot/esp", "size": 12, "filesystem": "fat", "fs_options": "-n EFI"},
+            {"mountpoint": "/", "size": 0, "filesystem": "ext4", "fs_options": "-F -O ^huge_file -b 4096 -L rootfs"}
+        ]
+    },
+    "image_type": "ls1012afrwy",
     "size": 512,
-    "bootmode":"efi",
-    "public_key":"<ssh-key-here>",
     "postinstallscripts": ["ls1012afrwy-custom-patch.sh"],
     "additionalfiles": [
                             {"resizefs.sh": "/usr/local/bin/resizefs.sh"},

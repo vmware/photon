@@ -12,6 +12,7 @@ import sys
 import glob
 import re
 import modules.commons
+import random
 from logger import Logger
 from commandutils import CommandUtils
 from jsonwrapper import JsonWrapper
@@ -23,34 +24,51 @@ class Installer(object):
     """
     Photon installer
     """
+
+    # List of allowed keys in kickstart config file.
+    # Please keep ks_config.txt file updated.
+    known_keys = {
+        'additional_packages',
+        'autopartition',
+        'bootmode',
+        'disk',
+        'eject_cdrom',
+        'hostname',
+        'install_linux_esx',
+        'packages',
+        'packagelist_file',
+        'partition_type',
+        'partitions',
+        'password',
+        'postinstall',
+        'public_key',
+        'setup_grub_script',
+        'shadow_password',
+        'type'
+    }
+
     mount_command = os.path.dirname(__file__)+"/mk-mount-disk.sh"
+    prepare_command = os.path.dirname(__file__)+"/mk-prepare-system.sh"
     finalize_command = "./mk-finalize-system.sh"
     chroot_command = os.path.dirname(__file__)+"/mk-run-chroot.sh"
     unmount_disk_command = os.path.dirname(__file__)+"/mk-unmount-disk.sh"
     default_partitions = [{"mountpoint": "/", "size": 0, "filesystem": "ext4"}]
 
-    def __init__(self, install_config, maxy=0, maxx=0, iso_installer=False,
+    def __init__(self, working_directory="/mnt/photon-root", maxy=0, maxx=0, iso_installer=False,
                  rpm_path=os.path.dirname(__file__)+"/../stage/RPMS", log_path=os.path.dirname(__file__)+"/../stage/LOGS", log_level="info"):
         self.exiting = False
-        self.install_config = install_config
-        self.install_config['iso_installer'] = iso_installer
+        self.interactive = False
+        self.install_config = None
+        self.iso_installer = iso_installer
         self.rpm_path = rpm_path
         self.logger = Logger.get_logger(log_path, log_level, not iso_installer)
         self.cmd = CommandUtils(self.logger)
+        self.working_directory = working_directory
 
-        if 'working_directory' in self.install_config:
-            self.working_directory = self.install_config['working_directory']
-        else:
-            self.working_directory = "/mnt/photon-root"
-
-        if os.path.exists(self.working_directory) and os.path.isdir(self.working_directory):
+        if os.path.exists(self.working_directory) and os.path.isdir(self.working_directory) and working_directory == '/mnt/photon-root':
             shutil.rmtree(self.working_directory)
-        os.mkdir(self.working_directory)
-
-        if 'prepare_script' in self.install_config:
-            self.prepare_command = self.install_config['prepare_script']
-        else:
-            self.prepare_command = os.path.dirname(__file__)+"/mk-prepare-system.sh"
+        if not os.path.exists(self.working_directory):
+            os.mkdir(self.working_directory)
 
         self.photon_root = self.working_directory + "/photon-chroot"
         self.installer_path = os.path.dirname(os.path.abspath(__file__))
@@ -60,13 +78,13 @@ class Installer(object):
         # used by tdnf.conf as cachedir=, tdnf will append the rest
         self.rpm_cache_dir_short = self.photon_root + '/cache/tdnf'
 
-        if 'setup_grub_script' in self.install_config:
-            self.setup_grub_command = self.install_config['setup_grub_script']
-        else:
-            self.setup_grub_command = os.path.dirname(__file__)+"/mk-setup-grub.sh"
+        self.setup_grub_command = os.path.dirname(__file__)+"/mk-setup-grub.sh"
+
         self.rpms_tobeinstalled = None
 
-        if self.install_config['iso_installer']:
+        if iso_installer:
+            self.maxy = maxy
+            self.maxx = maxx
             #initializing windows
             height = 10
             width = 75
@@ -83,11 +101,102 @@ class Installer(object):
 
         signal.signal(signal.SIGINT, self.exit_gracefully)
 
-    def install(self):
+    """
+    create, append and validate configuration date - install_config
+    """
+    def configure(self, install_config, ui_config = None):
+        # run UI configurator iff install_config param is None
+        if not install_config and ui_config:
+            from iso_config import IsoConfig
+            self.interactive = True
+            config = IsoConfig(self.maxy, self.maxx)
+            install_config = config.configure(ui_config)
+
+        self._add_defaults(install_config)
+
+        issue = self._check_install_config(install_config)
+        if issue:
+            self.logger.error(issue)
+            raise Exception(issue)
+
+        self.install_config = install_config
+
+
+    def execute(self):
+        if 'setup_grub_script' in self.install_config:
+            self.setup_grub_command = self.install_config['setup_grub_script']
+
+        if self.install_config.get('type', '') == "ostree_host":
+            ostree = OstreeInstaller(self.install_config, self.maxy, self.maxx, self.interactive,
+                              self.iso_installer, self.rpm_path, self.log_path, self.log_level)
+            return ostree.install()
+
+        return self._install()
+
+    def _add_defaults(self, install_config):
+        """
+        Add default install_config settings if not specified
+        """
+        # extend 'packages' by 'packagelist_file' and 'additional_packages'
+        packages = []
+        if 'packagelist_file' in install_config:
+            plf = install_config['packagelist_file']
+            if not plf.startswith('/'):
+                plf = os.path.join(os.path.dirname(__file__), plf)
+            json_wrapper_package_list = JsonWrapper(plf)
+            package_list_json = json_wrapper_package_list.read()
+            packages.extend(package_list_json["packages"])
+
+        if 'additional_packages' in install_config:
+            packages.extend(install_config['additional_packages'])
+
+        if 'packages' in install_config:
+            install_config['packages'] = list(set(packages + install_config['packages']))
+        else:
+            install_config['packages'] = packages
+
+        # 'bootmode' mode
+        if 'bootmode' not in install_config:
+            arch = subprocess.check_output(['uname', '-m'], universal_newlines=True)
+            if "x86_64" in arch:
+                install_config['bootmode'] = 'dualboot'
+            else:
+                install_config['bootmode'] = 'efi'
+
+        # define 'hostname' as 'photon-<RANDOM STRING>'
+        if "hostname" not in install_config or install_config['hostname'] == "":
+            install_config['hostname'] = 'photon-%12x' % random.randrange(16**12)
+
+        # Set crypted password if needed
+        if 'shadow_password' not in install_config:
+            if 'password' in install_config:
+                if install_config['password']['crypted']:
+                    install_config['shadow_password'] = install_config['password']['text']
+                else:
+                    install_config['shadow_password'] = CommandUtils.generate_password_hash(install_config['password']['text'])
+            else:
+                install_config['shadow_password'] = '*'
+
+    def _check_install_config(self, install_config):
+        """
+        Sanity check of install_config before its execution.
+        Return error string or None
+        """
+
+        unknown_keys = install_config.keys() - Installer.known_keys
+        if len(unknown_keys) > 0:
+            return "Unknown install_config keys: " + ", ".join(unknown_keys)
+
+        if not 'disk' in install_config:
+            return "No disk configured"
+
+        return None
+
+    def _install(self):
         """
         Install photon system and handle exception
         """
-        if self.install_config['iso_installer']:
+        if self.iso_installer:
             self.window.show_window()
             self.progress_bar.initialize('Initializing installation...')
             self.progress_bar.show()
@@ -97,7 +206,7 @@ class Installer(object):
         except Exception as inst:
             self.logger.exception(repr(inst))
             self.exit_gracefully()
-            if not self.install_config['iso_installer']:
+            if not self.iso_installer:
                 raise
 
     def _unsafe_install(self):
@@ -127,7 +236,7 @@ class Installer(object):
         del frame1
         if not self.exiting:
             self.exiting = True
-            if self.install_config['iso_installer']:
+            if self.iso_installer:
                 self.progress_bar.hide()
                 self.window.addstr(0, 0, 'Oops, Installer got interrupted.\n\n' +
                                    'Press any key to get to the bash...')
@@ -147,6 +256,8 @@ class Installer(object):
         if retval != 0:
             self.logger.error("Failed to unmount disks")
 
+        shutil.rmtree(self.photon_root)
+
         # Uninitialize device paritions mapping
         disk = self.install_config['disk']
         if 'loop' in disk:
@@ -156,12 +267,12 @@ class Installer(object):
                 return None
 
         # Congratulation screen
-        if self.install_config['iso_installer'] and not self.exiting:
+        if self.iso_installer and not self.exiting:
             self.progress_bar.hide()
             self.window.addstr(0, 0, 'Congratulations, Photon has been installed in {0} secs.\n\n'
                                'Press any key to continue to boot...'
                                .format(self.progress_bar.time_elapsed))
-            if 'ui_install' in self.install_config:
+            if self.interactive:
                 self.window.content_window().getch()
             self._eject_cdrom()
 
@@ -275,11 +386,11 @@ class Installer(object):
             self.logger.info("Failed to setup the disk for installation")
             self.exit_gracefully()
 
-        if self.install_config['iso_installer']:
+        if self.iso_installer:
             self.progress_bar.update_message('Initializing system...')
         self._bind_installer()
         self._bind_repo_dir()
-        retval = self.cmd.run([self.prepare_command, '-w', self.photon_root,
+        retval = self.cmd.run([Installer.prepare_command, '-w', self.photon_root,
                                self.working_directory, self.rpm_cache_dir])
         if retval != 0:
             self.logger.info("Failed to bind the installer and repo needed by tdnf")
@@ -289,7 +400,7 @@ class Installer(object):
         """
         Finalize the system after the installation
         """
-        if self.install_config['iso_installer']:
+        if self.iso_installer:
             self.progress_bar.show_loading('Finalizing installation')
         #Setup the disk
         retval = self.cmd.run([Installer.chroot_command, '-w', self.photon_root,
@@ -304,6 +415,8 @@ class Installer(object):
         retval = self.cmd.run(['rm', '-rf', os.path.join(self.photon_root, "cache")])
         if retval != 0:
             self.logger.error("Fail to remove the cache")
+        os.remove(self.tdnf_conf_path)
+        os.remove(self.tdnf_repo_path)
 
     def _post_install(self):
         # install grub
@@ -413,7 +526,7 @@ class Installer(object):
         # run in shell to do not throw exception if tdnf not found
         process = subprocess.Popen(tdnf_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        if self.install_config['iso_installer']:
+        if self.iso_installer:
             while True:
                 output = process.stdout.readline().decode()
                 if output == '':
@@ -475,10 +588,7 @@ class Installer(object):
         """
         Eject the cdrom on request
         """
-        eject_cdrom = True
-        if 'eject_cdrom' in self.install_config and not self.install_config['eject_cdrom']:
-            eject_cdrom = False
-        if eject_cdrom:
+        if self.install_config.get('eject_cdrom', True):
             self.cmd.run(['eject', '-r'])
 
     def _enable_network_in_chroot(self):
@@ -519,7 +629,7 @@ class Installer(object):
         Partition the disk
         """
 
-        if self.install_config['iso_installer']:
+        if self.iso_installer:
             self.progress_bar.update_message('Partitioning...')
 
         if 'partitions' not in self.install_config:

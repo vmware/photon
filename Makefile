@@ -163,6 +163,7 @@ packages: check-docker-py check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) $(PHO
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS) \
 		--threads ${THREADS}
+	$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)
 
 packages-docker: check-docker-py check-docker-service check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
@@ -438,6 +439,7 @@ packages-cached:
 	$(RM) -f $(PHOTON_RPMS_DIR_ARCH)/* && \
 	$(CP) -f $(PHOTON_CACHE_PATH)/RPMS/noarch/* $(PHOTON_RPMS_DIR_NOARCH)/ && \
 	$(CP) -f $(PHOTON_CACHE_PATH)/RPMS/$(ARCH)/* $(PHOTON_RPMS_DIR_ARCH)/
+	$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)
 
 sources:
 	@$(MKDIR) -p $(PHOTON_SRCS_DIR)
