@@ -352,8 +352,7 @@ image: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 		--src-root=$(SRCROOT) \
 		--generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
 		--stage-path=$(PHOTON_STAGE) \
-		--rpm-path $(PHOTON_STAGE)/RPMS \
-		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH)
+		--rpm-path $(PHOTON_STAGE)/RPMS
 
 all-images: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 	@echo "Building all images - gce, ami, azure, ova..."
@@ -363,35 +362,30 @@ all-images: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 		--generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
 		--stage-path=$(PHOTON_STAGE) \
 		--rpm-path $(PHOTON_STAGE)/RPMS \
-		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH) \
 		--img-name=ami
 	$(PHOTON_IMAGE_BUILDER) \
 		--src-root=$(SRCROOT) \
 		--generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
 		--stage-path=$(PHOTON_STAGE) \
 		--rpm-path $(PHOTON_STAGE)/RPMS \
-		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH) \
 		--img-name=gce
 	$(PHOTON_IMAGE_BUILDER) \
 		--src-root=$(SRCROOT) \
 		--generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
 		--stage-path=$(PHOTON_STAGE) \
 		--rpm-path $(PHOTON_STAGE)/RPMS \
-		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH) \
 		--img-name=azure
 	$(PHOTON_IMAGE_BUILDER) \
 		--src-root=$(SRCROOT) \
 		--generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
 		--stage-path=$(PHOTON_STAGE) \
 		--rpm-path $(PHOTON_STAGE)/RPMS \
-		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH) \
 		--img-name=ova
 	$(PHOTON_IMAGE_BUILDER) \
 		--src-root=$(SRCROOT) \
 		--generated-data-path=$(PHOTON_GENERATED_DATA_DIR) \
 		--stage-path=$(PHOTON_STAGE) \
 		--rpm-path $(PHOTON_STAGE)/RPMS \
-		--additional-rpms-path=$(ADDITIONAL_RPMS_PATH) \
 		--img-name=ova_uefi
 
 photon-docker-image:

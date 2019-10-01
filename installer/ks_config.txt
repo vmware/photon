@@ -2,6 +2,10 @@ Kickstart config file is a json format with following possible parameters:
 
 'additional_packages' same as 'packages'
 
+'additional_rpms_path' (optional)
+	Provide a path containing additional RPMS that are to be bundled into
+	the image.
+
 'bootmode' (optional)
 	Sets the boot type to suppot: EFI, BIOS or both.
 	Acceptible values are: "bios", "efi", "dualboot"

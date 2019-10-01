@@ -201,13 +201,6 @@ def createImage(options):
     grub_script = replaceScript(script_dir, image_type, "mk-setup-grub.sh", options.installer_path)
     install_config['setup_grub_script'] = grub_script
 
-    if options.additional_rpms_path:
-        os.mkdir(options.rpm_path + '/additional')
-        for item in os.listdir(options.additional_rpms_path):
-            s = os.path.join(options.additional_rpms_path, item)
-            d = os.path.join(options.rpm_path + '/additional', item)
-            shutil.copy2(s, d)
-
     # Set absolute path for 'packagelist_file'
     if 'packagelist_file' in install_config:
         plf = install_config['packagelist_file']
@@ -238,11 +231,12 @@ def createImage(options):
     Utils.runshellcommand("losetup -d {}".format(install_config['disk']))
 
     os.chdir(script_dir)
-    imagegenerator.generateImage(image_file,
-                                 options.rpm_path + '/additional/',
-                                 options.src_root + '/tools/bin/',
-                                 options.src_root,
-                                 config)
+    imagegenerator.generateImage(
+                                image_file,
+                                options.src_root + '/tools/bin/',
+                                options.src_root,
+                                config
+                              )
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -256,7 +250,6 @@ if __name__ == '__main__':
     parser.add_argument("-y", "--log-level", dest="log_level", default="debug")
     # Image builder args for ami, gce, azure, ova, rpi3 etc.
     parser.add_argument("-c", "--config-file", dest="config_file")
-    parser.add_argument("-a", "--additional-rpms-path", dest="additional_rpms_path")
     parser.add_argument("-i", "--img-name", dest="img_name")
     # ISO builder args
     parser.add_argument("-j", "--iso-path", dest="iso_path")

@@ -30,6 +30,7 @@ class Installer(object):
     # Please keep ks_config.txt file updated.
     known_keys = {
         'additional_packages',
+        'additional_rpms_path',
         'autopartition',
         'bootmode',
         'disk',
@@ -255,6 +256,7 @@ class Installer(object):
         self._setup_install_repo()
         self._initialize_system()
         self._install_packages()
+        self._install_additional_rpms()
         self._enable_network_in_chroot()
         self._finalize_system()
         self._cleanup_install_repo()
@@ -507,7 +509,6 @@ class Installer(object):
         except KeyError:
             pass
 
-
     def _setup_install_repo(self):
         """
         Setup the tdnf repo for installation
@@ -534,6 +535,15 @@ class Installer(object):
                 conf_file.write("keepcache=1\n")
             conf_file.write("repodir={}\n".format(self.working_directory))
             conf_file.write("cachedir={}\n".format(self.rpm_cache_dir_short))
+
+    def _install_additional_rpms(self):
+        rpms_path = self.install_config.get('additional_rpms_path', None)
+
+        if not rpms_path or not os.path.exists(rpms_path):
+            return
+
+        if self.cmd.run(['rpm', '--root', self.photon_root, '-U', rpms_path + '/*' ]) != 0:
+            self.logger.info('Failed to install additional_rpms from ' + rpms_path)
 
     def _install_packages(self):
         """

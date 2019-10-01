@@ -17,7 +17,7 @@ def prepLoopDevice(loop_device_path, mount_path):
     Utils.runshellcommand("mount -o bind /proc {}".format(mount_path + "/proc"))
     Utils.runshellcommand("mount -o bind /dev {}".format(mount_path + "/dev"))
     Utils.runshellcommand("mount -o bind /dev/pts {}".format(mount_path + "/dev/pts"))
-    Utils.runshellcommand("mount -o bind /sys {}".format(mount_path + "/sys"))        
+    Utils.runshellcommand("mount -o bind /sys {}".format(mount_path + "/sys"))
 
 def cleanupMountPoints(mount_path):
     Utils.runshellcommand("umount -l {}".format(mount_path + "/sys"))
@@ -27,15 +27,6 @@ def cleanupMountPoints(mount_path):
 
     Utils.runshellcommand("sync")
     Utils.runshellcommand("umount -l {}".format(mount_path))
-
-def installAdditionalRpms(mount_path, additional_rpms_path):
-    os.mkdir(mount_path + "/additional_rpms")
-    Utils.copyallfiles(additional_rpms_path,
-                       mount_path + "/additional_rpms")
-    Utils.runshellcommand(
-        "chroot {} /bin/bash -c 'rpm -i /additional_rpms/*'".format(mount_path))
-    shutil.rmtree(mount_path + "/additional_rpms", ignore_errors=True)
-    shutil.rmtree(additional_rpms_path, ignore_errors=True)
 
 def writefstabandgrub(mount_path, uuidval, partuuidval):
     os.remove(mount_path + "/etc/fstab")
@@ -172,10 +163,8 @@ def generateCompressedFile(inputfile, outputfile, formatstring):
         tarout.add(inputfile, arcname=os.path.basename(inputfile))
         tarout.close()
 
-def generateImage(raw_image_path, additional_rpms_path, tools_bin_path, src_root, config):
-    working_directory = os.path.dirname(raw_image_path)
+def generateImage(raw_image_path, tools_bin_path, src_root, config):
     mount_path = os.path.splitext(raw_image_path)[0]
-    build_scripts_path = os.path.dirname(os.path.abspath(__file__))
     # TODO: remove 'bootmode' -> partition_no hack
     root_partition_no = 2
     if config['installer'].get('bootmode', '') == 'dualboot':
@@ -201,8 +190,6 @@ def generateImage(raw_image_path, additional_rpms_path, tools_bin_path, src_root
         open(mount_path + "/etc/machine-id", "w").close()
         # Write fstab
         writefstabandgrub(mount_path, uuidval, partuuidval)
-        if additional_rpms_path and os.path.exists(additional_rpms_path):
-            installAdditionalRpms(mount_path, additional_rpms_path)
         # Perform additional steps defined in installer config
         customizeImage(config, mount_path)
     except Exception as e:
@@ -214,28 +201,24 @@ def generateImage(raw_image_path, additional_rpms_path, tools_bin_path, src_root
 
         shutil.rmtree(mount_path)
         createOutputArtifact(raw_image_path, config, src_root, tools_bin_path)
-    
+
 if __name__ == '__main__':
     parser = ArgumentParser()
 
     parser.add_argument("-r", "--raw-image-path", dest="raw_image_path")
     parser.add_argument("-c", "--config-path", dest="config_path")
-    parser.add_argument("-a", "--additional-rpms-path", dest="additional_rpms_path")
     parser.add_argument("-t", "--tools-bin-path", dest="tools_bin_path")
     parser.add_argument("-s", "--src-root", dest="src_root")
 
     options = parser.parse_args()
-    if config_path:
+    if options.config_path:
         config = Utils.jsonread(options.config_path)
     else:
         raise Exception("No config file defined")
 
     generateImage(
                 options.raw_image_path,
-                options.working_directory,
-                options.additional_rpms_path,
                 options.tools_bin_path,
                 options.src_root,
                 config
                 )
-
