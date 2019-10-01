@@ -7,8 +7,8 @@
             "text": "changeme"
         },
     "packagelist_file": "packages_ova.json",
-    "size": { "root": "16", "swap": "0" },
-    "boot":"dualboot",
+    "size": 16384,
+    "bootmode":"dualboot",
     "public_key":"<ssh-key-here>",
     "expirepassword": true,
     "artifacttype": "ova",

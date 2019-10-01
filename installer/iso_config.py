@@ -409,13 +409,13 @@ class IsoConfig(object):
         """
         Add default install_config settings if not specified
         """
-        # 'boot' mode
-        if 'boot' not in install_config:
+        # 'bootmode' mode
+        if 'bootmode' not in install_config:
             arch = subprocess.check_output(['uname', '-m'], universal_newlines=True)
-            if "x86" in arch:
-                install_config['boot'] = 'dualboot'
+            if "x86_64" in arch:
+                install_config['bootmode'] = 'dualboot'
             else:
-                install_config['boot'] = 'efi'
+                install_config['bootmode'] = 'efi'
 
         # define 'hostname' as 'photon-<RANDOM STRING>'
         if "hostname" not in install_config or install_config['hostname'] == "":

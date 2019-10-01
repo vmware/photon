@@ -43,7 +43,9 @@ class Installer(object):
         else:
             self.working_directory = "/mnt/photon-root"
 
-        self.cmd.run(['mkdir', '-p', self.working_directory])
+        if os.path.exists(self.working_directory) and os.path.isdir(self.working_directory):
+            shutil.rmtree(self.working_directory)
+        os.mkdir(self.working_directory)
 
         if 'prepare_script' in self.install_config:
             self.prepare_command = self.install_config['prepare_script']
@@ -94,16 +96,16 @@ class Installer(object):
             return self._unsafe_install()
         except Exception as inst:
             self.logger.exception(repr(inst))
-            if self.install_config['iso_installer']:
-                self.exit_gracefully()
-            else:
+            self.exit_gracefully()
+            if not self.install_config['iso_installer']:
                 raise
 
     def _unsafe_install(self):
         """
         Install photon system
         """
-        self._format_disk()
+        self._partition_disk()
+        self._format_partitions()
         self._setup_install_repo()
         self._initialize_system()
         self._install_packages()
@@ -144,7 +146,17 @@ class Installer(object):
         retval = self.cmd.run(command)
         if retval != 0:
             self.logger.error("Failed to unmount disks")
-        if self.install_config['iso_installer']:
+
+        # Uninitialize device paritions mapping
+        disk = self.install_config['disk']
+        if 'loop' in disk:
+            retval = self.cmd.run(['kpartx', '-d', disk])
+            if retval != 0:
+                self.logger.error("Failed to unmap partitions of the disk image {}". format(disk))
+                return None
+
+        # Congratulation screen
+        if self.install_config['iso_installer'] and not self.exiting:
             self.progress_bar.hide()
             self.window.addstr(0, 0, 'Congratulations, Photon has been installed in {0} secs.\n\n'
                                'Press any key to continue to boot...'
@@ -300,7 +312,7 @@ class Installer(object):
 
         retval = self.cmd.run(
             [self.setup_grub_command, '-w', self.photon_root,
-             self.install_config.get('boot', 'bios'),
+             self.install_config.get('bootmode', 'bios'),
              self.install_config['disk'],
              self.install_config['partitions_data']['root'],
              self.install_config['partitions_data']['boot'],
@@ -356,26 +368,6 @@ class Installer(object):
         except KeyError:
             pass
 
-    def _format_disk(self):
-        """
-        Partition and format the disk
-        """
-        # skip partitioning if installer was called from image
-        if not self.install_config['iso_installer']:
-            return
-
-        self.progress_bar.update_message('Partitioning...')
-
-        if 'partitions' not in self.install_config:
-            self.install_config['partitions'] = Installer.default_partitions
-
-        # do partitioning
-        partitions_data = self.partition_disk()
-
-        if partitions_data == None:
-            raise Exception("Partitioning failed.")
-        self.install_config['partitions_data'] = partitions_data
-
 
     def _setup_install_repo(self):
         """
@@ -414,13 +406,13 @@ class Installer(object):
         packages_to_install = {}
         total_size = 0
         stderr = None
-        self.logger.debug("tdnf install --installroot {0} {1} -c {2}"
-                           .format(self.photon_root, " ".join(selected_packages),
-                                            self.tdnf_conf_path))
-        process = subprocess.Popen(['tdnf', 'install'] + selected_packages +
-                                   ['--installroot', self.photon_root,
-                                    '--assumeyes', '-c', self.tdnf_conf_path],
-                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        tdnf_cmd = "tdnf install --installroot {0} --assumeyes -c {1} {2}".format(self.photon_root,
+                        self.tdnf_conf_path, " ".join(selected_packages))
+        self.logger.debug(tdnf_cmd)
+
+        # run in shell to do not throw exception if tdnf not found
+        process = subprocess.Popen(tdnf_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
         if self.install_config['iso_installer']:
             while True:
                 output = process.stdout.readline().decode()
@@ -470,10 +462,7 @@ class Installer(object):
                 retval = self.cmd.run(['docker', 'run',
                                    '-v', self.rpm_cache_dir+':'+self.rpm_cache_dir,
                                    '-v', self.working_directory+':'+self.working_directory,
-                                   'photon:3.0',
-                                   'tdnf', 'install'] + selected_packages +
-                                   ['--installroot', self.photon_root,
-                                    '--assumeyes', '-c', self.tdnf_conf_path])
+                                   'photon:3.0', '/bin/sh', '-c', tdnf_cmd])
 
         # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
         if retval != 0 and retval != 137:
@@ -511,7 +500,31 @@ class Installer(object):
             return (1, len(p['mountpoint']), p['mountpoint'])
         return (0, 0, "A")
 
-    def partition_disk(self):
+    def _get_partition_path(self, disk, part_idx):
+        prefix = ''
+        if 'nvme' in disk or 'mmcblk' in disk or 'loop' in disk:
+            prefix = 'p'
+
+        # loop partitions device names are /dev/mapper/loopXpY instead of /dev/loopXpY
+        if 'loop' in disk:
+            path = '/dev/mapper' + disk[4:] + prefix + repr(part_idx)
+        else:
+            path = disk + prefix + repr(part_idx)
+
+        return path
+
+
+    def _partition_disk(self):
+        """
+        Partition the disk
+        """
+
+        if self.install_config['iso_installer']:
+            self.progress_bar.update_message('Partitioning...')
+
+        if 'partitions' not in self.install_config:
+            self.install_config['partitions'] = Installer.default_partitions
+
         disk = self.install_config['disk']
         partitions = self.install_config['partitions']
         partitions_data = {}
@@ -519,49 +532,59 @@ class Installer(object):
         # Clear the disk
         retval = self.cmd.run(['sgdisk', '-o', '-g', disk])
         if retval != 0:
-            self.logger.error("Failed clearing disk {0}".format(disk))
-            return None
+            raise Exception("Failed clearing disk {0}".format(disk))
+
         # Partitioning the disk
+
+        # Partition which will occupy rest of the disk.
+        # Only one expensible partition per disk is allowed
         extensible_partition = None
-        partitions_count = len(partitions)
-        partition_number = 3
-        # Add part size and grub flags
 
-        bios_flag = ':ef02'
-        part_size = '+2M'
-        # Adding the bios partition
-        partition_cmd = ['sgdisk', '-n 1::' + part_size]
-
-        efi_flag = ':ef00'
-        part_size = '+3M'
-        # Adding the efi partition
-        partition_cmd.extend(['-n 2::' + part_size])
-        # Adding the known size partitions
-
+        # bootmode: bios, efi, dualboot
+        bootmode = self.install_config.get('bootmode', 'bios')
         arch = subprocess.check_output(['uname', '-m'], universal_newlines=True)
-        if "x86" not in arch:
-            partition_number = 2
-            # Adding the efi partition
-            partition_cmd = ['sgdisk', '-n 1::' + part_size]
+        if arch == 'aarch64':
+            bootmode = 'efi'
 
+        # current partition
+        part_idx = 1
+
+        partition_cmd = ['sgdisk']
+        part_type_bios = None
+        part_type_efi = None
+        efi_partition = None
+
+        # Adding bios partition
+        if bootmode == 'dualboot' or bootmode == 'bios':
+            partition_cmd.extend(['-n', '{}::+4M'.format(part_idx)])
+            part_type_bios = '-t{}:ef02'.format(part_idx)
+            part_idx = part_idx + 1
+
+        # Adding efi bios partition
+        if bootmode == 'dualboot' or bootmode == 'efi':
+            partition_cmd.extend(['-n', '{}::+8M'.format(part_idx)])
+            part_type_efi = '-t{}:ef00'.format(part_idx)
+            efi_partition = {'path': self._get_partition_path(disk, part_idx),
+                             'mountpoint': '/boot/esp',
+                             'filesystem': 'fat',
+                             'partition_number': part_idx}
+            part_idx = part_idx + 1
+
+        # Adding the known size partitions
         for partition in partitions:
             if partition['size'] == 0:
                 # Can not have more than 1 extensible partition
                 if extensible_partition != None:
-                    self.logger.error("Can not have more than 1 extensible partition")
-                    return None
+                    raise Exception("Can not have more than 1 extensible partition")
                 extensible_partition = partition
             else:
-                partition_cmd.extend(['-n', '{}::+{}M'.format(partition_number, partition['size'])])
+                partition_cmd.extend(['-n', '{}::+{}M'.format(part_idx, partition['size'])])
 
-            partition['partition_number'] = partition_number
-            prefix = ''
-            if 'nvme' in disk or 'mmcblk' in disk:
-                prefix = 'p'
-            partition['path'] = disk + prefix + repr(partition_number)
-            partition_number = partition_number + 1
+            partition['partition_number'] = part_idx
+            partition['path'] = self._get_partition_path(disk, part_idx)
+            part_idx = part_idx + 1
 
-        # Adding the last extendible partition
+        # Adding the last extensible partition
         if extensible_partition:
             partition_cmd.extend(['-n', repr(extensible_partition['partition_number'])])
 
@@ -570,26 +593,36 @@ class Installer(object):
         # Run the partitioning command
         retval = self.cmd.run(partition_cmd)
         if retval != 0:
-            self.logger.error("Failed partition disk, command: {0}". format(partition_cmd))
-            return None
+            raise Exception("Failed partition disk, command: {0}". format(partition_cmd))
 
-        if "x86" not in arch:
-            retval = self.cmd.run(['sgdisk', '-t1' + efi_flag, disk])
+        # Set partition types
+        if part_type_bios:
+            retval = self.cmd.run(['sgdisk', part_type_bios, disk])
             if retval != 0:
-                self.logger.error("Failed to setup efi partition")
-                return None
+                raise Exception("Failed to setup bios partition")
+        if part_type_efi:
+            retval = self.cmd.run(['sgdisk', part_type_efi, disk])
+            if retval != 0:
+                raise Exception("Failed to setup efi partition")
 
-        else:
-            retval = self.cmd.run(['sgdisk', '-t1' + bios_flag, disk])
-            if retval != 0:
-                self.logger.error("Failed to setup bios partition")
-                return None
 
-            retval = self.cmd.run(['sgdisk', '-t2' + efi_flag, disk])
+        # Some devices, such as rpi3, can boot only from MSDOS partition table, and not GPT.
+        # For its image we used 'parted' instead of 'sgdisk':
+        # parted -s $IMAGE_NAME mklabel msdos mkpart primary fat32 1M 30M mkpart primary ext4 30M 100%
+        # Try to use 'sgdisk -m' to convert GPT to MBR and see whether it works.
+        if self.install_config.get('partition_type', 'gpt') == 'msdos':
+            # m - colon separated partitions list
+            m = ":".join([str(i) for i in range(1,part_idx)])
+            retval = self.cmd.run(['sgdisk', '-m', m, disk])
             if retval != 0:
-                self.logger.error("Failed to setup efi partition")
-                return None
-        # Format the filesystem
+                raise Exception("Failed to setup efi partition")
+
+        if 'loop' in disk:
+            retval = self.cmd.run(['kpartx', '-avs', disk])
+            if retval != 0:
+                raise Exception("Failed to rescan partitions of the disk image {}". format(disk))
+
+        # Create partitions_data
         for partition in partitions:
             if "mountpoint" in partition:
                 if partition['mountpoint'] == '/':
@@ -599,31 +632,49 @@ class Installer(object):
                     partitions_data['boot'] = partition['path']
                     partitions_data['boot_partition_number'] = partition['partition_number']
                     partitions_data['bootdirectory'] = '/'
-            if partition['filesystem'] == "swap":
-                retval = self.cmd.run(['mkswap', partition['path']])
-                if retval != 0:
-                    self.logger.error("Failed to create swap partition @ {}".format(partition['path']))
-                    return None
-            else:
-                mkfs_cmd = ['mkfs', '-t', partition['filesystem'], partition['path']]
-                retval = self.cmd.run(mkfs_cmd)
-                if retval != 0:
-                    self.logger.error(
-                        "Failed to format {} partition @ {}".format(partition['filesystem'],
-                                                                partition['path']))
-                    return None
+                elif partition['mountpoint'] == '/boot/esp':
+                    partitions_data['esp'] = partition['path']
+                    partitions_data['esp_partition_number'] = partition['partition_number']
 
         # Check if there is no root partition
         if 'root' not in partitions_data:
-            self.logger.error("There is no partition assigned to root '/'")
-            return None
+            raise Exception("There is no partition assigned to root '/'")
 
+        # If no separate boot partition, then use /boot folder from root partition
         if 'boot' not in partitions_data:
             partitions_data['boot'] = partitions_data['root']
             partitions_data['boot_partition_number'] = partitions_data['root_partition_number']
             partitions_data['bootdirectory'] = '/boot/'
 
+        # Inject auto created ESP if not specified in install_config
+        if 'esp' not in partitions_data and efi_partition:
+            partitions_data['esp'] = efi_partition['path']
+            partitions_data['esp_partition_number'] = efi_partition['partition_number']
+            self.install_config['partitions'].append(efi_partition)
+
         partitions.sort(key=lambda p: self.partition_compare(p))
 
-        return partitions_data
+        self.install_config['partitions_data'] = partitions_data
+
+    def _format_partitions(self):
+        partitions = self.install_config['partitions']
+        self.logger.info(partitions)
+
+        # Format the filesystem
+        for partition in partitions:
+            if partition['filesystem'] == "swap":
+                mkfs_cmd = ['mkswap']
+            else:
+                mkfs_cmd = ['mkfs', '-t', partition['filesystem']]
+
+            if 'fs_options' in partition:
+                mkfs_cmd.extend([partition['fs_options']])
+
+            mkfs_cmd.extend([partition['path']])
+            retval = self.cmd.run(mkfs_cmd)
+
+            if retval != 0:
+                raise Exception(
+                    "Failed to format {} partition @ {}".format(partition['filesystem'],
+                                                         partition['path']))
 

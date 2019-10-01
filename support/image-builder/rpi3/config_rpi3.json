@@ -7,8 +7,13 @@
 			"text": "PASSWORD"
 		},
 	"packagelist_file": "packages_rpi3.json",
-    "size": {"root": "1", "swap": "0"},
-    "boot":"efi",
+    "partition_type": "msdos",
+    "partitions": [
+                        {"mountpoint": "/boot/esp", "size": 30, "filesystem": "fat"},
+                        {"mountpoint": "/", "size": 0, "filesystem": "ext4"}
+                    ],
+    "size": 512,
+    "bootmode":"efi",
     "public_key":"<ssh-key-here>",
     "postinstallscripts": ["rpi3-custom-patch.sh"],
     "additionalfiles": [

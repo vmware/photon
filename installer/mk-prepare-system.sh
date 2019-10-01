@@ -33,8 +33,6 @@ if mountpoint ${BUILDROOT}/sys  >/dev/null 2>&1; then umount ${BUILDROOT}/sys; f
 if mountpoint ${BUILDROOT}/proc >/dev/null 2>&1; then umount ${BUILDROOT}/proc; fi
 if mountpoint ${BUILDROOT}/dev/pts  >/dev/null 2>&1; then umount ${BUILDROOT}/dev/pts; fi
 if mountpoint ${BUILDROOT}/dev  >/dev/null 2>&1; then umount ${BUILDROOT}/dev; fi
-sync
-[ ${EUID} -eq 0 ]   || fail "${PRGNAME}: Need to be root user: FAILURE"
 
 mkdir -p ${BUILDROOT}/var/lib/rpm
 mkdir -p ${BUILDROOT}/cache/tdnf
@@ -49,10 +47,6 @@ tdnf install filesystem --installroot ${BUILDROOT} --assumeyes -c ${WORKINGDIR}/
 [ -e ${BUILDROOT}/dev/null ]    || mknod -m 666 ${BUILDROOT}/dev/null c 1 3
 [ -e ${BUILDROOT}/dev/random ]  || mknod -m 444 ${BUILDROOT}/dev/random c 1 8
 [ -e ${BUILDROOT}/dev/urandom ] || mknod -m 444 ${BUILDROOT}/dev/urandom c 1 9
-
-if [[   $# -eq 0 ]] || [[ $1 != 'install' ]]; then
-    chown -R 0:0 ${BUILDROOT}/* || :
-fi
 
 #   Mount kernel filesystem
 #

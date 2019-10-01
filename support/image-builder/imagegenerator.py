@@ -177,7 +177,7 @@ def generateImage(raw_image_path, additional_rpms_path, tools_bin_path, src_root
     mount_path = os.path.splitext(raw_image_path)[0]
     build_scripts_path = os.path.dirname(os.path.abspath(__file__))
     root_partition_no = 2
-    if 'boot' in config and config['boot'] == 'dualboot':
+    if 'bootmode' in config and config['bootmode'] == 'dualboot':
         root_partition_no = 3
 
     if os.path.exists(mount_path) and os.path.isdir(mount_path):

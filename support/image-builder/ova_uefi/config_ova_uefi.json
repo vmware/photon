@@ -7,8 +7,8 @@
 			"text": "changeme"
 		},
 	"packagelist_file": "packages_ova.json",
-    "size": {"root": "16", "swap": "0"},
-    "boot":"efi",
+    "size": 16384,
+    "bootmode":"efi",
     "public_key":"<ssh-key-here>",
     "expirepassword": true,
     "artifacttype": "ova",

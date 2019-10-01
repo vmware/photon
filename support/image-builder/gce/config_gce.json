@@ -7,7 +7,8 @@
             "text": "PASSWORD"
         },
     "packagelist_file": "packages_gce.json",
-    "size": {"root": "16", "swap": "0"},
+    "size": 16284,
+    "bootmode":"bios",
     "public_key":"<ssh-key-here>",
     "postinstallscripts": [ "gce-patch.sh", "../password-expiry.sh" ],
     "additionalfiles": [

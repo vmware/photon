@@ -6,9 +6,14 @@
 			"crypted": false,
 			"text": "PASSWORD"
 		},
+    "partition_type": "msdos",
+    "partitions": [
+                        {"mountpoint": "/boot/esp", "size": 12, "filesystem": "fat", "fs_options": "-n EFI"},
+                        {"mountpoint": "/", "size": 0, "filesystem": "ext4", "fs_options": "-F -O ^huge_file -b 4096 -L rootfs"}
+                    ],
     "packagelist_file": "packages_ls1012afrwy.json",
-    "size": {"root": "1", "swap": "0"},
-    "boot":"efi",
+    "size": 512,
+    "bootmode":"efi",
     "public_key":"<ssh-key-here>",
     "postinstallscripts": ["ls1012afrwy-custom-patch.sh"],
     "additionalfiles": [

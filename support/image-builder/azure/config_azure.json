@@ -7,7 +7,7 @@
             "text": "PASSWORD"
         },
     "packagelist_file": "packages_azure.json",
-    "size": {"root": "16", "swap": "0"},
+    "size": 16384,
     "public_key":"<ssh-key-here>",
     "postinstallscripts": [ "azure-patch.sh", "../password-expiry.sh" ],
     "additionalfiles": [
