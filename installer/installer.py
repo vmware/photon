@@ -10,7 +10,6 @@ import shutil
 import signal
 import sys
 import glob
-import re
 import modules.commons
 import random
 import curses
@@ -20,6 +19,14 @@ from jsonwrapper import JsonWrapper
 from progressbar import ProgressBar
 from window import Window
 from actionresult import ActionResult
+from enum import Enum
+
+class PartitionType(Enum):
+    SWAP = 1
+    LINUX = 2
+    LVM = 3
+    ESP = 4
+    BIOS = 5
 
 class Installer(object):
     """
@@ -86,6 +93,7 @@ class Installer(object):
         self.setup_grub_command = os.path.dirname(__file__)+"/mk-setup-grub.sh"
 
         signal.signal(signal.SIGINT, self.exit_gracefully)
+        self.lvs_to_datach = {'vgs': [], 'pvs': []}
 
     """
     create, append and validate configuration date - install_config
@@ -158,6 +166,10 @@ class Installer(object):
             else:
                 install_config['bootmode'] = 'efi'
 
+        # default partition
+        if 'partitions' not in install_config:
+            install_config['partitions'] = Installer.default_partitions
+
         # define 'hostname' as 'photon-<RANDOM STRING>'
         if "hostname" not in install_config or install_config['hostname'] == "":
             install_config['hostname'] = 'photon-%12x' % random.randrange(16**12)
@@ -192,6 +204,33 @@ class Installer(object):
 
         if not 'disk' in install_config:
             return "No disk configured"
+
+        if 'install_linux_esx' not in install_config:
+            install_config['install_linux_esx'] = False
+
+        # Perform 2 checks here:
+        # 1) Only one extensible partition is allowed per disk
+        # 2) /boot can not be LVM
+        # 3) / must present
+        has_extensible = {}
+        has_root = False
+        default_disk = install_config['disk']
+        for partition in install_config['partitions']:
+            disk = partition.get('disk', default_disk)
+            if disk not in has_extensible:
+                has_extensible[disk] = False
+            size = partition['size']
+            if size == 0:
+                if has_extensible[disk]:
+                    return "Disk {} has more than one extensible partition".format(disk)
+                else:
+                    has_extensible[disk] = True
+            if partition.get('mountpoint', '') == '/boot' and 'lvm' in partition:
+                return "/boot on LVM is not supported"
+            if partition.get('mountpoint', '') == '/':
+                has_root = True
+        if not has_root:
+            return "There is no partition assigned to root '/'"
 
         return None
 
@@ -253,6 +292,7 @@ class Installer(object):
         """
         self._partition_disk()
         self._format_partitions()
+        self._mount_partitions()
         self._setup_install_repo()
         self._initialize_system()
         self._install_packages()
@@ -260,10 +300,11 @@ class Installer(object):
         self._enable_network_in_chroot()
         self._finalize_system()
         self._cleanup_install_repo()
+        self._setup_grub()
         self._execute_modules(modules.commons.POST_INSTALL)
-        self._post_install()
+        self._create_fstab()
         self._disable_network_in_chroot()
-        self._cleanup_and_exit()
+        self._unmount_partitions()
 
     def exit_gracefully(self, signal1=None, frame1=None):
         """
@@ -281,12 +322,12 @@ class Installer(object):
                 self.window.content_window().getch()
 
             self._cleanup_install_repo()
-            self._cleanup_and_exit()
+            self._unmount_partitions()
         sys.exit(1)
 
-    def _cleanup_and_exit(self):
+    def _unmount_partitions(self):
         """
-        Unmount the disk, eject cd and exit
+        Unmount partitions
         """
         command = [Installer.unmount_disk_command, '-w', self.photon_root]
         command.extend(self._generate_partitions_param(reverse=True))
@@ -295,6 +336,18 @@ class Installer(object):
             self.logger.error("Failed to unmount disks")
 
         shutil.rmtree(self.photon_root)
+
+        # Deactivate LVM VGs
+        for vg in self.lvs_to_datach['vgs']:
+            retval = self.cmd.run(["vgchange", "-v", "-an", vg])
+            if retval != 0:
+                self.logger.error("Failed to deactivate LVM volume group: {}".format(vg))
+        # Simulate partition hot remove to notify LVM
+        for pv in self.lvs_to_datach['pvs']:
+            retval = self.cmd.run(["dmsetup", "remove", pv])
+            if retval != 0:
+                self.logger.error("Failed to detach LVM physical volume: {}".format(pv))
+
 
         # Uninitialize device paritions mapping
         disk = self.install_config['disk']
@@ -352,7 +405,7 @@ class Installer(object):
                 self.cmd.run(['rm', '-rf', self.rpm_cache_dir]) != 0):
             self.logger.error("Fail to unbind cache rpms")
 
-    def _update_fstab(self):
+    def _create_fstab(self):
         """
         update fstab
         """
@@ -360,15 +413,19 @@ class Installer(object):
             fstab_file.write("#system\tmnt-pt\ttype\toptions\tdump\tfsck\n")
 
             for partition in self.install_config['partitions']:
+                ptype = self._get_partition_type(partition)
+                if ptype == PartitionType.BIOS:
+                    continue
+
                 options = 'defaults'
                 dump = 1
                 fsck = 2
 
-                if 'mountpoint' in partition and partition['mountpoint'] == '/':
+                if partition.get('mountpoint', '') == '/':
                     options = options + ',barrier,noatime,noacl,data=ordered'
                     fsck = 1
 
-                if partition['filesystem'] == 'swap':
+                if ptype == PartitionType.SWAP:
                     mountpoint = 'swap'
                     dump = 0
                     fsck = 0
@@ -396,24 +453,25 @@ class Installer(object):
             step = 1
         params = []
         for partition in self.install_config['partitions'][::step]:
-            if partition["filesystem"] == "swap":
+            if self._get_partition_type(partition) in [PartitionType.BIOS, PartitionType.SWAP]:
                 continue
 
             params.extend(['--partitionmountpoint', partition["path"], partition["mountpoint"]])
         return params
 
-    def _initialize_system(self):
-        """
-        Prepare the system to install photon
-        """
-        #Setup the disk
+    def _mount_partitions(self):
         command = [Installer.mount_command, '-w', self.photon_root]
         command.extend(self._generate_partitions_param())
         retval = self.cmd.run(command)
         if retval != 0:
-            self.logger.info("Failed to setup the disk for installation")
+            self.logger.info("Failed to mount partitions for installation")
             self.exit_gracefully()
 
+
+    def _initialize_system(self):
+        """
+        Prepare the system to install photon
+        """
         if self.install_config['ui']:
             self.progress_bar.update_message('Initializing system...')
         self._bind_installer()
@@ -430,7 +488,7 @@ class Installer(object):
         """
         if self.install_config['ui']:
             self.progress_bar.show_loading('Finalizing installation')
-        #Setup the disk
+
         retval = self.cmd.run([Installer.chroot_command, '-w', self.photon_root,
                                     Installer.finalize_command, '-w', self.photon_root])
         if retval != 0:
@@ -446,24 +504,17 @@ class Installer(object):
         os.remove(self.tdnf_conf_path)
         os.remove(self.tdnf_repo_path)
 
-    def _post_install(self):
-        # install grub
-        if 'boot_partition_number' not in self.install_config['partitions_data']:
-            self.install_config['partitions_data']['boot_partition_number'] = 1
-
+    def _setup_grub(self):
         retval = self.cmd.run(
             [self.setup_grub_command, '-w', self.photon_root,
              self.install_config.get('bootmode', 'bios'),
              self.install_config['disk'],
              self.install_config['partitions_data']['root'],
              self.install_config['partitions_data']['boot'],
-             self.install_config['partitions_data']['bootdirectory'],
-             str(self.install_config['partitions_data']['boot_partition_number'])])
+             self.install_config['partitions_data']['bootdirectory']])
 
         if retval != 0:
             raise Exception("Bootloader (grub2) setup failed")
-
-        self._update_fstab()
 
     def _execute_modules(self, phase):
         """
@@ -501,13 +552,16 @@ class Installer(object):
         """
         Install linux_esx on Vmware virtual machine if requested
         """
-        try:
-            if self.install_config['install_linux_esx']:
-                regex = re.compile(r'^linux-[0-9]|^initramfs-[0-9]')
-                self.install_config['packages'] = [x for x in self.install_config['packages'] if not regex.search(x)]
-                self.install_config['packages'].append('linux-esx')
-        except KeyError:
-            pass
+        if self.install_config['install_linux_esx']:
+            if 'linux' in self.install_config['packages']:
+                self.install_config['packages'].remove('linux')
+            self.install_config['packages'].append('linux-esx')
+
+    def _add_packages_to_install(self, package):
+        """
+        Install packages on Vmware virtual machine if requested
+        """
+        self.install_config['packages'].append(package)
 
     def _setup_install_repo(self):
         """
@@ -659,6 +713,160 @@ class Installer(object):
 
         return path
 
+    def _get_partition_type(self, partition):
+        if partition['filesystem'] == 'bios':
+            return PartitionType.BIOS
+        if partition['filesystem'] == 'swap':
+            return PartitionType.SWAP
+        if partition.get('mountpoint', '') == '/boot/esp' and partition['filesystem'] == 'vfat':
+            return PartitionType.ESP
+        if partition.get('lvm', None):
+            return PartitionType.LVM
+        return PartitionType.LINUX
+
+    def _partition_type_to_string(self, ptype):
+        if ptype == PartitionType.BIOS:
+            return 'ef02'
+        if ptype == PartitionType.SWAP:
+            return '8200'
+        if ptype == PartitionType.ESP:
+            return 'ef00'
+        if ptype == PartitionType.LVM:
+            return '8e00'
+        if ptype == PartitionType.LINUX:
+            return '8300'
+        raise Exception("Unknown partition type: {}".format(ptype))
+
+    def _create_logical_volumes(self, physical_partition, vg_name, lv_partitions, extensible):
+        """
+        Create logical volumes
+        """
+        # if vg is not extensible (all lvs inside are known size) then make last lv
+        # extensible, i.e. shrink it. Srinking last partition is important. We will
+        # not be able to provide specified size because given physical partition is
+        # also used by LVM header.
+        extensible_logical_volume = None
+        if not extensible:
+            extensible_logical_volume = lv_partitions[-1]
+            extensible_logical_volume['size'] = 0
+
+        # create physical volume
+        command = ['pvcreate', '-ff', '-y', physical_partition]
+        retval = self.cmd.run(command)
+        if retval != 0:
+            raise Exception("Error: Failed to create physical volume, command : {}".format(command))
+
+        # create volume group
+        command = ['vgcreate', vg_name, physical_partition]
+        retval = self.cmd.run(command)
+        if retval != 0:
+            raise Exception("Error: Failed to create volume group, command = {}".format(command))
+
+        # create logical volumes
+        for partition in lv_partitions:
+            lv_cmd = ['lvcreate', '-y']
+            lv_name = partition['lvm']['lv_name']
+            size = partition['size']
+            if partition['size'] == 0:
+                # Each volume group can have only one extensible logical volume
+                if not extensible_logical_volume:
+                    extensible_logical_volume = partition
+            else:
+                lv_cmd.extend(['-L', '{}M'.format(partition['size']), '-n', lv_name, vg_name ])
+                retval = self.cmd.run(lv_cmd)
+                if retval != 0:
+                    raise Exception("Error: Failed to create logical volumes , command: {}".format(lv_cmd))
+            partition['path'] = '/dev/' + vg_name + '/' + lv_name
+
+        # create extensible logical volume
+        if not extensible_logical_volume:
+            raise Exception("Can not fully partition VG: ".format(vg_name))
+
+        lv_name = extensible_logical_volume['lvm']['lv_name']
+        lv_cmd = ['lvcreate', '-y']
+        lv_cmd.extend(['-l', '100%FREE', '-n', lv_name, vg_name ])
+
+        retval = self.cmd.run(lv_cmd)
+        if retval != 0:
+            raise Exception("Error: Failed to create extensible logical volume, command = {}". format(lv_cmd))
+
+        # remember pv/vg for detaching it later.
+        self.lvs_to_datach['pvs'].append(os.path.basename(physical_partition))
+        self.lvs_to_datach['vgs'].append(vg_name)
+
+    def _get_partition_tree_view(self):
+        # Tree View of partitions list, to be returned.
+        # 1st level: dict of disks
+        # 2nd level: list of physical partitions, with all information necessary to partition the disk
+        # 3rd level: list of logical partitions (LVM) or detailed partition information needed to format partition
+        ptv = {}
+
+        # Dict of VG's per disk. Purpose of this dict is:
+        # 1) to collect its LV's
+        # 2) to accumulate total size
+        # 3) to create physical partition representation for VG
+        vg_partitions = {}
+
+        default_disk = self.install_config['disk']
+        partitions = self.install_config['partitions']
+        for partition in partitions:
+            disk = partition.get('disk', default_disk)
+            if disk not in ptv:
+                ptv[disk] = []
+            if disk not in vg_partitions:
+                vg_partitions[disk] = {}
+
+            if partition.get('lvm', None):
+                vg_name = partition['lvm']['vg_name']
+                if vg_name not in vg_partitions[disk]:
+                    vg_partitions[disk][vg_name] = {
+                        'size': 0,
+                        'type': self._partition_type_to_string(PartitionType.LVM),
+                        'extensible': False,
+                        'lvs': [],
+                        'vg_name': vg_name
+                    }
+                vg_partitions[disk][vg_name]['lvs'].append(partition)
+                if partition['size'] == 0:
+                    vg_partitions[disk][vg_name]['extensible'] = True
+                    vg_partitions[disk][vg_name]['size'] = 0
+                else:
+                    if not vg_partitions[disk][vg_name]['extensible']:
+                        vg_partitions[disk][vg_name]['size'] = vg_partitions[disk][vg_name]['size'] + partition['size']
+            else:
+                l2entry = {
+                    'size': partition['size'],
+                    'type': self._partition_type_to_string(self._get_partition_type(partition)),
+                    'partition': partition
+                }
+                ptv[disk].append(l2entry)
+
+        # Add accumulated VG partitions
+        for disk, vg_list in vg_partitions.items():
+                ptv[disk].extend(vg_list.values())
+        return ptv
+
+    def _insert_boot_partitions(self):
+        bios_found = False
+        esp_found = False
+        for partition in self.install_config['partitions']:
+            ptype = self._get_partition_type(partition)
+            if ptype == PartitionType.BIOS:
+                bios_found = True
+            if ptype == PartitionType.ESP:
+                esp_found = True
+
+        bootmode = self.install_config.get('bootmode', 'bios')
+
+        # Insert efi special partition
+        if not esp_found and (bootmode == 'dualboot' or bootmode == 'efi'):
+            efi_partition = { 'size': 8, 'filesystem': 'vfat', 'mountpoint': '/boot/esp' }
+            self.install_config['partitions'].insert(0, efi_partition)
+
+        # Insert bios partition last to be very first
+        if not bios_found and (bootmode == 'dualboot' or bootmode == 'bios'):
+            bios_partition = { 'size': 4, 'filesystem': 'bios' }
+            self.install_config['partitions'].insert(0, bios_partition)
 
     def _partition_disk(self):
         """
@@ -668,136 +876,95 @@ class Installer(object):
         if self.install_config['ui']:
             self.progress_bar.update_message('Partitioning...')
 
-        if 'partitions' not in self.install_config:
-            self.install_config['partitions'] = Installer.default_partitions
+        self._insert_boot_partitions()
+        ptv = self._get_partition_tree_view()
 
-        disk = self.install_config['disk']
         partitions = self.install_config['partitions']
         partitions_data = {}
+        lvm_present = False
 
-        # Clear the disk
-        retval = self.cmd.run(['sgdisk', '-o', '-g', disk])
-        if retval != 0:
-            raise Exception("Failed clearing disk {0}".format(disk))
+        # Partitioning disks
+        for disk, l2entries in ptv.items():
 
-        # Partitioning the disk
-
-        # Partition which will occupy rest of the disk.
-        # Only one expensible partition per disk is allowed
-        extensible_partition = None
-
-        # bootmode: bios, efi, dualboot
-        bootmode = self.install_config.get('bootmode', 'bios')
-        arch = subprocess.check_output(['uname', '-m'], universal_newlines=True)
-        if arch == 'aarch64':
-            bootmode = 'efi'
-
-        # current partition
-        part_idx = 1
-
-        partition_cmd = ['sgdisk']
-        part_type_bios = None
-        part_type_efi = None
-        efi_partition = None
-
-        # Adding bios partition
-        if bootmode == 'dualboot' or bootmode == 'bios':
-            partition_cmd.extend(['-n', '{}::+4M'.format(part_idx)])
-            part_type_bios = '-t{}:ef02'.format(part_idx)
-            part_idx = part_idx + 1
-
-        # Adding efi bios partition
-        if bootmode == 'dualboot' or bootmode == 'efi':
-            partition_cmd.extend(['-n', '{}::+8M'.format(part_idx)])
-            part_type_efi = '-t{}:ef00'.format(part_idx)
-            efi_partition = {'path': self._get_partition_path(disk, part_idx),
-                             'mountpoint': '/boot/esp',
-                             'filesystem': 'fat',
-                             'partition_number': part_idx}
-            part_idx = part_idx + 1
-
-        # Adding the known size partitions
-        for partition in partitions:
-            if partition['size'] == 0:
-                # Can not have more than 1 extensible partition
-                if extensible_partition != None:
-                    raise Exception("Can not have more than 1 extensible partition")
-                extensible_partition = partition
-            else:
-                partition_cmd.extend(['-n', '{}::+{}M'.format(part_idx, partition['size'])])
-
-            partition['partition_number'] = part_idx
-            partition['path'] = self._get_partition_path(disk, part_idx)
-            part_idx = part_idx + 1
-
-        # Adding the last extensible partition
-        if extensible_partition:
-            partition_cmd.extend(['-n', repr(extensible_partition['partition_number'])])
-
-        partition_cmd.extend(['-p', disk])
-
-        # Run the partitioning command
-        retval = self.cmd.run(partition_cmd)
-        if retval != 0:
-            raise Exception("Failed partition disk, command: {0}". format(partition_cmd))
-
-        # Set partition types
-        if part_type_bios:
-            retval = self.cmd.run(['sgdisk', part_type_bios, disk])
+            # Clear the disk first
+            retval = self.cmd.run(['sgdisk', '-o', '-g', disk])
             if retval != 0:
-                raise Exception("Failed to setup bios partition")
-        if part_type_efi:
-            retval = self.cmd.run(['sgdisk', part_type_efi, disk])
+                raise Exception("Failed clearing disk {0}".format(disk))
+
+            # Build partition command and insert 'part' into 'partitions'
+            partition_cmd = ['sgdisk']
+            part_idx = 1
+            # command option for extensible partition
+            last_partition = None
+            for l2 in l2entries:
+                if 'lvs' in l2:
+                    # will be used for _create_logical_volumes() invocation
+                    l2['path'] = self._get_partition_path(disk, part_idx)
+                else:
+                    l2['partition']['path'] = self._get_partition_path(disk, part_idx)
+
+                if l2['size'] == 0:
+                    last_partition = []
+                    last_partition.extend(['-n{}'.format(part_idx)])
+                    last_partition.extend(['-t{}:{}'.format(part_idx, l2['type'])])
+                else:
+                    partition_cmd.extend(['-n{}::+{}M'.format(part_idx, l2['size'])])
+                    partition_cmd.extend(['-t{}:{}'.format(part_idx, l2['type'])])
+                part_idx = part_idx + 1
+            # if extensible partition present, add it to the end of the disk
+            if last_partition:
+                partition_cmd.extend(last_partition)
+            partition_cmd.extend(['-p', disk])
+
+            # Run the partitioning command (all physical partitions in one shot)
+            retval = self.cmd.run(partition_cmd)
             if retval != 0:
-                raise Exception("Failed to setup efi partition")
+                raise Exception("Failed partition disk, command: {0}".format(partition_cmd))
+
+            # For RPi image we used 'parted' instead of 'sgdisk':
+            # parted -s $IMAGE_NAME mklabel msdos mkpart primary fat32 1M 30M mkpart primary ext4 30M 100%
+            # Try to use 'sgdisk -m' to convert GPT to MBR and see whether it works.
+            if self.install_config.get('partition_type', 'gpt') == 'msdos':
+                # m - colon separated partitions list
+                m = ":".join([str(i) for i in range(1,part_idx)])
+                retval = self.cmd.run(['sgdisk', '-m', m, disk])
+                if retval != 0:
+                    raise Exception("Failed to setup efi partition")
+
+            # Make loop disk partitions available
+            if 'loop' in disk:
+                retval = self.cmd.run(['kpartx', '-avs', disk])
+                if retval != 0:
+                    raise Exception("Failed to rescan partitions of the disk image {}". format(disk))
 
 
-        # Some devices, such as rpi3, can boot only from MSDOS partition table, and not GPT.
-        # For its image we used 'parted' instead of 'sgdisk':
-        # parted -s $IMAGE_NAME mklabel msdos mkpart primary fat32 1M 30M mkpart primary ext4 30M 100%
-        # Try to use 'sgdisk -m' to convert GPT to MBR and see whether it works.
-        if self.install_config.get('partition_type', 'gpt') == 'msdos':
-            # m - colon separated partitions list
-            m = ":".join([str(i) for i in range(1,part_idx)])
-            retval = self.cmd.run(['sgdisk', '-m', m, disk])
-            if retval != 0:
-                raise Exception("Failed to setup efi partition")
+            # Go through l2 entries again and create logical partitions
+            for l2 in l2entries:
+                if 'lvs' not in l2:
+                    continue
+                lvm_present = True
+                self._create_logical_volumes(l2['path'], l2['vg_name'], l2['lvs'], l2['extensible'])
 
-        if 'loop' in disk:
-            retval = self.cmd.run(['kpartx', '-avs', disk])
-            if retval != 0:
-                raise Exception("Failed to rescan partitions of the disk image {}". format(disk))
+        if lvm_present:
+            # add lvm2 package to install list
+            self._add_packages_to_install('lvm2')
 
-        # Create partitions_data
+        # Create partitions_data (needed for mk-setup-grub.sh)
         for partition in partitions:
             if "mountpoint" in partition:
                 if partition['mountpoint'] == '/':
                     partitions_data['root'] = partition['path']
-                    partitions_data['root_partition_number'] = partition['partition_number']
                 elif partition['mountpoint'] == '/boot':
                     partitions_data['boot'] = partition['path']
-                    partitions_data['boot_partition_number'] = partition['partition_number']
                     partitions_data['bootdirectory'] = '/'
-                elif partition['mountpoint'] == '/boot/esp':
-                    partitions_data['esp'] = partition['path']
-                    partitions_data['esp_partition_number'] = partition['partition_number']
-
-        # Check if there is no root partition
-        if 'root' not in partitions_data:
-            raise Exception("There is no partition assigned to root '/'")
 
         # If no separate boot partition, then use /boot folder from root partition
         if 'boot' not in partitions_data:
             partitions_data['boot'] = partitions_data['root']
-            partitions_data['boot_partition_number'] = partitions_data['root_partition_number']
             partitions_data['bootdirectory'] = '/boot/'
 
-        # Inject auto created ESP if not specified in install_config
-        if 'esp' not in partitions_data and efi_partition:
-            partitions_data['esp'] = efi_partition['path']
-            partitions_data['esp_partition_number'] = efi_partition['partition_number']
-            self.install_config['partitions'].append(efi_partition)
-
+        # Sort partitions by mountpoint to be able to mount and
+        # unmount it in proper sequence
         partitions.sort(key=lambda p: self.partition_compare(p))
 
         self.install_config['partitions_data'] = partitions_data
@@ -808,7 +975,11 @@ class Installer(object):
 
         # Format the filesystem
         for partition in partitions:
-            if partition['filesystem'] == "swap":
+            ptype = self._get_partition_type(partition)
+            # Do not format BIOS boot partition
+            if ptype == PartitionType.BIOS:
+                continue
+            if ptype == PartitionType.SWAP:
                 mkfs_cmd = ['mkswap']
             else:
                 mkfs_cmd = ['mkfs', '-t', partition['filesystem']]

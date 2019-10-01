@@ -13,7 +13,7 @@ class JsonWrapper(object):
 
     def read(self):
         with open(self.filename) as json_data:
-            self.data = json.load(json_data, object_pairs_hook=collections.OrderedDict)
+            self.data = json.load(json_data)
         return self.data
 
     def write(self, data):

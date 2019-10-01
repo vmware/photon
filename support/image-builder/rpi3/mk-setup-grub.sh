@@ -44,15 +44,11 @@ ARCH=$(uname -m)    # host architecture
 [ ${EUID} -eq 0 ]    || fail "${PRGNAME}: Need to be root user: FAILURE"
 > ${LOGFILE}        #    clear/initialize logfile
 
-# Check if passing a HHD and partition
-if [ $# -eq 6 ] ; then
-    BOOTMODE=$1
-    HDD=$2
-    ROOT_PARTITION_PATH=$3
-    BOOT_PARTITION_PATH=$4
-    BOOT_DIRECTORY=$5
-    BOOT_PARTITION_NUMBER=$6
-fi
+BOOTMODE=$1
+HDD=$2
+ROOT_PARTITION_PATH=$3
+BOOT_PARTITION_PATH=$4
+BOOT_DIRECTORY=$5
 
 #
 #    Install grub2.

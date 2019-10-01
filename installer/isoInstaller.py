@@ -2,7 +2,8 @@
 #
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
-
+import os
+import subprocess
 import shlex
 from argparse import ArgumentParser
 from installer import Installer
@@ -38,7 +39,7 @@ class IsoInstaller(object):
             self.mount_cd(cd_search)
 
         if ks_path:
-            install_config=self.get_ks_config(ks_path)
+            install_config=self._load_ks_config(ks_path)
 
         if options.ui_config_file:
             ui_config = (JsonWrapper(options.ui_config_file)).read()
@@ -84,15 +85,6 @@ class IsoInstaller(object):
                     raise Exception("cannot read ks config from cdrom, no cdrom specified")
                 path = os.path.join(self.cd_mount_path, path.replace("cdrom:/", "", 1))
             return (JsonWrapper(path)).read()
-
-    def get_ks_config(self, ks_path):
-        """Load configuration from kick start file"""
-        install_config = self._load_ks_config(ks_path)
-
-        if 'install_linux_esx' not in install_config and CommandUtils.is_vmware_virtualization():
-            install_config['install_linux_esx'] = True
-
-        return install_config
 
     def mount_cd(self, cd_search):
         """Mount the cd with RPMS"""

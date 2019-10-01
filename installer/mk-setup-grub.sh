@@ -69,17 +69,13 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #    set log file name
 ARCH=$(uname -m)    # host architecture
 [ ${EUID} -eq 0 ]    || fail "${PRGNAME}: Need to be root user: FAILURE"
 > ${LOGFILE}        #    clear/initialize logfile
-# Check if passing a HHD and partition
-if [ $# -eq 6 ]
-    then
-        BOOTMODE=$1
-    HDD=$2
-    ROOT_PARTITION_PATH=$3
-    BOOT_PARTITION_PATH=$4
-    BOOT_DIRECTORY=$5
-    BOOT_PARTITION_NUMBER=$6
-    EFI_PARTITION_NUMBER="1"
-fi
+
+BOOTMODE=$1
+HDD=$2
+ROOT_PARTITION_PATH=$3
+BOOT_PARTITION_PATH=$4
+BOOT_DIRECTORY=$5
+EFI_PARTITION_NUMBER="1"
 
 #
 #    Install grub2.
@@ -152,7 +148,12 @@ if [ -f  ${BOOT_DIRECTORY}systemd.cfg ]; then
 else
     set systemd_cmdline=net.ifnames=0
 fi
-set rootpartition=PARTUUID=$PARTUUID
+
+if [ "$PARTUUID" != ""  ]; then
+    set rootpartition=PARTUUID=$PARTUUID
+else
+    set rootpartition=$ROOT_PARTITION_PATH
+fi
 
 menuentry "Photon" {
     linux ${BOOT_DIRECTORY}\$photon_linux root=\$rootpartition \$photon_cmdline \$systemd_cmdline $EXTRA_PARAMS

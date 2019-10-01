@@ -64,7 +64,7 @@ PACKAGES="filesystem glibc zlib file gmp libgcc libstdc++ bash sed haveged ncurs
     libffi expat linux cpio Linux-PAM attr libcap systemd dbus \
     gzip sqlite nspr nss popt lua rpm gptfdisk tar \
     hawkey python3 python3-libs pcre glib tdnf python3-requests grub2 \
-    grub2-pc grub2-efi efivar efibootmgr dracut curl dosfstools ostree ostree-grub2 ostree-libs"
+    grub2-pc grub2-efi efivar efibootmgr dracut curl dosfstools ostree ostree-grub2 ostree-libs lvm2"
 
 TDNF_CMD="tdnf install -y --installroot $INITRD --rpmverbosity 10 -c ${WORKINGDIR}/tdnf.conf -q $PACKAGES"
 

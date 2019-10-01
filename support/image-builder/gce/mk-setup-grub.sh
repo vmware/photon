@@ -30,7 +30,10 @@ grub_efi_install()
     rm $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi
     cp $INSTALLER_PATH/EFI_x86_64/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
     mkdir -p $BUILDROOT/boot/efi/boot/grub2    
-    echo "configfile (hd0,gpt${BOOT_PARTITION_NUMBER})${BOOT_DIRECTORY}grub2/grub.cfg" > $BUILDROOT/boot/efi/boot/grub2/grub.cfg
+    cat > $BUILDROOT/boot/efi/boot/grub2/grub.cfg << EOF
+search -n -u ${BOOT_UUID} -s
+configfile ${BOOT_DIRECTORY}grub2/grub.cfg
+EOF
     umount $BUILDROOT/boot/efi
 }
 
@@ -53,22 +56,17 @@ ARCH=$(uname -m)    # host architecture
 [ ${EUID} -eq 0 ]   || fail "${PRGNAME}: Need to be root user: FAILURE"
 > ${LOGFILE}        #   clear/initialize logfile
 
-# Check if passing a HDD and partition
-if [ $# -eq 6 ] 
-    then
-       BOOTMODE=$1
-       HDD=$2
-       ROOT_PARTITION_PATH=$3
-       BOOT_PARTITION_PATH=$4
-       BOOT_DIRECTORY=$5
-       BOOT_PARTITION_NUMBER=$6
-fi
+BOOTMODE=$1
+HDD=$2
+ROOT_PARTITION_PATH=$3
+BOOT_PARTITION_PATH=$4
+BOOT_DIRECTORY=$5
 
 #
 #	Install grub2.
 #
 UUID_VAL=$(blkid -s UUID -o value $ROOT_PARTITION_PATH)
-PARTUUID_VAL=$(blkid -s PARTUUID -o value $ROOT_PARTITION_PATH)
+PARTUUID=$(blkid -s PARTUUID -o value $ROOT_PARTITION_PATH)
 BOOT_UUID=$(blkid -s UUID -o value $BOOT_PARTITION_PATH)
 echo "Changing boot loader to MBR type on raw disk"
 
@@ -119,7 +117,11 @@ fi
 
 export menuentry_id_option
 load_env -f "$BOOT_DIRECTORY"photon.cfg
-set rootpartition=PARTUUID=$PARTUUID_VAL
+if [ "$PARTUUID" != ""  ]; then
+    set rootpartition=PARTUUID=$PARTUUID
+else
+    set rootpartition=$ROOT_PARTITION_PATH
+fi
 
 if [ "\${prev_saved_entry}" ]; then
   set saved_entry="\${prev_saved_entry}"
