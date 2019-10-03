@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.76
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -175,12 +175,14 @@ cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0
 photon_linux=vmlinuz-%{uname_r}
-#photon_initrd=initrd.img-%{uname_r}
+photon_initrd=initrd.img-%{uname_r}
 EOF
 
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
-touch %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r}
+cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
+--add-drivers "lvm dm-mod"
+EOF
 
 # cleanup dangling symlinks
 rm -f %{buildroot}/lib/modules/%{uname_r}/source
@@ -226,6 +228,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 14 2019 Harinadh D <hdommaraju@vmware.com> 4.19.76-4
+-   Adding lvm and dm-mod modules to support root as lvm
 *   Mon Oct 07 2019 Bo Gan <ganb@vmware.com> 4.19.76-3
 -   Recreate /dev/root in init
 *   Fri Oct 4 2019 Bo Gan <ganb@vmware.com> 4.19.76-2
