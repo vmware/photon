@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.193
+Version:       4.4.196
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=be8704c9b9dc83957faa693f89f121a4175b5185
+%define sha1 linux=ebc1f7bfc3544d2e193fa72d3dcad8555fb4e7b0
 Source1:       config-esx
 Source2:       update_photon_cfg.postun
 Patch0:        double-tcp_mem-limits.patch
@@ -39,9 +39,11 @@ Patch24:       Implement-the-f-xattrat-family-of-functions.patch
 Patch26:       init-do_mounts-recreate-dev-root.patch
 Patch27:       net-9p-vdfs-zerocopy.patch
 Patch28:       0001-Enable-cache-loose-for-vdfs-9p.patch
+
 # Fix for CVE-2018-8043
 Patch30:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
-
+# Fix for CVE-2018-20976
+Patch31:        0001-xfs-clear-sb-s_fs_info-on-mount-failure.patch
 
 Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
@@ -147,6 +149,7 @@ The Linux package contains the Linux kernel doc files
 %patch27 -p1
 %patch28 -p1
 %patch30 -p1
+%patch31 -p1
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
@@ -264,6 +267,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Oct 11 2019 Ajay Kaher <akaher@vmware.com> 4.4.196-1
+-   Update to version 4.4.196
 *   Wed Sep 18 2019 bvikas <bvikas@vmware.com> 4.4.193-1
 -   Update to version 4.4.193
 *   Mon Sep 09 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.191-1

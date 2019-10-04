@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.193
+Version:    	4.4.196
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=be8704c9b9dc83957faa693f89f121a4175b5185
+%define sha1 linux=ebc1f7bfc3544d2e193fa72d3dcad8555fb4e7b0
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -38,6 +38,8 @@ Patch17:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch18:        0002-allow-also-ecb-cipher_null.patch
 Patch19:	net-9p-vdfs-zerocopy.patch
 Patch20:        0001-Enable-cache-loose-for-vdfs-9p.patch
+# Fix for CVE-2018-20976
+Patch21:        0001-xfs-clear-sb-s_fs_info-on-mount-failure.patch
 # Fix for CVE-2018-8043
 Patch22:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
@@ -179,6 +181,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
+%patch21 -p1
 %patch22 -p1
 %patch26 -p1
 %patch27 -p1
@@ -366,6 +369,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri Oct 11 2019 Ajay Kaher <akaher@vmware.com> 4.4.196-1
+-   Update to version 4.4.196
 *   Wed Sep 18 2019 bvikas <bvikas@vmware.com> 4.4.193-1
 -   Update to version 4.4.193
 *   Mon Sep 09 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.191-1
