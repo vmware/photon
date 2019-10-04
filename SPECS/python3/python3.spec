@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -13,6 +13,7 @@ Patch0:         cgi3.patch
 Patch1:         python3-support-photon-platform.patch
 Patch2:         CVE-2019-16056.patch
 Patch3:         CVE-2019-16935.patch
+
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel
@@ -32,6 +33,12 @@ Provides:       python(abi)
 Provides:       /usr/bin/python
 Provides:       /bin/python
 Provides:       /bin/python3
+
+%if %{with_check}
+BuildRequires:  iana-etc
+BuildRequires:  tzdata
+BuildRequires:  curl-devel
+%endif
 
 %description
 The Python 3 package contains a new version of Python development environment.
@@ -261,6 +268,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Mon Oct 21 2019 Shreyas B. <shreyasb@vmware.com> 3.7.4-2
+-   Fixed makecheck errors.
 *   Thu Oct 17 2019 Tapas Kundu <tkundu@vmware.com> 3.7.4-1
 -   Updated to patch release 3.7.4
 -   Fix CVE-2019-16935
