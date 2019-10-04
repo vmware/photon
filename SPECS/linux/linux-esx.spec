@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.72
-Release:        2%{?dist}
+Version:        4.19.76
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=677ee0d53d50007b58932023382da961f95ba772
+%define sha1 linux=bf878636e97a25ab4cb75c641e9aeb7232b44013
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -224,6 +224,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Oct 02 2019 Ajay Kaher <akaher@vmware.com> 4.19.76-1
+-   Update to version 4.19.76
 *   Thu Sep 19 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.72-2
 -   Avoid oldconfig which leads to potential build hang
 *   Wed Sep 11 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.72-1
