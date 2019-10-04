@@ -1,17 +1,15 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
-Version:        8.26.0
-Release:        7%{?dist}
+Version:        8.1907.0
+Release:        1%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha1    rsyslog=9c5e253fbf1c6992ac5d1eefe17587d4da2cdbfd
+%define sha1    rsyslog=d7a861810d1bdf80357cab08504589d336ea9b4b
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf
-#Patch taken from https://github.com/rsyslog/rsyslog/pull/1565
-Patch0:         CVE-2017-12588.patch
-Patch1:         CVE-2018-16881.patch
+Patch0:         CVE-2019-17040.patch
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -23,6 +21,7 @@ BuildRequires:  liblogging-devel
 BuildRequires:  librelp-devel
 BuildRequires:  autogen
 BuildRequires:  gnutls-devel
+BuildRequires:  curl-devel
 Requires:       gnutls
 Requires:       systemd
 Requires:       libestr
@@ -35,8 +34,8 @@ RSYSLOG is the rocket-fast system for log processing.
 It offers high-performance, great security features and a modular design. While it started as a regular syslogd, rsyslog has evolved into a kind of swiss army knife of logging, being able to accept inputs from a wide variety of sources, transform them, and output to the results to diverse destinations.
 %prep
 %setup -q
+autoreconf -fvi
 %patch0 -p1
-%patch1 -p1
 %build
 sed -i 's/libsystemd-journal/libsystemd/' configure
 ./configure \
@@ -85,6 +84,9 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/rsyslog.conf
 %{_sysconfdir}/rsyslog.d
 %changelog
+*   Fri Oct 04 2019 Keerthana K <keerthanak@vmware.com> 8.1907.0-1
+-   Update to 8.1907.0
+-   Fix CVE-2019-17040
 *   Thu Feb 14 2019 Keerthana K <keerthanak@vmware.com> 8.26.0-7
 -   Fix for CVE-2018-16881.
 *   Tue Apr 24 2018 Xiaolin Li <xiaolinl@vmware.com> 8.26.0-6
