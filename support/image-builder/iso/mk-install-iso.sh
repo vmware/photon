@@ -11,8 +11,9 @@
 #   End
 #
 
-set -o errexit        # exit if error...insurance ;)
+set -e
 set -x
+
 SCRIPT_PATH=$(dirname $(realpath -s $0))
 PRGNAME=${0##*/}    # script name minus the path
 
@@ -70,12 +71,10 @@ TDNF_CMD="tdnf install -y --installroot $INITRD --rpmverbosity 10 -c ${WORKINGDI
 # run host's tdnf, if fails - try one from photon:3.0 docker image
 $TDNF_CMD || docker run -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR photon:3.0 $TDNF_CMD
 
-rm ${WORKINGDIR}/photon-local.repo
-rm ${WORKINGDIR}/tdnf.conf
+rm -f ${WORKINGDIR}/photon-local.repo ${WORKINGDIR}/tdnf.conf
 
 # 2. copy installer code to initrd
 cp -r $INSTALLER_PATH $INITRD
-
 
 # 3. finalize initrd system (mk-finalize-system.sh)
 chroot ${INITRD} /usr/sbin/pwconv
@@ -88,8 +87,7 @@ echo "photon-installer" > $INITRD/etc/hostname
 # Importing the pubkey (photon-repos required)
 #chroot ${INITRD} rpm --import /etc/pki/rpm-gpg/*
 
-cp -r $SCRIPT_PATH/BUILD_DVD/isolinux ${WORKINGDIR}/
-cp -r $SCRIPT_PATH/BUILD_DVD/boot ${WORKINGDIR}/
+cp -r $SCRIPT_PATH/BUILD_DVD/isolinux $SCRIPT_PATH/BUILD_DVD/boot ${WORKINGDIR}/
 mkdir ${WORKINGDIR}/boot/grub2/fonts/
 cp $INSTALLER_PATH/boot/ascii.pf2 ${WORKINGDIR}/boot/grub2/fonts/
 mkdir -p ${WORKINGDIR}/boot/grub2/themes/photon/
@@ -137,12 +135,10 @@ mknod ${INITRD}/dev/ram2 b 1 2
 mknod ${INITRD}/dev/ram3 b 1 3
 mknod ${INITRD}/dev/sda b 8 0
 
-
 #- Step 5 - Creating the boot script
 mkdir -p ${INITRD}/etc/systemd/scripts
 
 # Step 6 create fstab
-
 cp $SCRIPT_PATH/BUILD_DVD/fstab ${INITRD}/etc/fstab
 
 mkdir -p ${INITRD}/etc/yum.repos.d
@@ -204,9 +200,7 @@ echo ${RPMS_PATH}
 cd ${RPMS_PATH}
 mkdir ${WORKINGDIR}/RPMS
 for rpm_name in $RPM_LIST; do
-    if [ -f "$rpm_name" ]; then
-        cp --parent $rpm_name ${WORKINGDIR}/RPMS/;
-    fi
+    [ -f "$rpm_name" ] && cp --parent $rpm_name ${WORKINGDIR}/RPMS/
 done
 )
 
@@ -214,9 +208,7 @@ done
 (
 cd $STAGE_PATH
 for file_name in $ADDITIONAL_FILES_TO_COPY_FROM_STAGE; do
-    if [ -n "$file_name" ]; then
-        cp $file_name ${WORKINGDIR}/;
-    fi
+    [ -n "$file_name" ] &&  cp $file_name ${WORKINGDIR}
 done
 )
 
@@ -234,82 +226,63 @@ fi
 rm -rf ${INITRD}/LOGS
 
 # Cleaning up
-for filename in ${INITRD}/usr/lib/*; do
-    if [[ -f ${filename} ]]; then
-        file ${filename} | grep ELF >/dev/null 2>&1 && strip $filename ||:
-    fi;
-done
+find ${INITRD}/usr/lib/ -maxdepth 1 -mindepth 1 -type f | xargs -i sh -c "grep ELF {} >/dev/null 2>&1 && strip {} || :"
 
-rm -rf ${INITRD}/home/*
-rm -rf ${INITRD}/var/lib/rpm
-rm -rf ${INITRD}/cache
+rm -rf ${INITRD}/home/*         \
+        ${INITRD}/var/lib/rpm   \
+        ${INITRD}/cache         \
+        ${INITRD}/boot          \
+        ${INITRD}/usr/include   \
+        ${INITRD}/usr/sbin/sln  \
+        ${INITRD}/usr/bin/iconv \
+        ${INITRD}/usr/bin/oldfind       \
+        ${INITRD}/usr/bin/localedef     \
+        ${INITRD}/usr/bin/sqlite3       \
+        ${INITRD}/usr/bin/grub2-*       \
+        ${INITRD}/usr/bin/bsdcpio       \
+        ${INITRD}/usr/bin/bsdtar        \
+        ${INITRD}/usr/bin/networkctl    \
+        ${INITRD}/usr/bin/machinectl    \
+        ${INITRD}/usr/bin/pkg-config    \
+        ${INITRD}/usr/bin/openssl       \
+        ${INITRD}/usr/bin/timedatectl   \
+        ${INITRD}/usr/bin/localectl     \
+        ${INITRD}/usr/bin/systemd-cgls  \
+        ${INITRD}/usr/bin/systemd-analyze       \
+        ${INITRD}/usr/bin/systemd-nspawn        \
+        ${INITRD}/usr/bin/systemd-inhibit       \
+        ${INITRD}/usr/bin/systemd-studio-bridge \
+        ${INITRD}/usr/lib/python2.7/lib2to3     \
+        ${INITRD}/usr/lib/python2.7/lib-tk      \
+        ${INITRD}/usr/lib/python2.7/ensurepip   \
+        ${INITRD}/usr/lib/python2.7/distutils   \
+        ${INITRD}/usr/lib/python2.7/pydoc_data  \
+        ${INITRD}/usr/lib/python2.7/idlelib     \
+        ${INITRD}/usr/lib/python2.7/unittest    \
+        ${INITRD}/usr/lib/librpmbuild.so*       \
+        ${INITRD}/usr/lib/libdb_cxx*            \
+        ${INITRD}/usr/lib/libnss_compat*        \
+        ${INITRD}/usr/lib/grub/i386-pc/*.module \
+        ${INITRD}/usr/lib/grub/x86_64-efi/*.module \
+        ${INITRD}/lib64/libmvec*        \
+        ${INITRD}/usr/lib64/gconv
 
+find "${INITRD}/usr/sbin" -mindepth 1 -maxdepth 1 \
+                        ! -name grub2-install -exec rm -rvf {} \;
 
-# Remove the boot directory
-rm -rf ${INITRD}/boot
-
-#Remove the include files.
-rm -rf ${INITRD}/usr/include
-
-rm -f ${INITRD}/lib64/libmvec*
-rm -f ${INITRD}/usr/sbin/sln
-rm -f ${INITRD}/usr/bin/oldfind
-
-rm -f ${INITRD}/usr/bin/localedef
-rm -f ${INITRD}/usr/bin/systemd-nspawn
-rm -f ${INITRD}/usr/bin/systemd-analyze
-rm -rf ${INITRD}/usr/lib64/gconv
-rm -f ${INITRD}/usr/bin/sqlite3
-
-rm -f ${INITRD}/usr/bin/bsdcpio
-rm -f ${INITRD}/usr/bin/bsdtar
-rm -f ${INITRD}/usr/bin/networkctl
-rm -f ${INITRD}/usr/bin/machinectl
-rm -f ${INITRD}/usr/bin/pkg-config
-rm -f ${INITRD}/usr/bin/openssl
-rm -f ${INITRD}/usr/bin/timedatectl
-rm -f ${INITRD}/usr/bin/localectl
-rm -f ${INITRD}/usr/bin/systemd-cgls
-rm -f ${INITRD}/usr/bin/systemd-inhibit
-rm -f ${INITRD}/usr/bin/systemd-studio-bridge
-rm -f ${INITRD}/usr/bin/iconv
-
-rm -rf ${INITRD}/usr/lib/python2.7/lib2to3
-rm -rf ${INITRD}/usr/lib/python2.7/lib-tk
-rm -rf ${INITRD}/usr/lib/python2.7/ensurepip
-rm -rf ${INITRD}/usr/lib/python2.7/distutils
-rm -rf ${INITRD}/usr/lib/python2.7/pydoc_data
-rm -rf ${INITRD}/usr/lib/python2.7/idlelib
-rm -rf ${INITRD}/usr/lib/python2.7/unittest
-
-rm -f ${INITRD}/usr/lib/librpmbuild.so*
-rm -f ${INITRD}/usr/lib/libdb_cxx*
-rm -f ${INITRD}/usr/lib/libnss_compat*
-
-rm -f ${INITRD}/usr/bin/grub2-*
-rm -f ${INITRD}/usr/lib/grub/i386-pc/*.module
-rm -f ${INITRD}/usr/lib/grub/x86_64-efi/*.module
-
-for j in `ls ${INITRD}/usr/sbin/grub2*`; do
-    bsname=$(basename "$j")
-    if [ $bsname != 'grub2-install' ]; then
-        rm -f $j
-    fi
-done
-
-# remove unused /usr/share
-for i in `ls ${INITRD}/usr/share/`; do
-    if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' -a $i != 'factory' -a $i != 'dbus-1' ]; then
-        rm -rf ${INITRD}/usr/share/$i
-    fi
-done
+find "${INITRD}/usr/share" -mindepth 1 -maxdepth 1 \
+                        ! -name terminfo \
+                        ! -name cracklib \
+                        ! -name grub    \
+                        ! -name factory \
+                        ! -name dbus-1 -exec rm -rvf {} \;
 
 # Set password max days to 99999 (disable aging)
 chroot ${INITRD} /bin/bash -c "chage -M 99999 root"
 
 # Generate the initrd
 pushd $INITRD
-(find . | cpio -o -H newc --quiet | gzip -9 ) > ${WORKINGDIR}/isolinux/initrd.img
+(find . | cpio -o -H newc --quiet | gzip -9) > ${WORKINGDIR}/isolinux/initrd.img
 popd
 rm -rf $INITRD
 

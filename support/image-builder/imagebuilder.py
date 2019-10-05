@@ -1,15 +1,11 @@
 #!/usr/bin/python3
 
 import os
-import shutil
-import random
-import string
-import json
-from utils import Utils
 import sys
-import crypt
+import shutil
 import subprocess
 from argparse import ArgumentParser
+from utils import Utils
 import imagegenerator
 
 def runInstaller(options, install_config, working_directory):
@@ -20,7 +16,7 @@ def runInstaller(options, install_config, working_directory):
         raise ImportError('Installer path incorrect!')
 
     # Run the installer
-    installer = Installer(working_directory = working_directory, rpm_path=options.rpm_path,
+    installer = Installer(working_directory=working_directory, rpm_path=options.rpm_path,
                           log_path=options.log_path, log_level=options.log_level)
     installer.configure(install_config)
     return installer.execute()
@@ -83,7 +79,7 @@ def make_debug_iso(working_directory, debug_iso_path, rpm_list):
     if os.path.exists(working_directory) and os.path.isdir(working_directory):
         shutil.rmtree(working_directory)
     process = subprocess.Popen(['mkdir', '-p', os.path.join(working_directory, "DEBUGRPMS")])
-    retval = process.wait()
+    process.wait()
     for rpmfile in rpm_list:
         if os.path.isfile(rpmfile):
             dirname = os.path.dirname(rpmfile)
@@ -91,22 +87,22 @@ def make_debug_iso(working_directory, debug_iso_path, rpm_list):
             dest_working_directory = os.path.join(working_directory, "DEBUGRPMS", lastfolder)
             if not os.path.isdir(dest_working_directory):
                 process = subprocess.Popen(['mkdir', dest_working_directory])
-                retval = process.wait()
+                process.wait()
             shutil.copy2(rpmfile, dest_working_directory)
     process = subprocess.Popen(['mkisofs', '-r', '-o', debug_iso_path, working_directory])
-    retval = process.wait()
+    process.wait()
     shutil.rmtree(working_directory)
 
 def make_src_iso(working_directory, src_iso_path, rpm_list):
     if os.path.exists(working_directory) and os.path.isdir(working_directory):
         shutil.rmtree(working_directory)
     process = subprocess.Popen(['mkdir', '-p', os.path.join(working_directory, "SRPMS")])
-    retval = process.wait()
+    process.wait()
     for rpmfile in rpm_list:
         if os.path.isfile(rpmfile):
             shutil.copy2(rpmfile, os.path.join(working_directory, "SRPMS"))
     process = subprocess.Popen(['mkisofs', '-r', '-o', src_iso_path, working_directory])
-    retval = process.wait()
+    process.wait()
     shutil.rmtree(working_directory)
 
 def createIso(options):
@@ -124,11 +120,12 @@ def createIso(options):
             create_additional_file_list_to_copy_in_iso(
                 os.path.abspath(options.stage_path), options.package_list_file))
 
-        retval = subprocess.call([script_directory + '/iso/mk-install-iso.sh', options.installer_path,
-                         working_directory, options.iso_path,
-                         options.rpm_path, options.package_list_file,
-                         rpm_list, options.stage_path, files_to_copy,
-                         options.generated_data_path])
+        retval = subprocess.call([script_directory + '/iso/mk-install-iso.sh',
+                                  options.installer_path,
+                                  working_directory, options.iso_path,
+                                  options.rpm_path, options.package_list_file,
+                                  rpm_list, options.stage_path, files_to_copy,
+                                  options.generated_data_path])
 
         if retval:
             raise Exception("Unable to create install ISO")
@@ -178,15 +175,11 @@ def verifyImageTypeAndConfig(config_file, img_name):
             else:
                 return (False, config)
         return (True, config)
-    else:
-        if not config_file or config_file == '':
-            return (False, config)
-        else:
-            config = Utils.jsonread(config_file)
-            if 'image_type' not in config:
-                return (False, config)
-            else:
-                return (True, config)
+    if not config_file or config_file == '':
+        return (False, config)
+
+    config = Utils.jsonread(config_file)
+    return ('image_type' in config, config)
 
 def createImage(options):
     (validImage, config) = verifyImageTypeAndConfig(options.config_file, options.img_name)
@@ -227,7 +220,7 @@ def createImage(options):
 
     # Create disk image
     Utils.runshellcommand(
-        "dd if=/dev/zero of={} bs=1024 seek={} count=0".format(image_file,config['size']*1024))
+        "dd if=/dev/zero of={} bs=1024 seek={} count=0".format(image_file, config['size'] * 1024))
     Utils.runshellcommand(
         "chmod 755 {}".format(image_file))
 
@@ -243,13 +236,11 @@ def createImage(options):
     Utils.runshellcommand("losetup -d {}".format(install_config['disk']))
 
     os.chdir(script_dir)
-    imagegenerator.generateImage(
-                                image_file,
-                                options.rpm_path + '/additional/',
-                                options.src_root + '/tools/bin/',
-                                options.src_root,
-                                config
-                              )
+    imagegenerator.generateImage(image_file,
+                                 options.rpm_path + '/additional/',
+                                 options.src_root + '/tools/bin/',
+                                 options.src_root,
+                                 config)
 
 if __name__ == '__main__':
     parser = ArgumentParser()
