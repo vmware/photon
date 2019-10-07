@@ -3,7 +3,7 @@
 
 Name:           python-M2Crypto
 Version:        0.30.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 License:        MIT
@@ -12,6 +12,7 @@ Source0:        https://pypi.python.org/packages/11/29/0b075f51c38df4649a24ecff9
 Vendor:         VMware, Inc.
 Distribution:   Photon
 %define sha1    M2Crypto=8e2eb23196afbac08ad566ecb3378de9f35c5f12
+Patch0:         fix_test_public_encrypt.patch
 BuildRequires:  python2-devel
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
@@ -19,6 +20,10 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-typing
 Requires:       python-typing
 Requires:       python2
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-typing
+BuildRequires:  python3-xml
 
 %description
 M2Crypto is a crypto and SSL toolkit for Python featuring the following:
@@ -32,12 +37,7 @@ messenger for Zope.
 
 %package -n     python3-M2Crypto
 Summary:        python3 version of Crypto and SSL toolkit
-BuildRequires:  python3-devel
-BuildRequires:  openssl
-BuildRequires:  openssl-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-typing
-BuildRequires:  python3-xml
+
 Requires:       python3-typing
 Requires:       python3
 
@@ -46,6 +46,7 @@ Python 3 version.
 
 %prep
 %setup -q -n M2Crypto-%{version}
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -80,6 +81,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Oct 07 2019 Shreyas B. <shreyasb@vmware.com> 0.30.1-3
+-   Fixed makecheck errors.
 *   Mon Dec 03 2018 Ashwin H <ashwinh@vmware.com> 0.30.1-2
 -   Add %check
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.30.1-1
