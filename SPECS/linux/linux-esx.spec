@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.76
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -24,6 +24,7 @@ Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         4.18-x86-vmware-STA-support.patch
 Patch7:	        9p-trans_fd-extend-port-variable-to-u32.patch
+Patch8:         init-do_mounts-recreate-dev-root.patch
 
 # -esx
 Patch13:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
@@ -104,6 +105,7 @@ The Linux package contains the Linux kernel doc files
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
@@ -224,6 +226,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 07 2019 Bo Gan <ganb@vmware.com> 4.19.76-3
+-   Recreate /dev/root in init
 *   Fri Oct 4 2019 Bo Gan <ganb@vmware.com> 4.19.76-2
 -   Enable IMA with SHA256 as default hash algorithm
 *   Wed Oct 02 2019 Ajay Kaher <akaher@vmware.com> 4.19.76-1
