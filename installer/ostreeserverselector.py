@@ -32,10 +32,10 @@ class OSTreeServerSelector(object):
         self.window = Window(win_height, win_width, maxy, maxx, 'Select OSTree Server', True, host_menu)
 
     def set_default_repo_installation(self,  is_default_repo ):
-        self.install_config['default_repo'] = is_default_repo
+        self.install_config['ostree']['default_repo'] = is_default_repo
         return ActionResult(True, None)
 
     def display(self):
-        if self.install_config['type'] == 'ostree_host':
+        if 'ostree' in self.install_config:
             return self.window.do_action()
         return ActionResult(True, None)

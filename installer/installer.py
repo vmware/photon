@@ -13,6 +13,7 @@ import glob
 import re
 import modules.commons
 import random
+import curses
 from logger import Logger
 from commandutils import CommandUtils
 from jsonwrapper import JsonWrapper
@@ -35,6 +36,8 @@ class Installer(object):
         'eject_cdrom',
         'hostname',
         'install_linux_esx',
+        'log_level',
+        'ostree',
         'packages',
         'packagelist_file',
         'partition_type',
@@ -44,7 +47,8 @@ class Installer(object):
         'public_key',
         'setup_grub_script',
         'shadow_password',
-        'type'
+        'type',
+        'ui'
     }
 
     mount_command = os.path.dirname(__file__)+"/mk-mount-disk.sh"
@@ -54,15 +58,15 @@ class Installer(object):
     unmount_disk_command = os.path.dirname(__file__)+"/mk-unmount-disk.sh"
     default_partitions = [{"mountpoint": "/", "size": 0, "filesystem": "ext4"}]
 
-    def __init__(self, working_directory="/mnt/photon-root", maxy=0, maxx=0, iso_installer=False,
-                 rpm_path=os.path.dirname(__file__)+"/../stage/RPMS", log_path=os.path.dirname(__file__)+"/../stage/LOGS", log_level="info"):
+    def __init__(self, working_directory="/mnt/photon-root",
+                 rpm_path=os.path.dirname(__file__)+"/../stage/RPMS", log_path=os.path.dirname(__file__)+"/../stage/LOGS"):
         self.exiting = False
         self.interactive = False
         self.install_config = None
-        self.iso_installer = iso_installer
         self.rpm_path = rpm_path
-        self.logger = Logger.get_logger(log_path, log_level, not iso_installer)
-        self.cmd = CommandUtils(self.logger)
+        self.log_path = log_path
+        self.logger = None
+        self.cmd = None
         self.working_directory = working_directory
 
         if os.path.exists(self.working_directory) and os.path.isdir(self.working_directory) and working_directory == '/mnt/photon-root':
@@ -80,37 +84,29 @@ class Installer(object):
 
         self.setup_grub_command = os.path.dirname(__file__)+"/mk-setup-grub.sh"
 
-        self.rpms_tobeinstalled = None
-
-        if iso_installer:
-            self.maxy = maxy
-            self.maxx = maxx
-            #initializing windows
-            height = 10
-            width = 75
-            progress_padding = 5
-
-            progress_width = width - progress_padding
-            starty = (maxy - height) // 2
-            startx = (maxx - width) // 2
-            self.window = Window(height, width, maxy, maxx,
-                                 'Installing Photon', False)
-            self.progress_bar = ProgressBar(starty + 3,
-                                            startx + progress_padding // 2,
-                                            progress_width)
-
         signal.signal(signal.SIGINT, self.exit_gracefully)
 
     """
     create, append and validate configuration date - install_config
     """
     def configure(self, install_config, ui_config = None):
+        # Initialize logger and cmd first
+        if not install_config:
+            # UI installation
+            log_level = 'debug'
+            console = False
+        else:
+            log_level = install_config.get('log_level', 'info')
+            console = not install_config.get('ui', False)
+        self.logger = Logger.get_logger(self.log_path, log_level, console)
+        self.cmd = CommandUtils(self.logger)
+
         # run UI configurator iff install_config param is None
         if not install_config and ui_config:
             from iso_config import IsoConfig
             self.interactive = True
-            config = IsoConfig(self.maxy, self.maxx)
-            install_config = config.configure(ui_config)
+            config = IsoConfig()
+            install_config = curses.wrapper(config.configure, ui_config)
 
         self._add_defaults(install_config)
 
@@ -126,12 +122,10 @@ class Installer(object):
         if 'setup_grub_script' in self.install_config:
             self.setup_grub_command = self.install_config['setup_grub_script']
 
-        if self.install_config.get('type', '') == "ostree_host":
-            ostree = OstreeInstaller(self.install_config, self.maxy, self.maxx, self.interactive,
-                              self.iso_installer, self.rpm_path, self.log_path, self.log_level)
-            return ostree.install()
-
-        return self._install()
+        if self.install_config['ui']:
+            curses.wrapper(self._install)
+        else:
+            self._install()
 
     def _add_defaults(self, install_config):
         """
@@ -177,6 +171,14 @@ class Installer(object):
             else:
                 install_config['shadow_password'] = '*'
 
+        # Do not show UI progress by default
+        if 'ui' not in install_config:
+            install_config['ui'] = False
+
+        # Log level
+        if 'log_level' not in install_config:
+            install_config['log_level'] = 'info'
+
     def _check_install_config(self, install_config):
         """
         Sanity check of install_config before its execution.
@@ -192,22 +194,57 @@ class Installer(object):
 
         return None
 
-    def _install(self):
+    def _install(self, stdscreen=None):
         """
         Install photon system and handle exception
         """
-        if self.iso_installer:
+        if self.install_config['ui']:
+            # init the screen
+            curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
+            curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
+            curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_GREEN)
+            curses.init_pair(4, curses.COLOR_RED, curses.COLOR_WHITE)
+            stdscreen.bkgd(' ', curses.color_pair(1))
+            maxy, maxx = stdscreen.getmaxyx()
+            curses.curs_set(0)
+
+            # initializing windows
+            height = 10
+            width = 75
+            progress_padding = 5
+
+            progress_width = width - progress_padding
+            starty = (maxy - height) // 2
+            startx = (maxx - width) // 2
+            self.window = Window(height, width, maxy, maxx,
+                                 'Installing Photon', False)
+            self.progress_bar = ProgressBar(starty + 3,
+                                            startx + progress_padding // 2,
+                                            progress_width)
             self.window.show_window()
             self.progress_bar.initialize('Initializing installation...')
             self.progress_bar.show()
 
         try:
-            return self._unsafe_install()
+            if 'ostree' in self.install_config:
+                from ostreeinstaller import OstreeInstaller
+                ostree = OstreeInstaller(self)
+                ostree._unsafe_install()
+            else:
+                self._unsafe_install()
         except Exception as inst:
             self.logger.exception(repr(inst))
             self.exit_gracefully()
-            if not self.iso_installer:
-                raise
+
+        # Congratulation screen
+        if self.install_config['ui']:
+            self.progress_bar.hide()
+            self.window.addstr(0, 0, 'Congratulations, Photon has been installed in {0} secs.\n\n'
+                               'Press any key to continue to boot...'
+                               .format(self.progress_bar.time_elapsed))
+            if self.interactive:
+                self.window.content_window().getch()
+            self._eject_cdrom()
 
     def _unsafe_install(self):
         """
@@ -225,7 +262,6 @@ class Installer(object):
         self._post_install()
         self._disable_network_in_chroot()
         self._cleanup_and_exit()
-        return ActionResult(True, None)
 
     def exit_gracefully(self, signal1=None, frame1=None):
         """
@@ -236,7 +272,7 @@ class Installer(object):
         del frame1
         if not self.exiting:
             self.exiting = True
-            if self.iso_installer:
+            if self.install_config['ui']:
                 self.progress_bar.hide()
                 self.window.addstr(0, 0, 'Oops, Installer got interrupted.\n\n' +
                                    'Press any key to get to the bash...')
@@ -265,16 +301,6 @@ class Installer(object):
             if retval != 0:
                 self.logger.error("Failed to unmap partitions of the disk image {}". format(disk))
                 return None
-
-        # Congratulation screen
-        if self.iso_installer and not self.exiting:
-            self.progress_bar.hide()
-            self.window.addstr(0, 0, 'Congratulations, Photon has been installed in {0} secs.\n\n'
-                               'Press any key to continue to boot...'
-                               .format(self.progress_bar.time_elapsed))
-            if self.interactive:
-                self.window.content_window().getch()
-            self._eject_cdrom()
 
     def _bind_installer(self):
         """
@@ -386,7 +412,7 @@ class Installer(object):
             self.logger.info("Failed to setup the disk for installation")
             self.exit_gracefully()
 
-        if self.iso_installer:
+        if self.install_config['ui']:
             self.progress_bar.update_message('Initializing system...')
         self._bind_installer()
         self._bind_repo_dir()
@@ -400,7 +426,7 @@ class Installer(object):
         """
         Finalize the system after the installation
         """
-        if self.iso_installer:
+        if self.install_config['ui']:
             self.progress_bar.show_loading('Finalizing installation')
         #Setup the disk
         retval = self.cmd.run([Installer.chroot_command, '-w', self.photon_root,
@@ -526,7 +552,7 @@ class Installer(object):
         # run in shell to do not throw exception if tdnf not found
         process = subprocess.Popen(tdnf_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        if self.iso_installer:
+        if self.install_config['ui']:
             while True:
                 output = process.stdout.readline().decode()
                 if output == '':
@@ -629,7 +655,7 @@ class Installer(object):
         Partition the disk
         """
 
-        if self.iso_installer:
+        if self.install_config['ui']:
             self.progress_bar.update_message('Partitioning...')
 
         if 'partitions' not in self.install_config:

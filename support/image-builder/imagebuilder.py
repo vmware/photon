@@ -17,9 +17,9 @@ def runInstaller(options, install_config, working_directory):
 
     # Run the installer
     installer = Installer(working_directory=working_directory, rpm_path=options.rpm_path,
-                          log_path=options.log_path, log_level=options.log_level)
+                          log_path=options.log_path)
     installer.configure(install_config)
-    return installer.execute()
+    installer.execute()
 
 def get_file_name_with_last_folder(filename):
     basename = os.path.basename(filename)
@@ -224,13 +224,15 @@ def createImage(options):
     Utils.runshellcommand(
         "chmod 755 {}".format(image_file))
 
+    if 'log_level' not in install_config:
+        install_config['log_level'] = options.log_level
+
     # Associating loopdevice to raw disk and save the name as a target's 'disk'
     install_config['disk'] = (Utils.runshellcommand(
         "losetup --show -f {}".format(image_file))).rstrip('\n')
 
-    result = runInstaller(options, install_config, workingDir)
-    if not result:
-        raise Exception("Installation process failed")
+    # No return value, it throws exception on error.
+    runInstaller(options, install_config, workingDir)
 
     # Detaching loop device from vmdk
     Utils.runshellcommand("losetup -d {}".format(install_config['disk']))

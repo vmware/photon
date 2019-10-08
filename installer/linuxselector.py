@@ -37,6 +37,9 @@ class LinuxSelector(object):
         return ActionResult(True, None)
 
     def display(self):
+        if 'ostree' in self.install_config:
+            return ActionResult(True, None)
+
         self.window.addstr(0, 0, 'The installer has detected that you are installing')
         self.window.addstr(1, 0, 'Photon OS on a VMware hypervisor.')
         self.window.addstr(2, 0, 'Which type of Linux kernel would you like to install?')

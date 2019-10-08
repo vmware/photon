@@ -4,6 +4,7 @@ import re
 import random
 import requests
 import cracklib
+import curses
 from logger import Logger
 from custompartition import CustomPartition
 from packageselector import PackageSelector
@@ -19,8 +20,7 @@ from commandutils import CommandUtils
 class IsoConfig(object):
     g_ostree_repo_url = None
     """This class handles iso installer configuration."""
-    def __init__(self, maxy, maxx):
-        self.logger = None
+    def __init__(self):
         self.alpha_chars = list(range(65, 91))
         self.alpha_chars.extend(range(97, 123))
         self.hostname_accepted_chars = self.alpha_chars
@@ -30,11 +30,7 @@ class IsoConfig(object):
         self.hostname_accepted_chars.extend([ord('.'), ord('-')])
         self.random_id = '%12x' % random.randrange(16**12)
         self.random_hostname = "photon-" + self.random_id.strip()
-
-        self.maxy = maxy
-        self.maxx = maxx
         self.logger = Logger.get_logger()
-
 
     @staticmethod
     def validate_hostname(hostname):
@@ -132,10 +128,22 @@ class IsoConfig(object):
             password = str(message)
         return password == text, "Error: " + password
 
-    def configure(self, ui_config):
+    def configure(self, stdscreen, ui_config):
         """Configuration through UI"""
+        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
+        curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
+        curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_GREEN)
+        curses.init_pair(4, curses.COLOR_RED, curses.COLOR_WHITE)
+        stdscreen.bkgd(' ', curses.color_pair(1))
+        maxy, maxx = stdscreen.getmaxyx()
+        stdscreen.addstr(maxy - 1, 0, '  Arrow keys make selections; <Enter> activates.')
+        curses.curs_set(0)
+
         install_config = {}
-        items = self.add_ui_pages(install_config, ui_config, self.maxy, self.maxx)
+        # force UI progress screen
+        install_config['ui'] = True
+
+        items = self.add_ui_pages(install_config, ui_config, maxy, maxx)
         index = 0
         while True:
             result = items[index][0]()
@@ -195,7 +203,7 @@ class IsoConfig(object):
         ostree_server_selector = OSTreeServerSelector(maxy, maxx, install_config)
         ostree_url_reader = OSTreeWindowStringReader(
             maxy, maxx, 10, 80,
-            'ostree_repo_url',
+            'repo_url',
             None, # confirmation error msg if it's a confirmation text
             None, # echo char
             None, # set of accepted chars
@@ -205,7 +213,7 @@ class IsoConfig(object):
             "http://")
         ostree_ref_reader = OSTreeWindowStringReader(
             maxy, maxx, 10, 70,
-            'ostree_repo_ref',
+            'repo_ref',
             None, # confirmation error msg if it's a confirmation text
             None, # echo char
             None, # set of accepted chars

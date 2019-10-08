@@ -14,9 +14,12 @@ class CommandUtils(object):
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out,err = process.communicate()
         retval = process.returncode
-        self.logger.info(out.decode())
+        if out != b'':
+            self.logger.info(out.decode())
         if retval != 0:
-            self.logger.debug(err.decode())
+            self.logger.info("Command failed: {}".format(cmd))
+            self.logger.info("Error code: {}".format(retval))
+            self.logger.error(err.decode())
         return retval
 
     @staticmethod

@@ -21,14 +21,20 @@ Kickstart config file is a json format with following possible parameters:
 
 'eject_cdrom' (optional)
 	Eject or not cdrom after installation completed.
-	Boolean: True or False
-	Default value: True
-	Example: { 'eject_cdrom': False }
+	Boolean: true or false
+	Default value: true
+	Example: { 'eject_cdrom': false }
 
 'hostname' (optional)
 	Set target host name.
 	Default value: 'photon-<randomized string>'
 	Example: { 'hostname': 'photon-machine' }
+
+'log_level' (optional)
+	Set installer logging level.
+	Acceptible values are: "error", "warning", "info", "debug"
+	Default value: 'info'
+	Example: { 'log_level': 'debug' }
 
 'packagelist_file' (optional if 'packages' set)
 	Contains file name which has list of packages to install.
@@ -93,5 +99,12 @@ Kickstart config file is a json format with following possible parameters:
 	Short form of: { "password": {
 				"crypted": true,
 				"text": "<encrypted password here>"} }
+
+'ui' (optional)
+	Installer will show UI for progress status if it set to true.
+	Or logging output will be printed to console - default behavior.
+	Boolean: true or false
+	Default value: false
+	Example: { 'ui': true }
 
 For reference, look at 'sample_ks.cfg' file

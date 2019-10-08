@@ -4,63 +4,52 @@
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
 import shlex
-import curses
 from argparse import ArgumentParser
 from installer import Installer
 from commandutils import CommandUtils
+from jsonwrapper import JsonWrapper
 
 class IsoInstaller(object):
-    def __init__(self, stdscreen, options_file, rpms_path):
-        self.screen = stdscreen
-
-        # Init the colors
-        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
-        curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
-        curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_GREEN)
-        curses.init_pair(4, curses.COLOR_RED, curses.COLOR_WHITE)
-
-        self.screen.bkgd(' ', curses.color_pair(1))
-
-        self.maxy, self.maxx = self.screen.getmaxyx()
-        self.screen.addstr(self.maxy - 1, 0, '  Arrow keys make selections; <Enter> activates.')
-        curses.curs_set(0)
-
+    def __init__(self, options):
         install_config=None
         self.cd_mount_path = None
-        ks_path = None
         cd_search = None
+        ks_path = options.install_config_file
+        repo_path = options.repo_path
 
         with open('/proc/cmdline', 'r') as f:
             kernel_params = shlex.split(f.read().replace('\n', ''))
 
         for arg in kernel_params:
             if arg.startswith("ks="):
-                ks_path = arg[len("ks="):]
+                if not ks_path:
+                    ks_path = arg[len("ks="):]
             elif arg.startswith("repo="):
-                rpms_path = arg[len("repo="):]
+                if not repo_path:
+                    repo_path = arg[len("repo="):]
             elif arg.startswith("photon.media="):
                 cd_search = arg[len("photon.media="):]
 
-        if cd_search is not None:
+        if not repo_path:
+            print("Please specify RPM repo path.")
+            return
+
+        if cd_search:
             self.mount_cd(cd_search)
 
-        if ks_path is not None:
+        if ks_path:
             install_config=self.get_ks_config(ks_path)
 
-        # Run installer
-        installer = Installer(
-            maxy=self.maxy,
-            maxx=self.maxx,
-            iso_installer=True,
-            rpm_path=rpms_path,
-            log_path="/var/log",
-            log_level="debug")
+        if options.ui_config_file:
+            ui_config = (JsonWrapper(options.ui_config_file)).read()
+        else:
+            ui_config={}
+        ui_config['options_file'] = options.options_file
 
-        ui_config={}
-        ui_config['options_file'] = options_file
+        # Run installer
+        installer = Installer(rpm_path=repo_path, log_path="/var/log")
 
         installer.configure(install_config, ui_config)
-        self.screen.erase()
         installer.execute()
 
     def _load_ks_config(self, path):
@@ -146,7 +135,10 @@ class IsoInstaller(object):
 if __name__ == '__main__':
     usage = "Usage: %prog [options]"
     parser = ArgumentParser(usage)
+    parser.add_argument("-c", "--config", dest="install_config_file")
+    parser.add_argument("-u", "--ui-config", dest="ui_config_file")
     parser.add_argument("-j", "--json-file", dest="options_file", default="input.json")
-    parser.add_argument("-r", "--rpms-path", dest="rpms_path", default="../stage/RPMS")
+    parser.add_argument("-r", "--repo-path", dest="repo_path")
     options = parser.parse_args()
-    curses.wrapper(IsoInstaller, options.options_file, options.rpms_path)
+
+    IsoInstaller(options)
