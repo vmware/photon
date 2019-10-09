@@ -1,7 +1,7 @@
 Name:            kibana
 Summary:         Browser-based analytics and search dashboard for Elasticsearch.
 Version:         6.7.0
-Release:         2%{?dist}
+Release:         3%{?dist}
 License:         Apache License Version 2.0
 URL:             https://www.elastic.co/products/kibana
 Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}.tar.gz
@@ -9,6 +9,10 @@ Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Daemons
 %define sha1     %{name}-%{version}=36bc3dea07c787c395d1b6aaf46e2ade93c5b7a9
+Source1:         node_modules_kibana_6.7.0.tar.gz
+%define sha1     node_modules_kibana=bb056b73894050cc7007100d685a8817101f286a
+Source2:         kibana_build_6.7.0.tar.gz
+%define sha1     kibana_build=c259f2374e42a20cadada3665b9adfac1e056570
 BuildArch:       x86_64
 BuildRequires:   git
 BuildRequires:   yarn
@@ -37,11 +41,11 @@ It enables visual exploration and real-time analysis of your data in Elasticsear
 # 5) tar -zcvf kibana-6.7.0.tar.gz kibana-%{version}
 %setup -q -n %{name}-%{version}
 
-yarn kbn bootstrap
+tar xf %{SOURCE1} --no-same-owner
 
 %build
 export PATH=${PATH}:/usr/bin
-yarn build --oss --skip-os-packages
+tar xf %{SOURCE2} --no-same-owner
 
 
 %install
@@ -126,6 +130,8 @@ exit
 %{_datadir}/%{name}
 
 %changelog
+*   Wed Oct 09 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-3
+-   Use bundled source to build
 *   Thu Jul 18 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-2
 -   Added missing dll's & config files
 -   Packaged file from the correct oss build folder
