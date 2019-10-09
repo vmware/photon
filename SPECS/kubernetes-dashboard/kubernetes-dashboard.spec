@@ -1,13 +1,15 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        1.10.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    kubernetes-dashboard=ad2d26be3a7d099e0d917f04b873a72945694d58
 Source1:        roboto-mono.tar.gz
 %define sha1    roboto-mono=4544ed04e1aa3249efbcb8e58b957c1a7f6a8ada
+Source2:        node_modules-10.15.2.tar.gz
+%define sha1    node_modules=9c34ab9208696e0e6464d90d040129e7fe969b12
 Patch0:         remove_easyfont_roboto_mono.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -32,8 +34,8 @@ Kubernetes Dashboard UI.
 
 %build
 export PATH=${PATH}:/usr/bin
-npm install --unsafe-perm
-#Remove the lines which strips the debuginfo. 
+tar xf %{SOURCE2} --no-same-owner
+#Remove the lines which strips the debuginfo.
 sed -i '/https:\/\/golang.org\/cmd\/link\//,+2d' ./build/backend.js
 cp -r %{SOURCE1} ./node_modules/easyfont-roboto-mono
 ./node_modules/.bin/gulp build
@@ -57,8 +59,10 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.10.1-5
--   Bump up version to compile with new go
+*    Wed Oct 09 2019 Tapas Kundu <tkundu@vmware.com> 1.10.1-6
+-    Use npm source to build.
+*    Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.10.1-5
+-    Bump up version to compile with new go
 *    Tue May 07 2019 Ankit Jain <ankitja@vmware.com> 1.10.1-4
 -    Dashboard works with Nodejs latest version as well
 -    so removed version dependency
