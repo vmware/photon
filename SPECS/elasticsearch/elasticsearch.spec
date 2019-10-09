@@ -1,34 +1,44 @@
 %define debug_package %{nil}
 
-Summary:        Elastic Search
-Name:           elasticsearch
-Version:        6.7.0
-Release:        3%{?dist}
-License:        Apache License Version 2.0
-URL:            https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}.tar.gz=e11320399dd707cff8416d672b6f8146e74cf8c8
-Source1:        cacerts
-%define sha1    cacerts=f584c7c1f48c552f39acfb5560a300a657d9f3bb
-Group:          Development/Daemons
-Vendor:         VMware, Inc.
-Distribution:   Photon
-BuildRequires:  openjdk11
-BuildRequires:  unzip
-BuildRequires:  curl
-BuildRequires:  which
-BuildRequires:  git
-BuildRequires:  make
-BuildRequires:  automake
-BuildRequires:  autoconf
-BuildRequires:  libtool
-BuildRequires:  tar
-BuildRequires:  wget
-BuildRequires:  patch
-BuildRequires:  texinfo
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
-Patch0:          update_jars.patch
+Summary:          Elastic Search
+Name:             elasticsearch
+Version:          6.7.0
+Release:          4%{?dist}
+License:          Apache License Version 2.0
+URL:              https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
+Source0:          %{name}-%{version}.tar.gz
+%define sha1      %{name}-%{version}.tar.gz=e11320399dd707cff8416d672b6f8146e74cf8c8
+Source1:          cacerts
+%define sha1      cacerts=f584c7c1f48c552f39acfb5560a300a657d9f3bb
+# gradle installed dependencies all in one tarball
+# which includes benchmarks buildSrc client docs libs modules plugins qa rest-api-spec server test x-pack
+Source2:          gradle-tarball-1-for-elasticsearch-6.7.0.tar.gz
+%define sha1      gradle-tarball-1-for-elasticsearch=80ddd9a547f7d4269e76eca25ad605258268e73e
+# gradle installed dependencies all in one tarball, which includes distribution
+Source3:          gradle-tarball-2-for-elasticsearch-6.7.0.tar.gz
+%define sha1      gradle-tarball-2-for-elasticsearch=99cb20c5ff0ca45cbace77acbda41eb69dcd6e3c
+# gradle installed dependencies all in one tarball, which includes /root/.gradle
+Source4:          gradle-tarball-3-for-elasticsearch-6.7.0.tar.gz
+%define sha1      gradle-tarball-3-for-elasticsearch=90db98f9d92afd3ca8226cda0376d7083dde88c1
+Group:            Development/Daemons
+Vendor:           VMware, Inc.
+Distribution:     Photon
+BuildRequires:    openjdk11
+BuildRequires:    unzip
+BuildRequires:    curl
+BuildRequires:    which
+BuildRequires:    git
+BuildRequires:    make
+BuildRequires:    automake
+BuildRequires:    autoconf
+BuildRequires:    libtool
+BuildRequires:    tar
+BuildRequires:    wget
+BuildRequires:    patch
+BuildRequires:    texinfo
+Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
+Patch0:           update_jars.patch
 
 %description
 Elasticsearch is a highly distributed RESTful search engine built for the cloud.
@@ -36,6 +46,13 @@ Elasticsearch is a highly distributed RESTful search engine built for the cloud.
 %prep
 %setup -qn %{name}-%{version}
 %patch0 -p1
+rm -rf benchmarks buildSrc client docs libs modules plugins qa rest-api-spec server test x-pack
+%setup -D -c -T -a 2 -n %{name}-%{version}/
+rm -rf distribution
+%setup -D -c -T -a 3 -n %{name}-%{version}/
+%setup -D -c -T -a 4 -n %{name}-%{version}/
+mv root/.gradle /root
+rm -rf root
 
 %build
 export LANG="en_US.UTF-8"
@@ -44,7 +61,6 @@ export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 export PATH=$JAVA_HOME/bin:$PATH
 export _JAVA_OPTIONS="-Xmx10g"
 cp %{SOURCE1} $JAVA_HOME/lib/security/
-./gradlew assemble
 
 %install
 rm -rf %{buildroot}
@@ -79,10 +95,8 @@ chmod 755 %{buildroot}/var/run/%{name}/
 chmod 755 %{buildroot}%{_datadir}/%{name}/data
 
 %pre
-
 getent group elasticsearch >/dev/null || /usr/sbin/groupadd -r elasticsearch
 getent passwd elasticsearch >/dev/null || /usr/sbin/useradd --comment "ElasticSearch" --shell /bin/bash -M -r --groups elasticsearch --home /usr/share/elasticsearch elasticsearch
-
 
 %post
 %{_sbindir}/ldconfig
@@ -98,7 +112,6 @@ if [ $1 -eq 0 ] ; then
     /usr/sbin/groupdel elasticsearch
 fi
 /sbin/ldconfig
-
 
 %check
 
@@ -121,6 +134,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+*    Wed Oct 9 2019 Michelle Wang <michellew@vmware.com> 6.7.0-4
+-    Add gradle-tarball-for-elasticsearch-6.7.0.tar.gz to avoid download failures
 *    Mon Sep 16 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-3
 -    Update jackson databind to 2.9.9.3
 *    Fri Aug 09 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-2
