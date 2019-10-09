@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.76
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -224,6 +224,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Oct 4 2019 Bo Gan <ganb@vmware.com> 4.19.76-2
+-   Enable IMA with SHA256 as default hash algorithm
 *   Wed Oct 02 2019 Ajay Kaher <akaher@vmware.com> 4.19.76-1
 -   Update to version 4.19.76
 *   Thu Sep 19 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.72-2

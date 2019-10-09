@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.76
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -525,6 +525,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Oct 4 2019 Bo Gan <ganb@vmware.com> 4.19.76-3
+-   Enable IMA with SHA256 as default hash algorithm
 *   Thu Oct 10 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.76-2
 -   Add additional BuildRequires and Requires to fix issues with perf, related to
 -   interactive UI and C++ symbol demangling. Also update the last few perf python
