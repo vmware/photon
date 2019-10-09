@@ -93,7 +93,7 @@ class Installer(object):
         self.setup_grub_command = os.path.dirname(__file__)+"/mk-setup-grub.sh"
 
         signal.signal(signal.SIGINT, self.exit_gracefully)
-        self.lvs_to_datach = {'vgs': [], 'pvs': []}
+        self.lvs_to_detach = {'vgs': [], 'pvs': []}
 
     """
     create, append and validate configuration date - install_config
@@ -266,12 +266,7 @@ class Installer(object):
             self.progress_bar.show()
 
         try:
-            if 'ostree' in self.install_config:
-                from ostreeinstaller import OstreeInstaller
-                ostree = OstreeInstaller(self)
-                ostree._unsafe_install()
-            else:
-                self._unsafe_install()
+            self._unsafe_install()
         except Exception as inst:
             self.logger.exception(repr(inst))
             self.exit_gracefully()
@@ -293,16 +288,21 @@ class Installer(object):
         self._partition_disk()
         self._format_partitions()
         self._mount_partitions()
-        self._setup_install_repo()
-        self._initialize_system()
-        self._install_packages()
-        self._install_additional_rpms()
-        self._enable_network_in_chroot()
-        self._finalize_system()
-        self._cleanup_install_repo()
-        self._setup_grub()
+        if 'ostree' in self.install_config:
+            from ostreeinstaller import OstreeInstaller
+            ostree = OstreeInstaller(self)
+            ostree.install()
+        else:
+            self._setup_install_repo()
+            self._initialize_system()
+            self._install_packages()
+            self._install_additional_rpms()
+            self._enable_network_in_chroot()
+            self._finalize_system()
+            self._cleanup_install_repo()
+            self._setup_grub()
+            self._create_fstab()
         self._execute_modules(modules.commons.POST_INSTALL)
-        self._create_fstab()
         self._disable_network_in_chroot()
         self._unmount_partitions()
 
@@ -334,16 +334,22 @@ class Installer(object):
         retval = self.cmd.run(command)
         if retval != 0:
             self.logger.error("Failed to unmount disks")
+        # need to call it twice, because of internal bind mounts
+        if 'ostree' in self.install_config:
+            retval = self.cmd.run(['umount', '-R', self.photon_root])
+            retval = self.cmd.run(['umount', '-R', self.photon_root])
+            if retval != 0:
+                self.logger.error("Failed to unmount disks in photon root")
 
         shutil.rmtree(self.photon_root)
 
         # Deactivate LVM VGs
-        for vg in self.lvs_to_datach['vgs']:
+        for vg in self.lvs_to_detach['vgs']:
             retval = self.cmd.run(["vgchange", "-v", "-an", vg])
             if retval != 0:
                 self.logger.error("Failed to deactivate LVM volume group: {}".format(vg))
         # Simulate partition hot remove to notify LVM
-        for pv in self.lvs_to_datach['pvs']:
+        for pv in self.lvs_to_detach['pvs']:
             retval = self.cmd.run(["dmsetup", "remove", pv])
             if retval != 0:
                 self.logger.error("Failed to detach LVM physical volume: {}".format(pv))
@@ -405,11 +411,13 @@ class Installer(object):
                 self.cmd.run(['rm', '-rf', self.rpm_cache_dir]) != 0):
             self.logger.error("Fail to unbind cache rpms")
 
-    def _create_fstab(self):
+    def _create_fstab(self, fstab_path = None):
         """
         update fstab
         """
-        with open(os.path.join(self.photon_root, "etc/fstab"), "w") as fstab_file:
+        if not fstab_path:
+            fstab_path = os.path.join(self.photon_root, "etc/fstab")
+        with open(fstab_path, "w") as fstab_file:
             fstab_file.write("#system\tmnt-pt\ttype\toptions\tdump\tfsck\n")
 
             for partition in self.install_config['partitions']:
@@ -791,8 +799,8 @@ class Installer(object):
             raise Exception("Error: Failed to create extensible logical volume, command = {}". format(lv_cmd))
 
         # remember pv/vg for detaching it later.
-        self.lvs_to_datach['pvs'].append(os.path.basename(physical_partition))
-        self.lvs_to_datach['vgs'].append(vg_name)
+        self.lvs_to_detach['pvs'].append(os.path.basename(physical_partition))
+        self.lvs_to_detach['vgs'].append(vg_name)
 
     def _get_partition_tree_view(self):
         # Tree View of partitions list, to be returned.
@@ -855,6 +863,13 @@ class Installer(object):
                 bios_found = True
             if ptype == PartitionType.ESP:
                 esp_found = True
+
+       # Adding boot partition required for ostree if already not present in partitions table
+        if 'ostree' in self.install_config:
+            mount_points = [partition['mountpoint'] for partition in self.install_config['partitions'] if 'mountpoint' in partition]
+            if '/boot' not in mount_points:
+                boot_partition = {'size': 300, 'filesystem': 'ext4', 'mountpoint': '/boot'}
+                self.install_config['partitions'].insert(0, boot_partition)
 
         bootmode = self.install_config.get('bootmode', 'bios')
 

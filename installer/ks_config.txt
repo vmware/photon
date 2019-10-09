@@ -40,6 +40,28 @@ Kickstart config file is a json format with following possible parameters:
 	Default value: "info"
 	Example: { "log_level": "debug" }
 
+"ostree" (optional)
+        Atomic flavour of Photon OS.
+        "default_repo" (required)
+                 Define the type of repo data used for installing the OS
+                 There are two type: 1. Default Repo(comes with ISO) 2. Custom Repo (Remote server)
+                 Boolean: true or false
+                   where true : Default Repo is selected
+                         false: Custom Repo is selected
+                 Default value: true
+        Example: { "ostree": {"default_repo": true}}
+        "repo_url" (Required, Only If Custom Repo is selected)
+                 Supported Value: Valid "repo" URL of remote server where repo data exists
+        "repo_ref" (Required, Only If Custom Repo is selected)
+                 Supported Value: Valid "ref" path which was mentioned for
+                                  creation of Base Tree on remote server
+        Example: { "ostree": {
+                              "default_repo": false,
+                              "repo_url": "http://<ip>:<port>/repo",
+                              "repo_ref": "photon/3.0/x86_64/minimal"
+                             }
+                 }
+
 "packagelist_file" (optional if "packages" set)
 	Contains file name which has list of packages to install.
 	Example: { "packagelist_file": "packages_minimal.json" }

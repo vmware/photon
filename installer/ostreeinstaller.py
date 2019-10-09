@@ -10,6 +10,7 @@ import re
 import glob
 import modules.commons
 from installer import Installer
+from commandutils import CommandUtils
 
 class OstreeInstaller(object):
 
@@ -22,8 +23,10 @@ class OstreeInstaller(object):
         self.logger = installer.logger
         self.progress_bar = installer.progress_bar
         self.photon_root = installer.photon_root
-        self._execute_modules = installer._execute_modules
+        self.installer_path = installer.installer_path
+        self._create_fstab = installer._create_fstab
         self.exit_gracefully = installer.exit_gracefully
+        self.cmd = CommandUtils(self.logger)
 
     def get_ostree_repo_url(self):
         self.default_repo = self.install_config['ostree'].get('default_repo', False);
@@ -38,19 +41,22 @@ class OstreeInstaller(object):
                 self.repo_config[name] = value.strip(' \n\t\r')
 
     def pull_repo(self, repo_url, repo_ref):
-        self.run("ostree remote add --repo={}/ostree/repo --set=gpg-verify=false photon {}".format(self.photon_root, repo_url), "Adding OSTree remote")
+        self.run([['ostree', 'remote', 'add', '--repo={}/ostree/repo'.format(self.photon_root), '--set=gpg-verify=false', 'photon', '{}'.format(repo_url)]], "Adding OSTree remote")
         if self.default_repo:
-            self.run("ostree pull-local --repo={}/ostree/repo {}".format(self.photon_root, self.local_repo_path), "Pulling OSTree repo")
-            self.run("mv {}/ostree/repo/refs/heads {}/ostree/repo/refs/remotes/photon".format(self.photon_root, self.photon_root))
-            self.run("mkdir -p {}/ostree/repo/refs/heads".format(self.photon_root, self.photon_root))
+            self.run([['ostree', 'pull-local', '--repo={}/ostree/repo'.format(self.photon_root), '{}'.format(self.local_repo_path)]], "Pulling OSTree repo")
+            cmd = []
+            cmd.append(['mv', '{}/ostree/repo/refs/heads'.format(self.photon_root), '{}/ostree/repo/refs/remotes/photon'.format(self.photon_root)])
+            cmd.append(['mkdir', '-p', '{}/ostree/repo/refs/heads'.format(self.photon_root)])
+            self.run(cmd)
         else:
-            self.run("ostree pull --repo={}/ostree/repo photon {}".format(self.photon_root, repo_ref), "Pulling OSTree remote repo")
+            self.run([['ostree', 'pull', '--repo={}/ostree/repo'.format(self.photon_root), 'photon', '{}'.format(repo_ref)]], "Pulling OSTree remote repo")
 
     def deploy_ostree(self, repo_url, repo_ref):
-        self.run("ostree admin --sysroot={} init-fs {}".format(self.photon_root, self.photon_root), "Initializing OSTree filesystem")
+        self.run([['ostree', 'admin', '--sysroot={}'.format(self.photon_root), 'init-fs', '{}'.format(self.photon_root)]], "Initializing OSTree filesystem")
         self.pull_repo(repo_url, repo_ref)
-        self.run("ostree admin --sysroot={} os-init photon ".format(self.photon_root), "OSTree OS Initializing")
-        self.run("ostree admin --sysroot={} deploy --os=photon photon:{}".format(self.photon_root, repo_ref), "Deploying")
+        self.run([['ostree', 'admin', '--sysroot={}'.format(self.photon_root), 'os-init', 'photon']], "OSTree OS Initializing")
+        self.run([['ostree', 'admin', '--sysroot={}'.format(self.photon_root), 'deploy', '--os=photon', 'photon:{}'.format(repo_ref)]], "Deploying")
+
 
     def do_systemd_tmpfiles_commands(self, commit_number):
         prefixes = ["/var/home",
@@ -63,17 +69,18 @@ class OstreeInstaller(object):
             "/var/spool/mail"]
 
         for prefix in prefixes:
-            command = "systemd-tmpfiles --create --boot --root={}/ostree/deploy/photon/deploy/{}.0 --prefix={}".format(self.photon_root, commit_number, prefix)
-            self.run(command, "systemd-tmpfiles command done")
+            command = ['systemd-tmpfiles', '--create', '--boot', '--root={}/ostree/deploy/photon/deploy/{}.0'.format(self.photon_root, commit_number), '--prefix={}'.format(prefix)]
+            self.run([command], "systemd-tmpfiles command done")
 
     def mount_devices_in_deployment(self, commit_number):
-        for command in ["mount -t bind -o bind,defaults /dev  {}/ostree/deploy/photon/deploy/{}.0/dev",
-            "mount -t devpts -o gid=5,mode=620 devpts  {}/ostree/deploy/photon/deploy/{}.0/dev/pts",
-            "mount -t tmpfs -o defaults tmpfs  {}/ostree/deploy/photon/deploy/{}.0/dev/shm",
-            "mount -t proc -o defaults proc  {}/ostree/deploy/photon/deploy/{}.0/proc",
-            "mount -t bind -o bind,defaults /run  {}/ostree/deploy/photon/deploy/{}.0/run",
-            "mount -t sysfs -o defaults sysfs  {}/ostree/deploy/photon/deploy/{}.0/sys" ]:
-            self.run(command.format(self.photon_root, commit_number), "mounting done")
+        command = []
+        command.append(['mount', '-t', 'bind', '-o', 'bind,defaults', '/dev', '{}/ostree/deploy/photon/deploy/{}.0/dev'.format(self.photon_root, commit_number)])
+        command.append(['mount', '-t', 'devpts', '-o', 'gid=5,mode=620', 'devpts', '{}/ostree/deploy/photon/deploy/{}.0/dev/pts'.format(self.photon_root, commit_number)])
+        command.append(['mount', '-t', 'tmpfs', '-o', 'defaults', 'tmpfs', '{}/ostree/deploy/photon/deploy/{}.0/dev/shm'.format(self.photon_root, commit_number)])
+        command.append(['mount', '-t', 'proc', '-o', 'defaults', 'proc', '{}/ostree/deploy/photon/deploy/{}.0/proc'.format(self.photon_root, commit_number)])
+        command.append(['mount', '-t', 'bind', '-o', 'bind,defaults', '/run',  '{}/ostree/deploy/photon/deploy/{}.0/run'.format(self.photon_root, commit_number)])
+        command.append(['mount', '-t', 'sysfs', '-o', 'defaults', 'sysfs',  '{}/ostree/deploy/photon/deploy/{}.0/sys'.format(self.photon_root, commit_number)])
+        self.run(command, "mounting done")
 
     def get_commit_number(self, ref):
         fileName = os.path.join(self.photon_root, "ostree/repo/refs/remotes/photon/{}".format(ref))
@@ -82,10 +89,22 @@ class OstreeInstaller(object):
             commit_number = file.read().replace('\n', '')
         return commit_number
 
-    def _unsafe_install(self):
+    def install(self):
+        """
+        Ostree Installer  Main
+        """
+        sysroot_boot = self.photon_root
+        sysroot_bootefi = self.photon_root
+        for partition in self.install_config['partitions']:
+            if partition.get('mountpoint', '') == '/':
+                root_partition = partition
+            if partition.get('mountpoint', '') == '/boot':
+                boot_partition = partition
+                sysroot_boot = sysroot_boot + partition['mountpoint']
+            if partition.get('mountpoint', '') == '/boot/esp' and partition['filesystem'] == 'vfat':
+                sysroot_bootefi = sysroot_bootefi + partition['mountpoint']
+
         sysroot_ostree = os.path.join(self.photon_root, "ostree")
-        sysroot_boot = os.path.join(self.photon_root, "boot")
-        sysroot_bootefi = os.path.join(self.photon_root, "bootefi")
         loader0 = os.path.join(sysroot_boot, "loader.0")
         loader1 = os.path.join(sysroot_boot, "loader.1")
 
@@ -97,43 +116,24 @@ class OstreeInstaller(object):
 
         self.get_ostree_repo_url()
 
-        self._execute_modules(modules.commons.PRE_INSTALL)
-
-        disk_partition = self.install_config['disk']
-        if re.search(r'mmcblk', disk_partition):
-            disk = disk_partition + "p"
-        else:
-            disk = disk_partition
-        self.run("sgdisk -o -g {}".format(disk_partition))
-        self.run("sgdisk -n 1::+2M -n 2::+8M -n 3::+300M -n 4 -p {}".format(disk_partition), "Updating partition table for OSTree")
-        self.run("sgdisk -t1:ef02 {}".format(disk_partition))
-        self.run("sgdisk -t2:ef00 {}".format(disk_partition))
-        self.run("mkfs -t vfat {}2".format(disk))
-        self.run("mkfs -t ext4 {}3".format(disk))
-        self.run("mkfs -t ext4 {}4".format(disk))
-        self.run("mkdir -p {} ".format(self.photon_root))
-        self.run("mount {}4 {}".format(disk, self.photon_root))
-        self.run("mkdir -p {} ".format(sysroot_boot))
-        self.run("mount {}3 {}".format(disk, sysroot_boot))
-
-        self.run("mkdir -p {} ".format(sysroot_bootefi))
-        self.run("mount -t vfat {}2 {}".format(disk, sysroot_bootefi))
-        self.run("mkdir -p {}/EFI/Boot".format(sysroot_bootefi))
-        self.run("mkdir -p {}/boot/grub2".format(sysroot_bootefi))
-        self.run("mkdir -p {}/boot/grub2/fonts".format(sysroot_bootefi))
-        self.run("cp {}/boot/* {}/boot/grub2/fonts/".format(os.path.dirname(__file__), sysroot_bootefi))
+        bootmode = self.install_config['bootmode']
+        if bootmode == 'dualboot' or bootmode == 'efi':
+            mount_efi = []
+            mount_efi.append(['mkdir', '-p', '{}/EFI/Boot'.format(sysroot_bootefi)])
+            mount_efi.append(['mkdir', '-p', '{}/boot/grub2/fonts'.format(sysroot_bootefi)])
+            mount_efi.append(['cp', '-r', '{}/boot/.'.format(self.installer_path), '{}/boot/grub2/fonts/'.format(sysroot_bootefi)])
+            self.run(mount_efi, "Mount and setup efi partition")
 
         if self.default_repo:
-            self.run("mkdir -p {}/repo".format(self.photon_root))
+            self.run([['mkdir', '-p', '{}/repo'.format(self.photon_root)]])
             if self.install_config['ui']:
                 self.progress_bar.show_loading("Unpacking local OSTree repo")
-            self.run("tar --warning=none -xf /mnt/cdrom/ostree-repo.tar.gz -C {}/repo".format(self.photon_root))
+            self.run([['tar', '--warning=none', '-xf', '/mnt/cdrom/ostree-repo.tar.gz', '-C' '{}/repo'.format(self.photon_root)]])
             self.local_repo_path = "{}/repo".format(self.photon_root)
             self.ostree_repo_url = self.repo_config['OSTREEREPOURL']
             self.ostree_ref = self.repo_config['OSTREEREFS']
             if self.install_config['ui']:
                 self.progress_bar.update_loading_message("Unpacking done")
-
 
         self.deploy_ostree(self.ostree_repo_url, self.ostree_ref)
 
@@ -146,62 +146,56 @@ class OstreeInstaller(object):
         deployment_boot = os.path.join(deployment, "boot")
         deployment_sysroot = os.path.join(deployment, "sysroot")
 
-        self.run("mv {} {}".format(loader1, loader0))
-        self.run("mv {} {}".format(boot1, boot0))
-        self.run("mv {} {}".format(boot11, boot01))
-        self.run("mount --bind {} {}".format(sysroot_boot, deployment_boot))
-        self.run("mount --bind {} {}".format(self.photon_root, deployment_sysroot))
-        # For BIOS Support
-        self.run("chroot {} bash -c \"grub2-install --target=i386-pc --force --boot-directory=/boot {}\"".format(deployment, disk_partition))
-        # For EFI Support
-        self.run("cp {}/EFI_x86_64/BOOT/* {}/EFI/Boot/".format(os.path.dirname(__file__), sysroot_bootefi))
-        self.run("touch {}/boot/grub2/grub.cfg".format(sysroot_bootefi))
-        self.run("echo \"search -n -u `blkid -s UUID -o value {}3` -s\" >> {}/boot/grub2/grub.cfg".format(disk, sysroot_bootefi))
-        self.run("echo \"configfile /grub2/grub.cfg\" >> {}/boot/grub2/grub.cfg".format(sysroot_bootefi))
+        if os.path.exists(loader1):
+            cmd = []
+            cmd.append(['mv', '{}'.format(loader1), '{}'.format(loader0)])
+            cmd.append(['mv', '{}'.format(boot1), '{}'.format(boot0)])
+            cmd.append(['mv', '{}'.format(boot11), '{}'.format(boot01)])
+            self.run(cmd)
+        mount_bind = []
+        mount_bind.append(['mount', '--bind', '{}'.format(sysroot_boot), '{}'.format(deployment_boot)])
+        mount_bind.append(['mount', '--bind', '{}'.format(self.photon_root), '{}'.format(deployment_sysroot)])
+        self.run(mount_bind)
+        if bootmode == 'dualboot' or bootmode == 'bios':
+            self.run([['chroot', '{}'.format(deployment), 'bash', '-c', 'grub2-install --target=i386-pc --force --boot-directory=/boot {};'.format(self.install_config['disk'])]], "Generating Grub binaries for BIOS mode")
+        if bootmode == 'dualboot' or bootmode == 'efi':
+            grub_cfg = []
+            grub_cfg.append(['cp', '-r', '{}/EFI_x86_64/BOOT/.'.format(self.installer_path), '{}/EFI/Boot/'.format(sysroot_bootefi)])
+            grub_cfg.append(['touch', '{}/boot/grub2/grub.cfg'.format(sysroot_bootefi)])
+            grub_cfg.append(['echo', '\"search -n -u `blkid -s UUID -o value {}` -s\"'.format(boot_partition['path']), '>>', '{}/boot/grub2/grub.cfg'.format(sysroot_bootefi)])
+            grub_cfg.append(['echo', '\"configfile /grub2/grub.cfg\"', '>>', '{}/boot/grub2/grub.cfg'.format(sysroot_bootefi)])
+            self.run(grub_cfg, "Generating grub.cfg for efi boot")
 
-        self.run("cp {}/usr/lib/ostree-boot/photon.cfg {}/boot/ ".format(deployment, deployment))
-        self.run("cp {}/usr/lib/ostree-boot/systemd.cfg {}/boot/ ".format(deployment, deployment))
-        self.run("chroot {} bash -c \"echo load_env -f /photon.cfg >> /etc/grub.d/40_custom \"".format(deployment))
-        self.run("chroot {} bash -c \"echo load_env -f /systemd.cfg >> /etc/grub.d/40_custom \"".format(deployment))
-        self.run("chroot {} bash -c \"grub2-mkconfig -o /boot/grub2/grub.cfg\"".format(deployment))
-        self.run("mv {} {}".format(loader0, loader1))
-        self.run("mv {} {}".format(boot0, boot1))
-        self.run("mv {} {}".format(boot01, boot11))
-        self.run("chroot {} bash -c \"ostree admin instutil set-kargs '\\$photon_cmdline' '\\$systemd_cmdline' root={}4 \"".format(deployment, disk))
+        self.run([['chroot', '{}'.format(deployment), 'bash', '-c', 'grub2-mkconfig -o /boot/grub2/grub.cfg;']])
+        if os.path.exists(loader0):
+            cmd = []
+            cmd.append(['mv', '{}'.format(loader0), '{}'.format(loader1)])
+            cmd.append(['mv', '{}'.format(boot0), '{}'.format(boot1)])
+            cmd.append(['mv', '{}'.format(boot01), '{}'.format(boot11)])
+            self.run(cmd)
+        self.run([['chroot', '{}'.format(deployment), 'bash', '-c', "ostree admin instutil set-kargs '$photon_cmdline' '$systemd_cmdline' root={};".format(root_partition['path'])]], "Add ostree  menu entry in grub.cfg")
         sysroot_grub2_grub_cfg = os.path.join(self.photon_root, "boot/grub2/grub.cfg")
-        self.run("ln -sf ../loader/grub.cfg {}".format(sysroot_grub2_grub_cfg))
-        # FIXME: after ostree admin instutil.. invocation these SRC folders are not there anymore
-        # self.run("mv {} {}".format(loader1, loader0))
-        # self.run("mv {} {}".format(boot1, boot0))
-        # self.run("mv {} {}".format(boot11, boot01))
+        self.run([['ln', '-sf', '../loader/grub.cfg', '{}'.format(sysroot_grub2_grub_cfg)]])
+        if os.path.exists(loader1):
+            cmd = []
+            cmd.append(['mv', '{}'.format(loader1), '{}'.format(loader0)])
+            cmd.append(['mv', '{}'.format(boot1), '{}'.format(boot0)])
+            cmd.append(['mv', '{}'.format(boot11), '{}'.format(boot01)])
+            self.run(cmd)
 
         deployment_fstab = os.path.join(deployment, "etc/fstab")
-        self.run("echo \"{}4    /        ext4   defaults   1 1  \" >> {} ".format(disk, deployment_fstab), "Adding / mount point in fstab")
-        self.run("echo \"{}3    /boot    ext4   defaults   1 2  \" >> {} ".format(disk, deployment_fstab), "Adding /boot mount point in fstab")
-        self.run("mount --bind {} {}".format(deployment, self.photon_root))
-        if self.install_config['ui']:
-            self.progress_bar.update_loading_message("Starting post install modules")
-        self._execute_modules(modules.commons.POST_INSTALL)
-        self.progress_bar.update_loading_message("Unmounting disks")
-        # need to call it twice, because of internal bind mounts
-        self.run("umount -R {}".format(self.photon_root))
-        self.run("umount -R {}".format(self.photon_root))
+        self._create_fstab(deployment_fstab)
 
-    def run(self, command, comment = None):
+        self.run([['mount', '--bind', '{}'.format(deployment), '{}'.format(self.photon_root)]], "Bind deployment to photon root")
+
+    def run(self, commands, comment = None):
         if comment != None:
             self.logger.info("Installer: {} ".format(comment))
             self.progress_bar.update_loading_message(comment)
 
-        self.logger.info("Installer: {} ".format(command))
-        process = subprocess.Popen([command], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out,err = process.communicate()
-        if out != b'':
-            self.logger.info(out)
-
-        retval = process.returncode
-        if retval != 0 and "systemd-tmpfiles" not in command:
-            self.logger.error("Installer: failed in {} with error code {}".format(command, retval))
-            self.logger.error(err)
-            self.exit_gracefully(None, None)
-
+        for command in commands:
+            retval = self.cmd.run(command)
+            if retval != 0 and "systemd-tmpfiles" not in command:
+                self.logger.error("Installer: failed in {} with error code {}".format(command, retval))
+                self.exit_gracefully()
         return retval
