@@ -5,7 +5,7 @@
 
 Name:           dracut
 Version:        048
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -16,6 +16,7 @@ Source0:        http://www.kernel.org/pub/linux/utils/boot/dracut/dracut-%{versi
 Source1:        https://www.gnu.org/licenses/lgpl-2.1.txt
 Patch1:         disable-xattr.patch
 Patch2:         fix-initrd-naming-for-photon.patch
+Patch3:	        lvm-no-read-only-locking.patch
 Summary:        dracut to create initramfs
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -52,6 +53,7 @@ This package contains tools to assemble the local initrd and host configuration.
 cp %{SOURCE1} .
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 %configure --systemdsystemunitdir=%{_unitdir} --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
@@ -158,6 +160,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*   Thu Oct 10 2019 Alexey Makhalov <amakhalov@vmware.com> 048-2
+-   lvm.conf: Do not set read-only locking.
 *   Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 048-1
 -   Version update
 *   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  045-6
