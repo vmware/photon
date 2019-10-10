@@ -1,7 +1,7 @@
 Summary:	Portable and efficient C programming interface (API) to determine the call-chain of a program.
 Name:		libunwind
 Version:	1.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	X11
 URL:		http://www.nongnu.org/libunwind/
 Source0:	http://download.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
@@ -16,6 +16,7 @@ Portable and efficient C programming interface (API) to determine the call-chain
 %package devel
 Summary:        libunwind devel
 Group:          Development/Tools
+Requires:       %{name} = %{version}-%{release}
 %description devel
 This contains development tools and libraries for libunwind.
 
@@ -43,6 +44,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/libunwind*
 
 %changelog
+*   Sun Sep 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.2-3
+-   libunwind-devel needs libunwind.
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2-2
 -   Use standard configure macros
 *   Mon Feb 06 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2-1

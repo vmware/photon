@@ -5,7 +5,7 @@ x86_64/python2-devel-2.7.11-1.ph1.x86_64.rpm
 x86_64/nspr-4.11-1.ph1.x86_64.rpm
 x86_64/rpm-4.13.0.1-5.ph2.x86_64.rpm
 x86_64/rpm-libs-4.13.0.1-5.ph2.x86_64.rpm
-x86_64/binutils-devel-2.30-2.ph1.x86_64.rpm
+x86_64/binutils-devel-2.31-9.ph1.x86_64.rpm
 x86_64/nss-3.21-1.ph1.x86_64.rpm
 x86_64/mpfr-devel-4.0.1-1.ph2.x86_64.rpm
 x86_64/cpio-2.12-1.ph1.x86_64.rpm
@@ -62,7 +62,8 @@ x86_64/python2-2.7.11-1.ph1.x86_64.rpm
 x86_64/elfutils-devel-0.165-1.ph1.x86_64.rpm
 x86_64/patch-2.7.5-1.ph1.x86_64.rpm
 x86_64/xz-5.2.2-1.ph1.x86_64.rpm
-x86_64/binutils-2.30-2.ph1.x86_64.rpm
+x86_64/binutils-2.31-9.ph1.x86_64.rpm
+x86_64/binutils-libs-2.31-9.ph1.x86_64.rpm
 x86_64/libgomp-devel-7.3.0-2.ph2.x86_64.rpm
 x86_64/bzip2-devel-1.0.6-4.ph1.x86_64.rpm
 x86_64/libgcc-7.3.0-2.ph2.x86_64.rpm
