@@ -28,34 +28,6 @@ def cleanupMountPoints(mount_path):
     Utils.runshellcommand("sync")
     Utils.runshellcommand("umount -l {}".format(mount_path))
 
-def writefstabandgrub(mount_path, uuidval, partuuidval):
-    os.remove(mount_path + "/etc/fstab")
-    f = open(mount_path + "/etc/fstab", "w")
-    if uuidval != '':
-        f.write("UUID={}    /    ext4    defaults 1 1\n".format(uuidval))
-    else:
-        f.write("PARTUUID={}    /    ext4    defaults 1 1\n".format(partuuidval))
-    f.close()
-    Utils.replaceinfile(mount_path + "/boot/grub/grub.cfg",
-                        "rootpartition=PARTUUID=.*$",
-                        "rootpartition=PARTUUID={}".format(partuuidval))
-
-def generateUuid(loop_device_path):
-    partuuidval = (Utils.runshellcommand(
-        "blkid -s PARTUUID -o value {}".format(loop_device_path))).rstrip('\n')
-    uuidval = (Utils.runshellcommand(
-        "blkid -s UUID -o value {}".format(loop_device_path))).rstrip('\n')
-    if partuuidval == '':
-        sgdiskout = Utils.runshellcommand(
-            "sgdisk -i 2 {} ".format(disk_device))
-        partuuidval = (re.findall(r'Partition unique GUID.*',
-                                  sgdiskout))[0].split(':')[1].strip(' ').lower()
-
-    if partuuidval == '':
-        raise RuntimeError("Cannot generate partuuid")
-
-    return (uuidval, partuuidval)
-
 def customizeImage(config, mount_path):
     build_scripts_path = os.path.dirname(os.path.abspath(__file__))
     image_name = config['image_type']
@@ -183,13 +155,10 @@ def generateImage(raw_image_path, tools_bin_path, src_root, config):
     print(loop_device_path)
 
     try:
-        (uuidval, partuuidval) = generateUuid(loop_device_path)
         # Prep the loop device
         prepLoopDevice(loop_device_path, mount_path)
         # Clear machine-id so it gets regenerated on boot
         open(mount_path + "/etc/machine-id", "w").close()
-        # Write fstab
-        writefstabandgrub(mount_path, uuidval, partuuidval)
         # Perform additional steps defined in installer config
         customizeImage(config, mount_path)
     except Exception as e:

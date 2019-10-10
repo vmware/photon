@@ -13,6 +13,7 @@ import glob
 import modules.commons
 import random
 import curses
+import stat
 from logger import Logger
 from commandutils import CommandUtils
 from jsonwrapper import JsonWrapper
@@ -38,12 +39,14 @@ class Installer(object):
     known_keys = {
         'additional_packages',
         'additional_rpms_path',
+        'arch',
         'autopartition',
         'bootmode',
         'disk',
         'eject_cdrom',
         'hostname',
         'install_linux_esx',
+        'live',
         'log_level',
         'ostree',
         'packages',
@@ -59,11 +62,6 @@ class Installer(object):
         'ui'
     }
 
-    mount_command = os.path.dirname(__file__)+"/mk-mount-disk.sh"
-    prepare_command = os.path.dirname(__file__)+"/mk-prepare-system.sh"
-    finalize_command = "./mk-finalize-system.sh"
-    chroot_command = os.path.dirname(__file__)+"/mk-run-chroot.sh"
-    unmount_disk_command = os.path.dirname(__file__)+"/mk-unmount-disk.sh"
     default_partitions = [{"mountpoint": "/", "size": 0, "filesystem": "ext4"}]
 
     def __init__(self, working_directory="/mnt/photon-root",
@@ -158,13 +156,22 @@ class Installer(object):
         else:
             install_config['packages'] = packages
 
+        # set arch to host's one if not defined
+        arch = subprocess.check_output(['uname', '-m'], universal_newlines=True).rstrip('\n')
+        if 'arch' not in install_config:
+            install_config['arch'] = arch
+
         # 'bootmode' mode
         if 'bootmode' not in install_config:
-            arch = subprocess.check_output(['uname', '-m'], universal_newlines=True)
             if "x86_64" in arch:
                 install_config['bootmode'] = 'dualboot'
             else:
                 install_config['bootmode'] = 'efi'
+
+        # live means online system. When you create an image for
+        # target system, live should be set to false.
+        if 'live' not in install_config:
+            install_config['live'] = 'loop' not in install_config['disk']
 
         # default partition
         if 'partitions' not in install_config:
@@ -232,6 +239,13 @@ class Installer(object):
         if not has_root:
             return "There is no partition assigned to root '/'"
 
+        if install_config['arch'] not in ["aarch64", 'x86_64']:
+            return "Unsupported target architecture {}".format(install_config['arch'])
+
+        # No BIOS for aarch64
+        if install_config['arch'] == 'aarch64' and install_config['bootmode'] in ['dualboot', 'bios']:
+            return "Aarch64 targets do not support BIOS boot. Set 'bootmode' to 'efi'."
+
         return None
 
     def _install(self, stdscreen=None):
@@ -295,6 +309,7 @@ class Installer(object):
         else:
             self._setup_install_repo()
             self._initialize_system()
+            self._mount_special_folders()
             self._install_packages()
             self._install_additional_rpms()
             self._enable_network_in_chroot()
@@ -304,7 +319,7 @@ class Installer(object):
             self._create_fstab()
         self._execute_modules(modules.commons.POST_INSTALL)
         self._disable_network_in_chroot()
-        self._unmount_partitions()
+        self._unmount_all()
 
     def exit_gracefully(self, signal1=None, frame1=None):
         """
@@ -313,7 +328,7 @@ class Installer(object):
         """
         del signal1
         del frame1
-        if not self.exiting:
+        if not self.exiting and self.install_config:
             self.exiting = True
             if self.install_config['ui']:
                 self.progress_bar.hide()
@@ -322,18 +337,26 @@ class Installer(object):
                 self.window.content_window().getch()
 
             self._cleanup_install_repo()
-            self._unmount_partitions()
+            self._unmount_all()
         sys.exit(1)
 
-    def _unmount_partitions(self):
+    def _unmount_all(self):
         """
-        Unmount partitions
+        Unmount partitions and special folders
         """
-        command = [Installer.unmount_disk_command, '-w', self.photon_root]
-        command.extend(self._generate_partitions_param(reverse=True))
-        retval = self.cmd.run(command)
-        if retval != 0:
-            self.logger.error("Failed to unmount disks")
+        for d in ["/run", "/sys", "/dev/pts", "/dev", "/proc"]:
+            retval = self.cmd.run(['umount', '-l', self.photon_root + d])
+            if retval != 0:
+                self.logger.error("Failed to unmount {}".format(d))
+
+        for partition in self.install_config['partitions'][::-1]:
+            if self._get_partition_type(partition) in [PartitionType.BIOS, PartitionType.SWAP]:
+                continue
+            mountpoint = self.photon_root + partition["mountpoint"]
+            retval = self.cmd.run(['umount', '-l', mountpoint])
+            if retval != 0:
+                self.logger.error("Failed to unmount partition {}".format(mountpoint))
+
         # need to call it twice, because of internal bind mounts
         if 'ostree' in self.install_config:
             retval = self.cmd.run(['umount', '-R', self.photon_root])
@@ -341,6 +364,7 @@ class Installer(object):
             if retval != 0:
                 self.logger.error("Failed to unmount disks in photon root")
 
+        self.cmd.run(['sync'])
         shutil.rmtree(self.photon_root)
 
         # Deactivate LVM VGs
@@ -411,6 +435,21 @@ class Installer(object):
                 self.cmd.run(['rm', '-rf', self.rpm_cache_dir]) != 0):
             self.logger.error("Fail to unbind cache rpms")
 
+    def _get_partuuid(self, path):
+        partuuid = subprocess.check_output(['blkid', '-s', 'PARTUUID', '-o', 'value', path],
+                                       universal_newlines=True).rstrip('\n')
+        # Backup way to get uuid/partuuid. Leave it here for later use.
+        #if partuuidval == '':
+        #    sgdiskout = Utils.runshellcommand(
+        #        "sgdisk -i 2 {} ".format(disk_device))
+        #    partuuidval = (re.findall(r'Partition unique GUID.*',
+        #                          sgdiskout))[0].split(':')[1].strip(' ').lower()
+        return partuuid
+
+    def _get_uuid(self, path):
+        return subprocess.check_output(['blkid', '-s', 'UUID', '-o', 'value', path],
+                                       universal_newlines=True).rstrip('\n')
+
     def _create_fstab(self, fstab_path = None):
         """
         update fstab
@@ -440,8 +479,23 @@ class Installer(object):
                 else:
                     mountpoint = partition['mountpoint']
 
+                # Use PARTUUID/UUID instead of bare path.
+                # Prefer PARTUUID over UUID as it is supported by kernel
+                # and UUID only by initrd.
+                path = partition['path']
+                mnt_src = None
+                partuuid = self._get_partuuid(path)
+                if partuuid != '':
+                    mnt_src = "PARTUUID={}".format(partuuid)
+                else:
+                    uuid = self._get_uuid(path)
+                    if uuid != '':
+                        mnt_src = "UUID={}".format(uuid)
+                if not mnt_src:
+                    raise RuntimeError("Cannot get PARTUUID/UUID of: {}".format(path))
+
                 fstab_file.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(
-                    partition['path'],
+                    mnt_src,
                     mountpoint,
                     partition['filesystem'],
                     options,
@@ -468,13 +522,15 @@ class Installer(object):
         return params
 
     def _mount_partitions(self):
-        command = [Installer.mount_command, '-w', self.photon_root]
-        command.extend(self._generate_partitions_param())
-        retval = self.cmd.run(command)
-        if retval != 0:
-            self.logger.info("Failed to mount partitions for installation")
-            self.exit_gracefully()
-
+        for partition in self.install_config['partitions'][::1]:
+            if self._get_partition_type(partition) in [PartitionType.BIOS, PartitionType.SWAP]:
+                continue
+            mountpoint = self.photon_root + partition["mountpoint"]
+            self.cmd.run(['mkdir', '-p', mountpoint])
+            retval = self.cmd.run(['mount', '-v', partition["path"], mountpoint])
+            if retval != 0:
+                self.logger.error("Failed to mount partition {}".format(partition["path"]))
+                self.exit_gracefully()
 
     def _initialize_system(self):
         """
@@ -484,10 +540,48 @@ class Installer(object):
             self.progress_bar.update_message('Initializing system...')
         self._bind_installer()
         self._bind_repo_dir()
-        retval = self.cmd.run([Installer.prepare_command, '-w', self.photon_root,
-                               self.working_directory, self.rpm_cache_dir])
+
+        # Initialize rpm DB
+        self.cmd.run(['mkdir', '-p', os.path.join(self.photon_root, "var/lib/rpm")])
+        retval = self.cmd.run(['rpm', '--root', self.photon_root, '--initdb',
+                               '--dbpath', '/var/lib/rpm'])
         if retval != 0:
-            self.logger.info("Failed to bind the installer and repo needed by tdnf")
+            self.logger.error("Failed to initialize rpm DB")
+            self.exit_gracefully()
+
+        # Install filesystem rpm
+        tdnf_cmd = "tdnf install filesystem --installroot {0} --assumeyes -c {1}".format(self.photon_root,
+                        self.tdnf_conf_path)
+        retval = self.cmd.run(tdnf_cmd)
+        if retval != 0:
+            retval = self.cmd.run(['docker', 'run',
+                                   '-v', self.rpm_cache_dir+':'+self.rpm_cache_dir,
+                                   '-v', self.working_directory+':'+self.working_directory,
+                                   'photon:3.0', '/bin/sh', '-c', tdnf_cmd])
+            if retval != 0:
+                self.logger.error("Failed to install filesystem rpm")
+                self.exit_gracefully()
+
+        # Create special devices (TODO: really need it?)
+        devices = {
+            'console': (600, stat.S_IFCHR, 5, 1),
+            'null': (666, stat.S_IFCHR, 1, 3),
+            'random': (444, stat.S_IFCHR, 1, 8),
+            'urandom': (444, stat.S_IFCHR, 1, 9)
+        }
+        for device, (mode, dev_type, major, minor) in devices.items():
+            os.mknod(os.path.join(self.photon_root, "dev", device),
+                    mode | dev_type, os.makedev(major, minor))
+
+    def _mount_special_folders(self):
+        for d in ["/proc", "/dev", "/dev/pts", "/sys"]:
+            retval = self.cmd.run(['mount', '-o', 'bind', d, self.photon_root + d])
+            if retval != 0:
+                self.logger.error("Failed to bind mount {}".format(d))
+                self.exit_gracefully()
+        retval = self.cmd.run(['mount', '-t', 'tmpfs', 'tmpfs', self.photon_root + "/run"])
+        if retval != 0:
+            self.logger.error("Failed to bind mount {}".format(d))
             self.exit_gracefully()
 
     def _finalize_system(self):
@@ -497,10 +591,17 @@ class Installer(object):
         if self.install_config['ui']:
             self.progress_bar.show_loading('Finalizing installation')
 
-        retval = self.cmd.run([Installer.chroot_command, '-w', self.photon_root,
-                                    Installer.finalize_command, '-w', self.photon_root])
-        if retval != 0:
-            self.logger.error("Fail to setup the target system after the installation")
+        self.cmd.run_in_chroot(self.photon_root, "/sbin/ldconfig")
+        self.cmd.run_in_chroot(self.photon_root, "/bin/systemd-machine-id-setup")
+        # Importing the pubkey
+        self.cmd.run_in_chroot(self.photon_root, "rpm --import /etc/pki/rpm-gpg/*")
+        # Set locale
+        with open(os.path.join(self.photon_root, "etc/locale.conf"), "w") as locale_conf:
+            locale_conf.write("LANG=en_US.UTF-8\n")
+        #locale-gen.sh needs /usr/share/locale/locale.alias which is shipped with
+        #  glibc-lang rpm, in some photon installations glibc-lang rpm is not installed
+        #  by default. Call localedef directly here to define locale environment.
+        self.cmd.run_in_chroot(self.photon_root, "/usr/bin/localedef -c -i en_US -f UTF-8 en_US.UTF-8")
 
     def _cleanup_install_repo(self):
         self._unbind_installer()
@@ -513,10 +614,59 @@ class Installer(object):
         os.remove(self.tdnf_repo_path)
 
     def _setup_grub(self):
+        bootmode = self.install_config['bootmode']
+
+        self.cmd.run(['mkdir', '-p', self.photon_root + '/boot/grub2'])
+        self.cmd.run(['ln', '-sfv', 'grub2', self.photon_root + '/boot/grub'])
+
+        # Setup bios grub
+        if bootmode == 'dualboot' or bootmode == 'bios':
+            retval = self.cmd.run(['grub2-install', '--target=i386-pc', '--force',
+                                   '--boot-directory={}'.format(self.photon_root + "/boot"),
+                                   self.install_config['disk']])
+            if retval != 0:
+                retval = self.cmd.run(['grub-install', '--target=i386-pc', '--force',
+                                   '--boot-directory={}'.format(self.photon_root + "/boot"),
+                                   self.install_config['disk']])
+                if retval != 0:
+                    raise Exception("Unable to setup grub")
+
+        # Setup efi grub
+        if bootmode == 'dualboot' or bootmode == 'efi':
+            esp_pn = '1'
+            if bootmode == 'dualboot':
+                esp_pn = '2'
+
+            self.cmd.run(['mkdir', '-p', self.photon_root + '/boot/efi/EFI/BOOT'])
+            if self.install_config['arch'] == 'aarch64':
+                shutil.copy(self.installer_path + '/EFI_aarch64/BOOT/bootaa64.efi', self.photon_root + '/boot/efi/EFI/BOOT')
+                exe_name='bootaa64.efi'
+            if self.install_config['arch'] == 'x86_64':
+                shutil.copy(self.installer_path + '/EFI_x86_64/BOOT/bootx64.efi', self.photon_root + '/boot/efi/EFI/BOOT')
+                shutil.copy(self.installer_path + '/EFI_x86_64/BOOT/grubx64.efi', self.photon_root + '/boot/efi/EFI/BOOT')
+                exe_name='bootx64.efi'
+
+            self.cmd.run(['mkdir', '-p', self.photon_root + '/boot/efi/boot/grub2'])
+            with open(os.path.join(self.photon_root, 'boot/efi/boot/grub2/grub.cfg'), "w") as grub_cfg:
+                grub_cfg.write("search -n -u {} -s\n".format(self._get_uuid(self.install_config['partitions_data']['boot'])))
+                grub_cfg.write("configfile {}grub2/grub.cfg\n".format(self.install_config['partitions_data']['bootdirectory']))
+
+            if self.install_config['live']:
+                # Some platforms do not support adding boot entry. Thus, ignore failures
+                self.cmd.run(['efibootmgr', '--create', '--remove-dups', '--disk', self.install_config['disk'],
+                              '--part', esp_pn, '--loader', '/EFI/BOOT/' + exe_name, '--label', 'Photon'])
+
+        # Copy grub theme files
+        shutil.copy(self.installer_path + '/boot/ascii.pf2', self.photon_root + '/boot/grub2')
+        self.cmd.run(['mkdir', '-p', self.photon_root + '/boot/grub2/themes/photon'])
+        shutil.copy(self.installer_path + '/boot/splash.png', self.photon_root + '/boot/grub2/themes/photon/photon.png')
+        shutil.copy(self.installer_path + '/boot/theme.txt', self.photon_root + '/boot/grub2/themes/photon')
+        for f in glob.glob(os.path.abspath(self.installer_path) + '/boot/terminal_*.tga'):
+            shutil.copy(f, self.photon_root + '/boot/grub2/themes/photon')
+
+        # Create custom grub.cfg
         retval = self.cmd.run(
-            [self.setup_grub_command, '-w', self.photon_root,
-             self.install_config.get('bootmode', 'bios'),
-             self.install_config['disk'],
+            [self.setup_grub_command, self.photon_root,
              self.install_config['partitions_data']['root'],
              self.install_config['partitions_data']['boot'],
              self.install_config['partitions_data']['bootdirectory']])
@@ -726,7 +876,7 @@ class Installer(object):
             return PartitionType.BIOS
         if partition['filesystem'] == 'swap':
             return PartitionType.SWAP
-        if partition.get('mountpoint', '') == '/boot/esp' and partition['filesystem'] == 'vfat':
+        if partition.get('mountpoint', '') == '/boot/efi' and partition['filesystem'] == 'vfat':
             return PartitionType.ESP
         if partition.get('lvm', None):
             return PartitionType.LVM
@@ -875,7 +1025,7 @@ class Installer(object):
 
         # Insert efi special partition
         if not esp_found and (bootmode == 'dualboot' or bootmode == 'efi'):
-            efi_partition = { 'size': 8, 'filesystem': 'vfat', 'mountpoint': '/boot/esp' }
+            efi_partition = { 'size': 8, 'filesystem': 'vfat', 'mountpoint': '/boot/efi' }
             self.install_config['partitions'].insert(0, efi_partition)
 
         # Insert bios partition last to be very first

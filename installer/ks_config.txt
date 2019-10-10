@@ -6,6 +6,14 @@ Kickstart config file is a json format with following possible parameters:
 	Provide a path containing additional RPMS that are to be bundled into
 	the image.
 
+"arch" (optional)
+	Target system architecture. Should be set if target architecture is
+	different from host one, for instance x86_64 machine building RPi
+	image.
+	Acceptible values are: "x86_64", "aarch64"
+	Defatult value: autodetected host architecture
+	Example: { "arch": "aarch64" }
+
 "bootmode" (optional)
 	Sets the boot type to suppot: EFI, BIOS or both.
 	Acceptible values are: "bios", "efi", "dualboot"
@@ -105,7 +113,7 @@ Kickstart config file is a json format with following possible parameters:
 				 }
 			},
 			{
-				"mountpoint": "/boot/esp",
+				"mountpoint": "/boot/efi",
 				"size": 12,
 				"filesystem": "vfat",
 				"fs_options": "-n EFI"

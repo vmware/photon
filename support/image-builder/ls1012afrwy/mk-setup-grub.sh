@@ -1,59 +1,20 @@
-#!/bin/bash
-#################################################
-#       Title:  mk-setup-grub                   #
-#        Date:  2014-11-26                      #
-#     Version:  1.0                             #
-#      Author:  sharathg@vmware.com             #
-#     Options:                                  #
-#################################################
-#    Overview
-#        This is a precursor for the vmware build system.
-#        This assumes that an empty hard disk is attached to the build VM.
-#        The path to this empty disk is specified in the HDD variable in config.inc
-#    End
-#
-
-grub_efi_install()
-{
-	cp -r $SCRIPT_PATH/esp/ls1012afrwy_boot.scr $BUILDROOT/boot/esp/
-	cp -r $SCRIPT_PATH/esp/ls1046afrwy_boot.scr $BUILDROOT/boot/esp/
-	mkdir -p $BUILDROOT/boot/esp/EFI/BOOT/
-        cp $INSTALLER_PATH/EFI_aarch64/BOOT/bootaa64.efi $BUILDROOT/boot/esp/EFI/BOOT/
-}
-
+#! /bin/bash
 
 set -o errexit        # exit if error...insurance ;)
 set -o nounset        # exit if variable not initalized
 set +h            # disable hashall
-PRGNAME=${0##*/}    # script name minus the path
 SCRIPT_PATH=$(dirname $(realpath -s $0))
-INSTALLER_PATH=$SCRIPT_PATH/../../../installer
-source ${INSTALLER_PATH}/config.inc             #       configuration parameters
-source ${INSTALLER_PATH}/function.inc #    commonn functions
-LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #    set log file name
-ARCH=$(uname -m)    # host architecture
-[ ${EUID} -eq 0 ]    || fail "${PRGNAME}: Need to be root user: FAILURE"
-> ${LOGFILE}        #    clear/initialize logfile
 
-BOOTMODE=$1
-HDD=$2
-ROOT_PARTITION_PATH=$3
-BOOT_PARTITION_PATH=$4
-BOOT_DIRECTORY=$5
-
-#
-#    Install grub2.
-#
-BOOT_UUID=$(blkid -s UUID -o value $ROOT_PARTITION_PATH)
+BUILDROOT=$1
+ROOT_PARTITION_PATH=$2
+BOOT_PARTITION_PATH=$3
+BOOT_DIRECTORY=$4
 
 echo "$ROOT_PARTITION_PATH"
 echo "$BUILDROOT"
 
-mkdir -p $BUILDROOT/boot/grub2/
-ln -sfv grub2 $BUILDROOT/boot/grub
-
-grub_efi_install
-
+cp -r $SCRIPT_PATH/esp/ls1012afrwy_boot.scr $BUILDROOT/boot/efi/
+cp -r $SCRIPT_PATH/esp/ls1046afrwy_boot.scr $BUILDROOT/boot/efi/
 
 EXTRA_PARAMS="rootwait rw console=ttyS0,115200n8 console=tty0 rootfs=/dev/mmcblk0p2"
 
@@ -86,15 +47,4 @@ menuentry "Photon" {
 }
 # End /boot/grub2/grub.cfg
 EOF
-
-
-
-#mkdir $BUILDROOT/boot/grub
-#cp -rfa $BUILDROOT/boot/grub2/* $BUILDROOT/boot/grub/
-
-#grub_efi_install
-
-#Cleanup the workspace directory
-rm -rf "$BUILDROOT"/tools
-rm -rf "$BUILDROOT"/RPMS
 

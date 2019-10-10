@@ -1,98 +1,27 @@
 #!/bin/bash
-#################################################
-#       Title:  mk-setup-grub                   #
-#        Date:  2014-11-26                      #
-#     Version:  1.0                             #
-#      Author:  sharathg@vmware.com             #
-#     Options:                                  #
-#################################################
-#   Overview
-#       This is a precursor for the vmware build system.
-#       This assumes that an empty hard disk is attached to the build VM.
-#       The path to this empty disk is specified in the HDD variable in config.inc
-#   End
-#
-grub_efi_install()
-{
-    mkdir $BUILDROOT/boot/efi
-    #
-    # if it is a loop device then we should mount the dev mapped boot partition
-    #
-    if [[ $HDD == *"loop"* ]]
-    then
-         BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p1
-    else
-         BOOT_PARTITION=${HDD}1
-    fi
-    mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/efi
-    cp $INSTALLER_PATH/boot/unifont.pf2 /usr/share/grub/
-    grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck
-    rm $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi
-    cp $INSTALLER_PATH/EFI_x86_64/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
-    mkdir -p $BUILDROOT/boot/efi/boot/grub2    
-    cat > $BUILDROOT/boot/efi/boot/grub2/grub.cfg << EOF
-search -n -u ${BOOT_UUID} -s
-configfile ${BOOT_DIRECTORY}grub2/grub.cfg
-EOF
-    umount $BUILDROOT/boot/efi
-}
-
-grub_mbr_install()
-{
-    $grubInstallCmd --force --boot-directory=$BUILDROOT/boot "$HDD"
-}
 
 set -o errexit      # exit if error...insurance ;)
 set -o nounset      # exit if variable not initalized
 set +h          # disable hashall
-PRGNAME=${0##*/}    # script name minus the path
+set -x
 SCRIPT_PATH=$(dirname $(realpath -s $0))
 INSTALLER_PATH=$SCRIPT_PATH/../../../installer
-source $INSTALLER_PATH/config.inc       #   configuration parameters
-source $INSTALLER_PATH/function.inc     #   commonn functions
-LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
-#LOGFILE=/dev/null      #   uncomment to disable log file
-ARCH=$(uname -m)    # host architecture
-[ ${EUID} -eq 0 ]   || fail "${PRGNAME}: Need to be root user: FAILURE"
-> ${LOGFILE}        #   clear/initialize logfile
 
-BOOTMODE=$1
-HDD=$2
-ROOT_PARTITION_PATH=$3
-BOOT_PARTITION_PATH=$4
-BOOT_DIRECTORY=$5
+BUILDROOT=$1
+ROOT_PARTITION_PATH=$2
+BOOT_PARTITION_PATH=$3
+BOOT_DIRECTORY=$4
 
 #
 #	Install grub2.
 #
 UUID_VAL=$(blkid -s UUID -o value $ROOT_PARTITION_PATH)
 PARTUUID=$(blkid -s PARTUUID -o value $ROOT_PARTITION_PATH)
-BOOT_UUID=$(blkid -s UUID -o value $BOOT_PARTITION_PATH)
-echo "Changing boot loader to MBR type on raw disk"
 
-sgdisk -m 1:2 "$HDD"
-
-grubInstallCmd=""
-mkdir -p $BUILDROOT/boot/grub2
-ln -sfv grub2 $BUILDROOT/boot/grub
-command -v grub-install >/dev/null 2>&1 && grubInstallCmd="grub-install" && { echo >&2 "Found grub-install"; }
-command -v grub2-install >/dev/null 2>&1 && grubInstallCmd="grub2-install" && { echo >&2 "Found grub2-install"; }
-if [ -z $grubInstallCmd ]; then
-echo "Unable to find grub install command"
-exit 1
-fi
-rm -rf ${BUILDROOT}/boot/grub2/fonts
-mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
-cp $INSTALLER_PATH/boot/splash.png ${BUILDROOT}/boot/grub2/themes/photon/photon.png
-cp $INSTALLER_PATH/boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
-cp $INSTALLER_PATH/boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
-
-if [ "$BOOTMODE" == "bios" ]; then 
-    grub_mbr_install
-fi
-if [ "$BOOTMODE" == "efi" ]; then 
-    grub_efi_install
-fi
+# TODO: check is installer._setup_grub() is enough
+# grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck
+# rm $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi
+# cp $INSTALLER_PATH/EFI_x86_64/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
 
 cat > ${BUILDROOT}/boot/grub2/grub.cfg <<EOF
 # Begin /boot/grub2/grub.cfg
@@ -233,4 +162,4 @@ fi
 # End /boot/grub2/grub.cfg
 EOF
 
-sed -i "s/UUID_PLACEHOLDER/$UUID_VAL/" "$BUILDROOT"/boot/grub2/grub.cfg > ${LOGFILE} 
+sed -i "s/UUID_PLACEHOLDER/$UUID_VAL/" "$BUILDROOT"/boot/grub2/grub.cfg

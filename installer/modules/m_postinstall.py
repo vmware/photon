@@ -19,5 +19,5 @@ def execute(installer):
         outfile.write("\n".join(script).encode())
 
     os.chmod(script_file, 0o700)
-    return installer.cmd.run(["./mk-run-chroot.sh", '-w', installer.photon_root,
-                              "/etc/tmpfiles.d/postinstall.sh"]) == 0
+    return installer.cmd.run_in_chroot(installer.photon_root,
+                                       "/etc/tmpfiles.d/postinstall.sh") == 0

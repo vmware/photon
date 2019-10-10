@@ -145,13 +145,21 @@ class IsoConfig(object):
 
         items = self.add_ui_pages(install_config, ui_config, maxy, maxx)
         index = 0
+        # Used to continue direction if some screen was skipped
+        go_next=True
+
+        # UI screens showing
         while True:
-            result = items[index][0]()
-            if result.success:
+            ar = items[index][0]()
+            # Skip inactive window and continue previos direction.
+            if ar.result and ar.result.get('inactive_screen', False):
+                ar.success = go_next
+            go_next = ar.success
+            if ar.success:
                 index += 1
                 if index == len(items):
                     # confirm window
-                    if result.result['yes']:
+                    if ar.result['yes']:
                         break
                     else:
                         exit(0)

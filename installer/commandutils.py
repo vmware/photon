@@ -11,7 +11,8 @@ class CommandUtils(object):
 
     def run(self, cmd):
         self.logger.debug(cmd)
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        use_shell = not isinstance(cmd, list)
+        process = subprocess.Popen(cmd, shell=use_shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out,err = process.communicate()
         retval = process.returncode
         if out != b'':
@@ -21,6 +22,17 @@ class CommandUtils(object):
             self.logger.info("Error code: {}".format(retval))
             self.logger.error(err.decode())
         return retval
+
+    def run_in_chroot(self, chroot_path, cmd):
+        # Use short command here. Initial version was:
+        # chroot "${BUILDROOT}" \
+        #   /usr/bin/env -i \
+        #   HOME=/root \
+        #   TERM="$TERM" \
+        #   PS1='\u:\w\$ ' \
+        #   PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+        #   /usr/bin/bash --login +h -c "cd installer;$*"
+        return self.run(['chroot', chroot_path, '/bin/bash', '-c', cmd])
 
     @staticmethod
     def is_vmware_virtualization():

@@ -1,11 +1,12 @@
 {
     "installer": {
-        "bootmode":"efi",
+	"arch": "aarch64",
+        "bootmode": "efi",
         "hostname": "photon-machine",
         "packagelist_file": "packages_rpi3.json",
         "partition_type": "msdos",
         "partitions": [
-            {"mountpoint": "/boot/esp", "size": 30, "filesystem": "vfat"},
+            {"mountpoint": "/boot/efi", "size": 30, "filesystem": "vfat"},
             {"mountpoint": "/", "size": 0, "filesystem": "ext4"}
         ]
     },

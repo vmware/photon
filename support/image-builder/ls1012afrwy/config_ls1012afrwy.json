@@ -1,11 +1,12 @@
 {
     "installer": {
-        "bootmode":"efi",
+	"arch": "aarch64",
+        "bootmode": "efi",
         "hostname": "photon-machine",
         "packagelist_file": "packages_ls1012afrwy.json",
         "partition_type": "msdos",
         "partitions": [
-            {"mountpoint": "/boot/esp", "size": 12, "filesystem": "vfat", "fs_options": "-n EFI"},
+            {"mountpoint": "/boot/efi", "size": 12, "filesystem": "vfat", "fs_options": "-n EFI"},
             {"mountpoint": "/", "size": 0, "filesystem": "ext4", "fs_options": "-F -O ^huge_file -b 4096 -L rootfs"}
         ]
     },

@@ -24,3 +24,6 @@ def execute(installer):
         #add password hash in shadow file
         commons.replace_string_in_file(shadow_filename, "root::", "root:"+shadow_password+":")
         commons.replace_string_in_file(shadow_filename, "root:x:", "root:"+shadow_password+":")
+
+    installer.cmd.run_in_chroot(installer.photon_root, "/usr/sbin/pwconv")
+    installer.cmd.run_in_chroot(installer.photon_root, "/usr/sbin/grpconv")

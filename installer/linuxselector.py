@@ -38,7 +38,7 @@ class LinuxSelector(object):
 
     def display(self):
         if 'ostree' in self.install_config:
-            return ActionResult(True, None)
+            return ActionResult(None, {"inactive_screen": True})
 
         self.window.addstr(0, 0, 'The installer has detected that you are installing')
         self.window.addstr(1, 0, 'Photon OS on a VMware hypervisor.')
