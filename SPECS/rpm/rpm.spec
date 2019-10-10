@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -20,6 +20,8 @@ Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
 Requires:       libarchive
+Requires:       lua
+BuildRequires:  lua-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  libdb-devel
 BuildRequires:  popt-devel
@@ -56,6 +58,7 @@ Shared libraries librpm and librpmio
 
 %package build
 Requires:       perl
+Requires:       lua
 Requires:       %{name}-devel = %{version}-%{release}
 Requires:       elfutils-libelf
 Summary: Binaries, scripts and libraries needed to build rpms.
@@ -102,7 +105,7 @@ sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
         --disable-static \
         --enable-python \
         --with-cap \
-        --without-lua \
+        --with-lua \
         --disable-silent-rules \
         --with-external-db
 make %{?_smp_mflags}
@@ -248,6 +251,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Oct 10 2019 Tapas Kundu <tkundu@vmware.com> 4.14.2-5
+-   Enabled lua support
 *   Wed Oct 03 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-4
 -   Clean up the file in accordance to spec file checker
 *   Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-3
