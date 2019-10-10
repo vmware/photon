@@ -213,6 +213,8 @@ class constants(object):
         "libcap",
         "libdb",
         "libdb-devel",
+        "lua",
+        "lua-devel",
         "rpm",
         "rpm-build",
         "rpm-devel",
