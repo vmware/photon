@@ -1,0 +1,14 @@
+diff -Naur dracut-045.orig/modules.d/90lvm/module-setup.sh dracut-045/modules.d/90lvm/module-setup.sh
+--- dracut-045.orig/modules.d/90lvm/module-setup.sh	2017-04-03 01:26:25.000000000 -0700
++++ dracut-045/modules.d/90lvm/module-setup.sh	2019-10-10 13:45:33.565094711 -0700
+@@ -62,10 +62,6 @@
+     if [[ $hostonly ]] || [[ $lvmconf = "yes" ]]; then
+         if [ -f /etc/lvm/lvm.conf ]; then
+             inst_simple -H /etc/lvm/lvm.conf
+-            # FIXME: near-term hack to establish read-only locking;
+-            # use command-line lvm.conf editor once it is available
+-            sed -i -e 's/\(^[[:space:]]*\)locking_type[[:space:]]*=[[:space:]]*[[:digit:]]/\1locking_type = 4/' ${initdir}/etc/lvm/lvm.conf
+-            sed -i -e 's/\(^[[:space:]]*\)use_lvmetad[[:space:]]*=[[:space:]]*[[:digit:]]/\1use_lvmetad = 0/' ${initdir}/etc/lvm/lvm.conf
+         fi
+ 
+         export LVM_SUPPRESS_FD_WARNINGS=1
