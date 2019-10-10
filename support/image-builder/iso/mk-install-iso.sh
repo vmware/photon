@@ -267,7 +267,7 @@ rm -rf ${INITRD}/home/*         \
         ${INITRD}/lib64/libmvec*        \
         ${INITRD}/usr/lib64/gconv
 
-find "${INITRD}/usr/sbin" -mindepth 1 -maxdepth 1 \
+find "${INITRD}/usr/sbin" -mindepth 1 -maxdepth 1 -name "grub2*" \
                         ! -name grub2-install -exec rm -rvf {} \;
 
 find "${INITRD}/usr/share" -mindepth 1 -maxdepth 1 \
