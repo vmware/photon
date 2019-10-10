@@ -1,14 +1,14 @@
 Summary:        The Sysstat package contains utilities to monitor system performance and usage activity
 Name:           sysstat
-Version:        11.4.3
-Release:        2%{?dist}
+Version:        12.1.6
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://sebastien.godard.pagesperso-orange.fr/
 Group:          Development/Debuggers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://perso.wanadoo.fr/sebastien.godard/%{name}-%{version}.tar.xz
-%define sha1    sysstat=805002b2bef00cd9ab44c5037d09b29cb71a17f8
+%define sha1    sysstat=46b77ddb4e8b11953fa00782e769d1add5747039
 BuildRequires:  cronie
 Requires:       cronie
 %description
@@ -52,6 +52,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Wed Oct 09 2019 Shreyas B. <shreyasb@vmware.com> 12.1.6-1
+-   Upgrade to 12.1.6 to fix CVE-2019-16167.
 *   Thu Apr 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 11.4.3-2
 -   Ensure debuginfo
 *   Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 11.4.3-1
