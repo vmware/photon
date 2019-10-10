@@ -2,14 +2,14 @@
 %global debug_package %{nil}
 Summary:        U-Boot EFI firmware
 Name:		u-boot
-Version:	2019.01
-Release:	4%{?dist}
+Version:	2019.10
+Release:	1%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        ftp://ftp.denx.de/pub/u-boot/u-boot-%{version}.tar.bz2
-%define sha1 u-boot=3c4d22eea02032488e1a4cc5da202bb2469cf6fa
+%define sha1 u-boot=f50493fd92e926b8558671bc248e78de2b57299f
 Source1:        rpi_3_photon_defconfig
 Source2:        fw_env.config
 Patch0:		0001-XXX-openSUSE-XXX-Load-dtb-from-part.patch
@@ -17,19 +17,6 @@ Patch1:		0004-Fix-MMC1-external-SD-slot-on-Samsun.patch
 Patch2:		0005-Fix-no-usb.patch
 Patch3:         add_tcp_wget_support.patch
 Patch4:         add-saveenv-in-bootcmd.patch
-
-# CVE-2019-11059
-Patch5:         0001-Fix_ext4_block_group_descriptor_sizing.patch
-
-# CVE-2019-13103
-Patch6:		CVE-2019-13103-disk-stop_infinite_recursion_in_DOS.patch
-
-# CVE-2019-13104
-Patch7:         0001-fs-ext4-cache-extent-data.patch
-Patch8:         0001-CVE-2019-13104-ext4-check-for-underflow-in-ext4fs_re.patch
-
-# CVE-2019-13106
-Patch9:         0001-CVE-2019-13106-ext4-fix-out-of-bounds-memset.patch
 
 Group:          Development/Tools
 BuildArch:      aarch64
@@ -51,11 +38,6 @@ env variables from linux shell prompt.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
 
 %build
 cp %{SOURCE1} configs/
@@ -77,6 +59,8 @@ install -D -m 0644 %{SOURCE2} %{buildroot}/etc/fw_env.config
 /usr/bin/fw_setenv
 
 %changelog
+*   Thu Oct 10 2019 Ajay Kaher <akaher@vmware.com> 2019.10-1
+-   Updating to 2019.10
 *   Thu Aug 22 2019 Ajay Kaher <akaher@vmware.com> 2019.01-4
 -   Fix CVE-2019-13104, CVE-2019-13106
 *   Wed Aug 07 2019 Kuladeep Rayalla <krayalla@vmware.com> 2019.01-3

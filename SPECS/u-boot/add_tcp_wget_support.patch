@@ -1,13 +1,77 @@
-This patch is to enable tcp and wget support in u-boot.
+From fb09b9efb9dc610a81d1e6bc7f26e6a07f83ac34 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Thu, 10 Oct 2019 12:57:25 +0000
+Subject: [PATCH] This patch is to enable tcp and wget support in u-boot.
 
 Reference:
 https://lists.denx.de/pipermail/u-boot/2018-June/332739.html
 https://patchwork.ozlabs.org/patch/934007/
+---
+ cmd/Kconfig        |   8 +
+ cmd/net.c          |  14 +
+ include/net.h      |   9 +-
+ include/net/tcp.h  | 227 +++++++++++++++
+ include/net/wget.h |  19 ++
+ net/Kconfig        |   6 +
+ net/Makefile       |   3 +-
+ net/net.c          |  42 ++-
+ net/tcp.c          | 702 +++++++++++++++++++++++++++++++++++++++++++++
+ net/wget.c         | 426 +++++++++++++++++++++++++++
+ 10 files changed, 1452 insertions(+), 4 deletions(-)
+ create mode 100644 include/net/tcp.h
+ create mode 100644 include/net/wget.h
+ create mode 100644 net/tcp.c
+ create mode 100644 net/wget.c
 
-
---- a/include/net.h	2019-01-14 22:02:36.000000000 +0000
-+++ b/include/net.h	2019-02-21 05:36:45.082330020 +0000
-@@ -26,7 +26,9 @@
+diff --git a/cmd/Kconfig b/cmd/Kconfig
+index 4e61565a..45f6be09 100644
+--- a/cmd/Kconfig
++++ b/cmd/Kconfig
+@@ -1457,6 +1457,14 @@ config CMD_NFS
+ 	help
+ 	  Boot image via network using NFS protocol.
+ 
++config CMD_WGET
++	bool "wget"
++	select TCP
++	help
++	  Download kernel, or other files, from a web server over TCP.
++	  Fast file transfer over networks with latenc
++
++
+ config CMD_MII
+ 	bool "mii"
+ 	help
+diff --git a/cmd/net.c b/cmd/net.c
+index 23740397..4f87fa54 100644
+--- a/cmd/net.c
++++ b/cmd/net.c
+@@ -27,6 +27,20 @@ U_BOOT_CMD(
+ );
+ #endif
+ 
++#if defined(CONFIG_CMD_WGET)
++static int do_wget(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
++{
++	return netboot_common(WGET, cmdtp, argc, argv);
++}
++
++U_BOOT_CMD(
++	wget,   3,      1,      do_wget,
++	"boot image via network using HTTP protocol",
++	"[loadAddress] [[hostIPaddr:]path and image name]"
++);
++#endif
++
++
+ #ifdef CONFIG_CMD_TFTPBOOT
+ int do_tftpb(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+ {
+diff --git a/include/net.h b/include/net.h
+index 75a16e4c..35ba5de9 100644
+--- a/include/net.h
++++ b/include/net.h
+@@ -27,7 +27,9 @@
   *	alignment in memory.
   *
   */
@@ -18,7 +82,7 @@ https://patchwork.ozlabs.org/patch/934007/
  #ifdef CONFIG_SYS_RX_ETH_BUFFER
  # define PKTBUFSRX	CONFIG_SYS_RX_ETH_BUFFER
  #else
-@@ -352,6 +354,7 @@ struct vlan_ethernet_hdr {
+@@ -346,6 +348,7 @@ struct vlan_ethernet_hdr {
  #define PROT_PPP_SES	0x8864		/* PPPoE session messages	*/
  
  #define IPPROTO_ICMP	 1	/* Internet Control Message Protocol	*/
@@ -26,7 +90,7 @@ https://patchwork.ozlabs.org/patch/934007/
  #define IPPROTO_UDP	17	/* User Datagram Protocol		*/
  
  /*
-@@ -537,7 +540,7 @@ extern int		net_restart_wrap;	/* Tried a
+@@ -531,7 +534,7 @@ extern int		net_restart_wrap;	/* Tried all network devices */
  
  enum proto_t {
  	BOOTP, RARP, ARP, TFTPGET, DHCP, PING, DNS, NFS, CDP, NETCONS, SNTP,
@@ -35,7 +99,7 @@ https://patchwork.ozlabs.org/patch/934007/
  };
  
  extern char	net_boot_file_name[1024];/* Boot File name */
-@@ -684,6 +687,8 @@ static inline void net_send_packet(uchar
+@@ -674,6 +677,8 @@ static inline void net_send_packet(uchar *pkt, int len)
  int net_send_ip_packet(uchar *ether, struct in_addr dest, int dport, int sport,
  		       int payload_len, int proto, u8 action, u32 tcp_seq_num,
  		       u32 tcp_ack_num);
@@ -44,8 +108,11 @@ https://patchwork.ozlabs.org/patch/934007/
  int net_send_udp_packet(uchar *ether, struct in_addr dest, int dport,
  			int sport, int payload_len);
  
---- a/include/net/tcp.h	2019-02-22 11:07:25.767384692 +0000
-+++ b/include/net/tcp.h	2019-02-20 16:21:35.634978332 +0000
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+new file mode 100644
+index 00000000..d0e90e07
+--- /dev/null
++++ b/include/net/tcp.h
 @@ -0,0 +1,227 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
@@ -274,9 +341,36 @@ https://patchwork.ozlabs.org/patch/934007/
 +void rxhand_action(u8 tcp_action, int payload_len, u32 tcp_seq_num,
 +		   u32 tcp_ack_num, unsigned int pkt_len,
 +		   union tcp_build_pkt *b);
---- a/net/Kconfig	2019-01-14 22:02:36.000000000 +0000
-+++ b/net/Kconfig	2019-02-20 16:22:21.914704150 +0000
-@@ -22,4 +22,9 @@ config NETCONSOLE
+diff --git a/include/net/wget.h b/include/net/wget.h
+new file mode 100644
+index 00000000..61bdd851
+--- /dev/null
++++ b/include/net/wget.h
+@@ -0,0 +1,19 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Duncan Hare Copyright 2017
++ */
++
++void wget_start(void);			/* Begin wget */
++
++enum WGET_STATE {
++	WGET_CLOSED,
++	WGET_CONNECTING,
++	WGET_CONNECTED,
++	WGET_TRANSFERRING,
++	WGET_TRANSFERRED
++};
++
++#define	DEBUG_WGET		0	/* Set to 1 for debug messges */
++#define	SERVER_PORT		80
++#define	WGET_RETRY_COUNT	30
++#define	WGET_TIMEOUT		2000UL
+diff --git a/net/Kconfig b/net/Kconfig
+index 68cecf75..5194171a 100644
+--- a/net/Kconfig
++++ b/net/Kconfig
+@@ -22,6 +22,12 @@ config NETCONSOLE
  	  Support the 'nc' input/output device for networked console.
  	  See README.NetConsole for details.
  
@@ -285,10 +379,15 @@ https://patchwork.ozlabs.org/patch/934007/
 +	help
 +	  TCP protocol support with SACK for wget. Selecting this will provide
 +	  the fastest file transfer possible.
- endif   # if NET
---- a/net/Makefile	2019-01-14 22:02:36.000000000 +0000
-+++ b/net/Makefile	2019-02-21 05:40:05.474372488 +0000
-@@ -23,8 +23,9 @@ obj-$(CONFIG_CMD_PING) += ping.o
++
+ config IP_DEFRAG
+ 	bool "Support IP datagram reassembly"
+ 	default n
+diff --git a/net/Makefile b/net/Makefile
+index 2a700c84..17149d33 100644
+--- a/net/Makefile
++++ b/net/Makefile
+@@ -26,8 +26,9 @@ obj-$(CONFIG_CMD_PCAP) += pcap.o
  obj-$(CONFIG_CMD_RARP) += rarp.o
  obj-$(CONFIG_CMD_SNTP) += sntp.o
  obj-$(CONFIG_CMD_TFTPBOOT) += tftp.o
@@ -299,9 +398,11 @@ https://patchwork.ozlabs.org/patch/934007/
  
  # Disable this warning as it is triggered by:
  # sprintf(buf, index ? "foo%d" : "foo", index)
---- a/net/net.c	2019-01-14 22:02:36.000000000 +0000
-+++ b/net/net.c	2019-02-21 05:42:18.156998774 +0000
-@@ -114,6 +114,8 @@
+diff --git a/net/net.c b/net/net.c
+index ded86e74..f414c126 100644
+--- a/net/net.c
++++ b/net/net.c
+@@ -118,6 +118,8 @@
  #if defined(CONFIG_CMD_SNTP)
  #include "sntp.h"
  #endif
@@ -332,7 +433,7 @@ https://patchwork.ozlabs.org/patch/934007/
  #if defined(CONFIG_CMD_CDP)
  		case CDP:
  			cdp_start();
-@@ -814,6 +824,17 @@ int net_send_udp_packet(uchar *ether, st
+@@ -820,6 +830,17 @@ int net_send_udp_packet(uchar *ether, struct in_addr dest, int dport, int sport,
  				  IPPROTO_UDP, 0, 0, 0);
  }
  
@@ -350,7 +451,7 @@ https://patchwork.ozlabs.org/patch/934007/
  int net_send_ip_packet(uchar *ether, struct in_addr dest, int dport, int sport,
  		       int payload_len, int proto, u8 action, u32 tcp_seq_num,
  		       u32 tcp_ack_num)
-@@ -845,6 +866,14 @@ int net_send_ip_packet(uchar *ether, str
+@@ -851,6 +872,14 @@ int net_send_ip_packet(uchar *ether, struct in_addr dest, int dport, int sport,
  				   payload_len);
  		pkt_hdr_size = eth_hdr_size + IP_UDP_HDR_SIZE;
  		break;
@@ -365,7 +466,7 @@ https://patchwork.ozlabs.org/patch/934007/
  	default:
  		return -EINVAL;
  	}
-@@ -1254,6 +1283,16 @@ void net_process_received_packet(uchar *
+@@ -1260,6 +1289,16 @@ void net_process_received_packet(uchar *in_packet, int len)
  		if (ip->ip_p == IPPROTO_ICMP) {
  			receive_icmp(ip, len, src_ip, et);
  			return;
@@ -382,7 +483,7 @@ https://patchwork.ozlabs.org/patch/934007/
  		} else if (ip->ip_p != IPPROTO_UDP) {	/* Only UDP packets */
  			return;
  		}
-@@ -1564,7 +1603,8 @@ int net_parse_bootfile(struct in_addr *i
+@@ -1573,7 +1612,8 @@ int net_parse_bootfile(struct in_addr *ipaddr, char *filename, int max_len)
  
  #if	defined(CONFIG_CMD_NFS)		|| \
  	defined(CONFIG_CMD_SNTP)	|| \
@@ -392,8 +493,11 @@ https://patchwork.ozlabs.org/patch/934007/
  /*
   * make port a little random (1024-17407)
   * This keeps the math somewhat trivial to compute, and seems to work with
---- a/net/tcp.c	2019-02-22 11:07:16.290624985 +0000
-+++ b/net/tcp.c	2019-02-21 06:22:35.527085578 +0000
+diff --git a/net/tcp.c b/net/tcp.c
+new file mode 100644
+index 00000000..d694fbd7
+--- /dev/null
++++ b/net/tcp.c
 @@ -0,0 +1,702 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
@@ -417,7 +521,7 @@ https://patchwork.ozlabs.org/patch/934007/
 +#include <common.h>
 +#include <command.h>
 +#include <console.h>
-+#include <environment.h>
++#include <env_internal.h>
 +#include <errno.h>
 +#include <net.h>
 +#include <net/tcp.h>
@@ -1097,70 +1201,11 @@ https://patchwork.ozlabs.org/patch/934007/
 +				    tcp_seq_num, tcp_ack_num);
 +	}
 +}
---- a/cmd/Kconfig	2019-01-14 22:02:36.000000000 +0000
-+++ b/cmd/Kconfig	2019-02-21 05:35:21.591649174 +0000
-@@ -1265,6 +1265,14 @@ config CMD_NFS
- 	help
- 	  Boot image via network using NFS protocol.
- 
-+config CMD_WGET
-+	bool "wget"
-+	select TCP
-+	help
-+	  Download kernel, or other files, from a web server over TCP.
-+	  Fast file transfer over networks with latenc
-+
-+
- config CMD_MII
- 	bool "mii"
- 	help
---- a/cmd/net.c	2019-01-14 22:02:36.000000000 +0000
-+++ b/cmd/net.c	2019-02-21 05:36:20.348350616 +0000
-@@ -26,6 +26,20 @@ U_BOOT_CMD(
- );
- #endif
- 
-+#if defined(CONFIG_CMD_WGET)
-+static int do_wget(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
-+{
-+	return netboot_common(WGET, cmdtp, argc, argv);
-+}
-+
-+U_BOOT_CMD(
-+	wget,   3,      1,      do_wget,
-+	"boot image via network using HTTP protocol",
-+	"[loadAddress] [[hostIPaddr:]path and image name]"
-+);
-+#endif
-+
-+
- #ifdef CONFIG_CMD_TFTPBOOT
- int do_tftpb(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
- {
---- a/include/net/wget.h	2019-02-22 11:07:07.837947380 +0000
-+++ b/include/net/wget.h	2019-02-22 08:09:51.773771633 +0000
-@@ -0,0 +1,19 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Duncan Hare Copyright 2017
-+ */
-+
-+void wget_start(void);			/* Begin wget */
-+
-+enum WGET_STATE {
-+	WGET_CLOSED,
-+	WGET_CONNECTING,
-+	WGET_CONNECTED,
-+	WGET_TRANSFERRING,
-+	WGET_TRANSFERRED
-+};
-+
-+#define	DEBUG_WGET		0	/* Set to 1 for debug messges */
-+#define	SERVER_PORT		80
-+#define	WGET_RETRY_COUNT	30
-+#define	WGET_TIMEOUT		2000UL
---- a/net/wget.c	2019-02-22 11:06:59.717296398 +0000
-+++ b/net/wget.c	2019-02-21 06:27:16.333626855 +0000
+diff --git a/net/wget.c b/net/wget.c
+new file mode 100644
+index 00000000..8238ec52
+--- /dev/null
++++ b/net/wget.c
 @@ -0,0 +1,426 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
@@ -1588,3 +1633,6 @@ https://patchwork.ozlabs.org/patch/934007/
 +
 +	wget_send(TCP_SYN, 0, 0, 0);
 +}
+-- 
+2.19.0
+
