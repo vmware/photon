@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.44
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_44_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
@@ -78,9 +78,10 @@ install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
 %{nil}
 
 %check
-cd nss/tests
 chmod g+w . -R
+cd nss/tests
 useradd test -G root -m
+sed -i '/RUN_FIPS/a export HOST=localhost DOMSUF=localdomain BUILD_OPT=1 USE_64=1' all.sh
 HOST=localhost DOMSUF=localdomain BUILD_OPT=1
 sudo -u test ./all.sh && userdel test -r -f
 
@@ -108,6 +109,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Thu Oct 10 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 3.44-3
+-   Makecheck fixes
 *   Fri Aug 09 2019 Ashwin H <ashwinh@vmware.com> 3.44-2
 -   Fix to enable nss in fips mode
 *   Wed May 29 2019 Michelle Wang <michellew@vmware.com> 3.44-1
