@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.9.4
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
@@ -11,6 +11,7 @@ Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz
 %define sha1    subversion=bc7d51fdda43bea01e1272dfe9d23d0a9d6cd11c
 Patch0:         subversion-CVE-2017-9800.patch
 Patch1:         subversion-CVE-2016-8734.patch
+Patch2:         subversion-CVE-2018-11782.patch
 Requires:       apr
 Requires:       apr-util
 Requires:       serf
@@ -35,6 +36,7 @@ Requires:       %{name} = %{version}
 %setup -q
 %patch0 -p1
 %patch1 -p0
+%patch2 -p0
 %build
 ./configure --prefix=%{_prefix}         \
             --disable-static            \
@@ -62,6 +64,8 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_datadir}/pkgconfig/*.pc
 
 %changelog
+*   Fri Oct 11 2019 Ankit Jain <ankitja@vmware.com> 1.9.4-7
+-   Fix for CVE-2018-11782 and CVE-2019-0203
 *   Thu Feb 01 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-6
 -   Move pkgconfig files to devel package.
 *   Mon Jan 22 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-5
