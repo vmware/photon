@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.9.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
 %define sha1    subversion=874b81749cdc3e88152d103243c3623ac6338388
+Patch0:         subversion-CVE-2018-11782.patch
 Requires:       apr
 Requires:       apr-util
 Requires:       serf
@@ -31,6 +32,7 @@ Requires:   %{name} = %{version}
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 ./configure --prefix=%{_prefix}         \
@@ -65,6 +67,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Fri Oct 11 2019 Ankit Jain <ankitja@vmware.com> 1.9.7-3
+-   Fix for CVE-2018-11782 and CVE-2019-0203
 *   Mon Jan 22 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.7-2
 -   Compile subversion with https repository access module support
 *   Mon Aug 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.7-1
