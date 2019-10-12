@@ -1,6 +1,6 @@
 Name:           influxdb
 Version:        1.6.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
@@ -87,7 +87,7 @@ Source39:       yamux.tar.gz
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Applications/Database
-BuildRequires:  go = 1.9.7
+BuildRequires:  go
 BuildRequires:  git
 BuildRequires:  systemd
 Requires:       systemd
@@ -226,6 +226,8 @@ fi
 %exclude %{_bindir}/test_client
 
 %changelog
+*   Fri Oct 11 2019 Ashwin H <ashwinh@vmware.com> 1.6.0-6
+-   Build with go 1.13
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.6.0-5
 -   Bump up version to compile with new go
 *   Fri Jan 25 2019 Keerthana K <keerthanak@vmware.com> 1.6.0-4

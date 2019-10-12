@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -28,7 +28,7 @@ BuildRequires:  libltdl-devel
 BuildRequires:  libgcc-devel
 BuildRequires:  glibc-devel
 BuildRequires:  unzip
-BuildRequires:  go = 1.10.7
+BuildRequires:  go
 BuildRequires:  sed
 BuildRequires:  cmake
 BuildRequires:  findutils
@@ -224,6 +224,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Fri Oct 11 2019 Ashwin H <ashwinh@vmware.com> 18.06.2-5
+-   Build with go 1.13
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 18.06.2-4
 -   Bump up version to compile with new go
 *   Tue Jun 4 2019 Bo Gan <ganb@vmware.com> 18.06.2-3
