@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.3.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -140,6 +140,9 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Fri Oct 11 2019 Anish Swaminathan <anishs@vmware.com> 10.3.10-3
+-   Update memory leak fix patch to include
+-   https://github.com/vmware/open-vm-tools/commit/26b9edbeb79d1c67b9ae73a0c97c48999c1fb503
 *   Thu Sep 19 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-2
 -   Fix memory leak issues in vix.
 -   Added enable-custom-scripts parsing code in GOSC scripts.
