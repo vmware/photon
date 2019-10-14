@@ -173,3 +173,69 @@ index 44369444c..00b40b1ce 100644
  
     return err;
  #else
+From 26b9edbeb79d1c67b9ae73a0c97c48999c1fb503 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@vmware.com>
+Date: Wed, 2 Oct 2019 17:48:35 -0700
+Subject: [PATCH] Fix leaks in ListAliases and ListMappedAliases
+ (9bc72f0b09702754b429115658a85223cb3058bd from devel)
+
+---
+ open-vm-tools/services/plugins/vix/vixTools.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/open-vm-tools/services/plugins/vix/vixTools.c b/open-vm-tools/services/plugins/vix/vixTools.c
+index 00b40b1ce..b0bd4d023 100644
+--- a/open-vm-tools/services/plugins/vix/vixTools.c
++++ b/open-vm-tools/services/plugins/vix/vixTools.c
+@@ -9621,7 +9621,6 @@ VixToolsListAuthAliases(VixCommandRequestHeader *requestMsg, // IN
+    char *endDestPtr;
+    char *tmpBuf = NULL;
+    char *tmpBuf2 = NULL;
+-   char *recordBuf;
+    size_t recordSize;
+    char *escapedStr = NULL;
+    char *escapedStr2 = NULL;
+@@ -9680,6 +9679,8 @@ VixToolsListAuthAliases(VixCommandRequestHeader *requestMsg, // IN
+    destPtr += Str_Sprintf(destPtr, endDestPtr - destPtr, "%s",
+                           VIX_XML_ESCAPED_TAG);
+    for (i = 0; i < num; i++) {
++      char *recordBuf = NULL;
++
+       escapedStr = VixToolsEscapeXMLString(uaList[i].pemCert);
+       if (escapedStr == NULL) {
+          err = VIX_E_OUT_OF_MEMORY;
+@@ -9750,6 +9751,8 @@ VixToolsListAuthAliases(VixCommandRequestHeader *requestMsg, // IN
+          Log("%s: ListAuth list results too large, truncating", __FUNCTION__);
+          goto abort;
+       }
++      free(recordBuf);
++      recordBuf = NULL;
+    }
+ 
+    *result = resultBuffer;
+@@ -9817,7 +9820,6 @@ VixToolsListMappedAliases(VixCommandRequestHeader *requestMsg, // IN
+    char *endDestPtr;
+    char *tmpBuf = NULL;
+    char *tmpBuf2 = NULL;
+-   char *recordBuf;
+    char *escapedStr = NULL;
+    char *escapedStr2 = NULL;
+    size_t recordSize;
+@@ -9870,6 +9872,8 @@ VixToolsListMappedAliases(VixCommandRequestHeader *requestMsg, // IN
+    destPtr += Str_Sprintf(destPtr, endDestPtr - destPtr, "%s",
+                           VIX_XML_ESCAPED_TAG);
+    for (i = 0; i < num; i++) {
++      char *recordBuf = NULL;
++
+       escapedStr = VixToolsEscapeXMLString(maList[i].pemCert);
+       if (escapedStr == NULL) {
+          err = VIX_E_OUT_OF_MEMORY;
+@@ -9938,6 +9942,8 @@ VixToolsListMappedAliases(VixCommandRequestHeader *requestMsg, // IN
+          Log("%s: ListMapped results too large, truncating", __FUNCTION__);
+          goto abort;
+       }
++      free(recordBuf);
++      recordBuf = NULL;
+    }
+ 
+    *result = resultBuffer;
