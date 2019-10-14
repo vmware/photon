@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.76
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -30,6 +30,7 @@ Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         4.18-x86-vmware-STA-support.patch
 Patch7:	        9p-trans_fd-extend-port-variable-to-u32.patch
+Patch8:         perf-scripts-python-Convert-python2-scripts-to-python3.patch
 # ttyXRUSB support
 Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
 #HyperV patches
@@ -123,7 +124,13 @@ BuildRequires:  libmspack-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
-BuildRequires:	audit-devel
+BuildRequires:  audit-devel
+BuildRequires:  elfutils-libelf-devel
+BuildRequires:  binutils-devel
+BuildRequires:  xz-devel
+BuildRequires:  libunwind-devel
+BuildRequires:  slang-devel
+BuildRequires:  python3-devel
 Requires:       filesystem kmod
 Requires(post):(coreutils or toybox)
 Requires(postun):(coreutils or toybox)
@@ -176,7 +183,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
 Group:          System/Tools
 Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-aws = %{version})
-Requires:       audit
+Requires:       audit elfutils-libelf binutils-libs xz-libs libunwind slang python3
 Obsoletes:      linux-aws-tools <= 4.19.52-1
 Provides:       linux-aws-tools
 %description tools
@@ -213,6 +220,7 @@ Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 %patch11 -p1
 %patch13 -p1
 %patch24 -p1
@@ -294,7 +302,7 @@ sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 %include %{SOURCE7}
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
-make -C tools perf
+make -C tools perf PYTHON=python3
 %ifarch x86_64
 # build ENA module
 bldroot=`pwd`
@@ -427,7 +435,7 @@ cp arch/arm64/kernel/module.lds %{buildroot}/usr/src/%{name}-headers-%{uname_r}/
 # disable (JOBS=1) parallel build to fix this issue:
 # fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
 # Linux version that was affected is 4.4.26
-make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
+make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3
 
 %include %{SOURCE2}
 %include %{SOURCE6}
@@ -517,6 +525,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Oct 10 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.76-3
+-   Add additional BuildRequires and Requires to fix issues with perf, related to
+-   interactive UI and C++ symbol demangling. Also update the last few perf python
+-   scripts in Linux kernel to use python3 syntax.
 *   Thu Oct 10 2019 Harinadh D <hdommaraju@vmware.com> 4.19.76-2
 -   Adding lvm and dm-mod modules to support root as lvm
 *   Wed Oct 02 2019 Ajay Kaher <akaher@vmware.com> 4.19.76-1

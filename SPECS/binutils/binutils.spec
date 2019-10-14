@@ -1,12 +1,14 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.32
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Requires:       %{name}-libs = %{version}-%{release}
+
 Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
 %define sha1 binutils=cd45a512af1c8a508976c1beb4f5825b3bb89f4d
 
@@ -24,6 +26,14 @@ Patch9:         binutils-CVE-2019-1010204.patch
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
+
+%package    libs
+Summary:    Shared library files for binutils
+Obsoletes:  binutils <= 2.32-1
+
+%description    libs
+It contains the binutils shared libraries that applications can link
+to at runtime.
 
 %package    devel
 Summary:    Header and development files for binutils
@@ -69,8 +79,6 @@ sed -i 's/testsuite/ /g' gold/Makefile
 make %{?_smp_mflags} check
 
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/dwp
@@ -110,6 +118,11 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/windres.1.gz
 %{_mandir}/man1/size.1.gz
 %{_mandir}/man1/objdump.1.gz
+
+%post   libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
+
+%files libs
 %{_libdir}/libbfd-%{version}.so
 %{_libdir}/libopcodes-%{version}.so
 
@@ -130,6 +143,9 @@ make %{?_smp_mflags} check
 %{_lib64dir}/libiberty.a
 
 %changelog
+*   Sun Sep 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 2.32-2
+-   Separate out libbfd and libopcodes shared libraries into
+-   binutils-libs sub-package.
 *   Mon Aug 26 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.32-1
 -   Update version to 2.32, fix CVE-2019-1010204, fix a make check failure
 *   Mon Aug 12 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.31.1-6
