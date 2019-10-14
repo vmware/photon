@@ -548,7 +548,7 @@ clean-chroot:
 
 # Targets to check for tools support in build environment
 #__________________________________________________________________________________
-check-tools: check-bison check-g++ check-gawk check-repo-tool check-texinfo check-sanity check-docker
+check-tools: check-bison check-g++ check-gawk check-repo-tool check-texinfo check-sanity check-docker check-pyopenssl
 
 check-docker:
 	@command -v docker >/dev/null 2>&1 || { echo "Package docker not installed. Aborting." >&2; exit 1; }
@@ -558,6 +558,9 @@ check-docker-service:
 
 check-docker-py:
 	@python3 -c "import docker; assert docker.__version__ >= '$(PHOTON_DOCKER_PY_VER)'" >/dev/null 2>&1 || { echo "Error: Python3 package docker-py3 $(PHOTON_DOCKER_PY_VER) not installed.\nPlease use: pip3 install docker==$(PHOTON_DOCKER_PY_VER)" >&2; exit 1; }
+
+check-pyopenssl:
+	@python3 -c "import OpenSSL" > /dev/null 2>&1 || { echo "Error pyOpenSSL package not installed.\nPlease use: pip3 install pyOpenSSL" >&2; exit 1; }
 
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }

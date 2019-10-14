@@ -4,6 +4,11 @@ import os
 import crypt
 import string
 import random
+import shutil
+import ssl
+import requests
+from urllib.parse import urlparse
+from OpenSSL.crypto import load_certificate, FILETYPE_PEM
 
 class CommandUtils(object):
     def __init__(self, logger):
@@ -52,3 +57,51 @@ class CommandUtils(object):
                     string.ascii_letters + string.digits) for _ in range(16)]))
         return shadow_password
 
+    @staticmethod
+    def _requests_get(url, verify):
+        try:
+            r = requests.get(url, verify=verify, stream=True, timeout=5.0)
+        except:
+            return None
+        return r
+
+    @staticmethod
+    def wget(url, out, enforce_https=True, ask_fn=None, fingerprint=None):
+        # Check URL
+        try:
+            u = urlparse(url)
+        except:
+            return False, "Failed to parse URL"
+        if not all([ u.scheme, u.netloc ]):
+            return False, 'Invalid URL'
+        if enforce_https:
+            if u.scheme != 'https':
+                return False, 'URL must be of secure origin (HTTPS)'
+        r = CommandUtils._requests_get(url, True)
+        if r is None:
+            if fingerprint is None and ask_fn is None:
+                return False, "Unable to verify server certificate"
+            port = u.port
+            if port is None:
+                port = 443
+            try:
+                pem = ssl.get_server_certificate((u.netloc, port))
+                cert = load_certificate(FILETYPE_PEM, pem)
+                fp = cert.digest('sha1').decode()
+            except:
+                return False, "Failed to get server certificate"
+            if ask_fn is not None:
+                if not ask_fn(fp):
+                    return False, "Aborted on user request"
+            else:
+                if fingerprint != fp:
+                    return False, "Server fingerprint did not match provided. Got: " + fp
+            # Download file without validation
+            r = CommandUtils._requests_get(url, False)
+            if r is None:
+                return False, "Failed to download file"
+        r.raw.decode_content = True
+        with open(out, 'wb') as f:
+            shutil.copyfileobj(r.raw, f)
+
+        return True, None

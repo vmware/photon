@@ -17,12 +17,14 @@ import random
 import curses
 import stat
 import re
+import tempfile
 from logger import Logger
 from commandutils import CommandUtils
 from jsonwrapper import JsonWrapper
 from progressbar import ProgressBar
 from window import Window
 from actionresult import ActionResult
+from networkmanager import NetworkManager
 from enum import Enum
 
 class PartitionType(Enum):
@@ -57,6 +59,7 @@ class Installer(object):
         'packagelist_file',
         'partition_type',
         'partitions',
+        'network',
         'password',
         'postinstall',
         'postinstallscripts',
@@ -332,6 +335,7 @@ class Installer(object):
             self._install_packages()
             self._install_additional_rpms()
             self._enable_network_in_chroot()
+            self._setup_network()
             self._finalize_system()
             self._cleanup_install_repo()
             self._setup_grub()
@@ -358,6 +362,25 @@ class Installer(object):
             self._cleanup_install_repo()
             self._unmount_all()
         sys.exit(1)
+
+    def _setup_network(self):
+        if 'network' not in self.install_config:
+            return
+        # setup network config files in chroot
+        nm = NetworkManager(self.install_config, self.photon_root)
+        if not nm.setup_network():
+            self.logger.error("Failed to setup network!")
+            self.exit_gracefully()
+
+        # Configure network when in live mode (ISO) and when network is not
+        # already configured (typically in KS flow).
+        if ('live' in self.install_config and
+                'conf_files' not in self.install_config['network']):
+            nm = NetworkManager(self.install_config)
+            if not nm.setup_network():
+                self.logger.error("Failed to setup network in ISO system")
+                self.exit_gracefully()
+            nm.restart_networkd()
 
     def _unmount_all(self):
         """
@@ -614,11 +637,19 @@ class Installer(object):
         if 'additional_files' in self.install_config:
             for filetuples in self.install_config['additional_files']:
                 for src, dest in filetuples.items():
-                    srcpath = self.getfile(src)
-                    if (os.path.isdir(srcpath)):
-                        shutil.copytree(srcpath, self.photon_root + dest, True)
+                    if src.startswith('http://') or src.startswith('https://'):
+                        temp_file = tempfile.mktemp()
+                        result, msg = CommandUtils.wget(src, temp_file, False)
+                        if result:
+                            shutil.copyfile(temp_file, self.photon_root + dest)
+                        else:
+                            self.logger.error("Download failed URL: {} got error: {}".format(src, msg))
                     else:
-                        shutil.copyfile(srcpath, self.photon_root + dest)
+                        srcpath = self.getfile(src)
+                        if (os.path.isdir(srcpath)):
+                            shutil.copytree(srcpath, self.photon_root + dest, True)
+                        else:
+                            shutil.copyfile(srcpath, self.photon_root + dest)
 
     def _finalize_system(self):
         """
@@ -985,7 +1016,7 @@ class Installer(object):
 
         # create extensible logical volume
         if not extensible_logical_volume:
-            raise Exception("Can not fully partition VG: ".format(vg_name))
+            raise Exception("Can not fully partition VG: " + vg_name)
 
         lv_name = extensible_logical_volume['lvm']['lv_name']
         lv_cmd = ['lvcreate', '-y']
