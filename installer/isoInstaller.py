@@ -99,9 +99,9 @@ class IsoInstaller(object):
         # Construct mount cmdline
         cmdline = ['mount']
         if cd_search.startswith("UUID="):
-            cmdline.extend(['-U', cd_search[len("UUID="):] ]);
+            cmdline.extend(['-U', cd_search[len("UUID="):] ])
         elif cd_search.startswith("LABEL="):
-            cmdline.extend(['-L', cd_search[len("LABEL="):] ]);
+            cmdline.extend(['-L', cd_search[len("LABEL="):] ])
         elif cd_search == "cdrom":
             cmdline.append('/dev/cdrom')
         else:

@@ -16,6 +16,8 @@ from linuxselector import LinuxSelector
 from ostreeserverselector import OSTreeServerSelector
 from ostreewindowstringreader import OSTreeWindowStringReader
 from commandutils import CommandUtils
+from filedownloader import FileDownloader
+from netconfig import NetworkConfigure
 
 class IsoConfig(object):
     g_ostree_repo_url = None
@@ -53,6 +55,7 @@ class IsoConfig(object):
         return (len(machinename) <= 64 and
                 machinename[0].isalpha(), error_hostname)
 
+    @staticmethod
     def validate_ostree_url_input(ostree_repo_url):
         if not ostree_repo_url:
             return False, "Error: Invalid input"
@@ -85,6 +88,7 @@ class IsoConfig(object):
         IsoConfig.g_ostree_repo_url = ostree_repo_url
         return True, None
 
+    @staticmethod
     def validate_ostree_refs_input(ostree_repo_ref):
         if not ostree_repo_ref:
             return False, "Error: Invalid input"
@@ -101,7 +105,8 @@ class IsoConfig(object):
         return True, None
 
 
-    def validate_http_response( url, checks, exception_text, error_text):
+    @staticmethod
+    def validate_http_response(url, checks, exception_text, error_text):
         try:
             response = requests.get(url, verify=True, stream=True, timeout=5.0)
         except Exception:
@@ -240,6 +245,18 @@ class IsoConfig(object):
         items.append((select_disk.display, True))
         items.append((custom_partition.display, False))
         items.append((package_selector.display, True))
+        if 'network_screen' in ui_config:
+            allow_vlan = ui_config['network_screen'].get('allow_vlan', False)
+            net_cfg = NetworkConfigure(maxy, maxx, install_config, allow_vlan)
+            items.append((net_cfg.display, True))
+
+        if 'download_screen' in ui_config:
+            title = ui_config['download_screen'].get('title', None)
+            intro = ui_config['download_screen'].get('intro', None)
+            dest  = ui_config['download_screen'].get('destination', None)
+            fd = FileDownloader(maxy, maxx, install_config, title, intro, dest, True)
+            items.append((fd.display, True))
+
         if CommandUtils.is_vmware_virtualization():
             linux_selector = LinuxSelector(maxy, maxx, install_config)
             items.append((linux_selector.display, True))
