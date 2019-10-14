@@ -11,54 +11,6 @@ import json
 from utils import Utils
 import ovagenerator
 
-def prepLoopDevice(loop_device_path, mount_path):
-    Utils.runshellcommand(
-            "mount -t ext4 {} {}".format(loop_device_path, mount_path))
-    Utils.runshellcommand("mount -o bind /proc {}".format(mount_path + "/proc"))
-    Utils.runshellcommand("mount -o bind /dev {}".format(mount_path + "/dev"))
-    Utils.runshellcommand("mount -o bind /dev/pts {}".format(mount_path + "/dev/pts"))
-    Utils.runshellcommand("mount -o bind /sys {}".format(mount_path + "/sys"))
-
-def cleanupMountPoints(mount_path):
-    Utils.runshellcommand("umount -l {}".format(mount_path + "/sys"))
-    Utils.runshellcommand("umount -l {}".format(mount_path + "/dev/pts"))
-    Utils.runshellcommand("umount -l {}".format(mount_path + "/dev"))
-    Utils.runshellcommand("umount -l {}".format(mount_path + "/proc"))
-
-    Utils.runshellcommand("sync")
-    Utils.runshellcommand("umount -l {}".format(mount_path))
-
-def customizeImage(config, mount_path):
-    build_scripts_path = os.path.dirname(os.path.abspath(__file__))
-    image_name = config['image_type']
-    if 'additionalfiles' in config:
-        for filetuples in config['additionalfiles']:
-            for src, dest in filetuples.items():
-                if (os.path.isdir(build_scripts_path + '/' +
-                                  image_name + '/' + src)):
-                    shutil.copytree(build_scripts_path + '/' +
-                                    image_name + '/' + src,
-                                    mount_path + dest, True)
-                else:
-                    shutil.copyfile(build_scripts_path + '/' +
-                                    image_name + '/' + src,
-                                    mount_path + dest)
-    if 'postinstallscripts' in config:
-        if not os.path.exists(mount_path + "/tempscripts"):
-            os.mkdir(mount_path + "/tempscripts")
-        for script in config['postinstallscripts']:
-            shutil.copy(build_scripts_path + '/' +
-                        image_name + '/' + script,
-                        mount_path + "/tempscripts")
-        for script in os.listdir(mount_path + "/tempscripts"):
-            print("     ...running script {}".format(script))
-            Utils.runshellcommand(
-                "chroot {} /bin/bash -c '/tempscripts/{}'".format(mount_path, script))
-        shutil.rmtree(mount_path + "/tempscripts", ignore_errors=True)
-    if 'expirepassword' in config and config['expirepassword']:
-        # Do not run 'chroot -R' from outside. It will not find nscd socket.
-        Utils.runshellcommand("chroot {} /bin/bash -c 'chage -d 0 root'".format(mount_path))
-
 def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
     photon_release_ver = os.environ['PHOTON_RELEASE_VER']
     photon_build_num = os.environ['PHOTON_BUILD_NUM']
@@ -135,42 +87,6 @@ def generateCompressedFile(inputfile, outputfile, formatstring):
         tarout.add(inputfile, arcname=os.path.basename(inputfile))
         tarout.close()
 
-def generateImage(raw_image_path, tools_bin_path, src_root, config):
-    mount_path = os.path.splitext(raw_image_path)[0]
-    # TODO: remove 'bootmode' -> partition_no hack
-    root_partition_no = 2
-    if config['installer'].get('bootmode', '') == 'dualboot':
-        root_partition_no = 3
-
-    if os.path.exists(mount_path) and os.path.isdir(mount_path):
-        shutil.rmtree(mount_path)
-    os.mkdir(mount_path)
-    disk_device = (Utils.runshellcommand(
-        "losetup --show -f {}".format(raw_image_path))).rstrip('\n')
-    disk_partitions = Utils.runshellcommand("kpartx -as {}".format(disk_device))
-    device_name = disk_device.split('/')[2]
-    if not device_name:
-        raise Exception("Could not create loop device and partition")
-    loop_device_path = "/dev/mapper/{}p{}".format(device_name, root_partition_no)
-    print(loop_device_path)
-
-    try:
-        # Prep the loop device
-        prepLoopDevice(loop_device_path, mount_path)
-        # Clear machine-id so it gets regenerated on boot
-        open(mount_path + "/etc/machine-id", "w").close()
-        # Perform additional steps defined in installer config
-        customizeImage(config, mount_path)
-    except Exception as e:
-        print(e)
-    finally:
-        cleanupMountPoints(mount_path)
-        Utils.runshellcommand("kpartx -d {}".format(disk_device))
-        Utils.runshellcommand("losetup -d {}".format(disk_device))
-
-        shutil.rmtree(mount_path)
-        createOutputArtifact(raw_image_path, config, src_root, tools_bin_path)
-
 if __name__ == '__main__':
     parser = ArgumentParser()
 
@@ -185,9 +101,9 @@ if __name__ == '__main__':
     else:
         raise Exception("No config file defined")
 
-    generateImage(
+    createOutputArtifact(
                 options.raw_image_path,
-                options.tools_bin_path,
+                config,
                 options.src_root,
-                config
+                options.tools_bin_path
                 )

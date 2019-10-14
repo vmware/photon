@@ -220,6 +220,11 @@ def createImage(options):
     if 'log_level' not in install_config:
         install_config['log_level'] = options.log_level
 
+    install_config['search_path'] = [
+        os.path.abspath(os.path.join(script_dir, image_type)),
+        os.path.abspath(script_dir),
+    ]
+
     # Associating loopdevice to raw disk and save the name as a target's 'disk'
     install_config['disk'] = (Utils.runshellcommand(
         "losetup --show -f {}".format(image_file))).rstrip('\n')
@@ -231,11 +236,11 @@ def createImage(options):
     Utils.runshellcommand("losetup -d {}".format(install_config['disk']))
 
     os.chdir(script_dir)
-    imagegenerator.generateImage(
+    imagegenerator.createOutputArtifact(
                                 image_file,
-                                options.src_root + '/tools/bin/',
+                                config,
                                 options.src_root,
-                                config
+                                options.src_root + '/tools/bin/'
                               )
 
 if __name__ == '__main__':

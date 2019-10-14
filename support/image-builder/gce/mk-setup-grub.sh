@@ -18,7 +18,7 @@ BOOT_DIRECTORY=$4
 UUID_VAL=$(blkid -s UUID -o value $ROOT_PARTITION_PATH)
 PARTUUID=$(blkid -s PARTUUID -o value $ROOT_PARTITION_PATH)
 
-# TODO: check is installer._setup_grub() is enough
+# TODO: check if installer._setup_grub() is enough to boot GCE image, if not - uncomment these lines.
 # grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck
 # rm $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi
 # cp $INSTALLER_PATH/EFI_x86_64/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/

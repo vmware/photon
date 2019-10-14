@@ -3,6 +3,7 @@
         "bootmode":"efi",
         "hostname": "photon-machine",
         "password": {
+            "age": 0,
             "crypted": false,
             "text": "changeme"
         },
@@ -10,7 +11,6 @@
     },
     "image_type": "ova_uefi",
     "size": 16384,
-    "expirepassword": true,
     "artifacttype": "ova",
     "keeprawdisk": false
 }

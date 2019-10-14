@@ -4,13 +4,13 @@
         "hostname": "photon-machine",
         "packagelist_file": "packages_ova.json",
         "password": {
+            "age": 0,
             "crypted": false,
             "text": "changeme"
         }
     },
     "image_type": "ova",
     "size": 16384,
-    "expirepassword": true,
     "artifacttype": "ova",
     "keeprawdisk": false
 }

@@ -1,5 +1,13 @@
 Kickstart config file is a json format with following possible parameters:
 
+"additional_files": (optional)
+	Contains list of pairs { source file (or directory), destination file
+	(or directory) } to copy to the target system. Source file
+	(directory) will be looked up in "search_path" list.
+	Example: { "additional_files": [
+		{"resizefs.sh": "/usr/local/bin/resizefs.sh"},
+		{"resizefs.service": "/lib/systemd/system/resizefs.service"}]}
+
 "additional_packages" same as "packages"
 
 "additional_rpms_path" (optional)
@@ -10,13 +18,13 @@ Kickstart config file is a json format with following possible parameters:
 	Target system architecture. Should be set if target architecture is
 	different from host one, for instance x86_64 machine building RPi
 	image.
-	Acceptible values are: "x86_64", "aarch64"
-	Defatult value: autodetected host architecture
+	Acceptable values are: "x86_64", "aarch64"
+	Default value: autodetected host architecture
 	Example: { "arch": "aarch64" }
 
 "bootmode" (optional)
 	Sets the boot type to suppot: EFI, BIOS or both.
-	Acceptible values are: "bios", "efi", "dualboot"
+	Acceptable values are: "bios", "efi", "dualboot"
 	"bios" will add special partition (very first) for first stage grub.
 	"efi" will add ESP (Efi Special Partition), format is as FAT and copy
 	there EFI binaries including grub.efi
@@ -42,9 +50,16 @@ Kickstart config file is a json format with following possible parameters:
 	Default value: "photon-<randomized string>"
 	Example: { "hostname": "photon-machine" }
 
+"live" (optional)
+	Should be set to flase if target system will not be run on
+	host machine. When it set to false, installer will not add EFI boot
+	entries, and will not generate unique machine-id.
+	Default value: false if "disk" is /dev/loop and true otherwise.
+	Example: { "live": false }
+
 "log_level" (optional)
 	Set installer logging level.
-	Acceptible values are: "error", "warning", "info", "debug"
+	Acceptable values are: "error", "warning", "info", "debug"
 	Default value: "info"
 	Example: { "log_level": "debug" }
 
@@ -121,15 +136,25 @@ Kickstart config file is a json format with following possible parameters:
 			{"size": 128, "filesystem": "swap"} ] }
 
 "password" (optional)
-	Set root password. It is dictionary of two items:
+	Set root password. It is dictionary of the following items:
 	"text" (required) password plain text ("crypted" : false)
-			  of encrypted ("crypted": true)
-	"crypted" (required) how to interpret "text" content
+		of encrypted ("crypted": true)
+	"crypted" (required) Hint on how to interpret "text" content.
+	"age" (optional) Set password expiration date. If not set, then
+		used Photon OS default password aging value.
+		Value: integer. Meanings:
+		- Any positive number - password will be expired in
+		  so many days from today.
+		- Zero (0) - marks password as already expired. root
+		  will be asked to change current password during the
+		  first login.
+		- Minus one (-1) - removes root password expiration date.
 	Default value: { "crypted": true, "text": "*"} }
 	    which means root is not allowed to login.
 	Example: { "password": {
 			"crypted": false,
-			"text": "changeme"} }
+			"text": "changeme",
+			"age": 0 } }
 
 "postinstall" (optional)
 	Contains list of lines to be executed as a single script on
@@ -137,9 +162,17 @@ Kickstart config file is a json format with following possible parameters:
 	Example: { "postinstall": [
 			"#!/bin/sh",
 			"echo \"Hello World\" > /etc/postinstall" ] }
+"postinstallscripts" (optional)
+	Contains list of scripts to execute on the target after installation.
+	Scripts will be looked up in "search_path" list.
+	Example: { "postinstallscripts": ["rpi3-custom-patch.sh"] }
 
 "public_key" (optional)
 	To inject entry to authorized_keys as a string
+
+"search_path" (optional)
+	List of directories to search for additional files and scripts.
+	Example: { "search_path": ["/home/user", "/tmp"] }
 
 "shadow_password" (optional)
 	Contains encrypted root password <encrypted password here>.

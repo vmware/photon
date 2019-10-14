@@ -37,6 +37,7 @@ class Installer(object):
     # List of allowed keys in kickstart config file.
     # Please keep ks_config.txt file updated.
     known_keys = {
+        'additional_files',
         'additional_packages',
         'additional_rpms_path',
         'arch',
@@ -55,7 +56,9 @@ class Installer(object):
         'partitions',
         'password',
         'postinstall',
+        'postinstallscripts',
         'public_key',
+        'search_path',
         'setup_grub_script',
         'shadow_password',
         'type',
@@ -181,15 +184,15 @@ class Installer(object):
         if "hostname" not in install_config or install_config['hostname'] == "":
             install_config['hostname'] = 'photon-%12x' % random.randrange(16**12)
 
-        # Set crypted password if needed
+        # Set password if needed
+        if 'password' not in install_config:
+            install_config['password'] = {'crypted': True, 'text': '*', 'age': -1}
+
         if 'shadow_password' not in install_config:
-            if 'password' in install_config:
-                if install_config['password']['crypted']:
-                    install_config['shadow_password'] = install_config['password']['text']
-                else:
-                    install_config['shadow_password'] = CommandUtils.generate_password_hash(install_config['password']['text'])
+            if install_config['password']['crypted']:
+                install_config['shadow_password'] = install_config['password']['text']
             else:
-                install_config['shadow_password'] = '*'
+                install_config['shadow_password'] = CommandUtils.generate_password_hash(install_config['password']['text'])
 
         # Do not show UI progress by default
         if 'ui' not in install_config:
@@ -198,6 +201,13 @@ class Installer(object):
         # Log level
         if 'log_level' not in install_config:
             install_config['log_level'] = 'info'
+
+        # Extend search_path by current dir and script dir
+        if 'search_path' not in install_config:
+            install_config['search_path'] = []
+        for dirname in [os.getcwd(), os.path.abspath(os.path.dirname(__file__))]:
+            if dirname not in install_config['search_path']:
+                install_config['search_path'].append(dirname)
 
     def _check_install_config(self, install_config):
         """
@@ -245,6 +255,10 @@ class Installer(object):
         # No BIOS for aarch64
         if install_config['arch'] == 'aarch64' and install_config['bootmode'] in ['dualboot', 'bios']:
             return "Aarch64 targets do not support BIOS boot. Set 'bootmode' to 'efi'."
+
+        if 'age' in install_config['password']:
+            if install_config['password']['age'] < -1:
+                return "Password age should be -1, 0 or positive"
 
         return None
 
@@ -344,7 +358,7 @@ class Installer(object):
         """
         Unmount partitions and special folders
         """
-        for d in ["/run", "/sys", "/dev/pts", "/dev", "/proc"]:
+        for d in ["/tmp", "/run", "/sys", "/dev/pts", "/dev", "/proc"]:
             retval = self.cmd.run(['umount', '-l', self.photon_root + d])
             if retval != 0:
                 self.logger.error("Failed to unmount {}".format(d))
@@ -562,27 +576,28 @@ class Installer(object):
                 self.logger.error("Failed to install filesystem rpm")
                 self.exit_gracefully()
 
-        # Create special devices (TODO: really need it?)
-        devices = {
-            'console': (600, stat.S_IFCHR, 5, 1),
-            'null': (666, stat.S_IFCHR, 1, 3),
-            'random': (444, stat.S_IFCHR, 1, 8),
-            'urandom': (444, stat.S_IFCHR, 1, 9)
-        }
-        for device, (mode, dev_type, major, minor) in devices.items():
-            os.mknod(os.path.join(self.photon_root, "dev", device),
-                    mode | dev_type, os.makedev(major, minor))
-
     def _mount_special_folders(self):
         for d in ["/proc", "/dev", "/dev/pts", "/sys"]:
             retval = self.cmd.run(['mount', '-o', 'bind', d, self.photon_root + d])
             if retval != 0:
                 self.logger.error("Failed to bind mount {}".format(d))
                 self.exit_gracefully()
-        retval = self.cmd.run(['mount', '-t', 'tmpfs', 'tmpfs', self.photon_root + "/run"])
-        if retval != 0:
-            self.logger.error("Failed to bind mount {}".format(d))
-            self.exit_gracefully()
+
+        for d in ["/tmp", "/run"]:
+            retval = self.cmd.run(['mount', '-t', 'tmpfs', 'tmpfs', self.photon_root + d])
+            if retval != 0:
+                self.logger.error("Failed to bind mount {}".format(d))
+                self.exit_gracefully()
+
+    def _copy_additional_files(self):
+        if 'additional_files' in self.install_config:
+            for filetuples in self.install_config['additional_files']:
+                for src, dest in filetuples.items():
+                    srcpath = self.getfile(src)
+                    if (os.path.isdir(srcpath)):
+                        shutil.copytree(srcpath, self.photon_root + dest, True)
+                    else:
+                        shutil.copyfile(srcpath, self.photon_root + dest)
 
     def _finalize_system(self):
         """
@@ -591,17 +606,12 @@ class Installer(object):
         if self.install_config['ui']:
             self.progress_bar.show_loading('Finalizing installation')
 
+        self._copy_additional_files()
+
         self.cmd.run_in_chroot(self.photon_root, "/sbin/ldconfig")
-        self.cmd.run_in_chroot(self.photon_root, "/bin/systemd-machine-id-setup")
+
         # Importing the pubkey
         self.cmd.run_in_chroot(self.photon_root, "rpm --import /etc/pki/rpm-gpg/*")
-        # Set locale
-        with open(os.path.join(self.photon_root, "etc/locale.conf"), "w") as locale_conf:
-            locale_conf.write("LANG=en_US.UTF-8\n")
-        #locale-gen.sh needs /usr/share/locale/locale.alias which is shipped with
-        #  glibc-lang rpm, in some photon installations glibc-lang rpm is not installed
-        #  by default. Call localedef directly here to define locale environment.
-        self.cmd.run_in_chroot(self.photon_root, "/usr/bin/localedef -c -i en_US -f UTF-8 en_US.UTF-8")
 
     def _cleanup_install_repo(self):
         self._unbind_installer()
@@ -730,7 +740,7 @@ class Installer(object):
             repo_file.write("[photon-local]\n")
             repo_file.write("name=VMWare Photon installer repo\n")
             if self.rpm_path.startswith("https://") or self.rpm_path.startswith("http://"):
-                repo_file.write("baseurl={}\n".format(self.rpm_path.replace('/', r'\/')))
+                repo_file.write("baseurl={}\n".format(self.rpm_path))
             else:
                 repo_file.write("baseurl=file://{}\n".format(self.rpm_cache_dir))
                 keepcache = True
@@ -1159,4 +1169,14 @@ class Installer(object):
                 raise Exception(
                     "Failed to format {} partition @ {}".format(partition['filesystem'],
                                                          partition['path']))
+
+    def getfile(self, filename):
+        """
+        Returns absolute filepath by filename.
+        """
+        for dirname in self.install_config['search_path']:
+            filepath = os.path.join(dirname, filename)
+            if os.path.exists(filepath):
+                return filepath
+        raise Exception("File {} not found in the following directories {}".format(filename, self.install_config['search_path']))
 
