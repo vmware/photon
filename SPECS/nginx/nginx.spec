@@ -1,14 +1,14 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.15.3
-Release:        4%{?dist}
+Version:        1.16.1
+Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nginx=584a585096cffa240a6224f718b4c0c83a7a5e36
+%define sha1    nginx=77ce4d26481b62f7a9d83e399454df0912f01a4b
 Source1:        nginx.service
 Source2:        nginx-njs-0.2.1.tar.gz
 %define sha1    nginx-njs=fd8c3f2d219f175be958796e3beaa17f3b465126
@@ -76,6 +76,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %{_var}/log/nginx
 
 %changelog
+*   Mon Oct 14 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.16.1-1
+-   update version to 1.16.1
 *   Fri Mar 15 2019 Keerthana K <keerthanak@vmware.com> 1.15.3-4
 -   Enable http_stub_status_module.
 *   Wed Nov 07 2018 Ajay Kaher <akaher@vmware.com> 1.15.3-3
