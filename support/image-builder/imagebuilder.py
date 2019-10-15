@@ -34,7 +34,7 @@ def create_pkg_list_to_copy_to_iso(build_install_option, output_data_path):
     packages = []
     for install_option in options_sorted:
         if install_option[0] != "iso":
-            file_path = os.path.join(output_data_path, install_option[1]["file"])
+            file_path = os.path.join(output_data_path, install_option[1]["packagelist_file"])
             package_list_json = Utils.jsonread(file_path)
             packages = packages + package_list_json["packages"]
     return packages
@@ -120,12 +120,15 @@ def createIso(options):
             create_additional_file_list_to_copy_in_iso(
                 os.path.abspath(options.stage_path), options.package_list_file))
 
+        initrd_pkg_list_file = os.path.join(os.path.dirname(options.package_list_file), 'packages_installer_initrd.json')
+        initrd_pkgs = " ".join(Utils.jsonread(initrd_pkg_list_file)["packages"])
+
         retval = subprocess.call([script_directory + '/iso/mk-install-iso.sh',
                                   options.installer_path,
                                   working_directory, options.iso_path,
                                   options.rpm_path, options.package_list_file,
                                   rpm_list, options.stage_path, files_to_copy,
-                                  options.generated_data_path])
+                                  options.generated_data_path, initrd_pkgs])
 
         if retval:
             raise Exception("Unable to create install ISO")

@@ -16,6 +16,7 @@ import modules.commons
 import random
 import curses
 import stat
+import re
 from logger import Logger
 from commandutils import CommandUtils
 from jsonwrapper import JsonWrapper
@@ -745,6 +746,10 @@ class Installer(object):
                 regex = re.compile(r'(?!linux-[0-9].*)')
                 self.install_config['packages'] = list(filter(regex.match,self.install_config['packages']))
             self.install_config['packages'].append('linux-esx')
+        else:
+            regex = re.compile(r'(?!linux-esx-[0-9].*)')
+            self.install_config['packages'] = list(filter(regex.match,self.install_config['packages']))
+
 
     def _add_packages_to_install(self, package):
         """
