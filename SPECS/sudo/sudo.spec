@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.8.23
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -14,18 +14,20 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
 Requires:       Linux-PAM
 Requires:       shadow
+Patch0:         fix_CVE-2019-14287.patch
+Patch1:         test_CVE-2019-14287.patch
 
 %description
-The Sudo package allows a system administrator to give certain users (or groups of users) 
+The Sudo package allows a system administrator to give certain users (or groups of users)
 the ability to run some (or all) commands as root or another user while logging the commands and arguments.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
+%configure \
     --libexecdir=%{_libdir} \
     --docdir=%{_docdir}/%{name}-%{version} \
     --with-all-insults \
@@ -91,6 +93,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+*   Tue Oct 15 2019 Shreyas B. <shreyasb@vmware.com> 1.8.23-2
+-   Fix for CVE-2019-14287.
 *   Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 1.8.23-1
 -   Update to version 1.8.23.
 *   Thu Mar 01 2018 Anish Swaminathan <anishs@vmware.com> 1.8.20p2-5
