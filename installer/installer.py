@@ -11,6 +11,7 @@ import shutil
 import signal
 import sys
 import glob
+import re
 import modules.commons
 import random
 import curses
@@ -360,43 +361,45 @@ class Installer(object):
         Unmount partitions and special folders
         """
         for d in ["/tmp", "/run", "/sys", "/dev/pts", "/dev", "/proc"]:
-            retval = self.cmd.run(['umount', '-l', self.photon_root + d])
-            if retval != 0:
-                self.logger.error("Failed to unmount {}".format(d))
+            if os.path.exists(self.photon_root + d):
+                retval = self.cmd.run(['umount', '-l', self.photon_root + d])
+                if retval != 0:
+                    self.logger.error("Failed to unmount {}".format(d))
 
         for partition in self.install_config['partitions'][::-1]:
             if self._get_partition_type(partition) in [PartitionType.BIOS, PartitionType.SWAP]:
                 continue
             mountpoint = self.photon_root + partition["mountpoint"]
-            retval = self.cmd.run(['umount', '-l', mountpoint])
-            if retval != 0:
-                self.logger.error("Failed to unmount partition {}".format(mountpoint))
+            if os.path.exists(mountpoint):
+                retval = self.cmd.run(['umount', '-l', mountpoint])
+                if retval != 0:
+                    self.logger.error("Failed to unmount partition {}".format(mountpoint))
 
         # need to call it twice, because of internal bind mounts
         if 'ostree' in self.install_config:
-            retval = self.cmd.run(['umount', '-R', self.photon_root])
-            retval = self.cmd.run(['umount', '-R', self.photon_root])
-            if retval != 0:
-                self.logger.error("Failed to unmount disks in photon root")
+            if os.path.exists(self.photon_root):
+                retval = self.cmd.run(['umount', '-R', self.photon_root])
+                retval = self.cmd.run(['umount', '-R', self.photon_root])
+                if retval != 0:
+                    self.logger.error("Failed to unmount disks in photon root")
 
         self.cmd.run(['sync'])
-        shutil.rmtree(self.photon_root)
+        if os.path.exists(self.photon_root):
+            shutil.rmtree(self.photon_root)
 
         # Deactivate LVM VGs
         for vg in self.lvs_to_detach['vgs']:
             retval = self.cmd.run(["vgchange", "-v", "-an", vg])
             if retval != 0:
                 self.logger.error("Failed to deactivate LVM volume group: {}".format(vg))
-        # Simulate partition hot remove to notify LVM
-        for pv in self.lvs_to_detach['pvs']:
-            retval = self.cmd.run(["dmsetup", "remove", pv])
-            if retval != 0:
-                self.logger.error("Failed to detach LVM physical volume: {}".format(pv))
-
-
-        # Uninitialize device paritions mapping
         disk = self.install_config['disk']
         if 'loop' in disk:
+            # Simulate partition hot remove to notify LVM
+            for pv in self.lvs_to_detach['pvs']:
+                retval = self.cmd.run(["dmsetup", "remove", pv])
+                if retval != 0:
+                    self.logger.error("Failed to detach LVM physical volume: {}".format(pv))
+            # Uninitialize device paritions mapping
             retval = self.cmd.run(['kpartx', '-d', disk])
             if retval != 0:
                 self.logger.error("Failed to unmap partitions of the disk image {}". format(disk))
@@ -421,13 +424,14 @@ class Installer(object):
 
     def _unbind_installer(self):
         # unmount the installer directory
-        retval = self.cmd.run(['umount', os.path.join(self.photon_root, "installer")])
-        if retval != 0:
-            self.logger.error("Fail to unbind the installer directory")
-        # remove the installer directory
-        retval = self.cmd.run(['rm', '-rf', os.path.join(self.photon_root, "installer")])
-        if retval != 0:
-            self.logger.error("Fail to remove the installer directory")
+        if os.path.exists(os.path.join(self.photon_root, "installer")):
+            retval = self.cmd.run(['umount', os.path.join(self.photon_root, "installer")])
+            if retval != 0:
+                self.logger.error("Fail to unbind the installer directory")
+            # remove the installer directory
+            retval = self.cmd.run(['rm', '-rf', os.path.join(self.photon_root, "installer")])
+            if retval != 0:
+                self.logger.error("Fail to remove the installer directory")
 
     def _bind_repo_dir(self):
         """
@@ -446,9 +450,10 @@ class Installer(object):
         """
         if self.rpm_path.startswith("https://") or self.rpm_path.startswith("http://"):
             return
-        if (self.cmd.run(['umount', self.rpm_cache_dir]) != 0 or
-                self.cmd.run(['rm', '-rf', self.rpm_cache_dir]) != 0):
-            self.logger.error("Fail to unbind cache rpms")
+        if os.path.exists(self.rpm_cache_dir):
+            if (self.cmd.run(['umount', self.rpm_cache_dir]) != 0 or
+                    self.cmd.run(['rm', '-rf', self.rpm_cache_dir]) != 0):
+                self.logger.error("Fail to unbind cache rpms")
 
     def _get_partuuid(self, path):
         partuuid = subprocess.check_output(['blkid', '-s', 'PARTUUID', '-o', 'value', path],
@@ -633,8 +638,10 @@ class Installer(object):
         retval = self.cmd.run(['rm', '-rf', os.path.join(self.photon_root, "cache")])
         if retval != 0:
             self.logger.error("Fail to remove the cache")
-        os.remove(self.tdnf_conf_path)
-        os.remove(self.tdnf_repo_path)
+        if os.path.exists(self.tdnf_conf_path):
+            os.remove(self.tdnf_conf_path)
+        if os.path.exists(self.tdnf_repo_path):
+            os.remove(self.tdnf_repo_path)
 
     def _setup_grub(self):
         bootmode = self.install_config['bootmode']
@@ -734,6 +741,9 @@ class Installer(object):
         if self.install_config['install_linux_esx']:
             if 'linux' in self.install_config['packages']:
                 self.install_config['packages'].remove('linux')
+            else:
+                regex = re.compile(r'(?!linux-[0-9].*)')
+                self.install_config['packages'] = list(filter(regex.match,self.install_config['packages']))
             self.install_config['packages'].append('linux-esx')
 
     def _add_packages_to_install(self, package):
@@ -920,6 +930,15 @@ class Installer(object):
         """
         Create logical volumes
         """
+        #Remove LVM logical volumes and volume groups if already exists
+        #Existing lvs & vg should be removed to continue re-installation
+        #else pvcreate command fails to create physical volumes even if executes forcefully
+        retval = self.cmd.run(['bash', '-c', 'pvs | grep {}'. format(vg_name)])
+        if retval == 0:
+            #Remove LV's associated to VG and VG
+            retval = self.cmd.run(["vgremove", "-f", vg_name])
+            if retval != 0:
+                self.logger.error("Error: Failed to remove existing vg before installation {}". format(vg_name))
         # if vg is not extensible (all lvs inside are known size) then make last lv
         # extensible, i.e. shrink it. Srinking last partition is important. We will
         # not be able to provide specified size because given physical partition is
@@ -1122,7 +1141,6 @@ class Installer(object):
                 retval = self.cmd.run(['kpartx', '-avs', disk])
                 if retval != 0:
                     raise Exception("Failed to rescan partitions of the disk image {}". format(disk))
-
 
             # Go through l2 entries again and create logical partitions
             for l2 in l2entries:
