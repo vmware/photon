@@ -1,7 +1,7 @@
 Summary:	Sudo
 Name:		sudo
 Version:	1.8.20p2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	ISC
 URL:		https://www.kernel.org/pub/linux/libs/pam/
 Group:		System Environment/Security
@@ -13,12 +13,18 @@ BuildRequires:	man-db
 BuildRequires:	Linux-PAM
 Requires:	Linux-PAM
 Requires:	shadow
+Patch0:		fix_CVE-2019-14287.patch
+Patch1:		test_CVE-2019-14287.patch
+
 %description
 The Sudo package allows a system administrator to give certain users (or groups of users) 
 the ability to run some (or all) commands as root or another user while logging the commands and arguments. 
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+
 %build
 
 ./configure \
@@ -33,6 +39,7 @@ the ability to run some (or all) commands as root or another user while logging 
         --with-passprompt="[sudo] password for %p"
 
 make %{?_smp_mflags}
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot}
@@ -82,6 +89,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+*   Tue Oct 15 2019 Shreyas B. <shreyasb@vmware.com> 1.8.20p2-2
+-   Fix for CVE-2019-14287.
 *       Thu Jun 15 2017 Kumar Kaushik <kaushikk@vmware.com> 1.8.20p2-1
 -       Udating version to 1.8.20p2, fixing CVE-2017-1000367 and CVE-2017-1000368
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-3
