@@ -30,6 +30,7 @@ OUTPUT_DATA_PATH=$7
 PHOTON_COMMON_DIR=$(dirname "${PACKAGE_LIST_FILE}")
 PACKAGE_LIST_FILE_BASE_NAME=$(basename "${PACKAGE_LIST_FILE}")
 INITRD=${WORKINGDIR}/photon-chroot
+PACKAGES=$8
 
 rm -rf $WORKINGDIR/*
 mkdir -p $INITRD
@@ -57,14 +58,6 @@ repodir=${WORKINGDIR}
 EOF
 
 rpm --root $INITRD --initdb --dbpath /var/lib/rpm
-
-PACKAGES="filesystem glibc zlib file gmp libgcc libstdc++ bash sed haveged ncurses-terminfo \
-    bzip2 pkg-config python3-curses ncurses cracklib cracklib-dicts python3-cracklib \
-    shadow coreutils grep readline findutils xz util-linux e2fsprogs \
-    libffi expat linux cpio Linux-PAM attr libcap systemd dbus \
-    gzip sqlite nspr nss popt lua rpm gptfdisk tar \
-    hawkey python3 python3-libs pcre glib tdnf python3-requests grub2 \
-    grub2-pc grub2-efi efivar efibootmgr dracut curl dosfstools ostree ostree-grub2 ostree-libs lvm2"
 
 TDNF_CMD="tdnf install -y --installroot $INITRD --rpmverbosity 10 -c ${WORKINGDIR}/tdnf.conf -q $PACKAGES"
 

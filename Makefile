@@ -30,6 +30,7 @@ PHOTON_SOURCES ?= sources
 endif
 
 FULL_PACKAGE_LIST_FILE := build_install_options_all.json
+MINIMAL_PACKAGE_LIST_FILE := build_install_options_minimal.json
 
 ifdef PHOTON_PUBLISH_RPMS_PATH
 PHOTON_PUBLISH_RPMS := publish-rpms-cached
@@ -117,6 +118,29 @@ packages-minimal: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURC
 		--source-path $(PHOTON_SRCS_DIR) \
 		--build-root-path $(PHOTON_CHROOT_PATH) \
 		--packages-json-input $(PHOTON_DATA_DIR)/packages_minimal.json \
+		--log-path $(PHOTON_LOGS_DIR) \
+		--log-level $(LOGLEVEL) \
+		--publish-RPMS-path $(PHOTON_PUBLISH_RPMS_DIR) \
+		--pullsources-config $(PHOTON_PULLSOURCES_CONFIG) \
+		--dist-tag $(PHOTON_DIST_TAG) \
+		--build-number $(PHOTON_BUILD_NUMBER) \
+		--release-version $(PHOTON_RELEASE_VERSION) \
+		--pkginfo-file $(PHOTON_PKGINFO_FILE) \
+		$(PHOTON_RPMCHECK_FLAGS) \
+		$(PUBLISH_BUILD_DEPENDENCIES) \
+		$(PACKAGE_WEIGHTS) \
+		--threads ${THREADS}
+
+packages-initrd: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
+	@echo "Building all initrd package RPMS..."
+	@echo ""
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+	$(PHOTON_PACKAGE_BUILDER) \
+		--spec-path $(PHOTON_SPECS_DIR) \
+		--rpm-path $(PHOTON_RPMS_DIR) \
+		--source-path $(PHOTON_SRCS_DIR) \
+		--build-root-path $(PHOTON_CHROOT_PATH) \
+		--packages-json-input $(PHOTON_DATA_DIR)/packages_installer_initrd.json \
 		--log-path $(PHOTON_LOGS_DIR) \
 		--log-level $(LOGLEVEL) \
 		--publish-RPMS-path $(PHOTON_PUBLISH_RPMS_DIR) \
@@ -316,9 +340,26 @@ iso: check-tools photon-stage $(PHOTON_PACKAGES) ostree-repo
 		--log-level $(LOGLEVEL) \
 		--rpm-path $(PHOTON_STAGE)/RPMS \
 		--srpm-path $(PHOTON_STAGE)/SRPMS \
-		--package-list-file $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
+		--package-list-file $(PHOTON_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
 		--generated-data-path $(PHOTON_STAGE)/common/data \
 		--pkg-to-rpm-map-file $(PHOTON_PKGINFO_FILE)
+
+minimal-iso: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) packages-minimal packages-initrd
+	@echo "Building Photon Minimal ISO..."
+	@$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)
+	@$(CP) -f $(PHOTON_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) $(PHOTON_GENERATED_DATA_DIR)/
+	@cd $(PHOTON_IMAGE_BUILDER_DIR) && \
+	sudo $(PHOTON_IMAGE_BUILDER) \
+                --iso-path $(PHOTON_STAGE)/photon-minimal-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUM).iso \
+                --debug-iso-path $(PHOTON_STAGE)/photon-minimal-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
+                --log-path $(PHOTON_STAGE)/LOGS \
+                --log-level $(LOGLEVEL) \
+                --rpm-path $(PHOTON_STAGE)/RPMS \
+                --srpm-path $(PHOTON_STAGE)/SRPMS \
+                --package-list-file $(PHOTON_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
+                --generated-data-path $(PHOTON_STAGE)/common/data \
+                --pkg-to-rpm-map-file $(PHOTON_PKGINFO_FILE) \
+                --pkg-to-be-copied-conf-file $(PHOTON_GENERATED_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE)
 
 src-iso: check-tools photon-stage $(PHOTON_PACKAGES)
 	@echo "Building Photon Full Source ISO..."

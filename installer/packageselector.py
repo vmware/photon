@@ -48,6 +48,11 @@ class PackageSelector(object):
         base_path = os.path.dirname(options_file)
         package_list = []
 
+        if len(options_sorted) == 1:
+            if 'packagelist_file' not in self.install_config:
+                self.install_config['packagelist_file'] = list(options_sorted)[0][1]['packagelist_file']
+                list(options_sorted)[0][1]['visible'] = True
+
         default_selected = 0
         visible_options_cnt = 0
         for install_option in options_sorted:
@@ -77,4 +82,7 @@ class PackageSelector(object):
         return ActionResult(True, {'custom': True})
 
     def display(self):
+        if 'packagelist_file' in self.install_config:
+            return ActionResult(None, {"inactive_screen": True})
+
         return self.window.do_action()
