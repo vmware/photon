@@ -29,7 +29,7 @@ echo "baseurl=file:///RPMS" >> ${SRCROOT}/support/image-builder/ostree-tools/pho
 rm -rf stage/ostree-repo
 mkdir -p stage/ostree-repo
 
-sudo docker run -it --privileged -v ${SRCROOT}:/photon -v $(pwd)/stage/RPMS:/RPMS -v $(pwd)/stage/ostree-repo:/srv/rpm-ostree -w="/photon/support/image-builder/ostree-tools/" ankitaj/photon-build:rpm-ostree-3.0 ./mk-ostree-server.sh /
+sudo docker run -it --privileged -v ${SRCROOT}:/photon -v $(pwd)/stage/RPMS:/RPMS -v $(pwd)/stage/ostree-repo:/srv/rpm-ostree -w="/photon/support/image-builder/ostree-tools/" vmware/photon-build:rpm-ostree-3.0 ./mk-ostree-server.sh /
 
 (cd stage/ostree-repo/repo/; tar -zcf ../../ostree-repo.tar.gz .; )
 
