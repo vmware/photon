@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.76
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.79
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bf878636e97a25ab4cb75c641e9aeb7232b44013
+%define sha1 linux=0a45220bfcf4bf33da8b1aa1eb2967e71b66e8aa
 Source1:	config-aws
 Source2:	initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -30,6 +30,8 @@ Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 #FIPS patches - allow some algorithms
 Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Fix CVE-2019-17133
+Patch27:        0001-cfg80211_wext_Reject_malformed_SSID_elements.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
@@ -155,6 +157,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch13 -p1
 %patch24 -p1
 %patch26 -p1
+%patch27 -p1
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
@@ -357,6 +360,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Oct 15 2019 Ajay Kaher <akaher@vmware.com> 4.19.79-1
+-   Update to version 4.19.79
+-   Fix CVE-2019-17133
 *   Thu Oct 10 2019 Harinadh D <hdommaraju@vmware.com> 4.19.76-2
 -   Adding lvm and dm-mod modules to support root as lvm
 *   Wed Oct 02 2019 Ajay Kaher <akaher@vmware.com> 4.19.76-1
