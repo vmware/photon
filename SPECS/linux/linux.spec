@@ -527,7 +527,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %changelog
 *   Mon Oct 14 2019 Harinadh D <hdommaraju@vmware.com> 4.19.76-4
 -   Adding lvm and dm-mod modules to support root as lvm
-*   Fri Oct 4 2019 Bo Gan <ganb@vmware.com> 4.19.76-3
+*   Fri Oct 11 2019 Bo Gan <ganb@vmware.com> 4.19.76-3
 -   Enable IMA with SHA256 as default hash algorithm
 *   Thu Oct 10 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.76-2
 -   Add additional BuildRequires and Requires to fix issues with perf, related to
