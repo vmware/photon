@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.8.20p2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -14,6 +14,8 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
 Requires:       Linux-PAM
 Requires:       shadow
+Patch0:         fix_CVE-2019-14287.patch
+Patch1:         test_CVE-2019-14287.patch
 
 %description
 The Sudo package allows a system administrator to give certain users (or groups of users) 
@@ -21,6 +23,8 @@ the ability to run some (or all) commands as root or another user while logging 
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 
 %build
 ./configure \
@@ -90,6 +94,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+*   Tue Oct 15 2019 Shreyas B. <shreyasb@vmware.com> 1.8.20p2-6
+-   Fix for CVE-2019-14287.
 *   Thu Mar 01 2018 Anish Swaminathan <anishs@vmware.com> 1.8.20p2-5
 -   Move includedir sudoers.d to end of sudoers file
 *   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.20p2-4
