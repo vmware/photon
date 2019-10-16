@@ -1,15 +1,14 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
-Version:        8.1907.0
+Version:        8.1910.0
 Release:        1%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha1    rsyslog=d7a861810d1bdf80357cab08504589d336ea9b4b
+%define sha1    rsyslog=ac36de817e69450d88e4a2b822f9d69f3fbcf0f4
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf
-Patch0:         CVE-2019-17040.patch
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -35,7 +34,6 @@ It offers high-performance, great security features and a modular design. While 
 %prep
 %setup -q
 autoreconf -fvi
-%patch0 -p1
 %build
 sed -i 's/libsystemd-journal/libsystemd/' configure
 %configure \
@@ -82,6 +80,9 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/systemd/journald.conf.d/*
 %{_sysconfdir}/rsyslog.conf
 %changelog
+*   Wed Oct 16 2019 Tapas Kundu <tkundu@vmware.com> 8.1910.0-1
+-   Update to 8.1910.0 release
+-   Fix CVE-2019-17041 and CVE-2019-17042
 *   Fri Oct 04 2019 Keerthana K <keerthanak@vmware.com> 8.1907.0-1
 -   Update to 8.1907.0
 -   Fix CVE-2019-17040
