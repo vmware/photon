@@ -1,25 +1,24 @@
 Summary:        A high-level scripting language
 Name:           python2
-Version:        2.7.15
-Release:        11%{?dist}
+Version:        2.7.16
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=f99348a095ec4a6411c84c0d15343d11920c9724
+%define sha1    Python=e9543af127d958b12b0edfb9340d4f0af3d0d90e
 Patch0:         cgi.patch
 Patch1:         added-pyopenssl-ipaddress-certificate-validation.patch
 Patch2:         python2-support-photon-platform.patch
-Patch3:         CVE-2018-14647.patch
-Patch4:         CVE-2019-9636.patch
-Patch5:         CVE-2019-9948.patch
-Patch6:         CVE-2019-9740.patch
-Patch7:         CVE-2019-10160.patch
-Patch8:         CVE-2018-20852.patch
-Patch9:         CVE-2019-16056.patch
-Patch10:        CVE-2019-16935.patch
+Patch3:         CVE-2019-9636.patch
+Patch4:         CVE-2019-9948.patch
+Patch5:         CVE-2019-9740.patch
+Patch6:         CVE-2019-10160.patch
+Patch7:         CVE-2018-20852.patch
+Patch8:         CVE-2019-16056.patch
+Patch9:        CVE-2019-16935.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
@@ -36,9 +35,9 @@ Provides:       /bin/python
 Provides:       /bin/python2
 
 %description
-The Python 2 package contains the Python development environment. It 
-is useful for object-oriented programming, writing scripts, 
-prototyping large programs or developing entire applications. This 
+The Python 2 package contains the Python development environment. It
+is useful for object-oriented programming, writing scripts,
+prototyping large programs or developing entire applications. This
 version is for backward compatibility with other dependent packages.
 
 %package libs
@@ -56,8 +55,8 @@ Requires:       bzip2-libs
 # Requires: binutils
 
 %description libs
-The python interpreter can be embedded into applications wanting to 
-use python as an embedded scripting language.  The python-libs package 
+The python interpreter can be embedded into applications wanting to
+use python as an embedded scripting language.  The python-libs package
 provides the libraries needed for this.
 
 %package -n python-xml
@@ -69,7 +68,7 @@ Requires: python2-libs = %{version}-%{release}
 The python-xml package provides the libraries needed for XML manipulation.
 
 %package -n python-curses
-Summary: Python module interface for NCurses Library 
+Summary: Python module interface for NCurses Library
 Group: Applications/System
 Requires: python2-libs = %{version}-%{release}
 Requires: ncurses
@@ -126,16 +125,12 @@ The test package contains all regression tests for Python as well as the modules
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
-%patch10 -p1
 
 %build
 export OPT="${CFLAGS}"
-./configure \
+%configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
     --enable-shared \
     --with-ssl \
     --with-system-expat \
@@ -147,7 +142,7 @@ make %{?_smp_mflags}
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 chmod -v 755 %{buildroot}%{_libdir}/libpython2.7.so.1.0
-%{_fixperms} %{buildroot}/* 
+%{_fixperms} %{buildroot}/*
 
 # Remove unused stuff
 find $RPM_BUILD_ROOT/ -name "*~"|xargs rm -f
@@ -169,7 +164,7 @@ rm -rf %{buildroot}/*
 %check
 make test
 
-%files 
+%files
 %defattr(-, root, root)
 %doc LICENSE README
 %{_bindir}/pydoc*
@@ -249,6 +244,8 @@ make test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Thu Oct 17 2019 Tapas Kundu <tkundu@vmware.com> 2.7.16-1
+-   Updated to 2.7.16
 *   Fri Oct 11 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-11
 -   Fix for CVE-2019-16935
 *   Mon Sep 16 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-10
@@ -308,7 +305,7 @@ make test
 *   Wed Sep 14 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-7
 -   Improvised pyopenssl patch
 *   Wed Sep 7 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-6
--   Added patch to python openssl to validate certificates by ipaddress 
+-   Added patch to python openssl to validate certificates by ipaddress
 *   Mon Jun 20 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-5
 -   Added stack-protector flag for ncurses module
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.11-4
