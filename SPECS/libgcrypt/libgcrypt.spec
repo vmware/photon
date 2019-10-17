@@ -1,11 +1,11 @@
 Summary:	Crypto Libraries
 Name:		libgcrypt
-Version:	1.8.3
-Release:	2%{?dist}
+Version:	1.8.5
+Release:	1%{?dist}
 License:        GPLv2+ and LGPLv2+
 URL:            http://www.gnu.org/software/libgcrypt/
 Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
-%define sha1 libgcrypt=13bd2ce69e59ab538e959911dfae80ea309636e3
+%define sha1 libgcrypt=2d8781e92f88706707a1e76fb628b499ad538a30
 Patch0:     libgcrypt-00-ac_cv_sys_symbol_underscore.patch
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
@@ -61,8 +61,11 @@ make %{?_smp_mflags} check
 %{_datadir}/aclocal/*
 %{_libdir}/*.la
 %{_libdir}/*.so
+%{_libdir}/pkgconfig/libgcrypt.pc
 
 %changelog
+*   Thu Oct 17 2019 Ankit Jain <ankitja@vmware.com> 1.8.5-1
+-   Updated to version 1.8.5
 *   Tue Nov 06 2018 Sriram Nambakam <snambakam@vmware.com> 1.8.3-2
 -   Cross compilation support
 *   Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 1.8.3-1
