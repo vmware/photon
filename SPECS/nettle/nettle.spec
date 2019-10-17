@@ -1,11 +1,11 @@
 Summary:	Low level cryptographic libraries
 Name:		nettle
-Version:	3.4
+Version:	3.4.1
 Release:	1%{?dist}
 License:	LGPLv3+ or GPLv2+
 URL:            http://www.lysator.liu.se/~nisse/nettle/
 Source0: 	https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
-%define sha1 nettle=f3c8495b7c43cba9cdd19503e7567095c680b490
+%define sha1 nettle=56a81ed4a8d35489d8bddd99d5262fe3958a52b4
 Group: 		Development/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -33,8 +33,9 @@ developing applications that use nettle.
 
 %prep
 %setup -q
+
 %build
-./configure \
+%configure \
 	--prefix=%{_prefix} \
 	--enable-shared \
         --disable-static
@@ -63,6 +64,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Thu Oct 17 2019 Shreenidhi Shedi <sshedi@vmware.com> 3.4.1-1
+-   Upgrade to version 3.4.1
 *   Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 3.4-1
 -   Update version to 3.4
 *   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3-1
