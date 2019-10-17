@@ -1,19 +1,18 @@
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.7.3
-Release:        3%{?dist}
+Version:        3.7.4
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=e3584650a06ae2765da0678176deae9d133f1b3d
+%define sha1    Python=a862c5a58626fdad02d2047a57771ede2783fcef
 Patch0:         cgi3.patch
 Patch1:         python3-support-photon-platform.patch
-Patch2:         CVE-2019-9740.patch
-Patch3:         CVE-2019-10160.patch
-Patch4:         CVE-2019-16056.patch
+Patch2:         CVE-2019-16056.patch
+Patch3:         CVE-2019-16935.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel
@@ -136,7 +135,6 @@ The test package contains all regression tests for Python as well as the modules
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -263,6 +261,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Thu Oct 17 2019 Tapas Kundu <tkundu@vmware.com> 3.7.4-1
+-   Updated to patch release 3.7.4
+-   Fix CVE-2019-16935
 *   Wed Sep 11 2019 Tapas Kundu <tkundu@vmware.com> 3.7.3-3
 -   Fix CVE-2019-16056
 *   Mon Jun 17 2019 Tapas Kundu <tkundu@vmware.com> 3.7.3-2
