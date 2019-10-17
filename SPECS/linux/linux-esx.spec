@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.76
-Release:        4%{?dist}
+Version:        4.19.79
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bf878636e97a25ab4cb75c641e9aeb7232b44013
+%define sha1 linux=0a45220bfcf4bf33da8b1aa1eb2967e71b66e8aa
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -37,6 +37,8 @@ Patch19:        06-pv-ops-boot_clock.patch
 Patch20:        07-vmware-only.patch
 
 Patch22:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Fix CVE-2019-17133
+Patch23:        0001-cfg80211_wext_Reject_malformed_SSID_elements.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
@@ -115,6 +117,7 @@ The Linux package contains the Linux kernel doc files
 %patch19 -p1
 %patch20 -p1
 %patch22 -p1
+%patch23 -p1
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
@@ -228,6 +231,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Oct 17 2019 Ajay Kaher <akaher@vmware.com> 4.19.79-1
+-   Update to version 4.19.79
+-   Fix CVE-2019-17133
 *   Mon Oct 14 2019 Harinadh D <hdommaraju@vmware.com> 4.19.76-4
 -   Adding lvm and dm-mod modules to support root as lvm
 *   Mon Oct 07 2019 Bo Gan <ganb@vmware.com> 4.19.76-3
