@@ -1,14 +1,14 @@
 Summary:        HA monitor built upon LVS, VRRP and services poller
 Name:           keepalived
-Version:        2.0.16
-Release:        2%{?dist}
+Version:        2.0.18
+Release:        1%{?dist}
 License:        GPL
 URL:            http://www.keepalived.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.keepalived.org/software/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=bbc7bae5266c8a752fb16f32355c41decf460f32
+%define sha1    %{name}-%{version}=86cf8c2ec6df72daa705d2fd59502ca39e8244c9
 Source1:        %{name}.service
 BuildRequires:  openssl-devel
 BuildRequires:  iptables-devel >= 1.8.3
@@ -85,6 +85,8 @@ fi
 %{_mandir}/man8/%{name}.8*
 
 %changelog
+*   Thu Oct 17 2019 Ajay Kaher <akaher@vmware.com> 2.0.18-1
+-   Update to v2.0.18
 *   Tue Sep 17 2019 Shreyas B. <shreyasb@vmware.com> 2.0.16-2
 -   bump version to 2.0.16-2
 *   Fri May 10 2019 Ashwin H <ashwinh@vmware.com> 2.0.16-1
