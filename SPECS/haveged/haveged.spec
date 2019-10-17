@@ -2,15 +2,15 @@
 
 Summary:        A Linux entropy source using the HAVEGE algorithm
 Name:           haveged
-Version:        1.9.1
-Release:        4%{?dist}
+Version:        1.9.8
+Release:        1%{?dist}
 License:        GPLv3+
 Vendor:         VMware, Inc.
 Distribution:   Discus
 Group:          System Environment/Daemons
 URL:            http://www.irisa.fr/caps/projects/hipsor/
 Source0:        http://www.issihosts.com/haveged/%{name}-%{version}.tar.gz
-%define sha1 haveged=ab7234b7f57dbb7d500a5ab3cbf0494715ce6499
+%define sha1 haveged=6171d9fffb3ef2daa21d10bcf014b3410ba5e21a
 Source1:        haveged.service
 Requires:       systemd
 
@@ -26,7 +26,7 @@ Haveged is a user space entropy daemon which is not dependent upon the
 standard mechanisms for harvesting randomness for the system entropy
 pool. This is important in systems with high entropy needs or limited
 user interaction (e.g. headless servers).
- 
+
 Haveged uses HAVEGE (HArdware Volatile Entropy Gathering and Expansion)
 to maintain a 1M pool of random bytes used to fill /dev/random
 whenever the supply of random bits in /dev/random falls below the low
@@ -78,7 +78,7 @@ rm -rf %{buildroot}%{_libdir}/libhavege.*a
 rm -rf %{buildroot}
 
 %post
-/sbin/ldconfig 
+/sbin/ldconfig
 %systemd_post haveged.service
 
 %preun
@@ -106,6 +106,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Oct 17 2019 Ajay Kaher <akaher@vmware.com> 1.9.8-1
+- Upadte to v1.9.8
 * Thu May 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.9.1-4
 - Start haveged before cloud-init-local.service to speed up booting.
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.1-3
@@ -121,18 +123,17 @@ rm -rf %{buildroot}
 * Sat Oct 13 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.5-2
 - BZ 850144
 - Introduce new systemd-rpm macros in haveged spec file
-- Fedora 19 changes the way how to work with services in spec files. 
-- It introduces new macros - systemd_post, systemd_preun and systemd_postun; 
+- Fedora 19 changes the way how to work with services in spec files.
+- It introduces new macros - systemd_post, systemd_preun and systemd_postun;
 - which replace scriptlets from Fedora 18 and older
 - see https://fedoraproject.org/wiki/Packaging:ScriptletSnippets#Systemd
-
 * Tue Aug 14 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.5-1
 - Update to the version 1.5
 - Main new feature is a run time verification of the produced random numbers
 - PIDFILE set to /run/haveged.pid
 - converted README and man page to UTF-8. Informed the upstream to fix it.
 * Wed Feb 15 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.4-3
-- PIDFile should be stored at /run instead of the default location /var/run 
+- PIDFile should be stored at /run instead of the default location /var/run
 - There is  long term plan that directory /var/run will not further exist in the future Fedora versions
 - Asked upstream to add -p <PID_FILE_location> switch to influence the location of the PID File
 - Set PIDFile=/var/run/haveged.pid This is needed as long -p option is not implemented
