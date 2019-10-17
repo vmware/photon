@@ -2,16 +2,15 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Python SSH module
 Name:           paramiko
-Version:        2.4.2
-Release:        3%{?dist}
+Version:        2.4.3
+Release:        1%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.paramiko.org/
 Source0:        https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
-%define sha1 paramiko=f9b9729b57f53f47ef09ae10af9bdc89a5c4201c
-Patch0: 	patch_for_dev-requirements.patch
+%define sha1 paramiko=73d56799e18ccc36f36f8180b0ba60a44667dae2
 BuildArch:      noarch
 
 BuildRequires:  python-setuptools
@@ -29,6 +28,8 @@ BuildRequires:  python3-xml
 BuildRequires:  python3-pip
 BuildRequires:  python3-bcrypt
 BuildRequires:  python3-PyNaCl
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
 %endif
 Requires:       python2
 Requires:       pycrypto > 2.1
@@ -56,7 +57,6 @@ Python 3 version.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 python2 setup.py build
@@ -91,6 +91,8 @@ pytest
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Oct 17 2019 Tapas Kundu <tkundu@vmware.com> 2.4.3-1
+-   Updated to 2.4.3
 *   Fri Aug 23 2019 Anisha Kumari <kanisha@vmware.com> 2.4.2-3
 -   Added patch to update pytest version.
 *   Wed Mar 06 2019 Tapas Kundu <tkundu@vmware.com> 2.4.2-2
