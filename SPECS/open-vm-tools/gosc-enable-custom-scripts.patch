@@ -19,7 +19,7 @@ diff -Naur gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh gosc-scr
      local exitCode=$?
      if [[ $exitCode -ne 0 ]]; then
        Die "Execution of post-customization failed!"
-@@ -1293,3 +1293,26 @@ GetOvfPropertyValue() {
+@@ -1293,3 +1293,30 @@ GetOvfPropertyValue() {
    fi
  }
  
@@ -33,9 +33,13 @@ diff -Naur gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh gosc-scr
 +   if [ $? -eq 0 ]; then
 +      local result=`vmware-toolbox-cmd config get $group $key`
 +      IFS=' ' read -r -a array <<< "$result"
-+      echo "${array[3]}"
++      if echo "${array[3]}" | grep -iqwF "true"; then
++         echo "${array[3]}"
++      else
++         echo "false"
++      fi
 +   else
-+      echo "true"
++      echo "false"
 +   fi
 +}
 +
@@ -57,7 +61,7 @@ index 35df9b2..c1c82d7 100755
 +  #Read enable-custom-scripts value from /etc/vmware-tools/tools.conf through vmware-toolbox-cmd command
 +  #If enable-custom-scripts value is false then cancel the guest customization and Report failure.
 +  local value=$(GetToolsConfig "deployPkg" "enable-custom-scripts")
-+  if echo $value | grep -iqwF "false"; then
++  if !(echo $value | grep -iqwF "true"); then
 +     PostDeployPkgStatus "enable-custom-scripts is set to false"
 +     Die "enable-custom-scripts is set to false. Failing customization"
 +  fi
