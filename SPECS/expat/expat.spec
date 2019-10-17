@@ -1,15 +1,14 @@
 Summary:	An XML parser library
 Name:		expat
-Version:	2.2.6
-Release:	2%{?dist}
+Version:	2.2.7
+Release:	1%{?dist}
 License:	MIT
 URL:		http://expat.sourceforge.net/
 Group:		System Environment/GeneralLibraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 expat=c8947fc3119a797b55485f2f7bdaaeb49cc9df01
-Patch0:		expat-CVE-2018-20843.patch
+Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.xz
+%define sha1 expat=c59d6183b3edbb85e5c54a71d40ea4032986bd4a
 Requires:       expat-libs = %{version}-%{release}
 %description
 The Expat package contains a stream oriented C library for parsing XML.
@@ -28,15 +27,17 @@ This package contains minimal set of shared expat libraries.
 
 %prep
 %setup -q
-%patch0 -p2
 %build
+
 %configure \
 	CFLAGS="%{optflags}" \
 	CXXFLAGS="%{optflags}" \
 	--bindir=%{_bindir} \
 	--libdir=%{_libdir} \
 	--disable-static
+
 make %{?_smp_mflags}
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
@@ -49,13 +50,19 @@ make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %doc AUTHORS Changes
 %{_bindir}/*
-%{_mandir}/man1/*
+
+## TODO: There's some change in man page build path according to release notes.
+## https://github.com/libexpat/libexpat/blob/R_2_2_7/expat/Changes
+## #158 #263  CMake: Build man page in PROJECT_BINARY_DIR not _SOURCE_DIR
+#%{_mandir}/man1/*
 
 %files devel
 %{_includedir}/*
@@ -66,6 +73,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libexpat.so.*
 
 %changelog
+*   Thu Oct 17 2019 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-1
+-   Upgrade to version 2.2.7
 *   Mon Jul 8 2019 Siddharth Chandrasekaran <csiddharth@vmware.com> 2.2.6-2
 -   Add patch for CVE-2018-20843
 *   Thu Sep 20 2018 Sujay G <gsujay@vmware.com> 2.2.6-1
@@ -79,4 +88,4 @@ rm -rf %{buildroot}/*
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.0-2
 -   GA - Bump release of all rpms
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.1.0-1
--   Initial build.	First version
+-   Initial build. First version
