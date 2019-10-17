@@ -27,19 +27,20 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
 
     shutil.move(raw_image_path, new_name)
     raw_image = new_name
+    compressed = True
 
     if config['artifacttype'] == 'tgz':
         print("Generating the tar.gz artifact ...")
         outputfile = (img_path + '/photon-' + config['image_type'] +
                       '-' + photon_release_ver + '-' +
                       photon_build_num + '.tar.gz')
-        generateCompressedFile(raw_image, outputfile, "w:gz")
+        compressed = generateCompressedFile(raw_image, outputfile, "w:gz")
     elif config['artifacttype'] == 'xz':
         print("Generating the xz artifact ...")
         outputfile = (img_path + '/photon-' + config['image_type'] +
                       '-' + photon_release_ver + '-' +
                       photon_build_num + '.xz')
-        generateCompressedFile(raw_image, outputfile, "w:xz")
+        compressed = generateCompressedFile(raw_image, outputfile, "w:xz")
     elif 'vhd' in config['artifacttype']:
         relrawpath = os.path.relpath(raw_image, src_root)
         vhdname = ('/photon-' +
@@ -62,8 +63,9 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
             outputfile = (img_path + '/photon-' + config['image_type'] +
                           '-' + photon_release_ver + '-' +
                           photon_build_num + '.vhd.tar.gz')
-            generateCompressedFile(img_path + vhdname, outputfile, "w:gz")
-            # raw image is .vhd file
+            compressed = generateCompressedFile(img_path + vhdname, outputfile, "w:gz")
+            # remove raw image and call the vhd as raw image
+            os.remove(raw_image)
             raw_image = img_path + vhdname
     elif config['artifacttype'] == 'ova':
         ovagenerator.create_ova_image(raw_image, tools_bin_path, config)
@@ -72,22 +74,31 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
     else:
         raise ValueError("Unknown output format")
 
+    if not compressed:
+        print("ERROR: Image compression failed!")
+        # Leave the raw disk around if compression failed
+        return
     if not config['keeprawdisk']:
         os.remove(raw_image)
 
 def generateCompressedFile(inputfile, outputfile, formatstring):
-    if formatstring == "w:xz":
-        in_file = open(inputfile, 'rb')
-        in_data = in_file.read()
+    try:
+        if formatstring == "w:xz":
+            in_file = open(inputfile, 'rb')
+            in_data = in_file.read()
 
-        out_file = open(inputfile+".xz", 'wb')
-        out_file.write(xz.compress(in_data))
-        in_file.close()
-        out_file.close()
-    else:
-        tarout = tarfile.open(outputfile, formatstring)
-        tarout.add(inputfile, arcname=os.path.basename(inputfile))
-        tarout.close()
+            out_file = open(inputfile+".xz", 'wb')
+            out_file.write(xz.compress(in_data))
+            in_file.close()
+            out_file.close()
+        else:
+            tarout = tarfile.open(outputfile, formatstring)
+            tarout.add(inputfile, arcname=os.path.basename(inputfile))
+            tarout.close()
+    except Exception as e:
+        print(e)
+        return False
+    return True
 
 if __name__ == '__main__':
     parser = ArgumentParser()
