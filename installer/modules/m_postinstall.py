@@ -1,12 +1,13 @@
 import os
 import subprocess
 import commons
+import shutil
 
 install_phase = commons.POST_INSTALL
 enabled = True
 
 def execute(installer):
-    if 'postinstall' not in installer.install_config or 'postinstallscripts' not in installer.install_config:
+    if 'postinstall' not in installer.install_config and 'postinstallscripts' not in installer.install_config:
         return
 
     tempdir = "/tmp/tempscripts"
@@ -26,7 +27,7 @@ def execute(installer):
         os.chmod(script_file, 0o700)
 
     if 'postinstallscripts' in installer.install_config:
-        for scriptname in config['postinstallscripts']:
+        for scriptname in installer.install_config['postinstallscripts']:
             script_file = installer.getfile(scriptname)
             shutil.copy(script_file, tempdir_full)
 

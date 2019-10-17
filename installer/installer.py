@@ -576,6 +576,18 @@ class Installer(object):
                 self.logger.error("Failed to install filesystem rpm")
                 self.exit_gracefully()
 
+        # Create special devices. We need it when devtpmfs is not mounted yet.
+        devices = {
+            'console': (600, stat.S_IFCHR, 5, 1),
+            'null': (666, stat.S_IFCHR, 1, 3),
+            'random': (444, stat.S_IFCHR, 1, 8),
+            'urandom': (444, stat.S_IFCHR, 1, 9)
+        }
+        for device, (mode, dev_type, major, minor) in devices.items():
+            os.mknod(os.path.join(self.photon_root, "dev", device),
+                    mode | dev_type, os.makedev(major, minor))
+
+
     def _mount_special_folders(self):
         for d in ["/proc", "/dev", "/dev/pts", "/sys"]:
             retval = self.cmd.run(['mount', '-o', 'bind', d, self.photon_root + d])
@@ -631,9 +643,7 @@ class Installer(object):
 
         # Setup bios grub
         if bootmode == 'dualboot' or bootmode == 'bios':
-            retval = self.cmd.run(['grub2-install', '--target=i386-pc', '--force',
-                                   '--boot-directory={}'.format(self.photon_root + "/boot"),
-                                   self.install_config['disk']])
+            retval = self.cmd.run('grub2-install --target=i386-pc --force --boot-directory={} {}'.format(self.photon_root + "/boot", self.install_config['disk']))
             if retval != 0:
                 retval = self.cmd.run(['grub-install', '--target=i386-pc', '--force',
                                    '--boot-directory={}'.format(self.photon_root + "/boot"),

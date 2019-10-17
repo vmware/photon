@@ -42,7 +42,7 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         generateCompressedFile(raw_image, outputfile, "w:xz")
     elif 'vhd' in config['artifacttype']:
         relrawpath = os.path.relpath(raw_image, src_root)
-        vhdname = (os.path.dirname(relrawpath) + '/photon-' +
+        vhdname = ('/photon-' +
                    config['image_type'] + '-' + photon_release_ver + '-' +
                    photon_build_num + '.vhd')
         print("Converting raw disk to vhd ...")
@@ -57,12 +57,14 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         Utils.runshellcommand(
             "docker run -v {}:/mnt:rw anishs/qemu-img convert {} -O "
             "vpc -o subformat=fixed,force_size {}"
-            .format(src_root, '/mnt/' + relrawpath, '/mnt/' + vhdname))
+            .format(src_root, '/mnt/' + relrawpath, '/mnt/' + os.path.dirname(relrawpath) + vhdname))
         if config['artifacttype'] == 'vhd.gz':
             outputfile = (img_path + '/photon-' + config['image_type'] +
                           '-' + photon_release_ver + '-' +
                           photon_build_num + '.vhd.tar.gz')
-            generateCompressedFile(vhdname, outputfile, "w:gz")
+            generateCompressedFile(img_path + vhdname, outputfile, "w:gz")
+            # raw image is .vhd file
+            raw_image = img_path + vhdname
     elif config['artifacttype'] == 'ova':
         ovagenerator.create_ova_image(raw_image, tools_bin_path, config)
     elif config['artifacttype'] == 'raw':

@@ -168,7 +168,8 @@ Kickstart config file is a json format with following possible parameters:
 	Example: { "postinstallscripts": ["rpi3-custom-patch.sh"] }
 
 "public_key" (optional)
-	To inject entry to authorized_keys as a string
+	To inject entry to authorized_keys as a string. Setting this variable
+	enables root login in sshd config.
 
 "search_path" (optional)
 	List of directories to search for additional files and scripts.

@@ -24,6 +24,10 @@ if [[ $ROOT_PARTITION_PATH == *"nvme"* ]]; then
     EXTRA_PARAMS=rootwait
 fi
 
+if [ "$PARTUUID" != ""  ]; then
+    ROOT_PARTITION_PATH="PARTUUID=$PARTUUID"
+fi
+
 cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 # Begin /boot/grub2/grub.cfg
 
@@ -52,11 +56,7 @@ else
     set systemd_cmdline=net.ifnames=0
 fi
 
-if [ "$PARTUUID" != ""  ]; then
-    set rootpartition=PARTUUID=$PARTUUID
-else
-    set rootpartition=$ROOT_PARTITION_PATH
-fi
+set rootpartition=$ROOT_PARTITION_PATH
 
 menuentry "Photon" {
     linux ${BOOT_DIRECTORY}\$photon_linux root=\$rootpartition \$photon_cmdline \$systemd_cmdline $EXTRA_PARAMS

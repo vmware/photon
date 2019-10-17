@@ -9,7 +9,7 @@
     },
     "image_type": "azure",
     "size": 16384,
-    "artifacttype": "vhd",
+    "artifacttype": "vhd.gz",
     "keeprawdisk": false
 }
 

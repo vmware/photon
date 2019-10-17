@@ -1,6 +1,7 @@
 {
     "installer": {
         "hostname": "photon-machine",
+        "bootmode": "bios",
         "postinstallscripts": [ "ami-patch.sh" ],
         "additional_files": [
             {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"}
