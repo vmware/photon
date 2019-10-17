@@ -1,11 +1,11 @@
 Summary:	A garbage collector for C and C++
 Name:		gc
-Version:	8.0.0
+Version:	8.0.4
 Release:	1%{?dist}
 License:	BSD
 Url:		http://www.hboehm.info/gc/
 Source0:	http://www.hboehm.info/gc/gc_source/%{name}-%{version}.tar.gz
-%define sha1 gc=bfb22367b95c796f2248b41405d37388027fe382
+%define sha1 gc=4b8b24534f469b64ff4bc2332a9bdf8bef8bf1d4
 Source1:       http://www.ivmaisoft.com/_bin/atomic_ops/libatomic_ops-7.6.6.tar.gz
 %define sha1 libatomic_ops=89a320bc94860fc63069615a0a7ee6f38eee9b70
 Group:		System Environment/Base
@@ -30,7 +30,7 @@ developing applications that use gc.
 ln -sfv libatomic_ops-7.6.6 libatomic_ops
 
 %build
-./configure \
+%configure \
 	--prefix=%{_prefix} \
 	--datadir=%{_docdir} \
         --enable-cplusplus
@@ -61,8 +61,10 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Thu Oct 17 2019 Shreenidhi Shedi <sshedi@vmware.com> 8.0.4-1
+-       Upgrade to version 8.0.4
 *	Mon Sep 17 2018 Sujay G <gsujay@vmware.com> 8.0.0-1
--	Bump to version 8.0.0 
+-	Bump to version 8.0.0
 *	Wed Apr 05 2017 Danut Moraru <dmoraru@vmware.com> 7.6.0-1
 -	Upgrade gc to 7.6.0, libatomic_ops to 7.4.4
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.4.2-2
