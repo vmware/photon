@@ -3,10 +3,10 @@
 
 Summary:        Kernel Audit Tool
 Name:           audit
-Version:        2.8.4
+Version:        2.8.5
 Release:        1%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha1    audit=026235ab9e8b19f6c2b1112ce13d180f35cf0ff4
+%define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit/
@@ -26,6 +26,10 @@ Requires:       openldap
 Requires:       tcp_wrappers
 Requires:       libcap-ng
 Requires:       gawk
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 
 %description
 The audit package contains the user space utilities for
@@ -42,8 +46,6 @@ The libraries and header files needed for audit development.
 %package        python
 Summary:        Python bindings for libaudit
 License:        LGPLv2+
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
 Requires:       %{name} = %{version}-%{release}
 Requires:       python2
 
@@ -54,8 +56,6 @@ and libauparse.
 %package  -n    python3-audit
 Summary:        Python3 bindings for libaudit
 License:        LGPLv2+
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3
 
@@ -67,12 +67,8 @@ and libauparse.
 %setup -q
 
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --exec_prefix=/usr \
-    --sbindir=%{_sbindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=%{_sysconfdir} \
     --with-python=yes \
     --with-python3=yes \
     --with-libwrap \
@@ -161,6 +157,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Oct 17 2019 Shreyas B <shreyasb@vmware.com> 2.8.5-1
+-   Updated to version 2.8.5.
 *   Mon Sep 3 2018 Keerthana K <keerthanak@vmware.com> 2.8.4-1
 -   Updated to version 2.8.4.
 *   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-4
