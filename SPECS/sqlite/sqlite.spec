@@ -2,7 +2,7 @@
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
 Version:        3.27.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
@@ -44,6 +44,7 @@ The sqlite3 library.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 %configure \
@@ -93,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0.8.6
 
 %changelog
+*   Fri Oct 18 2019 Michelle Wang <michellew@vmware.com> 3.27.2-5
+-   Fix patch CVE-2019-16168.patch
 *   Mon Sep 16 2019 Michelle Wang <michellew@vmware.com> 3.27.2-4
 -   Add patch CVE-2019-16168.patch
 *   Wed Jun 5 2019 Michelle Wang <michellew@vmware.com> 3.27.2-3
