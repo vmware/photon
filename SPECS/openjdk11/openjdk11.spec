@@ -1,18 +1,18 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
 %define jdk_major_version 1.11.0
-%define subversion 2
+%define subversion 28
 Summary:	OpenJDK
 Name:		openjdk11
-Version:	1.11.0.2
-Release:	4%{?dist}
+Version:	1.11.0.28
+Release:	1%{?dist}
 License:	GNU General Public License V2
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk/jdk11/openjdk-%{version}.tar.gz
-%define sha1 openjdk-1.11.0=aa24e47c3e67c3ef6c7eceaebb21123a67ab8fea
+%define sha1 openjdk-1.11.0=6cb75bdcc078bf2f5b06c2d9c44b984283c0524b
 BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
@@ -184,6 +184,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+*   Fri Oct 18 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.28-1
+-   Updated to jdk11 tag: 11+28
 *   Thu Sep 05 2019 Ankit Jain <ankitja@vmware.com> 1.11.0.2-4
 -   Divided version:majorversion+subversion to remove specific
 -   version java dependency from other packages
