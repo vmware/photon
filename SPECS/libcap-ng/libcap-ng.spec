@@ -3,23 +3,26 @@
 
 Summary:        POSIX capability Library
 Name:           libcap-ng
-Version:        0.7.9
+Version:        0.7.10
 Release:        1%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
 URL:            http://people.redhat.com/sgrubb/libcap-ng
 Source0:        http://people.redhat.com/sgrubb/libcap-ng/%{name}-%{version}.tar.gz
-%define sha1    libcap-ng=f29f1eefdfbbd93501d9c7a54ac340d4ca660634
+%define sha1    libcap-ng=cdff16e6d3b2aec6067f4a12e6517879f12b7775
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  swig
 
 %description
 The libcap-ng library is intended to make programming with posix capabilities much easier than the traditional libcap library. It includes utilities that can analyse all currently running applications and print out any capabilities and whether or not it has an open ended bounding set. An open bounding set without the securebits "NOROOT" flag will allow full capabilities escalation for apps retaining uid 0 simply by calling execve.
 
 %package  -n    python2-libcap-ng
 Summary:        Python bindings for libcap-ng
-License:        LGPLv2+
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  swig
 Requires:       %{name} = %{version}-%{release}
 Requires:       python2
 
@@ -28,10 +31,6 @@ The python2-libcap-ng package contains the python2 bindings for libcap-ng.
 
 %package  -n    python3-libcap-ng
 Summary:        Python3 bindings for libaudit
-License:        LGPLv2+
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  swig
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3
 
@@ -49,9 +48,7 @@ The libraries and header files needed for libcap_ng development.
 %setup -q
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --libdir=%{_libdir} \
+%configure \
     --with-python \
     --with-python3
 
@@ -89,6 +86,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_libdir}/*.a
 
 %changelog
+*   Thu Oct 17 2019 Ankit Jain <ankitja@vmware.com> 0.7.10-1
+-   Updated to 0.7.10
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 0.7.9-1
 -   Updated to latest version
 *   Mon May 22 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.8-2
