@@ -3,10 +3,10 @@
 
 Summary:        Kernel Audit Tool
 Name:           audit
-Version:        2.8.4
-Release:        4%{?dist}
+Version:        2.8.5
+Release:        1%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha1    audit=026235ab9e8b19f6c2b1112ce13d180f35cf0ff4
+%define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit/
@@ -169,6 +169,8 @@ ln -sfv %{_var}/opt/audit/log %{_var}/log/audit
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Oct 17 2019 Shreyas B <shreyasb@vmware.com> 2.8.5-1
+-   Updated to version 2.8.5.
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 2.8.4-4
 -   Bump up version to compile with new go
 *   Sat Aug 10 2019 Dweep Advani <dadvani@vmware.com> 2.8.4-3

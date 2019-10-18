@@ -1,7 +1,7 @@
 Summary:        Contains programs for compressing and decompressing files
 Name:           bzip2
-Version:        1.0.6
-Release:        10%{?dist}
+Version:        1.0.8
+Release:        1%{?dist}
 License:        BSD
 URL:            http://www.bzip.org/
 Group:          System Environment/Base
@@ -9,10 +9,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.bzip.org/%{version}/%{name}-%{version}.tar.gz
 Provides:       libbz2.so.1()(64bit)
-%define sha1    bzip2=3f89f861209ce81a6bab1fd1998c0ef311712002
+%define sha1    bzip2=bf7badf7e248e0ecf465d33c2f5aeec774209227
 Patch0:         bzip2-1.0.6-install_docs-1.patch
-Patch1:         CVE-2016-3189.patch
-Patch2:         CVE-2019-12900.patch
 Requires:       bzip2-libs = %{version}-%{release}
 Conflicts:      toybox
 
@@ -36,8 +34,6 @@ This package contains minimal set of shared bzip2 libraries.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
 sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
 sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile
 
@@ -96,6 +92,9 @@ make %{?_smp_mflags} check
 %{_lib}/libbz2.so.*
 
 %changelog
+*   Fri Oct 18 2019 Shreyas B <shreyasb@vmware.com> 1.0.8-1
+-   Upgrade to 1.0.8.
+-   Remove CVE-2016-3189.patch & CVE-2019-12900.patch, as the fix already available in latest version.
 *   Mon Jun 24 2019 Michelle Wang <michellew@vmware.com> 1.0.6-10
 -   Add patch for CVE-2019-12900.
 *   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 1.0.6-9
