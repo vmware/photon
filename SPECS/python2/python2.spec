@@ -1,23 +1,24 @@
 Summary:        A high-level scripting language
 Name:           python2
-Version:        2.7.15
-Release:        8%{?dist}
+Version:        2.7.16
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=f99348a095ec4a6411c84c0d15343d11920c9724
+%define sha1    Python=e9543af127d958b12b0edfb9340d4f0af3d0d90e
 Patch0:         cgi.patch
 Patch1:         added-pyopenssl-ipaddress-certificate-validation.patch
 Patch2:         python2-support-photon-platform.patch
-Patch3:         CVE-2018-14647.patch
-Patch4:         CVE-2019-9636.patch
-Patch5:         CVE-2019-9948.patch
-Patch6:         CVE-2019-9740.patch
-Patch7:         CVE-2019-10160.patch
+Patch3:         CVE-2019-9636.patch
+Patch4:         CVE-2019-9948.patch
+Patch5:         CVE-2019-9740.patch
+Patch6:         CVE-2019-10160.patch
+Patch7:         CVE-2018-20852.patch
 Patch8:         CVE-2019-16056.patch
+Patch9:         CVE-2019-16935.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
@@ -124,6 +125,7 @@ The test package contains all regression tests for Python as well as the modules
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -240,6 +242,10 @@ make test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Sun Oct 20 2019 Tapas Kundu <tkundu@vmware.com> 2.7.16-1
+-   Updated to 2.7.16
+-   Fix for CVE-2019-16935
+-   Fix for CVE-2018-20852
 *   Mon Sep 16 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-8
 -   Fix for CVE-2019-16056
 *   Wed May 22 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-7
