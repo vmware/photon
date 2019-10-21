@@ -1,7 +1,7 @@
 Summary:	precision numeric processing language
 Name:		bc
 Version:	1.07.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://ftp.gnu.org/gnu/bc/
 Group:		System Environment/base
@@ -10,6 +10,8 @@ Distribution: Photon
 Source0:	https://ftp.gnu.org/gnu/bc/%{name}-%{version}.tar.gz
 %define sha1 bc=b4475c6d66590a5911d30f9747361db47231640a
 BuildRequires:  ed
+Requires: flex
+
 %description
 The Bc package contains an arbitrary precision numeric processing language.
 %prep
@@ -37,6 +39,8 @@ make %{?_smp_mflags}  timetest
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*       Mon Oct 14 2019 Piyush Gupta <guptapi@vmware.com> 1.07.1-2
+-       Added Requires flex
 *       Mon Oct 1 2018 Sujay G <gsujay@vmware.com> 1.07.1-1
 -       Bump bc version to 1.07.1
 *       Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.06.95-3
