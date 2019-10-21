@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.84
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -74,6 +74,8 @@ Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19078
 Patch46:        0001-ath10k-fix-memory-leak.patch
 
+Patch1001:	hmac_gen_kernel.patch
+
 BuildArch:     x86_64
 BuildRequires: bc
 BuildRequires: kbd
@@ -110,6 +112,13 @@ Requires:      python2
 Requires:      %{name} = %{version}-%{release}
 %description docs
 The Linux package contains the Linux kernel doc files
+
+%package hmacgen
+Summary:	HMAC SHA256/HMAC SHA512 generator
+Group:		System Environment/Kernel
+Requires:      %{name} = %{version}-%{release}
+%description hmacgen
+This Linux package contains hmac sha generator kernel module.
 
 %prep
 %setup -q -n linux-%{version}
@@ -151,6 +160,7 @@ The Linux package contains the Linux kernel doc files
 %patch45 -p1
 %patch46 -p1
 
+%patch1001 -p1
 %build
 # patch vmw_balloon driver
 sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
@@ -162,6 +172,11 @@ sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .co
 %include %{SOURCE4}
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
+
+#build hmac sha generator module
+bldroot=`pwd`
+pushd hmac_gen
+make -C $bldroot M=`pwd` modules
 
 # Do not compress modules which will be loaded at boot time
 # to speed up boot process
@@ -192,6 +207,12 @@ cp -v .config            %{buildroot}/boot/config-%{uname_r}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
+
+#install hmac sha generator module
+bldroot=`pwd`
+pushd hmac_gen
+make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
 
 # TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
 cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
@@ -230,6 +251,9 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 /sbin/depmod -a %{uname_r}
 ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
+%post hmacgen
+/sbin/depmod -a %{uname_r}
+
 %files
 %defattr(-,root,root)
 /boot/System.map-%{uname_r}
@@ -250,7 +274,13 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/build
 /usr/src/linux-headers-%{uname_r}
 
+%files hmacgen
+%defattr(-,root,root)
+/lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
+
 %changelog
+*   Tue Dec 03 2019 Keerthana K <keerthanak@vmware.com> 4.19.84-3
+-   Adding hmac sha256/sha512 generator kernel module for fips.
 *   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.19.84-2
 -   Fix CVE-2019-19062, CVE-2019-19066, CVE-2019-19072,
 -   CVE-2019-19073, CVE-2019-19074, CVE-2019-19078

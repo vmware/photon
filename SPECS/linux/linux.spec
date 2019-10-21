@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.84
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -130,6 +130,8 @@ Patch234:        0001-fsl_dpaa_mac-wait-for-phy-probe-to-complete.patch
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
 %endif
+Patch1001:	hmac_gen_kernel.patch
+
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
@@ -223,6 +225,12 @@ Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
 
 %endif
 
+%package hmacgen
+Summary:	HMAC SHA256/HMAC SHA512 generator
+Group:		System Environment/Kernel
+Requires:      %{name} = %{version}-%{release}
+%description hmacgen
+This Linux package contains hmac sha generator kernel module.
 
 %prep
 %setup -q -n linux-%{version}
@@ -308,6 +316,7 @@ Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
+%patch1001 -p1
 
 %build
 make mrproper
@@ -340,6 +349,11 @@ pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
 make KERNELDIR=$bldroot %{?_smp_mflags} all
 popd
 %endif
+
+#build hmac sha generator module
+bldroot=`pwd`
+pushd hmac_gen
+make -C $bldroot M=`pwd` modules
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
@@ -401,6 +415,12 @@ if [ "$ID1" != "$ID2" ] ; then
 fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 %endif
+
+#install hmac sha generator module
+bldroot=`pwd`
+pushd hmac_gen
+make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
 
 %ifarch aarch64
 install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
@@ -469,6 +489,9 @@ make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=
 /sbin/depmod -a %{uname_r}
 ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
+%post hmacgen
+/sbin/depmod -a %{uname_r}
+
 %post drivers-gpu
 /sbin/depmod -a %{uname_r}
 
@@ -514,6 +537,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/kernel/sound
 
+%files hmacgen
+%defattr(-,root,root)
+/lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
+
 %ifarch x86_64
 %files oprofile
 %defattr(-,root,root)
@@ -550,6 +577,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Dec 03 2019 Keerthana K <keerthanak@vmware.com> 4.19.84-4
+-   Adding hmac sha256/sha512 generator kernel module for fips.
 *   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.19.84-3
 -   Fix CVE-2019-19062, CVE-2019-19066, CVE-2019-19072,
 -   CVE-2019-19073, CVE-2019-19074, CVE-2019-19078

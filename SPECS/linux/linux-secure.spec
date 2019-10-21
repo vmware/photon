@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.84
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -73,6 +73,8 @@ Patch42:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
 
+Patch1001:	hmac_gen_kernel.patch
+
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
 %endif
@@ -118,6 +120,13 @@ Requires:      python2
 Requires:      %{name} = %{version}-%{release}
 %description docs
 The Linux package contains the Linux kernel doc files
+
+%package hmacgen
+Summary:	HMAC SHA256/HMAC SHA512 generator
+Group:		System Environment/Kernel
+Requires:      %{name} = %{version}-%{release}
+%description hmacgen
+This Linux package contains hmac sha generator kernel module.
 
 %prep
 %setup -q -n linux-%{version}
@@ -165,6 +174,8 @@ popd
 %patch1000 -p1
 %endif
 
+%patch1001 -p1
+
 %build
 # patch vmw_balloon driver
 sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
@@ -183,6 +194,11 @@ sed -i '/#include <asm\/uaccess.h>/d' drv_fips_test.c
 sed -i '/#include <asm\/uaccess.h>/d' fips_test.c
 make -C $bldroot M=`pwd` modules
 popd
+
+#build hmac sha generator module
+bldroot=`pwd`
+pushd hmac_gen
+make -C $bldroot M=`pwd` modules
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
@@ -212,6 +228,13 @@ bldroot=`pwd`
 pushd ../LKCM
 make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
+
+#install hmac sha generator module
+bldroot=`pwd`
+pushd hmac_gen
+make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
+
 cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{uname_r}
 cp -v System.map        %{buildroot}/boot/System.map-%{uname_r}
 cp -v .config            %{buildroot}/boot/config-%{uname_r}
@@ -260,6 +283,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %post lkcm
 /sbin/depmod -a %{uname_r}
 
+%post hmacgen
+/sbin/depmod -a %{uname_r}
+
 %files
 %defattr(-,root,root)
 /boot/System.map-%{uname_r}
@@ -276,6 +302,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/extra/fips_lkcm.ko.xz
 
+%files hmacgen
+%defattr(-,root,root)
+/lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
+
 %files docs
 %defattr(-,root,root)
 %{_defaultdocdir}/linux-%{uname_r}/*
@@ -286,6 +316,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Dec 03 2019 Keerthana K <keerthanak@vmware.com> 4.19.84-3
+-   Adding hmac sha256/sha512 generator kernel module for fips.
 *   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.19.84-2
 -   Fix CVE-2019-19062, CVE-2019-19066, CVE-2019-19072,
 -   CVE-2019-19073, CVE-2019-19074, CVE-2019-19078

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.84
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -99,6 +99,9 @@ Patch152: 0056-Amazon-ENA-driver-Update-to-version-1.6.0.patch
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
 %endif
+
+Patch1001:	hmac_gen_kernel.patch
+
 BuildArch:      x86_64
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -149,6 +152,13 @@ Group:          System Environment/Kernel
 Requires:       python3
 %description docs
 The Linux package contains the Linux kernel doc files
+
+%package hmacgen
+Summary:	HMAC SHA256/HMAC SHA512 generator
+Group:		System Environment/Kernel
+Requires:      %{name} = %{version}-%{release}
+%description hmacgen
+This Linux package contains hmac sha generator kernel module.
 
 %ifarch x86_64
 %package oprofile
@@ -222,6 +232,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
+%patch1001 -p1
 
 %build
 make mrproper
@@ -237,6 +248,11 @@ sed -i 's/CONFIG_LOCALVERSION="-aws"/CONFIG_LOCALVERSION="-%{release}-aws"/' .co
 %include %{SOURCE4}
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
+
+#build hmac sha generator module
+bldroot=`pwd`
+pushd hmac_gen
+make -C $bldroot M=`pwd` modules
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
@@ -262,6 +278,12 @@ install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
+
+#install hmac sha generator module
+bldroot=`pwd`
+pushd hmac_gen
+make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
 
 %ifarch x86_64
 
@@ -330,6 +352,9 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 /sbin/depmod -aq %{uname_r}
 ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
+%post hmacgen
+/sbin/depmod -a %{uname_r}
+
 %post drivers-gpu
 /sbin/depmod -aq %{uname_r}
 
@@ -371,6 +396,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %exclude /lib/modules/%{uname_r}/kernel/drivers/gpu/drm/cirrus/
 /lib/modules/%{uname_r}/kernel/drivers/gpu
 
+%files hmacgen
+%defattr(-,root,root)
+/lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
+
 %files sound
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/kernel/sound
@@ -382,6 +411,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Dec 03 2019 Keerthana K <keerthanak@vmware.com> 4.19.84-3
+-   Adding hmac sha256/sha512 generator kernel module for fips.
 *   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.19.84-2
 -   Fix CVE-2019-19062, CVE-2019-19066, CVE-2019-19072,
 -   CVE-2019-19073, CVE-2019-19074, CVE-2019-19078
