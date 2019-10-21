@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.193
+Version:        4.9.197
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bb98f6446e4ace7cbd85911702905c89cc9ce796
+%define sha1 linux=7aed4b4f4644540bb18c9aafa87b0a104addf641
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -49,6 +49,8 @@ Patch27:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch28:        0002-allow-also-ecb-cipher_null.patch
 Patch29:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 
+# Fix CVE-2019-17133
+Patch30:        0001-cfg80211_wext_Reject_malformed_SSID_elements.patch
 # Fix CVE-2017-1000252
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
 Patch32:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
@@ -195,6 +197,7 @@ EOF
 %patch27 -p1
 %patch28 -p1
 %patch29 -p1
+%patch30 -p1
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
@@ -351,6 +354,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 21 2019 Ajay Kaher <akaher@vmware.com> 4.9.197-1
+-   Update to version 4.9.197, Fix CVE-2019-17133
 *   Wed Sep 18 2019 bvikas <bvikas@vmware.com> 4.9.193-1
 -   Update to version 4.9.193
 *   Mon Aug 12 2019 Alexey Makhalov <amakhalov@vmware.com> 4.9.189-1

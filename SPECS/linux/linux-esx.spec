@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.193
+Version:        4.9.197
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bb98f6446e4ace7cbd85911702905c89cc9ce796
+%define sha1 linux=7aed4b4f4644540bb18c9aafa87b0a104addf641
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -39,6 +39,8 @@ Patch20:        06-pv-ops-boot_clock.patch
 Patch21:        07-vmware-only.patch
 Patch22:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 
+# Fix CVE-2019-17133
+Patch23:        0001-cfg80211_wext_Reject_malformed_SSID_elements.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
 Patch25:        init-do_mounts-recreate-dev-root.patch
@@ -134,6 +136,7 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
+%patch23 -p1
 %patch24 -p1
 %patch25 -p1
 %patch30 -p1
@@ -248,6 +251,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 21 2019 Ajay Kaher <akaher@vmware.com> 4.9.197-1
+-   Update to version 4.9.197, Fix CVE-2019-17133
 *   Wed Sep 18 2019 bvikas <bvikas@vmware.com> 4.9.193-1
 -   Update to version 4.9.193
 *   Mon Aug 12 2019 Alexey Makhalov <amakhalov@vmware.com> 4.9.189-1
