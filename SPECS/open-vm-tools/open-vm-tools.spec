@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.3.10
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -21,6 +21,7 @@ Patch4:         timezoneCust.patch
 Patch5:         gosc-post-custom.patch
 Patch6:         fix-memleak-in-vix.patch
 Patch7:         gosc-enable-custom-scripts.patch
+Patch8:         remove-etc-security-dir.patch
 BuildArch:      x86_64
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
@@ -69,6 +70,7 @@ It contains the libraries and header files to create applications.
 %patch5 -p0
 %patch6 -p2
 %patch7 -p0
+%patch8 -p2
 %build
 touch ChangeLog
 autoreconf -i
@@ -140,6 +142,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Mon Oct 21 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-5
+-   Remove the /etc/security directory from the guest vm-support bundle.
 *   Wed Oct 16 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-4
 -   Change to Stop customization unless the custom script is explictly enabled by tools config.
 *   Fri Oct 11 2019 Anish Swaminathan <anishs@vmware.com> 10.3.10-3
