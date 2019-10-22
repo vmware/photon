@@ -1,7 +1,7 @@
 Summary:        Vendor Package Management for Goland
 Name:           glide
 Version:        0.13.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/Masterminds/glide
 Source0:        %{name}-%{version}.tar.gz
@@ -43,6 +43,8 @@ popd
 %{_bindir}/glide
 
 %changelog
+*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 0.13.3-2
+-   Bump up version to compile with go 1.13.3
 *   Fri Oct 11 2019 Ashwin H <ashwinh@vmware.com> 0.13.3-1
 -   Update to 0.13.3 to build using go 1.13
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 0.13.1-5

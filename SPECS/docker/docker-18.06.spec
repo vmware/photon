@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -224,6 +224,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 18.06.2-6
+-   Bump up version to compile with go 1.13.3
 *   Fri Oct 11 2019 Ashwin H <ashwinh@vmware.com> 18.06.2-5
 -   Build with go 1.13
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 18.06.2-4

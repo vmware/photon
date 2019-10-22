@@ -14,7 +14,7 @@
 
 Summary:        Go
 Name:           go
-Version:        1.13
+Version:        1.13.3
 Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
@@ -22,7 +22,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
-%define sha1    go=402cb0d9c0c7af03e885fc800015f772b8cac123
+%define sha1    go=1fdfd1586888d4d24f5dadee6016092f89e6049e
 Requires:       glibc
 %define ExtraBuildRequires go
 
@@ -112,5 +112,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Tue Oct 22 2019 <ashwinh@vmware.com> 1.13.3-1
+-   Update to 1.13.3
 *   Wed Sep 11 2019 <ashwinh@vmware.com> 1.13-1
 -   Initial build for 1.13

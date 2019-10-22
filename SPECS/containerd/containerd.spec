@@ -2,7 +2,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.2.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
@@ -90,5 +90,7 @@ rm -rf %{buildroot}/*
 %{_docdir}/*
 
 %changelog
+*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.2.8-2
+-   Bump up version to compile with go 1.13.3
 *   Tue Aug 27 2019 Shreyas B. <shreyasb@vmware.com> 1.2.8-1
 -   Initial version of containerd spec.

@@ -1,7 +1,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.3.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd/
 Group:          System Environment/Security
@@ -71,6 +71,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 3.3.13-2
+-   Bump up version to compile with go 1.13.3
 *   Thu Oct 17 2019 Anish Swaminathan <anishs@vmware.com> 3.3.13-1
 -   Upgraded to version 3.3.13, fix CVE-2018-16886
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 3.3.9-3
