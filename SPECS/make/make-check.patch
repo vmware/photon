@@ -1,0 +1,13 @@
+diff --git a/tests/run_make_tests.pl b/tests/run_make_tests.pl
+index 916f346..e899462 100644
+--- a/tests/run_make_tests.pl
++++ b/tests/run_make_tests.pl
+@@ -57,6 +57,8 @@ if ($^O eq 'VMS')
+ 
+   *CORE::GLOBAL::rmdir = \&vms_rmdir;
+ }
++use FindBin;
++use lib "$FindBin::Bin";
+ 
+ require "test_driver.pl";
+ require "config-flags.pm";
