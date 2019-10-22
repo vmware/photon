@@ -1,17 +1,14 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
-Version:    2.57.1
-Release:    5%{?dist}
+Version:    2.68.2
+Release:    1%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.57/%{name}-%{version}.tar.xz
-%define sha1 libsoup=a855a98c1d002a4e2bfb7562135265a8df4dad65
-Patch0:          CVE-2017-2885.patch
-Patch1:          CVE-2018-12910.patch
-Patch2:          CVE-2018-11713.patch
+Source0:    http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.68/%{name}-%{version}.tar.xz
+%define sha1 libsoup=38e489cf0d37a478a77d1bba278bfd2a47ac249a
 BuildRequires:   glib
 BuildRequires:   glib-devel
 BuildRequires:   gobject-introspection
@@ -21,15 +18,21 @@ BuildRequires:   python2
 BuildRequires:   python2-libs
 BuildRequires:   python2-devel
 BuildRequires:   python2-tools
+BuildRequires:   python3-setuptools
+BuildRequires:   python3-xml
 BuildRequires:   glib-networking
 BuildRequires:   autogen
 BuildRequires:   sqlite-devel
+BuildRequires:   meson
+BuildRequires:   ninja-build
+BuildRequires:   libpsl-devel
+BuildRequires:   gtk-doc
 %if %{with_check}
 BuildRequires:   krb5-devel
 %endif
 Requires:        libxml2
 Requires:        glib-networking
-
+Requires:        libpsl
 %description
 libsoup is HTTP client/server library for GNOME
 
@@ -38,6 +41,7 @@ Summary: Header files for libsoup
 Group: System Environment/Development
 Requires: libsoup
 Requires: libxml2-devel
+Requires: libpsl-devel
 %description devel
 Header files for libsoup.
 
@@ -57,24 +61,24 @@ These are the additional language files of libsoup.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
-export CFLAGS="%{optflags}"
-./configure  --prefix=%{_prefix} --disable-vala
-
-make %{?_smp_mflags}
+mkdir build &&
+cd build &&
+meson --prefix=%{_prefix} \
+      -Dgtk_doc=true \
+      -Dvapi=disabled \
+      -Dgssapi=disabled .. &&
+ninja
 
 %install
-rm -rf %{buildroot}%{_infodir}
-make DESTDIR=%{buildroot} install
+cd build
+DESTDIR=%{buildroot} ninja install
 %find_lang %{name}
-find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %check
-make  check
+cd build
+ninja test
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -85,18 +89,20 @@ make  check
 %exclude %{_libdir}/debug
 
 %files devel
-/usr/include/*
+%{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/*.a
 %{_libdir}/pkgconfig/*
 
 %files doc
-/usr/share/*
+%defattr(-,root,root)
+%{_datadir}/*
 
-%files lang -f %{name}.lang
+%files lang -f build/%{name}.lang
 %defattr(-,root,root)
 
 %changelog
+*   Wed Oct 16 2019 Prashant S Chauhan <psinghchauha@vmware.com> 2.68.2-1
+-   Package update to version 2.68.2, Fix CVE-2019-17266
 *   Mon May 27 2019 Keerthana K <keerthanak@vmware.com> 2.57.1-5
 -   Fix CVE-2018-11713
 *   Mon Sep 03 2018 Ankit Jain <ankitja@vmware.com> 2.57.1-4
