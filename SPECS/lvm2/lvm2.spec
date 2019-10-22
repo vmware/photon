@@ -3,7 +3,7 @@
 Summary:        Userland logical volume management tools
 Name:           lvm2
 Version:        2.02.181
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2, BSD 2-Clause and LGPLv2.1
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
@@ -27,6 +27,7 @@ Requires:       device-mapper-event = %{version}-%{release}
 Requires:       device-mapper = %{version}-%{release}
 Requires:       systemd
 Requires:       libaio
+Requires:       %{name}-libs = %{version}-%{release}
 
 %description
 LVM2 includes all of the support for handling read/write operations on
@@ -345,6 +346,8 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 
 
 %changelog
+*   Thu Oct 24 2019 Piyush Gupta <guptapi@vmware.com> 2.02.181-3
+-   Fixed install time dependency
 *   Thu Oct 03 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 2.02.181-2
 -   Added libaio to resolve linkage errors
 *   Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.02.181-1
