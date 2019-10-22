@@ -26,6 +26,7 @@ class OstreeInstaller(object):
         self.installer_path = installer.installer_path
         self._create_fstab = installer._create_fstab
         self.exit_gracefully = installer.exit_gracefully
+        self._get_uuid = installer._get_uuid
         self.cmd = CommandUtils(self.logger)
 
     def get_ostree_repo_url(self):
@@ -101,7 +102,7 @@ class OstreeInstaller(object):
             if partition.get('mountpoint', '') == '/boot':
                 boot_partition = partition
                 sysroot_boot = sysroot_boot + partition['mountpoint']
-            if partition.get('mountpoint', '') == '/boot/esp' and partition['filesystem'] == 'vfat':
+            if partition.get('mountpoint', '') == '/boot/efi' and partition['filesystem'] == 'vfat':
                 sysroot_bootefi = sysroot_bootefi + partition['mountpoint']
 
         sysroot_ostree = os.path.join(self.photon_root, "ostree")
@@ -159,12 +160,10 @@ class OstreeInstaller(object):
         if bootmode == 'dualboot' or bootmode == 'bios':
             self.run([['chroot', '{}'.format(deployment), 'bash', '-c', 'grub2-install --target=i386-pc --force --boot-directory=/boot {};'.format(self.install_config['disk'])]], "Generating Grub binaries for BIOS mode")
         if bootmode == 'dualboot' or bootmode == 'efi':
-            grub_cfg = []
-            grub_cfg.append(['cp', '-r', '{}/EFI_x86_64/BOOT/.'.format(self.installer_path), '{}/EFI/Boot/'.format(sysroot_bootefi)])
-            grub_cfg.append(['touch', '{}/boot/grub2/grub.cfg'.format(sysroot_bootefi)])
-            grub_cfg.append(['echo', '\"search -n -u `blkid -s UUID -o value {}` -s\"'.format(boot_partition['path']), '>>', '{}/boot/grub2/grub.cfg'.format(sysroot_bootefi)])
-            grub_cfg.append(['echo', '\"configfile /grub2/grub.cfg\"', '>>', '{}/boot/grub2/grub.cfg'.format(sysroot_bootefi)])
-            self.run(grub_cfg, "Generating grub.cfg for efi boot")
+            self.run([['cp', '-r', '{}/EFI_x86_64/BOOT/.'.format(self.installer_path), '{}/EFI/Boot/'.format(sysroot_bootefi)]], "Generating grub.cfg for efi boot")
+            with open(os.path.join(sysroot_bootefi, 'boot/grub2/grub.cfg'), "w") as grub_cfg:
+                grub_cfg.write("search -n -u {} -s\n".format(self._get_uuid(boot_partition['path'])))
+                grub_cfg.write("configfile /grub2/grub.cfg\n")
 
         self.run([['chroot', '{}'.format(deployment), 'bash', '-c', 'grub2-mkconfig -o /boot/grub2/grub.cfg;']])
         if os.path.exists(loader0):
