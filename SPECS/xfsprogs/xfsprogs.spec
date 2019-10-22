@@ -1,7 +1,7 @@
 Summary:        Utilities for managing the XFS filesystem
 Name:           xfsprogs
 Version:        4.18.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+ and LGPLv2+
 URL:            http://oss.sgi.com/projects/xfs/
 Group:          System Environment/Base
@@ -53,9 +53,6 @@ find %{buildroot}/%{_lib64dir} -name '*.a' -delete
 
 %find_lang %{name}
 
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-
 %clean
 rm -rf %{buildroot}/*
 
@@ -87,6 +84,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Tue Oct 22 2019 Prashant S Chauhan <psinghchauha@vmware.com> 4.18.0-2
+-   Removed %check since this package does not come with test suite
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 4.18.0-1
 -   Updated to latest version
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 4.10.0-3
