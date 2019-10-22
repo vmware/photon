@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.2
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -55,9 +55,6 @@ make
 cd build && make install DESTDIR=$RPM_BUILD_ROOT
 find %{buildroot} -name '*.la' -delete
 
-%check
-make check
-
 %post -p  /sbin/ldconfig
 
 %files
@@ -72,6 +69,8 @@ make check
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Tue Oct 22 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2-5
+-  Remove make check as unit tests are not present in c-rest-engine
 *  Fri Jan 11 2019 Ankit Jain <ankitja@vmware.com> 1.2-4
 -  Added Makecheck
 *  Tue May 08 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-3
