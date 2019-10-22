@@ -1,7 +1,7 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
 Version:        1.44.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
@@ -11,6 +11,7 @@ Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.
 %define sha1    e2fsprogs=bfe11b75fee61c4d3795ac27eea11f9f7843294b
 Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox
+Patch0:         CVE-2019-5094.patch
 
 %description
 The E2fsprogs package contains the utilities for handling the ext2 file system.
@@ -35,12 +36,13 @@ These are the additional language files of e2fsprogs
 
 %prep
 %setup -q
+%patch0 -p1
 sed -i -e 's|^LD_LIBRARY_PATH.*|&:/tools/lib|' tests/test_config
 
 %build
-LIBS=-L/tools/lib \
-CFLAGS=-I/tools/include \
-PKG_CONFIG_PATH=/tools/lib/pkgconfig \
+export LIBS=-L/tools/libi; \
+export CFLAGS=-I/tools/include; \
+export PKG_CONFIG_PATH=/tools/lib/pkgconfig
 %configure \
     --with-root-prefix='' \
     --enable-elf-shlibs \
@@ -127,6 +129,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Tue Oct 22 2019 Shreyas B. <shreyasb@vmware.com> 1.44.3-3
+-   Fixes for CVE-2019-5094.
 *   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 1.44.3-2
 -   Add conflicts toybox.
 *   Mon Sep 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.44.3-1
