@@ -1,0 +1,13 @@
+diff --git a/components/cli/scripts/docs/generate-man.sh b/components/cli/scripts/docs/generate-man.sh
+index 7412e5b..d3ae11c 100755
+--- a/components/cli/scripts/docs/generate-man.sh
++++ b/components/cli/scripts/docs/generate-man.sh
+@@ -4,8 +4,6 @@ set -eu -o pipefail
+ 
+ mkdir -p ./man/man1
+ 
+-go install ./vendor/github.com/cpuguy83/go-md2man
+-
+ # Generate man pages from cobra commands
+ go build -o /tmp/gen-manpages github.com/docker/cli/man
+ /tmp/gen-manpages --root "$(pwd)" --target "$(pwd)/man/man1"
