@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.28.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -17,6 +17,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.gz
 %define sha1    perl=0622f86160e8969633cbd21a2cca9e11ae1f8c5a
+%if %{with_check}
+Patch0:         make-check-failure.patch
+%endif
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
 Provides:       perl(s)
@@ -34,6 +37,9 @@ Report Language.
 %prep
 %setup -q
 sed -i 's/-fstack-protector/&-all/' Configure
+%if %{with_check}
+%patch0 -p1
+%endif
 
 %build
 export BUILD_ZLIB=False
@@ -71,6 +77,8 @@ make test TEST_SKIP_VERSION_CHECK=1
 %{_mandir}/*/*
 
 %changelog
+*   Tue Oct 22 2019 Prashant S Chauhan <psinghchauha@vmware.com> 5.28.0-3
+-   Fix for make check failure added a patch
 *   Wed Oct 24 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.28.0-2
 -   Add provides perl(s)
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 5.28.0-1
