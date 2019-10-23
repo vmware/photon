@@ -1,0 +1,26 @@
+diff --git a/src/sparse.c b/src/sparse.c
+index 7d652ea..af8f4af 100644
+--- a/src/sparse.c
++++ b/src/sparse.c
+@@ -1318,6 +1318,8 @@ pax_decode_header (struct tar_sparse_file *file)
+ 	  sparse_add_map (file->stat_info, &sp);
+ 	}
+       set_next_block_after (blk);
++
++      file->dumped_size += BLOCKSIZE * (current_block_ordinal () - start);
+     }
+ 
+   return true;
+diff --git a/tests/difflink.at b/tests/difflink.at
+index eadfb08..4e01176 100644
+--- a/tests/difflink.at
++++ b/tests/difflink.at
+@@ -21,7 +21,7 @@ mkdir a
+ genfile -f a/x
+ ln -s x a/y
+ ln a/y a/z
+-tar cf a.tar a
++tar cf a.tar a/x a/y a/z
+ rm a/z
+ ln -s x a/z
+ tar df a.tar
