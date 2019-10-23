@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -233,7 +233,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/python3.7m-config
 
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
-%{_libdir}/libpython3.so
 %exclude %{_bindir}/2to3*
 %exclude %{_bindir}/idle*
 
@@ -261,6 +260,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Wed Oct 23 2019 Tapas Kundu <tkundu@vmware.com> 3.7.4-2
+-   Fix conflict of libpython3.so
 *   Thu Oct 17 2019 Tapas Kundu <tkundu@vmware.com> 3.7.4-1
 -   Updated to patch release 3.7.4
 -   Fix CVE-2019-16935
