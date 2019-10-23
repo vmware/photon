@@ -1,7 +1,7 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
 Version:        1.8.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
@@ -11,6 +11,9 @@ Source0:        https://www.freedesktop.org/software/ModemManager/ModemManager-1
 %define sha1    ModemManager=9c1377fe879a9a36a9cd937425f501d6bf8fa234
 BuildRequires:  libqmi-devel
 BuildRequires:  gobject-introspection-devel
+%if %{with_check}
+BuildRequires:  dbus-devel
+%endif
 Requires:       libqmi
 Requires:       gobject-introspection
 %description
@@ -37,7 +40,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 
 %check
-make  %{?_smp_mflags} check
+make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -68,5 +71,7 @@ make  %{?_smp_mflags} check
 %{_libdir}/libmm-glib.la
 
 %changelog
+*   Wed Oct 23 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.8.2-2
+-   Fix a dbus daemon make check failure
 *   Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8.2-1
 -   Initial build. First version
