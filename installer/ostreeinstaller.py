@@ -164,6 +164,7 @@ class OstreeInstaller(object):
             with open(os.path.join(sysroot_bootefi, 'boot/grub2/grub.cfg'), "w") as grub_cfg:
                 grub_cfg.write("search -n -u {} -s\n".format(self._get_uuid(boot_partition['path'])))
                 grub_cfg.write("configfile /grub2/grub.cfg\n")
+            self.run([['chroot', '{}'.format(deployment), 'bash', '-c', 'mkdir -p /boot/grub2;']])
 
         self.run([['chroot', '{}'.format(deployment), 'bash', '-c', 'grub2-mkconfig -o /boot/grub2/grub.cfg;']])
         if os.path.exists(loader0):

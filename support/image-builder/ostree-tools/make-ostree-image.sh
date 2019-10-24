@@ -10,6 +10,7 @@ fi
 
 PROGRAM=$0
 SRCROOT=$1
+DOCK_ARCH=`uname -m`
 
 cat > ${SRCROOT}/support/image-builder/ostree-tools/mk-ostree-server.sh << EOF
 #!/bin/bash
@@ -29,7 +30,13 @@ echo "baseurl=file:///RPMS" >> ${SRCROOT}/support/image-builder/ostree-tools/pho
 rm -rf stage/ostree-repo
 mkdir -p stage/ostree-repo
 
-sudo docker run -it --privileged -v ${SRCROOT}:/photon -v $(pwd)/stage/RPMS:/RPMS -v $(pwd)/stage/ostree-repo:/srv/rpm-ostree -w="/photon/support/image-builder/ostree-tools/" vmware/photon-build:rpm-ostree-3.0 ./mk-ostree-server.sh /
+if [ $DOCK_ARCH == "x86_64" ]
+then
+  sudo docker run -it --privileged -v ${SRCROOT}:/photon -v $(pwd)/stage/RPMS:/RPMS -v $(pwd)/stage/ostree-repo:/srv/rpm-ostree -w="/photon/support/image-builder/ostree-tools/" vmware/photon-build:rpm-ostree-3.0 ./mk-ostree-server.sh /
+elif [ $DOCK_ARCH == "aarch64" ]
+then
+  sudo docker run -it --privileged -v ${SRCROOT}:/photon -v $(pwd)/stage/RPMS:/RPMS -v $(pwd)/stage/ostree-repo:/srv/rpm-ostree -w="/photon/support/image-builder/ostree-tools/" ankitaj/photon-build:rpm-ostree-arm-3.0 ./mk-ostree-server.sh /
+fi
 
 (cd stage/ostree-repo/repo/; tar -zcf ../../ostree-repo.tar.gz .; )
 
