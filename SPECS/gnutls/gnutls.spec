@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.6.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.5/%{name}-%{version}.tar.xz
@@ -9,6 +9,7 @@ Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.5/%{name}-%{version}.
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Patch0:         gnutls-3.6.9-default-priority.patch
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
@@ -40,6 +41,7 @@ developing applications that use gnutls.
 
 %prep
 %setup -q
+%patch0 -p1
 %build
 # check for trust store file presence
 [ -f %{_sysconfdir}/pki/tls/certs/ca-bundle.crt ] || exit 1
@@ -92,6 +94,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Oct 24 2019 Shreenidhi Shedi <sshedi@vmware.com> 3.6.9-2
+-   Added default priority patch.
 *   Thu Oct 17 2019 Shreenidhi Shedi <sshedi@vmware.com> 3.6.9-1
 -   Upgrade to version 3.6.9
 *   Mon Apr 15 2019 Keerthana K <keerthanak@vmware.com> 3.6.3-3
