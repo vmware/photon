@@ -5,7 +5,7 @@
 
 Summary:	Linux Firmware
 Name:		linux-firmware
-Version:	20190830
+Version:	20191030
 Release:	1%{?dist}
 License:	GPL+ and GPLv2+ and MIT and Redistributable, no modification permitted
 URL:		http://www.kernel.org/
@@ -13,7 +13,7 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 linux=2f42905341c7d02aa45ba11973b978e09e8c8418
+%define sha1 linux=4bcee0f22979c415bbe5c4fe90aa70abc0eea893
 BuildArch:	noarch
 
 %description
@@ -32,7 +32,10 @@ cp -r * %{buildroot}%{_firmwarepath}
 %files
 %defattr(-,root,root)
 %{_firmwarepath}/*
+
 %changelog
+*   Thu Oct 24 2019 Ajay Kaher <akaher@vmware.com> 20191030-1
+-   Added Dell 5K Gateway firmware.
 *   Fri Aug 30 2019 Alexey Makhalov <amakhalov@vmware.com> 20190830-1
 -   Added ath10k firmware for ls1046a.
 *   Tue Feb 05 2019 Alexey Makhalov <amakhalov@vmware.com> 20190205-1
