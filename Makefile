@@ -593,7 +593,7 @@ print-upward-deps:
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-generate-yaml-files: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+generate-yaml-files: check-tools photon-stage $(PHOTON_PACKAGES)
 	@echo "Generating yaml files for packages ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
 	$(PHOTON_GENERATE_OSS_FILES) --generate-yaml-files \
