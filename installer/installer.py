@@ -1045,7 +1045,7 @@ class Installer(object):
 
         # Insert efi special partition
         if not esp_found and (bootmode == 'dualboot' or bootmode == 'efi'):
-            efi_partition = { 'size': 8, 'filesystem': 'vfat', 'mountpoint': '/boot/efi' }
+            efi_partition = { 'size': 10, 'filesystem': 'vfat', 'mountpoint': '/boot/efi' }
             self.install_config['partitions'].insert(0, efi_partition)
 
         # Insert bios partition last to be very first

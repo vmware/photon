@@ -407,7 +407,7 @@ k8s-docker-images: start-docker photon-docker-image
 	./build-k8s-nginx-ingress.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)  && \
 	./build-wavefront-proxy-docker-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)
 
-ostree-repo: $(PHOTON_PACKAGES)
+ostree-repo: start-docker $(PHOTON_PACKAGES)
 	@echo "Creating OSTree repo from local RPMs in ostree-repo.tar.gz..."
 	@if [ -f  $(PHOTON_STAGE)/ostree-repo.tar.gz ]; then \
 		echo "ostree-repo.tar.gz already present, not creating again..."; \
