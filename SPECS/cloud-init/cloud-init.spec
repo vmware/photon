@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -28,7 +28,6 @@ Patch11:        ds-guestinfo-photon.patch
 Patch12:        trigger-post-customization.patch
 Patch13:        enable-disable-custom-script.patch
 Patch14:        disable-custom-script-default.patch
-Patch15:        add_cc_kubeadm.py.patch
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  systemd
@@ -91,7 +90,6 @@ ssh keys and to let the user run various scripts.
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
-%patch15 -p1
 
 find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -162,6 +160,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Thu Oct 24 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 19.1-3
+-   remove kubeadm module
 *   Thu Oct 17 2019 Keerthana K <keerthanak@vmware.com> 19.1-2
 -   Fix to disable custom script by default in DatasourceOVF.
 -   add kubeadm module
