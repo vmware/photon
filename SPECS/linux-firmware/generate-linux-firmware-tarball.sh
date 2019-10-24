@@ -25,8 +25,13 @@ cp firmware-nonfree/brcm/brcmfmac43455-sdio.txt $DST/brcm/
 cp firmware-nonfree/LICENCE.broadcom_bcm43xx $DST/
 
 # Dell Edge Gateway requires:
+mkdir $DST/rtl_nic/
+mkdir $DST/mrvl/
 cp -a linux-firmware/rsi $DST/
 cp linux-firmware/rsi_91x.fw $DST/
+cp linux-firmware/rtl_nic/rtl8168f-2.fw $DST/rtl_nic/
+wget -P $DST/mrvl/ https://downloads.dell.com/FOLDER04270570M/1/pcie8897_uapsta.bin
+cp linux-firmware/LICENCE.Marvell $DST/
 
 # NXP ls10XXa FRWY requires:
 cp qoriq-engine-pfe-bin/ls1012a/slow_path/ppfe_class_ls1012a.elf $DST/
