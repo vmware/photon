@@ -23,6 +23,6 @@
     "image_type": "rpi3",
     "size": 512,
     "artifacttype": "xz",
-    "keeprawdisk": "true"
+    "keeprawdisk": true
 }
 

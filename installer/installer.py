@@ -6,6 +6,7 @@ Photon installer
 
 import subprocess
 import os
+import re
 import shutil
 import signal
 import sys
@@ -1170,7 +1171,8 @@ class Installer(object):
                 mkfs_cmd = ['mkfs', '-t', partition['filesystem']]
 
             if 'fs_options' in partition:
-                mkfs_cmd.extend([partition['fs_options']])
+                options = re.sub("[^\w]", " ", partition['fs_options']).split()
+                mkfs_cmd.extend(options)
 
             mkfs_cmd.extend([partition['path']])
             retval = self.cmd.run(mkfs_cmd)
