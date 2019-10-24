@@ -1,11 +1,11 @@
 Summary:	Library for Neighbor Discovery Protocol
 Name:		libndp
-Version:	1.5
-Release:	2%{?dist}
+Version:	1.6
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://www.libndp.org/
 Source:		http://www.libndp.org/files/%{name}-%{version}.tar.gz
-%define sha1 libndp=9e7c371d9e72f2bcbb922c1041880aba5ae386dc
+%define sha1 libndp=300e63fcf69f6239dc6c5f82770437d5ffbc2dd4
 Group:		System Environment/Libraries
 
 %description
@@ -45,6 +45,8 @@ find %{buildroot}%{_libdir} -name \*.la -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Thu Oct 24 2019 Shreyas B. <shreyasb@vmware.com> 1.6-1
+-   Update to 1.6 to fix CVE-2016-3698.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5-2
 -	GA - Bump release of all rpms
 *	Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 1.5-1
