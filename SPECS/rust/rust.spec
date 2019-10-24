@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.34.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -11,7 +11,6 @@ Distribution:   Photon
 # Source0 + .git as it requires git hooks at build time
 Source0:        https://github.com/rust-lang/rust/archive/%{name}-%{version}.tar.gz
 %define sha1    %{name}-%{version}=b58d56db5bfba942019c9a83818ab2a1b6dc441c
-BuildArch:      x86_64
 BuildRequires:  git
 BuildRequires:  cmake
 BuildRequires:  glibc
@@ -28,9 +27,6 @@ Rust Programming Language
 %build
 sh ./configure --prefix=%{_prefix} --enable-extended --tools="cargo"
 make %{?_smp_mflags}
-
-%check
-make check
 
 %install
 make DESTDIR=%{buildroot} install
@@ -64,5 +60,7 @@ rm %{buildroot}%{_docdir}/%{name}/*.old
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+*   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 1.34.2-2
+-   Added for ARM Build
 *   Wed May 15 2019 Ankit Jain <ankitja@vmware.com> 1.34.2-1
 -   Initial build. First version

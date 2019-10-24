@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2019.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -11,7 +11,6 @@ Distribution:   Photon
 # Source0 + .git as it requires git hooks at build time
 Source0:        https://github.com/ostreedev/ostree/archive/%{name}-%{version}.tar.gz
 %define sha1    %{name}-%{version}=716f6b626203a188ecf267cc312ca817ef7dc875
-BuildArch:      x86_64
 Source1:        91-ostree.preset
 Patch0:         dualboot-support.patch
 Patch1:         0001-ostree-Copying-photon-config-to-boot-directory.patch
@@ -100,9 +99,6 @@ env NOCONFIGURE=1 ./autogen.sh
      --enable-libsoup-client-certs
 make %{?_smp_mflags}
 
-%check
-make check
-
 %install
 make DESTDIR=%{buildroot} INSTALL="install -p -c" install
 find %{buildroot} -name '*.la' -delete
@@ -168,6 +164,8 @@ rm -rf %{buildroot}/lib
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+*   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2019.2-3
+-   Added for ARM Build
 *   Fri Sep 13 2019 Ankit Jain <ankitja@vmware.com> 2019.2-2
 -   Added support to get kernel and systemd commandline param
 -   from photon.cfg and systemd.cfg

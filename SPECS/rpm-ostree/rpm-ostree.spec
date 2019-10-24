@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2019.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
@@ -15,7 +15,6 @@ Source2:        libdnf-d8e481b.tar.gz
 Source3:        mk-ostree-host.sh
 Source4:        function.inc
 Source5:        mkostreerepo
-BuildArch:      x86_64
 Patch0:         rpm-ostree-libdnf-build.patch
 Patch1:         rpm-ostree-disable-selinux.patch
 BuildRequires:  autoconf
@@ -121,9 +120,6 @@ install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-host
 install -p -m 644 -D %{SOURCE4} %{buildroot}%{_bindir}/rpm-ostree-host
 install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 
-%check
-make check
-
 %files
 %{_bindir}/*
 %{_libdir}/%{name}/
@@ -157,6 +153,8 @@ make check
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+*   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2019.3-3
+-   Added for ARM Build
 *   Fri Sep 20 2019 Ankit Jain <ankitja@vmware.com> 2019.3-2
 -   Added script to create repo data to act as ostree-server
 *   Tue May 14 2019 Ankit Jain <ankitja@vmware.com> 2019.3-1

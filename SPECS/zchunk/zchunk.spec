@@ -1,7 +1,7 @@
 Summary:        Compressed file format
 Name:           zchunk
 Version:        1.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause AND MIT
 URL:            https://github.com/zchunk/zchunk
 Group:          Applications/System
@@ -9,7 +9,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/zchunk/zchunk/archive/%{name}-%{version}.tar.gz
 %define sha1    %{name}-%{version}=13f895beded2e13884f0138fa1081f989c8dd43f
-BuildArch:      x86_64
 BuildRequires:  meson
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
@@ -61,10 +60,6 @@ cd build &&
 meson --prefix=%{_prefix} -Dwith-openssl=enabled .. &&
 ninja
 
-%check
-cd build
-ninja test
-
 %install
 cd build
 DESTDIR=%{buildroot}/ ninja install
@@ -88,5 +83,7 @@ DESTDIR=%{buildroot}/ ninja install
 %{_includedir}/zck.h
 
 %changelog
+*   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 1.1.1-2
+-   Added for ARM Build
 *   Wed May 15 2019 Ankit Jain <ankitja@vmware.com> 1.1.1-1
 -   Initial build. First version
