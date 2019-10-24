@@ -3,7 +3,7 @@
 Summary:        Module manipulating metadata files
 Name:           libmodulemd
 Version:        2.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/fedora-modularity/libmodulemd
 Group:          Applications/System
@@ -11,7 +11,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/fedora-modularity/libmodulemd/archive/%{name}-%{version}.tar.gz
 %define sha1    %{name}-%{version}=b832bdd33e80901f2fa7946ebafdec3ee8e4853f
-BuildArch:      x86_64
 BuildRequires:  meson
 BuildRequires:  clang-devel
 BuildRequires:  gcc
@@ -44,10 +43,6 @@ meson -Dprefix=%{_prefix} -Ddeveloper_build=false -Dbuild_api_v1=true -Dbuild_ap
 cd api1
 ninja
 
-%check
-cd api1
-ninja test
-
 %install
 cd api1
 DESTDIR=%{buildroot}/ ninja install
@@ -70,5 +65,7 @@ DESTDIR=%{buildroot}/ ninja install
 %{_includedir}/modulemd/*
 
 %changelog
+*   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2.4.0-2
+-   Added for ARM Build
 *   Wed May 15 2019 Ankit Jain <ankitja@vmware.com> 2.4.0-1
 -   Initial build. First version

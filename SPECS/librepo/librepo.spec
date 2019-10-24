@@ -5,7 +5,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.10.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -13,7 +13,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
 %define sha1    %{name}-%{version}=9709bbca874a1afda9dff1c1775a3c68321c7182
-BuildArch:      x86_64
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  check
@@ -77,9 +76,6 @@ pushd build-py3
   make %{?_smp_mflags}
 popd
 
-%check
-make check
-
 %install
 pushd build-py2
   make DESTDIR=%{buildroot} install
@@ -109,5 +105,7 @@ popd
 %{_python3_sitearch}/%{name}/
 
 %changelog
+*   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-2
+-   Added for ARM Build
 *   Wed May 15 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-1
 -   Initial build. First version
