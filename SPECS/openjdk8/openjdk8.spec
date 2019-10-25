@@ -1,18 +1,18 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
 %define jdk_major_version 1.8.0
-%define subversion 222
+%define subversion 232
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	%{jdk_major_version}.%{subversion}
-Release:	2%{?dist}
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}-b10.tar.gz
-%define sha1    openjdk=f0d4b778c674b26ffee1119cda12ec1083118578
+Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}-ga.tar.gz
+%define sha1    openjdk=2f74498e2acfc4d4cceb17260f07207d8a51fa51
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
 Patch2:         remove-cups.patch
@@ -66,7 +66,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -qn openjdk-%{version}-b10
+%setup -qn openjdk-%{version}-ga
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -242,6 +242,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+*   Fri Oct 25 2019 Shreyas B. <shreyasb@vmware.com> 1.8.0.232-1
+-   Upgrade to version 1.8.0.232 ga (jdk8u232-ga)
 *   Tue Sep 04 2019 Ankit Jain <ankitja@vmware.com> 1.8.0.222-2
 -   Divided version:majorversion+subversion to remove specific
 -   version java dependency from other packages
