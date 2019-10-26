@@ -1,22 +1,22 @@
 Summary:       A toolkit for defining and handling authorizations.
 Name:          polkit
-Version:       0.113
-Release:       4%{?dist}
+Version:       0.116
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       LGPLv2+
 URL:           https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
 Source0:       https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
-Patch0:        polkit-CVE-2018-19788.patch
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: expat-devel
 BuildRequires: glib-devel
 BuildRequires: gobject-introspection
 BuildRequires: intltool >= 0.40.0
-BuildRequires: js-devel
+BuildRequires: mozjs60-devel
 BuildRequires: Linux-PAM-devel
 BuildRequires: systemd-devel
+Requires:      mozjs60
 Requires:      expat
 Requires:      glib
 Requires:      js
@@ -24,7 +24,7 @@ Requires:      Linux-PAM
 Requires:      systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):  /usr/sbin/userdel /usr/sbin/groupdel
-%define sha1 polkit=ef855c2d04184dceb38e0940dc7bec9cc3da415c
+%define sha1 polkit=7fafbf4d2b9a308ad4ad3a174b01970b78c09eea
 
 %description
 polkit provides an authorization API intended to be used by privileged programs
@@ -41,7 +41,6 @@ header files and libraries for polkit
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 %configure \
@@ -102,6 +101,7 @@ fi
 %{_sysconfdir}/dbus-1/system.d/org.freedesktop.PolicyKit1.conf
 %{_sysconfdir}/pam.d/polkit-1
 %{_sysconfdir}/polkit-1/rules.d/50-default.rules
+%{_datadir}/gettext/its
 
 %files devel
 %defattr(-,root,root)
@@ -111,6 +111,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Sat Oct 26 2019 Ankit Jain <ankitja@vmware.com> 0.116-1
+-   Upgraded to 0.116
 *   Thu Jan 10 2019 Dweep Advani <dadvani@vmware.com> 0.113-4
 -   Fix for CVE-2018-19788
 *   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 0.113-3
