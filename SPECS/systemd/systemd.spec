@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          14%{?dist}
+Release:          15%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -42,6 +42,7 @@ Requires:         kmod
 Requires:         glib
 Requires:         libgcrypt
 Requires:         filesystem >= 1.1
+Requires:         elfutils
 BuildRequires:    intltool
 BuildRequires:    gperf
 BuildRequires:    libcap-devel
@@ -272,6 +273,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Tue Oct 28 2019 Piyush Gupta <guptapi@vmware.com>  239-15
+-    Added requires elfutils
 *    Wed Sep 11 2019 Susant Sahani <ssahani@vmware.com>  239-14
 -    Fix CVE-2019-15718
 *    Fri Jun 28 2019 Susant Sahani <ssahani@vmware.com>  239-13
