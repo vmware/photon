@@ -7,7 +7,7 @@
         "partition_type": "msdos",
         "partitions": [
             {"mountpoint": "/boot/efi", "size": 12, "filesystem": "vfat", "fs_options": "-n EFI"},
-            {"mountpoint": "/", "size": 0, "filesystem": "ext4", "fs_options": ["-F", "-v", "-O", "^huge_file", "-b", "4096", "-L", "rootfs"]}
+            {"mountpoint": "/", "size": 0, "filesystem": "ext4", "fs_options": "-F -v -O ^huge_file -b 4096 -L rootfs"}
         ],
         "password": {
             "age": 0,
