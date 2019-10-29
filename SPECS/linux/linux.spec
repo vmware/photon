@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.79
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -528,6 +528,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Oct 24 2019 Ajay Kaher <akaher@vmware.com> 4.19.79-2
+-   Enabled WiFi and BT config for Dell 5K.
 *   Tue Oct 15 2019 Ajay Kaher <akaher@vmware.com> 4.19.79-1
 -   Update to version 4.19.79
 -   Fix CVE-2019-17133
