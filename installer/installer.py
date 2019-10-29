@@ -1194,7 +1194,7 @@ class Installer(object):
                 mkfs_cmd = ['mkfs', '-t', partition['filesystem']]
 
             if 'fs_options' in partition:
-                options = re.sub("[^\w]", " ", partition['fs_options']).split()
+                options = re.sub("[^\S]", " ", partition['fs_options']).split()
                 mkfs_cmd.extend(options)
 
             mkfs_cmd.extend([partition['path']])
