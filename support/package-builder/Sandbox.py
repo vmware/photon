@@ -2,7 +2,6 @@ import sys
 import os.path
 import subprocess
 import shutil
-import docker
 from constants import constants
 from Logger import Logger
 from CommandUtils import CommandUtils
@@ -176,6 +175,7 @@ class Chroot(Sandbox):
 
 class Container(Sandbox):
     def __init__(self, logger):
+        import docker
         Sandbox.__init__(self, logger)
         self.containerID = None
         self.dockerClient = docker.from_env(version="auto")
