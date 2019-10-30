@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.5.6
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -22,6 +22,7 @@ Patch10:        python3-CVE-2019-9740.patch
 Patch11:        python3-CVE-2019-10160.patch
 Patch12:        python3-CVE-2018-20852.patch
 Patch13:        python3-CVE-2019-16056.patch
+Patch14:        python3-CVE-2019-16935.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel >= 6.0-3
@@ -111,6 +112,7 @@ to build python programs.
 %patch11 -p1
 %patch12 -p1
 %patch13 -p1
+%patch14 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -216,6 +218,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Wed Oct 30 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-11
+-   Fix for CVE-2019-16935.
 *   Wed Sep 11 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-10
 -   Fix for CVE-2019-16056
 *   Thu Aug 20 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-9
