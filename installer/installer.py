@@ -11,12 +11,10 @@ import shutil
 import signal
 import sys
 import glob
-import re
 import modules.commons
 import random
 import curses
 import stat
-import re
 import tempfile
 from logger import Logger
 from commandutils import CommandUtils
