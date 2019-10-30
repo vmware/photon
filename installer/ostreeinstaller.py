@@ -21,7 +21,8 @@ class OstreeInstaller(object):
         # simulate inheritance
         self.install_config = installer.install_config
         self.logger = installer.logger
-        self.progress_bar = installer.progress_bar
+        if self.install_config['ui']:
+            self.progress_bar = installer.progress_bar
         self.photon_root = installer.photon_root
         self.installer_path = installer.installer_path
         self._create_fstab = installer._create_fstab
@@ -72,6 +73,13 @@ class OstreeInstaller(object):
         for prefix in prefixes:
             command = ['systemd-tmpfiles', '--create', '--boot', '--root={}/ostree/deploy/photon/deploy/{}.0'.format(self.photon_root, commit_number), '--prefix={}'.format(prefix)]
             self.run([command], "systemd-tmpfiles command done")
+
+    def create_symlink_directory(self, deployment):
+        command = []
+        command.append(['mkdir', '-p', '{}/sysroot/tmp'.format(deployment)])
+        command.append(['mkdir', '-p', '{}/sysroot/ostree'.format(deployment)])
+        command.append(['mkdir', '-p', '{}/run/media'.format(deployment)])
+        self.run(command, "symlink directory created")
 
     def mount_devices_in_deployment(self, commit_number):
         command = []
@@ -143,6 +151,7 @@ class OstreeInstaller(object):
 
         self.mount_devices_in_deployment(commit_number)
         deployment = os.path.join(self.photon_root, "ostree/deploy/photon/deploy/" + commit_number + ".0/")
+        self.create_symlink_directory(deployment)
 
         deployment_boot = os.path.join(deployment, "boot")
         deployment_sysroot = os.path.join(deployment, "sysroot")
@@ -191,7 +200,8 @@ class OstreeInstaller(object):
     def run(self, commands, comment = None):
         if comment != None:
             self.logger.info("Installer: {} ".format(comment))
-            self.progress_bar.update_loading_message(comment)
+            if self.install_config['ui']:
+                self.progress_bar.update_loading_message(comment)
 
         for command in commands:
             retval = self.cmd.run(command)
