@@ -1,7 +1,7 @@
 Summary:        Contains a utility for determining file types
 Name:           file
 Version:        5.34
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            http://www.darwinsys.com/file
 Group:          Applications/File
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
 %define sha1    file=509e30ad0e0d74fa4040a28ce4667486cfe2170c
+Patch0:		CVE-2019-18218.patch
 Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox
 %description
@@ -28,6 +29,7 @@ It contains the libraries and header files to create applications.
 
 %prep
 %setup -q
+%patch0 -p1
 %build
 %configure \
     --disable-silent-rules
@@ -59,6 +61,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*man3/*
 
 %changelog
+*   Tue Oct 29 2019 Siju Maliakkal <smaliakkal@vmware.com> 5.34-2
+-   Apply patch for CVE-2019-18218
 *   Thu Sep 20 2018 Sujay G <gsujay@vmware.com> 5.34-1
 -   Bump file version to 5.34
 *   Fri Dec 15 2017 Divya Thaluru <dthaluru@vmware.com> 5.30-3
