@@ -310,6 +310,8 @@ class Installer(object):
                                .format(self.progress_bar.time_elapsed))
             if self.interactive:
                 self.window.content_window().getch()
+
+        if self.install_config['live']:
             self._eject_cdrom()
 
     def _unsafe_install(self):
