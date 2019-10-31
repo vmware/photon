@@ -54,18 +54,25 @@ diff --git gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh gosc-sc
 index 35df9b2..c1c82d7 100755
 --- gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh
 +++ gosc-scripts-modify/imc-shell/imgcust-scripts/PhotonCustomization.sh
-@@ -93,6 +93,14 @@ PhotonCustomization_Customize()
-   #Set Guest Customization status as Started
-   PostGCStatus "Started"
+@@ -12,6 +12,21 @@ RunCloudConfig()
  
+   ConfigFile_LoadConfigFile $configPath
+ 
++  #Check whether post custom script is present and the file is non empty then
 +  #Read enable-custom-scripts value from /etc/vmware-tools/tools.conf through vmware-toolbox-cmd command
 +  #If enable-custom-scripts value is false then cancel the guest customization and Report failure.
-+  local value=$(GetToolsConfig "deployPkg" "enable-custom-scripts")
-+  if !(echo $value | grep -iqwF "true"); then
-+     PostDeployPkgStatus "enable-custom-scripts is set to false"
-+     Die "enable-custom-scripts is set to false. Failing customization"
++  local postScript=$(ConfigFile_GetCustomScriptName)
++  if [[ -n "$postScript" ]]; then
++     postScript=`${DIRNAME} $configFilePath`"/$postScript"
++     if [[ -f "$postScript" && -s "$postScript" ]]; then
++        local value=$(GetToolsConfig "deployPkg" "enable-custom-scripts")
++        if !(echo $value | grep -iqwF "true"); then
++           PostDeployPkgStatus "enable-custom-scripts is set to false"
++           Die "enable-custom-scripts is set to false. Failing customization"
++        fi
++     fi
 +  fi
 +
-   RunCloudConfig $configFilePath
+   tmpOvfEnvFile="/tmp/gctemp.xml"
  
-   Info "Photon customization finished"
+   local scriptName=$(ConfigFile_GetCustomScriptName)
