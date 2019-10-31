@@ -151,7 +151,7 @@ Kickstart config file is a json format with following possible parameters:
 	"nameserver" (required; when type == static)
 		IP String; Name server IP address to be configured
 	"vlan_id" (required; when type == vlan)
-		Integer (1-4094); VLAN ID number
+		ID String. (1-4094); VLAN ID number expressed as string
 
 "password" (optional)
 	Set root password. It is dictionary of the following items:

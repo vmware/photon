@@ -57,7 +57,6 @@ class NetworkManager():
     def __init__(self, install_config, photon_root='/'):
         self.photon_root = photon_root
         self.install_config = install_config
-        # Installed system config directory (keep - persistent)
         self.conf_dir = os.path.join(self.photon_root, 'etc/systemd/network')
 
         # Get contents of default dhcp config.
@@ -66,6 +65,10 @@ class NetworkManager():
             with open(filename, 'r') as f:
                 self.TEMPLATE_NET_DHCP = f.read()
                 self.TEMPLATE_NET_DHCP += '\n\n'
+
+        # Remove existing configs (if any)
+        for filename in os.listdir(self.conf_dir):
+            self.rm_f(os.path.join(self.conf_dir, filename))
 
     def rm_f(self, filename):
         if os.path.isfile(filename):
