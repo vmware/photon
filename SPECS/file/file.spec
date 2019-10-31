@@ -1,7 +1,7 @@
 Summary:        Contains a utility for determining file types
 Name:           file
 Version:        5.30
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            http://www.darwinsys.com/file
 Group:          Applications/File
@@ -11,6 +11,7 @@ Source0:        ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
 %define sha1    file=276051cd2c438d4e7a321c4422a5b3bc850fd747
 Patch0:         file-5.30-keep-not-stripped-last.patch
 Patch1:         0001-Avoid-reading-past-the-end-of-buffer-Rui-Reis.patch
+Patch2:		CVE-2019-18218.patch
 Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox
 %description
@@ -32,6 +33,7 @@ It contains the libraries and header files to create applications.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %build
 ./configure \
     --prefix=%{_prefix} \
@@ -64,6 +66,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*man3/*
 
 %changelog
+*   Thu Oct 31 2019 Siju Maliakkal <smaliakkal@vmware.com> 5.30-5
+-   Patch for CVE-2019-18218
 *   Wed Aug 01 2018 Ankit Jain <ankitja@vmware.com> 5.30-4
 -   Fix for CVE-2018-10360.
 *   Fri Dec 15 2017 Divya Thaluru <dthaluru@vmware.com> 5.30-3
