@@ -153,7 +153,7 @@ cd /installer
 ACTIVE_CONSOLE="\$(< /sys/devices/virtual/tty/console/active)"
 
 install() {
-  LANG=en_US.UTF-8 ./isoInstaller.py --json-file=$PACKAGE_LIST_FILE_BASE_NAME -r /mnt/cdrom/RPMS 2>/var/log/installer && shutdown -r now
+  LANG=en_US.UTF-8 ./isoInstaller.py --json-file=$PACKAGE_LIST_FILE_BASE_NAME -r /mnt/cdrom/RPMS && shutdown -r now
 }
 
 try_run_installer() {
