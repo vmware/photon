@@ -28,6 +28,7 @@ class OstreeInstaller(object):
         self._create_fstab = installer._create_fstab
         self.exit_gracefully = installer.exit_gracefully
         self._get_uuid = installer._get_uuid
+        self._get_partuuid = installer._get_partuuid
         self.cmd = CommandUtils(self.logger)
 
     def get_ostree_repo_url(self):
@@ -182,7 +183,13 @@ class OstreeInstaller(object):
             cmd.append(['mv', '{}'.format(boot0), '{}'.format(boot1)])
             cmd.append(['mv', '{}'.format(boot01), '{}'.format(boot11)])
             self.run(cmd)
-        self.run([['chroot', '{}'.format(deployment), 'bash', '-c', "ostree admin instutil set-kargs '$photon_cmdline' '$systemd_cmdline' root={};".format(root_partition['path'])]], "Add ostree  menu entry in grub.cfg")
+
+        partuuid=self._get_partuuid(root_partition['path'])
+        if partuuid == "" :
+            self.run([['chroot', '{}'.format(deployment), 'bash', '-c', "ostree admin instutil set-kargs '$photon_cmdline' '$systemd_cmdline' root={};".format(root_partition['path'])]], "Add ostree  menu entry in grub.cfg")
+        else:
+            self.run([['chroot', '{}'.format(deployment), 'bash', '-c', "ostree admin instutil set-kargs '$photon_cmdline' '$systemd_cmdline' root=PARTUUID={};".format(partuuid)]], "Add ostree  menu entry in grub.cfg")
+
         sysroot_grub2_grub_cfg = os.path.join(self.photon_root, "boot/grub2/grub.cfg")
         self.run([['ln', '-sf', '../loader/grub.cfg', '{}'.format(sysroot_grub2_grub_cfg)]])
         if os.path.exists(loader1):
