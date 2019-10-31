@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.0.2u
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -11,13 +11,16 @@ Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
 %define sha1    openssl=740916d79ab0d209d2775277b1c6c3ec2f6502b2
 Source1:        rehash_ca_certificates.sh
 %if 0%{?with_fips:1}
-Source100:      openssl-fips-2.0.9-lin64.tar.gz
-%define sha1    openssl-fips=e834d3678fb190f9483f48f037fb17041abba6a1
+Source100:      openssl-fips-2.0.20-vmw.tar.gz
+%define sha1    openssl-fips=973ac82a77285f573296ffe94809da8c019aab33
 %endif
 Patch0:         c_rehash.patch
 Patch1:         openssl-ipv6apps.patch
 Patch2:         openssl-init-conslidate.patch
 Patch3:         openssl-drbg-default-read-system-fips.patch
+%if 0%{?with_fips:1}
+Patch4:         fips-2.20-vmw.patch
+%endif
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -61,6 +64,9 @@ Perl scripts that convert certificates and keys to various formats.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%if 0%{?with_fips:1}
+%patch4 -p1
+%endif
 
 %build
 %if 0%{?with_fips:1}
@@ -84,7 +90,7 @@ export MACHINE=%{_arch}
     shared \
     zlib-dynamic \
 %if 0%{?with_fips:1}
-    fips --with-fipsdir=%{_builddir}/openssl-fips-2.0.9 \
+    fips --with-fipsdir=%{_builddir}/openssl-2.0.20 \
 %endif
     -Wl,-z,noexecstack \
     -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
@@ -138,6 +144,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Fri Feb 28 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2u-3
+-   Use 2.0.20 fips
 *   Mon Jan 20 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2u-2
 -   Configure with Wl flag.
 *   Thu Jan 09 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2u-1
