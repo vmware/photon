@@ -1,7 +1,7 @@
-Summary:        Libxslt-1.1.29
+Summary:        Libxslt is a  XSLT C library
 Name:           libxslt
 Version:        1.1.29
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
@@ -14,6 +14,7 @@ Patch1:         libxslt-CVE-2015-9019.patch
 Patch2:		libxslt-CVE-2019-11068.patch
 Patch3:		libxslt-CVE-2019-13117.patch
 Patch4:		libxslt-CVE-2019-13118.patch
+Patch5:		CVE-2019-18197.patch
 Requires:       libxml2-devel
 BuildRequires:  libxml2-devel
 %description
@@ -33,6 +34,7 @@ Header files for doing development with libxslt.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 ./configure \
@@ -76,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+*   Wed Oct 30 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.1.29-7
+-   Patch for CVE-2019-18197
 *   Sun Jul 21 2019 Shreyas B. <shreyasb@vmware.com> 1.1.29-6
 -   Apply patch for CVE-2019-13117 and CVE-2019-13118
 *   Fri Apr 12 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.1.29-5
