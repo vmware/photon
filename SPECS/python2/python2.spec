@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -18,7 +18,8 @@ Patch5:         CVE-2019-9740.patch
 Patch6:         CVE-2019-10160.patch
 Patch7:         CVE-2018-20852.patch
 Patch8:         CVE-2019-16056.patch
-Patch9:        CVE-2019-16935.patch
+Patch9:         CVE-2019-16935.patch
+Patch10:        CVE-2019-17514.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
@@ -128,6 +129,7 @@ The test package contains all regression tests for Python as well as the modules
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -248,6 +250,8 @@ LANG=en_US.UTF-8 make %{?_smp_mflags} test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Thu Oct 31 2019 Tapas Kundu <tkundu@vmware.com> 2.7.16-3
+-   Fix for CVE-2019-17514
 *   Mon Oct 21 2019 Shreyas B. <shreyasb@vmware.com> 2.7.16-2
 -   Fixed makecheck errors.
 *   Thu Oct 17 2019 Tapas Kundu <tkundu@vmware.com> 2.7.16-1
