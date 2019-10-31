@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.0.2t
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -11,13 +11,16 @@ Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
 %define sha1    openssl=8ac3fd379cf8c8ef570abb51ec52a88fd526f88a
 Source1:        rehash_ca_certificates.sh
 %if 0%{?with_fips:1}
-Source100:      openssl-fips-2.0.9-lin64.tar.gz
-%define sha1    openssl-fips=e834d3678fb190f9483f48f037fb17041abba6a1
+Source100:      openssl-fips-2.0.20-vmw.tar.gz
+%define sha1    openssl-fips=973ac82a77285f573296ffe94809da8c019aab33
 %endif
 Patch0:         c_rehash.patch
 Patch1:         openssl-ipv6apps.patch
 Patch2:         openssl-init-conslidate.patch
 Patch3:         openssl-drbg-default-read-system-fips.patch
+%if 0%{?with_fips:1}
+Patch4:         fips-2.20-vmw.patch
+%endif
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -62,6 +65,9 @@ Perl scripts that convert certificates and keys to various formats.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%if 0%{?with_fips:1}
+%patch4 -p1
+%endif
 
 %build
 %if 0%{?with_fips:1}
@@ -77,7 +83,7 @@ export CFLAGS="%{optflags}"
     shared \
     zlib-dynamic \
 %if 0%{?with_fips:1}
-    fips --with-fipsdir=%{_builddir}/openssl-fips-2.0.9 \
+    fips --with-fipsdir=%{_builddir}/openssl-2.0.20 \
 %endif
     -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
 # does not support -j yet
@@ -130,6 +136,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Wed Oct 30 2019 Tapas Kundu <tkundu@vmware.com> 1.0.2t-2
+-   Use 2.0.20 fips
 *   Thu Sep 19 2019 Tapas Kundu <tkundu@vmware.com> 1.0.2t-1
 -   Updated to 1.0.2t
 -   Fix multiple CVEs
