@@ -34,7 +34,6 @@ def create_ova_image(raw_image_name, tools_path, config):
         "{} -wmeta toolsVersion 2147483647 {}".format(vixdiskutil_path, vmdk_path))
 
     utils.runshellcommand("ovftool {} {}".format(vmx_path, ovf_path))
-    utils.replaceinfile(ovf_path, 'otherGuest', 'other3xLinux64Guest')
 
     #Add product info
     if os.path.exists(ovfinfo_path):
