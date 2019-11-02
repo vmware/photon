@@ -1068,9 +1068,14 @@ class Installer(object):
                     if not vg_partitions[disk][vg_name]['extensible']:
                         vg_partitions[disk][vg_name]['size'] = vg_partitions[disk][vg_name]['size'] + partition['size']
             else:
+                if 'type' in partition:
+                    ptype_code = partition['type']
+                else:
+                    ptype_code = self._partition_type_to_string(self._get_partition_type(partition))
+
                 l2entry = {
                     'size': partition['size'],
-                    'type': self._partition_type_to_string(self._get_partition_type(partition)),
+                    'type': ptype_code,
                     'partition': partition
                 }
                 ptv[disk].append(l2entry)

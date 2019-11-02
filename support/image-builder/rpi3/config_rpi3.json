@@ -6,7 +6,7 @@
         "packagelist_file": "packages_rpi3.json",
         "partition_type": "msdos",
         "partitions": [
-            {"mountpoint": "/boot/efi", "size": 30, "filesystem": "vfat"},
+            {"mountpoint": "/boot/efi", "size": 30, "filesystem": "vfat", "type": "0c01"},
             {"mountpoint": "/", "size": 0, "filesystem": "ext4"}
         ],
         "password": {
