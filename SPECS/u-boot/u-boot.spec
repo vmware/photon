@@ -3,7 +3,7 @@
 Summary:        U-Boot EFI firmware
 Name:		u-boot
 Version:	2019.10
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
@@ -46,19 +46,21 @@ make %{?_smp_mflags} CROSS_COMPILE= USE_PRIVATE_LIBGG=yes
 make %{?_smp_mflags} CROSS_COMPILE= USE_PRIVATE_LIBGG=yes envtools
 
 %install
-install -D -m 0644 u-boot.bin %{buildroot}/boot/esp/u-boot.bin
+install -D -m 0644 u-boot.bin %{buildroot}/boot/efi/u-boot.bin
 install -D -m 0744 tools/env/fw_printenv %{buildroot}/usr/bin/fw_setenv
 install -D -m 0644 %{SOURCE2} %{buildroot}/etc/fw_env.config
 
 %files
 %defattr(-,root,root)
-/boot/esp/*
+/boot/efi/*
 
 %files -n u-boot-utils
 /etc/fw_env.config
 /usr/bin/fw_setenv
 
 %changelog
+*   Thu Oct 31 2019 Alexey Makhalov <amakhalov@vmware.com> 2019.10-2
+-   Move /boot/esp/u-boot.bin to /boot/efi/u-boot.bin.
 *   Thu Oct 10 2019 Ajay Kaher <akaher@vmware.com> 2019.10-1
 -   Updating to 2019.10
 *   Thu Aug 22 2019 Ajay Kaher <akaher@vmware.com> 2019.01-4
