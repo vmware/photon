@@ -1,3 +1,4 @@
+import os
 import commons
 
 install_phase = commons.POST_INSTALL
@@ -10,4 +11,5 @@ def execute(installer):
         installer.cmd.run_in_chroot(installer.photon_root, "/bin/systemd-machine-id-setup")
     else:
         open(installer.photon_root + "/etc/machine-id", "w").close()
+        os.chmod(installer.photon_root + "/etc/machine-id", 0o444)
 
