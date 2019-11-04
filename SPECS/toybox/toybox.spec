@@ -1,5 +1,5 @@
 Name:           toybox
-Version:        0.8.2
+Version:        0.7.7
 Release:        1%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
@@ -8,10 +8,8 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
-%define sha1 toybox=0477740759f5132397fdfdbf8aea88e811869173
-Source1:        config-toybox
-BuildRequires:  openssl-devel
-Requires:       openssl
+%define sha1 toybox=5475bc98a0dd807061a4fc4ebad57f323b328dbc
+Source1:	config-toybox
 %description
 Toybox combines common Linux command line utilities together into a single
 BSD-licensed executable that's simple, small, fast, reasonably
@@ -50,8 +48,6 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %{_sbindir}/*
 
 %changelog
-*   Wed Oct 30 2019 Alexey Makhalov <amakhalov@vmware.com> 0.8.2-1
--   Version update. Use system libcrypto.
 *   Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 0.7.7-1
 -   Version update
 *   Sun Oct 01 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-6
