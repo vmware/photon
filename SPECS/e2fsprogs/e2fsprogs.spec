@@ -1,7 +1,7 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
 Version:        1.44.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
@@ -23,7 +23,7 @@ It contains the libraries: libss and libcom_err
 
 %package    devel
 Summary:    Header and development files for e2fsprogs
-Requires:   %{name} = %{version}
+Requires:   %{name} = %{version}-%{release}
 %description    devel
 It contains the libraries and header files to create applications
 
@@ -129,6 +129,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Mon Nov 04 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.44.3-4
+-   make devel depend on the version-release instead of version alone
 *   Tue Oct 22 2019 Shreyas B. <shreyasb@vmware.com> 1.44.3-3
 -   Fixes for CVE-2019-5094.
 *   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 1.44.3-2
