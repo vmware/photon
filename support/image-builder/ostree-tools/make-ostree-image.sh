@@ -32,10 +32,10 @@ mkdir -p stage/ostree-repo
 
 if [ $DOCK_ARCH == "x86_64" ]
 then
-  sudo docker run -it --privileged -v ${SRCROOT}:/photon -v $(pwd)/stage/RPMS:/RPMS -v $(pwd)/stage/ostree-repo:/srv/rpm-ostree -w="/photon/support/image-builder/ostree-tools/" vmware/photon-build:rpm-ostree-3.0 ./mk-ostree-server.sh /
+  sudo docker run --privileged -v ${SRCROOT}:/photon -v $(pwd)/stage/RPMS:/RPMS -v $(pwd)/stage/ostree-repo:/srv/rpm-ostree -w="/photon/support/image-builder/ostree-tools/" vmware/photon-build:rpm-ostree-3.0 ./mk-ostree-server.sh /
 elif [ $DOCK_ARCH == "aarch64" ]
 then
-  sudo docker run -it --privileged -v ${SRCROOT}:/photon -v $(pwd)/stage/RPMS:/RPMS -v $(pwd)/stage/ostree-repo:/srv/rpm-ostree -w="/photon/support/image-builder/ostree-tools/" vmware/photon-build:rpm-ostree-aarch64-3.0 ./mk-ostree-server.sh /
+  sudo docker run --privileged -v ${SRCROOT}:/photon -v $(pwd)/stage/RPMS:/RPMS -v $(pwd)/stage/ostree-repo:/srv/rpm-ostree -w="/photon/support/image-builder/ostree-tools/" vmware/photon-build:rpm-ostree-aarch64-3.0 ./mk-ostree-server.sh /
 fi
 
 (cd stage/ostree-repo/repo/; tar -zcf ../../ostree-repo.tar.gz .; )
