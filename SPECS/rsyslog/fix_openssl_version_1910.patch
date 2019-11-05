@@ -1,0 +1,122 @@
+As per rsyslog documentation, gnutlsPriorityString can be used to configure
+right TLS as needed. But as per one commit: https://github.com/alorbach/rsyslog-1/commit/2f20fdd8c28b4a07364b164e17416bc2d10fe8c0
+
+Looks like the openssl version number is not right, due to which even we have
+openssl 1.0.2 it says openssl is too old.
+
+But as per this documentation: https://www.rsyslog.com/doc/v8-stable/configuration/modules/imtcp.html
+
+It says This support is present in Openssl from 1.0.2 release onwards. 
+
+So added this fix and it works fine and does the work.
+
+From 73934b06c56d80c112c8d4f678779e9dcdaef908 Mon Sep 17 00:00:00 2001
+From: Andre lorbach <alorbach@adiscon.com>
+Date: Mon, 4 Nov 2019 11:36:27 +0100
+Subject: [PATCH] ossl driver: fix wrong OpenSSL Version check
+
+(OPENSSL_VERSION_NUMBER)
+
+Fix OpenSSL Version check in:
+- SetGnutlsPriorityString function in nsd_ossl.c
+- initTLS() function tcpflood.c
+
+See https://www.openssl.org/docs/man1.1.0/man3/OPENSSL_VERSION_NUMBER.html
+for more.
+
+Removed "MinProtocol=TLSv1.1" from two testcases because MinProtocol
+is only supported by OpenSSl 1.1.0 or higher and was not really
+necessary for the testcases.
+
+closes https://github.com/rsyslog/rsyslog/issues/3939
+---
+ runtime/nsd_ossl.c                            | 2 +-
+ tests/imtcp-tls-ossl-basic-tlscommands.sh     | 6 +++---
+ tests/sndrcv_tls_ossl_certvalid_tlscommand.sh | 7 ++++---
+ tests/tcpflood.c                              | 2 +-
+ 4 files changed, 9 insertions(+), 8 deletions(-)
+
+--- a/runtime/nsd_ossl.c_org	2019-11-04 05:43:02.421331614 +0000
++++ b/runtime/nsd_ossl.c	2019-11-04 05:43:24.861332692 +0000
+@@ -1790,7 +1790,7 @@ SetGnutlsPriorityString(__attribute__((u
+ 		RETiRet;
+ 	} else {
+ 		dbgprintf("gnutlsPriorityString: set to '%s'\n", gnutlsPriorityString);
+-#if OPENSSL_VERSION_NUMBER >= 0x10020000L
++#if OPENSSL_VERSION_NUMBER >= 0x10002000L
+ 		char *pCurrentPos;
+ 		char *pNextPos;
+ 		char *pszCmd;
+--- a/tests/tcpflood.c_org	2019-11-04 16:51:36.395257562 +0000
++++ b/tests/tcpflood.c	2019-11-04 16:51:54.115258412 +0000
+@@ -1181,7 +1181,7 @@ initTLS(void)
+ 
+ 	/* Check for Custom Config string */
+ 	if (customConfig != NULL){
+-#if OPENSSL_VERSION_NUMBER >= 0x10020000L
++#if OPENSSL_VERSION_NUMBER >= 0x10002000L
+ 	char *pCurrentPos;
+ 	char *pNextPos;
+ 	char *pszCmd;
+--- a/tests/sndrcv_tls_ossl_certvalid_tlscommand.sh_org	2019-11-08 04:01:48.353662758 +0000
++++ b/tests/sndrcv_tls_ossl_certvalid_tlscommand.sh	2019-11-08 04:03:22.776547676 +0000
+@@ -18,7 +18,7 @@ module(	load="../plugins/imtcp/.libs/imt
+ 	StreamDriver.Mode="1"
+ 	StreamDriver.AuthMode="x509/certvalid"
+ 	StreamDriver.PermitExpiredCerts="off"
+-	gnutlsPriorityString="Protocol=ALL,-SSLv2,-SSLv3,-TLSv1,-TLSv1.2\nMinProtocol=TLSv1.1\nOptions=Bugs"
++	gnutlsPriorityString="Protocol=ALL,-SSLv2,-SSLv3,-TLSv1,-TLSv1.2\nOptions=Bugs"
+ 	)
+ input(	type="imtcp"
+ 	port="'$PORT_RCVR'" )
+@@ -41,7 +41,7 @@ action(	type="omfwd"
+ 	port="'$PORT_RCVR'"
+ 	StreamDriverMode="1"
+ 	StreamDriverAuthMode="x509/certvalid"
+-	gnutlsPriorityString="Protocol=ALL,-SSLv2,-SSLv3,-TLSv1,-TLSv1.1,-TLSv1.3"
++	gnutlsPriorityString="Protocol=-ALL,TLSv1.2"
+ )
+ ' 2
+ startup 2
+@@ -65,8 +65,9 @@ if [ $ret == 0 ]; then
+ 	echo "SKIP: OpenSSL Version to old"
+ 	skip_test
+ else
+-	content_check "wrong version number"
++	# Kindly check for a failed session
++	content_check "SSL_ERROR_SSL"
+ 	content_check "OpenSSL Error Stack:"
+ fi
+ 
+-exit_test
+\ No newline at end of file
++exit_test
+--- a/tests/imtcp-tls-ossl-basic-tlscommands.sh_org	2019-11-08 04:15:41.991091680 +0000
++++ b/tests/imtcp-tls-ossl-basic-tlscommands.sh	2019-11-08 04:19:24.081857473 +0000
+@@ -18,7 +18,6 @@ module(	load="../plugins/imtcp/.libs/imt
+ 	StreamDriver.Mode="1"
+ 	StreamDriver.AuthMode="anon"
+ 	gnutlsPriorityString="Protocol=ALL,-SSLv2,-SSLv3,-TLSv1,-TLSv1.2
+-	MinProtocol=TLSv1.1
+ 	Options=Bugs"
+ 	)
+ input(	type="imtcp"
+@@ -29,7 +28,7 @@ action(type="omfile" file="'$RSYSLOG_OUT
+ startup
+ 
+ # now inject the messages which will fail due protocol configuration
+-tcpflood --check-only -k "Protocol=ALL,-SSLv2,-SSLv3,-TLSv1,-TLSv1.1,-TLSv1.3" -p'$TCPFLOOD_PORT' -m$NUMMESSAGES -Ttls -x$srcdir/tls-certs/ca.pem -Z$srcdir/tls-certs/cert.pem -z$srcdir/tls-certs/key.pem
++tcpflood --check-only -k "Protocol=-ALL,TLSv1.2" -p'$TCPFLOOD_PORT' -m$NUMMESSAGES -Ttls -x$srcdir/tls-certs/ca.pem -Z$srcdir/tls-certs/cert.pem -z$srcdir/tls-certs/key.pem
+ 
+ shutdown_when_empty
+ wait_shutdown
+@@ -40,7 +39,8 @@ if [ $ret == 0 ]; then
+ 	echo "SKIP: OpenSSL Version to old"
+ 	skip_test
+ else
+-	content_check "wrong version number"
++	# Kindly check for a failed session
++	content_check "SSL_ERROR_SSL"
+ 	content_check "OpenSSL Error Stack:"
+ fi
+ 
