@@ -1,15 +1,15 @@
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
 Version:        6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-%global ncursessubversion 20180908
+%global ncursessubversion 20191102
 Source0:        ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-%{ncursessubversion}.tgz
-%define sha1    ncurses=86f99ef885761f1cb1fa2037a5ddff4df02bbc4a
+%define sha1    ncurses=7a5cec2e85878f1d00b71805ece1fb5582fa4435
 Requires:       ncurses-libs = %{version}-%{release}
 %description
 The Ncurses package contains libraries for terminal-independent
@@ -37,7 +37,7 @@ Summary:        Header and development files for ncurses
 Requires:       %{name} = %{version}-%{release}
 Provides:       pkgconfig(ncurses)
 %description    devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %package        terminfo
 Summary:        terminfo files for ncurses
@@ -52,7 +52,7 @@ It contains all terminfo files
 mkdir v6
 pushd v6
 ln -s ../configure .
-./configure \
+%configure \
     --prefix=%{_prefix} \
     --mandir=%{_mandir} \
     --with-shared \
@@ -68,7 +68,7 @@ popd
 mkdir v5
 pushd v5
 ln -s ../configure .
-./configure \
+%configure \
     --prefix=%{_prefix} \
     --mandir=%{_mandir} \
     --with-shared \
@@ -106,7 +106,7 @@ cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 
 %check
 cd test
-./configure
+%configure
 make
 
 %post libs -p /sbin/ldconfig
@@ -183,6 +183,9 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Tue Nov 05 2019 Ajay Kaher <akaher@vmware.com> 6.1-2
+-   Update to version 6.1, subversion 20191102
+-   to fix CVE-2019-17594, CVE-2019-17595
 *   Wed Sep 12 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 6.1-1
 -   Update to version 6.1.
 *   Tue Jul 17 2018 Tapas Kundu <tkundu@vmware.com> 6.0-14
