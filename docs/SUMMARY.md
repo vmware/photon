@@ -113,6 +113,7 @@
     - [Cloud-Init on Photon OS](photon_admin/cloud-init-on-photon-os.md)
         - [Cloud-Init Overview](photon_admin/cloud-init.md)
         - [Deploy Photon OS With cloud-init](photon_admin/deploy_photon_with_cloud-init.md) 
+        - [Customizing Guest OS using Cloud-Init](photon_admin/Customizing_Gos_Cloudinit.md)
         - [Creating a Stand-Alone Photon Machine with cloud-init](photon_admin/creating-a-stand-alone-photon-machine-with-cloud-init.md)
         -   [Customizing a Photon OS Machine on EC2](photon_admin/customizing-a-photon-os-machine-on-ec2.md)
         -   [Running a Photon OS Machine on GCE](photon_admin/running-a-photon-os-machine-on-gce.md)

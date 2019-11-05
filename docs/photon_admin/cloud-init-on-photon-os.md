@@ -4,6 +4,7 @@ The minimal and full versions of Photon OS include the cloud-init service as a b
 
 - [Cloud-Init Overview](cloud-init.md)
 - [Deploy Photon OS With cloud-init](deploy_photon_with_cloud-init.md)
+- [Customizing Guest OS for Cloud-Init](Customizing_Gos_Cloudinit.md)
 - [Creating a Stand-Alone Photon Machine with cloud-init](creating-a-stand-alone-photon-machine-with-cloud-init.md)
 - [Customizing a Photon OS Machine on EC2](customizing-a-photon-os-machine-on-ec2.md)
 - [Running a Photon OS Machine on GCE](running-a-photon-os-machine-on-gce.md)
