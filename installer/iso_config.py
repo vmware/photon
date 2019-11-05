@@ -245,10 +245,8 @@ class IsoConfig(object):
         items.append((select_disk.display, True))
         items.append((custom_partition.display, False))
         items.append((package_selector.display, True))
-        if 'network_screen' in ui_config:
-            allow_vlan = ui_config['network_screen'].get('allow_vlan', False)
-            net_cfg = NetworkConfigure(maxy, maxx, install_config, allow_vlan)
-            items.append((net_cfg.display, True))
+        net_cfg = NetworkConfigure(maxy, maxx, install_config)
+        items.append((net_cfg.display, True))
 
         if 'download_screen' in ui_config:
             title = ui_config['download_screen'].get('title', None)

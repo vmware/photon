@@ -37,7 +37,7 @@ class NetworkConfigure(object):
         'VLAN ID (1-4094): '
     )
 
-    def __init__(self, maxy, maxx, install_config, allow_vlan=False):
+    def __init__(self, maxy, maxx, install_config):
         self.maxx = maxx
         self.maxy = maxy
         self.win_width = 80
@@ -48,9 +48,6 @@ class NetworkConfigure(object):
         self.package_menu_items = []
         self.install_config = install_config
         self.install_config['network'] = {}
-
-        if not allow_vlan:
-            self.NET_CONFIG_OPTION_STRINGS.pop(self.NET_CONFIG_OPTION_VLAN)
 
         for opt in self.NET_CONFIG_OPTION_STRINGS:
             self.package_menu_items.append((opt, self.exit_function, [opt]))
