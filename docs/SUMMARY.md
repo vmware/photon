@@ -163,7 +163,7 @@
             - [Version skipping upgrade](photon_admin/Photon-RPM-OSTree-5-Host-updating-operations.md#version-skipping-upgrade)
             - [Tracking parent commits](photon_admin/Photon-RPM-OSTree-5-Host-updating-operations.md#tracking-parent-commits)
             - [Resetting a branch to a previous commit](photon_admin/Photon-RPM-OSTree-5-Host-updating-operations.md#resetting-a-branch-to-a-previous-commit)
-        - [Installing a Photon RPM-OSTree Package](photon_admin/Photon-RPM-OSTree-6-Installing-a-server.md)
+        - [Creating a Photon RPM-OSTree Package](photon_admin/Photon-RPM-OSTree-6-Installing-a-server.md)
             - [Composing your first OSTree repo](photon_admin/Photon-RPM-OSTree-6-Installing-a-server.md#composing-your-first-OSTree-repo)
         - [Installing a Photon RPM-OStree host against a custom server repository](photon_admin/Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.md)
             - [Manual install of a custom host](photon_admin/Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.md#manual-install-of-a-custom-host)

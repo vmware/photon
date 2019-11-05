@@ -8,7 +8,6 @@ The number of packages included in the RPMS repo in Photon OS 3.0 increased sign
 
 You can compose your own RPM-OSTRee server in the following two ways:
 
-
 1. By Manually executing the below command:
     ```
     root [ /srv/rpm-ostree ]# ostree --repo=repo init --mode=archive-z2
@@ -19,7 +18,6 @@ You can compose your own RPM-OSTRee server in the following two ways:
 
 ## Installing an RPM-OSTree host
 
-Photon OS 2.0 installer no longer includes a UI option to deploy a host manually - either against a default or a custom server repo, and also there is no official online Photon OS 2.0 OSTree repo published. This is now completely customer driven.  
 Automated host install is supported, as explained in [Chapter 7.2 Automated install of a custom host via kickstart](Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.md#72-automated-install-of-a-custom-host-via-kickstart).  
 
 ## Rebasing a host from Photon 1.0 to 3.0
@@ -39,7 +37,7 @@ http://10.197.103.175:8000/repo
 3. Rebase your host to the new 2.0 server and Refspec.
 
     ```
-    root@ostree-host [ ~ ]# ostree remote add photon2 http://10.197.103.204:8000/repo --no-gpg-verify
+    root@ostree-host [ ~ ]# ostree remote add photon-2 http://10.197.103.204:8000/repo --no-gpg-verify
     root@ostree-host [ ~ ]# rpm-ostree rebase photon-2:photon/3.0/x86_64/minimal
     
     Rebasing to photon-2:photon/3.0/x86_64/minimal

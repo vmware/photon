@@ -214,8 +214,8 @@ Let's upgrade and replace the .0 image by a .3 build that contains git and also 
 ```
 root@photon-host-cus1 [ ~ ]# rpm-ostree status
   TIMESTAMP (UTC)         VERSION               ID             OSNAME     REFSPEC
-* 2015-09-04 00:36:37     1.0_tp2_minimal.2     092e21d292     photon     photon:photon/tp2/x86_64/minimal
-  2015-08-20 22:27:43     1.0_tp2_minimal       2940e10c4d     photon     photon:photon/tp2/x86_64/minimal
+* 2015-09-04 00:36:37     3.0_tp2_minimal.2     092e21d292     photon     photon:photon/tp2/x86_64/minimal
+  2015-08-20 22:27:43     3.0_tp2_minimal       2940e10c4d     photon     photon:photon/tp2/x86_64/minimal
 
 root@photon-host-cus1 [ ~ ]# rpm-ostree upgrade
 Updating from: photon:photon/tp2/x86_64/minimal
@@ -231,11 +231,11 @@ Upgrade prepared for next boot; run "systemctl reboot" to start a reboot
 
 root@photon-host-cus1 [ ~ ]# rpm-ostree status
   TIMESTAMP (UTC)         VERSION               ID             OSNAME     REFSPEC
-  2015-09-06 18:12:08     1.0_tp2_minimal.3     d16aebd803     photon     photon:photon/tp2/x86_64/minimal
-* 2015-09-04 00:36:37     1.0_tp2_minimal.2     092e21d292     photon     photon:photon/tp2/x86_64/minimal
+  2015-09-06 18:12:08     3.0_tp2_minimal.3     d16aebd803     photon     photon:photon/tp2/x86_64/minimal
+* 2015-09-04 00:36:37     3.0_tp2_minimal.2     092e21d292     photon     photon:photon/tp2/x86_64/minimal
 ```
 
-After reboot from 1.0_tp2_minimal.3 build, let's check that the 3-way /etc merge succeeded as expected. The docker.service slink is still there, and docker demon restarted at boot.
+After reboot from 3.0_tp2_minimal.3 build, let's check that the 3-way /etc merge succeeded as expected. The docker.service slink is still there, and docker demon restarted at boot.
 
 ```
 root@photon-host-cus1 [ ~ ]# ls -l /etc/systemd/system/multi-user.target.wants/docker.service

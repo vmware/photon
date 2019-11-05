@@ -1,10 +1,45 @@
-# Installing a Photon RPM-OSTree Package
+# Creating a Server
 
 Photon OS 3.0 includes a `rpm-ostree-repo` package that can be installed on a VM.
 
 This package provides an automated script that creates a repo tree that acts as a server.
 
-## Composing your first OSTree repo  
+Run the following commands to create a server:
+
+```
+tdnf install rpm-ostree-repo
+```
+
+A script is created, which provides options to create a server.
+<p>Script to create a Photon OSTree repo
+Usage: 
+
+```
+/usr/bin/rpm-ostree-server/mkostreerepo -r=<repo path> 
+/usr/bin/rpm-ostree-server/mkostreerepo -r=<repo path> -p=<json treefile>
+/usr/bin/rpm-ostree-server/mkostreerepo -c -r=<repo path> -p=<json treefile>
+-r|--repopath   <Provide repo path> 
+-p|--jsonfile   <Provide Json file> 
+-c|--customrepo <Provide custom repo file inside repo path directory>
+```
+**Note**
+
+- Use **PATH=$PATH:/usr/bin/rpm-ostree-server** and then use **mkostreerepo** from any directory for ease of use.
+- **mkostreerepo** is used to create the fresh tree for ostree.
+- **mkostreerepo** is also used to update a new commit to the existing tree.
+- You can also use custom repo as to create/append the tree.
+
+
+
+
+Run the following command to initiate the script, choose different help options to create a server.
+
+
+```
+mkostreerepo
+```
+
+## Manually Composing your OSTree repo  
 
 Use the following commands to initialize a new repo and to compose it.
 
@@ -14,6 +49,4 @@ root [ /srv/rpm-ostree ]# ostree --repo=repo init --mode=archive-z2
 root [ /srv/rpm-ostree ]# rpm-ostree compose tree --repo=repo photon-base.json
 ```
 
-You can now deploy a host. For more information, see [File oriented server operations](Photon-RPM-OStree-8-File-oriented-server-operations.md) and [Package oriented server operations](Photon-RPM-OSTree-9-Package-oriented-server-operations.md) to learn create your own customized file tree.   
-
-
+You can now deploy a host. For more information, see [File oriented server operations](Photon-RPM-OStree-8-File-oriented-server-operations.md) and [Package oriented server operations](Photon-RPM-OSTree-9-Package-oriented-server-operations.md) to learn create your own customized file tree.
