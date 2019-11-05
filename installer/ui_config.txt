@@ -2,13 +2,6 @@ UI config file is a json format with following possible parameters:
 
 Note: All top level keys must be optional.
 
-"network_screen"
-	Enable network configuration screen
-
-	"allow_vlan" (optional)
-		Bool; Used to display/hide the option used to configure
-		network with VLAN.
-
 "download_screen" (depends on "network_screen")
 	Used to show a window where user can input a custom URL from
 	which a file can be downloaded and placed in a custom location
