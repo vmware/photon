@@ -151,6 +151,16 @@ After you have downloaded the latest Photon OS ISO image into a folder of your c
     
     Select the option you want and press the Enter key.
 
+1. The **Network Configuration** screen appears, select one of the four options to configure your network.
+![Network Sonfiguration](../images/Network_configuration.png)
+    1. Choose **Configure network automatically** and select **Next** to configure the network automatically.
+    1. To configure network automatically with the DHCP hostname, select **Configure network automatically with a DHCP hostname** and select **Next**. Enter the DHCP Hostname and select **Next**.
+![../images/DHCP_hostname_for_your_system.png](../images/DHCP_hostname_for_your_system.png)
+    1. To configure the network manually, select **Configure Network manually**. In the window that appears, enter the IP Address, Netmask, Gateway and Nameserver and select **OK**.
+![../images/Configure_Network_Manually.png](../images/Configure_Network_Manually.png)
+
+    1. If your network interface is directly connected to the VLAN trunk port, choose **YES** on the Configure the network screen. Enter the VLAN ID and select **Next**.
+![Configure the network](../images/Configure_the_network.png).
 1. Select the Linux Kernel
 
     Select a Linux kernel to install.
