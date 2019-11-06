@@ -2,7 +2,6 @@
 
 The following Linux troubleshoot tools are neither installed on Photon OS by default nor available in the Photon OS repositories: 
 
-* iostat
 * telnet (use SSH instead)
 * Iprm
 * hdparm
