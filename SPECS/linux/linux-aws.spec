@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.197
+Version:        4.9.199
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=7aed4b4f4644540bb18c9aafa87b0a104addf641
+%define sha1 linux=b87a494d268cac73b9f991d2990aec7cae26affd
 Source1:	config-aws
 Source2:	initramfs.trigger
 Source3:	update_photon_cfg.postun
@@ -43,8 +43,6 @@ Patch24:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch25:        0002-allow-also-ecb-cipher_null.patch
 Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 
-# Fix CVE-2019-17133
-Patch27:        0001-cfg80211_wext_Reject_malformed_SSID_elements.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 Patch30:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
@@ -221,7 +219,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
-%patch27 -p1
 %patch28 -p1
 %patch30 -p1
 %patch31 -p1
@@ -440,6 +437,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Thu Nov 07 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.199-1
+-   Update to version 4.9.199
 *   Mon Oct 21 2019 Ajay Kaher <akaher@vmware.com> 4.9.197-1
 -   Update to version 4.9.197, Fix CVE-2019-17133
 *   Wed Sep 18 2019 bvikas <bvikas@vmware.com> 4.9.193-1
