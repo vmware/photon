@@ -43,7 +43,7 @@
     - [Manual install of a custom host](Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.md#manual-install-of-a-custom-host)
     - [Automated install of a custom host via kickstart](Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.md#automated-install-of-a-custom-host-via-kickstart)
 - [Automatic Updates](RPM-OSTree-AutoUpdate.md)
-        - [Enable Automatic Updates](RPM-OSTree-AutoUpdate.md#enable-automatic-updates)
+    - [Enable Automatic Updates](RPM-OSTree-AutoUpdate.md#enable-automatic-updates)
 - [File oriented server operations](Photon-RPM-OStree-8-File-oriented-server-operations.md)
     - [Starting a fresh OSTree repo](Photon-RPM-OStree-8-File-oriented-server-operations.md#starting-a-fresh-ostree-repo)
     - [Creating summary metadata](Photon-RPM-OStree-8-File-oriented-server-operations.md#creating-summary-metadata)
