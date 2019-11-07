@@ -1,0 +1,4279 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Querying for commit, file and package metadata · VMware Photon OS 3.0 Documentation</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-insert-logo/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-chapter-fold/chapter-fold.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-noembed/style.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html" />
+    
+    
+    <link rel="prev" href="Photon-RPM-OStree-3-Concepts-in-action.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        <li class="header">Photon OS 3.0</li>
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.1.1" data-path="../photon_quickstart.html">
+            
+                <a href="../photon_quickstart.html">
+            
+                    
+                    Quick Start Links
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../Overview.html">
+            
+                <a href="../Overview.html">
+            
+                    
+                    Overview
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../Introduction.html">
+            
+                <a href="../Introduction.html">
+            
+                    
+                    Introduction to Photon OS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../PhotonOS-versions.html">
+            
+                <a href="../PhotonOS-versions.html">
+            
+                    
+                    Versions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../features.html">
+            
+                <a href="../features.html">
+            
+                    
+                    Features
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="../What-is-New-in-Photon-OS-3.0.html">
+            
+                <a href="../What-is-New-in-Photon-OS-3.0.html">
+            
+                    
+                    What's New in Photon OS 3.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../photon_installation/">
+            
+                <a href="../photon_installation/">
+            
+                    
+                    Installation Guide
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../photon_installation/Downloading-Photon-OS.html">
+            
+                <a href="../photon_installation/Downloading-Photon-OS.html">
+            
+                    
+                    Downloading Photon OS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="../photon_installation/Upgrading_to_photon_os_3.0.html">
+            
+                <a href="../photon_installation/Upgrading_to_photon_os_3.0.html">
+            
+                    
+                    Upgrading to Photon OS 3.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="../photon_installation/build-photon.html">
+            
+                <a href="../photon_installation/build-photon.html">
+            
+                    
+                    Build an ISO from the source code for Photon OS
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.3.1" data-path="../photon_installation/folder_layout.html">
+            
+                <a href="../photon_installation/folder_layout.html">
+            
+                    
+                    Folder Layout
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.2" data-path="../photon_installation/build_prerequisites.html">
+            
+                <a href="../photon_installation/build_prerequisites.html">
+            
+                    
+                    Build Prerequisites
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.3" data-path="../photon_installation/build_the_iso.html">
+            
+                <a href="../photon_installation/build_the_iso.html">
+            
+                    
+                    Building the ISO
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.4" data-path="../photon_installation/Use_the_Cached_Toolchain_and_RPMS.html">
+            
+                <a href="../photon_installation/Use_the_Cached_Toolchain_and_RPMS.html">
+            
+                    
+                    Use the Cached Toolchain and RPMS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.5" data-path="../photon_installation/use_cached_sources.html">
+            
+                <a href="../photon_installation/use_cached_sources.html">
+            
+                    
+                    Use Cached Sources
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.6" data-path="../photon_installation/view_build_logs.html">
+            
+                <a href="../photon_installation/view_build_logs.html">
+            
+                    
+                    View Build Logs
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="../photon_installation/build-package-kernel-using-script.html">
+            
+                <a href="../photon_installation/build-package-kernel-using-script.html">
+            
+                    
+                    Building Package or Kernel Modules Using a Script
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="../photon_installation/Running-Photon-OS-on-vSphere.html">
+            
+                <a href="../photon_installation/Running-Photon-OS-on-vSphere.html">
+            
+                    
+                    Running Photon OS on vSphere
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.5.1" data-path="../photon_installation/photon_os_vsphere_prerequisites.html">
+            
+                <a href="../photon_installation/photon_os_vsphere_prerequisites.html">
+            
+                    
+                    Prerequisites for Running Photon OS on vSphere
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5.2" data-path="../photon_installation/importing_ova_for_photon_os_3.0.html">
+            
+                <a href="../photon_installation/importing_ova_for_photon_os_3.0.html">
+            
+                    
+                    Importing the OVA for Photon OS 3.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5.3" data-path="../photon_installation/installing-the-iso-image-for-photon-os-30.html">
+            
+                <a href="../photon_installation/installing-the-iso-image-for-photon-os-30.html">
+            
+                    
+                    Installing the ISO Image for Photon OS 3.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6" data-path="../photon_installation/Running-Project-Photon-on-Fusion.html">
+            
+                <a href="../photon_installation/Running-Project-Photon-on-Fusion.html">
+            
+                    
+                    Running Photon OS on Fusion
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.6.1" data-path="../photon_installation/photon_os_fusion_prerequisites.html">
+            
+                <a href="../photon_installation/photon_os_fusion_prerequisites.html">
+            
+                    
+                    Prerequisites for Running Photon OS on Fusion
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6.2" data-path="../photon_installation/importing-ova-for-photon-os-3.0-fusion.html">
+            
+                <a href="../photon_installation/importing-ova-for-photon-os-3.0-fusion.html">
+            
+                    
+                    Importing the OVA for Photon OS 3.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6.3" data-path="../photon_installation/installing-the-iso-image-for-photon-os-30-fusion.html">
+            
+                <a href="../photon_installation/installing-the-iso-image-for-photon-os-30-fusion.html">
+            
+                    
+                    Installing the ISO Image for Photon OS 3.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.7" data-path="../photon_installation/Running-Photon-OS-on-Workstation.html">
+            
+                <a href="../photon_installation/Running-Photon-OS-on-Workstation.html">
+            
+                    
+                    Running Photon OS on Workstation
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.7.1" data-path="../photon_installation/photon_os_workstation_prerequisites.html">
+            
+                <a href="../photon_installation/photon_os_workstation_prerequisites.html">
+            
+                    
+                    Prerequisites for Running Photon OS on Workstation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.7.2" data-path="../photon_installation/importing_ova_for_photon_os_3.0-workstation.html">
+            
+                <a href="../photon_installation/importing_ova_for_photon_os_3.0-workstation.html">
+            
+                    
+                    Importing the OVA for Photon OS 3.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.7.3" data-path="../photon_installation/installing-the-iso-image-for-photon-os-30-workstation.html">
+            
+                <a href="../photon_installation/installing-the-iso-image-for-photon-os-30-workstation.html">
+            
+                    
+                    Installing the ISO Image for Photon OS 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.8" data-path="../photon_installation/Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.html">
+            
+                <a href="../photon_installation/Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.html">
+            
+                    
+                    Running Photon OS on AWS EC2
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.8.1" data-path="../photon_installation/photon_os_ecc_prerequisites.html">
+            
+                <a href="../photon_installation/photon_os_ecc_prerequisites.html">
+            
+                    
+                    Prerequisites for Running Photon OS on AWS EC2
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.8.2" data-path="../photon_installation/set-up-PhotonOS-on-ec2.html">
+            
+                <a href="../photon_installation/set-up-PhotonOS-on-ec2.html">
+            
+                    
+                    Set Up Photon OS on EC2
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.8.3" data-path="../photon_installation/deploying-a-containerized-application-in-photon-os-ssh.html">
+            
+                <a href="../photon_installation/deploying-a-containerized-application-in-photon-os-ssh.html">
+            
+                    
+                    Deploy a Containerized Application in Photon OS using SSH
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.8.4" data-path="../photon_installation/launch-web-server-with-cloud-init.html">
+            
+                <a href="../photon_installation/launch-web-server-with-cloud-init.html">
+            
+                    
+                    Launch the Web Server with Cloud-Init
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.8.5" data-path="../photon_installation/terminate-the-ami-instance.html">
+            
+                <a href="../photon_installation/terminate-the-ami-instance.html">
+            
+                    
+                    Terminate the AMI Instance
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.9" data-path="../photon_installation/Running-Photon-OS-on-Microsoft-Azure.html">
+            
+                <a href="../photon_installation/Running-Photon-OS-on-Microsoft-Azure.html">
+            
+                    
+                    Running Photon OS on Microsoft Azure
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.9.1" data-path="../photon_installation/photon-os-azure-prerequisites.html">
+            
+                <a href="../photon_installation/photon-os-azure-prerequisites.html">
+            
+                    
+                    Prerequisites for Running Photon OS on Azure
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.9.2" data-path="../photon_installation/setting-up-azure-storage-and-uploading-the-vhd.html">
+            
+                <a href="../photon_installation/setting-up-azure-storage-and-uploading-the-vhd.html">
+            
+                    
+                    Set Up Azure Storage and Uploading the VHD
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.9.3" data-path="../photon_installation/remove-photon-os-from-azure.html">
+            
+                <a href="../photon_installation/remove-photon-os-from-azure.html">
+            
+                    
+                    Remove Photon OS From Azure
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.10" data-path="../photon_installation/Running-Photon-OS-on-Google-Compute-Engine.html">
+            
+                <a href="../photon_installation/Running-Photon-OS-on-Google-Compute-Engine.html">
+            
+                    
+                    Running Photon OS on Google Compute Engine
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.10.1" data-path="../photon_installation/photon-os-gce-prerequisites.html">
+            
+                <a href="../photon_installation/photon-os-gce-prerequisites.html">
+            
+                    
+                    Prerequisites for Running Photon OS on GCE
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.10.2" data-path="../photon_installation/installing-photon-os-on-google-compute-engine.html">
+            
+                <a href="../photon_installation/installing-photon-os-on-google-compute-engine.html">
+            
+                    
+                    Installing Photon OS on Google Compute Engine
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11" data-path="../photon_installation/Running-Photon-OS-on-Raspberry-Pi-3.html">
+            
+                <a href="../photon_installation/Running-Photon-OS-on-Raspberry-Pi-3.html">
+            
+                    
+                    Running Photon OS on Raspberry Pi 3
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.11.1" data-path="../photon_installation/photon-os-rpi3-prerequisites.html">
+            
+                <a href="../photon_installation/photon-os-rpi3-prerequisites.html">
+            
+                    
+                    Prerequisites for Running Photon OS on Raspberry Pi 3
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.2" data-path="../photon_installation/installing-the-iso-image-for-photon-os-30-rpi3.html">
+            
+                <a href="../photon_installation/installing-the-iso-image-for-photon-os-30-rpi3.html">
+            
+                    
+                    Installing Photon OS on Raspberry Pi 3
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.12" data-path="../photon_installation/deploying-a-containerized-application-in-photon-os.html">
+            
+                <a href="../photon_installation/deploying-a-containerized-application-in-photon-os.html">
+            
+                    
+                    Deploying a Containerized Application in Photon OS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.13" data-path="../photon_installation/Installing-Photon-OS-on-Dell-Gateways.html">
+            
+                <a href="../photon_installation/Installing-Photon-OS-on-Dell-Gateways.html">
+            
+                    
+                    Installing Photon OS on Dell Gateways
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.13.1" data-path="../photon_installation/Installing-Photon-OS-on-Dell-500X.html">
+            
+                <a href="../photon_installation/Installing-Photon-OS-on-Dell-500X.html">
+            
+                    
+                    Installing Photon OS on Dell Edge Gateway 500X
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.13.2" data-path="../photon_installation/Installing-Photon-OS-on-Dell-300X.html">
+            
+                <a href="../photon_installation/Installing-Photon-OS-on-Dell-300X.html">
+            
+                    
+                    Installing Photon OS on Dell Edge Gateway 300X
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.14" data-path="../photon_installation/Installing-and-Using-Lightwave-on-Photon-OS.html">
+            
+                <a href="../photon_installation/Installing-and-Using-Lightwave-on-Photon-OS.html">
+            
+                    
+                    Installing and Using Lightwave on Photon OS
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.14.1" data-path="../photon_installation/Installing-Lightwave-Server-and-Setting-Up-a-Domain.html">
+            
+                <a href="../photon_installation/Installing-Lightwave-Server-and-Setting-Up-a-Domain.html">
+            
+                    
+                    Installing the Lightwave Server and Configuring It as a Domain Controller on a Photon Image
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.14.2" data-path="../photon_installation/Installing-Lightwave-Client-and-Joining-a-Domain.html">
+            
+                <a href="../photon_installation/Installing-Lightwave-Client-and-Joining-a-Domain.html">
+            
+                    
+                    Installing the Lightwave Client on a Photon Image and Joining the Client to a Domain
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.14.3" data-path="../photon_installation/Installing-the-Photon-Management-Daemon-on-a-Lightwave-Client.html">
+            
+                <a href="../photon_installation/Installing-the-Photon-Management-Daemon-on-a-Lightwave-Client.html">
+            
+                    
+                    Installing the Photon Management Daemon on a Lightwave Client
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.14.4" data-path="../photon_installation/Remotely-Upgrade-a-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                <a href="../photon_installation/Remotely-Upgrade-a-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                    
+                    Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Photon Management Daemon Installed
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.14.5" data-path="../photon_installation/Remotely-Upgrade-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                <a href="../photon_installation/Remotely-Upgrade-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                    
+                    Remotely Upgrade Multiple Photon OS Machines With Lightwave Client and Photon Management Daemon Installed
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15" data-path="../photon_installation/using-the-photon-management-daemon.html">
+            
+                <a href="../photon_installation/using-the-photon-management-daemon.html">
+            
+                    
+                    Photon Management Daemon
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.15.1" data-path="../photon_installation/installing_pmd_package.html">
+            
+                <a href="../photon_installation/installing_pmd_package.html">
+            
+                    
+                    Installing the pmd Package
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.2" data-path="../photon_installation/available_apis.html">
+            
+                <a href="../photon_installation/available_apis.html">
+            
+                    
+                    Available APIs
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Administration Guide
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="photon_os_packages.html">
+            
+                <a href="photon_os_packages.html">
+            
+                    
+                    Photon OS Packages
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1.1" data-path="examining_packages_spec_dir.html">
+            
+                <a href="examining_packages_spec_dir.html">
+            
+                    
+                    Examining the Packages in the SPECS Directory on Github
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.2" data-path="differences_between_minimal_and_full_version.html">
+            
+                <a href="differences_between_minimal_and_full_version.html">
+            
+                    
+                    Looking at the Differences Between the Minimal and the Full Version
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.3" data-path="root_account_and_sudo_commands.html">
+            
+                <a href="root_account_and_sudo_commands.html">
+            
+                    
+                    The Root Account and the sudo and su Commands
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.4" data-path="photon-os-package-repositories.html">
+            
+                <a href="photon-os-package-repositories.html">
+            
+                    
+                    Photon OS Package Repositories
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.5" data-path="signed-packages.html">
+            
+                <a href="signed-packages.html">
+            
+                    
+                    Examining Signed Packages
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.6" data-path="building-a-package-from-a-source-rpm.html">
+            
+                <a href="building-a-package-from-a-source-rpm.html">
+            
+                    
+                    Building a Package from a Source RPM
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.1.7" data-path="compiling-c-code-on-the-minimal-version-of-photon-os.html">
+            
+                <a href="compiling-c-code-on-the-minimal-version-of-photon-os.html">
+            
+                    
+                    Compiling C++ Code on the Minimal Version of Photon OS
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="package_management.html">
+            
+                <a href="package_management.html">
+            
+                    
+                    Package Management in Photon OS with tdnf
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.1" data-path="tdnf.html">
+            
+                <a href="tdnf.html">
+            
+                    
+                    Introduction to tdnf
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2" data-path="configuration-files-and-repositories.html">
+            
+                <a href="configuration-files-and-repositories.html">
+            
+                    
+                    Configuration Files and Repositories
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3" data-path="adding-a-new-repository.html">
+            
+                <a href="adding-a-new-repository.html">
+            
+                    
+                    Adding a New Repository
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.4" data-path="configure-a-repository.html">
+            
+                <a href="configure-a-repository.html">
+            
+                    
+                    Configure a Repository
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.5" data-path="adding-the-dev-repository.html">
+            
+                <a href="adding-the-dev-repository.html">
+            
+                    
+                    Adding the Dev Repository to Get New Packages from the GitHub Dev Branch
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.6" data-path="standard_tdnf_syntax.html">
+            
+                <a href="standard_tdnf_syntax.html">
+            
+                    
+                    Standard Syntax for tdnf Commands
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.6.1" data-path="options-for-commands.html">
+            
+                <a href="options-for-commands.html">
+            
+                    
+                    Options for Commands
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.6.2" data-path="commands.html">
+            
+                <a href="commands.html">
+            
+                    
+                    Commands
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="managing-services-with-systemd.html">
+            
+                <a href="managing-services-with-systemd.html">
+            
+                    
+                    Managing Services with systemd
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.3.1" data-path="viewing-services.html">
+            
+                <a href="viewing-services.html">
+            
+                    
+                    Viewing Services
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.2" data-path="controlling-services.html">
+            
+                <a href="controlling-services.html">
+            
+                    
+                    Controlling Services
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.3" data-path="creating-a-startup-service.html">
+            
+                <a href="creating-a-startup-service.html">
+            
+                    
+                    Creating a Startup Service
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.4" data-path="disabling-the-photon-os-httpd.service.html">
+            
+                <a href="disabling-the-photon-os-httpd.service.html">
+            
+                    
+                    Disabling the Photon OS httpd.service
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.5" data-path="auditing-system-events-with-auditd.html">
+            
+                <a href="auditing-system-events-with-auditd.html">
+            
+                    
+                    Auditing System Events with auditd
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.6" data-path="analyzing-systemd-logs-with-journalctl.html">
+            
+                <a href="analyzing-systemd-logs-with-journalctl.html">
+            
+                    
+                    Analyzing systemd Logs with journalctl
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.7" data-path="migrating-scripts-to-systemd.html">
+            
+                <a href="migrating-scripts-to-systemd.html">
+            
+                    
+                    Migrating Scripts to systemd
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.8" data-path="installing-sendmail.html">
+            
+                <a href="installing-sendmail.html">
+            
+                    
+                    Installing Sendmail
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="managing-the-network-configuration.html">
+            
+                <a href="managing-the-network-configuration.html">
+            
+                    
+                    Managing the Network Configuration
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.1" data-path="network_management_commands.html">
+            
+                <a href="network_management_commands.html">
+            
+                    
+                    Commands to Manage Network Service
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.2" data-path="using-the-network-configuration-manager.html">
+            
+                <a href="using-the-network-configuration-manager.html">
+            
+                    
+                    Using the Network Configuration Manager
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.3" data-path="use-ip-and-ss-commands.html">
+            
+                <a href="use-ip-and-ss-commands.html">
+            
+                    
+                    Use ip and ss Commands Instead of ifconfig and netstat
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.4" data-path="configuring-network-interfaces.html">
+            
+                <a href="configuring-network-interfaces.html">
+            
+                    
+                    Configuring Network Interfaces
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.5" data-path="setting-a-static-ip-address.html">
+            
+                <a href="setting-a-static-ip-address.html">
+            
+                    
+                    Setting a Static IP Address
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.6" data-path="turning-off-dhcp.html">
+            
+                <a href="turning-off-dhcp.html">
+            
+                    
+                    Turning Off DHCP
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.7" data-path="adding-a-dns-server.html">
+            
+                <a href="adding-a-dns-server.html">
+            
+                    
+                    Adding a DNS Server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.8" data-path="setting-up-networking-for-multiple-nics.html">
+            
+                <a href="setting-up-networking-for-multiple-nics.html">
+            
+                    
+                    Setting Up Networking for Multiple NICs
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.8.1" data-path="combining-dhcp-and-static-ip-addresses-with-ipv4-and-ipv6.html">
+            
+                <a href="combining-dhcp-and-static-ip-addresses-with-ipv4-and-ipv6.html">
+            
+                    
+                    Combining DHCP and Static IP Addresses with IPv4 and IPv6
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.9" data-path="clearing-the-machine-id-of-a-cloned-instance-for-dhcp.html">
+            
+                <a href="clearing-the-machine-id-of-a-cloned-instance-for-dhcp.html">
+            
+                    
+                    Clearing the Machine ID of a Cloned Instance for DHCP
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.10" data-path="using-predictable-network-interface-names.html">
+            
+                <a href="using-predictable-network-interface-names.html">
+            
+                    
+                    Using Predictable Network Interface Names
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.11" data-path="inspecting-the-status-of-network-links-with-networkctl.html">
+            
+                <a href="inspecting-the-status-of-network-links-with-networkctl.html">
+            
+                    
+                    Inspecting the Status of Network Links with networkctl
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.12" data-path="turning-on-network-debugging.html">
+            
+                <a href="turning-on-network-debugging.html">
+            
+                    
+                    Network Debugging
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.13" data-path="mounting-a-network-file-system.html">
+            
+                <a href="mounting-a-network-file-system.html">
+            
+                    
+                    Mounting a Network File System
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.14" data-path="installing-the-packages-for-tcpdump-and-netcat-with-tdnf.html">
+            
+                <a href="installing-the-packages-for-tcpdump-and-netcat-with-tdnf.html">
+            
+                    
+                    Installing the Packages for tcpdump and netcat with tdnf
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.15" data-path="netmgr.c.html">
+            
+                <a href="netmgr.c.html">
+            
+                    
+                    Network Configuration Manager - C API
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.16" data-path="netmgr.python.html">
+            
+                <a href="netmgr.python.html">
+            
+                    
+                    Network Configuration Manager - Python API
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="configure-wireless-networking.html">
+            
+                <a href="configure-wireless-networking.html">
+            
+                    
+                    Configure Wireless Networking
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="prioritize-eth0-route-over-wlan0.html">
+            
+                <a href="prioritize-eth0-route-over-wlan0.html">
+            
+                    
+                    Prioritize eth0 Route Over wlan0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7" data-path="cloud-init-on-photon-os.html">
+            
+                <a href="cloud-init-on-photon-os.html">
+            
+                    
+                    Cloud-Init on Photon OS
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.7.1" data-path="cloud-init.html">
+            
+                <a href="cloud-init.html">
+            
+                    
+                    Cloud-Init Overview
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.2" data-path="deploy_photon_with_cloud-init.html">
+            
+                <a href="deploy_photon_with_cloud-init.html">
+            
+                    
+                    Deploy Photon OS With cloud-init
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.3" data-path="Customizing_Gos_Cloudinit.html">
+            
+                <a href="Customizing_Gos_Cloudinit.html">
+            
+                    
+                    Customizing Guest OS using Cloud-Init
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.4" data-path="creating-a-stand-alone-photon-machine-with-cloud-init.html">
+            
+                <a href="creating-a-stand-alone-photon-machine-with-cloud-init.html">
+            
+                    
+                    Creating a Stand-Alone Photon Machine with cloud-init
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.5" data-path="customizing-a-photon-os-machine-on-ec2.html">
+            
+                <a href="customizing-a-photon-os-machine-on-ec2.html">
+            
+                    
+                    Customizing a Photon OS Machine on EC2
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.6" data-path="running-a-photon-os-machine-on-gce.html">
+            
+                <a href="running-a-photon-os-machine-on-gce.html">
+            
+                    
+                    Running a Photon OS Machine on GCE
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8" data-path="photon_os_containers.html">
+            
+                <a href="photon_os_containers.html">
+            
+                    
+                    Containers
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.8.1" data-path="docker-containers.html">
+            
+                <a href="docker-containers.html">
+            
+                    
+                    Docker Containers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8.2" data-path="kubernetes.html">
+            
+                <a href="kubernetes.html">
+            
+                    
+                    Kubernetes
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.9" data-path="changing-the-locale.html">
+            
+                <a href="changing-the-locale.html">
+            
+                    
+                    Changing the Locale
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.10" data-path="default-security-policy-of-photon-os.html">
+            
+                <a href="default-security-policy-of-photon-os.html">
+            
+                    
+                    Security Policy
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.10.1" data-path="default-firewall-settings.html">
+            
+                <a href="default-firewall-settings.html">
+            
+                    
+                    Default Firewall Settings
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.10.2" data-path="default-permissions-and-umask.html">
+            
+                <a href="default-permissions-and-umask.html">
+            
+                    
+                    Default Permissions and umask
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.10.3" data-path="disabling-tls-1.0.html">
+            
+                <a href="disabling-tls-1.0.html">
+            
+                    
+                    Disabling TLS 1.0 to Improve Transport Layer Security
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11" data-path="Photon-RPM-OSTree-a-simple-guide.html">
+            
+                <a href="Photon-RPM-OSTree-a-simple-guide.html">
+            
+                    
+                    Photon RPM OSTree
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.1" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.1.1" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#rpm-ostree-overview">
+            
+                    
+                    RPM-OSTree Overview
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.1.2" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#why-use-rpm-ostree-in-photon">
+            
+                    
+                    Why use RPM-OSTree in Photon?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.1.3" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#photon-with-rpm-ostree-installation-profiles">
+            
+                    
+                    Photon with RPM-OSTree installation profiles
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.1.4" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#terminology">
+            
+                    
+                    Terminology
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.1.5" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#sample-code">
+            
+                    
+                    Sample code
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.1.6" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#how-to-read-this-book">
+            
+                    
+                    How to read this book
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.1.7" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#rpm-ostree-in-photon-os-30">
+            
+                    
+                    RPM-OSTree in Photon OS 3.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.2" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                    
+                    Installing a Photon RPM-OSTree host against default server repository
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.2.1" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html#who-is-this-for">
+            
+                    
+                    Who is this for?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.2.2" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html#installing-the-iso">
+            
+                    
+                    Installing the ISO, step by step
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.3" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                    
+                    Concepts in action
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.3.1" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#querying-the-deployed-filetrees">
+            
+                    
+                    Querying the deployed filetrees
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.3.2" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#bootable-filetree-version">
+            
+                    
+                    Bootable filetree version
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.3.3" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#commit-id">
+            
+                    
+                    Commit ID
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.3.4" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#osname">
+            
+                    
+                    OSname
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.3.5" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#refspec">
+            
+                    
+                    Refspec
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.3.6" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#deployments">
+            
+                    
+                    Deployments
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.4.11.4" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                    
+                    Querying for commit, file and package metadata
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.4.1" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#commit-history">
+            
+                    
+                    Commit history
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.4.2" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#listing-file-mappings">
+            
+                    
+                    Listing file mappings
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.4.3" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#listing-configuration-changes">
+            
+                    
+                    Listing configuration changes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.4.4" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#listing-packages">
+            
+                    
+                    Listing packages
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.4.5" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#querying-for-package-details">
+            
+                    
+                    Querying for package details
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.4.6" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#why-am-i-unable-to-install-update-or-delete-packages">
+            
+                    
+                    Why am I unable to install, update or delete packages?
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                    
+                    Host updating operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.5.1" data-path="photon_admin/Photon-RPM-OSTree-5-Host-updating-operations.md">
+            
+                <span>
+            
+                    
+                    Upgrade overview
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5.2" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#incremental-upgrade">
+            
+                    
+                    Incremental upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5.3" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#listing-file-differences">
+            
+                    
+                    Listing file differences
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5.4" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#listing-package-differences">
+            
+                    
+                    Listing package differences
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5.5" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#rollback">
+            
+                    
+                    Rollback
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5.6" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#installing-packages">
+            
+                    
+                    Installing Packages
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5.7" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#uninstalling-packages">
+            
+                    
+                    Uninstalling Packages
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5.8" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#deleting-a-deployed-filetree">
+            
+                    
+                    Deleting a deployed filetree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5.9" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#version-skipping-upgrade">
+            
+                    
+                    Version skipping upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5.10" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#tracking-parent-commits">
+            
+                    
+                    Tracking parent commits
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5.11" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#resetting-a-branch-to-a-previous-commit">
+            
+                    
+                    Resetting a branch to a previous commit
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.6" data-path="Photon-RPM-OSTree-6-Installing-a-server.html">
+            
+                <a href="Photon-RPM-OSTree-6-Installing-a-server.html">
+            
+                    
+                    Creating a Photon RPM-OSTree Package
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.6.1" data-path="Photon-RPM-OSTree-6-Installing-a-server.html">
+            
+                <a href="Photon-RPM-OSTree-6-Installing-a-server.html#composing-your-first-OSTree-repo">
+            
+                    
+                    Composing your first OSTree repo
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.7" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                    
+                    Installing a Photon RPM-OStree host against a custom server repository
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.7.1" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html#manual-install-of-a-custom-host">
+            
+                    
+                    Manual install of a custom host
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.7.2" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html#automated-install-of-a-custom-host-via-kickstart">
+            
+                    
+                    Automated install of a custom host via kickstart
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.8" data-path="RPM-OSTree-AutoUpdate.html">
+            
+                <a href="RPM-OSTree-AutoUpdate.html">
+            
+                    
+                    Automatic Updates
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.8.1" data-path="RPM-OSTree-AutoUpdate.html">
+            
+                <a href="RPM-OSTree-AutoUpdate.html#enable-automatic-updates">
+            
+                    
+                    Enable Automatic Updates
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.9" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                    
+                    File oriented server operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.9.1" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#starting-a-fresh-ostree-repo">
+            
+                    
+                    Starting a fresh OSTree repo
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.9.2" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#creating-summary-metadata">
+            
+                    
+                    Creating summary metadata
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.10" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                    
+                    Package oriented server operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.10.1" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.mdjson-configuration-file">
+            
+                <span>
+            
+                    
+                    JSON configuration file
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.10.2" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#package-addition-removal-upgrade">
+            
+                    
+                    Package addition, removal, upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.10.3" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#rpms-repository">
+            
+                    
+                    RPMS repository
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.10.4" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#composing-a-tree">
+            
+                    
+                    Composing a tree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.10.5" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#automatic-version-prefix">
+            
+                    
+                    Automatic version prefix
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.10.6" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#installing-package-updates">
+            
+                    
+                    Installing package updates
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.10.7" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#creating-server-metadata">
+            
+                    
+                    Creating server metadata
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.10.8" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#starting-a-fresh-ostree-repo">
+            
+                    
+                    Starting a fresh OSTree repo
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.11" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html">
+            
+                    
+                    Remotes
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.11.1" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#listing-remotes">
+            
+                    
+                    Listing remotes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.11.2" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#gpg-signature-verification">
+            
+                    
+                    GPG signature verification
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.11.3" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#switching-repositories">
+            
+                    
+                    Switching repositories
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.11.4" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#adding-and-removing-remotes">
+            
+                    
+                    Adding and removing remotes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.11.5" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#list-available-branches">
+            
+                    
+                    List available branches
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.12" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                    
+                    Running container applications between bootable images
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.12.1" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#downloading-a-docker-container-appliance">
+            
+                    
+                    Downloading a docker container appliance
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.12.2" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#rebooting-into-an-existing-image">
+            
+                    
+                    Rebooting into an existing image
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.12.3" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#reboot-into-a-newly-created-image">
+            
+                    
+                    Reboot into a newly created image
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.13" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                    
+                    Install or rebase to Photon OS 3.0
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.13.1" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#composing-your-own-rpm-ostree-server">
+            
+                    
+                    Composing your own RPM-OSTree Server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.13.2" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#installing-an-rpm-ostree-host">
+            
+                    
+                    Installing an RPM-OSTree host
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.13.3" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#rebasing-a-host-from-photon-10-to-20">
+            
+                    
+                    Rebasing a host from Photon 1.0 to 3.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.13.4" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#creating-a-host-raw-image">
+            
+                    
+                    Creating a host raw image
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../photon_user/">
+            
+                <a href="../photon_user/">
+            
+                    
+                    User Guide
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.1" data-path="../photon_user/PXE-boot.html">
+            
+                <a href="../photon_user/PXE-boot.html">
+            
+                    
+                    Setting Up a Network PXE Boot Server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.2" data-path="../photon_user/kickstart.html">
+            
+                <a href="../photon_user/kickstart.html">
+            
+                    
+                    Working with Kickstart
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3" data-path="../photon_user/kickstart_through_http.html">
+            
+                <a href="../photon_user/kickstart_through_http.html">
+            
+                    
+                    Kickstart Through HTTP
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.3.1" data-path="../photon_user/kickstart-prerequisites.html">
+            
+                <a href="../photon_user/kickstart-prerequisites.html">
+            
+                    
+                    Prerequisites
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3.2" data-path="../photon_user/kickstart-procedure.html">
+            
+                <a href="../photon_user/kickstart-procedure.html">
+            
+                    
+                    Procedure
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3.3" data-path="../photon_user/packer-template.html">
+            
+                <a href="../photon_user/packer-template.html">
+            
+                    
+                    Packer Template
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3.4" data-path="../photon_user/packages-minimal-json-file.html">
+            
+                <a href="../photon_user/packages-minimal-json-file.html">
+            
+                    
+                    packages_minimal.json File
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4" data-path="../photon_user/kubernetes_intro.html">
+            
+                <a href="../photon_user/kubernetes_intro.html">
+            
+                    
+                    Kubernetes on Photon OS
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.4.1" data-path="../photon_user/prerequisites.html">
+            
+                <a href="../photon_user/prerequisites.html">
+            
+                    
+                    Prerequisites
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4.2" data-path="../photon_user/running_kubernetes.html">
+            
+                <a href="../photon_user/running_kubernetes.html">
+            
+                    
+                    Running Kubernetes on Photon OS
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.4.2.1" data-path="../photon_user/system_information.html">
+            
+                <a href="../photon_user/system_information.html">
+            
+                    
+                    System Information
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4.2.2" data-path="../photon_user/prepare_the_hosts.html">
+            
+                <a href="../photon_user/prepare_the_hosts.html">
+            
+                    
+                    Prepare the Hosts
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4.2.3" data-path="../photon_user/configure_kubernetes_on_master.html">
+            
+                <a href="../photon_user/configure_kubernetes_on_master.html">
+            
+                    
+                    Configure Kubernetes Services on Master
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4.2.4" data-path="../photon_user/configure_kubernetes_on_node.html">
+            
+                <a href="../photon_user/configure_kubernetes_on_node.html">
+            
+                    
+                    Configure Kubernetes Services on Node
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.5" data-path="../photon_user/nfs-utils.html">
+            
+                <a href="../photon_user/nfs-utils.html">
+            
+                    
+                    Mounting Remote File Systems
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../photon_cli/">
+            
+                <a href="../photon_cli/">
+            
+                    
+                    Command-Line Reference
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.1" data-path="../photon_cli/command-line_interfaces.html">
+            
+                <a href="../photon_cli/command-line_interfaces.html">
+            
+                    
+                    Command-line Interfaces
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.1.1" data-path="../photon_cli/pmd-cli.html">
+            
+                <a href="../photon_cli/pmd-cli.html">
+            
+                    
+                    Photon Management Daemon Command-line Interface (pmd-cli)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.1.2" data-path="../photon_cli/netmgr-cli.html">
+            
+                <a href="../photon_cli/netmgr-cli.html">
+            
+                    
+                    Photon Network Manager Command-line Interface (netmgr)
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="../photon_troubleshoot/">
+            
+                <a href="../photon_troubleshoot/">
+            
+                    
+                    Troubleshooting Guide
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.1" data-path="../photon_troubleshoot/introduction.html">
+            
+                <a href="../photon_troubleshoot/introduction.html">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.1.1" data-path="../photon_troubleshoot/systemd-and-tdnf.html">
+            
+                <a href="../photon_troubleshoot/systemd-and-tdnf.html">
+            
+                    
+                    Systemd and TDNF
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.1.2" data-path="../photon_troubleshoot/root-account-sudo-and-su-commands.html">
+            
+                <a href="../photon_troubleshoot/root-account-sudo-and-su-commands.html">
+            
+                    
+                    The Root Account and the sudo and su Commands
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.1.3" data-path="../photon_troubleshoot/checking-the-version-and-build-number.html">
+            
+                <a href="../photon_troubleshoot/checking-the-version-and-build-number.html">
+            
+                    
+                    Checking the Version and Build Number
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.1.4" data-path="../photon_troubleshoot/general-best-practices.html">
+            
+                <a href="../photon_troubleshoot/general-best-practices.html">
+            
+                    
+                    General Best Practices
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.1.5" data-path="../photon_troubleshoot/photon-os-logs.html">
+            
+                <a href="../photon_troubleshoot/photon-os-logs.html">
+            
+                    
+                    Photon OS Logs
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.1.6" data-path="../photon_troubleshoot/troubleshooting-progression.html">
+            
+                <a href="../photon_troubleshoot/troubleshooting-progression.html">
+            
+                    
+                    Troubleshooting Progression
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2" data-path="../photon_troubleshoot/solutions-to-common-problems.html">
+            
+                <a href="../photon_troubleshoot/solutions-to-common-problems.html">
+            
+                    
+                    Solutions to Common Problems
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.2.1" data-path="../photon_troubleshoot/boot-in-emergency-mode.html">
+            
+                <a href="../photon_troubleshoot/boot-in-emergency-mode.html">
+            
+                    
+                    Boot in Emergency Mode
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2.2" data-path="../photon_troubleshoot/resetting-a-lost-root-password.html">
+            
+                <a href="../photon_troubleshoot/resetting-a-lost-root-password.html">
+            
+                    
+                    Resetting a Lost Root Password
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2.3" data-path="../photon_troubleshoot/network-config-files-permissions.html">
+            
+                <a href="../photon_troubleshoot/network-config-files-permissions.html">
+            
+                    
+                    Fixing Permissions on Network Configuration Files
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2.4" data-path="../photon_troubleshoot/permitting-root-login-with-ssh.html">
+            
+                <a href="../photon_troubleshoot/permitting-root-login-with-ssh.html">
+            
+                    
+                    Permitting Root Login with SSH
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2.5" data-path="../photon_troubleshoot/fixing-sendmail.html">
+            
+                <a href="../photon_troubleshoot/fixing-sendmail.html">
+            
+                    
+                    Fixing Sendmail
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.3" data-path="../photon_troubleshoot/troubleshooting-tools.html">
+            
+                <a href="../photon_troubleshoot/troubleshooting-tools.html">
+            
+                    
+                    Troubleshooting Tools on Photon OS
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.3.1" data-path="../photon_troubleshoot/common-tools.html">
+            
+                <a href="../photon_troubleshoot/common-tools.html">
+            
+                    
+                    Common Tools
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.3.2" data-path="../photon_troubleshoot/default-tools.html">
+            
+                <a href="../photon_troubleshoot/default-tools.html">
+            
+                    
+                    Troubleshooting Tools Installed by Default
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.3.3" data-path="../photon_troubleshoot/installing-tools.html">
+            
+                <a href="../photon_troubleshoot/installing-tools.html">
+            
+                    
+                    Installing Tools From Repositories
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.3.4" data-path="../photon_troubleshoot/linux-troubleshooting-tools.html">
+            
+                <a href="../photon_troubleshoot/linux-troubleshooting-tools.html">
+            
+                    
+                    Linux Troubleshooting Tools
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.4" data-path="../photon_troubleshoot/systemd.html">
+            
+                <a href="../photon_troubleshoot/systemd.html">
+            
+                    
+                    Troubleshooting With systemd
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.4.1" data-path="../photon_troubleshoot/enabling-systemd-debug.html">
+            
+                <a href="../photon_troubleshoot/enabling-systemd-debug.html">
+            
+                    
+                    Enabling systemd Debug Shell During Boot
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.4.2" data-path="../photon_troubleshoot/troubleshooting-services.html">
+            
+                <a href="../photon_troubleshoot/troubleshooting-services.html">
+            
+                    
+                    Troubleshooting Services with systemctl
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.4.3" data-path="../photon_troubleshoot/analyzing-system-logs-with-journalctl.html">
+            
+                <a href="../photon_troubleshoot/analyzing-system-logs-with-journalctl.html">
+            
+                    
+                    Analyzing System Logs with journalctl
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.4.4" data-path="../photon_troubleshoot/inspecting-services-with-systemd-analyze.html">
+            
+                <a href="../photon_troubleshoot/inspecting-services-with-systemd-analyze.html">
+            
+                    
+                    Inspecting Services with systemd-analyze
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.5" data-path="../photon_troubleshoot/networking.html">
+            
+                <a href="../photon_troubleshoot/networking.html">
+            
+                    
+                    Network Troubleshooting
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.5.1" data-path="../photon_troubleshoot/managing-the-network-configuration.html">
+            
+                <a href="../photon_troubleshoot/managing-the-network-configuration.html">
+            
+                    
+                    Managing the Network Configuration
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.5.2" data-path="../photon_troubleshoot/inspecting-ip-addresses.html">
+            
+                <a href="../photon_troubleshoot/inspecting-ip-addresses.html">
+            
+                    
+                    Inspecting IP Addresses
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.5.3" data-path="../photon_troubleshoot/inspecting-network-links-with-networkctl.html">
+            
+                <a href="../photon_troubleshoot/inspecting-network-links-with-networkctl.html">
+            
+                    
+                    Inspecting the Status of Network Links with networkctl
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.5.4" data-path="../photon_troubleshoot/network-debugging.html">
+            
+                <a href="../photon_troubleshoot/network-debugging.html">
+            
+                    
+                    Network Debugging
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.5.5" data-path="../photon_troubleshoot/checking-firewall-rules.html">
+            
+                <a href="../photon_troubleshoot/checking-firewall-rules.html">
+            
+                    
+                    Checking Firewall Rules
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.5.6" data-path="../photon_troubleshoot/netmgr.html">
+            
+                <a href="../photon_troubleshoot/netmgr.html">
+            
+                    
+                    Inspect Network Settings with netmgr
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.6" data-path="../photon_troubleshoot/file-system.html">
+            
+                <a href="../photon_troubleshoot/file-system.html">
+            
+                    
+                    File System Troubleshooting
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.6.1" data-path="../photon_troubleshoot/checking-disk-space.html">
+            
+                <a href="../photon_troubleshoot/checking-disk-space.html">
+            
+                    
+                    Checking Disk Space
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.6.2" data-path="../photon_troubleshoot/adding-a-disk-and-partitioning-it.html">
+            
+                <a href="../photon_troubleshoot/adding-a-disk-and-partitioning-it.html">
+            
+                    
+                    Adding a Disk and Partitioning It
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.6.3" data-path="../photon_troubleshoot/expanding-disk-partition.html">
+            
+                <a href="../photon_troubleshoot/expanding-disk-partition.html">
+            
+                    
+                    Expanding Disk Partition
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.6.4" data-path="../photon_troubleshoot/fdisk.html">
+            
+                <a href="../photon_troubleshoot/fdisk.html">
+            
+                    
+                    List Disk Partitions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.6.5" data-path="../photon_troubleshoot/fsck.html">
+            
+                <a href="../photon_troubleshoot/fsck.html">
+            
+                    
+                    File System Consistency Check Tool
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.6.6" data-path="../photon_troubleshoot/fixing-file-system-errors-when-fsck-fails.html">
+            
+                <a href="../photon_troubleshoot/fixing-file-system-errors-when-fsck-fails.html">
+            
+                    
+                    Fixing File System Errors When fsck Fails
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.7" data-path="../photon_troubleshoot/packages.html">
+            
+                <a href="../photon_troubleshoot/packages.html">
+            
+                    
+                    Troubleshooting Packages
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.8" data-path="../photon_troubleshoot/kernel-problems-and-boot-and-login-errors.html">
+            
+                <a href="../photon_troubleshoot/kernel-problems-and-boot-and-login-errors.html">
+            
+                    
+                    Kernel Problems and Boot and Login Problems
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.8.1" data-path="../photon_troubleshoot/kernel-overview.html">
+            
+                <a href="../photon_troubleshoot/kernel-overview.html">
+            
+                    
+                    Kernel Overview
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.8.2" data-path="../photon_troubleshoot/boot-process-overview.html">
+            
+                <a href="../photon_troubleshoot/boot-process-overview.html">
+            
+                    
+                    Boot Process Overview
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.8.3" data-path="../photon_troubleshoot/blank-screen-on-reboot.html">
+            
+                <a href="../photon_troubleshoot/blank-screen-on-reboot.html">
+            
+                    
+                    Blank Screen on Reboot
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.8.4" data-path="../photon_troubleshoot/investigating-strange-behavior.html">
+            
+                <a href="../photon_troubleshoot/investigating-strange-behavior.html">
+            
+                    
+                    Investigating Unexpected Behavior
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.8.5" data-path="../photon_troubleshoot/investigating-the-guest-kernel.html">
+            
+                <a href="../photon_troubleshoot/investigating-the-guest-kernel.html">
+            
+                    
+                    Investigating the Guest Kernel
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.8.6" data-path="../photon_troubleshoot/kernel-log-replication-with-vprobes.html">
+            
+                <a href="../photon_troubleshoot/kernel-log-replication-with-vprobes.html">
+            
+                    
+                    Kernel Log Replication with VProbes
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.9" data-path="../photon_troubleshoot/performance-issues.html">
+            
+                <a href="../photon_troubleshoot/performance-issues.html">
+            
+                    
+                    Performance Issues
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.9.1" data-path="../photon_troubleshoot/general_performance_guidelines.html">
+            
+                <a href="../photon_troubleshoot/general_performance_guidelines.html">
+            
+                    
+                    General Guidelines
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.9.2" data-path="../photon_troubleshoot/throughput_performance.html">
+            
+                <a href="../photon_troubleshoot/throughput_performance.html">
+            
+                    
+                    Throughput Performance
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8" >
+            
+                <a target="_blank" href="https://github.com/vmware/photon/wiki/Security-Advisories">
+            
+                    
+                    Security Advisories
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Querying for commit, file and package metadata</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="querying-for-commit-file-and-package-metadata">Querying For Commit File and Package Metadata</h1>
+<p>There are several ostree and rpm-ostree commands that list file or package data based on either the Commit ID, or Refspec. If Refspec is passed as a parameter, it&apos;s the same as passing the most recent commit ID (head) for that branch.</p>
+<h2 id="commit-history">Commit history</h2>
+<p>For a host that is freshly installed, there is only one commit in the history for the only branch.</p>
+<pre><code>root@photon-host [ ~ ]# ostree log photon/3.0/x86_64/minimal
+commit a31a843985e314a9e70bcf09afe8d59f7351817d9fb743c2b6dab84f20833650
+ContentChecksum:  e91261daf8d60074f334a7ebf81d3b930c3fc88c765f994f79ab2445296f03c5
+Date:  2019-08-29 11:20:19 +0000
+Version: 3.0_minimal
+</code></pre><p>This commit has no parent; if there was an older commit, it would have been listed too. We can get the same listing (either nicely formatted or raw variant data) by passing the Commit ID. Just the first several hex digits will suffice to identify the commit ID. We can either request to be displayed in a pretty format, or raw - the actual C struct.</p>
+<pre><code>root@photon-host [ ~ ]# ostree log a31a
+commit a31a843985e314a9e70bcf09afe8d59f7351817d9fb743c2b6dab84f20833650
+ContentChecksum:  e91261daf8d60074f334a7ebf81d3b930c3fc88c765f994f79ab2445296f03c5
+Date:  2019-08-29 11:20:19 +0000
+Version: 3.0_minimal
+</code></pre><pre><code>root@photon-host [ ~ ]# ostree log a31a --raw
+commit a31a843985e314a9e70bcf09afe8d59f7351817d9fb743c2b6dab84f20833650
+({&apos;rpmostree.inputhash&apos;: &lt;&apos;a3e8f3f6ef6e93c2ed6ce9edd1e9e80c93a36ecda0fed0d78f607e6ec3179d04&apos;&gt;, &apos;rpmostree.rpmmd-repos&apos;: &lt;[{&apos;id&apos;: &lt;&apos;photon&apos;&gt;, &apos;timestamp&apos;: &lt;uint64 1567077533&gt;}]&gt;, &apos;version&apos;: &lt;&apos;3.0_minimal&apos;&gt;, &apos;rpmostree.rpmdb.pkglist&apos;: &lt;[(&apos;Linux-PAM&apos;, &apos;0&apos;, &apos;1.3.0&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;attr&apos;, &apos;0&apos;, &apos;2.4.48&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;autogen-libopts&apos;, &apos;0&apos;, &apos;5.18.16&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;bash&apos;, &apos;0&apos;, &apos;4.4.18&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;bc&apos;, &apos;0&apos;, &apos;1.07.1&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;binutils&apos;, &apos;0&apos;, &apos;2.31.1&apos;, &apos;6.ph3&apos;, &apos;x86_64&apos;), (&apos;bridge-utils&apos;, &apos;0&apos;, &apos;1.6&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;bubblewrap&apos;, &apos;0&apos;, &apos;0.3.0&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;bzip2&apos;, &apos;0&apos;, &apos;1.0.6&apos;, &apos;10.ph3&apos;, &apos;x86_64&apos;), (&apos;bzip2-libs&apos;, &apos;0&apos;, &apos;1.0.6&apos;, &apos;10.ph3&apos;, &apos;x86_64&apos;), (&apos;ca-certificates&apos;, &apos;0&apos;, &apos;20190521&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;ca-certificates-pki&apos;, &apos;0&apos;, &apos;20190521&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;coreutils&apos;, &apos;0&apos;, &apos;8.30&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;cpio&apos;, &apos;0&apos;, &apos;2.12&apos;, &apos;4.ph3&apos;, &apos;x86_64&apos;), (&apos;cracklib&apos;, &apos;0&apos;, &apos;2.9.6&apos;, &apos;8.ph3&apos;, &apos;x86_64&apos;), (&apos;cracklib-dicts&apos;, &apos;0&apos;, &apos;2.9.6&apos;, &apos;8.ph3&apos;, &apos;x86_64&apos;), (&apos;curl&apos;, &apos;0&apos;, &apos;7.61.1&apos;, &apos;4.ph3&apos;, &apos;x86_64&apos;), (&apos;curl-libs&apos;, &apos;0&apos;, &apos;7.61.1&apos;, &apos;4.ph3&apos;, &apos;x86_64&apos;), (&apos;dbus&apos;, &apos;0&apos;, &apos;1.13.6&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;device-mapper&apos;, &apos;0&apos;, &apos;2.02.181&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;device-mapper-libs&apos;, &apos;0&apos;, &apos;2.02.181&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;docker&apos;, &apos;0&apos;, &apos;18.06.2&apos;, &apos;3.ph3&apos;, &apos;x86_64&apos;), (&apos;dracut&apos;, &apos;0&apos;, &apos;048&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;dracut-tools&apos;, &apos;0&apos;, &apos;048&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;e2fsprogs-libs&apos;, &apos;0&apos;, &apos;1.44.3&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;elfutils&apos;, &apos;0&apos;, &apos;0.176&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;elfutils-libelf&apos;, &apos;0&apos;, &apos;0.176&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;expat&apos;, &apos;0&apos;, &apos;2.2.6&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;expat-libs&apos;, &apos;0&apos;, &apos;2.2.6&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;file&apos;, &apos;0&apos;, &apos;5.34&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;file-libs&apos;, &apos;0&apos;, &apos;5.34&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;filesystem&apos;, &apos;0&apos;, &apos;1.1&apos;, &apos;4.ph3&apos;, &apos;x86_64&apos;), (&apos;findutils&apos;, &apos;0&apos;, &apos;4.6.0&apos;, &apos;5.ph3&apos;, &apos;x86_64&apos;), (&apos;flex&apos;, &apos;0&apos;, &apos;2.6.4&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;fuse&apos;, &apos;0&apos;, &apos;2.9.7&apos;, &apos;5.ph3&apos;, &apos;x86_64&apos;), (&apos;gc&apos;, &apos;0&apos;, &apos;8.0.0&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;glib&apos;, &apos;0&apos;, &apos;2.58.0&apos;, &apos;4.ph3&apos;, &apos;x86_64&apos;), (&apos;glib-networking&apos;, &apos;0&apos;, &apos;2.59.1&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;glibc&apos;, &apos;0&apos;, &apos;2.28&apos;, &apos;4.ph3&apos;, &apos;x86_64&apos;), (&apos;glibc-iconv&apos;, &apos;0&apos;, &apos;2.28&apos;, &apos;4.ph3&apos;, &apos;x86_64&apos;), (&apos;gmp&apos;, &apos;0&apos;, &apos;6.1.2&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;gnupg&apos;, &apos;0&apos;, &apos;2.2.17&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;gnutls&apos;, &apos;0&apos;, &apos;3.6.3&apos;, &apos;3.ph3&apos;, &apos;x86_64&apos;), (&apos;gobject-introspection&apos;, &apos;0&apos;, &apos;1.58.0&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;gpgme&apos;, &apos;0&apos;, &apos;1.11.1&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;grep&apos;, &apos;0&apos;, &apos;3.1&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;grub2&apos;, &apos;0&apos;, &apos;2.02&apos;, &apos;13.ph3&apos;, &apos;x86_64&apos;), (&apos;grub2-efi&apos;, &apos;0&apos;, &apos;2.02&apos;, &apos;13.ph3&apos;, &apos;x86_64&apos;), (&apos;grub2-pc&apos;, &apos;0&apos;, &apos;2.02&apos;, &apos;13.ph3&apos;, &apos;x86_64&apos;), (&apos;guile&apos;, &apos;0&apos;, &apos;2.0.13&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;gzip&apos;, &apos;0&apos;, &apos;1.9&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;iana-etc&apos;, &apos;0&apos;, &apos;2.30&apos;, &apos;2.ph3&apos;, &apos;noarch&apos;), (&apos;icu&apos;, &apos;0&apos;, &apos;61.1&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;iproute2&apos;, &apos;0&apos;, &apos;4.18.0&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;iptables&apos;, &apos;0&apos;, &apos;1.8.3&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;js&apos;, &apos;0&apos;, &apos;1.8.5&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;json-c&apos;, &apos;0&apos;, &apos;0.13.1&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;json-glib&apos;, &apos;0&apos;, &apos;1.4.4&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;kmod&apos;, &apos;0&apos;, &apos;25&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;krb5&apos;, &apos;0&apos;, &apos;1.17&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;libapparmor&apos;, &apos;0&apos;, &apos;2.13&apos;, &apos;7.ph3&apos;, &apos;x86_64&apos;), (&apos;libarchive&apos;, &apos;0&apos;, &apos;3.3.3&apos;, &apos;3.ph3&apos;, &apos;x86_64&apos;), (&apos;libassuan&apos;, &apos;0&apos;, &apos;2.5.1&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;libcap&apos;, &apos;0&apos;, &apos;2.25&apos;, &apos;8.ph3&apos;, &apos;x86_64&apos;), (&apos;libdb&apos;, &apos;0&apos;, &apos;5.3.28&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;libffi&apos;, &apos;0&apos;, &apos;3.2.1&apos;, &apos;6.ph3&apos;, &apos;x86_64&apos;), (&apos;libgcc&apos;, &apos;0&apos;, &apos;7.3.0&apos;, &apos;4.ph3&apos;, &apos;x86_64&apos;), (&apos;libgcrypt&apos;, &apos;0&apos;, &apos;1.8.3&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;libgomp&apos;, &apos;0&apos;, &apos;7.3.0&apos;, &apos;4.ph3&apos;, &apos;x86_64&apos;), (&apos;libgpg-error&apos;, &apos;0&apos;, &apos;1.32&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;libgsystem&apos;, &apos;0&apos;, &apos;2015.2&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;libksba&apos;, &apos;0&apos;, &apos;1.3.5&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;libltdl&apos;, &apos;0&apos;, &apos;2.4.6&apos;, &apos;3.ph3&apos;, &apos;x86_64&apos;), (&apos;libmodulemd&apos;, &apos;0&apos;, &apos;2.4.0&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;libpsl&apos;, &apos;0&apos;, &apos;0.20.2&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;librepo&apos;, &apos;0&apos;, &apos;1.10.2&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;libseccomp&apos;, &apos;0&apos;, &apos;2.4.0&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;libselinux&apos;, &apos;0&apos;, &apos;2.8&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;libsepol&apos;, &apos;0&apos;, &apos;2.8&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;libsolv&apos;, &apos;0&apos;, &apos;0.6.35&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;libsoup&apos;, &apos;0&apos;, &apos;2.64.0&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;libssh2&apos;, &apos;0&apos;, &apos;1.9.0&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;libstdc++&apos;, &apos;0&apos;, &apos;7.3.0&apos;, &apos;4.ph3&apos;, &apos;x86_64&apos;), (&apos;libtasn1&apos;, &apos;0&apos;, &apos;4.13&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;libtool&apos;, &apos;0&apos;, &apos;2.4.6&apos;, &apos;3.ph3&apos;, &apos;x86_64&apos;), (&apos;libunistring&apos;, &apos;0&apos;, &apos;0.9.10&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;libxml2&apos;, &apos;0&apos;, &apos;2.9.9&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;libyaml&apos;, &apos;0&apos;, &apos;0.2.1&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;linux&apos;, &apos;0&apos;, &apos;4.19.65&apos;, &apos;3.ph3&apos;, &apos;x86_64&apos;), (&apos;m4&apos;, &apos;0&apos;, &apos;1.4.18&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;mpfr&apos;, &apos;0&apos;, &apos;4.0.1&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;ncurses&apos;, &apos;0&apos;, &apos;6.1&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;ncurses-libs&apos;, &apos;0&apos;, &apos;6.1&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;ncurses-terminfo&apos;, &apos;0&apos;, &apos;6.1&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;net-tools&apos;, &apos;0&apos;, &apos;1.60&apos;, &apos;11.ph3&apos;, &apos;x86_64&apos;), (&apos;nettle&apos;, &apos;0&apos;, &apos;3.4&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;npth&apos;, &apos;0&apos;, &apos;1.6&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;nspr&apos;, &apos;0&apos;, &apos;4.21&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;nss-altfiles&apos;, &apos;0&apos;, &apos;2.23.0&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;nss-libs&apos;, &apos;0&apos;, &apos;3.44&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;openssh&apos;, &apos;0&apos;, &apos;7.8p1&apos;, &apos;5.ph3&apos;, &apos;x86_64&apos;), (&apos;openssh-clients&apos;, &apos;0&apos;, &apos;7.8p1&apos;, &apos;5.ph3&apos;, &apos;x86_64&apos;), (&apos;openssh-server&apos;, &apos;0&apos;, &apos;7.8p1&apos;, &apos;5.ph3&apos;, &apos;x86_64&apos;), (&apos;openssl&apos;, &apos;0&apos;, &apos;1.0.2s&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;ostree&apos;, &apos;0&apos;, &apos;2019.2&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;ostree-grub2&apos;, &apos;0&apos;, &apos;2019.2&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;ostree-libs&apos;, &apos;0&apos;, &apos;2019.2&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;pcre&apos;, &apos;0&apos;, &apos;8.42&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;pcre-libs&apos;, &apos;0&apos;, &apos;8.42&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;photon-release&apos;, &apos;0&apos;, &apos;3.0&apos;, &apos;3.ph3&apos;, &apos;noarch&apos;), (&apos;photon-repos&apos;, &apos;0&apos;, &apos;3.0&apos;, &apos;3.ph3&apos;, &apos;noarch&apos;), (&apos;pinentry&apos;, &apos;0&apos;, &apos;1.1.0&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;pkg-config&apos;, &apos;0&apos;, &apos;0.29.2&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;polkit&apos;, &apos;0&apos;, &apos;0.113&apos;, &apos;5.ph3&apos;, &apos;x86_64&apos;), (&apos;popt&apos;, &apos;0&apos;, &apos;1.16&apos;, &apos;5.ph3&apos;, &apos;x86_64&apos;), (&apos;procps-ng&apos;, &apos;0&apos;, &apos;3.3.15&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;python3&apos;, &apos;0&apos;, &apos;3.7.3&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;python3-libs&apos;, &apos;0&apos;, &apos;3.7.3&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;readline&apos;, &apos;0&apos;, &apos;7.0&apos;, &apos;2.ph3&apos;, &apos;x86_64&apos;), (&apos;rpm-libs&apos;, &apos;0&apos;, &apos;4.14.2&apos;, &apos;4.ph3&apos;, &apos;x86_64&apos;), (&apos;rpm-ostree&apos;, &apos;0&apos;, &apos;2019.3&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;sed&apos;, &apos;0&apos;, &apos;4.5&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;shadow&apos;, &apos;0&apos;, &apos;4.6&apos;, &apos;3.ph3&apos;, &apos;x86_64&apos;), (&apos;shadow-tools&apos;, &apos;0&apos;, &apos;4.6&apos;, &apos;3.ph3&apos;, &apos;x86_64&apos;), (&apos;sqlite-libs&apos;, &apos;0&apos;, &apos;3.27.2&apos;, &apos;3.ph3&apos;, &apos;x86_64&apos;), (&apos;systemd&apos;, &apos;0&apos;, &apos;239&apos;, &apos;13.ph3&apos;, &apos;x86_64&apos;), (&apos;util-linux&apos;, &apos;0&apos;, &apos;2.32&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;util-linux-libs&apos;, &apos;0&apos;, &apos;2.32&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;vim&apos;, &apos;0&apos;, &apos;8.1.0388&apos;, &apos;4.ph3&apos;, &apos;x86_64&apos;), (&apos;which&apos;, &apos;0&apos;, &apos;2.21&apos;, &apos;5.ph3&apos;, &apos;x86_64&apos;), (&apos;xz&apos;, &apos;0&apos;, &apos;5.2.4&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;xz-libs&apos;, &apos;0&apos;, &apos;5.2.4&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;zchunk&apos;, &apos;0&apos;, &apos;1.1.1&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;zchunk-libs&apos;, &apos;0&apos;, &apos;1.1.1&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;), (&apos;zlib&apos;, &apos;0&apos;, &apos;1.2.11&apos;, &apos;1.ph3&apos;, &apos;x86_64&apos;)]&gt;}, @ay [], @a(say) [], &apos;&apos;, &apos;&apos;, uint64 1567077619, [byte 0x1e, 0x0a, 0x85, 0x20, 0xa8, 0xe0, 0x18, 0x6a, 0x88, 0x15, 0xc0, 0xd9, 0xb0, 0xab, 0xc9, 0x98, 0x94, 0xa1, 0xfb, 0x0a, 0x48, 0xdf, 0xa0, 0x73, 0x32, 0x02, 0x9a, 0xdf, 0x49, 0xed, 0x13, 0x8d], [byte 0x44, 0x6a, 0x0e, 0xf1, 0x1b, 0x7c, 0xc1, 0x67, 0xf3, 0xb6, 0x03, 0xe5, 0x85, 0xc7, 0xee, 0xee, 0xb6, 0x75, 0xfa, 0xa4, 0x12, 0xd5, 0xec, 0x73, 0xf6, 0x29, 0x88, 0xeb, 0x0b, 0x6c, 0x54, 0x88])
+</code></pre><h2 id="listing-file-mappings">Listing file mappings</h2>
+<p>This command lists the file relations between the original source Linux Photon filetree and the deployed filetree. The normal columns include file type type (regular file, directory, link), permissions in chmod octal format, userID, groupID, file size, file name. </p>
+<pre><code>root@photon-host [ ~ ]# ostree ls photon/3.0/x86_64/minimal
+d00755 0 0      0 /
+l00777 0 0      0 /bin -&gt; usr/bin
+l00777 0 0      0 /home -&gt; var/home
+l00777 0 0      0 /lib -&gt; usr/lib
+l00777 0 0      0 /lib64 -&gt; usr/lib
+l00777 0 0      0 /media -&gt; run/media
+l00777 0 0      0 /mnt -&gt; var/mnt
+l00777 0 0      0 /opt -&gt; var/opt
+l00777 0 0      0 /ostree -&gt; sysroot/ostree
+l00777 0 0      0 /root -&gt; var/roothome
+l00777 0 0      0 /sbin -&gt; usr/sbin
+l00777 0 0      0 /srv -&gt; var/srv
+l00777 0 0      0 /tmp -&gt; sysroot/tmp
+d00755 0 0      0 /boot
+d00755 0 0      0 /dev
+d00755 0 0      0 /proc
+d00755 0 0      0 /run
+d00755 0 0      0 /sys
+d00755 0 0      0 /sysroot
+d00755 0 0      0 /usr
+d00755 0 0      0 /var
+</code></pre><p>Extra columns can be added like checksum (-C) and extended attributes (-X). </p>
+<pre><code>root@photon-host [ /usr/share/man/man1 ]# ostree ls photon/3.0/x86_64/minimal -C
+d00755 0 0      0 1e0a8520a8e0186a8815c0d9b0abc99894a1fb0a48dfa07332029adf49ed138d 446a0ef11b7cc167f3b603e585c7eeeeb675faa412d5ec73f62988eb0b6c5488 /
+l00777 0 0      0 389846c2702216e1367c8dfb68326a6b93ccf5703c89c93979052a9bf359608e /bin -&gt; usr/bin
+l00777 0 0      0 4344c10bf4931483f918496534f12ed9b50dc6a2cead35e3cd9dd898d6ac9414 /home -&gt; var/home
+l00777 0 0      0 f11902ca9d69a80df33918534a3e443251fd0aa7f94b76301e1f55e52aed29dd /lib -&gt; usr/lib
+l00777 0 0      0 f11902ca9d69a80df33918534a3e443251fd0aa7f94b76301e1f55e52aed29dd /lib64 -&gt; usr/lib
+l00777 0 0      0 75317a3df11447c470ffdd63dde045450ca97dfb2a97a0f3f6a21a5da66f737c /media -&gt; run/media
+l00777 0 0      0 97c55dbe24e8f3aecfd3f3e5b3f44646fccbb39799807d37a217e9c871da108b /mnt -&gt; var/mnt
+l00777 0 0      0 46b1abbd27a846a9257a8d8c9fc4b384ac0888bdb8ac0d6a2d5de72715bd5092 /opt -&gt; var/opt
+l00777 0 0      0 d37269e3f46023fd0275212473e07011894cdf4148cbf3fb5758a7e9471dad8e /ostree -&gt; sysroot/ostree
+l00777 0 0      0 6f800e74eed172661278d1e1f09e389a6504dcd3358618e1c1618f91f9d33601 /root -&gt; var/roothome
+l00777 0 0      0 e0bead7be9323b06bea05cb9b66eb151839989e3a4e5d1a93e09a36919e91818 /sbin -&gt; usr/sbin
+l00777 0 0      0 5d4250bba1ed300f793fa9769474351ee5cebd71e8339078af7ebfbe6256d9b5 /srv -&gt; var/srv
+l00777 0 0      0 364fbd62f91ca1e06eb7dbd50c93de8976f2cea633658e2dbe803ce6f7490c09 /tmp -&gt; sysroot/tmp
+d00755 0 0      0 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d 446a0ef11b7cc167f3b603e585c7eeeeb675faa412d5ec73f62988eb0b6c5488 /boot
+d00755 0 0      0 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d 446a0ef11b7cc167f3b603e585c7eeeeb675faa412d5ec73f62988eb0b6c5488 /dev
+d00755 0 0      0 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d 446a0ef11b7cc167f3b603e585c7eeeeb675faa412d5ec73f62988eb0b6c5488 /proc
+d00755 0 0      0 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d 446a0ef11b7cc167f3b603e585c7eeeeb675faa412d5ec73f62988eb0b6c5488 /run
+d00755 0 0      0 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d 446a0ef11b7cc167f3b603e585c7eeeeb675faa412d5ec73f62988eb0b6c5488 /sys
+d00755 0 0      0 6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d 446a0ef11b7cc167f3b603e585c7eeeeb675faa412d5ec73f62988eb0b6c5488 /sysroot
+d00755 0 0      0 ef1c0980e0d77f64e7f250a3e48f0b24e9285fc0716b80520dac6f98c148324a 446a0ef11b7cc167f3b603e585c7eeeeb675faa412d5ec73f62988eb0b6c5488 /usr
+d00755 0 0      0 a3a987e053ea5a116f1e75a31cd7557fc6e57a3ae09e64171d7fea17ef71ec3e 446a0ef11b7cc167f3b603e585c7eeeeb675faa412d5ec73f62988eb0b6c5488 /var
+</code></pre><p>By default, only the top folders are listed, but -R will list recursively. Instead of listing over 10,000 files, let&apos;s filter to just all files that contain &apos;rpm-ostree&apos;, &apos;rpmostree&apos; or &apos;RpmOstree&apos;, that must belong to <strong>rpm-ostree</strong> package itself.</p>
+<pre><code>root@photon-host [ /usr/share/rpm-ostree ]# ostree ls photon/3.0/x86_64/minimal -R | grep -e &apos;[Rr]pm-\?[Oo]stree&apos;
+-00755 0 0 749000 /usr/bin/rpm-ostree
+d00755 0 0      0 /usr/bin/rpm-ostree-host
+-00644 0 0   1069 /usr/bin/rpm-ostree-host/function.inc
+-00755 0 0  10507 /usr/bin/rpm-ostree-host/mk-ostree-host.sh
+-00644 0 0    209 /usr/etc/rpm-ostreed.conf
+-00644 0 0   1530 /usr/etc/dbus-1/system.d/org.projectatomic.rpmostree1.conf
+l00777 0 0      0 /usr/lib/librpmostree-1.so.1 -&gt; librpmostree-1.so.1.0.0
+-00755 0 0 5278496 /usr/lib/librpmostree-1.so.1.0.0
+-00644 0 0   2312 /usr/lib/girepository-1.0/RpmOstree-1.0.typelib
+-00755 0 0     22 /usr/lib/kernel/install.d/00-rpmostree-skip.install
+d00755 0 0      0 /usr/lib/rpm-ostree
+-00755 0 0 1640704 /usr/lib/rpm-ostree/libdnf.so.2
+-00644 0 0    622 /usr/lib/rpm-ostree/rpm-ostree-0-integration.conf
+d00755 0 0      0 /usr/lib/sysimage/rpm-ostree-base-db
+-00644 0 0 544768 /usr/lib/sysimage/rpm-ostree-base-db/Basenames
+-00644 0 0   8192 /usr/lib/sysimage/rpm-ostree-base-db/Conflictname
+-00644 0 0 110592 /usr/lib/sysimage/rpm-ostree-base-db/Dirnames
+-00644 0 0   8192 /usr/lib/sysimage/rpm-ostree-base-db/Enhancename
+-00644 0 0   8192 /usr/lib/sysimage/rpm-ostree-base-db/Filetriggername
+-00644 0 0   8192 /usr/lib/sysimage/rpm-ostree-base-db/Group
+-00644 0 0  12288 /usr/lib/sysimage/rpm-ostree-base-db/Installtid
+-00644 0 0   8192 /usr/lib/sysimage/rpm-ostree-base-db/Name
+-00644 0 0   8192 /usr/lib/sysimage/rpm-ostree-base-db/Obsoletename
+-00644 0 0 2625536 /usr/lib/sysimage/rpm-ostree-base-db/Packages
+-00644 0 0  86016 /usr/lib/sysimage/rpm-ostree-base-db/Providename
+-00644 0 0   8192 /usr/lib/sysimage/rpm-ostree-base-db/Recommendname
+-00644 0 0  69632 /usr/lib/sysimage/rpm-ostree-base-db/Requirename
+-00644 0 0  20480 /usr/lib/sysimage/rpm-ostree-base-db/Sha1header
+-00644 0 0  16384 /usr/lib/sysimage/rpm-ostree-base-db/Sigmd5
+-00644 0 0   8192 /usr/lib/sysimage/rpm-ostree-base-db/Suggestname
+-00644 0 0   8192 /usr/lib/sysimage/rpm-ostree-base-db/Supplementname
+-00644 0 0   8192 /usr/lib/sysimage/rpm-ostree-base-db/Transfiletriggername
+-00644 0 0   8192 /usr/lib/sysimage/rpm-ostree-base-db/Triggername
+-00644 0 0    263 /usr/lib/systemd/system/rpm-ostree-bootstatus.service
+-00644 0 0    257 /usr/lib/systemd/system/rpm-ostreed-automatic.service
+-00644 0 0    227 /usr/lib/systemd/system/rpm-ostreed-automatic.timer
+-00644 0 0    272 /usr/lib/systemd/system/rpm-ostreed.service
+-00644 0 0    102 /usr/lib/systemd/system-preset/40-rpm-ostree-auto.preset
+-00644 0 0    622 /usr/lib/tmpfiles.d/rpm-ostree-0-integration.conf
+-00644 0 0   1082 /usr/lib/tmpfiles.d/rpm-ostree-1-autovar.conf
+-00755 0 0     53 /usr/libexec/rpm-ostreed
+-00644 0 0   3049 /usr/share/bash-completion/completions/rpm-ostree
+-00644 0 0  15997 /usr/share/dbus-1/interfaces/org.projectatomic.rpmostree1.xml
+-00644 0 0    133 /usr/share/dbus-1/system-services/org.projectatomic.rpmostree1.service
+-00644 0 0   6160 /usr/share/polkit-1/actions/org.projectatomic.rpmostree1.policy
+d00755 0 0      0 /usr/share/rpm-ostree
+-00644 0 0   1169 /usr/share/rpm-ostree/treefile.json
+</code></pre><p><strong>atomic</strong> is really an alias for rpm-ostree command. The last file <strong>treefile.json</strong> is not installed by the rpm-ostree package, it is actually downloaded from the server, as we will see in the next chapter. For now, let us notice <strong>&quot;osname&quot; : &quot;photon&quot;,  &quot;ref&quot; : &quot;photon/1.0/x86_64/minimal&quot;,  &quot;automatic_version_prefix&quot; : &quot;1.0_minimal&quot;</strong>, that matches what we have known so far, and also the <strong>&quot;documentation&quot; : false</strong> setting, that explains why there are no manual files installed for rpm-ostree, and in fact for any package.</p>
+<pre><code>root@photon-host [ /usr/share/rpm-ostree ]# ls -l /usr/share/man/man1 
+total 0
+</code></pre><h2 id="listing-configuration-changes">Listing configuration changes</h2>
+<p>To diff the current /etc configuration versus default /etc (from the base image), this command will show the <strong>M</strong>odified, <strong>A</strong>dded and <strong>D</strong>eleted files:</p>
+<pre><code>root@photon-host [ ~ ]# ostree admin config-diff
+M    ssh/sshd_config
+M    machine-id
+M    fstab
+M    hosts
+M    mtab
+M    shadow
+A    ssh/ssh_host_rsa_key
+A    ssh/ssh_host_rsa_key.pub
+A    ssh/ssh_host_dsa_key
+A    ssh/ssh_host_dsa_key.pub
+A    ssh/ssh_host_ecdsa_key
+A    ssh/ssh_host_ecdsa_key.pub
+A    ssh/ssh_host_ed25519_key
+A    ssh/ssh_host_ed25519_key.pub
+A    udev/hwdb.bin
+A    resolv.conf
+A    hostname
+A    localtime
+A    .pwd.lock
+A    .updated
+</code></pre><h2 id="listing-packages">Listing packages</h2>
+<p>The following is the rpm-ostree command that lists all the packages for that branch, extracted from RPM database.   </p>
+<pre><code>root@photon-host [ ~ ]# rpm-ostree db list photon/3.0/x86_64/minimal
+ostree commit: photon/3.0/x86_64/minimal (a31a843985e314a9e70bcf09afe8d59f7351817d9fb743c2b6dab84f20833650)
+ Linux-PAM-1.3.0-1.ph3.x86_64
+ attr-2.4.48-1.ph3.x86_64
+ autogen-libopts-5.18.16-1.ph3.x86_64
+ bash-4.4.18-1.ph3.x86_64
+ bc-1.07.1-1.ph3.x86_64
+ binutils-2.31.1-6.ph3.x86_64
+ bridge-utils-1.6-1.ph3.x86_64
+ bubblewrap-0.3.0-2.ph3.x86_64
+ bzip2-1.0.6-10.ph3.x86_64
+ bzip2-libs-1.0.6-10.ph3.x86_64
+ ca-certificates-20190521-1.ph3.x86_64
+ ca-certificates-pki-20190521-1.ph3.x86_64
+ coreutils-8.30-1.ph3.x86_64
+ cpio-2.12-4.ph3.x86_64
+ cracklib-2.9.6-8.ph3.x86_64
+ cracklib-dicts-2.9.6-8.ph3.x86_64
+ curl-7.61.1-4.ph3.x86_64
+ curl-libs-7.61.1-4.ph3.x86_64
+ dbus-1.13.6-1.ph3.x86_64
+ device-mapper-2.02.181-1.ph3.x86_64
+ device-mapper-libs-2.02.181-1.ph3.x86_64
+ docker-18.06.2-3.ph3.x86_64
+ dracut-048-1.ph3.x86_64
+ dracut-tools-048-1.ph3.x86_64
+ e2fsprogs-libs-1.44.3-2.ph3.x86_64
+ elfutils-0.176-1.ph3.x86_64
+ elfutils-libelf-0.176-1.ph3.x86_64
+ expat-2.2.6-2.ph3.x86_64
+ expat-libs-2.2.6-2.ph3.x86_64
+ file-5.34-1.ph3.x86_64
+ file-libs-5.34-1.ph3.x86_64
+ filesystem-1.1-4.ph3.x86_64
+ findutils-4.6.0-5.ph3.x86_64
+ flex-2.6.4-2.ph3.x86_64
+ fuse-2.9.7-5.ph3.x86_64
+ gc-8.0.0-1.ph3.x86_64
+ glib-2.58.0-4.ph3.x86_64
+ glib-networking-2.59.1-2.ph3.x86_64
+ glibc-2.28-4.ph3.x86_64
+ glibc-iconv-2.28-4.ph3.x86_64
+ gmp-6.1.2-2.ph3.x86_64
+ gnupg-2.2.17-1.ph3.x86_64
+ gnutls-3.6.3-3.ph3.x86_64
+ gobject-introspection-1.58.0-2.ph3.x86_64
+ gpgme-1.11.1-2.ph3.x86_64
+ grep-3.1-1.ph3.x86_64
+ grub2-2.02-13.ph3.x86_64
+ grub2-efi-2.02-13.ph3.x86_64
+ grub2-pc-2.02-13.ph3.x86_64
+ guile-2.0.13-2.ph3.x86_64
+ gzip-1.9-1.ph3.x86_64
+ iana-etc-2.30-2.ph3.noarch
+ icu-61.1-1.ph3.x86_64
+ iproute2-4.18.0-2.ph3.x86_64
+ iptables-1.8.3-1.ph3.x86_64
+ js-1.8.5-2.ph3.x86_64
+ json-c-0.13.1-1.ph3.x86_64
+ json-glib-1.4.4-1.ph3.x86_64
+ kmod-25-1.ph3.x86_64
+ krb5-1.17-1.ph3.x86_64
+ libapparmor-2.13-7.ph3.x86_64
+ libarchive-3.3.3-3.ph3.x86_64
+ libassuan-2.5.1-1.ph3.x86_64
+ libcap-2.25-8.ph3.x86_64
+ libdb-5.3.28-2.ph3.x86_64
+ libffi-3.2.1-6.ph3.x86_64
+ libgcc-7.3.0-4.ph3.x86_64
+ libgcrypt-1.8.3-2.ph3.x86_64
+ libgomp-7.3.0-4.ph3.x86_64
+ libgpg-error-1.32-1.ph3.x86_64
+ libgsystem-2015.2-2.ph3.x86_64
+ libksba-1.3.5-1.ph3.x86_64
+ libltdl-2.4.6-3.ph3.x86_64
+ libmodulemd-2.4.0-1.ph3.x86_64
+ libpsl-0.20.2-1.ph3.x86_64
+ librepo-1.10.2-1.ph3.x86_64
+ libseccomp-2.4.0-1.ph3.x86_64
+ libselinux-2.8-1.ph3.x86_64
+ libsepol-2.8-1.ph3.x86_64
+ libsolv-0.6.35-1.ph3.x86_64
+ libsoup-2.64.0-2.ph3.x86_64
+ libssh2-1.9.0-1.ph3.x86_64
+ libstdc++-7.3.0-4.ph3.x86_64
+ libtasn1-4.13-1.ph3.x86_64
+ libtool-2.4.6-3.ph3.x86_64
+ libunistring-0.9.10-1.ph3.x86_64
+ libxml2-2.9.9-1.ph3.x86_64
+ libyaml-0.2.1-2.ph3.x86_64
+ linux-4.19.65-3.ph3.x86_64
+ m4-1.4.18-2.ph3.x86_64
+ mpfr-4.0.1-1.ph3.x86_64
+ ncurses-6.1-1.ph3.x86_64
+ ncurses-libs-6.1-1.ph3.x86_64
+ ncurses-terminfo-6.1-1.ph3.x86_64
+ net-tools-1.60-11.ph3.x86_64
+ nettle-3.4-1.ph3.x86_64
+ npth-1.6-1.ph3.x86_64
+ nspr-4.21-1.ph3.x86_64
+ nss-altfiles-2.23.0-1.ph3.x86_64
+ nss-libs-3.44-2.ph3.x86_64
+ openssh-7.8p1-5.ph3.x86_64
+ openssh-clients-7.8p1-5.ph3.x86_64
+ openssh-server-7.8p1-5.ph3.x86_64
+ openssl-1.0.2s-1.ph3.x86_64
+ ostree-2019.2-1.ph3.x86_64
+ ostree-grub2-2019.2-1.ph3.x86_64
+ ostree-libs-2019.2-1.ph3.x86_64
+ pcre-8.42-1.ph3.x86_64
+ pcre-libs-8.42-1.ph3.x86_64
+ photon-release-3.0-3.ph3.noarch
+ photon-repos-3.0-3.ph3.noarch
+ pinentry-1.1.0-1.ph3.x86_64
+ pkg-config-0.29.2-2.ph3.x86_64
+ polkit-0.113-5.ph3.x86_64
+ popt-1.16-5.ph3.x86_64
+ procps-ng-3.3.15-1.ph3.x86_64
+ python3-3.7.3-2.ph3.x86_64
+ python3-libs-3.7.3-2.ph3.x86_64
+ readline-7.0-2.ph3.x86_64
+ rpm-libs-4.14.2-4.ph3.x86_64
+ rpm-ostree-2019.3-1.ph3.x86_64
+ sed-4.5-1.ph3.x86_64
+ shadow-4.6-3.ph3.x86_64
+ shadow-tools-4.6-3.ph3.x86_64
+ sqlite-libs-3.27.2-3.ph3.x86_64
+ systemd-239-13.ph3.x86_64
+ util-linux-2.32-1.ph3.x86_64
+ util-linux-libs-2.32-1.ph3.x86_64
+ vim-8.1.0388-4.ph3.x86_64
+ which-2.21-5.ph3.x86_64
+ xz-5.2.4-1.ph3.x86_64
+ xz-libs-5.2.4-1.ph3.x86_64
+ zchunk-1.1.1-1.ph3.x86_64
+ zchunk-libs-1.1.1-1.ph3.x86_64
+ zlib-1.2.11-1.ph3.x86_64
+</code></pre><h2 id="querying-for-package-details">Querying for package details</h2>
+<p>We are able to use the query option of rpm to make sure any package have been installed properly. The files list should match the previous file mappings in 4.2, so let&apos;s check package <strong>rpm-ostree</strong>. As we&apos;ve seen, manual files listed here are actually missing, they were not installed.</p>
+<pre><code>root@photon-host [ /usr/share/man/man1 ]# rpm -ql  rpm-ostree
+/usr/bin/atomic
+/usr/bin/rpm-ostree
+/usr/lib/girepository-1.0/RpmOstree-1.0.typelib
+/usr/lib/librpmostree-1.so.1
+/usr/lib/librpmostree-1.so.1.0.0
+/usr/lib/rpm-ostree
+/usr/lib/rpm-ostree/tmpfiles-ostree-integration.conf
+/usr/share/man/man1/atomic.1.gz
+/usr/share/man/man1/rpm-ostree.1.gz
+</code></pre><h2 id="why-am-i-unable-to-install-upgrade-or-uninstall-packages">Why am I unable to install, upgrade or uninstall packages?</h2>
+<p>The OSTree host installer needs the server URL or the server repository. </p>
+<p>When you perform the installation using the repo, the install packages are located under the layer package.  When you install with the URL, the packages are located under the local packages.</p>
+<p>You can use the <code>rpm-ostree uninstall</code> command to uninstall only the layered and local packages but not the base packages. To modify the base packages, you can use the <code>rpm-ostree override</code> command. </p>
+<p>When you run <code>rpm-ostree upgrade</code>, the command will only upgrade packages based on the commit available in the server.</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#deployments" class="navigation navigation-prev " aria-label="Previous page: Deployments">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#commit-history" class="navigation navigation-next " aria-label="Next page: Commit history">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Querying for commit, file and package metadata","level":"1.4.11.4","depth":3,"next":{"title":"Commit history","level":"1.4.11.4.1","depth":4,"anchor":"#commit-history","path":"photon_admin/Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.md","ref":"photon_admin/Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.md#commit-history","articles":[]},"previous":{"title":"Deployments","level":"1.4.11.3.6","depth":4,"anchor":"#deployments","path":"photon_admin/Photon-RPM-OStree-3-Concepts-in-action.md","ref":"photon_admin/Photon-RPM-OStree-3-Concepts-in-action.md#deployments","articles":[]},"dir":"ltr"},"config":{"plugins":["insert-logo","chapter-fold","edit-link","noembed"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"noembed":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit this Page","base":"https://github.com/vmware/photon/tree/master/docs"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"insert-logo":{"style":"background: none","url":"photonos-logo-sm.png"}},"theme":"default","pdf":{"pageBreaksBefore":"/","headerTemplate":"_TITLE_","paperSize":"letter","margin":{"right":62,"left":62,"top":56,"bottom":56},"fontSize":12,"fontFamily":"Arial","footerTemplate":"_PAGENUM_","chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"VMware Photon OS 3.0 Documentation","gitbook":"3.x.x"},"file":{"path":"photon_admin/Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.md","mtime":"2019-11-06T10:24:29.697Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-07T11:41:25.485Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-insert-logo/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-chapter-fold/chapter-fold.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-edit-link/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-noembed/scripts.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
