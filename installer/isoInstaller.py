@@ -5,6 +5,9 @@
 import os
 import subprocess
 import shlex
+import requests
+import time
+import json
 from argparse import ArgumentParser
 from installer import Installer
 from commandutils import CommandUtils
@@ -70,14 +73,14 @@ class IsoInstaller(object):
                 except Exception as e:
                     err_msg = e
 
-                self.logger.warning(ks_file_error)
-                self.logger.warning("error msg: {0}".format(err_msg))
-                self.logger.warning("retry in a second")
+                print(ks_file_error)
+                print("error msg: {0}".format(err_msg))
+                print("retry in a second")
                 time.sleep(wait)
                 wait = wait * 2
 
             # Something went wrong
-            self.logger.error(ks_file_error)
+            print(ks_file_error)
             raise Exception(err_msg)
         else:
             if path.startswith("cdrom:/"):
@@ -105,7 +108,7 @@ class IsoInstaller(object):
         elif cd_search == "cdrom":
             cmdline.append('/dev/cdrom')
         else:
-            self.logger.error("Unsupported installer media, check photon.media in kernel cmdline")
+            print("Unsupported installer media, check photon.media in kernel cmdline")
             raise Exception("Can not mount the cd")
 
         cmdline.extend(['-o', 'ro', mount_path])
@@ -117,10 +120,10 @@ class IsoInstaller(object):
             if retval == 0:
                 self.cd_mount_path = mount_path
                 return
-            self.logger.error("Failed to mount the cd, retry in a second")
+            print("Failed to mount the cd, retry in a second")
             time.sleep(1)
-        self.logger.error("Failed to mount the cd, exiting the installer")
-        self.logger.error("check the logs for more details")
+        print("Failed to mount the cd, exiting the installer")
+        print("check the logs for more details")
         raise Exception("Can not mount the cd")
 
 
