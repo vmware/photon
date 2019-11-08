@@ -3,7 +3,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.8.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -20,6 +20,8 @@ Requires:       python2
 Requires:       python2-libs
 # Required for %check
 Requires:       python2-devel
+Requires:       python-jinja2
+Requires:       PyYAML
 
 %description
 Ansible is a radically simple IT automation system. It handles configuration-management, application deployment, cloud provisioning, ad-hoc task-execution, and multinode orchestration - including trivializing things like zero downtime rolling updates with load balancers.
@@ -45,6 +47,8 @@ python2 setup.py test
 %{python2_sitelib}/*
 
 %changelog
+*   Fri Nov 08 2019 Tapas Kundu <tkundu@vmware.com> 2.8.3-3
+-   Fix dependencies
 *   Mon Sep 09 2019 Anish Swaminathan <anishs@vmware.com> 2.8.3-2
 -   Patch to support tdnf operations
 *   Mon Aug 12 2019 Shreenidhi Shedi <sshedi@vmware.com> 2.8.3-1
