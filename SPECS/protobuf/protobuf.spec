@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        2.6.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -17,6 +17,8 @@ BuildRequires:  libstdc++
 BuildRequires:  curl
 BuildRequires:  make
 BuildRequires:  unzip
+BuildRequires:  python-dateutil
+BuildRequires:  python3-dateutil
 
 %description
 Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data. You can find protobuf's documentation on the Google Developers site.
@@ -146,6 +148,8 @@ make check
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Fri Nov 08 2019 Tapas Kundu <tkundu@vmware.com> 2.6.1-6
+-   Added python-dateutils in BR.
 *   Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 2.6.1-5
 -   Modified the path of JAVA_HOME
 *   Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6.1-4
