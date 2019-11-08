@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.19.79
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.82
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=0a45220bfcf4bf33da8b1aa1eb2967e71b66e8aa
+%define sha1 linux=358ecd8e4b70a3396e2bbc2a15f29724bafde87c
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -41,8 +41,6 @@ Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 #FIPS patches - allow some algorithms
 Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2019-17133
-Patch27:        0001-cfg80211_wext_Reject_malformed_SSID_elements.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
@@ -229,7 +227,6 @@ Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
 %patch13 -p1
 %patch24 -p1
 %patch26 -p1
-%patch27 -p1
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
@@ -530,6 +527,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Nov 08 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.82-1
+-   Update to version 4.19.82
 *   Thu Nov 07 2019 Jorgen Hansen (VMware) <jhansen@vmware.com> 4.19.79-3
 -   Fix vsock QP detach with outgoing data
 *   Thu Oct 24 2019 Ajay Kaher <akaher@vmware.com> 4.19.79-2
