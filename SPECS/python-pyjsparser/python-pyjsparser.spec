@@ -3,7 +3,7 @@
 
 Summary:        Fast javascript parser (based on esprima.js).
 Name:           python-pyjsparser
-Version:        2.5.2
+Version:        2.7.1
 Release:        1%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/pyjsparser/2.5.2
 Source0:        https://files.pythonhosted.org/packages/source/p/pyjsparser/pyjsparser-%{version}.tar.gz
-%define         sha1 pyjsparser=5a03ca6042b2f5bb2226158c8e7f15210f4eb38e
+%define         sha1 pyjsparser=760fc7a1dacefa484fea4b0c4273973eb6af76b2
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -68,5 +68,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Nov 10 2019 Tapas Kundu <tkundu@vmware.com> 2.7.1-1
+-   Update to 2.7.1
 *   Mon Sep 11 2017 Xiaolin Li <xiaolinl@vmware.com> 2.5.2-1
 -   Initial packaging for Photon
