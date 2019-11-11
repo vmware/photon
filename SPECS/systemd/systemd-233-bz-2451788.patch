@@ -1,0 +1,119 @@
+diff -rupN systemd-233/src/network/networkd-link.c systemd-233-bz-2257208/src/network/networkd-link.c
+--- systemd-233/src/network/networkd-link.c	2019-11-14 10:43:23.000000000 +0000
++++ systemd-233-bz-2257208/src/network/networkd-link.c	2019-11-14 13:57:27.942093570 +0000
+@@ -742,7 +742,7 @@ void link_check_ready(Link *link) {
+         if (!link->network)
+                 return;
+ 
+-        if (!link->static_configured)
++        if (!link->static_routes_configured)
+                 return;
+ 
+         if (link_ipv4ll_enabled(link))
+@@ -779,12 +779,12 @@ static int route_handler(sd_netlink *rtn
+         _cleanup_link_unref_ Link *link = userdata;
+         int r;
+ 
+-        assert(link->link_messages > 0);
++        assert(link->route_messages > 0);
+         assert(IN_SET(link->state, LINK_STATE_SETTING_ADDRESSES,
+                       LINK_STATE_SETTING_ROUTES, LINK_STATE_FAILED,
+                       LINK_STATE_LINGER));
+ 
+-        link->link_messages--;
++        link->route_messages--;
+ 
+         if (IN_SET(link->state, LINK_STATE_FAILED, LINK_STATE_LINGER))
+                 return 1;
+@@ -793,9 +793,9 @@ static int route_handler(sd_netlink *rtn
+         if (r < 0 && r != -EEXIST)
+                 log_link_warning_errno(link, r, "Could not set route: %m");
+ 
+-        if (link->link_messages == 0) {
++        if (link->route_messages == 0) {
+                 log_link_debug(link, "Routes set");
+-                link->static_configured = true;
++                link->static_routes_configured = true;
+                 link_check_ready(link);
+         }
+ 
+@@ -827,12 +827,12 @@ static int link_enter_set_routes(Link *l
+                         r = route_configure(rt, link, route_handler);
+                         if (r < 0)
+                                 return log_link_warning_errno(link, r, "Could not set routes: %m");
+-                        if (r > 0)
+-                                link->link_messages++;
++                        if (r >= 0)
++                                link->route_messages++;
+                 }
+ 
+-        if (link->link_messages == 0) {
+-                link->static_configured = true;
++        if (link->route_messages == 0) {
++                link->static_routes_configured  = true;
+                 link_check_ready(link);
+         } else
+                 log_link_debug(link, "Setting routes");
+@@ -866,11 +866,11 @@ static int address_handler(sd_netlink *r
+         assert(m);
+         assert(link);
+         assert(link->ifname);
+-        assert(link->link_messages > 0);
++        assert(link->address_messages > 0);
+         assert(IN_SET(link->state, LINK_STATE_SETTING_ADDRESSES,
+                LINK_STATE_FAILED, LINK_STATE_LINGER));
+ 
+-        link->link_messages--;
++        link->address_messages--;
+ 
+         if (IN_SET(link->state, LINK_STATE_FAILED, LINK_STATE_LINGER))
+                 return 1;
+@@ -881,7 +881,7 @@ static int address_handler(sd_netlink *r
+         else if (r >= 0)
+                 manager_rtnl_process_address(rtnl, m, link->manager);
+ 
+-        if (link->link_messages == 0) {
++        if (link->address_messages == 0) {
+                 log_link_debug(link, "Addresses set");
+                 link_enter_set_routes(link);
+         }
+@@ -1022,7 +1022,7 @@ static int link_enter_set_addresses(Link
+                         return r;
+                 }
+ 
+-                link->link_messages++;
++                link->address_messages++;
+         }
+ 
+         /* now that we can figure out a default address for the dhcp server,
+@@ -1145,7 +1145,7 @@ static int link_enter_set_addresses(Link
+                 log_link_debug(link, "Offering DHCPv4 leases");
+         }
+ 
+-        if (link->link_messages == 0)
++        if (link->address_messages == 0)
+                 link_enter_set_routes(link);
+         else
+                 log_link_debug(link, "Setting addresses");
+diff -rupN systemd-233/src/network/networkd-link.h systemd-233-bz-2257208/src/network/networkd-link.h
+--- systemd-233/src/network/networkd-link.h	2019-11-14 10:43:22.000000000 +0000
++++ systemd-233-bz-2257208/src/network/networkd-link.h	2019-11-14 13:57:17.933902420 +0000
+@@ -84,7 +84,8 @@ typedef struct Link {
+         LinkState state;
+         LinkOperationalState operstate;
+ 
+-        unsigned link_messages;
++        unsigned address_messages;
++        unsigned route_messages;
+         unsigned enslaving;
+ 
+         Set *addresses;
+@@ -108,7 +109,7 @@ typedef struct Link {
+         bool ipv4ll_address:1;
+         bool ipv4ll_route:1;
+ 
+-        bool static_configured;
++        bool static_routes_configured;
+ 
+         LIST_HEAD(Address, pool_addresses);
+ 
