@@ -1,18 +1,20 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
-Version:        1.9.7
-Release:        3%{?dist}
+Version:        1.10.4
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    subversion=874b81749cdc3e88152d103243c3623ac6338388
+%define sha1    subversion=a9052724d94fe5d3ee886473eb7cdc4297af4cdd
 Patch0:         subversion-CVE-2018-11782.patch
+Patch1:         subversion-CVE-2019-0203.patch
 Requires:       apr
 Requires:       apr-util
 Requires:       serf
+Requires:       utf8proc
 BuildRequires:  apr-devel
 BuildRequires:  apr-util
 BuildRequires:  apr-util-devel
@@ -20,6 +22,7 @@ BuildRequires:  sqlite-devel
 BuildRequires:  libtool
 BuildRequires:  expat-devel
 BuildRequires:  serf-devel
+BuildRequires:  utf8proc-devel
 
 %description
 The Apache version control system.
@@ -33,17 +36,19 @@ Requires:   %{name} = %{version}
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 ./configure --prefix=%{_prefix}         \
         --disable-static                \
         --with-apache-libexecdir        \
-        --with-serf=%{_prefix}
+        --with-serf=%{_prefix}          \
+        --with-lz4=internal
 
 make %{?_smp_mflags}
 
 %install
-make -j1 DESTDIR=%{buildroot} install 
+make -j1 DESTDIR=%{buildroot} install
 %find_lang %{name}
 
 %check
@@ -67,6 +72,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Mon Nov 11 2019 Prashant S Chauhan <psinghchauha@vmware.com> 1.10.4-1
+-   Fix for CVE-2018-11803, update to version 1.10.4
 *   Fri Oct 11 2019 Ankit Jain <ankitja@vmware.com> 1.9.7-3
 -   Fix for CVE-2018-11782 and CVE-2019-0203
 *   Mon Jan 22 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.7-2

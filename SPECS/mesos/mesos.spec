@@ -3,7 +3,7 @@
 Summary:        Mesos
 Name:           mesos
 Version:        1.5.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://mesos.apache.org
 Group:          Applications/System
@@ -30,13 +30,14 @@ BuildRequires:  python-xml
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  sqlite-devel
+BuildRequires:  utf8proc-devel
 Requires:       apr >= 1.5.2
 Requires:       apr-util >= 1.5.4
 Requires:       cyrus-sasl >= 2.1.26
 Requires:       expat
 Requires:       openjre8 >= 1.8.0.45
 Requires:       subversion >= 1.8.13
-
+Requires:       utf8proc
 
 %description
  This package installs mesos services that allow photon to run tasks in mesos
@@ -65,10 +66,10 @@ sed -i "/xlocale.h/d" 3rdparty/stout/include/stout/jsonify.hpp
     --bindir=%{_bindir} \
     --libdir=%{_libdir} \
     --sysconfdir=%{_sysconfdir}
-make %{?_smp_mflags}
+make
 
 #%check
-#make %{?_smp_mflags} check
+#make
 
 %install
 make DESTDIR=%{buildroot} install
@@ -104,6 +105,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Fri Dec 13 2019 Prashant S Chauhan <psinghchauha@vmware.com> 1.5.3-2
+-   Removed %{?_smp_mflags} since build was running out of memory
 *   Thu May 30 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.5.3-1
 -   Update to 1.5.3 includes fix for CVE-2019-0204
 *   Wed Feb 27 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.2-1
