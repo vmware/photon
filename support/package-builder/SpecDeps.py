@@ -115,7 +115,7 @@ class SpecDependencyGenerator(object):
             sortedList.append(elem[0])
         # construct all children nodes
         if displayOption == "tree":
-            for k, v in parent.iteritems():
+            for k, v in parent.items():
                 children.setdefault(v, []).append(k)
             if inputType == "json":
                 self.logger.info("Dependency Mappings for {}".format(inputValue) + " :")
