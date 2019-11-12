@@ -1,13 +1,14 @@
 Summary:        RPM installer/updater
 Name:           yum
 Version:        3.4.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         yumconf.patch
 Patch1:         parser.patch
 Patch2:         yum-repo-name.patch
+Patch3:         yum-CVE-2013-1910.patch
 %define sha1    yum=8ec5d339e4518a7908fd4db0721740288a3d8b6c
 URL:            http://yum.baseurl.org/
 Vendor:         VMware, Inc.
@@ -80,6 +81,7 @@ automatically, prompting the user for permission as necessary.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 make
@@ -202,6 +204,8 @@ touch $RPM_BUILD_ROOT/var/lib/yum/uuid
 %exclude %{_mandir}/man*/yum-updatesd*
 
 %changelog
+*   Tue Nov 12 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.4.3-9
+-   Fix CVE-2013-1910
 *   Wed Aug 23 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.3-8
 -   Replaced variables in repo name.
 *   Wed Mar 29 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.3-7
