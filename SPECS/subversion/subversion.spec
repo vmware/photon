@@ -1,20 +1,20 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
-Version:        1.9.4
-Release:        7%{?dist}
+Version:        1.10.4
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    subversion=bc7d51fdda43bea01e1272dfe9d23d0a9d6cd11c
-Patch0:         subversion-CVE-2017-9800.patch
-Patch1:         subversion-CVE-2016-8734.patch
-Patch2:         subversion-CVE-2018-11782.patch
+%define sha1    subversion=a9052724d94fe5d3ee886473eb7cdc4297af4cdd
+Patch0:         subversion-CVE-2018-11782.patch
+Patch1:         subversion-CVE-2019-0203.patch
 Requires:       apr
 Requires:       apr-util
 Requires:       serf
+Requires:       utf8proc
 BuildRequires:  apr-devel
 BuildRequires:  apr-util
 BuildRequires:  apr-util-devel
@@ -22,6 +22,7 @@ BuildRequires:  sqlite-autoconf
 BuildRequires:  libtool
 BuildRequires:  expat
 BuildRequires:  serf-devel
+BuildRequires:  utf8proc-devel
 
 %description
 The Apache version control system.
@@ -35,13 +36,13 @@ Requires:       %{name} = %{version}
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p0
-%patch2 -p0
+%patch1 -p1
 %build
 ./configure --prefix=%{_prefix}         \
             --disable-static            \
             --with-apache-libexecdir    \
-            --with-serf=%{_prefix}
+            --with-serf=%{_prefix}      \
+            --with-lz4=internal
 
 make %{?_smp_mflags}
 
@@ -64,6 +65,8 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_datadir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Nov 11 2019 Prashant S Chauhan <psinghchauha@vmware.com> 1.10.4-1
+-   Fix CVE-2018-11803 update to version 1.10.4
 *   Fri Oct 11 2019 Ankit Jain <ankitja@vmware.com> 1.9.4-7
 -   Fix for CVE-2018-11782 and CVE-2019-0203
 *   Thu Feb 01 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-6
