@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.19.82
+Version:        4.19.84
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=358ecd8e4b70a3396e2bbc2a15f29724bafde87c
+%define sha1 linux=5af921fa4772749c2fe8818dea3554fe4ad58faa
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -41,6 +41,8 @@ Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 #FIPS patches - allow some algorithms
 Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Fix CVE-2019-18814
+Patch27:        apparmor-Fix-use-after-free-in-aa_audit_rule_init.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
@@ -227,6 +229,7 @@ Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
 %patch13 -p1
 %patch24 -p1
 %patch26 -p1
+%patch27 -p1
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
@@ -527,6 +530,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.84-1
+-   Update to version 4.19.84
+-   Fix CVE-2019-18814
 *   Fri Nov 08 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.82-1
 -   Update to version 4.19.82
 *   Thu Nov 07 2019 Jorgen Hansen (VMware) <jhansen@vmware.com> 4.19.79-3
