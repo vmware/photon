@@ -18,6 +18,12 @@ Deployments:
 
 ## Enable Automatic Updates
 
+1. Run the following command:
+
+```
+$ systemctl restart rpm-ostreed
+```
+
 1. To enable automatic background updates, edit the `/etc/rpm-ostreed.conf`, and include the below lines in the `Daemon` section:
 
     ```
@@ -29,9 +35,8 @@ Deployments:
 1. Run the following commands:
 
     ```
-    $ systemctl enable rpm-ostree-automatic.timer 
-    $ systemctl start rpm-ostree-automatic.timer 
-    
+    $ systemctl reload rpm-ostreed
+    $ systemctl enable rpm-ostree-automatic.timer --now  
     $ systemctl restart rpm-ostree-automatic
     ```
 
