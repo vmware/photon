@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.82
+Version:        4.19.84
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=358ecd8e4b70a3396e2bbc2a15f29724bafde87c
+%define sha1 linux=5af921fa4772749c2fe8818dea3554fe4ad58faa
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -38,6 +38,8 @@ Patch19:        06-pv-ops-boot_clock.patch
 Patch20:        07-vmware-only.patch
 
 Patch22:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Fix CVE-2019-18814
+Patch23:        apparmor-Fix-use-after-free-in-aa_audit_rule_init.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
@@ -117,6 +119,7 @@ The Linux package contains the Linux kernel doc files
 %patch19 -p1
 %patch20 -p1
 %patch22 -p1
+%patch23 -p1
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
@@ -230,6 +233,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.84-1
+-   Update to version 4.19.84
+-   Fix CVE-2019-18814
 *   Fri Nov 08 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.82-1
 -   Update to version 4.19.82
 *   Thu Nov 07 2019 Jorgen Hansen (VMware) <jhansen@vmware.com> 4.19.79-2
