@@ -3,41 +3,21 @@
 
 set -e
 
-pushd src/powershell-unix
-dotnet restore
-popd
+for f in src/powershell-unix src/ResGen src/TypeCatalogGen; do
+  dotnet restore $f
+done
 
 pushd src/ResGen
-dotnet restore
 dotnet run
 popd
 
 pushd src
-
-targetFile="Microsoft.PowerShell.SDK/obj/Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets"
-cat > $targetFile <<-"EOF"
-<Project>
-    <Target Name="_GetDependencies"
-            DependsOnTargets="ResolveAssemblyReferencesDesignTime">
-        <ItemGroup>
-            <_RefAssemblyPath Include="%(_ReferencesFromRAR.HintPath)%3B"  Condition=" '%(_ReferencesFromRAR.NuGetPackageId)' != 'Microsoft.Management.Infrastructure' "/>
-        </ItemGroup>
-        <WriteLinesToFile File="$(_DependencyFile)" Lines="@(_RefAssemblyPath)" Overwrite="true" />
-    </Target>
-</Project>
-EOF
+cp Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets Microsoft.PowerShell.SDK/obj
 dotnet msbuild Microsoft.PowerShell.SDK/Microsoft.PowerShell.SDK.csproj /t:_GetDependencies "/property:DesignTimeBuild=true;_DependencyFile=$(pwd)/TypeCatalogGen/powershell.inc" /nologo
 popd
 
 pushd src/TypeCatalogGen
-dotnet restore
 dotnet run ../System.Management.Automation/CoreCLR/CorePsTypeCatalog.cs powershell.inc
-popd
-
-#build libpsl
-pushd src/libpsl-native
-cmake -DCMAKE_BUILD_TYPE=Debug .
-make -j
 popd
 
 #
