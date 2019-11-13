@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.15
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -20,6 +20,7 @@ Patch8:         CVE-2018-20852.patch
 Patch9:         CVE-2019-16056.patch
 Patch10:        CVE-2019-16935.patch
 Patch11:        CVE-2019-17514.patch
+Patch12:        CVE-2019-5010.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
@@ -118,6 +119,7 @@ to build python programs.
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -236,6 +238,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Wed Nov 13 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-13
+-   Fix for CVE-2019-5010
 *   Thu Oct 31 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-12
 -   Fix for CVE-2019-17514
 *   Fri Oct 11 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-11
