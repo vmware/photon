@@ -757,6 +757,19 @@
             
         </li>
     
+        <li class="chapter " data-level="1.3.11.3" data-path="../photon_installation/enabling_RPi3_interfaces_using_devicetree.html">
+            
+                <a href="../photon_installation/enabling_RPi3_interfaces_using_devicetree.html">
+            
+                    
+                    Enabling Rpi3 Interfaces using Device Tree
+            
+                </a>
+            
+
+            
+        </li>
+    
 
             </ul>
             
@@ -3898,15 +3911,18 @@ Deployments:
            LayeredPackages: createrepo_c rpm wget
 </code></pre><h2 id="enable-automatic-updates">Enable Automatic Updates</h2>
 <ol>
+<li>Run the following command:</li>
+</ol>
+<pre><code>$ systemctl restart rpm-ostreed
+</code></pre><ol>
 <li><p>To enable automatic background updates, edit the <code>/etc/rpm-ostreed.conf</code>, and include the below lines in the <code>Daemon</code> section:</p>
 <pre><code> [Daemon]
  AutomaticUpdatePolicy=stage
  #IdleExitTimeout=60
 </code></pre></li>
 <li><p>Run the following commands:</p>
-<pre><code> $ systemctl enable rpm-ostree-automatic.timer 
- $ systemctl start rpm-ostree-automatic.timer 
-
+<pre><code> $ systemctl reload rpm-ostreed
+ $ systemctl enable rpm-ostree-automatic.timer --now  
  $ systemctl restart rpm-ostree-automatic
 </code></pre></li>
 <li><p>Verify that the automatic update feature has been enabled:</p>
@@ -3962,7 +3978,7 @@ Deployments:
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Automatic Updates","level":"1.4.11.8","depth":3,"next":{"title":"Enable Automatic Updates","level":"1.4.11.8.1","depth":4,"anchor":"#enable-automatic-updates","path":"photon_admin/RPM-OSTree-AutoUpdate.md","ref":"photon_admin/RPM-OSTree-AutoUpdate.md#enable-automatic-updates","articles":[]},"previous":{"title":"Automated install of a custom host via kickstart","level":"1.4.11.7.2","depth":4,"anchor":"#automated-install-of-a-custom-host-via-kickstart","path":"photon_admin/Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.md","ref":"photon_admin/Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.md#automated-install-of-a-custom-host-via-kickstart","articles":[]},"dir":"ltr"},"config":{"plugins":["insert-logo","chapter-fold","edit-link","noembed"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"noembed":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit this Page","base":"https://github.com/vmware/photon/tree/master/docs"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"insert-logo":{"style":"background: none","url":"photonos-logo-sm.png"}},"theme":"default","pdf":{"pageBreaksBefore":"/","headerTemplate":"_TITLE_","paperSize":"letter","margin":{"right":62,"left":62,"top":56,"bottom":56},"fontSize":12,"fontFamily":"Arial","footerTemplate":"_PAGENUM_","chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"VMware Photon OS 3.0 Documentation","gitbook":"3.x.x"},"file":{"path":"photon_admin/RPM-OSTree-AutoUpdate.md","mtime":"2019-11-06T10:24:29.720Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-07T11:41:25.485Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Automatic Updates","level":"1.4.11.8","depth":3,"next":{"title":"Enable Automatic Updates","level":"1.4.11.8.1","depth":4,"anchor":"#enable-automatic-updates","path":"photon_admin/RPM-OSTree-AutoUpdate.md","ref":"photon_admin/RPM-OSTree-AutoUpdate.md#enable-automatic-updates","articles":[]},"previous":{"title":"Automated install of a custom host via kickstart","level":"1.4.11.7.2","depth":4,"anchor":"#automated-install-of-a-custom-host-via-kickstart","path":"photon_admin/Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.md","ref":"photon_admin/Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.md#automated-install-of-a-custom-host-via-kickstart","articles":[]},"dir":"ltr"},"config":{"plugins":["insert-logo","chapter-fold","edit-link","noembed"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"noembed":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit this Page","base":"https://github.com/vmware/photon/tree/master/docs"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"insert-logo":{"style":"background: none","url":"photonos-logo-sm.png"}},"theme":"default","pdf":{"pageBreaksBefore":"/","headerTemplate":"_TITLE_","paperSize":"letter","margin":{"right":62,"left":62,"top":56,"bottom":56},"fontSize":12,"fontFamily":"Arial","footerTemplate":"_PAGENUM_","chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"VMware Photon OS 3.0 Documentation","gitbook":"3.x.x"},"file":{"path":"photon_admin/RPM-OSTree-AutoUpdate.md","mtime":"2019-11-14T11:31:24.736Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-14T11:31:52.311Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
