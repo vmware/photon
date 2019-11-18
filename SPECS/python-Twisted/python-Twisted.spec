@@ -3,15 +3,15 @@
 
 Summary:        An asynchronous networking framework written in Python
 Name:           python-Twisted
-Version:        18.7.0
-Release:        3%{?dist}
+Version:        19.10.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://twistedmatrix.com
 Source0:        https://pypi.python.org/packages/source/T/Twisted/Twisted-%{version}.tar.bz2
-%define sha1 Twisted=949c75da0426ca139a3128fecb484eeb7513087e
+%define sha1 Twisted=38a7f1b9c63ba0d2db553e2d210af2fd01b3ed21
 Patch0:        extra_dependency.patch
 Patch1:        no_packet.patch
 
@@ -130,6 +130,8 @@ popd
 %{_bindir}/cftp3
 
 %changelog
+*   Mon Nov 18 2019 Tapas Kundu <tkundu@vmware.com> 19.10.0-1
+-   Updated to 19.10.0 release
 *   Fri Aug 30 2019 Tapas Kundu <tkundu@vmware.com> 18.7.0-3
 -   Added requires as PyHamcrest
 *   Tue Oct 30 2018 Tapas Kundu <tkundu@vmware.com> 18.7.0-2
