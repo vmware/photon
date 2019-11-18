@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        9.6.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -10,6 +10,7 @@ Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
 %define sha1    postgresql=12ebacbe8138c17a4748b2c3ec6b7473a40a4ca1
+Patch0:         CVE-2019-10208.patch
 # Common libraries needed
 BuildRequires:  krb5-devel
 BuildRequires:  libxml2-devel
@@ -53,6 +54,7 @@ developing applications that use postgresql.
 
 %prep
 %setup -q
+%patch0 -p1
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h &&
 ./configure \
@@ -151,6 +153,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Mon Nov 18 2019 Prashant S Chauhan <psinghchauha@vmware.com> 9.6.14-2
+-   Added patch to fix CVE-2019-10208
 *   Tue Jun 25 2019 Siju Maliakkal <smaliakkal@vmware.com> 9.6.14-1
 -   Upgrade to 9.6.14 for CVE-2019-10164
 *   Tue Aug 21 2018 Keerthana K <keerthanak@vmware.com> 9.6.10-1
