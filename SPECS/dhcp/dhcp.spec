@@ -1,7 +1,7 @@
 Summary:	Dynamic host configuration protocol
 Name:		dhcp
 Version:	4.3.5
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	ISC
 Url:      	http://isc.org/products/DHCP/
 Source0:  	ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
@@ -14,6 +14,7 @@ Patch1:		dhcp-4.3.5-missing_ipv6-1.patch
 Patch2:         dhcp-CVE-2017-3144.patch
 Patch3:         dhcp-CVE-2018-5733.patch
 Patch4:         dhcp-nowplusinterval.patch
+Patch5:         dhcp-CVE-2018-5732.patch
 BuildRequires:	systemd
 %description
 The ISC DHCP package contains both the client and server programs for DHCP. dhclient (the client) is used for connecting to a network which uses DHCP to assign network addresses. dhcpd (the server) is used for assigning network addresses on private networks
@@ -49,6 +50,7 @@ The ISC DHCP Client, dhclient, provides a means for configuring one or more netw
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 %build
 CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'         \
         -D_PATH_DHCPD_CONF='\"/etc/dhcp/dhcpd.conf\"'               \
@@ -176,6 +178,8 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+*   Tue Nov 19 2019 Keerthana K <keerthanak@vmware.com> 4.3.5-7
+-   Fix CVE-2018-5732
 *   Thu Sep 19 2019 Keerthana K <keerthanak@vmware.com> 4.3.5-6
 -   Fix dhcpd fails with "Unable to set up timer: out of range"
 *   Fri May 10 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.5-5
