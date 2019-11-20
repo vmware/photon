@@ -16,9 +16,14 @@ from jsonwrapper import JsonWrapper
 class IsoInstaller(object):
     def __init__(self, options):
         install_config=None
-        self.cd_mount_path = None
-        cd_search = None
+        self.media_mount_path = None
+        photon_media = None
         ks_path = options.install_config_file
+        # Path to RPMS repository: local media or remote URL
+        # If --repo-path= provided - use it,
+        # if not provided - use kernel repo= parameter,
+        # if not provided - use /RPMS path from photon_media,
+        # exit otherwise.
         repo_path = options.repo_path
 
         with open('/proc/cmdline', 'r') as f:
@@ -32,14 +37,17 @@ class IsoInstaller(object):
                 if not repo_path:
                     repo_path = arg[len("repo="):]
             elif arg.startswith("photon.media="):
-                cd_search = arg[len("photon.media="):]
+                photon_media = arg[len("photon.media="):]
+
+        if photon_media:
+            self.mount_media(photon_media)
 
         if not repo_path:
-            print("Please specify RPM repo path.")
-            return
-
-        if cd_search:
-            self.mount_cd(cd_search)
+            if self.media_mount_path:
+                repo_path = self.media_mount_path + "/RPMS"
+            else:
+                print("Please specify RPM repo path.")
+                return
 
         if ks_path:
             install_config=self._load_ks_config(ks_path)
@@ -84,28 +92,28 @@ class IsoInstaller(object):
             raise Exception(err_msg)
         else:
             if path.startswith("cdrom:/"):
-                if self.cd_mount_path is None:
+                if self.media_mount_path is None:
                     raise Exception("cannot read ks config from cdrom, no cdrom specified")
-                path = os.path.join(self.cd_mount_path, path.replace("cdrom:/", "", 1))
+                path = os.path.join(self.media_mount_path, path.replace("cdrom:/", "", 1))
             return (JsonWrapper(path)).read()
 
-    def mount_cd(self, cd_search):
+    def mount_media(self, photon_media):
         """Mount the cd with RPMS"""
         # check if the cd is already mounted
-        if self.cd_mount_path:
+        if self.media_mount_path:
             return
-        mount_path = "/mnt/cdrom"
+        mount_path = "/mnt/media"
 
         # Mount the cd to get the RPMS
         os.makedirs(mount_path, exist_ok=True)
 
         # Construct mount cmdline
         cmdline = ['mount']
-        if cd_search.startswith("UUID="):
-            cmdline.extend(['-U', cd_search[len("UUID="):] ])
-        elif cd_search.startswith("LABEL="):
-            cmdline.extend(['-L', cd_search[len("LABEL="):] ])
-        elif cd_search == "cdrom":
+        if photon_media.startswith("UUID="):
+            cmdline.extend(['-U', photon_media[len("UUID="):] ])
+        elif photon_media.startswith("LABEL="):
+            cmdline.extend(['-L', photon_media[len("LABEL="):] ])
+        elif photon_media == "cdrom":
             cmdline.append('/dev/cdrom')
         else:
             print("Unsupported installer media, check photon.media in kernel cmdline")
@@ -118,7 +126,7 @@ class IsoInstaller(object):
             process = subprocess.Popen(cmdline)
             retval = process.wait()
             if retval == 0:
-                self.cd_mount_path = mount_path
+                self.media_mount_path = mount_path
                 return
             print("Failed to mount the cd, retry in a second")
             time.sleep(1)
