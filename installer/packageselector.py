@@ -11,6 +11,7 @@ from actionresult import ActionResult
 class PackageSelector(object):
     def __init__(self, maxy, maxx, install_config, options_file):
         self.install_config = install_config
+        self.inactive_screen = False
         self.maxx = maxx
         self.maxy = maxy
         self.win_width = 50
@@ -23,7 +24,8 @@ class PackageSelector(object):
 
         self.load_package_list(options_file)
 
-        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx,
+        if not self.inactive_screen:
+            self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx,
                              'Select Installation', True, action_panel=self.package_menu,
                              can_go_next=True, position=1)
 
@@ -49,9 +51,8 @@ class PackageSelector(object):
         package_list = []
 
         if len(options_sorted) == 1:
-            if 'packagelist_file' not in self.install_config:
-                self.install_config['packagelist_file'] = list(options_sorted)[0][1]['packagelist_file']
-                list(options_sorted)[0][1]['visible'] = True
+            self.inactive_screen = True
+            list(options_sorted)[0][1]['visible'] = True
 
         default_selected = 0
         visible_options_cnt = 0
@@ -67,8 +68,11 @@ class PackageSelector(object):
                 visible_options_cnt = visible_options_cnt + 1
 
 
-        self.package_menu = Menu(self.menu_starty, self.maxx, self.package_menu_items,
-                                 default_selected=default_selected, tab_enable=False)
+        if self.inactive_screen:
+            self.exit_function(self.package_menu_items[0][2])
+        else:
+            self.package_menu = Menu(self.menu_starty, self.maxx, self.package_menu_items,
+                                     default_selected=default_selected, tab_enable=False)
 
     def exit_function(self, selected_item_params):
         if selected_item_params[0] == 'ostree_host':
@@ -82,7 +86,7 @@ class PackageSelector(object):
         return ActionResult(True, {'custom': True})
 
     def display(self):
-        if 'packagelist_file' in self.install_config:
+        if self.inactive_screen:
             return ActionResult(None, {"inactive_screen": True})
 
         return self.window.do_action()
