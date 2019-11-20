@@ -138,7 +138,7 @@ mkdir -p ${INITRD}/etc/yum.repos.d
 cat > ${INITRD}/etc/yum.repos.d/photon-iso.repo << EOF
 [photon-iso]
 name=VMWare Photon Linux 1.0(x86_64)
-baseurl=file:///mnt/cdrom/RPMS
+baseurl=file:///mnt/media/RPMS
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
@@ -153,7 +153,7 @@ cd /installer
 ACTIVE_CONSOLE="\$(< /sys/devices/virtual/tty/console/active)"
 
 install() {
-  LANG=en_US.UTF-8 ./isoInstaller.py --json-file=$PACKAGE_LIST_FILE_BASE_NAME -r /mnt/cdrom/RPMS && shutdown -r now
+  LANG=en_US.UTF-8 ./isoInstaller.py --json-file=$PACKAGE_LIST_FILE_BASE_NAME && shutdown -r now
 }
 
 try_run_installer() {

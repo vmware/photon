@@ -138,7 +138,7 @@ class OstreeInstaller(object):
             self.run([['mkdir', '-p', '{}/repo'.format(self.photon_root)]])
             if self.install_config['ui']:
                 self.progress_bar.show_loading("Unpacking local OSTree repo")
-            self.run([['tar', '--warning=none', '-xf', '/mnt/cdrom/ostree-repo.tar.gz', '-C' '{}/repo'.format(self.photon_root)]])
+            self.run([['tar', '--warning=none', '-xf', '/mnt/media/ostree-repo.tar.gz', '-C' '{}/repo'.format(self.photon_root)]])
             self.local_repo_path = "{}/repo".format(self.photon_root)
             self.ostree_repo_url = self.repo_config['OSTREEREPOURL']
             self.ostree_ref = self.repo_config['OSTREEREFS']
