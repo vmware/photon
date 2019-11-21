@@ -1,7 +1,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.1910.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
@@ -87,8 +87,10 @@ make %{?_smp_mflags} check
 %{_libdir}/systemd/system/rsyslog.service
 %dir %{_sysconfdir}/rsyslog.d
 %{_sysconfdir}/systemd/journald.conf.d/*
-%{_sysconfdir}/rsyslog.conf
+%config(noreplace) %{_sysconfdir}/rsyslog.conf
 %changelog
+*   Thu Nov 21 2019 Tapas Kundu <tkundu@vmware.com> 8.1910.0-3
+-   Added config noreplace for rsyslog.conf
 *   Mon Nov 04 2019 Tapas Kundu <tkundu@vmware.com> 8.1910.0-2
 -   Built with imtcp and openssl
 -   Added patch to fix openssl version in rsyslog source
