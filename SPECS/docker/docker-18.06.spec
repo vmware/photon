@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -43,6 +43,10 @@ Requires:       glibc
 Requires:       libseccomp
 Requires:       systemd
 Requires:       device-mapper-libs
+
+# To fix downgrade from docker 18.09 to docker 18.06
+Obsoletes:      docker-cli
+Obsoletes:      docker-engine
 
 %description
 Docker is an open source project to build, ship and run any application as a lightweight container.
@@ -224,6 +228,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Thu Nov 21 2019 Ankit Jain <ankitja@vmware.com> 18.06.2-7
+-   Added Obsoletes to fix downgrade docker from 18.09 to 18.06
 *   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 18.06.2-6
 -   Bump up version to compile with go 1.13.3
 *   Fri Oct 11 2019 Ashwin H <ashwinh@vmware.com> 18.06.2-5
