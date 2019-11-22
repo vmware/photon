@@ -3,7 +3,7 @@
 Summary:        C++ L7 proxy and communication bus
 Name:           envoy
 Version:        1.10.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/lyft/envoy
 Source0:        %{name}-v%{version}.tar.gz
@@ -11,6 +11,9 @@ Source0:        %{name}-v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Patch0:         bazel-replace-tclap-mirror.patch
+
 BuildRequires:  backward-cpp
 BuildRequires:  c-ares-devel >= 1.11.0
 BuildRequires:  cmake
@@ -61,6 +64,9 @@ Envoy is a L7 proxy and communication bus designed for large modern service orie
 %prep
 %setup -q -c -n %{name}-v%{version}
 
+cd %{name}-%{version}
+%patch0 -p1
+
 %build
 cd envoy-%{version}
 echo -n "%{git_commit}" > SOURCE_VERSION
@@ -82,9 +88,11 @@ cp -rf configs/* %{buildroot}%{_sysconfdir}/envoy
 %config(noreplace) %{_sysconfdir}/envoy/*
 
 %changelog
+*   Fri Nov 22 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.10.0-3
+-   Fix build failure due to non-existent tclap repo.
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.10.0-2
 -   Bump up version to compile with new go
-*    Mon Jun 03 2019 Harinadh Dommaraju <hdommaraju@vmware.c0m> 1.10.0-1
--    Upgraded envoy package from 1.2.0 to 1.10.0 to fix CVE-2019-9901 & CVE-2019-9900
-*    Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-1
--    Initial version of envoy package for Photon.
+*   Mon Jun 03 2019 Harinadh Dommaraju <hdommaraju@vmware.c0m> 1.10.0-1
+-   Upgraded envoy package from 1.2.0 to 1.10.0 to fix CVE-2019-9901 & CVE-2019-9900
+*   Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-1
+-   Initial version of envoy package for Photon.

@@ -1,0 +1,76 @@
+From 648cfc3b6c1410d8b27aa33b6fc0392ab230d601 Mon Sep 17 00:00:00 2001
+From: Ismo Puustinen <ismo.puustinen@intel.com>
+Date: Tue, 19 Nov 2019 23:49:20 +0200
+Subject: [PATCH] bazel: replace tclap mirror. (#9072)
+
+Description:
+
+Change (non-existent) https://github.com/eile/tclap/ to
+https://github.com/mirror/tclap/. I didn't validate the new mirror in
+any way, but the downloded release file sha256sum stays the same. In
+the future the releases should probably be downloaded from the real
+upstream. However the release 1.2.1 tarball from
+https://sourceforge.net/projects/tclap/files/ did not have the same
+sha256sum as the release file which Envoy uses.
+
+Risk Level: Medium
+Testing: N/A
+Docs Changes: N/A
+Release Notes:
+Fixes #9071
+
+Signed-off-by: Ismo Puustinen <ismo.puustinen@intel.com>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ bazel/repositories.bzl         | 8 ++++----
+ bazel/repository_locations.bzl | 4 ++--
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/bazel/repositories.bzl b/bazel/repositories.bzl
+index f2cfc4c..3dbb623 100644
+--- a/bazel/repositories.bzl
++++ b/bazel/repositories.bzl
+@@ -176,7 +176,7 @@ def envoy_dependencies(skip_targets = []):
+     _com_github_circonus_labs_libcircllhist()
+     _com_github_c_ares_c_ares()
+     _com_github_cyan4973_xxhash()
+-    _com_github_eile_tclap()
++    _com_github_mirror_tclap()
+     _com_github_fmtlib_fmt()
+     _com_github_gabime_spdlog()
+     _com_github_gcovr_gcovr()
+@@ -264,14 +264,14 @@ def _com_github_envoyproxy_sqlparser():
+         actual = "@com_github_envoyproxy_sqlparser//:sqlparser",
+     )
+ 
+-def _com_github_eile_tclap():
++def _com_github_mirror_tclap():
+     _repository_impl(
+-        name = "com_github_eile_tclap",
++        name = "com_github_mirror_tclap",
+         build_file = "@envoy//bazel/external:tclap.BUILD",
+     )
+     native.bind(
+         name = "tclap",
+-        actual = "@com_github_eile_tclap//:tclap",
++        actual = "@com_github_mirror_tclap//:tclap",
+     )
+ 
+ def _com_github_fmtlib_fmt():
+diff --git a/bazel/repository_locations.bzl b/bazel/repository_locations.bzl
+index b363f4f..e8e0db4 100644
+--- a/bazel/repository_locations.bzl
++++ b/bazel/repository_locations.bzl
+@@ -47,10 +47,10 @@ REPOSITORY_LOCATIONS = dict(
+         strip_prefix = "sql-parser-5f50c68bdf5f107692bb027d1c568f67597f4d7f",
+         urls = ["https://github.com/envoyproxy/sql-parser/archive/5f50c68bdf5f107692bb027d1c568f67597f4d7f.tar.gz"],
+     ),
+-    com_github_eile_tclap = dict(
++    com_github_mirror_tclap = dict(
+         sha256 = "f0ede0721dddbb5eba3a47385a6e8681b14f155e1129dd39d1a959411935098f",
+         strip_prefix = "tclap-tclap-1-2-1-release-final",
+-        urls = ["https://github.com/eile/tclap/archive/tclap-1-2-1-release-final.tar.gz"],
++        urls = ["https://github.com/mirror/tclap/archive/tclap-1-2-1-release-final.tar.gz"],
+     ),
+     com_github_fmtlib_fmt = dict(
+         sha256 = "4c0741e10183f75d7d6f730b8708a99b329b2f942dad5a9da3385ab92bb4a15c",
