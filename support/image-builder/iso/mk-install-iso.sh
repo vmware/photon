@@ -193,7 +193,8 @@ echo ${RPMS_PATH}
 cd ${RPMS_PATH}
 mkdir ${WORKINGDIR}/RPMS
 for rpm_name in $RPM_LIST; do
-    [ -f "$rpm_name" ] && cp --parent $rpm_name ${WORKINGDIR}/RPMS/
+    cp --parent $rpm_name ${WORKINGDIR}/RPMS/
+    chmod 644 ${WORKINGDIR}/RPMS/$rpm_name
 done
 )
 
