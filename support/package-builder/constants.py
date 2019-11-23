@@ -44,6 +44,7 @@ class constants(object):
         "sqlite-libs"]
 
     # These packages will be built in first order as build-core-toolchain stage
+    # Put only main pakage names here. Do not add subpackages such as libgcc
     listCoreToolChainPackages = [
         "filesystem",
         "linux-api-headers",
@@ -51,7 +52,6 @@ class constants(object):
         "zlib",
         "file",
         "binutils",
-        "binutils-libs",
         "gmp",
         "mpfr",
         "mpc",
@@ -62,6 +62,7 @@ class constants(object):
         "bash"]
 
     # These packages will be built in a second stage to replace publish RPMS
+    # Put only main pakage names here. Do not add subpackages such as libgcc
     listToolChainPackages = [
         "filesystem",
         "linux-api-headers",
@@ -69,7 +70,6 @@ class constants(object):
         "zlib",
         "file",
         "binutils",
-        "binutils-libs",
         "gmp",
         "mpfr",
         "mpc",
