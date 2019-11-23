@@ -418,7 +418,6 @@ generate-dep-lists:
 photon-docker-image:
 	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon
 	sudo docker run \
-		-it \
 		--rm \
 		--privileged \
 		--net=host \
