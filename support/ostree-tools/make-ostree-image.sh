@@ -19,7 +19,7 @@ echo "baseurl=file:///RPMS" >> ${SRCROOT}/installer/photon-ostree.repo
 rm -rf stage/ostree-repo
 mkdir -p stage/ostree-repo
 
-sudo docker run -it --privileged -v ${SRCROOT}:/photon -v $(pwd)/stage/RPMS:/RPMS -v $(pwd)/stage/ostree-repo:/srv/rpm-ostree -w="/photon/installer"  vmware/photon:rpm-ostree ./mk-ostree-server.sh /
+sudo docker run --privileged -v ${SRCROOT}:/photon -v $(pwd)/stage/RPMS:/RPMS -v $(pwd)/stage/ostree-repo:/srv/rpm-ostree -w="/photon/installer"  vmware/photon:rpm-ostree ./mk-ostree-server.sh /
 
 (cd stage/ostree-repo/repo/; tar -zcf ../../ostree-repo.tar.gz .; )
 
