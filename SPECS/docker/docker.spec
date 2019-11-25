@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.03.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -18,6 +18,7 @@ Patch0:         fix-apparmor-not-being-applied-to-exec-processes.patch
 Patch1:         CVE-2019-5736.patch
 Patch10:        CVE-2018-15664_1.patch
 Patch11:        CVE-2018-15664_2.patch
+Patch12:        CVE-2019-14271.patch
 Patch99:        remove-firewalld.patch
 
 BuildRequires:  systemd
@@ -69,6 +70,7 @@ ln -snrf "$OLDPWD/components/cli" docker/cli
 pushd docker/docker
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 popd
 
 %build
@@ -199,6 +201,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Nov 25 2019 Ashwin H <ashwinh@vmware.com> 18.03.0-7
+-   Fix CVE-2019-14271
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 18.03.0-6
 -   Bump up version to compile with new go
 *   Tue Jun 4 2019 Bo Gan <ganb@vmware.com> 18.03.0-5
