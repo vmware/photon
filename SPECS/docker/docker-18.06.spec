@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -16,6 +16,7 @@ Source0:        https://github.com/docker/docker-ce/archive/docker-%{version}-ce
 Source99:       default-disable.preset
 Patch10:        CVE-2018-15664_1.patch
 Patch11:        CVE-2018-15664_2.patch
+Patch12:        CVE-2019-14271.patch
 Patch99:        remove-firewalld.patch
 
 BuildRequires:  systemd
@@ -74,6 +75,7 @@ ln -snrf "$OLDPWD/docker-ce-%{version}-ce/components/cli" docker/cli
 pushd docker/docker
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 popd
 
 %build
@@ -228,6 +230,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Nov 25 2019 Ashwin H <ashwinh@vmware.com> 18.06.2-8
+-   Fix CVE-2019-14271
 *   Thu Nov 21 2019 Ankit Jain <ankitja@vmware.com> 18.06.2-7
 -   Added Obsoletes to fix downgrade docker from 18.09 to 18.06
 *   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 18.06.2-6
