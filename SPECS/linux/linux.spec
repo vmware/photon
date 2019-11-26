@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.202
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -88,7 +88,8 @@ Patch59:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch60:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch61:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
-
+# Fix for CVE-2019-19066
+Patch62:        0001-scsi_bfa_release_allocated_memory_in_case_of_error.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -222,6 +223,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch59 -p1
 %patch60 -p1
 %patch61 -p1
+%patch62 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -399,6 +401,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.9.202-2
+-   Fix CVE-2019-19066
 *   Tue Nov 19 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.202-1
 -   Update to version 4.9.202
 *   Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.201-1
