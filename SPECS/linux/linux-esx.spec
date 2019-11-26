@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.202
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -48,6 +48,8 @@ Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch35:       0001-scsi-libsas-direct-call-probe-and-destruct.patch
 # Fix for CVE-2018-10323
 Patch36:       0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
+# Fix for CVE-2019-19066
+Patch37:        0001-scsi_bfa_release_allocated_memory_in_case_of_error.patch
 # Fix for CVE-2018-10322 (following 8 patches)
 Patch41:        0001-xfs-add-missing-include-dependencies-to-xfs_dir2.h.patch
 Patch42:        0002-xfs-replace-xfs_mode_to_ftype-table-with-switch-stat.patch
@@ -150,6 +152,7 @@ The Linux package contains the Linux kernel doc files
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch37 -p1
 %patch41 -p1
 %patch42 -p1
 %patch43 -p1
@@ -264,6 +267,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.4.202-2
+-   Fix CVE-2019-19066
 *   Tue Nov 19 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.202-1
 -   Update to version 4.4.202
 *   Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.201-1

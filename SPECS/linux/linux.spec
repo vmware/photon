@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.202
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -40,6 +40,8 @@ Patch19:	net-9p-vdfs-zerocopy.patch
 Patch20:        0001-Enable-cache-loose-for-vdfs-9p.patch
 # Fix for CVE-2018-8043
 Patch22:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
+# Fix for CVE-2019-19066
+Patch23:        0001-scsi_bfa_release_allocated_memory_in_case_of_error.patch
 
 Patch26:        Implement-the-f-xattrat-family-of-functions.patch
 Patch27:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -180,6 +182,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch19 -p1
 %patch20 -p1
 %patch22 -p1
+%patch23 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -366,6 +369,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.4.202-2
+-   Fix CVE-2019-19066
 *   Tue Nov 19 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.202-1
 -   Update to version 4.4.202
 *   Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.201-1
