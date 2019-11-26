@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.84
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -26,6 +26,20 @@ Patch6:         4.18-x86-vmware-STA-support.patch
 Patch7:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 #HyperV patches
 Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+
+# Fix CVE-2019-19062
+Patch15:        0001-crypto-user-fix-memory-leak-in-crypto_report.patch
+# Fix CVE-2019-19066
+Patch16:        0001-scsi_bfa_release_allocated_memory_in_case_of_error.patch
+# Fix CVE-2019-19072
+Patch17:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
+# Fix CVE-2019-19073
+Patch18:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
+# Fix CVE-2019-19074
+Patch19:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
+# Fix CVE-2019-19078
+Patch20:        0001-ath10k-fix-memory-leak.patch
+
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 #FIPS patches - allow some algorithms
@@ -157,6 +171,12 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch6 -p1
 %patch7 -p1
 %patch13 -p1
+%patch15 -p1
+%patch16 -p1
+%patch17 -p1
+%patch18 -p1
+%patch19 -p1
+%patch20 -p1
 %patch24 -p1
 %patch26 -p1
 %patch27 -p1
@@ -362,6 +382,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.19.84-2
+-   Fix CVE-2019-19062, CVE-2019-19066, CVE-2019-19072,
+-   CVE-2019-19073, CVE-2019-19074, CVE-2019-19078
 *   Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.84-1
 -   Update to version 4.19.84
 -   Fix CVE-2019-18814

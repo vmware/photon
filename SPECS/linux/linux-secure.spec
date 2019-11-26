@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.84
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -32,6 +32,18 @@ Patch14:        0002-Added-PAX_RANDKSTACK.patch
 Patch15:        0003-Added-rap_plugin.patch
 # HyperV Patches
 Patch16:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+# Fix CVE-2019-19062
+Patch17:        0001-crypto-user-fix-memory-leak-in-crypto_report.patch
+# Fix CVE-2019-19066
+Patch18:        0001-scsi_bfa_release_allocated_memory_in_case_of_error.patch
+# Fix CVE-2019-19072
+Patch19:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
+# Fix CVE-2019-19073
+Patch20:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
+# Fix CVE-2019-19074
+Patch21:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
+# Fix CVE-2019-19078
+Patch22:        0001-ath10k-fix-memory-leak.patch
 #FIPS patches - allow some algorithms
 Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
@@ -123,6 +135,13 @@ The Linux package contains the Linux kernel doc files
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
+%patch18 -p1
+%patch19 -p1
+%patch20 -p1
+%patch21 -p1
+%patch22 -p1
+
 %patch24 -p1
 %patch26 -p1
 %patch27 -p1
@@ -267,6 +286,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.19.84-2
+-   Fix CVE-2019-19062, CVE-2019-19066, CVE-2019-19072,
+-   CVE-2019-19073, CVE-2019-19074, CVE-2019-19078
 *   Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.84-1
 -   Update to version 4.19.84
 -   Fix CVE-2019-18814

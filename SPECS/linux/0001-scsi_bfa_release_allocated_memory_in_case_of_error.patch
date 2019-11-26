@@ -1,0 +1,42 @@
+From:   Navid Emamdoost <navid.emamdoost@gmail.com>
+Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
+        Navid Emamdoost <navid.emamdoost@gmail.com>,
+        Anil Gurumurthy <anil.gurumurthy@qlogic.com>,
+        Sudarsana Kalluru <sudarsana.kalluru@qlogic.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] scsi: bfa: release allocated memory in case of error
+Date:   Tue, 10 Sep 2019 18:44:15 -0500
+
+commit 0e62395da2bd5166d7c9e14cbc7503b256a34cb0 upstream.
+
+In bfad_im_get_stats if bfa_port_get_stats fails, allocated memory
+needs to be released.
+
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ drivers/scsi/bfa/bfad_attr.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/scsi/bfa/bfad_attr.c b/drivers/scsi/bfa/bfad_attr.c
+index 29ab81df75c0..fbfce02e5b93 100644
+--- a/drivers/scsi/bfa/bfad_attr.c
++++ b/drivers/scsi/bfa/bfad_attr.c
+@@ -275,8 +275,10 @@ bfad_im_get_stats(struct Scsi_Host *shost)
+ 	rc = bfa_port_get_stats(BFA_FCPORT(&bfad->bfa),
+ 				fcstats, bfad_hcb_comp, &fcomp);
+ 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+-	if (rc != BFA_STATUS_OK)
++	if (rc != BFA_STATUS_OK) {
++		kfree(fcstats);
+ 		return NULL;
++	}
+ 
+ 	wait_for_completion(&fcomp.comp);
+ 
+-- 
+2.17.1
+
+

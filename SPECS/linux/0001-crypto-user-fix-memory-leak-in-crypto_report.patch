@@ -1,0 +1,42 @@
+From ac0e48d6c541f2a4f7db69ae3ecd5299ec6b69e4 Mon Sep 17 00:00:00 2001
+From: Navid Emamdoost <navid.emamdoost@gmail.com>
+Date: Tue, 26 Nov 2019 14:55:02 +0530
+Subject: [PATCH] crypto: user - fix memory leak in crypto_report
+
+commit ffdde5932042600c6807d46c1550b28b0db6a3bc upstream.
+
+In crypto_report, a new skb is created via nlmsg_new(). This skb should
+be released if crypto_report_alg() fails.
+
+Fixes: a38f7907b926 ("crypto: Add userspace configuration API")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+[ 4.19.y backport notes:
+  Ajay: upstreamed patch is for crypto_user_base.c,
+        however 4.19.y has this file with name crypto_user.c,
+        so applied changes of this patch to crypto_user.c]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ crypto/crypto_user.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/crypto/crypto_user.c b/crypto/crypto_user.c
+index 3cca814..9acd1dd 100644
+--- a/crypto/crypto_user.c
++++ b/crypto/crypto_user.c
+@@ -288,8 +288,10 @@ static int crypto_report(struct sk_buff *in_skb, struct nlmsghdr *in_nlh,
+ drop_alg:
+ 	crypto_mod_put(alg);
+ 
+-	if (err)
++	if (err) {
++		kfree_skb(skb);
+ 		return err;
++	}
+ 
+ 	return nlmsg_unicast(crypto_nlsk, skb, NETLINK_CB(in_skb).portid);
+ }
+-- 
+2.7.4
+

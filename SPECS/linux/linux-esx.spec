@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.84
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -61,6 +61,18 @@ Patch34:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch35:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 Patch36:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
+# Fix CVE-2019-19062
+Patch41:        0001-crypto-user-fix-memory-leak-in-crypto_report.patch
+# Fix CVE-2019-19066
+Patch42:        0001-scsi_bfa_release_allocated_memory_in_case_of_error.patch
+# Fix CVE-2019-19072
+Patch43:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
+# Fix CVE-2019-19073
+Patch44:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
+# Fix CVE-2019-19074
+Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
+# Fix CVE-2019-19078
+Patch46:        0001-ath10k-fix-memory-leak.patch
 
 BuildArch:     x86_64
 BuildRequires: bc
@@ -132,6 +144,12 @@ The Linux package contains the Linux kernel doc files
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch41 -p1
+%patch42 -p1
+%patch43 -p1
+%patch44 -p1
+%patch45 -p1
+%patch46 -p1
 
 %build
 # patch vmw_balloon driver
@@ -233,6 +251,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.19.84-2
+-   Fix CVE-2019-19062, CVE-2019-19066, CVE-2019-19072,
+-   CVE-2019-19073, CVE-2019-19074, CVE-2019-19078
 *   Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.84-1
 -   Update to version 4.19.84
 -   Fix CVE-2019-18814
