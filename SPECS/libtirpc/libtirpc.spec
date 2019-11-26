@@ -1,7 +1,7 @@
 Summary:        Libraries for Transport Independent RPC
 Name:           libtirpc
 Version:        1.1.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Source0:        http://downloads.sourceforge.net/project/libtirpc/libtirpc/0.3.2/%{name}-%{version}.tar.bz2
 %define sha1    libtirpc=d85717035cb9bd6c45557a1eb1351d3af9a69ff7
 License:        BSD
@@ -10,7 +10,6 @@ URL:            http://nfsv4.bullopensource.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  krb5-devel
-BuildRequires:  automake
 BuildRequires:  e2fsprogs-devel
 Requires:       krb5
 
@@ -38,7 +37,7 @@ This package includes header files and libraries necessary for developing progra
 %setup -q
 
 %build
-./configure --prefix=%{_prefix} --sysconfdir=%{_sysconfdir}
+%configure
 sed '/stdlib.h/a#include <stdint.h>' -i src/xdr_sizeof.c
 
 make %{?_smp_mflags}
@@ -67,6 +66,8 @@ make install DESTDIR=%{buildroot}
 %{_libdir}/*.la
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.4-2
+-   Cross compilation support
 *   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.1.4-1
 -   Update to version 1.1.4
 *   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0.1-7

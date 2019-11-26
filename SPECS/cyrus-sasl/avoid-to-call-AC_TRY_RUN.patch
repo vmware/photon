@@ -1,0 +1,49 @@
+From 288430d3c2d3f36a4c9d40c4fffa85288f44549a Mon Sep 17 00:00:00 2001
+From: "Roy.Li" <rongqing.li@windriver.com>
+Date: Tue, 25 Jun 2013 09:22:59 +0800
+Subject: [PATCH] Avoid to call AC_TRY_RUN
+
+Upstream-Status: Inappropriate [configuration]
+
+Avoid to call AC_TRY_RUN to check if GSSAPI libraries support SPNEGO
+on cross-compile environment by definition AC_ARG_ENABLE enable-spnego
+
+Signed-off-by: Roy.Li <rongqing.li@windriver.com>
+
+---
+ m4/sasl2.m4 | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/m4/sasl2.m4 b/m4/sasl2.m4
+index 56e0504..cf62607 100644
+--- a/m4/sasl2.m4
++++ b/m4/sasl2.m4
+@@ -314,7 +314,18 @@ if test "$gssapi" != no; then
+   cmu_save_LIBS="$LIBS"
+   LIBS="$LIBS $GSSAPIBASE_LIBS"
+ 
+-  AC_MSG_CHECKING([for SPNEGO support in GSSAPI libraries])
++  AC_ARG_ENABLE([spnego],
++              [AC_HELP_STRING([--enable-spnego=<DIR>],
++                              [enable SPNEGO support in GSSAPI libraries [no]])],
++              [spnego=$enableval],
++              [spnego=no])
++
++  if test "$spnego" = no; then
++       echo "no"
++  elif test "$spnego" = yes; then
++       AC_DEFINE(HAVE_GSS_SPNEGO,,[Define if your GSSAPI implementation supports SPNEGO])
++  else
++       AC_MSG_CHECKING([for SPNEGO support in GSSAPI libraries])
+   AC_TRY_RUN([
+ #ifdef HAVE_GSSAPI_H
+ #include <gssapi.h>
+@@ -341,7 +352,7 @@ int main(void)
+ 	AC_MSG_RESULT(yes) ],
+ 	AC_MSG_RESULT(no))
+   LIBS="$cmu_save_LIBS"
+-
++   fi
+ else
+   AC_MSG_RESULT([disabled])
+ fi

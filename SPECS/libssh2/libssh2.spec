@@ -1,7 +1,7 @@
 Summary:        libssh2 is a library implementing the SSH2 protocol.
 Name:           libssh2
 Version:        1.8.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://www.libssh2.org/
 Group:          System Environment/NetworkingLibraries
@@ -31,8 +31,15 @@ These are the header files of libssh2.
 %patch0 -p1
 
 %build
-%configure --disable-static \
-    --enable-shared
+if [ %{_host} != %{_build} ]; then
+  PREFIXES="--with-libssl-prefix=/target-%{_arch}/usr --with-libz-prefix=/target-%{_arch}/usr"
+else
+  PREFIXES=
+fi
+%configure \
+    --disable-static \
+    --enable-shared \
+    $PREFIXES
 make
 
 %install
@@ -51,6 +58,8 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Jul 03 2019 Alexey Makhalov <amakhalov@vmware.com> 1.8.0-3
+-   Cross compilation support
 *   Thu Mar 28 2019 Tapas Kundu <tkundu@vmware.com> 1.8.0-2
 -   Fix for CVE-2019-3855
 *   Wed Nov 30 2016 Xiaolin Li <xiaolinl@vmware.com> 1.8.0-1

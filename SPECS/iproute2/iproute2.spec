@@ -1,7 +1,7 @@
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
 Version:        4.18.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.kernel.org/pub/linux/utils/net/iproute2
 Group:          Applications/System
@@ -33,7 +33,7 @@ sed -i 's/m_ipt.o//' tc/Makefile
 %patch0 -p1
 
 %build
-make VERBOSE=1 %{?_smp_mflags} DESTDIR= LIBDIR=%{_libdir}
+make CC=%{_host}-gcc VERBOSE=1 %{?_smp_mflags} DESTDIR= LIBDIR=%{_libdir}
 %install
 make    DESTDIR=%{buildroot} \
     MANDIR=%{_mandir} \
@@ -70,6 +70,8 @@ cd ..
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Jul 03 2019 Alexey Makhalov <amakhalov@vmware.com> 4.18.0-3
+-   Cross compilation support
 *   Fri Mar 08 2019 Fabio Rapposelli <fabio@vmware.com> 4.18.0-2
 -   Added "Provides: iproute" for better compatibility with other distributions
 *   Wed Sep 05 2018 Ankit Jain <ankitja@vmware.com> 4.18.0-1

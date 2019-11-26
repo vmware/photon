@@ -1,7 +1,7 @@
 Summary:        Libxslt-1.1.29
 Name:           libxslt
 Version:        1.1.32
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
@@ -24,10 +24,8 @@ Header files for doing development with libxslt.
 %prep
 %setup -q
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
+%configure \
+    $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --disable-static \
     --without-python
 make %{?_smp_mflags}
@@ -62,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.32-2
+-   Cross compilation support
 *   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.1.32-1
 -   Update to version 1.1.32.
 *   Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 1.1.29-4

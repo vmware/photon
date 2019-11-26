@@ -1,7 +1,7 @@
 Summary:	Check-0.12.0
 Name:		check
 Version:	0.12.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://check.sourceforge.net/
 Source0:	https://github.com/libcheck/check/archive/%{name}-%{version}.tar.gz
@@ -9,15 +9,16 @@ Source0:	https://github.com/libcheck/check/archive/%{name}-%{version}.tar.gz
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: Photon
+Requires:       gawk
 %description
-Check is a unit testing framework for C. It features a simple interface for defining unit tests, 
-putting little in the way of the developer. Tests are run in a separate address space, 
+Check is a unit testing framework for C. It features a simple interface for defining unit tests,
+putting little in the way of the developer. Tests are run in a separate address space,
 so both assertion failures and code errors that cause segmentation faults or other signals can be caught.
 %prep
 %setup -q
 %build
 autoreconf --install
-./configure --prefix=%{_prefix}
+%configure
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -39,6 +40,9 @@ make %{?_smp_mflags} check
 /usr/share/doc/%{name}/*
 /usr/share/aclocal/*
 %changelog
+*   Thu Nov 08 2018 Alexey Makhalov <amakhalov@vmware.com> 0.12.0-2
+-   Cross compilation support
+-   Added required gawk
 *   Wed Sep 19 2018 Ajay Kaher <akaher@vmware.com> 0.12.0-1
 -   Upgraded to version 0.12.0
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.10.0-2

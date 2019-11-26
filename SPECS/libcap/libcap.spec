@@ -1,7 +1,7 @@
 Summary:		Libcap
 Name:			libcap
 Version:		2.25
-Release:		8%{?dist}
+Release:		9%{?dist}
 License:		GPLv2+
 URL:			https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:		https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
@@ -10,8 +10,8 @@ Group:			System Environment/Security
 Vendor:			VMware, Inc.
 Distribution:	Photon
 %description
-The libcap package implements the user-space interfaces to the POSIX 1003.1e capabilities available 
-in Linux kernels. These capabilities are a partitioning of the all powerful root privilege 
+The libcap package implements the user-space interfaces to the POSIX 1003.1e capabilities available
+in Linux kernels. These capabilities are a partitioning of the all powerful root privilege
 into a set of distinct privileges.
 
 %package        devel
@@ -26,12 +26,17 @@ for developing applications that use libcap.
 %prep
 %setup -q
 %build
+if [ %{_host} != %{_build} ]; then
+  MFLAGS="CC=%{_arch}-unknown-linux-gnu-gcc AR=%{_arch}-unknown-linux-gnu-ar RANLIB=%{_arch}-unknown-linux-gnu-ranlib BUILD_CC=gcc"
+else
+  MFLAGS=
+fi
 sed -i 's:LIBDIR:PAM_&:g' pam_cap/Makefile
-make %{?_smp_mflags}
+make %{?_smp_mflags} $MFLAGS
 %install
 make prefix=%{_prefix}	SBINDIR=%{_sbindir} PAM_LIBDIR=%{_libdir} RAISE_SETFCAP=no DESTDIR=%{buildroot} install
 %ifarch aarch64
-mv %{buildroot}%{_libdir} %{buildroot}%{_lib64dir}
+test -d %{buildroot}%{_libdir} && mv %{buildroot}%{_libdir} %{buildroot}%{_lib64dir}
 %endif
 chmod -v 755 %{buildroot}/usr/lib64/libcap.so
 %check
@@ -54,6 +59,8 @@ sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Nov 26 2019 Alexey Makhalov <amakhalov@vmware.com> 2.25-9
+-   Cross compilation support
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.25-8
 -   Aarch64 support
 *   Wed Aug 09 2017 Danut Moraru <dmoraru@vmware.com> 2.25-7

@@ -1,8 +1,10 @@
+%define perl_vendorarchdir %(test %{_host} == %{_build} && echo %{perl_vendorarch} || echo %{perl_vendorarch} | sed 's/x86_64-linux-thread-multi/%{_arch}-linux/')
+
 # Got the intial spec from Fedora and modified it
 Summary:        SQLite DBI Driver
 Name:           perl-DBD-SQLite
 Version:        1.62
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        (GPL+ or Artistic) and Public Domain
 URL:            http://search.cpan.org/dist/DBD-SQLite/
@@ -27,8 +29,13 @@ libraries.
 %setup -q -n DBD-SQLite-%{version}
 
 %build
-CFLAGS="%{optflags}" perl Makefile.PL INSTALLDIRS=vendor
-make %{?_smp_mflags} OPTIMIZE="%{optflags}"
+CFLAGS="%{optflags}" perl Makefile.PL INSTALLDIRS=vendor AR=%{_host}-ar CC=%{_host}-gcc LD=%{_host}-gcc OPTIMIZE="%{optflags}"
+if [ %{_host} != %{_build} ]; then
+ln -s /target-%{_arch}%{perl_privlib}/%{_arch}-linux %{perl_privlib}/%{_arch}-linux
+ln -s /target-%{_arch}%{perl_vendorlib}/%{_arch}-linux %{perl_vendorlib}/%{_arch}-linux
+sed -i 's/x86_64-linux-thread-multi/%{_arch}-linux/' Makefile
+fi
+make %{?_smp_mflags}
 
 %install
 make pure_install DESTDIR=%{buildroot}
@@ -40,11 +47,13 @@ find %{buildroot} -type f \( -name .packlist -o \
 make test
 
 %files
-%{perl_vendorarch}/auto/*
-%{perl_vendorarch}/DBD/
+%{perl_vendorarchdir}/auto/*
+%{perl_vendorarchdir}/DBD/
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Jul 03 2019 Alexey Makhalov <amakhalov@vmware.com> 1.62-2
+-   Cross compilation support
 *   Tue Jan 22 2019 Michelle Wang <michellew@vmware.com> 1.62-1
 -   Update to version 1.62.
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.58-1
