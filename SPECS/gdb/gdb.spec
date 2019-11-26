@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        8.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
@@ -25,17 +25,15 @@ BuildRequires:  systemtap-sdt-devel
 %endif
 
 %description
-GDB, the GNU Project debugger, allows you to see what is going on 
-`inside' another program while it executes -- or what 
-another program was doing at the moment it crashed. 
+GDB, the GNU Project debugger, allows you to see what is going on
+`inside' another program while it executes -- or what
+another program was doing at the moment it crashed.
 %prep
 %setup -q
 %patch0 -p1
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --with-python=/usr/bin/python3
+%configure --with-python=/usr/bin/python3
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -45,10 +43,10 @@ rm %{buildroot}%{_infodir}/dir
 # following files conflicts with binutils-2.24-1.x86_64
 rm %{buildroot}%{_includedir}/ansidecl.h
 rm %{buildroot}%{_includedir}/bfd.h
-rm %{buildroot}%{_includedir}/bfdlink.h 
-rm %{buildroot}%{_includedir}/dis-asm.h 
-rm %{buildroot}%{_libdir}/libbfd.a 
-rm %{buildroot}%{_libdir}/libopcodes.a 
+rm %{buildroot}%{_includedir}/bfdlink.h
+rm %{buildroot}%{_includedir}/dis-asm.h
+rm %{buildroot}%{_libdir}/libbfd.a
+rm %{buildroot}%{_libdir}/libopcodes.a
 # following files conflicts with binutils-2.25-1.x86_64
 rm %{buildroot}%{_datadir}/locale/de/LC_MESSAGES/opcodes.mo
 rm %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/bfd.mo
@@ -80,6 +78,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_mandir}/*/*
 
 %changelog
+*   Mon Jul 22 2019 Alexey Makhalov <amakhalov@vmware.com> 8.2-2
+-   Cross compilation support
 *   Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 8.2-1
 -   Update to version 8.2
 *   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 7.12.1-8

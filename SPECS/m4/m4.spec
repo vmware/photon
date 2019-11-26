@@ -1,7 +1,7 @@
 Summary:	A macro processor
 Name:		m4
 Version:	1.4.18
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/m4
 Group:		Development/Tools
@@ -20,8 +20,7 @@ The M4 package contains a macro processor
 sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
 echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
 
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--disable-silent-rules
 make %{?_smp_mflags}
 
@@ -39,6 +38,8 @@ make  %{?_smp_mflags}  check
 %{_mandir}/*/*
 
 %changelog
+* Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.4.18-3
+- Cross compilation support
 * Sun Sep 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.4.18-2
 - Fix compilation issue against glibc-2.28
 * Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 1.4.18-1

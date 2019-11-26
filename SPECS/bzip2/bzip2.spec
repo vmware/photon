@@ -1,7 +1,7 @@
 Summary:        Contains programs for compressing and decompressing files
 Name:           bzip2
 Version:        1.0.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            http://www.bzip.org/
 Group:          System Environment/Base
@@ -38,9 +38,16 @@ sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
 sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile
 
 %build
-make VERBOSE=1 %{?_smp_mflags} -f Makefile-libbz2_so
+if [ %{_host} != %{_build} ]; then
+  MFLAGS="CC=%{_arch}-unknown-linux-gnu-gcc AR=%{_arch}-unknown-linux-gnu-ar RANLIB=%{_arch}-unknown-linux-gnu-ranlib"
+  # disable buildtime testing
+  sed -i 's/all: libbz2.a bzip2 bzip2recover test/all: libbz2.a bzip2 bzip2recover/' Makefile
+else
+  MFLAGS=
+fi
+make VERBOSE=1 %{?_smp_mflags} -f Makefile-libbz2_so $MFLAGS
 make clean
-make VERBOSE=1 %{?_smp_mflags}
+make VERBOSE=1 %{?_smp_mflags} $MFLAGS
 
 %install
 make PREFIX=%{buildroot}/usr install
@@ -92,6 +99,8 @@ make %{?_smp_mflags} check
 %{_lib}/libbz2.so.*
 
 %changelog
+*   Tue Nov 26 2019 Alexey Makhalov <amakhalov@vmware.com> 1.0.8-2
+-   Cross compilation support
 *   Fri Oct 18 2019 Shreyas B <shreyasb@vmware.com> 1.0.8-1
 -   Upgrade to 1.0.8.
 -   Remove CVE-2016-3189.patch as the fix already available in the latest version.

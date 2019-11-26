@@ -1,7 +1,7 @@
 Summary:	Basic system utilities
 Name:		coreutils
 Version:	8.30
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/coreutils
 Group:		System Environment/Base
@@ -38,8 +38,8 @@ These are the additional language files of coreutils.
 %endif
 %build
 autoreconf -fiv
-export FORCE_UNSAFE_CONFIGURE=1 && ./configure \
-	--prefix=%{_prefix} \
+export FORCE_UNSAFE_CONFIGURE=1
+%configure \
 	--enable-no-install-program=kill,uptime \
 	--disable-silent-rules
 make %{?_smp_mflags}
@@ -87,6 +87,8 @@ make NON_ROOT_USERNAME=nobody check
 %defattr(-,root,root)
 
 %changelog
+* Fri Nov 01 2019 Alexey Makhalov <amakhalov@vmware.com> 8.30-3
+- Cross compilation support
 * Thu Sep 12 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 8.30-2
 - Fix for makecheck failure added a patch
 * Fri Sep 07 2018 Alexey Makhalov <amakhalov@vmware.com> 8.30-1

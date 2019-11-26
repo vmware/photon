@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -28,6 +28,8 @@ BuildRequires:  libffi-devel >= 3.0.13
 BuildRequires:  sqlite-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
+# cross compilation requires native python2 installed
+%define BuildRequiresNative python2
 Requires:       openssl
 Requires:       python2-libs = %{version}-%{release}
 Provides:       python-sqlite
@@ -131,7 +133,15 @@ The test package contains all regression tests for Python as well as the modules
 
 %build
 export OPT="${CFLAGS}"
+if [ %{_host} != %{_build} ]; then
+  sed -i 's/\tPYTHONPATH/\t-PYTHONPATH/' Makefile.pre.in
+  export ac_cv_buggy_getaddrinfo=no
+  export ac_cv_file__dev_ptmx=yes
+  export ac_cv_file__dev_ptc=no
+fi
 %configure \
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
     --enable-shared \
     --with-ssl \
     --with-system-expat \
@@ -244,6 +254,8 @@ make test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Tue Nov 26 2019 Alexey Makhalov <amakhalov@vmware.com> 2.7.16-3
+-   Cross compilation support
 *   Tue Nov 05 2019 Tapas Kundu <tkundu@vmware.com> 2.7.16-2
 -   Fix for CVE-2019-17514
 *   Sun Oct 20 2019 Tapas Kundu <tkundu@vmware.com> 2.7.16-1

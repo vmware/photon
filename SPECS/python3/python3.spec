@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -23,6 +23,9 @@ BuildRequires:  xz-devel
 BuildRequires:  expat-devel >= 2.1.0
 BuildRequires:  libffi-devel >= 3.0.13
 BuildRequires:  sqlite-devel
+BuildRequires:  util-linux-devel
+# cross compilation requires native python3 installed for ensurepip
+%define BuildRequiresNative python3-xml
 Requires:       ncurses
 Requires:       openssl
 Requires:       python3-libs = %{version}-%{release}
@@ -55,6 +58,7 @@ Requires:       libffi >= 3.0.13
 Requires:       ncurses
 Requires:       sqlite-libs
 Requires:       bzip2-libs
+Requires:       util-linux-libs
 
 
 %description    libs
@@ -146,6 +150,12 @@ The test package contains all regression tests for Python as well as the modules
 
 %build
 export OPT="${CFLAGS}"
+if [ %{_host} != %{_build} ]; then
+  ln -s python3 /bin/python
+  export ac_cv_buggy_getaddrinfo=no
+  export ac_cv_file__dev_ptmx=yes
+  export ac_cv_file__dev_ptc=no
+fi
 %configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
@@ -166,6 +176,7 @@ ln -sf libpython3.7m.so %{buildroot}%{_libdir}/libpython3.7.so
 find %{buildroot}%{_libdir} -name '*.pyc' -delete
 find %{buildroot}%{_libdir} -name '*.pyo' -delete
 find %{buildroot}%{_libdir} -name '*.o' -delete
+find %{buildroot}%{_libdir} -name '*__pycache__' -delete
 rm %{buildroot}%{_bindir}/2to3
 
 %check
@@ -188,7 +199,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/*/*
 
 %dir %{_libdir}/python3.7
-%dir %{_libdir}/python3.7/site-packages
+%{_libdir}/python3.7/site-packages/README.txt
 
 %{_libdir}/libpython3.so
 %{_libdir}/libpython3.7.so
@@ -206,8 +217,6 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %doc LICENSE README.rst
 %{_libdir}/python3.7
-%{_libdir}/python3.7/site-packages/easy_install.py
-%{_libdir}/python3.7/site-packages/README.txt
 %exclude %{_libdir}/python3.7/site-packages/
 %exclude %{_libdir}/python3.7/ctypes/test
 %exclude %{_libdir}/python3.7/distutils/tests
@@ -268,6 +277,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Tue Nov 26 2019 Alexey Makhalov <amakhalov@vmware.com> 3.7.4-5
+-   Cross compilation support
 *   Tue Nov 05 2019 Tapas Kundu <tkundu@vmware.com> 3.7.4-4
 -   Fix for CVE-2019-17514
 *   Thu Oct 24 2019 Shreyas B. <shreyasb@vmware.com> 3.7.4-3

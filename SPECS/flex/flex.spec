@@ -1,7 +1,7 @@
 Summary:	A utility for generating programs that recognize patterns in text
 Name:		flex
 Version:	2.6.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		https://github.com/westes/flex/releases
 Group:		Applications/System
@@ -27,10 +27,10 @@ flex.
 %prep
 %setup -q
 sed -i -e '/test-bison/d' tests/Makefile.in
+sed -i "/math.h/a #include <malloc.h>" src/flexdef.h
 %build
-CFLAGS="-D_GNU_SOURCE" \
-./configure \
-	--prefix=%{_prefix} \
+autoreconf -fiv
+%configure \
 	--docdir=%{_defaultdocdir}/%{name}-%{version} \
 	--disable-silent-rules
 make VERBOSE=1 %{?_smp_mflags}
@@ -69,6 +69,8 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.6.4-3
+-   Cross compilation support
 *   Fri Aug 4 2017 Alexey Makhalov <amakhalov@vmware.com> 2.6.4-2
 -   Use _GNU_SOURCE
 *   Thu May 11 2017 Chang Lee <changlee@vmware.com> 2.6.4-1
