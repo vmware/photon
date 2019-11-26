@@ -1,7 +1,7 @@
 Summary:        The GNU Database Manager
 Name:           gdbm
 Version:        1.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/gdbm
 Group:          Applications/Databases
@@ -33,8 +33,7 @@ It contains the libraries and header files to create applications.
 %setup -q
 
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --enable-libgdbm-compat \
     --disable-silent-rules
 make %{?_smp_mflags}
@@ -69,6 +68,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.18-2
+-   Cross compilation support
 *   Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 1.18-1
 -   Update to version 1.18
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.13-3

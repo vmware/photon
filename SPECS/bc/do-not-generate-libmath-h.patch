@@ -1,0 +1,18 @@
+diff -Naur a/bc/Makefile.am b/bc/Makefile.am
+--- a/bc/Makefile.am	2017-04-07 13:09:29.000000000 -0700
++++ b/bc/Makefile.am	2018-11-14 14:49:51.457915578 -0800
+@@ -31,14 +31,6 @@
+ 
+ fbcOBJ = main.o bc.o scan.o execute.o load.o storage.o util.o warranty.o
+ 
+-libmath.h: libmath.b $(fbcOBJ) $(LIBBC)
+-	echo '{0}' > libmath.h
+-	$(MAKE) global.o
+-	$(LINK) -o fbc $(fbcOBJ) global.o $(LIBBC) $(LIBL) $(READLINELIB) $(LIBS)
+-	./fbc -c $(srcdir)/libmath.b </dev/null >libmath.h
+-	$(srcdir)/fix-libmath_h
+-	rm -f ./fbc ./global.o
+-
+ sbcOBJ = main.o sbc.o scan.o execute.o global.o load.o storage.o util.o \
+          warranty.o
+ sbc.o: sbc.c

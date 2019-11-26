@@ -1,7 +1,7 @@
 Summary:        Utilities for loading kernel modules
 Name:           kmod
 Version:        25
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2.1+ and GPLv2+
 URL:            http://www.kernel.org/pub/linux/utils/kernel/kmod
 Group:          Applications/System
@@ -24,10 +24,8 @@ It contains the libraries and header files to create applications.
 %prep
 %setup -q
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --bindir=/bin \
-    --sysconfdir=%{_sysconfdir} \
     --with-rootlibdir=%{_lib} \
     --disable-manpages \
     --with-xz \
@@ -59,6 +57,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/*.so
 
 %changelog
+*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 25-2
+-   Cross compilation support
 *   Wed Sep 12 2018 Ankit Jain <ankitja@vmware.com> 25-1
 -   Updated to version 25
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 24-3
@@ -69,7 +69,7 @@ find %{buildroot} -name '*.la' -delete
 -   Updated to version 24
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 21-4
 -   GA - Bump release of all rpms
-*   Wed Apr 21 2016 Anish Swaminathan <anishs@vmware.com> 21-3
+*   Thu Apr 21 2016 Anish Swaminathan <anishs@vmware.com> 21-3
 -   Add patch for return code fix in error path
 *   Fri Mar 25 2016 Alexey Makhalov <amakhalov@vmware.com> 21-2
 -   /bin/lsmod -> /sbin/lsmod
