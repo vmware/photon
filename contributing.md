@@ -16,7 +16,7 @@ Feature requests should fall within the scope of the project. Keep in mind that 
 
 ## Pull Requests
 
-Before submitting a pull request, please make sure that you can build Photon OS. See [Building an ISO from the Source Code for Photon OS](https://github.com/vmware/photon/blob/master/docs/build-photon.md).
+Before submitting a pull request, please make sure that you can build Photon OS. See [Building an ISO from the Source Code for Photon OS](https://github.com/vmware/photon/blob/master/docs/photon_installation/build-photon.md).
 
 ## SPEC File Guidelines and Best Practices
 
