@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -16,6 +16,7 @@ Source0:        https://github.com/docker/docker-ce/archive/docker-%{version}-ce
 Source99:       default-disable.preset
 Patch10:        CVE-2018-15664_1.patch
 Patch11:        CVE-2018-15664_2.patch
+Patch12:        CVE-2019-14271.patch
 Patch99:        remove-firewalld-18.06.patch
 
 BuildRequires:  systemd
@@ -69,6 +70,7 @@ ln -snrf "$OLDPWD/docker-ce-%{version}-ce/components/cli" docker/cli
 pushd docker/docker
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 popd
 
 %build
@@ -223,6 +225,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Thu Nov 28 2019 Ashwin H <ashwinh@vmware.com> 18.06.2-5
+-   Fix CVE-2019-14271
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 18.06.2-4
 -   Bump up version to compile with new go
 *   Tue Jun 4 2019 Bo Gan <ganb@vmware.com> 18.06.2-3

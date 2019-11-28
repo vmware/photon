@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        17.06.0
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -34,6 +34,7 @@ Patch3:         CVE-2019-5736-v17.06.patch
 Patch10:        CVE-2018-15664_1706_1.patch
 Patch11:        CVE-2018-15664_1706_2.patch
 Patch12:        CVE-2018-15664_1706_3.patch
+Patch13:        CVE-2019-14271-1706.patch
 
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -89,6 +90,7 @@ ln -s docker-ce/components/packaging packaging
 %patch10 -p2
 %patch11 -p2
 %patch12 -p2
+%patch13 -p2
 
 mkdir -p /go/src/github.com
 cd /go/src/github.com
@@ -236,6 +238,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Thu Nov 28 2019 Ashwin H <ashwinh@vmware.com> 17.06.0-13
+-   Fix CVE-2019-14271
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 17.06.0-12
 -   Bump up version to compile with new go
 *   Wed Aug 14 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 17.06.0-11
