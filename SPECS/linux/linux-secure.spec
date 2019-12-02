@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.84
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:        4.19.87
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=5af921fa4772749c2fe8818dea3554fe4ad58faa
+%define sha1 linux=6bef9ec5ef74ae160b18d7a0930cd80cb1461bdb
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -316,6 +316,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.19.87-1
+-   Update to version 4.19.87
 *   Tue Dec 03 2019 Keerthana K <keerthanak@vmware.com> 4.19.84-3
 -   Adding hmac sha256/sha512 generator kernel module for fips.
 *   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.19.84-2

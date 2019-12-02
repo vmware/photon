@@ -18,7 +18,7 @@ index 2ffaf6a..90543d6 100644
 -	int err, nloop = 0;
 +	int err = -EADDRINUSE;
 +	int nloop = 0;
- 	unsigned short port = xs_get_srcport(transport);
+ 	int port = xs_get_srcport(transport);
  	unsigned short last;
 +	struct net *net = transport->xprt.xprt_net;
  
