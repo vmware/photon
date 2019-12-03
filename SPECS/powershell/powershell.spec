@@ -1,7 +1,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        6.2.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -9,8 +9,8 @@ Url:            https://microsoft.com/powershell
 Group:          shells
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    powershell=ab7e1d7fbdf4a90fd160cf85b5dc56eb294a7755
-Source1:        %{name}-native-6.2.0.tar.gz
-%define sha1    powershell-native=b748288e87e16a13783a0cc57a5cfe818445ab2b
+Source1:        %{name}-native-6.2.0_git_src.tar.gz
+%define sha1    powershell-native=8d16da65c46f36b9d9181abac5e618c2a73f7ae8
 Source2:        %{name}-linux-%{version}-x64.tar.gz
 %define sha1    powershell-linux=38efbb5c76ceb2a0d0d3c364a9c82241f2144faa
 Source3:        build.sh
@@ -32,7 +32,7 @@ It consists of a cross-platform command-line shell and associated scripting lang
 
 %prep
 %setup -qn PowerShell-%{version}
-%setup -qTDb 1 -n PowerShell-Native-6.2.0
+%setup -qcTDa 1 -n PowerShell-Native
 %setup -qcTDa 2 -n %{name}-linux-%{version}-x64
 
 %build
@@ -42,6 +42,10 @@ cp %{SOURCE3} .
 cp %{SOURCE4} src
 chmod +x ./build.sh
 ./build.sh
+cd %{_builddir}/PowerShell-Native/powershell-native-6.2.0
+pushd src/libpsl-native
+cmake -DCMAKE_BUILD_TYPE=Debug .
+make -j
 
 %install
 cd %{_builddir}/PowerShell-%{version}
@@ -51,6 +55,8 @@ mkdir -p %{buildroot}%{_docdir}/powershell
 mv src/powershell-unix/bin/ThirdPartyNotices.txt %{buildroot}%{_docdir}/powershell
 mv src/powershell-unix/bin/LICENSE.txt %{buildroot}%{_docdir}/powershell
 cp -r src/powershell-unix/bin/* %{buildroot}/%{_libdir}/powershell
+rm -f %{buildroot}/%{_libdir}/powershell/libpsl-native.so
+cp -rf %{_builddir}/PowerShell-Native/powershell-native-6.2.0/src/powershell-unix/libpsl-native.so %{buildroot}/%{_libdir}/powershell
 mkdir -p %{buildroot}%{_bindir}
 chmod 0755 %{buildroot}/%{_libdir}/powershell/pwsh
 ln -sf %{_libdir}/powershell/pwsh %{buildroot}%{_bindir}/pwsh
@@ -82,6 +88,8 @@ fi
     %{_docdir}/*
 
 %changelog
+*   Wed Dec 16 2019 Shreyas B <shreyasb@vmware.com> 6.2.3-4
+-   Build PowerShell with locally build "libpsl-native.so" from PowerShell-Native(6.2.0).
 *   Wed Dec 04 2019 Tapas Kundu <tkundu@vmware.com> 6.2.3-3
 -   Fixed ref folder to have right dlls
 *   Tue Dec 03 2019 Tapas Kundu <tkundu@vmware.com> 6.2.3-2
