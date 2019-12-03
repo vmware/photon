@@ -1,7 +1,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        6.2.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -59,6 +59,10 @@ cp -r %{_builddir}/powershell-linux-%{version}-x64/Modules/{PSReadLine,PowerShel
 %{buildroot}%{_libdir}/powershell/Modules
 
 %post
+#in case of upgrade, delete and recreate the soft links
+if [ $1 -eq 2 ] ; then
+    rm %{_libdir}/powershell/ref/*
+fi
 ln -sf %{_libdir}/powershell/*.dll %{_libdir}/powershell/ref
 grep -qF /usr/bin/pwsh /etc/shells || echo "/usr/bin/pwsh" >> /etc/shells
 
@@ -77,6 +81,8 @@ fi
     %{_docdir}/*
 
 %changelog
+*   Tue Dec 03 2019 Tapas Kundu <tkundu@vmware.com> 6.2.3-2
+-   Fix post in case of upgrade
 *   Wed Nov 13 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.3-1
 -   update to 6.2.3
 -   refactor build script
