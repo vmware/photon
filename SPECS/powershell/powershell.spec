@@ -1,7 +1,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        6.2.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -55,21 +55,22 @@ mkdir -p %{buildroot}%{_bindir}
 chmod 0755 %{buildroot}/%{_libdir}/powershell/pwsh
 ln -sf %{_libdir}/powershell/pwsh %{buildroot}%{_bindir}/pwsh
 mkdir -p %{buildroot}%{_libdir}/powershell/ref
+cp %{_builddir}/powershell-linux-%{version}-x64/ref/* %{buildroot}%{_libdir}/powershell/ref
 cp -r %{_builddir}/powershell-linux-%{version}-x64/Modules/{PSReadLine,PowerShellGet,PackageManagement} \
 %{buildroot}%{_libdir}/powershell/Modules
 
 %post
-#in case of upgrade, delete and recreate the soft links
+#in case of upgrade, delete the soft links
 if [ $1 -eq 2 ] ; then
-    rm %{_libdir}/powershell/ref/*
+    pushd %{_libdir}/powershell/ref
+    find -type l -exec unlink {} \;
+    popd
 fi
-ln -sf %{_libdir}/powershell/*.dll %{_libdir}/powershell/ref
 grep -qF /usr/bin/pwsh /etc/shells || echo "/usr/bin/pwsh" >> /etc/shells
 
 %preun
 #remove on uninstall
 if [ $1 -eq 0 ]; then
-  rm  %{_libdir}/powershell/ref/*
   sed -i '\/usr\/bin\/pwsh/d' /etc/shells
 fi
 
@@ -81,6 +82,8 @@ fi
     %{_docdir}/*
 
 %changelog
+*   Wed Dec 04 2019 Tapas Kundu <tkundu@vmware.com> 6.2.3-3
+-   Fixed ref folder to have right dlls
 *   Tue Dec 03 2019 Tapas Kundu <tkundu@vmware.com> 6.2.3-2
 -   Fix post in case of upgrade
 *   Wed Nov 13 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.3-1
