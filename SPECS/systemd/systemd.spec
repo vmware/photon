@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          15%{?dist}
+Release:          16%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -34,6 +34,7 @@ Patch14:          systemd-239-CVE-2019-6454.patch
 Patch15:          systemd-239-CVE-2019-3833-3844.patch
 Patch16:          systemd-239-bz-2361840-sysctl-ipv6-disabled.patch
 Patch17:          systemd-239-CVE-2019-15718.patch
+Patch18:          systemd-239-bz-2471962.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -107,6 +108,7 @@ EOF
 %patch15 -p1
 %patch16 -p1
 %patch17 -p1
+%patch18 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -273,6 +275,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Fri Dec 06 2019 Susant Sahani <ssahani@vmware.com>  239-16
+-    Fix RoutingPolicyRule does not always apply - applies alternately.
 *    Tue Oct 28 2019 Piyush Gupta <guptapi@vmware.com>  239-15
 -    Added requires elfutils
 *    Wed Sep 11 2019 Susant Sahani <ssahani@vmware.com>  239-14
