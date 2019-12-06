@@ -1,15 +1,15 @@
 Summary:        Container Network Interface (CNI) plugins
 Name:           cni
-Version:        0.7.5
-Release:        3%{?dist}
+Version:        0.8.3
+Release:        1%{?dist}
 License:        ASL 2.0
-URL:            https://github.com/containernetworking/cni
-Source0:        https://github.com/containernetworking/cni/archive/%{name}-v%{version}.tar.gz
-%define sha1 cni=e980fff2a3e6446b70c3e0beb22ca53853259d4d
+URL:            https://github.com/containernetworking/plugins
+Source0:        https://github.com/containernetworking/plugins/archive/%{name}-v%{version}.tar.gz
+%define sha1 cni=3fc85b5d0908d93efa12eef7ee350f81070a7f3c
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  go >= 1.5
+BuildRequires:  go
 %define _default_cni_plugins_dir /opt/cni/bin
 
 %description
@@ -19,7 +19,7 @@ The CNI (Container Network Interface) project consists of a specification and li
 %setup -n plugins-%{version}
 
 %build
-./build.sh
+./build_linux.sh
 
 %install
 install -vdm 755 %{buildroot}%{_default_cni_plugins_dir}
@@ -37,6 +37,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_default_cni_plugins_dir}/*
 
 %changelog
+*   Fri Dec 6 2019 Ashwin H <ashwinh@vmware.com> 0.8.3-1
+-   Update cni to v0.8.3
 *   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 0.7.5-3
 -   Bump up version to compile with go 1.13.3
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 0.7.5-2
