@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.202
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.205
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f469b6c404a1db07fc8c73593f105ebcb695d7a4
+%define sha1 linux=c27bd0601c172fe4c3f1fbb5c96fd6f306c87c28
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -353,6 +353,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Dec 04 2019 Ajay Kaher <akaher@vmware.com> 4.9.205-1
+-   Update to version 4.9.205
 *   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.9.202-2
 -   Fix CVE-2019-19066
 *   Tue Nov 19 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.202-1
