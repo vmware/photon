@@ -2,7 +2,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-pywbem
-Version:        0.12.6
+Version:        0.15.0
 Release:        1%{?dist}
 Summary:        Python WBEM Client
 Group:          Development/Libraries
@@ -12,7 +12,7 @@ Source0:        http://downloads.sourceforge.net/pywbem-%{version}.tar.gz
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-%define sha1 pywbem=0a75b4c5ca8303351b3942901dbd314cf4120157
+%define sha1 pywbem=2c9621b483fa1c50edb9a15230724664d6fe64f8
 BuildRequires:  python2-devel
 BuildRequires:  python-pip
 BuildRequires:  python-xml
@@ -26,7 +26,7 @@ Requires:       PyYAML
 Requires:       python-ply
 
 %description
-PyWBEM is a Python library for making CIM operations over HTTP using the 
+PyWBEM is a Python library for making CIM operations over HTTP using the
 WBEM CIM-XML protocol.  WBEM is a manageability protocol, like SNMP,
 standardised by the Distributed Management Task Force (DMTF) available
 at http://www.dmtf.org/standards/wbem.
@@ -117,6 +117,8 @@ fi
 %{python3_sitelib}/*
 
 %changelog
+*    Fri Dec 06 2019 Tapas Kundu <tkundu@vmware.com> 0.15.0-1
+-    Updated to release 0.15.0
 *    Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 0.12.6-1
 -    Updated to release 0.12.6
 *    Thu Jul 13 2017 Kumar Kaushik <kaushikk@vmware.com> 0.10.0-1
