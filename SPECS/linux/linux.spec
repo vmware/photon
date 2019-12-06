@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.202
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.206
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=0f9d976a844c81b3174a79c62c1d1265116328c3
+%define sha1 linux=37f9d637f52e8bdda67f0afd4c20e5a48f89e733
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -369,6 +369,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.4.206-1
+-   Update to version 4.4.206
 *   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.4.202-2
 -   Fix CVE-2019-19066
 *   Tue Nov 19 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.202-1
