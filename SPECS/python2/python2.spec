@@ -1,25 +1,18 @@
 Summary:        A high-level scripting language
 Name:           python2
-Version:        2.7.16
-Release:        3%{?dist}
+Version:        2.7.17
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=e9543af127d958b12b0edfb9340d4f0af3d0d90e
+%define sha1    Python=dc5784d11d09c29fbf3fc155e2f242b3d3309454
 Patch0:         cgi.patch
 Patch1:         added-pyopenssl-ipaddress-certificate-validation.patch
 Patch2:         python2-support-photon-platform.patch
-Patch3:         CVE-2019-9636.patch
-Patch4:         CVE-2019-9948.patch
-Patch5:         CVE-2019-9740.patch
-Patch6:         CVE-2019-10160.patch
-Patch7:         CVE-2018-20852.patch
-Patch8:         CVE-2019-16056.patch
-Patch9:         CVE-2019-16935.patch
-Patch10:        CVE-2019-17514.patch
+Patch3:         CVE-2019-17514.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
@@ -36,6 +29,9 @@ Provides:       python-sqlite
 Provides:       python(abi)
 Provides:       /bin/python
 Provides:       /bin/python2
+%if %{with_check}
+BuildRequires:  iana-etc
+%endif
 
 %description
 The Python 2 package contains the Python development environment. It
@@ -123,13 +119,6 @@ The test package contains all regression tests for Python as well as the modules
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -167,13 +156,40 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/python2.7/LICENSE.txt
 find %{buildroot}%{_libdir} -name '*.pyc' -delete
 find %{buildroot}%{_libdir} -name '*.pyo' -delete
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%post
+if [ "$(stat -c %d:%i /)" != "$(stat -c %d:%i /proc/1/root/.)" ]; then
+#if we are in chroot
+    ln -sf /usr/bin/python2 /usr/bin/python
+elif [ ! -f "/usr/bin/python3" ]; then
+    ln -sf /usr/bin/python2 /usr/bin/python
+else
+#if we are updating only python2, then
+#we should set python link to python3
+#as previously python was link to python2
+    ln -sf /usr/bin/python3 /usr/bin/python
+fi
+/sbin/ldconfig
+
+%postun
+#if python3 is not present and we uninstall python2
+#we will delete the symlink
+if [ ! -f "/usr/bin/python3" ]; then
+    if [ $1 -eq 0 ] ; then
+        rm /usr/bin/python
+    fi
+else
+#if we are downgrading/uninstalling python2,
+#and python3 is present. then
+#we should set python link to python3
+    ln -sf /usr/bin/python3 /usr/bin/python
+fi
+/sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
 
 %check
-make test
+LANG=en_US.UTF-8 make %{?_smp_mflags} test
 
 %files
 %defattr(-, root, root)
@@ -195,7 +211,7 @@ make test
 %exclude %{_libdir}/python2.7/test
 #%exclude %{_libdir}/python2.7/unittest
 %exclude %{_libdir}/python2.7/lib-dynload/_ctypes_test.so
-
+%ghost %{_bindir}/python
 
 %files libs
 %defattr(-,root,root)
@@ -254,6 +270,11 @@ make test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Sat Dec 07 2019 Tapas Kundu <tkundu@vmware.com> 2.7.17-1
+-   Update to 2.7.17
+-   Exclude /usr/bin/python
+-   Link python to python2 if python3 doesnt exists
+-   Fix make check
 *   Tue Nov 26 2019 Alexey Makhalov <amakhalov@vmware.com> 2.7.16-3
 -   Cross compilation support
 *   Tue Nov 05 2019 Tapas Kundu <tkundu@vmware.com> 2.7.16-2
