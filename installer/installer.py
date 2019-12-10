@@ -423,6 +423,13 @@ class Installer(object):
         """
         Unmount partitions and special folders
         """
+        # Fix "missing grub.cfg" error during ova build on CentOS host.  The umount below
+        # is passed the -l (lazy) flag which prevents dirty pages from being flushed before
+        # returning.  This creates a race with the creation of the grub.cfg in the step
+        # before this and the unmount completing.  In effect, we end up with a missing
+        # grub.cfg when photon is built on some hosts vs others.  Add a sync to avoid
+        # the race and flush dirty pages before calling umount.
+        self.cmd.run(['sync'])
         for d in ["/tmp", "/run", "/sys", "/dev/pts", "/dev", "/proc"]:
             if os.path.exists(self.photon_root + d):
                 retval = self.cmd.run(['umount', '-l', self.photon_root + d])
