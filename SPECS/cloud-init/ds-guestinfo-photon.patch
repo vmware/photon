@@ -1,22 +1,25 @@
 diff --git a/cloudinit/sources/DataSourceVMwareGuestInfo.py b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-index e69de29..59dd685 100644
+index eae842d9..933862db 100644
 --- a/cloudinit/sources/DataSourceVMwareGuestInfo.py
 +++ b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-@@ -108,7 +108,99 @@
-         # Get the vendor data.
-         self.vendordata_raw = guestinfo('vendordata')
+@@ -128,11 +128,117 @@ class DataSourceVMwareGuestInfo(sources.DataSource):
+         if data_access_method == VMWARE_RPCTOOL and CLEANUP_GUESTINFO in self.metadata:
+             clear_guestinfo_keys(self.metadata[CLEANUP_GUESTINFO])
  
--        return True
+-        if self.metadata or self.userdata_raw or self.vendordata_raw:
 +        hostname = get_guestinfo_value('hostname')
 +        if hostname:
 +            self.distro.set_hostname(hostname)
++
 +        found = True
 +        dev_index = 0
 +        network_settings = ''
++
 +        while found:
 +            key_begin = 'interface.' + str(dev_index)
 +            key_iname = key_begin + '.name'
 +            interface_name = get_guestinfo_value(key_iname)
++
 +            if interface_name:
 +                network_settings += 'auto ' + interface_name + '\n'
 +                network_settings += 'iface ' + interface_name
@@ -25,6 +28,7 @@ index e69de29..59dd685 100644
 +                key_address = key_begin + '.address'
 +                address = get_guestinfo_value(key_address)
 +                bootproto = 'dhcp'
++
 +                if dhcp_enabled:
 +                    if dhcp_enabled == 'yes':
 +                        network_settings += ' dhcp\n'
@@ -41,25 +45,35 @@ index e69de29..59dd685 100644
 +                    dhcp_enabled == 'yes'
 +                    network_settings += ' dhcp\n'
 +                    LOG.debug("Setting network bootproto to dhcp by default")
++
 +                key_mac = key_begin + '.mac'
 +                mac = get_guestinfo_value(key_mac)
++
 +                if address:
 +                    network_settings += 'address ' + address + '\n'
++
 +                if mac:
 +                    network_settings += 'hwaddress ' + mac + '\n'
++
 +                key_netmask = key_begin + '.netmask'
++
 +                netmask = get_guestinfo_value(key_netmask)
 +                if netmask:
 +                     network_settings += 'netmask ' + netmask + '\n'
++
 +                key_dnsserver = 'dns.servers'
++
 +                dnsserver = get_guestinfo_value(key_dnsserver)
 +                if dnsserver:
 +                    network_settings += 'dns-nameservers '
 +                    dnsserver = dnsserver.split(',')
++
 +                    for d in dnsserver:
 +                        network_settings += d + ' '
 +                    network_settings += '\n'
++
 +                key_dnsdomain = 'dns.domains'
++
 +                dnsdomain = get_guestinfo_value(key_dnsdomain)
 +                if dnsdomain:
 +                    network_settings += 'dns-search '
@@ -67,6 +81,7 @@ index e69de29..59dd685 100644
 +                    for d in dnsdomain:
 +                        network_settings += d + ' '
 +                    network_settings += '\n'
++
 +                route_index = 0
 +                default_destination_set = False
 +                while True:
@@ -93,13 +108,16 @@ index e69de29..59dd685 100644
 +            else:
 +                found = False
 +            dev_index += 1
++
 +        if network_settings:
 +            self.distro.apply_network(network_settings, False)
 +
 +        if self.metadata or self.userdata_raw or self.vendordata_raw or hostname or network_settings:
-+           return True
-+        else:
-+           return False
+             return True
+         else:
+             return False
  
++
      def setup(self, is_new_instance):
          """setup(is_new_instance)
+ 

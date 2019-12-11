@@ -1,8 +1,9 @@
 diff --git a/cloudinit/sources/DataSourceVMwareGuestInfo.py b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-index e69de29..59dd685 100644
---- a/cloudinit/sources/DataSourceVMwareGuestInfo.py
+new file mode 100644
+index 00000000..eae842d9
+--- /dev/null
 +++ b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-@@ -0,0 +1,483 @@
+@@ -0,0 +1,657 @@
 +# Cloud-Init Datasource for VMware Guestinfo
 +#
 +# Copyright (c) 2018 VMware, Inc. All Rights Reserved.
@@ -28,7 +29,9 @@ index e69de29..59dd685 100644
 +import copy
 +from distutils.spawn import find_executable
 +import json
++import os
 +import socket
++import string
 +import zlib
 +
 +from cloudinit import log as logging
@@ -41,7 +44,12 @@ index e69de29..59dd685 100644
 +
 +LOG = logging.getLogger(__name__)
 +NOVAL = "No value found"
-+VMTOOLSD = find_executable("vmtoolsd")
++VMWARE_RPCTOOL = find_executable("vmware-rpctool")
++VMX_GUESTINFO = "VMX_GUESTINFO"
++GUESTINFO_EMPTY_YAML_VAL = "---"
++LOCAL_IPV4 = 'local-ipv4'
++LOCAL_IPV6 = 'local-ipv6'
++CLEANUP_GUESTINFO = 'cleanup-guestinfo'
 +
 +
 +class NetworkConfigError(Exception):
@@ -58,27 +66,34 @@ index e69de29..59dd685 100644
 +    which uses cloud-init 0.7.9. However, this datasource should
 +    work with any Linux distribution for which cloud-init is
 +    avaialble.
++
 +    The documentation for cloud-init 0.7.9's datasource is
 +    available at http://bit.ly/cloudinit-datasource-0-7-9. The
 +    current documentation for cloud-init is found at
 +    https://cloudinit.readthedocs.io/en/latest/.
++
 +    Setting the hostname:
 +        The hostname is set by way of the metadata key "local-hostname".
++
 +    Setting the instance ID:
 +        The instance ID may be set by way of the metadata key "instance-id".
 +        However, if this value is absent then then the instance ID is
 +        read from the file /sys/class/dmi/id/product_uuid.
++
 +    Configuring the network:
 +        The network is configured by setting the metadata key "network"
 +        with a value consistent with Network Config Versions 1 or 2,
 +        depending on the Linux distro's version of cloud-init:
++
 +            Network Config Version 1 - http://bit.ly/cloudinit-net-conf-v1
 +            Network Config Version 2 - http://bit.ly/cloudinit-net-conf-v2
++
 +        For example, CentOS 7's official cloud-init package is version
 +        0.7.9 and does not support Network Config Version 2. However,
 +        this datasource still supports supplying Network Config Version 2
 +        data as long as the Linux distro's cloud-init package is new
 +        enough to parse the data.
++
 +        The metadata key "network.encoding" may be used to indicate the
 +        format of the metadata key "network". Valid encodings are base64
 +        and gzip+base64.
@@ -88,20 +103,22 @@ index e69de29..59dd685 100644
 +
 +    def __init__(self, sys_cfg, distro, paths, ud_proc=None):
 +        sources.DataSource.__init__(self, sys_cfg, distro, paths, ud_proc)
-+        if not VMTOOLSD:
-+            LOG.error("Failed to find vmtoolsd")
++        if not get_data_access_method():
++            LOG.error("Failed to find vmware-rpctool")
 +
 +    def get_data(self):
 +        """
 +        This method should really be _get_data in accordance with the most
 +        recent versions of cloud-init. However, because the datasource
 +        supports as far back as cloud-init 0.7.9, get_data is still used.
++
 +        Because of this the method attempts to do some of the same things
 +        that the get_data functions in newer versions of cloud-init do,
 +        such as calling persist_instance_data.
 +        """
-+        if not VMTOOLSD:
-+            LOG.error("vmtoolsd is required to fetch guestinfo value")
++        data_access_method = get_data_access_method()
++        if not data_access_method:
++            LOG.error("vmware-rpctool is required to fetch guestinfo value")
 +            return False
 +
 +        # Get the metadata.
@@ -113,11 +130,20 @@ index e69de29..59dd685 100644
 +        # Get the vendor data.
 +        self.vendordata_raw = guestinfo('vendordata')
 +
-+        return True
++        # Check to see if any of the guestinfo data should be removed.
++        if data_access_method == VMWARE_RPCTOOL and CLEANUP_GUESTINFO in self.metadata:
++            clear_guestinfo_keys(self.metadata[CLEANUP_GUESTINFO])
++
++        if self.metadata or self.userdata_raw or self.vendordata_raw:
++            return True
++        else:
++            return False
 +
 +    def setup(self, is_new_instance):
 +        """setup(is_new_instance)
++
 +        This is called before user-data and vendor-data have been processed.
++
 +        Unless the datasource has set mode to 'local', then networking
 +        per 'fallback' or per 'network_config' will have been written and
 +        brought up the OS at this point.
@@ -126,6 +152,10 @@ index e69de29..59dd685 100644
 +        # Get information about the host.
 +        host_info = get_host_info()
 +        LOG.info("got host-info: %s", host_info)
++
++        # Reflect any possible local IPv4 or IPv6 addresses in the guest
++        # info.
++        advertise_local_ip_addrs(host_info)
 +
 +        # Ensure the metadata gets updated with information about the
 +        # host, including the network interfaces, default IP addresses,
@@ -158,8 +188,22 @@ index e69de29..59dd685 100644
 +        if self.metadata and 'instance-id' in self.metadata:
 +            return self.metadata['instance-id']
 +        with open('/sys/class/dmi/id/product_uuid', 'r') as id_file:
-+            self.metadata['instance-id'] = str(id_file.read()).rstrip()
++            self.metadata['instance-id'] = str(id_file.read()).rstrip().lower()
 +            return self.metadata['instance-id']
++
++    def get_public_ssh_keys(self):
++        public_keys_data = ""
++        if 'public-keys-data' in self.metadata:
++            public_keys_data = self.metadata['public-keys-data'].splitlines()
++
++        public_keys = []
++        if not public_keys_data:
++            return public_keys
++
++        for public_key in public_keys_data:
++            public_keys.append(public_key)
++
++        return public_keys
 +
 +
 +def decode(key, enc_type, data):
@@ -204,30 +248,148 @@ index e69de29..59dd685 100644
 +    return raw_data
 +
 +
++def get_none_if_empty_val(val):
++    '''
++    get_none_if_empty_val returns None if the provided value, once stripped
++    of its trailing whitespace, is empty or equal to GUESTINFO_EMPTY_YAML_VAL.
++
++    The return value is always a string, regardless of whether the input is
++    a bytes class or a string.
++    '''
++
++    # If the provided value is a bytes class, convert it to a string to
++    # simplify the rest of this function's logic.
++    if isinstance(val, bytes):
++        val = val.decode()
++
++    val = val.rstrip()
++    if len(val) == 0 or val == GUESTINFO_EMPTY_YAML_VAL:
++        return None
++    return val
++
++
++def advertise_local_ip_addrs(host_info):
++    '''
++    advertise_local_ip_addrs gets the local IP address information from
++    the provided host_info map and sets the addresses in the guestinfo
++    namespace
++    '''
++    if not host_info:
++        return
++
++    # Reflect any possible local IPv4 or IPv6 addresses in the guest
++    # info.
++    local_ipv4 = host_info.get(LOCAL_IPV4)
++    if local_ipv4:
++        set_guestinfo_value(LOCAL_IPV4, local_ipv4)
++        LOG.info("advertised local ipv4 address %s in guestinfo", local_ipv4)
++
++    local_ipv6 = host_info.get(LOCAL_IPV6)
++    if local_ipv6:
++        set_guestinfo_value(LOCAL_IPV6, local_ipv6)
++        LOG.info("advertised local ipv6 address %s in guestinfo", local_ipv6)
++
++
++def handle_returned_guestinfo_val(key, val):
++    '''
++    handle_returned_guestinfo_val returns the provided value if it is
++    not empty or set to GUESTINFO_EMPTY_YAML_VAL, otherwise None is
++    returned
++    '''
++    val = get_none_if_empty_val(val)
++    if val:
++        return val
++    LOG.debug("No value found for key %s", key)
++    return None
++
++
 +def get_guestinfo_value(key):
 +    '''
 +    Returns a guestinfo value for the specified key.
 +    '''
 +    LOG.debug("Getting guestinfo value for key %s", key)
-+    try:
-+        (stdout, stderr) = util.subp(
-+            [VMTOOLSD, "--cmd", "info-get guestinfo." + key])
-+        if stderr == NOVAL:
-+            LOG.debug("No value found for key %s", key)
-+        elif not stdout:
-+            LOG.error("Failed to get guestinfo value for key %s", key)
-+        else:
-+            return stdout.rstrip()
-+    except util.ProcessExecutionError as error:
-+        if error.stderr == NOVAL:
-+            LOG.debug("No value found for key %s", key)
-+        else:
++
++    data_access_method = get_data_access_method()
++
++    if data_access_method == VMX_GUESTINFO:
++        env_key = ("vmx.guestinfo." + key).upper().replace(".", "_", -1)
++        return handle_returned_guestinfo_val(key, os.environ.get(env_key, ""))
++
++    if data_access_method == VMWARE_RPCTOOL:
++        try:
++            (stdout, stderr) = util.subp(
++                [VMWARE_RPCTOOL, "info-get guestinfo." + key])
++            if stderr == NOVAL:
++                LOG.debug("No value found for key %s", key)
++            elif not stdout:
++                LOG.error("Failed to get guestinfo value for key %s", key)
++            else:
++                return handle_returned_guestinfo_val(key, stdout)
++        except util.ProcessExecutionError as error:
++            if error.stderr == NOVAL:
++                LOG.debug("No value found for key %s", key)
++            else:
++                util.logexc(
++                    LOG, "Failed to get guestinfo value for key %s: %s", key, error)
++        except Exception:
 +            util.logexc(
-+                LOG, "Failed to get guestinfo value for key %s: %s", key, error)
-+    except Exception:
-+        util.logexc(
-+            LOG, "Unexpected error while trying to get guestinfo value for key %s", key)
++                LOG, "Unexpected error while trying to get guestinfo value for key %s", key)
++
 +    return None
++
++
++def set_guestinfo_value(key, value):
++    '''
++    Sets a guestinfo value for the specified key. Set value to an empty string
++    to clear an existing guestinfo key.
++    '''
++
++    # If value is an empty string then set it to a single space as it is not
++    # possible to set a guestinfo key to an empty string. Setting a guestinfo
++    # key to a single space is as close as it gets to clearing an existing
++    # guestinfo key.
++    if value == "":
++        value = " "
++
++    LOG.debug("Setting guestinfo key=%s to value=%s", key, value)
++
++    data_access_method = get_data_access_method()
++
++    if data_access_method == VMX_GUESTINFO:
++        return True
++
++    if data_access_method == VMWARE_RPCTOOL:
++        try:
++            util.subp(
++                [VMWARE_RPCTOOL, ("info-set guestinfo.%s %s" % (key, value))])
++            return True
++        except util.ProcessExecutionError as error:
++            util.logexc(
++                LOG, "Failed to set guestinfo key=%s to value=%s: %s", key, value, error)
++        except Exception:
++            util.logexc(
++                LOG, "Unexpected error while trying to set guestinfo key=%s to value=%s", key, value)
++
++    return None
++
++
++def clear_guestinfo_keys(keys):
++    '''
++    clear_guestinfo_keys clears guestinfo of all of the keys in the given list.
++    each key will have its value set to "---". Since the value is valid YAML,
++    cloud-init can still read it if it tries.
++    '''
++    if not keys:
++        return
++    if not type(keys) in (list, tuple):
++        keys = [keys]
++    for key in keys:
++        LOG.info("clearing guestinfo.%s", key)
++        if not set_guestinfo_value(key, GUESTINFO_EMPTY_YAML_VAL):
++            LOG.error("failed to clear guestinfo.%s", key)
++        LOG.info("clearing guestinfo.%s.encoding", key)
++        if not set_guestinfo_value(key + ".encoding", ""):
++            LOG.error("failed to clear guestinfo.%s.encoding", key)
 +
 +
 +def guestinfo(key):
@@ -375,6 +537,8 @@ index e69de29..59dd685 100644
 +    return ipv4, ipv6
 +
 +# patched socket.getfqdn() - see https://bugs.python.org/issue5004
++
++
 +def getfqdn(name=''):
 +    """Get fully qualified domain name from name.
 +     An empty argument is interpreted as meaning the local host.
@@ -383,7 +547,8 @@ index e69de29..59dd685 100644
 +    if not name or name == '0.0.0.0':
 +        name = socket.gethostname()
 +    try:
-+        addrs = socket.getaddrinfo(name, None, 0, socket.SOCK_DGRAM, 0, socket.AI_CANONNAME)
++        addrs = socket.getaddrinfo(
++            name, None, 0, socket.SOCK_DGRAM, 0, socket.AI_CANONNAME)
 +    except socket.error:
 +        pass
 +    else:
@@ -392,6 +557,7 @@ index e69de29..59dd685 100644
 +                name = addr[3]
 +                break
 +    return name
++
 +
 +def get_host_info():
 +    '''
@@ -412,12 +578,13 @@ index e69de29..59dd685 100644
 +    if hostname:
 +        host_info['hostname'] = hostname
 +        host_info['local-hostname'] = hostname
++        host_info['local_hostname'] = hostname
 +
 +    default_ipv4, default_ipv6 = get_default_ip_addrs()
 +    if default_ipv4:
-+        host_info['local-ipv4'] = default_ipv4
++        host_info[LOCAL_IPV4] = default_ipv4
 +    if default_ipv6:
-+        host_info['local-ipv6'] = default_ipv6
++        host_info[LOCAL_IPV6] = default_ipv6
 +
 +    by_mac = host_info['network']['interfaces']['by-mac']
 +    by_ipv4 = host_info['network']['interfaces']['by-ipv4']
@@ -470,6 +637,14 @@ index e69de29..59dd685 100644
 +                by_ipv6[key] = val
 +
 +    return host_info
++
++
++def get_data_access_method():
++    if os.environ.get(VMX_GUESTINFO, ""):
++        return VMX_GUESTINFO
++    if VMWARE_RPCTOOL:
++        return VMWARE_RPCTOOL
++    return None
 +
 +
 +def main():

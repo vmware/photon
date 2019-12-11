@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -160,6 +160,10 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Fri Dec 13 2019 Shreenidhi Shedi <sshedi@vmware.com> 19.1-4
+-   Enable power-state-change in cloud-photon.cfg file
+-   Updated DataSourceVMwareGuestInfo.patch (till commit 9e69060 from mainline)
+-   Updated dscheck_VMwareGuestInfo and ds-guestinfo-photon.patch
 *   Thu Oct 24 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 19.1-3
 -   remove kubeadm module
 *   Thu Oct 17 2019 Keerthana K <keerthanak@vmware.com> 19.1-2

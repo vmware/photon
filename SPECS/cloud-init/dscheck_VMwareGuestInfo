@@ -33,13 +33,21 @@
 # PATH and named dscheck_VMwareGuestInfo.
 #
 
-if ! command -v vmtoolsd >/dev/null 2>&1; then
+if [ -n "${VMX_GUESTINFO}" ]; then
+  if [ -n "${VMX_GUESTINFO_METADATA}" ] || \
+     [ -n "${VMX_GUESTINFO_USERDATA}" ] || \
+     [ -n "${VMX_GUESTINFO_VENDORDATA}" ]; then
+     exit 0
+  fi
+fi
+
+if ! command -v vmware-rpctool >/dev/null 2>&1; then
   exit 1
 fi
 
-if { vmtoolsd --cmd "info-get guestinfo.metadata" || \
-     vmtoolsd --cmd "info-get guestinfo.userdata" || \
-     vmtoolsd --cmd "info-get guestinfo.vendordata"; } >/dev/null 2>&1; then
+if { vmware-rpctool "info-get guestinfo.metadata" || \
+     vmware-rpctool "info-get guestinfo.userdata" || \
+     vmware-rpctool "info-get guestinfo.vendordata"; } >/dev/null 2>&1; then
    exit 0
 fi
 
