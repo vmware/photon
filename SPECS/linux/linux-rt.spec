@@ -4,7 +4,7 @@ Name:           linux-rt
 Version:        4.19.82
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt30
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -24,7 +24,7 @@ Patch1:         double-tcp_mem-limits.patch
 # TODO: disable this patch, check for regressions
 #Patch2:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports_linux_rt.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         4.18-x86-vmware-STA-support.patch
 Patch7:         9p-trans_fd-extend-port-variable-to-u32.patch
@@ -855,5 +855,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Dec 12 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.82-2
+-   Fix patch that wont apply on 4.19.82. Revert when upgraded to 4.19.87 or more
 *   Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.82-1
 -   Introduce a new kernel flavor 'linux-rt' supporting real-time (RT) features.
