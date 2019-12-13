@@ -1,6 +1,6 @@
 Summary:        Ruby
 Name:           ruby
-Version:        2.5.4
+Version:        2.5.7
 Release:        1%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
@@ -8,7 +8,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://cache.ruby-lang.org/pub/ruby/2.5/%{name}-%{version}.tar.bz2
-%define sha1    ruby=ac3248a055b5317cec53d3f922559c5b4a67d410
+%define sha1    ruby=51154b6bfed967b5acd7903790402172ced2563b
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -53,6 +53,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Fri Dec 13 2019 Sujay G <gsujay@vmware.com> 2.5.7-1
+-   Bump ruby version to 2.5.7, to fix CVE-2019-15845, CVE-2019-16201, CVE-2019-16255
 *   Wed Sep 09 2019 Sujay G <gsujay@vmware.com> 2.5.4-1
 -   Bump version to 2.5.4
 -   Utilising latest tests from 2.5.4 fixes make check issues.
