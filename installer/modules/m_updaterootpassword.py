@@ -28,7 +28,7 @@ def execute(installer):
     installer.cmd.run_in_chroot(installer.photon_root, "/usr/sbin/pwconv")
     installer.cmd.run_in_chroot(installer.photon_root, "/usr/sbin/grpconv")
 
-    if 'age' in installer.install_config['password']:
+    if 'age' in installer.install_config.get('password', {}):
         age = installer.install_config['password']['age']
         login_defs_filename = os.path.join(installer.photon_root, 'etc/login.defs')
 
