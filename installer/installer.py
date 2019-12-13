@@ -188,11 +188,13 @@ class Installer(object):
         if "hostname" not in install_config or install_config['hostname'] == "":
             install_config['hostname'] = 'photon-%12x' % random.randrange(16**12)
 
-        # Set password if needed
-        if 'password' not in install_config:
-            install_config['password'] = {'crypted': True, 'text': '*', 'age': -1}
-
+        # Set password if needed.
+        # Installer uses 'shadow_password' and optionally 'password'/'age'
+        # to set aging if present. See modules/m_updaterootpassword.py
         if 'shadow_password' not in install_config:
+            if 'password' not in install_config:
+                install_config['password'] = {'crypted': True, 'text': '*', 'age': -1}
+
             if install_config['password']['crypted']:
                 install_config['shadow_password'] = install_config['password']['text']
             else:
