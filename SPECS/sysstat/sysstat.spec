@@ -1,6 +1,6 @@
 Summary:        The Sysstat package contains utilities to monitor system performance and usage activity
 Name:           sysstat
-Version:        12.1.6
+Version:        12.2.0
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://sebastien.godard.pagesperso-orange.fr/
@@ -8,7 +8,11 @@ Group:          Development/Debuggers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://perso.wanadoo.fr/sebastien.godard/%{name}-%{version}.tar.xz
-%define sha1    sysstat=46b77ddb4e8b11953fa00782e769d1add5747039
+%define sha1    sysstat=aa9e72132093d1e24e77415a998e1f2d50c1fcf9
+
+Patch0:         sysstat.sysconfig.in.patch
+Patch1:         CVE-2019-19725.patch
+
 BuildRequires:  cronie
 Requires:       cronie
 %description
@@ -16,6 +20,9 @@ Requires:       cronie
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+
 %build
 %configure \
             --enable-install-cron \
@@ -55,6 +62,10 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Mon Dec 16 2019 Shreyas B. <shreyasb@vmware.com> 12.2.0-1
+-   Update to 12.2.0 & fix CVE-2019-19725.
+*   Wed Nov 20 2019 Shreyas B. <shreyasb@vmware.com> 12.1.6-2
+-   Fix System Config Issue get SAR logs - Bug 2460236
 *   Wed Oct 09 2019 Shreyas B. <shreyasb@vmware.com> 12.1.6-1
 -   Update to 12.1.6 to fix CVE-2019-16167.
 *   Thu Jan 03 2019 Keerthana K <keerthanak@vmware.com> 12.1.2-1
