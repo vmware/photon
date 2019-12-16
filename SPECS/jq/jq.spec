@@ -1,7 +1,7 @@
 Summary:       jq is a lightweight and flexible command-line JSON processor.
 Name:          jq
 Version:       1.5
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       MIT
@@ -63,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*  Fri Dec 13 2019 Dweep Advani <dadvani@vmware.com> 1.5-4
+-  Spec bumping for consuming oniguruma-6.9.3
 *  Tue Aug 22 2017 Chang Lee <changlee@vmware.com> 1.5-3
 -  Add oniguruma for %check
 *  Wed Jun 07 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5-2
