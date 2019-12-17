@@ -1,7 +1,7 @@
 Summary:        libssh2 is a library implementing the SSH2 protocol.
 Name:           libssh2
 Version:        1.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://www.libssh2.org/
 Group:          System Environment/NetworkingLibraries
@@ -15,6 +15,8 @@ BuildRequires:  zlib-devel
 Requires:       openssl
 Requires:       zlib
 
+Patch0:         CVE-2019-17498.patch
+
 %description
 libssh2 is a client-side C library implementing the SSH2 protocol.
 
@@ -27,6 +29,7 @@ These are the header files of libssh2.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 %configure --disable-static \
@@ -49,6 +52,8 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Dec 17 2019 Siddharth Chandrasekran <csiddharth@vmware.com> 1.9.0-2
+-   Add Patch to fix CVE-2019-17498
 *   Tue Jul 30 2019 Ashwin H <ashwinh@vmware.com> 1.9.0-1
 -   Update to 1.9.0
 *   Mon Apr 01 2019 Ashwin H <ashwinh@vmware.com> 1.8.2-1
