@@ -1,7 +1,7 @@
 Summary:        Libxslt-1.1.29
 Name:           libxslt
 Version:        1.1.32
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
@@ -9,10 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
 %define sha1    libxslt=c47969f16747a72f9095b6a7a56d3afdd1e6e9ac
-Patch0:		libxslt-CVE-2019-11068.patch
-Patch1:		libxslt-CVE-2019-13117.patch
-Patch2:		libxslt-CVE-2019-13118.patch
-Patch3:		CVE-2019-18197.patch
+Patch0:         libxslt-CVE-2019-11068.patch
+Patch1:         libxslt-CVE-2019-13117.patch
+Patch2:         libxslt-CVE-2019-13118.patch
+Patch3:         CVE-2019-18197.patch
+Patch4:         libxslt-CVE-2019-5815.patch
 Requires:       libxml2-devel
 BuildRequires:  libxml2-devel
 %description
@@ -31,6 +32,7 @@ Header files for doing development with libxslt.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 sh configure \
@@ -71,6 +73,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Dec 17 2019 Shreyas B. <shreyasb@vmware.com> 1.1.32-6
+-   Apply patch for CVE-2019-5815: READ heap-buffer-overflow in libxslt.
 *   Tue Oct 29 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.1.32-5
 -   Apply patch for CVE-2019-18197
 *   Mon Jul 22 2019 Shreyas B. <shreyasb@vmware.com> 1.1.32-4
