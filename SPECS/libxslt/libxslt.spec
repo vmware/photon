@@ -1,7 +1,7 @@
 Summary:        Libxslt is a  XSLT C library
 Name:           libxslt
 Version:        1.1.29
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
@@ -11,10 +11,11 @@ Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
 %define sha1    libxslt=edcaeabb3555ae44853bdc406ee9521fb65c620d
 Patch0:         libxslt-CVE-2017-5029.patch
 Patch1:         libxslt-CVE-2015-9019.patch
-Patch2:		libxslt-CVE-2019-11068.patch
-Patch3:		libxslt-CVE-2019-13117.patch
-Patch4:		libxslt-CVE-2019-13118.patch
-Patch5:		CVE-2019-18197.patch
+Patch2:         libxslt-CVE-2019-11068.patch
+Patch3:         libxslt-CVE-2019-13117.patch
+Patch4:         libxslt-CVE-2019-13118.patch
+Patch5:         CVE-2019-18197.patch
+Patch6:         libxslt-CVE-2019-5815.patch
 Requires:       libxml2-devel
 BuildRequires:  libxml2-devel
 %description
@@ -35,6 +36,7 @@ Header files for doing development with libxslt.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %build
 ./configure \
@@ -78,6 +80,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+*   Tue Dec 17 2019 Shreyas B. <shreyasb@vmware.com> 1.1.29-8
+-   Apply patch for CVE-2019-5815: READ heap-buffer-overflow in libxslt.
 *   Wed Oct 30 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.1.29-7
 -   Patch for CVE-2019-18197
 *   Sun Jul 21 2019 Shreyas B. <shreyasb@vmware.com> 1.1.29-6
