@@ -3,7 +3,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.11.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -25,12 +25,18 @@ Cassandra is a highly scalable, eventually consistent, distributed, structured k
 %setup -qn %{name}-%{name}-%{version}
 sed -i 's#\"logback-core\" version=\"1.1.3\"#\"logback-core\" version=\"1.2.0\"#g' build.xml
 sed -i 's#\"logback-classic\" version=\"1.1.3\"#\"logback-classic\" version=\"1.2.0\"#g' build.xml
+sed -i 's#\"libthrift\" version=\"0.9.2\"#\"libthrift\" version=\"0.9.3.1\"#g' build.xml
+
+rm lib/libthrift-*
 rm lib/logback-*
+
 mv lib/licenses/logback-core-1.1.3.txt lib/licenses/logback-core-1.2.0.txt
 mv lib/licenses/logback-classic-1.1.3.txt lib/licenses/logback-classic-1.2.0.txt
+mv lib/licenses/libthrift-0.9.2.txt lib/licenses/libthrift-0.9.3.txt
 
 wget http://central.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar -P lib
 wget http://central.maven.org/maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar -P lib
+wget http://central.maven.org/maven2/org/apache/thrift/libthrift/0.9.3/libthrift-0.9.3.jar -P lib
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
@@ -126,6 +132,8 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Tue Dec 17 2019 Shreyas B. <shreyasb@vmware.com> 3.11.2-3
+-   Bumping up the thrift version to 0.9.3.1 to fix vulnerability.
 *   Wed Jul 31 2019 Ankit Jain <ankitja@vmware.com> 3.11.2-2
 -   Modified the path of JAVA_HOME
 *   Wed Jul 25 2018 Tapas Kundu <tkundu@vmware,com> 3.11.2-1
