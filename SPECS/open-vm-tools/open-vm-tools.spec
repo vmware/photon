@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.3.10
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -142,6 +142,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Wed Dec 18 2019 Shreyas B. <shreyasb@vmware.com> 10.3.10-7
+-   Start vmtoolsd after dbus service.
 *   Thu Oct 31 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-6
 -   Check enable-custom-script only when there is custom script added in spec.
 *   Mon Oct 21 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-5

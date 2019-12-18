@@ -5,6 +5,7 @@ ConditionVirtualization=vmware
 Requires=vgauthd.service
 DefaultDependencies=no
 Before=cloud-init-local.service
+After=dbus.service
 
 [Service]
 ExecStart=/usr/bin/vmtoolsd
