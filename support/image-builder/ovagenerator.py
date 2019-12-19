@@ -9,6 +9,7 @@ from utils import Utils
 def create_ova_image(raw_image_name, tools_path, config):
     build_scripts_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), config['image_type'])
     output_path = os.path.dirname(os.path.realpath(raw_image_name))
+    image_name = config.get('image_name', 'photon-' + config['image_type'])
     utils = Utils()
     # Remove older artifacts
     files = os.listdir(output_path)
@@ -16,14 +17,14 @@ def create_ova_image(raw_image_name, tools_path, config):
         if file.endswith(".vmdk"):
             os.remove(os.path.join(output_path, file))
 
-    vmx_path = os.path.join(output_path, 'photon-ova.vmx')
+    vmx_path = os.path.join(output_path, image_name + '.vmx')
     utils.replaceandsaveasnewfile(os.path.join(build_scripts_path, 'vmx-template'),
                                   vmx_path, 'VMDK_IMAGE',
-                                  os.path.join(output_path, 'photon-ova.vmdk'))
+                                  os.path.join(output_path, image_name + '.vmdk'))
     vixdiskutil_path = os.path.join(tools_path, 'vixdiskutil')
-    vmdk_path = os.path.join(output_path, 'photon-ova.vmdk')
-    ovf_path = os.path.join(output_path, 'photon-ova.ovf')
-    mf_path = os.path.join(output_path, 'photon-ova.mf')
+    vmdk_path = os.path.join(output_path, image_name + '.vmdk')
+    ovf_path = os.path.join(output_path, image_name + '.ovf')
+    mf_path = os.path.join(output_path, image_name + '.mf')
     ovfinfo_path = os.path.join(build_scripts_path, 'ovfinfo.txt')
     utils.runshellcommand(
         "{} -convert {} -cap {} {}".format(vixdiskutil_path,
@@ -51,14 +52,14 @@ def create_ova_image(raw_image_name, tools_path, config):
 
     cwd = os.getcwd()
     os.chdir(output_path)
-    out = utils.runshellcommand("openssl sha1 photon-ova-disk1.vmdk photon-ova.ovf")
+    out = utils.runshellcommand("openssl sha1 {}-disk1.vmdk {}.ovf".format(image_name, image_name))
     with open(mf_path, "w") as source:
         source.write(out)
     rawsplit = os.path.splitext(raw_image_name)
     ova_name = rawsplit[0] + '.ova'
 
     ovatar = tarfile.open(ova_name, "w", format=tarfile.USTAR_FORMAT)
-    for name in ["photon-ova.ovf", "photon-ova.mf", "photon-ova-disk1.vmdk"]:
+    for name in [image_name + ".ovf", image_name + ".mf", image_name + "-disk1.vmdk"]:
         ovatar.add(name, arcname=os.path.basename(name))
     ovatar.close()
     os.remove(vmx_path)
@@ -66,12 +67,12 @@ def create_ova_image(raw_image_name, tools_path, config):
 
     if 'additionalhwversion' in config:
         for addlversion in config['additionalhwversion']:
-            new_ovf_path = output_path + "/photon-ova-hw{}.ovf".format(addlversion)
-            mf_path = output_path + "/photon-ova-hw{}.mf".format(addlversion)
+            new_ovf_path = output_path + "/{}-hw{}.ovf".format(image_name, addlversion)
+            mf_path = output_path + "/{}-hw{}.mf".format(image_name, addlversion)
             utils.replaceandsaveasnewfile(
                 ovf_path, new_ovf_path, "vmx-.*<", "vmx-{}<".format(addlversion))
-            out = utils.runshellcommand("openssl sha1 photon-ova-disk1.vmdk "
-                                        "photon-ova-hw{}.ovf".format(addlversion))
+            out = utils.runshellcommand("openssl sha1 {}-disk1.vmdk ".format(image_name)
+                                        + "{}-hw{}.ovf".format(image_name, addlversion))
             with open(mf_path, "w") as source:
                 source.write(out)
             temp_name_list = os.path.basename(ova_name).split('-')
@@ -79,7 +80,7 @@ def create_ova_image(raw_image_name, tools_path, config):
             new_ova_name = '-'.join(temp_name_list)
             new_ova_path = output_path + '/' + new_ova_name
             ovatar = tarfile.open(new_ova_path, "w", format=tarfile.USTAR_FORMAT)
-            for name in [new_ovf_path, mf_path, "photon-ova-disk1.vmdk"]:
+            for name in [new_ovf_path, mf_path, image_name + "-disk1.vmdk"]:
                 ovatar.add(name, arcname=os.path.basename(name))
             ovatar.close()
 

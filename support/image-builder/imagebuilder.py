@@ -195,6 +195,7 @@ def createImage(options):
     install_config = config['installer']
 
     image_type = config['image_type']
+    image_name = config.get('image_name', 'photon-' + image_type)
     workingDir = os.path.abspath(options.stage_path + "/" + image_type)
     if os.path.exists(workingDir) and os.path.isdir(workingDir):
         shutil.rmtree(workingDir)
@@ -212,7 +213,7 @@ def createImage(options):
         install_config['packagelist_file'] = plf
 
     os.chdir(workingDir)
-    image_file = workingDir + "/photon-" + image_type + ".raw"
+    image_file = workingDir + "/" + image_name + ".raw"
 
     # Create disk image
     Utils.runshellcommand(

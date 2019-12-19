@@ -15,15 +15,14 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
     photon_release_ver = os.environ['PHOTON_RELEASE_VER']
     photon_build_num = os.environ['PHOTON_BUILD_NUM']
     new_name = ""
+    image_name = config.get('image_name', 'photon-' + config['image_type']
+                       + '-' + photon_release_ver + '-' + photon_build_num)
     img_path = os.path.dirname(os.path.realpath(raw_image_path))
     # Rename gce image to disk.raw
     if config['image_type'] == "gce":
         new_name = img_path + '/disk.raw'
-
     else:
-        new_name = (img_path + '/photon-' + config['image_type'] +
-                    '-' + photon_release_ver + '-' +
-                    photon_build_num + '.raw')
+        new_name = (img_path + '/' + image_name + '.raw')
 
     shutil.move(raw_image_path, new_name)
     raw_image = new_name
@@ -31,21 +30,15 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
 
     if config['artifacttype'] == 'tgz':
         print("Generating the tar.gz artifact ...")
-        outputfile = (img_path + '/photon-' + config['image_type'] +
-                      '-' + photon_release_ver + '-' +
-                      photon_build_num + '.tar.gz')
+        outputfile = (img_path + '/' + image_name + '.tar.gz')
         compressed = generateCompressedFile(raw_image, outputfile, "w:gz")
     elif config['artifacttype'] == 'xz':
         print("Generating the xz artifact ...")
-        outputfile = (img_path + '/photon-' + config['image_type'] +
-                      '-' + photon_release_ver + '-' +
-                      photon_build_num + '.xz')
+        outputfile = (img_path + '/' + image_name + '.xz')
         compressed = generateCompressedFile(raw_image, outputfile, "w:xz")
     elif 'vhd' in config['artifacttype']:
         relrawpath = os.path.relpath(raw_image, src_root)
-        vhdname = ('/photon-' +
-                   config['image_type'] + '-' + photon_release_ver + '-' +
-                   photon_build_num + '.vhd')
+        vhdname = ('/' + image_name + '.vhd')
         print("Converting raw disk to vhd ...")
         info_output = Utils.runshellcommand(
             "docker run -v {}:/mnt:rw anishs/qemu-img info -f raw --output json {}"
@@ -60,9 +53,7 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
             "vpc -o subformat=fixed,force_size {}"
             .format(src_root, '/mnt/' + relrawpath, '/mnt/' + os.path.dirname(relrawpath) + vhdname))
         if config['artifacttype'] == 'vhd.gz':
-            outputfile = (img_path + '/photon-' + config['image_type'] +
-                          '-' + photon_release_ver + '-' +
-                          photon_build_num + '.vhd.tar.gz')
+            outputfile = (img_path + '/' + image_name + '.vhd.tar.gz')
             compressed = generateCompressedFile(img_path + vhdname, outputfile, "w:gz")
             # remove raw image and call the vhd as raw image
             os.remove(raw_image)
