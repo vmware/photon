@@ -1,7 +1,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        6.2.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -65,6 +65,13 @@ cp %{_builddir}/powershell-linux-%{version}-x64/ref/* %{buildroot}%{_libdir}/pow
 cp -r %{_builddir}/powershell-linux-%{version}-x64/Modules/{PSReadLine,PowerShellGet,PackageManagement} \
 %{buildroot}%{_libdir}/powershell/Modules
 
+%check
+cd %{_builddir}/PowerShell-%{version}/test/xUnit
+dotnet test
+export LANG=en_US.UTF-8
+cd %{_builddir}/PowerShell-Native/powershell-native-6.2.0/src/libpsl-native
+make test
+
 %post
 #in case of upgrade, delete the soft links
 if [ $1 -eq 2 ] ; then
@@ -88,7 +95,10 @@ fi
     %{_docdir}/*
 
 %changelog
-*   Wed Dec 16 2019 Shreyas B <shreyasb@vmware.com> 6.2.3-4
+*   Thu Dec 19 2019 Shreyas B <shreyasb@vmware.com> 6.2.3-5
+-   Adding make check for powershell & powershell-native.
+-   Fix Test failre in libpsl-native/test/test-locale.cpp.
+*   Mon Dec 16 2019 Shreyas B <shreyasb@vmware.com> 6.2.3-4
 -   Build PowerShell with locally build "libpsl-native.so" from PowerShell-Native(6.2.0).
 *   Wed Dec 04 2019 Tapas Kundu <tkundu@vmware.com> 6.2.3-3
 -   Fixed ref folder to have right dlls
