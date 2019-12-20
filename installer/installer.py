@@ -823,8 +823,9 @@ class Installer(object):
         if not rpms_path or not os.path.exists(rpms_path):
             return
 
-        if self.cmd.run(['rpm', '--root', self.photon_root, '-U', rpms_path + '/*' ]) != 0:
+        if self.cmd.run([ 'rpm', '--root', self.photon_root, '-U', rpms_path + '/*.rpm' ]) != 0:
             self.logger.info('Failed to install additional_rpms from ' + rpms_path)
+            self.exit_gracefully()
 
     def _install_packages(self):
         """
