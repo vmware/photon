@@ -1,19 +1,22 @@
-%define sourcever 3270200
+%define sourcever 3300100
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
-Version:        3.27.2
-Release:        6%{?dist}
+Version:        3.30.1
+Release:        1%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://sqlite.org/2018/%{name}-autoconf-%{sourcever}.tar.gz
-%define sha1    sqlite=5f5750e3f39b7b60394a2fb6ddb2371f848670e6
-Patch0:         CVE-2019-9936.patch
-Patch1:         CVE-2019-9937.patch
-Patch2:         CVE-2019-8457.patch
-Patch3:         CVE-2019-16168.patch
+Source0:        http://sqlite.org/2019/%{name}-autoconf-%{sourcever}.tar.gz
+%define sha1    sqlite=8383f29d53fa1d4383e4c8eb3e087f2ed940a9e0
+Patch0:         sqlite-CVE-2019-19646.patch
+Patch1:         sqlite-CVE-2019-19603.patch
+Patch2:         sqlite-CVE-2019-19317.patch
+Patch3:         sqlite-CVE-2019-19880.patch
+Patch4:         sqlite-CVE-2019-19645.patch
+Patch5:         sqlite-CVE-2019-19925.patch
+Patch6:         sqlite-CVE-2019-20218.patch
 Obsoletes:      sqlite-autoconf
 Obsoletes:      sqlite-devel <= 3.27.2-5
 Requires:       sqlite-libs = %{version}-%{release}
@@ -46,6 +49,9 @@ The sqlite3 library.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
 
 %build
 %configure \
@@ -95,6 +101,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0
 
 %changelog
+*   Mon Jan 06 2020 Ankit Jain <ankitja@vmware.com> 3.30.1-1
+-   Upgrade to version 3.30.1
 *   Wed Oct 23 2019 Michelle Wang <michellew@vmware.com> 3.27.2-6
 -   Move libsqlite3.so* from devel to libs
 *   Fri Oct 18 2019 Michelle Wang <michellew@vmware.com> 3.27.2-5
