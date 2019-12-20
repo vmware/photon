@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.205
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -90,6 +90,9 @@ Patch60:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 Patch61:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-19066
 Patch62:        0001-scsi_bfa_release_allocated_memory_in_case_of_error.patch
+# Fix for CVE-2019-10220
+Patch63:        0001-Make-filldir-64-verify-the-directory-entry-filename-.patch
+Patch64:        0002-filldir-64-remove-WARN_ON_ONCE-for-bad-directory-ent.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -224,6 +227,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch60 -p1
 %patch61 -p1
 %patch62 -p1
+%patch63 -p1
+%patch64 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -401,6 +406,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Dec 20 2019 Siddharth Chandrasekran <csiddharth@vmware.com> 4.9.205-2
+-   Fix CVE-2019-10220
 *   Wed Dec 04 2019 Ajay Kaher <akaher@vmware.com> 4.9.205-1
 -   Update to version 4.9.205
 *   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.9.202-2

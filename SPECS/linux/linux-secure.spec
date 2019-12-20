@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.205
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -82,7 +82,9 @@ Patch55:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch56:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch57:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
-
+# Fix for CVE-2019-10220
+Patch58:        0001-Make-filldir-64-verify-the-directory-entry-filename-.patch
+Patch59:        0002-filldir-64-remove-WARN_ON_ONCE-for-bad-directory-ent.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -216,6 +218,8 @@ EOF
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
+%patch58 -p1
+%patch59 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -353,6 +357,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Dec 20 2019 Siddharth Chandrasekran <csiddharth@vmware.com> 4.9.205-2
+-   Fix CVE-2019-10220
 *   Wed Dec 04 2019 Ajay Kaher <akaher@vmware.com> 4.9.205-1
 -   Update to version 4.9.205
 *   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.9.202-2

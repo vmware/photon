@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.205
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -71,8 +71,9 @@ Patch52:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch53:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch54:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
-
-
+# Fix for CVE-2019-10220
+Patch55:        0001-Make-filldir-64-verify-the-directory-entry-filename-.patch
+Patch56:        0002-filldir-64-remove-WARN_ON_ONCE-for-bad-directory-ent.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -155,6 +156,8 @@ The Linux package contains the Linux kernel doc files
 %patch52 -p1
 %patch53 -p1
 %patch54 -p1
+%patch55 -p1
+%patch56 -p1
 
 %build
 
@@ -250,6 +253,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Dec 20 2019 Siddharth Chandrasekran <csiddharth@vmware.com> 4.9.205-2
+-   Fix CVE-2019-10220
 *   Wed Dec 04 2019 Ajay Kaher <akaher@vmware.com> 4.9.205-1
 -   Update to version 4.9.205
 *   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.9.202-2

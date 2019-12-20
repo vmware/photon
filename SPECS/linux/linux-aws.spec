@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.205
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -77,6 +77,9 @@ Patch54:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 Patch55:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-19066
 Patch56:        0001-scsi_bfa_release_allocated_memory_in_case_of_error.patch
+# Fix for CVE-2019-10220
+Patch57:        0001-Make-filldir-64-verify-the-directory-entry-filename-.patch
+Patch58:        0002-filldir-64-remove-WARN_ON_ONCE-for-bad-directory-ent.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -240,6 +243,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
+%patch57 -p1
+%patch58 -p1
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -438,6 +443,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Fri Dec 20 2019 Siddharth Chandrasekran <csiddharth@vmware.com> 4.9.205-2
+-   Fix CVE-2019-10220
 *   Wed Dec 04 2019 Ajay Kaher <akaher@vmware.com> 4.9.205-1
 -   Update to version 4.9.205
 *   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.9.202-2
