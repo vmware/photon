@@ -15,7 +15,7 @@
 Summary:        Go
 Name:           go
 Version:        1.11.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -23,6 +23,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
 %define sha1    go=3039af0d0714db1902059add729f6b36390a9776
+Patch0:         CVE-2019-16276.patch
+Patch1:         CVE-2019-17596.patch
 Requires:       glibc
 
 %description
@@ -111,6 +113,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Fri Jan 03 2020 <ashwinh@vmware.com> 1.11.13-2
+-   Fix CVE-2019-16276 and CVE-2019-17596
 *   Tue Aug 27 2019 <ashwinh@vmware.com> 1.11.13-1
 -   Update to  1.11.13
 *   Wed Apr 24 2019 <ashwinh@vmware.com> 1.11.9-1

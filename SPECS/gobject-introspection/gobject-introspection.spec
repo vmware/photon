@@ -3,7 +3,7 @@
 Name:       	gobject-introspection
 Summary:    	Introspection system for GObject-based libraries
 Version:    	1.46.0
-Release:    	3%{?dist}
+Release:    	4%{?dist}
 Group:      	Development/Libraries
 License:    	GPLv2+, LGPLv2+, MIT
 URL:        	http://live.gnome.org/GObjectIntrospection
@@ -99,6 +99,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 1.46.0-4
+-   Bump up version to compile with new go
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.46.0-3
 -   Bump up version to compile with new go
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.46.0-2
