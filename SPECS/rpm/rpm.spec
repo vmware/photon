@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -106,6 +106,7 @@ sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
         --enable-python \
         --with-cap \
         --with-lua \
+        --with-vendor=vmware \
         --disable-silent-rules \
         --with-external-db
 make %{?_smp_mflags}
@@ -251,6 +252,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Sat Jan 04 2020 Neal Gompa <ngompa13@gmail.com> 4.14.2-6
+-   Configure RPMCANONVENDOR to vmware
 *   Thu Oct 10 2019 Tapas Kundu <tkundu@vmware.com> 4.14.2-5
 -   Enabled lua support.
 *   Wed Oct 03 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-4
