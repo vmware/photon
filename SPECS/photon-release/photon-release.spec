@@ -1,13 +1,17 @@
 Summary:    Photon release files
 Name:       photon-release
 Version:    3.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache License
 Group:      System Environment/Base
 URL:        https://vmware.github.io/photon/
 Vendor:     VMware, Inc.
 Distribution:   Photon
+Provides:   system-release
+Provides:   system-release(%{version})
+Provides:   system-release(releasever) = %{version}
 BuildArch:  noarch
+
 
 %description
 Photon release files such as yum configs and other /etc/ release related files
@@ -42,11 +46,11 @@ EOF
 ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 
 cat > %{buildroot}/etc/issue <<- EOF
-Welcome to Photon %{photon_release_version} (%{_arch}) - Kernel \r (\l)
+Welcome to Photon %{photon_release_version} (\m) - Kernel \r (\l)
 EOF
 
 cat > %{buildroot}/etc/issue.net <<- EOF
-Welcome to Photon %{photon_release_version} (%{_arch}) - Kernel %r (%t)
+Welcome to Photon %{photon_release_version} (%m) - Kernel %r (%t)
 EOF
 
 %post
@@ -64,6 +68,9 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/issue.net
 
 %changelog
+*       Sat Jan 04 2020 Neal Gompa <ngompa13@gmail.com> 3.0-3
+-       Fix issue files to not require arch mangling
+-       Add system-release Provides for generic distroverpkg identifying name
 *       Fri Sep 28 2018 Ajay Kaher <akaher@vmware.com> 3.0-2
 -       Fix for aarch64
 *       Mon Sep 24 2018 Anish Swaminathan <anishs@vmware.com> 3.0-1
