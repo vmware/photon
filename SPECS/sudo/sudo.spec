@@ -1,21 +1,19 @@
 Summary:        Sudo
 Name:           sudo
-Version:        1.8.20p2
-Release:        6%{?dist}
+Version:        1.8.30
+Release:        1%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha1    sudo=7aa187518735312a82c5fcb3d253ed700cb8c68e
+%define sha1    sudo=5b30363d4b23ea7edfb882e7224e1fd1111dd106
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
 Requires:       Linux-PAM
 Requires:       shadow
-Patch0:         fix_CVE-2019-14287.patch
-Patch1:         test_CVE-2019-14287.patch
 
 %description
 The Sudo package allows a system administrator to give certain users (or groups of users) 
@@ -23,13 +21,9 @@ the ability to run some (or all) commands as root or another user while logging 
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
+%configure \
     --libexecdir=%{_libdir} \
     --docdir=%{_docdir}/%{name}-%{version} \
     --with-all-insults \
@@ -86,6 +80,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/sudo/*.so
 %{_libdir}/sudo/*.so.*
 %{_sbindir}/*
+%{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_docdir}/%{name}-%{version}/*
@@ -94,6 +89,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+*   Mon Jan 06 2020 Shreyas B. <shreyasb@vmware.com> 1.8.30-1
+-   Upgrade sudo to v1.8.30 for fixing the CVE-2019-19232 & CVE-2019-19234.
 *   Tue Oct 15 2019 Shreyas B. <shreyasb@vmware.com> 1.8.20p2-6
 -   Fix for CVE-2019-14287.
 *   Thu Mar 01 2018 Anish Swaminathan <anishs@vmware.com> 1.8.20p2-5
