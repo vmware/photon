@@ -1,22 +1,20 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.12.10
-Release:        2%{?dist}
+Version:        1.13.12
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=b58470cb234d312ff158c11d8911986f56943739
+%define sha1    kubernetes-%{version}.tar.gz=a73861cff33634ba43e5c4c38dd85d8cff0ab2e0
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
-Patch0:         k8s-1.12-vke.patch
-Patch1:         CVE-2019-11247-1.patch
-Patch2:         CVE-2019-11247-2.patch
-Patch3:         CVE-2019-11249-1.patch
-Patch4:         CVE-2019-11249-2.patch
+Patch0:         k8s-1.13-vke.patch
+Patch1:         go-27704.patch
+Patch2:         go-27842-k8s-1.13.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  go >= 1.10.2
+BuildRequires:  go >= 1.11.2
 BuildRequires:  rsync
 BuildRequires:  which
 Requires:       cni
@@ -53,6 +51,8 @@ Group:          Development/Tools
 %description    pause
 A pod setup process that holds a pod's namespace.
 
+%global debug_package %{nil}
+
 %prep -p exit
 %setup -qn %{name}-%{version}
 cd ..
@@ -60,10 +60,11 @@ tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 cd %{name}-%{version}
 %patch0 -p1
+
+pushd vendor/golang.org/x/net
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
-%patch4 -p1
+popd
 
 %build
 make
@@ -215,6 +216,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 1.13.12-1
+-   Update to 1.13.12 which has fix for CVE-2019-11253
 *   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 1.12.10-2
 -   Bump up version to compile with new go
 *   Tue Sep 10 2019 Ashwin H <ashwinh@vmware.com> 1.12.10-1
