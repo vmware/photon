@@ -15,7 +15,7 @@
 Summary:        Go
 Name:           go
 Version:        1.11.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -32,6 +32,9 @@ Go is an open source programming language that makes it easy to build simple, re
 
 %prep
 %setup -qn %{name}
+%patch0 -p1
+%patch1 -p1
+
 
 %build
 export GOHOSTOS=linux
@@ -113,6 +116,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Mon Jan 06 2020 <ashwinh@vmware.com> 1.11.13-3
+-   Add patch for CVE-2019-16276 CVE-2019-17596 which was missed
 *   Fri Jan 03 2020 <ashwinh@vmware.com> 1.11.13-2
 -   Fix CVE-2019-16276 and CVE-2019-17596
 *   Tue Aug 27 2019 <ashwinh@vmware.com> 1.11.13-1
