@@ -2,7 +2,7 @@
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite-autoconf
 Version:        3.30.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
@@ -16,6 +16,7 @@ Patch2:         sqlite-CVE-2019-19317.patch
 Patch3:         sqlite-CVE-2019-19880.patch
 Patch4:         sqlite-CVE-2019-19645.patch
 Patch5:         sqlite-CVE-2019-19925.patch
+Patch6:         sqlite-CVE-2019-20218.patch
 Obsoletes:      libsqlite
 Provides:       sqlite3
 
@@ -32,6 +33,7 @@ C/C++ interface specs and other miscellaneous documentation.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %build
 ./configure \
@@ -77,6 +79,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+*   Mon Jan 06 2020 Ankit Jain <ankitja@vmware.com> 3.30.1-2
+-   Fix for CVE-2019-20218
 *   Fri Jan 03 2020 Ankit Jain <ankitja@vmware.com> 3.30.1-1
 -   Upgrade to version 3.30.1
 *   Fri Dec 20 2019 Ankit Jain <ankitja@vmware.com> 3.27.2-5
