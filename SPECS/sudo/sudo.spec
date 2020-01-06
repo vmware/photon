@@ -1,20 +1,18 @@
 Summary:	Sudo
 Name:		sudo
-Version:	1.8.20p2
-Release:	2%{?dist}
+Version:	1.8.30
+Release:	1%{?dist}
 License:	ISC
 URL:		https://www.kernel.org/pub/linux/libs/pam/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha1 sudo=7aa187518735312a82c5fcb3d253ed700cb8c68e
+%define sha1 sudo=5b30363d4b23ea7edfb882e7224e1fd1111dd106
 BuildRequires:	man-db
 BuildRequires:	Linux-PAM
 Requires:	Linux-PAM
 Requires:	shadow
-Patch0:		fix_CVE-2019-14287.patch
-Patch1:		test_CVE-2019-14287.patch
 
 %description
 The Sudo package allows a system administrator to give certain users (or groups of users) 
@@ -22,21 +20,19 @@ the ability to run some (or all) commands as root or another user while logging 
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 
 %build
 
 ./configure \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libexecdir=%{_libdir} \
-        --docdir=%{_docdir}/%{name}-%{version} \
-	--with-all-insults         \
-        --with-env-editor          \
-	--with-pam                 \
-	--with-pam-login	   \
-        --with-passprompt="[sudo] password for %p"
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --libexecdir=%{_libdir} \
+    --docdir=%{_docdir}/%{name}-%{version} \
+    --with-all-insults \
+    --with-env-editor \
+    --with-pam \
+    --with-pam-login \
+    --with-passprompt="[sudo] password for %p"
 
 make %{?_smp_mflags}
 
@@ -82,6 +78,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/sudo/*.so
 %{_libdir}/sudo/*.so.*
 %{_sbindir}/*
+%{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_docdir}/%{name}-%{version}/*
@@ -89,23 +86,25 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+*   Mon Jan 06 2020 Shreyas B. <shreyasb@vmware.com> 1.8.30-1
+-   Upgrade sudo to v1.8.30 for fixing the CVE-2019-19232 & CVE-2019-19234.
 *   Tue Oct 15 2019 Shreyas B. <shreyasb@vmware.com> 1.8.20p2-2
 -   Fix for CVE-2019-14287.
-*       Thu Jun 15 2017 Kumar Kaushik <kaushikk@vmware.com> 1.8.20p2-1
--       Udating version to 1.8.20p2, fixing CVE-2017-1000367 and CVE-2017-1000368
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-3
--	GA - Bump release of all rpms
-*   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-2
--   	Fix for upgrade issues
-*	Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-1
--	Update to 1.8.15-1.
-*	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.8.11p1-5
--	Edit post script.
-*	Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-4
--	Fixing permissions on /etc/sudoers file
-*	Fri May 29 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-3
--	Adding sudo configuration and PAM config file
-*	Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-2
--	Adding PAM support
-*	Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-1
--	Initial build.	First version
+*   Thu Jun 15 2017 Kumar Kaushik <kaushikk@vmware.com> 1.8.20p2-1
+-   Udating version to 1.8.20p2, fixing CVE-2017-1000367 and CVE-2017-1000368
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-3
+-   GA - Bump release of all rpms
+*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-2
+-   Fix for upgrade issues
+*   Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-1
+-   Update to 1.8.15-1.
+*   Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.8.11p1-5
+-   Edit post script.
+*   Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-4
+-   Fixing permissions on /etc/sudoers file
+*   Fri May 29 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-3
+-   Adding sudo configuration and PAM config file
+*   Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-2
+-   Adding PAM support
+*   Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-1
+-   Initial build.	First version
