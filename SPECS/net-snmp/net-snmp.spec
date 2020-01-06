@@ -2,7 +2,7 @@
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
@@ -82,6 +82,12 @@ rm -rf %{buildroot}/*
 %{_bindir}
 %{_libdir}/*.so.*
 /sbin/*
+%{_datadir}/snmp/snmpconf-data/
+%{_datadir}/snmp/snmp_perl.pl
+%{_datadir}/snmp/snmp_perl_trapd.pl
+%{_mandir}/man1/*
+%{_mandir}/man5/*
+%{_mandir}/man8/*
 
 %files devel
 %defattr(-,root,root)
@@ -89,10 +95,15 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.la
 %{_libdir}/perl5
 %{_libdir}/*.so
-%{_datadir}
+%{_datadir}/snmp/mibs
+%{_datadir}/snmp/mib2c*
+%{_mandir}/man3/*
 %exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %changelog
+*   Fri Jan 10 2020 Ankit Jain <ankitja@vmware.com> 5.8-4
+-   Moved snmpconf-data files to base pkg to
+-   fix "snmpconf -g basic_setup"
 *   Fri Jan 10 2020 Ankit Jain <ankitja@vmware.com> 5.8-3
 -   Added release number in requires of devel
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 5.8-2
