@@ -1,7 +1,7 @@
 Summary:        Fast, reliable, and secure dependency management.
 Name:           yarn
 Version:        1.10.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD 2-Clause
 URL:            https://yarnpkg.com
 Source0:        https://github.com/yarnpkg/yarn/archive/%{name}-%{version}.tar.gz
@@ -12,6 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Developement/Languages/NodeJs
 Patch0:         CVE-2019-5448-forces-using-https-for-registries.patch
+Patch1:         CVE-2019-10773.patch
 BuildRequires:  nodejs
 
 %global debug_package %{nil}
@@ -27,6 +28,7 @@ Yarn uses checksums to verify the integrity of every installed package before it
 %setup -q -n %{name}-%{version}
 
 %patch0 -p1
+%patch1 -p1
 
 tar xf %{SOURCE1} --no-same-owner
 
@@ -49,6 +51,8 @@ ln -sf %{_libdir}/node_modules/%{name}/bin/yarn.js %{buildroot}%{_bindir}/yarnpk
 %{_libdir}/node_modules/%{name}
 
 %changelog
+*   Tue Jan 07 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 1.10.1-4
+-   Add patch to fix CVE-2019-10773
 *   Wed Oct 09 2019 Tapas Kundu <tkundu@vmware.com> 1.10.1-3
 -   Use local repo for installing yarn
 *   Thu Sep 12 2019 Siddharth Chandrasekaran <csiddharth@vmware.com> 1.10.1-2
