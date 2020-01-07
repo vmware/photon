@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.7
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -1141,6 +1141,8 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.3.1.7-3
+-   Bump up version to compile with new go
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.3.1.7-2
 -   Bump up version to compile with new go
 *   Thu Nov 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1.7-1

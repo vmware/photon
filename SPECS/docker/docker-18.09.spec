@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -284,6 +284,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 18.09.9-2
+-   Bump up version to compile with new go
 *   Tue Oct 22 2019 Bo Gan <ganb@vmware.com> 18.09.9-1
 -   Initial packaging for 18.09
 -   Split daemon and cli into different RPMs

@@ -10,7 +10,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.14.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -227,6 +227,8 @@ fi
 %endif
 
 %changelog
+*   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.14.6-3
+-   Bump up version to compile with new go
 *   Wed Oct 9 2019 Ashwin H <ashwinh@vmware.com> 1.14.6-2
 -   Fix CVE-2019-11253
 *   Wed Sep 11 2019 Ashwin H <ashwinh@vmware.com> 1.14.6-1

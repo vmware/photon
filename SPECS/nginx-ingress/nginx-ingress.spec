@@ -1,7 +1,7 @@
 Summary:        NGINX Ingress Controller for Kubernetes
 Name:           nginx-ingress
 Version:        1.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/nginxinc/kubernetes-ingress
 Source0:        %{name}-%{version}.tar.gz
@@ -37,6 +37,8 @@ install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ nginx/template
 /usr/share/nginx-ingress/docker/nginx.*
 
 %changelog
+*   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.1.1-3
+-   Bump up version to compile with new go
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.1.1-2
 -   Bump up version to compile with new go
 *   Wed Mar 21 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.1.1-1

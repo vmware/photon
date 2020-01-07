@@ -1,7 +1,7 @@
 Summary:        Overlay network for containers based on etcd
 Name:           flannel
 Version:        0.11.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/coreos/flannel
 Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.zip
@@ -93,6 +93,8 @@ GOPATH=%{_builddir} make test
 %config(noreplace) %{_sysconfdir}/flannel/flanneld.conf
 
 %changelog
+*   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 0.11.0-3
+-   Bump up version to compile with new go
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 0.11.0-2
 -   Bump up version to compile with new go
 *   Tue Apr 02 2019 Ashwin H <ashwinh@vmware.com> 0.11.0-1
