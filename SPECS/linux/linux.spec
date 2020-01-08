@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.87
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -579,6 +579,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Jan 08 2020 Ajay Kaher <akaher@vmware.com> 4.19.87-4
+-   Enabled configs RTC_DRV_PL030, RTC_DRV_PL031
 *   Thu Jan 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.87-3
 -   Modify tcrypt to remove tests for algorithms that are not supported in photon.
 -   Added tests for DH, DRBG algorithms.
