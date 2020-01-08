@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        9.11.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,8 +11,11 @@ Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}
 %define         sha1 node=4b1a5582afc298cf77fe47fa61ffc8c7f32f074d
 
 BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
+BuildRequires:  python2
+BuildRequires:  which
 Requires:       (coreutils >= 8.22 or toybox)
 Requires:       openssl >= 1.0.1
+Requires:       python2
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -70,6 +73,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Mon Jan 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 9.11.2-2
+-   Added python as build dependency
 *   Thu Sep 20 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.11.2-1
 -   Updated to version 9.11.2
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 9.9.0-1

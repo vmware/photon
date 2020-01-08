@@ -207,9 +207,6 @@ class constants(object):
         "automake",
         "openssl",
         "openssl-devel",
-        "python2",
-        "python2-libs",
-        "python2-devel",
         "libcap",
         "libdb",
         "libdb-devel",
@@ -219,8 +216,6 @@ class constants(object):
         "rpm-build",
         "rpm-devel",
         "rpm-libs",
-        "groff",
-        "man-pages",
         "cpio"]
 
     # List of RPMs which are not published. They will be created during the

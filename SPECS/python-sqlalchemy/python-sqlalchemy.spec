@@ -3,7 +3,7 @@
 Summary:        The Python SQL Toolkit and Object Relational Mapper
 Name:           python-sqlalchemy
 Version:        1.3.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            http://www.sqlalchemy.org
 License:        MIT
 Group:          Development/Languages/Python
@@ -11,6 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/29/18/a78469bc449d9f92f6269cc62d0d6fbe6bf394d1031b447ad5e54463c3a0/SQLAlchemy-%{version}.tar.gz
 %define sha1    SQLAlchemy=45b36906f108c730577dc81ba5fd16cce37a74be
+BuildRequires:  python2-devel
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
@@ -46,6 +47,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python2_sitelib}/*
 
 %changelog
+*   Wed Jan 08 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.3.7-2
+-   Added python2-devel as a build requirement
 *   Fri Aug 23 2019 Tapas Kundu <tkundu@vmware.com> 1.3.7-1
 -   Update to version 1.3.7
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.2.11-1

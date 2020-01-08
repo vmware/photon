@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.23.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
@@ -19,6 +19,7 @@ Requires:       perl-YAML
 Requires:       perl-DBI
 Requires:       perl-CGI
 Requires:       subversion-perl
+Requires:       python2
 
 %description
 Git is a free and open source, distributed version control system
@@ -89,6 +90,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Tue Jan 07 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.23.1-2
+-   Added python2 as requirement
 *   Mon Dec 16 2019 Tapas Kundu <tkundu@vmware.com> 2.23.1-1
 -   Fix CVE-2019-19604
 *   Fri Oct 18 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.23.0-1

@@ -1,7 +1,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        6.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -12,6 +12,7 @@ Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.x
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
 BuildRequires:  libffi-devel
+BuildRequires:  python2
 Requires:       libxml2
 
 %description
@@ -77,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Mon Jan 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 6.0.1-3
+-   Added python2 dependency
 *   Wed Jun 26 2019 Keerthana K <keerthanak@vmware.com> 6.0.1-2
 -   Enable target BPF
 *   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1

@@ -1,7 +1,7 @@
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
 Version:        2.0.25
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://sourceforge.net/projects/openipmi/
 License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
@@ -17,6 +17,7 @@ BuildRequires:  popt-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
 BuildRequires:  swig
+BuildRequires:  python2-devel
 Requires:       systemd
 
 %description
@@ -178,6 +179,8 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
+*   Tue Jan 07 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.25-2
+-   Added python2-devel as a build requirement
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.0.25-1
 -   Upgrade to 2.0.25
 *   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-2

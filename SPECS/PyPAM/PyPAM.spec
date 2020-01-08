@@ -5,7 +5,7 @@
 Summary:        Python bindings for PAM (Pluggable Authentication Modules).
 Name:           PyPAM
 Version:        0.5.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -22,6 +22,7 @@ Patch4:         PyPAM-0.5.0-return-value.patch
 Patch5:         PyPAM-python3-support.patch
 
 BuildRequires:  python2
+BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  Linux-PAM-devel
@@ -85,6 +86,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jan 08 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.5.0-4
+-   Added python2-devel as a build requirement
 *   Thu Jun 22 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.5.0-3
 -   Fix the check section
 *   Wed May 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.5.0-2

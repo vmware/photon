@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.8p1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -28,6 +28,7 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
+BuildRequires:  groff
 Requires:       openssh-clients = %{version}-%{release}
 Requires:       openssh-server = %{version}-%{release}
 %description
@@ -188,6 +189,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Wed Jan 08 2020 Prashant S Chauhan <psinghchauha@vmware.com> 7.8p1-7
+-   Added groff as a build requirement
 *   Fri Nov 29 2019 Ankit Jain <ankitja@vmware.comm> 7.8p1-6
 -   Fix for CVE-2019-16905
 *   Wed Aug 07 2019 Anish Swaminathan <anishs@vmware.com> 7.8p1-5

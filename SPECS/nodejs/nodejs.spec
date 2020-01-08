@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        13.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,7 +11,10 @@ Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}
 %define         sha1 node=edf0e98b25ae943c49176dd7c3431aa69bacf065
 
 BuildRequires:  coreutils >= 8.22, zlib
+BuildRequires:  python2
+BuildRequires:  which
 Requires:       (coreutils >= 8.22 or toybox)
+Requires:       python2
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -66,6 +69,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Mon Jan 27 2020 Prashant S Chauhan <psinghchauha@vmware.com> 13.7.0-2
+-   Added python and which as build dependency
 *   Fri Jan 24 2020 Ankit Jain <ankitja@vmware.com> 13.7.0-1
 -   Upgraded to 13.7.0
 *   Fri Jan 24 2020 Ankit Jain <ankitja@vmware.com> 10.15.3-1

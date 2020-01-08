@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       4.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -32,6 +32,7 @@ BuildRequires: perl
 BuildRequires: python-setuptools
 BuildRequires: nss
 BuildRequires: shadow
+BuildRequires: python2-devel
 %if %with_boost
 BuildRequires: boost-devel
 %endif
@@ -355,6 +356,8 @@ fi
 %{_mandir}/man8/systemtap-service.8*
 
 %changelog
+*   Mon Jan 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.0-2
+-   Added python2-devel as build requirement
 *   Tue Dec 04 2018 Keerthana K <keerthanak@vmware.com> 4.0-1
 -   Updated to version 4.0
 *   Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 3.3-1
