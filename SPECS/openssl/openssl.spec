@@ -1,6 +1,6 @@
 Summary:    Management tools and libraries relating to cryptography
 Name:       openssl
-Version:    1.0.2t
+Version:    1.0.2u
 Release:    1%{?dist}
 License:    OpenSSL
 URL:        http://www.openssl.org
@@ -8,7 +8,7 @@ Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1 openssl=8ac3fd379cf8c8ef570abb51ec52a88fd526f88a
+%define sha1 openssl=740916d79ab0d209d2775277b1c6c3ec2f6502b2
 Patch0:     c_rehash.patch
 Patch1:     openssl-ipv6apps.patch
 Patch2:     openssl-init-conslidate.patch
@@ -112,6 +112,9 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Thu Jan 09 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2u-1
+-   Updated to 1.0.2u
+-   Fix CVE-2019-1551
 *   Thu Sep 19 2019 Tapas Kundu <tkundu@vmware.com> 1.0.2t-1
 -   Updated to 1.0.2t
 -   Fix multiple CVEs
