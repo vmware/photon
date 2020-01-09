@@ -31,3 +31,12 @@ This sequence of commands should look like this:
 ![The series of commands to reset the root password](images/resetpw.png)
 
 After the Photon OS machine reboots, log in with the new root password. 
+
+## Resetting the failed logon count
+Resetting the root password will not reset the failed logon count, if you've had to many failed attempts, you may not be able to logon after resetting the password.
+
+You will know if this is the case, if you see `Account locked due to X failed logins` at the photon console.
+
+To reset the count, before you unmount the filesystem, run the following...
+
+	/sbin/pam_tally2 --reset --user root
