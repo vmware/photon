@@ -1,14 +1,14 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2t
-Release:        2%{?dist}
+Version:        1.0.2u
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1    openssl=8ac3fd379cf8c8ef570abb51ec52a88fd526f88a
+%define sha1    openssl=740916d79ab0d209d2775277b1c6c3ec2f6502b2
 Source1:        rehash_ca_certificates.sh
 %if 0%{?with_fips:1}
 Source100:      openssl-fips-2.0.9-lin64.tar.gz
@@ -137,6 +137,9 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Thu Jan 09 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2u-1
+-   Updated to 1.0.2u
+-   Fix CVE-2019-1551
 *   Fri Sep 27 2019 Alexey Makhalov <amakhalov@vmware.com> 1.0.2t-2
 -   Cross compilation support
 *   Thu Sep 19 2019 Tapas Kundu <tkundu@vmware.com> 1.0.2t-1
