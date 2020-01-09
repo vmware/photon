@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        10.3.10
-Release:        9%{?dist}
+Version:        11.0.5
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 open-vm-tools=de11691d0d2149d7cff4d3a17e9a74bb5bdbab05
+%define sha1 open-vm-tools=74e64ef0bb18acdf2a4222ba333b5edf24abbea2
 Source1:        gosc-scripts-1.2.tar.gz
 %define sha1 gosc-scripts-1.2=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
@@ -21,10 +21,8 @@ Patch2:         PureIPv6-hosts.patch
 Patch3:         GOSC-libDeploy.patch
 Patch4:         timezoneCust.patch
 Patch5:         gosc-post-custom.patch
-Patch6:         fix-memleak-in-vix.patch
-Patch7:         gosc-enable-custom-scripts.patch
-Patch8:         remove-etc-security-dir.patch
-Patch9:         gosc-fix-vmtoolsd-binary-path.patch
+Patch6:         gosc-enable-custom-scripts.patch
+Patch7:         gosc-fix-vmtoolsd-binary-path.patch
 
 BuildArch:      x86_64
 BuildRequires:  glib-devel
@@ -76,10 +74,8 @@ It contains the libraries and header files to create applications.
 %patch3 -p2
 %patch4 -p0
 %patch5 -p0
-%patch6 -p2
+%patch6 -p0
 %patch7 -p0
-%patch8 -p2
-%patch9 -p0
 
 %build
 touch ChangeLog
@@ -130,7 +126,6 @@ fi
 %dir %{_libdir}/%{name}/plugins/common
 %dir %{_libdir}/%{name}/plugins/vmsvc
 %{_libdir}/%{name}/plugins/vmsvc/libdeployPkgPlugin.so
-%{_libdir}/%{name}/plugins/vmsvc/libgrabbitmqProxy.so
 %{_libdir}/%{name}/plugins/vmsvc/libguestInfo.so
 %{_libdir}/%{name}/plugins/vmsvc/libpowerOps.so
 %{_libdir}/%{name}/plugins/vmsvc/libresolutionKMS.so
@@ -152,6 +147,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Thu Mar 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.0.5-1
+-   Upgrade version to 11.0.5
 *   Mon Mar 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 10.3.10-9
 -   Fix gosc script vmtoolsd path - revisited
 *   Thu Feb 20 2020 Keerthana K <keerthanak@vmware.com> 10.3.10-8

@@ -1,8 +1,8 @@
 diff --git a/open-vm-tools/libDeployPkg/linuxDeployment.c b/open-vm-tools/libDeployPkg/linuxDeployment.c
-index 6e22aac..d49259f 100644
+index 1af08936..227fb381 100644
 --- a/open-vm-tools/libDeployPkg/linuxDeployment.c
 +++ b/open-vm-tools/libDeployPkg/linuxDeployment.c
-@@ -596,13 +596,17 @@ GetPackageInfo(const char* packageName,
+@@ -651,13 +651,17 @@ GetPackageInfo(const char* packageName,
     close(fd);
  
     // Create space and copy the command
@@ -22,23 +22,28 @@ index 6e22aac..d49259f 100644
     *archiveType = hdr.payloadType;
     *flags = hdr.reserved;
  
-@@ -1223,6 +1227,19 @@ Deploy(const char* packageName)
+@@ -1315,6 +1319,24 @@ Deploy(const char* packageName)
        free(command);
        deployPkgStatus = CloudInitSetup(imcDirPath);
     } else {
-+       if ((strstr(command, "scripts/Customize.pl") != NULL) || (strstr(command, "scripts/customize.sh") != NULL)) {
-+          free (command);
-+          char PHOTON_OS_LAUNCH_COMMAND[256];
-+          sprintf(PHOTON_OS_LAUNCH_COMMAND, "/bin/bash /usr/share/open-vm-tools/GOSC/gosc-scripts/imc-shell/imgcust-scripts/customize.sh %s/cust.cfg", imcDirPath);
++       if (strstr(command, "scripts/Customize.pl") || strstr(command, "scripts/customize.sh")) {
++           char PHOTON_OS_LAUNCH_COMMAND[256] = {0};
 +
-+          // The command will be parsed alter and can be of arbitrary length
-+          command = strdup(PHOTON_OS_LAUNCH_COMMAND);
-+          if (!command) {
-+             SetDeployError("Error allocating memory.");
-+             return DEPLOYPKG_STATUS_ERROR;
-+          }
-+          _DeployPkg_SkipReboot(true);
-+      }
-       sLog(log_info, "Executing traditional GOSC workflow");
++           free(command);
++           command = NULL;
++
++           snprintf(PHOTON_OS_LAUNCH_COMMAND, sizeof(PHOTON_OS_LAUNCH_COMMAND),
++                   "/bin/bash /usr/share/open-vm-tools/GOSC/gosc-scripts/imc-shell/imgcust-scripts/customize.sh %s/cust.cfg",
++                   imcDirPath);
++
++           // The command will be parsed alter and can be of arbitrary length
++           command = strdup(PHOTON_OS_LAUNCH_COMMAND);
++           if (!command) {
++               SetDeployError("Error allocating memory.");
++               return DEPLOYPKG_STATUS_ERROR;
++           }
++           _DeployPkg_SkipReboot(true);
++       }
+       sLog(log_info, "Executing traditional GOSC workflow.\n");
        deploymentResult = ForkExecAndWaitCommand(command, false);
        free(command);
