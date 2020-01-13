@@ -1,17 +1,15 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
-Version:        2.76
-Release:        6%{?dist}
+Version:        2.79
+Release:        1%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            http://www.thekelleys.org.uk/dnsmasq/
 Source:         %{name}-%{version}.tar.xz
-%define sha1    dnsmasq=db42d7297dc0a05d51588baa2f298ebb42fcef99
+%define sha1    dnsmasq=d4a1af08b02b27736954ce8b2db2da7799d75812
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Patch0:         dnsmasq.patch
-Patch1:         CVE-2017-13704.patch
-Patch2:         CVE-2017-15107.patch
+Patch0:         CVE-2019-14834.patch
 
 %description
 Dnsmasq a lightweight, caching DNS proxy with integrated DHCP server.
@@ -25,8 +23,6 @@ Utilities that use DHCP protocol to query and remove a DHCP server's leases
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 make %{?_smp_mflags}
@@ -93,6 +89,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+*   Tue Jan 14 2020 Ashwin H <ashwinh@vmware.com> 2.79-1
+-   Fix CVE-2019-14834 and update to 2.79
 *   Tue Mar 26 2019 Ashwin H <ashwinh@vmware.com> 2.76-6
 -   Add dnsmasq-utils sub package
 *   Tue Feb 13 2018 Xiaolin Li <xiaolinl@vmware.com> 2.76-5
