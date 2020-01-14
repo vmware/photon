@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.87
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -315,6 +315,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jan 14 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.87-4
+-   Enable DRBG HASH and DRBG CTR support.
 *   Thu Jan 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.87-3
 -   Modify tcrypt to remove tests for algorithms that are not supported in photon.
 -   Added tests for DH, DRBG algorithms.
