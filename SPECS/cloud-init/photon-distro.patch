@@ -1,8 +1,8 @@
 diff --git a/cloudinit/distros/photon.py b/cloudinit/distros/photon.py
-index e69de29b..5b995338 100644
+index e69de29b..f3a973fd 100644
 --- a/cloudinit/distros/photon.py
 +++ b/cloudinit/distros/photon.py
-@@ -0,0 +1,343 @@
+@@ -0,0 +1,356 @@
 +# vi: ts=4 expandtab
 +#
 +# Copyright (C) 2017 VMware Inc.
@@ -17,6 +17,7 @@ index e69de29b..5b995338 100644
 +from cloudinit import log as logging
 +from cloudinit import util
 +from cloudinit.distros import net_util
++from cloudinit.distros import rhel_util as rhutil
 +from cloudinit.distros.parsers.hostname import HostnameConf
 +from cloudinit.net.network_state import mask_to_net_prefix
 +
@@ -27,6 +28,7 @@ index e69de29b..5b995338 100644
 +class Distro(distros.Distro):
 +    hostname_conf_fn = "/etc/hostname"
 +    locale_conf_fn = "/etc/default/locale"
++    systemd_locale_conf_fn = '/etc/locale.conf'
 +    network_conf_dir = "/etc/systemd/network/"
 +    resolve_conf_fn = "/etc/systemd/resolved.conf"
 +    init_cmd = ['systemctl']  # init scripts
@@ -40,17 +42,28 @@ index e69de29b..5b995338 100644
 +        self.osfamily = 'photon'
 +
 +    def apply_locale(self, locale, out_fn=None):
-+        if not out_fn:
-+            out_fn = self.locale_conf_fn
-+        util.subp(['locale-gen', locale], capture=False)
-+        util.subp(['update-locale', locale], capture=False)
-+        # "" provides trailing newline during join
-+        lines = [
-+            util.make_header(),
-+            'LANG="%s"' % (locale),
-+            "",
-+        ]
-+        util.write_file(out_fn, "\n".join(lines))
++        if self.uses_systemd():
++            if not out_fn:
++                out_fn = self.systemd_locale_conf_fn
++        else:
++            if not out_fn:
++                out_fn = self.locale_conf_fn
++        locale_cfg = {
++            'LANG': locale,
++        }
++        rhutil.update_sysconfig_file(out_fn, locale_cfg)
++
++        ## rhutil will modify /etc/locale.conf
++        ## For locale change to take effect, reboot is needed or we can restart systemd-localed
++        ## This is equivalent of localectl
++        cmd = ['systemctl', 'restart', 'systemd-localed']
++        LOG.debug("Attempting to restart localed using command %s", cmd)
++        try:
++            (_out, err) = util.subp(cmd)
++            if len(err):
++                LOG.warn("Running %s resulted in stderr output: %s", cmd, err)
++        except util.ProcessExecutionError:
++            util.logexc(LOG, "Restart of localed using command %s failed", cmd)
 +
 +    def install_packages(self, pkglist):
 +        #self.update_package_sources()

@@ -1,0 +1,146 @@
+diff --git a/config/cloud.cfg.tmpl b/config/cloud.cfg.tmpl
+index 25db43e0..d2d30444 100644
+--- a/config/cloud.cfg.tmpl
++++ b/config/cloud.cfg.tmpl
+@@ -10,23 +10,34 @@ syslog_fix_perms: root:root
+ # A set of users which may be applied and/or used by various modules
+ # when a 'default' entry is found it will reference the 'default_user'
+ # from the distro configuration specified below
++{% if variant in ["photon"] %}
+ users:
+-   - default
++  - name: root
++    lock_passwd: false
++{% else %}
++users:
++    - default
++{% endif %}
+ 
+ # If this is set, 'root' will not be able to ssh in and they
+ # will get a message to login instead as the default $user
+-{% if variant in ["freebsd"] %}
++{% if variant in ["freebsd", "photon"] %}
+ disable_root: false
+ {% else %}
+ disable_root: true
+ {% endif %}
+ 
++#Vmware guest customization.
++{% if variant in ["photon"] %}
++disable_vmware_customization: true
++{% endif %}
++
+ {% if variant in ["centos", "fedora", "rhel"] %}
+ mount_default_fields: [~, ~, 'auto', 'defaults,nofail', '0', '2']
+ resize_rootfs_tmp: /dev
+ ssh_pwauth:   0
+-
+ {% endif %}
++
+ # This will cause the set+update hostname module to not operate (if true)
+ preserve_hostname: false
+ 
+@@ -34,6 +45,24 @@ preserve_hostname: false
+ # This should not be required, but leave it in place until the real cause of
+ # not beeing able to find -any- datasources is resolved.
+ datasource_list: ['ConfigDrive', 'Azure', 'OpenStack', 'Ec2']
++{% elif variant in ["photon"] %}
++# datasources to check for cloud-config
++datasource_list: [
++    NoCloud,
++    ConfigDrive,
++    OVF,
++    OpenStack,
++#   OpenNebula,
++#   Azure,
++#   AltCloud,
++#   MAAS,
++#   GCE,
++#   CloudSigma,
++#   Ec2,
++#   CloudStack,
++    VMwareGuestInfo,
++    None
++    ]
+ {% endif %}
+ # Example datasource config
+ # datasource:
+@@ -58,7 +87,9 @@ cloud_init_modules:
+  - update_hostname
+ {% if variant not in ["freebsd"] %}
+  - update_etc_hosts
++{% if variant not in ["photon"] %}
+  - ca-certs
++{% endif %}
+  - rsyslog
+ {% endif %}
+  - users-groups
+@@ -73,11 +104,17 @@ cloud_config_modules:
+  - snap
+  - snap_config  # DEPRECATED- Drop in version 18.2
+ {% endif %}
++{% if variant not in ["photon"] %}
+  - ssh-import-id
+- - locale
++{% endif %}
++# Use this with caution, you may need to install glibc-i18n to get all locales
++# Disabling locale because cloud-init overwrites with default locale on reboot
++# - locale
+  - set-passwords
+-{% if variant in ["rhel", "fedora"] %}
++{% if variant in ["rhel", "fedora", "photon"] %}
++{% if variant not in ["photon"] %}
+  - spacewalk
++{% endif %}
+  - yum-add-repo
+ {% endif %}
+ {% if variant in ["ubuntu", "unknown", "debian"] %}
+@@ -101,6 +138,10 @@ cloud_config_modules:
+  - byobu
+ {% endif %}
+ 
++{% if variant in ["photon"] %}
++unverified_modules: ['yum-add-repo', 'ntp']
++{% endif %}
++
+ # The modules that run in the 'final' stage
+ cloud_final_modules:
+ {% if variant in ["ubuntu", "unknown", "debian"] %}
+@@ -137,7 +178,7 @@ cloud_final_modules:
+ # (not accessible to handlers/transforms)
+ system_info:
+    # This will affect which distro class gets used
+-{% if variant in ["centos", "debian", "fedora", "rhel", "suse", "ubuntu", "freebsd"] %}
++{% if variant in ["centos", "debian", "fedora", "rhel", "suse", "ubuntu", "freebsd", "photon"] %}
+    distro: {{ variant }}
+ {% else %}
+    # Unknown/fallback distro.
+@@ -211,5 +252,14 @@ system_info:
+      gecos: FreeBSD
+      groups: [wheel]
+      sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+-     shell: /bin/tcsh
++     shell: /bin/tcsih
++{% elif variant == "photon" %}
++   # Other config here will be given to the distro class and/or path classes
++   paths:
++      cloud_dir: /var/lib/cloud/
++      templates_dir: /etc/cloud/templates/
++
++   ssh_svcname: sshd
++
++#manage_etc_hosts: true
+ {% endif %}
+diff --git a/tools/render-cloudcfg b/tools/render-cloudcfg
+index 8b7cb875..8b77505c 100755
+--- a/tools/render-cloudcfg
++++ b/tools/render-cloudcfg
+@@ -4,7 +4,7 @@ import argparse
+ import os
+ import sys
+ 
+-VARIANTS = ["bsd", "centos", "fedora", "rhel", "suse", "ubuntu", "unknown"]
++VARIANTS = ["bsd", "centos", "fedora", "rhel", "suse", "ubuntu", "photon", "unknown"]
+ 
+ if "avoid-pep8-E402-import-not-top-of-file":
+     _tdir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

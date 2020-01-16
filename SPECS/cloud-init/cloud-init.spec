@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -12,25 +12,26 @@ Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
 %define sha1 cloud-init=6de398dd755959dde47c8d6f6e255a0857017c44
-Source1:        cloud-photon.cfg
-Source2:        99-disable-networking-config.cfg
-Source3:        dscheck_VMwareGuestInfo
+Source1:        99-disable-networking-config.cfg
+Source2:        dscheck_VMwareGuestInfo
 
 Patch0:         photon-distro.patch
-Patch2:         vca-admin-pwd.patch
-Patch3:         photon-hosts-template.patch
-Patch5:         DataSourceVMwareGuestInfo.patch
-Patch6:         systemd-service-changes.patch
-Patch7:         makecheck.patch
-Patch8:         systemd-resolved-config.patch
-Patch9:         cloud-init-azureds.patch
-Patch10:        ds-identity.patch
-Patch11:        ds-guestinfo-photon.patch
-Patch12:        trigger-post-customization.patch
-Patch13:        enable-disable-custom-script.patch
-Patch14:        disable-custom-script-default.patch
-Patch15:        CVE-2020-8632.patch
-Patch16:        CVE-2020-8631.patch
+Patch1:         vca-admin-pwd.patch
+Patch2:         photon-hosts-template.patch
+Patch3:         DataSourceVMwareGuestInfo.patch
+Patch4:         systemd-service-changes.patch
+Patch5:         makecheck.patch
+Patch6:         systemd-resolved-config.patch
+Patch7:         cloud-init-azureds.patch
+Patch8:         ds-identity.patch
+Patch9:         ds-guestinfo-photon.patch
+Patch10:        trigger-post-customization.patch
+Patch11:        enable-disable-custom-script.patch
+Patch12:        disable-custom-script-default.patch
+Patch13:        CVE-2020-8632.patch
+Patch14:        CVE-2020-8631.patch
+Patch15:        cloud-cfg.patch
+Patch16:        fix-make-check.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -42,15 +43,16 @@ BuildRequires:  automake
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-six
-# %if %{with_check}
 BuildRequires:  python3-requests
-# %endif
 BuildRequires:  python3-PyYAML
 BuildRequires:  python3-urllib3
 BuildRequires:  python3-chardet
 BuildRequires:  python3-certifi
 BuildRequires:  python3-idna
 BuildRequires:  python3-jinja2
+%if %{with_check}
+BuildRequires:  python3-pip
+%endif
 
 Requires:       systemd
 Requires:       (net-tools or toybox)
@@ -81,8 +83,10 @@ ssh keys and to let the user run various scripts.
 %prep
 %setup -q -n %{name}-%{version}
 %patch0 -p1
+%patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
@@ -105,21 +109,20 @@ python3 setup.py build
 rm -rf $RPM_BUILD_ROOT
 python3 setup.py install -O1 --skip-build --root=%{buildroot} --init-system systemd
 
+python3 tools/render-cloudcfg --variant photon > $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg
+
 mkdir -p %{buildroot}/var/lib/cloud
 mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
 
-# We supply our own config file since our software differs from Ubuntu's.
-cp -p %{SOURCE1} %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
-
 # Disable networking config by cloud-init
-cp -p %{SOURCE2} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
-install -m 755 %{SOURCE3} $RPM_BUILD_ROOT/%{_bindir}/
+cp -p %{SOURCE1} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
+install -m 755 %{SOURCE2} $RPM_BUILD_ROOT/%{_bindir}/
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-ln -s /usr/bin/pip3 /usr/bin/pip
-$easy_install_3 tox
-tox -e py36
+touch vd ud
+pip3 install httpretty mock unittest2 deepmerge configobj jsonpatch nose
+ln -s /usr/bin/nosetests-3.4 /usr/bin/nosetests3
+make check
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -165,6 +168,10 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Fri Mar 27 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.1-8
+-   Fixed make check
+-   Enable all harmless options
+-   Generate cloud.cfg using render-cloudcfg script
 *   Wed Mar 25 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.1-7
 -   Updated ds-guestinfo-photon.patch
 -   Fixed dhcp issue in photon-distro.patch
