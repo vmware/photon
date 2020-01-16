@@ -4,7 +4,7 @@ Name:           linux-rt
 Version:        4.19.82
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt30
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -852,6 +852,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Jan 16 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.82-4
+-   Enable DRBG HASH and DRBG CTR support.
 *   Fri Jan 03 2020 Keerthana K <keerthanak@vmware.com> 4.19.82-3
 -   Remove FIPS patch that enables fips for algorithms which are not fips allowed.
 *   Wed Dec 12 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.82-2

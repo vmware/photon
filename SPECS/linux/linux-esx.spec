@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.87
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -291,6 +291,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Thu Jan 16 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.87-5
+-   Enable DRBG HASH and DRBG CTR support.
 *   Mon Jan 06 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.87-4
 -   Enable CONFIG_NF_CONNTRACK_ZONES
 *   Thu Jan 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.87-3
