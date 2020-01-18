@@ -36,12 +36,10 @@ Functions signature fixing is still required.
  arch/x86/crypto/twofish-x86_64-asm_64.S            |   4 +-
  arch/x86/entry/Makefile                            |   2 +
  arch/x86/entry/common.c                            |  61 +++
- arch/x86/include/asm/fixmap.h                      |   2 +-
  arch/x86/include/asm/module.h                      |   9 +-
  arch/x86/kernel/cpu/vmware.c                       |   8 +-
  arch/x86/kernel/mcount_64.S                        |   2 +-
  arch/x86/kernel/traps.c                            |   4 +
- arch/x86/mm/pgtable.c                              |   2 +-
  arch/x86/oprofile/nmi_int.c                        |   2 +-
  arch/x86/xen/xen-asm.S                             |   8 +-
  drivers/acpi/button.c                              |   4 +-
@@ -1259,19 +1257,6 @@ index b0cd306..f384da6 100644
  	}
  
  	syscall_return_slowpath(regs);
-diff --git a/arch/x86/include/asm/fixmap.h b/arch/x86/include/asm/fixmap.h
-index 8554f96..6c58add 100644
---- a/arch/x86/include/asm/fixmap.h
-+++ b/arch/x86/include/asm/fixmap.h
-@@ -142,7 +142,7 @@ extern pte_t *kmap_pte;
- extern pte_t *pkmap_page_table;
- 
- void __native_set_fixmap(enum fixed_addresses idx, pte_t pte);
--void native_set_fixmap(enum fixed_addresses idx,
-+void native_set_fixmap(unsigned int idx,
- 		       phys_addr_t phys, pgprot_t flags);
- 
- #ifndef CONFIG_PARAVIRT
 diff --git a/arch/x86/include/asm/module.h b/arch/x86/include/asm/module.h
 index e3b7819..f1de876 100644
 --- a/arch/x86/include/asm/module.h
@@ -1350,19 +1335,6 @@ index bd4e3d4..d0f53cc 100644
  			die(str, regs, error_code);
  		}
  		return 0;
-diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-index 3feec5a..66fc0b0 100644
---- a/arch/x86/mm/pgtable.c
-+++ b/arch/x86/mm/pgtable.c
-@@ -542,7 +542,7 @@ void __native_set_fixmap(enum fixed_addresses idx, pte_t pte)
- 	fixmaps_set++;
- }
- 
--void native_set_fixmap(enum fixed_addresses idx, phys_addr_t phys,
-+void native_set_fixmap(unsigned int idx, phys_addr_t phys,
- 		       pgprot_t flags)
- {
- 	__native_set_fixmap(idx, pfn_pte(phys >> PAGE_SHIFT, flags));
 diff --git a/arch/x86/oprofile/nmi_int.c b/arch/x86/oprofile/nmi_int.c
 index 28c0412..56accd4 100644
 --- a/arch/x86/oprofile/nmi_int.c

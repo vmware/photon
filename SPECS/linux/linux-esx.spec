@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.205
-Release:        2%{?dist}
+Version:        4.9.210
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c27bd0601c172fe4c3f1fbb5c96fd6f306c87c28
+%define sha1 linux=2f114512b1636e4b199d00e9872b023e3c62e5e8
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -46,8 +46,6 @@ Patch30:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
 Patch31:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 Patch32:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
-# Fix for CVE-2019-19066
-Patch34:        0001-scsi_bfa_release_allocated_memory_in_case_of_error.patch
 # Fix for CVE-2018-8043
 Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -71,9 +69,6 @@ Patch52:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch53:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch54:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
-# Fix for CVE-2019-10220
-Patch55:        0001-Make-filldir-64-verify-the-directory-entry-filename-.patch
-Patch56:        0002-filldir-64-remove-WARN_ON_ONCE-for-bad-directory-ent.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -142,7 +137,6 @@ The Linux package contains the Linux kernel doc files
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
-%patch34 -p1
 %patch38 -p1
 %patch42 -p1
 %patch43 -p1
@@ -156,8 +150,6 @@ The Linux package contains the Linux kernel doc files
 %patch52 -p1
 %patch53 -p1
 %patch54 -p1
-%patch55 -p1
-%patch56 -p1
 
 %build
 
@@ -253,6 +245,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.210-1
+-   Update to version 4.9.210
 *   Fri Dec 20 2019 Siddharth Chandrasekran <csiddharth@vmware.com> 4.9.205-2
 -   Fix CVE-2019-10220
 *   Wed Dec 04 2019 Ajay Kaher <akaher@vmware.com> 4.9.205-1

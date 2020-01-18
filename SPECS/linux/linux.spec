@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.205
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.210
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c27bd0601c172fe4c3f1fbb5c96fd6f306c87c28
+%define sha1 linux=2f114512b1636e4b199d00e9872b023e3c62e5e8
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -88,11 +88,6 @@ Patch59:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch60:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch61:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
-# Fix for CVE-2019-19066
-Patch62:        0001-scsi_bfa_release_allocated_memory_in_case_of_error.patch
-# Fix for CVE-2019-10220
-Patch63:        0001-Make-filldir-64-verify-the-directory-entry-filename-.patch
-Patch64:        0002-filldir-64-remove-WARN_ON_ONCE-for-bad-directory-ent.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -226,9 +221,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch59 -p1
 %patch60 -p1
 %patch61 -p1
-%patch62 -p1
-%patch63 -p1
-%patch64 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -406,6 +398,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.210-1
+-   Update to version 4.9.210
 *   Fri Dec 20 2019 Siddharth Chandrasekran <csiddharth@vmware.com> 4.9.205-2
 -   Fix CVE-2019-10220
 *   Wed Dec 04 2019 Ajay Kaher <akaher@vmware.com> 4.9.205-1
