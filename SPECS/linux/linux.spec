@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.19.87
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.97
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6bef9ec5ef74ae160b18d7a0930cd80cb1461bdb
+%define sha1 linux=6be0db4833d6c4db4230a01ed2e9661d84b6420b
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -37,18 +37,12 @@ Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
 #HyperV patches
 Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 
-# Fix CVE-2019-19062
-Patch15:        0001-crypto-user-fix-memory-leak-in-crypto_report.patch
-# Fix CVE-2019-19066
-Patch16:        0001-scsi_bfa_release_allocated_memory_in_case_of_error.patch
 # Fix CVE-2019-19072
 Patch17:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 # Fix CVE-2019-19073
 Patch18:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19074
 Patch19:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
-# Fix CVE-2019-19078
-Patch20:        0001-ath10k-fix-memory-leak.patch
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
@@ -250,12 +244,9 @@ This Linux package contains hmac sha generator kernel module.
 %patch9 -p1
 %patch11 -p1
 %patch13 -p1
-%patch15 -p1
-%patch16 -p1
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
-%patch20 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -579,6 +570,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.97-1
+-   Update to version 4.19.97
 *   Tue Jan 14 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.87-5
 -   Enable DRBG HASH and DRBG CTR support.
 *   Wed Jan 08 2020 Ajay Kaher <akaher@vmware.com> 4.19.87-4
