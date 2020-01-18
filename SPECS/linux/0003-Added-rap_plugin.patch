@@ -37,14 +37,12 @@ Subject: [PATCH 3/3] Added rap_plugin
  arch/x86/entry/common.c                       |  51 ++
  arch/x86/events/amd/iommu.h                   |   2 +-
  arch/x86/include/asm/e820/api.h               |   2 +-
- arch/x86/include/asm/fixmap.h                 |   2 +-
  arch/x86/include/asm/module.h                 |   9 +-
  arch/x86/kernel/cpu/vmware.c                  |   8 +-
  arch/x86/kernel/e820.c                        |   2 +-
  arch/x86/kernel/ftrace_64.S                   |   2 +-
  arch/x86/kernel/paravirt.c                    |   6 +-
  arch/x86/kernel/traps.c                       |   4 +
- arch/x86/mm/pgtable.c                         |   2 +-
  arch/x86/xen/xen-asm.S                        |   8 +-
  drivers/char/tpm/tpm-chip.c                   |   9 +-
  drivers/firmware/dmi-id.c                     |   7 +-
@@ -1194,19 +1192,6 @@ index 62be73b23d5c..4133797d4274 100644
  
  extern void e820__range_add   (u64 start, u64 size, enum e820_type type);
  extern u64  e820__range_update(u64 start, u64 size, enum e820_type old_type, enum e820_type new_type);
-diff --git a/arch/x86/include/asm/fixmap.h b/arch/x86/include/asm/fixmap.h
-index 6390bd8c141b..de014caebfe8 100644
---- a/arch/x86/include/asm/fixmap.h
-+++ b/arch/x86/include/asm/fixmap.h
-@@ -159,7 +159,7 @@ extern pte_t *kmap_pte;
- extern pte_t *pkmap_page_table;
- 
- void __native_set_fixmap(enum fixed_addresses idx, pte_t pte);
--void native_set_fixmap(enum fixed_addresses idx,
-+void native_set_fixmap(unsigned int idx,
- 		       phys_addr_t phys, pgprot_t flags);
- 
- #ifndef CONFIG_PARAVIRT
 diff --git a/arch/x86/include/asm/module.h b/arch/x86/include/asm/module.h
 index 7948a17febb4..bc2b010b3d76 100644
 --- a/arch/x86/include/asm/module.h
@@ -1322,19 +1307,6 @@ index e6db475164ed..3be5161ac26c 100644
  		die(str, regs, error_code);
  	}
  
-diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-index 59274e2c1ac4..2428f9d132cf 100644
---- a/arch/x86/mm/pgtable.c
-+++ b/arch/x86/mm/pgtable.c
-@@ -660,7 +660,7 @@ void __native_set_fixmap(enum fixed_addresses idx, pte_t pte)
- 	fixmaps_set++;
- }
- 
--void native_set_fixmap(enum fixed_addresses idx, phys_addr_t phys,
-+void native_set_fixmap(unsigned int idx, phys_addr_t phys,
- 		       pgprot_t flags)
- {
- 	/* Sanitize 'prot' against any unsupported bits: */
 diff --git a/arch/x86/xen/xen-asm.S b/arch/x86/xen/xen-asm.S
 index 8019edd0125c..1ce29074f0e0 100644
 --- a/arch/x86/xen/xen-asm.S

@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.87
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.97
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6bef9ec5ef74ae160b18d7a0930cd80cb1461bdb
+%define sha1 linux=6be0db4833d6c4db4230a01ed2e9661d84b6420b
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -32,18 +32,12 @@ Patch14:        0002-Added-PAX_RANDKSTACK.patch
 Patch15:        0003-Added-rap_plugin.patch
 # HyperV Patches
 Patch16:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
-# Fix CVE-2019-19062
-Patch17:        0001-crypto-user-fix-memory-leak-in-crypto_report.patch
-# Fix CVE-2019-19066
-Patch18:        0001-scsi_bfa_release_allocated_memory_in_case_of_error.patch
 # Fix CVE-2019-19072
 Patch19:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 # Fix CVE-2019-19073
 Patch20:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19074
 Patch21:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
-# Fix CVE-2019-19078
-Patch22:        0001-ath10k-fix-memory-leak.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2019-18814
 Patch27:        apparmor-Fix-use-after-free-in-aa_audit_rule_init.patch
@@ -144,12 +138,9 @@ This Linux package contains hmac sha generator kernel module.
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
-%patch17 -p1
-%patch18 -p1
 %patch19 -p1
 %patch20 -p1
 %patch21 -p1
-%patch22 -p1
 %patch26 -p1
 %patch27 -p1
 %patch31 -p1
@@ -315,6 +306,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.97-1
+-   Update to version 4.19.97
 *   Thu Jan 16 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.87-4
 -   Enable DRBG HASH and DRBG CTR support.
 *   Thu Jan 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.87-3

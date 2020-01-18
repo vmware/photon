@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.87
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.97
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6bef9ec5ef74ae160b18d7a0930cd80cb1461bdb
+%define sha1 linux=6be0db4833d6c4db4230a01ed2e9661d84b6420b
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -61,18 +61,12 @@ Patch34:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch35:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 Patch36:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
-# Fix CVE-2019-19062
-Patch41:        0001-crypto-user-fix-memory-leak-in-crypto_report.patch
-# Fix CVE-2019-19066
-Patch42:        0001-scsi_bfa_release_allocated_memory_in_case_of_error.patch
 # Fix CVE-2019-19072
 Patch43:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 # Fix CVE-2019-19073
 Patch44:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19074
 Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
-# Fix CVE-2019-19078
-Patch46:        0001-ath10k-fix-memory-leak.patch
 
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
@@ -160,12 +154,9 @@ This Linux package contains hmac sha generator kernel module.
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
-%patch41 -p1
-%patch42 -p1
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
-%patch46 -p1
 %patch100 -p1
 
 %if 0%{?kat_build:1}
@@ -291,6 +282,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.97-1
+-   Update to version 4.19.97
 *   Thu Jan 16 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.87-5
 -   Enable DRBG HASH and DRBG CTR support.
 *   Mon Jan 06 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.87-4
