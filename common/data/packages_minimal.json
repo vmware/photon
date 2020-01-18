@@ -4,6 +4,8 @@
                  "linux",
                  "initramfs",
                  "linux-esx",
-                 "lvm2"
+                 "lvm2",
+                 "less",
+                 "sudo"
                  ]
 }
