@@ -28,17 +28,17 @@ Link: http://lkml.kernel.org/r/1436888390.7983.49.camel@gmail.com
 Signed-off-by: Ingo Molnar <mingo@kernel.org>
 ---
  include/linux/sched.h |  4 +--
- kernel/sched/fair.c   | 67 ++++++++++++++++++++++++++-------------------------
+ kernel/sched/fair.c   | 67 ++++++++++++++++++++++---------------------
  2 files changed, 36 insertions(+), 35 deletions(-)
 
-diff --git b/include/linux/sched.h a/include/linux/sched.h
-index 65a8a86..7412070 100644
---- b/include/linux/sched.h
-+++ a/include/linux/sched.h
-@@ -1387,9 +1387,9 @@ struct task_struct {
- #ifdef CONFIG_SMP
- 	struct llist_node wake_entry;
- 	int on_cpu;
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 761247c966a5..fcba64fc0fd7 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1408,9 +1408,9 @@ struct task_struct {
+ #ifdef CONFIG_THREAD_INFO_IN_TASK
+ 	unsigned int cpu;	/* current CPU */
+ #endif
 -	unsigned int wakee_flips;
 -	unsigned long wakee_flip_decay_ts;
  	struct task_struct *last_wakee;
@@ -47,11 +47,11 @@ index 65a8a86..7412070 100644
  
  	int wake_cpu;
  #endif
-diff --git b/kernel/sched/fair.c a/kernel/sched/fair.c
-index ea23f9f..8b384b8d 100644
---- b/kernel/sched/fair.c
-+++ a/kernel/sched/fair.c
-@@ -4659,29 +4659,26 @@ static long effective_load(struct task_group *tg, int cpu, long wl, long wg)
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index b42d2b8b283e..c29c47b25ec1 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -4776,29 +4776,26 @@ static long effective_load(struct task_group *tg, int cpu, long wl, long wg)
  
  #endif
  
@@ -97,7 +97,7 @@ index ea23f9f..8b384b8d 100644
  }
  
  static int wake_affine(struct sched_domain *sd, struct task_struct *p, int sync)
-@@ -4693,6 +4690,13 @@ static int wake_affine(struct sched_domain *sd, struct task_struct *p, int sync)
+@@ -4810,6 +4807,13 @@ static int wake_affine(struct sched_domain *sd, struct task_struct *p, int sync)
  	unsigned long weight;
  	int balanced;
  
@@ -111,7 +111,7 @@ index ea23f9f..8b384b8d 100644
  	idx	  = sd->wake_idx;
  	this_cpu  = smp_processor_id();
  	prev_cpu  = task_cpu(p);
-@@ -4953,17 +4957,17 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
+@@ -5070,17 +5074,17 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
  {
  	struct sched_domain *tmp, *affine_sd = NULL, *sd = NULL;
  	int cpu = smp_processor_id();
@@ -132,7 +132,7 @@ index ea23f9f..8b384b8d 100644
  
  		/*
  		 * If both cpu and prev_cpu are part of this domain,
-@@ -4977,21 +4981,17 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
+@@ -5094,21 +5098,17 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
  
  		if (tmp->flags & sd_flag)
  			sd = tmp;
@@ -161,7 +161,7 @@ index ea23f9f..8b384b8d 100644
  		struct sched_group *group;
  		int weight;
  
-@@ -5025,6 +5025,7 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
+@@ -5142,6 +5142,7 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
  		}
  		/* while loop will break here if sd == NULL */
  	}
@@ -170,5 +170,5 @@ index ea23f9f..8b384b8d 100644
  
  	return new_cpu;
 -- 
-1.9.1
+2.17.1
 

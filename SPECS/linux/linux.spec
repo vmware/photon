@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.206
+Version:    	4.4.210
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=37f9d637f52e8bdda67f0afd4c20e5a48f89e733
+%define sha1 linux=3b684bb3d2befad9155f663aa6b183f1f04d01f9
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -40,8 +40,6 @@ Patch19:	net-9p-vdfs-zerocopy.patch
 Patch20:        0001-Enable-cache-loose-for-vdfs-9p.patch
 # Fix for CVE-2018-8043
 Patch22:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
-# Fix for CVE-2019-19066
-Patch23:        0001-scsi_bfa_release_allocated_memory_in_case_of_error.patch
 
 Patch26:        Implement-the-f-xattrat-family-of-functions.patch
 Patch27:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -182,7 +180,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch19 -p1
 %patch20 -p1
 %patch22 -p1
-%patch23 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -369,6 +366,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.210-1
+-   Update to version 4.4.210
 *   Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.4.206-1
 -   Update to version 4.4.206
 *   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.4.202-2
