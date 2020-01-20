@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.0.2u
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -86,6 +86,7 @@ export MACHINE=%{_arch}
 %if 0%{?with_fips:1}
     fips --with-fipsdir=%{_builddir}/openssl-fips-2.0.9 \
 %endif
+    -Wl,-z,noexecstack \
     -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
 # does not support -j yet
 make
@@ -137,6 +138,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Mon Jan 20 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2u-2
+-   Configure with Wl flag.
 *   Thu Jan 09 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2u-1
 -   Updated to 1.0.2u
 -   Fix CVE-2019-1551
