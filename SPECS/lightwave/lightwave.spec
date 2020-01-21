@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.7
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -130,6 +130,9 @@ sed -i 's|/opt/vmware/bin/certool|/usr/bin/certool|' vmidentity/install/src/main
 sed -i 's/VMIDENTITY_LIB_DIR=\/opt\/vmware\/lib64/VMIDENTITY_LIB_DIR=\/usr\/jars/' vmidentity/websso/src/main/resources/sso-config.sh
 sed -i 's,/opt/vmware/bin/ic-join,/usr/bin/ic-join,' config/scripts/domainjoin.sh
 sed -i 's#$COMMONS_DAEMON_HOME#usr#g' configure.ac
+sed -i 's|http://central.maven.org|https://search.maven.org|' vmafd/jdepends/build.xml
+sed -i 's|http://central.maven.org|https://search.maven.org|' vmca/jdepends/build.xml
+sed -i 's|http://central.maven.org|https://search.maven.org|' config/jdepends/build.xml
 %build
 
 cd build
@@ -1141,6 +1144,8 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Wed Jan 22 2020 Ankit Jain <ankitja@vmware.com> 1.3.1.7-4
+-   Replaced central maven repository
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.3.1.7-3
 -   Bump up version to compile with new go
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.3.1.7-2

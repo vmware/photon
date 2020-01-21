@@ -2,16 +2,21 @@
 %global __os_install_post %{nil}
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
-Version:        3.11.2
-Release:        3%{?dist}
+Version:        3.11.5
+Release:        1%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/apache/cassandra/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}.tar.gz=e4eb73614b0cc103bb6030ff0008982990abd205
-Source1:        cassandra.service
+Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
+%define sha1    apache-cassandra=5e443e229819d70fcad963f3221109ab55a2c3a2
+# https://search.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar
+# https://search.maven.org/maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar
+# https://search.maven.org/maven2/org/apache/thrift/libthrift/0.9.3/libthrift-0.9.3.jar
+Source1:        cassandra-libthrift-logback-jars.tar.gz
+%define sha1    cassandra-libthrift-logback-jars=68f9251787cfc5f223f76b9eafcb2bfdf84f32c4
+Source2:        cassandra.service
 BuildRequires:  apache-ant
 BuildRequires:  unzip zip
 BuildRequires:  openjdk8
@@ -19,10 +24,11 @@ BuildRequires:  wget
 Requires:       openjre8
 Requires:       gawk
 %description
-Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store. Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
+Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store.
+Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
 
 %prep
-%setup -qn %{name}-%{name}-%{version}
+%setup -qn apache-%{name}-%{version}-src
 sed -i 's#\"logback-core\" version=\"1.1.3\"#\"logback-core\" version=\"1.2.0\"#g' build.xml
 sed -i 's#\"logback-classic\" version=\"1.1.3\"#\"logback-classic\" version=\"1.2.0\"#g' build.xml
 sed -i 's#\"libthrift\" version=\"0.9.2\"#\"libthrift\" version=\"0.9.3.1\"#g' build.xml
@@ -34,9 +40,8 @@ mv lib/licenses/logback-core-1.1.3.txt lib/licenses/logback-core-1.2.0.txt
 mv lib/licenses/logback-classic-1.1.3.txt lib/licenses/logback-classic-1.2.0.txt
 mv lib/licenses/libthrift-0.9.2.txt lib/licenses/libthrift-0.9.3.txt
 
-wget http://central.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar -P lib
-wget http://central.maven.org/maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar -P lib
-wget http://central.maven.org/maven2/org/apache/thrift/libthrift/0.9.3/libthrift-0.9.3.jar -P lib
+tar -xf %{SOURCE1} --no-same-owner
+cp cassandra-libthrift-logback-jars/* lib/
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
@@ -87,7 +92,7 @@ cp tools/bin/cassandra-stress %{buildroot}%{_bindir}/
 cp tools/bin/cassandra-stressd %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}/lib/systemd/system
-install -p -D -m 644 %{SOURCE1}  %{buildroot}/lib/systemd/system/%{name}.service
+install -p -D -m 644 %{SOURCE2} %{buildroot}/lib/systemd/system/%{name}.service
 
 cat >> %{buildroot}/etc/sysconfig/cassandra <<- "EOF"
 CASSANDRA_HOME=/var/opt/cassandra/
@@ -132,6 +137,8 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Tue Jan 21 2020 Michelle Wang <michellew@vmware.com> 3.11.5-1
+-   Central maven repository not responding, Updated to 3.11.5
 *   Tue Dec 17 2019 Shreyas B. <shreyasb@vmware.com> 3.11.2-3
 -   Bumping up the thrift version to 0.9.3.1 to fix vulnerability.
 *   Wed Jul 31 2019 Ankit Jain <ankitja@vmware.com> 3.11.2-2
