@@ -262,7 +262,7 @@ class Installer(object):
         if install_config['arch'] == 'aarch64' and install_config['bootmode'] in ['dualboot', 'bios']:
             return "Aarch64 targets do not support BIOS boot. Set 'bootmode' to 'efi'."
 
-        if 'age' in install_config['password']:
+        if 'age' in install_config.get('password', {}):
             if install_config['password']['age'] < -1:
                 return "Password age should be -1, 0 or positive"
 
