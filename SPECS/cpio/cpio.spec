@@ -1,7 +1,7 @@
 Summary:	cpio-2.12
 Name:		cpio
 Version:	2.12
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/cpio/
 Group:		System Environment/System utilities
@@ -9,10 +9,12 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
 %define sha1 cpio=60358408c76db354f6716724c4bcbcb6e18ab642
+Patch0:		cpio-CVE-2019-14866.patch
 %description
 The cpio package contains tools for archiving.
 %prep
 %setup -q
+%patch0 -p1
 %build
 sed -i -e '/gets is a/d' gnu/stdio.in.h
 ./configure \
@@ -39,6 +41,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_mandir}/man1/*
 %{_docdir}/%{name}-%{version}/*
 %changelog
+*	Thu Jan 23 2020 Siju Maliakkal <smaliakkal@vmware.com> 2.12-3
+-	Patch for CVE-2019-14866
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.12-2
 -	GA - Bump release of all rpms
 * 	Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.12-1
