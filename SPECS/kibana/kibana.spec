@@ -1,7 +1,7 @@
 Name:            kibana
 Summary:         Browser-based analytics and search dashboard for Elasticsearch.
 Version:         6.7.0
-Release:         4%{?dist}
+Release:         5%{?dist}
 License:         Apache License Version 2.0
 URL:             https://www.elastic.co/products/kibana
 Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}.tar.gz
@@ -16,7 +16,7 @@ Source2:         kibana_build_6.7.0.tar.gz
 BuildArch:       x86_64
 BuildRequires:   git
 BuildRequires:   yarn
-BuildRequires:   nodejs = 10.15.2
+BuildRequires:   nodejs = 10.15.3
 BuildRequires:   zip
 BuildRequires:   photon-release
 BuildRequires:   systemd
@@ -130,6 +130,8 @@ exit
 %{_datadir}/%{name}
 
 %changelog
+*   Fri Jan 24 2020 Ankit Jain <ankitja@vmware.com> 6.7.0-5
+-   Build with nodejs-10.15.3
 *   Fri Dec 13 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-4
 -   Removed specific nodejs version in requires
 *   Wed Oct 09 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-3

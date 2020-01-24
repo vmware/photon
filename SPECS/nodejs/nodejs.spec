@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        10.15.2
+Version:        10.15.3
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
-%define         sha1 node=e1523b5b5bec534cc570b79c9a1eb9273a47564a
+%define         sha1 node=00a137775c16a3a8a38956aeff3bfc582413064e
 
 BuildRequires:  coreutils >= 8.22, zlib
 Requires:       (coreutils >= 8.22 or toybox)
@@ -67,6 +67,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Fri Jan 24 2020 Ankit Jain <ankitja@vmware.com> 10.15.3-1
+-   Updated to 10.15.3
 *   Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 10.15.2-1
 -   Updated to 10.15.2
 *   Tue Jan 08 2019 Siju Maliakkal <smaliakkal@vmware.com> 10.14.1-1
