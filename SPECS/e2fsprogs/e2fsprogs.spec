@@ -1,14 +1,14 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
-Version:        1.44.3
-Release:        4%{?dist}
+Version:        1.44.6
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
-%define sha1    e2fsprogs=bfe11b75fee61c4d3795ac27eea11f9f7843294b
+%define sha1    e2fsprogs=e9f5bfdae08b59bd8c7a123481667b6bde9e5937
 Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox
 Patch0:         CVE-2019-5094.patch
@@ -129,6 +129,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Fri Jan 24 2020 Shreyas B. <shreyasb@vmware.com> 1.44.6-1
+-   Upgrade to version 1.44.6.
 *   Mon Nov 04 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.44.3-4
 -   make devel depend on the version-release instead of version alone
 *   Tue Oct 22 2019 Shreyas B. <shreyasb@vmware.com> 1.44.3-3
