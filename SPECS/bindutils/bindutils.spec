@@ -1,7 +1,7 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.15.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.gz
@@ -69,6 +69,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Mon Jan 27 2020 Tapas Kundu <tkundu@vmware.com> 9.15.5-2
+-   Bump bindutils release to build with latest openssl
 *   Thu Jan 09 2020 Sujay G <gsujay@vmware.com> 9.15.5-1
 -   Bump bindutils version to 9.15.5
 *   Sun Sep 23 2018 Sujay G <gsujay@vmware.com> 9.13.3-1
