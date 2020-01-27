@@ -1,15 +1,14 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
-Version:        8.1910.0
-Release:        4%{?dist}
+Version:        8.2001.0
+Release:        1%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha1    rsyslog=ac36de817e69450d88e4a2b822f9d69f3fbcf0f4
+%define sha1    rsyslog=f9943b3df0b82294e7293fa30d1d03eeff8faf84
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf
-Patch0:         fix_openssl_version_1910.patch
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -35,7 +34,6 @@ It offers high-performance, great security features and a modular design. While 
 %prep
 %setup -q
 
-%patch0 -p1
 
 autoreconf -fvi
 
@@ -89,6 +87,8 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/systemd/journald.conf.d/*
 %config(noreplace) %{_sysconfdir}/rsyslog.conf
 %changelog
+*   Mon Jan 27 2020 Tapas Kundu <tkundu@vmware.com> 8.2001.0-1
+-   Update to 8.2001.0
 *   Mon Dec 23 2019 Tapas Kundu <tkundu@vmware.com> 8.1910.0-4
 -   Fix typo in conf file.
 *   Thu Nov 21 2019 Tapas Kundu <tkundu@vmware.com> 8.1910.0-3
