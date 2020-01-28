@@ -54,4 +54,9 @@ cp linux-firmware/LICENCE.ibt_firmware $DST/
 cp linux-firmware/iwlwifi-8000C-*.ucode $DST/
 cp linux-firmware/LICENCE.iwlwifi_firmware $DST/
 
+mkdir $DST/bnx2x
+cp linux-firmware/bnx2x/bnx2x-e2-7.13.1.0.fw $DST/bnx2x/
+cp linux-firmware/ql2500_fw.bin $DST/
+cp linux-firmware/LICENCE.qla2xxx $DST/
+
 tar -czvf $DST.tar.gz $DST
