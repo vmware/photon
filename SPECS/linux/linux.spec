@@ -13,7 +13,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.97
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -87,6 +87,8 @@ Patch43:	secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
 Patch44:	secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
 Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
 
+# Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
+Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 
@@ -274,6 +276,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch44 -p1
 %patch45 -p1
 
+%patch98 -p1
 %patch100 -p1
 
 %ifarch aarch64
@@ -567,6 +570,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Jan 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-2
+-   Update tcrypt to test drbg_pr_sha256 and drbg_nopr_sha256.
+-   Update testmgr to add drbg_pr_ctr_aes256 test vectors.
 *   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.97-1
 -   Update to version 4.19.97
 *   Thu Jan 16 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.87-6

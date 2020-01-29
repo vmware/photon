@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.97
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -68,14 +68,16 @@ Patch44:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19074
 Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 
+# Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
+Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
-
-Patch1001:	hmac_gen_kernel.patch
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
 %endif
+
+Patch1001:	hmac_gen_kernel.patch
 
 BuildArch:     x86_64
 BuildRequires: bc
@@ -157,6 +159,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
+%patch98 -p1
 %patch100 -p1
 
 %if 0%{?kat_build:1}
@@ -282,6 +285,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Wed Jan 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-2
+-   Update tcrypt to test drbg_pr_sha256 and drbg_nopr_sha256.
+-   Update testmgr to add drbg_pr_ctr_aes256 test vectors.
 *   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.97-1
 -   Update to version 4.19.97
 *   Thu Jan 16 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.87-5
