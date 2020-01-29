@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.97
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -60,6 +60,8 @@ Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 
+# Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
+Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 
@@ -193,6 +195,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch38 -p1
 %patch39 -p1
 
+%patch98 -p1
 %patch100 -p1
 
 %patch101 -p1
@@ -404,6 +407,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Jan 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-2
+-   Update tcrypt to test drbg_pr_sha256 and drbg_nopr_sha256.
+-   Update testmgr to add drbg_pr_ctr_aes256 test vectors.
 *   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.97-1
 -   Update to version 4.19.97
 *   Thu Jan 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.87-3

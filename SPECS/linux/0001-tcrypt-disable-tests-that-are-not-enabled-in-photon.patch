@@ -44,7 +44,7 @@ index d332988..a28ca2a 100644
  	case 52:
  		ret += tcrypt_test("sm3");
  		break;
-@@ -1958,20 +1941,56 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
+@@ -1958,20 +1941,64 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
  		ret += tcrypt_test("vmac64(aes)");
  		break;
  
@@ -106,6 +106,14 @@ index d332988..a28ca2a 100644
 -		ret += tcrypt_test("hmac(sha3-512)");
 +	case 131:
 +		ret += tcrypt_test("pkcs1pad(rsa,sha256)");
++		break;
++ 
++	case 132:
++		ret += tcrypt_test("drbg_pr_sha256");
++		break;
++ 
++	case 133:
++		ret += tcrypt_test("drbg_nopr_sha256");
  		break;
  
  	case 150:

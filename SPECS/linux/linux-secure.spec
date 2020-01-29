@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.97
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -63,6 +63,8 @@ Patch41:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch42:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 
+# Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
+Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
 # Patch to call drbg and dh crypto tests from tcrypt
@@ -156,6 +158,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch41 -p1
 %patch42 -p1
 
+%patch98 -p1
 pushd ..
 %patch99 -p0
 popd
@@ -307,6 +310,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-2
+-   Update tcrypt to test drbg_pr_sha256 and drbg_nopr_sha256.
+-   Update testmgr to add drbg_pr_ctr_aes256 test vectors.
 *   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.97-1
 -   Update to version 4.19.97
 *   Tue Jan 14 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.87-4
