@@ -1,7 +1,7 @@
 Summary:	Contains the utilities for the ext2 file system
 Name:		e2fsprogs
 Version:	1.42.13
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		http://e2fsprogs.sourceforge.net
 Group:		System Environment/Base
@@ -9,7 +9,9 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
 %define sha1 e2fsprogs=77d1412472ac5a67f8954166ec16c37616074c37
-Patch0: 	CVE-2019-5094.patch
+Patch0:    CVE-2019-5094.patch
+Patch1:    CVE-2019-5188-1.patch
+Patch2:    CVE-2019-5188-2.patch
 
 %description
 The E2fsprogs package contains the utilities for handling
@@ -18,10 +20,12 @@ the ext2 file system.
 Summary:	Header and development files for e2fsprogs
 Requires:	%{name} = %{version}
 %description	devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 install -vdm 755 build
 sed -i -e 's|^LD_LIBRARY_PATH.*|&:/tools/lib|' tests/test_config
 %build
@@ -132,6 +136,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libext2fs.a
 %{_libdir}/libss.so
 %changelog
+*   Wed Jan 29 2020 Shreyas B. <shreyasb@vmware.com> 1.42.13-5
+-   Fixes for CVE-2019-5188.
 *   Tue Oct 22 2019 Shreyas B. <shreyasb@vmware.com> 1.42.13-4
 -   Fixes for CVE-2019-5094.
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 1.42.13-3
