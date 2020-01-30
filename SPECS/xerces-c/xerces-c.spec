@@ -1,31 +1,40 @@
 Summary:        C++ xml parser.
 Name:           xerces-c
-Version:        3.2.1
+Version:        3.2.2
 Release:        1%{?dist}
 License:        Apache License
 URL:            http://xerces.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://mirror.jax.hugeserver.com/apache//xerces/c/3/sources/%{name}-%{version}.tar.xz
-%define sha1 xerces-c=4ffe41542787732cdca58cb87cd502178c4ea740
+Source0:        http://mirrors.estointernet.in/apache//xerces/c/3/sources/%{name}-%{version}.tar.xz
+%define sha1 xerces-c=9a283d6410230a8ee9e7d71940c70cf653510170
+Patch0:         CVE-2018-1311.patch
+
 %description
 Xerces-C++ is a validating XML parser written in a portable subset of C++
+
 %package        devel
 Summary:        XML library headers
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 This package contains development headers and static library for xml parser.
+
 %prep
 %setup -q
+%patch0 -p1
+
 %build
 ./configure --prefix=/usr
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -39,6 +48,9 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/*.la
 
 %changelog
+*   Thu Jan 30 2020 Shreyas B <shreyasb@vmware.cm> 3.2.2-1
+-   Upgrade to v3.2.2.
+-   Suggested mitigations added for CVE-2018-1311.
 *   Mon Apr 16 2018 Xiaolin Li <xiaolinl@vmware.cm> 3.2.1-1
 -   Update to version 3.2.1 to handle CVE-2017-12627
 *   Wed Mar 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.1.4-1
