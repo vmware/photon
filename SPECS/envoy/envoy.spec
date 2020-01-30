@@ -14,6 +14,7 @@ Distribution:   Photon
 
 Patch0:         bazel-replace-tclap-mirror.patch
 Patch1:         envoy-1.10-CVE-2019-18801.patch
+Patch2:         envoy-1.10-CVE-2019-18802.patch
 
 BuildRequires:	bazel
 BuildRequires:  backward-cpp
@@ -68,6 +69,7 @@ Envoy is a L7 proxy and communication bus designed for large modern service orie
 cd %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p0
 
 %build
 cd envoy-%{version}
@@ -90,7 +92,9 @@ cp -rf configs/* %{buildroot}%{_sysconfdir}/envoy
 %config(noreplace) %{_sysconfdir}/envoy/*
 
 %changelog
-*   Mon Jan 20 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 1.10.0-5
+*   Thu Jan 30 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 1.10.0-5
+-   Fix for CVE-2019-18802
+*   Mon Jan 20 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 1.10.0-4
 -   Fix for CVE-2019-18801
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.10.0-4
 -   Bump up version to compile with new go
