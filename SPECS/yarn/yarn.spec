@@ -1,7 +1,7 @@
 Summary:        Fast, reliable, and secure dependency management.
 Name:           yarn
 Version:        1.10.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD 2-Clause
 URL:            https://yarnpkg.com
 Source0:        https://github.com/yarnpkg/yarn/archive/%{name}-%{version}.tar.gz
@@ -13,7 +13,7 @@ Distribution:   Photon
 Group:          Developement/Languages/NodeJs
 Patch0:         CVE-2019-5448-forces-using-https-for-registries.patch
 BuildArch:      noarch
-BuildRequires:  nodejs = 8.11.4
+BuildRequires:  nodejs = 8.17.0
 
 %global debug_package %{nil}
 
@@ -58,6 +58,8 @@ ln -sf %{_datadir}/%{name}/bin/yarnpkg %{buildroot}%{_bindir}/yarnpkg
 %exclude %{_datadir}/%{name}/bin/yarn.ps1
 
 %changelog
+*   Wed Jan 29 2020 Siju Maliakkal <smaliakkal@vmware.com> 1.10.1-5
+-   Upgrade to use nodejs 8.17.0
 *   Wed Oct 09 2019 Tapas Kundu <tkundu@vmware.com> 1.10.1-4
 -   Use local repo for installing yarn
 *   Thu Sep 12 2019 Siddharth Chandrasekaran <csiddharth@vmware.com> 1.10.1-3
