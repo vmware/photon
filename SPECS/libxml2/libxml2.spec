@@ -3,20 +3,20 @@
 
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.9.8
-Release:        2%{?dist}
+Version:        2.9.10
+Release:        1%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
-Patch0:		Fix_nullptr_deref_with_XPath_logic_ops.patch
-%define sha1    libxml2=66bcefd98a6b7573427cf66f9d3841b59eb5b8c3
+%define sha1    libxml2=db6592ec9ca9708c4e71bf6bfd907bbb5cd40644
+Patch0:         CVE-2020-7595.patch
 Provides:       pkgconfig(libxml-2.0)
 
 %description
-The libxml2 package contains libraries and utilities used for parsing XML files. 
+The libxml2 package contains libraries and utilities used for parsing XML files.
 
 %package python
 Summary:        The libxml2 python module
@@ -114,6 +114,9 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Thu Jan 30 2020 Shreyas B <shreyasb@vmware.com> 2.9.10-1
+-   Updgrade to v2.9.10 to address CVE-2019-19956(memory leak issue).
+-   Fix CVE-2020-7595(end-of-file issue).
 *   Mon Oct 29 2018 Siju Maliakkal <smaliakkal@vmware.com> 2.9.8-2
 -   Apply patch to fix CVE-2018-14404
 *   Fri May 11 2018 Sharath George <sharathg@vmware.com> 2.9.8-1
