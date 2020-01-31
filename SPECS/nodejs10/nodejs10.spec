@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs10
-Version:        10.15.2
+Version:        10.18.0
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
-%define         sha1 node=e1523b5b5bec534cc570b79c9a1eb9273a47564a
+%define         sha1 node=ad10c82b98e1e0bf2d95cdba1c29268cbd1c3c6d
 BuildArch:      x86_64
 
 BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
@@ -76,5 +76,7 @@ make  %{?_smp_mflags} test
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Thu Jan 30 2020 Siju Maliakkal <smaliakkal@vmware.com> 10.18.0-1
+-   Upgrade to use higher openssl version
 *   Tue Apr 02 2019 Ankit Jain <ankitja@vmware.com> 10.15.2-1
 -   Initial Version
