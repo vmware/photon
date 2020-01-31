@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.210
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -55,6 +55,8 @@ Patch32:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
 Patch33:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 Patch34:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch35:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
+# Fix for CVE-2019-16233
+Patch36:        0001-scsi-qla2xxx-fix-a-potential-NULL-pointer-dereferenc.patch
 # Fix for CVE-2018-8043
 Patch40:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 Patch44:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -198,6 +200,7 @@ EOF
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
+%patch36 -p1
 %patch40 -p1
 %patch44 -p1
 %patch45 -p1
@@ -349,6 +352,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jan 31 2020 Ajay Kaher <akaher@vmware.com> 4.9.210-2
+-   Fix CVE-2019-16233
 *   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.210-1
 -   Update to version 4.9.210
 *   Fri Dec 20 2019 Siddharth Chandrasekran <csiddharth@vmware.com> 4.9.205-2
