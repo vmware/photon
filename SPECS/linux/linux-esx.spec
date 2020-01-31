@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.213
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -70,6 +70,8 @@ Patch55:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch56:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch57:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
+# Fix for CVE-2019-16233
+Patch58:        0001-scsi-qla2xxx-fix-a-potential-NULL-pointer-dereferenc.patch
 
 # Fix for CVE-2019-11487
 Patch61:        0001-mm-make-page-ref-count-overflow-check-tighter-and-mo.patch
@@ -168,6 +170,7 @@ The Linux package contains the Linux kernel doc files
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
+%patch58 -p1
 
 %patch61 -p1
 %patch62 -p1
@@ -269,6 +272,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Feb 13 2020 Ajay Kaher <akaher@vmware.com> 4.4.213-2
+-   Fix CVE-2019-16233
 *   Wed Feb 12 2020 ashwin-h <ashwinh@vmware.com> 4.4.213-1
 -   Update to version 4.4.213
 *   Tue Feb 11 2020 Mounesh Badiger <badigerm@vmware.com> 4.4.210-3

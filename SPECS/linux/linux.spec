@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.213
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -40,7 +40,10 @@ Patch19:	net-9p-vdfs-zerocopy.patch
 Patch20:        0001-Enable-cache-loose-for-vdfs-9p.patch
 # Fix for CVE-2018-8043
 Patch22:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
+
 Patch23:        0001-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
+# Fix for CVE-2019-16233
+Patch24:        0001-scsi-qla2xxx-fix-a-potential-NULL-pointer-dereferenc.patch
 
 Patch26:        Implement-the-f-xattrat-family-of-functions.patch
 Patch27:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -183,6 +186,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch20 -p1
 %patch22 -p1
 %patch23 -p1
+%patch24 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -370,6 +374,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Feb 13 2020 Ajay Kaher <akaher@vmware.com> 4.4.213-2
+-   Fix CVE-2019-16233
 *   Wed Feb 12 2020 ashwin-h <ashwinh@vmware.com> 4.4.213-1
 -   Update to version 4.4.213
 *   Tue Feb 11 2020 Mounesh Badiger <badigerm@vmware.com> 4.4.210-3

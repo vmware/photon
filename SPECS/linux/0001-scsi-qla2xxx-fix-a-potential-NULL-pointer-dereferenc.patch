@@ -1,0 +1,78 @@
+From 30a8ac7e57c8b0782b2c64efc69c8982013cf1f7 Mon Sep 17 00:00:00 2001
+From: Allen Pais <allen.pais@oracle.com>
+Date: Fri, 31 Jan 2020 12:08:14 +0530
+Subject: [PATCH v4.4.y] scsi: qla2xxx: fix a potential NULL pointer dereference
+
+commit 35a79a63517981a8aea395497c548776347deda8 upstream
+
+alloc_workqueue is not checked for errors and as a result a potential
+NULL dereference could occur.
+
+Link: https://lore.kernel.org/r/1568824618-4366-1-git-send-email-allen.pais@oracle.com
+Signed-off-by: Allen Pais <allen.pais@oracle.com>
+Reviewed-by: Martin Wilck <mwilck@suse.com>
+Acked-by: Himanshu Madhani <hmadhani@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+[Ajay: Rewrote this patch for v4.4.y, as 4.4.y codebase is different from mainline]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ drivers/scsi/qla2xxx/qla_os.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
+index c813c9b..00528db 100644
+--- a/drivers/scsi/qla2xxx/qla_os.c
++++ b/drivers/scsi/qla2xxx/qla_os.c
+@@ -451,6 +451,12 @@ static int qla25xx_setup_mode(struct scsi_qla_host *vha)
+ 		goto fail;
+ 	}
+ 	if (ql2xmultique_tag) {
++		ha->wq = alloc_workqueue("qla2xxx_wq", WQ_MEM_RECLAIM, 1);
++		if (unlikely(!ha->wq)) {
++			ql_log(ql_log_warn, vha, 0x01e0,
++			    "Failed to alloc workqueue.\n");
++			goto fail;
++		}
+ 		/* create a request queue for IO */
+ 		options |= BIT_7;
+ 		req = qla25xx_create_req_que(ha, options, 0, 0, -1,
+@@ -458,9 +464,8 @@ static int qla25xx_setup_mode(struct scsi_qla_host *vha)
+ 		if (!req) {
+ 			ql_log(ql_log_warn, vha, 0x00e0,
+ 			    "Failed to create request queue.\n");
+-			goto fail;
++			goto fail2;
+ 		}
+-		ha->wq = alloc_workqueue("qla2xxx_wq", WQ_MEM_RECLAIM, 1);
+ 		vha->req = ha->req_q_map[req];
+ 		options |= BIT_1;
+ 		for (ques = 1; ques < ha->max_rsp_queues; ques++) {
+@@ -468,7 +473,7 @@ static int qla25xx_setup_mode(struct scsi_qla_host *vha)
+ 			if (!ret) {
+ 				ql_log(ql_log_warn, vha, 0x00e8,
+ 				    "Failed to create response queue.\n");
+-				goto fail2;
++				goto fail3;
+ 			}
+ 		}
+ 		ha->flags.cpu_affinity_enabled = 1;
+@@ -482,11 +487,13 @@ static int qla25xx_setup_mode(struct scsi_qla_host *vha)
+ 		    ha->max_rsp_queues, ha->max_req_queues);
+ 	}
+ 	return 0;
+-fail2:
++
++fail3:
+ 	qla25xx_delete_queues(vha);
+-	destroy_workqueue(ha->wq);
+-	ha->wq = NULL;
+ 	vha->req = ha->req_q_map[0];
++fail2:
++        destroy_workqueue(ha->wq);
++        ha->wq = NULL;
+ fail:
+ 	ha->mqenable = 0;
+ 	kfree(ha->req_q_map);
+-- 
+2.7.4
+
