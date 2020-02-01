@@ -1,7 +1,7 @@
 Summary:    Management tools and libraries relating to cryptography
 Name:       openssl
 Version:    1.0.2u
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    OpenSSL
 URL:        http://www.openssl.org
 Group:      System Environment/Security
@@ -62,7 +62,8 @@ export CFLAGS="%{optflags}"
     --openssldir=/%{_sysconfdir}/ssl \
     shared \
     zlib-dynamic \
-        %{?_with_fips} \
+    %{?_with_fips} \
+    -Wl,-z,noexecstack \
     -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
 # does not support -j yet
 make
@@ -112,6 +113,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Fri Jan 31 2020 Anish Swaminathan <anishs@vmware.com> 1.0.2u-2
+-   Configure with Wl flag.
 *   Thu Jan 09 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2u-1
 -   Updated to 1.0.2u
 -   Fix CVE-2019-1551
