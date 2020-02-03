@@ -1,13 +1,14 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.6.35
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
 %define sha1    libsolv=4f53d60467ddab4099cfe5eb91a3fe7260666209
 Patch0:         libsolv-xmlparser.patch
 Patch1:         libsolv-rpm4-IndexOoB-fix.patch
+Patch2:         CVE-2019-20387.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -34,6 +35,7 @@ for developing applications that use libsolv.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %build
 cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
@@ -66,6 +68,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Feb 03 2020 Keerthana K <keerthanak@vmware.com> 0.6.35-2
+-   Fix CVE-2019-20387
 *   Tue Jun 04 2019 Ankit Jain <ankitja@vmware.com> 0.6.35-1
 -   Updated to 0.6.35 and added a patch to fix Index outofBound
 *   Thu Feb 14 2019 Keerthana K <keerthanak@vmware.com> 0.6.26-5
