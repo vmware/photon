@@ -1,12 +1,13 @@
 Summary:        Libsolv-0.6.19
 Name:           libsolv
 Version:        0.6.26
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
 %define sha1    libsolv=7699af00e648bf3e631246559c48ceb7f3f544b9
 Patch0:         CVE-2018-20532-20533-20534.patch
+Patch1:         CVE-2019-20387.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -31,6 +32,7 @@ for developing applications that use libsolv.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
 cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
@@ -63,6 +65,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Feb 03 2020 Keerthana K <keerthanak@vmware.com> 0.6.26-5
+-   Fix CVE-2019-20387
 *   Thu Feb 14 2019 Keerthana K <keerthanak@vmware.com> 0.6.26-4
 -   Fix for CVE-2018-20532, CVE-2018-20533, CVE-2018-20534.
 *   Fri Apr 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.26-3
