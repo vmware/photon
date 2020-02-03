@@ -1,14 +1,14 @@
 Summary:        unbound dns server
 Name:           unbound
-Version:        1.6.0
-Release:        3%{?dist}
+Version:        1.6.8
+Release:        1%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
 Distribution:   Photon
 URL:            http://www.unbound.net
 Source0:        https://www.unbound.net/downloads/%{name}-%{version}.tar.gz
-%define sha1 unbound=9b7606b016b447dc837efc108cee94f3fecf4ede
+%define sha1    unbound=492737be9647c26ee39d4d198f2755062803b412
 Source1:        %{name}.service
 Requires:       expat
 Requires:       openssl
@@ -17,21 +17,18 @@ Requires:       systemd
 BuildRequires:  systemd
 BuildRequires:  openssl-devel
 BuildRequires:  expat
-
 %description
 Unbound is a validating, recursive, and caching DNS resolver.
 
 %package	devel
 Summary:	unbound development libs and headers
 Group:		Development/Libraries
-
 %description devel
 Development files for unbound dns server
 
 %package	docs
 Summary:	unbound docs
 Group:		Documentation
-
 %description docs
 unbound dns server docs
 
@@ -46,7 +43,6 @@ unbound dns server docs
     --sysconfdir=%{_sysconfdir} \
     --with-conf-file=%{_sysconfdir}/%{name}/unbound.conf \
     --disable-static
-
 make
 
 %install
@@ -65,7 +61,7 @@ useradd -r -g unbound -d %{_sysconfdir}/unbound -s /sbin/nologin \
 -c "Unbound DNS resolver" unbound
 
 %post
-    /sbin/ldconfig
+/sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -85,6 +81,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+*  Mon Feb 3 2020 Michelle Wang <michellew@vmware.com> 1.6.8-1
+-  CVE-2017-15105: bump up version since 1.6.8 is released with the patch
 *  Fri Oct 6 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.0-3
 -  update service file for restart and pid.
 *  Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 1.6.0-2
