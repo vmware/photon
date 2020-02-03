@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           nxtgn-openssl
 Version:        1.1.1d
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -11,6 +11,7 @@ Source0:        http://www.openssl.org/source/openssl-%{version}.tar.gz
 %define sha1    openssl=056057782325134b76d1931c48f2c7e6595d7ef4
 Source1:        nxtgn-rehash_ca_certificates.sh
 Patch1:         nxtgn-c_rehash.patch
+Patch2:         CVE-2019-1551.patch
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -52,6 +53,7 @@ Perl scripts that convert certificates and keys to various formats.
 %prep
 %setup -q -n openssl-%{version}
 %patch1 -p1
+%patch2 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -118,6 +120,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/nxtgn-rehash_ca_certificates.sh
 
 %changelog
+*   Mon Feb 03 2020 Tapas Kundu <tkundu@vmware.com> 1.1.1d-2
+-   Fix CVE-2019-1551
 *   Mon Sep 30 2019 Tapas Kundu <tkundu@vmware.com> 1.1.1d-1
 -   Updated to 1.1.1d
 -   Fix CVE-2019-1549
