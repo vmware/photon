@@ -1,7 +1,7 @@
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
 Version:        6.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses/
 Group:          Applications/System
@@ -12,6 +12,11 @@ Source0:    ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-20
 %define sha1    ncurses=179d79d707ac5040499294e3206fd558d52b604a
 Provides:       libncurses.so.6()(64bit)
 Patch0:         CVE-2018-10754.patch
+
+# Fix for CVE-2019-17594
+Patch1:         0001-Check-for-invalid-hashcode-in-_nc_find_type_entry-an.patch
+# Fix for CVE-2019-17595
+Patch2:         0001-Check-for-missing-character-after-backslash-in-fmt_e.patch
 %description
 The Ncurses package contains libraries for terminal-independent
 handling of character screens.
@@ -34,6 +39,8 @@ It contains the libraries and header files to create applications
 %prep
 %setup -q -n %{name}-%{version}-%{ncursessubversion}
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 mkdir v6
@@ -157,6 +164,8 @@ ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 %{_libdir}/libpanel.so
 %{_libdir}/libmenu.so
 %changelog
+*   Fri Jan 31 2020 Ajay Kaher <akaher@vmware.com> 6.0-10
+-   Fix for CVE-2019-17594, CVE-2019-17595
 *   Tue Jul 17 2018 Tapas Kundu <tkundu@vmware.com> 6.0-9
 -   Fix for CVE-2018-10754
 *   Wed Dec 06 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-8

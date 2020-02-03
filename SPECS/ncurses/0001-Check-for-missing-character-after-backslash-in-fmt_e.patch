@@ -1,0 +1,40 @@
+From f5172e63f229d5501c4948917a702b5a816b976c Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Mon, 3 Feb 2020 11:36:36 +0530
+Subject: [PATCH] Check for missing character after backslash in fmt_entry
+ (CVE-2019-17595).
+
+Check for missing character after backslash in fmt_entry
+source: https://github.com/mirror/ncurses/commit/b025434573f466efe27862656a6a9d41dd2bd609
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ progs/dump_entry.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/progs/dump_entry.c b/progs/dump_entry.c
+index 3b1fcb1..5c80939 100644
+--- a/progs/dump_entry.c
++++ b/progs/dump_entry.c
+@@ -1110,7 +1110,8 @@ fmt_entry(TERMTYPE2 *tterm,
+ 				*d++ = '\\';
+ 				*d = ':';
+ 			    } else if (*d == '\\') {
+-				*++d = *s++;
++				if ((*++d = *s++) == '\0')
++					break;
+ 			    }
+ 			    d++;
+ 			    *d = '\0';
+@@ -1370,7 +1371,7 @@ one_one_mapping(const char *mapping)
+ 
+     if (VALID_STRING(mapping)) {
+ 	int n = 0;
+-	while (mapping[n] != '\0') {
++	while (mapping[n] != '\0' && mapping[n + 1] != '\0') {
+ 	    if (isLine(mapping[n]) &&
+ 		mapping[n] != mapping[n + 1]) {
+ 		result = FALSE;
+-- 
+2.7.4
+

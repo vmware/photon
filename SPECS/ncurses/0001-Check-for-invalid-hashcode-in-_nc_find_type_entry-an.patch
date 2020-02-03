@@ -1,0 +1,43 @@
+From d97b0bc0f939d86a4fe2cd8a5b80fd2300dc007d Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Mon, 3 Feb 2020 11:44:38 +0530
+Subject: [PATCH] Check for invalid hashcode in _nc_find_type_entry and
+ nc_find_name_entry (CVE-2019-17594).
+
+Check for invalid hashcode in _nc_find_type_entry and nc_find_name_entry
+source: https://github.com/mirror/ncurses/commit/b025434573f466efe27862656a6a9d41dd2bd609
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ ncurses/tinfo/comp_hash.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/ncurses/tinfo/comp_hash.c b/ncurses/tinfo/comp_hash.c
+index 959c6e1..361669e 100644
+--- a/ncurses/tinfo/comp_hash.c
++++ b/ncurses/tinfo/comp_hash.c
+@@ -63,7 +63,9 @@ _nc_find_entry(const char *string,
+ 
+     hashvalue = data->hash_of(string);
+ 
+-    if (data->table_data[hashvalue] >= 0) {
++    if (hashvalue >= 0
++	&& (unsigned) hashvalue < data->table_size
++	&& data->table_data[hashvalue] >= 0) {
+ 
+ 	real_table = _nc_get_table(termcap);
+ 	ptr = real_table + data->table_data[hashvalue];
+@@ -96,7 +98,9 @@ _nc_find_type_entry(const char *string,
+     const HashData *data = _nc_get_hash_info(termcap);
+     int hashvalue = data->hash_of(string);
+ 
+-    if (data->table_data[hashvalue] >= 0) {
++    if (hashvalue >= 0
++	&& (unsigned) hashvalue < data->table_size
++	&& data->table_data[hashvalue] >= 0) {
+ 	const struct name_table_entry *const table = _nc_get_table(termcap);
+ 
+ 	ptr = table + data->table_data[hashvalue];
+-- 
+2.7.4
+
