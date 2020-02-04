@@ -1,6 +1,6 @@
 Name:           mongodb
 Version:        3.4.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The MongoDB Database
 Group:          Applications/Database
 License:        AGPLv3
@@ -11,6 +11,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  scons
 BuildRequires:  systemd
+BuildRequires:  pcre-devel
+BuildRequires:  valgrind
+BuildRequires:  zlib-devel
 
 %description
 MongoDB (from "humongous") is a scalable, high-performance, open source, document-oriented database.
@@ -20,18 +23,23 @@ MongoDB (from "humongous") is a scalable, high-performance, open source, documen
 
 %build
 scons %{?_smp_mflags} MONGO_VERSION=%{version} \
-    --disable-warnings-as-errors
+    --disable-warnings-as-errors \
+    --use-system-pcre \
+    --use-system-valgrind \
+    --use-system-zlib
 
 %install
 scons  %{?_smp_mflags} MONGO_VERSION=%{version} install \
     --prefix=%{buildroot}%{_prefix} \
-    --disable-warnings-as-errors
+    --disable-warnings-as-errors \
+    --use-system-pcre \
+    --use-system-valgrind \
+    --use-system-zlib
 install -d %{buildroot}/var/log/%{name}
 install -d %{buildroot}/var/lib/mongo
 install -d -m 755 %{buildroot}%{_unitdir}
 install -D -m 644 rpm/mongod.service %{buildroot}%{_unitdir}
 install -D -m 644 rpm/mongod.conf %{buildroot}/etc/mongod.conf
-
 
 %clean
 rm -rf %{buildroot}
@@ -64,5 +72,7 @@ fi
 %attr(0766, mongod, mongod) %dir /var/lib/mongo
 
 %changelog
+*   Tue Feb 04 2020 Shreyas B <shreyasb@vmware.com> 3.4.10-2
+-   Use locally build packages(i.e. pcre, valgrind, zlib) to build mongodb.
 *   Fri Mar 16 2018 Dheeraj Shetty <dheerajs@vmware.com> 3.4.10-1
 -   Initial build.  First version
