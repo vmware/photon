@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          17%{?dist}
+Release:          18%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -36,6 +36,7 @@ Patch16:          systemd-239-bz-2361840-sysctl-ipv6-disabled.patch
 Patch17:          systemd-239-CVE-2019-15718.patch
 Patch18:          systemd-239-bz-2471962.patch
 Patch19:          systemd-239-issue-962.patch
+Patch20:          systemd-239-CVE-2019-20386.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -111,6 +112,7 @@ EOF
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
+%patch20 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -277,6 +279,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Tue Feb 04 2020 Susant Sahani <ssahani@vmware.com>  239-18
+-    Fix CVE-2019-20386
 *    Thu  Jan 02 2020 Susant Sahani <ssahani@vmware.com>  239-17
 -    Fix If system has invalid hostname, systemd-networkd dhcpv4 does not run
 -    and obscure error message is also sligtly update generatedRoutingPolicyRule
