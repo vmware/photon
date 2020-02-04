@@ -1,6 +1,6 @@
 Name:           mongodb
 Version:        3.4.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The MongoDB Database
 Group:          Applications/Database
 License:        AGPLv3
@@ -11,6 +11,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  scons
 BuildRequires:  systemd
+BuildRequires:  pcre-devel
+BuildRequires:  zlib-devel
 
 %description
 MongoDB (from "humongous") is a scalable, high-performance, open source, document-oriented database.
@@ -20,17 +22,20 @@ MongoDB (from "humongous") is a scalable, high-performance, open source, documen
 
 %build
 scons %{?_smp_mflags} MONGO_VERSION=%{version} \
-    --disable-warnings-as-errors
+    --disable-warnings-as-errors \
+    --use-system-pcre \
+    --use-system-zlib
 
 %install
 scons %{?_smp_mflags} MONGO_VERSION=%{version} install \
-    --prefix=%{buildroot}%{_prefix}
+    --prefix=%{buildroot}%{_prefix} \
+    --use-system-pcre \
+    --use-system-zlib
 install -d %{buildroot}/var/log/%{name}
 install -d %{buildroot}/var/lib/mongo
 install -d -m 755 %{buildroot}%{_unitdir}
 install -D -m 644 rpm/mongod.service %{buildroot}%{_unitdir}
 install -D -m 644 rpm/mongod.conf %{buildroot}/etc/mongod.conf
-
 
 %clean
 rm -rf %{buildroot}
@@ -63,6 +68,8 @@ fi
 %attr(0766, mongod, mongod) %dir /var/lib/mongo
 
 %changelog
+*   Tue Feb 04 2020 Shreyas B <shreyasb@vmware.com> 3.4.10-2
+-   Use locally build packages(i.e. pcre, valgrind, zlib) to build mongodb.
 *   Tue Dec 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-1
 -   Update to version 3.4.10, fix CVE-2017-15535
 *   Sun Oct 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.4-1
