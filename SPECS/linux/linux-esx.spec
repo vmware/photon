@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.210
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -39,6 +39,7 @@ Patch24:       Implement-the-f-xattrat-family-of-functions.patch
 Patch26:       init-do_mounts-recreate-dev-root.patch
 Patch27:       net-9p-vdfs-zerocopy.patch
 Patch28:       0001-Enable-cache-loose-for-vdfs-9p.patch
+Patch29:       0001-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
 
 # Fix for CVE-2018-8043
 Patch30:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
@@ -146,6 +147,7 @@ The Linux package contains the Linux kernel doc files
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
+%patch29 -p1
 %patch30 -p1
 %patch34 -p1
 %patch35 -p1
@@ -264,6 +266,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Feb 05 2020 Mounesh Badiger <badigerm@vmware.com> 4.4.210-2
+    9p:Calculate zerocopy pages with considering buffer alignment
 *   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.210-1
 -   Update to version 4.4.210
 *   Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.4.206-1
