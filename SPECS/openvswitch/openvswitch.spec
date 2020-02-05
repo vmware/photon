@@ -2,8 +2,8 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
-Version:        2.8.2
-Release:        3%{?dist}
+Version:        2.12.0
+Release:        1%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha1 openvswitch=1d0e8cbf6d6e649e0f518219a599d7411f863875
+%define sha1 openvswitch=3ee6da7f52aeaad78b816ec6d61f7e7f163902fd
 
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
@@ -20,25 +20,19 @@ BuildRequires:  make
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  systemd
-BuildRequires:  python2 >= 2.7.0
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python-pip
-BuildRequires:  python-six
-BuildRequires:  python-xml
-BuildRequires:  python-setuptools
 BuildRequires:  python3 >= 3.4.0
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-six
-
+BuildRequires:  python3-xml
+BuildRequires:  python2
 Requires:       libgcc-atomic
 Requires:       libcap-ng
 Requires:       openssl
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-six
-Requires:       python-xml
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-six
+Requires:       python3-xml
 Requires:       gawk
 
 %description
@@ -120,6 +114,7 @@ It contains the documentation and manpages for OVN.
 %setup -q
 
 %build
+export PYTHON2=no
 %configure --enable-ssl --enable-shared
 
 make %{_smp_mflags}
@@ -130,13 +125,12 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 mkdir -p %{buildroot}/%{python2_sitelib}
 mkdir -p %{buildroot}/%{python3_sitelib}
 cp -a %{buildroot}/%{_datadir}/openvswitch/python/ovs/* %{buildroot}/%{python2_sitelib}
-
 cp -a %{buildroot}/%{_datadir}/openvswitch/python/ovs/* %{buildroot}/%{python3_sitelib}
 
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
 install -p -D -m 0644 rhel/usr_share_openvswitch_scripts_systemd_sysconfig.template %{buildroot}/%{_sysconfdir}/sysconfig/openvswitch
 
-/usr/bin/perl build-aux/dpdkstrip.pl --nodpdk < rhel/usr_lib_systemd_system_ovs-vswitchd.service.in > rhel/usr_lib_systemd_system_ovs-vswitchd.service
+/usr/bin/python3 build-aux/dpdkstrip.py --nodpdk < rhel/usr_lib_systemd_system_ovs-vswitchd.service.in > rhel/usr_lib_systemd_system_ovs-vswitchd.service
 for service in openvswitch ovsdb-server ovs-vswitchd ovn-controller ovn-controller-vtep ovn-northd; do
 	install -p -D -m 0644 rhel/usr_lib_systemd_system_${service}.service %{buildroot}/%{_unitdir}/${service}.service
 done
@@ -199,7 +193,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_sysconfdir}/openvswitch/default.conf
 %{_sysconfdir}/bash_completion.d/ovs-*-bashcomp.bash
 %{_datadir}/openvswitch/*.ovsschema
-%{_datadir}/openvswitch/bugtool-plugins/*
 %{_datadir}/openvswitch/python/*
 %{_datadir}/openvswitch/scripts/ovs-*
 %config(noreplace) %{_sysconfdir}/sysconfig/openvswitch
@@ -227,6 +220,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man7/ovs-fields.7.gz
 %{_mandir}/man8/ovs-*.8.gz
 %{_mandir}/man8/vtep-ctl.8.gz
+%{_mandir}/man5/ovsdb-server.5.gz
+%{_mandir}/man7/ovs-actions.7.gz
 
 %files -n ovn-common
 %{_bindir}/ovn-nbctl
@@ -235,9 +230,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/ovn-detrace
 %{_datadir}/openvswitch/scripts/ovn-ctl
 %{_datadir}/openvswitch/scripts/ovndb-servers.ocf
-%{_datadir}/openvswitch/scripts/ovn-bugtool-nbctl-show
-%{_datadir}/openvswitch/scripts/ovn-bugtool-sbctl-lflow-list
-%{_datadir}/openvswitch/scripts/ovn-bugtool-sbctl-show
 
 %files -n ovn-host
 %{_unitdir}/ovn-controller.service
@@ -271,6 +263,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Wed Feb 05 2020 Tapas Kundu <tkundu@vmware.com> 2.12.0-1
+-   Build with Python3
 *   Tue Nov 13 2018 Anish Swaminathan <anishs@vmware.com> 2.8.2-3
 -   Replace with configure macro
 *   Wed Feb 28 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-2
