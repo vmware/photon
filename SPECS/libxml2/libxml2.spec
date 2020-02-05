@@ -4,7 +4,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -13,6 +13,7 @@ Distribution:   Photon
 Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
 %define sha1    libxml2=db6592ec9ca9708c4e71bf6bfd907bbb5cd40644
 Patch0:         CVE-2020-7595.patch
+Patch1:         CVE-2019-20388.patch
 Provides:       pkgconfig(libxml-2.0)
 
 %description
@@ -51,6 +52,7 @@ Static libraries and header files for the support library for libxml
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 sed \
   -e /xmlInitializeCatalog/d \
   -e 's/((ent->checked =.*&&/(((ent->checked == 0) ||\
@@ -114,6 +116,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Wed Feb 05 2020 Shreyas B <shreyasb@vmware.com> 2.9.10-2
+-   Fix for CVE-2019-20388(Fix memory leak in xmlSchemaValidateStream).
 *   Thu Jan 30 2020 Shreyas B <shreyasb@vmware.com> 2.9.10-1
 -   Updgrade to v2.9.10 to address CVE-2019-19956(memory leak issue).
 -   Fix CVE-2020-7595(end-of-file issue).
