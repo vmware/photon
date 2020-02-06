@@ -3,7 +3,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.11.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -23,6 +23,8 @@ BuildRequires:  openjdk8
 BuildRequires:  wget
 Requires:       openjre8
 Requires:       gawk
+Requires:       shadow
+
 %description
 Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store.
 Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
@@ -137,6 +139,8 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Thu Feb 06 2020 Shreyas B. <shreyasb@vmware.com> 3.11.5-2
+-   Shadow require by Cassandra for installation.
 *   Tue Jan 21 2020 Michelle Wang <michellew@vmware.com> 3.11.5-1
 -   Central maven repository not responding, Updated to 3.11.5
 *   Tue Dec 17 2019 Shreyas B. <shreyasb@vmware.com> 3.11.2-3
