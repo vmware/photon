@@ -1,7 +1,7 @@
 Summary:    Management tools and libraries relating to cryptography
 Name:       openssl
 Version:    1.0.2u
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    OpenSSL
 URL:        http://www.openssl.org
 Group:      System Environment/Security
@@ -13,6 +13,7 @@ Patch0:     c_rehash.patch
 Patch1:     openssl-ipv6apps.patch
 Patch2:     openssl-init-conslidate.patch
 Patch3:     openssl-drbg-default-read-system-fips.patch
+Patch4:     fips-2.20-vmw.patch
 Requires:   bash glibc libgcc
 
 %description
@@ -53,6 +54,9 @@ Perl scripts that convert certificates and keys to various formats.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%if 0%{?_with_fips:1}
+%patch4 -p1
+%endif
 
 %build
 export CFLAGS="%{optflags}"
@@ -113,6 +117,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Wed Feb 05 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2u-3
+-   Use fips 2.0.20
 *   Fri Jan 31 2020 Anish Swaminathan <anishs@vmware.com> 1.0.2u-2
 -   Configure with Wl flag.
 *   Thu Jan 09 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2u-1
