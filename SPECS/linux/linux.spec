@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.97
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -511,6 +511,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %exclude /lib/modules/%{uname_r}/build
 %exclude /lib/modules/%{uname_r}/kernel/drivers/gpu
 %exclude /lib/modules/%{uname_r}/kernel/sound
+%ifarch aarch64
+%exclude /lib/modules/%{uname_r}/kernel/drivers/staging/vc04_services/bcm2835-audio
+%endif
 %ifarch x86_64
 %exclude /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 %endif
@@ -532,6 +535,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %files drivers-sound
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/kernel/sound
+%ifarch aarch64
+/lib/modules/%{uname_r}/kernel/drivers/staging/vc04_services/bcm2835-audio
+%endif
 
 %files hmacgen
 %defattr(-,root,root)
@@ -573,6 +579,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Jan 31 2020 Ajay Kaher <akaher@vmware.com> 4.19.97-3
+-   Move snd-bcm2835.ko to linux-drivers-sound rpm
 *   Wed Jan 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-2
 -   Update tcrypt to test drbg_pr_sha256 and drbg_nopr_sha256.
 -   Update testmgr to add drbg_pr_ctr_aes256 test vectors.
