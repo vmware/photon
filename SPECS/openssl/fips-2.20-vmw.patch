@@ -1,0 +1,70 @@
+From b87116ad21797140dbbd3fa254a274545ea4ea86 Mon Sep 17 00:00:00 2001
+From: Kevin Christopher <kevinc@vmware.com>
+Date: Wed, 24 Oct 2018 18:20:40 -0700
+Subject: [PATCH] OpenSSL: compat with FOM 2.0.20-vmw
+
+The 2.0.20-vmw FOM is now "always" in FIPS mode (except if self-tests
+fail due to e.g. static linking). Since libcrypto users expect to
+choose whether to enter FIPS mode - including via magic files - the
+FOM FIPS state can no longer be used to control whether to call into
+the FOM. Introduce a local FIPS state to control usage of the FOM.
+
+Earlier FOMs continue to use the existing path.
+
+Minor change: stop adjusting the DRBG, which is unconditionally
+switched to the FIPS DRBG via an earlier patch in OpenSSL_init().
+The FIPS DRBG does not require FIPS mode to operate.
+
+--- a/crypto/o_fips.c_org	2019-10-31 05:12:20.951432666 +0000
++++ b/crypto/o_fips.c	2019-10-31 05:15:54.985866700 +0000
+@@ -63,11 +63,13 @@
+ # include <openssl/rand.h>
+ #endif
+ 
++static int local_fips_mode;
++
+ int FIPS_mode(void)
+ {
+     OPENSSL_init();
+ #ifdef OPENSSL_FIPS
+-    return FIPS_module_mode();
++    return local_fips_mode && FIPS_module_mode();
+ #else
+     return 0;
+ #endif
+@@ -77,15 +79,34 @@ int FIPS_mode_set(int r)
+ {
+     OPENSSL_init();
+ #ifdef OPENSSL_FIPS
++    if (FIPS_module_version() < 0x2001400FL) {
+ # ifndef FIPS_AUTH_USER_PASS
+ #  define FIPS_AUTH_USER_PASS     "Default FIPS Crypto User Password"
+ # endif
++    /* Early FOM: self-tests during FIPS_module_mode_set */
+     if (!FIPS_module_mode_set(r, FIPS_AUTH_USER_PASS))
+         return 0;
++        local_fips_mode = 1;  // defer to FOM's "fips mode"
++    } else {
++        /* FOM 2.0.20-vmw: self-tests during constructor due to FIPS IG 9.10.
++         * The module will "always" be in FIPS mode (except self-test failure);
++         * calling FIPS_module_mode_set() will fail due to multi-init.
++         * Since libcrypto does need to select FIPS mode, use local state
++         * to control whether to call into the FOM.
++         */
++        if (r && !FIPS_module_mode())
++            return 0;
++        local_fips_mode = r;
++    }
++#if 0
++    /* OPENSSL_init() unconditionally switches to FIPS DRBG */
++
++
+     if (r)
+         RAND_set_rand_method(FIPS_rand_get_method());
+     else
+         RAND_set_rand_method(NULL);
++#endif
+     return 1;
+ #else
+     if (r == 0)
+
