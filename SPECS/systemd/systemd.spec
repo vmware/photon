@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          24%{?dist}
+Release:          25%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -44,6 +44,7 @@ Patch25:          systemd-233-CVE-2019-6454.patch
 Patch26:          systemd-233-CVE-2019-3843-3844.patch
 Patch27:          systemd-233-BZ-2257208.patch
 Patch28:          systemd-233-bz-2451788.patch
+Patch29:          systemd-233-CVE-2020-1712.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -126,6 +127,7 @@ sed -i "/xlocale.h/d" src/basic/parse-util.c
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
+%patch29 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -276,6 +278,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Sun Feb 09 2020 Susant Sahani <ssahani@vmware.com> 233-25
+-    Fix CVE-2020-1712
 *    Mon Nov 11 2019 Harinadh D <hdommaraju@vmware.com> 233-24
 -    Fix BZ-2451788
 *    Wed Oct 09 2019 Susant Sahani <ssahani@vmware.com> 233-23
