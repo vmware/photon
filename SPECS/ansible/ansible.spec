@@ -3,15 +3,18 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.7.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
 %define sha1 ansible=70c30c682178b555be5869b83304145554469ecc
+
 Patch0:         CVE-2019-10156.patch
+Patch1:         CVE-2019-14864.patch
 
 BuildArch:      noarch
 
@@ -27,7 +30,9 @@ Ansible is a radically simple IT automation system. It handles configuration-man
 
 %prep
 %setup -q -n %{name}-%{version}
+
 %patch0 -p1
+%patch1 -p1
 
 %build
 python2 setup.py build
@@ -43,6 +48,8 @@ python2 setup.py install -O1 --skip-build \
 %{python2_sitelib}/*
 
 %changelog
+*   Thu Feb 06 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.7.9-3
+-   Fix for CVE-2019-14864
 *   Mon Aug 12 2019 Shreenidhi Shedi <sshedi@vmware.com> 2.7.9-2
 -   Fix for CVE-2019-10156
 *   Fri Apr 19 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.7.9-1
