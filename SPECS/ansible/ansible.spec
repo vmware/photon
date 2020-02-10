@@ -3,19 +3,25 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.8.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
 %define sha1 %{name}=b09bf12af20e9231945966d5a0a32241dfdb4f05
+
 Patch0:         ansible-tdnf.patch
+Patch1:         CVE-2019-14864.patch
+
 BuildArch:      noarch
+
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-jinja2
@@ -25,12 +31,15 @@ Requires:       paramiko
 %if %{with_check}
 Requires:       python2-devel
 %endif
+
 %description
 Ansible is a radically simple IT automation system. It handles configuration-management, application deployment, cloud provisioning, ad-hoc task-execution, and multinode orchestration - including trivializing things like zero downtime rolling updates with load balancers.
 
 %prep
 %setup -q
+
 %patch0 -p2
+%patch1 -p1
 
 %build
 python2 setup.py build
@@ -49,6 +58,8 @@ python2 setup.py test
 %{python2_sitelib}/*
 
 %changelog
+*   Thu Feb 06 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.3-5
+-   Fix for CVE-2019-14864
 *   Mon Nov 18 2019 Tapas Kundu <tkundu@vmware.com> 2.8.3-4
 -   Added additional missing dependencies
 *   Fri Nov 08 2019 Tapas Kundu <tkundu@vmware.com> 2.8.3-3
