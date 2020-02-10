@@ -1,30 +1,24 @@
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.6.5
-Release:        14%{?dist}
+Version:        3.6.9
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=5a7a833a36f1006257d298787f4c38493c5d1689
+%define sha1    Python=3cd8b0e814b753fcce4fdf7edc823d8fb0da9208
 Patch0:         cgi3.patch
 Patch1:         python3-support-photon-platform.patch
 Patch2:         python3-CVE-2017-18207.patch
-Patch3:         python3-CVE-2018-14647.patch
-Patch4:         python3-CVE-2018-20406.patch
-Patch5:         python3-CVE-2019-9636.patch
-Patch6:         python3-CVE-2019-5010.patch
-Patch7:         python3-CVE-2019-9740.patch
-Patch8:         python3-CVE-2019-10160.patch
-Patch9:         python3-CVE-2018-20852.patch
-Patch10:        python3-CVE-2019-16056.patch
-Patch11:        python3-CVE-2019-16935.patch
-Patch12:        python3-CVE-2019-17514.patch
-Patch13:        python3-CVE-2019-18348.patch
-Patch14:        python3-CVE-2019-9674.patch
-Patch15:        python3-CVE-2020-8492.patch
+Patch3:         python3-CVE-2019-16056.patch
+Patch4:         python3-CVE-2019-16935.patch
+Patch5:         python3-CVE-2019-17514.patch
+Patch6:         python3-CVE-2019-18348.patch
+Patch7:         python3-CVE-2019-9674.patch
+Patch8:         python3-CVE-2020-8492.patch
+
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel
@@ -153,13 +147,6 @@ The test package contains all regression tests for Python as well as the modules
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -274,20 +261,22 @@ rm -rf %{buildroot}/*
 %files pip
 %defattr(-,root,root,755)
 %{_libdir}/python3.6/site-packages/pip/*
-%{_libdir}/python3.6/site-packages/pip-9.0.3.dist-info/*
+%{_libdir}/python3.6/site-packages/pip-18.1.dist-info/*
 %{_bindir}/pip*
 
 %files setuptools
 %defattr(-,root,root,755)
 %{_libdir}/python3.6/site-packages/pkg_resources/*
 %{_libdir}/python3.6/site-packages/setuptools/*
-%{_libdir}/python3.6/site-packages/setuptools-39.0.1.dist-info/*
+%{_libdir}/python3.6/site-packages/setuptools-40.6.2.dist-info/*
 %{_bindir}/easy_install-3.6
 
 %files test
 %{_libdir}/python3.6/test/*
 
 %changelog
+*   Fri Apr 17 2020 Tapas Kundu <tkundu@vmware.com> 3.6.9-1
+-   Update to release 3.6.9
 *   Fri Apr 03 2020 Tapas Kundu <tkundu@vmware.com> 3.6.5-14
 -   Fix for CVE-2020-8492
 *   Tue Mar 31 2020 Tapas Kundu <tkundu@vmware.com> 3.6.5-13
