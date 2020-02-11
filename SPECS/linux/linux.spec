@@ -1,8 +1,9 @@
 %global security_hardening none
+%global photon_checksum_generator_version 1.0
 Summary:        Kernel
 Name:           linux
 Version:        4.19.97
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -20,6 +21,9 @@ Source5:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
 %define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
 Source6:        update_photon_cfg.postun
 Source7:        check_for_config_applicability.inc
+# Photon-checksum-generator kernel module
+Source8:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
+%define sha1 photon-checksum-generator=b2a0528ce733e27bf332ea533072faf73c336f0c
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -127,7 +131,6 @@ Patch234:        0001-fsl_dpaa_mac-wait-for-phy-probe-to-complete.patch
 %if 0%{?kat_build:1}
 Patch1000:	fips-kat-tests.patch
 %endif
-Patch1001:	hmac_gen_kernel.patch
 
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -235,6 +238,7 @@ This Linux package contains hmac sha generator kernel module.
 %setup -D -b 3 -n linux-%{version}
 %setup -D -b 5 -n linux-%{version}
 %endif
+%setup -D -b 8 -n linux-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch3 -p1
@@ -312,7 +316,6 @@ This Linux package contains hmac sha generator kernel module.
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
-%patch1001 -p1
 
 %build
 make mrproper
@@ -346,10 +349,11 @@ make KERNELDIR=$bldroot %{?_smp_mflags} all
 popd
 %endif
 
-#build hmac sha generator module
+#build photon-checksum-generator module
 bldroot=`pwd`
-pushd hmac_gen
+pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
 make -C $bldroot M=`pwd` modules
+popd
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
@@ -412,9 +416,9 @@ fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 %endif
 
-#install hmac sha generator module
+#install photon-checksum-generator module
 bldroot=`pwd`
-pushd hmac_gen
+pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
 make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
@@ -511,6 +515,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %exclude /lib/modules/%{uname_r}/build
 %exclude /lib/modules/%{uname_r}/kernel/drivers/gpu
 %exclude /lib/modules/%{uname_r}/kernel/sound
+%exclude /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 %ifarch aarch64
 %exclude /lib/modules/%{uname_r}/kernel/drivers/staging/vc04_services/bcm2835-audio
 %endif
@@ -579,6 +584,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Feb 11 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-4
+-   Add photon-checksum-generator source tarball and remove hmacgen patch.
+-   Exclude hmacgen.ko from base package.
 *   Fri Jan 31 2020 Ajay Kaher <akaher@vmware.com> 4.19.97-3
 -   Move snd-bcm2835.ko to linux-drivers-sound rpm
 *   Wed Jan 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-2

@@ -1,8 +1,9 @@
 %global security_hardening none
+%global photon_checksum_generator_version 1.0
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.97
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -14,6 +15,9 @@ Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
 Source4:        check_for_config_applicability.inc
+# Photon-checksum-generator kernel module
+Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
+%define sha1 photon-checksum-generator=b2a0528ce733e27bf332ea533072faf73c336f0c
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -70,8 +74,6 @@ Patch99:        LKCM.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch100:       0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 
-Patch1001:	hmac_gen_kernel.patch
-
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
 %endif
@@ -127,6 +129,7 @@ This Linux package contains hmac sha generator kernel module.
 
 %prep
 %setup -q -n linux-%{version}
+%setup -D -b 5 -n linux-%{version}
 
 %patch0 -p1
 %patch1 -p1
@@ -168,8 +171,6 @@ popd
 %patch1000 -p1
 %endif
 
-%patch1001 -p1
-
 %build
 # patch vmw_balloon driver
 sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
@@ -189,10 +190,11 @@ sed -i '/#include <asm\/uaccess.h>/d' fips_test.c
 make -C $bldroot M=`pwd` modules
 popd
 
-#build hmac sha generator module
+#build photon-checksum-generator module
 bldroot=`pwd`
-pushd hmac_gen
+pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
 make -C $bldroot M=`pwd` modules
+popd
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
@@ -223,9 +225,9 @@ pushd ../LKCM
 make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
-#install hmac sha generator module
+#install photon-checksum-generator module
 bldroot=`pwd`
-pushd hmac_gen
+pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
 make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
@@ -291,6 +293,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %exclude /lib/modules/%{uname_r}/build
 %exclude /usr/src
 %exclude /lib/modules/%{uname_r}/extra/fips_lkcm.ko.xz
+%exclude /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %files lkcm
 %defattr(-,root,root)
@@ -310,6 +313,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Feb 11 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-3
+-   Add photon-checksum-generator source tarball and remove hmacgen patch.
+-   Exclude hmacgen.ko from base package.
 *   Wed Jan 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-2
 -   Update tcrypt to test drbg_pr_sha256 and drbg_nopr_sha256.
 -   Update testmgr to add drbg_pr_ctr_aes256 test vectors.
