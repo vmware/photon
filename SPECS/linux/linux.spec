@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.210
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -85,6 +85,7 @@ Patch59:        0008-fs-prevent-page-refcount-overflow-in-pipe_buf_get.patch
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 
+Patch71: 0001-9p-Transport-error-uninitialized.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -210,6 +211,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch58 -p1
 %patch59 -p1
 %patch67 -p1
+%patch71 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -368,6 +370,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Feb 11 2020 Mounesh Badiger <badigerm@vmware.com> 4.4.210-3
+    9p: Transport error uninitialized
 *   Wed Feb 05 2020 Mounesh Badiger <badigerm@vmware.com> 4.4.210-2
     9p:Calculate zerocopy pages with considering buffer alignment
 *   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.210-1

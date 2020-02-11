@@ -1,0 +1,30 @@
+From f392fd3a8c3f067e01fad01d369b249a4cae2d8e Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com>
+Date: Tue, 11 Feb 2020 08:35:38 -0800
+Subject: [PATCH] 9p: Transport error uninitialized
+
+The p9_tag_alloc() does not initialize the transport error t_err field.
+The struct p9_req_t *req is allocated and stored in a struct p9_client
+variable. The field t_err is never initialized before p9_conn_cancel()
+checks its value.
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0ce772fe79b68f83df40f07f28207b292785c677
+---
+ net/9p/client.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 443db20..48d0ed9 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -291,6 +291,7 @@ p9_tag_alloc(struct p9_client *c, u16 tag, unsigned int max_size)
+ 	p9pdu_reset(req->tc);
+ 	p9pdu_reset(req->rc);
+ 
++	req->t_err = 0;
+ 	req->tc->tag = tag-1;
+ 	req->status = REQ_STATUS_ALLOC;
+ 
+-- 
+2.6.2
+

@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.210
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -83,6 +83,8 @@ Patch68:        0008-fs-prevent-page-refcount-overflow-in-pipe_buf_get.patch
 
 # For Spectre
 Patch70: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
+
+Patch71: 0001-9p-Transport-error-uninitialized.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -176,6 +178,7 @@ The Linux package contains the Linux kernel doc files
 %patch67 -p1
 %patch68 -p1
 %patch70 -p1
+%patch71 -p1
 
 %build
 # patch vmw_balloon driver
@@ -266,6 +269,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Feb 11 2020 Mounesh Badiger <badigerm@vmware.com> 4.4.210-3
+    9p: Transport error uninitialized
 *   Wed Feb 05 2020 Mounesh Badiger <badigerm@vmware.com> 4.4.210-2
     9p:Calculate zerocopy pages with considering buffer alignment
 *   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.210-1
