@@ -2,13 +2,14 @@
 
 Name:           cloud-init
 Version:        19.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
 URL:            http://launchpad.net/cloud-init
 Vendor:         VMware, Inc
 Distribution:   Photon
+
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
 %define sha1 cloud-init=6de398dd755959dde47c8d6f6e255a0857017c44
 Source1:        cloud-photon.cfg
@@ -29,6 +30,8 @@ Patch12:        trigger-post-customization.patch
 Patch13:        enable-disable-custom-script.patch
 Patch14:        disable-custom-script-default.patch
 Patch15:        add_cc_kubeadm.py.patch
+Patch16:        CVE-2020-8632.patch
+
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  systemd
@@ -92,6 +95,7 @@ ssh keys and to let the user run various scripts.
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
 
 find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -162,6 +166,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Tue Feb 11 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.1-4
+-   Fix for CVE-2020-8632
 *   Fri Dec 13 2019 Shreenidhi Shedi <sshedi@vmware.com> 19.1-3
 -   Enabled power-state-change in cloud-photon.cfg file
 -   Updated DataSourceVMwareGuestInfo.patch (till commit 9e69060 from mainline)
