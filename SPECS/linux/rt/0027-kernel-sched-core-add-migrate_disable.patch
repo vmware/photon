@@ -1,7 +1,7 @@
-From 70a9ac89b97eb9275f3eb6d7adbba77ddd059fee Mon Sep 17 00:00:00 2001
+From aa1ee07372c9826aa12b48a40ecb187c8364d502 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Sat, 27 May 2017 19:02:06 +0200
-Subject: [PATCH 027/290] kernel/sched/core: add migrate_disable()
+Subject: [PATCH 027/319] kernel/sched/core: add migrate_disable()
 
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
@@ -86,7 +86,7 @@ index 9fb239e12b82..5801e516ba63 100644
   * Callback to arch code if there's nosmp or maxcpus=0 on the
   * boot command line:
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 39bb4b3eb1bf..1a1ffb873d22 100644
+index 07dc66137a26..d0450f06612c 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -1008,7 +1008,15 @@ void set_cpus_allowed_common(struct task_struct *p, const struct cpumask *new_ma
@@ -145,7 +145,7 @@ index 39bb4b3eb1bf..1a1ffb873d22 100644
  	if (task_running(rq, p) || p->state == TASK_WAKING) {
  		struct migration_arg arg = { p, dest_cpu };
  		/* Need help from migration thread: drop lock and wait. */
-@@ -7104,3 +7133,100 @@ const u32 sched_prio_to_wmult[40] = {
+@@ -7105,3 +7134,100 @@ const u32 sched_prio_to_wmult[40] = {
  };
  
  #undef CREATE_TRACE_POINTS
@@ -262,5 +262,5 @@ index 78fadf0438ea..5027158d3908 100644
  #undef PN
  #undef __PN
 -- 
-2.23.0
+2.24.1
 

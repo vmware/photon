@@ -1,7 +1,7 @@
-From 22720b62b26a1291196199a2ac4f37ba1970d076 Mon Sep 17 00:00:00 2001
+From 375dd71e0e4c9212c6aa7d91c5b97253884195d8 Mon Sep 17 00:00:00 2001
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 3 Jul 2009 08:29:51 -0500
-Subject: [PATCH 077/290] mm/swap: Convert to percpu locked
+Subject: [PATCH 077/319] mm/swap: Convert to percpu locked
 
 Replace global locks (get_cpu + local_irq_save) with "local_locks()".
 Currently there is one of for "rotate" and one for "swap".
@@ -17,7 +17,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  4 files changed, 30 insertions(+), 19 deletions(-)
 
 diff --git a/include/linux/swap.h b/include/linux/swap.h
-index 7bd0a6f2ac2b..e643672fa802 100644
+index ee8f9f554a9e..2ad000e362bd 100644
 --- a/include/linux/swap.h
 +++ b/include/linux/swap.h
 @@ -12,6 +12,7 @@
@@ -56,10 +56,10 @@ index 5079ddbec8f9..c40d3a13cbbd 100644
  				cc->last_migrated_pfn = 0;
  			}
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 99b3861b1ef6..1679f5883307 100644
+index bff6c04eb359..f7d30f995bc5 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -7207,8 +7207,9 @@ void __init free_area_init(unsigned long *zones_size)
+@@ -7212,8 +7212,9 @@ void __init free_area_init(unsigned long *zones_size)
  
  static int page_alloc_cpu_dead(unsigned int cpu)
  {
@@ -207,5 +207,5 @@ index 45fdbfb6b2a6..92f994b962f0 100644
  
  #ifdef CONFIG_SMP
 -- 
-2.23.0
+2.24.1
 

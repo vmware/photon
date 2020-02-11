@@ -1,7 +1,7 @@
-From 1fd04accf7d1da34be2d03a8cc9db0ba68c8cf9f Mon Sep 17 00:00:00 2001
+From 7b261f5cd7cd0810b1f5764bcc27e35ff00a0669 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 10 Apr 2019 11:01:37 +0200
-Subject: [PATCH 266/290] drm/i915: Don't disable interrupts independently of
+Subject: [PATCH 266/319] drm/i915: Don't disable interrupts independently of
  the lock
 
 The locks (timeline->lock and rq->lock) need to be taken with disabled
@@ -47,5 +47,5 @@ index 5c2c93cbab12..7124510b9131 100644
  	/*
  	 * The backing object for the context is done after switching to the
 -- 
-2.23.0
+2.24.1
 

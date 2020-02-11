@@ -1,7 +1,7 @@
-From 40419bc23d3cd7c730310c4a6461dd40f579010a Mon Sep 17 00:00:00 2001
+From 8e7b37d51d025fa465a2740068d54a48855f8745 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 15 Sep 2016 10:51:27 +0200
-Subject: [PATCH 129/290] fs/nfs: turn rmdir_sem into a semaphore
+Subject: [PATCH 129/319] fs/nfs: turn rmdir_sem into a semaphore
 
 The RW semaphore had a reader side which used the _non_owner version
 because it most likely took the reader lock in one thread and released it
@@ -147,5 +147,5 @@ index a0831e9d19c9..94b6fefd90b0 100644
  
  #if IS_ENABLED(CONFIG_NFS_V4)
 -- 
-2.23.0
+2.24.1
 

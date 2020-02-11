@@ -1,7 +1,7 @@
-From e73f701fa4cf094c7eeeb1959b4eb29b520ed548 Mon Sep 17 00:00:00 2001
+From 3c832332fc085b9c0fd59aeffff2637f44010861 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 13 Mar 2018 13:49:16 +0100
-Subject: [PATCH 288/290] block: blk-mq: move blk_queue_usage_counter_release()
+Subject: [PATCH 288/319] block: blk-mq: move blk_queue_usage_counter_release()
  into process context
 
 [ Upstream commit 61c928ecf4fe200bda9b49a0813b5ba0f43995b5 ]
@@ -55,10 +55,10 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  2 files changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index 0edb346263b8..f0d9ebeea16d 100644
+index 4860cd26cd5a..7d709465876e 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
-@@ -970,12 +970,21 @@ void blk_queue_exit(struct request_queue *q)
+@@ -973,12 +973,21 @@ void blk_queue_exit(struct request_queue *q)
  	percpu_ref_put(&q->q_usage_counter);
  }
  
@@ -81,7 +81,7 @@ index 0edb346263b8..f0d9ebeea16d 100644
  }
  
  static void blk_rq_timed_out_timer(struct timer_list *t)
-@@ -1072,6 +1081,7 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
+@@ -1075,6 +1084,7 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
  	queue_flag_set_unlocked(QUEUE_FLAG_BYPASS, q);
  
  	init_waitqueue_head(&q->mq_freeze_wq);
@@ -90,7 +90,7 @@ index 0edb346263b8..f0d9ebeea16d 100644
  	/*
  	 * Init percpu_ref in atomic mode so that it's faster to shutdown.
 diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index f1960add94df..15a489abfb62 100644
+index 111ab4209797..981103415cd8 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
 @@ -13,6 +13,7 @@
@@ -110,5 +110,5 @@ index f1960add94df..15a489abfb62 100644
  	struct list_head	all_q_node;
  
 -- 
-2.23.0
+2.24.1
 

@@ -1,7 +1,7 @@
-From c69af1bd9be59d1e008a9cabae469116cffd44b6 Mon Sep 17 00:00:00 2001
+From 9ef2ec1afbe07c16ce7c07cbcdd85e57e9257a17 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 31 May 2011 16:59:16 +0200
-Subject: [PATCH 106/290] sched: Move task_struct cleanup to RCU
+Subject: [PATCH 106/319] sched: Move task_struct cleanup to RCU
 
 __put_task_struct() does quite some expensive work. We don't want to
 burden random tasks with that.
@@ -29,10 +29,10 @@ index ba37d39d5c6b..a1ef00db6baa 100644
  	unsigned long			task_state_change;
  #endif
 diff --git a/include/linux/sched/task.h b/include/linux/sched/task.h
-index 108ede99e533..bb98c5b43f81 100644
+index 44c6f15800ff..d2b33e57c636 100644
 --- a/include/linux/sched/task.h
 +++ b/include/linux/sched/task.h
-@@ -88,6 +88,15 @@ extern void sched_exec(void);
+@@ -90,6 +90,15 @@ extern void sched_exec(void);
  
  #define get_task_struct(tsk) do { atomic_inc(&(tsk)->usage); } while(0)
  
@@ -48,7 +48,7 @@ index 108ede99e533..bb98c5b43f81 100644
  extern void __put_task_struct(struct task_struct *t);
  
  static inline void put_task_struct(struct task_struct *t)
-@@ -95,7 +104,7 @@ static inline void put_task_struct(struct task_struct *t)
+@@ -97,7 +106,7 @@ static inline void put_task_struct(struct task_struct *t)
  	if (atomic_dec_and_test(&t->usage))
  		__put_task_struct(t);
  }
@@ -58,10 +58,10 @@ index 108ede99e533..bb98c5b43f81 100644
  
  #ifdef CONFIG_ARCH_WANTS_DYNAMIC_TASK_STRUCT
 diff --git a/kernel/fork.c b/kernel/fork.c
-index c940fee1426c..b14cb6876ac8 100644
+index b3744a043f46..4b85282d9a07 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
-@@ -671,7 +671,9 @@ static inline void put_signal_struct(struct signal_struct *sig)
+@@ -666,7 +666,9 @@ static inline void put_signal_struct(struct signal_struct *sig)
  	if (atomic_dec_and_test(&sig->sigcnt))
  		free_signal_struct(sig);
  }
@@ -72,7 +72,7 @@ index c940fee1426c..b14cb6876ac8 100644
  void __put_task_struct(struct task_struct *tsk)
  {
  	WARN_ON(!tsk->exit_state);
-@@ -688,7 +690,18 @@ void __put_task_struct(struct task_struct *tsk)
+@@ -683,7 +685,18 @@ void __put_task_struct(struct task_struct *tsk)
  	if (!profile_handoff_task(tsk))
  		free_task(tsk);
  }
@@ -92,5 +92,5 @@ index c940fee1426c..b14cb6876ac8 100644
  void __init __weak arch_task_cache_init(void) { }
  
 -- 
-2.23.0
+2.24.1
 

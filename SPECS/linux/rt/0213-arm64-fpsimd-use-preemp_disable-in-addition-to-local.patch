@@ -1,7 +1,7 @@
-From 67796c909f19de9affd36a6024bfad2fead9a410 Mon Sep 17 00:00:00 2001
+From 6559dfd29b5b3ea6ccbdd9e7325022d9c93014f2 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 25 Jul 2018 14:02:38 +0200
-Subject: [PATCH 213/290] arm64: fpsimd: use preemp_disable in addition to
+Subject: [PATCH 213/319] arm64: fpsimd: use preemp_disable in addition to
  local_bh_disable()
 
 In v4.16-RT I noticed a number of warnings from task_fpsimd_load(). The
@@ -167,5 +167,5 @@ index 58c53bc96928..71252cd8b594 100644
  EXPORT_SYMBOL(kernel_neon_begin);
  
 -- 
-2.23.0
+2.24.1
 

@@ -1,7 +1,7 @@
-From 05ad3e257a527d9072919b02e0cff6078055eed0 Mon Sep 17 00:00:00 2001
+From 44d7fc79a3292b3ccd4952759da0f0f640f5337c Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 24 Jul 2009 12:38:56 +0200
-Subject: [PATCH 059/290] preempt: Provide preempt_*_(no)rt variants
+Subject: [PATCH 059/319] preempt: Provide preempt_*_(no)rt variants
 
 RT needs a few preempt_disable/enable points which are not necessary
 otherwise. Implement variants to avoid #ifdeffery.
@@ -49,5 +49,5 @@ index 3196d0e76719..f7a17fcc3fec 100644
  
  struct preempt_notifier;
 -- 
-2.23.0
+2.24.1
 

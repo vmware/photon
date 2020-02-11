@@ -1,7 +1,7 @@
-From ba611c8f81858be6e3e56e1e556ee058d65df3c7 Mon Sep 17 00:00:00 2001
+From fc8476149856a8aa15d74e28a1086b626281a575 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 29 Jan 2015 15:10:08 +0100
-Subject: [PATCH 181/290] block/mq: don't complete requests via IPI
+Subject: [PATCH 181/319] block/mq: don't complete requests via IPI
 
 The IPI runs in hardirq context and there are sleeping locks. This patch
 moves the completion into a workqueue.
@@ -16,7 +16,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  4 files changed, 30 insertions(+), 1 deletion(-)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index 074ae9376189..0edb346263b8 100644
+index ea33d6abdcfc..4860cd26cd5a 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
 @@ -189,6 +189,9 @@ void blk_rq_init(struct request_queue *q, struct request *rq)
@@ -101,7 +101,7 @@ index 2885dce1ad49..8dbb9ecf9993 100644
  void blk_mq_start_request(struct request *rq);
  void blk_mq_end_request(struct request *rq, blk_status_t error);
 diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index d51e10f50e75..f1960add94df 100644
+index 6e67aeb56928..111ab4209797 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
 @@ -149,6 +149,9 @@ enum mq_rq_state {
@@ -115,5 +115,5 @@ index d51e10f50e75..f1960add94df 100644
  
  	int cpu;
 -- 
-2.23.0
+2.24.1
 

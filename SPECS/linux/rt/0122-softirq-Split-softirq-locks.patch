@@ -1,7 +1,7 @@
-From 9708867fdc9d911c92c3b3f7b7d5ff8e08d387a3 Mon Sep 17 00:00:00 2001
+From c02fce4c0354066fb4bb6d0a436cc074be910c88 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 4 Oct 2012 14:20:47 +0100
-Subject: [PATCH 122/290] softirq: Split softirq locks
+Subject: [PATCH 122/319] softirq: Split softirq locks
 
 The 3.x RT series removed the split softirq implementation in favour
 of pushing softirq processing into the context of the thread which
@@ -199,10 +199,10 @@ index c073a3273beb..baa5fceea0ff 100644
  #define PF_EXITING		0x00000004	/* Getting shut down */
  #define PF_EXITPIDONE		0x00000008	/* PI exit done on shut down */
 diff --git a/init/main.c b/init/main.c
-index 020972fed117..4a7471606e53 100644
+index 38a603f62b7b..6e02188386a7 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -561,6 +561,7 @@ asmlinkage __visible void __init start_kernel(void)
+@@ -560,6 +560,7 @@ asmlinkage __visible void __init start_kernel(void)
  	setup_command_line(command_line);
  	setup_nr_cpu_ids();
  	setup_per_cpu_areas();
@@ -808,10 +808,10 @@ index 1d3a482246cc..fd89f8ab85ac 100644
  	.thread_fn		= run_ksoftirqd,
  	.thread_comm		= "ksoftirqd/%u",
 diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
-index c217af74dddf..6482945f8ae8 100644
+index 012bc81879bf..2b0ddd50e879 100644
 --- a/kernel/time/tick-sched.c
 +++ b/kernel/time/tick-sched.c
-@@ -891,14 +891,7 @@ static bool can_stop_idle_tick(int cpu, struct tick_sched *ts)
+@@ -895,14 +895,7 @@ static bool can_stop_idle_tick(int cpu, struct tick_sched *ts)
  		return false;
  
  	if (unlikely(local_softirq_pending() && cpu_online(cpu))) {
@@ -828,5 +828,5 @@ index c217af74dddf..6482945f8ae8 100644
  	}
  
 -- 
-2.23.0
+2.24.1
 

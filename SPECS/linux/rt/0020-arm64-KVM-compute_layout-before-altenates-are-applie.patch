@@ -1,7 +1,7 @@
-From 7cf32c5e928501c234cefb60c14a7d2516bfdd27 Mon Sep 17 00:00:00 2001
+From 3489432969eb414c9fc795a71bdcd32da562ebc0 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 26 Jul 2018 09:13:42 +0200
-Subject: [PATCH 020/290] arm64: KVM: compute_layout before altenates are
+Subject: [PATCH 020/319] arm64: KVM: compute_layout before altenates are
  applied
 
 compute_layout() is invoked as part of an alternative fixup under
@@ -79,5 +79,5 @@ index c712a7376bc1..792da0e125de 100644
  	 * Compute HYP VA by using the same computation as kern_hyp_va()
  	 */
 -- 
-2.23.0
+2.24.1
 

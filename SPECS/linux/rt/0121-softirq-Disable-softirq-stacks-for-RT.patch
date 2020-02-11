@@ -1,7 +1,7 @@
-From 7e2dac7d12e5f5068d09042b543ca3001c0eb674 Mon Sep 17 00:00:00 2001
+From 791d5bd21697ffa55c1cbc39592f106da01eab96 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 18 Jul 2011 13:59:17 +0200
-Subject: [PATCH 121/290] softirq: Disable softirq stacks for RT
+Subject: [PATCH 121/319] softirq: Disable softirq stacks for RT
 
 Disable extra stacks for softirqs. We want to preempt softirqs and
 having them on special IRQ-stack does not make this easier.
@@ -20,7 +20,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  8 files changed, 15 insertions(+), 1 deletion(-)
 
 diff --git a/arch/powerpc/kernel/irq.c b/arch/powerpc/kernel/irq.c
-index 916ddc4aac44..833d27f85aea 100644
+index d37704ebccdb..b45a9849b687 100644
 --- a/arch/powerpc/kernel/irq.c
 +++ b/arch/powerpc/kernel/irq.c
 @@ -766,6 +766,7 @@ void irq_ctx_init(void)
@@ -60,7 +60,7 @@ index 695b24a2d954..032ada21b7bd 100644
  /*
   * void call_do_irq(struct pt_regs *regs, struct thread_info *irqtp);
 diff --git a/arch/powerpc/kernel/misc_64.S b/arch/powerpc/kernel/misc_64.S
-index 1bf6aaefd26a..52c7298f583a 100644
+index facc02964ab3..8b1774186c68 100644
 --- a/arch/powerpc/kernel/misc_64.S
 +++ b/arch/powerpc/kernel/misc_64.S
 @@ -32,6 +32,7 @@
@@ -173,5 +173,5 @@ index e74936c7be48..cb2d1384cb0d 100644
  #else
  static inline void do_softirq_own_stack(void)
 -- 
-2.23.0
+2.24.1
 

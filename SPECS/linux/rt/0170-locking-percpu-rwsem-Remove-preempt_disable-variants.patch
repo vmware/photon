@@ -1,7 +1,7 @@
-From bd2407192fdb6b4ab9958ae8e7df76b9b0b1ca3f Mon Sep 17 00:00:00 2001
+From bfcb6d3726255160cf862479263c8576662e50f0 Mon Sep 17 00:00:00 2001
 From: Peter Zijlstra <peterz@infradead.org>
 Date: Wed, 23 Nov 2016 16:29:32 +0100
-Subject: [PATCH 170/290] locking/percpu-rwsem: Remove preempt_disable variants
+Subject: [PATCH 170/319] locking/percpu-rwsem: Remove preempt_disable variants
 
 Effective revert commit:
 
@@ -18,7 +18,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  2 files changed, 20 insertions(+), 36 deletions(-)
 
 diff --git a/fs/locks.c b/fs/locks.c
-index 2ecb4db8c840..8259b7c7b5d2 100644
+index 28270e74be34..552476d6f6bb 100644
 --- a/fs/locks.c
 +++ b/fs/locks.c
 @@ -936,7 +936,7 @@ static int flock_lock_inode(struct inode *inode, struct file_lock *request)
@@ -222,5 +222,5 @@ index 79b99d653e03..fb44e237316d 100644
  extern void percpu_up_write(struct percpu_rw_semaphore *);
  
 -- 
-2.23.0
+2.24.1
 

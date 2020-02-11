@@ -1,7 +1,7 @@
-From bab10e0b6d5f774e9d4b8745a51b7d9cc64f9eb0 Mon Sep 17 00:00:00 2001
+From 4632fdb644b1e4124755af9ebdb55af7d75d0277 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 12 Oct 2017 17:17:03 +0200
-Subject: [PATCH 144/290] rtmutex: add mutex implementation based on rtmutex
+Subject: [PATCH 144/319] rtmutex: add mutex implementation based on rtmutex
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
@@ -379,5 +379,5 @@ index 000000000000..4f81595c0f52
 +}
 +EXPORT_SYMBOL(atomic_dec_and_mutex_lock);
 -- 
-2.23.0
+2.24.1
 

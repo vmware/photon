@@ -1,7 +1,7 @@
-From 26e860afda01037b95eca42b1e3863949b30b52c Mon Sep 17 00:00:00 2001
+From 0b391c008b2303a32e134b00b319ae084460c72d Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 6 Jun 2011 12:20:33 +0200
-Subject: [PATCH 108/290] sched: Move mmdrop to RCU on RT
+Subject: [PATCH 108/319] sched: Move mmdrop to RCU on RT
 
 Takes sleeping locks and calls into the memory allocator, so nothing
 we want to do in task switch and oder atomic contexts.
@@ -16,7 +16,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  4 files changed, 44 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index 5ed8f6292a53..f430cf0a377e 100644
+index 3a9a996af229..202b736ccbfa 100644
 --- a/include/linux/mm_types.h
 +++ b/include/linux/mm_types.h
 @@ -12,6 +12,7 @@
@@ -27,7 +27,7 @@ index 5ed8f6292a53..f430cf0a377e 100644
  #include <linux/page-flags-layout.h>
  #include <linux/workqueue.h>
  
-@@ -482,6 +483,9 @@ struct mm_struct {
+@@ -487,6 +488,9 @@ struct mm_struct {
  		bool tlb_flush_batched;
  #endif
  		struct uprobes_state uprobes_state;
@@ -60,10 +60,10 @@ index e9d4e389aed9..fb59f96fdd2e 100644
   * This has to be called after a get_task_mm()/mmget_not_zero()
   * followed by taking the mmap_sem for writing before modifying the
 diff --git a/kernel/fork.c b/kernel/fork.c
-index b14cb6876ac8..5adb1349c001 100644
+index 4b85282d9a07..e05834c2420c 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
-@@ -637,6 +637,19 @@ void __mmdrop(struct mm_struct *mm)
+@@ -632,6 +632,19 @@ void __mmdrop(struct mm_struct *mm)
  }
  EXPORT_SYMBOL_GPL(__mmdrop);
  
@@ -84,7 +84,7 @@ index b14cb6876ac8..5adb1349c001 100644
  {
  	struct mm_struct *mm;
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index de93941bad5a..3c51cd04d7b4 100644
+index 5c23d1272429..cb89c90513dd 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -2729,9 +2729,13 @@ static struct rq *finish_task_switch(struct task_struct *prev)
@@ -102,7 +102,7 @@ index de93941bad5a..3c51cd04d7b4 100644
  	}
  	if (unlikely(prev_state == TASK_DEAD)) {
  		if (prev->sched_class->task_dead)
-@@ -5600,6 +5604,8 @@ void sched_setnuma(struct task_struct *p, int nid)
+@@ -5601,6 +5605,8 @@ void sched_setnuma(struct task_struct *p, int nid)
  #endif /* CONFIG_NUMA_BALANCING */
  
  #ifdef CONFIG_HOTPLUG_CPU
@@ -111,7 +111,7 @@ index de93941bad5a..3c51cd04d7b4 100644
  /*
   * Ensure that the idle task is using init_mm right before its CPU goes
   * offline.
-@@ -5615,7 +5621,11 @@ void idle_task_exit(void)
+@@ -5616,7 +5622,11 @@ void idle_task_exit(void)
  		current->active_mm = &init_mm;
  		finish_arch_post_lock_switch();
  	}
@@ -124,7 +124,7 @@ index de93941bad5a..3c51cd04d7b4 100644
  }
  
  /*
-@@ -5927,6 +5937,10 @@ int sched_cpu_dying(unsigned int cpu)
+@@ -5928,6 +5938,10 @@ int sched_cpu_dying(unsigned int cpu)
  	update_max_interval();
  	nohz_balance_exit_idle(rq);
  	hrtick_clear(rq);
@@ -136,5 +136,5 @@ index de93941bad5a..3c51cd04d7b4 100644
  }
  #endif
 -- 
-2.23.0
+2.24.1
 

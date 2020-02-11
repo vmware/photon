@@ -1,0 +1,20 @@
+From ce39011e888459d064bd6a5b1accf45d14ada048 Mon Sep 17 00:00:00 2001
+From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
+Date: Fri, 17 Jan 2020 11:55:15 -0500
+Subject: [PATCH 319/319] Linux 4.19.98-rt40 REBASE
+
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 1199ebade17b..2af6c89aee6d 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt16
++-rt40
+-- 
+2.24.1
+

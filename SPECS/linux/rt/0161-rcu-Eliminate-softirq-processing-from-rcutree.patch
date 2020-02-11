@@ -1,7 +1,7 @@
-From 3849b64ca740e816ba3e9c8c188225a500d906ce Mon Sep 17 00:00:00 2001
+From ef22777ec315db1b68bec2fcc92ac86a6c8065e4 Mon Sep 17 00:00:00 2001
 From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
 Date: Mon, 4 Nov 2013 13:21:10 -0800
-Subject: [PATCH 161/290] rcu: Eliminate softirq processing from rcutree
+Subject: [PATCH 161/319] rcu: Eliminate softirq processing from rcutree
 
 Running RCU out of softirq is a problem for some workloads that would
 like to manage RCU core processing independently of other softirq work,
@@ -419,5 +419,5 @@ index bee9bffeb0ce..2e8737f1010f 100644
  {
  	return false;
 -- 
-2.23.0
+2.24.1
 

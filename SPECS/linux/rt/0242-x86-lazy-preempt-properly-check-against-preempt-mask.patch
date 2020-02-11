@@ -1,7 +1,7 @@
-From e87427920276b51f5f1d11c24ac3f23473907b66 Mon Sep 17 00:00:00 2001
+From 7cc7a536a235fea0e35cd8b08dd8bcff5b91b157 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 18 Feb 2019 16:57:09 +0100
-Subject: [PATCH 242/290] x86: lazy-preempt: properly check against
+Subject: [PATCH 242/319] x86: lazy-preempt: properly check against
  preempt-mask
 
 should_resched() should check against preempt_offset after unmasking the
@@ -29,5 +29,5 @@ index 22992c837795..f66708779274 100644
  	if (current_thread_info()->preempt_lazy_count)
  		return false;
 -- 
-2.23.0
+2.24.1
 

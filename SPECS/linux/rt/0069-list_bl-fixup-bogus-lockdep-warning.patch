@@ -1,7 +1,7 @@
-From 8f7a92e93b3e1260267a4fbe03c549dbe23303fe Mon Sep 17 00:00:00 2001
+From bcb40b30edcaa78686ae44b4714971a9ebf2ec51 Mon Sep 17 00:00:00 2001
 From: Josh Cartwright <joshc@ni.com>
 Date: Thu, 31 Mar 2016 00:04:25 -0500
-Subject: [PATCH 069/290] list_bl: fixup bogus lockdep warning
+Subject: [PATCH 069/319] list_bl: fixup bogus lockdep warning
 
 At first glance, the use of 'static inline' seems appropriate for
 INIT_HLIST_BL_HEAD().
@@ -100,5 +100,5 @@ index 69b659259bac..0b5de7d9ffcf 100644
  static inline void INIT_HLIST_BL_NODE(struct hlist_bl_node *h)
  {
 -- 
-2.23.0
+2.24.1
 

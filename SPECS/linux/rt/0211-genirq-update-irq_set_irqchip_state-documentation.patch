@@ -1,7 +1,7 @@
-From 8b11399a6330d802b28290410bb88dd784a962e2 Mon Sep 17 00:00:00 2001
+From ead3d324722354be9120d1af08518f8b281b2c5b Mon Sep 17 00:00:00 2001
 From: Josh Cartwright <joshc@ni.com>
 Date: Thu, 11 Feb 2016 11:54:00 -0600
-Subject: [PATCH 211/290] genirq: update irq_set_irqchip_state documentation
+Subject: [PATCH 211/319] genirq: update irq_set_irqchip_state documentation
 
 On -rt kernels, the use of migrate_disable()/migrate_enable() is
 sufficient to guarantee a task isn't moved to another CPU.  Update the
@@ -28,5 +28,5 @@ index 3858ac895777..5701774a6d71 100644
   */
  int irq_set_irqchip_state(unsigned int irq, enum irqchip_irq_state which,
 -- 
-2.23.0
+2.24.1
 

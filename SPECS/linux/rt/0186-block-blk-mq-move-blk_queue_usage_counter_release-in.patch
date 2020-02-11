@@ -1,7 +1,7 @@
-From c42562ee54e99ab855db63ca0f224c76515fe664 Mon Sep 17 00:00:00 2001
+From 5a57cb1b88f6bfe5f20a4f3182a6e0cdf802e1d6 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 13 Mar 2018 13:49:16 +0100
-Subject: [PATCH 186/290] block: blk-mq: move blk_queue_usage_counter_release()
+Subject: [PATCH 186/319] block: blk-mq: move blk_queue_usage_counter_release()
  into process context
 
 | BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:914
@@ -52,10 +52,10 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  2 files changed, 15 insertions(+), 1 deletion(-)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index 0edb346263b8..06fcd081696e 100644
+index 4860cd26cd5a..13bf37156bb0 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
-@@ -970,12 +970,21 @@ void blk_queue_exit(struct request_queue *q)
+@@ -973,12 +973,21 @@ void blk_queue_exit(struct request_queue *q)
  	percpu_ref_put(&q->q_usage_counter);
  }
  
@@ -78,7 +78,7 @@ index 0edb346263b8..06fcd081696e 100644
  }
  
  static void blk_rq_timed_out_timer(struct timer_list *t)
-@@ -1072,6 +1081,7 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
+@@ -1075,6 +1084,7 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
  	queue_flag_set_unlocked(QUEUE_FLAG_BYPASS, q);
  
  	init_waitqueue_head(&q->mq_freeze_wq);
@@ -86,7 +86,7 @@ index 0edb346263b8..06fcd081696e 100644
  
  	/*
  	 * Init percpu_ref in atomic mode so that it's faster to shutdown.
-@@ -3961,6 +3971,8 @@ int __init blk_dev_init(void)
+@@ -3964,6 +3974,8 @@ int __init blk_dev_init(void)
  	if (!kblockd_workqueue)
  		panic("Failed to create kblockd\n");
  
@@ -96,7 +96,7 @@ index 0edb346263b8..06fcd081696e 100644
  			sizeof(struct request), 0, SLAB_PANIC, NULL);
  
 diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index f1960add94df..7b7c0bc6a514 100644
+index 111ab4209797..2f3b2e5196eb 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
 @@ -27,6 +27,7 @@
@@ -116,5 +116,5 @@ index f1960add94df..7b7c0bc6a514 100644
  	struct list_head	all_q_node;
  
 -- 
-2.23.0
+2.24.1
 

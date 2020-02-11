@@ -1,7 +1,7 @@
-From 982f936d6c159820d6df7fee5e09b0c072472bc3 Mon Sep 17 00:00:00 2001
+From 3718bf246e7340835f523c0f37019260348c7f82 Mon Sep 17 00:00:00 2001
 From: Mikulas Patocka <mpatocka@redhat.com>
 Date: Mon, 13 Nov 2017 12:56:53 -0500
-Subject: [PATCH 151/290] locking/rt-mutex: fix deadlock in device mapper /
+Subject: [PATCH 151/319] locking/rt-mutex: fix deadlock in device mapper /
  block-IO
 
 When some block device driver creates a bio and submits it to another
@@ -77,5 +77,5 @@ index 1f2dc2dfe2e7..b38c3a92dce8 100644
  }
  
 -- 
-2.23.0
+2.24.1
 

@@ -1,7 +1,7 @@
-From 582f57023bf1845fd98e522a850011a7f8d9b966 Mon Sep 17 00:00:00 2001
+From 889529cd4ac2d241666482b07ee91fe87cdc3d61 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 14 Sep 2016 17:36:35 +0200
-Subject: [PATCH 202/290] net/Qdisc: use a seqlock instead seqcount
+Subject: [PATCH 202/319] net/Qdisc: use a seqlock instead seqcount
 
 The seqcount disables preemption on -RT while it is held which can't
 remove. Also we don't want the reader to spin for ages if the writer is
@@ -255,7 +255,7 @@ index 84fdc4857771..3c5c51657e1a 100644
  		err = -EOPNOTSUPP;
  		if (sch->flags & TCQ_F_MQROOT) {
 diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 0b9c494f64b0..c618e5c5a1b1 100644
+index 4ab20f1138fd..a9ed58ca3924 100644
 --- a/net/sched/sch_generic.c
 +++ b/net/sched/sch_generic.c
 @@ -575,7 +575,11 @@ struct Qdisc noop_qdisc = {
@@ -268,9 +268,9 @@ index 0b9c494f64b0..c618e5c5a1b1 100644
  	.running	=	SEQCNT_ZERO(noop_qdisc.running),
 +#endif
  	.busylock	=	__SPIN_LOCK_UNLOCKED(noop_qdisc.busylock),
- };
- EXPORT_SYMBOL(noop_qdisc);
-@@ -864,9 +868,17 @@ struct Qdisc *qdisc_alloc(struct netdev_queue *dev_queue,
+ 	.gso_skb = {
+ 		.next = (struct sk_buff *)&noop_qdisc.gso_skb,
+@@ -876,9 +880,17 @@ struct Qdisc *qdisc_alloc(struct netdev_queue *dev_queue,
  	lockdep_set_class(&sch->busylock,
  			  dev->qdisc_tx_busylock ?: &qdisc_tx_busylock);
  
@@ -289,5 +289,5 @@ index 0b9c494f64b0..c618e5c5a1b1 100644
  	sch->ops = ops;
  	sch->flags = ops->static_flags;
 -- 
-2.23.0
+2.24.1
 

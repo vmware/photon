@@ -1,17 +1,17 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.82
+Version:        4.19.98
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt30
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+%define rt_version rt40
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=358ecd8e4b70a3396e2bbc2a15f29724bafde87c
+%define sha1 linux=6be02e28955ef9e21de927954046d5f4eae60d3b
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
@@ -24,7 +24,7 @@ Patch1:         double-tcp_mem-limits.patch
 # TODO: disable this patch, check for regressions
 #Patch2:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports_linux_rt.patch
+Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         4.18-x86-vmware-STA-support.patch
 Patch7:         9p-trans_fd-extend-port-variable-to-u32.patch
@@ -341,8 +341,37 @@ Patch486:        0286-thermal-Defer-thermal-wakups-to-threads.patch
 Patch487:        0287-revert-block.patch
 Patch488:        0288-block-blk-mq-move-blk_queue_usage_counter_release-in.patch
 Patch489:        0289-workqueue-rework.patch
+Patch490:        0290-i2c-exynos5-Remove-IRQF_ONESHOT.patch
+Patch491:        0291-i2c-hix5hd2-Remove-IRQF_ONESHOT.patch
+Patch492:        0292-sched-deadline-Ensure-inactive_timer-runs-in-hardirq.patch
+Patch493:        0293-thermal-x86_pkg_temp-make-pkg_temp_lock-a-raw-spinlo.patch
+Patch494:        0294-dma-buf-Use-seqlock_t-instread-disabling-preemption.patch
+Patch495:        0295-KVM-arm-arm64-Let-the-timer-expire-in-hardirq-contex.patch
+Patch496:        0296-x86-preempt-Check-preemption-level-before-looking-at.patch
+Patch497:        0297-hrtimer-Use-READ_ONCE-to-access-timer-base-in-hrimer.patch
+Patch498:        0298-hrtimer-Don-t-grab-the-expiry-lock-for-non-soft-hrti.patch
+Patch499:        0299-hrtimer-Prevent-using-hrtimer_grab_expiry_lock-on-mi.patch
+Patch500:        0300-hrtimer-Add-a-missing-bracket-and-hide-migration_bas.patch
+Patch501:        0301-posix-timers-Unlock-expiry-lock-in-the-early-return.patch
+Patch502:        0302-sched-migrate_dis-enable-Use-sleeping_lock-to-annota.patch
+Patch503:        0303-sched-__set_cpus_allowed_ptr-Check-cpus_mask-not-cpu.patch
+Patch504:        0304-sched-Remove-dead-__migrate_disabled-check.patch
+Patch505:        0305-sched-migrate-disable-Protect-cpus_ptr-with-lock.patch
+Patch506:        0306-lib-smp_processor_id-Don-t-use-cpumask_equal.patch
+Patch507:        0307-futex-Make-the-futex_hash_bucket-spinlock_t-again-an.patch
+Patch508:        0308-locking-rtmutex-Clean-pi_blocked_on-in-the-error-cas.patch
+Patch509:        0309-lib-ubsan-Don-t-seralize-UBSAN-report.patch
+Patch510:        0310-kmemleak-Change-the-lock-of-kmemleak_object-to-raw_s.patch
+Patch511:        0311-sched-migrate_enable-Use-select_fallback_rq.patch
+Patch512:        0312-sched-Lazy-migrate_disable-processing.patch
+Patch513:        0313-sched-migrate_enable-Use-stop_one_cpu_nowait.patch
+Patch514:        0314-Revert-ARM-Initialize-split-page-table-locks-for-vec.patch
+Patch515:        0315-locking-Make-spinlock_t-and-rwlock_t-a-RCU-section-o.patch
+Patch516:        0316-sched-core-migrate_enable-must-access-takedown_cpu_t.patch
+Patch517:        0317-lib-smp_processor_id-Adjust-check_preemption_disable.patch
+Patch518:        0318-sched-migrate_enable-Busy-loop-until-the-migration-r.patch
 # Keep rt_version matched up with this patch.
-Patch490:        0290-Linux-4.19.82-rt30-REBASE.patch
+Patch519:        0319-Linux-4.19.98-rt40-REBASE.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -705,7 +734,35 @@ The Linux package contains the Linux kernel doc files
 %patch488 -p1
 %patch489 -p1
 %patch490 -p1
-
+%patch491 -p1
+%patch492 -p1
+%patch493 -p1
+%patch494 -p1
+%patch495 -p1
+%patch496 -p1
+%patch497 -p1
+%patch498 -p1
+%patch499 -p1
+%patch500 -p1
+%patch501 -p1
+%patch502 -p1
+%patch503 -p1
+%patch504 -p1
+%patch505 -p1
+%patch506 -p1
+%patch507 -p1
+%patch508 -p1
+%patch509 -p1
+%patch510 -p1
+%patch511 -p1
+%patch512 -p1
+%patch513 -p1
+%patch514 -p1
+%patch515 -p1
+%patch516 -p1
+%patch517 -p1
+%patch518 -p1
+%patch519 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -852,11 +909,13 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Jan 28 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.98-1
+-   Upgrade to 4.19.98
 *   Thu Jan 16 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.82-4
 -   Enable DRBG HASH and DRBG CTR support.
 *   Fri Jan 03 2020 Keerthana K <keerthanak@vmware.com> 4.19.82-3
 -   Remove FIPS patch that enables fips for algorithms which are not fips allowed.
-*   Wed Dec 12 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.82-2
+*   Thu Dec 12 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.82-2
 -   Fix patch that wont apply on 4.19.82. Revert when upgraded to 4.19.87 or more
 *   Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.82-1
 -   Introduce a new kernel flavor 'linux-rt' supporting real-time (RT) features.

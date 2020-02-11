@@ -1,7 +1,7 @@
-From 7de4956b65f4b43f98eca7ecd5400c01df56ba53 Mon Sep 17 00:00:00 2001
+From 9072f46dc068957eed1dc43e5d52e40dfb9072fc Mon Sep 17 00:00:00 2001
 From: Paul Gortmaker <paul.gortmaker@windriver.com>
 Date: Fri, 21 Jun 2013 15:07:25 -0400
-Subject: [PATCH 068/290] list_bl: Make list head locking RT safe
+Subject: [PATCH 068/319] list_bl: Make list head locking RT safe
 
 As per changes in include/linux/jbd_common.h for avoiding the
 bit_spin_locks on RT ("fs: jbd/jbd2: Make state lock and journal
@@ -117,5 +117,5 @@ index 3fc2cc57ba1b..69b659259bac 100644
  
  static inline bool hlist_bl_is_locked(struct hlist_bl_head *b)
 -- 
-2.23.0
+2.24.1
 

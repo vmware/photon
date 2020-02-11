@@ -1,7 +1,7 @@
-From e181b2520df8a6c8ec1db3b847bf2036dd54fbca Mon Sep 17 00:00:00 2001
+From df65fbe90028cb099d30e1079f3d3a490afe7d75 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 11 Jan 2019 21:16:31 +0100
-Subject: [PATCH 147/290] rtmutex/rwlock: preserve state like a sleeping lock
+Subject: [PATCH 147/319] rtmutex/rwlock: preserve state like a sleeping lock
 
 The rwlock is spinning while acquiring a lock. Therefore it must become
 a sleeping lock on RT and preserve its task state while sleeping and
@@ -29,5 +29,5 @@ index aebb7ce25bc6..8f90afe111ce 100644
  	/*
  	 * The slowlock() above is guaranteed to return with the rtmutex is
 -- 
-2.23.0
+2.24.1
 

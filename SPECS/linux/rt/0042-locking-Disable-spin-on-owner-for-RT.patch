@@ -1,7 +1,7 @@
-From fb7c18e5a29066807df152c5b7d6cd2cf66e0301 Mon Sep 17 00:00:00 2001
+From 9c91d8e6b3fe49e29d0c88f346dfd3d2ebc9dcb8 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 17 Jul 2011 21:51:45 +0200
-Subject: [PATCH 042/290] locking: Disable spin on owner for RT
+Subject: [PATCH 042/319] locking: Disable spin on owner for RT
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -34,5 +34,5 @@ index 84d882f3e299..af27c4000812 100644
  config LOCK_SPIN_ON_OWNER
         def_bool y
 -- 
-2.23.0
+2.24.1
 

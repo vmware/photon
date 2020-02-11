@@ -1,7 +1,7 @@
-From 05082980933eaa57eb3a208aa1849e3b7603fe91 Mon Sep 17 00:00:00 2001
+From 557b89c622057c2146f0f7b999fca36bb74c045e Mon Sep 17 00:00:00 2001
 From: "Yadi.hu" <yadi.hu@windriver.com>
 Date: Wed, 10 Dec 2014 10:32:09 +0800
-Subject: [PATCH 210/290] ARM: enable irq in translation/section permission
+Subject: [PATCH 210/319] ARM: enable irq in translation/section permission
  fault handlers
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -92,5 +92,5 @@ index a9ee0d9dc740..20b0e146de98 100644
  	return 0;
  }
 -- 
-2.23.0
+2.24.1
 

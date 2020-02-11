@@ -1,7 +1,7 @@
-From be6d4affd5215ceaca4642942e1914cb32b9f6e2 Mon Sep 17 00:00:00 2001
+From 302b083e0cfd9f17c6e5f6e33753c54c53b244f4 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 3 Jul 2009 08:44:34 -0500
-Subject: [PATCH 063/290] mm/scatterlist: Do not disable irqs on RT
+Subject: [PATCH 063/319] mm/scatterlist: Do not disable irqs on RT
 
 For -RT it is enough to keep pagefault disabled (which is currently handled by
 kmap_atomic()).
@@ -26,5 +26,5 @@ index 8c3036c37ba0..336162c2813f 100644
  		} else
  			kunmap(miter->page);
 -- 
-2.23.0
+2.24.1
 

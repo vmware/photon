@@ -1,7 +1,7 @@
-From e2963af9e43c937bbd8ade2d14c9031bc7fe64b3 Mon Sep 17 00:00:00 2001
+From 69af8adf00215135bca6e6da24f98e6b5ee38a40 Mon Sep 17 00:00:00 2001
 From: John Stultz <johnstul@us.ibm.com>
 Date: Fri, 3 Jul 2009 08:29:58 -0500
-Subject: [PATCH 105/290] posix-timers: Thread posix-cpu-timers on -rt
+Subject: [PATCH 105/319] posix-timers: Thread posix-cpu-timers on -rt
 
 posix-cpu-timer code takes non -rt safe locks in hard irq
 context. Move it to a thread.
@@ -58,10 +58,10 @@ index 0b49b9cf5571..9e3362748214 100644
  	.thread_group	= LIST_HEAD_INIT(init_task.thread_group),
  	.thread_node	= LIST_HEAD_INIT(init_signals.thread_head),
 diff --git a/kernel/fork.c b/kernel/fork.c
-index 173e010cba45..c940fee1426c 100644
+index 8c285876eb52..b3744a043f46 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
-@@ -1585,6 +1585,9 @@ static void rt_mutex_init_task(struct task_struct *p)
+@@ -1580,6 +1580,9 @@ static void rt_mutex_init_task(struct task_struct *p)
   */
  static void posix_cpu_timers_init(struct task_struct *tsk)
  {
@@ -265,5 +265,5 @@ index d62d7ae5201c..8d95e8de98b2 100644
   * Set one of the process-wide special case CPU timers or RLIMIT_CPU.
   * The tsk->sighand->siglock must be held by the caller.
 -- 
-2.23.0
+2.24.1
 

@@ -1,7 +1,7 @@
-From 7f302e683aa4acd6aa30ca84762059087161208d Mon Sep 17 00:00:00 2001
+From 6fb8afce9853e0b1387394c56708504eda92dc25 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 12 Oct 2017 17:11:19 +0200
-Subject: [PATCH 143/290] rtmutex: add sleeping lock implementation
+Subject: [PATCH 143/319] rtmutex: add sleeping lock implementation
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
@@ -396,10 +396,10 @@ index 000000000000..3e3d8c5f7a9a
 +
 +#endif
 diff --git a/kernel/fork.c b/kernel/fork.c
-index ff7e5983a21c..652986ccb41c 100644
+index a6f39cbb71c3..7399bff2e08d 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
-@@ -895,6 +895,7 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
+@@ -890,6 +890,7 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
  	tsk->splice_pipe = NULL;
  	tsk->task_frag.page = NULL;
  	tsk->wake_q.next = NULL;
@@ -408,10 +408,10 @@ index ff7e5983a21c..652986ccb41c 100644
  	account_kernel_stack(tsk, 1);
  
 diff --git a/kernel/futex.c b/kernel/futex.c
-index 4d6501d689b5..fe90164aa6ec 100644
+index 60be4530c767..4c448dddce3c 100644
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
-@@ -1476,6 +1476,7 @@ static int wake_futex_pi(u32 __user *uaddr, u32 uval, struct futex_pi_state *pi_
+@@ -1479,6 +1479,7 @@ static int wake_futex_pi(u32 __user *uaddr, u32 uval, struct futex_pi_state *pi_
  	struct task_struct *new_owner;
  	bool postunlock = false;
  	DEFINE_WAKE_Q(wake_q);
@@ -419,7 +419,7 @@ index 4d6501d689b5..fe90164aa6ec 100644
  	int ret = 0;
  
  	new_owner = rt_mutex_next_owner(&pi_state->pi_mutex);
-@@ -1535,13 +1536,13 @@ static int wake_futex_pi(u32 __user *uaddr, u32 uval, struct futex_pi_state *pi_
+@@ -1538,13 +1539,13 @@ static int wake_futex_pi(u32 __user *uaddr, u32 uval, struct futex_pi_state *pi_
  	pi_state->owner = new_owner;
  	raw_spin_unlock(&new_owner->pi_lock);
  
@@ -436,7 +436,7 @@ index 4d6501d689b5..fe90164aa6ec 100644
  
  	return ret;
  }
-@@ -2870,7 +2871,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
+@@ -2873,7 +2874,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
  		goto no_block;
  	}
  
@@ -445,7 +445,7 @@ index 4d6501d689b5..fe90164aa6ec 100644
  
  	/*
  	 * On PREEMPT_RT_FULL, when hb->lock becomes an rt_mutex, we must not
-@@ -3263,7 +3264,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+@@ -3266,7 +3267,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
  	 * The waiter is allocated on our stack, manipulated by the requeue
  	 * code while we sleep on uaddr.
  	 */
@@ -1144,7 +1144,7 @@ index 5955ad2aa2a8..6fcf0a3e180d 100644
  #ifdef CONFIG_DEBUG_RT_MUTEXES
  # include "rtmutex-debug.h"
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 5723a8966865..654e2ec54f9d 100644
+index 42b42ebf52bc..6a0ccaea2b42 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -401,9 +401,15 @@ static bool set_nr_if_polling(struct task_struct *p)
@@ -1204,5 +1204,5 @@ index 5723a8966865..654e2ec54f9d 100644
  	}
  }
 -- 
-2.23.0
+2.24.1
 

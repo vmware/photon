@@ -1,7 +1,7 @@
-From 6ee23601786b2fb75dfb6aaed6da438321511261 Mon Sep 17 00:00:00 2001
+From 84548b1ff452f0c5800bf366b9ef378eab17b89c Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 25 Oct 2012 10:32:35 +0100
-Subject: [PATCH 081/290] mm: Enable SLUB for RT
+Subject: [PATCH 081/319] mm: Enable SLUB for RT
 
 Avoid the memory allocation in IRQ section
 
@@ -38,5 +38,5 @@ index 224663e20772..cbe47408c6eb 100644
  
  /*
 -- 
-2.23.0
+2.24.1
 

@@ -1,7 +1,7 @@
-From 06f6850c211b4924e125e00c1f1a21a14ea7712e Mon Sep 17 00:00:00 2001
+From 8ed646c39bf30d1cfb9b8693f074812c9f52731e Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 30 Nov 2017 13:40:10 +0100
-Subject: [PATCH 223/290] crypto: limit more FPU-enabled sections
+Subject: [PATCH 223/319] crypto: limit more FPU-enabled sections
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -104,5 +104,5 @@ index 2e5003fef51a..768c53767bb2 100644
   * Save the FPU state (mark it for reload if necessary):
   *
 -- 
-2.23.0
+2.24.1
 

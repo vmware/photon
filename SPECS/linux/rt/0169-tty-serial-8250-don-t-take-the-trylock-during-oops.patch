@@ -1,7 +1,7 @@
-From ab14019d06506af1681a118b437e278ede26523e Mon Sep 17 00:00:00 2001
+From c6d09bb9fe3185c5d06584cf47752b48f6abf7ee Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 11 Apr 2016 16:55:02 +0200
-Subject: [PATCH 169/290] tty: serial: 8250: don't take the trylock during oops
+Subject: [PATCH 169/319] tty: serial: 8250: don't take the trylock during oops
 
 An oops with irqs off (panic() from irqsafe hrtimer like the watchdog
 timer) will lead to a lockdep warning on each invocation and as such
@@ -31,5 +31,5 @@ index aa4de6907f77..6b1d46c1df3b 100644
  		spin_lock_irqsave(&port->lock, flags);
  
 -- 
-2.23.0
+2.24.1
 

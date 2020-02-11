@@ -1,7 +1,7 @@
-From 5f5a0dcfddf4d7c1d2b7c1380024986d3bbfccb7 Mon Sep 17 00:00:00 2001
+From b5e36877ce0ee4a9decb7e3774eb0867fb9c4e54 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 24 Jun 2019 19:33:16 +0200
-Subject: [PATCH 274/290] sched/core: Drop a preempt_disable_rt() statement
+Subject: [PATCH 274/319] sched/core: Drop a preempt_disable_rt() statement
 
 [ Upstream commit 761126efdcbe3fa3e99c9079fa0ad6eca2f251f2 ]
 
@@ -16,7 +16,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  1 file changed, 2 insertions(+), 7 deletions(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 06abce7fef9e..fab44ac4e1dd 100644
+index cfde725e1017..678c2c4de4f5 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -558,14 +558,11 @@ void resched_cpu(int cpu)
@@ -46,5 +46,5 @@ index 06abce7fef9e..fab44ac4e1dd 100644
  }
  
 -- 
-2.23.0
+2.24.1
 

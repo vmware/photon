@@ -1,7 +1,7 @@
-From 23180e2794932f9ce1ba1e0ef1ebb6a04c9ff676 Mon Sep 17 00:00:00 2001
+From ee624f64e49b67ed8912644b49a392651308fc12 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 28 Oct 2016 23:05:11 +0200
-Subject: [PATCH 025/290] NFSv4: replace seqcount_t with a seqlock_t
+Subject: [PATCH 025/319] NFSv4: replace seqcount_t with a seqlock_t
 
 The raw_write_seqcount_begin() in nfs4_reclaim_open_state() bugs me
 because it maps to preempt_disable() in -RT which I can't have at this
@@ -27,10 +27,10 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  4 files changed, 21 insertions(+), 11 deletions(-)
 
 diff --git a/fs/nfs/delegation.c b/fs/nfs/delegation.c
-index 825a8c52165a..c14f02b41f0d 100644
+index 74ff459b75ef..6b422d1b5ae1 100644
 --- a/fs/nfs/delegation.c
 +++ b/fs/nfs/delegation.c
-@@ -152,11 +152,11 @@ static int nfs_delegation_claim_opens(struct inode *inode,
+@@ -162,11 +162,11 @@ static int nfs_delegation_claim_opens(struct inode *inode,
  		sp = state->owner;
  		/* Block nfs4_proc_unlck */
  		mutex_lock(&sp->so_delegreturn_mutex);
@@ -38,7 +38,7 @@ index 825a8c52165a..c14f02b41f0d 100644
 +		seq = read_seqbegin(&sp->so_reclaim_seqlock);
  		err = nfs4_open_delegation_recall(ctx, state, stateid);
  		if (!err)
- 			err = nfs_delegation_claim_locks(ctx, state, stateid);
+ 			err = nfs_delegation_claim_locks(state, stateid);
 -		if (!err && read_seqcount_retry(&sp->so_reclaim_seqcount, seq))
 +		if (!err && read_seqretry(&sp->so_reclaim_seqlock, seq))
  			err = -EAGAIN;
@@ -58,10 +58,10 @@ index 5b61520dce88..2771aafaca19 100644
  };
  
 diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
-index 75faef7af22d..72abcccb8177 100644
+index 7834b325394f..026164678f37 100644
 --- a/fs/nfs/nfs4proc.c
 +++ b/fs/nfs/nfs4proc.c
-@@ -2873,7 +2873,7 @@ static int _nfs4_open_and_get_state(struct nfs4_opendata *opendata,
+@@ -2870,7 +2870,7 @@ static int _nfs4_open_and_get_state(struct nfs4_opendata *opendata,
  	unsigned int seq;
  	int ret;
  
@@ -70,7 +70,7 @@ index 75faef7af22d..72abcccb8177 100644
  
  	ret = _nfs4_proc_open(opendata, ctx);
  	if (ret != 0)
-@@ -2914,7 +2914,7 @@ static int _nfs4_open_and_get_state(struct nfs4_opendata *opendata,
+@@ -2911,7 +2911,7 @@ static int _nfs4_open_and_get_state(struct nfs4_opendata *opendata,
  
  	if (d_inode(dentry) == state->inode) {
  		nfs_inode_attach_open_context(ctx);
@@ -132,5 +132,5 @@ index b3086e99420c..c9bf1eb7e1b2 100644
  }
  
 -- 
-2.23.0
+2.24.1
 

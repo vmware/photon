@@ -1,7 +1,7 @@
-From 31b7c5de23c43474d2c4e69605d541d32c80e750 Mon Sep 17 00:00:00 2001
+From f8b098df445ccd6bd34887413c07738e758a0b84 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 26 Oct 2012 18:50:54 +0100
-Subject: [PATCH 239/290] sched: Add support for lazy preemption
+Subject: [PATCH 239/319] sched: Add support for lazy preemption
 
 It has become an obsession to mitigate the determinism vs. throughput
 loss of RT. Looking at the mainline semantics of preemption points
@@ -216,7 +216,7 @@ index 8d8821b3689a..d3fcab20d2a3 100644
  #ifndef CONFIG_HAVE_ARCH_WITHIN_STACK_FRAMES
  static inline int arch_within_stack_frames(const void * const stack,
 diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
-index 0403d9696944..c20237c5ab66 100644
+index 1cc4d2da954c..72864a11cec0 100644
 --- a/include/linux/trace_events.h
 +++ b/include/linux/trace_events.h
 @@ -64,6 +64,7 @@ struct trace_entry {
@@ -245,7 +245,7 @@ index 907d72b3ba95..306567f72a3e 100644
  	prompt "Preemption Model"
  	default PREEMPT_NONE
 diff --git a/kernel/cpu.c b/kernel/cpu.c
-index 69b5853f2854..efa687c2c170 100644
+index c8631e699ce2..00dac381da2e 100644
 --- a/kernel/cpu.c
 +++ b/kernel/cpu.c
 @@ -304,11 +304,13 @@ void pin_current_cpu(void)
@@ -263,7 +263,7 @@ index 69b5853f2854..efa687c2c170 100644
  		__read_rt_unlock(cpuhp_pin);
  		goto again;
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index d7692e31a254..538461ee8ebd 100644
+index 6ef0dcea94d7..a17c765d3fcb 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -493,6 +493,48 @@ void resched_curr(struct rq *rq)
@@ -384,7 +384,7 @@ index d7692e31a254..538461ee8ebd 100644
  	do {
  		/*
  		 * Because the function tracer can trace preempt_count_sub()
-@@ -5502,7 +5576,9 @@ void init_idle(struct task_struct *idle, int cpu)
+@@ -5503,7 +5577,9 @@ void init_idle(struct task_struct *idle, int cpu)
  
  	/* Set the preempt count _outside_ the spinlocks! */
  	init_idle_preempt_count(idle, cpu);
@@ -395,7 +395,7 @@ index d7692e31a254..538461ee8ebd 100644
  	/*
  	 * The idle tasks have their own, simple scheduling class:
  	 */
-@@ -7227,6 +7303,7 @@ void migrate_disable(void)
+@@ -7228,6 +7304,7 @@ void migrate_disable(void)
  	}
  
  	preempt_disable();
@@ -403,7 +403,7 @@ index d7692e31a254..538461ee8ebd 100644
  	pin_current_cpu();
  
  	migrate_disable_update_cpus_allowed(p);
-@@ -7294,6 +7371,7 @@ void migrate_enable(void)
+@@ -7295,6 +7372,7 @@ void migrate_enable(void)
  			arg.dest_cpu = dest_cpu;
  
  			unpin_current_cpu();
@@ -411,7 +411,7 @@ index d7692e31a254..538461ee8ebd 100644
  			preempt_enable();
  			stop_one_cpu(task_cpu(p), migration_cpu_stop, &arg);
  			tlb_migrate_finish(p->mm);
-@@ -7302,6 +7380,7 @@ void migrate_enable(void)
+@@ -7303,6 +7381,7 @@ void migrate_enable(void)
  		}
  	}
  	unpin_current_cpu();
@@ -420,7 +420,7 @@ index d7692e31a254..538461ee8ebd 100644
  }
  EXPORT_SYMBOL(migrate_enable);
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index da5d60d25c27..e30187563bfc 100644
+index 6e6d9e999814..5e00ddd76749 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
 @@ -4075,7 +4075,7 @@ check_preempt_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr)
@@ -450,7 +450,7 @@ index da5d60d25c27..e30187563bfc 100644
  		return;
  	}
  	/*
-@@ -4427,7 +4427,7 @@ static void __account_cfs_rq_runtime(struct cfs_rq *cfs_rq, u64 delta_exec)
+@@ -4375,7 +4375,7 @@ static void __account_cfs_rq_runtime(struct cfs_rq *cfs_rq, u64 delta_exec)
  	 * hierarchy can be throttled
  	 */
  	if (!assign_cfs_rq_runtime(cfs_rq) && likely(cfs_rq->curr))
@@ -459,7 +459,7 @@ index da5d60d25c27..e30187563bfc 100644
  }
  
  static __always_inline
-@@ -5126,7 +5126,7 @@ static void hrtick_start_fair(struct rq *rq, struct task_struct *p)
+@@ -5069,7 +5069,7 @@ static void hrtick_start_fair(struct rq *rq, struct task_struct *p)
  
  		if (delta < 0) {
  			if (rq->curr == p)
@@ -468,7 +468,7 @@ index da5d60d25c27..e30187563bfc 100644
  			return;
  		}
  		hrtick_start(rq, delta);
-@@ -6702,7 +6702,7 @@ static void check_preempt_wakeup(struct rq *rq, struct task_struct *p, int wake_
+@@ -6645,7 +6645,7 @@ static void check_preempt_wakeup(struct rq *rq, struct task_struct *p, int wake_
  	return;
  
  preempt:
@@ -477,7 +477,7 @@ index da5d60d25c27..e30187563bfc 100644
  	/*
  	 * Only set the backward buddy when the current task is still
  	 * on the rq. This can happen when a wakeup gets interleaved
-@@ -9794,7 +9794,7 @@ static void task_fork_fair(struct task_struct *p)
+@@ -9746,7 +9746,7 @@ static void task_fork_fair(struct task_struct *p)
  		 * 'current' within the tree based on its new key value.
  		 */
  		swap(curr->vruntime, se->vruntime);
@@ -486,7 +486,7 @@ index da5d60d25c27..e30187563bfc 100644
  	}
  
  	se->vruntime -= cfs_rq->min_vruntime;
-@@ -9818,7 +9818,7 @@ prio_changed_fair(struct rq *rq, struct task_struct *p, int oldprio)
+@@ -9770,7 +9770,7 @@ prio_changed_fair(struct rq *rq, struct task_struct *p, int oldprio)
  	 */
  	if (rq->curr == p) {
  		if (p->prio > oldprio)
@@ -510,10 +510,10 @@ index 68de18405857..12a12be6770b 100644
  
  /*
 diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 49ae30da28ee..f7c1c262457f 100644
+index c79e32488940..c90574112bca 100644
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
-@@ -1638,6 +1638,15 @@ extern void reweight_task(struct task_struct *p, int prio);
+@@ -1634,6 +1634,15 @@ extern void reweight_task(struct task_struct *p, int prio);
  extern void resched_curr(struct rq *rq);
  extern void resched_cpu(int cpu);
  
@@ -530,7 +530,7 @@ index 49ae30da28ee..f7c1c262457f 100644
  extern void init_rt_bandwidth(struct rt_bandwidth *rt_b, u64 period, u64 runtime);
  
 diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index befe5978a832..d547c6ab0db2 100644
+index 5eccf1c201db..d13b58073bce 100644
 --- a/kernel/trace/trace.c
 +++ b/kernel/trace/trace.c
 @@ -2137,6 +2137,7 @@ tracing_generic_entry_update(struct trace_entry *entry, unsigned long flags,
@@ -667,5 +667,5 @@ index 46c96744f09d..3f78b0afb729 100644
  		trace_seq_printf(s, "%x", entry->migrate_disable);
  	else
 -- 
-2.23.0
+2.24.1
 

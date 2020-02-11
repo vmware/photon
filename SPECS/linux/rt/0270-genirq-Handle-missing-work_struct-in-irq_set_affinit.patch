@@ -1,7 +1,7 @@
-From a03f41214e2dccb4d558c97bee856d5ba751de70 Mon Sep 17 00:00:00 2001
+From 29b5ac7dca1ad6d0b25dc434b09a63f5cb98e375 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 28 May 2019 10:42:15 +0200
-Subject: [PATCH 270/290] genirq: Handle missing work_struct in
+Subject: [PATCH 270/319] genirq: Handle missing work_struct in
  irq_set_affinity_notifier()
 
 [ Upstream commit bbc4d2a7d6ff54ba923640d9a42c7bef7185fe98 ]
@@ -38,5 +38,5 @@ index d5539e04e00a..290cd520dba1 100644
  #endif
  		kref_put(&old_notify->kref, old_notify->release);
 -- 
-2.23.0
+2.24.1
 

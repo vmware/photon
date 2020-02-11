@@ -1,7 +1,7 @@
-From 37dae8435d79cbcc247b536cb16f55db30295418 Mon Sep 17 00:00:00 2001
+From f01096cb1d4d299f6f8fbb23b411dd1266d021d7 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 14 Feb 2013 22:36:59 +0100
-Subject: [PATCH 031/290] timekeeping: Split jiffies seqlock
+Subject: [PATCH 031/319] timekeeping: Split jiffies seqlock
 
 Replace jiffies_lock seqlock with a simple seqcounter and a rawlock so
 it can be taken in atomic context on RT.
@@ -77,10 +77,10 @@ index a02e0f6b287c..32f5101f07ce 100644
  		clockevents_switch_state(dev, CLOCK_EVT_STATE_ONESHOT);
  
 diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
-index 5b33e2f5c0ed..54fd344ef973 100644
+index 48403fb653c2..e774a49176cc 100644
 --- a/kernel/time/tick-sched.c
 +++ b/kernel/time/tick-sched.c
-@@ -67,7 +67,8 @@ static void tick_do_update_jiffies64(ktime_t now)
+@@ -68,7 +68,8 @@ static void tick_do_update_jiffies64(ktime_t now)
  		return;
  
  	/* Reevaluate with jiffies_lock held */
@@ -90,7 +90,7 @@ index 5b33e2f5c0ed..54fd344ef973 100644
  
  	delta = ktime_sub(now, last_jiffies_update);
  	if (delta >= tick_period) {
-@@ -90,10 +91,12 @@ static void tick_do_update_jiffies64(ktime_t now)
+@@ -94,10 +95,12 @@ static void tick_do_update_jiffies64(ktime_t now)
  		/* Keep the tick_next_period variable up to date */
  		tick_next_period = ktime_add(last_jiffies_update, tick_period);
  	} else {
@@ -105,7 +105,7 @@ index 5b33e2f5c0ed..54fd344ef973 100644
  	update_wall_time();
  }
  
-@@ -104,12 +107,14 @@ static ktime_t tick_init_jiffy_update(void)
+@@ -108,12 +111,14 @@ static ktime_t tick_init_jiffy_update(void)
  {
  	ktime_t period;
  
@@ -122,7 +122,7 @@ index 5b33e2f5c0ed..54fd344ef973 100644
  	return period;
  }
  
-@@ -652,10 +657,10 @@ static ktime_t tick_nohz_next_event(struct tick_sched *ts, int cpu)
+@@ -656,10 +661,10 @@ static ktime_t tick_nohz_next_event(struct tick_sched *ts, int cpu)
  
  	/* Read jiffies and the time when jiffies were updated last */
  	do {
@@ -136,10 +136,10 @@ index 5b33e2f5c0ed..54fd344ef973 100644
  	ts->timer_expires_base = basemono;
  
 diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
-index c2708e1f0c69..13477f8ee80e 100644
+index 81ee5b83c920..512db778f442 100644
 --- a/kernel/time/timekeeping.c
 +++ b/kernel/time/timekeeping.c
-@@ -2418,8 +2418,10 @@ EXPORT_SYMBOL(hardpps);
+@@ -2394,8 +2394,10 @@ EXPORT_SYMBOL(hardpps);
   */
  void xtime_update(unsigned long ticks)
  {
@@ -167,5 +167,5 @@ index 141ab3ab0354..099737f6f10c 100644
  #define CS_NAME_LEN	32
  
 -- 
-2.23.0
+2.24.1
 

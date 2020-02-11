@@ -1,7 +1,7 @@
-From 4e739662f4d14956803c5fa64a1ed3b08275bba8 Mon Sep 17 00:00:00 2001
+From 38ec688774ec5974084ed0c74492da9da0b25c1c Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 7 Mar 2012 21:10:04 +0100
-Subject: [PATCH 189/290] net: Use cpu_chill() instead of cpu_relax()
+Subject: [PATCH 189/319] net: Use cpu_chill() instead of cpu_relax()
 
 Retry loops on RT might loop forever when the modifying side was
 preempted. Use cpu_chill() instead of cpu_relax() to let the system
@@ -15,7 +15,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  2 files changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 7204e7bbebb0..2c22fa8cf9bf 100644
+index ac65e66d1d72..b4267ce1f869 100644
 --- a/net/packet/af_packet.c
 +++ b/net/packet/af_packet.c
 @@ -63,6 +63,7 @@
@@ -26,7 +26,7 @@ index 7204e7bbebb0..2c22fa8cf9bf 100644
  #include <linux/kmod.h>
  #include <linux/slab.h>
  #include <linux/vmalloc.h>
-@@ -667,7 +668,7 @@ static void prb_retire_rx_blk_timer_expired(struct timer_list *t)
+@@ -668,7 +669,7 @@ static void prb_retire_rx_blk_timer_expired(struct timer_list *t)
  	if (BLOCK_NUM_PKTS(pbd)) {
  		while (atomic_read(&pkc->blk_fill_in_prog)) {
  			/* Waiting for skb_copy_bits to finish... */
@@ -35,7 +35,7 @@ index 7204e7bbebb0..2c22fa8cf9bf 100644
  		}
  	}
  
-@@ -929,7 +930,7 @@ static void prb_retire_current_block(struct tpacket_kbdq_core *pkc,
+@@ -930,7 +931,7 @@ static void prb_retire_current_block(struct tpacket_kbdq_core *pkc,
  		if (!(status & TP_STATUS_BLK_TMO)) {
  			while (atomic_read(&pkc->blk_fill_in_prog)) {
  				/* Waiting for skb_copy_bits to finish... */
@@ -66,5 +66,5 @@ index 0b347f46b2f4..f395f06031bc 100644
  }
  
 -- 
-2.23.0
+2.24.1
 

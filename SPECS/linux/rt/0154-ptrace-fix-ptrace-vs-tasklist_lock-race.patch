@@ -1,7 +1,7 @@
-From dc2b806b1905e1f7f8538a75cb22fbef4d319f7f Mon Sep 17 00:00:00 2001
+From ce84cbced5a766910a051cb469e33035cdd94024 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 29 Aug 2013 18:21:04 +0200
-Subject: [PATCH 154/290] ptrace: fix ptrace vs tasklist_lock race
+Subject: [PATCH 154/319] ptrace: fix ptrace vs tasklist_lock race
 
 As explained by Alexander Fyodorov <halcy@yandex.ru>:
 
@@ -100,7 +100,7 @@ index f25c9566ee92..32a9ca5dff59 100644
   * cond_resched() and cond_resched_lock(): latency reduction via
   * explicit rescheduling in places that are safe. The return
 diff --git a/kernel/ptrace.c b/kernel/ptrace.c
-index fed682a01a75..ace2839323de 100644
+index b93eb4eaf7ac..a38b304fb9fd 100644
 --- a/kernel/ptrace.c
 +++ b/kernel/ptrace.c
 @@ -174,7 +174,14 @@ static bool ptrace_freeze_traced(struct task_struct *task)
@@ -120,7 +120,7 @@ index fed682a01a75..ace2839323de 100644
  	}
  	spin_unlock_irq(&task->sighand->siglock);
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 654e2ec54f9d..fc2826788d16 100644
+index 6a0ccaea2b42..6bab30347081 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -1349,6 +1349,18 @@ int migrate_swap(struct task_struct *cur, struct task_struct *p,
@@ -162,5 +162,5 @@ index 654e2ec54f9d..fc2826788d16 100644
  		task_rq_unlock(rq, p, &rf);
  
 -- 
-2.23.0
+2.24.1
 

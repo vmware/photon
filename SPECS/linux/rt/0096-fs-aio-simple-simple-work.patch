@@ -1,7 +1,7 @@
-From 824fb4cfaff29a2b6013b74084736a71b3c3647a Mon Sep 17 00:00:00 2001
+From 04733c73ab752c1bece7eb1430ec438278e14329 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 16 Feb 2015 18:49:10 +0100
-Subject: [PATCH 096/290] fs/aio: simple simple work
+Subject: [PATCH 096/319] fs/aio: simple simple work
 
 |BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:768
 |in_atomic(): 1, irqs_disabled(): 0, pid: 26, name: rcuos/2
@@ -85,5 +85,5 @@ index 911e23087dfb..16dcf8521c2c 100644
  {
  	unsigned i, new_nr;
 -- 
-2.23.0
+2.24.1
 

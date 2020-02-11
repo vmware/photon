@@ -1,7 +1,7 @@
-From 8eeb2b164aeb9df1434b2bd622a69c654c4e5fd4 Mon Sep 17 00:00:00 2001
+From bd368e92be47fb98f997ab7f33d7c6bc8aab7117 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 21 Aug 2013 17:48:46 +0200
-Subject: [PATCH 269/290] genirq: Do not invoke the affinity callback via a
+Subject: [PATCH 269/319] genirq: Do not invoke the affinity callback via a
  workqueue on RT
 
 [ Upstream commit 2122adbe011cdc0eb62ad62494e181005b23c76a ]
@@ -97,5 +97,5 @@ index ce86341a9e19..d5539e04e00a 100644
  		INIT_WORK(&notify->work, irq_affinity_notify);
  #endif
 -- 
-2.23.0
+2.24.1
 

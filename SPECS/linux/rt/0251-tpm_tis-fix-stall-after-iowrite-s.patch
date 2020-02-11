@@ -1,7 +1,7 @@
-From b0b78c13c30994b736f07aa1d0545d6b484a4b18 Mon Sep 17 00:00:00 2001
+From 0aa2f1879bd762cd6c2d1c8d5b7d8733ee284ab6 Mon Sep 17 00:00:00 2001
 From: Haris Okanovic <haris.okanovic@ni.com>
 Date: Tue, 15 Aug 2017 15:13:08 -0500
-Subject: [PATCH 251/290] tpm_tis: fix stall after iowrite*()s
+Subject: [PATCH 251/319] tpm_tis: fix stall after iowrite*()s
 
 ioread8() operations to TPM MMIO addresses can stall the cpu when
 immediately following a sequence of iowrite*()'s to the same region.
@@ -80,5 +80,5 @@ index f08949a5f678..9fefcfcae593 100644
  	return 0;
  }
 -- 
-2.23.0
+2.24.1
 

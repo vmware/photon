@@ -1,7 +1,7 @@
-From cf2d016887fc80fdc7b517711849d31904430e8a Mon Sep 17 00:00:00 2001
+From a71c76f2f1383e70c69f7c82e7b6b1e946495754 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 26 Jun 2019 17:44:13 +0200
-Subject: [PATCH 276/290] Revert "futex: Ensure lock/unlock symetry versus
+Subject: [PATCH 276/319] Revert "futex: Ensure lock/unlock symetry versus
  pi_lock and hash bucket lock"
 
 [ Upstream commit 6a773b70cf105b46298ed3b44e77c102ce31d9ec ]
@@ -17,10 +17,10 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  1 file changed, 2 deletions(-)
 
 diff --git a/kernel/futex.c b/kernel/futex.c
-index fe90164aa6ec..a58af833bb77 100644
+index 4c448dddce3c..38f53b95e370 100644
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
-@@ -918,9 +918,7 @@ void exit_pi_state_list(struct task_struct *curr)
+@@ -921,9 +921,7 @@ void exit_pi_state_list(struct task_struct *curr)
  		if (head->next != next) {
  			/* retain curr->pi_lock for the loop invariant */
  			raw_spin_unlock(&pi_state->pi_mutex.wait_lock);
@@ -31,5 +31,5 @@ index fe90164aa6ec..a58af833bb77 100644
  			continue;
  		}
 -- 
-2.23.0
+2.24.1
 

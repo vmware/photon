@@ -1,7 +1,7 @@
-From a4408a9fddd06393e70db9e3e61ae63973d1d257 Mon Sep 17 00:00:00 2001
+From 58a4e878cc03b497b5484fa523908cde2a07d503 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 5 Jul 2018 14:44:51 +0200
-Subject: [PATCH 156/290] sched/migrate_disable: fallback to preempt_disable()
+Subject: [PATCH 156/319] sched/migrate_disable: fallback to preempt_disable()
  instead barrier()
 
 On SMP + !RT migrate_disable() is still around. It is not part of spin_lock()
@@ -94,7 +94,7 @@ index c5f050afff18..53d92153700b 100644
  # endif
  #endif
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 5fa7e1b544d2..ed44ed8215dd 100644
+index d49580cb0eb2..3b2664e691de 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -1031,7 +1031,7 @@ void set_cpus_allowed_common(struct task_struct *p, const struct cpumask *new_ma
@@ -124,7 +124,7 @@ index 5fa7e1b544d2..ed44ed8215dd 100644
  	if (__migrate_disabled(p)) {
  		p->migrate_disable_update = 1;
  		goto out;
-@@ -7209,7 +7209,7 @@ const u32 sched_prio_to_wmult[40] = {
+@@ -7210,7 +7210,7 @@ const u32 sched_prio_to_wmult[40] = {
  
  #undef CREATE_TRACE_POINTS
  
@@ -133,7 +133,7 @@ index 5fa7e1b544d2..ed44ed8215dd 100644
  
  static inline void
  update_nr_migratory(struct task_struct *p, long delta)
-@@ -7357,45 +7357,44 @@ EXPORT_SYMBOL(migrate_enable);
+@@ -7358,45 +7358,44 @@ EXPORT_SYMBOL(migrate_enable);
  #elif !defined(CONFIG_SMP) && defined(CONFIG_PREEMPT_RT_BASE)
  void migrate_disable(void)
  {
@@ -200,5 +200,5 @@ index 5027158d3908..dd6c364d6f01 100644
  #endif
  	P(nr_cpus_allowed);
 -- 
-2.23.0
+2.24.1
 

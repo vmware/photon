@@ -1,7 +1,7 @@
-From b929bcca97d17ac7c7b56351098a97c990818c3b Mon Sep 17 00:00:00 2001
+From 84da1d3fbac298748bdeaeacbdeec3a01355f892 Mon Sep 17 00:00:00 2001
 From: Mike Galbraith <efault@gmx.de>
 Date: Sun, 8 Jan 2017 09:32:25 +0100
-Subject: [PATCH 258/290] cpuset: Convert callback_lock to raw_spinlock_t
+Subject: [PATCH 258/319] cpuset: Convert callback_lock to raw_spinlock_t
 
 The two commits below add up to a cpuset might_sleep() splat for RT:
 
@@ -289,5 +289,5 @@ index 7bb129c5b412..92575cb9b493 100644
  }
  
 -- 
-2.23.0
+2.24.1
 

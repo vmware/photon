@@ -1,7 +1,7 @@
-From 124dab5838407b56b59161de8a01d98181dfe729 Mon Sep 17 00:00:00 2001
+From b19de6aae7e1d0cf81632f491d371c4ed2c9da7e Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 12 Oct 2017 17:31:14 +0200
-Subject: [PATCH 148/290] rtmutex: wire up RT's locking
+Subject: [PATCH 148/319] rtmutex: wire up RT's locking
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
@@ -233,7 +233,7 @@ index 936f3d14dd6b..e89b70f474af 100644
  
  void __lockfunc _raw_spin_lock_nested(raw_spinlock_t *lock, int subclass)
 diff --git a/kernel/locking/spinlock_debug.c b/kernel/locking/spinlock_debug.c
-index 9aa0fccd5d43..76d0b40d9193 100644
+index 03595c29c566..d63df281b495 100644
 --- a/kernel/locking/spinlock_debug.c
 +++ b/kernel/locking/spinlock_debug.c
 @@ -31,6 +31,7 @@ void __raw_spin_lock_init(raw_spinlock_t *lock, const char *name,
@@ -267,5 +267,5 @@ index 9aa0fccd5d43..76d0b40d9193 100644
 +
 +#endif
 -- 
-2.23.0
+2.24.1
 

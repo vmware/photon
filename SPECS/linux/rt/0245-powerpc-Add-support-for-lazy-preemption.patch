@@ -1,7 +1,7 @@
-From 80e79c5148f7aa9295c560cd5640bb1455ce9f73 Mon Sep 17 00:00:00 2001
+From 47ea6f0e5ce6e73bd3e6fa86fdd9e04e9c76a819 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 1 Nov 2012 10:14:11 +0100
-Subject: [PATCH 245/290] powerpc: Add support for lazy preemption
+Subject: [PATCH 245/319] powerpc: Add support for lazy preemption
 
 Implement the powerpc pieces for lazy preempt.
 
@@ -77,7 +77,7 @@ index 3c0002044bc9..ce316076bc52 100644
  /* Bits in local_flags */
  /* Don't move TLF_NAPPING without adjusting the code in entry_32.S */
 diff --git a/arch/powerpc/kernel/asm-offsets.c b/arch/powerpc/kernel/asm-offsets.c
-index 7c3738d890e8..d16fc87332f8 100644
+index 50400f213bbf..1bb82c5dc1d9 100644
 --- a/arch/powerpc/kernel/asm-offsets.c
 +++ b/arch/powerpc/kernel/asm-offsets.c
 @@ -156,6 +156,7 @@ int main(void)
@@ -141,7 +141,7 @@ index 26b3f853cbf6..3783f3ef17a4 100644
  	andi.	r0,r9,_TIF_USER_WORK_MASK
  	beq	restore_user
 diff --git a/arch/powerpc/kernel/entry_64.S b/arch/powerpc/kernel/entry_64.S
-index 7a46e0e57a36..7671fa5da9fa 100644
+index 58b50967b3e5..ef02e41d5d96 100644
 --- a/arch/powerpc/kernel/entry_64.S
 +++ b/arch/powerpc/kernel/entry_64.S
 @@ -176,7 +176,7 @@ system_call:			/* label this so stack traces look sane */
@@ -153,7 +153,7 @@ index 7a46e0e57a36..7671fa5da9fa 100644
  	beq	15f
  	addi	r11,r11,8	/* use 32-bit syscall entries */
  	clrldi	r3,r3,32
-@@ -768,7 +768,7 @@ _GLOBAL(ret_from_except_lite)
+@@ -774,7 +774,7 @@ _GLOBAL(ret_from_except_lite)
  	bl	restore_math
  	b	restore
  #endif
@@ -162,7 +162,7 @@ index 7a46e0e57a36..7671fa5da9fa 100644
  	beq	2f
  	bl	restore_interrupts
  	SCHEDULE_USER
-@@ -830,10 +830,18 @@ resume_kernel:
+@@ -836,10 +836,18 @@ resume_kernel:
  
  #ifdef CONFIG_PREEMPT
  	/* Check if we need to preempt */
@@ -182,7 +182,7 @@ index 7a46e0e57a36..7671fa5da9fa 100644
  	cmpwi	cr0,r8,0
  	bne	restore
  	ld	r0,SOFTE(r1)
-@@ -850,7 +858,7 @@ resume_kernel:
+@@ -856,7 +864,7 @@ resume_kernel:
  	/* Re-test flags and eventually loop */
  	CURRENT_THREAD_INFO(r9, r1)
  	ld	r4,TI_FLAGS(r9)
@@ -192,5 +192,5 @@ index 7a46e0e57a36..7671fa5da9fa 100644
  
  	/*
 -- 
-2.23.0
+2.24.1
 

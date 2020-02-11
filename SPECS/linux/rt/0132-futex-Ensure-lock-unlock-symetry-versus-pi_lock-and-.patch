@@ -1,7 +1,7 @@
-From 653ee648a2ba5f857ec351405fc64f9cf8867b84 Mon Sep 17 00:00:00 2001
+From b6c15ff83910111040d015b2501f49375a9ef85d Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 1 Mar 2013 11:17:42 +0100
-Subject: [PATCH 132/290] futex: Ensure lock/unlock symetry versus pi_lock and
+Subject: [PATCH 132/319] futex: Ensure lock/unlock symetry versus pi_lock and
  hash bucket lock
 
 In exit_pi_state_list() we have the following locking construct:
@@ -32,10 +32,10 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  1 file changed, 2 insertions(+)
 
 diff --git a/kernel/futex.c b/kernel/futex.c
-index b2a90c66d8f4..4d6501d689b5 100644
+index 5ec49f862c53..60be4530c767 100644
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
-@@ -918,7 +918,9 @@ void exit_pi_state_list(struct task_struct *curr)
+@@ -921,7 +921,9 @@ void exit_pi_state_list(struct task_struct *curr)
  		if (head->next != next) {
  			/* retain curr->pi_lock for the loop invariant */
  			raw_spin_unlock(&pi_state->pi_mutex.wait_lock);
@@ -46,5 +46,5 @@ index b2a90c66d8f4..4d6501d689b5 100644
  			continue;
  		}
 -- 
-2.23.0
+2.24.1
 

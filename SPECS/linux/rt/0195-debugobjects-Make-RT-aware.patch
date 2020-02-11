@@ -1,7 +1,7 @@
-From 51f4d617b46bda60b9220ca45de034aab6c76877 Mon Sep 17 00:00:00 2001
+From 8455adeadcb6ca4eca69add2d97b80e269df0e24 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 17 Jul 2011 21:41:35 +0200
-Subject: [PATCH 195/290] debugobjects: Make RT aware
+Subject: [PATCH 195/319] debugobjects: Make RT aware
 
 Avoid filling the pool / allocating memory with irqs off().
 
@@ -28,5 +28,5 @@ index 14afeeb7d6ef..e28481c402ae 100644
  	db = get_bucket((unsigned long) addr);
  
 -- 
-2.23.0
+2.24.1
 

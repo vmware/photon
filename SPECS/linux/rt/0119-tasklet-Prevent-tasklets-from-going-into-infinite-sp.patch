@@ -1,7 +1,7 @@
-From eef329f6c046880d5fa82df96ecff7a6c6582e7f Mon Sep 17 00:00:00 2001
+From 489ddb3efb030856305f559521920c2a0106d1a2 Mon Sep 17 00:00:00 2001
 From: Ingo Molnar <mingo@elte.hu>
 Date: Tue, 29 Nov 2011 20:18:22 -0500
-Subject: [PATCH 119/290] tasklet: Prevent tasklets from going into infinite
+Subject: [PATCH 119/319] tasklet: Prevent tasklets from going into infinite
  spin in RT
 
 When CONFIG_PREEMPT_RT_FULL is enabled, tasklets run as threads,
@@ -299,5 +299,5 @@ index 6f584861d329..1d3a482246cc 100644
  {
  	return local_softirq_pending();
 -- 
-2.23.0
+2.24.1
 

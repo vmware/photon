@@ -1,7 +1,7 @@
-From 50a52c8407c717fe21f31d5ae907a1fd3ec7fd32 Mon Sep 17 00:00:00 2001
+From 15c190f8b3c2e5e3a407dad286f1bec54b40db49 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 24 Jul 2018 14:48:55 +0200
-Subject: [PATCH 019/290] x86/efi: drop task_lock() from efi_switch_mm()
+Subject: [PATCH 019/319] x86/efi: drop task_lock() from efi_switch_mm()
 
 efi_switch_mm() is a wrapper around switch_mm() which saves current's
 ->active_mm, sets the requests mm as ->active_mm and invokes
@@ -51,5 +51,5 @@ index ee5d08f25ce4..e8da7f492970 100644
  
  #ifdef CONFIG_EFI_MIXED
 -- 
-2.23.0
+2.24.1
 

@@ -1,7 +1,7 @@
-From c6286af6b5a433a8f97f2875f2cdcc7fb9614a9d Mon Sep 17 00:00:00 2001
+From 2ed782cdff52ade7a3b23eb2f87e0dc307e25ae0 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 6 Jun 2011 12:12:51 +0200
-Subject: [PATCH 107/290] sched: Limit the number of task migrations per batch
+Subject: [PATCH 107/319] sched: Limit the number of task migrations per batch
 
 Put an upper limit on the number of tasks which are migrated per batch
 to avoid large latencies.
@@ -13,7 +13,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  1 file changed, 4 insertions(+)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 86839f848805..de93941bad5a 100644
+index 2f6b4365d070..5c23d1272429 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -44,7 +44,11 @@ const_debug unsigned int sysctl_sched_features =
@@ -29,5 +29,5 @@ index 86839f848805..de93941bad5a 100644
  /*
   * period over which we measure -rt task CPU usage in us.
 -- 
-2.23.0
+2.24.1
 

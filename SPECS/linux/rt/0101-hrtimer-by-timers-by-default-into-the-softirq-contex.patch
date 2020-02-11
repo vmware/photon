@@ -1,7 +1,7 @@
-From 7c5afdf61b2f178567e499bc4aec5050c12a82ce Mon Sep 17 00:00:00 2001
+From 47be6fbf8f70c1863bd4140512ff891de09a64d5 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 3 Jul 2009 08:44:31 -0500
-Subject: [PATCH 101/290] hrtimer: by timers by default into the softirq
+Subject: [PATCH 101/319] hrtimer: by timers by default into the softirq
  context
 
 We can't have hrtimers callbacks running in hardirq context on RT. Therefore
@@ -42,7 +42,7 @@ index 262e49301cae..c2f51b6e8974 100644
  
  	/*
 diff --git a/include/linux/hrtimer.h b/include/linux/hrtimer.h
-index 73ad7309436a..2bdb047c7656 100644
+index 8714f1a37d84..082147c07831 100644
 --- a/include/linux/hrtimer.h
 +++ b/include/linux/hrtimer.h
 @@ -42,6 +42,7 @@ enum hrtimer_mode {
@@ -66,7 +66,7 @@ index 73ad7309436a..2bdb047c7656 100644
  
  /*
 diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 625ba462e5bb..9e17b38fdb98 100644
+index 460d5fd3ec4e..60a883088961 100644
 --- a/kernel/events/core.c
 +++ b/kernel/events/core.c
 @@ -1102,7 +1102,7 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_context *cpuctx, int cpu)
@@ -88,7 +88,7 @@ index 625ba462e5bb..9e17b38fdb98 100644
  
  	/*
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index ba6d51c7df61..86839f848805 100644
+index 584978640512..2f6b4365d070 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -315,7 +315,7 @@ static void hrtick_rq_init(struct rq *rq)
@@ -114,10 +114,10 @@ index 4b13df38c069..974a8f9b615a 100644
  }
  
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index da5d60d25c27..5bbc77b948e7 100644
+index 6e6d9e999814..21cf60c360e8 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -4967,9 +4967,9 @@ void init_cfs_bandwidth(struct cfs_bandwidth *cfs_b)
+@@ -4914,9 +4914,9 @@ void init_cfs_bandwidth(struct cfs_bandwidth *cfs_b)
  	cfs_b->period = ns_to_ktime(default_cfs_period());
  
  	INIT_LIST_HEAD(&cfs_b->throttled_cfs_rq);
@@ -145,10 +145,10 @@ index b6ca4a630050..aeb99395c03b 100644
  }
  
 diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index 923a650e5c35..abf24e60b6e8 100644
+index e135cb27db39..1fd5ec39e7f4 100644
 --- a/kernel/time/hrtimer.c
 +++ b/kernel/time/hrtimer.c
-@@ -1135,7 +1135,9 @@ void hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim,
+@@ -1138,7 +1138,9 @@ void hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim,
  	 * Check whether the HRTIMER_MODE_SOFT bit and hrtimer.is_soft
  	 * match.
  	 */
@@ -158,7 +158,7 @@ index 923a650e5c35..abf24e60b6e8 100644
  
  	base = lock_hrtimer_base(timer, &flags);
  
-@@ -1295,10 +1297,17 @@ static inline int hrtimer_clockid_to_base(clockid_t clock_id)
+@@ -1298,10 +1300,17 @@ static inline int hrtimer_clockid_to_base(clockid_t clock_id)
  static void __hrtimer_init(struct hrtimer *timer, clockid_t clock_id,
  			   enum hrtimer_mode mode)
  {
@@ -178,7 +178,7 @@ index 923a650e5c35..abf24e60b6e8 100644
  	memset(timer, 0, sizeof(struct hrtimer));
  
  	cpu_base = raw_cpu_ptr(&hrtimer_bases);
-@@ -1681,6 +1690,14 @@ static void __hrtimer_init_sleeper(struct hrtimer_sleeper *sl,
+@@ -1684,6 +1693,14 @@ static void __hrtimer_init_sleeper(struct hrtimer_sleeper *sl,
  				   enum hrtimer_mode mode,
  				   struct task_struct *task)
  {
@@ -207,10 +207,10 @@ index a836efd34589..c50e8f3262de 100644
  	clockevents_register_device(&ce_broadcast_hrtimer);
  }
 diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
-index 54fd344ef973..c217af74dddf 100644
+index e774a49176cc..012bc81879bf 100644
 --- a/kernel/time/tick-sched.c
 +++ b/kernel/time/tick-sched.c
-@@ -1310,7 +1310,7 @@ void tick_setup_sched_timer(void)
+@@ -1314,7 +1314,7 @@ void tick_setup_sched_timer(void)
  	/*
  	 * Emulate tick processing via per-CPU hrtimers:
  	 */
@@ -233,5 +233,5 @@ index bbc4940f21af..defd493ba967 100644
  	hrtimer_start(hrtimer, ns_to_ktime(sample_period),
  		      HRTIMER_MODE_REL_PINNED);
 -- 
-2.23.0
+2.24.1
 

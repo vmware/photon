@@ -1,7 +1,7 @@
-From 1dc416b3e49814a54ed09b9248b6ec3183db9f8e Mon Sep 17 00:00:00 2001
+From eef9ffd80c33a099d81465fb733e81a87da011c3 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 21 Sep 2017 14:25:13 +0200
-Subject: [PATCH 155/290] rtmutex: annotate sleeping lock context
+Subject: [PATCH 155/319] rtmutex: annotate sleeping lock context
 
 The RCU code complains on schedule() within a rcu_readlock() section.
 The valid scenario on -RT is if a sleeping is held. In order to suppress
@@ -250,10 +250,10 @@ index a97c20ea9bce..564e3927e7b0 100644
  	    !t->rcu_read_unlock_special.b.blocked) {
  
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index fc2826788d16..5fa7e1b544d2 100644
+index 6bab30347081..d49580cb0eb2 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -7353,4 +7353,49 @@ void migrate_enable(void)
+@@ -7354,4 +7354,49 @@ void migrate_enable(void)
  	preempt_enable();
  }
  EXPORT_SYMBOL(migrate_enable);
@@ -304,5 +304,5 @@ index fc2826788d16..5fa7e1b544d2 100644
 +EXPORT_SYMBOL(migrate_enable);
  #endif
 -- 
-2.23.0
+2.24.1
 

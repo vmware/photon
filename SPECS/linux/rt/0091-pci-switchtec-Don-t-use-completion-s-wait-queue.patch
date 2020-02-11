@@ -1,7 +1,7 @@
-From 10b9bce593adcb0971345750199a4c428b95be36 Mon Sep 17 00:00:00 2001
+From 988b3b5a82c34bcdc6c423233cfdb2456f09bda3 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 4 Oct 2017 10:24:23 +0200
-Subject: [PATCH 091/290] pci/switchtec: Don't use completion's wait queue
+Subject: [PATCH 091/319] pci/switchtec: Don't use completion's wait queue
 
 The poll callback is using completion's wait_queue_head_t member and
 puts it in poll_wait() so the poll() caller gets a wakeup after command
@@ -24,7 +24,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  1 file changed, 13 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/pci/switch/switchtec.c b/drivers/pci/switch/switchtec.c
-index 72db2e0ebced..77d4fb86d05b 100644
+index 5aaa4ce04ec3..df32c5195e07 100644
 --- a/drivers/pci/switch/switchtec.c
 +++ b/drivers/pci/switch/switchtec.c
 @@ -43,10 +43,11 @@ struct switchtec_user {
@@ -111,5 +111,5 @@ index 72db2e0ebced..77d4fb86d05b 100644
  		stuser_put(stuser);
  	}
 -- 
-2.23.0
+2.24.1
 

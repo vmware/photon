@@ -1,7 +1,7 @@
-From 2e0e054d46bdb30148a9bdbbbcee165a85b47ca5 Mon Sep 17 00:00:00 2001
+From 98d05dc7feecce7df94e7f9a2c9e75f030ea7523 Mon Sep 17 00:00:00 2001
 From: Mike Galbraith <efault@gmx.de>
 Date: Sun, 19 Aug 2018 08:28:35 +0200
-Subject: [PATCH 230/290] sched: Allow pinned user tasks to be awakened to the
+Subject: [PATCH 230/319] sched: Allow pinned user tasks to be awakened to the
  CPU they pinned
 
 Since commit 7af443ee16976 ("sched/core: Require cpu_active() in
@@ -22,7 +22,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 7a0061839d77..d7692e31a254 100644
+index dcf2deedd3f8..6ef0dcea94d7 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -904,7 +904,7 @@ static inline bool is_cpu_allowed(struct task_struct *p, int cpu)
@@ -35,5 +35,5 @@ index 7a0061839d77..d7692e31a254 100644
  
  	return cpu_active(cpu);
 -- 
-2.23.0
+2.24.1
 

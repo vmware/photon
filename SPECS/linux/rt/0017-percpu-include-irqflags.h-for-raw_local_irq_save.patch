@@ -1,7 +1,7 @@
-From f917aafbaad3be951578ed66aa337f869b407357 Mon Sep 17 00:00:00 2001
+From 92afe6cc73c0cf83dd262269898a909ea1076ce6 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 11 Oct 2018 16:39:59 +0200
-Subject: [PATCH 017/290] percpu: include irqflags.h for raw_local_irq_save()
+Subject: [PATCH 017/319] percpu: include irqflags.h for raw_local_irq_save()
 
 The header percpu.h header file is using raw_local_irq_save() but does
 not include irqflags.h for its definition. It compiles because the
@@ -29,5 +29,5 @@ index 1817a8415a5e..942d64c0476e 100644
  #ifdef CONFIG_SMP
  
 -- 
-2.23.0
+2.24.1
 

@@ -1,7 +1,7 @@
-From 462f06ccfcce395acd6e89f8b9d9a91bd924750c Mon Sep 17 00:00:00 2001
+From 6313e1b6eb43d4f320883ced7c1383542925df19 Mon Sep 17 00:00:00 2001
 From: "Luis Claudio R. Goncalves" <lclaudio@uudg.org>
 Date: Tue, 25 Jun 2019 11:28:04 -0300
-Subject: [PATCH 282/290] mm/zswap: Do not disable preemption in
+Subject: [PATCH 282/319] mm/zswap: Do not disable preemption in
  zswap_frontswap_store()
 
 [ Upstream commit 4e4cf4be79635e67144632d9135286381acbc95a ]
@@ -123,5 +123,5 @@ index cd91fd9d96b8..420225d3ff0b 100644
  freepage:
  	zswap_entry_cache_free(entry);
 -- 
-2.23.0
+2.24.1
 

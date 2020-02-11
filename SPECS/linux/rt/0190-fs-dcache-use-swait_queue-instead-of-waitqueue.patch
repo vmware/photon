@@ -1,7 +1,7 @@
-From 92858e88d7c3572ca27dfe00a007a9971d4c720d Mon Sep 17 00:00:00 2001
+From 9950c0d6830b534c19003f86eefbc8d142f930b1 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 14 Sep 2016 14:35:49 +0200
-Subject: [PATCH 190/290] fs/dcache: use swait_queue instead of waitqueue
+Subject: [PATCH 190/319] fs/dcache: use swait_queue instead of waitqueue
 
 __d_lookup_done() invokes wake_up_all() while holding a hlist_bl_lock()
 which disables preemption. As a workaround convert it to swait.
@@ -85,10 +85,10 @@ index dcde8ffe384c..b2a00f3ff7df 100644
  	hlist_bl_unlock(b);
  	INIT_HLIST_NODE(&dentry->d_u.d_alias);
 diff --git a/fs/fuse/dir.c b/fs/fuse/dir.c
-index e7a2a988533d..4691605ea4aa 100644
+index 6244345a5745..7ee10b7cc808 100644
 --- a/fs/fuse/dir.c
 +++ b/fs/fuse/dir.c
-@@ -1203,7 +1203,7 @@ static int fuse_direntplus_link(struct file *file,
+@@ -1213,7 +1213,7 @@ static int fuse_direntplus_link(struct file *file,
  	struct inode *dir = d_inode(parent);
  	struct fuse_conn *fc;
  	struct inode *inode;
@@ -237,5 +237,5 @@ index c7cb30cdd1b7..119a56d7f739 100644
  	list_splice_init(&q->task_list, &tmp);
  	while (!list_empty(&tmp)) {
 -- 
-2.23.0
+2.24.1
 

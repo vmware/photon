@@ -1,7 +1,7 @@
-From 2efd4a4df8085c42c4a8bb8d74f1a6a566adc67a Mon Sep 17 00:00:00 2001
+From c51325ab11e3c7ddf36f31eeca82e9a724789275 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 14 Dec 2011 01:03:49 +0100
-Subject: [PATCH 037/290] cpumask: Disable CONFIG_CPUMASK_OFFSTACK for RT
+Subject: [PATCH 037/319] cpumask: Disable CONFIG_CPUMASK_OFFSTACK for RT
 
 There are "valid" GFP_ATOMIC allocations such as
 
@@ -47,7 +47,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  2 files changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index e76d16ac2776..04a45d6d0167 100644
+index af35f5caadbe..e40ba59efe7f 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
 @@ -934,7 +934,7 @@ config CALGARY_IOMMU_ENABLED_BY_DEFAULT
@@ -72,5 +72,5 @@ index a3928d4438b5..a50b2158f7cd 100644
  	  Use dynamic allocation for cpumask_var_t, instead of putting
  	  them on the stack.  This is a bit more expensive, but avoids
 -- 
-2.23.0
+2.24.1
 

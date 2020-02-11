@@ -1,7 +1,7 @@
-From d823b15c5b9f5edcf6111f3b480674e4c2e42847 Mon Sep 17 00:00:00 2001
+From bbd782bbddcca081fc971aab654ae096f8318b9e Mon Sep 17 00:00:00 2001
 From: He Zhe <zhe.he@windriver.com>
 Date: Wed, 19 Dec 2018 16:30:57 +0100
-Subject: [PATCH 024/290] kmemleak: Turn kmemleak_lock to raw spinlock on RT
+Subject: [PATCH 024/319] kmemleak: Turn kmemleak_lock to raw spinlock on RT
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -165,5 +165,5 @@ index 5eeabece0c17..92ce99b15f2b 100644
  
  /*
 -- 
-2.23.0
+2.24.1
 

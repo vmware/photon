@@ -1,7 +1,7 @@
-From 09e670527717c63889ba34375c51c55f408402b2 Mon Sep 17 00:00:00 2001
+From c0af4af496d76996276c007968e54ed99997b50f Mon Sep 17 00:00:00 2001
 From: Steven Rostedt <rostedt@goodmis.org>
 Date: Tue, 14 Jul 2015 14:26:34 +0200
-Subject: [PATCH 131/290] futex: Fix bug on when a requeued RT task times out
+Subject: [PATCH 131/319] futex: Fix bug on when a requeued RT task times out
 
 Requeue with timeout causes a bug with PREEMPT_RT_FULL.
 
@@ -117,5 +117,5 @@ index f4b6596d224a..461527f3f7af 100644
  extern struct task_struct *rt_mutex_next_owner(struct rt_mutex *lock);
  extern void rt_mutex_init_proxy_locked(struct rt_mutex *lock,
 -- 
-2.23.0
+2.24.1
 

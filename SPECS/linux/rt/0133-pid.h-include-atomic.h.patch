@@ -1,7 +1,7 @@
-From 6c3b20a2664b9baa69bba26f6743559038199793 Mon Sep 17 00:00:00 2001
+From 6fbd083aaf8825cd6f6fb073b3e39f69e3e5429c Mon Sep 17 00:00:00 2001
 From: Grygorii Strashko <Grygorii.Strashko@linaro.org>
 Date: Tue, 21 Jul 2015 19:43:56 +0300
-Subject: [PATCH 133/290] pid.h: include atomic.h
+Subject: [PATCH 133/319] pid.h: include atomic.h
 
 This patch fixes build error:
   CC      kernel/pid_namespace.o
@@ -39,5 +39,5 @@ index 14a9a39da9c7..a9026a5da196 100644
  enum pid_type
  {
 -- 
-2.23.0
+2.24.1
 
