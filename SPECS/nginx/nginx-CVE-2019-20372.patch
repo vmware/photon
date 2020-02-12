@@ -1,0 +1,28 @@
+From c1be55f97211d38b69ac0c2027e6812ab8b1b94e Mon Sep 17 00:00:00 2001
+From: Ruslan Ermilov <ru@nginx.com>
+Date: Mon, 23 Dec 2019 15:45:46 +0300
+Subject: [PATCH] Discard request body when redirecting to a URL via
+ error_page.
+
+Reported by Bert JW Regeer and Francisco Oca Gonzalez.
+---
+ src/http/ngx_http_special_response.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/http/ngx_http_special_response.c b/src/http/ngx_http_special_response.c
+index 4ffb2cc8ad..76e6705889 100644
+--- a/src/http/ngx_http_special_response.c
++++ b/src/http/ngx_http_special_response.c
+@@ -623,6 +623,12 @@ ngx_http_send_error_page(ngx_http_request_t *r, ngx_http_err_page_t *err_page)
+         return ngx_http_named_location(r, &uri);
+     }
+ 
++    r->expect_tested = 1;
++
++    if (ngx_http_discard_request_body(r) != NGX_OK) {
++        r->keepalive = 0;
++    }
++
+     location = ngx_list_push(&r->headers_out.headers);
+ 
+     if (location == NULL) {

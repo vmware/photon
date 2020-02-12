@@ -1,7 +1,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.16.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
@@ -12,6 +12,7 @@ Source0:        %{name}-%{version}.tar.gz
 Source1:        nginx.service
 Source2:        nginx-njs-0.2.1.tar.gz
 %define sha1    nginx-njs=fd8c3f2d219f175be958796e3beaa17f3b465126
+Patch0:         nginx-CVE-2019-20372.patch
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  which
@@ -20,6 +21,7 @@ NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as
 
 %prep
 %setup -q
+%patch0 -p1
 pushd ../
 mkdir nginx-njs
 tar -C nginx-njs -xf %{SOURCE2}
@@ -76,6 +78,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %{_var}/log/nginx
 
 %changelog
+*   Tue Feb 11 2020 Ankit Jain <ankitja@vmware.com> 1.16.1-2
+-   Fix for CVE-2019-20372
 *   Thu Aug 29 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.16.1-1
 -   Update to version 1.16.1-1
 *   Fri Mar 15 2019 Keerthana K <keerthanak@vmware.com> 1.15.3-6
