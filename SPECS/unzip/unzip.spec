@@ -4,7 +4,7 @@
 Summary:        Unzip-6.0
 Name:           unzip
 Version:        6.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        BSD
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://downloads.sourceforge.net/infozip/unzip60.tar.gz
@@ -21,6 +21,9 @@ Patch5:         unzip-CVE-2018-1000035.patch
 Patch6:         unzip_cfactor_overflow.patch
 Patch7:         CVE-2019-13232-0001-Fix-bug-in-undefer_input-that-misplaced-the-input-st.patch
 Patch8:         CVE-2019-13232-0001-Detect-and-reject-a-zip-bomb-using-overlapped-entrie.patch
+Patch9:         CVE-2014-8139.patch
+Patch10:        CVE-2014-8140.patch
+Patch11:        CVE-2014-8141.patch
 
 %description
 The UnZip package contains ZIP extraction utilities. These are useful
@@ -38,6 +41,9 @@ with PKZIP or Info-ZIP utilities, primarily in a DOS environment.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
 
 %build
 case `uname -m` in
@@ -68,6 +74,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/*
 
 %changelog
+*   Wed Feb 12 2020 Michelle Wang <michellew@vmware.com> 6.0-12
+-   Fix for CVE-2014-8139, CVE-2014-8140 and CVE-2014-8141
 *   Wed Jul 17 2019 Michelle Wang <michellew@vmware.com> 6.0-11
 -   Fix for CVE-2019-13232
 *   Thu Jan 24 2019 Ankit Jain <ankitja@vmware.com> 6.0-10
