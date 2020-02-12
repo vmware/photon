@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.210
-Release:       3%{?dist}
+Version:       4.4.213
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=3b684bb3d2befad9155f663aa6b183f1f04d01f9
+%define sha1 linux=11c59d6a37957a1ac504dc1586d0cc52e3a97578
 Source1:       config-esx
 Source2:       update_photon_cfg.postun
 Patch0:        double-tcp_mem-limits.patch
@@ -269,10 +269,12 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Feb 12 2020 ashwin-h <ashwinh@vmware.com> 4.4.213-1
+-   Update to version 4.4.213
 *   Tue Feb 11 2020 Mounesh Badiger <badigerm@vmware.com> 4.4.210-3
-    9p: Transport error uninitialized
+-   9p: Transport error uninitialized
 *   Wed Feb 05 2020 Mounesh Badiger <badigerm@vmware.com> 4.4.210-2
-    9p:Calculate zerocopy pages with considering buffer alignment
+-   9p:Calculate zerocopy pages with considering buffer alignment
 *   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.210-1
 -   Update to version 4.4.210
 *   Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.4.206-1
