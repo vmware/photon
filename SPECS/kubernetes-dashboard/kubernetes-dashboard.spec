@@ -1,7 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        1.10.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-%{version}.tar.gz
@@ -19,7 +19,7 @@ BuildRequires:  git
 BuildRequires:  glibc-devel
 BuildRequires:  go
 BuildRequires:  linux-api-headers
-BuildRequires:  nodejs = 8.11.4
+BuildRequires:  nodejs = 8.17.0
 BuildRequires:  openjre8
 BuildRequires:  which
 Requires:       nodejs
@@ -59,8 +59,10 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
-*   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.10.1-7
--   Bump up version to compile with new go
+*    Wed Feb 12 2020 Siju Maliakkal <smaliakkal@vmware.com> 1.10.1-8
+-    To use nodejs-8.17.0
+*    Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.10.1-7
+-    Bump up version to compile with new go
 *    Wed Oct 09 2019 Tapas Kundu <tkundu@vmware.com> 1.10.1-6
 -    Use npm source to build.
 *    Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.10.1-5
