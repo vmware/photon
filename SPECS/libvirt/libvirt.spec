@@ -1,14 +1,15 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        3.2.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
 %define sha1    libvirt=47d4b443fdf1e268589529018c436bbc4b413a7c
 Patch0:         libvirt-CVE-2017-1000256.patch
 Patch1:         libvirt-CVE-2018-1064.patch
-Patch2:		libvirt-CVE-2019-3840.patch
+Patch2:         libvirt-CVE-2019-3840.patch
+Patch3:         libvirt-CVE-2019-10161.patch
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -24,10 +25,11 @@ BuildRequires:  libssh2-devel
 BuildRequires:  openssl-devel
 BuildRequires:  systemd
 BuildRequires:  parted
-BuildRequires:  python2-devel
+BuildRequires:  python3-devel
 BuildRequires:  readline
 BuildRequires:  readline-devel
 BuildRequires:  dbus-devel
+BuildRequires:  xmlto
 Requires:       cyrus-sasl
 Requires:       device-mapper
 Requires:       gnutls
@@ -39,7 +41,7 @@ Requires:       libselinux
 Requires:       libssh2
 Requires:       systemd
 Requires:       parted
-Requires:       python2
+Requires:       python3
 Requires:       readline
 
 %description
@@ -63,6 +65,7 @@ This contains development tools and libraries for libvirt.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 ./configure \
@@ -113,6 +116,8 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/*
 
 %changelog
+*   Wed Feb 12 2020 Harinadh D <hdommaraju@vmware.com> 3.2.0-7
+-   Fix for CVE-2019-10161
 *   Tue Jun 25 2019 Sujay G <gsujay@vmware.com> 3.2.0-6
 -   Added dbus in build-requires, to support dbus version bump and utilization in libvirt.
 *   Fri May 24 2019 Siju Maliakkal <smaliakkal@vmware.com> 3.2.0-5
