@@ -2,7 +2,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.15.0
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
@@ -64,7 +64,6 @@ make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
 make install KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build" DESTDIR=%{buildroot}
 mkdir -p %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra
 mv driver/falco-probe.ko %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra
-sed -i 's|/var/lib/dkms/$PACKAGE_NAME/$SYSDIG_VERSION/$KERNEL_RELEASE/$ARCH/module/$PROBE_NAME.ko|/lib/modules/$KERNEL_RELEASE/extra/$PROBE_NAME.ko|g' %{buildroot}/usr/bin/falco-probe-loader
 
 #falco requires docker instance and dpkg to pass make check.
 #%check
@@ -87,7 +86,15 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/falco-probe.ko
 
+%post
+/sbin/depmod -a
+
+%postun
+/sbin/depmod -a
+
 %changelog
+*   Wed Feb 12 2020 Ashwin H <ashwinh@vmware.com> 0.15.0-2
+-   Add depmod for falco-probe.ko and remove patch for falco-probe-loader
 *   Sun May 26 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 0.15.0-1
 -   Fix for CVE-2019-8839
 *   Thu Aug 24 2017 Rui Gu <ruig@vmware.com> 0.6.0-3
