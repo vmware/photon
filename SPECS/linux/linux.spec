@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.104
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -24,6 +24,7 @@ Source7:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source8:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
 %define sha1 photon-checksum-generator=b2a0528ce733e27bf332ea533072faf73c336f0c
+Source9:        genhmac.inc
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -340,7 +341,6 @@ arch="arm64"
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
 %include %{SOURCE7}
-
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
 make -C tools perf PYTHON=python3
 %ifarch x86_64
@@ -370,6 +370,8 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
     done \
 %{nil}
 
+%include %{SOURCE9}
+
 # We want to compress modules after stripping. Extra step is added to
 # the default __spec_install_post.
 %define __spec_install_post\
@@ -377,6 +379,7 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
     %{__arch_install_post}\
     %{__os_install_post}\
     %{__modules_install_post}\
+    %{__modules_gen_hmac}\
 %{nil}
 
 %install
@@ -515,6 +518,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /boot/System.map-%{uname_r}
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
+/boot/.vmlinuz-%{uname_r}.hmac
 %config(noreplace) /boot/%{name}-%{uname_r}.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 %defattr(0644,root,root)
@@ -591,6 +595,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Mar 17 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-3
+-   hmac generation of crypto modules and initrd generation changes if fips=1
 *   Mon Mar 16 2020 Keerthana K <keerthanak@vmware.com> 4.19.104-2
 -   Adding Enhances depedency to hmacgen.
 *   Mon Mar 09 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.104-1
