@@ -5,7 +5,7 @@
 
 Name:           dracut
 Version:        048
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -18,6 +18,7 @@ Patch1:         disable-xattr.patch
 Patch2:         fix-initrd-naming-for-photon.patch
 Patch3:	        lvm-no-read-only-locking.patch
 Patch4:         install-systemd-tty-ask-password-agent.patch
+Patch5:         0001-fips-changes.patch
 
 Summary:        dracut to create initramfs
 Vendor:         VMware, Inc.
@@ -57,11 +58,11 @@ cp %{SOURCE1} .
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 %configure --systemdsystemunitdir=%{_unitdir} --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
            --libdir=%{_prefix}/lib   --disable-documentation
-
 make %{?_smp_mflags}
 
 %install
@@ -72,7 +73,6 @@ make %{?_smp_mflags} install \
 
 echo "DRACUT_VERSION=%{version}-%{release}" > $RPM_BUILD_ROOT/%{dracutlibdir}/dracut-version.sh
 
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/01fips
 rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/02fips-aesni
 
 rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/00bootchart
@@ -163,6 +163,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*   Fri Apr 03 2020 Vikash Bansal <bvikas@vmware.com> 048-4
+-   Added fips module
 *   Wed Apr 01 2020 Susant Sahani <ssahani@vmware.com> 048-3
 -   systemd: install systemd-tty-ask-password-agent systemd-ask-password
 *   Thu Oct 10 2019 Alexey Makhalov <amakhalov@vmware.com> 048-2

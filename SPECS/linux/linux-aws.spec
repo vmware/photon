@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.104
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -18,6 +18,7 @@ Source4:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
 %define sha1 photon-checksum-generator=b2a0528ce733e27bf332ea533072faf73c336f0c
+Source6:        genhmac.inc
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -268,6 +269,8 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
     done \
 %{nil}
 
+%include %{SOURCE6}
+
 # We want to compress modules after stripping. Extra step is added to
 # the default __spec_install_post.
 %define __spec_install_post\
@@ -275,6 +278,7 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
     %{__arch_install_post}\
     %{__os_install_post}\
     %{__modules_install_post}\
+    %{__modules_gen_hmac}\
 %{nil}
 
 %install
@@ -377,6 +381,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /boot/System.map-%{uname_r}
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
+/boot/.vmlinuz-%{uname_r}.hmac
 %config(noreplace) /boot/%{name}-%{uname_r}.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 %defattr(0644,root,root)
@@ -418,6 +423,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Mar 31 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-2
+-   hmac generation of crypto modules and initrd generation changes if fips=1
 *   Wed Mar 25 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-1
 -   Update to version 4.19.104
 *   Mon Mar 16 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-6
