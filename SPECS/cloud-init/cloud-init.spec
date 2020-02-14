@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -30,6 +30,7 @@ Patch12:        trigger-post-customization.patch
 Patch13:        enable-disable-custom-script.patch
 Patch14:        disable-custom-script-default.patch
 Patch15:        CVE-2020-8632.patch
+Patch16:        CVE-2020-8631.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -77,7 +78,6 @@ Cloud-init is a set of init scripts for cloud instances.  Cloud instances
 need special scripts to run during initialization to retrieve and install
 ssh keys and to let the user run various scripts.
 
-
 %prep
 %setup -q -n %{name}-%{version}
 %patch0 -p1
@@ -94,6 +94,7 @@ ssh keys and to let the user run various scripts.
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
 
 find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -164,6 +165,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Fri Feb 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.1-6
+-   Fix for CVE-2020-8631
 *   Mon Feb 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.1-5
 -   Fix for CVE CVE-2020-8632
 *   Fri Dec 13 2019 Shreenidhi Shedi <sshedi@vmware.com> 19.1-4
