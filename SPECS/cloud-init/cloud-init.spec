@@ -2,11 +2,12 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        17%{?dist}
+Release:        18%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
 URL:            http://launchpad.net/cloud-init
+
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
 %define sha1 cloud-init=3b4345267e72e28b877e2e3f0735c1f672674cfc
 Source1:        cloud-photon.cfg
@@ -22,6 +23,8 @@ Patch6:         systemd-service-changes.patch
 Patch7:         makecheck.patch
 Patch8:         systemd-resolved-config.patch
 Patch9:         cloud-init-azureds.patch
+Patch10:        CVE-2020-8631.patch
+Patch11:        CVE-2020-8632.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -55,7 +58,6 @@ Cloud-init is a set of init scripts for cloud instances.  Cloud instances
 need special scripts to run during initialization to retrieve and install
 ssh keys and to let the user run various scripts.
 
-
 %prep
 %setup -q -n %{name}-%{version}
 %patch0 -p1
@@ -68,6 +70,8 @@ ssh keys and to let the user run various scripts.
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
+%patch11 -p1
 
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -136,8 +140,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/cloud-init*
 %dir /var/lib/cloud
 
-
 %changelog
+*   Fri Feb 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.7.9-18
+-   Fix for CVE-2020-8631 and CVE-2020-8632
 *   Wed Jun 12 2019 Keerthana K <keerthanak@vmware.com> 0.7.9-17
 -   Fix to delete the contents of /etc/systemd/network dir at the beginning
 -   of write_network instead of looping through each NIC and delete the contents
@@ -190,7 +195,7 @@ rm -rf $RPM_BUILD_ROOT
 *   Mon Oct 24 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-11
 -   Enabled ssh module in cloud-init
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-10
--   Fixed logic to restart the active services after upgrade 
+-   Fixed logic to restart the active services after upgrade
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.6-9
 -   GA - Bump release of all rpms
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-8
