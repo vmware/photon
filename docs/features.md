@@ -1,6 +1,6 @@
 # Features
 
-The two distinguishing features of Photon OS are as follows:
+The three distinguishing features of Photon OS are as follows:
 
 - It manages services with systemd. 
     
@@ -13,3 +13,5 @@ The two distinguishing features of Photon OS are as follows:
 - It manages packages with an open source, yum-compatible package manager called tdnf for Tiny DNF.
     
     Tdnf keeps the operating system as small as possible while preserving yum's robust package-management capabilities. On Photon OS, tdnf is the default package manager for installing new packages. It is a C implementation of the DNF package manager. 
+
+- It provides Gnu Bash, a modern version of the classic Bourne Shell.
