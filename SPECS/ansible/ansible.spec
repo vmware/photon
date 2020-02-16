@@ -3,7 +3,7 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.8.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -50,7 +50,7 @@ python2 setup.py install -O1 --skip-build \
     --root "%{buildroot}"
 
 %check
-python2 setup.py test
+python3 setup.py test
 
 %files
 %defattr(-, root, root)
@@ -58,6 +58,8 @@ python2 setup.py test
 %{python2_sitelib}/*
 
 %changelog
+*   Sun Feb 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.3-6
+-   Fix 'make check'
 *   Thu Feb 06 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.3-5
 -   Fix for CVE-2019-14864
 *   Mon Nov 18 2019 Tapas Kundu <tkundu@vmware.com> 2.8.3-4
