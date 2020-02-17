@@ -1,11 +1,11 @@
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.15.5
-Release:        2%{?dist}
+Version:        9.15.6
+Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.gz
-%define sha1    bind=feac5bc04aef1a6f2b077600170544091492493d
+%define sha1    bind=12b38c0982ee6d8ac1c9862257389aed028bd86b
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,6 +13,7 @@ Requires:       openssl
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 BuildRequires:  openssl-devel
+BuildRequires:  libuv-devel
 %description
 BIND is open source software that implements the Domain Name System (DNS) protocols
 for the Internet. It is a reference implementation of those protocols, but it is
@@ -69,6 +70,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Mon Feb 17 2020 Sujay G <gsujay@vmware.com> 9.15.6-1
+-   Bump version to 9.15.6 to fix CVE-2019-6470
 *   Mon Jan 27 2020 Tapas Kundu <tkundu@vmware.com> 9.15.5-2
 -   Bump bindutils release to build with latest openssl
 *   Thu Jan 09 2020 Sujay G <gsujay@vmware.com> 9.15.5-1
