@@ -1,14 +1,14 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        13.7.0
-Release:        2%{?dist}
+Version:        13.8.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
-%define         sha1 node=edf0e98b25ae943c49176dd7c3431aa69bacf065
+%define         sha1 node=81c3777f1c695f637dad22314fb7acbdd46d761f
 
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python2
@@ -69,6 +69,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Tue Feb 18 2020 Siju Maliakkal <smaliakkal@vmware.com> 13.8.0-1
+-   Upgrade to 13.8.0
 *   Mon Jan 27 2020 Prashant S Chauhan <psinghchauha@vmware.com> 13.7.0-2
 -   Added python and which as build dependency
 *   Fri Jan 24 2020 Ankit Jain <ankitja@vmware.com> 13.7.0-1
