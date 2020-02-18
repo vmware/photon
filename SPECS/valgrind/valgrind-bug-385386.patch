@@ -1,0 +1,40 @@
+From 3542be5bdc706b1a7d5d080ea01e81d4791e20b4 Mon Sep 17 00:00:00 2001
+From: Julian Seward <jseward@acm.org>
+Date: Wed, 22 Jan 2020 10:32:31 +0100
+Subject: [PATCH] Bug 385386 - Assertion failed "szB >= CACHE_ENTRY_SIZE" on
+ m_debuginfo/image.c:517.
+
+Patch from Reimar Doeffinger (kde@reimardoeffinger.de).
+---
+ coregrind/m_debuginfo/image.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/coregrind/m_debuginfo/image.c b/coregrind/m_debuginfo/image.c
+index c08b97839..acb09523b 100644
+--- a/coregrind/m_debuginfo/image.c
++++ b/coregrind/m_debuginfo/image.c
+@@ -509,10 +509,10 @@ static UInt alloc_CEnt ( DiImage* img, SizeT szB, Bool fromC )
+    return entNo;
+ }
+ 
+-static void realloc_CEnt ( DiImage* img, UInt entNo, SizeT szB )
++static void realloc_CEnt ( DiImage* img, UInt entNo, SizeT szB, Bool fromC )
+ {
+    vg_assert(img != NULL);
+-   vg_assert(szB >= CACHE_ENTRY_SIZE);
++   vg_assert(fromC || szB >= CACHE_ENTRY_SIZE);
+    vg_assert(is_sane_CEnt("realloc_CEnt-pre", img, entNo));
+    img->ces[entNo] = ML_(dinfo_realloc)("di.realloc_CEnt.1",
+                                         img->ces[entNo],
+@@ -768,7 +768,7 @@ static UChar get_slowcase ( DiImage* img, DiOffT off )
+    }
+    vg_assert(i >= 0 && i < CACHE_N_ENTRIES);
+ 
+-   realloc_CEnt(img, i, size);
++   realloc_CEnt(img, i, size, /*fromC?*/cslc != NULL);
+    img->ces[i]->size = size;
+    img->ces[i]->used = 0;
+    if (cslc == NULL) {
+-- 
+2.23.1
+

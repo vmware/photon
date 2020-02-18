@@ -2,12 +2,13 @@
 Summary:        Memory Management Debugger.
 Name:           valgrind
 Version:        3.15.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://valgrind.org
 Group:          Development/Debuggers
 Source0:        http://valgrind.org/downloads/%{name}-%{version}.tar.bz2
 %define sha1    valgrind=4cc014e2390c4bcecb11aa00b37aa52d352db97f
+Patch0:         valgrind-bug-385386.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  pkg-config
@@ -21,6 +22,7 @@ programs.
 
 %prep
 %setup -q -n %{name}-%{version}
+%patch0 -p1
 
 %build
 %configure
@@ -43,6 +45,9 @@ make %{?_smp_mflags} -k check
 %{_datadir}/doc/valgrind/*
 
 %changelog
+*   Tue Feb 18 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.15.0-2
+-   Apply patch for assertion failed "szB >= CACHE_ENTRY_SIZE"
+-   See: https://bugs.kde.org/show_bug.cgi?id=385386
 *   Tue Jan 07 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.15.0-1
 -   Update to version 3.13.0
 *   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 3.13.0-1
