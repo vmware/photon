@@ -1,7 +1,7 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
 Version:        2.2.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            https://libgd.github.io/
 Group:          System/Libraries
@@ -12,6 +12,7 @@ Source0:        https://github.com/libgd/libgd/releases/download/gd-%{version}/%
 Patch0:         CVE-2018-1000222.patch
 Patch1:         libgd-CVE-2019-6978.patch
 Patch2:         libgd-CVE-2019-6977.patch
+Patch3:         libgd-CVE-2018-14553.patch
 BuildRequires:  libjpeg-turbo-devel 
 BuildRequires:  libpng-devel
 BuildRequires:  libwebp-devel
@@ -27,7 +28,7 @@ GD is an open source code library for the dynamic creation of images by programm
 GD is written in C, and "wrappers" are available for Perl, PHP and other languages. GD can read and write many different image formats. GD is commonly used to generate charts, graphics, thumbnails, and most anything else, on the fly.
 %package    devel
 Summary:    Header and development files
-Requires:   %{name} = %{version}
+Requires:   %{name} = %{version}-%{release}
 %description    devel
 Header & Development files 
 %prep
@@ -35,6 +36,7 @@ Header & Development files
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 ./configure --prefix=%{_prefix} --with-webp --with-tiff --with-jpeg --with-png --disable-werror --disable-static
@@ -57,6 +59,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Tue Feb 18 2020 Ankit Jain <ankitja@vmware.com>  2.2.5-5
+-   Added release number in devel, Fix for CVE-2018-14553
 *   Mon Apr 22  2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  2.2.5-4
 -   Fix for CVE-2019-6977
 *   Wed Jan 30 2019 Ankit Jain <ankitja@vmware.com>  2.2.5-3
