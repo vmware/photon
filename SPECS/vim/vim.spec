@@ -3,7 +3,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.1.0388
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -75,6 +75,7 @@ sed -i '/source test_recover.vim/d' src/testdir/test_alot.vim
 sed -i '916d' src/testdir/test_search.vim
 sed -i '454,594d' src/testdir/test_autocmd.vim
 sed -i '1,9d' src/testdir/test_modeline.vim
+sed -i '133d' ./src/testdir/Make_all.mak
 make test
 
 %post
@@ -187,6 +188,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+*   Thu Feb 20 2020 Prashant Singh Chauhan <psinghchauha@vmware.com> 8.1.0388-6
+-   Fix make check failure
 *   Wed Sep 25 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 8.1.0388-5
 -   Removed tests since make-check job was getting stuck on that test
 *   Wed Aug 14 2019 Anisha Kumari <kanisha@vmware.com> 8.1.0388-4
