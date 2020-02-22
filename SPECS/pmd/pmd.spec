@@ -9,7 +9,7 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -21,20 +21,21 @@ Requires:       jansson
 Requires:       likewise-open >= 6.2.9
 Requires:       netmgmt
 Requires:       systemd
-Requires:       tdnf >= 2.0.0
+Requires:       tdnf >= 2.1.0
 Requires:       lightwave-client-libs
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       shadow
 BuildRequires:  copenapi-devel
 BuildRequires:  c-rest-engine-devel >= 1.1
 BuildRequires:  curl-devel
+BuildRequires:  expat-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  jansson-devel
 BuildRequires:  krb5-devel
 BuildRequires:  likewise-open-devel >= 6.2.9
 BuildRequires:  netmgmt-cli-devel
 BuildRequires:  netmgmt-devel
-BuildRequires:  tdnf-devel >= 1.2.0
+BuildRequires:  tdnf-devel >= 2.1.0
 BuildRequires:  lightwave-devel
 BuildRequires: python2-devel >= 2.7
 BuildRequires: python3-devel >= 3.5
@@ -42,6 +43,7 @@ Source0:        %{name}-%{version}.tar.gz
 %define sha1    pmd=a8a3a920647a80e08094d23437330fb498770700
 Patch0:         pmd-rename-DNS_MODE_INVALID-with-DNS_MODE_UNKNOWN.patch
 Patch1:         pmd-fw-bugfix.patch
+Patch2:         pmd-tdnf-updateinfosummary.patch
 
 %description
 Photon Management Daemon
@@ -91,6 +93,7 @@ Python3 bindings for photon management daemon
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 sed -i 's/pmd, 0.0.1/pmd, 0.0.6/' configure.ac
@@ -312,6 +315,8 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*   Tue Feb 25 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.6-2
+-   apply patch for tdnf-2.1.0
 *   Mon Sep 30 2019 Tapas Kundu <tkundu@vmware.com> 0.0.6-1
 -   Updated to release 0.0.6
 -   Included role mgmt changes.

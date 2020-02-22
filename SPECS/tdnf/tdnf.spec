@@ -1,10 +1,11 @@
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 #
 # tdnf spec file
 #
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        2.0.0
-Release:        11%{?dist}
+Version:        2.1.0
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -19,6 +20,10 @@ BuildRequires:  rpm-devel
 BuildRequires:  openssl-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  curl-devel
+#plugin repogpgcheck
+BuildRequires:  gpgme-devel
+BuildRequires:  cmake
+BuildRequires:  python3-devel
 %if %{with_check}
 BuildRequires:  createrepo_c
 BuildRequires:  glib
@@ -26,26 +31,18 @@ BuildRequires:  libxml2
 %endif
 Obsoletes:      yum
 Provides:       yum
-Source0:        %{name}-%{version}-beta.tar.gz
-%define sha1    tdnf=3d316ac465bef668f3deeda5b98c9a21c22e8323
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    tdnf=74e88364cdca65c3fe9da5df8da7d8e14e724e54
 Source1:        cache-updateinfo
 Source2:        cache-updateinfo.service
 Source3:        cache-updateinfo.timer
 Source4:        updateinfo.sh
-Patch0:         tdnf-epoch-and-perm.patch
-Patch1:         tdnf-libsolv-caching.patch
-Patch2:         tdnf-list-available.patch
-Patch3:         tdnf-updateinfo-cmd-updates.patch
-Patch4:         tdnf-fix-mem-leak.patch
-Patch5:         tdnf-fix-curl-status-type.patch
-Patch6:         tdnf-fix-error-no-repo.patch
-Patch7:         tdnf-refresh-mkcache.patch
-Patch8:         tdnf-fix-gpgcheck.patch
-Patch9:         tdnf-added-skip-options-to-check.patch
-Patch10:        tdnf-check-Added-more-rules-for-skip-obsoletes.patch
+Source5:        tdnfrepogpgcheck.conf
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
+
+%define _tdnfpluginsdir %{_libdir}/tdnf-plugins
 
 %package    devel
 Summary:    A Library providing C API for tdnf
@@ -63,32 +60,40 @@ Group:		Development/Libraries
 %description cli-libs
 Library providing cli libs for tdnf like clients.
 
+%package	plugin-repogpgcheck
+Summary:	tdnf plugin providign gpg verification for repository metadata
+Group:		Development/Libraries
+Requires:       gpgme
+
+%description plugin-repogpgcheck
+tdnf plugin providign gpg verification for repository metadata
+
+%package	python
+Summary:	python bindings for tdnf
+Group:		Development/Libraries
+Requires:       python3
+
+%description python
+python bindings for tdnf
+
 %prep
-%setup -qn %{name}-%{version}-beta
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
+%setup -qn %{name}-%{version}
 
 %build
-autoreconf -i
-%configure \
-    --disable-static
-make %{?_smp_mflags}
+mkdir build && cd build
+cmake \
+-DCMAKE_BUILD_TYPE=Debug \
+-DCMAKE_INSTALL_PREFIX=%{_prefix} \
+-DCMAKE_INSTALL_LIBDIR:PATH=lib \
+..
+make %{?_smp_mflags} && make python
 
 %check
-make %{?_smp_mflags} check
+cd build && make %{?_smp_mflags} check
 
 %install
-make DESTDIR=%{buildroot} install
-find %{buildroot} -name '*.la' -delete
+cd build && make DESTDIR=%{buildroot} install
+find %{buildroot} -name '*.a' -delete
 mkdir -p %{buildroot}/var/cache/tdnf
 ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
 ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/yum
@@ -96,6 +101,15 @@ install -v -D -m 0755 %{SOURCE1} %{buildroot}%{_bindir}/tdnf-cache-updateinfo
 install -v -D -m 0644 %{SOURCE2} %{buildroot}%{_libdir}/systemd/system/tdnf-cache-updateinfo.service
 install -v -D -m 0644 %{SOURCE3} %{buildroot}%{_libdir}/systemd/system/tdnf-cache-updateinfo.timer
 install -v -D -m 0755 %{SOURCE4} %{buildroot}%{_sysconfdir}/motdgen.d/02-tdnf-updateinfo.sh
+install -v -D -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/tdnf/pluginconf.d/tdnfrepogpgcheck.conf
+mv %{buildroot}/usr/lib/pkgconfig/tdnfcli.pc %{buildroot}/usr/lib/pkgconfig/tdnf-cli-libs.pc
+mkdir -p %{buildroot}/%{_tdnfpluginsdir}/tdnfrepogpgcheck
+mv %{buildroot}/%{_tdnfpluginsdir}/libtdnfrepogpgcheck.so %{buildroot}/%{_tdnfpluginsdir}/tdnfrepogpgcheck/libtdnfrepogpgcheck.so
+
+pushd python
+python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+popd
+find %{buildroot} -name '*.pyc' -delete
 
 # Pre-install
 %pre
@@ -161,6 +175,7 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %config(noreplace) %{_libdir}/systemd/system/tdnf-cache-updateinfo.timer
     %config %{_sysconfdir}/motdgen.d/02-tdnf-updateinfo.sh
     %dir /var/cache/tdnf
+    %{_datadir}/bash-completion/completions/tdnf
 
 %files devel
     %defattr(-,root,root)
@@ -175,7 +190,19 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %defattr(-,root,root)
     %{_libdir}/libtdnfcli.so.*
 
+%files plugin-repogpgcheck
+    %defattr(-,root,root)
+    %dir %{_sysconfdir}/tdnf/pluginconf.d
+    %config(noreplace) %{_sysconfdir}/tdnf/pluginconf.d/tdnfrepogpgcheck.conf
+    %{_tdnfpluginsdir}/tdnfrepogpgcheck/libtdnfrepogpgcheck.so
+
+%files python
+    %defattr(-,root,root)
+    %{python3_sitelib}/*
+
 %changelog
+*   Thu Feb 20 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.0-1
+-   Update to 2.1.0
 *   Sun Sep 08 2019 Ankit Jain <ankitja@vmware.com> 2.0.0-11
 -   Added more rules for skipconflicts and skipobsoletes to check command.
 *   Fri Mar 15 2019 Ankit Jain <ankitja@vmware.com> 2.0.0-10

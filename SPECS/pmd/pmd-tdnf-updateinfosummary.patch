@@ -1,0 +1,12 @@
+diff --git a/privsep/pkgmgmtapi.c b/privsep/pkgmgmtapi.c
+index 087e0de..e705605 100644
+--- a/privsep/pkgmgmtapi.c
++++ b/privsep/pkgmgmtapi.c
+@@ -283,7 +283,6 @@ pkg_updateinfo_s(
+ 
+     dwError = TDNFUpdateInfoSummary(
+                   pTdnf,
+-                  nAvail,
+                   ppszPackageNameSpecs,
+                   &pUpdateInfoSummary);
+     BAIL_ON_PMD_ERROR(dwError);

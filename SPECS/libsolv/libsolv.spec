@@ -1,7 +1,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.6.35
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
@@ -18,7 +18,6 @@ BuildRequires:  libdb-devel
 BuildRequires:  cmake
 BuildRequires:  rpm-devel
 BuildRequires:  expat-devel
-Provides:       pkgconfig(libsolv)
 %description
 Libsolv is a free package management library, using SAT technology to solve requests.
 It supports debian, rpm, archlinux and haiku style distributions.
@@ -27,6 +26,8 @@ It supports debian, rpm, archlinux and haiku style distributions.
 Summary:        Development headers for libsolv
 Requires:       %{name} = %{version}-%{release}
 Requires:       expat-devel
+Provides:       pkgconfig(libsolv)
+Provides:       pkgconfig(libsolvext)
 %description devel
 The libsolv-devel package contains libraries, header files and documentation
 for developing applications that use libsolv.
@@ -68,6 +69,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Feb 25 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.35-3
+-   provides pkgconfig(libsolvext).
 *   Mon Feb 03 2020 Keerthana K <keerthanak@vmware.com> 0.6.35-2
 -   Fix CVE-2019-20387
 *   Tue Jun 04 2019 Ankit Jain <ankitja@vmware.com> 0.6.35-1
