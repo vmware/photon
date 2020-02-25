@@ -1,7 +1,7 @@
 Summary:        fork of the original IJG libjpeg which uses SIMD.
 Name:           libjpeg-turbo
 Version:        2.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        IJG
 URL:            http://sourceforge.net/projects/libjpeg-turbo
 Group:          System Environment/Libraries
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        http://downloads.sourceforge.net/libjpeg-turbo/%{name}-%{version}.tar.gz
 %define sha1    libjpeg-turbo=6d74b609294b6bae5a7cde035f7d6b80d60ebb77
 Patch0:         CVE-2018-20330.patch
+Patch1:         CVE-2018-19664.patch
 %ifarch x86_64
 BuildRequires:  nasm
 %endif
@@ -27,6 +28,7 @@ It contains the libraries and header files to create applications
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 mkdir build
@@ -59,6 +61,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Tue Feb 25 2020 Sujay G <gsujay@vmware.com> 2.0.0-4
+-   Fix CVE-2018-19664
 *   Mon Mar 04 2019 Keerthana K <keerthanak@vmware.com> 2.0.0-3
 -   Update BuildRequires nasm only for x86_64.
 *   Thu Jan 10 2019 Sujay G <gsujay@vmware.com> 2.0.0-2
