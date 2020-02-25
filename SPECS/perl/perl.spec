@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.28.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -21,6 +21,7 @@ Patch0:         perl-CVE-2018-18311.patch
 Patch1:         perl-CVE-2018-18312.patch
 %if %{with_check}
 Patch2:         make-check-failure.patch
+Patch3:         make-check-failure2.patch
 %endif
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
@@ -42,6 +43,7 @@ Report Language.
 %patch1 -p1
 %if %{with_check}
 %patch2 -p1
+%patch3 -p1
 %endif
 sed -i 's/-fstack-protector/&-all/' Configure
 
@@ -81,6 +83,8 @@ make test TEST_SKIP_VERSION_CHECK=1
 %{_mandir}/*/*
 
 %changelog
+*   Tue Feb 25 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.28.0-5
+-   Added a patch to fix make check
 *   Tue Oct 22 2019 Prashant S Chauhan <psinghchauha@vmware.com> 5.28.0-4
 -   Fix for make check failure added a patch
 *   Tue Feb 26 2019 Dweep Advani <dadvani@vmware.com> 5.28.0-3
