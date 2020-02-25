@@ -1,33 +1,30 @@
-
-
-Summary:        agent for collecting, processing, aggregating, and writing metrics.
-Name:           telegraf
-Version:        1.10.0
-Release:        3%{?dist}
-License:        MIT
-URL:            https://github.com/influxdata/telegraf
-Source0:        https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
-%define sha1    telegraf=e02d4c1319099f4111ab06a4fa6c4e47b8e70742
-Source1:        https://github.com/wavefrontHQ/telegraf/archive/telegraf-plugin-1.4.0.zip
-%define sha1    telegraf-plugin=51d2bedf6b7892dbe079e7dd948d60c31a2fc436
-Source2:        https://raw.githubusercontent.com/wavefrontHQ/integrations/master/telegraf/telegraf.conf
-Source3:       golang-dep-0.5.0.tar.gz
-%define sha1 golang-dep-0.5.0=b8bb441fe3a4445e6cd4fa263dd2112e8566a734
-Group:          Development/Tools
-Vendor:         VMware, Inc.
-Distribution:   Photon
-BuildRequires:  go
-BuildRequires:  git
-BuildRequires:  systemd-devel
-BuildRequires:  unzip
-Requires:       systemd
-Requires:       logrotate
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Summary:         agent for collecting, processing, aggregating, and writing metrics.
+Name:            telegraf
+Version:         1.13.4
+Release:         1%{?dist}
+License:         MIT
+URL:             https://github.com/influxdata/telegraf
+Source0:         https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
+%define sha1     telegraf=ce135233fea21d048f85296fd6ed06f0049e2d56
+Source1:         https://github.com/wavefrontHQ/telegraf/archive/telegraf-plugin-1.4.0.zip
+%define sha1     telegraf-plugin=51d2bedf6b7892dbe079e7dd948d60c31a2fc436
+Source2:         https://raw.githubusercontent.com/wavefrontHQ/integrations/master/telegraf/telegraf.conf
+Source3:         golang-dep-0.5.0.tar.gz
+%define sha1     golang-dep-0.5.0=b8bb441fe3a4445e6cd4fa263dd2112e8566a734
+Group:           Development/Tools
+Vendor:          VMware, Inc.
+Distribution:    Photon
+BuildRequires:   go
+BuildRequires:   git
+BuildRequires:   systemd-devel
+BuildRequires:   unzip
+Requires:        systemd
+Requires:        logrotate
+Requires(pre):   /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 Telegraf is an agent written in Go for collecting, processing, aggregating, and writing metrics.
-
 Design goals are to have a minimal memory footprint with a plugin system so that developers in
 the community can easily add support for collecting metrics from well known services (like Hadoop,
 Postgres, or Redis) and third party APIs (like Mailchimp, AWS CloudWatch, or Google Analytics).
@@ -104,6 +101,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+*   Tue Feb 25 2020 Michelle Wang <michellew@vmware.com> 1.13.4-1
+-   Bump up version to 1.13.4
 *   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.10.0-3
 -   Bump up version to compile with go 1.13.3
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.10.0-2
