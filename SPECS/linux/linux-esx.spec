@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.97
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -65,6 +65,8 @@ Patch34:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch35:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 Patch36:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
+# Fix for CVE-2019-16234
+Patch37:        0001-iwlwifi-pcie-fix-rb_allocator-workqueue-allocation.patch
 # Fix CVE-2019-19072
 Patch43:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 # Fix CVE-2019-19073
@@ -159,6 +161,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch37 -p1
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
@@ -289,6 +292,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Tue Feb 25 2020 Ajay Kaher <akaher@vmware.com> 4.19.97-4
+-   Fix CVE-2019-16234
 *   Tue Feb 11 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-3
 -   Add photon-checksum-generator source tarball and remove hmacgen patch.
 -   Exclude hmacgen.ko from base package.
