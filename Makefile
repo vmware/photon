@@ -127,6 +127,7 @@ packages-minimal: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURC
 		--publish-RPMS-path $(PHOTON_PUBLISH_RPMS_DIR) \
 		--pullsources-config $(PHOTON_PULLSOURCES_CONFIG) \
 		--dist-tag $(PHOTON_DIST_TAG) \
+		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
 		--pkginfo-file $(PHOTON_PKGINFO_FILE) \
 		$(PHOTON_RPMCHECK_FLAGS) \
@@ -149,6 +150,7 @@ packages-initrd: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCE
 		--publish-RPMS-path $(PHOTON_PUBLISH_RPMS_DIR) \
 		--pullsources-config $(PHOTON_PULLSOURCES_CONFIG) \
 		--dist-tag $(PHOTON_DIST_TAG) \
+		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
 		--pkginfo-file $(PHOTON_PKGINFO_FILE) \
 		$(PHOTON_RPMCHECK_FLAGS) \
@@ -173,6 +175,7 @@ packages: check-docker-py check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) $(PHO
 		--publish-XRPMS-path $(PHOTON_PUBLISH_XRPMS_DIR) \
 		--pullsources-config $(PHOTON_PULLSOURCES_CONFIG) \
 		--dist-tag $(PHOTON_DIST_TAG) \
+		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
 		--pkginfo-file $(PHOTON_PKGINFO_FILE) \
 		$(PACKAGE_BUILD_OPTIONS) \
@@ -200,6 +203,7 @@ packages-docker: check-docker-py check-docker-service check-tools photon-stage $
 		--publish-XRPMS-path $(PHOTON_PUBLISH_XRPMS_DIR) \
 		--pullsources-config $(PHOTON_PULLSOURCES_CONFIG) \
 		--dist-tag $(PHOTON_DIST_TAG) \
+		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
 		--pkginfo-file $(PHOTON_PKGINFO_FILE) \
 		$(PACKAGE_BUILD_OPTIONS) \
@@ -223,6 +227,7 @@ updated-packages: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBL
 		--publish-XRPMS-path $(PHOTON_PUBLISH_XRPMS_DIR) \
 		--pullsources-config $(PHOTON_PULLSOURCES_CONFIG) \
 		--dist-tag $(PHOTON_DIST_TAG) \
+		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
 		--input-RPMS-path $(PHOTON_INPUT_RPMS_DIR) \
 		$(PHOTON_KAT_BUILD_FLAGS) \
@@ -247,6 +252,7 @@ tool-chain-stage1: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOUR
 		--threads ${THREADS} \
 		--pullsources-config $(PHOTON_PULLSOURCES_CONFIG) \
 		--dist-tag $(PHOTON_DIST_TAG) \
+		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
 		$(PHOTON_RPMCHECK_FLAGS) \
 		--tool-chain-stage stage1
@@ -267,6 +273,7 @@ tool-chain-stage2: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOUR
 		--threads ${THREADS} \
 		--pullsources-config $(PHOTON_PULLSOURCES_CONFIG) \
 		--dist-tag $(PHOTON_DIST_TAG) \
+		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
 		$(PHOTON_RPMCHECK_FLAGS) \
 		--tool-chain-stage stage2
@@ -286,6 +293,7 @@ tool-chain-stage2: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOUR
 		--pullsources-config $(PHOTON_PULLSOURCES_CONFIG) \
 		--log-level $(LOGLEVEL) \
 		--dist-tag $(PHOTON_DIST_TAG) \
+		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
 		$(PACKAGE_BUILD_OPTIONS) \
 		$(PHOTON_RPMCHECK_FLAGS) \
@@ -312,6 +320,7 @@ check: packages
 		--publish-XRPMS-path $(PHOTON_PUBLISH_XRPMS_DIR) \
 		--pullsources-config $(PHOTON_PULLSOURCES_CONFIG) \
 		--dist-tag $(PHOTON_DIST_TAG) \
+		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
 		--pkginfo-file $(PHOTON_PKGINFO_FILE) \
 		$(PACKAGE_BUILD_OPTIONS) \

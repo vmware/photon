@@ -1,7 +1,7 @@
 Summary:        Photon release files
 Name:           photon-release
 Version:        3.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
@@ -70,6 +70,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/issue.net
 
 %changelog
+*       Wed Feb 26 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0-5
+-       Fixed Build Number Issue
 *       Sat Jan 04 2020 Neal Gompa <ngompa13@gmail.com> 3.0-4
 -       Fix issue files to not require arch mangling
 -       Add system-release Provides for generic distroverpkg identifying name
