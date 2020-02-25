@@ -1,0 +1,42 @@
+From a9f6e3cde3df5009b1c42032e2e64462df6451fc Mon Sep 17 00:00:00 2001
+From: Johannes Berg <johannes.berg@intel.com>
+Date: Tue, 25 Feb 2020 23:09:03 +0530
+Subject: [PATCH v4.9.y] iwlwifi: pcie: fix rb_allocator workqueue allocation
+
+commit 8188a18ee2e48c9a7461139838048363bfce3fef upstream
+
+We don't handle failures in the rb_allocator workqueue allocation
+correctly. To fix that, move the code earlier so the cleanup is
+easier and we don't have to undo all the interrupt allocations in
+this case.
+
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+[Ajay: Rewrote this patch for v4.9.y, as 4.9.y codebase is different from mainline]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ drivers/net/wireless/intel/iwlwifi/pcie/rx.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
+index a2ebe46..395bbe2 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
+@@ -898,9 +898,13 @@ int iwl_pcie_rx_init(struct iwl_trans *trans)
+ 			return err;
+ 	}
+ 	def_rxq = trans_pcie->rxq;
+-	if (!rba->alloc_wq)
++	if (!rba->alloc_wq) {
+ 		rba->alloc_wq = alloc_workqueue("rb_allocator",
+ 						WQ_HIGHPRI | WQ_UNBOUND, 1);
++		if (!rba->alloc_wq)
++			return -ENOMEM;
++	}
++
+ 	INIT_WORK(&rba->rx_alloc, iwl_pcie_rx_allocator_work);
+ 
+ 	cancel_work_sync(&rba->rx_alloc);
+-- 
+2.7.4
+

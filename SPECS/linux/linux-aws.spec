@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.210
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -52,7 +52,8 @@ Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 
 # Fix for CVE-2019-16233
 Patch34:        0001-scsi-qla2xxx-fix-a-potential-NULL-pointer-dereferenc.patch
-
+# Fix for CVE-2019-16234
+Patch37:        0001-iwlwifi-pcie-fix-rb_allocator-workqueue-allocation.patch
 # Fix for CVE-2018-8043
 Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -227,6 +228,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch32 -p1
 %patch33 -p1
 %patch34 -p1
+%patch37 -p1
 %patch38 -p1
 %patch42 -p1
 %patch43 -p1
@@ -439,6 +441,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Tue Feb 25 2020 Ajay Kaher <akaher@vmware.com> 4.9.210-3
+-   Fix CVE-2019-16234
 *   Fri Jan 31 2020 Ajay Kaher <akaher@vmware.com> 4.9.210-2
 -   Fix CVE-2019-16233
 *   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.210-1
