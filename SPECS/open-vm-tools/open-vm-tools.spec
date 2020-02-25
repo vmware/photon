@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.3.10
-Release:        6%{?dist}
+Release:        8%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -22,6 +22,7 @@ Patch5:         gosc-post-custom.patch
 Patch6:         fix-memleak-in-vix.patch
 Patch7:         gosc-enable-custom-scripts.patch
 Patch8:         remove-etc-security-dir.patch
+Patch9:         gosc-fix-vmtoolsd-binary-path.patch
 BuildArch:      x86_64
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
@@ -50,6 +51,7 @@ Requires:       systemd
 Requires:       libstdc++
 Requires:       libtirpc
 Requires:       xmlsec1
+Requires:       which
 %description
 VmWare virtualization user mode tools
 
@@ -71,6 +73,7 @@ It contains the libraries and header files to create applications.
 %patch6 -p2
 %patch7 -p0
 %patch8 -p2
+%patch9 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -142,6 +145,10 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Thu Feb 20 2020 Keerthana K <keerthanak@vmware.com> 10.3.10-8
+-   Fix gosc script vmtoolsd path.
+*   Wed Dec 18 2019 Shreyas B. <shreyasb@vmware.com> 10.3.10-7
+-   Start vmtoolsd after dbus service.
 *   Thu Oct 31 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-6
 -   Check enable-custom-script only when there is custom script added in spec.
 *   Mon Oct 21 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-5
