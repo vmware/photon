@@ -1,8 +1,9 @@
 %global security_hardening none
+%global photon_checksum_generator_version 1.0
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.97
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -14,6 +15,9 @@ Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
 Source4:        check_for_config_applicability.inc
+# Photon-checksum-generator kernel module
+Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
+%define sha1 photon-checksum-generator=b2a0528ce733e27bf332ea533072faf73c336f0c
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -77,8 +81,6 @@ Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 Patch1000:      fips-kat-tests.patch
 %endif
 
-Patch1001:	hmac_gen_kernel.patch
-
 BuildArch:     x86_64
 BuildRequires: bc
 BuildRequires: kbd
@@ -125,6 +127,7 @@ This Linux package contains hmac sha generator kernel module.
 
 %prep
 %setup -q -n linux-%{version}
+%setup -D -b 5 -n linux-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch3 -p1
@@ -165,7 +168,6 @@ This Linux package contains hmac sha generator kernel module.
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
-%patch1001 -p1
 
 %build
 # patch vmw_balloon driver
@@ -179,10 +181,11 @@ sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .co
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
-#build hmac sha generator module
+#build photon-checksum-generator module
 bldroot=`pwd`
-pushd hmac_gen
+pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
 make -C $bldroot M=`pwd` modules
+popd
 
 # Do not compress modules which will be loaded at boot time
 # to speed up boot process
@@ -214,9 +217,9 @@ cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
 
-#install hmac sha generator module
+#install photon-checksum-generator module
 bldroot=`pwd`
-pushd hmac_gen
+pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
 make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
@@ -270,6 +273,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/*
 %exclude /lib/modules/%{uname_r}/build
 %exclude /usr/src
+%exclude /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %files docs
 %defattr(-,root,root)
@@ -285,6 +289,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Tue Feb 11 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-3
+-   Add photon-checksum-generator source tarball and remove hmacgen patch.
+-   Exclude hmacgen.ko from base package.
 *   Wed Jan 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-2
 -   Update tcrypt to test drbg_pr_sha256 and drbg_nopr_sha256.
 -   Update testmgr to add drbg_pr_ctr_aes256 test vectors.
