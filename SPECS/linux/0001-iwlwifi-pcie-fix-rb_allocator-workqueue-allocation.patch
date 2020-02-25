@@ -1,0 +1,63 @@
+From 80ff13281221222dfa0ed0474420e646dafb29c4 Mon Sep 17 00:00:00 2001
+From: Johannes Berg <johannes.berg@intel.com>
+Date: Tue, 25 Feb 2020 16:24:47 +0530
+Subject: [PATCH v4.19.y] iwlwifi: pcie: fix rb_allocator workqueue allocation
+
+commit 8188a18ee2e48c9a7461139838048363bfce3fef upstream
+
+We don't handle failures in the rb_allocator workqueue allocation
+correctly. To fix that, move the code earlier so the cleanup is
+easier and we don't have to undo all the interrupt allocations in
+this case.
+
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+[Ajay: Modified to apply on v4.19.y]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ drivers/net/wireless/intel/iwlwifi/pcie/trans.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+index 4f55711..24da496 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+@@ -3283,6 +3283,15 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
+ 	spin_lock_init(&trans_pcie->reg_lock);
+ 	mutex_init(&trans_pcie->mutex);
+ 	init_waitqueue_head(&trans_pcie->ucode_write_waitq);
++
++	trans_pcie->rba.alloc_wq = alloc_workqueue("rb_allocator",
++						   WQ_HIGHPRI | WQ_UNBOUND, 1);
++	if (!trans_pcie->rba.alloc_wq) {
++		ret = -ENOMEM;
++		goto out_free_trans;
++	}
++	INIT_WORK(&trans_pcie->rba.rx_alloc, iwl_pcie_rx_allocator_work);
++
+ 	trans_pcie->tso_hdr_page = alloc_percpu(struct iwl_tso_hdr_page);
+ 	if (!trans_pcie->tso_hdr_page) {
+ 		ret = -ENOMEM;
+@@ -3485,10 +3494,6 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
+ 		trans_pcie->inta_mask = CSR_INI_SET_MASK;
+ 	 }
+ 
+-	trans_pcie->rba.alloc_wq = alloc_workqueue("rb_allocator",
+-						   WQ_HIGHPRI | WQ_UNBOUND, 1);
+-	INIT_WORK(&trans_pcie->rba.rx_alloc, iwl_pcie_rx_allocator_work);
+-
+ #ifdef CONFIG_IWLWIFI_PCIE_RTPM
+ 	trans->runtime_pm_mode = IWL_PLAT_PM_MODE_D0I3;
+ #else
+@@ -3501,6 +3506,8 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
+ 	iwl_pcie_free_ict(trans);
+ out_no_pci:
+ 	free_percpu(trans_pcie->tso_hdr_page);
++	destroy_workqueue(trans_pcie->rba.alloc_wq);
++out_free_trans:
+ 	iwl_trans_free(trans);
+ 	return ERR_PTR(ret);
+ }
+-- 
+2.7.4
+

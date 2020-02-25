@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.97
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -69,6 +69,8 @@ Patch34:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch35:        0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
 # Fix for CVE-2019-12381
 Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
+# Fix for CVE-2019-16234
+Patch37:        0001-iwlwifi-pcie-fix-rb_allocator-workqueue-allocation.patch
 # Fix for CVE-2019-12378
 Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
@@ -264,6 +266,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch37 -p1
 %patch38 -p1
 %patch39 -p1
 %patch40 -p1
@@ -584,6 +587,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Feb 25 2020 Ajay Kaher <akaher@vmware.com> 4.19.97-5
+-   Fix CVE-2019-16234
 *   Tue Feb 11 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-4
 -   Add photon-checksum-generator source tarball and remove hmacgen patch.
 -   Exclude hmacgen.ko from base package.
