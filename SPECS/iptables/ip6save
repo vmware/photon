@@ -10,4 +10,9 @@
 #-A INPUT -j LOG --log-prefix "FIREWALL:INPUT "
 -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
 -A OUTPUT -j ACCEPT
+
+# Allow IPv6 RA and DHCP6
+-A INPUT -p ipv6-icmp -j ACCEPT
+-A INPUT -p udp --sport 547 --dport 546 -j ACCEPT
+
 COMMIT
