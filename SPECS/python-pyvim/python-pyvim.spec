@@ -4,7 +4,7 @@
 Summary:        Pure Python Vi Implementation.
 Name:           python-pyvim
 Version:        2.0.22
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -39,6 +39,8 @@ BuildRequires:  python-attrs
 BuildRequires:  python3-attrs
 BuildRequires:  python-xml
 BuildRequires:  python3-xml
+BuildRequires:  python-pip
+BuildRequires:  python3-pip
 %endif
 
 Requires:       python2
@@ -73,11 +75,9 @@ mv %{buildroot}/%{_bindir}/pyvim %{buildroot}/%{_bindir}/pyvim3
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 pathlib2 funcsigs pluggy more-itertools==5.0 pyflakes
+pip install pathlib2 funcsigs pluggy more-itertools pyflakes
 PYTHONPATH=./ py.test2
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pathlib2 funcsigs pluggy more-itertools pyflakes
+pip3 install pathlib2 funcsigs pluggy more-itertools pyflakes
 PYTHONPATH=./ py.test3
 
 %files
@@ -91,6 +91,8 @@ PYTHONPATH=./ py.test3
 %{_bindir}/pyvim3
 
 %changelog
+*   Wed Feb 26 2020 Tapas Kundu <tkundu@vmware.com> 2.0.22-5
+-   Fix makecheck
 *   Mon Sep 09 2019 Tapas Kundu <tkundu@vmware.com> 2.0.22-4
 -   Fix makecheck
 *   Mon Nov 26 2018 Tapas Kundu <tkundu@vmware.com> 2.0.22-3
