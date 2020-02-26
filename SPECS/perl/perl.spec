@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.28.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -19,6 +19,7 @@ Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.gz
 %define sha1    perl=0622f86160e8969633cbd21a2cca9e11ae1f8c5a
 %if %{with_check}
 Patch0:         make-check-failure.patch
+Patch1:         make-check-failure2.patch
 %endif
 Source1:	https://github.com/arsv/perl-cross/releases/download/1.2/perl-cross-1.2.tar.gz
 %define sha1	perl-cross=ded421469e0295ae6dde40e0cbcb2238b4e724e3
@@ -41,6 +42,7 @@ Report Language.
 sed -i 's/-fstack-protector/&-all/' Configure
 %if %{with_check}
 %patch0 -p1
+%patch1 -p1
 %endif
 
 %build
@@ -87,6 +89,8 @@ make test TEST_SKIP_VERSION_CHECK=1
 %{_mandir}/*/*
 
 %changelog
+*   Tue Feb 25 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.28.0-5
+-   Added a patch to fix make check
 *   Thu Oct 31 2019 Alexey Makhalov <amakhalov@vmware.com> 5.28.0-4
 -   Cross compilation support
 *   Tue Oct 22 2019 Prashant S Chauhan <psinghchauha@vmware.com> 5.28.0-3
