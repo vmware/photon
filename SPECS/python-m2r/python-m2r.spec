@@ -4,7 +4,7 @@
 Summary:        Markdown to reStructuredText converter.
 Name:           python-m2r
 Version:        0.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -30,6 +30,8 @@ BuildRequires:  python-Pygments
 BuildRequires:  python3-Pygments
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
+BuildRequires:  python-pip
+BuildRequires:  python3-pip
 %endif
 
 Requires:       python2
@@ -75,12 +77,10 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 mock
+pip install mock
 python2 setup.py test -s tests
 pushd ../p3dir
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 mock
+pip3 install mock
 python3 setup.py test -s tests
 popd
 
@@ -95,6 +95,8 @@ popd
 %{_bindir}/m2r3
 
 %changelog
+*   Thu Feb 27 2020 Tapas Kundu <tkundu@vmware.com> 0.2.0-3
+-   Fix makecheck
 *   Mon Nov 26 2018 Tapas Kundu <tkundu@vmware.com> 0.2.0-2
 -   Fix makecheck
 -   Removed buildrequires from subpackage
