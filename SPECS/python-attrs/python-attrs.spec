@@ -4,7 +4,7 @@
 Summary:        Attributes without boilerplate.
 Name:           python-attrs
 Version:        18.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/attrs
 License:        MIT
 Group:          Development/Languages/Python
@@ -29,6 +29,7 @@ BuildRequires:  python3-xml
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 BuildRequires:  python3-zope.interface
+BuildRequires:  python3-pip
 %endif
 Requires:       python2
 Requires:       python2-libs
@@ -65,8 +66,7 @@ popd
 
 %check
 #python2 does not support for tests
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pytest hypothesis
+pip3 install pytest hypothesis==4.38.0
 python3 setup.py test
 
 %files
@@ -78,6 +78,9 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Feb 27 2020 Tapas Kundu <tkundu@vmware.com> 18.2.0-3
+-   hypothesis 4.38.2 has requirement attrs>=19.2.0,
+-   but we have attrs 18.2.0 which is incompatible.
 *   Tue Nov 13 2018 Tapas Kundu <tkundu@vmware.com> 18.2.0-2
 -   Fixed the makecheck errors
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 18.2.0-1
