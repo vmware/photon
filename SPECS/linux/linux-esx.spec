@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.97
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -292,6 +292,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Fri Feb 28 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-5
+-   Enable CONFIG_CRYPT_TEST for FIPS.
 *   Tue Feb 25 2020 Ajay Kaher <akaher@vmware.com> 4.19.97-4
 -   Fix CVE-2019-16234
 *   Tue Feb 11 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-3
