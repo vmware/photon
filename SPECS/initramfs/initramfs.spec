@@ -4,7 +4,7 @@
 Summary:        initramfs
 Name:           initramfs
 Version:        1.0
-Release:        11%{?kernelsubrelease}%{?dist}
+Release:        12%{?kernelsubrelease}%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 Source:        %{name}-%{version}.tar.gz
@@ -46,6 +46,8 @@ rm -rf $RPM_BUILD_ROOT
 /boot/initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
 
 %changelog
+*   Fri Feb 28 2020 Anish Swaminathan <anishs@vmware.com>  1.0-12
+-   Update release to pick up new libblkid
 *   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.0-11
 -   Including nostrip option to the libraries packaged in initrd image.
 *   Thu Sep 6 2018 Michelle Wang <michellew@vmware.com>  1.0-10

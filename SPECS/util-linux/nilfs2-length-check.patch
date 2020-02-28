@@ -1,0 +1,56 @@
+From ac681a310c32319423297544833932f4d689a7a2 Mon Sep 17 00:00:00 2001
+From: Torsten Hilbrich <torsten.hilbrich@secunet.com>
+Date: Mon, 20 Jun 2016 07:09:10 +0200
+Subject: [PATCH] liblkid: Add length check in probe_nilfs2 before crc32
+
+The bytes variable is read from the file system to probe and must be
+checked before used as length parameter in the crc32 call.
+
+The following problems may occur here:
+
+- bytes smaller than sumoff + 4: underflow in length calculation
+- bytes larger than remaining space in sb: overflow of buffer
+
+This fixes a problem where an encrypted volume had the correct magic
+values 0x3434 at offset 0x406 and the following uint16_t (which is
+read into the nilfs_super_block.s_bytes struct) was parsed as 1.
+
+Then crc32 was called with the length value 18446744073709551597
+causing a segmentation fault.
+
+[kzak@redhat.com: - fix probe_nilfs2() return code]
+
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ libblkid/src/superblocks/nilfs.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/libblkid/src/superblocks/nilfs.c b/libblkid/src/superblocks/nilfs.c
+index d12472c7e..cd93d7bc5 100644
+--- a/libblkid/src/superblocks/nilfs.c
++++ b/libblkid/src/superblocks/nilfs.c
+@@ -72,6 +72,7 @@ static int nilfs_valid_sb(blkid_probe pr, struct nilfs_super_block *sb, int is_b
+ 	static unsigned char sum[4];
+ 	const int sumoff = offsetof(struct nilfs_super_block, s_sum);
+ 	size_t bytes;
++	const size_t crc_start = sumoff + 4;
+ 	uint32_t crc;
+ 
+ 	if (!sb || le16_to_cpu(sb->s_magic) != NILFS_SB_MAGIC)
+@@ -82,9 +83,15 @@ static int nilfs_valid_sb(blkid_probe pr, struct nilfs_super_block *sb, int is_b
+ 		return 0;
+ 
+ 	bytes = le16_to_cpu(sb->s_bytes);
++	/* ensure that no underrun can happen in the length parameter
++	 * of the crc32 call or more data are processed than read into
++	 * sb */
++	if (bytes < crc_start || bytes > sizeof(struct nilfs_super_block))
++		return 0;
++
+ 	crc = crc32(le32_to_cpu(sb->s_crc_seed), (unsigned char *)sb, sumoff);
+ 	crc = crc32(crc, sum, 4);
+-	crc = crc32(crc, (unsigned char *)sb + sumoff + 4, bytes - sumoff - 4);
++	crc = crc32(crc, (unsigned char *)sb + crc_start, bytes - crc_start);
+ 
+ 	return blkid_probe_verify_csum(pr, crc, le32_to_cpu(sb->s_sum));
+ }
