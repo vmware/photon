@@ -1,7 +1,7 @@
 Summary:	Archiving program
 Name:		tar
 Version:	1.30
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/tar
 Group:		Applications/System
@@ -9,10 +9,16 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	tar/%{name}-%{version}.tar.xz
 %define sha1 tar=0d442c4565f8131745a5dff1cd08f7eaa797f679
+%if %{with_check}
+Patch0:         make-check-failure.patch
+%endif
 %description
 Contains GNU archiving program
 %prep
 %setup -q
+%if %{with_check}
+%patch0 -p1
+%endif
 %build
 FORCE_UNSAFE_CONFIGURE=1  ./configure \
 	--prefix=%{_prefix} \
@@ -23,7 +29,7 @@ make %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_sbindir}
 make DESTDIR=%{buildroot} install
 make DESTDIR=%{buildroot} -C doc install-html docdir=%{_defaultdocdir}/%{name}-%{version}
-install -vdm 755 %{buildroot}/usr/share/man/man1 
+install -vdm 755 %{buildroot}/usr/share/man/man1
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
 %check
@@ -35,6 +41,8 @@ make  %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*       Mon Mar 02 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.30-2
+-       Fix make check failure
 *       Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 1.30-1
 -       Update to version 1.30
 *       Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.29-1
