@@ -3,7 +3,7 @@
 
 Name:           python-virtualenv
 Version:        16.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Virtual Python Environment builder
 License:        MIT
 Group:          Development/Languages/Python
@@ -23,6 +23,10 @@ BuildRequires:  python-setuptools
 %if %{with_check}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
+BuildRequires:  python-pip
+BuildRequires:  python3-devel
+Requires:       python3-devel
+BuildRequires:  python3-pip
 BuildRequires:  python-pip
 %endif
 
@@ -64,10 +68,13 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 pytest==4.6
+pip install zipp>=0.5
+pip install pytest
+pip install mock
 python2 setup.py test
 pushd ../p3dir
+pip3 install pytest
+pip3 install mock
 python3 setup.py test
 popd
 
@@ -81,6 +88,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Mar 02 2020 Shreyas B. <shreyasb@vmware.com> 16.0.0-3
+-   Fix make check.
 *   Mon Sep 09 2019 Shreyas B. <shreyasb@vmware.com> 16.0.0-2
 -   Fix make check.
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 16.0.0-1
