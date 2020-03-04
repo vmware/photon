@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.97
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -78,6 +78,8 @@ Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+# Patch to perform continuous testing on RNG from Noise Source
+Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -167,6 +169,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch45 -p1
 %patch98 -p1
 %patch100 -p1
+%patch101 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -292,6 +295,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Wed Mar 04 2020 Vikash Bansal <bvikas@vmware.com> 4.19.97-6
+-   Backporting of patch continuous testing of RNG from urandom
 *   Fri Feb 28 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-5
 -   Enable CONFIG_CRYPT_TEST for FIPS.
 *   Tue Feb 25 2020 Ajay Kaher <akaher@vmware.com> 4.19.97-4

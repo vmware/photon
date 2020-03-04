@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.97
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -74,6 +74,8 @@ Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 Patch99:        LKCM.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch100:       0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+# Patch to perform continuous testing on RNG from Noise Source
+Patch101:       0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -168,6 +170,7 @@ pushd ..
 %patch99 -p0
 popd
 %patch100 -p1
+%patch101 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -315,6 +318,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Mar 04 2020 Vikash Bansal <bvikas@vmware.com> 4.19.97-5
+-   Backporting of patch continuous testing of RNG from urandom
 *   Tue Feb 25 2020 Ajay Kaher <akaher@vmware.com> 4.19.97-4
 -   Fix CVE-2019-16234
 *   Tue Feb 11 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-3
