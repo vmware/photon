@@ -1,7 +1,7 @@
 Summary:	Archiving program
 Name:		tar
 Version:	1.30
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/tar
 Group:		Applications/System
@@ -12,6 +12,7 @@ Source0:	tar/%{name}-%{version}.tar.xz
 %if %{with_check}
 Patch0:         make-check-failure.patch
 %endif
+Patch1:         CVE-2019-9923.patch
 %description
 Contains GNU archiving program
 %prep
@@ -19,6 +20,7 @@ Contains GNU archiving program
 %if %{with_check}
 %patch0 -p1
 %endif
+%patch1 -p1
 %build
 FORCE_UNSAFE_CONFIGURE=1  ./configure \
 	--prefix=%{_prefix} \
@@ -41,6 +43,8 @@ make  %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*       Thu Mar 05 2020 Keerthana K <keerthanak@vmware.com> 1.30-3
+-       Fix CVE-2019-9923.
 *       Mon Mar 02 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.30-2
 -       Fix make check failure
 *       Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 1.30-1
