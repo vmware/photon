@@ -1,0 +1,159 @@
+From 9952bd7019186cee1dbc7eb25c0c092a5a294656 Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com>
+Date: Mon, 2 Mar 2020 10:44:32 -0800
+Subject: [PATCH 4/4] Calculate zerocopy pages with considering buffer
+ alignment
+
+Max number of zerocopy pages are calculated manually without
+considering input buffer alignment. this is causing 9p to send
+multiple read/write request for io with non-page aligned buffers.
+
+This change fixes issues with using iov_iter_npages() which consider
+iovector considers bufer alignment and returns number of pages.
+---
+ net/9p/client.c | 44 +++++++++++++++++++++-----------------------
+ 1 file changed, 21 insertions(+), 23 deletions(-)
+
+diff --git a/net/9p/client.c b/net/9p/client.c
+index f9cd58b..16b2dcf 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -1697,14 +1697,13 @@ p9_client_read_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *er
+        int rsize;
+        size_t off;
+ 
+-       int i, maxpages, npages = 0;
++       int i, maxpages;
+        struct page **pages = NULL;
+        unsigned long *ppns = NULL;
+ 
+        *err = 0;
+ 
+-       maxpages = DIV_ROUND_UP(count, PAGE_SIZE);
+-       maxpages = min(DOTX_ZC_MAXPAGES, maxpages);
++       maxpages = iov_iter_npages(to, DOTX_ZC_MAXPAGES);
+ 
+        pages = kmalloc(sizeof(struct page *) * maxpages, GFP_KERNEL);
+        if (!pages) {
+@@ -1723,44 +1722,44 @@ p9_client_read_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *er
+                goto error;
+        }
+ 
+-       npages = DIV_ROUND_UP(off + rsize, PAGE_SIZE);
+-       for (i = 0; i < npages; i++) {
++       for (i = 0; i < maxpages; i++) {
+                ppns[i] = page_to_pfn(pages[i]);
+        }
+ 
+        req = p9_client_rpc(clnt, P9_TREADX, "dqddp", fid->fid, offset, rsize,
+-                           (unsigned int) off, npages, ppns);
++                           (unsigned int) off, maxpages, ppns);
+        if (IS_ERR(req)) {
+                p9_debug(P9_DEBUG_9P, "          rpc error\n");
+                *err = PTR_ERR(req);
+-               goto error;
++               goto put_pages;
+        }
+ 
+        *err = p9pdu_readf(&req->rc, clnt->proto_version, "d", &count);
+        if (*err) {
+                p9_debug(P9_DEBUG_9P, "          ret err %d \n", *err);
+                trace_9p_protocol_dump(clnt, &req->rc);
+-               goto error;
++               goto put_pages;
+        }
+        if (rsize < count) {
+                pr_err("bogus RREADX count (%d > %d)\n", count, rsize);
+-               goto error;
++               goto put_pages;
+        }
+ 
+        if (count == 0)
+-               goto error;
++               goto put_pages;
+ 
+        iov_iter_advance(to, count);
+        total = count;
+ 
+-error:
++put_pages:
+        if (req && !IS_ERR(req))
+                p9_tag_remove(clnt, req);
+ 
+-       for (i = 0; i < npages; i++) {
++       for (i = 0; i < maxpages; i++) {
+                put_page(pages[i]);
+        }
+ 
++error:
+        kfree(pages);
+        kfree(ppns);
+ 
+@@ -1873,14 +1872,13 @@ p9_client_write_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *from, int
+        int rsize;
+        size_t off;
+ 
+-       int i, maxpages, npages = 0;
++       int i, maxpages;
+        struct page **pages = NULL;
+        unsigned long *ppns = NULL;
+ 
+        *err = 0;
+ 
+-       maxpages = DIV_ROUND_UP(count, PAGE_SIZE);
+-       maxpages = min(DOTX_ZC_MAXPAGES, maxpages);
++       maxpages = iov_iter_npages(from, DOTX_ZC_MAXPAGES);
+ 
+        pages = kmalloc(sizeof(struct page *) * maxpages, GFP_KERNEL);
+        if (!pages) {
+@@ -1898,39 +1896,39 @@ p9_client_write_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *from, int
+                goto error;
+        }
+ 
+-       npages = DIV_ROUND_UP(off + rsize, PAGE_SIZE);
+-       for (i = 0; i < npages; i++) {
++       for (i = 0; i < maxpages; i++) {
+                ppns[i] = page_to_pfn(pages[i]);
+        }
+ 
+        req = p9_client_rpc(clnt, P9_TWRITEX, "dqddp", fid->fid, offset, rsize,
+-                           (unsigned int) off, npages, ppns);
++                           (unsigned int) off, maxpages, ppns);
+        if (IS_ERR(req)) {
+                p9_debug(P9_DEBUG_9P, "          rpc error\n");
+                *err = PTR_ERR(req);
+-               goto error;
++               goto put_pages;
+        }
+        *err = p9pdu_readf(&req->rc, clnt->proto_version, "d", &count);
+        if (*err) {
+                p9_debug(P9_DEBUG_9P, "          ret err %d \n", *err);
+                trace_9p_protocol_dump(clnt, &req->rc);
+-               goto error;
++               goto put_pages;
+        }
+        if (rsize < count) {
+                pr_err("bogus RWRITEX count (%d > %d)\n", count, rsize);
+-               goto error;
++               goto put_pages;
+        }
+ 
+        iov_iter_advance(from, count);
+        total = count;
+-error:
++put_pages:
+        if (req && !IS_ERR(req))
+                p9_tag_remove(clnt, req);
+ 
+-       for (i = 0; i < npages; i++) {
++       for (i = 0; i < maxpages; i++) {
+                put_page(pages[i]);
+        }
+ 
++error:
+        kfree(pages);
+        kfree(ppns);
+ 
+-- 
+2.6.2
+

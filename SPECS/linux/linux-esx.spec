@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.104
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -74,6 +74,11 @@ Patch43:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 Patch44:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19074
 Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
+
+Patch55:        0001-p9fs_dir_readdir-offset-support.patch
+Patch56:	0002-Add-9p-zero-copy-data-path-using-crossfd.patch
+Patch57:	0003-Enable-cache-loose-for-vdfs-9p.patch
+Patch58:	0004-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -169,6 +174,10 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
+%patch55 -p1
+%patch56 -p1
+%patch57 -p1
+%patch58 -p1
 %patch98 -p1
 %patch100 -p1
 %patch101 -p1
@@ -297,6 +306,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Fri Mar 13 2020 Mounesh Badiger <badigerm@vmware.com> 4.19.104-2
+-   p9fs_dir_readdir offset support
+-   Add 9p zero copy data path using crossfd
+-   Enable cache=loose for vdfs 9p
+-   9p:Calculate zerocopy pages with considering buffer alignment
 *   Mon Mar 09 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.104-1
 -   Update to version 4.19.104
 *   Wed Mar 04 2020 Vikash Bansal <bvikas@vmware.com> 4.19.97-7
