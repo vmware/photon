@@ -1,18 +1,20 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.3.10
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
 %define sha1 open-vm-tools=de11691d0d2149d7cff4d3a17e9a74bb5bdbab05
 Source1:        gosc-scripts-1.2.tar.gz
 %define sha1 gosc-scripts-1.2=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
+
 Patch0:         IPv6Support.patch
 Patch1:         hostnameReCustomizationFix.patch
 Patch2:         PureIPv6-hosts.patch
@@ -23,6 +25,7 @@ Patch6:         fix-memleak-in-vix.patch
 Patch7:         gosc-enable-custom-scripts.patch
 Patch8:         remove-etc-security-dir.patch
 Patch9:         gosc-fix-vmtoolsd-binary-path.patch
+
 BuildArch:      x86_64
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
@@ -40,6 +43,7 @@ BuildRequires:  systemd
 BuildRequires:  rpcsvc-proto-devel
 BuildRequires:  libtirpc-devel
 BuildRequires:  xmlsec1-devel
+
 Requires:       fuse
 Requires:       xerces-c
 Requires:       libdnet
@@ -52,6 +56,7 @@ Requires:       libstdc++
 Requires:       libtirpc
 Requires:       xmlsec1
 Requires:       which
+
 %description
 VmWare virtualization user mode tools
 
@@ -64,6 +69,7 @@ It contains the libraries and header files to create applications.
 %prep
 %setup -q -n %{name}-stable-%{version}/%{name}
 %setup -a 1 -n %{name}-stable-%{version}/%{name}
+
 %patch0 -p0
 %patch1 -p0
 %patch2 -p0
@@ -74,6 +80,7 @@ It contains the libraries and header files to create applications.
 %patch7 -p0
 %patch8 -p2
 %patch9 -p0
+
 %build
 touch ChangeLog
 autoreconf -i
@@ -145,6 +152,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Mon Mar 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 10.3.10-9
+-   Fix gosc script vmtoolsd path - revisited
 *   Thu Feb 20 2020 Keerthana K <keerthanak@vmware.com> 10.3.10-8
 -   Fix gosc script vmtoolsd path.
 *   Wed Dec 18 2019 Shreyas B. <shreyasb@vmware.com> 10.3.10-7
