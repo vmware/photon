@@ -8,27 +8,18 @@
 %define debug_package %{nil}
 %define __strip /bin/true
 
-# rpmbuild magic to keep from having meta dependency on libc.so.6
-#%define _use_internal_dependency_generator 0
-#%define __find_requires %{nil}
-
 Summary:        Go
 Name:           go
-Version:        1.11.13
+Version:        1.14
 Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
-%define sha1    go=3039af0d0714db1902059add729f6b36390a9776
-
-Patch0:         go-1.11-CVE-2019-16276.patch
-
+%define sha1    go=b46ef8d3ede13a8e890cfab8a9f269190a0a8618
 Requires:       glibc
-
 %define ExtraBuildRequires go
 
 %description
@@ -36,8 +27,6 @@ Go is an open source programming language that makes it easy to build simple, re
 
 %prep
 %setup -qn %{name}
-
-%patch0 -p1
 
 %build
 export GOHOSTOS=linux
@@ -118,7 +107,5 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
-*   Thu Mar 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.11.13-1
--   Upgarde to 1.11.13 & fix CVE-2019-16276
-*   Wed Apr 24 2019 <ashwinh@vmware.com> 1.11.9-1
--   Initial build for 1.11.9
+*   Thu Mar 05 2020 <ashwinh@vmware.com> 1.14-1
+-   Initial build for 1.14

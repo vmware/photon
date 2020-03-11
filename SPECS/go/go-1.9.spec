@@ -14,15 +14,25 @@
 Summary:        Go
 Name:           go
 Version:        1.9.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
 %define sha1    go=388bb51899059e979b81473998f4e955c2af99ca
+
+Patch0:         go-1.9-CVE-2019-16875.patch
+Patch1:         go-1.9-CVE-2019-6486.patch
+Patch2:         go-1.9-CVE-2018-16874.patch
+Patch3:         go-1.9-CVE-2018-16873.patch
+Patch4:         go-CVE-2019-9741.patch
+Patch5:         go-CVE-2019-14809.patch
+
 Requires:       glibc
+
 # to avoid cyclic dependency use prebuilt publish go rpm
 %define ExtraBuildRequires go
 
@@ -31,6 +41,12 @@ Go is an open source programming language that makes it easy to build simple, re
 
 %prep
 %setup -qn %{name}
+
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 export GOHOSTOS=linux
@@ -112,6 +128,10 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Thu Mar 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.9.7-2
+-   Fix for following CVEs:
+-   CVE-2019-16875, CVE-2019-6486, CVE-2018-16873
+-   CVE-2018-16874, CVE-2019-9741, CVE-2019-14809
 *   Mon Jan 21 2019 Bo Gan <ganb@vmware.com> 1.9.7-1
 -   Update to 1.9.7
 *   Wed Oct 24 2018 Alexey Makhalov <amakhalov@vmware.com> 1.9.4-3

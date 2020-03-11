@@ -1,28 +1,37 @@
-Summary:        Consul is a tool for service discovery and configuration.
 Name:           consul
-Version:        1.2.3
+Version:        1.7.1
 Release:        1%{?dist}
+Summary:        Consul is a tool for service discovery and configuration.
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:		https://github.com/hashicorp/consul/archive/v%{version}.tar.gz
-Source0:	%{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}.tar.gz=c507e1c0b31fa02dd5ba3f8a3a981e6f7b0c464d
+URL:		    https://github.com/hashicorp/consul/archive/v%{version}.tar.gz
+
+Source0:	    %{name}-%{version}.tar.gz
+%define sha1 %{name}-%{version}.tar.gz=9efd96b44feb477703374ff9b5d21090ce3218f0
 Source1:        %{name}.service
+
 BuildRequires:  unzip
 BuildRequires:  systemd
 BuildRequires:  go
+BuildRequires:  ca-certificates
 Requires:       systemd
 
 %description
 Consul is a tool for service discovery and configuration. Consul is distributed, highly available, and extremely scalable.
 
 Consul provides several key features:
- - Service Discovery - Consul makes it simple for services to register themselves and to discover other services via a DNS or HTTP interface. External services such as SaaS providers can be registered as well.
- - Health Checking - Health Checking enables Consul to quickly alert operators about any issues in a cluster. The integration with service discovery prevents routing traffic to unhealthy hosts and enables service level circuit breakers.
- - Key/Value Storage - A flexible key/value store enables storing dynamic configuration, feature flagging, coordination, leader election and more. The simple HTTP API makes it easy to use anywhere.
- - Multi-Datacenter - Consul is built to be datacenter aware, and can support any number of regions without complex configuration.
+ * Service Discovery - Consul makes it simple for services to register themselves and to discover other services via a DNS or HTTP interface.
+                     - External services such as SaaS providers can be registered as well.
+
+ * Health Checking - Health Checking enables Consul to quickly alert operators about any issues in a cluster.
+                   - The integration with service discovery prevents routing traffic to unhealthy hosts and enables service level circuit breakers.
+
+ * Key/Value Storage - A flexible key/value store enables storing dynamic configuration, feature flagging, coordination, leader election and more.
+                     - The simple HTTP API makes it easy to use anywhere.
+
+ * Multi-Datacenter - Consul is built to be datacenter aware, and can support any number of regions without complex configuration.
 
 %global debug_package %{nil}
 
@@ -30,34 +39,16 @@ Consul provides several key features:
 %setup -q
 
 %build
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-export PKG=github.com/hashicorp/%{name}
-export GOPATH=/usr/share/gocode
-export GOROOT=/usr/lib/golang
-export GOHOSTOS=linux
-export CGO_ENABLED=0
-export GOOS=linux
-export VERSION=%{version}
-mkdir -p ${GOPATH}/src/${PKG}
-cp -r * ${GOPATH}/src/${PKG}/.
-pushd ${GOPATH}/src/${PKG}
-mkdir -p %{name}_bin
-CGO_ENABLED=0 GOOS=linux go build -v -o %{name}_bin/%{name} -ldflags "-X main.VERSION=%{version} -s -w" *.go
+go build -v -o %{name}
 
 %install
-export PKG=github.com/hashicorp/%{name}
-pushd ${GOPATH}/src/${PKG}
 install -vdm 755 %{buildroot}%{_bindir}
-install ${GOPATH}/src/${PKG}/%{name}_bin/%{name} %{buildroot}%{_bindir}
+install %{name} %{buildroot}%{_bindir}
+chown -R root:root %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_sysconfdir}/%{name}.d
 install -vdm 755 %{buildroot}/usr/lib/systemd/system
-
-chown -R root:root %{buildroot}%{_bindir}
-
 install -vdm 755 %{buildroot}/usr/lib/systemd/system
 install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/
-
 install -vdm 755 %{buildroot}/var/lib/%{name}
 
 %pre
@@ -101,9 +92,17 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/%{name}.d
 
 %changelog
+*  Tue Mar 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7.1-1
+-  Version upgrade to 1.7.1; fixes CVE-2020-7219 & CVE-2020-7955
+*  Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.2.3-4
+-  Bump up version to compile with go 1.13.3
+*  Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.2.3-3
+-  Bump up version to compile with new go
+*  Mon Jun 03 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.2.3-2
+-  Applied patch for CVE-2018-19653
 *  Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.2.3-1
 -  Upgraded to version 1.2.3
 *  Mon Jul 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
 -  Modify command line parameters in .service file.
 *  Thu Jun 28 2018 Ankit Jain <ankitja@vmware.com> 1.1.0-1
--  Initial build.  First version
+-  Initial build. First version
