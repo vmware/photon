@@ -3,7 +3,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.02
-Release:    13%{?dist}
+Release:    14%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -64,6 +64,15 @@ Group: System Environment/Programming
 Requires: %{name} = %{version}
 %description efi
 Additional library files for grub
+
+%package efi-image
+Summary: GRUB UEFI image
+Group: System Environment/Base
+%ifarch x86_64
+Requires: shim-signed
+%endif
+%description efi-image
+GRUB UEFI image signed by vendor key
 
 %prep
 %setup -qn grub-%{version}
@@ -150,6 +159,19 @@ ln -sf %{_sysconfdir}/default/grub %{buildroot}%{_sysconfdir}/sysconfig/grub
 mkdir -p %{buildroot}/boot/%{name}
 touch %{buildroot}/boot/%{name}/grub.cfg
 rm -rf %{buildroot}%{_infodir}
+# Generate grub efi image
+install -d %{buildroot}/boot/efi/EFI/BOOT
+%ifarch x86_64
+./install-for-efi/usr/bin/grub2-mkimage -d ./install-for-efi/usr/lib/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/grub2 -O x86_64-efi fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
+%endif
+%ifarch aarch64
+cat > grub-embed-config.cfg << EOF
+search.fs_label rootfs root
+configfile /boot/grub2/grub.cfg
+EOF
+
+./install-for-efi/usr/bin/grub2-mkimage -d ./install-for-efi/usr/lib/grub/arm64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/bootaa64.efi -p /boot/grub2 -O arm64-efi -c grub-embed-config.cfg fat iso9660 part_gpt part_msdos  normal boot linux configfile loopback chain efifwsetup efi_gop efinet ls search search_label search_fs_uuid search_fs_file  gfxterm gfxterm_background gfxterm_menu test all_video loadenv  exfat ext2 udf halt gfxmenu png tga lsefi help all_video probe echo
+%endif
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -184,11 +206,16 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/grub/*
 %endif
 
+%files efi-image
+/boot/efi/EFI/BOOT/*
+
 %files lang
 %defattr(-,root,root)
 %{_datarootdir}/locale/*
 
 %changelog
+*   Tue Mar 10 2020 Alexey Makhalov <amakhalov@vmware.com> 2.02-14
+-   Package grubx64.efi (bootaa64.efi) into -efi-image subpackage.
 *   Wed Aug 14 2019 Alexey Makhalov <amakhalov@vmware.com> 2.02-13
 -   Add one more patch from fc30 to fix arm64 build.
 *   Thu Feb 21 2019 Alexey Makhalov <amakhalov@vmware.com> 2.02-12
