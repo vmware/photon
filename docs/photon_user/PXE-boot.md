@@ -18,7 +18,7 @@ The instructions to set up the servers assume you have an Ubuntu 14.04 machine w
   sudo apt-get install isc-dhcp-server
 ```
 * Edit the Ethernet interface in `/etc/default/isc-dhcp-server` to `INTERFACES="eth0"`
-* Edit the DHCP configuration in `/etc/dhcp/dhcpd.conf` to allow machines to boot and get an IP address via DHCP in the range `172.16.78.230 - 172.16.78.250`
+* Edit the DHCP configuration in `/etc/dhcp/dhcpd.conf` to allow machines to boot and get an IP address via DHCP in the range `172.16.78.230 - 172.16.78.250`, for example:
 ```
   subnet 172.16.78.0 netmask 255.255.255.0 {
     range 172.16.78.230 172.16.78.250;
