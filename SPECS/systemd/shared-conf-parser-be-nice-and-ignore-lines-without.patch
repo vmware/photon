@@ -1,0 +1,41 @@
+From 2d4fffb00bbf528683946ee04e04980549124b0a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 18 Jul 2019 11:28:55 +0200
+Subject: [PATCH 1/2] shared/conf-parser: be nice and ignore lines without "="
+
+We generally don't treat syntax error as fatal, but in this case we would
+completely refuse to load the file. I think we should treat the the same
+as assignment outside of a section, or an unknown key name.
+---
+ src/shared/conf-parser.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/src/shared/conf-parser.c b/src/shared/conf-parser.c
+index 62fc1c97b7..c3af230870 100644
+--- a/src/shared/conf-parser.c
++++ b/src/shared/conf-parser.c
+@@ -239,7 +239,6 @@ static int parse_line(
+         }
+ 
+         if (sections && !*section) {
+-
+                 if (!(flags & CONFIG_PARSE_RELAXED) && !*section_ignored)
+                         log_syntax(unit, LOG_WARNING, filename, line, 0, "Assignment outside of section. Ignoring.");
+ 
+@@ -247,10 +246,9 @@ static int parse_line(
+         }
+ 
+         e = strchr(l, '=');
+-        if (!e) {
+-                log_syntax(unit, LOG_WARNING, filename, line, 0, "Missing '='.");
+-                return -EINVAL;
+-        }
++        if (!e)
++                return log_syntax(unit, LOG_WARNING, filename, line, 0,
++                                  "Missing '=', ignoring line.");
+ 
+         *e = 0;
+         e++;
+-- 
+2.25.1
+

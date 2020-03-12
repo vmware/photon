@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          18%{?dist}
+Release:          19%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -32,11 +32,13 @@ Patch12:          systemd-239-CVE-2018-16866.patch
 Patch13:          systemd-239-CVE-2019-3842.patch
 Patch14:          systemd-239-CVE-2019-6454.patch
 Patch15:          systemd-239-CVE-2019-3833-3844.patch
-Patch16:          systemd-239-bz-2361840-sysctl-ipv6-disabled.patch
 Patch17:          systemd-239-CVE-2019-15718.patch
 Patch18:          systemd-239-bz-2471962.patch
 Patch19:          systemd-239-issue-962.patch
 Patch20:          systemd-239-CVE-2019-20386.patch
+Patch21:          shared-conf-parser-be-nice-and-ignore-lines-without.patch
+Patch22:          shared-conf-parser-emit-a-nicer-warning-for-somethin.patch
+Patch23:          systemd-239-bz-2527177.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -108,11 +110,13 @@ EOF
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
-%patch16 -p1
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
+%patch21 -p1
+%patch22 -p1
+%patch23 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -279,6 +283,9 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Thu Mar 12 2020 Susant Sahani <ssahani@vmware.com>  239-19
+-    Don't treat syntax error as fatal, fix bz 2527776 and drop
+-    patch 16 as upstream dropped it.
 *    Tue Feb 04 2020 Susant Sahani <ssahani@vmware.com>  239-18
 -    Fix CVE-2019-20386
 *    Thu  Jan 02 2020 Susant Sahani <ssahani@vmware.com>  239-17

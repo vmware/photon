@@ -1,0 +1,32 @@
+From 8be8ed8ce1ed30450b6caf6e7dcf6dd28080e1f6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 18 Jul 2019 11:30:43 +0200
+Subject: [PATCH 2/2] shared/conf-parser: emit a nicer warning for something
+ like "======"
+
+Urlich Windl wrote on the mailing list:
+> I noticed that a line of "=======" in "[Service]" cases the message " Unknown lvalue '' in section 'Service'".
+
+This now becomes:
+/etc/systemd/system/eqeqeqeq.service:3: Missing key name before '=', ignoring line.
+---
+ src/shared/conf-parser.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/shared/conf-parser.c b/src/shared/conf-parser.c
+index c3af230870..b4ebc0f44b 100644
+--- a/src/shared/conf-parser.c
++++ b/src/shared/conf-parser.c
+@@ -249,6 +249,9 @@ static int parse_line(
+         if (!e)
+                 return log_syntax(unit, LOG_WARNING, filename, line, 0,
+                                   "Missing '=', ignoring line.");
++        if (e == l)
++                return log_syntax(unit, LOG_WARNING, filename, line, 0,
++                                  "Missing key name before '=', ignoring line.");
+ 
+         *e = 0;
+         e++;
+-- 
+2.25.1
+
