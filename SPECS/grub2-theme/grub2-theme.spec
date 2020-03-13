@@ -1,7 +1,7 @@
 Summary:    Photon theme for grub2
 Name:       grub2-theme
 Version:    3.2
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache License
 Group:      System Environment/Base
 URL:        https://vmware.github.io/photon/
@@ -19,14 +19,18 @@ grub2-theme provides content of /boot/grub2/themes/photon plus ascii font.
 
 %install
 install -d %{buildroot}/boot
-cp ascii.pf2 %{buildroot}/boot/
 cp -a grub2 %{buildroot}/boot/
 ln -s grub2 %{buildroot}/boot/grub
+# TODO: move fonts to proper place in source tarball
+# Moving ascii to grub2/fonts will allow to load it by
+# loadfont ascii
+install -d %{buildroot}/boot/grub2/fonts
+cp ascii.pf2 %{buildroot}/boot/grub2/fonts/
 
 %files
 %defattr(-,root,root,-)
-/boot/ascii.pf2
 /boot/grub
+/boot/grub2/fonts/ascii.pf2
 %dir /boot/grub2/themes
 %dir /boot/grub2/themes/photon
 /boot/grub2/themes/photon/photon.png
@@ -42,5 +46,7 @@ ln -s grub2 %{buildroot}/boot/grub
 /boot/grub2/themes/photon/theme.txt
 
 %changelog
+* Wed Mar 11 2020 Alexey Makhalov <amakhalov@vmware.com> 3.2-2
+- Move ascii.pf2 to grub2/fonts folder.
 * Mon Mar 09 2020 Alexey Makhalov <amakhalov@vmware.com> 3.2-1
 - Initial packaging
