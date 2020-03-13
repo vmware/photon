@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        5.7.27
+Version:        5.7.29
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=d3ee59c36d23435954df97270d3cd77c9d14bc0a
+%define         sha1 mysql-boost=74c8eddce479258c274ca0cb5e96e33b6011e1fc
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -48,7 +48,7 @@ make test
 
 %files
 %defattr(-,root,root)
-%doc COPYING  README
+%doc LICENSE  README
 %{_libdir}/plugin/*
 %{_libdir}/libmysqlclient.so.*
 %{_bindir}/*
@@ -66,6 +66,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Fri Mar 13 2020 Tapas Kundu <tkundu@vmware.com> 5.7.29-1
+-   Upgrade to version 5.7.29
 *   Tue Aug 06 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.7.27-1
 -   Upgrade to version 5.7.27 to fix CVE-2019-2800, CVE-2019-2822 and more
 *   Tue May 07 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.7.26-1
