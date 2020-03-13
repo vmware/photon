@@ -80,17 +80,10 @@ echo "photon-installer" > $INITRD/etc/hostname
 # Importing the pubkey (photon-repos required)
 #chroot ${INITRD} rpm --import /etc/pki/rpm-gpg/*
 
+# Move entire /boot from initrd to ISO
+mv ${INITRD}/boot ${WORKINGDIR}/
+
 cp -r $SCRIPT_PATH/BUILD_DVD/isolinux $SCRIPT_PATH/BUILD_DVD/boot ${WORKINGDIR}/
-mkdir ${WORKINGDIR}/boot/grub2/fonts/
-cp $INSTALLER_PATH/boot/ascii.pf2 ${WORKINGDIR}/boot/grub2/fonts/
-mkdir -p ${WORKINGDIR}/boot/grub2/themes/photon/
-cp $INSTALLER_PATH/boot/splash.png ${WORKINGDIR}/boot/grub2/themes/photon/photon.png
-cp $INSTALLER_PATH/boot/terminal_*.tga ${WORKINGDIR}/boot/grub2/themes/photon/
-cp $INSTALLER_PATH/boot/theme.txt ${WORKINGDIR}/boot/grub2/themes/photon/
-echo ${WORKINGDIR}
-cp $SCRIPT_PATH/BUILD_DVD/isolinux/splash.png ${INITRD}/installer/boot/.
-mkdir -p ${INITRD}/installer/EFI/BOOT
-cp $INSTALLER_PATH/EFI_$(uname -m)/BOOT/* ${INITRD}/installer/EFI/BOOT/
 
 #Generate efiboot image
 # efiboot is a fat16 image that has at least EFI/BOOT/bootx64.efi
@@ -101,10 +94,7 @@ dd if=/dev/zero of=${WORKINGDIR}/${EFI_IMAGE} bs=3K count=1024
 mkdosfs ${WORKINGDIR}/${EFI_IMAGE}
 mkdir $EFI_FOLDER
 mount -o loop ${WORKINGDIR}/${EFI_IMAGE} $EFI_FOLDER
-mkdir $EFI_FOLDER/EFI
-mkdir ${WORKINGDIR}/EFI
-cp -r $INSTALLER_PATH/EFI_$(uname -m)/BOOT $EFI_FOLDER/EFI/
-cp -r $INSTALLER_PATH/EFI_$(uname -m)/BOOT ${WORKINGDIR}/EFI/
+mv ${WORKINGDIR}/boot/efi/EFI $EFI_FOLDER/
 ls -lR $EFI_FOLDER
 umount $EFI_FOLDER
 rm -rf $EFI_FOLDER
@@ -112,7 +102,7 @@ rm -rf $EFI_FOLDER
 
 cp $INSTALLER_PATH/sample_ks.cfg ${WORKINGDIR}/isolinux/
 
-mv ${INITRD}/boot/vmlinuz* ${WORKINGDIR}/isolinux/vmlinuz
+mv ${WORKINGDIR}/boot/vmlinuz* ${WORKINGDIR}/isolinux/vmlinuz
 
 rm -f ${INITRD}/installer/*.pyc
 # Copy package list json files, dereference symlinks

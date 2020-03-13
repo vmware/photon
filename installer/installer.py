@@ -145,6 +145,18 @@ class Installer(object):
         """
         Add default install_config settings if not specified
         """
+        # set arch to host's one if not defined
+        arch = subprocess.check_output(['uname', '-m'], universal_newlines=True).rstrip('\n')
+        if 'arch' not in install_config:
+            install_config['arch'] = arch
+
+        # 'bootmode' mode
+        if 'bootmode' not in install_config:
+            if "x86_64" in arch:
+                install_config['bootmode'] = 'dualboot'
+            else:
+                install_config['bootmode'] = 'efi'
+
         # extend 'packages' by 'packagelist_file' and 'additional_packages'
         packages = []
         if 'packagelist_file' in install_config:
@@ -158,22 +170,14 @@ class Installer(object):
         if 'additional_packages' in install_config:
             packages.extend(install_config['additional_packages'])
 
+        # add bootloader packages after bootmode set
+        if install_config['bootmode'] in ['dualboot', 'efi']:
+            packages.append('grub2-efi-image')
+
         if 'packages' in install_config:
             install_config['packages'] = list(set(packages + install_config['packages']))
         else:
             install_config['packages'] = packages
-
-        # set arch to host's one if not defined
-        arch = subprocess.check_output(['uname', '-m'], universal_newlines=True).rstrip('\n')
-        if 'arch' not in install_config:
-            install_config['arch'] = arch
-
-        # 'bootmode' mode
-        if 'bootmode' not in install_config:
-            if "x86_64" in arch:
-                install_config['bootmode'] = 'dualboot'
-            else:
-                install_config['bootmode'] = 'efi'
 
         # live means online system. When you create an image for
         # target system, live should be set to false.
@@ -680,9 +684,6 @@ class Installer(object):
     def _setup_grub(self):
         bootmode = self.install_config['bootmode']
 
-        self.cmd.run(['mkdir', '-p', self.photon_root + '/boot/grub2'])
-        self.cmd.run(['ln', '-sfv', 'grub2', self.photon_root + '/boot/grub'])
-
         # Setup bios grub
         if bootmode == 'dualboot' or bootmode == 'bios':
             retval = self.cmd.run('grub2-install --target=i386-pc --force --boot-directory={} {}'.format(self.photon_root + "/boot", self.install_config['disk']))
@@ -699,32 +700,19 @@ class Installer(object):
             if bootmode == 'dualboot':
                 esp_pn = '2'
 
-            self.cmd.run(['mkdir', '-p', self.photon_root + '/boot/efi/EFI/BOOT'])
-            if self.install_config['arch'] == 'aarch64':
-                shutil.copy(self.installer_path + '/EFI_aarch64/BOOT/bootaa64.efi', self.photon_root + '/boot/efi/EFI/BOOT')
-                exe_name='bootaa64.efi'
-            if self.install_config['arch'] == 'x86_64':
-                shutil.copy(self.installer_path + '/EFI_x86_64/BOOT/bootx64.efi', self.photon_root + '/boot/efi/EFI/BOOT')
-                shutil.copy(self.installer_path + '/EFI_x86_64/BOOT/grubx64.efi', self.photon_root + '/boot/efi/EFI/BOOT')
-                exe_name='bootx64.efi'
-
             self.cmd.run(['mkdir', '-p', self.photon_root + '/boot/efi/boot/grub2'])
             with open(os.path.join(self.photon_root, 'boot/efi/boot/grub2/grub.cfg'), "w") as grub_cfg:
                 grub_cfg.write("search -n -u {} -s\n".format(self._get_uuid(self.install_config['partitions_data']['boot'])))
+                grub_cfg.write("set prefix=($root){}grub2\n".format(self.install_config['partitions_data']['bootdirectory']))
                 grub_cfg.write("configfile {}grub2/grub.cfg\n".format(self.install_config['partitions_data']['bootdirectory']))
 
             if self.install_config['live']:
+                arch = self.install_config['arch']
+                # 'x86_64' -> 'bootx64.efi', 'aarch64' -> 'bootaa64.efi'
+                exe_name = 'boot'+arch[:-5]+arch[-2:]+'.efi'
                 # Some platforms do not support adding boot entry. Thus, ignore failures
                 self.cmd.run(['efibootmgr', '--create', '--remove-dups', '--disk', self.install_config['disk'],
                               '--part', esp_pn, '--loader', '/EFI/BOOT/' + exe_name, '--label', 'Photon'])
-
-        # Copy grub theme files
-        shutil.copy(self.installer_path + '/boot/ascii.pf2', self.photon_root + '/boot/grub2')
-        self.cmd.run(['mkdir', '-p', self.photon_root + '/boot/grub2/themes/photon'])
-        shutil.copy(self.installer_path + '/boot/splash.png', self.photon_root + '/boot/grub2/themes/photon/photon.png')
-        shutil.copy(self.installer_path + '/boot/theme.txt', self.photon_root + '/boot/grub2/themes/photon')
-        for f in glob.glob(os.path.abspath(self.installer_path) + '/boot/terminal_*.tga'):
-            shutil.copy(f, self.photon_root + '/boot/grub2/themes/photon')
 
         # Create custom grub.cfg
         retval = self.cmd.run(

@@ -1,13 +1,15 @@
 Name:           minimal
 Summary:        Metapackage to install minimal profile
 Version:        0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache 2.0
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Requires:       filesystem
+Requires:	grub2-theme
+Requires:	grub2-efi-image
 Requires:       pkg-config
 Requires:       bzip2
 Requires:       procps-ng
@@ -56,6 +58,8 @@ Metapackage to install minimal profile
 %defattr(-,root,root,0755)
 
 %changelog
+*   Thu Mar 12 2020 Alexey Makhalov <amakhalov@vmware.com> 0.1-3
+-   Add grub2 packages
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 0.1-2
 -   Add open-vm-tools as requires only for x86_64
 *   Tue Oct 30 2018 Anish Swaminathan <anishs@vmware.com> 0.1-1

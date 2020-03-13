@@ -1,6 +1,8 @@
 {
     "packages": [
         "filesystem",
+        "grub2-theme",
+        "grub2-efi-image",
         "glibc",
         "zlib",
         "file",

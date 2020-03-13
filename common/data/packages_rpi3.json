@@ -1,5 +1,6 @@
 {
     "packages":["glibc", "zlib", "filesystem",
+		"grub2-theme", "grub2-efi-image",
                 "pkg-config", "bash", "bzip2", "shadow", "procps-ng",
 		"coreutils", "bc", "libtool", "net-tools", "findutils", "xz",
 		"iproute2", "util-linux", "kmod", "linux", "linux-dtb-rpi3",

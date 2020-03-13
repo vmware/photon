@@ -20,7 +20,7 @@ cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 
 set default=0
 set timeout=2
-loadfont ${BOOT_DIRECTORY}grub2/ascii.pf2
+loadfont ascii
 
 insmod all_video
 insmod gfxterm

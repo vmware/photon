@@ -3,6 +3,8 @@
         "glibc",
         "zlib",
         "filesystem",
+        "grub2-theme",
+        "grub2-efi-image",
         "pkg-config",
         "bash",
         "bzip2",

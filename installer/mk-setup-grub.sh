@@ -34,7 +34,7 @@ cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 set default=0
 set timeout=5
 search -n -u $BOOT_UUID -s
-loadfont ${BOOT_DIRECTORY}grub2/ascii.pf2
+loadfont ascii
 
 insmod gfxterm
 insmod vbe
