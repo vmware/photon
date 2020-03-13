@@ -4,7 +4,7 @@ Name:           linux-rt
 Version:        4.19.98
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt40
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -28,7 +28,8 @@ Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         4.18-x86-vmware-STA-support.patch
 Patch7:         9p-trans_fd-extend-port-variable-to-u32.patch
-Patch8:         vsock-delay-detach-of-QP-with-outgoing-data.patch
+Patch8:         perf-scripts-python-Convert-python2-scripts-to-python3.patch
+Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 # ttyXRUSB support
 Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
@@ -391,6 +392,14 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
+BuildRequires:  elfutils-devel
+BuildRequires:  elfutils-libelf-devel
+BuildRequires:  binutils-devel
+BuildRequires:  xz-devel
+BuildRequires:  libunwind-devel
+BuildRequires:  slang-devel
+BuildRequires:  python3-devel
+BuildRequires:  pciutils-devel
 Requires:       filesystem kmod
 Requires(post):(coreutils or toybox)
 Requires(postun):(coreutils or toybox)
@@ -417,6 +426,13 @@ Requires:       python3
 %description docs
 The Linux package contains the Linux kernel doc files
 
+%package tools
+Summary:        This package contains kernel tools like perf, turbostat and cpupower
+Group:          System/Tools
+Requires:       %{name} = %{version}
+Requires:       audit elfutils-libelf binutils-libs xz-libs libunwind slang python3 pciutils
+%description tools
+This package contains kernel tools like perf, turbostat and cpupower.
 
 %prep
 %setup -q -n linux-%{version}
@@ -431,6 +447,7 @@ The Linux package contains the Linux kernel doc files
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 %patch11 -p1
 %patch26 -p1
 %patch29 -p1
@@ -781,6 +798,12 @@ sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .conf
 %include %{SOURCE5}
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
+make ARCH=${arch} -C tools perf PYTHON=python3
+
+%ifarch x86_64
+make ARCH=${arch} -C tools turbostat cpupower PYTHON=python3
+%endif
+
 %ifarch x86_64
 # build XR module
 bldroot=`pwd`
@@ -881,6 +904,15 @@ ln -sf "/usr/src/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 
+# disable (JOBS=1) parallel build to fix this issue:
+# fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
+# Linux version that was affected is 4.4.26
+make -C tools ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3
+
+%ifarch x86_64
+make -C tools ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
+%endif
+
 %include %{SOURCE2}
 %include %{SOURCE4}
 
@@ -908,7 +940,35 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/build
 /usr/src/%{name}-headers-%{uname_r}
 
+%files tools
+%defattr(-,root,root)
+/usr/libexec
+%exclude %{_libdir}/debug
+%ifarch x86_64
+/usr/lib64/traceevent
+%endif
+%{_bindir}
+/etc/bash_completion.d/*
+/usr/share/perf-core/strace/groups/file
+/usr/share/doc/*
+%{_libdir}/perf/examples/bpf/*
+%{_libdir}/perf/include/bpf/*
+%{_includedir}/cpufreq.h
+%{_includedir}/cpuidle.h
+%{_lib64dir}/libcpupower.so
+%{_lib64dir}/libcpupower.so.*
+%config(noreplace) %{_sysconfdir}/cpufreq-bench.conf
+%{_sbindir}/cpufreq-bench
+%{_mandir}/man1/cpupower*.gz
+%{_mandir}/man8/turbostat*.gz
+%{_datadir}/locale/*
+
+
 %changelog
+*   Tue Mar 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.98-2
+-   Add tools subpackage to include perf, turbostat and cpupower.
+-   Update the last few perf python scripts in Linux kernel to use
+-   python3 syntax.
 *   Tue Jan 28 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.98-1
 -   Upgrade to 4.19.98
 *   Thu Jan 16 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.82-4
