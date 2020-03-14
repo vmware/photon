@@ -1,0 +1,53 @@
+From f4f9d24860e1b5cd4f6a014f3fda7cd33ebe5be7 Mon Sep 17 00:00:00 2001
+From: Petr Lautrbach <plautrba@redhat.com>
+Date: Sat, 27 Jul 2019 08:20:20 -0700
+Subject: [PATCH] libselinux: Do not define gettid() if glibc >= 2.30 is used
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Since version 2.30 glibc implements gettid() system call wrapper, see
+https://sourceware.org/bugzilla/show_bug.cgi?id=6399
+
+Fixes:
+cc -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -I../include -D_GNU_SOURCE  -DNO_ANDROID_BACKEND   -c -o procattr.o procattr.c
+procattr.c:28:14: error: static declaration of ‘gettid’ follows non-static declaration
+   28 | static pid_t gettid(void)
+      |              ^~~~~~
+In file included from /usr/include/unistd.h:1170,
+                 from procattr.c:2:
+/usr/include/bits/unistd_ext.h:34:16: note: previous declaration of ‘gettid’ was here
+   34 | extern __pid_t gettid (void) __THROW;
+      |                ^~~~~~
+
+Signed-off-by: Petr Lautrbach <plautrba@redhat.com>
+Acked-by: Stephen Smalley <sds@tycho.nsa.gov>
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+---
+ src/procattr.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+--- a/src/procattr.c
++++ b/src/procattr.c
+@@ -21,8 +21,19 @@
+ static int destructor_key_initialized = 0;
+ static __thread char destructor_initialized;
+ 
+-#ifndef __BIONIC__
+-/* Bionic declares this in unistd.h and has a definition for it */
++/* Bionic and glibc >= 2.30 declare gettid() system call wrapper in unistd.h and
++ * has a definition for it */
++#ifdef __BIONIC__
++  #define OVERRIDE_GETTID 0
++#elif !defined(__GLIBC_PREREQ)
++  #define OVERRIDE_GETTID 1
++#elif !__GLIBC_PREREQ(2,29)
++  #define OVERRIDE_GETTID 1
++#else
++  #define OVERRIDE_GETTID 0
++#endif
++
++#if OVERRIDE_GETTID
+ static pid_t gettid(void)
+ {
+ 	return syscall(__NR_gettid);

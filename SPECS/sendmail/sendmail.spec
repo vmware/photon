@@ -1,13 +1,14 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        16%{?dist}
+Release:        17%{?dist}
 URL:            http://www.sendmail.org/
 License:        BSD and CDDL1.1 and MIT
 Group:          Email/Server/Library
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.vim.org/pub/mail/sendmail/sendmail-r8/sendmail.8.15.2.tar.gz
+Patch0:         sendmail-8.15.2-glibc-2.30.patch
 BuildRequires:	systemd
 BuildRequires:  openldap
 BuildRequires:  openssl-devel
@@ -33,6 +34,7 @@ of email from systems to network and is not just a mail client.
 %prep
 
 %setup
+%patch0 -p0
 
 %build
 
@@ -196,6 +198,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+*   Thu Mar 26 2020 Alexey Makhalov <amakhalov@vmware.com> 8.15.2-17
+-   Fix compilation issue with glibc >= 2.30.
 *   Fri Nov 29 2019 Tapas Kundu <tkundu@vmware.com> 8.15.2-16
 -   Build with NETINET6 flag.
 *   Mon Oct 02 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-15

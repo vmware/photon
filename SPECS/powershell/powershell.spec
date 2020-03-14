@@ -1,7 +1,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        6.2.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -44,6 +44,10 @@ chmod +x ./build.sh
 ./build.sh
 cd %{_builddir}/PowerShell-Native/powershell-native-6.2.0
 pushd src/libpsl-native
+# sys/sysctl.h is deprecated
+sed -i '/sys\/sysctl.h/d' src/getuserfrompid.cpp
+sed -i '/sys\/sysctl.h/d' src/getppid.cpp
+
 cmake -DCMAKE_BUILD_TYPE=Debug .
 make -j
 
@@ -88,7 +92,9 @@ fi
     %{_docdir}/*
 
 %changelog
-*   Wed Dec 16 2019 Shreyas B <shreyasb@vmware.com> 6.2.3-4
+*   Thu Mar 26 2020 Alexey Makhalov <amakhalov@vmware.com> 6.2.3-5
+-   Fix compilation issue with glibc >= 2.30.
+*   Mon Dec 16 2019 Shreyas B <shreyasb@vmware.com> 6.2.3-4
 -   Build PowerShell with locally build "libpsl-native.so" from PowerShell-Native(6.2.0).
 *   Wed Dec 04 2019 Tapas Kundu <tkundu@vmware.com> 6.2.3-3
 -   Fixed ref folder to have right dlls

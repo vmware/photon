@@ -218,16 +218,16 @@ index 54e406b..29787a5 100644
 +}
 +
  #if USE_TCACHE
- static inline int
- __always_inline
+ static __always_inline int
+ do_set_tcache_max (size_t value)
 @@ -5237,6 +5263,11 @@ __libc_mallopt (int param_number, int value)
        if (value > 0)
- 	do_set_arena_max (value);
+ 	res = do_set_arena_max (value);
        break;
 +
 +    case M_ARENA_STICKINESS:
 +      if (value > 0)
-+	do_set_arena_stickiness (value);
++	res = do_set_arena_stickiness (value);
 +      break;
      }
    __libc_lock_unlock (av->mutex);

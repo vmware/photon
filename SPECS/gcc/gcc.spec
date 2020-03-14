@@ -3,7 +3,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        7.3.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -14,6 +14,8 @@ Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}
 Patch0:         PLUGIN_TYPE_CAST.patch
 Patch1:         libsanitizer-avoidustat.h-glibc-2.28.patch
 Patch2:         090_all_pr55930-dependency-tracking.patch
+Patch3:         glibc-2.31-libsanitizer-1.patch
+Patch4:         glibc-2.31-libsanitizer-2.patch
 Requires:       libstdc++-devel = %{version}-%{release}
 Requires:       libgcc-devel = %{version}-%{release}
 Requires:       libgomp-devel = %{version}-%{release}
@@ -89,6 +91,8 @@ This package contains development headers and static library for libgomp
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 # disable no-pie for gcc binaries
 sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
@@ -208,6 +212,8 @@ make %{?_smp_mflags} check-gcc
 %{_lib64dir}/libgomp.spec
 
 %changelog
+*   Tue Mar 24 2020 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-6
+-   Fix compilation issue with glibc-2.31
 *   Tue Nov 06 2018 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-5
 -   Cross compilation support
 *   Fri Nov 02 2018 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-4

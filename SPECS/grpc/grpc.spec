@@ -1,7 +1,7 @@
 Summary:        Google RPC
 Name:           grpc
 Version:        1.15.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License, Version 2.0
 URL:            https://grpc.io
 Group:          Development/Libraries
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/grpc/grpc/archive/%{name}-%{version}.tar.gz
 %define sha1 grpc=0c5ab74d3f64800dbf6005ec337e4291f04df438
+Patch0:         grpc-rename-gettid-functions.patch
 BuildRequires:  build-essential
 BuildRequires:  which
 BuildRequires:  c-ares-devel
@@ -40,6 +41,7 @@ developing applications that use grpc.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 make  %{_smp_mflags} prefix=%{_prefix} libdir=%{_libdir}
@@ -64,6 +66,8 @@ ln -sf libgrpc++_error_details.so.6 %{buildroot}%{_libdir}/libgrpc++_error_detai
 %{_libdir}/pkgconfig/*
 
 %changelog
+* Wed Mar 25 2020 Alexey Makhalov <amakhalov@vmware.com> 1.15.1-2
+- Fix compilation issue with glibc >= 2.30.
 * Thu Oct 04 2018 Siju Maliakkal <smaliakkal@vmware.com> 1.15.1-1
 - Updated to latest version
 * Tue Mar 27 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.10.0-1

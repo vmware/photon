@@ -211,7 +211,7 @@ class ToolChainUtils(object):
             packages += " " + package
 
         self.logger.debug("Installing custom rpms:" + packages)
-        cmd = (self.rpmCommand + " -i -v --nodeps --noorder --force " + rpmFiles)
+        cmd = ("rpm -i -v --nodeps --noorder --force " + rpmFiles)
         retVal = sandbox.run(cmd, logfn=self.logger.debug)
         if retVal != 0:
             self.logger.debug("Command Executed:" + cmd)

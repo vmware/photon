@@ -3,11 +3,12 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        2.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Source0:        https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}.tar.gz
 %define sha1    libselinux=d45f2db91dbec82ef5a153aca247acc04234e8af
+Patch0:         0001-libselinux-Do-not-define-gettid-if-glibc-2.30-is-use.patch
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -77,6 +78,7 @@ SELinux applications.
 
 %prep
 %setup -qn %{name}-%{version}
+%patch0 -p1
 
 %build
 sed '/unistd.h/a#include <sys/uio.h>' -i src/setrans_client.c
@@ -131,6 +133,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Mar 25 2020 Alexey Makhalov <amakhalov@vmware.com> 2.8-3
+-   Fix compilation issue with glibc >= 2.30.
 *   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.8-2
 -   Added BuildRequires python2-devel
 *   Fri Aug 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.8-1

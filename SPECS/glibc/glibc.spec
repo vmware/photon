@@ -3,24 +3,23 @@
 
 Summary:        Main C library
 Name:           glibc
-Version:        2.28
-Release:        5%{?dist}
+Version:        2.31
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
-%define sha1    glibc=ccb5dc9e51a9884df8488f86982439d47b283b2a
+%define sha1    glibc=55619672e5e13996e264d408949eb4aaa26e7ec8
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
-Patch0:         http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
+Patch0:         http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.31-fhs-1.patch
 Patch1:         glibc-2.24-bindrsvport-blacklist.patch
 Patch2:         0002-malloc-arena-fix.patch
-Patch3:         glibc-2.28-CVE-2018-19591.patch
-Patch4:         CVE-2019-9169.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
+%define ExtraBuildRequires python3, python3-libs
 %description
 This library provides the basic routines for allocating memory,
 searching directories, opening and closing files, reading and
@@ -75,8 +74,6 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
-%patch4 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -107,19 +104,19 @@ chmod +x find_requires.sh
 
 %build
 
-# make aarch64 use /lib64 instead of /lib (same as x86_64)
-sed -i "s/libc_cv_rtlddir='\/lib'/libc_cv_rtlddir='\/lib64'/" sysdeps/unix/sysv/linux/aarch64/configure
-
 cd %{_builddir}/%{name}-build
 ../%{name}-%{version}/configure \
         --prefix=%{_prefix} \
         --build=%{_build} \
         --host=%{_host} \
         --disable-profile \
+        --disable-werror \
         --enable-kernel=3.2 \
         --enable-bind-now \
+        --enable-stack-protector=strong \
         --disable-experimental-malloc \
-        --disable-silent-rules
+        --disable-silent-rules \
+        libc_cv_slibdir=/lib
 
 # Sometimes we have false "out of memory" make error
 # just rerun/continue make to workaroung it.
@@ -197,11 +194,17 @@ make %{?_smp_mflags} check ||:
 # FAIL (intermittent) in chroot but PASS in container:
 # posix/tst-spawn3 and stdio-common/test-vfprintf
 n=0
-grep "^FAIL: posix/tst-spawn3" tests.sum >/dev/null && n=$((n+1)) ||:
-grep "^FAIL: stdio-common/test-vfprintf" tests.sum >/dev/null && n=$((n+1)) ||:
-# FAIL always on overlayfs/aufs (in container)
-grep "^FAIL: posix/tst-dir" tests.sum >/dev/null && n=$((n+1)) ||:
 
+grep "^FAIL: c++-types-check" tests.sum >/dev/null && n=$((n+1)) ||:
+# can fail in chroot
+grep "^FAIL: io/tst-fchownat" tests.sum >/dev/null && n=$((n+1)) ||:
+grep "^FAIL: malloc/tst-tcfree2" tests.sum >/dev/null && n=$((n+1)) ||:
+# can timeout
+grep "^FAIL: nptl/tst-mutex10" tests.sum >/dev/null && n=$((n+1)) ||:
+# can fail in chroot
+grep "^FAIL: nptl/tst-setuid3" tests.sum >/dev/null && n=$((n+1)) ||:
+grep "^FAIL: stdlib/tst-secure-getenv" tests.sum >/dev/null && n=$((n+1)) ||:
+grep "^FAIL: support/tst-support_descriptors" tests.sum >/dev/null && n=$((n+1)) ||:
 #https://sourceware.org/glibc/wiki/Testing/Testsuite
 grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 #This happens because the kernel fails to reap exiting threads fast enough,
@@ -224,16 +227,9 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %attr(0644,root,root) %config(missingok,noreplace) %{_sysconfdir}/ld.so.cache
 %config %{_sysconfdir}/locale-gen.conf
 
-%ifarch %{ix86}
 /lib/*
 %exclude /lib/libpcprofile.so
 %{_libdir}/*.so
-%else
-/lib64/*
-%exclude /lib64/libpcprofile.so
-%{_lib64dir}/*.so
-%endif
-
 /sbin/ldconfig
 /sbin/locale-gen.sh
 %{_bindir}/*
@@ -254,11 +250,7 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 %files iconv
 %defattr(-,root,root)
-%ifarch %{ix86}
 %{_libdir}/gconv/*
-%else
-%{_lib64dir}/gconv/*
-%endif
 /usr/bin/iconv
 /usr/sbin/iconvconfig
 
@@ -274,13 +266,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 /usr/sbin/zdump
 /usr/sbin/zic
 /sbin/sln
-%ifarch %{ix86}
 %{_libdir}/audit/*
 /lib/libpcprofile.so
-%else
-%{_lib64dir}/audit/*
-/lib64/libpcprofile.so
-%endif
 
 %files nscd
 %defattr(-,root,root)
@@ -301,13 +288,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %defattr(-,root,root)
 # TODO: Excluding for now to remove dependency on PERL
 # /usr/bin/mtrace
-%ifarch %{ix86}
 %{_libdir}/*.a
 %{_libdir}/*.o
-%else
-%{_lib64dir}/*.a
-%{_lib64dir}/*.o
-%endif
 %{_includedir}/*
 
 %files -f %{name}.lang lang
@@ -315,6 +297,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Thu Mar 12 2020 Alexey Makhalov <amakhalov@vmware.com> 2.31-1
+-   Version update. Use /lib
 *   Tue Sep 24 2019 Alexey Makhalov <amakhalov@vmware.com> 2.28-5
 -   Cross compilling support
 -   Create empty ld.so.cache file for all builds (native and cross)

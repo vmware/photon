@@ -93,6 +93,8 @@ aarch64/xz-5.2.3-2.ph2.aarch64.rpm
 aarch64/xz-libs-5.2.3-2.ph2.aarch64.rpm
 aarch64/zlib-1.2.11-1.ph2.aarch64.rpm
 aarch64/zlib-devel-1.2.11-1.ph2.aarch64.rpm
+aarch64/python3-3.7.5-1.ph3.aarch64.rpm
+aarch64/python3-libs-3.7.5-1.ph3.aarch64.rpm
 noarch/apache-maven-3.3.9-4.ph1.noarch.rpm
 noarch/autoconf-2.69-6.ph2.noarch.rpm
 noarch/automake-1.15-4.ph2.noarch.rpm
