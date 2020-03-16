@@ -1,0 +1,32 @@
+From 415b50d910f73e97eac0082cc6b7c2fa57a4094f Mon Sep 17 00:00:00 2001
+From: Nikolay Stanchev <nstanchev@vmware.com>
+Date: Wed, 25 Mar 2020 15:02:13 +0200
+Subject: [PATCH] Prevent error raising when verify mode is VERIFY_NONE
+
+As stated in documentation of OpenSSL found here:
+https://www.openssl.org/docs/man1.0.2/man3/SSL_CTX_set_verify.html
+The SSL_VERIFY_NONE client mode is currently not possible.
+This leads to not having the possiblity to use TCP with SSL and
+always trust on the certificate provided by the remote server,
+for example for dev purposes.
+
+Signed-off-by: Nikolay Stanchev <nstanchev@vmware.com>
+---
+ lib/remote_syslog_sender/tcp_sender.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/remote_syslog_sender/tcp_sender.rb b/lib/remote_syslog_sender/tcp_sender.rb
+index fb1a258..026a2d5 100644
+--- a/lib/remote_syslog_sender/tcp_sender.rb
++++ b/lib/remote_syslog_sender/tcp_sender.rb
+@@ -70,7 +70,7 @@ def connect
+             @socket = OpenSSL::SSL::SSLSocket.new(@tcp_socket, context)
+             @socket.connect
+             @socket.post_connection_check(@remote_hostname)
+-            raise "verification error" if @socket.verify_result != OpenSSL::X509::V_OK
++            raise "verification error" if @socket.verify_result != OpenSSL::X509::V_OK and context.verify_mode != OpenSSL::SSL::VERIFY_NONE
+           else
+             @socket = @tcp_socket
+           end
+
+
