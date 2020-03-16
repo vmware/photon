@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.8p1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -17,6 +17,12 @@ Patch0:         blfs_systemd_fixes.patch
 Patch1:         openssh-7.8p1-fips.patch
 Patch2:         openssh-7.8p1-configure-fips.patch
 Patch3:         openssh-CVE-2018-20685.patch
+Patch4:         openssh-CVE-2019-6109.patch
+Patch5:         openssh-CVE-2019-6109-progressmeter.patch
+Patch6:         openssh-CVE-2019-6111.patch
+Patch7:         openssh-CVE-2019-6111-filenames.patch
+Patch8:         scp-name-validator-CVE-2019-6110.patch
+Patch9:         openssh-CVE-2019-16905.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
@@ -55,6 +61,12 @@ tar xf %{SOURCE1} --no-same-owner
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
 %build
 %configure \
     --sysconfdir=/etc/ssh \
@@ -177,6 +189,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Mon Mar 16 2020 Ankit Jain <ankitja@vmware.comm> 7.8p1-5
+-   Fix CVE-2019-6109, CVE-2019-6110, CVE-2019-6111, CVE-2019-16905
 *   Wed Aug 07 2019 Anish Swaminathan <anishs@vmware.com> 7.8p1-4
 -   Check for fips mode before setting
 *   Thu Feb 14 2019 Ankit Jain <ankitja@vmware.comm> 7.8p1-3
