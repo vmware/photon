@@ -1,19 +1,20 @@
-Summary:        Etcd-3.1.5
+Summary:        Distributed reliable key-value store
 Name:           etcd
-Version:        3.3.9
-Release:        2%{?dist}
+Version:        3.4.3
+Release:        1%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 etcd=67d754476cdb1cde4d33fbb9872a6313963c5755
+%define sha1 etcd=3934e2b43004cf0d9a323add6be3398340a607aa
 Source1:        etcd.service
 %ifarch aarch64
 Source2:        etcd.sysconfig
 %endif
-BuildRequires:  go >= 1.7
+BuildRequires:  go >= 1.12
+BuildRequires:  git
 
 %description
 A highly-available key value store for shared configuration and service discovery.
@@ -71,6 +72,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+*   Mon Mar 16 2020 Ankit Jain <ankitja@vmware.com> 3.4.3-1
+-   Update to 3.4.3
 *   Mon Feb 25 2019 Keerthana K <keerthanak@vmware.com> 3.3.9-2
 -   Add env variable ETCD_UNSUPPORTED_ARCH=arm64 for arm to start etcd service.
 *   Fri Sep 21 2018 Sujay G <gsujay@vmware.com> 3.3.9-1
