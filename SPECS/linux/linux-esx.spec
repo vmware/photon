@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.104
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -132,6 +132,7 @@ The Linux package contains the Linux kernel doc files
 Summary:	HMAC SHA256/HMAC SHA512 generator
 Group:		System Environment/Kernel
 Requires:      %{name} = %{version}-%{release}
+Enhances:        %{name}
 %description hmacgen
 This Linux package contains hmac sha generator kernel module.
 
@@ -306,6 +307,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Mon Mar 16 2020 Keerthana K <keerthanak@vmware.com> 4.19.104-3
+-   Adding Enhances depedency to hmacgen.
 *   Fri Mar 13 2020 Mounesh Badiger <badigerm@vmware.com> 4.19.104-2
 -   p9fs_dir_readdir offset support
 -   Add 9p zero copy data path using crossfd
