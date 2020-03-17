@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.214
+Version:        4.9.216
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=40fbbe2606f486223fd5cad15b9e7fd6d9845bac
+%define sha1 linux=4b633163289e13d9d8c7ae559677dfdea70077d5
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -55,10 +55,6 @@ Patch32:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
 Patch33:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 Patch34:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch35:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
-# Fix for CVE-2019-16233
-Patch36:        0001-scsi-qla2xxx-fix-a-potential-NULL-pointer-dereferenc.patch
-# Fix for CVE-2019-16234
-Patch37:        0001-iwlwifi-pcie-fix-rb_allocator-workqueue-allocation.patch
 # Fix for CVE-2018-8043
 Patch40:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 Patch44:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -202,8 +198,6 @@ EOF
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
-%patch36 -p1
-%patch37 -p1
 %patch40 -p1
 %patch44 -p1
 %patch45 -p1
@@ -355,6 +349,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Mar 17 2020 Ajay Kaher <akaher@vmware.com> 4.9.216-1
+-   Update to version 4.9.216
 *   Tue Mar 03 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.9.214-1
 -   Update to version 4.9.214
 *   Tue Feb 25 2020 Ajay Kaher <akaher@vmware.com> 4.9.210-3
