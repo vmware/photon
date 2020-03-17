@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.213
-Release:       2%{?dist}
+Version:       4.4.216
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=11c59d6a37957a1ac504dc1586d0cc52e3a97578
+%define sha1 linux=544a6744428acd4879f53315cd69487cf01d9505
 Source1:       config-esx
 Source2:       update_photon_cfg.postun
 Patch0:        double-tcp_mem-limits.patch
@@ -70,18 +70,6 @@ Patch55:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch56:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch57:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
-# Fix for CVE-2019-16233
-Patch58:        0001-scsi-qla2xxx-fix-a-potential-NULL-pointer-dereferenc.patch
-
-# Fix for CVE-2019-11487
-Patch61:        0001-mm-make-page-ref-count-overflow-check-tighter-and-mo.patch
-Patch62:        0002-mm-add-try_get_page-helper-function.patch
-Patch63:        0003-mm-handle-PTE-mapped-tail-pages-in-gerneric-fast-gup.patch
-Patch64:        0004-mm-gup-remove-broken-VM_BUG_ON_PAGE-compound-check-f.patch
-Patch65:        0005-mm-gup-ensure-real-head-page-is-ref-counted-when-usi.patch
-Patch66:        0006-mm-prevent-get_user_pages-from-overflowing-page-refc.patch
-Patch67:        0007-pipe-add-pipe_buf_get-helper.patch
-Patch68:        0008-fs-prevent-page-refcount-overflow-in-pipe_buf_get.patch
 
 # For Spectre
 Patch70: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -170,16 +158,7 @@ The Linux package contains the Linux kernel doc files
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
-%patch58 -p1
 
-%patch61 -p1
-%patch62 -p1
-%patch63 -p1
-%patch64 -p1
-%patch65 -p1
-%patch66 -p1
-%patch67 -p1
-%patch68 -p1
 %patch70 -p1
 %patch71 -p1
 
@@ -272,6 +251,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Mar 17 2020 Ajay Kaher <akaher@vmware.com> 4.4.216-1
+-   Update to version 4.4.216
 *   Thu Feb 13 2020 Ajay Kaher <akaher@vmware.com> 4.4.213-2
 -   Fix CVE-2019-16233
 *   Wed Feb 12 2020 ashwin-h <ashwinh@vmware.com> 4.4.213-1

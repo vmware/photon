@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.213
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.216
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=11c59d6a37957a1ac504dc1586d0cc52e3a97578
+%define sha1 linux=544a6744428acd4879f53315cd69487cf01d9505
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -42,8 +42,6 @@ Patch20:        0001-Enable-cache-loose-for-vdfs-9p.patch
 Patch22:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
 Patch23:        0001-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
-# Fix for CVE-2019-16233
-Patch24:        0001-scsi-qla2xxx-fix-a-potential-NULL-pointer-dereferenc.patch
 
 Patch26:        Implement-the-f-xattrat-family-of-functions.patch
 Patch27:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -74,16 +72,6 @@ Patch49:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch50:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch51:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
-
-# Fix for CVE-2019-11487
-Patch52:        0001-mm-make-page-ref-count-overflow-check-tighter-and-mo.patch
-Patch53:        0002-mm-add-try_get_page-helper-function.patch
-Patch54:        0003-mm-handle-PTE-mapped-tail-pages-in-gerneric-fast-gup.patch
-Patch55:        0004-mm-gup-remove-broken-VM_BUG_ON_PAGE-compound-check-f.patch
-Patch56:        0005-mm-gup-ensure-real-head-page-is-ref-counted-when-usi.patch
-Patch57:        0006-mm-prevent-get_user_pages-from-overflowing-page-refc.patch
-Patch58:        0007-pipe-add-pipe_buf_get-helper.patch
-Patch59:        0008-fs-prevent-page-refcount-overflow-in-pipe_buf_get.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -186,7 +174,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch20 -p1
 %patch22 -p1
 %patch23 -p1
-%patch24 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -206,14 +193,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch49 -p1
 %patch50 -p1
 %patch51 -p1
-%patch52 -p1
-%patch53 -p1
-%patch54 -p1
-%patch55 -p1
-%patch56 -p1
-%patch57 -p1
-%patch58 -p1
-%patch59 -p1
 %patch67 -p1
 %patch71 -p1
 
@@ -374,6 +353,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Mar 17 2020 Ajay Kaher <akaher@vmware.com> 4.4.216-1
+-   Update to version 4.4.216
 *   Thu Feb 13 2020 Ajay Kaher <akaher@vmware.com> 4.4.213-2
 -   Fix CVE-2019-16233
 *   Wed Feb 12 2020 ashwin-h <ashwinh@vmware.com> 4.4.213-1
