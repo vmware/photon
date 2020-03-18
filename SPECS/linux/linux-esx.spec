@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.97
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -127,6 +127,7 @@ The Linux package contains the Linux kernel doc files
 Summary:	HMAC SHA256/HMAC SHA512 generator
 Group:		System Environment/Kernel
 Requires:      %{name} = %{version}-%{release}
+Enhances:       %{name}
 %description hmacgen
 This Linux package contains hmac sha generator kernel module.
 
@@ -297,6 +298,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Mon Mar 16 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-8
+-   Adding Enhances depedency to hmacgen.
 *   Fri Mar 06 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.97-7
 -   9p: file attributes caching support (cache=stat)
 *   Wed Mar 04 2020 Vikash Bansal <bvikas@vmware.com> 4.19.97-6

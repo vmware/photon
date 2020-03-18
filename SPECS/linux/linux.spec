@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.97
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -240,6 +240,7 @@ Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
 Summary:	HMAC SHA256/HMAC SHA512 generator
 Group:		System Environment/Kernel
 Requires:      %{name} = %{version}-%{release}
+Enhances:       %{name}
 %description hmacgen
 This Linux package contains hmac sha generator kernel module.
 
@@ -587,6 +588,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Mar 16 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-7
+-   Adding Enhances depedency to hmacgen.
 *   Wed Mar 04 2020 Vikash Bansal <bvikas@vmware.com> 4.19.97-6
 -   Backporting of patch continuous testing of RNG from urandom
 *   Tue Feb 25 2020 Ajay Kaher <akaher@vmware.com> 4.19.97-5
