@@ -1,0 +1,14 @@
+We do not require tuned-gui.desktop as part of Photon.
+So, this patch is to remove the dependency on desktop-file-install
+
+--- a/Makefile	2020-04-30 18:30:48.450748730 +0800
++++ b/Makefile	2020-04-30 18:31:22.779857495 +0800
+@@ -216,7 +216,7 @@ install: install-dirs
+ 
+ 	# desktop file
+ 	install -dD $(DESTDIR)$(DATADIR)/applications
+-	desktop-file-install --dir=$(DESTDIR)$(DATADIR)/applications tuned-gui.desktop
++	#desktop-file-install --dir=$(DESTDIR)$(DATADIR)/applications tuned-gui.desktop
+ 
+ clean: clean-html
+ 	find -name "*.pyc" | xargs rm -f
