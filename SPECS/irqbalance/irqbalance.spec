@@ -1,7 +1,7 @@
 Summary:    Irqbalance daemon
 Name:       irqbalance
 Version:    1.4.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        https://github.com/Irqbalance/irqbalance
 Group:      System Environment/Services
@@ -10,7 +10,6 @@ Distribution:   Photon
 # https://github.com/Irqbalance/%{name}/archive/v%{version}.tar.gz
 Source0:    %{name}-%{version}.tar.gz
 %define sha1 %{name}-%{version}=4eb861313d6b93b3be5d5933a7f45ee7b51c7ddb
-BuildArch:      x86_64
 BuildRequires:  systemd-devel
 BuildRequires:  glib-devel
 Requires:  systemd
@@ -23,11 +22,10 @@ interrupts across all of a systems cpus.
 %build
 sed -i 's/libsystemd-journal/libsystemd/' configure.ac
 ./autogen.sh
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --disable-static \
     --with-systemd
-    
+
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -54,6 +52,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datadir}/*
 
 %changelog
+*   Thu Jul 09 2020 Tapas Kundu <tkundu@vmware.com> 1.4.0-3
+-   Remove BuildArch
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.4.0-2
 -   Adding BuildArch
 *   Fri Sep 07 2018 Ankit Jain <ankitja@vmware.com>  1.4.0-1
