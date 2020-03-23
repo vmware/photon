@@ -1,7 +1,7 @@
 Summary:	Cmake-3.8.0
 Name:		cmake
 Version:	3.8.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.8/%{name}-%{version}.tar.gz
@@ -18,8 +18,20 @@ BuildRequires:  curl-devel
 BuildRequires:  libgcc-devel
 BuildRequires:  expat-libs
 BuildRequires:  expat-devel
+BuildRequires:  xz-devel
+BuildRequires:  xz-libs
+BuildRequires:  zlib-devel
+BuildRequires:  bzip2-devel
+BuildRequires:  libarchive
+BuildRequires:  libarchive-devel
 Requires:	ncurses
+Requires:       xz-libs
 Requires:       expat
+Requires:       zlib
+Requires:       bzip2
+Requires:       libarchive
+
+
 %description
 CMake is an extensible, open-source system that manages the build process in an 
 operating system and in a compiler-independent manner. 
@@ -28,7 +40,13 @@ operating system and in a compiler-independent manner.
 %patch0 -p1
 %build
 ncores="$(/usr/bin/getconf _NPROCESSORS_ONLN)"
-./bootstrap --prefix=%{_prefix} --system-expat --parallel=$ncores
+./bootstrap \
+  --prefix=%{_prefix} \
+  --system-expat \
+  --system-zlib \
+  --system-libarchive \
+  --system-bzip2 \
+  --parallel=$ncores
 
 make
 %install
@@ -45,6 +63,8 @@ make  %{?_smp_mflags} test
 /usr/doc/%{name}-*/*
 /usr/share/aclocal/*
 %changelog
+*       Fri Mar 20 2020 Dweep Advani <dadvani@vmware.com> 3.8.0-5
+-       Building using system libs.
 *       Fri Sep 29 2017 Kumar Kaushik <kaushikk@vmware.com> 3.8.0-4
 -       Building using system expat libs.
 *       Thu Aug 17 2017 Kumar Kaushik <kaushikk@vmware.com> 3.8.0-3
