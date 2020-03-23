@@ -2,15 +2,15 @@
 %global photon_checksum_generator_version 1.0
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.104
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.112
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=86bba9d355c767c843f0a63353658fe39fd31e92
+%define sha1 linux=266f149294b7222b23eab3292d0db98791343b0e
 Source1:	config-aws
 Source2:	initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -60,8 +60,6 @@ Patch34:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch35:        0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
 # Fix for CVE-2019-12381
 Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
-# Fix for CVE-2019-16234
-Patch37:        0001-iwlwifi-pcie-fix-rb_allocator-workqueue-allocation.patch
 # Fix for CVE-2019-12378
 Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
@@ -201,7 +199,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
-%patch37 -p1
 %patch38 -p1
 %patch39 -p1
 
@@ -423,6 +420,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Mar 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.112-1
+-   Update to version 4.19.112
 *   Tue Mar 17 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-3
 -   hmac generation of crypto modules and initrd generation changes if fips=1
 *   Mon Mar 16 2020 Keerthana K <keerthanak@vmware.com> 4.19.104-2
