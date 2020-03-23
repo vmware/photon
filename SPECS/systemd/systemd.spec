@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          19%{?dist}
+Release:          20%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -38,6 +38,7 @@ Patch18:          systemd-239-issue-962.patch
 Patch19:          systemd-239-CVE-2019-20386.patch
 Patch20:          shared-conf-parser-be-nice-and-ignore-lines-without.patch
 Patch21:          systemd-239-bz-2527177.patch
+Patch22:          ipv6ra-allow-to-ignore-addresses.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -115,6 +116,7 @@ EOF
 %patch19 -p1
 %patch20 -p1
 %patch21 -p1
+%patch22 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -281,6 +283,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Tue Mar 24 2020 Susant Sahani <ssahani@vmware.com>  239-20
+-    networkd: ipv6ra allow to ignore addresses
 *    Thu Mar 12 2020 Susant Sahani <ssahani@vmware.com>  239-19
 -    Don't treat syntax error as fatal, fix bz 2527776 and drop
 -    patch 16 as upstream dropped it.
