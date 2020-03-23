@@ -1,7 +1,7 @@
 Summary:	Cmake-3.12.1
 Name:		cmake
 Version:	3.12.1
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.12/%{name}-%{version}.tar.gz
@@ -24,11 +24,20 @@ BuildRequires:  libarchive
 BuildRequires:  libarchive-devel
 BuildRequires:  bzip2
 BuildRequires:  bzip2-devel
+BuildRequires:  xz-devel
+BuildRequires:  xz-libs
+BuildRequires:  libarchive
+BuildRequires:  libuv-devel
+BuildRequires:  libuv
 Requires:	ncurses
 Requires:       expat
 Requires:       zlib
 Requires:       libarchive
 Requires:       bzip2
+Requires:       xz-libs
+Requires:       libarchive
+Requires:       libuv
+
 %description
 CMake is an extensible, open-source system that manages the build process in an
 operating system and in a compiler-independent manner.
@@ -37,7 +46,16 @@ operating system and in a compiler-independent manner.
 %patch0 -p1
 %build
 ncores="$(/usr/bin/getconf _NPROCESSORS_ONLN)"
-./bootstrap --prefix=%{_prefix} --system-expat --system-zlib --system-libarchive --system-bzip2 --parallel=$ncores
+./bootstrap \
+  --prefix=%{_prefix} \
+  --system-expat \
+  --system-zlib \
+  --system-libarchive \
+  --system-bzip2 \
+  --system-liblzma \
+  --system-libarchive \
+  --system-libuv \
+  --parallel=$ncores
 make %{?_smp_mflags}
 
 %install
@@ -57,6 +75,8 @@ make  %{?_smp_mflags} test
 %{_libdir}/rpm/macros.d/macros.cmake
 
 %changelog
+*       Fri Mar 20 2020 Dweep Advani <dadvani@vmware.com> 3.12.1-5
+-       Add system provided libs.
 *       Thu Jan 17 2019 Ankit Jain <ankitja@vmware.com> 3.12.1-4
 -       Removed unnecessary libgcc-devel buildrequires
 *       Thu Dec 06 2018 <ashwinh@vmware.com> 3.12.1-3
