@@ -2,7 +2,7 @@
 
 Summary:      Z shell
 Name:         zsh
-Version:      5.6.1
+Version:      5.8
 Release:      1%{?dist}
 License:      MIT
 URL:          http://zsh.sourceforge.net/
@@ -10,7 +10,7 @@ Group:        System Environment/Shells
 Vendor:       VMware, Inc.
 Distribution: Photon
 Source0:      http://www.zsh.org/pub/%{name}-%{version}.tar.xz
-%define sha1  zsh=6caa65c72b2f8f52aecce9064e223139d3a37d85
+%define sha1  zsh=966ea0498fb94140f3caf12af88e98b0e4d02078
 Source1:      zprofile.rhs
 Source2:      zshrc
 
@@ -144,6 +144,8 @@ fi
 %doc Doc/*.html
 
 %changelog
+*   Mon Mar 23 2020 Siju Maliakkal <smaliakkal@vmware.com> 5.8-1
+-   Upgrade to 5.8 to mitigate CVE-2019-20044
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 5.6.1-1
 -   Upgrading to latest
 *   Mon Mar 19 2018 Xiaolin Li <xiaolinl@vmware.com> 5.3.1-5
