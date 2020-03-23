@@ -1,7 +1,7 @@
 Summary:	Cmake-3.4.3
 Name:		cmake
 Version:	3.4.3
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.4/%{name}-%{version}.tar.gz
@@ -11,15 +11,32 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	ncurses-devel >= 6.0-3
 BuildRequires:  expat
-Requires:	ncurses >= 6.0-3
+BuildRequires:  curl
+BuildRequires:  zlib
+BuildRequires:  bzip2-devel
+BuildRequires:  libarchive-devel
+BuildRequires:  xz-devel
+BuildRequires:  xz
+Requires:       ncurses >= 6.0-3
 Requires:       expat
+Requires:       curl
+Requires:       bzip2
+Requires:       libarchive
+Requires:       xz
+
 %description
 CMake is an extensible, open-source system that manages the build process in an 
 operating system and in a compiler-independent manner. 
 %prep
 %setup -q
 %build
-./bootstrap --prefix=%{_prefix} --system-expat
+./bootstrap \
+  --prefix=%{_prefix} \
+  --system-expat \
+  --system-zlib \
+  --system-libarchive \
+  --system-bzip2 \
+  --system-libarchive
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -33,6 +50,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/doc/%{name}-*/*
 /usr/share/aclocal/*
 %changelog
+*   Fri Mar 20 2020 Dweep Advani <dadvani@vmware.com> 3.4.3-5
+-   Build with system provided libs
 *   Fri Sep 29 2017 Kumar Kaushik <kaushikk@vmware.com> 3.4.3-4
 -   Building with system expat.
 *   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 3.4.3-3
