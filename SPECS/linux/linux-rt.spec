@@ -1,10 +1,11 @@
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
 Version:        4.19.98
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt40
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -433,6 +434,16 @@ Requires:       %{name} = %{version}
 Requires:       audit elfutils-libelf binutils-libs xz-libs libunwind slang python3 pciutils
 %description tools
 This package contains kernel tools like perf, turbostat and cpupower.
+
+%package -n python3-perf
+Summary:        Python bindings for applications that will manipulate perf events.
+Group:          Development/Libraries
+Requires:       linux-rt-tools = %{version}-%{release}
+Requires:       python3
+
+%description -n python3-perf
+This package provides a module that permits applications written in the
+Python programming language to use the interface to manipulate perf events.
 
 %prep
 %setup -q -n linux-%{version}
@@ -908,6 +919,7 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 # fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
 # Linux version that was affected is 4.4.26
 make -C tools ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3
+make -C tools/perf ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} PYTHON=python3 install-python_ext
 
 %ifarch x86_64
 make -C tools ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
@@ -963,8 +975,14 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_mandir}/man8/turbostat*.gz
 %{_datadir}/locale/*
 
+%files -n python3-perf
+%defattr(-,root,root)
+%{python3_sitelib}/*
+
 
 %changelog
+*   Sun Mar 22 2020 Tapas Kundu <tkundu@vmware.com> 4.19.98-3
+-   Added python3-perf subpackage
 *   Tue Mar 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.98-2
 -   Add tools subpackage to include perf, turbostat and cpupower.
 -   Update the last few perf python scripts in Linux kernel to use
