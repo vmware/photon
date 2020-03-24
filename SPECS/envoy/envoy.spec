@@ -3,7 +3,7 @@
 Summary:        C++ L7 proxy and communication bus
 Name:           envoy
 Version:        1.10.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/lyft/envoy
 Source0:        %{name}-v%{version}.tar.gz
@@ -15,6 +15,7 @@ Distribution:   Photon
 Patch0:         bazel-replace-tclap-mirror.patch
 Patch1:         envoy-1.10-CVE-2019-18801.patch
 Patch2:         envoy-1.10-CVE-2019-18802.patch
+Patch3:         envoy-CVE-2020-8660.patch
 
 BuildRequires:  backward-cpp
 BuildRequires:  c-ares-devel >= 1.11.0
@@ -70,13 +71,14 @@ cd %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p0
+%patch3 -p1
 
 %build
 cd envoy-%{version}
 echo -n "%{git_commit}" > SOURCE_VERSION
-echo $GOPATH
-go get -u github.com/bazelbuild/buildtools/buildifier
-export BUILDIFIER_BIN=$GOPATH/bin/buildifier
+#echo $GOPATH
+#go get -u github.com/bazelbuild/buildtools/buildifier
+#export BUILDIFIER_BIN=$GOPATH/bin/buildifier
 bazel build //source/exe:envoy-static
 
 %install
@@ -92,6 +94,8 @@ cp -rf configs/* %{buildroot}%{_sysconfdir}/envoy
 %config(noreplace) %{_sysconfdir}/envoy/*
 
 %changelog
+*   Fri Jan 31 2020 Harinadh D <hdommaraju@vmware.com> 1.10.0-7
+-   Fix for CVE-2020-8660 and build errors
 *   Fri Jan 31 2020 Harinadh D <hdommaraju@vmware.com> 1.10.0-6
 -   Fix for CVE-2019-18801
 *   Wed Jan 29 2020 Harinadh D <hdommaraju@vmware.com> 1.10.0-5
