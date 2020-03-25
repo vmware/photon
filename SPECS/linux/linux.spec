@@ -13,15 +13,15 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        4.19.97
-Release:        8%{?kat_build:.kat}%{?dist}
+Version:        4.19.104
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6be0db4833d6c4db4230a01ed2e9661d84b6420b
+%define sha1 linux=86bba9d355c767c843f0a63353658fe39fd31e92
 Source1:	config_%{_arch}
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -590,6 +590,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Mar 25 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-1
+-   Update to version 4.19.104
 *   Mon Mar 23 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.97-8
 -   Fix perf compilation issue with binutils >= 2.34.
 *   Mon Mar 16 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-7

@@ -2,15 +2,15 @@
 %global photon_checksum_generator_version 1.0
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.97
-Release:        8%{?kat_build:.kat}%{?dist}
+Version:        4.19.104
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6be0db4833d6c4db4230a01ed2e9661d84b6420b
+%define sha1 linux=86bba9d355c767c843f0a63353658fe39fd31e92
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -298,6 +298,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Wed Mar 25 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-1
+-   Update to version 4.19.104
 *   Mon Mar 16 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-8
 -   Adding Enhances depedency to hmacgen.
 *   Fri Mar 06 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.97-7
