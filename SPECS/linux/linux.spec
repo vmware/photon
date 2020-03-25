@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.97
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -58,6 +58,7 @@ Patch18:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19074
 Patch19:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 
+Patch20:        perf-Make-perf-able-to-build-with-latest-libbfd.patch
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
@@ -265,6 +266,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
+%patch20 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -588,6 +590,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Mar 23 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.97-8
+-   Fix perf compilation issue with binutils >= 2.34.
 *   Mon Mar 16 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-7
 -   Adding Enhances depedency to hmacgen.
 *   Wed Mar 04 2020 Vikash Bansal <bvikas@vmware.com> 4.19.97-6

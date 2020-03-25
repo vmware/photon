@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.98
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt40
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -33,6 +33,7 @@ Patch8:         perf-scripts-python-Convert-python2-scripts-to-python3.patch
 Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 # ttyXRUSB support
 Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
+Patch20:	perf-Make-perf-able-to-build-with-latest-libbfd.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Out-of-tree patches from AppArmor:
 Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
@@ -460,6 +461,7 @@ Python programming language to use the interface to manipulate perf events.
 %patch8 -p1
 %patch9 -p1
 %patch11 -p1
+%patch20 -p1
 %patch26 -p1
 %patch29 -p1
 %patch30 -p1
@@ -981,6 +983,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Mon Mar 23 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.98-4
+-   Fix perf compilation issue with binutils >= 2.34.
 *   Sun Mar 22 2020 Tapas Kundu <tkundu@vmware.com> 4.19.98-3
 -   Added python3-perf subpackage
 *   Tue Mar 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.98-2

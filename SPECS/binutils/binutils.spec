@@ -1,29 +1,21 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
-Version:        2.32
-Release:        4%{?dist}
+Version:        2.34
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Requires:       %{name}-libs = %{version}-%{release}
-
+%if %{with_check}
+BuildRequires:  dejagnu
+BuildRequires:  bc
+%endif
 Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
-%define sha1 binutils=cd45a512af1c8a508976c1beb4f5825b3bb89f4d
-
-Patch0:         binutils-CVE-2019-12972.patch
-Patch1:         binutils-CVE-2019-14444.patch
-Patch2:         binutils-CVE-2019-9071.patch
-Patch3:         binutils-CVE-2019-9073.patch
-Patch4:         binutils-CVE-2019-9074.patch
-Patch5:         binutils-CVE-2019-9075.patch
-Patch6:         binutils-CVE-2019-9077.patch
-Patch7:         binutils-CVE-2019-14250.patch
+%define sha1 binutils=78f7ba4c0775ae75f5b906dc9af03d70b39b0785
 Patch8:         binutils-sync-libiberty-add-no-recurse-limit-make-check-fix.patch
 Patch9:         binutils-CVE-2019-1010204.patch
-Patch10:        binutils-CVE-2019-17450.patch
-Patch11:        binutils-CVE-2019-17451.patch
 
 %description
 The Binutils package contains a linker, an assembler,
@@ -47,20 +39,11 @@ for handling compiled objects.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
 %patch8 -p1
 %patch9 -p1
-%patch10 -p1
-%patch11 -p1
 
 %build
+sed -i '/@\tincremental_copy/d' gold/testsuite/Makefile.in
 %configure \
             --enable-gold       \
             --enable-ld=default \
@@ -80,8 +63,9 @@ rm -rf %{buildroot}/%{_infodir}
 %find_lang %{name} --all-name
 
 %check
-sed -i 's/testsuite/ /g' gold/Makefile
-make %{?_smp_mflags} check
+# Disable gcc hardening as it will affect some tests.
+rm `dirname $(gcc --print-libgcc-file-name)`/../specs
+make %{?_smp_mflags} -k check > tests.sum 2>&1
 
 
 %files -f %{name}.lang
@@ -129,10 +113,14 @@ make %{?_smp_mflags} check
 
 %files libs
 %{_libdir}/libbfd-%{version}.so
+%{_libdir}/libctf.so*
+%{_libdir}/libctf-nobfd.so*
 %{_libdir}/libopcodes-%{version}.so
 
 %files devel
 %{_includedir}/bfd_stdint.h
+%{_includedir}/ctf.h
+%{_includedir}/ctf-api.h
 %{_includedir}/plugin-api.h
 %{_includedir}/symcat.h
 %{_includedir}/bfd.h
@@ -142,12 +130,16 @@ make %{?_smp_mflags} check
 %{_includedir}/libiberty/*
 %{_includedir}/diagnostics.h
 %{_libdir}/libbfd.a
-%{_libdir}/libopcodes.a
 %{_libdir}/libbfd.so
+%{_libdir}/libctf.a
+%{_libdir}/libctf-nobfd.a
+%{_libdir}/libopcodes.a
 %{_libdir}/libopcodes.so
 %{_lib64dir}/libiberty.a
 
 %changelog
+*   Fri Mar 13 2020 Alexey Makhalov <amakhalov@vmware.com> 2.34-1
+-   Version update.
 *   Tue Nov 26 2019 Alexey Makhalov <amakhalov@vmware.com> 2.32-4
 -   Support for aarch64 target to be able to strip aarch64 libraries
     during cross-aarch64-gcc build
