@@ -1,7 +1,8 @@
-diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/cloudinit/distros/photon.py
---- cloud-init-0.7.9/cloudinit/distros/photon.py        1969-12-31 16:00:00.000000000 -0800
-+++ cloud-init-0.7.9-new/cloudinit/distros/photon.py    2017-05-15 05:13:49.156848344 -0700
-@@ -0,0 +1,335 @@
+diff --git a/cloudinit/distros/photon.py b/cloudinit/distros/photon.py
+index e69de29b..5b995338 100644
+--- a/cloudinit/distros/photon.py
++++ b/cloudinit/distros/photon.py
+@@ -0,0 +1,343 @@
 +# vi: ts=4 expandtab
 +#
 +# Copyright (C) 2017 VMware Inc.
@@ -78,13 +79,19 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +               net_fn = self.network_conf_dir + str(dev_index) + '-' + dev + '.network'
 +            else:
 +                net_fn = self.network_conf_dir + net_fn
++
 +            dhcp_enabled = 'no'
 +            if info.get('bootproto') == 'dhcp':
-+                dhcp_enabled = 'yes'        
++                if settings.find('inet dhcp') >= 0 and settings.find('inet6 dhcp') >= 0:
++                    dhcp_enabled = 'yes'
++                else:
++                    dhcp_enabled = 'ipv6' if info.get('inet6') == True else 'ipv4'
++
 +            net_cfg = {
 +                'Name': dev,
 +                'DHCP': dhcp_enabled,
 +            }
++
 +            if info.get('hwaddress'):
 +                net_cfg['MACAddress'] = info.get('hwaddress')
 +            if info.get('address'):
@@ -126,7 +133,7 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +                continue
 +            else:
 +                new_resolve_data.append(item)
-+        
++
 +        new_resolve_data = new_resolve_data +  convert_resolv_conf(nameservers, searchdomains)
 +        LOG.debug("New resolve data\n")
 +        LOG.debug("%s",new_resolve_data)
@@ -143,7 +150,8 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +        if 'MACAddress' in net_cfg:
 +            content += "MACAddress=%s\n" % (net_cfg['MACAddress'])
 +        content += "[Network]\n"
-+        if 'DHCP' in net_cfg and net_cfg['DHCP'] == 'yes':
++
++        if 'DHCP' in net_cfg and net_cfg['DHCP'] in {'yes', 'ipv4', 'ipv6'}:
 +            content += "DHCP=%s\n" % (net_cfg['DHCP'])
 +        else:
 +            if 'Address' in net_cfg:
@@ -152,6 +160,7 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +                content += "Gateway=%s\n" % (net_cfg['Gateway'])
 +            if 'DHCP' in net_cfg and net_cfg['DHCP'] == 'no':
 +                content += "DHCP=%s\n" % (net_cfg['DHCP'])
++
 +            route_index = 0
 +            found = True
 +            if route_entry:

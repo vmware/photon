@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -165,6 +165,10 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Wed Mar 25 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.1-7
+-   Updated ds-guestinfo-photon.patch
+-   Fixed dhcp issue in photon-distro.patch
+-   Updated DataSourceVMwareGuestInfo.patch (till commit bf996d9 from mainline)
 *   Fri Feb 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.1-6
 -   Fix for CVE-2020-8631
 *   Mon Feb 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.1-5
