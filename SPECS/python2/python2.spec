@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.17
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -14,6 +14,7 @@ Patch1:         added-pyopenssl-ipaddress-certificate-validation.patch
 Patch2:         python2-support-photon-platform.patch
 Patch3:         CVE-2019-17514.patch
 Patch4:         CVE-2019-9674.patch
+Patch5:         CVE-2019-18348.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
@@ -118,6 +119,7 @@ The test package contains all regression tests for Python as well as the modules
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -238,6 +240,8 @@ LANG=en_US.UTF-8 make %{?_smp_mflags} test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Thu Mar 26 2020 Tapas Kundu <tkundu@vmware.com> 2.7.17-3
+-   Fix for CVE-2019-18348
 *   Wed Feb 12 2020 Tapas Kundu <tkundu@vmware.com> 2.7.17-2
 -   Fix CVE-2019-9674
 *   Mon Nov 18 2019 Tapas Kundu <tkundu@vmware.com> 2.7.17-1
