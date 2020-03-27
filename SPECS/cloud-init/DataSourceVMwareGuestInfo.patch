@@ -1,9 +1,8 @@
 diff --git a/cloudinit/sources/DataSourceVMwareGuestInfo.py b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-new file mode 100644
-index 00000000..eae842d9
---- /dev/null
+index e69de29b..73b9219a 100644
+--- a/cloudinit/sources/DataSourceVMwareGuestInfo.py
 +++ b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-@@ -0,0 +1,657 @@
+@@ -0,0 +1,738 @@
 +# Cloud-Init Datasource for VMware Guestinfo
 +#
 +# Copyright (c) 2018 VMware, Inc. All Rights Reserved.
@@ -28,10 +27,13 @@ index 00000000..eae842d9
 +import collections
 +import copy
 +from distutils.spawn import find_executable
++from distutils.util import strtobool
++import ipaddress
 +import json
 +import os
 +import socket
 +import string
++import time
 +import zlib
 +
 +from cloudinit import log as logging
@@ -50,6 +52,9 @@ index 00000000..eae842d9
 +LOCAL_IPV4 = 'local-ipv4'
 +LOCAL_IPV6 = 'local-ipv6'
 +CLEANUP_GUESTINFO = 'cleanup-guestinfo'
++WAIT_ON_NETWORK = 'wait-on-network'
++WAIT_ON_NETWORK_IPV4 = 'ipv4'
++WAIT_ON_NETWORK_IPV6 = 'ipv6'
 +
 +
 +class NetworkConfigError(Exception):
@@ -149,8 +154,7 @@ index 00000000..eae842d9
 +        brought up the OS at this point.
 +        """
 +
-+        # Get information about the host.
-+        host_info = get_host_info()
++        host_info = wait_on_network(self.metadata)
 +        LOG.info("got host-info: %s", host_info)
 +
 +        # Reflect any possible local IPv4 or IPv6 addresses in the guest
@@ -559,6 +563,21 @@ index 00000000..eae842d9
 +    return name
 +
 +
++def is_valid_ip_addr(val):
++    """
++    Returns false if the address is loopback, link local or unspecified;
++    otherwise true is returned.
++    """
++    addr = None
++    try:
++        addr = ipaddress.ip_address(val)
++    except:
++        return False
++    if addr.is_link_local or addr.is_loopback or addr.is_unspecified:
++        return False
++    return True
++
++
 +def get_host_info():
 +    '''
 +    Returns host information such as the host name and network interfaces.
@@ -609,15 +628,25 @@ index 00000000..eae842d9
 +            key = mac
 +            val = {}
 +            if af_inet4:
-+                val["ipv4"] = af_inet4
++                af_inet4_vals = []
++                for ip_info in af_inet4:
++                    if not is_valid_ip_addr(ip_info['addr']):
++                        continue
++                    af_inet4_vals.append(ip_info)
++                val["ipv4"] = af_inet4_vals
 +            if af_inet6:
-+                val["ipv6"] = af_inet6
++                af_inet6_vals = []
++                for ip_info in af_inet6:
++                    if not is_valid_ip_addr(ip_info['addr']):
++                        continue
++                    af_inet6_vals.append(ip_info)
++                val["ipv6"] = af_inet6_vals
 +            by_mac[key] = val
 +
 +        if af_inet4:
 +            for ip_info in af_inet4:
 +                key = ip_info['addr']
-+                if key == '127.0.0.1':
++                if not is_valid_ip_addr(key):
 +                    continue
 +                val = copy.deepcopy(ip_info)
 +                del val['addr']
@@ -628,13 +657,63 @@ index 00000000..eae842d9
 +        if af_inet6:
 +            for ip_info in af_inet6:
 +                key = ip_info['addr']
-+                if key == '::1':
++                if not is_valid_ip_addr(key):
 +                    continue
 +                val = copy.deepcopy(ip_info)
 +                del val['addr']
 +                if mac:
 +                    val['mac'] = mac
 +                by_ipv6[key] = val
++
++    return host_info
++
++
++def wait_on_network(metadata):
++    # Determine whether we need to wait on the network coming online.
++    wait_on_ipv4 = False
++    wait_on_ipv6 = False
++    if WAIT_ON_NETWORK in metadata:
++        wait_on_network = metadata[WAIT_ON_NETWORK]
++        if WAIT_ON_NETWORK_IPV4 in wait_on_network:
++            wait_on_ipv4_val = wait_on_network[WAIT_ON_NETWORK_IPV4]
++            if isinstance(wait_on_ipv4_val, bool):
++                wait_on_ipv4 = wait_on_ipv4_val
++            else:
++                wait_on_ipv4 = bool(strtobool(wait_on_ipv4_val))
++        if WAIT_ON_NETWORK_IPV6 in wait_on_network:
++            wait_on_ipv6_val = wait_on_network[WAIT_ON_NETWORK_IPV6]
++            if isinstance(wait_on_ipv6_val, bool):
++                wait_on_ipv6 = wait_on_ipv6_val
++            else:
++                wait_on_ipv6 = bool(strtobool(wait_on_ipv6_val))
++
++    # Get information about the host.
++    host_info = None
++    while host_info == None:
++        host_info = get_host_info()
++        if wait_on_ipv4:
++            ipv4_ready = False
++            if 'network' in host_info:
++                if 'interfaces' in host_info['network']:
++                    if 'by-ipv4' in host_info['network']['interfaces']:
++                        if len(host_info['network']['interfaces']['by-ipv4']) > 0:
++                            ipv4_ready = True
++            if not ipv4_ready:
++                LOG.info("ipv4 not ready")
++                host_info = None
++        if wait_on_ipv6:
++            ipv6_ready = False
++            if 'network' in host_info:
++                if 'interfaces' in host_info['network']:
++                    if 'by-ipv6' in host_info['network']['interfaces']:
++                        if len(host_info['network']['interfaces']['by-ipv6']) > 0:
++                            ipv6_ready = True
++            if not ipv6_ready:
++                LOG.info("ipv6 not ready")
++                host_info = None
++        if host_info == None:
++            LOG.info("waiting on network")
++            time.sleep(1)
 +
 +    return host_info
 +
@@ -651,8 +730,9 @@ index 00000000..eae842d9
 +    '''
 +    Executed when this file is used as a program.
 +    '''
-+    metadata = {'network': {'config': {'dhcp': True}}}
-+    host_info = get_host_info()
++    metadata = {'wait-on-network': {'ipv4': True, 'ipv6': "false"},
++                'network': {'config': {'dhcp': True}}}
++    host_info = wait_on_network(metadata)
 +    metadata = always_merger.merge(metadata, host_info)
 +    print(util.json_dumps(metadata))
 +
