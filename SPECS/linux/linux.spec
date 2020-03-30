@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.217
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -88,6 +88,10 @@ Patch59:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch60:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch61:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
+#Fix for CVE-2018-13094
+Patch62: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
+#Fix for CVE-2019-3900
+Patch63: 0001-vhost-vsock-add-weight-support.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -221,6 +225,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch59 -p1
 %patch60 -p1
 %patch61 -p1
+%patch62 -p1
+%patch63 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -398,6 +404,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Mar 30 2020 Vikash Bansal <bvikas@vmware.com> 4.9.217-2
+-   Fix for CVE-2018-13094 & CVE-2019-3900
 *   Mon Mar 23 2020 Keerthana K <keerthanak@vmware.com> 4.9.217-1
 -   Update to version 4.9.217
 *   Tue Mar 17 2020 Ajay Kaher <akaher@vmware.com> 4.9.216-1

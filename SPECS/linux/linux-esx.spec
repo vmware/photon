@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.217
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -70,6 +70,10 @@ Patch52:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch53:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch54:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
+#Fix for CVE-2018-13094
+Patch55: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
+#Fix for CVE-2019-3900
+Patch56: 0001-vhost-vsock-add-weight-support.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -151,6 +155,8 @@ The Linux package contains the Linux kernel doc files
 %patch52 -p1
 %patch53 -p1
 %patch54 -p1
+%patch55 -p1
+%patch56 -p1
 
 %build
 
@@ -246,6 +252,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 30 2020 Vikash Bansal <bvikas@vmware.com> 4.9.217-2
+-   Fix for CVE-2018-13094 & CVE-2019-3900
 *   Mon Mar 23 2020 Keerthana K <keerthanak@vmware.com> 4.9.217-1
 -   Update to version 4.9.217
 *   Tue Mar 17 2020 Ajay Kaher <akaher@vmware.com> 4.9.216-1
