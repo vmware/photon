@@ -1,7 +1,7 @@
 Summary:	Photon repo files, gpg keys
 Name:		photon-repos
 Version:	2.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://vmware.github.io/photon/
@@ -47,6 +47,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
+*       Mon Mar 30 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0-3
+-       change baseurl to packages.vmware
 *       Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 2.0-2
 -       Add sources for initramfs for OSSTP
 *       Thu Jul 13 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0-1
