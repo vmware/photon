@@ -1,12 +1,19 @@
 Summary:	Photon repo files, gpg keys
 Name:		photon-repos
 Version:	1.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://vmware.github.io/photon/
-Source:		%{name}-%{version}-3.tar.gz
-%define sha1 photon-repos=f0ef82f7fa696ccfa241e00fef34c71b4dfc1ea2
+Source:		%{name}-%{version}-4.tar.gz
+%define sha1 photon-repos=6dcaac0748e7fba12c4f5f01f05f6aeae5ec7fa3
+Source1:        VMWARE-RPM-GPG-KEY
+Source2:        photon.repo
+Source3:        photon-updates.repo
+Source4:        photon-iso.repo
+Source5:        photon-debuginfo.repo
+Source6:        photon-extras.repo
+Source7:        lightwave.repo
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	photon-repos
@@ -17,19 +24,21 @@ Requires:       rpm
 Photon repo files and gpg keys 
 
 %prep
-%setup -q -n %{name}-%{version}
 
 %build
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d -m 755 $RPM_BUILD_ROOT/etc/yum.repos.d
-for file in *repo ; do
-  install -m 644 $file $RPM_BUILD_ROOT/etc/yum.repos.d
-done
+install -m 644 %{SOURCE2} $RPM_BUILD_ROOT/etc/yum.repos.d
+install -m 644 %{SOURCE3} $RPM_BUILD_ROOT/etc/yum.repos.d
+install -m 644 %{SOURCE4} $RPM_BUILD_ROOT/etc/yum.repos.d
+install -m 644 %{SOURCE5} $RPM_BUILD_ROOT/etc/yum.repos.d
+install -m 644 %{SOURCE6} $RPM_BUILD_ROOT/etc/yum.repos.d
+install -m 644 %{SOURCE7} $RPM_BUILD_ROOT/etc/yum.repos.d
 
 install -d -m 755 $RPM_BUILD_ROOT/etc/pki/rpm-gpg
-install -m 644 VMWARE-RPM-GPG-KEY $RPM_BUILD_ROOT/etc/pki/rpm-gpg
+install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/pki/rpm-gpg
 
 %post
 
@@ -48,6 +57,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
+*	Mon Mar 30 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-5
+-	Change baseurl to point to packages.vmware.com
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-4
 -	GA - Bump release of all rpms
 *       Mon May 23 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-3
