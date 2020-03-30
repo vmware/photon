@@ -1,0 +1,43 @@
+From bb3d48dcf86a97dc25fe9fc2c11938e19cb4399a Mon Sep 17 00:00:00 2001
+From: Eric Sandeen <sandeen@sandeen.net>
+Date: Fri, 8 Jun 2018 09:53:49 -0700
+Subject: [PATCH] xfs: don't call xfs_da_shrink_inode with NULL bp
+
+xfs_attr3_leaf_create may have errored out before instantiating a buffer,
+for example if the blkno is out of range.  In that case there is no work
+to do to remove it, and in fact xfs_da_shrink_inode will lead to an oops
+if we try.
+
+This also seems to fix a flaw where the original error from
+xfs_attr3_leaf_create gets overwritten in the cleanup case, and it
+removes a pointless assignment to bp which isn't used after this.
+
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=199969
+Reported-by: Xu, Wen <wen.xu@gatech.edu>
+Tested-by: Xu, Wen <wen.xu@gatech.edu>
+Signed-off-by: Eric Sandeen <sandeen@redhat.com>
+Reviewed-by: Darrick J. Wong <darrick.wong@oracle.com>
+Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
+---
+ fs/xfs/libxfs/xfs_attr_leaf.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/fs/xfs/libxfs/xfs_attr_leaf.c b/fs/xfs/libxfs/xfs_attr_leaf.c
+index 99e0f5749dba..76e90046731c 100644
+--- a/fs/xfs/libxfs/xfs_attr_leaf.c
++++ b/fs/xfs/libxfs/xfs_attr_leaf.c
+@@ -791,9 +791,8 @@ xfs_attr_shortform_to_leaf(
+ 	ASSERT(blkno == 0);
+ 	error = xfs_attr3_leaf_create(args, blkno, &bp);
+ 	if (error) {
+-		error = xfs_da_shrink_inode(args, 0, bp);
+-		bp = NULL;
+-		if (error)
++		/* xfs_attr3_leaf_create may not have instantiated a block */
++		if (bp && (xfs_da_shrink_inode(args, 0, bp) != 0))
+ 			goto out;
+ 		xfs_idata_realloc(dp, size, XFS_ATTR_FORK);	/* try to put */
+ 		memcpy(ifp->if_u1.if_data, tmpbuffer, size);	/* it back */
+-- 
+2.17.1
+
