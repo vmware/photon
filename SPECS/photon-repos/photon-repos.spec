@@ -1,7 +1,7 @@
 Summary:	Photon repo files, gpg keys
 Name:		photon-repos
 Version:	3.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://vmware.github.io/photon/
@@ -17,7 +17,7 @@ Provides:	photon-repos
 BuildArch:	noarch
 
 %description
-Photon repo files and gpg keys 
+Photon repo files and gpg keys
 
 %build
 # Nothing to do
@@ -48,6 +48,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
+*   Thu Mar 26 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-4
+-   Change baseurl to packages.vmware.com
 *   Sat Jan 04 2020 Neal Gompa <ngompa13@gmail.com> 3.0-3
 -   Fix all the repo definitions to not require arch-specific mangling
 *   Mon Oct 1 2018 Ajay Kaher <akaher@vmware.com> 3.0-2
@@ -66,4 +68,3 @@ rm -rf $RPM_BUILD_ROOT
 -   Fix regression in photon-extras gpg key location
 *   Mon Apr 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-1
 -   Initial
-
