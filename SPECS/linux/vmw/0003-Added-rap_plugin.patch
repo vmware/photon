@@ -5747,7 +5747,7 @@ new file mode 100644
 index 000000000000..2f53f142a1e2
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_fptr_pass.c
-@@ -0,0 +1,220 @@
+@@ -0,0 +1,224 @@
 +/*
 + * Copyright 2012-2016 by PaX Team <pageexec@freemail.hu>
 + * Licensed under the GPL v2
@@ -5859,7 +5859,11 @@ index 000000000000..2f53f142a1e2
 +	cond_bb = e->src;
 +	join_bb = e->dest;
 +	e->flags = EDGE_FALSE_VALUE;
++#if BUILDING_GCC_VERSION < 8000
 +	e->probability = REG_BR_PROB_BASE;
++#else
++	e->probability = profile_probability::always ();
++#endif
 +
 +	true_bb = create_empty_bb(EXIT_BLOCK_PTR_FOR_FN(cfun)->prev_bb);
 +	make_edge(cond_bb, true_bb, EDGE_TRUE_VALUE | EDGE_PRESERVE);
@@ -5973,7 +5977,7 @@ new file mode 100644
 index 000000000000..7c59f383494d
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_hash.c
-@@ -0,0 +1,382 @@
+@@ -0,0 +1,392 @@
 +/*
 + * Copyright 2012-2016 by PaX Team <pageexec@freemail.hu>
 + * Licensed under the GPL v2
@@ -6012,7 +6016,7 @@ index 000000000000..7c59f383494d
 +	[UNION_TYPE] = 140,
 +	[QUAL_UNION_TYPE] = 0,
 +	[VOID_TYPE] = 160,
-+#if BUILDING_GCC_VERSION >= 5000
++#if BUILDING_GCC_VERSION >= 5000 && BUILDING_GCC_VERSION < 9000
 +	[POINTER_BOUNDS_TYPE] = 170,
 +#endif
 +	[FUNCTION_TYPE] = 180,
@@ -6310,12 +6314,18 @@ index 000000000000..7c59f383494d
 +{
 +	rap_hash_t hash;
 +	tree fndecl;
++	int uid;
 +
 +	gcc_assert(rap_imprecise_hashes);
 +
 +	hash.hash = 0;
-+	if (node->uid < rap_cgraph_max_uid)
-+		hash = rap_imprecise_hashes[node->uid];
++#if BUILDING_GCC_VERSION < 9003
++	uid = node->uid;
++#else
++	uid = node->get_uid();
++#endif
++	if (uid < rap_cgraph_max_uid)
++		hash = rap_imprecise_hashes[uid];
 +
 +	if (hash.hash)
 +		return hash;
@@ -6343,7 +6353,11 @@ index 000000000000..7c59f383494d
 +	FOR_EACH_FUNCTION(node) {
 +		const_tree fndecl;
 +
++#if BUILDING_GCC_VERSION < 9003
 +		uid = node->uid;
++#else
++		uid = node->get_uid();
++#endif
 +		gcc_assert(uid < rap_cgraph_max_uid);
 +
 +		if (node->global.inlined_to)
@@ -6361,7 +6375,7 @@ new file mode 100644
 index 000000000000..658c305adb5d
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_plugin.c
-@@ -0,0 +1,534 @@
+@@ -0,0 +1,538 @@
 +/*
 + * Copyright 2012-2016 by PaX Team <pageexec@freemail.hu>
 + * Licensed under the GPL v2
@@ -6494,7 +6508,11 @@ index 000000000000..658c305adb5d
 +	const unsigned HOST_WIDE_INT rap_hash_offset = TARGET_64BIT ? 2 * sizeof(rap_hash_t) : sizeof(rap_hash_t);
 +	unsigned HOST_WIDE_INT skip;
 +
++#if BUILDING_GCC_VERSION < 9003
 +	skip = 1ULL << align_functions_log;
++#else
++	skip = 1ULL <<  align_functions.levels[0].log;
++#endif
 +	if (DECL_USER_ALIGN(decl))
 +		return;
 +

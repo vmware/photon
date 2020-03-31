@@ -1,7 +1,7 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.2.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
@@ -44,6 +44,8 @@ header files and libraries for netmgmt cli
 
 %build
 autoreconf -mif
+# fix gcc 9 compilation warning/error
+export CFLAGS="-O2 -g -Wno-error=format-truncation -Wno-error=restrict -Wno-error=format-overflow -Wno-error=stringop-truncation -Wno-error=stringop-overflow"
 %configure \
 	--libdir=%{_lib64dir}
 %make_build
@@ -76,6 +78,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-3
+-   Fix compilation issue with gcc-8.4.0
 *   Thu Jan 17 2019 Michelle Wang <michellew@vmware.com> 1.2.0-2
 -   Remove make check for netmgmt.
 -   Netmgmt tests are package tests instead of unit tests.
@@ -91,7 +95,7 @@ find %{buildroot} -name '*.la' -delete
 -   Backward compatibility interface.
 *   Sat Sep 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-5
 -   Retain current match conf when creating interface specific conf.
-*   Tue Aug 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-4
+*   Wed Aug 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-4
 -   Fix coverity issues.
 *   Thu May 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-3
 -   Fix handling of invalid match section config files.

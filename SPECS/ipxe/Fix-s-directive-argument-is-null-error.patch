@@ -1,0 +1,32 @@
+From 412acd7854de10e7194f362a6b1a3257a17974f7 Mon Sep 17 00:00:00 2001
+From: Valentine Barshak <gvaxon@gmail.com>
+Date: Sun, 9 Jun 2019 13:30:11 +0300
+Subject: [PATCH] [build] Fix "'%s' directive argument is null" error
+
+Use '%p' directive, and print handle's address if the address is null
+and the handle doesn't have a name.  This fixes the following
+compilation error:
+
+  interface/efi/efi_debug.c:334:3: error: '%s' directive
+  argument is null [-Werror=format-overflow=]
+
+Signed-off-by: Valentine Barshak <gvaxon@gmail.com>
+Signed-off-by: Michael Brown <mcb30@ipxe.org>
+---
+ src/interface/efi/efi_debug.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/src/interface/efi/efi_debug.c b/src/interface/efi/efi_debug.c
+index 8ea0a822d..de9b1af55 100644
+--- a/src/interface/efi/efi_debug.c
++++ b/src/interface/efi/efi_debug.c
+@@ -331,8 +331,7 @@ void dbg_efi_protocols ( EFI_HANDLE handle ) {
+ 
+ 	/* Sanity check */
+ 	if ( ! handle ) {
+-		printf ( "HANDLE %s could not retrieve protocols\n",
+-			 efi_handle_name ( handle ) );
++		printf ( "HANDLE %p could not retrieve protocols\n", handle );
+ 		return;
+ 	}
+ 

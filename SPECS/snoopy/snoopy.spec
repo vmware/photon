@@ -1,7 +1,7 @@
 Summary:        snoopy is a tiny library that logs all executed commands
 Name:           snoopy
 Version:        2.4.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU GPLv2
 URL:            https://github.com/a2o/snoopy/archive/snoopy-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
@@ -31,7 +31,7 @@ mkdir -p build/m4
 mkdir -p lib/iniparser/build/m4
 autoreconf -i -v
 rm -f config.h.in~
-
+export CFLAGS="-O2 -g -Wno-error=stringop-truncation -Wno-error=stringop-overflow"
 %configure \
      --enable-config-file
 make
@@ -56,6 +56,8 @@ fi
 %config(noreplace) %{_sysconfdir}/snoopy.ini
 
 %changelog
-*   Thu Sep 18 2019 Ashwin H <ashwinh@vmware.com> 2.4.6-1
+*   Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 2.4.6-2
+-   Fix compilation issue with gcc-8.4.0
+*   Wed Sep 18 2019 Ashwin H <ashwinh@vmware.com> 2.4.6-1
 -   snoopy initial version
 

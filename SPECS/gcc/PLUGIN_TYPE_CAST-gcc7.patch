@@ -2,14 +2,14 @@ diff -Naurp gcc-7.3.0-orig/gcc/c/c-typeck.c gcc-7.3.0/gcc/c/c-typeck.c
 --- gcc-7.3.0-orig/gcc/c/c-typeck.c	2017-06-08 12:12:38.381833000 -0700
 +++ gcc-7.3.0/gcc/c/c-typeck.c	2018-04-24 14:44:50.222592671 -0700
 @@ -48,6 +48,8 @@ along with GCC; see the file COPYING3.
- #include "c-family/c-objc.h"
  #include "c-family/c-ubsan.h"
+ #include "cilk.h"
  #include "gomp-constants.h"
 +#include "plugin-api.h"
 +#include "plugin.h"
  #include "spellcheck-tree.h"
  #include "gcc-rich-location.h"
- #include "stringpool.h"
+ 
 @@ -5452,6 +5454,12 @@ build_c_cast (location_t loc, tree type,
  	return error_mark_node;
      }

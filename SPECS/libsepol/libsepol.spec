@@ -49,6 +49,8 @@ needed for developing applications that manipulate binary policies.
 
 %build
 make %{?_smp_mflags}
+# TODO: try to remove CFLAGS on next version update
+#make %{?_smp_mflags} CFLAGS="-Werror -Wall -W -Wundef -Wshadow -Wmissing-format-attribute -O2 -Wno-error=stringop-truncation"
 
 %install
 mkdir -p %{buildroot}/%{_lib}

@@ -27,7 +27,7 @@ Source4: https://ftp.gnu.org/gnu/gmp/gmp-6.1.2.tar.xz
 Source5: https://ftp.gnu.org/gnu/mpc/mpc-1.1.0.tar.gz
 %define sha1 mpc=b019d9e1d27ec5fb99497159d43a3164995de2d0
 Patch0:   libsanitizer-avoidustat.h-glibc-2.28.patch
-Patch1:   PLUGIN_TYPE_CAST.patch
+Patch1:   PLUGIN_TYPE_CAST-gcc7.patch
 BuildArch: x86_64
 Provides: libgcc_s.so.1
 Provides: libgcc_s.so.1(GCC_3.0)

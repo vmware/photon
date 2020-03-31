@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          13%{?dist}
+Release:          14%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -140,6 +140,8 @@ else
 fi
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
+# TODO: remove -Wno-error=format-overflow on next version update
+export CFLAGS="-g -Wno-error=format-overflow"
 meson  --prefix %{_prefix}                                            \
        --sysconfdir /etc                                              \
        --localstatedir /var                                           \
@@ -164,6 +166,7 @@ meson  --prefix %{_prefix}                                            \
        $PWD build $CROSS_COMPILE_CONFIG &&
        cd build &&
        %ninja_build
+
 
 %install
 cd build && %ninja_install
@@ -301,6 +304,9 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Mon May 04 2020 Alexey Makhalov <amakhalov@vmware.com> 239-14
+-    Fix compilation issue with gcc-8.4.0
+-    Build with debug info.
 *    Sat Apr 18 2020 Alexey Makhalov <amakhalov@vmware.com> 239-13
 -    Enable SELinux support
 *    Thu Oct 31 2019 Alexey Makhalov <amakhalov@vmware.com> 239-12

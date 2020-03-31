@@ -2,11 +2,12 @@
 Summary:	A fast JSON parser/generator for C++ with both SAX/DOM style API
 Name:		rapidjson
 Version:	1.1.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD, JSON, MIT
 URL:		https://github.com/gcc-mirror/gcc/blob/master/gcc/gcov.c
 Source0:	https://github.com/miloyip/rapidjson/archive/%{name}-%{version}.tar.gz
 %define sha1 rapidjson=a3e0d043ad3c2d7638ffefa3beb30a77c71c869f
+Patch0:         rapidjson-fix-Wclass-memaccess-warnings-errors.patch
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -29,6 +30,7 @@ This package contains development headers and examples.
 
 %prep
 %setup -q
+%patch0 -p1
 %patch1 -p1
 %patch2 -p1
 
@@ -53,6 +55,8 @@ make test
 %{_includedir}
 %{_datadir}
 %changelog
+*   Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-4
+-   Fix compilation issue with gcc-8.4.0
 *   Mon Nov 19 2018 Vasavi Sirnapalli <vsirnapalli@vmware.com> 1.1.0-3
 -   Fix makecheck
 *   Wed Aug 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.1.0-2

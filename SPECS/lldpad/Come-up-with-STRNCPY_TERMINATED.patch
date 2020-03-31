@@ -1,0 +1,463 @@
+From ae1cba77287e451a0300987bc22361e8bea8ebb1 Mon Sep 17 00:00:00 2001
+From: marxin <mliska@suse.cz>
+Date: Thu, 25 Apr 2019 13:55:25 +0200
+Subject: [PATCH] Come up with STRNCPY_TERMINATED (#25).
+
+And use it in order to deal with new GCC 9 warnings.
+---
+ dcb_protocol.c         |  8 +++-----
+ event_iface.c          |  2 +-
+ include/lldp.h         |  7 +++++++
+ lldp/l2_packet_linux.c |  4 ++--
+ lldp_8021qaz.c         |  2 +-
+ lldp_8023.c            |  2 +-
+ lldp_basman.c          |  2 +-
+ lldp_dcbx.c            |  2 +-
+ lldp_dcbx_nl.c         |  3 +--
+ lldp_evb.c             |  2 +-
+ lldp_evb22.c           |  2 +-
+ lldp_mand.c            |  2 +-
+ lldp_med.c             |  2 +-
+ lldp_util.c            | 30 +++++++++++++++---------------
+ qbg/ecp.c              |  2 +-
+ qbg/ecp22.c            |  2 +-
+ qbg/vdp.c              |  2 +-
+ qbg/vdp22.c            |  2 +-
+ qbg/vdp22_cmds.c       |  2 +-
+ qbg/vdpnl.c            |  2 +-
+ vdptool.c              |  2 +-
+ 21 files changed, 44 insertions(+), 40 deletions(-)
+
+diff --git a/dcb_protocol.c b/dcb_protocol.c
+index 61b504d..75ca139 100644
+--- a/dcb_protocol.c
++++ b/dcb_protocol.c
+@@ -75,7 +75,7 @@ void pg_insert(struct pghead *head, char *ifname, pg_attribs *store)
+ 	entry = (struct pg_store1 *)malloc(sizeof(struct pg_store1));
+ 	if (!entry)
+ 		return;
+-	strncpy(entry->ifname, ifname, sizeof(entry->ifname));
++	STRNCPY_TERMINATED(entry->ifname, ifname, sizeof(entry->ifname));
+ 	entry->second = store;
+ 	LIST_INSERT_HEAD(head, entry, entries);
+ }
+@@ -1100,7 +1100,7 @@ int dcbx_remove_adapter(char *device_name)
+ 	assert(device_name);
+ 	not_default = memcmp(DEF_CFG_STORE, device_name,
+ 		strlen(DEF_CFG_STORE));
+-	strncpy (devName, device_name, MAX_DEVICE_NAME_LEN);
++	STRNCPY_TERMINATED (devName, device_name, MAX_DEVICE_NAME_LEN);
+ 
+ 	if (not_default)
+ 		handle_opermode_true(device_name);
+@@ -2274,9 +2274,7 @@ cmd_status get_bwg_descrpt(char *device_name, u8 bwgid, char **name)
+ 				sizeof(char);
+ 			*name = (char*)malloc(size);
+ 			if (*name != NULL) {
+-				strncpy(*name,
+-					attribs.descript.pgid_desc[bwgid],
+-					size); /* Localization OK */
++				memcpy(*name, attribs.descript.pgid_desc[bwgid], size); /* Localization OK */
+ 			} else {
+ 				goto Error;
+ 			}
+diff --git a/event_iface.c b/event_iface.c
+index 297d751..0a41052 100644
+--- a/event_iface.c
++++ b/event_iface.c
+@@ -77,7 +77,7 @@ static void event_if_decode_rta(int type, struct rtattr *rta, int *ls, char *d)
+ 		LLDPAD_DBG(" IFLA_BROADCAST\n");
+ 		break;
+ 	case IFLA_IFNAME:
+-		strncpy(d, (char *)RTA_DATA(rta), IFNAMSIZ);
++		STRNCPY_TERMINATED(d, (char *)RTA_DATA(rta), IFNAMSIZ);
+ 		LLDPAD_DBG(" IFLA_IFNAME\n");
+ 		LLDPAD_DBG("        device name is %s\n", d);
+ 		break;
+diff --git a/include/lldp.h b/include/lldp.h
+index 1564c8f..fb5ee93 100644
+--- a/include/lldp.h
++++ b/include/lldp.h
+@@ -51,6 +51,13 @@ typedef __u64 u64;
+ 		__x > __y ? __x : __y;	\
+ 	 })
+ 
++/* Use strncpy with N-1 and ensure the string is terminated.  */
++#define STRNCPY_TERMINATED(DEST, SRC, N) \
++  do { \
++    strncpy (DEST, SRC, N - 1); \
++    DEST[N - 1] = '\0'; \
++  } while (false)
++
+ /*
+  * Organizationally Unique Identifier (OUI)
+  * http://standards.ieee.org/regauth/oui/oui.txt
+diff --git a/lldp/l2_packet_linux.c b/lldp/l2_packet_linux.c
+index 4dc37b5..be9b8af 100644
+--- a/lldp/l2_packet_linux.c
++++ b/lldp/l2_packet_linux.c
+@@ -169,7 +169,7 @@ struct l2_packet_data * l2_packet_init(
+ 	if (l2 == NULL)
+ 		return NULL;
+ 	memset(l2, 0, sizeof(*l2));
+-	strncpy(l2->ifname, ifname, sizeof(l2->ifname));
++	STRNCPY_TERMINATED(l2->ifname, ifname, sizeof(l2->ifname));
+ 	l2->rx_callback = rx_callback;
+ 	l2->rx_callback_ctx = rx_callback_ctx;
+ 	l2->l2_hdr = l2_hdr;
+@@ -183,7 +183,7 @@ struct l2_packet_data * l2_packet_init(
+ 		return NULL;
+ 	}
+ 
+-	strncpy(ifr.ifr_name, l2->ifname, sizeof(ifr.ifr_name));
++	STRNCPY_TERMINATED(ifr.ifr_name, l2->ifname, sizeof(ifr.ifr_name));
+ 	if (ioctl(l2->fd, SIOCGIFINDEX, &ifr) < 0) {
+ 		perror("ioctl[SIOCGIFINDEX]");
+ 		close(l2->fd);
+diff --git a/lldp_8021qaz.c b/lldp_8021qaz.c
+index 3863d86..219db80 100644
+--- a/lldp_8021qaz.c
++++ b/lldp_8021qaz.c
+@@ -592,7 +592,7 @@ void ieee8021qaz_ifup(char *ifname, struct lldp_agent *agent)
+ 	memset(tlvs->rx, 0, sizeof(*tlvs->rx));
+ 
+ 	/* Initializing the ieee8021qaz_tlvs struct */
+-	strncpy(tlvs->ifname, ifname, IFNAMSIZ);
++	STRNCPY_TERMINATED(tlvs->ifname, ifname, IFNAMSIZ);
+ 	tlvs->port = port;
+ 	tlvs->ieee8021qazdu = 0;
+ 	l2_packet_get_own_src_addr(port->l2, tlvs->local_mac);
+diff --git a/lldp_8023.c b/lldp_8023.c
+index eea4bc7..422026e 100644
+--- a/lldp_8023.c
++++ b/lldp_8023.c
+@@ -447,7 +447,7 @@ void ieee8023_ifup(char *ifname, struct lldp_agent *agent)
+ 		goto out_err;
+ 	}
+ 	memset(bd, 0, sizeof(struct ieee8023_data));
+-	strncpy(bd->ifname, ifname, IFNAMSIZ);
++	STRNCPY_TERMINATED(bd->ifname, ifname, IFNAMSIZ);
+ 	bd->agenttype = agent->type;
+ 
+ 	if (ieee8023_bld_tlv(bd, agent)) {
+diff --git a/lldp_basman.c b/lldp_basman.c
+index 824dd9a..a4f69c1 100644
+--- a/lldp_basman.c
++++ b/lldp_basman.c
+@@ -679,7 +679,7 @@ void basman_ifup(char *ifname, struct lldp_agent *agent)
+ 		goto out_err;
+ 	}
+ 	memset(bd, 0, sizeof(struct basman_data));
+-	strncpy(bd->ifname, ifname, IFNAMSIZ);
++	STRNCPY_TERMINATED(bd->ifname, ifname, IFNAMSIZ);
+ 	bd->agenttype = agent->type;
+ 
+ 	if (basman_bld_tlv(bd, agent)) {
+diff --git a/lldp_dcbx.c b/lldp_dcbx.c
+index 9999e33..77522c4 100644
+--- a/lldp_dcbx.c
++++ b/lldp_dcbx.c
+@@ -582,7 +582,7 @@ void dcbx_ifup(char *ifname, struct lldp_agent *agent)
+ 	memset(manifest, 0, sizeof(*manifest));
+ 
+ 	tlvs->manifest = manifest;
+-	strncpy(tlvs->ifname, ifname, IFNAMSIZ);
++	STRNCPY_TERMINATED(tlvs->ifname, ifname, IFNAMSIZ);
+ 	tlvs->port = port;
+ 	tlvs->dcbdu = 0;
+ 	tlvs->dcbx_st = gdcbx_subtype & MASK_DCBX_FORCE;
+diff --git a/lldp_dcbx_nl.c b/lldp_dcbx_nl.c
+index 357da9c..8e02cef 100644
+--- a/lldp_dcbx_nl.c
++++ b/lldp_dcbx_nl.c
+@@ -561,7 +561,7 @@ int get_dcb_numtcs(const char *ifname, u8 *pgtcs, u8 *pfctcs)
+ 
+ 	seq = nlh->nlmsg_seq;
+ 
+-	strncpy(name, ifname, sizeof(name));
++	STRNCPY_TERMINATED (name, ifname, sizeof(name));
+ 	add_rta(nlh, DCB_ATTR_IFNAME, (void *)name, strlen(name) + 1);
+ 	rta_parent = add_rta(nlh, DCB_ATTR_NUMTCS, NULL, 0);
+ 
+diff --git a/lldp_evb.c b/lldp_evb.c
+index 07f5ffb..dcdcc7e 100644
+--- a/lldp_evb.c
++++ b/lldp_evb.c
+@@ -342,7 +342,7 @@ static void evb_ifup(char *ifname, struct lldp_agent *agent)
+ 			   __func__, ifname, agent->type, sizeof(*ed));
+ 		return;
+ 	}
+-	strncpy(ed->ifname, ifname, IFNAMSIZ);
++	STRNCPY_TERMINATED(ed->ifname, ifname, IFNAMSIZ);
+ 	ed->agenttype = agent->type;
+ 
+ 	evb_init_tlv(ed, agent);
+diff --git a/lldp_evb22.c b/lldp_evb22.c
+index 64b04e0..76ba883 100644
+--- a/lldp_evb22.c
++++ b/lldp_evb22.c
+@@ -450,7 +450,7 @@ static void evb22_ifup(char *ifname, struct lldp_agent *agent)
+ 			   __func__, ifname, agent->type, sizeof *ed);
+ 		return;
+ 	}
+-	strncpy(ed->ifname, ifname, IFNAMSIZ);
++	STRNCPY_TERMINATED(ed->ifname, ifname, IFNAMSIZ);
+ 	ed->agenttype = agent->type;
+ 	evb22_init_tlv(ed, agent);
+ 	ud = find_module_user_data_by_id(&lldp_head, LLDP_MOD_EVB22);
+diff --git a/lldp_mand.c b/lldp_mand.c
+index 06d8c41..b9a33f5 100644
+--- a/lldp_mand.c
++++ b/lldp_mand.c
+@@ -600,7 +600,7 @@ void mand_ifup(char *ifname, struct lldp_agent *agent)
+ 			return;
+ 		}
+ 		memset(md, 0, sizeof(struct mand_data));
+-		strncpy(md->ifname, ifname, IFNAMSIZ);
++		STRNCPY_TERMINATED(md->ifname, ifname, IFNAMSIZ);
+ 		md->agenttype = agent->type;
+ 
+ 		mud = find_module_user_data_by_id(&lldp_head, LLDP_MOD_MAND);
+diff --git a/lldp_med.c b/lldp_med.c
+index 77ec20d..f6c373e 100644
+--- a/lldp_med.c
++++ b/lldp_med.c
+@@ -905,7 +905,7 @@ void med_ifup(char *ifname, struct lldp_agent *agent)
+ 		goto out_err;
+ 	}
+ 	memset(md, 0, sizeof(struct med_data));
+-	strncpy(md->ifname, ifname, IFNAMSIZ);
++	STRNCPY_TERMINATED(md->ifname, ifname, IFNAMSIZ);
+ 	md->agenttype = agent->type;
+ 
+ 	if (med_bld_tlv(md, agent)) {
+diff --git a/lldp_util.c b/lldp_util.c
+index fc0917f..32df768 100644
+--- a/lldp_util.c
++++ b/lldp_util.c
+@@ -366,7 +366,7 @@ int get_ifflags(const char *ifname)
+ 	fd = get_ioctl_socket();
+ 	if (fd >= 0) {
+ 		memset(&ifr, 0, sizeof(ifr));
+-		strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
++		STRNCPY_TERMINATED(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
+ 		if (ioctl(fd, SIOCGIFFLAGS, &ifr) == 0)
+ 			flags = ifr.ifr_flags;
+ 	}
+@@ -402,7 +402,7 @@ int get_ifpflags(const char *ifname)
+ 	fd = get_ioctl_socket();
+ 	if (fd >= 0) {
+ 		memset(&ifr, 0, sizeof(ifr));
+-		strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
++		STRNCPY_TERMINATED(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
+ 		if (ioctl(fd, SIOCGIFPFLAGS, &ifr) == 0)
+ 			flags = ifr.ifr_flags;
+ 	}
+@@ -486,7 +486,7 @@ int is_slave(const char *ifmaster, const char *ifslave)
+ 
+ 	memset(&ifr, 0, sizeof(ifr));
+ 	memset(&ifb, 0, sizeof(ifb));
+-	strncpy(ifr.ifr_name, ifmaster, IFNAMSIZ);
++	STRNCPY_TERMINATED(ifr.ifr_name, ifmaster, IFNAMSIZ);
+ 	ifr.ifr_data = (caddr_t)&ifb;
+ 	if (ioctl(fd, SIOCBONDINFOQUERY, &ifr))
+ 		goto out_done;
+@@ -516,7 +516,7 @@ int get_ifidx(const char *ifname)
+ 	fd = get_ioctl_socket();
+ 	if (fd >= 0) {
+ 		memset(&ifreq, 0, sizeof(ifreq));
+-		strncpy(ifreq.ifr_name, ifname, IFNAMSIZ);
++		STRNCPY_TERMINATED(ifreq.ifr_name, ifname, IFNAMSIZ);
+ 		if (ioctl(fd, SIOCGIFINDEX, &ifreq) == 0)
+ 			idx = ifreq.ifr_ifindex;
+ 	}
+@@ -588,7 +588,7 @@ int is_bridge(const char *ifname)
+ 						 (unsigned long) &bi, 0, 0 };
+ 
+ 			ifr.ifr_data = (char *)args;
+-			strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
++			STRNCPY_TERMINATED(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
+ 			if (ioctl(fd, SIOCDEVPRIVATE, &ifr) == 0)
+ 				rc = 1;
+ 		}
+@@ -626,7 +626,7 @@ int is_vlan(const char *ifname)
+ 	if (fd >= 0) {
+ 		memset(&ifv, 0, sizeof(ifv));
+ 		ifv.cmd = GET_VLAN_REALDEV_NAME_CMD;
+-		strncpy(ifv.device1, ifname, sizeof(ifv.device1));
++		STRNCPY_TERMINATED(ifv.device1, ifname, sizeof(ifv.device1));
+ 		if (ioctl(fd, SIOCGIFVLAN, &ifv) == 0)
+ 			rc = 1;
+ 	}
+@@ -653,7 +653,7 @@ int is_wlan(const char *ifname)
+ 	fd = get_ioctl_socket();
+ 	if (fd >= 0) {
+ 		memset(&iwreq, 0, sizeof(iwreq));
+-		strncpy(iwreq.ifr_name, ifname, sizeof(iwreq.ifr_name));
++		STRNCPY_TERMINATED(iwreq.ifr_name, ifname, sizeof(iwreq.ifr_name));
+ 		if (ioctl(fd, SIOCGIWNAME, &iwreq) == 0)
+ 			rc = 1;
+ 	}
+@@ -770,7 +770,7 @@ int is_active(const char *ifname)
+ 	fd = get_ioctl_socket();
+ 	if (fd >= 0) {
+ 		memset(&ifr, 0, sizeof(ifr));
+-		strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
++		STRNCPY_TERMINATED(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
+ 		if (ioctl(fd, SIOCGIFFLAGS, &ifr) == 0)
+ 			if (ifr.ifr_flags & IFF_UP)
+ 				rc = 1;
+@@ -791,7 +791,7 @@ int is_autoneg_supported(const char *ifname)
+ 		memset(&cmd, 0, sizeof(cmd));
+ 		cmd.cmd = ETHTOOL_GSET;
+ 		ifr.ifr_data = &cmd;
+-		strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
++		STRNCPY_TERMINATED(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
+ 		if (ioctl(fd, SIOCETHTOOL, &ifr) == 0)
+ 			if (cmd.supported & SUPPORTED_Autoneg)
+ 				rc = 1;
+@@ -812,7 +812,7 @@ int is_autoneg_enabled(const char *ifname)
+ 		memset(&cmd, 0, sizeof(cmd));
+ 		cmd.cmd = ETHTOOL_GSET;
+ 		ifr.ifr_data = &cmd;
+-		strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
++		STRNCPY_TERMINATED(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
+ 		if (ioctl(fd, SIOCETHTOOL, &ifr) == 0)
+ 			rc = cmd.autoneg;
+ 	}
+@@ -849,7 +849,7 @@ int get_maucaps(const char *ifname)
+ 		memset(&cmd, 0, sizeof(cmd));
+ 		cmd.cmd = ETHTOOL_GSET;
+ 		ifr.ifr_data = &cmd;
+-		strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
++		STRNCPY_TERMINATED(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
+ 		if (ioctl(fd, SIOCETHTOOL, &ifr) == 0) {
+ 			if (cmd.advertising & ADVERTISED_10baseT_Half)
+ 				caps |= MAUCAPADV_b10baseT;
+@@ -888,7 +888,7 @@ int get_mautype(const char *ifname)
+ 		memset(&cmd, 0, sizeof(cmd));
+ 		cmd.cmd = ETHTOOL_GSET;
+ 		ifr.ifr_data = &cmd;
+-		strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
++		STRNCPY_TERMINATED(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
+ 		if (ioctl(fd, SIOCETHTOOL, &ifr) == 0) {
+ 			/* TODO: too many dot3MauTypes,
+ 			 * should check duplex, speed, and port */
+@@ -915,7 +915,7 @@ int get_mtu(const char *ifname)
+ 	fd = get_ioctl_socket();
+ 	if (fd >= 0) {
+ 		memset(&ifr, 0, sizeof(ifr));
+-		strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
++		STRNCPY_TERMINATED(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
+ 		if (ioctl(fd, SIOCGIFMTU, &ifr) == 0)
+ 			rc = ifr.ifr_mtu;
+ 	}
+@@ -947,7 +947,7 @@ int get_mac(const char *ifname, u8 mac[])
+ 	fd = get_ioctl_socket();
+ 	if (fd >= 0) {
+ 		ifr.ifr_addr.sa_family = AF_INET;
+-		strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
++		STRNCPY_TERMINATED(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
+ 		if (!ioctl(fd, SIOCGIFHWADDR, &ifr)) {
+ 			memcpy(mac, ifr.ifr_hwaddr.sa_data, 6);
+ 			rc = 0;
+@@ -1014,7 +1014,7 @@ int get_saddr(const char *ifname, struct sockaddr_in *saddr)
+ 	fd = get_ioctl_socket();
+ 	if (fd >= 0) {
+ 		ifr.ifr_addr.sa_family = AF_INET;
+-		strncpy(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
++		STRNCPY_TERMINATED(ifr.ifr_name, ifname, sizeof(ifr.ifr_name));
+ 		if (ioctl(fd, SIOCGIFADDR, &ifr) == 0) {
+ 			memcpy(saddr, &ifr.ifr_addr, sizeof(*saddr));
+ 			rc = 0;
+diff --git a/qbg/ecp.c b/qbg/ecp.c
+index c81eb19..d14af97 100644
+--- a/qbg/ecp.c
++++ b/qbg/ecp.c
+@@ -795,7 +795,7 @@ int ecp_init(char *ifname)
+ 			   __func__, ifname);
+ 		return -1;
+ 	}
+-	strncpy(vd->ecp.ifname, ifname, sizeof vd->ecp.ifname);
++	STRNCPY_TERMINATED(vd->ecp.ifname, ifname, sizeof vd->ecp.ifname);
+ 	ecp_rx_change_state(vd, ECP_RX_IDLE);
+ 	ecp_rx_run_sm(vd);
+ 	ecp_somethingChangedLocal(vd, true);
+diff --git a/qbg/ecp22.c b/qbg/ecp22.c
+index ddf7777..90b87fe 100644
+--- a/qbg/ecp22.c
++++ b/qbg/ecp22.c
+@@ -749,7 +749,7 @@ static struct ecp22 *ecp22_create(char *ifname, struct ecp22_user_data *eud)
+ 			   ifname);
+ 		return NULL;
+ 	}
+-	strncpy(ecp->ifname, ifname, sizeof ecp->ifname);
++	STRNCPY_TERMINATED(ecp->ifname, ifname, sizeof ecp->ifname);
+ 	ecp->l2 = l2_packet_init(ecp->ifname, 0, ETH_P_ECP22,
+ 				 ecp22_rx_receiveframe, ecp, 1);
+ 
+diff --git a/qbg/vdp.c b/qbg/vdp.c
+index 074a1e1..da05be7 100644
+--- a/qbg/vdp.c
++++ b/qbg/vdp.c
+@@ -1607,7 +1607,7 @@ void vdp_ifup(char *ifname, struct lldp_agent *agent)
+ 			 __func__, ifname, sizeof(*vd));
+ 		goto out_err;
+ 	}
+-	strncpy(vd->ifname, ifname, IFNAMSIZ);
++	STRNCPY_TERMINATED(vd->ifname, ifname, IFNAMSIZ);
+ 
+ 	vd->role = VDP_ROLE_STATION;
+ 	vd->enabletx = enabletx;
+diff --git a/qbg/vdp22.c b/qbg/vdp22.c
+index cad750f..cf02310 100644
+--- a/qbg/vdp22.c
++++ b/qbg/vdp22.c
+@@ -834,7 +834,7 @@ static struct vdp22 *vdp22_create(const char *ifname,
+ 			   ifname);
+ 		return NULL;
+ 	}
+-	strncpy(vdp->ifname, ifname, sizeof vdp->ifname);
++	STRNCPY_TERMINATED(vdp->ifname, ifname, sizeof vdp->ifname);
+ 	vdp->myrole = role;
+ 	LIST_INIT(&vdp->vsi22_que);
+ 	LIST_INSERT_HEAD(&eud->head, vdp, node);
+diff --git a/qbg/vdp22_cmds.c b/qbg/vdp22_cmds.c
+index 862451e..479b1b0 100644
+--- a/qbg/vdp22_cmds.c
++++ b/qbg/vdp22_cmds.c
+@@ -577,7 +577,7 @@ static int get_arg_vsi(struct cmd *cmd, char *arg, char *argvalue,
+ 	memset(&vsi, 0, sizeof(vsi));
+ 	memset(vsi_str, 0, sizeof(vsi_str));
+ 	vsi.request = cmd->tlvid;
+-	strncpy(vsi.ifname, cmd->ifname, sizeof(vsi.ifname) - 1);
++	strncpy(vsi.ifname, cmd->ifname, sizeof(vsi.ifname));
+ 	good_cmd = cmd_failed;
+ 	if ((cmd->ops & op_config) && (cmd->ops & op_arg)) {
+ 		memset(&mac, 0, sizeof(mac));
+diff --git a/qbg/vdpnl.c b/qbg/vdpnl.c
+index 9b8fcdd..458bdf2 100644
+--- a/qbg/vdpnl.c
++++ b/qbg/vdpnl.c
+@@ -233,7 +233,7 @@ static int vdpnl_set(struct nlmsghdr *nlh, struct vdpnl_vsi *vsi)
+ 
+ 	vsi->ifindex = ifinfo->ifi_index;
+ 	if (tb[IFLA_IFNAME])
+-		strncpy(vsi->ifname, (char *)RTA_DATA(tb[IFLA_IFNAME]),
++		STRNCPY_TERMINATED(vsi->ifname, (char *)RTA_DATA(tb[IFLA_IFNAME]),
+ 			sizeof vsi->ifname);
+ 	else {
+ 		if (!if_indextoname(ifinfo->ifi_index, vsi->ifname)) {
+diff --git a/vdptool.c b/vdptool.c
+index b805372..569bbdf 100644
+--- a/vdptool.c
++++ b/vdptool.c
+@@ -178,7 +178,7 @@ static char *get_oui_name(char *argvals)
+ 
+ static void fill_oui_hdr(vdptool_oui_data_t *oui_data, char *oui_name)
+ {
+-	strncpy(oui_data->oui_name, oui_name, sizeof(oui_data->oui_name));
++	STRNCPY_TERMINATED(oui_data->oui_name, oui_name, sizeof(oui_data->oui_name));
+ 	snprintf(oui_data->data, sizeof(oui_data->data), "%02x%s",
+ 		 (unsigned int)strlen(oui_data->oui_name), oui_data->oui_name);
+ }

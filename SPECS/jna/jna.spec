@@ -4,7 +4,7 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        4.5.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache
 URL:            https://github.com/java-native-access/jna
 Group:          Applications/System
@@ -13,6 +13,7 @@ Distribution:   Photon
 Source0:        https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
 %define sha1 %{name}-%{version}=a75cfa8690861e535f391eca9820da548c921252
 Patch0:         jna_remove_clover_jar.patch
+Patch1:         jna-fix-GCC8-warnings.patch
 BuildRequires: openjre8
 BuildRequires: openjdk8
 BuildRequires: apache-ant
@@ -34,6 +35,7 @@ Sources for JNA
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %clean
 rm -rf %{buildroot}
@@ -83,6 +85,8 @@ ant
 %{_prefix}/*.aar
 
 %changelog
+*   Thu Apr 02 2020 Alexey Makhalov <amakhalov@vmware.com> 4.5.2-4
+-   Fix compilation issue with gcc-8.4.0
 *   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 4.5.2-3
 -   Removed dependency on JAVA8_VERSION macro
 *   Thu Oct 25 2018 Ankit Jain <ankitja@vmware.com> 4.5.2-2

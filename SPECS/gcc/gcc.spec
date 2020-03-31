@@ -2,20 +2,18 @@
 %define _use_internal_dependency_generator 0
 Summary:        Contains the GNU compiler collection
 Name:           gcc
-Version:        7.3.0
-Release:        6%{?dist}
+Version:        8.4.0
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.xz
-%define sha1 gcc=9689b9cae7b2886fdaa08449a26701f095c04e48
+%define sha1 gcc=00ddb177b04caffd40f7af0175d5b3c8e5442545
+Source1:        gcc-9-bug.c
 Patch0:         PLUGIN_TYPE_CAST.patch
-Patch1:         libsanitizer-avoidustat.h-glibc-2.28.patch
-Patch2:         090_all_pr55930-dependency-tracking.patch
-Patch3:         glibc-2.31-libsanitizer-1.patch
-Patch4:         glibc-2.31-libsanitizer-2.patch
+Patch1:         090_all_pr55930-dependency-tracking.patch
 Requires:       libstdc++-devel = %{version}-%{release}
 Requires:       libgcc-devel = %{version}-%{release}
 Requires:       libgomp-devel = %{version}-%{release}
@@ -90,9 +88,6 @@ This package contains development headers and static library for libgomp
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
 
 # disable no-pie for gcc binaries
 sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
@@ -111,10 +106,13 @@ test %{_host} != %{_build} && export gcc_cv_objdump=%{_arch}-unknown-linux-gnu-o
     --enable-languages=c,c++,fortran\
     --disable-multilib \
     --disable-bootstrap \
+    --disable-libstdcxx-pch \
     --enable-linker-build-id \
     --enable-plugin \
     --with-system-zlib
 make %{?_smp_mflags}
+# Check for GCC-9 bug presence which causes random app segfaults
+./host-%{_host}/gcc/xgcc -B./host-%{_host}/gcc/ -O1 %{SOURCE1} && ./a.out
 %install
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/%_lib
@@ -128,15 +126,32 @@ rm -rf %{buildroot}%{_infodir}
 
 %check
 ulimit -s 32768
-# disable PCH tests is ASLR is on (due to bug in pch)
+# PCH tests fail with error: one ordd more PCH files were found, but they were invalid
+# It happens if ASLR is on (due to bug in PCH)
+# disable gcc PCH tests.
 test `cat /proc/sys/kernel/randomize_va_space` -ne 0 && rm gcc/testsuite/gcc.dg/pch/pch.exp
+# disable g++ PCH tests.
+test `cat /proc/sys/kernel/randomize_va_space` -ne 0 && rm -rf gcc/testsuite/g++.dg/pch
 # disable security hardening for tests
 rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
+
 # run only gcc tests
 make %{?_smp_mflags} check-gcc
-# Only 1 FAIL is OK
-[ `grep ^FAIL testsuite/gcc/gcc.sum | wc -l` -ne 1 -o `grep ^XPASS testsuite/gcc/gcc.sum | wc -l` -ne 0 ] && exit 1 ||:
-[ `grep "^FAIL: gcc.dg/cpp/trad/include.c (test for excess errors)" testsuite/gcc/gcc.sum | wc -l` -ne 1 ] && exit 1 ||:
+
+# 2 gcc failures
+GCC_SUM_FILE=host-%{_host}/gcc/testsuite/gcc/gcc.sum
+[ `grep ^FAIL $GCC_SUM_FILE | wc -l` -ne 2 -o `grep ^XPASS $GCC_SUM_FILE | wc -l` -ne 0 ] && exit 1 ||:
+[ `grep "^FAIL: gcc.target/i386/pr57193.c scan-assembler-times movdqa 2" $GCC_SUM_FILE | wc -l` -ne 1 ] && exit 1 ||:
+[ `grep "^FAIL: gcc.target/i386/pr90178.c scan-assembler-times xorl" $GCC_SUM_FILE | wc -l` -ne 1 ] && exit 1 ||:
+
+# No g++ failures
+CPP_SUM_FILE=host-%{_host}/gcc/testsuite/g++/g++.sum
+[ `grep ^FAIL $CPP_SUM_FILE | wc -l` -ne 0 -o `grep ^XPASS $CPP_SUM_FILE | wc -l` -ne 0 ] && exit 1 ||:
+
+# 1 gfortran fail
+GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
+[ `grep ^FAIL $GFORTRAN_SUM_FILE | wc -l` -ne 1 -o `grep ^XPASS $GFORTRAN_SUM_FILE | wc -l` -ne 0 ] && exit 1 ||:
+[ `grep "^FAIL: gfortran.dg/vect/vect-8.f90   -O   scan-tree-dump-times vect \"vectorized 22 loops\" 1" $GFORTRAN_SUM_FILE | wc -l` -ne 1 ] && exit 1 ||:
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -212,6 +227,8 @@ make %{?_smp_mflags} check-gcc
 %{_lib64dir}/libgomp.spec
 
 %changelog
+*   Thu May 07 2020 Alexey Makhalov <amakhalov@vmware.com> 8.4.0-1
+-   Version update
 *   Tue Mar 24 2020 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-6
 -   Fix compilation issue with glibc-2.31
 *   Tue Nov 06 2018 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-5

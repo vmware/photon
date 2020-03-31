@@ -1,0 +1,79 @@
+From 516ada0594aafc9c4f8f137000fb66e53b27fb80 Mon Sep 17 00:00:00 2001
+From: Recolic Keghart <root@recolic.net>
+Date: Fri, 18 May 2018 15:30:48 +0800
+Subject: [PATCH] fix compilation bug on gcc 8.1.0
+
+---
+ src/core/ext/filters/client_channel/client_channel.cc          | 2 +-
+ .../client_channel/lb_policy/grpclb/load_balancer_api.cc       | 3 ++-
+ src/core/ext/transport/chttp2/transport/flow_control.cc        | 2 +-
+ src/core/lib/surface/channel.cc                                | 2 +-
+ src/core/tsi/alts_transport_security.cc                        | 2 +-
+ 5 files changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/src/core/ext/filters/client_channel/client_channel.cc b/src/core/ext/filters/client_channel/client_channel.cc
+index fa0c280f801..72a140bac33 100644
+--- a/src/core/ext/filters/client_channel/client_channel.cc
++++ b/src/core/ext/filters/client_channel/client_channel.cc
+@@ -416,7 +416,7 @@ static void on_resolver_result_changed_locked(void* arg, grpc_error* error) {
+         grpc_uri* uri = grpc_uri_parse(server_uri, true);
+         GPR_ASSERT(uri->path[0] != '\0');
+         service_config_parsing_state parsing_state;
+-        memset(&parsing_state, 0, sizeof(parsing_state));
++        memset(reinterpret_cast<void *>(&parsing_state), 0, sizeof(parsing_state));
+         parsing_state.server_name =
+             uri->path[0] == '/' ? uri->path + 1 : uri->path;
+         service_config->ParseGlobalParams(parse_retry_throttle_params,
+diff --git a/src/core/ext/filters/client_channel/lb_policy/grpclb/load_balancer_api.cc b/src/core/ext/filters/client_channel/lb_policy/grpclb/load_balancer_api.cc
+index 0e80dd5521f..8b542d26fce 100644
+--- a/src/core/ext/filters/client_channel/lb_policy/grpclb/load_balancer_api.cc
++++ b/src/core/ext/filters/client_channel/lb_policy/grpclb/load_balancer_api.cc
+@@ -68,7 +68,8 @@ grpc_grpclb_request* grpc_grpclb_request_create(const char* lb_service_name) {
+   req->has_initial_request = true;
+   req->initial_request.has_name = true;
+   strncpy(req->initial_request.name, lb_service_name,
+-          GRPC_GRPCLB_SERVICE_NAME_MAX_LENGTH);
++          GRPC_GRPCLB_SERVICE_NAME_MAX_LENGTH - 1);
++  req->initial_request.name[GRPC_GRPCLB_SERVICE_NAME_MAX_LENGTH - 1] = '\0';
+   return req;
+ }
+ 
+diff --git a/src/core/ext/transport/chttp2/transport/flow_control.cc b/src/core/ext/transport/chttp2/transport/flow_control.cc
+index e89c363200e..552a7c3e3e1 100644
+--- a/src/core/ext/transport/chttp2/transport/flow_control.cc
++++ b/src/core/ext/transport/chttp2/transport/flow_control.cc
+@@ -187,7 +187,7 @@ TransportFlowControl::TransportFlowControl(const grpc_chttp2_transport* t,
+ uint32_t TransportFlowControl::MaybeSendUpdate(bool writing_anyway) {
+   FlowControlTrace trace("t updt sent", this, nullptr);
+   const uint32_t target_announced_window =
+-      static_cast<const uint32_t>(target_window());
++      static_cast<uint32_t>(target_window());
+   if ((writing_anyway || announced_window_ <= target_announced_window / 2) &&
+       announced_window_ != target_announced_window) {
+     const uint32_t announce = static_cast<uint32_t> GPR_CLAMP(
+diff --git a/src/core/lib/surface/channel.cc b/src/core/lib/surface/channel.cc
+index d740ebd4114..be6401a7339 100644
+--- a/src/core/lib/surface/channel.cc
++++ b/src/core/lib/surface/channel.cc
+@@ -103,7 +103,7 @@ grpc_channel* grpc_channel_create_with_builder(
+     return channel;
+   }
+ 
+-  memset(channel, 0, sizeof(*channel));
++  memset(reinterpret_cast<void *>(channel), 0, sizeof(*channel));
+   channel->target = target;
+   channel->is_client = grpc_channel_stack_type_is_client(channel_stack_type);
+   size_t channel_tracer_max_nodes = 0;  // default to off
+diff --git a/src/core/tsi/alts_transport_security.cc b/src/core/tsi/alts_transport_security.cc
+index 2fd408103bf..6a020e12f8d 100644
+--- a/src/core/tsi/alts_transport_security.cc
++++ b/src/core/tsi/alts_transport_security.cc
+@@ -45,7 +45,7 @@ void grpc_tsi_alts_signal_for_cq_destroy() {
+ }
+ 
+ void grpc_tsi_alts_init() {
+-  memset(&g_alts_resource, 0, sizeof(alts_shared_resource));
++  memset(reinterpret_cast<void *>(&g_alts_resource), 0, sizeof(g_alts_resource));
+   gpr_mu_init(&g_alts_resource.mu);
+   gpr_cv_init(&g_alts_resource.cv);
+ }

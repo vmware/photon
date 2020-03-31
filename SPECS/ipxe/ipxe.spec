@@ -5,7 +5,7 @@
 Summary:        iPXE open source boot firmware
 Name:           ipxe
 Version:        20180717
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://ipxe.org
 Group:          System Environment/Daemons
@@ -14,6 +14,8 @@ Distribution:   Photon
 #Download URL:  https://git.ipxe.org/ipxe.git/snapshot/%{commit}.tar.bz2
 Source0:        %{name}-%{version}.tar.bz2
 %define sha1 ipxe=66c8cdfa6411702f4e0fd62ed375a043d5b36360
+Patch0:         Fix-s-directive-argument-is-null-error.patch
+Patch1:         zbin-Fix-compiler-warning-with-gcc-9.patch
 BuildArch:      x86_64
 BuildRequires:  binutils
 BuildRequires:  binutils-devel
@@ -34,6 +36,8 @@ PXE implementation enhanced with additional features.
 
 %prep
 %setup -q -n %{name}-%{version}
+%patch0 -p1
+%patch1 -p1
 
 %build
 cd src
@@ -63,6 +67,8 @@ install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}/usr/share/ipxe/
 /usr/share/ipxe/rtl8139.rom
 
 %changelog
+*   Wed Apr 01 2020 Alexey Makhalov <amakhalov@vmware.com> 20180717-3
+-   Fix compilation issue with gcc-8.4.0
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 20180717-2
 -   Adding BuildArch
 *   Thu Oct 11 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 20180717-1

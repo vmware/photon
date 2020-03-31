@@ -4,7 +4,7 @@
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python-pyinstaller
 Version:        3.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller
 License:        GPLv2+
 Group:          Development/Languages/Python
@@ -13,6 +13,7 @@ Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/P/PyInstaller/PyInstaller-%{version}.tar.gz
 %define sha1    PyInstaller=218c99be6886c6fddfb10f9892b19df906821652
 Patch0:         make-check-fix-pyinstaller.patch
+Patch1:         fix-warnings-in-gcc-8.1.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -57,6 +58,7 @@ Python 3 version.
 %prep
 %setup -q -n PyInstaller-%{version}
 %patch0 -p1
+%patch1 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -138,6 +140,8 @@ LANG=en_US.UTF-8 py.test2 tests/unit tests/functional \
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+*   Wed Apr 01 2020 Alexey Makhalov <amakhalov@vmware.com> 3.4-3
+-   Fix compilation issue with gcc-8.4.0
 *   Fri Dec 07 2018 Tapas Kundu <tkundu@vmware.com> 3.4-2
 -   Fix makecheck.
 *   Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 3.4-1

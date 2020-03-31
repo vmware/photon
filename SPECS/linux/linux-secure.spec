@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.112
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -323,6 +323,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon May 04 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.112-4
+-   Updated pax_rap patch to support gcc-8.4.0
 *   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.112-3
 -   Photon-checksum-generator version update to 1.1.
 *   Wed Apr 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-2

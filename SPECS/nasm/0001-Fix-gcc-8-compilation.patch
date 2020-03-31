@@ -1,0 +1,26 @@
+From aa9324ae33870cd3b9d90251e380a6d704651a60 Mon Sep 17 00:00:00 2001
+From: Damjan Marion <damarion@cisco.com>
+Date: Mon, 17 Sep 2018 09:25:35 +0200
+Subject: [PATCH] Fix gcc-8 compilation
+
+Signed-off-by: Damjan Marion <damarion@cisco.com>
+---
+ include/nasmlib.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/nasmlib.h b/include/nasmlib.h
+index 79e866b..5f07d77 100644
+--- a/include/nasmlib.h
++++ b/include/nasmlib.h
+@@ -191,7 +191,7 @@ int64_t readstrnum(char *str, int length, bool *warn);
+  * seg_init: Initialise the segment-number allocator.
+  * seg_alloc: allocate a hitherto unused segment number.
+  */
+-void pure_func seg_init(void);
++int32_t pure_func seg_init(void);
+ int32_t pure_func seg_alloc(void);
+ 
+ /*
+-- 
+2.17.1
+

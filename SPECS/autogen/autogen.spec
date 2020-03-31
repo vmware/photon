@@ -1,7 +1,8 @@
 Summary:	The Automated Text and Program Generation Tool
 Name:		autogen
 Version:	5.18.16
-Release:	1%{?dist}
+# TODO: try to remove CFLAGS on next version update
+Release:	2%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/autogen/
 Source0:        ftp://ftp.gnu.org/gnu/autogen/rel%{version}/%{name}-%{version}.tar.xz
@@ -43,7 +44,8 @@ This package contains development files for libopts.
 %setup -q
 %build
 %configure --disable-dependency-tracking
-make %{?_smp_mflags}
+# TODO: try to remove CFLAGS on next version update
+make %{?_smp_mflags} CFLAGS="-g -O2 -Wno-format-contains-nul -fno-strict-aliasing -Wno-error=format-overflow"
 %install
 make DESTDIR=%{buildroot} install
 
@@ -79,6 +81,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.la
 
 %changelog
+*       Wed Apr 01 2020 Alexey Makhalov <amakhalov@vmware.com>  5.18.16-2
+-       Fix compilation issue with gcc-8.4.0
 *       Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com>  5.18.16-1
 -       Upgrade to 5.18.16
 *       Mon May 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 5.18.12-2

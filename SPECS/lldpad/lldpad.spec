@@ -1,11 +1,13 @@
 Summary: Intel LLDP Agent
 Name:    lldpad
 Version: 1.0.1
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: GPLv2
 URL: http://open-lldp.org/
 Source: %{name}-%{version}.tar.gz
 %define sha1 lldpad=71e35298e926f0c03556cede4861dffa36928500
+Patch0:     Come-up-with-STRNCPY_TERMINATED.patch
+Patch1:     Silent-Werror-address-of-packed-member-warnings.patch
 Group:      System Environment/Daemons
 Vendor:     VMware, Inc.
 Distribution:  Photon
@@ -24,6 +26,8 @@ The lldpad package comes with utilities to manage an LLDP interface with support
 
 %prep
 %setup -q -n open-lldp-036e314
+%patch0 -p1
+%patch1 -p1
 sed -i "s/AM_CFLAGS = -Wall -Werror -Wextra -Wformat=2/AM_CFLAGS = -Wall -Werror -Wextra -Wformat=2 -std=gnu89 -Wno-implicit-fallthrough -Wno-format-truncation/" Makefile.am
 sed -i "s/u8 arglen;/u8 arglen = 0;/g" lldp_util.c
 
@@ -33,7 +37,7 @@ sed -i "s/u8 arglen;/u8 arglen = 0;/g" lldp_util.c
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install 
+make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
 mkdir -p %{buildroot}/lib/systemd/system
 mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
@@ -67,6 +71,8 @@ mv %{buildroot}/%{_libdir}/systemd/system/lldpad.socket  \
 
 
 %changelog
+*   Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 1.0.1-7
+-   Fix compilation issue with gcc-8.4.0
 *   Mon Aug 13 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.0.1-6
 -   Suppress build warnings with gcc 7.3
 *   Wed May 25 2016 Anish Swaminathan <anishs@vmware.com> 1.0.1-5

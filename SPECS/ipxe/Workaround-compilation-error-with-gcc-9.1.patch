@@ -1,0 +1,51 @@
+From 1dd56dbd11082fb622c2ed21cfaced4f47d798a6 Mon Sep 17 00:00:00 2001
+From: Valentine Barshak <gvaxon@gmail.com>
+Date: Mon, 22 Jul 2019 10:47:50 +0100
+Subject: [PATCH] [build] Workaround compilation error with gcc 9.1
+
+Compiling with gcc 9.1 generates lots of "taking address of packed
+member of ... may result in an unaligned pointer value" warnings.
+
+Some of these warnings are genuine, and indicate correctly that parts
+of iPXE currently require the CPU (or runtime environment) to support
+unaligned accesses.  For example: the TCP/IP receive data path will
+attempt to access 32-bit fields that may not be aligned to a 32-bit
+boundary.
+
+Other warnings are either spurious (such as when the pointer is to a
+variable-length byte array, which can have no alignment requirement
+anyway) or unhelpful (such as when the pointer is used solely to
+provide a debug colour value for the DBGC() macro).
+
+There appears to be no easy way to silence the spurious warnings.
+Since the ability to perform unaligned accesses is already a
+requirement for iPXE, work around the problem by silencing this class
+of warnings.
+
+Signed-off-by: Valentine Barshak <gvaxon@gmail.com>
+Modified-by: Michael Brown <mcb30@ipxe.org>
+Signed-off-by: Michael Brown <mcb30@ipxe.org>
+---
+ src/Makefile.housekeeping | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/src/Makefile.housekeeping b/src/Makefile.housekeeping
+index f8334921b..4b09e81f0 100644
+--- a/src/Makefile.housekeeping
++++ b/src/Makefile.housekeeping
+@@ -185,6 +185,15 @@ WNST_TEST = $(CC) -Wstringop-truncation -x c -c /dev/null -o /dev/null \
+ 		  >/dev/null 2>&1
+ WNST_FLAGS := $(shell $(WNST_TEST) && $(ECHO) '-Wno-stringop-truncation')
+ WORKAROUND_CFLAGS += $(WNST_FLAGS)
++
++# gcc 9.1 generates warnings for taking address of packed member which
++# may result in an unaligned pointer value.  Inhibit the warnings.
++#
++WNAPM_TEST = $(CC) -Wno-address-of-packed-member -x c -c /dev/null \
++		   -o /dev/null >/dev/null 2>&1
++WNAPM_FLAGS := $(shell $(WNAPM_TEST) && \
++		 $(ECHO) '-Wno-address-of-packed-member')
++WORKAROUND_CFLAGS += $(WNAPM_FLAGS)
+ endif
+ 
+ # Some versions of gas choke on division operators, treating them as

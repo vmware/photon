@@ -3,13 +3,14 @@ Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
 Version:        1.4.33
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
 Url:            https://github.com/aws/aws-sdk-cpp
 Source0:        aws-sdk-cpp-%{version}.tar.gz
 %define sha1    aws-sdk-cpp=5db6bed30cb85c59c7a3a58034f222007e6a9e49
+Patch0:         aws-sdk-cpp-Build-foxes-for-GCC9.patch
 Requires:       openssl-devel
 Requires:       curl-devel
 Requires:       zlib-devel
@@ -78,6 +79,7 @@ aws s3 libs
 
 %prep
 %setup
+%patch0 -p1
 
 %build
 mkdir build
@@ -172,5 +174,7 @@ rm -rf %{buildroot}/*
     %{_lib64dir}/libaws-cpp-sdk-s3.so
 
 %changelog
+*   Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 1.4.33-2
+-   Fix compilation issue with gcc-8.4.0
 *   Thu Aug 30 2018 Anish Swaminathan <anishs@vmware.com> 1.4.33-1
 -   Initial build.  First version

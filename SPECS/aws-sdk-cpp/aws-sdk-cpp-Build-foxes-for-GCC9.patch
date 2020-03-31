@@ -1,0 +1,48 @@
+From 201059b0b15b3e01dfead6cdfd27aa71058e64c0 Mon Sep 17 00:00:00 2001
+From: Philip Salvaggio <philip.salvaggio@eagleview.com>
+Date: Fri, 3 May 2019 19:37:20 +0000
+Subject: [PATCH] Build fixes for GCC9
+
+---
+ aws-cpp-sdk-core-tests/aws/client/AWSErrorMashallerTest.cpp | 4 ++--
+ aws-cpp-sdk-core/include/aws/core/client/AWSError.h         | 5 +++++
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/aws-cpp-sdk-core-tests/aws/client/AWSErrorMashallerTest.cpp b/aws-cpp-sdk-core-tests/aws/client/AWSErrorMashallerTest.cpp
+index debe4d25e1..316c20143c 100644
+--- a/aws-cpp-sdk-core-tests/aws/client/AWSErrorMashallerTest.cpp
++++ b/aws-cpp-sdk-core-tests/aws/client/AWSErrorMashallerTest.cpp
+@@ -74,7 +74,7 @@ static Aws::UniquePtr<Aws::Http::HttpResponse> BuildHttpResponse(const Aws::Stri
+         response->AddHeader(ERROR_TYPE_HEADER, exception);
+     }
+ 
+-    return std::move(response);
++    return response;
+ }
+ 
+ static Aws::UniquePtr<Aws::Http::HttpResponse> BuildHttpXmlResponse(const Aws::String& exception, const Aws::String& message, int style = SingularErrorNode)
+@@ -113,7 +113,7 @@ static Aws::UniquePtr<Aws::Http::HttpResponse> BuildHttpXmlResponse(const Aws::S
+     {
+         *ss << "</Errors> </OtherRoot>";
+     }
+-    return std::move(response);
++    return response;
+ }
+ 
+ TEST(XmlErrorMarshallerTest, TestXmlErrorPayload)
+diff --git a/aws-cpp-sdk-core/include/aws/core/client/AWSError.h b/aws-cpp-sdk-core/include/aws/core/client/AWSError.h
+index 379c5f1139..feac72dc36 100644
+--- a/aws-cpp-sdk-core/include/aws/core/client/AWSError.h
++++ b/aws-cpp-sdk-core/include/aws/core/client/AWSError.h
+@@ -56,6 +56,11 @@ namespace Aws
+                 m_responseCode(rhs.GetResponseCode()), m_isRetryable(rhs.ShouldRetry())
+             {}          
+ 
++            /**
++             * Copy assignment operator
++             */
++            AWSError& operator=(const AWSError<ERROR_TYPE>&) = default;
++
+             /**
+              * Gets underlying errorType.
+              */
