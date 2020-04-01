@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        7.12.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
@@ -10,6 +10,7 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Patch0:         gdb-7.12-pstack.patch
+Patch1:         CVE-2019-1010180.patch
 Requires:       expat
 Requires:       ncurses
 Requires:       python3
@@ -31,6 +32,7 @@ another program was doing at the moment it crashed.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 ./configure \
@@ -77,6 +79,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_mandir}/*/*
 
 %changelog
+*   Wed Apr 01 2020 Keerthana K <keerthanak@vmware.com> 7.12.1-8
+-   Fix CVE-2019-1010180
 *   Tue Mar 13 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 7.12.1-7
 -   Enable LZMA support.
 *   Mon Sep 11 2017 Rui Gu <ruig@vmware.com> 7.12.1-6
