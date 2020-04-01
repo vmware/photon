@@ -3,7 +3,7 @@
 Summary:        C++ L7 proxy and communication bus
 Name:           envoy
 Version:        1.10.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/lyft/envoy
 Source0:        %{name}-v%{version}.tar.gz
@@ -80,6 +80,7 @@ echo $GOPATH
 go get -u github.com/bazelbuild/buildtools/buildifier
 export BUILDIFIER_BIN=$GOPATH/bin/buildifier
 bazel build //source/exe:envoy-static
+bazel shutdown
 
 %install
 cd envoy-%{version}
@@ -94,6 +95,8 @@ cp -rf configs/* %{buildroot}%{_sysconfdir}/envoy
 %config(noreplace) %{_sysconfdir}/envoy/*
 
 %changelog
+*   Mon Mar 23 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 1.10.0-8
+-   Cleanup bazel server after build
 *   Mon Mar 23 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 1.10.0-7
 -   Fix for CVE-2020-8660
 *   Thu Jan 30 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 1.10.0-6

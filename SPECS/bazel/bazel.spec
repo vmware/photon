@@ -5,7 +5,7 @@
 Summary: Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:		bazel
 Version:	0.24.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache License 2.0
 Group: 		Development/Tools
 URL: 		http://bazel.build/
@@ -30,10 +30,9 @@ export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
 export PYTHONPATH=%{buildroot}%{python2_sitelib}
 mkdir /usr/tmp
 export TMPDIR=/usr/tmp
-./compile.sh
-pushd output
-./bazel
-popd
+env ./compile.sh
+env ./output/bazel
+env ./output/bazel shutdown
 
 %install
 mkdir -p %{buildroot}/usr/bin
@@ -45,6 +44,8 @@ cp output/bazel %{buildroot}/usr/bin/
 %attr(777,root,root) /usr/bin/bazel
 
 %changelog
+*	Wed Apr 01 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 0.24.1-2
+-	Cleanup bazel server after build
 *	Thu May 9 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 0.24.1-1
 -	Add bazel package to photon2.0 to build envopy-1.10.0
 *	Thu Apr 04 2019 Tapas Kundu <tkundu@vmware.com> 0.24.1-1
