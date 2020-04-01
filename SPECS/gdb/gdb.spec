@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        7.8.2
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.gz
@@ -10,6 +10,7 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Patch0:         gdb-7.12-pstack.patch
+Patch1:         CVE-2019-1010180.patch
 Requires:       python3
 Requires:       expat
 Requires:       ncurses >= 6.0-3
@@ -27,6 +28,7 @@ another program was doing at the moment it crashed.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
 ./configure \
     --prefix=%{_prefix} \
@@ -62,6 +64,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/*/*
 
 %changelog
+*   Tue Mar 24 2020 Keerthana K <keerthanak@vmware.com> 7.8.2-10
+-   Fix CVE-2019-1010180
 *   Tue Mar 13 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 7.8.2-9
 -   Enable LZMA support.
 *   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 7.8.2-8
