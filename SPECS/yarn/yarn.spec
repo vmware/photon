@@ -1,7 +1,7 @@
 Summary:        Fast, reliable, and secure dependency management.
 Name:           yarn
 Version:        1.10.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        BSD 2-Clause
 URL:            https://yarnpkg.com
 Source0:        https://github.com/yarnpkg/yarn/archive/%{name}-%{version}.tar.gz
@@ -14,6 +14,7 @@ Group:          Developement/Languages/NodeJs
 patch0:         CVE-2019-5448-forces-using-https-for-registries.patch
 Patch1:         CVE-2019-10773.patch
 Patch2:         CVE-2020-8131-Fix-arbitrary-file-write-on-fetch.patch
+Patch3:         CVE-2019-15608.patch
 BuildRequires:  nodejs = 8.17.0
 
 %global debug_package %{nil}
@@ -31,6 +32,7 @@ Yarn uses checksums to verify the integrity of every installed package before it
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 tar xf %{SOURCE1} --no-same-owner
 
@@ -53,6 +55,8 @@ ln -sf %{_libdir}/node_modules/%{name}/bin/yarn.js %{buildroot}%{_bindir}/yarnpk
 %{_libdir}/node_modules/%{name}
 
 %changelog
+*   Thu Apr 02 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 1.10.1-8
+-   Add patch to fix CVE-2019-15608
 *   Thu Mar 05 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 1.10.1-7
 -   Add patch to fix CVE-2020-8131
 *   Wed Feb 12 2020 Siju Maliakkal <smaliakkal@vmware.com> 1.10.1-6
