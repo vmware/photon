@@ -1,0 +1,43 @@
+From 0474b8c66a8ea298f5e4dedc67b2de464297ad1c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ma=C3=ABl=20Nison?= <nison.mael@gmail.com>
+Date: Sat, 28 Sep 2019 14:16:15 +0200
+Subject: [PATCH] Prevents loading the cache if the stored integrity doesnt
+ match
+
+---
+ src/package-fetcher.js | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/src/package-fetcher.js b/src/package-fetcher.js
+index 3f4c24e42e..0913698b78 100644
+--- a/src/package-fetcher.js
++++ b/src/package-fetcher.js
+@@ -9,8 +9,17 @@ import * as fetchers from './fetchers/index.js';
+ import * as fs from './util/fs.js';
+ import * as promise from './util/promise.js';
+ 
+-async function fetchCache(dest: string, fetcher: Fetchers, config: Config): Promise<FetchedMetadata> {
+-  const {hash, package: pkg} = await config.readPackageMetadata(dest);
++const ssri = require('ssri');
++
++async function fetchCache(dest: string, fetcher: Fetchers, config: Config, integrity: ?string): Promise<FetchedMetadata> {
++  const {hash, package: pkg, remote} = await config.readPackageMetadata(dest);
++
++  if (integrity) {
++    if (!remote.integrity || !ssri.parse(integrity).match(remote.integrity)) {
++      throw new MessageError('Incorrect integrity when fetching from the cache');
++    }
++  }
++
+   await fetcher.setupMirrorFromCache();
+   return {
+     package: pkg,
+@@ -40,7 +49,7 @@ export async function fetchOneRemote(
+ 
+   const fetcher = new Fetcher(dest, remote, config);
+   if (await config.isValidModuleDest(dest)) {
+-    return fetchCache(dest, fetcher, config);
++      return fetchCache(dest, fetcher, config, remote.integrity);
+   }
+ 
+   // remove as the module may be invalid
