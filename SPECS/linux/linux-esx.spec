@@ -3,22 +3,26 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.115
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+%define uname_r %{version}-%{release}-esx
+
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=bdcf13e181be2e9b8a1cc7bac26f9fc1dc0c67dd
 Source1:        config-esx
 Source2:        initramfs.trigger
-Source3:        update_photon_cfg.postun
+Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
 %define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
 Source6:        genhmac.inc
+
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -112,9 +116,10 @@ BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
 BuildRequires: lz4
 Requires:      filesystem kmod
-Requires(post):(coreutils or toybox)
-Requires(postun):(coreutils or toybox)
-%define uname_r %{version}-%{release}-esx
+Requires(pre): (coreutils or toybox)
+Requires(preun): (coreutils or toybox)
+Requires(post): (coreutils or toybox)
+Requires(postun): (coreutils or toybox)
 
 %description
 The Linux kernel build for GOS for VMware hypervisor.
@@ -323,6 +328,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu May 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-8
+-   Keep modules of running kernel till next boot
 *   Fri May 22 2020 Ashwin H <ashwinh@vmware.com> 4.19.115-7
 -   Fix for CVE-2018-20669
 *   Fri May 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-6

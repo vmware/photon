@@ -3,22 +3,26 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.115
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
+
+%define uname_r %{version}-%{release}-aws
+
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=bdcf13e181be2e9b8a1cc7bac26f9fc1dc0c67dd
-Source1:	config-aws
-Source2:	initramfs.trigger
-Source3:        update_photon_cfg.postun
+Source1:        config-aws
+Source2:        initramfs.trigger
+Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
 %define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
 Source6:        genhmac.inc
+
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -125,13 +129,13 @@ BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:	audit-devel
 Requires:       filesystem kmod
-Requires(post):(coreutils or toybox)
-Requires(postun):(coreutils or toybox)
-%define uname_r %{version}-%{release}-aws
+Requires(pre): (coreutils or toybox)
+Requires(preun): (coreutils or toybox)
+Requires(post): (coreutils or toybox)
+Requires(postun): (coreutils or toybox)
 
 %description
 The Linux package contains the Linux kernel.
-
 
 %package devel
 Summary:        Kernel Dev
@@ -178,7 +182,6 @@ Requires:       %{name} = %{version}-%{release}
 %description oprofile
 Kernel driver for oprofile, a statistical profiler for Linux systems
 %endif
-
 
 %prep
 %setup -q -n linux-%{version}
@@ -433,6 +436,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu May 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-6
+-   Keep modules of running kernel till next boot
 *   Fri May 22 2020 Ashwin H <ashwinh@vmware.com> 4.19.115-5
 -   Fix for CVE-2018-20669
 *   Fri May 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-4
@@ -450,7 +455,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 *   Tue Mar 17 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-3
 -   hmac generation of crypto modules and initrd generation changes if fips=1
 *   Mon Mar 16 2020 Keerthana K <keerthanak@vmware.com> 4.19.104-2
--    Adding Enhances depedency to hmacgen.
+-   Adding Enhances depedency to hmacgen.
 *   Mon Mar 09 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.104-1
 -   Update to version 4.19.104
 *   Wed Mar 04 2020 Vikash Bansal <bvikas@vmware.com> 4.19.97-5

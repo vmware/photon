@@ -4,12 +4,15 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.115
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
+
+%define uname_r %{version}-%{release}
+
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=bdcf13e181be2e9b8a1cc7bac26f9fc1dc0c67dd
 Source1:	config
@@ -20,12 +23,13 @@ Source3:	https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.t
 Source4:	config_aarch64
 Source5:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
 %define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
-Source6:        update_photon_cfg.postun
+Source6:        pre-preun-postun-tasks.inc
 Source7:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source8:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
 %define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
 Source9:        genhmac.inc
+
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -172,13 +176,13 @@ BuildRequires:  python3-devel
 BuildRequires:  pciutils-devel
 %endif
 Requires:       filesystem kmod
-Requires(post):(coreutils or toybox)
-Requires(postun):(coreutils or toybox)
-%define uname_r %{version}-%{release}
+Requires(pre): (coreutils or toybox)
+Requires(preun): (coreutils or toybox)
+Requires(post): (coreutils or toybox)
+Requires(postun): (coreutils or toybox)
 
 %description
 The Linux package contains the Linux kernel.
-
 
 %package devel
 Summary:        Kernel Dev
@@ -256,7 +260,6 @@ Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
 %description dtb-ls1012afrwy
 Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
-
 %endif
 
 %package hmacgen
@@ -274,6 +277,7 @@ This Linux package contains hmac sha generator kernel module.
 %setup -D -b 5 -n linux-%{version}
 %endif
 %setup -D -b 8 -n linux-%{version}
+
 %patch0 -p1
 %patch1 -p1
 %patch3 -p1
@@ -655,10 +659,11 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %defattr(-,root,root)
 /boot/dtb/fsl-ls1012a-frwy.dtb
 /boot/dtb/fsl-ls1046a-rdb.dtb
-
 %endif
 
 %changelog
+*   Thu May 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-10
+-   Keep modules of running kernel till next boot
 *   Thu May 28 2020 Tapas Kundu <tkundu@vmware.com> 4.19.115-9
 -   Added linux-python3-perf subpackage.
 -   Added turbostat and cpupower to tools for x86_64.
