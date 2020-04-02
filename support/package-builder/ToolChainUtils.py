@@ -42,53 +42,6 @@ class ToolChainUtils(object):
                               "Unable to determine the rpm file for package:" + package)
             return None
 
-    def buildCoreToolChainPackages(self):
-        self.logger.info("Step 1 : Building the core toolchain packages for " + constants.currentArch)
-        self.logger.info(constants.listCoreToolChainPackages)
-        self.logger.info("")
-        chroot = None
-        pkgCount = 0
-        try:
-            pkgUtils = PackageUtils(self.logName, self.logPath)
-            coreToolChainYetToBuild = []
-            doneList = []
-            for package in constants.listCoreToolChainPackages:
-                version = SPECS.getData().getHighestVersion(package)
-                rpmPkg = pkgUtils.findRPMFile(package, version)
-                if rpmPkg is not None:
-                    doneList.append(package+'-'+version)
-                    continue
-                else:
-                    coreToolChainYetToBuild.append(package)
-            if coreToolChainYetToBuild:
-                self.logger.info("The following core toolchain packages need to be built :")
-                self.logger.info(coreToolChainYetToBuild)
-            else:
-                self.logger.info("Core toolchain packages are already available")
-
-            for package in coreToolChainYetToBuild:
-                self.logger.debug("Building core toolchain package : " + package)
-                version = SPECS.getData().getHighestVersion(package)
-                destLogPath = constants.logPath + "/" + package + "-" + version + "." + constants.currentArch
-                if not os.path.isdir(destLogPath):
-                    CommandUtils.runCommandInShell("mkdir -p " + destLogPath)
-                chroot = Chroot(self.logger)
-                chroot.create(package + "-" + version)
-                self.installToolchainRPMS(chroot, package, version, availablePackages=doneList)
-                pkgUtils.adjustGCCSpecs(chroot, package, version)
-                pkgUtils.buildRPMSForGivenPackage(chroot, package, version, destLogPath)
-                pkgCount += 1
-                chroot.destroy()
-                doneList.append(package+'-'+version)
-            self.logger.debug("Successfully built toolchain")
-            self.logger.info("-" * 45 + "\n")
-        except Exception as e:
-            self.logger.error("Unable to build toolchain.")
-            # print stacktrace
-            traceback.print_exc()
-            raise e
-        return pkgCount
-
     def getListDependentPackages(self, package, version):
         listBuildRequiresPkg=SPECS.getData(constants.buildArch).getBuildRequiresForPackage(package, version)
         listBuildRequiresPkg.extend(SPECS.getData(constants.buildArch).getCheckBuildRequiresForPackage(package, version))

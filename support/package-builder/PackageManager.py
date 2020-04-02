@@ -34,14 +34,39 @@ class PackageManager(object):
             self.dockerClient = docker.from_env(version="auto")
 
     def buildToolChain(self):
+        self.logger.info("Step 1 : Building the core toolchain packages for " + constants.currentArch)
+        self.logger.info(constants.listCoreToolChainPackages)
+        self.logger.info("")
+
         pkgCount = 0
-        try:
-            tUtils = ToolChainUtils()
-            pkgCount = tUtils.buildCoreToolChainPackages()
-        except Exception as e:
-            self.logger.error("Unable to build tool chain")
-            self.logger.error(e)
-            raise e
+        pkgUtils = PackageUtils(self.logName, self.logPath)
+        coreToolChainYetToBuild = []
+        doneList = []
+        for package in constants.listCoreToolChainPackages:
+            version = SPECS.getData().getHighestVersion(package)
+            rpmPkg = pkgUtils.findRPMFile(package, version)
+            self.sortedPackageList.append(package+"-"+version)
+            if rpmPkg is not None:
+                doneList.append(package+'-'+version)
+                continue
+            else:
+                coreToolChainYetToBuild.append(package)
+
+        self.listOfPackagesAlreadyBuilt = set(doneList)
+        pkgCount = len(coreToolChainYetToBuild)
+        if coreToolChainYetToBuild:
+            self.logger.info("The following core toolchain packages need to be built :")
+            self.logger.info(coreToolChainYetToBuild)
+        else:
+            self.logger.info("Core toolchain packages are already available")
+            self.logger.info("")
+            return pkgCount
+
+        Scheduler.coreToolChainBuild = True
+        self._buildPackages(1)
+        Scheduler.coreToolChainBuild = False
+        self.logger.debug("Successfully built core toolchain")
+        self.logger.info("-" * 45 + "\n")
         return pkgCount
 
     def buildToolChainPackages(self, buildThreads):
@@ -174,7 +199,9 @@ class PackageManager(object):
         if not returnVal:
             self.logger.error("Unable to set parameters. Terminating the package manager.")
             raise Exception("Unable to set parameters")
+        self._buildPackages(buildThreads)
 
+    def _buildPackages(self, buildThreads):
         statusEvent = threading.Event()
         self._initializeScheduler(statusEvent)
         self._initializeThreadPool(statusEvent)

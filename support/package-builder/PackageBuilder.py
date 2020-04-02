@@ -53,9 +53,10 @@ class PackageBuilder(object):
             else:
                 tUtils.installToolchainRPMS(self.sandbox, self.package, self.version, availablePackages=self.doneList)
 
-            self._installDependencies(constants.buildArch)
-            if constants.crossCompiling:
-                self._installDependencies(constants.targetArch)
+            if self.package not in constants.listCoreToolChainPackages:
+                self._installDependencies(constants.buildArch)
+                if constants.crossCompiling:
+                    self._installDependencies(constants.targetArch)
 
             pkgUtils = PackageUtils(self.logName, self.logPath)
             pkgUtils.adjustGCCSpecs(self.sandbox, self.package, self.version)
