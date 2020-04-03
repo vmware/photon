@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.6.5
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -24,6 +24,7 @@ Patch11:        python3-CVE-2019-16935.patch
 Patch12:        python3-CVE-2019-17514.patch
 Patch13:        python3-CVE-2019-18348.patch
 Patch14:        python3-CVE-2019-9674.patch
+Patch15:        python3-CVE-2020-8492.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel
@@ -158,6 +159,7 @@ The test package contains all regression tests for Python as well as the modules
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+%patch15 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -286,6 +288,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.6/test/*
 
 %changelog
+*   Fri Apr 03 2020 Tapas Kundu <tkundu@vmware.com> 3.6.5-14
+-   Fix for CVE-2020-8492
 *   Tue Mar 31 2020 Tapas Kundu <tkundu@vmware.com> 3.6.5-13
 -   Fix for CVE-2019-9674
 *   Thu Mar 26 2020 Tapas Kundu <tkundu@vmware.com> 3.6.5-12
