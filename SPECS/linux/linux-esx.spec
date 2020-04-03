@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.112
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -32,6 +32,7 @@ Patch7:	        9p-trans_fd-extend-port-variable-to-u32.patch
 Patch8:         init-do_mounts-recreate-dev-root.patch
 Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 Patch10:        9p-file-attributes-caching-support.patch
+Patch11:        fs-9p-cache-container-support.patch
 
 # -esx
 Patch13:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
@@ -148,6 +149,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
@@ -309,6 +311,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.112-2
+-   9p: cache=container support
 *   Mon Mar 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.112-1
 -   Update to version 4.19.112
 *   Wed Mar 18 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-4

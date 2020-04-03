@@ -1,0 +1,142 @@
+From d401a45650155e884db1c30505270e7a8d2b6e13 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 31 Mar 2020 19:51:49 +0000
+Subject: [PATCH] fs/9p: cache=container support
+
+It is a mix of mmap and stat caches, needed to run
+chroot/container images over 9p.
+---
+ Documentation/filesystems/9p.txt |  2 ++
+ fs/9p/v9fs.c                     | 19 +++++++++++++------
+ fs/9p/v9fs.h                     |  1 +
+ fs/9p/vfs_inode.c                |  9 ++++++---
+ fs/9p/vfs_inode_dotl.c           |  3 ++-
+ 5 files changed, 24 insertions(+), 10 deletions(-)
+
+diff --git a/Documentation/filesystems/9p.txt b/Documentation/filesystems/9p.txt
+index 567e41ca5380..faa8747e67bc 100644
+--- a/Documentation/filesystems/9p.txt
++++ b/Documentation/filesystems/9p.txt
+@@ -79,6 +79,8 @@ OPTIONS
+                                 mmap.  Northing else is cached, like cache=none
+                         stat = minimal cache that is only used for file
+ 				attributes. Northing else is cached.
++                        container = combination of mmap and stat cache modes.
++				Usable to run container images over 9p.
+ 
+   debug=n	specifies debug level.  The debug level is a bitmask.
+ 			0x01  = display verbose error messages
+diff --git a/fs/9p/v9fs.c b/fs/9p/v9fs.c
+index 1ef6b371ec8b..50555d454e6e 100644
+--- a/fs/9p/v9fs.c
++++ b/fs/9p/v9fs.c
+@@ -58,7 +58,7 @@ enum {
+ 	/* Options that take no arguments */
+ 	Opt_nodevmap,
+ 	/* Cache options */
+-	Opt_cache_loose, Opt_fscache, Opt_stat, Opt_mmap,
++	Opt_cache_loose, Opt_fscache, Opt_stat, Opt_mmap, Opt_container,
+ 	/* Access options */
+ 	Opt_access, Opt_posixacl,
+ 	/* Lock timeout option */
+@@ -88,11 +88,12 @@ static const match_table_t tokens = {
+ };
+ 
+ static const char *const v9fs_cache_modes[nr__p9_cache_modes] = {
+-	[CACHE_NONE]	= "none",
+-	[CACHE_STAT]	= "stat",
+-	[CACHE_MMAP]	= "mmap",
+-	[CACHE_LOOSE]	= "loose",
+-	[CACHE_FSCACHE]	= "fscache",
++	[CACHE_NONE]		= "none",
++	[CACHE_STAT]		= "stat",
++	[CACHE_MMAP]		= "mmap",
++	[CACHE_CONTAINER]	= "container",
++	[CACHE_LOOSE]		= "loose",
++	[CACHE_FSCACHE]		= "fscache",
+ };
+ 
+ /* Interpret mount options for cache mode */
+@@ -112,6 +113,9 @@ static int get_cache_mode(char *s)
+ 	} else if (!strcmp(s, "stat")) {
+ 		version = CACHE_STAT;
+ 		p9_debug(P9_DEBUG_9P, "Cache mode: stat\n");
++	} else if (!strcmp(s, "container")) {
++		version = CACHE_CONTAINER;
++		p9_debug(P9_DEBUG_9P, "Cache mode: container\n");
+ 	} else if (!strcmp(s, "none")) {
+ 		version = CACHE_NONE;
+ 		p9_debug(P9_DEBUG_9P, "Cache mode: none\n");
+@@ -298,6 +302,9 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
+ 		case Opt_mmap:
+ 			v9ses->cache = CACHE_MMAP;
+ 			break;
++		case Opt_container:
++			v9ses->cache = CACHE_CONTAINER;
++			break;
+ 		case Opt_cachetag:
+ #ifdef CONFIG_9P_FSCACHE
+ 			kfree(v9ses->cachetag);
+diff --git a/fs/9p/v9fs.h b/fs/9p/v9fs.h
+index fa0bdb397c56..6bcb38ac90d9 100644
+--- a/fs/9p/v9fs.h
++++ b/fs/9p/v9fs.h
+@@ -66,6 +66,7 @@ enum p9_cache_modes {
+ 	CACHE_NONE,
+ 	CACHE_STAT,
+ 	CACHE_MMAP,
++	CACHE_CONTAINER,
+ 	CACHE_LOOSE,
+ 	CACHE_FSCACHE,
+ 	nr__p9_cache_modes
+diff --git a/fs/9p/vfs_inode.c b/fs/9p/vfs_inode.c
+index 211a69264fdf..601a559e7d42 100644
+--- a/fs/9p/vfs_inode.c
++++ b/fs/9p/vfs_inode.c
+@@ -303,7 +303,8 @@ int v9fs_init_inode(struct v9fs_session_info *v9ses,
+ 			    v9ses->cache == CACHE_FSCACHE)
+ 				inode->i_fop =
+ 					&v9fs_cached_file_operations_dotl;
+-			else if (v9ses->cache == CACHE_MMAP)
++			else if (v9ses->cache == CACHE_MMAP ||
++				 v9ses->cache == CACHE_CONTAINER)
+ 				inode->i_fop = &v9fs_mmap_file_operations_dotl;
+ 			else
+ 				inode->i_fop = &v9fs_file_operations_dotl;
+@@ -313,7 +314,8 @@ int v9fs_init_inode(struct v9fs_session_info *v9ses,
+ 			    v9ses->cache == CACHE_FSCACHE)
+ 				inode->i_fop =
+ 					&v9fs_cached_file_operations;
+-			else if (v9ses->cache == CACHE_MMAP)
++			else if (v9ses->cache == CACHE_MMAP ||
++				 v9ses->cache == CACHE_CONTAINER)
+ 				inode->i_fop = &v9fs_mmap_file_operations;
+ 			else
+ 				inode->i_fop = &v9fs_file_operations;
+@@ -1081,7 +1083,8 @@ v9fs_vfs_getattr(const struct path *path, struct kstat *stat,
+ 	p9_debug(P9_DEBUG_VFS, "dentry: %p\n", dentry);
+ 	v9ses = v9fs_dentry2v9ses(dentry);
+ 	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE ||
+-	    (v9ses->cache == CACHE_STAT && d_really_is_positive(dentry))) {
++	    ((v9ses->cache == CACHE_STAT || v9ses->cache == CACHE_CONTAINER) &&
++	    d_really_is_positive(dentry))) {
+ 		generic_fillattr(d_inode(dentry), stat);
+ 		return 0;
+ 	}
+diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
+index a655397b7717..9fd38a9013c2 100644
+--- a/fs/9p/vfs_inode_dotl.c
++++ b/fs/9p/vfs_inode_dotl.c
+@@ -481,7 +481,8 @@ v9fs_vfs_getattr_dotl(const struct path *path, struct kstat *stat,
+ 	p9_debug(P9_DEBUG_VFS, "dentry: %p\n", dentry);
+ 	v9ses = v9fs_dentry2v9ses(dentry);
+ 	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE ||
+-	    (v9ses->cache == CACHE_STAT && d_really_is_positive(dentry))) {
++	    ((v9ses->cache == CACHE_STAT || v9ses->cache == CACHE_CONTAINER) &&
++	    d_really_is_positive(dentry))) {
+ 		generic_fillattr(d_inode(dentry), stat);
+ 		return 0;
+ 	}
+-- 
+2.14.2
+
