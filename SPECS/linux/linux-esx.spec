@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.112
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -311,6 +311,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Mon Apr 08 2020 Mounesh Badiger <badigerm@vmware.com> 4.19.112-3
+-   Initialize vdfs zero copy parameters in p9_client_create().
 *   Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.112-2
 -   9p: cache=container support
 *   Mon Mar 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.112-1

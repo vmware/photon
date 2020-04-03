@@ -1,7 +1,7 @@
-From cfa445f85c3df575b2c08b849e51c3a66b91a3c6 Mon Sep 17 00:00:00 2001
-From: Mounesh Badiger <badigerm@vmware.com>
-Date: Mon, 2 Mar 2020 10:42:26 -0800
-Subject: [PATCH 2/4] Add 9p zero copy data path using crossfd
+From 7f3c63c33d9ace640e1cbfce5f3dd0cf37b22458 Mon Sep 17 00:00:00 2001
+From: Kamal Charan <kcharan@vmware.com>
+Date: Sat, 4 Apr 2020 08:22:29 -0700
+Subject: [PATCH] Add 9p zero copy data path using crossfd
 
 Add new rpc calls to 9p protocol to allow zero copy
 read and write requests from the client to the server.
@@ -17,9 +17,9 @@ the crossfd feature of ESXi.
 ---
  include/net/9p/9p.h     |   8 +
  include/net/9p/client.h |   6 +
- net/9p/client.c         | 492 +++++++++++++++++++++++++++++++++++++-----------
+ net/9p/client.c         | 494 +++++++++++++++++++++++++++++++++++++-----------
  net/9p/protocol.c       |  20 +-
- 4 files changed, 416 insertions(+), 110 deletions(-)
+ 4 files changed, 418 insertions(+), 110 deletions(-)
 
 diff --git a/include/net/9p/9p.h b/include/net/9p/9p.h
 index 4ab293f..4851f77 100644
@@ -85,7 +85,7 @@ index 947a570..43a9e50 100644
  	struct p9_trans_module *trans_mod;
  	enum p9_trans_status status;
 diff --git a/net/9p/client.c b/net/9p/client.c
-index d62f83f..8d0e063 100644
+index d62f83f..7b31fb4 100644
 --- a/net/9p/client.c
 +++ b/net/9p/client.c
 @@ -25,6 +25,7 @@
@@ -209,7 +209,16 @@ index d62f83f..8d0e063 100644
  		c->proto_version = p9_proto_2000L;
  	else if (!strncmp(version, "9P2000.u", 8))
  		c->proto_version = p9_proto_2000u;
-@@ -1561,92 +1603,341 @@ int p9_client_unlinkat(struct p9_fid *dfid, const char *name, int flags)
+@@ -1026,6 +1068,8 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 	clnt->trans_mod = NULL;
+ 	clnt->trans = NULL;
+ 	clnt->fcall_cache = NULL;
++        clnt->is_dotx_ok = 0;
++        clnt->minzcpages = 1;
+ 
+ 	client_id = utsname()->nodename;
+ 	memcpy(clnt->name, client_id, strlen(client_id) + 1);
+@@ -1561,92 +1605,341 @@ int p9_client_unlinkat(struct p9_fid *dfid, const char *name, int flags)
  }
  EXPORT_SYMBOL(p9_client_unlinkat);
  
@@ -620,7 +629,7 @@ index d62f83f..8d0e063 100644
  	*err = 0;
  
  	p9_debug(P9_DEBUG_9P, ">>> TWRITE fid %d offset %llu count %zd\n",
-@@ -1654,43 +1945,27 @@ p9_client_write(struct p9_fid *fid, u64 offset, struct iov_iter *from, int *err)
+@@ -1654,43 +1947,27 @@ p9_client_write(struct p9_fid *fid, u64 offset, struct iov_iter *from, int *err)
  				iov_iter_count(from));
  
  	while (iov_iter_count(from)) {
@@ -684,7 +693,7 @@ index d62f83f..8d0e063 100644
  		total += count;
  		offset += count;
  	}
-@@ -1830,7 +2105,8 @@ static int p9_client_statsize(struct p9_wstat *wst, int proto_version)
+@@ -1830,7 +2107,8 @@ static int p9_client_statsize(struct p9_wstat *wst, int proto_version)
  		ret += strlen(wst->muid);
  
  	if ((proto_version == p9_proto_2000u) ||
@@ -740,5 +749,5 @@ index 462ba14..1d5bd21 100644
  			break;
  		default:
 -- 
-2.6.2
+2.7.4
 

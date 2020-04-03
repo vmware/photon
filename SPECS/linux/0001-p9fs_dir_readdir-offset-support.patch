@@ -1,5 +1,5 @@
 From 6c654d927b887ba418c29b5d1e7c41114d5efa97 Mon Sep 17 00:00:00 2001
-From: Mounesh Badiger <badigerm@vmware.com>
+From: Wenguang Wang <wenguangw@vmware.com>
 Date: Mon, 2 Mar 2020 10:41:13 -0800
 Subject: [PATCH 1/4] p9fs_dir_readdir offset support
 
