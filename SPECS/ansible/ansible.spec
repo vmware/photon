@@ -2,8 +2,8 @@
 
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.7.9
-Release:        3%{?dist}
+Version:        2.7.16
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -11,10 +11,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha1 ansible=70c30c682178b555be5869b83304145554469ecc
+%define sha1 ansible=612a7439465f66e996ec62d9b3c29e3077b9440b
 
-Patch0:         CVE-2019-10156.patch
-Patch1:         CVE-2019-14864.patch
+Patch0:         CVE-2020-1735.patch
+Patch1:         CVE-2020-1738.patch
+Patch2:         CVE-2020-1739.patch
+Patch3:         CVE-2020-1740.patch
+Patch4:         CVE-2020-10684-2.7.16.p1.patch
+Patch5:         CVE-2020-10684-2.7.16.p2.patch
 
 BuildArch:      noarch
 
@@ -33,6 +37,10 @@ Ansible is a radically simple IT automation system. It handles configuration-man
 
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 %build
 python2 setup.py build
@@ -48,6 +56,8 @@ python2 setup.py install -O1 --skip-build \
 %{python2_sitelib}/*
 
 %changelog
+*   Fri Apr 03 2020 Shreenidhi Shedi <<sshedi@vmware.com> 2.7.16-1
+-   Upgrade to version 2.7.16 & various CVE fixes
 *   Thu Feb 06 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.7.9-3
 -   Fix for CVE-2019-14864
 *   Mon Aug 12 2019 Shreenidhi Shedi <sshedi@vmware.com> 2.7.9-2
