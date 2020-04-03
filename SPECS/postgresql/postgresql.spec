@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        10.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -10,6 +10,7 @@ Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
 %define sha1    postgresql=388b082ea05e385f42ce1521f1a9f7d11561227b
+Patch0:         CVE-2020-1720.patch
 # Common libraries needed
 BuildRequires:  krb5-devel
 BuildRequires:  libxml2-devel
@@ -55,6 +56,7 @@ developing applications that use postgresql.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h &&
@@ -161,6 +163,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Fri Apr 03 2020 Anisha Kumari <kanisha@vmware.com> 10.10-4
+-   added patch to fix CVE-2020-1720
 *   Mon Sep 02 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 10.10-3
 -   add uuid with e2fs configuration
 *   Thu Aug 29 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 10.10-2
