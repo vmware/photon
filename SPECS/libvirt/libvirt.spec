@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        4.7.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
@@ -13,6 +13,7 @@ Patch0:         libvirt-CVE-2019-3840.patch
 Patch1:         libvirt-CVE-2019-10166.patch
 Patch2:         libvirt-CVE-2019-10167.patch
 Patch3:         libvirt-CVE-2019-10168.patch
+Patch4:         libvirt-4.7.0-CVE-2019-20485.patch
 BuildRequires:  cyrus-sasl
 BuildRequires:  device-mapper-devel
 BuildRequires:  gnutls-devel
@@ -24,7 +25,7 @@ BuildRequires:  libselinux-devel
 BuildRequires:  libssh2-devel
 BuildRequires:  systemd-devel
 BuildRequires:  parted
-BuildRequires:  python2-devel
+BuildRequires:  python3-devel
 BuildRequires:  readline-devel
 BuildRequires:  libxslt
 BuildRequires:  libtirpc-devel
@@ -39,7 +40,7 @@ Requires:       libselinux
 Requires:       libssh2
 Requires:       systemd
 Requires:       parted
-Requires:       python2
+Requires:       python3
 Requires:       readline
 Requires:       libtirpc
 
@@ -66,6 +67,7 @@ This contains development tools and libraries for libvirt.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 %build
 sh configure \
     --disable-silent-rules \
@@ -125,6 +127,8 @@ make check
 %{_mandir}/*
 
 %changelog
+*   Thu Apr 02 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 4.7.0-5
+-   Fix CVE-2019-20485
 *   Mon Aug 19 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 4.7.0-4
 -   Upgrading package to fix CVE-2019-10166, CVE-2019-10167, CVE-2019-10168
 *   Tue May 28 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.7.0-3
