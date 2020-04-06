@@ -1,16 +1,18 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.13.10
-Release:        2%{?dist}
+Version:        1.13.12
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=28708bfd50f6dcbcd54d9aba11d5143f7b48403f
+%define sha1    kubernetes-%{version}.tar.gz=a73861cff33634ba43e5c4c38dd85d8cff0ab2e0
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         k8s-1.13-vke.patch
 Patch1:         go-27704.patch
 Patch2:         go-27842-k8s-1.13.patch
+Patch3:         CVE-2019-11250_1.13.patch
+Patch4:         CVE-2020-8552-1.12-1.13.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -60,11 +62,12 @@ tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 cd %{name}-%{version}
 %patch0 -p1
-
 pushd vendor/golang.org/x/net
 %patch1 -p1
 %patch2 -p1
 popd
+%patch3 -p1
+%patch4 -p1
 
 %build
 make
@@ -216,6 +219,10 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Mon Apr 06 2020 Shreyas B <shreyasb@vmware.com> 1.13.12-1
+-   Bump up version to address CVE-2019-11251.
+-   Fix for CVE-2019-11250.
+-   Fix for CVE-2020-8552.
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.13.10-2
 -   Bump up version to compile with new go
 *   Tue Sep 10 2019 Ashwin H <ashwinh@vmware.com> 1.13.10-1
