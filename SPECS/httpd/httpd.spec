@@ -1,6 +1,6 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.41
+Version:        2.4.43
 Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    httpd=b46a02237f03384fa50ddbde9be62092dc23e684
+%define sha1    httpd=fc078df062503ffcf19319c4bf4e8cf27fe30cb4
 Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/%{name}-%{version}-blfs_layout-1.patch
 Patch1:         httpd-uncomment-ServerName.patch
 BuildRequires:  openssl
@@ -179,6 +179,9 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Mon Apr 06 2020 Shreyas B. <shreyasb@vmware.com> 2.4.43-1
+-   Upgrading to 2.4.43 to address following CVEs.
+-   (1) CVE-2020-1927 (2) CVE-2020-1934
 *   Mon Sep 30 2019 Shreyas B. <shreyasb@vmware.com> 2.4.41-1
 -   Upgrading to 2.4.41 to address following CVEs.
 -   (1) CVE-2019-10092 (2) CVE-2019-10098 (3) CVE-2019-10082
