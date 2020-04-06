@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.8p1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -90,8 +90,6 @@ install -vdm755 %{buildroot}/var/lib/sshd
 echo "AllowTcpForwarding no" >> %{buildroot}/etc/ssh/sshd_config
 echo "ClientAliveCountMax 2" >> %{buildroot}/etc/ssh/sshd_config
 echo "Compression no" >> %{buildroot}/etc/ssh/sshd_config
-echo "MaxAuthTries 2" >> %{buildroot}/etc/ssh/sshd_config
-#echo "MaxSessions 2" >> %{buildroot}/etc/ssh/sshd_config
 echo "TCPKeepAlive no" >> %{buildroot}/etc/ssh/sshd_config
 echo "AllowAgentForwarding no" >> %{buildroot}/etc/ssh/sshd_config
 echo "PermitRootLogin no" >> %{buildroot}/etc/ssh/sshd_config
@@ -194,6 +192,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Mon Apr 06 2020 Anish Swaminathan <anishs@vmware.com> 7.8p1-7
+-   Remove the MaxAuthTries restriction and default to 6
 *   Fri Mar 27 2020 Alexey Makhalov <amakhalov@vmware.com> 7.8p1-6
 -   glibc-2.31 support.
 *   Mon Mar 16 2020 Ankit Jain <ankitja@vmware.comm> 7.8p1-5
