@@ -3,7 +3,7 @@
 
 Name:           python-deepmerge
 Version:        0.0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python toolset to deeply merge python dictionaries.
 Group:          Development/Libraries
 License:        MIT
@@ -19,6 +19,8 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python-xml
 BuildRequires:  python3-xml
 BuildRequires:  curl-devel
+BuildRequires:  python-pyparsing
+BuildRequires:  python3-pyparsing
 Requires:       python2
 Requires:       python2-libs
 %if %{with_check}
@@ -94,5 +96,7 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
-*  Wed Jul 23 2019 Tapas Kundu <tkundu@vmware.com> 0.0.5-1
+*  Tue Apr 07 2020 Tapas Kundu <tkundu@vmware.com> 0.0.5-2
+-  Use photon bundled pyparsing for building deepmerge.
+*  Tue Jul 23 2019 Tapas Kundu <tkundu@vmware.com> 0.0.5-1
 -  Initial packaging for photon OS
