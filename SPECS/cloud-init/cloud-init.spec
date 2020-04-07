@@ -1,8 +1,8 @@
 %define python3_sitelib /usr/lib/python3.7/site-packages
 
 Name:           cloud-init
-Version:        19.1
-Release:        8%{?dist}
+Version:        19.4
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -11,27 +11,21 @@ Vendor:         VMware, Inc
 Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 cloud-init=6de398dd755959dde47c8d6f6e255a0857017c44
+%define sha1 cloud-init=5f4de38850f9691dc9789bd4db4be512c9717d7b
 Source1:        99-disable-networking-config.cfg
 Source2:        dscheck_VMwareGuestInfo
 
 Patch0:         photon-distro.patch
-Patch1:         vca-admin-pwd.patch
-Patch2:         photon-hosts-template.patch
-Patch3:         DataSourceVMwareGuestInfo.patch
-Patch4:         systemd-service-changes.patch
-Patch5:         makecheck.patch
-Patch6:         systemd-resolved-config.patch
-Patch7:         cloud-init-azureds.patch
-Patch8:         ds-identity.patch
-Patch9:         ds-guestinfo-photon.patch
-Patch10:        trigger-post-customization.patch
-Patch11:        enable-disable-custom-script.patch
-Patch12:        disable-custom-script-default.patch
-Patch13:        CVE-2020-8632.patch
-Patch14:        CVE-2020-8631.patch
-Patch15:        cloud-cfg.patch
-Patch16:        fix-make-check.patch
+Patch1:         photon-hosts-template.patch
+Patch2:         DataSourceVMwareGuestInfo.patch
+Patch3:         systemd-service-changes.patch
+Patch4:         systemd-resolved-config.patch
+Patch5:         cloud-init-azureds.patch
+Patch6:         ds-identity.patch
+Patch7:         ds-guestinfo-photon.patch
+Patch8:         CVE-2020-8632.patch
+Patch9:         CVE-2020-8631.patch
+Patch10:        cloud-cfg.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -50,6 +44,7 @@ BuildRequires:  python3-chardet
 BuildRequires:  python3-certifi
 BuildRequires:  python3-idna
 BuildRequires:  python3-jinja2
+
 %if %{with_check}
 BuildRequires:  python3-pip
 %endif
@@ -93,12 +88,6 @@ ssh keys and to let the user run various scripts.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
 
 find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -128,22 +117,22 @@ make check
 rm -rf $RPM_BUILD_ROOT
 
 %post
+%systemd_post cloud-init-local.service
+%systemd_post cloud-init.service
 %systemd_post cloud-config.service
 %systemd_post cloud-final.service
-%systemd_post cloud-init.service
-%systemd_post cloud-init-local.service
 
 %preun
+%systemd_preun cloud-init-local.service
+%systemd_preun cloud-init.service
 %systemd_preun cloud-config.service
 %systemd_preun cloud-final.service
-%systemd_preun cloud-init.service
-%systemd_preun cloud-init-local.service
 
 %postun
+%systemd_postun cloud-init-local.service
+%systemd_postun cloud-init.service
 %systemd_postun cloud-config.service
 %systemd_postun cloud-final.service
-%systemd_postun cloud-init.service
-%systemd_postun cloud-init-local.service
 
 %files
 %license LICENSE
@@ -168,6 +157,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Fri Jul 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.4-1
+-   Upgrade version to 19.4
 *   Fri Mar 27 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.1-8
 -   Fixed make check
 -   Enable all harmless options

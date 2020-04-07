@@ -1,7 +1,8 @@
-Only in a/: photon-hosts-template.patch
-diff -rupr a/templates/hosts.photon.tmpl b/templates/hosts.photon.tmpl
---- a/templates/hosts.photon.tmpl	2016-12-22 15:15:38.409943103 -0800
-+++ b/templates/hosts.photon.tmpl	2016-12-22 15:14:20.839459948 -0800
+diff --git a/templates/hosts.photon.tmpl b/templates/hosts.photon.tmpl
+new file mode 100644
+index 00000000..185b0c2e
+--- /dev/null
++++ b/templates/hosts.photon.tmpl
 @@ -0,0 +1,23 @@
 +## template:jinja
 +{#
@@ -16,7 +17,7 @@ diff -rupr a/templates/hosts.photon.tmpl b/templates/hosts.photon.tmpl
 +# a.) make changes to the master file in /etc/cloud/templates/hosts.photon.tmpl
 +# b.) change or remove the value of 'manage_etc_hosts' in
 +#     /etc/cloud/cloud.cfg or cloud-config from user-data
-+# 
++#
 +# The following lines are desirable for IPv4 capable hosts
 +127.0.0.1 {{fqdn}} {{hostname}}
 +127.0.0.1 localhost.localdomain localhost
