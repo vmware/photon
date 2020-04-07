@@ -8,7 +8,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.12.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -21,6 +21,8 @@ Patch2:         CVE-2019-11247-1.patch
 Patch3:         CVE-2019-11247-2.patch
 Patch4:         CVE-2019-11249-1.patch
 Patch5:         CVE-2019-11249-2.patch
+Patch6:         CVE-2020-8552-1.12-1.13.patch
+Patch7:         CVE-2019-11250-1.12.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -76,6 +78,8 @@ popd
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
+%patch7 -p1
 
 %build
 make
@@ -236,6 +240,9 @@ fi
 %endif
 
 %changelog
+*   Thu Apr 09 2020 Shreyas B <shreyasb@vmware.com> 1.12.10-3
+-   Fix for CVE-2020-8552.
+-   Fix for CVE-2019-11250.
 *   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.12.10-2
 -   Bump up version to compile with go 1.13.3
 *   Tue Sep 10 2019 Ashwin H <ashwinh@vmware.com> 1.12.10-1
