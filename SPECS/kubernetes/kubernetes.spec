@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.13.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -12,6 +12,7 @@ Patch0:         k8s-1.13-vke.patch
 Patch1:         go-27704.patch
 Patch2:         go-27842-k8s-1.13.patch
 Patch3:         CVE-2019-11250_1.13.patch
+Patch4:         CVE-2020-8552-1.12-1.13.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -61,11 +62,12 @@ tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 cd %{name}-%{version}
 %patch0 -p1
-
 pushd vendor/golang.org/x/net
 %patch1 -p1
 %patch2 -p1
 popd
+%patch3 -p1
+%patch4 -p1
 
 %build
 make
@@ -217,6 +219,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Thu Apr 09 2020 Shreyas B <shreyasb@vmware.com> 1.13.12-3
+-   Fix for CVE-2020-8552
 *   Tue Apr 07 2020 Shreyas B <shreyasb@vmware.com> 1.13.12-2
 -   Fix for CVE-2019-11250
 *   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 1.13.12-1
