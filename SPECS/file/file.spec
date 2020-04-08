@@ -1,17 +1,14 @@
 Summary:        Contains a utility for determining file types
 Name:           file
-Version:        5.30
-Release:        5%{?dist}
+Version:        5.38
+Release:        1%{?dist}
 License:        BSD
 URL:            http://www.darwinsys.com/file
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
-%define sha1    file=276051cd2c438d4e7a321c4422a5b3bc850fd747
-Patch0:         file-5.30-keep-not-stripped-last.patch
-Patch1:         0001-Avoid-reading-past-the-end-of-buffer-Rui-Reis.patch
-Patch2:		CVE-2019-18218.patch
+%define sha1    file=57cad9341c3f74f8681c2ef931786c420105f35e
 Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox
 %description
@@ -31,9 +28,6 @@ It contains the libraries and header files to create applications.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 %build
 ./configure \
     --prefix=%{_prefix} \
@@ -66,6 +60,9 @@ make %{?_smp_mflags} check
 %{_mandir}/*man3/*
 
 %changelog
+*   Wed Apr 08 2020 Siju Maliakkal <smaliakkal@vmware.com> 5.38-1
+-   Upgrade to 5.38
+-   CVE-2019-8904, CVE-2019-8905, CVE-2019-8906, CVE-2019-8907
 *   Thu Oct 31 2019 Siju Maliakkal <smaliakkal@vmware.com> 5.30-5
 -   Patch for CVE-2019-18218
 *   Wed Aug 01 2018 Ankit Jain <ankitja@vmware.com> 5.30-4
