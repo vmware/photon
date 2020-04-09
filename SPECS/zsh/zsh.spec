@@ -2,24 +2,17 @@
 
 Summary:      Z shell
 Name:         zsh
-Version:      5.3.1
-Release:      11%{?dist}
+Version:      5.8
+Release:      1%{?dist}
 License:      MIT
 URL:          http://zsh.sourceforge.net/
 Group:        System Environment/Shells
 Vendor:       VMware, Inc.
 Distribution: Photon
 Source0:      http://www.zsh.org/pub/%{name}-%{version}.tar.xz
-%define sha1  zsh=ec2a98c080f213c1c6c465c0c64662b5eae6818f
+%define sha1  zsh=966ea0498fb94140f3caf12af88e98b0e4d02078
 Source1:      zprofile.rhs
 Source2:      zshrc
-Patch0:       zsh-CVE-2018-7548.patch
-Patch1:       zsh-CVE-2018-7549.patch
-Patch2:       zsh-CVE-2018-1083.patch
-Patch3:       zsh-CVE-2018-1100.patch
-Patch4:	      zsh-CVE-2018-0502-CVE-2018-13259.patch
-Patch5:	      zsh-CVE-2017-18206.patch
-Patch6:       zsh-CVE-2017-18205.patch
 
 BuildRequires: coreutils
 BuildRequires: tar
@@ -65,13 +58,6 @@ This package contains the Zsh manual in html format.
 %prep
 
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
 
 %build
 # make loading of module's dependencies work again (#1277996)
@@ -158,6 +144,8 @@ fi
 %doc Doc/*.html
 
 %changelog
+*   Thu Apr 09 2020 Siju Maliakkal <smaliakkal@vmware.com> 5.8-1
+-   Upgrade to 5.8 for CVE-2019-20044
 *   Tue Mar 24 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 5.3.1-11
 -   Fix CVE-2017-18205
 *   Mon Jun 24 2019 Siju Maliakkal <smaliakkal@vmware.com> 5.3.1-10
