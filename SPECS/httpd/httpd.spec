@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.43
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -101,6 +101,11 @@ echo "disable httpd.service" > %{buildroot}/usr/lib/systemd/system-preset/50-htt
 ln -s /usr/sbin/httpd %{buildroot}/usr/sbin/apache2
 ln -s /etc/httpd/conf/httpd.conf %{buildroot}/etc/httpd/httpd.conf
 
+mkdir -p %{buildroot}%{_libdir}/tmpfiles.d
+cat >> %{buildroot}%{_libdir}/tmpfiles.d/httpd.conf << EOF
+d /var/run/httpd 0755 root root -
+EOF
+
 %post
 /sbin/ldconfig
 if [ $1 -eq 1 ]; then
@@ -119,7 +124,7 @@ if [ $1 -eq 1 ]; then
 fi
 
 ln -sf /etc/httpd/conf/mime.types /etc/mime.types
-mkdir -p /var/run/httpd
+systemd-tmpfiles --create httpd.conf
 %systemd_post httpd.service
 
 %preun
@@ -171,6 +176,7 @@ fi
 %{_sysconfdir}/httpd/httpd.conf
 %{_libdir}/systemd/system/httpd.service
 %{_libdir}/systemd/system-preset/50-httpd.preset
+%{_libdir}/tmpfiles.d/httpd.conf
 %{_localstatedir}/log/httpd
 
 %files tools
@@ -179,6 +185,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Mon Apr 08 2020 Dweep Advani <dadvani@vmware.com> 2.4.43-2
+-   Fixed failed httpd service startup issue on reboots
 *   Mon Apr 06 2020 Shreyas B. <shreyasb@vmware.com> 2.4.43-1
 -   Upgrading to 2.4.43 to address following CVEs.
 -   (1) CVE-2020-1927 (2) CVE-2020-1934
