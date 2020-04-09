@@ -63,5 +63,5 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
-*  Wed Jul 23 2019 Tapas Kundu <tkundu@vmware.com> 0.10.9-1
+*  Tue Jul 23 2019 Tapas Kundu <tkundu@vmware.com> 0.10.9-1
 -  Initial packaging for photon OS
