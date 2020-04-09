@@ -2,15 +2,15 @@
 %global photon_checksum_generator_version 1.0
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.104
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.112
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=86bba9d355c767c843f0a63353658fe39fd31e92
+%define sha1 linux=266f149294b7222b23eab3292d0db98791343b0e
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -67,8 +67,6 @@ Patch34:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch35:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 Patch36:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
-# Fix for CVE-2019-16234
-Patch37:        0001-iwlwifi-pcie-fix-rb_allocator-workqueue-allocation.patch
 # Fix CVE-2019-19072
 Patch43:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 # Fix CVE-2019-19073
@@ -167,7 +165,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
-%patch37 -p1
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
@@ -303,6 +300,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Wed Apr 08 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.112-1
+-   Update to version 4.19.112
 *   Wed Apr 08 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.104-3
 -   Improve hardcodded poweroff (03-poweroff.patch)
 *   Tue Mar 31 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-2
