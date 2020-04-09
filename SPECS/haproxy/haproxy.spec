@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        2.0.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.haproxy.org/download/2.0/src/%{name}-%{version}.tar.gz
 %define sha1 haproxy=7a81094c367621a981012480cebc7c152c482d75
+Patch0:         haproxy-CVE-2020-11100.patch
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  lua-devel
@@ -30,6 +31,7 @@ Requires:       %{name} = %{version}-%{release}
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 make %{?_smp_mflags} TARGET=linux-glibc USE_PCRE=1 USE_OPENSSL=1 \
@@ -58,6 +60,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Thu Apr 09 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.10-2
+-   Fix CVE-2020-11100
 *   Thu Dec 19 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.10-1
 -   Update to version 2.0.10 to fix CVE-2019-19330
 *   Thu Oct 31 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.6-1
