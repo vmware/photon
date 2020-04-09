@@ -1,9 +1,9 @@
 %global security_hardening none
-%global photon_checksum_generator_version 1.0
+%global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.115
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -17,7 +17,7 @@ Source3:        update_photon_cfg.postun
 Source4:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
-%define sha1 photon-checksum-generator=b2a0528ce733e27bf332ea533072faf73c336f0c
+%define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
 Source6:        genhmac.inc
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
@@ -312,6 +312,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.115-3
+-   Photon-checksum-generator version update to 1.1.
 *   Mon Apr 20 2020 Keerthana K <keerthanak@vmware.com> 4.19.115-2
 -   Fix __modules_install_post to skip compression for certain modules.
 *   Mon Apr 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-1

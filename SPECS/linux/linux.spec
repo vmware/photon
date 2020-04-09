@@ -1,9 +1,9 @@
 %global security_hardening none
-%global photon_checksum_generator_version 1.0
+%global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux
 Version:        4.19.115
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -23,7 +23,7 @@ Source6:        update_photon_cfg.postun
 Source7:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source8:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
-%define sha1 photon-checksum-generator=b2a0528ce733e27bf332ea533072faf73c336f0c
+%define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
 Source9:        genhmac.inc
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
@@ -594,6 +594,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.115-3
+-   Photon-cheksum-generator version update to 1.1.
 *   Wed Apr 29 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-2
 -   Enable additional config options.
 *   Mon Apr 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-1
