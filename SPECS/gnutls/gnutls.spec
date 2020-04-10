@@ -1,11 +1,11 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.6.9
-Release:        2%{?dist}
+Version:        3.6.13
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
-Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.5/%{name}-%{version}.tar.xz
-%define sha1    gnutls=4a12757b129562ae92a01ca890ed282050595296
+Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
+%define sha1    gnutls=0d3d0d093d6a7cf589612a7c21dbb46cb31c644b
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -94,6 +94,9 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Apr 10 2020 Tapas Kundu <tkundu@vmware.com> 3.6.13-1
+-   Update to 3.6.13
+-   Fix CVE-2020-11501
 *   Thu Oct 24 2019 Shreenidhi Shedi <sshedi@vmware.com> 3.6.9-2
 -   Added default priority patch.
 *   Thu Oct 17 2019 Shreenidhi Shedi <sshedi@vmware.com> 3.6.9-1
