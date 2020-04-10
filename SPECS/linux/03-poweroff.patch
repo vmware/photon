@@ -1,24 +1,41 @@
-From 467ddac279a00201bb732e7daa2794d61441075d Mon Sep 17 00:00:00 2001
+From 98580173d5aeffd33b2d0ae532a05aa55bfe02bb Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 29 Sep 2015 16:01:17 -0700
-Subject: [PATCH] reboot.c: Hardcodded piix4 poweroff.
+Subject: [PATCH] reboot.c: Hardcodded piix4 poweroff
 
+In case of missing ACPI or acpi=off we still want to
+be able to power off the VM. It can be done by sending
+Power off command (0x2000) into chipset power management
+control register (0x1004).
 ---
- arch/x86/kernel/reboot.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kernel/cpu/vmware.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/arch/x86/kernel/reboot.c b/arch/x86/kernel/reboot.c
-index 02693dd..e1eba75 100644
---- a/arch/x86/kernel/reboot.c
-+++ b/arch/x86/kernel/reboot.c
-@@ -653,6 +653,7 @@ static void native_machine_halt(void)
- 
- 	tboot_shutdown(TB_SHUTDOWN_HALT);
- 
-+	outw(0x2000, 0x1004);
- 	stop_this_cpu(NULL);
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 2b1d07183fba..8cf03fe161f2 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -351,3 +351,20 @@ static void kmsg_dumper_vmware_log(struct kmsg_dumper *dumper,
+ 			break;
+ 	}
  }
- 
++
++static void vmware_power_off(void)
++{
++	/* PIIX4 Power Off */
++	outw(0x2000, 0x1004);
++}
++
++static __init int vmware_poweroff_init(void)
++{
++	if (!pm_power_off) {
++		pr_info("Using non-ACPI power off method.\n");
++		pm_power_off = vmware_power_off;
++	}
++	return 0;
++}
++
++late_initcall(vmware_poweroff_init);
 -- 
-1.9.1
+2.14.2
 

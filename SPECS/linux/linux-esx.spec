@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.217
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -252,6 +252,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Apr 08 2020 Alexey Makhalov <amakhalov@vmware.com> 4.9.217-3
+-   Improve hardcodded poweroff (03-poweroff.patch)
 *   Mon Mar 30 2020 Vikash Bansal <bvikas@vmware.com> 4.9.217-2
 -   Fix for CVE-2018-13094 & CVE-2019-3900
 *   Mon Mar 23 2020 Keerthana K <keerthanak@vmware.com> 4.9.217-1
