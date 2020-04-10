@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.219
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -17,12 +17,12 @@ Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch2:        linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch3:        SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:        vmxnet3-1.4.6.0-update-rx-ring2-max-size.patch
-Patch5:        01-clear-linux.patch
-Patch6:        02-pci-probe.patch
-Patch7:        03-poweroff.patch
-Patch8:        04-quiet-boot.patch
-Patch9:        05-pv-ops.patch
-Patch10:       06-sunrpc.patch
+Patch5:        clear-linux.patch
+Patch6:        pci-probe.patch
+Patch7:        quiet-boot.patch
+Patch8:        pv-ops.patch
+Patch9:        poweroff.patch
+Patch10:       sunrpc-xs_bind-uses-ip_local_reserved_ports.patch
 Patch11:       vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
 Patch13:       REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch14:       e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
@@ -256,6 +256,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Apr 14 2020 Alexey Makhalov <amakhalov@vmware.com> 4.4.219-2
+-   Improve hardcodded poweroff (03-poweroff.patch)
 *   Mon Apr 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.219-1
 -   Update to version 4.4.219
 *   Mon Mar 30 2020 Vikash Bansal <bvikas@vmware.com> 4.4.217-2

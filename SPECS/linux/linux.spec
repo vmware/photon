@@ -19,7 +19,7 @@ Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch2:         linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch4:         06-sunrpc.patch
+Patch4:         sunrpc-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vmware-log-kmsg-dump-on-panic.patch
 Patch6:         vmxnet3-1.4.6.0-update-rx-ring2-max-size.patch
 Patch7:	        vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
