@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.104
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -303,6 +303,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Wed Apr 08 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.104-3
+-   Improve hardcodded poweroff (03-poweroff.patch)
 *   Tue Mar 31 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-2
 -   hmac generation of crypto modules and initrd generation changes if fips=1
 *   Wed Mar 25 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-1
