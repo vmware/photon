@@ -1,6 +1,6 @@
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        2.2.3
+Version:        3.1.3
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -8,9 +8,8 @@ License:        MIT
 Url:            https://github.com/dotnet/core
 Group:          Development/Tools
 BuildArch:      x86_64
-#Source0:        https://download.microsoft.com/download/A/7/8/A78F1D25-8D5C-4411-B544-C7D527296D5E/dotnet-runtime-2.2.0-linux-x64.tar.gz
-Source0:        https://download.visualstudio.microsoft.com/download/pr/28271651-a8f6-41d6-9144-2d53f6c4aac4/bb29124818f370cd08c5c8cc8f8816bf/dotnet-runtime-2.2.3-linux-x64.tar.gz
-%define sha1    dotnet-runtime=8eedd49b20abc52599b21a30902c8568e7949cab
+Source0:        %{name}-%{version}-linux-x64.tar.gz
+%define sha1    dotnet-runtime=fd3a44ee48a2d334fca2123e5a00dc5fa5278c16
 Requires:       curl libunwind krb5 lttng-ust
 
 %description
@@ -67,6 +66,8 @@ ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
     %{_libdir}/*
 
 %changelog
+*   Sat Apr 11 2020 Shreyas B. <shreyasb@vmware.com> 3.1.3-1
+-   Upgrade to v3.1.3
 *   Mon Nov 11 2019 Shreyas B. <shreyasb@vmware.com> 2.2.3-1
 -   Upgraded to v2.2.3
 *   Wed Dec 05 2018 Ajay Kaher <akaher@vmware.com> 2.2.0-1
