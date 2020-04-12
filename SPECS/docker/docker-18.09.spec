@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -37,7 +37,7 @@ BuildRequires:  libseccomp-devel
 BuildRequires:  libltdl-devel
 BuildRequires:  libgcc-devel
 BuildRequires:  glibc-devel
-BuildRequires:  go = 1.11.13
+BuildRequires:  go
 BuildRequires:  go-md2man
 BuildRequires:  cmake
 BuildRequires:  sed
@@ -285,6 +285,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon May 04 2020 Harinadh D <hdommaraju@vmware.com> 18.09.9-3
+-   Bump up version to compile with go 1.13.3-2
 *   Mon Apr 27 2020 Ankit Jain <ankitja@vmware.com> 18.09.9-2
 -   Added Requires shadow
 -   To fix docker run command, libseccomp >= 2.4.0
