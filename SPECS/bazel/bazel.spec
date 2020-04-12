@@ -1,20 +1,21 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %global debug_package %{nil}
 %define __os_install_post %{nil}
 
-Summary: Build software of any size, quickly and reliably, just as engineers do at Google.
-Name:		bazel
-Version:	0.24.1
-Release:	2%{?dist}
-License:	Apache License 2.0
-Group: 		Development/Tools
-URL: 		http://bazel.build/
-Source:  	https://github.com/bazelbuild/bazel/releases/download/0.24.1/bazel-0.24.1.tar.gz
-%define sha1    bazel=0534138766c04244aeec5b607b4561b42f61cbdf
-Requires: 	openjdk8
+Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
+Name:           bazel
+Version:        2.0.0
+Release:        1%{?dist}
+License:        Apache License 2.0
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+URL:            http://bazel.build/
+Source:         https://github.com/bazelbuild/bazel/releases/download/%{version}/%{name}-%{version}.dist.zip
+%define sha1    bazel=f4e2eca5ff6c1c1cb921ea6637c1ec758ba93128
+Requires:       openjdk8
 BuildRequires:  openjdk8 zlib-devel which findutils tar gzip zip unzip
 BuildRequires:  gcc
-BuildRequires:  python2
+BuildRequires:  python3
 
 %description
 Bazel is Google's own build tool, now publicly available in Beta. Bazel has
@@ -23,27 +24,30 @@ applications for both Android and iOS platforms. It also provides an extensible
 framework that you can use to develop your own build rules.
 
 %prep
-%setup -q
+%setup -c -n %{name}-%{version}
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
-export PYTHONPATH=%{buildroot}%{python2_sitelib}
 mkdir /usr/tmp
 export TMPDIR=/usr/tmp
+# some modules in bazel just expecting python to be exist
+ln -sf %{_bindir}/python3 %{_bindir}/python
 env ./compile.sh
 env ./output/bazel
 env ./output/bazel shutdown
 
 %install
-mkdir -p %{buildroot}/usr/bin
-cp output/bazel %{buildroot}/usr/bin/
+mkdir -p %{buildroot}%{_bindir}
+cp output/bazel %{buildroot}%{_bindir}
 
 
 %files
 %defattr(-,root,root)
-%attr(777,root,root) /usr/bin/bazel
+%attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+*	Fri Apr 10 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 2.0.0-1
+-	Update bazel to v2.0.0
 *	Wed Apr 01 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 0.24.1-2
 -	Cleanup bazel server after build
 *	Thu May 9 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 0.24.1-1

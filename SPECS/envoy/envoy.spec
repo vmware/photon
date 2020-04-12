@@ -2,20 +2,15 @@
 
 Summary:        C++ L7 proxy and communication bus
 Name:           envoy
-Version:        1.10.0
-Release:        8%{?dist}
+Version:        1.13.1
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/lyft/envoy
 Source0:        %{name}-v%{version}.tar.gz
-%define sha1    envoy=d2b3d504de30507ef72604288eece9d6ec735de8
+%define sha1    envoy=b3363c53b958fa87ceefe21219c5f37ba173f86f
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Patch0:         bazel-replace-tclap-mirror.patch
-Patch1:         envoy-1.10-CVE-2019-18801.patch
-Patch2:         envoy-1.10-CVE-2019-18802.patch
-Patch3:         envoy-CVE-2020-8660.patch
 
 BuildRequires:	bazel
 BuildRequires:  backward-cpp
@@ -67,12 +62,6 @@ Envoy is a L7 proxy and communication bus designed for large modern service orie
 %prep
 %setup -q -c -n %{name}-v%{version}
 
-cd %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p0
-%patch3 -p1
-
 %build
 cd envoy-%{version}
 echo -n "%{git_commit}" > SOURCE_VERSION
@@ -95,6 +84,10 @@ cp -rf configs/* %{buildroot}%{_sysconfdir}/envoy
 %config(noreplace) %{_sysconfdir}/envoy/*
 
 %changelog
+*   Fri Apr 10 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 1.13.1-1
+-   Update envoy to 1.13.1
+-   Fix for CVE-2020-8664,CVE-2020-8661,CVE-2020-8659,CVE-2019-18838,
+-   CVE-2019-18836,CVE-2019-15226,CVE-2019-15225
 *   Mon Mar 23 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 1.10.0-8
 -   Cleanup bazel server after build
 *   Mon Mar 23 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 1.10.0-7
