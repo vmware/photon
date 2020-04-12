@@ -1,7 +1,7 @@
-Summary:          Systemd-239
+Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          20%{?dist}
+Release:          21%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -39,6 +39,16 @@ Patch19:          systemd-239-CVE-2019-20386.patch
 Patch20:          shared-conf-parser-be-nice-and-ignore-lines-without.patch
 Patch21:          systemd-239-bz-2527177.patch
 Patch22:          ipv6ra-allow-to-ignore-addresses.patch
+Patch23:          sd-bus-make-rqueue-wqueue-sizes-of-type-size_t.patch
+Patch24:          sd-bus-reorder-bus-ref-and-bus-message-ref-handling.patch
+Patch25:          sd-bus-make-sure-dispatch_rqueue-initializes-return-.patch
+Patch26:          sd-bus-drop-two-inappropriate-empty-lines.patch
+Patch27:          sd-bus-initialize-mutex-after-we-allocated-the-wqueu.patch
+Patch28:          sd-bus-always-go-through-sd_bus_unref-to-free-messag.patch
+Patch29:          bus-message-introduce-two-kinds-of-references-to-bus.patch
+Patch30:          sd-bus-introduce-API-for-re-enqueuing-incoming-messa.patch
+Patch31:          sd-event-add-sd_event_source_disable_unref-helper.patch
+Patch32:          polkit-when-authorizing-via-PK-let-s-re-resolve-call.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -48,6 +58,7 @@ Requires:         glib
 Requires:         libgcrypt
 Requires:         filesystem >= 1.1
 Requires:         elfutils
+
 BuildRequires:    intltool
 BuildRequires:    gperf
 BuildRequires:    libcap-devel
@@ -67,19 +78,31 @@ BuildRequires:    shadow
 BuildRequires:    libgcrypt-devel
 
 %description
-Systemd is an init replacement with better process control and security
+systemd is a system and service manager that runs as PID 1 and starts
+the rest of the system. It provides aggressive parallelization
+capabilities, uses socket and D-Bus activation for starting services,
+offers on-demand starting of daemons, keeps track of processes using
+Linux control groups, maintains mount and automount points, and
+implements an elaborate transactional dependency-based service control
+logic. systemd supports SysV and LSB init scripts and works as a
+replacement for sysvinit. Other parts of this package are a logging daemon,
+utilities to control basic system configuration like the hostname,
+date, locale, maintain a list of logged-in users, system accounts,
+runtime directories and settings, and daemons to manage simple network
+configuration, network time synchronization, log forwarding, and name
+resolution.
 
-%package devel
-Summary:        Development headers for systemd
-Requires:       %{name} = %{version}-%{release}
-Requires:    glib-devel
+%package   devel
+Summary:   Development headers for systemd
+Requires:  %{name} = %{version}-%{release}
+Requires:  glib-devel
 
 %description devel
 Development headers for developing applications linking to libsystemd
 
 %package lang
-Summary:        Language pack for systemd
-Requires:       %{name} = %{version}-%{release}
+Summary:   Language pack for systemd
+Requires:  %{name} = %{version}-%{release}
 
 %description lang
 Language pack for systemd
@@ -117,6 +140,16 @@ EOF
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
+%patch23 -p1
+%patch24 -p1
+%patch25 -p1
+%patch26 -p1
+%patch27 -p1
+%patch28 -p1
+%patch29 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -283,6 +316,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Sun Apr 13 2020 Susant Sahani <ssahani@vmware.com>  239-21
+-    Fix CVE-2020-1712
 *    Tue Mar 24 2020 Susant Sahani <ssahani@vmware.com>  239-20
 -    networkd: ipv6ra allow to ignore addresses
 *    Thu Mar 12 2020 Susant Sahani <ssahani@vmware.com>  239-19

@@ -1,0 +1,35 @@
+From 19a9c67b79ebb9a65bc2aec8d8f2799262ef0cb2 Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Thu, 17 Jan 2019 18:15:37 +0100
+Subject: [PATCH 03/10] sd-bus: make sure dispatch_rqueue() initializes return
+ parameter on all types of success
+
+Let's make sure our own code follows coding style and initializes all
+return values on all types of success (and leaves it uninitialized in
+all types of failure).
+
+(cherry picked from commit c0bc4ec5cc17ac61773d1e9362b0ffa8382c1ff1)
+Related: CVE-2020-1712
+---
+ src/libsystemd/sd-bus/sd-bus.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/libsystemd/sd-bus/sd-bus.c b/src/libsystemd/sd-bus/sd-bus.c
+index 64026f7ee1..55b008cc9f 100644
+--- a/src/libsystemd/sd-bus/sd-bus.c
++++ b/src/libsystemd/sd-bus/sd-bus.c
+@@ -1814,8 +1814,10 @@ static int dispatch_rqueue(sd_bus *bus, bool hint_priority, int64_t priority, sd
+                 r = bus_read_message(bus, hint_priority, priority);
+                 if (r < 0)
+                         return r;
+-                if (r == 0)
++                if (r == 0) {
++                        *m = NULL;
+                         return ret;
++                }
+ 
+                 ret = 1;
+         }
+-- 
+2.25.1
+

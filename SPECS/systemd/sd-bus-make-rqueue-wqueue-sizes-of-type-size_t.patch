@@ -1,0 +1,52 @@
+From 1d8e642b0b67f07b0bf469c25126b878380bae6a Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Thu, 17 Jan 2019 18:13:03 +0100
+Subject: [PATCH 01/10] sd-bus: make rqueue/wqueue sizes of type size_t
+
+Let's do this like we usually do and size arrays with size_t.
+
+We already do this for the "allocated" counter correctly, and externally
+we expose the queue sizes as uint64_t anyway, hence there's really no
+point in usigned "unsigned" internally.
+
+(cherry picked from commit 143d4e045a798ccc87889b2a8a60d7fbe44be441)
+Related: CVE-2020-1712
+---
+ src/libsystemd/sd-bus/bus-internal.h | 4 ++--
+ src/libsystemd/sd-bus/sd-bus.c       | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/libsystemd/sd-bus/bus-internal.h b/src/libsystemd/sd-bus/bus-internal.h
+index 5d773b14c4..06bd7862cb 100644
+--- a/src/libsystemd/sd-bus/bus-internal.h
++++ b/src/libsystemd/sd-bus/bus-internal.h
+@@ -221,11 +221,11 @@ struct sd_bus {
+         size_t rbuffer_size;
+ 
+         sd_bus_message **rqueue;
+-        unsigned rqueue_size;
++        size_t rqueue_size;
+         size_t rqueue_allocated;
+ 
+         sd_bus_message **wqueue;
+-        unsigned wqueue_size;
++        size_t wqueue_size;
+         size_t windex;
+         size_t wqueue_allocated;
+ 
+diff --git a/src/libsystemd/sd-bus/sd-bus.c b/src/libsystemd/sd-bus/sd-bus.c
+index 1c9e967ae0..64026f7ee1 100644
+--- a/src/libsystemd/sd-bus/sd-bus.c
++++ b/src/libsystemd/sd-bus/sd-bus.c
+@@ -2080,7 +2080,7 @@ _public_ int sd_bus_call(
+         _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = sd_bus_message_ref(_m);
+         usec_t timeout;
+         uint64_t cookie;
+-        unsigned i;
++        size_t i;
+         int r;
+ 
+         bus_assert_return(m, -EINVAL, error);
+-- 
+2.25.1
+
