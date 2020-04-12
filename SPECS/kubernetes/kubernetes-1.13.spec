@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.13.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -219,6 +219,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.13.12-2
+-   Bump up version to compile with go 1.13.5-2
 *   Mon Apr 06 2020 Shreyas B <shreyasb@vmware.com> 1.13.12-1
 -   Bump up version to address CVE-2019-11251.
 -   Fix for CVE-2019-11250.

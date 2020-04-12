@@ -4,7 +4,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.7.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=7aaae7ea80f2280b25f243916e8d18b7338b5f53
 License:        GPLv2+
@@ -158,6 +158,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 2.7.5-6
+-   Bump up version to compile with go 1.13.5-2
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 2.7.5-5
 -   Bump up version to compile with new go
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 2.7.5-4

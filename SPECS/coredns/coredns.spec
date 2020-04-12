@@ -1,7 +1,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.2.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/coredns/coredns/archive/v%{version}.tar.gz
 Source0:        coredns-%{version}.tar.gz
@@ -51,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/coredns
 
 %changelog
+*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.2.6-5
+-   Bump up version to compile with go 1.13.5-2
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.2.6-4
 -   Bump up version to compile with new go
 *   Sun Sep 22 2019 Alexey Makhalov <amakhalov@vmware.com> 1.2.6-3

@@ -3,7 +3,7 @@
 Summary:        C++ L7 proxy and communication bus
 Name:           envoy
 Version:        1.13.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/lyft/envoy
 Source0:        %{name}-v%{version}.tar.gz
@@ -84,6 +84,8 @@ cp -rf configs/* %{buildroot}%{_sysconfdir}/envoy
 %config(noreplace) %{_sysconfdir}/envoy/*
 
 %changelog
+*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.13.1-2
+-   Bump up version to compile with go 1.13.5-2
 *   Fri Apr 10 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 1.13.1-1
 -   Update envoy to 1.13.1
 -   Fix for CVE-2020-8664,CVE-2020-8661,CVE-2020-8659,CVE-2019-18838,
