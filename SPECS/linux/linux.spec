@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.217
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.219
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=adb5def47258f881afb055e40001f425d3a1560e
+%define sha1 linux=f76f9b8f831b4537a8b35ef69976f6d79f1c6488
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -36,15 +36,17 @@ Patch16:        vsock-transport-for-9p.patch
 #allow some algorithms in FIPS mode
 Patch17:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch18:        0002-allow-also-ecb-cipher_null.patch
-Patch19:	net-9p-vdfs-zerocopy.patch
+# 9p patches for VDFS
+Patch19:        net-9p-vdfs-zerocopy.patch
 Patch20:        0001-Enable-cache-loose-for-vdfs-9p.patch
+Patch21:        0001-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
+Patch22:        0001-9p-Transport-error-uninitialized.patch
 # Fix for CVE-2018-8043
-Patch22:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
-
-Patch23:        0001-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
+Patch23:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
 Patch26:        Implement-the-f-xattrat-family-of-functions.patch
 Patch27:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+
 # Fix for CVE-2017-18232
 Patch28:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
 # Fix for CVE-2018-10323
@@ -78,7 +80,6 @@ Patch52:        0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 
-Patch71: 0001-9p-Transport-error-uninitialized.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -174,6 +175,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
+%patch21 -p1
 %patch22 -p1
 %patch23 -p1
 %patch26 -p1
@@ -197,7 +199,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch51 -p1
 %patch52 -p1
 %patch67 -p1
-%patch71 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -356,6 +357,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Apr 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.219-1
+-   Update to version 4.4.219
 *   Mon Mar 30 2020 Vikash Bansal <bvikas@vmware.com> 4.4.217-2
 -   Fix for CVE-2018-13094
 *   Mon Mar 23 2020 Keerthana K <keerthanak@vmware.com> 4.4.217-1

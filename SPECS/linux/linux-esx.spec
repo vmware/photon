@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.217
-Release:       2%{?dist}
+Version:       4.4.219
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=adb5def47258f881afb055e40001f425d3a1560e
+%define sha1 linux=f76f9b8f831b4537a8b35ef69976f6d79f1c6488
 Source1:       config-esx
 Source2:       update_photon_cfg.postun
 Patch0:        double-tcp_mem-limits.patch
@@ -34,15 +34,18 @@ Patch19:       serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 Patch22:       vsock-transport-for-9p.patch
-Patch23:       p9fs_dir_readdir-offset-support.patch
-Patch24:       Implement-the-f-xattrat-family-of-functions.patch
-Patch26:       init-do_mounts-recreate-dev-root.patch
+Patch23:       Implement-the-f-xattrat-family-of-functions.patch
+Patch24:       init-do_mounts-recreate-dev-root.patch
+
+# 9p patches for VDFS
+Patch26:       p9fs_dir_readdir-offset-support.patch
 Patch27:       net-9p-vdfs-zerocopy.patch
 Patch28:       0001-Enable-cache-loose-for-vdfs-9p.patch
 Patch29:       0001-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
+Patch30:       0001-9p-Transport-error-uninitialized.patch
 
 # Fix for CVE-2018-8043
-Patch30:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
+Patch31:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
 Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
@@ -76,7 +79,6 @@ Patch58:        0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 # For Spectre
 Patch70: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 
-Patch71: 0001-9p-Transport-error-uninitialized.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -143,6 +145,7 @@ The Linux package contains the Linux kernel doc files
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
+%patch31 -p1
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
@@ -163,7 +166,6 @@ The Linux package contains the Linux kernel doc files
 %patch58 -p1
 
 %patch70 -p1
-%patch71 -p1
 
 %build
 # patch vmw_balloon driver
@@ -254,6 +256,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Apr 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.219-1
+-   Update to version 4.4.219
 *   Mon Mar 30 2020 Vikash Bansal <bvikas@vmware.com> 4.4.217-2
 -   Fix for CVE-2018-13094
 *   Mon Mar 23 2020 Keerthana K <keerthanak@vmware.com> 4.4.217-1
