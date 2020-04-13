@@ -1,11 +1,11 @@
 Summary:        Low level cryptographic libraries
 Name:           nettle
-Version:        3.3
+Version:        3.4.1
 Release:        1%{?dist}
 License:        LGPLv3+ or GPLv2+
 URL:            http://www.lysator.liu.se/~nisse/nettle/
 Source0:        https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
-%define sha1 nettle=bf2b4d3a41192ff6177936d7bc3bee4cebeb86c4
+%define sha1 nettle=56a81ed4a8d35489d8bddd99d5262fe3958a52b4
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -33,29 +33,38 @@ developing applications that use nettle.
 
 %prep
 %setup -q
+
 %build
 ./configure \
         --prefix=%{_prefix} \
         --enable-shared
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 rm %{buildroot}%{_infodir}/*
+
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 %{_bindir}/*
+
 %files devel
 %defattr(-,root,root)
 %{_includedir}/nettle/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.a
+
 %changelog
+*   Mon Apr 13 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.4.1-1
+-   Upgrade to version 3.4.1
 *   Wed Mar 21 2018 Xiaolin Li <xiaolinl@vmware.com> 3.3-1
 -   Update to 3.3, fix CVE-2016-6489
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2-2
@@ -66,4 +75,3 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 -   Moving static lib files to devel package.
 *   Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 3.1.1-1
 -   Initial build. First version
-
