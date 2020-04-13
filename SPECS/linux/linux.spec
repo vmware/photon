@@ -2,15 +2,15 @@
 %global photon_checksum_generator_version 1.0
 Summary:        Kernel
 Name:           linux
-Version:        4.19.112
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.115
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=266f149294b7222b23eab3292d0db98791343b0e
+%define sha1 linux=bdcf13e181be2e9b8a1cc7bac26f9fc1dc0c67dd
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -594,6 +594,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Apr 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-1
+-   Update to version 4.19.115
 *   Wed Apr 08 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-2
 -   HMAC-SHA256 digest of hmac_generator module moved to hmacgen package
 *   Mon Mar 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.112-1
