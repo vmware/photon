@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.217
-Release:        3%{?dist}
+Version:        4.9.219
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b6685b4e6d830168a1fcab58b7d18c2055935446
+%define sha1 linux=4a9563c29863af8fbe204eeea2e97e1d124c5ed6
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -252,6 +252,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Apr 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.219-1
+-   Update to version 4.9.219
 *   Wed Apr 08 2020 Alexey Makhalov <amakhalov@vmware.com> 4.9.217-3
 -   Improve hardcodded poweroff (03-poweroff.patch)
 *   Mon Mar 30 2020 Vikash Bansal <bvikas@vmware.com> 4.9.217-2
