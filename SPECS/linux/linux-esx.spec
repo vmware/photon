@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.112
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -300,6 +300,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 
 %changelog
+*   Tue Apr 14 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.112-2
+-   Refactor PCI probe patch (03-pci-probe.patch)
 *   Wed Apr 08 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.112-1
 -   Update to version 4.19.112
 *   Wed Apr 08 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.104-3
