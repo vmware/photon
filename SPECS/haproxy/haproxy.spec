@@ -1,14 +1,14 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
-Version:        2.0.10
-Release:        2%{?dist}
+Version:        2.1.0
+Release:        1%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.haproxy.org/download/2.0/src/%{name}-%{version}.tar.gz
-%define sha1 haproxy=7a81094c367621a981012480cebc7c152c482d75
+%define sha1 haproxy=c1c19959d6c472af922243328f9beacede6f47a6
 Patch0:         haproxy-CVE-2020-11100.patch
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -35,7 +35,8 @@ Requires:       %{name} = %{version}-%{release}
 
 %build
 make %{?_smp_mflags} TARGET=linux-glibc USE_PCRE=1 USE_OPENSSL=1 \
-        USE_GETADDRINFO=1 USE_ZLIB=1 USE_SYSTEMD=1
+        USE_GETADDRINFO=1 USE_ZLIB=1 USE_SYSTEMD=1 \
+        EXTRA_OBJS="contrib/prometheus-exporter/service-prometheus.o"
 make %{?_smp_mflags} -C contrib/systemd
 sed -i s/"local\/"/""/g contrib/systemd/haproxy.service
 sed -i "s/\/run/\/var\/run/g" contrib/systemd/haproxy.service
@@ -60,6 +61,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Tue Apr 14 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.0-1
+-   Update to 2.1.0, add prometheus support
 *   Mon Apr 06 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.10-2
 -   Fix CVE-2020-11100
 *   Tue Dec 17 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.10-1
