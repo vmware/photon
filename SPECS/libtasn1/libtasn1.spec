@@ -1,18 +1,20 @@
 Summary:        ASN.1 library
 Name:           libtasn1
-Version:        4.13
+Version:        4.14
 Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnu.org/software/libtasn1/
 Source0:        http://ftp.gnu.org/gnu/libtasn1/%{name}-%{version}.tar.gz
-%define sha1    libtasn1=a84afb4cd8187c1fa5901c6bc1cf1486eea66635
+%define sha1    libtasn1=4ce6a70a40f50a2c29a62bbf1c0c5b6e306ca4e3
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
 %description
-Libtasn1 library provides Abstract Syntax Notation One (ASN.1, as specified by the X.680 ITU-T recommendation) parsing and structures management, 
-and Distinguished Encoding Rules (DER, as per X.690) encoding and decoding functions.
+Libtasn1 library provides Abstract Syntax Notation One (ASN.1, as specified by
+the X.680 ITU-T recommendation) parsing and structures management, and
+Distinguished Encoding Rules (DER, as per X.690) encoding and decoding
+functions.
 
 %package devel
 Summary:    Development libraries and header files for libtasn1
@@ -27,9 +29,9 @@ developing applications that use libtasn1.
 %setup -q
 
 %build
-./configure \
-    --prefix=%{_prefix}
+%configure
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 rm %{buildroot}%{_infodir}/*
@@ -51,6 +53,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.a
 %changelog
+*   Mon Apr 13 2020 Siddharth Chandrasekran <csiddhath@vmware.com> 4.14-1
+-   Update to version 4.14 to fix CVE-2018-1000654
 *   Mon Feb 12 2018 Xiaolin Li <xiaolinl@vmware.com> 4.13-1
 -   Update to version 4.13 fix CVE-2018-6003.
 *   Tue Oct 17 2017 Xiaolin Li <xiaolinl@vmware.com> 4.12-1
