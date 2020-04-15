@@ -1,6 +1,6 @@
 Summary:    ODBC driver manager
 Name:       unixODBC
-Version:    2.3.4
+Version:    2.3.7
 Release:    1%{?dist}
 License:    GPLv2+ and LGPLv2+
 URL:        http://www.unixodbc.org/
@@ -8,7 +8,7 @@ Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:    ftp://ftp.unixodbc.org/pub/unixODBC/%{name}-%{version}.tar.gz
-%define sha1 unixODBC=df3578b080fb67da544d4c83424a770729ef25fb
+%define sha1 unixODBC=a066c4f3fcb19befbaf5a5801b830ec41b7318df
 
 BuildRequires: automake autoconf libtool
 
@@ -66,7 +66,10 @@ rm -rf %{buildroot}%{_datadir}/libtool
 %files devel
 %{_includedir}/*
 %{_libdir}/*.so
+%{_libdir}/pkgconfig
 
 %changelog
+*   Wed Apr 15 2020 Dweep Advani <dadvani@vmware.com> 2.3.7-1
+-   Upgraded to 2.3.7 for addressing CVE-2018-7409, CVE-2018-7485
 *   Wed Oct 26 2016 Anish Swaminathan <anishs@vmware.com> 2.3.4-1
 -   Initial build.  First version
