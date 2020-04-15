@@ -2,12 +2,12 @@
 
 Summary:        CRI tools
 Name:           cri-tools
-Version:        1.11.1
-Release:        3%{?dist}
+Version:        1.17.0
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/kubernetes-incubator/cri-tools/archive/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}.tar.gz=ba8064bcac65239a9c9e0e21c7d576c6b39f4089
+%define sha1    %{name}-%{version}.tar.gz=5343b85c2b8df9ce1f90f80d043d7323afcec2b6
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -59,6 +59,8 @@ cp docs/roadmap.md %{buildroot}/usr/share/doc/cri-tools
 rm -rf %{buildroot}/*
 
 %changelog
+*   Wed Apr 15 2020 Ashwin H <ashwinh@vmware.com> 1.17.0-1
+-   Update to 1.17.0
 *   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.11.1-3
 -   Bump up version to compile with go 1.13.3
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.11.1-2
