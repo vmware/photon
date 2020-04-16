@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.17
+Version:        8.0.19
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,13 +8,15 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=8395df42d93e2030fcef862bb096831b24ed5c28
+%define         sha1 mysql-boost=d2ff524f697fc1f674505e1e5f31fd99cc923798
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  libtirpc-devel
 BuildRequires:  rpcsvc-proto-devel
+BuildRequires:  protobuf-devel
+Requires:       protobuf
 
 %description
 MySQL is a free, widely used SQL engine. It can be used as a fast database as well as a rock-solid DBMS using a modular engine architecture.
@@ -33,7 +35,7 @@ Development headers for developing applications linking to maridb
 %build
 cmake . \
       -DCMAKE_INSTALL_PREFIX=/usr   \
-      -DWITH_BOOST=boost/boost_1_69_0 \
+      -DWITH_BOOST=boost/boost_1_70_0 \
       -DINSTALL_MANDIR=share/man \
       -DINSTALL_DOCDIR=share/doc \
       -DINSTALL_DOCREADMEDIR=share/doc \
@@ -42,7 +44,8 @@ cmake . \
       -DCMAKE_C_FLAGS=-fPIC \
       -DCMAKE_CXX_FLAGS=-fPIC \
       -DWITH_EMBEDDED_SERVER=OFF \
-      -DFORCE_INSOURCE_BUILD=1
+      -DFORCE_INSOURCE_BUILD=1 \
+      -DWITH_PROTOBUF=system
 
 make %{?_smp_mflags}
 
@@ -74,6 +77,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Thu Apr 16 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.19-1
+-   Upgrade to version 8.0.19 to fix several CVEs
 *   Fri Oct 11 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.0.17-1
 -   Upgrade to version 8.0.17 which addresses several CVEs
 *   Tue Jan 22 2019 Siju Maliakkal <smaliakkal@vmware.com> 8.0.14-1
