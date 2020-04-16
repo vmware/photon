@@ -1,7 +1,7 @@
 Summary:	Programs that show the differences between files or directories
 Name:		diffutils
 Version:	3.6
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/diffutils
 Group:		System Environment/Base
@@ -10,7 +10,7 @@ Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/diffutils/%{name}-%{version}.tar.xz
 %define sha1 diffutils=1287a553868b808ebfff3790a5cdc6fdf7cb2886
 BuildRequires:  coreutils
-Conflicts:      toybox
+Conflicts:      toybox < 0.8.2-2
 
 %description
 The Diffutils package contains programs that show the
@@ -41,6 +41,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*       Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 3.6-3
+-       Do not conflict with toybox >= 0.8.2-2
 *       Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 3.6-2
 -       Add conflicts toybox.
 *       Fri Aug 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 3.6-1

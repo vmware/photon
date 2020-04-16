@@ -1,7 +1,7 @@
 Summary:        GNU Parted manipulates partition tables
 Name:           parted
 Version:        3.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv3+
 URL:            http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
 Group:          Applications/System
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/parted/%{name}-%{version}.tar.xz
 %define sha1 parted=8cabb2d6789badec15c857dcc003d0dd931a818b
-Conflicts:      toybox
+Conflicts:      toybox < 0.8.2-2
 
 %description
 This is useful for creating space for new operating systems,
@@ -46,6 +46,8 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/*
 
 %changelog
+*  Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 3.2-8
+-  Do not conflict with toybox >= 0.8.2-2
 *  Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 3.2-7
 -  Add conflict toybox.
 *  Sun Sep 09 2018 Alexey Makhalov <amakhalov@vmware.com> 3.2-6

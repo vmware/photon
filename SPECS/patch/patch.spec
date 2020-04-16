@@ -1,7 +1,7 @@
 Summary:        Program for modifying or creating files
 Name:           patch
 Version:        2.7.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        ftp://ftp.gnu.org/gnu/patch/%{name}-%{version}.tar.gz
@@ -14,7 +14,7 @@ Patch4:         CVE-2019-13638.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Conflicts:      toybox
+Conflicts:      toybox < 0.8.2-2
 
 %description
 Program for modifying or creating files by applying a patch
@@ -45,6 +45,8 @@ make  %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 2.7.6-5
+-   Do not conflict with toybox >= 0.8.2-2
 *   Thu Aug 08 2019 Shreenidhi Shedi <sshedi@vmware.com> 2.7.6-4
 -   Apply patch for CVE-2019-13636, CVE-2019-13638
 *   Mon Nov 19 2018 Siju Maliakkal <smaliakkal@vmware.com> 2.7.6-3

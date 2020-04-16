@@ -1,7 +1,7 @@
 Summary:	cpio-2.12
 Name:		cpio
 Version:	2.12
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/cpio/
 Group:		System Environment/System utilities
@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
 %define sha1 cpio=60358408c76db354f6716724c4bcbcb6e18ab642
-Conflicts:      toybox
+Conflicts:      toybox < 0.8.2-2
 %description
 The cpio package contains tools for archiving.
 
@@ -54,6 +54,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 2.12-5
+- Do not conflict with toybox >= 0.8.2-2
 * Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 2.12-4
 - Added conflicts toybox
 * Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 2.12-3

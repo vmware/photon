@@ -1,7 +1,7 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
 Version:        3.3.15
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://procps.sourceforge.net/
 Group:          Applications/System
@@ -11,7 +11,7 @@ Source0:        http://sourceforge.net/projects/procps-ng/files/Production/%{nam
 %define sha1    procps-ng=2929bc64f0cf7b2db997eef79b7187658e47230d
 BuildRequires:  ncurses-devel
 Requires:       ncurses
-Conflicts:      toybox
+Conflicts:      toybox < 0.8.2-2
 %description
 The Procps package contains programs for monitoring processes.
 %package    devel
@@ -103,6 +103,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 3.3.15-3
+-   Do not conflict with toybox >= 0.8.2-2
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 3.3.15-2
 -   Cross compilation support
 *   Fri Aug 10 2018 Tapas Kundu <tkundu@vmware.com> 3.3.15-1

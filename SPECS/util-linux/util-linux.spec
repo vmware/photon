@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.32
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -14,7 +14,7 @@ BuildRequires:  ncurses-devel
 BuildRequires:  ncurses-terminfo
 %endif
 Requires: %{name}-libs = %{version}-%{release}
-Conflicts:      toybox
+Conflicts:      toybox < 0.8.2-2
 %description
 Utilities for handling file systems, consoles, partitions,
 and messages.
@@ -96,6 +96,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 2.32-3
+-   Do not conflict with toybox >= 0.8.2-2
 *   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 2.32-2
 -   Cross compilation support
 *   Mon Apr 09 2018 Xiaolin Li <xiaolinl@vmware.com> 2.32-1

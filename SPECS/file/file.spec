@@ -1,7 +1,7 @@
 Summary:        Contains a utility for determining file types
 Name:           file
 Version:        5.34
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            http://www.darwinsys.com/file
 Group:          Applications/File
@@ -11,7 +11,7 @@ Source0:        ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
 %define sha1    file=509e30ad0e0d74fa4040a28ce4667486cfe2170c
 Patch0:		CVE-2019-18218.patch
 Requires:       %{name}-libs = %{version}-%{release}
-Conflicts:      toybox
+Conflicts:      toybox < 0.8.2-2
 %description
 The package contains a utility for determining the type of a
 given file or files
@@ -61,6 +61,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*man3/*
 
 %changelog
+*   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 5.34-3
+-   Do not conflict with toybox >= 0.8.2-2
 *   Tue Oct 29 2019 Siju Maliakkal <smaliakkal@vmware.com> 5.34-2
 -   Apply patch for CVE-2019-18218
 *   Thu Sep 20 2018 Sujay G <gsujay@vmware.com> 5.34-1

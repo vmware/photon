@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://github.com/shadow-maint/
 License:        BSD
 Group:          Applications/System
@@ -36,7 +36,7 @@ in a secure way.
 Summary:     Contains subset of tools which might be replaced by toybox
 Group:       Applications/System
 Requires:    %{name} = %{version}-%{release}
-Conflicts:   toybox
+Conflicts:   toybox < 0.8.2-2
 %description tools
 Contains subset of tools which might be replaced by toybox
 
@@ -169,6 +169,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 4.6-5
+-   Do not conflict with toybox >= 0.8.2-2
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 4.6-4
 -   Cross compilation support
 *   Wed Oct 24 2018 Michelle Wang <michellew@vmware.com> 4.6-3
