@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.5.4
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Apache License 2.0
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://mirrors.wuchna.com/apachemirror/maven/maven-3/%{version}/source/%{name}-%{version}-src.tar.gz
 %define sha1 %{name}=04aefb9462af8cf7ca93808cd246f4c28b8ae4a1
+Patch0:        Fix_Apache_License.patch
 BuildRequires: openjre8
 BuildRequires: openjdk8
 BuildRequires: apache-ant
@@ -28,6 +29,7 @@ The Maven package contains binaries for a build system
 
 %setup -q
 #find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
+%patch0 -p1
 
 %clean
 rm -rf %{buildroot}
@@ -77,6 +79,8 @@ done
 %exclude %{_libdir}/jansi-native
 
 %changelog
+*   Fri Apr 17 2020 Tapas Kundu <tkundu@vmware.com> 3.5.4-4
+-   Fix apache-maven build failure
 *   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 3.5.4-3
 -   Removed dependency on JAVA8_VERSION macro
 *   Mon Oct 29 2018 Alexey Makhalov <amakhalov@vmware.com> 3.5.4-2
