@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.5.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version}-src.tar.gz
 %define sha1 apache-maven=04aefb9462af8cf7ca93808cd246f4c28b8ae4a1
+Patch0:        Fix_Apache_License.patch
 BuildRequires: openjre
 BuildRequires: openjdk
 BuildRequires: apache-ant
@@ -27,6 +28,7 @@ The Maven package contains binaries for a build system
 
 %setup -q
 #find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
+%patch0 -p1
 
 %clean
 rm -rf %{buildroot}
@@ -76,6 +78,8 @@ done
 %exclude %{_libdir}/jansi-native
 
 %changelog
+*   Fri Apr 17 2020 Tapas Kundu <tkundu@vmware.com> 3.5.4-3
+-   Fix apache-maven build failure
 *   Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 3.5.4-2
 -   Modified the path of JAVA_HOME
 *   Tue May 07 2019 Tapas Kundu <tkundu@vmware.com> 3.5.4-1
