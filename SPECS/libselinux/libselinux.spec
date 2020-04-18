@@ -2,13 +2,12 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        SELinux library and simple utilities
 Name:           libselinux
-Version:        2.8
-Release:        3%{?dist}
+Version:        3.0
+Release:        1%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
-Source0:        https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}.tar.gz
-%define sha1    libselinux=d45f2db91dbec82ef5a153aca247acc04234e8af
-Patch0:         0001-libselinux-Do-not-define-gettid-if-glibc-2.30-is-use.patch
+Source0:        https://github.com/SELinuxProject/selinux/releases/download/20191204/%{name}-%{version}.tar.gz
+%define sha1    libselinux=2b948274ba4cbd9ad9e8d0994961457007d74d48
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -77,13 +76,10 @@ The libselinux-python package contains the python3 bindings for developing
 SELinux applications.
 
 %prep
-%setup -qn %{name}-%{version}
-%patch0 -p1
+%setup -q
 
 %build
-sed '/unistd.h/a#include <sys/uio.h>' -i src/setrans_client.c
-make clean
-make %{?_smp_mflags} swigify
+make %{?_smp_mflags}
 make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=/usr/bin/python2 pywrap
 make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=/usr/bin/python3 pywrap
 
@@ -95,9 +91,8 @@ make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" BINDIR="%{_b
 mkdir -p %{buildroot}/%{_prefix}/lib/tmpfiles.d
 mkdir -p %{buildroot}/var/run/setrans
 echo "d /var/run/setrans 0755 root root" > %{buildroot}/%{_prefix}/lib/tmpfiles.d/libselinux.conf
-
-%clean
-rm -rf %{buildroot}
+# do not package ru man pages
+rm -rf %{buildroot}%{_mandir}/ru
 
 %post -p /sbin/ldconfig
 
@@ -133,6 +128,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Sat Apr 18 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-1
+-   Version update.
 *   Wed Mar 25 2020 Alexey Makhalov <amakhalov@vmware.com> 2.8-3
 -   Fix compilation issue with glibc >= 2.30.
 *   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.8-2
