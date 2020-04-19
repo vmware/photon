@@ -1,7 +1,7 @@
 Summary:        Libxslt-1.1.29
 Name:           libxslt
 Version:        1.1.32
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
@@ -33,6 +33,7 @@ Header files for doing development with libxslt.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+sed -i 's/int xsltMaxDepth = 3000/int xsltMaxDepth = 5000/g' libxslt/transform.c
 
 %build
 sh configure \
@@ -73,6 +74,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Mar 13 2020 Shreyas B. <shreyasb@vmware.com> 1.1.32-7
+-   Increase the maximum number of nested template calls for xml.
 *   Tue Dec 17 2019 Shreyas B. <shreyasb@vmware.com> 1.1.32-6
 -   Apply patch for CVE-2019-5815: READ heap-buffer-overflow in libxslt.
 *   Tue Oct 29 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.1.32-5
