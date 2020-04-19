@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          12%{?dist}
+Release:          13%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -39,6 +39,7 @@ Requires:         libgcrypt
 Requires:         filesystem >= 1.1
 Requires:         elfutils
 Requires:         util-linux-libs
+Requires:         libselinux
 BuildRequires:    intltool
 BuildRequires:    gperf
 BuildRequires:    libcap-devel
@@ -57,6 +58,7 @@ BuildRequires:    gettext
 BuildRequires:    shadow
 BuildRequires:    libgcrypt-devel
 BuildRequires:    elfutils-devel
+BuildRequires:    libselinux-devel
 
 %description
 Systemd is an init replacement with better process control and security
@@ -153,6 +155,7 @@ meson  --prefix %{_prefix}                                            \
        -Dsysusers=false                                               \
        -Dpam=true                                                     \
        -Dpolkit=true                                                  \
+       -Dselinux=true                                                 \
        -Ddbuspolicydir=/etc/dbus-1/system.d                           \
        -Ddbussessionservicedir=%{_prefix}/share/dbus-1/services       \
        -Ddbussystemservicedir=%{_prefix}/share/dbus-1/system-services \
@@ -298,6 +301,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Sat Apr 18 2020 Alexey Makhalov <amakhalov@vmware.com> 239-13
+-    Enable SELinux support
 *    Thu Oct 31 2019 Alexey Makhalov <amakhalov@vmware.com> 239-12
 -    Cross compilation support
 *    Tue Oct 22 2019 Piyush Gupta <guptapi@vmware.com>  239-11
