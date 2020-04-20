@@ -1,18 +1,18 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
 %define jdk_major_version 1.8.0
-%define subversion 232
+%define subversion 252
 Summary:	OpenJDK
 Name:		openjdk
-Version:	1.8.0.232
+Version:	1.8.0.252
 Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}-ga.tar.gz
-%define sha1    openjdk=2f74498e2acfc4d4cceb17260f07207d8a51fa51
+Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
+%define sha1    openjdk=65021228d2ad4e6e20c4940ac4f2c200542412fa
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
 BuildRequires:  pcre-devel
@@ -60,7 +60,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -q -n %{name}-%{version}-ga
+%setup -q -n %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
 sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeScaler.c
@@ -236,6 +236,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+*       Fri Apr 17 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.252-1
+-       Upgrade to version 1.8.0.252 ga (jdk8u252-ga)
 *       Fri Oct 25 2019 Shreyas B. <shreyasb@vmware.com> 1.8.0.232-1
 -       Upgrade to version 1.8.0.232 ga (jdk8u232-ga)
 *       Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 1.8.0.222-2
