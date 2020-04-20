@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.112
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -285,6 +285,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %exclude /lib/modules/%{uname_r}/build
 %exclude /usr/src
 %exclude /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
+%exclude /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %files docs
 %defattr(-,root,root)
@@ -298,8 +299,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %files hmacgen
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
+/lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Apr 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-3
+-   HMAC-SHA256 digest of hmac_generator module moved to hmacgen package
 *   Tue Apr 14 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.112-2
 -   Refactor PCI probe patch (03-pci-probe.patch)
 *   Wed Apr 08 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.112-1
