@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.112
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -197,8 +197,7 @@ popd
 # Do not compress modules which will be loaded at boot time
 # to speed up boot process
 %define __modules_install_post \
-    find %{buildroot}/lib/modules/%{uname_r} -name *.ko | \
-        grep -v "evdev\|mousedev\|sr_mod\|cdrom\|vmwgfx\|drm_kms_helper\|ttm\|psmouse\|drm\|apa_piix\|vmxnet3\|i2c_core\|libata\|processor\|ipv6" | xargs xz \
+    find %{buildroot}/lib/modules/%{uname_r} -name "*.ko" \! \"(" -name "*evdev*" -o -name "*mousedev*" -o -name "*sr_mod*"  -o -name "*cdrom*" -o -name "*vmwgfx*" -o -name "*drm_kms_helper*" -o -name "*ttm*" -o -name "*psmouse*" -o -name "*drm*" -o -name "*apa_piix*" -o -name "*vmxnet3*" -o -name "*i2c_core*" -o -name "*libata*" -o -name "*processor*" -o -path "*ipv6*" \")" | xargs xz \
 %{nil}
 
 %include %{SOURCE6}
@@ -302,6 +301,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Apr 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.112-5
+-   Fix __modules_install_post to skip compression for certain modules.
 *   Wed Apr 22 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-4
 -   Corrected number of bars for "LSI Logic" and typepo in is_known_device call
 *   Wed Apr 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-3
