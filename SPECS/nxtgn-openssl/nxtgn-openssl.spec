@@ -1,21 +1,16 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           nxtgn-openssl
-Version:        1.1.1d
-Release:        3%{?dist}
+Version:        1.1.1g
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/openssl-%{version}.tar.gz
-%define sha1    openssl=056057782325134b76d1931c48f2c7e6595d7ef4
+%define sha1    openssl=18012543aface209ea2579cb628a49e22ea4ec29
 Source1:        nxtgn-rehash_ca_certificates.sh
 Patch1:         nxtgn-c_rehash.patch
-Patch2:         CVE-2019-1551.patch
-Patch3:		0001-Add-test-for-CVE-2020-1967.patch
-Patch4:		0002-Fix-NULL-dereference-in-SSL_check_chain-for-TLS-1.3.patch
-Patch5:		0003-fixup-Add-test-for-CVE-2020-1967.patch
-Patch6:		0004-fixup-Add-test-for-CVE-2020-1967.patch
 
 %if %{with_check}
 BuildRequires: zlib-devel
@@ -58,11 +53,6 @@ Perl scripts that convert certificates and keys to various formats.
 %prep
 %setup -q -n openssl-%{version}
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -129,6 +119,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/nxtgn-rehash_ca_certificates.sh
 
 %changelog
+*   Tue Apr 21 2020 Srinidhi Rao <srinidhir@vmware.com> 1.1.1g-1
+-   Upgrade to openssl-1.1.1g release
 *   Thu Apr 16 2020 Srinidhi Rao <srinidhir@vmware.com> 1.1.1d-3
 -   Fix CVE-2020-1967
 *   Mon Feb 03 2020 Tapas Kundu <tkundu@vmware.com> 1.1.1d-2
