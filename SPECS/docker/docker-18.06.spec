@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -17,6 +17,9 @@ Source99:       default-disable.preset
 Patch10:        CVE-2018-15664_1.patch
 Patch11:        CVE-2018-15664_2.patch
 Patch12:        CVE-2019-14271.patch
+Patch13:        CVE-2019-13139.patch
+Patch14:        CVE-2019-13509_1.patch
+Patch15:        CVE-2019-13509_2.patch
 Patch99:        remove-firewalld.patch
 
 BuildRequires:  systemd
@@ -76,6 +79,9 @@ pushd docker/docker
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
 popd
 
 %build
@@ -230,6 +236,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Tue Apr 21 2020 Ankit Jain <ankitja@vmware.com> 18.06.2-9
+-   Fix CVE-2019-13139, CVE-2019-13509
 *   Mon Nov 25 2019 Ashwin H <ashwinh@vmware.com> 18.06.2-8
 -   Fix CVE-2019-14271
 *   Thu Nov 21 2019 Ankit Jain <ankitja@vmware.com> 18.06.2-7
