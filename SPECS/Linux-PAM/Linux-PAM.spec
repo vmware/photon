@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD and GPLv2+
 URL:            https://www.kernel.org/pub/linux/libs/pam/
 Group:          System Environment/Security
@@ -11,6 +11,8 @@ Source0:        http://linux-pam.org/library/%{name}-%{version}.tar.bz2
 %define sha1    Linux-PAM=e956252e81d824c35a60c9b50919ca0767f8a8ec
 BuildRequires:  cracklib-devel
 Requires:       cracklib
+BuildRequires:  libselinux-devel
+Requires:       libselinux
 %description
 The Linux PAM package contains Pluggable Authentication Modules used to
 enable the local system administrator to choose how applications authenticate users.
@@ -39,6 +41,7 @@ for developing applications that use Linux-PAM.
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --includedir=/usr/include/security \
     --sbindir=/sbin \
+    --enable-selinux \
     --enable-securedir=/usr/lib/security \
     --docdir=%{_docdir}/%{name}-%{version}
 
@@ -91,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+*   Mon Apr 20 2020 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-3
+-   Enable SELinux support
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-2
 -   Cross compilation support
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-1
