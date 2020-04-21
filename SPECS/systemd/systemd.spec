@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          56%{?dist}
+Release:          57%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -59,6 +59,7 @@ Patch41:          build-sys-add-check-for-gperf-lookup-function-signat.patch
 Patch42:          core-donot-include-libmount.h-in-header-file.patch
 Patch43:          systemd-228-CVE-2019-6454.patch
 Patch44:          systemd-228-do-not-fail-networkd-if-dbus-not-active.patch
+Patch45:          systemd-228-CVE-2019-20386.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -66,6 +67,7 @@ Requires:         xz
 Requires:         kmod
 Requires:         glib
 Requires:         filesystem >= 1.1
+
 BuildRequires:    intltool
 BuildRequires:    gperf
 BuildRequires:    libcap-devel
@@ -138,6 +140,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch42 -p1
 %patch43 -p1
 %patch44 -p1
+%patch45 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -279,6 +282,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*    Tue Apr 20 2020 Susant Sahani <ssahani@vmware.com>  228-57
+-    Fix CVE-2019-20386
 *    Tue Sep 10 2019 Tapas Kundu <tkundu@vmware.com> 228-56
 -    Networkd should not exit if dbus is not active, it should retry.
 *    Fri Aug 02 2019 Susant Sahani <ssahani@vmware.com>  228-55
