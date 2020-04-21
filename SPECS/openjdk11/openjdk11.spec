@@ -1,10 +1,10 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
-%define jdk_major_version 1.11.0
-%define subversion 28
+%define jdk_major_version 11.0
+%define subversion 7
 Summary:	OpenJDK
 Name:		openjdk11
-Version:	1.11.0.28
+Version:	11.0.7
 Release:	1%{?dist}
 License:	GNU General Public License V2
 URL:		https://openjdk.java.net
@@ -12,7 +12,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk/jdk11/openjdk-%{version}.tar.gz
-%define sha1 openjdk-1.11.0=6cb75bdcc078bf2f5b06c2d9c44b984283c0524b
+%define sha1 openjdk-11.0=78a9d34c5115e5198ce1143b6f52201011596173
 BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
@@ -27,7 +27,7 @@ BuildRequires:  openjdk10
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
 AutoReqProv: 	no
-%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel
+%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel
 %define bootstrapjdkversion 1.8.0.112
 %define jdk_major_version 1.11.0
 
@@ -84,7 +84,7 @@ make install
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 install -vdm755 %{buildroot}%{_bindir}
-mv /usr/local/jvm/openjdk-11-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+mv /usr/local/jvm/openjdk-11.0.7-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 cp README LICENSE ASSEMBLY_EXCEPTION %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
 %post
@@ -171,7 +171,7 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmid
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmiregistry
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/unpack200
-
+%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jfr
 
 %files doc
 %defattr(-,root,root)
@@ -184,6 +184,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+*   Sun Apr 19 2020 Tapas Kundu <tkundu@vmware.com> 11.0.7-1
+-   Updating to jdk-11.0.7-ga
 *   Fri Oct 18 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.28-1
 -   Updated to jdk11 tag: 11+28
 *   Thu Apr 25 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.2-1
