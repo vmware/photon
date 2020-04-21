@@ -1,13 +1,26 @@
-diff --git a/components/packaging/rpm/systemd/docker.service b/components/packaging/rpm/systemd/docker.service
-index 6c60646..a10146d 100644
---- a/components/packaging/rpm/systemd/docker.service
-+++ b/components/packaging/rpm/systemd/docker.service
-@@ -1,7 +1,7 @@
- [Unit]
+From adee5033707beab4d38920de154cb8b3ee1da1e9 Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Mon, 28 Oct 2019 13:47:36 -0700
+Subject: [PATCH] Remove firewalld and docker.socket dependency
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ components/packaging/systemd/docker.service | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/components/packaging/systemd/docker.service b/components/packaging/systemd/docker.service
+index 3b658fd..37dcfc0 100644
+--- a/components/packaging/systemd/docker.service
++++ b/components/packaging/systemd/docker.service
+@@ -2,7 +2,7 @@
  Description=Docker Application Container Engine
  Documentation=https://docs.docker.com
--After=network-online.target firewalld.service
-+After=network-online.target
+ BindsTo=containerd.service
+-After=network-online.target firewalld.service containerd.service
++After=network-online.target containerd.service
  Wants=network-online.target
+ Requires=docker.socket
  
- [Service]
+-- 
+2.7.4
+

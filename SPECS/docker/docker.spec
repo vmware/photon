@@ -3,23 +3,19 @@
 %define __os_install_post %{nil}
 Summary:        Docker
 Name:           docker
-Version:        18.03.0
-Release:        8%{?dist}
+Version:        18.09.9
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/docker/docker-ce/archive/docker-%{version}-ce.tar.gz
-%define sha1 docker=873472d4b722aaf0e000ba0d0b1fa3d63d276ffc
-%define DOCKER_GITCOMMIT 0520e243029d1361649afb0706a1c5d9a1c012b8
+Source0:        https://github.com/docker/docker-ce/archive/%{name}-%{version}.tar.gz
+%define sha1 docker=efe4cb8b60f888ab83776c84717a2b3078928bce
+%define DOCKER_GITCOMMIT 039a7df9ba8097dd987370782fcdd6ea79b26016
 Source99:       default-disable.preset
-Patch0:         fix-apparmor-not-being-applied-to-exec-processes.patch
-Patch1:         CVE-2019-5736.patch
-Patch10:        CVE-2018-15664_1.patch
-Patch11:        CVE-2018-15664_2.patch
-Patch12:        CVE-2019-14271.patch
-Patch99:        remove-firewalld.patch
+Patch98:        remove-firewalld.patch
+Patch99:        update-container-binary-CVE-2019-16884.patch
 
 BuildRequires:  systemd
 BuildRequires:  device-mapper-devel
@@ -38,43 +34,38 @@ BuildRequires:  git
 Requires:       libltdl
 Requires:       libgcc
 Requires:       glibc
-Requires:       libseccomp
+Requires:       libseccomp >= 2.4.0
 Requires:       systemd
 Requires:       device-mapper-libs
+Requires:       shadow
+Requires:       runc >= 1.0.0.rc9
 
 %description
 Docker is an open source project to build, ship and run any application as a lightweight container.
 
 %package        doc
 Summary:        Documentation and vimfiles for docker
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 
 %description    doc
 Documentation and vimfiles for docker
 
 %prep
-%setup -q -c
+%setup -q
 
-%patch0 -p1
-%patch1 -p1
+%patch98 -p1
 %patch99 -p1
 
 mkdir -p /go/src/github.com
 cd /go/src/github.com
-mkdir opencontainers
 mkdir docker
 
 ln -snrf "$OLDPWD/components/engine" docker/docker
 ln -snrf "$OLDPWD/components/cli" docker/cli
 
-pushd docker/docker
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-popd
-
 %build
 export GOPATH="/go"
+export TMP_GOPATH="$GOPATH"
 export PATH="$PATH:$GOPATH/bin"
 
 GIT_COMMIT=%{DOCKER_GITCOMMIT}
@@ -87,15 +78,15 @@ DISABLE_WARN_OUTSIDE_CONTAINER=1 make VERSION=%{version} GITCOMMIT=${GIT_COMMIT_
 popd
 
 pushd docker
-for component in tini "proxy dynamic" "runc all" "containerd dynamic"; do
-  RUNC_BUILDTAGS="seccomp" \
+for component in tini "proxy dynamic" "containerd dynamic"; do
   hack/dockerfile/install/install.sh $component
 done
 DOCKER_BUILDTAGS="pkcs11 seccomp exclude_graphdriver_aufs" \
-VERSION=%{version}-ce DOCKER_GITCOMMIT=${GIT_COMMIT_SHORT} hack/make.sh dynbinary
+VERSION=%{version} DOCKER_GITCOMMIT=${GIT_COMMIT_SHORT} hack/make.sh dynbinary
 popd
 
 %install
+export GOPATH="/go"
 install -d -m755 %{buildroot}%{_mandir}/man1
 install -d -m755 %{buildroot}%{_mandir}/man5
 install -d -m755 %{buildroot}%{_mandir}/man8
@@ -112,12 +103,12 @@ install -p -m 755 "$(readlink -f components/engine/bundles/latest/dynbinary-daem
 install -p -m 755 /usr/local/bin/docker-proxy %{buildroot}%{_bindir}/docker-proxy
 
 # install containerd
-install -p -m 755 /usr/local/bin/docker-containerd %{buildroot}%{_bindir}/docker-containerd
-install -p -m 755 /usr/local/bin/docker-containerd-shim %{buildroot}%{_bindir}/docker-containerd-shim
-install -p -m 755 /usr/local/bin/docker-containerd-ctr %{buildroot}%{_bindir}/docker-containerd-ctr
-
-# install runc
-install -p -m 755 /usr/local/bin/docker-runc %{buildroot}%{_bindir}/docker-runc
+install -p -m 755 /usr/local/bin/containerd %{buildroot}%{_bindir}/containerd
+install -p -m 755 /usr/local/bin/containerd-shim %{buildroot}%{_bindir}/containerd-shim
+install -p -m 755 /usr/local/bin/ctr %{buildroot}%{_bindir}/ctr
+# Explicitly install conatiner runtime service required by docker.service
+install -p -m 644 $GOPATH/src/github.com/containerd/containerd/containerd.service %{buildroot}%{_unitdir}/containerd.service
+sed -i 's#/usr/local/bin#/usr/bin#g' %{buildroot}%{_unitdir}/containerd.service
 
 # install tini
 install -p -m 755 /usr/local/bin/docker-init %{buildroot}%{_bindir}/docker-init
@@ -126,7 +117,8 @@ install -p -m 755 /usr/local/bin/docker-init %{buildroot}%{_bindir}/docker-init
 install -p -m 644 components/engine/contrib/udev/80-docker.rules %{buildroot}/lib/udev/rules.d/80-docker.rules
 
 # add init scripts
-install -p -m 644 components/packaging/rpm/systemd/docker.service %{buildroot}%{_unitdir}/docker.service
+install -p -m 644 components/packaging/systemd/docker.service %{buildroot}%{_unitdir}/docker.service
+install -p -m 644 components/packaging/systemd/docker.socket %{buildroot}%{_unitdir}/docker.socket
 
 # add bash completions
 install -p -m 644 components/cli/contrib/completion/bash/docker %{buildroot}%{_datadir}/bash-completion/completions/docker
@@ -156,14 +148,17 @@ install -v -D -m 0644 %{SOURCE99} %{buildroot}%{_presetdir}/50-docker.preset
 
 %preun
 %systemd_preun docker.service
+%systemd_preun containerd.service
 
 %post
+%systemd_post containerd.service
 if [ $1 -eq 1 ] ; then
     getent group docker >/dev/null || groupadd -r docker
 fi
 %systemd_post docker.service
 
 %postun
+%systemd_postun_with_restart containerd.service
 %systemd_postun_with_restart docker.service
 
 if [ $1 -eq 0 ] ; then
@@ -176,14 +171,15 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_unitdir}/docker.service
+%{_unitdir}/docker.socket
+%{_unitdir}/containerd.service
 %{_presetdir}/50-docker.preset
 %{_bindir}/docker
 %{_bindir}/dockerd
-%{_bindir}/docker-containerd
-%{_bindir}/docker-containerd-ctr
-%{_bindir}/docker-containerd-shim
+%{_bindir}/containerd
+%{_bindir}/ctr
+%{_bindir}/containerd-shim
 %{_bindir}/docker-proxy
-%{_bindir}/docker-runc
 %{_bindir}/docker-init
 %{_datadir}/bash-completion/completions/docker
 /lib/udev/rules.d/80-docker.rules
@@ -201,6 +197,9 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Tue Apr 21 2020 Ankit Jain <ankitja@vmware.com> 18.09.9-1
+-   Update to 18.09.9
+-   Fixed CVE-2019-16884 by upgrading containerd version and runc
 *   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 18.03.0-8
 -   Bump up version to compile with new go
 *   Mon Nov 25 2019 Ashwin H <ashwinh@vmware.com> 18.03.0-7
