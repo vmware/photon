@@ -1,22 +1,22 @@
 Name:            kibana
 Summary:         Browser-based analytics and search dashboard for Elasticsearch.
-Version:         6.7.0
-Release:         5%{?dist}
+Version:         6.8.8
+Release:         1%{?dist}
 License:         Apache License Version 2.0
 URL:             https://www.elastic.co/products/kibana
 Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}.tar.gz
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Daemons
-%define sha1     %{name}-%{version}=36bc3dea07c787c395d1b6aaf46e2ade93c5b7a9
-Source1:         node_modules_kibana_6.7.0.tar.gz
-%define sha1     node_modules_kibana=bb056b73894050cc7007100d685a8817101f286a
-Source2:         kibana_build_6.7.0.tar.gz
-%define sha1     kibana_build=c259f2374e42a20cadada3665b9adfac1e056570
+%define sha1     %{name}-%{version}=e6d0b26f065fef6fad7ec3e88e97ce7c4c0f3bcd
+Source1:         node_modules_kibana_%{version}.tar.gz
+%define sha1     node_modules_kibana=8a45282f02db1e8cf7d74cad389c712689da9a73
+Source2:         kibana_build_%{version}.tar.gz
+%define sha1     kibana_build=5870573da792a26d842d765ca6a03ce7c3bde485
 BuildArch:       x86_64
 BuildRequires:   git
 BuildRequires:   yarn
-BuildRequires:   nodejs = 10.15.3
+BuildRequires:   nodejs = 10.19.0
 BuildRequires:   zip
 BuildRequires:   photon-release
 BuildRequires:   systemd
@@ -40,7 +40,6 @@ It enables visual exploration and real-time analysis of your data in Elasticsear
 # 4) cd ..
 # 5) tar -zcvf kibana-6.7.0.tar.gz kibana-%{version}
 %setup -q -n %{name}-%{version}
-
 tar xf %{SOURCE1} --no-same-owner
 
 %build
@@ -130,6 +129,8 @@ exit
 %{_datadir}/%{name}
 
 %changelog
+*   Wed Apr 15 2020 Tapas Kundu <<tkundu@vmware.com> 6.8.8-1
+-   Update to release 6.8.8
 *   Fri Jan 24 2020 Ankit Jain <ankitja@vmware.com> 6.7.0-5
 -   Build with nodejs-10.15.3
 *   Fri Dec 13 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-4

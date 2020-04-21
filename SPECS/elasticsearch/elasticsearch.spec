@@ -2,29 +2,28 @@
 
 Summary:          Elastic Search
 Name:             elasticsearch
-Version:          6.7.0
-Release:          4%{?dist}
+Version:          6.8.8
+Release:          1%{?dist}
 License:          Apache License Version 2.0
 URL:              https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
 Source0:          %{name}-%{version}.tar.gz
-%define sha1      %{name}-%{version}.tar.gz=e11320399dd707cff8416d672b6f8146e74cf8c8
+%define sha1      %{name}-%{version}.tar.gz=57763d079d3f5cfbf123c536505e6814c7a432fb
 Source1:          cacerts
 %define sha1      cacerts=f584c7c1f48c552f39acfb5560a300a657d9f3bb
 # gradle installed dependencies all in one tarball
 # which includes benchmarks buildSrc client docs libs modules plugins qa rest-api-spec server test x-pack
-Source2:          gradle-tarball-1-for-elasticsearch-6.7.0.tar.gz
-%define sha1      gradle-tarball-1-for-elasticsearch=80ddd9a547f7d4269e76eca25ad605258268e73e
+Source2:          gradle-tarball-1-for-elasticsearch-%{version}.tar.gz
+%define sha1      gradle-tarball-1-for-elasticsearch=ddf6e6f9bbf9577e002d2806012d9b0d66dee1b4
 # gradle installed dependencies all in one tarball, which includes distribution
-Source3:          gradle-tarball-2-for-elasticsearch-6.7.0.tar.gz
-%define sha1      gradle-tarball-2-for-elasticsearch=99cb20c5ff0ca45cbace77acbda41eb69dcd6e3c
+Source3:          gradle-tarball-2-for-elasticsearch-%{version}.tar.gz
+%define sha1      gradle-tarball-2-for-elasticsearch=3a849fa4ac03ee6f360febc22ad8d6684ad06d8c
 # gradle installed dependencies all in one tarball, which includes /root/.gradle
-Source4:          gradle-tarball-3-for-elasticsearch-6.7.0.tar.gz
-%define sha1      gradle-tarball-3-for-elasticsearch=90db98f9d92afd3ca8226cda0376d7083dde88c1
+Source4:          gradle-tarball-3-for-elasticsearch-%{version}.tar.gz
+%define sha1      gradle-tarball-3-for-elasticsearch=606d9b1a85bb31223116f0309dd1e7e4fce79931
 Group:            Development/Daemons
 Vendor:           VMware, Inc.
 Distribution:     Photon
 BuildArch:        x86_64
-BuildRequires:    openjdk11
 BuildRequires:    unzip
 BuildRequires:    curl
 BuildRequires:    which
@@ -39,14 +38,13 @@ BuildRequires:    patch
 BuildRequires:    texinfo
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
-Patch0:           update_jars.patch
+%define ExtraBuildRequires openjdk12
 
 %description
 Elasticsearch is a highly distributed RESTful search engine built for the cloud.
 
 %prep
 %setup -qn %{name}-%{version}
-%patch0 -p1
 rm -rf benchmarks buildSrc client docs libs modules plugins qa rest-api-spec server test x-pack
 %setup -D -c -T -a 2 -n %{name}-%{version}/
 rm -rf distribution
@@ -133,6 +131,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+*   Wed Apr 15 2020 Tapas Kundu <tkundu@vmware.com> 6.8.8-1
+-   update to release 6.8.8
 *   Wed Oct 9 2019 Michelle Wang <michellew@vmware.com> 6.7.0-4
 -   Add gradle-tarball-for-elasticsearch-6.7.0.tar.gz to avoid download failures
 *   Mon Sep 16 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-3
