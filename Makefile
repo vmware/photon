@@ -341,7 +341,7 @@ check: packages
 
 # The targets listed under "all" are the installer built artifacts
 #===============================================================================
-all: iso photon-docker-image k8s-docker-images all-images src-iso minimal-iso
+all: iso photon-docker-image all-images src-iso minimal-iso
 
 iso: check-tools photon-stage $(PHOTON_PACKAGES) ostree-repo
 	@echo "Building Photon Full ISO..."
