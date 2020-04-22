@@ -239,7 +239,7 @@ index fa4c386c8cd8..8cf9cf037431 100644
 +					*val = 0xffffc000;
 +					return 1;
 +				case REQUEST_BARS_INFO:
-+					*val = 3;
++					*val = 4;
 +					/* ROM is present */
 +					return 1;
 +			}
@@ -502,7 +502,7 @@ index fa4c386c8cd8..8cf9cf037431 100644
 +			int known_bars;
 +			int known_rom = 1;
 +			is_known_device(dev, REQUEST_BARS_INFO, &known_bars,
-+					&known_sz);
++					&known_rom);
 +			if (bar < 6 && bar >= known_bars)
 +				dev_err(&dev->dev,
 +					"wrong known bars count %d\n",
