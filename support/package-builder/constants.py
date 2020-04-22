@@ -259,7 +259,10 @@ class constants(object):
         "libXt-devel",
         "libXmu-devel",
         "libXrender",
-        "libXrender-devel"])
+        "libXrender-devel",
+        "libXrandr",
+        "libXrandr-devel"])
+
     perPackageToolChain["apache-maven"] = ["apache-maven"]
     # List of RPMs which are not published. They will be created during the
     # build process
