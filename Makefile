@@ -521,7 +521,8 @@ photon-stage:
 	@test -d $(PHOTON_SRCS_DIR) || $(MKDIR) -p $(PHOTON_SRCS_DIR)
 	@test -d $(PHOTON_LOGS_DIR) || $(MKDIR) -p $(PHOTON_LOGS_DIR)
 	@install -m 444 $(SRCROOT)/COPYING $(PHOTON_STAGE)/COPYING
-	@install -m 444 $(SRCROOT)/NOTICE $(PHOTON_STAGE)/NOTICE
+	@install -m 444 $(SRCROOT)/NOTICE-GPL2.0 $(PHOTON_STAGE)/NOTICE-GPL2.0
+	@install -m 444 $(SRCROOT)/NOTICE-Apachev2 $(PHOTON_STAGE)/NOTICE-Apachev2
 #_______________________________________________________________________________
 
 # Clean build environment
