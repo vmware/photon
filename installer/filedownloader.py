@@ -72,9 +72,10 @@ class FileDownloader(object):
         status_window.addstr(1, 0, 'Downloading file...')
         status_window.show_window()
 
-        temp_file = tempfile.mktemp()
+        fd, temp_file = tempfile.mkstemp()
         result, msg = CommandUtils.wget(file_source['url'], temp_file,
                                         ask_fn=self.ask_proceed_unsafe_download)
+        os.close(fd)
         if not result:
             status_window.adderror('Error: ' + msg + ' Press any key to go back...')
             status_window.content_window().getch()
