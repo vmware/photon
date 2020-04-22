@@ -153,7 +153,9 @@ class constants(object):
         "libXt-devel",
         "libXmu-devel",
         "libXrender",
-        "libXrender-devel"]
+        "libXrender-devel",
+        "libXrandr",
+        "libXrandr-devel"]
 
     listToolChainRPMPkgsToInstall=[
         "linux-api-headers",
