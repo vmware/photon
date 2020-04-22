@@ -37,7 +37,8 @@ mkdir -p $INITRD
 chmod 755 $INITRD
 
 cp $SCRIPT_PATH/open_source_license.txt $WORKINGDIR/
-cp $STAGE_PATH/NOTICE $WORKINGDIR/
+cp $STAGE_PATH/NOTICE-Apachev2 $WORKINGDIR/
+cp $STAGE_PATH/NOTICE-GPL2.0 $WORKINGDIR/
 
 # 1. install rpms into initrd path
 cat > ${WORKINGDIR}/photon-local.repo <<EOF
