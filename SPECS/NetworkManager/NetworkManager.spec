@@ -1,11 +1,11 @@
 Summary:	NetworkManager
 Name:		NetworkManager
-Version:	1.0.10
-Release:	2%{?dist}
+Version:	1.22.10
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		https://wiki.gnome.org/Projects/NetworkManager
 Source0:	https://download.gnome.org/sources/NetworkManager/1.0/%{name}-%{version}.tar.xz
-%define sha1 NetworkManager=1c199fdfb9fff9e7f540d51952699ce815a12369
+%define sha1 NetworkManager=4d39f390d486dbf5aa5fe89d1d05509ada653b59
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -25,15 +25,20 @@ BuildRequires:	dhcp-client
 BuildRequires:	libsoup-devel
 BuildRequires:  autogen
 BuildRequires:  libgudev-devel
-Requires:		libnl
-Requires:		dbus-glib
-Requires:		glib
-Requires:		libndp
-Requires:		libsoup
-Requires:		nss
-Requires:		ncurses
-Requires:		readline
-Requires:		dbus
+BuildRequires:  jansson-devel
+BuildRequires:  curl
+Requires:       libnl
+Requires:       dbus-glib
+Requires:       glib
+Requires:       libndp
+Requires:       libsoup
+Requires:       nss
+Requires:       ncurses
+Requires:       readline
+Requires:       dbus
+Requires:       libpsl
+Requires:       jansson
+Requires:       curl
 %package devel
 Summary:	Libraries and header files for NetworkManager
 Requires:	NetworkManager
@@ -69,7 +74,7 @@ EOF
 %postun	-p /sbin/ldconfig
 %files 
 %defattr(-,root,root)
-%{_sysconfdir}/NetworkManager/NetworkManager.conf
+%{_sysconfdir}/NetworkManager/*
 %{_bindir}/*
 %{_sbindir}/*
 %{_libdir}/*.so.*
@@ -79,6 +84,7 @@ EOF
 %{_libdir}/systemd/system/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
+%{_mandir}/man7/*
 %{_mandir}/man8/*
 %{_sysconfdir}/dbus-1/system.d/*
 %{_datadir}/gtk-doc/*
@@ -87,15 +93,15 @@ EOF
 %{_datadir}/doc/*  
 %{_datadir}/locale/*
 %{_datadir}/polkit-1/*
-/lib/udev/rules.d/*.rules
+%{_libdir}/udev/rules.d/*.rules
 %files devel
 %defattr(-,root,root)
-%{_includedir}/NetworkManager/*.h
 %{_includedir}/libnm/*.h
-%{_includedir}/libnm-glib/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*	Wed Apr 22 2020 Dweep Advani <dadvani@vmware.com> 1.22.10-1
+-	Upgraded to 1.22.10 to address CVE-2018-1000135
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.10-2
 -	GA - Bump release of all rpms
 * 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  1.0.10-1
