@@ -4,8 +4,8 @@
 %define subversion 252
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	%{jdk_major_version}.%{subversion}
-Release:	1%{?dist}
+Version:	1.8.0.252
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -242,6 +242,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+*   Thu Apr 23 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.252-2
+-   Removed macro from Version.
 *   Fri Apr 17 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.252-1
 -   Upgrade to version 1.8.0.252 ga (jdk8u252-ga)
 *   Fri Oct 25 2019 Shreyas B. <shreyasb@vmware.com> 1.8.0.232-1
