@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.5.4
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Apache License 2.0
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -36,7 +36,7 @@ rm -rf %{buildroot}
 
 %build
 MAVEN_DIST_DIR=%{buildroot}%{_prefix}
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
 
 sed -i 's/www.opensource/opensource/g' DEPENDENCIES
 
@@ -79,6 +79,8 @@ done
 %exclude %{_libdir}/jansi-native
 
 %changelog
+*   Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 3.5.4-5
+-   Changed openjdk install directory name
 *   Fri Apr 17 2020 Tapas Kundu <tkundu@vmware.com> 3.5.4-4
 -   Fix apache-maven build failure
 *   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 3.5.4-3

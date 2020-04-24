@@ -1,7 +1,7 @@
 Summary:	Apache Commons Daemon
 Name:		commons-daemon
 Version:	1.1.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://commons.apache.org/proper/commons-daemon
 Group:		Applications/System
@@ -26,7 +26,7 @@ code to control a Java daemon from a Unix operating system.
 rm -rf %{buildroot}
 
 %build
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
 ant dist
 
 %ifarch x86_64
@@ -45,7 +45,7 @@ cd src/native/unix && ./configure && make
 cd $CURDIR
 
 %install
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
 DIST_DIR=%{buildroot}%{_datadir}/java
 
 mkdir -p -m 755 $DIST_DIR
@@ -62,6 +62,8 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+*   Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 1.1.0-3
+-   Changed openjdk install directory name
 *   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
 -   Removed dependency on JAVA8_VERSION macro
 *   Tue Dec 26 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-1

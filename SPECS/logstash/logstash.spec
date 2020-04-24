@@ -1,7 +1,7 @@
 Summary:	Logstash is a tool for managing events and logs.
 Name:           logstash
 Version:        6.7.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -35,13 +35,13 @@ Logstash is a tool to collect, process, and forward events and log messages. Col
 
 %build
 export OSS=true
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
 #Note: Only Building and Packaging Apache Licensed OSS part of Logstash. It doesn't include x-pack coponent of Elastic
 ./gradlew assembleOssTarDistribution
 
 %install
 rm -rf %{buildroot}
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
 install -vdm 755 %{buildroot}%{_sysconfdir}/%{name}/conf.d
 install -vdm 755 %{buildroot}/var/lib/%{name}
 install -vdm 755 %{buildroot}/var/log/%{name}
@@ -116,6 +116,8 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+*   Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 6.7.0-6
+-   Changed openjdk install directory name
 *   Thu Nov 28 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-5
 -   Updated the logstash-input-beat version to fix CVE-2019-7620
 *   Mon Sep 16 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-4

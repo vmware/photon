@@ -3,7 +3,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.11.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -53,7 +53,7 @@ cp cassandra-jackson-jars/* lib/
 %patch0 -p1
 
 %build
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
 
 ant jar javadoc -Drelease=true
 
@@ -146,6 +146,8 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 3.11.5-4
+-   Changed openjdk install directory name
 *   Wed Feb 05 2020 Ankit Jain <ankitja@vmware.com> 3.11.5-3
 -   Bump jackson version to >= 2.9.5
 *   Wed Feb 05 2020 Shreyas B. <shreyasb@vmware.com> 3.11.5-2

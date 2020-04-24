@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.10.5
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -45,7 +45,7 @@ rm -rf %{buildroot}
 %build
 ANT_DIST_DIR=%{buildroot}%{_prefix}
 cp -v ./hamcrest-1.3/hamcrest-core-1.3.jar ./lib/optional
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
 mkdir -p -m 700 $ANT_DIST_DIR
 ./bootstrap.sh && ./build.sh -Ddist.dir=$ANT_DIST_DIR
 
@@ -91,7 +91,7 @@ if [ "$(stat -c %d:%i /)" != "$(stat -c %d:%i /proc/1/root/.)" ]; then
         src/tests/junit/org/apache/tools/ant/AntClassLoaderTest.java \
         src/tests/junit/org/apache/tools/ant/taskdefs/optional/XsltTest.java
 fi
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
 bootstrap/bin/ant -v run-tests
 
 %files
@@ -122,6 +122,8 @@ bootstrap/bin/ant -v run-tests
 %{_bindir}/runant.pl
 
 %changelog
+*   Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 1.10.5-5
+-   Changed openjdk install directory name
 *   Wed Sep 11 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.5-4
 -   Fix make check
 *   Tue Dec 04 2018 Dweep Advani <dadvani@vmware.com> 1.10.5-3
