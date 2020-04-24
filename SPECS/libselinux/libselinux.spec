@@ -3,7 +3,7 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/20191204/%{name}-%{version}.tar.gz
@@ -11,12 +11,20 @@ Source0:        https://github.com/SELinuxProject/selinux/releases/download/2019
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  libsepol-devel
+BuildRequires:  libsepol-devel = %{version}
 BuildRequires:  pcre-devel, swig
 BuildRequires:  python2-devel
 BuildRequires:  python3-devel
 Requires:       pcre-libs
-Requires:       libsepol
+# libselinux optionally uses libsepol by dlopen it.
+# libsepol really needed by highlevel SELinux packages
+# such as policycoreutils.
+# But libselinux is needed (dynamic linking) by systemd,
+# coreutils, pam even if SELinux is disabled,
+# just because they were dinamically linked against it.
+# Disable libsepol dependency to reduce minimal installation
+# size. And install libsepol when we really need SELinux
+#Requires:       libsepol
 
 %description
 Security-enhanced Linux is a feature of the Linux® kernel and a number
@@ -45,8 +53,8 @@ The libselinux-utils package contains the utilities
 Summary:        Header files and libraries used to build SELinux
 Group:          Development/Libraries
 Requires:       libselinux = %{version}-%{release}
+Requires:       libsepol-devel = %{version}
 Requires:       pcre-devel
-Requires:       libsepol-devel
 Provides:       pkgconfig(libselinux)
 
 %description    devel
@@ -128,6 +136,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Apr 24 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-2
+-   Remove libsepol runtime dependency.
 *   Sat Apr 18 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-1
 -   Version update.
 *   Wed Mar 25 2020 Alexey Makhalov <amakhalov@vmware.com> 2.8-3
