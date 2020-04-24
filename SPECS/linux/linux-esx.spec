@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.112
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -301,6 +301,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Apr 24 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-6
+-   Modified PCI Probe patch to store hardcoded values in lookup table
 *   Thu Apr 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.112-5
 -   Fix __modules_install_post to skip compression for certain modules.
 *   Wed Apr 22 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-4

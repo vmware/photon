@@ -13,14 +13,18 @@ resources (BARs) for them.
 
 Added pci=scan_all cmdline parameter verifies hardcodded pci
 values at runtime.
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+
 ---
  drivers/pci/pci.c   |   2 +
  drivers/pci/pci.h   |   2 +
- drivers/pci/probe.c | 433 +++++++++++++++++++++++++++++++++++++++++++++++++++-
- 3 files changed, 433 insertions(+), 4 deletions(-)
+ drivers/pci/probe.c | 380 +++++++++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 380 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 57a87a001b4f..64bfcb373225 100644
+index 57a87a001..64bfcb373 100644
 --- a/drivers/pci/pci.c
 +++ b/drivers/pci/pci.c
 @@ -6176,6 +6176,8 @@ static int __init pci_setup(char *str)
@@ -33,7 +37,7 @@ index 57a87a001b4f..64bfcb373225 100644
  				printk(KERN_ERR "PCI: Unknown option `%s'\n",
  						str);
 diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index e9ede82ee2c2..fc54123ce7d2 100644
+index e9ede82ee..fc54123ce 100644
 --- a/drivers/pci/pci.h
 +++ b/drivers/pci/pci.h
 @@ -149,6 +149,8 @@ void pci_no_msi(void);
@@ -46,14 +50,153 @@ index e9ede82ee2c2..fc54123ce7d2 100644
  {
  	u16 control;
 diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index fa4c386c8cd8..8cf9cf037431 100644
+index fa4c386c8..b4cbe1c91 100644
 --- a/drivers/pci/probe.c
 +++ b/drivers/pci/probe.c
-@@ -168,6 +168,398 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+@@ -30,6 +30,138 @@ static struct resource busn_resource = {
+ 	.flags	= IORESOURCE_BUS,
+ };
+ 
++
++/**
++ *pci_dev_bar_info : Representation of BARs for PCI device
++ *@vid: Vendor ID of PCI device
++ *@pid: Product ID of PCI device
++ *@bars: Numbers of bars to be read for PCI device
++ *@sz[11]: Known Values of Bars and ROM
++ *        sz[0]--sz[6] is for offset 0x10 to 0x24
++ *	 sz[8] is for ROM offset 0x30
++ *	 sz[10] is reserved, but this is read for some devices
++ *	 sz[i] = 0: no BAR at this position.
++ *        sz[i] = 0xffffffff: BAR has to be scanned, applicable for variable
++ *                size BAR (such as video memory).
++ *        any other value: size in PCI BAR format.
++ */
++
++typedef struct {
++	u32 vid;
++	u32 pid;
++	u8  bars;
++	u32 sz[11];
++} pci_dev_bar_info;
++
++/*List of LSI Logic devices*/
++pci_dev_bar_info lsi_devs[]  = {
++	{0x1000, 0x0030,   /*53c1030 PCI-X Fusion-MPT Dual Ultra320 SCSI*/
++	4,         /*Number of bars*/
++	{0xff01, 0xfffe0004, 0, 0xfffe0004, 0, 0,  /*Bars*/
++	 0, 0, 0xffffc000, 0, 0} }, /*Rom + Extra*/
++
++	{0x1000, 0x0054,   /*LSI Logic : SAS1068 PCI-X Fusion-MPT SAS*/
++	4,         /*Number of bars*/
++	{0xff01, 0xffffc004, 0, 0xffff0004, 0, 0, /*Bars*/
++	 0, 0, 0xffffc000, 0, 0} }, /*Rom + Extra*/
++
++	{0, 0,   /*END of array marker*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0, 0, 0, 0} }
++};
++
++/*List of Intel Devices*/
++pci_dev_bar_info intel_devs[]  = {
++	{0x8086, 0x7111,   /*IDE interface: 82371AB/EB/MB PIIX4 IDE*/
++	5,         /*Number of bars*/
++	{0, 0, 0, 0, 0xfffffff1, 0,        /*Bars*/
++	0, 0, 0, 0, 0} }, /*Rom + Extra*/
++
++	{0x8086, 0x7113,   /*Bridge: 82371AB/EB/MB PIIX4 ACPI*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0,                 /*Bars*/
++	0, 0, 0, 0, 0} },                    /*Rom + Extra*/
++
++	{0x8086, 0x7190,   /*Bridge: 82443BX/ZX/DX Host bridge*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0,                 /*Bars*/
++	0, 0, 0, 0, 0} },                   /*Rom + Extra*/
++
++	{0x8086, 0x7191,   /*PCI Bridge: Intel 440BX/ZX/DX - 82443BX/ZX/DX AGP*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0,                 /*Bars*/
++	0, 0, 0, 0, 0} },                   /*Rom + Extra*/
++
++	{0x8086, 0x10d3,   /*Eth controller[e1000e]: Intel 82574L Gigabit NIC*/
++	4,         /*Number of bars*/
++	{0xfffe0000, 0xfffe0000, 0xffffffe1, 0xffffc000, 0, 0, /*Bars*/
++	0, 0, 0xffff0000, 0, 0} },          /*Rom + Extra*/
++
++	{0x8086, 0x100f,   /*Eth controller[e1000]: Intel 82545EM Gigabit NIC*/
++	5,         /*Number of bars*/
++	{0xfffe0004, 0, 0xffff0004, 0, 0xffffffc1, 0, /*Bars*/
++	0, 0, 0xffff0000, 0, 0} },         /*Rom + Extra*/
++
++	{0, 0,   /*END of array marker*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0, 0, 0, 0} }
++};
++
++/*List of VmWare Devices*/
++pci_dev_bar_info vmw_devs[]  = {
++	{0x15ad, 0x0405,   /*VMware SVGA II Adapter*/
++	3,         /*Number of bars*/
++	{0xfffffff1, 0xffffffff, 0xff800000, 0, 0, 0, /*Bars*/
++	0, 0, 0xffff8000, 0, 0} },          /*Rom + Extra*/
++
++	{0x15ad, 0x0740,   /*VMware Virtual Machine Communication Interface*/
++	2,         /*Number of bars*/
++	{0xffffffc1, 0xffffe004, 0, 0, 0, 0,
++	0, 0, 0, 0, 0} },
++
++	{0x15ad, 0x0790,   /*VMware PCI bridge*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0} },
++
++	{0x15ad, 0x07a0,   /*VMware PCI Express Root Port*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0} },
++
++	{0x15ad, 0x07b0,   /*VMware VMXNET3 Ethernet Controller*/
++	4,         /*Number of bars*/
++	{0xfffff000, 0xfffff000, 0xffffe000, 0xfffffff1, 0, 0, /*Bars*/
++	0, 0, 0xffff0000, 0, 0} },           /*Rom + Extra*/
++
++	{0x15ad, 0x07c0,   /*VMware PVSCSI SCSI Controller*/
++	2,         /*Number of bars*/
++	{0xfffffff9, 0xffff8000, 0, 0, 0, 0, /*Bars*/
++	0, 0, 0xffff0000, 0, 0} },             /*Rom + Extra*/
++
++	{0x15ad, 0x07e0,   /*VMware SATA AHCI controller*/
++	6,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0xfffff000,        /*Bars*/
++	0, 0, 0xffff0000, 0, 0} },          /*Rom + Extra*/
++
++	{0x15ad, 0x0770,   /*VMware USB2 EHCI Controller*/
++	1,         /*Number of bars*/
++	{0xfffff000, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0} },
++
++	{0x15ad, 0x0774,   /*VMware USB1.1 UHCI Controller*/
++	5,         /*Number of bars*/
++	{0, 0, 0, 0, 0x0000ffe1, 0,
++	0, 0, 0, 0, 0} },
++
++	{0, 0,   /*END of array marker*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0, 0, 0, 0} }
++};
++
++
++pci_dev_bar_info *vendors_table[] = {lsi_devs, vmw_devs, intel_devs, NULL};
++
+ /* Ugh.  Need to stop exporting this to modules. */
+ LIST_HEAD(pci_root_buses);
+ EXPORT_SYMBOL(pci_root_buses);
+@@ -168,6 +300,213 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
  
  #define PCI_COMMAND_DECODE_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_IO)
  
-+static int pci_scan_and_verify = 0;
++static int pci_scan_and_verify;
 +
 +void pci_scan_all(void)
 +{
@@ -214,241 +357,56 @@ index fa4c386c8cd8..8cf9cf037431 100644
 + */
 +static int is_known_device(struct pci_dev *dev, int req, int *val, int *rom)
 +{
-+	switch (dev->vendor) {
-+		/* SCSI storage controller */
-+		case 0x1000:
-+		switch (dev->device) {
-+			/* LSI Logic */
-+			case 0x0030:
-+			switch (req) {
-+				case 0x10:
-+					*val = 0xff01;
-+					return 1;
-+				case 0x14:
-+					*val = 0xfffe0004;
-+					return 1;
-+				case 0x1c:
-+					*val = 0xfffe0004;
-+					return 1;
-+				case 0x18:
-+				case 0x20:
-+				case 0x24:
-+					*val = 0; /* Not implemented */
-+					return 1;
-+				case 0x30:
-+					*val = 0xffffc000;
-+					return 1;
-+				case REQUEST_BARS_INFO:
-+					*val = 4;
-+					/* ROM is present */
-+					return 1;
-+			}
-+			break;
++	int vid = dev->vendor;
++	int pid = dev->device;
++	pci_dev_bar_info *pdev = NULL;
++	pci_dev_bar_info *table;
++	int i, j;
++	int req_index;
++
++	for (i = 0; vendors_table[i]; i++) {
++		if (vendors_table[i]->vid != vid) {
++			continue;
 +		}
-+		break;
-+
-+
-+		/* VMware, Inc */
-+		case 0x15ad:
-+		switch (dev->device) {
-+			/* VMware SVGA II Adapter */
-+			case 0x0405:
-+			switch (req) {
-+				case 0x10:
-+					*val = 0xfffffff1;
-+					return 1;
-+				case 0x14:
-+					/* variable mem size */
-+					*val = 0xffffffff;
-+					return 0;
-+				case 0x18:
-+					*val = 0xff800000;
-+					return 1;
-+				case 0x1c:
-+				case 0x20:
-+				case 0x24:
-+					*val = 0; /* Not implemented */
-+					return 1;
-+				case 0x30:
-+					*val = 0xffff8000;
-+					return 1;
-+				case REQUEST_BARS_INFO:
-+					*val = 3;
-+					/* ROM is present */
-+					return 1;
++		table = vendors_table[i];
++		for (j = 0; table[j].pid != 0; j++) {
++			if (table[j].pid == pid) {
++				pdev = &table[j];
++				goto loop_out;
 +			}
-+			break;
-+
-+			/* VMware Virtual Machine Communication Interface */
-+			case 0x0740:
-+			switch (req) {
-+				case 0x10:
-+					*val = 0xffffffc1;
-+					return 1;
-+				case 0x14:
-+					*val = 0xffffe004;
-+					return 1;
-+				case 0x1c:
-+				case 0x20:
-+				case 0x24:
-+				case 0x30:
-+					*val = 0; /* Not implemented */
-+					return 1;
-+				case REQUEST_BARS_INFO:
-+					*val = 2;
-+					*rom = 0;
-+					return 1;
-+			}
-+			break;
-+
-+			/* VMware PCI bridge */
-+			case 0x0790:
-+			/* VMware PCI Express Root Port */
-+			case 0x07a0:
-+			switch (req) {
-+				case 0x10:
-+				case 0x14:
-+				case 0x38:
-+					*val = 0; /* Not implemented */
-+					return 1;
-+				case REQUEST_BARS_INFO:
-+					*val = 0;
-+					*rom = 0;
-+					return 1;
-+			}
-+			break;
-+
-+			/* VMware VMXNET3 Ethernet Controller */
-+			case 0x07b0:
-+			switch (req) {
-+				case 0x10:
-+					*val = 0xfffff000;
-+					return 1;
-+				case 0x14:
-+					*val = 0xfffff000;
-+					return 1;
-+				case 0x18:
-+					*val = 0xffffe000;
-+					return 1;
-+				case 0x1c:
-+					*val = 0xfffffff1;
-+					return 1;
-+				case 0x20:
-+				case 0x24:
-+					*val = 0; /* Not implemented */
-+					return 1;
-+				case 0x30:
-+					*val = 0xffff0000;
-+					return 1;
-+				case REQUEST_BARS_INFO:
-+					*val = 4;
-+					/* ROM is present */
-+					return 1;
-+			}
-+			break;
-+
-+			/* VMware PVSCSI SCSI Controller */
-+			case 0x07c0:
-+			switch (req) {
-+				case 0x10:
-+					*val = 0xfffffff9;
-+					return 1;
-+				case 0x14:
-+					*val = 0xffff8000; /* 0xffff8004 ? */
-+					return 1;
-+				case 0x1c:
-+				case 0x20:
-+				case 0x24:
-+					*val = 0; /* Not implemented */
-+					return 1;
-+				case 0x30:
-+					*val = 0xffff0000;
-+					return 1;
-+				case REQUEST_BARS_INFO:
-+					*val = 2;
-+					/* ROM is present */
-+					return 1;
-+			}
-+			break;
 +		}
-+		break;
-+
-+
-+		/* Intel Corporation */
-+		case 0x8086:
-+		switch (dev->device) {
-+			/* IDE interface: 82371AB/EB/MB PIIX4 IDE */
-+			case 0x7111:
-+			switch (req) {
-+				case 0x20:
-+					*val = 0xfffffff1;
-+					return 1;
-+				case 0x10:
-+				case 0x14:
-+				case 0x18:
-+				case 0x1c:
-+				case 0x24:
-+				case 0x30:
-+					*val = 0; /* Not implemented */
-+					return 1;
-+				case REQUEST_BARS_INFO:
-+					*val = 5;
-+					*rom = 0;
-+					return 1;
-+			}
-+			break;
-+
-+			/* Bridge: 82371AB/EB/MB PIIX4 ACPI */
-+			case 0x7113:
-+			switch (req) {
-+				case 0x10:
-+				case 0x14:
-+				case 0x18:
-+				case 0x1c:
-+				case 0x20:
-+				case 0x24:
-+				case 0x30:
-+					*val = 0; /* Not implemented */
-+					return 1;
-+				case REQUEST_BARS_INFO:
-+					*val = 0;
-+					*rom = 0;
-+					return 1;
-+			}
-+			break;
-+
-+			/* Bridge: 82443BX/ZX/DX Host bridge */
-+			case 0x7190:
-+			switch (req) {
-+				case 0x10:
-+				case 0x14:
-+				case 0x18:
-+				case 0x1c:
-+				case 0x20:
-+				case 0x24:
-+				case 0x30:
-+					*val = 0; /* Not implemented */
-+					return 1;
-+				case REQUEST_BARS_INFO:
-+					*val = 0;
-+					*rom = 0;
-+					return 1;
-+			}
-+			break;
-+		}
-+		break;
++		break; /*Matched table for vendor not having dev, so break*/
 +	}
++
++loop_out:
++	if (pdev) {
++		if (req == REQUEST_BARS_INFO) {
++			*val = pdev->bars;
++			if (!pdev->sz[8]) {
++				*rom = 0;
++				return 1;
++			}
++		}
++		req_index = (req - PCI_BASE_ADDRESS_0) >> 2;
++		if (req_index <= 10) {
++			*val = pdev->sz[req_index];
++			if (*val == 0xffffffff)
++				return 0;
++			return 1;
++		}
++	}
++
 +	if (req == REQUEST_BARS_INFO)
 +		*val = 6;
 +	else
 +		*val = 0xffffffff;
-+        return 0;
++	return 0;
 +}
 +
  /**
   * pci_read_base - Read a PCI BAR
   * @dev: the PCI device
-@@ -180,13 +572,20 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+@@ -180,13 +519,20 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
  int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		    struct resource *res, unsigned int pos)
  {
@@ -470,7 +428,7 @@ index fa4c386c8cd8..8cf9cf037431 100644
  	/* No printks while decoding is disabled! */
  	if (!dev->mmio_always_on) {
  		pci_read_config_word(dev, PCI_COMMAND, &orig_cmd);
-@@ -196,7 +595,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -196,7 +542,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		}
  	}
  
@@ -478,7 +436,7 @@ index fa4c386c8cd8..8cf9cf037431 100644
  
  	pci_read_config_dword(dev, pos, &l);
  	pci_write_config_dword(dev, pos, l | mask);
-@@ -212,6 +610,11 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -212,6 +557,11 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  	if (sz == 0xffffffff)
  		sz = 0;
  
@@ -490,7 +448,7 @@ index fa4c386c8cd8..8cf9cf037431 100644
  	/*
  	 * I don't know how l can have all bits set.  Copied from old code.
  	 * Maybe it fixes a bug on some ancient platform.
-@@ -316,8 +719,22 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -316,8 +666,22 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  fail:
  	res->flags = 0;
  out:
@@ -514,7 +472,7 @@ index fa4c386c8cd8..8cf9cf037431 100644
  
  	return (res->flags & IORESOURCE_MEM_64) ? 1 : 0;
  }
-@@ -1651,7 +2068,15 @@ int pci_setup_device(struct pci_dev *dev)
+@@ -1651,7 +2015,15 @@ int pci_setup_device(struct pci_dev *dev)
  		if (class == PCI_CLASS_BRIDGE_PCI)
  			goto bad;
  		pci_read_irq(dev);
@@ -532,5 +490,5 @@ index fa4c386c8cd8..8cf9cf037431 100644
  		pci_subsystem_ids(dev, &dev->subsystem_vendor, &dev->subsystem_device);
  
 -- 
-2.14.2
+2.17.1
 
