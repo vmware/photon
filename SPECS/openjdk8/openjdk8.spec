@@ -5,7 +5,7 @@
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	1.8.0.252
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -170,7 +170,6 @@ alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/java
 %postun -n openjre8
 alternatives --remove java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/java
 /sbin/ldconfig
-rm -rf %{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 
 %clean
 rm -rf %{buildroot}/*
@@ -246,6 +245,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+*   Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 1.8.0.252-2
+-   Cleaned removing of OpenJDK-1.8.0 directory in postun
 *   Fri Apr 17 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.252-1
 -   Upgrade to version 1.8.0.252 ga (jdk8u252-ga)
 *   Mon Apr 13 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.242-1
