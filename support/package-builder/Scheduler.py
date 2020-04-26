@@ -218,7 +218,8 @@ class Scheduler(object):
     def _getRequiredPackages(pkg):
         return Scheduler.__getRequiredTypePackages(pkg, "install")
 
-    def _createCoreToolChainGraphNodes():
+    def _createNodes():
+        # Create a graph node to represent every package
         for package in Scheduler.sortedList:
             packageName, packageVersion = StringUtils.splitPackageNameAndVersion(package)
             node = DependencyGraphNode(packageName, packageVersion,
@@ -228,12 +229,16 @@ class Scheduler(object):
             if package in Scheduler.listOfAlreadyBuiltPackages:
                 node.built = 1
 
-        # The package dependency is linear like A - B - C - D
-        # in accordance to elements/pacckages in sortedlist
+    def _createCoreToolChainGraphNodes():
+        # GRAPH-BUILD STEP 1: Initialize graph nodes for each core tool chain package.
+        Scheduler._createNodes()
+
+        # GRAPH-BUILD STEP 2: Mark package dependencies in the graph.
+        # The package dependency is linear like A - B - C - D in accordance to packages in sortedlist
         # Unless package A is build none other packages B,C,D are build
         for index,package in enumerate(Scheduler.sortedList):
             pkgNode = Scheduler.mapPackagesToGraphNodes[package]
-            for childPkg in Scheduler.sortedList[:index:]:
+            for childPkg in Scheduler.sortedList[:index]:
                 childPkgNode = Scheduler.mapPackagesToGraphNodes[childPkg]
                 pkgNode.childPkgNodes.add(childPkgNode)
                 childPkgNode.parentPkgNodes.add(pkgNode)
@@ -244,14 +249,7 @@ class Scheduler(object):
         #
         # Create a graph with a node to represent every package and all
         # its dependent packages in the given list.
-        for package in Scheduler.sortedList:
-            packageName, packageVersion = StringUtils.splitPackageNameAndVersion(package)
-            node = DependencyGraphNode(packageName, packageVersion,
-                                       Scheduler._getWeight(package))
-            Scheduler.mapPackagesToGraphNodes[package] = node
-
-            if package in Scheduler.listOfAlreadyBuiltPackages:
-                node.built = 1
+        Scheduler._createNodes()
 
         for package in Scheduler.sortedList:
             pkgNode = Scheduler.mapPackagesToGraphNodes[package]
