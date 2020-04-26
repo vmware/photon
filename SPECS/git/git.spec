@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.26.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
 %define sha1    git=1580df90eecae21664646ac6eb7eba4af4934fe4
+Patch0:         CVE-2020-5260.patch
 BuildRequires:  curl-devel
 BuildRequires:  python2
 BuildRequires:  openssl-devel
@@ -41,6 +42,7 @@ These are the additional language files of git.
 
 %prep
 %setup -q
+%patch0 -p1
 %build
 %configure \
     CFLAGS="%{optflags}" \
@@ -91,6 +93,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Mon Apr 27 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.26.0-2
+-   Added patch, Fixes CVE-2020-5260
 *   Wed Apr 01 2020 Susant Sahani <ssahani@vmware.com> 2.26.0-1
 -   Updated to version 2.26.0
 *   Wed Feb 12 2019 Prashant S Chauhan <psinghchauha@vmware.com> 2.23.1-1
