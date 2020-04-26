@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -197,6 +197,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 18.09.9-2
+-   Bump up version to compile with new go version
 *   Tue Apr 21 2020 Ankit Jain <ankitja@vmware.com> 18.09.9-1
 -   Update to 18.09.9
 -   Fixed CVE-2019-16884 by upgrading containerd version and runc

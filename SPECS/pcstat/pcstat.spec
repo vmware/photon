@@ -1,7 +1,7 @@
 Summary:        A tool that inspect which pages of a file or files are being cached by the Linux kernel
 Name:           pcstat 
 Version:        1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache 
 URL:            https://github.com/tobert/pcstat
 Group:          Development/Debuggers
@@ -45,6 +45,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/pcstat
 
 %changelog
+*   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 1-7
+-   Bump up version to compile with new go version
 *   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 1-6
 -   Bump up version to compile with new go
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1-5

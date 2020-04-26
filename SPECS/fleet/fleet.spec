@@ -4,7 +4,7 @@
 Summary:	A Distributed init System
 Name:		fleet
 Version:	0.11.5
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	Apache 2.0
 URL:		https://coreos.com/using-coreos/clustering/
 Group:		OS/ClusterManagement
@@ -83,6 +83,8 @@ getent passwd fleet >/dev/null || /usr/sbin/useradd -c "fleet user" -s /sbin/nol
 /usr/share/polkit-1/rules.d/fleet.rules
 
 %changelog
+*   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 0.11.5-6
+-   Bump up version to compile with new go version
 *   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 0.11.5-5
 -   Bump up version to compile with new go
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 0.11.5-4

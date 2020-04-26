@@ -15,7 +15,7 @@
 Summary:        Go
 Name:           go
 Version:        1.11.13
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -25,6 +25,7 @@ Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
 %define sha1    go=3039af0d0714db1902059add729f6b36390a9776
 Patch0:         CVE-2019-16276.patch
 Patch1:         CVE-2019-17596.patch
+Patch2:         CVE-2020-7919.patch
 Requires:       glibc
 
 %description
@@ -34,6 +35,7 @@ Go is an open source programming language that makes it easy to build simple, re
 %setup -qn %{name}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 
 %build
@@ -116,6 +118,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Thu Apr 23 2020 <hdommaraju@vmware.com> 1.11.13-4
+-   Add patch for CVE-2020-7919
 *   Mon Jan 06 2020 <ashwinh@vmware.com> 1.11.13-3
 -   Add patch for CVE-2019-16276 CVE-2019-17596 which was missed
 *   Fri Jan 03 2020 <ashwinh@vmware.com> 1.11.13-2
