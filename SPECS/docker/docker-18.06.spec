@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -14,6 +14,12 @@ Source0:        https://github.com/docker/docker-ce/archive/docker-%{version}-ce
 %define sha1 docker=d67890d32c8e4ee09bf2a00585d95211d8def486
 %define DOCKER_GITCOMMIT 6d37f41e333ee478440ef969392020f7e3915cd3
 Source99:       default-disable.preset
+Patch10:        CVE-2018-15664_1.patch
+Patch11:        CVE-2018-15664_2.patch
+Patch12:        CVE-2019-14271.patch
+Patch13:        CVE-2019-13139.patch
+Patch14:        CVE-2019-13509_1.patch
+Patch15:        CVE-2019-13509_2.patch
 Patch99:        remove-firewalld.patch
 
 BuildRequires:  systemd
@@ -40,6 +46,7 @@ Requires:       glibc
 Requires:       libseccomp
 Requires:       systemd
 Requires:       device-mapper-libs
+Requires:       shadow
 
 %description
 Docker is an open source project to build, ship and run any application as a lightweight container.
@@ -63,6 +70,15 @@ mkdir docker
 
 ln -snrf "$OLDPWD/docker-ce-%{version}-ce/components/engine" docker/docker
 ln -snrf "$OLDPWD/docker-ce-%{version}-ce/components/cli" docker/cli
+
+pushd docker/docker
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
+popd
 
 %build
 export GOPATH="/go"
@@ -216,6 +232,9 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Apr 27 2020 Ankit Jain <ankitja@vmware.com> 18.06.2-3
+-   Multiple CVEs fixes
+-   Added Requires shadow
 *   Fri Apr 17 2020 Alexey Makhalov <amakhalov@vmware.com> 18.06.2-2
 -   Build with SELinux support
 *   Mon Feb 11 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 18.06.2-1
