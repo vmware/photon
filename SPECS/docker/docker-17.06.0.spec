@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        17.06.0
-Release:        14%{?dist}
+Release:        15%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -60,6 +60,7 @@ Requires:       glibc
 Requires:       libseccomp
 Requires:       systemd
 Requires:       device-mapper-libs
+Requires:       shadow
 
 %description
 Docker is a platform for developers and sysadmins to develop, ship and run applications.
@@ -238,6 +239,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Apr 27 2020 Ankit Jain <ankitja@vmware.com> 17.06.0-15
+-   Added Requires shadow
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 17.06.0-14
 -   Bump up version to compile with new go
 *   Thu Nov 28 2019 Ashwin H <ashwinh@vmware.com> 17.06.0-13

@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -53,11 +53,12 @@ Docker is an open source project to build, ship and run any application as a lig
 %package        engine
 Summary:        Docker Engine
 Requires:       libapparmor
-Requires:       libseccomp
+Requires:       libseccomp >= 2.4.0
 Requires:       libltdl
 Requires:       device-mapper-libs
 Requires:       systemd
 Requires:       containerd >= 1.2.10, containerd < 1.4.0
+Requires:       shadow
 
 %description    engine
 Docker is an open source project to build, ship and run any application as a lightweight container.
@@ -284,6 +285,9 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Apr 27 2020 Ankit Jain <ankitja@vmware.com> 18.09.9-3
+-   Added Requires shadow
+-   To fix docker run command, libseccomp >= 2.4.0 required
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 18.09.9-2
 -   Bump up version to compile with new go
 *   Tue Oct 22 2019 Bo Gan <ganb@vmware.com> 18.09.9-1
