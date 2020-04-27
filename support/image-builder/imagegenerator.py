@@ -41,17 +41,21 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         vhdname = ('/' + image_name + '.vhd')
         print("Converting raw disk to vhd ...")
         info_output = Utils.runshellcommand(
-            "docker run -v {}:/mnt:rw anishs/qemu-img info -f raw --output json {}"
-            .format(src_root, '/mnt/' + relrawpath))
+            "docker run -v {}:/mnt:rw photon:{} /bin/bash -c "
+            "'tdnf install -y qemu-img > /dev/null 2>&1; qemu-img info -f raw --output json {}'"
+            .format(src_root, photon_release_ver, '/mnt/' + relrawpath))
         mbsize = 1024 * 1024
         mbroundedsize = ((int(json.loads(info_output)["virtual-size"])/mbsize + 1) * mbsize)
         Utils.runshellcommand(
-            "docker run -v {}:/mnt:rw anishs/qemu-img resize -f raw {} {}"
-            .format(src_root, '/mnt/' + relrawpath, mbroundedsize))
+            "docker run -v {}:/mnt:rw photon:{} /bin/bash -c "
+            "'tdnf install -y qemu-img > /dev/null 2>&1; qemu-img resize -f raw {} {}'"
+            .format(src_root, photon_release_ver, '/mnt/' + relrawpath, mbroundedsize))
         Utils.runshellcommand(
-            "docker run -v {}:/mnt:rw anishs/qemu-img convert {} -O "
-            "vpc -o subformat=fixed,force_size {}"
-            .format(src_root, '/mnt/' + relrawpath, '/mnt/' + os.path.dirname(relrawpath) + vhdname))
+            "docker run -v {}:/mnt:rw photon:{} /bin/bash -c "
+            "'tdnf install -y qemu-img > /dev/null 2>&1; qemu-img convert {} -O "
+            "vpc -o subformat=fixed,force_size {}'"
+            .format(src_root, photon_release_ver, '/mnt/' + relrawpath, '/mnt/'
+                + os.path.dirname(relrawpath) + vhdname))
         if config['artifacttype'] == 'vhd.gz':
             outputfile = (img_path + '/' + image_name + '.vhd.tar.gz')
             compressed = generateCompressedFile(img_path + vhdname, outputfile, "w:gz")
