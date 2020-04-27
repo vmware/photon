@@ -1,7 +1,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.7.20
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -86,6 +86,7 @@ fi
 %post
 chown -R rabbitmq:rabbitmq /var/lib/rabbitmq
 chown -R rabbitmq:rabbitmq /etc/rabbitmq
+chmod g+s /etc/rabbitmq
 %systemd_post %{name}.service
 
 %preun
@@ -106,6 +107,8 @@ rm -rf $RPM_BUILD_ROOT
 /var/lib/*
 
 %changelog
+* Mon Apr 27 2020 Tapas Kundu <tkundu@vmware.com> 3.7.20-2
+- Fix rabbitmq server issue when we enable rabbitmq plugin.
 * Tue Oct 29 2019 Keerthana K <keerthanak@vmware.com> 3.7.20-1
 - Update to version 3.7.20
 * Mon Aug 19 2019 Keerthana K <keerthanak@vmware.com> 3.7.3-1
