@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -47,6 +47,7 @@ Requires:       glibc
 Requires:       libseccomp
 Requires:       systemd
 Requires:       device-mapper-libs
+Requires:       shadow
 
 # To fix downgrade from docker 18.09 to docker 18.06
 Obsoletes:      docker-cli
@@ -236,6 +237,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Apr 27 2020 Ankit Jain <ankitja@vmware.com> 18.06.2-10
+-   Added Requires shadow
 *   Tue Apr 21 2020 Ankit Jain <ankitja@vmware.com> 18.06.2-9
 -   Fix CVE-2019-13139, CVE-2019-13509
 *   Mon Nov 25 2019 Ashwin H <ashwinh@vmware.com> 18.06.2-8
