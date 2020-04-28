@@ -3,7 +3,7 @@
 Summary:        SELinux policy management libraries
 Name:           libsemanage
 Version:        3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/20191204/%{name}-%{version}.tar.gz
@@ -88,7 +88,6 @@ rm -rf %{buildroot}%{_mandir}/ru
 %files
 %defattr(-,root,root,-)
 %{_libdir}/libsemanage.so.1
-%{_libexecdir}/selinux/*
 %{_sysconfdir}/selinux/semanage.conf
 %{_mandir}/man5/*
 
@@ -103,12 +102,16 @@ rm -rf %{buildroot}%{_mandir}/ru
 
 %files python
 %defattr(-,root,root,-)
+%ghost %{_libexecdir}/selinux/semanage_migrate_store
 %{python2_sitelib}/*
 
 %files python3
 %defattr(-,root,root,-)
+%{_libexecdir}/selinux/semanage_migrate_store
 %{python3_sitelib}/*
 
 %changelog
+* Tue Apr 28 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-2
+- Move migrate store python script to python subpackage.
 * Sat Apr 18 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-1
 - Initial build.
