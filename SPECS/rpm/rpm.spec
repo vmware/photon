@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -181,7 +181,7 @@ rm -rf %{buildroot}
 
 %files libs
 %defattr(-,root,root)
-%{_sysconfdir}/rpm/macros
+%config(noreplace) %{_sysconfdir}/rpm/macros
 %{_libdir}/librpmio.so.*
 %{_libdir}/librpm.so.*
 %{_libdir}/rpm/macros
@@ -253,6 +253,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.14.2-8
+-   Added %config(noreplace) for /etc/rpm/macros file.
 *   Sat Jan 04 2020 Neal Gompa <ngompa13@gmail.com> 4.14.2-7
 -   Configure RPMCANONVENDOR to vmware
 *   Thu Oct 31 2019 Alexey Makhalov <amakhalov@vmware.com> 4.14.2-6
