@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.98
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt40
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -983,6 +983,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Wed Apr 29 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.98-5
+-   Enable additional config options.
 *   Mon Mar 23 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.98-4
 -   Fix perf compilation issue with binutils >= 2.34.
 *   Sun Mar 22 2020 Tapas Kundu <tkundu@vmware.com> 4.19.98-3

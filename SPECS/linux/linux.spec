@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.112
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -594,6 +594,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Apr 29 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.112-3
+-   Enable additional config options.
 *   Wed Apr 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-2
 -   HMAC-SHA256 digest of hmac_generator module moved to hmacgen package
 *   Wed Apr 08 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.112-1
