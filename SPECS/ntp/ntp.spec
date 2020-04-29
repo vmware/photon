@@ -1,6 +1,6 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
-Version:        4.2.8p13
+Version:        4.2.8p14
 Release:        1%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
@@ -8,7 +8,7 @@ Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha1    ntp=cff200a987d64e891fb349a22313ecb0feaea090
+%define sha1    ntp=c6f353278cd5b7c8aa11e1189d3ac80985370b8f
 
 #https://github.com/darkhelmet/ntpstat
 Source1: ntpstat-master.zip
@@ -144,6 +144,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Wed Apr 29 2020 Dweep Advani <dadvani@vmware.com> 4.2.8p14-1
+-   Upgrade to version 4.2.8p14, addresses CVE-2020-11868.
 *   Thu Mar 28 2019 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p13-1
 -   Upgrade version to 4.2.8p13.
 *   Thu Mar 21 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.2.8p12-3
