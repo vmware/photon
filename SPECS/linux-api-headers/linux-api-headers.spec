@@ -1,6 +1,6 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
-Version:	4.4.219
+Version:	4.4.220
 Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
@@ -8,7 +8,7 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f76f9b8f831b4537a8b35ef69976f6d79f1c6488
+%define sha1 linux=064ef82ce83f8048a552e3fa6000e20bb8d88652
 BuildArch:	noarch
 # From SPECS/linux and used by linux-esx only
 # It provides f*xattrat syscalls
@@ -29,6 +29,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+*   Thu Apr 30 2020 ashwin-h <ashwinh@vmware.com> 4.4.220-1
+-   Update to version 4.4.220
 *   Mon Apr 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.219-1
 -   Update to version 4.4.219
 *   Mon Mar 23 2020 Keerthana K <keerthanak@vmware.com> 4.4.217-1
