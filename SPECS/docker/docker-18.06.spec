@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -20,6 +20,7 @@ Patch12:        CVE-2019-14271.patch
 Patch13:        CVE-2019-13139.patch
 Patch14:        CVE-2019-13509_1.patch
 Patch15:        CVE-2019-13509_2.patch
+Patch16:        update-runc-containerd-CVE-2019-16884.patch
 Patch99:        remove-firewalld.patch
 
 BuildRequires:  systemd
@@ -44,7 +45,7 @@ Requires:       libapparmor
 Requires:       libltdl
 Requires:       libgcc
 Requires:       glibc
-Requires:       libseccomp
+Requires:       libseccomp >= 2.4.0
 Requires:       systemd
 Requires:       device-mapper-libs
 Requires:       shadow
@@ -83,6 +84,7 @@ pushd docker/docker
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
 popd
 
 %build
@@ -237,6 +239,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Thu Apr 30 2020 Ankit Jain <ankitja@vmware.com> 18.06.2-12
+-   Fix CVE-2019-16884, updated runc and containerd version
 *   Wed Apr 29 2020 Harinadh D <hdommaraju@vmware.com> 18.06.2-11
 -   Bump up version to compile with go 1.13.3-2
 *   Mon Apr 27 2020 Ankit Jain <ankitja@vmware.com> 18.06.2-10
