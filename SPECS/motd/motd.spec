@@ -5,7 +5,7 @@
 Summary:        Message of the Day
 Name:           motd
 Version:        0.1.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv3
 URL:            http://github.com/rtnpro/fedora-motd
 Source0:        https://github.com/rtnpro/motdgen/archive/motdgen-a152954.tar.gz
@@ -36,6 +36,9 @@ python3 setup.py build
 %install
 python3 setup.py install -O1 --skip-build \
     --install-data=%{_datadir} --root %{buildroot}
+# SELinux: let systemd create our runtime directory and label it properly.
+mkdir -p %{buildroot}/%{_libdir}/tmpfiles.d
+echo "d /run/motdgen 0755 root root" > %{buildroot}/%{_libdir}/tmpfiles.d/motd.conf
 
 #shadow is providing /etc/pam.d/sshd with (noreplace)
 
@@ -66,8 +69,11 @@ rm -rf %{_localstatedir}/run/motdgen
 %{_sysconfdir}/profile.d/motdgen.sh
 %{_bindir}/motdgen
 %{_sysconfdir}/systemd/system/motdgen.service
+%{_libdir}/tmpfiles.d/motd.conf
 
 %changelog
+*   Thu Apr 30 2020 Alexey Makhalov <amakhalov@vmware.com> 0.1.3-6
+-   Systemd to generate runtime directory.
 *   Mon Jun 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.3-5
 -   Add python3-setuptools and python3-xml Buildrequires.
 *   Mon Jun 12 2017 Bo Gan <ganb@vmware.com> 0.1.3-4
