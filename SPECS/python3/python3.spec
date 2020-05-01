@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -126,6 +126,7 @@ Summary:        Download, build, install, upgrade, and uninstall Python packages
 Group:          Development/Tools
 BuildArch:      noarch
 Requires:       python3 = %{version}-%{release}
+Requires:       python3-xml = %{version}-%{release}
 
 %description    setuptools
 setuptools is a collection of enhancements to the Python distutils that allow you to more easily build and distribute Python packages, especially ones that have dependencies on other packages.
@@ -290,6 +291,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Fri May 01 2020 Alexey Makhalov <amakhalov@vmware.com> 3.7.5-2
+-   -setuptools requires -xml.
 *   Sat Dec 07 2019 Tapas Kundu <tkundu@vmware.com> 3.7.5-1
 -   Updated to 3.7.5 release
 -   Linked /usr/bin/python to python3.
