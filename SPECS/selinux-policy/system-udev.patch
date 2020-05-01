@@ -1,0 +1,30 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/udev.fc selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/udev.fc
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/udev.fc	2020-04-09 16:24:32.000000000 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/udev.fc	2020-04-22 08:53:52.773572958 +0000
+@@ -48,6 +48,10 @@
+ /var/run/libgpod(/.*)?	        gen_context(system_u:object_r:udev_var_run_t,s0)    
+ /var/run/udev(/.*)?		gen_context(system_u:object_r:udev_var_run_t,s0)
+ 
++/run/PackageKit/udev(/.*)?	gen_context(system_u:object_r:udev_var_run_t,s0)
++/run/libgpod(/.*)?	        gen_context(system_u:object_r:udev_var_run_t,s0)
++/run/udev(/.*)?		gen_context(system_u:object_r:udev_var_run_t,s0)
++
+ ifdef(`distro_debian',`
+ /var/run/xen-hotplug -d	gen_context(system_u:object_r:udev_var_run_t,s0)
+ ')
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/udev.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/udev.te
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/udev.te	2020-04-09 16:24:32.000000000 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/udev.te	2020-04-24 06:51:01.820348809 +0000
+@@ -224,6 +224,12 @@
+ 	init_getattr_script_status_files(udev_t)
+ ')
+ 
++ifdef(`distro_photon',`
++	optional_policy(`
++		unconfined_domain(udev_t)
++	')
++')
++
+ ifdef(`distro_redhat',`
+ 	fs_manage_hugetlbfs_dirs(udev_t)
+ 

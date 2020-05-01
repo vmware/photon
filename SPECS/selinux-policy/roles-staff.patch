@@ -1,0 +1,108 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/roles/staff.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/roles/staff.te
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/roles/staff.te	2020-04-09 16:24:32.000000000 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/roles/staff.te	2020-04-23 01:41:46.993190575 +0000
+@@ -349,104 +349,6 @@
+ 	xserver_run(staff_t, staff_r)
+ ')
+ 
+-ifndef(`distro_redhat',`
+-	optional_policy(`
+-		auth_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		cdrecord_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		cron_role(staff_r, staff)
+-	')
+-
+-	optional_policy(`
+-		dbus_role_template(staff, staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		evolution_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		games_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		gift_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		gpg_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		java_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		lockdev_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		lpd_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		mozilla_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		mplayer_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		pyzor_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		razor_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		rssh_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		spamassassin_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		su_role_template(staff, staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		thunderbird_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		tvtime_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		uml_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		userhelper_role_template(staff, staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		vmware_role(staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		wireshark_role(staff_r, staff_t)
+-	')
+-')
+-
+ tunable_policy(`selinuxuser_execmod',`
+ 	userdom_execmod_user_home_files(staff_t)
+ ')

@@ -1,0 +1,40 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/logging.fc selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/logging.fc
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/logging.fc	2020-04-09 16:24:32.000000000 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/logging.fc	2020-04-24 06:11:53.125930004 +0000
+@@ -62,11 +62,17 @@
+ /var/log/audit(/.*)?		gen_context(system_u:object_r:auditd_log_t,mls_systemhigh)
+ /var/run/log(/.*)?		gen_context(system_u:object_r:syslogd_var_run_t,mls_systemhigh)
+ /var/run/systemd/journal(/.*)?	gen_context(system_u:object_r:syslogd_var_run_t,mls_systemhigh)
++/run/log(/.*)?		gen_context(system_u:object_r:syslogd_var_run_t,mls_systemhigh)
++/run/systemd/journal(/.*)?	gen_context(system_u:object_r:syslogd_var_run_t,mls_systemhigh)
+ 
+ ifndef(`distro_gentoo',`
+ /var/log/audit\.log.*	--	gen_context(system_u:object_r:auditd_log_t,mls_systemhigh)
+ ')
+ 
++ifdef(`distro_photon',`
++/var/opt/audit(/.*)?		gen_context(system_u:object_r:auditd_log_t,mls_systemhigh)
++')
++
+ ifdef(`distro_redhat',`
+ /var/named/chroot/var/log -d	gen_context(system_u:object_r:var_log_t,s0)
+ /var/named/chroot/dev/log -s	gen_context(system_u:object_r:devlog_t,s0)
+@@ -85,6 +91,18 @@
+ /var/run/syslog-ng(/.*)?	gen_context(system_u:object_r:syslogd_var_run_t,s0)
+ /var/run/systemd/journal/syslog	-s	gen_context(system_u:object_r:devlog_t,mls_systemhigh)
+ 
++/run/audit_events	-s	gen_context(system_u:object_r:auditd_var_run_t,mls_systemhigh)
++/run/audispd_events	-s	gen_context(system_u:object_r:audisp_var_run_t,mls_systemhigh)
++/run/auditd\.pid	--	gen_context(system_u:object_r:auditd_var_run_t,mls_systemhigh)
++/run/auditd_sock	-s	gen_context(system_u:object_r:auditd_var_run_t,mls_systemhigh)
++/run/klogd\.pid	--	gen_context(system_u:object_r:klogd_var_run_t,s0)
++/run/log		-s	gen_context(system_u:object_r:devlog_t,s0)
++/run/metalog\.pid	--	gen_context(system_u:object_r:syslogd_var_run_t,s0)
++/run/syslogd\.pid	--	gen_context(system_u:object_r:syslogd_var_run_t,mls_systemhigh)
++/run/syslog-ng.ctl	--	gen_context(system_u:object_r:syslogd_var_run_t,s0)
++/run/syslog-ng(/.*)?	gen_context(system_u:object_r:syslogd_var_run_t,s0)
++/run/systemd/journal/syslog	-s	gen_context(system_u:object_r:devlog_t,mls_systemhigh)
++
+ /var/spool/audit(/.*)?		gen_context(system_u:object_r:audit_spool_t,mls_systemhigh)
+ /var/spool/bacula/log(/.*)? 	gen_context(system_u:object_r:var_log_t,s0)
+ /var/spool/postfix/pid	-d	gen_context(system_u:object_r:var_run_t,s0)

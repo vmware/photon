@@ -1,0 +1,32 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/contrib/container.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/contrib/container.te
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/contrib/container.te	2020-04-24 07:44:52.725859776 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/contrib/container.te	2020-04-22 06:48:04.224328802 +0000
+@@ -840,7 +840,7 @@
+ 
+ 
+ kernel_unlabeled_domtrans(container_runtime_domain, spc_t)
+-kernel_unlabeled_entry_type(spc_t)
++#kernel_unlabeled_entry_type(spc_t)
+ allow container_runtime_domain unlabeled_t:key manage_key_perms;
+ #kernel_dontaudit_write_usermodehelper_state(container_t)
+ gen_require(`
+@@ -865,10 +865,6 @@
+ ')
+ 
+ optional_policy(`
+-	sssd_stream_connect(container_domain)
+-')
+-
+-optional_policy(`
+ 	systemd_dbus_chat_logind(container_domain)
+ ')
+ 
+@@ -1101,8 +1097,6 @@
+ 
+ dev_rw_kvm(container_kvm_t)
+ 
+-sssd_read_public_files(container_kvm_t)
+-
+ # Container init - Policy for running systemd based containers
+ container_domain_template(container_init)
+ typeattribute container_init_t container_net_domain;

@@ -1,0 +1,14 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/contrib/dbus.fc selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/contrib/dbus.fc
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/contrib/dbus.fc	2020-04-24 07:44:30.317407645 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/contrib/dbus.fc	2020-04-22 08:56:18.670720008 +0000
+@@ -30,6 +30,10 @@
+ 
+ /var/run/user/[0-9]+/dbus(/.*)? 	gen_context(system_u:object_r:session_dbusd_tmp_t,s0)
+ 
++/run/dbus(/.*)?		gen_context(system_u:object_r:system_dbusd_var_run_t,s0)
++
++/run/user/[0-9]+/dbus(/.*)? 	gen_context(system_u:object_r:session_dbusd_tmp_t,s0)
++
+ ifdef(`distro_redhat',`
+ /var/named/chroot/var/run/dbus(/.*)?	gen_context(system_u:object_r:system_dbusd_var_run_t,s0)
+ ')

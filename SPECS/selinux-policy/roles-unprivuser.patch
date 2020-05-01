@@ -1,0 +1,143 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/roles/unprivuser.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/roles/unprivuser.te
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/roles/unprivuser.te	2020-04-09 16:24:32.000000000 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/roles/unprivuser.te	2020-04-23 01:42:20.177385342 +0000
+@@ -151,139 +151,6 @@
+ 	vlock_run(user_t, user_r)
+ ')
+ 
+-ifndef(`distro_redhat',`
+-	optional_policy(`
+-		auth_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		bluetooth_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		cdrecord_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		cron_role(user_r, user)
+-	')
+-
+-	optional_policy(`
+-		dbus_role_template(user, user_r, user_t)
+-
+-		optional_policy(`
+-			gnome_role_template(user, user_r, user_t)
+-		')
+-	')
+-
+-	optional_policy(`
+-		evolution_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		games_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		gift_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-       		gnome_filetrans_fontconfig_home_content(user_t)
+-	')
+-
+-	optional_policy(`
+-		gpg_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		hadoop_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		irc_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		java_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		lockdev_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		lpd_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		mozilla_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		mplayer_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		postgresql_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		pyzor_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		razor_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		rssh_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		spamassassin_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		ssh_role_template(user, user_r, user_t)
+-	')
+-	optional_policy(`
+-		su_role_template(user, user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		sudo_role_template(user, user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		thunderbird_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		tvtime_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		uml_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		userhelper_role_template(user, user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		vmware_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		wireshark_role(user_r, user_t)
+-	')
+-
+-	optional_policy(`
+-		xserver_run(user_t, user_r)
+-	')
+-')
+-
+ optional_policy(`
+     vmtools_run_helper(user_t, user_r)
+ ')

@@ -1,0 +1,18 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/authlogin.fc selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/authlogin.fc
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/authlogin.fc	2020-04-09 16:24:32.000000000 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/authlogin.fc	2020-04-23 23:57:28.939841529 +0000
+@@ -83,3 +83,14 @@
+ /var/run/sudo(/.*)?		gen_context(system_u:object_r:pam_var_run_t,s0)
+ /var/(db|adm)/sudo(/.*)?	gen_context(system_u:object_r:pam_var_run_t,s0)
+ /var/lib/sudo(/.*)?	gen_context(system_u:object_r:pam_var_run_t,s0)
++
++/run/console(/.*)?	 	gen_context(system_u:object_r:pam_var_console_t,s0)
++/run/faillock(/.*)?		gen_context(system_u:object_r:faillog_t,s0)
++/run/motd		--	gen_context(system_u:object_r:pam_var_run_t,s0)
++/run/motdgen		-d	gen_context(system_u:object_r:pam_var_run_t,s0)
++/run/motd\.d(/.*)?		gen_context(system_u:object_r:pam_var_run_t,s0)
++/run/pam_mount(/.*)?	gen_context(system_u:object_r:pam_var_run_t,s0)
++/run/pam_ssh(/.*)?		gen_context(system_u:object_r:pam_var_run_t,s0)
++/run/pam_timestamp(/.*)?	gen_context(system_u:object_r:pam_var_run_t,s0)
++/run/sepermit(/.*)? 	gen_context(system_u:object_r:pam_var_run_t,s0)
++/run/sudo(/.*)?		gen_context(system_u:object_r:pam_var_run_t,s0)

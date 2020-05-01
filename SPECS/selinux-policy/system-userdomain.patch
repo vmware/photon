@@ -1,0 +1,23 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/userdomain.fc selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/userdomain.fc
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/userdomain.fc	2020-04-09 16:24:32.000000000 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/userdomain.fc	2020-04-22 10:03:19.735704649 +0000
+@@ -31,6 +31,7 @@
+ 
+ 
+ /var/run/user(/.*)?	gen_context(system_u:object_r:user_tmp_t,s0)
++/run/user(/.*)?	gen_context(system_u:object_r:user_tmp_t,s0)
+ 
+ /tmp/hsperfdata_root        gen_context(system_u:object_r:user_tmp_t,s0)
+ /var/tmp/hsperfdata_root    gen_context(system_u:object_r:user_tmp_t,s0)
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/userdomain.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/userdomain.te
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/userdomain.te	2020-04-09 16:24:32.000000000 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/userdomain.te	2020-04-23 22:44:17.988220884 +0000
+@@ -98,7 +98,7 @@
+ ubac_constrained(user_devpts_t)
+ 
+ type user_tmp_t, user_tmp_type, user_tmpfs_type;
+-typealias user_tmp_t alias { screen_tmp_t winbind_tmp_t wine_tmp_t sshd_tmp_t staff_tmp_t sysadm_tmp_t secadm_tmp_t auditadm_tmp_t unconfined_tmp_t };
++typealias user_tmp_t alias { wine_tmp_t sshd_tmp_t staff_tmp_t sysadm_tmp_t secadm_tmp_t auditadm_tmp_t unconfined_tmp_t };
+ typealias user_tmp_t alias { staff_untrusted_content_tmp_t sysadm_untrusted_content_tmp_t secadm_untrusted_content_tmp_t auditadm_untrusted_content_tmp_t unconfined_untrusted_content_tmp_t };
+ typealias user_tmp_t alias { user_tmpfs_t staff_tmpfs_t sysadm_tmpfs_t secadm_tmpfs_t auditadm_tmpfs_t unconfined_tmpfs_t };
+ typealias user_tmp_t alias xdm_tmp_t;

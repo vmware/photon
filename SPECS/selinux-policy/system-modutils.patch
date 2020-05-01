@@ -1,0 +1,18 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/modutils.fc selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/modutils.fc
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/modutils.fc	2020-04-09 16:24:32.000000000 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/modutils.fc	2020-04-22 21:35:42.843651636 +0000
+@@ -3,6 +3,7 @@
+ /etc/modules\.conf.*	--	gen_context(system_u:object_r:modules_conf_t,s0)
+ /etc/modprobe\.conf.*	--	gen_context(system_u:object_r:modules_conf_t,s0)
+ /etc/modprobe\.d(/.*)?		gen_context(system_u:object_r:modules_conf_t,s0)
++/etc/modules-load\.d(/.*)?	gen_context(system_u:object_r:modules_conf_t,s0)
+ 
+ ifdef(`distro_gentoo',`
+ # gentoo init scripts still manage this file
+@@ -33,5 +34,6 @@
+ /usr/lib/modules/[^/]+/modules\..+ --	gen_context(system_u:object_r:modules_dep_t,s0)
+ 
+ /usr/lib/modules/modprobe\.conf -- 	gen_context(system_u:object_r:modules_conf_t,s0)
++/usr/lib/modules-load\.d(/.*)?	gen_context(system_u:object_r:modules_conf_t,s0)
+ 
+ /var/run/tmpfiles.d/kmod.conf --	gen_context(system_u:object_r:kmod_var_run_t,s0)

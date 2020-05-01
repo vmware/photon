@@ -1,0 +1,12 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/contrib/virt.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/contrib/virt.te
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/contrib/virt.te	2020-04-24 07:44:30.745416186 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/contrib/virt.te	2020-04-23 22:59:49.529898366 +0000
+@@ -182,7 +182,7 @@
+ 
+ virt_domain_template(svirt)
+ role system_r types svirt_t;
+-typealias svirt_t alias qemu_t;
++#typealias svirt_t alias qemu_t;
+ 
+ virt_domain_template(svirt_tcg)
+ role system_r types svirt_tcg_t;

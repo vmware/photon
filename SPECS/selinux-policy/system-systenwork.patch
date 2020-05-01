@@ -1,0 +1,44 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/sysnetwork.if selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/sysnetwork.if
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/sysnetwork.if	2020-04-09 16:24:32.000000000 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/sysnetwork.if	2020-04-23 20:40:22.933608083 +0000
+@@ -450,6 +450,13 @@
+ 		read_files_pattern($1, net_conf_t, net_conf_t)
+ 	')
+ 
++	ifdef(`distro_photon',`
++        files_search_all_pids($1)
++        init_search_pid_dirs($1)
++		allow $1 net_conf_t:dir list_dir_perms;
++		allow $1 net_conf_t:lnk_file read_lnk_file_perms;
++		read_files_pattern($1, net_conf_t, net_conf_t)
++	')
+ 	ifdef(`distro_redhat',`
+         files_search_all_pids($1)
+         init_search_pid_dirs($1)
+@@ -597,6 +604,13 @@
+ 		manage_files_pattern($1, net_conf_t, net_conf_t)
+ 	')
+ 
++	ifdef(`distro_photon',`
++        files_search_all_pids($1)
++        init_search_pid_dirs($1)
++		allow $1 net_conf_t:dir list_dir_perms;
++		manage_files_pattern($1, net_conf_t, net_conf_t)
++		manage_lnk_files_pattern($1, net_conf_t, net_conf_t)
++	')
+ 	ifdef(`distro_redhat',`
+         files_search_all_pids($1)
+         init_search_pid_dirs($1)
+@@ -628,6 +642,12 @@
+ 		manage_dirs_pattern($1, net_conf_t, net_conf_t)
+ 	')
+ 
++	ifdef(`distro_photon',`
++        files_search_all_pids($1)
++        init_search_pid_dirs($1)
++		allow $1 net_conf_t:dir list_dir_perms;
++		manage_dirs_pattern($1, net_conf_t, net_conf_t)
++	')
+ 	ifdef(`distro_redhat',`
+         files_search_all_pids($1)
+         init_search_pid_dirs($1)

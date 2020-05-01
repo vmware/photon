@@ -1,0 +1,50 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/contrib/cron.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/contrib/cron.te
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/contrib/cron.te	2020-04-24 07:44:30.301407326 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/contrib/cron.te	2020-04-22 06:10:08.883337862 +0000
+@@ -85,11 +85,9 @@
+ type crond_tmp_t;
+ files_tmp_file(crond_tmp_t)
+ files_poly_parent(crond_tmp_t)
+-mta_system_content(crond_tmp_t)
+ 
+ type crond_var_run_t;
+ files_pid_file(crond_var_run_t)
+-mta_system_content(crond_var_run_t)
+ 
+ type crontab_exec_t;
+ application_executable_file(crontab_exec_t)
+@@ -135,7 +133,6 @@
+ typealias user_cron_spool_t alias { auditadm_cron_spool_t secadm_cron_spool_t };
+ files_spool_file(user_cron_spool_t)
+ ubac_constrained(user_cron_spool_t)
+-mta_system_content(user_cron_spool_t)
+ 
+ type system_cronjob_var_lib_t;
+ files_type(system_cronjob_var_lib_t)
+@@ -286,12 +283,6 @@
+ userdom_list_admin_dir(crond_t)
+ userdom_manage_all_users_keys(crond_t)
+ 
+-optional_policy(`
+-	mta_send_mail(crond_t)
+-	mta_filetrans_admin_home_content(crond_t)
+-	mta_system_content(cron_spool_t)
+-')
+-
+ ifdef(`distro_debian',`
+ 	# pam_limits is used
+ 	allow crond_t self:process setrlimit;
+@@ -634,13 +625,6 @@
+ ')
+ 
+ optional_policy(`
+-	mta_read_config(system_cronjob_t)
+-	mta_send_mail(system_cronjob_t)
+-	mta_filetrans_admin_home_content(system_cronjob_t)
+-	mta_system_content(system_cron_spool_t)
+-')
+-
+-optional_policy(`
+ 	mysql_read_config(system_cronjob_t)
+ ')
+ 

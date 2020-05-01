@@ -1,0 +1,82 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/init.fc selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/init.fc
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/init.fc	2020-04-09 16:24:32.000000000 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/init.fc	2020-04-22 08:46:51.931248145 +0000
+@@ -81,6 +81,15 @@
+ /var/run/systemd/machine-id	--	gen_context(system_u:object_r:machineid_t,s0)
+ /var/run/systemd/journal/dev-log    -s  gen_context(system_u:object_r:devlog_t,s0)
+ 
++/run/initctl	-p	gen_context(system_u:object_r:initctl_t,s0)
++/run/systemd/initctl/fifo	-p	gen_context(system_u:object_r:initctl_t,s0)
++/run/utmp		--	gen_context(system_u:object_r:initrc_var_run_t,s0)
++/run/runlevel\.dir		gen_context(system_u:object_r:initrc_var_run_t,s0)
++/run/random-seed	--	gen_context(system_u:object_r:initrc_var_run_t,s0)
++/run/setmixer_flag	--	gen_context(system_u:object_r:initrc_var_run_t,s0)
++/run/systemd/machine-id	--	gen_context(system_u:object_r:machineid_t,s0)
++/run/systemd/journal/dev-log    -s  gen_context(system_u:object_r:devlog_t,s0)
++
+ ifdef(`distro_debian',`
+ /var/run/hotkey-setup	--	gen_context(system_u:object_r:initrc_var_run_t,s0)
+ /var/run/kdm/.*		--	gen_context(system_u:object_r:initrc_var_run_t,s0)
+@@ -99,3 +108,4 @@
+ /var/run/sysconfig(/.*)?	gen_context(system_u:object_r:initrc_var_run_t,s0)
+ ')
+ /var/run/systemd(/.*)?		gen_context(system_u:object_r:init_var_run_t,s0)
++/run/systemd(/.*)?		gen_context(system_u:object_r:init_var_run_t,s0)
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/init.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/init.te
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/init.te	2020-04-09 16:24:32.000000000 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/init.te	2020-04-23 20:54:35.181095004 +0000
+@@ -408,6 +408,21 @@
+ 	init_exec_rc(initrc_t)
+ ')
+ 
++ifdef(`distro_photon',`
++	fs_manage_tmpfs_files(init_t)
++	fs_manage_tmpfs_symlinks(init_t)
++	fs_manage_tmpfs_sockets(init_t)
++	fs_manage_tmpfs_chr_files(init_t)
++	fs_exec_tmpfs_files(init_t)
++	fs_read_tmpfs_symlinks(init_t)
++	fs_tmpfs_filetrans(init_t, initctl_t, fifo_file)
++	fs_tmpfs_filetrans_named_content(init_t)
++    fs_relabelfrom_tmpfs_lnk_files(init_t)
++
++	logging_stream_connect_syslog(init_t)
++	logging_relabel_syslog_pid_socket(init_t)
++')
++
+ ifdef(`distro_redhat',`
+ 	fs_manage_tmpfs_files(init_t)
+ 	fs_manage_tmpfs_symlinks(init_t)
+@@ -703,6 +718,32 @@
+ auth_domtrans_chk_passwd(init_t)
+ auth_manage_passwd(init_t)
+ 
++ifdef(`distro_photon',`
++    # it comes from setupr scripts used in systemd unit files
++    # has been covered by initrc_t
++	optional_policy(`
++		bind_manage_config_dirs(init_t)
++		bind_manage_config(init_t)
++		bind_write_config(init_t)
++		bind_setattr_zone_dirs(init_t)
++	')
++
++    optional_policy(`
++	    ipsec_read_config(init_t)
++        ipsec_manage_pid(init_t)
++        ipsec_stream_connect(init_t)
++    ')
++
++    optional_policy(`
++        rpc_manage_nfs_state_data(init_t)
++    ')
++
++    optional_policy(`
++        sysnet_relabelfrom_dhcpc_state(init_t)
++        sysnet_setattr_dhcp_state(init_t)
++    ')
++')
++
+ ifdef(`distro_redhat',`
+     # it comes from setupr scripts used in systemd unit files
+     # has been covered by initrc_t

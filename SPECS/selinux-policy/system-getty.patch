@@ -1,0 +1,13 @@
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/getty.te	2020-04-09 16:24:32.000000000 +0000
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/getty.te	2020-05-01 23:51:09.950324093 +0000
+@@ -130,6 +130,10 @@
+ 	')
+ ')
+ 
++ifdef(`distro_photon',`
++	allow getty_t self:capability sys_admin;
++')
++
+ tunable_policy(`login_console_enabled',`
+ 	# Support logging in from /dev/console
+ 	term_use_console(getty_t)
