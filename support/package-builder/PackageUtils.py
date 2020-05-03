@@ -150,7 +150,6 @@ class PackageUtils(object):
         if not arch:
             arch=constants.currentArch
 
-        cmdUtils = CommandUtils()
         if version == "*":
                 version = SPECS.getData(arch).getHighestVersion(package)
         release = SPECS.getData(arch).getRelease(package, version)
@@ -168,6 +167,31 @@ class PackageUtils(object):
 
         if throw:
             raise Exception("RPM %s not found" % (filename))
+        return None
+
+    def findSourceRPMFile(self, package,version="*"):
+        if version == "*":
+                version = SPECS.getData().getHighestVersion(package)
+        release = SPECS.getData().getRelease(package, version)
+        filename= package + "-" + version + "-" + release + "src.rpm"
+
+        fullpath = constants.sourceRpmPath + "/" + filename
+        if os.path.isfile(fullpath):
+            return fullpath
+        return None
+
+    def findDebugRPMFile(self, package,version="*",arch=None):
+        if not arch:
+            arch=constants.currentArch
+
+        if version == "*":
+                version = SPECS.getData(arch).getHighestVersion(package)
+        release = SPECS.getData(arch).getRelease(package, version)
+        filename= package + "-debuginfo-" + version + "-" + release + "." + arch +".rpm"
+
+        fullpath = constants.rpmPath + "/" + arch + "/" + filename
+        if os.path.isfile(fullpath):
+            return fullpath
         return None
 
     def findInstalledRPMPackages(self, sandbox, arch):

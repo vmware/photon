@@ -21,22 +21,12 @@ class PackageInfo(object):
     def loadPackagesData(self):
         listPackages = SPECS.getData().getListPackages()
         listPackages.sort()
-        cmdUtils = CommandUtils()
+        pkgUtils = PackageUtils(self.logName, self.logPath)
         for package in listPackages:
             for version in SPECS.getData().getVersions(package):
-                release = SPECS.getData().getRelease(package, version)
+                srpmFile = pkgUtils.findSourceRPMFile(package, version)
+                debugrpmFile = pkgUtils.findDebugRPMFile(package, version)
                 listRPMPackages = SPECS.getData().getRPMPackages(package, version)
-                srpmFileName = package + "-" + version + "-" + release + ".src.rpm"
-                srpmFiles = cmdUtils.findFile(srpmFileName, constants.sourceRpmPath)
-                srpmFile = None
-                if len(srpmFiles) == 1:
-                    srpmFile = srpmFiles[0]
-                debugrpmFileName = package + "-debuginfo-" + version + "-" + release + "*"
-                debugrpmFiles = cmdUtils.findFile(debugrpmFileName, constants.rpmPath)
-                debugrpmFile = None
-                if len(debugrpmFiles) == 1:
-                    debugrpmFile = debugrpmFiles[0]
-                pkgUtils = PackageUtils(self.logName, self.logPath)
                 for rpmPkg in listRPMPackages:
                     rpmFile = pkgUtils.findRPMFile(rpmPkg, version)
                     if rpmFile is not None:
