@@ -143,7 +143,6 @@ class PackageUtils(object):
         self.logger.debug("RPM build is successful")
 
     def findRPMFile(self, package,version="*"):
-        cmdUtils = CommandUtils()
         if version == "*":
                 version = SPECS.getData().getHighestVersion(package)
         release = SPECS.getData().getRelease(package, version)
@@ -159,6 +158,29 @@ class PackageUtils(object):
         if os.path.isfile(fullpath):
             return fullpath
 
+        return None
+
+    def findSourceRPMFile(self, package,version="*"):
+        if version == "*":
+                version = SPECS.getData().getHighestVersion(package)
+        release = SPECS.getData().getRelease(package, version)
+        filename= package + "-" + version + "-" + release + "src.rpm"
+
+        fullpath = constants.sourceRpmPath + "/" + filename
+        if os.path.isfile(fullpath):
+            return fullpath
+        return None
+
+    def findDebugRPMFile(self, package,version="*"):
+        if version == "*":
+                version = SPECS.getData().getHighestVersion(package)
+        release = SPECS.getData().getRelease(package, version)
+        arch=platform.machine()
+        filename= package + "-debuginfo-" + version + "-" + release + "." + arch +".rpm"
+
+        fullpath = constants.rpmPath + "/" + arch + "/" + filename
+        if os.path.isfile(fullpath):
+            return fullpath
         return None
 
     def findInstalledRPMPackages(self, sandbox):
