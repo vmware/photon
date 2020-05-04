@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.32.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -43,7 +43,7 @@ These are library files of util-linux.
 %setup -q
 sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
 %build
-./configure \
+%configure \
     --disable-nologin \
     --disable-silent-rules \
     --disable-static \
@@ -68,10 +68,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %files
 %defattr(-,root,root)
 %dir %{_sharedstatedir}/hwclock
-/bin/*
-/lib/libfdisk.so.*
-/lib/libsmartcols.so.*
-/sbin/*
+%{_libdir}/libfdisk.so.*
+%{_libdir}/libsmartcols.so.*
 %{_bindir}/*
 %{_sbindir}/*
 %{_mandir}/man1/*
@@ -82,9 +80,9 @@ rm -rf %{buildroot}/lib/systemd/system
 
 %files libs
 %defattr(-,root,root)
-/lib/libblkid.so.*
-/lib/libmount.so.*
-/lib/libuuid.so.*
+%{_libdir}/libblkid.so.*
+%{_libdir}/libmount.so.*
+%{_libdir}/libuuid.so.*
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
@@ -97,6 +95,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+*   Mon May 04 2020 Sujay G <gsujay@vmware.com> 2.32.1-2
+-   Replaced ./configure with %configure to fix builder issue
 *   Tue Apr 14 2020 Ashwin H <ashwinh@vmware.com> 2.32.1-1
 -   Update to version 2.32.1, fix CVE-2017-2616
 *   Mon Apr 09 2018 Xiaolin Li <xiaolinl@vmware.com> 2.32-1
