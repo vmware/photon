@@ -1,7 +1,7 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
 Version:        2.79
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            http://www.thekelleys.org.uk/dnsmasq/
@@ -80,7 +80,9 @@ rm -rf %{buildroot}
 %exclude %{_libdir}/debug
 %{_sbindir}/*
 %{_mandir}/*
-%{_sysconfdir}/*
+%{_sysconfdir}/dnsmasq.d
+%config(noreplace) %{_sysconfdir}/dnsmasq.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/dnsmasq.conf
 %dir %{_sharedstatedir}
 %config  /usr/share/dnsmasq/trust-anchors.conf
 
@@ -90,6 +92,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+*   Mon May 04 2020 Dweep Advani <dadvani@vmware.com> 2.79-4
+-   Preserve configuration files during package upgrades
 *   Mon Jan 13 2020 <ashwinh@vmware.com> 2.79-3
 -   Fix CVE-2019-14834
 *   Tue Mar 26 2019 <ashwinh@vmware.com> 2.79-2
