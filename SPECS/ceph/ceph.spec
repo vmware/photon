@@ -14,7 +14,7 @@
 #################################################################################
 Name:       ceph
 Version:    12.2.13
-Release:    1%{?dist}
+Release:    2%{?dist}
 Epoch:      1
 Summary:    User space components of the Ceph file system
 License:    LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
@@ -22,6 +22,7 @@ Group:      System/Filesystems
 URL:        http://ceph.com/
 Source0:    http://ceph.com/download/%{name}-%{version}.tar.gz
 %define sha1 ceph=2c4e6b5eab9880c6119f06445be84fcc06669e7c
+Patch0:     CVE-2020-12059.patch
 Vendor:     VMware, Inc.
 Distribution:   Photon
 #################################################################################
@@ -458,6 +459,7 @@ python-rbd, python-rgw or python-cephfs instead.
 #################################################################################
 %prep
 %setup -n ceph-%{version}
+%patch0 -p1
 
 %build
 %if %{with lowmem_builder}
@@ -1022,6 +1024,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+*   Mon May 04 2020 Sujay G <gsujay@vmware.com> 12.2.13-2
+-   fix CVE-2020-12059
 *   Tue Apr 14 2020 Sujay G <gsujay@vmware.com> 12.2.13-1
 -   Bump version to 12.2.13, to fix CVE-2018-14662, CVE-2018-16846
 *   Thu May 02 2019 Sujay G <gsujay@vmware.com> 12.2.9-1
