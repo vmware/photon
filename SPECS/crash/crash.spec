@@ -1,5 +1,5 @@
 Name:          crash
-Version:       7.2.3
+Version:       7.2.8
 Release:       1%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
@@ -7,13 +7,14 @@ Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://people.redhat.com/anderson/
 Source0:       http://people.redhat.com/anderson/crash-%{version}.tar.gz
-%define sha1 crash=1a9fa8cd6869da42314ec47df6a750e053f4bece
-%define CRASH_GCORE_VERSION	1.4.0
-Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-1.4.0.tar.gz
-%define sha1 crash-gcore=1434f787d7210516b12c2f28e5b9e5917c5b3eca
+%define sha1 crash=334bce71a69ccf8abefaf8c4bc5eec67c9b43c9e
+%define GCORE_VERSION	1.5.1
+Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-%{GCORE_VERSION}.tar.gz
+%define sha1 crash-gcore=9c542d8503824e5f16d00c47bfdb38a7481ed752
+Source2:       https://ftp.gnu.org/gnu/gdb/gdb-7.6.tar.gz
+%define sha1 gdb=026f4c9e1c8152a2773354551c523acd32d7f00e
 Source3:       gcore_defs.patch
 License:       GPL
-#Patch0:        gcore-support-linux-4.4.patch
 BuildRequires: binutils
 BuildRequires: glibc-devel
 BuildRequires: ncurses-devel
@@ -37,12 +38,12 @@ This package contains libraries and header files need for development.
 %prep
 %setup -q -n %{name}-%{version}
 %setup -a 1
-#cd crash-gcore-command-%{CRASH_GCORE_VERSION}
-#%patch0 -p1
 
 %build
-make RPMPKG=%{version}-%{release}
-cd crash-gcore-command-%{CRASH_GCORE_VERSION}
+sed -i "s/tar --exclude-from/tar --no-same-owner --exclude-from/" Makefile
+cp %{SOURCE2} .
+make GDB=gdb-7.6 RPMPKG=%{version}-%{release}
+cd crash-gcore-command-%{GCORE_VERSION}
 %ifarch x86_64
 make -f gcore.mk ARCH=SUPPORTED TARGET=X86_64
 %endif
@@ -61,7 +62,7 @@ mkdir -p %{buildroot}%{_includedir}/crash
 chmod 0644 defs.h
 cp -p defs.h %{buildroot}%{_includedir}/crash
 mkdir -p %{buildroot}%{_libdir}/crash
-install -pm 755 crash-gcore-command-%{CRASH_GCORE_VERSION}/gcore.so %{buildroot}%{_libdir}/crash/
+install -pm 755 crash-gcore-command-%{GCORE_VERSION}/gcore.so %{buildroot}%{_libdir}/crash/
 
 %clean
 [ "%{buildroot}" != / ] && rm -rf "%{buildroot}"
@@ -79,6 +80,8 @@ install -pm 755 crash-gcore-command-%{CRASH_GCORE_VERSION}/gcore.so %{buildroot}
 %{_includedir}/crash/*.h
 
 %changelog
+*   Mon May 04 2020 Alexey Makhalov <amakhalov@vmware.com> 7.2.8-1
+-   Version update
 *   Fri Sep 07 2018 Ajay Kaher <akaher@vmware.com> 7.2.3-1
 -   Upgrading to version 7.2.3
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 7.1.8-2
