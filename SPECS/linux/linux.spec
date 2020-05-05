@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.115
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -41,6 +41,13 @@ Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
 #HyperV patches
 Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+
+%ifarch x86_64
+# vmwgfx patches for sev-es
+Patch14:        0001-drm-vmwgfx-Don-t-use-the-HB-port-if-memory-encryptio.patch
+Patch15:        0002-drm-vmwgfx-Fix-the-refuse_dma-mode-when-using-guest-.patch
+Patch16:        0003-drm-vmwgfx-Refuse-DMA-operation-when-SEV-encryption-.patch
+%endif
 
 # Fix CVE-2019-19072
 Patch17:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
@@ -254,6 +261,13 @@ This Linux package contains hmac sha generator kernel module.
 %patch9 -p1
 %patch11 -p1
 %patch13 -p1
+
+%ifarch x86_64
+%patch14 -p1
+%patch15 -p1
+%patch16 -p1
+%endif
+
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
@@ -594,6 +608,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed May 06 2020 Ajay Kaher <akaher@vmware.com> 4.19.115-4
+-   Adding vmwgfx patches to support sev-es
 *   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.115-3
 -   Photon-cheksum-generator version update to 1.1.
 *   Wed Apr 29 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-2
