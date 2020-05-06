@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.221
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -92,6 +92,8 @@ Patch61:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 Patch62: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 #Fix for CVE-2019-3900
 Patch63: 0001-vhost-vsock-add-weight-support.patch
+# Fix for CVE-2020-10711
+Patch64:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -227,6 +229,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
+%patch64 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -404,6 +407,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.9.221-2
+-   Add patch to fix CVE-2020-10711
 *   Tue May 05 2020 ashwin-h <ashwinh@vmware.com> 4.9.221-1
 -   Update to version 4.9.221
 *   Thu Apr 30 2020 ashwin-h <ashwinh@vmware.com> 4.9.220-1

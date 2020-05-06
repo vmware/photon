@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.221
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -74,6 +74,8 @@ Patch54:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 Patch55: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 #Fix for CVE-2019-3900
 Patch56: 0001-vhost-vsock-add-weight-support.patch
+# Fix for CVE-2020-10711
+Patch57: CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -157,6 +159,7 @@ The Linux package contains the Linux kernel doc files
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
+%patch57 -p1
 
 %build
 
@@ -252,6 +255,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 12 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.9.221-3
+-   Add patch to fix CVE-2020-10711
 *   Fri May 08 2020 Vikash Bansal <bvikas@vmware.com> 4.9.221-2
 -   PCI Probe Refactored - Backported from dev
 *   Tue May 05 2020 ashwin-h <ashwinh@vmware.com> 4.9.221-1
