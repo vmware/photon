@@ -20,8 +20,8 @@ Signed-off-by: Vikash Bansal <bvikas@vmware.com>
 ---
  drivers/pci/pci.c   |   2 +
  drivers/pci/pci.h   |   2 +
- drivers/pci/probe.c | 380 +++++++++++++++++++++++++++++++++++++++++++-
- 3 files changed, 380 insertions(+), 4 deletions(-)
+ drivers/pci/probe.c | 390 +++++++++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 390 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
 index 57a87a001..64bfcb373 100644
@@ -50,10 +50,10 @@ index e9ede82ee..fc54123ce 100644
  {
  	u16 control;
 diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index fa4c386c8..b4cbe1c91 100644
+index fa4c386c8..8d475fdb8 100644
 --- a/drivers/pci/probe.c
 +++ b/drivers/pci/probe.c
-@@ -30,6 +30,138 @@ static struct resource busn_resource = {
+@@ -30,6 +30,148 @@ static struct resource busn_resource = {
  	.flags	= IORESOURCE_BUS,
  };
  
@@ -99,6 +99,11 @@ index fa4c386c8..b4cbe1c91 100644
 +
 +/*List of Intel Devices*/
 +pci_dev_bar_info intel_devs[]  = {
++	{0x8086, 0x7110,   /*ISA bridge: 82371AB/EB/MB PIIX4 ISA*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0,        /*Bars*/
++	0, 0, 0, 0, 0} }, /*Rom + Extra*/
++
 +	{0x8086, 0x7111,   /*IDE interface: 82371AB/EB/MB PIIX4 IDE*/
 +	5,         /*Number of bars*/
 +	{0, 0, 0, 0, 0xfffffff1, 0,        /*Bars*/
@@ -181,6 +186,11 @@ index fa4c386c8..b4cbe1c91 100644
 +	{0, 0, 0, 0, 0x0000ffe1, 0,
 +	0, 0, 0, 0, 0} },
 +
++	{0x15ad, 0x0779,   /*VMware USB3 xHCI 1.0 Controller*/
++	1,         /*Number of bars*/
++	{0xfffe0004, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0} },
++
 +	{0, 0,   /*END of array marker*/
 +	0,         /*Number of bars*/
 +	{0, 0, 0, 0, 0, 0, 0, 0, 0} }
@@ -192,7 +202,7 @@ index fa4c386c8..b4cbe1c91 100644
  /* Ugh.  Need to stop exporting this to modules. */
  LIST_HEAD(pci_root_buses);
  EXPORT_SYMBOL(pci_root_buses);
-@@ -168,6 +300,213 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+@@ -168,6 +310,213 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
  
  #define PCI_COMMAND_DECODE_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_IO)
  
@@ -406,7 +416,7 @@ index fa4c386c8..b4cbe1c91 100644
  /**
   * pci_read_base - Read a PCI BAR
   * @dev: the PCI device
-@@ -180,13 +519,20 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+@@ -180,13 +529,20 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
  int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		    struct resource *res, unsigned int pos)
  {
@@ -428,7 +438,7 @@ index fa4c386c8..b4cbe1c91 100644
  	/* No printks while decoding is disabled! */
  	if (!dev->mmio_always_on) {
  		pci_read_config_word(dev, PCI_COMMAND, &orig_cmd);
-@@ -196,7 +542,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -196,7 +552,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		}
  	}
  
@@ -436,7 +446,7 @@ index fa4c386c8..b4cbe1c91 100644
  
  	pci_read_config_dword(dev, pos, &l);
  	pci_write_config_dword(dev, pos, l | mask);
-@@ -212,6 +557,11 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -212,6 +567,11 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  	if (sz == 0xffffffff)
  		sz = 0;
  
@@ -448,7 +458,7 @@ index fa4c386c8..b4cbe1c91 100644
  	/*
  	 * I don't know how l can have all bits set.  Copied from old code.
  	 * Maybe it fixes a bug on some ancient platform.
-@@ -316,8 +666,22 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -316,8 +676,22 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  fail:
  	res->flags = 0;
  out:
@@ -472,7 +482,7 @@ index fa4c386c8..b4cbe1c91 100644
  
  	return (res->flags & IORESOURCE_MEM_64) ? 1 : 0;
  }
-@@ -1651,7 +2015,15 @@ int pci_setup_device(struct pci_dev *dev)
+@@ -1651,7 +2025,15 @@ int pci_setup_device(struct pci_dev *dev)
  		if (class == PCI_CLASS_BRIDGE_PCI)
  			goto bad;
  		pci_read_irq(dev);

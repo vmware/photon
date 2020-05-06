@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.112
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -301,6 +301,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu May 06 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-8
+-   Hardcoded the value of BARs in PCI_Probe for 2 more pci devices
 *   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.112-7
 -   Photon-checksum-generator version update to 1.1.
 *   Fri Apr 24 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-6
