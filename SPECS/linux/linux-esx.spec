@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.115
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -74,6 +74,8 @@ Patch43:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 Patch44:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19074
 Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
+# Fix for CVE-2020-10711
+Patch46:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
 
 Patch55:        0001-p9fs_dir_readdir-offset-support.patch
 Patch56:	0002-Add-9p-zero-copy-data-path-using-crossfd.patch
@@ -175,6 +177,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
+%patch46 -p1
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
@@ -312,6 +315,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue May 12 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.115-5
+-   Add patch to fix CVE-2020-10711
 *   Fri May 08 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-4
 -   Backported Refactored PCI probe patch with from dev branch
 *   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.115-3
