@@ -1,7 +1,10 @@
-From 22e2113343978e9246e450a53f163be819af83a2 Mon Sep 17 00:00:00 2001
+From fe0a55f724947832043b3e9dce548b136de75da7 Mon Sep 17 00:00:00 2001
+Message-Id: <fe0a55f724947832043b3e9dce548b136de75da7.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 1 Dec 2017 10:42:03 +0100
-Subject: [PATCH 047/319] arm*: disable NEON in kernel mode
+Subject: [PATCH 047/327] arm*: disable NEON in kernel mode
 
 NEON in kernel mode is used by the crypto algorithms and raid6 code.
 While the raid6 code looks okay, the crypto algorithms do not: NEON
@@ -13,7 +16,6 @@ stay on due to possible EFI callbacks so here I disable each algorithm.
 
 Cc: stable-rt@vger.kernel.org
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  arch/arm/Kconfig                  |  2 +-
  arch/arm64/crypto/Kconfig         | 28 ++++++++++++++--------------
@@ -21,7 +23,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  3 files changed, 17 insertions(+), 16 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 84f36e47e3ab..c1cc28f0841f 100644
+index 91ba9fe945ff..bd9d180db5c7 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -2163,7 +2163,7 @@ config NEON
@@ -162,5 +164,5 @@ index 34b4e3d46aab..ae055cdad8cf 100644
  		crc32_pmull_algs[1].update = crc32c_pmull_update;
  
 -- 
-2.24.1
+2.17.1
 

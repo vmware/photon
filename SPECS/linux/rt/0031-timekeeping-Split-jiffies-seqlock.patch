@@ -1,13 +1,15 @@
-From f01096cb1d4d299f6f8fbb23b411dd1266d021d7 Mon Sep 17 00:00:00 2001
+From 22522352d905d453f9bdc5271ca567d5fafdad16 Mon Sep 17 00:00:00 2001
+Message-Id: <22522352d905d453f9bdc5271ca567d5fafdad16.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 14 Feb 2013 22:36:59 +0100
-Subject: [PATCH 031/319] timekeeping: Split jiffies seqlock
+Subject: [PATCH 031/327] timekeeping: Split jiffies seqlock
 
 Replace jiffies_lock seqlock with a simple seqcounter and a rawlock so
 it can be taken in atomic context on RT.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  kernel/time/jiffies.c     |  7 ++++---
  kernel/time/tick-common.c | 10 ++++++----
@@ -167,5 +169,5 @@ index 141ab3ab0354..099737f6f10c 100644
  #define CS_NAME_LEN	32
  
 -- 
-2.24.1
+2.17.1
 

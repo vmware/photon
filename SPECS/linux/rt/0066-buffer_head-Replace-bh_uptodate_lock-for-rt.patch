@@ -1,13 +1,15 @@
-From f25b9d24a5d02e4eaa0ff113088f42dbe0fcc8a1 Mon Sep 17 00:00:00 2001
+From 9c2e7dffa272d9112c453d37bf48c92bb1b4d287 Mon Sep 17 00:00:00 2001
+Message-Id: <9c2e7dffa272d9112c453d37bf48c92bb1b4d287.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 18 Mar 2011 09:18:52 +0100
-Subject: [PATCH 066/319] buffer_head: Replace bh_uptodate_lock for -rt
+Subject: [PATCH 066/327] buffer_head: Replace bh_uptodate_lock for -rt
 
 Wrap the bit_spin_lock calls into a separate inline and add the RT
 replacements with a real spinlock.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  fs/buffer.c                 | 21 +++++++--------------
  fs/ext4/page-io.c           |  6 ++----
@@ -87,7 +89,7 @@ index a550e0d8e965..a5b3a456dbff 100644
  		__this_cpu_inc(bh_accounting.nr);
  		recalc_bh_state();
 diff --git a/fs/ext4/page-io.c b/fs/ext4/page-io.c
-index db7590178dfc..d76364124443 100644
+index 9cc79b7b0df1..3f4ba2011499 100644
 --- a/fs/ext4/page-io.c
 +++ b/fs/ext4/page-io.c
 @@ -95,8 +95,7 @@ static void ext4_finish_bio(struct bio *bio)
@@ -193,5 +195,5 @@ index 96225a77c112..8a1bcfb145d7 100644
   * macro tricks to expand the set_buffer_foo(), clear_buffer_foo()
   * and buffer_foo() functions.
 -- 
-2.24.1
+2.17.1
 

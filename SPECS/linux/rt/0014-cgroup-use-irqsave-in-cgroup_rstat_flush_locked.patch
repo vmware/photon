@@ -1,7 +1,10 @@
-From 48ec793a6116bef984072e33df9dd9ba72cdce3f Mon Sep 17 00:00:00 2001
+From d92527bb24ae4fa57d587ae040d61e04458f59ac Mon Sep 17 00:00:00 2001
+Message-Id: <d92527bb24ae4fa57d587ae040d61e04458f59ac.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 3 Jul 2018 18:19:48 +0200
-Subject: [PATCH 014/319] cgroup: use irqsave in cgroup_rstat_flush_locked()
+Subject: [PATCH 014/327] cgroup: use irqsave in cgroup_rstat_flush_locked()
 
 All callers of cgroup_rstat_flush_locked() acquire cgroup_rstat_lock
 either with spin_lock_irq() or spin_lock_irqsave().
@@ -16,7 +19,6 @@ the interrupts were not disabled here and a deadlock is possible.
 Acquire the raw_spin_lock_t with disabled interrupts.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  kernel/cgroup/rstat.c | 5 +++--
  1 file changed, 3 insertions(+), 2 deletions(-)
@@ -46,5 +48,5 @@ index bb95a35e8c2d..3266a9781b4e 100644
  		/* if @may_sleep, play nice and yield if necessary */
  		if (may_sleep && (need_resched() ||
 -- 
-2.24.1
+2.17.1
 

@@ -1,7 +1,10 @@
-From 117d007657d07b99682a270a209b3b8dcf47e9e3 Mon Sep 17 00:00:00 2001
+From 7c8bbf08ffe494d923710239c313474054189139 Mon Sep 17 00:00:00 2001
+Message-Id: <7c8bbf08ffe494d923710239c313474054189139.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:22 +0200
-Subject: [PATCH 005/319] ARM: at91: Implement clocksource selection
+Subject: [PATCH 005/327] ARM: at91: Implement clocksource selection
 
 Allow selecting and unselecting the PIT clocksource driver so it doesn't
 have to be compile when unused.
@@ -9,7 +12,6 @@ have to be compile when unused.
 Tested-by: Alexander Dahl <ada@thorsis.com>
 Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  arch/arm/mach-at91/Kconfig | 25 +++++++++++++++++++++++++
  1 file changed, 25 insertions(+)
@@ -51,5 +53,5 @@ index 903f23c309df..fa493a86e2bb 100644
  	bool
  
 -- 
-2.24.1
+2.17.1
 

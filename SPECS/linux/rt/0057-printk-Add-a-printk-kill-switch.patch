@@ -1,13 +1,15 @@
-From 8c45c95616892cf633365516a17d1180ce34805b Mon Sep 17 00:00:00 2001
+From b19916a6a05bf459669c0666d128f744d601c728 Mon Sep 17 00:00:00 2001
+Message-Id: <b19916a6a05bf459669c0666d128f744d601c728.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 22 Jul 2011 17:58:40 +0200
-Subject: [PATCH 057/319] printk: Add a printk kill switch
+Subject: [PATCH 057/327] printk: Add a printk kill switch
 
 Add a prinkt-kill-switch. This is used from (NMI) watchdog to ensure that
 it does not dead-lock with the early printk code.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  include/linux/printk.h |  2 ++
  kernel/printk/printk.c | 79 +++++++++++++++++++++++++++++++-----------
@@ -31,7 +33,7 @@ index cf3eccfe1543..30ebf5f82a7c 100644
  
  #ifdef CONFIG_PRINTK_NMI
 diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 845efadaf7ec..0214d876c22d 100644
+index 7a2fdc097c8c..29838e532f46 100644
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
 @@ -405,6 +405,58 @@ DEFINE_RAW_SPINLOCK(logbuf_lock);
@@ -170,5 +172,5 @@ index 71381168dede..685443375dc0 100644
  			nmi_panic(regs, "Hard LOCKUP");
  
 -- 
-2.24.1
+2.17.1
 

@@ -1,21 +1,23 @@
-From dd3f2bccec3250f69317ab3dc2aaf9c73d94bccb Mon Sep 17 00:00:00 2001
+From 05259869f3f330c74c6647e1bcceda4f6a17996d Mon Sep 17 00:00:00 2001
+Message-Id: <05259869f3f330c74c6647e1bcceda4f6a17996d.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 18 Jul 2011 17:08:34 +0200
-Subject: [PATCH 050/319] powerpc: Disable highmem on RT
+Subject: [PATCH 050/327] powerpc: Disable highmem on RT
 
 The current highmem handling on -RT is not compatible and needs fixups.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  arch/powerpc/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 9952764db9c5..1563820a37e8 100644
+index 3d5c86336072..1b332f69dd36 100644
 --- a/arch/powerpc/Kconfig
 +++ b/arch/powerpc/Kconfig
-@@ -398,7 +398,7 @@ menu "Kernel options"
+@@ -399,7 +399,7 @@ menu "Kernel options"
  
  config HIGHMEM
  	bool "High memory support"
@@ -25,5 +27,5 @@ index 9952764db9c5..1563820a37e8 100644
  source kernel/Kconfig.hz
  
 -- 
-2.24.1
+2.17.1
 

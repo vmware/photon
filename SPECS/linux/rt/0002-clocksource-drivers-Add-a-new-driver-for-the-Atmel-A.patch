@@ -1,7 +1,10 @@
-From cec3f26d964a7b10bc2e2f3ee87f4162a202caca Mon Sep 17 00:00:00 2001
+From aba8ef8111b7a69621be5dd2358f8163dc4a2263 Mon Sep 17 00:00:00 2001
+Message-Id: <aba8ef8111b7a69621be5dd2358f8163dc4a2263.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:19 +0200
-Subject: [PATCH 002/319] clocksource/drivers: Add a new driver for the Atmel
+Subject: [PATCH 002/327] clocksource/drivers: Add a new driver for the Atmel
  ARM TC blocks
 
 Add a driver for the Atmel Timer Counter Blocks. This driver provides a
@@ -23,7 +26,6 @@ Tested-by: Alexander Dahl <ada@thorsis.com>
 Tested-by: Andras Szemzo <szemzo.andras@gmail.com>
 Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/clocksource/Kconfig           |   8 +
  drivers/clocksource/Makefile          |   3 +-
@@ -481,5 +483,5 @@ index 000000000000..21fbe430f91b
 +}
 +TIMER_OF_DECLARE(atmel_tcb_clksrc, "atmel,tcb-timer", tcb_clksrc_init);
 -- 
-2.24.1
+2.17.1
 

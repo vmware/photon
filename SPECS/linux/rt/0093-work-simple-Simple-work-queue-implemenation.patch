@@ -1,7 +1,10 @@
-From 2fbbc667f46995f80477fcf15fe97748518125d2 Mon Sep 17 00:00:00 2001
+From 1af66c1b241adaee0ae77bcdfb1534a60d08264a Mon Sep 17 00:00:00 2001
+Message-Id: <1af66c1b241adaee0ae77bcdfb1534a60d08264a.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Daniel Wagner <daniel.wagner@bmw-carit.de>
 Date: Fri, 11 Jul 2014 15:26:11 +0200
-Subject: [PATCH 093/319] work-simple: Simple work queue implemenation
+Subject: [PATCH 093/327] work-simple: Simple work queue implemenation
 
 Provides a framework for enqueuing callbacks from irq context
 PREEMPT_RT_FULL safe. The callbacks are executed in kthread context.
@@ -10,7 +13,6 @@ Bases on wait-simple.
 
 Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Daniel Wagner <daniel.wagner@bmw-carit.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  include/linux/swork.h |  24 ++++++
  kernel/sched/Makefile |   2 +-
@@ -242,5 +244,5 @@ index 000000000000..a5b89fdacf19
 +}
 +EXPORT_SYMBOL_GPL(swork_put);
 -- 
-2.24.1
+2.17.1
 

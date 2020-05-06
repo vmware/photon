@@ -1,7 +1,10 @@
-From e78b96839a9a8fbd0038a1496ee8b00ea55e877b Mon Sep 17 00:00:00 2001
+From b5661f6c782e92843b5e1d081ab704dd3fb79a61 Mon Sep 17 00:00:00 2001
+Message-Id: <b5661f6c782e92843b5e1d081ab704dd3fb79a61.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Benedikt Spranger <b.spranger@linutronix.de>
 Date: Mon, 8 Mar 2010 18:57:04 +0100
-Subject: [PATCH 030/319] clocksource: TCLIB: Allow higher clock rates for
+Subject: [PATCH 030/327] clocksource: TCLIB: Allow higher clock rates for
  clock events
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -14,7 +17,6 @@ Add a compile time selection to allow higher clock resulution.
 
 Signed-off-by: Benedikt Spranger <b.spranger@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/clocksource/tcb_clksrc.c | 36 +++++++++++++++++++-------------
  drivers/misc/Kconfig             | 12 +++++++++--
@@ -166,5 +168,5 @@ index 3726eacdf65d..0900dec7ec04 100644
  	tristate "Dummy IRQ handler"
  	default n
 -- 
-2.24.1
+2.17.1
 

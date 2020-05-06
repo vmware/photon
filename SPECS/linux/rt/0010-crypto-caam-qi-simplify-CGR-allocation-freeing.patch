@@ -1,7 +1,10 @@
-From 2982038c12fffc845d63848cdf1882c30a9f5479 Mon Sep 17 00:00:00 2001
+From 222023498c02fbc8c0143bb3237a0e0a674175e5 Mon Sep 17 00:00:00 2001
+Message-Id: <222023498c02fbc8c0143bb3237a0e0a674175e5.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>
 Date: Mon, 8 Oct 2018 14:09:37 +0300
-Subject: [PATCH 010/319] crypto: caam/qi - simplify CGR allocation, freeing
+Subject: [PATCH 010/327] crypto: caam/qi - simplify CGR allocation, freeing
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -22,7 +25,6 @@ Link: https://lkml.kernel.org/r/20181005125443.dfhd2asqktm22ney@linutronix.de
 Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Horia Geantă <horia.geanta@nxp.com>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/crypto/caam/qi.c | 43 ++++------------------------------------
  drivers/crypto/caam/qi.h |  2 +-
@@ -136,5 +138,5 @@ index 357b69f57072..b6c8acc30853 100644
  /**
   * qi_cache_alloc - Allocate buffers from CAAM-QI cache
 -- 
-2.24.1
+2.17.1
 

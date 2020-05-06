@@ -1,14 +1,16 @@
-From 375dd71e0e4c9212c6aa7d91c5b97253884195d8 Mon Sep 17 00:00:00 2001
+From c1c0dcf5b79064717f21d1c3d294827591fea472 Mon Sep 17 00:00:00 2001
+Message-Id: <c1c0dcf5b79064717f21d1c3d294827591fea472.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 3 Jul 2009 08:29:51 -0500
-Subject: [PATCH 077/319] mm/swap: Convert to percpu locked
+Subject: [PATCH 077/327] mm/swap: Convert to percpu locked
 
 Replace global locks (get_cpu + local_irq_save) with "local_locks()".
 Currently there is one of for "rotate" and one for "swap".
 
 Signed-off-by: Ingo Molnar <mingo@elte.hu>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  include/linux/swap.h |  2 ++
  mm/compaction.c      |  6 ++++--
@@ -56,10 +58,10 @@ index 5079ddbec8f9..c40d3a13cbbd 100644
  				cc->last_migrated_pfn = 0;
  			}
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index bff6c04eb359..f7d30f995bc5 100644
+index d6f9be9c6635..a1547f1be42c 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -7212,8 +7212,9 @@ void __init free_area_init(unsigned long *zones_size)
+@@ -7242,8 +7242,9 @@ void __init free_area_init(unsigned long *zones_size)
  
  static int page_alloc_cpu_dead(unsigned int cpu)
  {
@@ -207,5 +209,5 @@ index 45fdbfb6b2a6..92f994b962f0 100644
  
  #ifdef CONFIG_SMP
 -- 
-2.24.1
+2.17.1
 

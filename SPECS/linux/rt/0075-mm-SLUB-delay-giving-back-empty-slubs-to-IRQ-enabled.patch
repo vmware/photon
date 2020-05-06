@@ -1,7 +1,10 @@
-From 74c94c3a1d3355bcc847435e11f75eb06c6aabfb Mon Sep 17 00:00:00 2001
+From 6e725f0366939a0d83764cd8835200cb222bb1af Mon Sep 17 00:00:00 2001
+Message-Id: <6e725f0366939a0d83764cd8835200cb222bb1af.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 21 Jun 2018 17:29:19 +0200
-Subject: [PATCH 075/319] mm/SLUB: delay giving back empty slubs to IRQ enabled
+Subject: [PATCH 075/327] mm/SLUB: delay giving back empty slubs to IRQ enabled
  regions
 
 __free_slab() is invoked with disabled interrupts which increases the
@@ -12,13 +15,12 @@ so it can be processed later.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  mm/slub.c | 74 +++++++++++++++++++++++++++++++++++++++++++++++++++----
  1 file changed, 69 insertions(+), 5 deletions(-)
 
 diff --git a/mm/slub.c b/mm/slub.c
-index ba20c68a9cfd..224663e20772 100644
+index a3b4c5c04ffe..19bc021a2726 100644
 --- a/mm/slub.c
 +++ b/mm/slub.c
 @@ -1330,6 +1330,12 @@ static inline void dec_slabs_node(struct kmem_cache *s, int node,
@@ -64,7 +66,7 @@ index ba20c68a9cfd..224663e20772 100644
  	} else
  		__free_slab(s, page);
  }
-@@ -2223,14 +2245,21 @@ static void put_cpu_partial(struct kmem_cache *s, struct page *page, int drain)
+@@ -2221,14 +2243,21 @@ static void put_cpu_partial(struct kmem_cache *s, struct page *page, int drain)
  			pobjects = oldpage->pobjects;
  			pages = oldpage->pages;
  			if (drain && pobjects > s->cpu_partial) {
@@ -86,7 +88,7 @@ index ba20c68a9cfd..224663e20772 100644
  				oldpage = NULL;
  				pobjects = 0;
  				pages = 0;
-@@ -2300,7 +2329,22 @@ static bool has_cpu_slab(int cpu, void *info)
+@@ -2298,7 +2327,22 @@ static bool has_cpu_slab(int cpu, void *info)
  
  static void flush_all(struct kmem_cache *s)
  {
@@ -109,7 +111,7 @@ index ba20c68a9cfd..224663e20772 100644
  }
  
  /*
-@@ -2498,8 +2542,10 @@ static inline void *get_freelist(struct kmem_cache *s, struct page *page)
+@@ -2496,8 +2540,10 @@ static inline void *get_freelist(struct kmem_cache *s, struct page *page)
   * already disabled (which is the case for bulk allocation).
   */
  static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
@@ -121,7 +123,7 @@ index ba20c68a9cfd..224663e20772 100644
  	void *freelist;
  	struct page *page;
  
-@@ -2555,6 +2601,13 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
+@@ -2563,6 +2609,13 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
  	VM_BUG_ON(!c->page->frozen);
  	c->freelist = get_freepointer(s, freelist);
  	c->tid = next_tid(c->tid);
@@ -135,7 +137,7 @@ index ba20c68a9cfd..224663e20772 100644
  	return freelist;
  
  new_slab:
-@@ -2570,7 +2623,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
+@@ -2578,7 +2631,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
  
  	if (unlikely(!freelist)) {
  		slab_out_of_memory(s, gfpflags, node);
@@ -144,7 +146,7 @@ index ba20c68a9cfd..224663e20772 100644
  	}
  
  	page = c->page;
-@@ -2583,7 +2636,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
+@@ -2591,7 +2644,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
  		goto new_slab;	/* Slab failed checks. Next slab needed */
  
  	deactivate_slab(s, page, get_freepointer(s, freelist), c);
@@ -153,7 +155,7 @@ index ba20c68a9cfd..224663e20772 100644
  }
  
  /*
-@@ -2595,6 +2648,7 @@ static void *__slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
+@@ -2603,6 +2656,7 @@ static void *__slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
  {
  	void *p;
  	unsigned long flags;
@@ -161,7 +163,7 @@ index ba20c68a9cfd..224663e20772 100644
  
  	local_irq_save(flags);
  #ifdef CONFIG_PREEMPT
-@@ -2606,8 +2660,9 @@ static void *__slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
+@@ -2614,8 +2668,9 @@ static void *__slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
  	c = this_cpu_ptr(s->cpu_slab);
  #endif
  
@@ -172,7 +174,7 @@ index ba20c68a9cfd..224663e20772 100644
  	return p;
  }
  
-@@ -3085,6 +3140,7 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
+@@ -3095,6 +3150,7 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
  			  void **p)
  {
  	struct kmem_cache_cpu *c;
@@ -180,7 +182,7 @@ index ba20c68a9cfd..224663e20772 100644
  	int i;
  
  	/* memcg and kmem_cache debug support */
-@@ -3108,7 +3164,7 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
+@@ -3127,7 +3183,7 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
  			 * of re-populating per CPU c->freelist
  			 */
  			p[i] = ___slab_alloc(s, flags, NUMA_NO_NODE,
@@ -189,7 +191,7 @@ index ba20c68a9cfd..224663e20772 100644
  			if (unlikely(!p[i]))
  				goto error;
  
-@@ -3120,6 +3176,7 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
+@@ -3139,6 +3195,7 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
  	}
  	c->tid = next_tid(c->tid);
  	local_irq_enable();
@@ -197,7 +199,7 @@ index ba20c68a9cfd..224663e20772 100644
  
  	/* Clear memory outside IRQ disabled fastpath loop */
  	if (unlikely(flags & __GFP_ZERO)) {
-@@ -3134,6 +3191,7 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
+@@ -3153,6 +3210,7 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
  	return i;
  error:
  	local_irq_enable();
@@ -205,7 +207,7 @@ index ba20c68a9cfd..224663e20772 100644
  	slab_post_alloc_hook(s, flags, i, p);
  	__kmem_cache_free_bulk(s, i, p);
  	return 0;
-@@ -4183,6 +4241,12 @@ void __init kmem_cache_init(void)
+@@ -4202,6 +4260,12 @@ void __init kmem_cache_init(void)
  {
  	static __initdata struct kmem_cache boot_kmem_cache,
  		boot_kmem_cache_node;
@@ -219,5 +221,5 @@ index ba20c68a9cfd..224663e20772 100644
  	if (debug_guardpage_minorder())
  		slub_max_order = 0;
 -- 
-2.24.1
+2.17.1
 

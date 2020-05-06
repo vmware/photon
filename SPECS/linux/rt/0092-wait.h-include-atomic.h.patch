@@ -1,7 +1,10 @@
-From 942213388a8ddeacb45d50f9f47a81227613d481 Mon Sep 17 00:00:00 2001
+From 62300f714d10365c00ac9d0b8b35a79be8f2fd26 Mon Sep 17 00:00:00 2001
+Message-Id: <62300f714d10365c00ac9d0b8b35a79be8f2fd26.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 28 Oct 2013 12:19:57 +0100
-Subject: [PATCH 092/319] wait.h: include atomic.h
+Subject: [PATCH 092/327] wait.h: include atomic.h
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -20,7 +23,6 @@ Content-Transfer-Encoding: 8bit
 This pops up on ARM. Non-RT gets its atomic.h include from spinlock.h
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  include/linux/wait.h | 1 +
  1 file changed, 1 insertion(+)
@@ -38,5 +40,5 @@ index ed7c122cb31f..2b5ef8e94d19 100644
  typedef struct wait_queue_entry wait_queue_entry_t;
  
 -- 
-2.24.1
+2.17.1
 

@@ -1,0 +1,23 @@
+From 2b0646206accede735b3a6c349849eb497c13905 Mon Sep 17 00:00:00 2001
+Message-Id: <2b0646206accede735b3a6c349849eb497c13905.1588347333.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+From: Tom Zanussi <zanussi@kernel.org>
+Date: Tue, 28 Apr 2020 11:01:54 -0500
+Subject: [PATCH 327/327] Linux 4.19.115-rt50 REBASE
+
+Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 1199ebade17b..42c384668389 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt16
++-rt50
+-- 
+2.17.1
+

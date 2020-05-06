@@ -1,19 +1,21 @@
-From 302b083e0cfd9f17c6e5f6e33753c54c53b244f4 Mon Sep 17 00:00:00 2001
+From 9977834321f77cd9919949417d7aff598ed71023 Mon Sep 17 00:00:00 2001
+Message-Id: <9977834321f77cd9919949417d7aff598ed71023.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 3 Jul 2009 08:44:34 -0500
-Subject: [PATCH 063/319] mm/scatterlist: Do not disable irqs on RT
+Subject: [PATCH 063/327] mm/scatterlist: Do not disable irqs on RT
 
 For -RT it is enough to keep pagefault disabled (which is currently handled by
 kmap_atomic()).
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  lib/scatterlist.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/lib/scatterlist.c b/lib/scatterlist.c
-index 8c3036c37ba0..336162c2813f 100644
+index 60e7eca2f4be..aad8b9ecd496 100644
 --- a/lib/scatterlist.c
 +++ b/lib/scatterlist.c
 @@ -777,7 +777,7 @@ void sg_miter_stop(struct sg_mapping_iter *miter)
@@ -26,5 +28,5 @@ index 8c3036c37ba0..336162c2813f 100644
  		} else
  			kunmap(miter->page);
 -- 
-2.24.1
+2.17.1
 

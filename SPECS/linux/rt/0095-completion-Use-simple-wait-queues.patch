@@ -1,14 +1,16 @@
-From 01463faa60abb5b89e5de020f0d10b37cfa6e656 Mon Sep 17 00:00:00 2001
+From b44f079dc57b192c97e92355b26180aaf99b6678 Mon Sep 17 00:00:00 2001
+Message-Id: <b44f079dc57b192c97e92355b26180aaf99b6678.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 11 Jan 2013 11:23:51 +0100
-Subject: [PATCH 095/319] completion: Use simple wait queues
+Subject: [PATCH 095/327] completion: Use simple wait queues
 
 Completions have no long lasting callbacks and therefor do not need
 the complex waitqueue variant. Use simple waitqueues which reduces the
 contention on the waitqueue lock.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  arch/powerpc/platforms/ps3/device-init.c      |  4 +--
  .../wireless/intersil/orinoco/orinoco_usb.c   |  4 +--
@@ -40,7 +42,7 @@ index e7075aaff1bb..1580464a9d5b 100644
  		res = -EINTR;
  	if (res) {
 diff --git a/drivers/net/wireless/intersil/orinoco/orinoco_usb.c b/drivers/net/wireless/intersil/orinoco/orinoco_usb.c
-index 94ad6fe29e69..52a49f0bbc19 100644
+index b704e4bce171..c364abaac548 100644
 --- a/drivers/net/wireless/intersil/orinoco/orinoco_usb.c
 +++ b/drivers/net/wireless/intersil/orinoco/orinoco_usb.c
 @@ -697,8 +697,8 @@ static void ezusb_req_ctx_wait(struct ezusb_priv *upriv,
@@ -55,10 +57,10 @@ index 94ad6fe29e69..52a49f0bbc19 100644
  		break;
  	default:
 diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
-index 2050993fb58b..e2ca75a6e241 100644
+index a9239455eb6d..ed56d61d888a 100644
 --- a/drivers/usb/gadget/function/f_fs.c
 +++ b/drivers/usb/gadget/function/f_fs.c
-@@ -1626,7 +1626,7 @@ static void ffs_data_put(struct ffs_data *ffs)
+@@ -1627,7 +1627,7 @@ static void ffs_data_put(struct ffs_data *ffs)
  		pr_info("%s(): freeing\n", __func__);
  		ffs_data_clear(ffs);
  		BUG_ON(waitqueue_active(&ffs->ev.waitq) ||
@@ -387,5 +389,5 @@ index 66b59ac77c22..c7cb30cdd1b7 100644
  	wait->task = current;
  	if (list_empty(&wait->task_list))
 -- 
-2.24.1
+2.17.1
 

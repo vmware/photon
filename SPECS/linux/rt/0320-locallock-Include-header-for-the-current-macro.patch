@@ -1,0 +1,34 @@
+From 455f22d624a5ef6344c8ff69a8d65ff71bc65672 Mon Sep 17 00:00:00 2001
+Message-Id: <455f22d624a5ef6344c8ff69a8d65ff71bc65672.1588347333.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Tue, 4 Feb 2020 13:29:50 +0100
+Subject: [PATCH 320/327] locallock: Include header for the `current' macro
+
+[ Upstream commit e693075a5fd852043fa8d2b0467e078d9e5cb782 ]
+
+Include the header for `current' macro so that
+CONFIG_KERNEL_HEADER_TEST=y passes.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ include/linux/locallock.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/linux/locallock.h b/include/linux/locallock.h
+index 921eab83cd34..81c89d87723b 100644
+--- a/include/linux/locallock.h
++++ b/include/linux/locallock.h
+@@ -3,6 +3,7 @@
+ 
+ #include <linux/percpu.h>
+ #include <linux/spinlock.h>
++#include <asm/current.h>
+ 
+ #ifdef CONFIG_PREEMPT_RT_BASE
+ 
+-- 
+2.17.1
+

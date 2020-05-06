@@ -1,7 +1,10 @@
-From f3122b272746d6f9a2ec957a00fed960dfbec71b Mon Sep 17 00:00:00 2001
+From 248d9794b36b5701308e7a624204d116f681240f Mon Sep 17 00:00:00 2001
+Message-Id: <248d9794b36b5701308e7a624204d116f681240f.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 29 Aug 2013 11:48:57 +0200
-Subject: [PATCH 055/319] md: disable bcache
+Subject: [PATCH 055/327] md: disable bcache
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -19,7 +22,6 @@ It uses anon semaphores
 either we get rid of those or we have to introduce them…
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/md/bcache/Kconfig | 1 +
  1 file changed, 1 insertion(+)
@@ -37,5 +39,5 @@ index f6e0a8b3a61e..18c03d79a442 100644
  	help
  	Allows a block device to be used as cache for other devices; uses
 -- 
-2.24.1
+2.17.1
 

@@ -1,7 +1,10 @@
-From e2e0b1ed31a83309f96119b0c26c8dbc703da324 Mon Sep 17 00:00:00 2001
+From 1025690c55aad067878962af6318286d26c87aaa Mon Sep 17 00:00:00 2001
+Message-Id: <1025690c55aad067878962af6318286d26c87aaa.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Luiz Capitulino <lcapitulino@redhat.com>
 Date: Fri, 27 May 2016 15:03:28 +0200
-Subject: [PATCH 078/319] mm: perform lru_add_drain_all() remotely
+Subject: [PATCH 078/327] mm: perform lru_add_drain_all() remotely
 
 lru_add_drain_all() works by scheduling lru_add_drain_cpu() to run
 on all CPUs that have non-empty LRU pagevecs and then waiting for
@@ -19,7 +22,6 @@ PS: This is based on an idea and initial implementation by
 Signed-off-by: Rik van Riel <riel@redhat.com>
 Signed-off-by: Luiz Capitulino <lcapitulino@redhat.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  mm/swap.c | 36 ++++++++++++++++++++++++++++++------
  1 file changed, 30 insertions(+), 6 deletions(-)
@@ -105,5 +107,5 @@ index 92f994b962f0..3885645a45ce 100644
  	mutex_unlock(&lock);
  }
 -- 
-2.24.1
+2.17.1
 

@@ -1,13 +1,15 @@
-From 5bc5a6b031abccea4cc88cb654642f7d43397260 Mon Sep 17 00:00:00 2001
+From df00a54df3c3cf8857d0f2836e313a11d3c38180 Mon Sep 17 00:00:00 2001
+Message-Id: <df00a54df3c3cf8857d0f2836e313a11d3c38180.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 28 Oct 2012 13:26:09 +0000
-Subject: [PATCH 043/319] rcu: Disable RCU_FAST_NO_HZ on RT
+Subject: [PATCH 043/327] rcu: Disable RCU_FAST_NO_HZ on RT
 
 This uses a timer_list timer from the irq disabled guts of the idle
 code. Disable it for now to prevent wreckage.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  kernel/rcu/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
@@ -26,5 +28,5 @@ index 9210379c0353..644264be90f0 100644
  	help
  	  This option permits CPUs to enter dynticks-idle state even if
 -- 
-2.24.1
+2.17.1
 

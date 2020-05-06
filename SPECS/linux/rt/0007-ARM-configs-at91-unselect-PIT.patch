@@ -1,7 +1,10 @@
-From d55e67832e8a39669cc1379c9902b5e386683d63 Mon Sep 17 00:00:00 2001
+From 44a288d26c969a743059392f799ee270bd87e9bb Mon Sep 17 00:00:00 2001
+Message-Id: <44a288d26c969a743059392f799ee270bd87e9bb.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:24 +0200
-Subject: [PATCH 007/319] ARM: configs: at91: unselect PIT
+Subject: [PATCH 007/327] ARM: configs: at91: unselect PIT
 
 The PIT is not required anymore to successfully boot and may actually harm
 in case preempt-rt is used because the PIT interrupt is shared.
@@ -9,7 +12,6 @@ Disable it so the TCB clocksource is used.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  arch/arm/configs/at91_dt_defconfig | 1 +
  arch/arm/configs/sama5_defconfig   | 1 +
@@ -40,5 +42,5 @@ index f2bbc6339ca6..be92871ab155 100644
  CONFIG_UACCESS_WITH_MEMCPY=y
  CONFIG_ZBOOT_ROM_TEXT=0x0
 -- 
-2.24.1
+2.17.1
 

@@ -1,7 +1,10 @@
-From c51325ab11e3c7ddf36f31eeca82e9a724789275 Mon Sep 17 00:00:00 2001
+From 267b99f0dfc2274075fc4d4652995fe24311f05b Mon Sep 17 00:00:00 2001
+Message-Id: <267b99f0dfc2274075fc4d4652995fe24311f05b.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 14 Dec 2011 01:03:49 +0100
-Subject: [PATCH 037/319] cpumask: Disable CONFIG_CPUMASK_OFFSTACK for RT
+Subject: [PATCH 037/327] cpumask: Disable CONFIG_CPUMASK_OFFSTACK for RT
 
 There are "valid" GFP_ATOMIC allocations such as
 
@@ -40,7 +43,6 @@ There are "valid" GFP_ATOMIC allocations such as
 which forbid allocations at run-time.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  arch/x86/Kconfig | 2 +-
  lib/Kconfig      | 1 +
@@ -72,5 +74,5 @@ index a3928d4438b5..a50b2158f7cd 100644
  	  Use dynamic allocation for cpumask_var_t, instead of putting
  	  them on the stack.  This is a bit more expensive, but avoids
 -- 
-2.24.1
+2.17.1
 

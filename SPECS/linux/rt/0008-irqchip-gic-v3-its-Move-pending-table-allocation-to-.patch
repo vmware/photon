@@ -1,19 +1,21 @@
-From b482cc1bb9025306209f61a69ff4c0827c2f444a Mon Sep 17 00:00:00 2001
+From d70eac98c1314f780bfe229544f829b50453ae2b Mon Sep 17 00:00:00 2001
+Message-Id: <d70eac98c1314f780bfe229544f829b50453ae2b.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Marc Zyngier <marc.zyngier@arm.com>
 Date: Fri, 27 Jul 2018 13:38:54 +0100
-Subject: [PATCH 008/319] irqchip/gic-v3-its: Move pending table allocation to
+Subject: [PATCH 008/327] irqchip/gic-v3-its: Move pending table allocation to
  init time
 
 Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/irqchip/irq-gic-v3-its.c   | 80 +++++++++++++++++++-----------
  include/linux/irqchip/arm-gic-v3.h |  1 +
  2 files changed, 53 insertions(+), 28 deletions(-)
 
 diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-index 050d6e040128..fc4c319ee1d7 100644
+index f9b73336a39e..0387399054b7 100644
 --- a/drivers/irqchip/irq-gic-v3-its.c
 +++ b/drivers/irqchip/irq-gic-v3-its.c
 @@ -179,6 +179,7 @@ static DEFINE_RAW_SPINLOCK(vmovp_lock);
@@ -155,7 +157,7 @@ index 050d6e040128..fc4c319ee1d7 100644
  		return err;
  
 diff --git a/include/linux/irqchip/arm-gic-v3.h b/include/linux/irqchip/arm-gic-v3.h
-index 3188c0bef3e7..5b57501fd2e7 100644
+index 1d21e98d6854..fdddead7e307 100644
 --- a/include/linux/irqchip/arm-gic-v3.h
 +++ b/include/linux/irqchip/arm-gic-v3.h
 @@ -585,6 +585,7 @@ struct rdists {
@@ -167,5 +169,5 @@ index 3188c0bef3e7..5b57501fd2e7 100644
  	struct page		*prop_page;
  	u64			flags;
 -- 
-2.24.1
+2.17.1
 

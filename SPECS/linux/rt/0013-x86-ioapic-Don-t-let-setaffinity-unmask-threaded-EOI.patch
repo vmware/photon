@@ -1,7 +1,10 @@
-From 257092083e40258a22fe83f41ddd5d39eb10730c Mon Sep 17 00:00:00 2001
+From 21f4cc8e461111c6918c67c907cb4a8ae8afa936 Mon Sep 17 00:00:00 2001
+Message-Id: <21f4cc8e461111c6918c67c907cb4a8ae8afa936.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 17 Jul 2018 18:25:31 +0200
-Subject: [PATCH 013/319] x86/ioapic: Don't let setaffinity unmask threaded EOI
+Subject: [PATCH 013/327] x86/ioapic: Don't let setaffinity unmask threaded EOI
  interrupt too early
 
 There is an issue with threaded interrupts which are marked ONESHOT
@@ -29,7 +32,6 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 [bigeasy: add the body of the patch, use the same functions in both
           ifdef paths (spotted by Andy Shevchenko)]
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  arch/x86/kernel/apic/io_apic.c | 16 ++++++++--------
  1 file changed, 8 insertions(+), 8 deletions(-)
@@ -97,5 +99,5 @@ index fa3b85b222e3..1bdad61a3ef7 100644
  
  static void ioapic_ir_ack_level(struct irq_data *irq_data)
 -- 
-2.24.1
+2.17.1
 

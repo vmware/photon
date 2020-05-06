@@ -1,7 +1,10 @@
-From 4650de2e78cfbf89274314543ccd34163a7e616c Mon Sep 17 00:00:00 2001
+From c6247543e73c08256490bf6ccd225a3476eefd3a Mon Sep 17 00:00:00 2001
+Message-Id: <c6247543e73c08256490bf6ccd225a3476eefd3a.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 18 Mar 2011 10:11:25 +0100
-Subject: [PATCH 067/319] fs: jbd/jbd2: Make state lock and journal head lock
+Subject: [PATCH 067/327] fs: jbd/jbd2: Make state lock and journal head lock
  rt safe
 
 bit_spin_locks break under RT.
@@ -12,7 +15,6 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  include/linux/buffer_head.h |    8 ++++++++
  include/linux/jbd2.h        |   24 ++++++++++++++++++++++++
  2 files changed, 32 insertions(+)
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  include/linux/buffer_head.h |  8 ++++++++
  include/linux/jbd2.h        | 24 ++++++++++++++++++++++++
@@ -106,5 +108,5 @@ index 268f3000d1b3..8f5d6ecb802e 100644
  
  #define J_ASSERT(assert)	BUG_ON(!(assert))
 -- 
-2.24.1
+2.17.1
 

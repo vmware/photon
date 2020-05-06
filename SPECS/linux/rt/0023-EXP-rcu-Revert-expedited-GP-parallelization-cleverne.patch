@@ -1,7 +1,10 @@
-From 0884ceedf5df2f707134b41f1f4c594eb4f5d711 Mon Sep 17 00:00:00 2001
+From ef814d6ef67f5228fd470d84ad33515c6a1efa57 Mon Sep 17 00:00:00 2001
+Message-Id: <ef814d6ef67f5228fd470d84ad33515c6a1efa57.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: "Paul E. McKenney" <paulmck@linux.ibm.com>
 Date: Mon, 29 Oct 2018 11:53:01 +0100
-Subject: [PATCH 023/319] EXP rcu: Revert expedited GP parallelization
+Subject: [PATCH 023/327] EXP rcu: Revert expedited GP parallelization
  cleverness
 
 (Commit 258ba8e089db23f760139266c232f01bad73f85c from linux-rcu)
@@ -14,7 +17,6 @@ work on the first CPU of that rcu_node structure.
 Suggested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Paul E. McKenney <paulmck@linux.ibm.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  kernel/rcu/tree_exp.h | 9 +--------
  1 file changed, 1 insertion(+), 8 deletions(-)
@@ -47,5 +49,5 @@ index 0b2c2ad69629..a0486414edb4 100644
  	}
  
 -- 
-2.24.1
+2.17.1
 

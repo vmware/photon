@@ -1,7 +1,10 @@
-From 5fba845b10e5ed9e8a2e4b3199fb24d20c7ba104 Mon Sep 17 00:00:00 2001
+From 6089b66d138cc77f35c9d6f7d526cc322b295f28 Mon Sep 17 00:00:00 2001
+Message-Id: <6089b66d138cc77f35c9d6f7d526cc322b295f28.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Yang Shi <yang.shi@windriver.com>
 Date: Wed, 30 Oct 2013 11:48:33 -0700
-Subject: [PATCH 084/319] mm/memcontrol: Don't call schedule_work_on in
+Subject: [PATCH 084/327] mm/memcontrol: Don't call schedule_work_on in
  preemption disabled context
 
 The following trace is triggered when running ltp oom test cases:
@@ -43,16 +46,15 @@ replace the pair of get/put_cpu() to get/put_cpu_light().
 
 Signed-off-by: Yang Shi <yang.shi@windriver.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  mm/memcontrol.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 3a3d109dce21..cf9e81fb342d 100644
+index 3b78b6af353b..1323fa231eed 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
-@@ -2082,7 +2082,7 @@ static void drain_all_stock(struct mem_cgroup *root_memcg)
+@@ -2084,7 +2084,7 @@ static void drain_all_stock(struct mem_cgroup *root_memcg)
  	 * as well as workers from this path always operate on the local
  	 * per-cpu data. CPU up doesn't touch memcg_stock at all.
  	 */
@@ -61,7 +63,7 @@ index 3a3d109dce21..cf9e81fb342d 100644
  	for_each_online_cpu(cpu) {
  		struct memcg_stock_pcp *stock = &per_cpu(memcg_stock, cpu);
  		struct mem_cgroup *memcg;
-@@ -2102,7 +2102,7 @@ static void drain_all_stock(struct mem_cgroup *root_memcg)
+@@ -2104,7 +2104,7 @@ static void drain_all_stock(struct mem_cgroup *root_memcg)
  		}
  		css_put(&memcg->css);
  	}
@@ -71,5 +73,5 @@ index 3a3d109dce21..cf9e81fb342d 100644
  }
  
 -- 
-2.24.1
+2.17.1
 

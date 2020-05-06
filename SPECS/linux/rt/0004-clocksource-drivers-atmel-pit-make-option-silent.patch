@@ -1,7 +1,10 @@
-From 342dd9963df7a4db751c879b027bb28f134c2058 Mon Sep 17 00:00:00 2001
+From 5e34b2461c24c7ec974e6c5f33e4431a3260b2c1 Mon Sep 17 00:00:00 2001
+Message-Id: <5e34b2461c24c7ec974e6c5f33e4431a3260b2c1.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:21 +0200
-Subject: [PATCH 004/319] clocksource/drivers: atmel-pit: make option silent
+Subject: [PATCH 004/327] clocksource/drivers: atmel-pit: make option silent
 
 To conform with the other option, make the ATMEL_PIT option silent so it
 can be selected from the platform
@@ -9,7 +12,6 @@ can be selected from the platform
 Tested-by: Alexander Dahl <ada@thorsis.com>
 Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/clocksource/Kconfig | 5 ++++-
  1 file changed, 4 insertions(+), 1 deletion(-)
@@ -32,5 +34,5 @@ index 0ab22e7037f4..34b07047b91f 100644
  config ATMEL_ST
  	bool "Atmel ST timer support" if COMPILE_TEST
 -- 
-2.24.1
+2.17.1
 

@@ -1,7 +1,10 @@
-From 4ed5d304d3adb82161fa9f8054a4a8309c38461c Mon Sep 17 00:00:00 2001
+From 8eed50e0a7fd1ea99c11d47421ca4ea0266c829f Mon Sep 17 00:00:00 2001
+Message-Id: <8eed50e0a7fd1ea99c11d47421ca4ea0266c829f.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 Date: Wed, 5 Mar 2014 00:49:47 +0100
-Subject: [PATCH 033/319] net: sched: Use msleep() instead of yield()
+Subject: [PATCH 033/327] net: sched: Use msleep() instead of yield()
 
 On PREEMPT_RT enabled systems the interrupt handler run as threads at prio 50
 (by default). If a high priority userspace process tries to shut down a busy
@@ -41,7 +44,6 @@ solution.
 
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  net/sched/sch_generic.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
@@ -60,5 +62,5 @@ index 8a4d01e427a2..4ab20f1138fd 100644
  		 * unwind stale skb lists and qdisc statistics
  		 */
 -- 
-2.24.1
+2.17.1
 

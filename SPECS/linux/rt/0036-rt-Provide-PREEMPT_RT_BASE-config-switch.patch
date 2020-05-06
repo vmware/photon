@@ -1,14 +1,16 @@
-From 2ce7fa38d9933c13f1f266d2fe1c42e1f4555f28 Mon Sep 17 00:00:00 2001
+From ac2295358559dac261e20522d82cc3896bd63e97 Mon Sep 17 00:00:00 2001
+Message-Id: <ac2295358559dac261e20522d82cc3896bd63e97.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 17 Jun 2011 12:39:57 +0200
-Subject: [PATCH 036/319] rt: Provide PREEMPT_RT_BASE config switch
+Subject: [PATCH 036/327] rt: Provide PREEMPT_RT_BASE config switch
 
 Introduce PREEMPT_RT_BASE which enables parts of
 PREEMPT_RT_FULL. Forces interrupt threading and enables some of the RT
 substitutions for testing.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  kernel/Kconfig.preempt | 21 ++++++++++++++++++---
  1 file changed, 18 insertions(+), 3 deletions(-)
@@ -60,5 +62,5 @@ index cd1655122ec0..027db5976c2f 100644
 \ No newline at end of file
 +       bool
 -- 
-2.24.1
+2.17.1
 

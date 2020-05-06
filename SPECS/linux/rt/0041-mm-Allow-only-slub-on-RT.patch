@@ -1,13 +1,15 @@
-From bfd77b6b106311446c570f3e56edf6712843065f Mon Sep 17 00:00:00 2001
+From bf1579f9280b4c92ce6b02c3f014d40eff596b86 Mon Sep 17 00:00:00 2001
+Message-Id: <bf1579f9280b4c92ce6b02c3f014d40eff596b86.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 3 Jul 2009 08:44:03 -0500
-Subject: [PATCH 041/319] mm: Allow only slub on RT
+Subject: [PATCH 041/327] mm: Allow only slub on RT
 
 Disable SLAB and SLOB on -RT. Only SLUB is adopted to -RT needs.
 
 Signed-off-by: Ingo Molnar <mingo@elte.hu>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  init/Kconfig | 2 ++
  1 file changed, 2 insertions(+)
@@ -33,5 +35,5 @@ index 47035b5a46f6..ae9a0113a699 100644
  	   SLOB replaces the stock allocator with a drastically simpler
  	   allocator. SLOB is generally more space efficient but
 -- 
-2.24.1
+2.17.1
 

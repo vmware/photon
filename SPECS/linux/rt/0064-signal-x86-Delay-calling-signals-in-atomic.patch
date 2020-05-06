@@ -1,7 +1,10 @@
-From 80deaa23b22770307783c0a517ad4e6fcbbdffaf Mon Sep 17 00:00:00 2001
+From f2ef7528019291f9ad8d4cf90b57d315f8accd38 Mon Sep 17 00:00:00 2001
+Message-Id: <f2ef7528019291f9ad8d4cf90b57d315f8accd38.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Oleg Nesterov <oleg@redhat.com>
 Date: Tue, 14 Jul 2015 14:26:34 +0200
-Subject: [PATCH 064/319] signal/x86: Delay calling signals in atomic
+Subject: [PATCH 064/327] signal/x86: Delay calling signals in atomic
 
 On x86_64 we must disable preemption before we enable interrupts
 for stack faults, int3 and debugging, because the current task is using
@@ -29,7 +32,6 @@ code will send the signal when preemption is enabled.
 Signed-off-by: Oleg Nesterov <oleg@redhat.com>
 Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  arch/x86/entry/common.c       |  7 +++++++
  arch/x86/include/asm/signal.h | 13 ++++++++++++
@@ -80,7 +82,7 @@ index 33d3c88a7225..fb0438d06ca7 100644
  typedef sigset_t compat_sigset_t;
  #endif
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 038d0faaa1d5..c87c11bfd9d9 100644
+index 0489d3e0e78c..e4af260f81c5 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -881,6 +881,10 @@ struct task_struct {
@@ -95,10 +97,10 @@ index 038d0faaa1d5..c87c11bfd9d9 100644
  	size_t				sas_ss_size;
  	unsigned int			sas_ss_flags;
 diff --git a/kernel/signal.c b/kernel/signal.c
-index 6b9d4bbfa9df..3565221b4fac 100644
+index feeae7177ee1..d1fa3c405784 100644
 --- a/kernel/signal.c
 +++ b/kernel/signal.c
-@@ -1272,8 +1272,8 @@ int do_send_sig_info(int sig, struct siginfo *info, struct task_struct *p,
+@@ -1282,8 +1282,8 @@ int do_send_sig_info(int sig, struct siginfo *info, struct task_struct *p,
   * We don't want to have recursive SIGSEGV's etc, for example,
   * that is why we also clear SIGNAL_UNKILLABLE.
   */
@@ -109,7 +111,7 @@ index 6b9d4bbfa9df..3565221b4fac 100644
  {
  	unsigned long int flags;
  	int ret, blocked, ignored;
-@@ -1302,6 +1302,39 @@ force_sig_info(int sig, struct siginfo *info, struct task_struct *t)
+@@ -1312,6 +1312,39 @@ force_sig_info(int sig, struct siginfo *info, struct task_struct *t)
  	return ret;
  }
  
@@ -150,5 +152,5 @@ index 6b9d4bbfa9df..3565221b4fac 100644
   * Nuke all other threads in the group.
   */
 -- 
-2.24.1
+2.17.1
 

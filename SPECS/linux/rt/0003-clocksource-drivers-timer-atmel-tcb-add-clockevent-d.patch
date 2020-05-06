@@ -1,7 +1,10 @@
-From f6f6e33b61f0a2490774b73d3b5484aa77458c30 Mon Sep 17 00:00:00 2001
+From 8cbcac5c2b1a35f8c81134219ef264b8c9f9e9d7 Mon Sep 17 00:00:00 2001
+Message-Id: <8cbcac5c2b1a35f8c81134219ef264b8c9f9e9d7.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:20 +0200
-Subject: [PATCH 003/319] clocksource/drivers: timer-atmel-tcb: add clockevent
+Subject: [PATCH 003/327] clocksource/drivers: timer-atmel-tcb: add clockevent
  device on separate channel
 
 Add an other clockevent device that uses a separate TCB channel when
@@ -9,7 +12,6 @@ available.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/clocksource/timer-atmel-tcb.c | 217 +++++++++++++++++++++++++-
  1 file changed, 212 insertions(+), 5 deletions(-)
@@ -267,5 +269,5 @@ index 21fbe430f91b..63ce3b69338a 100644
  	}
  
 -- 
-2.24.1
+2.17.1
 

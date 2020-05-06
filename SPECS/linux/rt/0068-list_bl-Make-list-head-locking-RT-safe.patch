@@ -1,7 +1,10 @@
-From 9072f46dc068957eed1dc43e5d52e40dfb9072fc Mon Sep 17 00:00:00 2001
+From ffb1cb4821d5ac6ec3e2f69dc118584321113848 Mon Sep 17 00:00:00 2001
+Message-Id: <ffb1cb4821d5ac6ec3e2f69dc118584321113848.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Paul Gortmaker <paul.gortmaker@windriver.com>
 Date: Fri, 21 Jun 2013 15:07:25 -0400
-Subject: [PATCH 068/319] list_bl: Make list head locking RT safe
+Subject: [PATCH 068/327] list_bl: Make list head locking RT safe
 
 As per changes in include/linux/jbd_common.h for avoiding the
 bit_spin_locks on RT ("fs: jbd/jbd2: Make state lock and journal
@@ -47,7 +50,6 @@ concern.
 
 Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  include/linux/list_bl.h | 28 ++++++++++++++++++++++++++--
  1 file changed, 26 insertions(+), 2 deletions(-)
@@ -117,5 +119,5 @@ index 3fc2cc57ba1b..69b659259bac 100644
  
  static inline bool hlist_bl_is_locked(struct hlist_bl_head *b)
 -- 
-2.24.1
+2.17.1
 

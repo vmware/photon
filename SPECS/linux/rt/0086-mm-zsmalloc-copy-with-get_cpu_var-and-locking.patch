@@ -1,7 +1,10 @@
-From d47a805e49efc4c59920da13e5a7a8bb8a7355c3 Mon Sep 17 00:00:00 2001
+From 9aa358dc71da851d2af3660ac73411ad469a331f Mon Sep 17 00:00:00 2001
+Message-Id: <9aa358dc71da851d2af3660ac73411ad469a331f.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Mike Galbraith <umgwanakikbuti@gmail.com>
 Date: Tue, 22 Mar 2016 11:16:09 +0100
-Subject: [PATCH 086/319] mm/zsmalloc: copy with get_cpu_var() and locking
+Subject: [PATCH 086/327] mm/zsmalloc: copy with get_cpu_var() and locking
 
 get_cpu_var() disables preemption and triggers a might_sleep() splat later.
 This is replaced with get_locked_var().
@@ -12,7 +15,6 @@ Signed-off-by: Mike Galbraith <umgwanakikbuti@gmail.com>
 [bigeasy: replace the bitspin_lock() with a mutex, get_locked_var(). Mike then
 fixed the size magic]
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  mm/zsmalloc.c | 80 +++++++++++++++++++++++++++++++++++++++++++++++----
  1 file changed, 74 insertions(+), 6 deletions(-)
@@ -199,5 +201,5 @@ index 85cc29c93d93..63e83b47fa99 100644
  	migrate_read_unlock(zspage);
  	unpin_tag(handle);
 -- 
-2.24.1
+2.17.1
 

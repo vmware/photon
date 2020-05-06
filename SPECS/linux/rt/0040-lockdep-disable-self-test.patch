@@ -1,7 +1,10 @@
-From 16f4decd3f38ba23148003b756e61992affb4944 Mon Sep 17 00:00:00 2001
+From d503eb089b47efb99b62cfd52744ae0e8522ba67 Mon Sep 17 00:00:00 2001
+Message-Id: <d503eb089b47efb99b62cfd52744ae0e8522ba67.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 17 Oct 2017 16:36:18 +0200
-Subject: [PATCH 040/319] lockdep: disable self-test
+Subject: [PATCH 040/327] lockdep: disable self-test
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -12,7 +15,6 @@ still reported false positives. Now the selftest locks up the system
 during boot and it needs to be investigated…
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  lib/Kconfig.debug | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
@@ -31,5 +33,5 @@ index 46a910acce3f..38cf7f81daa7 100644
  	  Say Y here if you want the kernel to run a short self-test during
  	  bootup. The self-test checks whether common types of locking bugs
 -- 
-2.24.1
+2.17.1
 

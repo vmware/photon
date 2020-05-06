@@ -1,7 +1,10 @@
-From c085b19bde02191b09d699e1cc693ca72186249d Mon Sep 17 00:00:00 2001
+From bf7590c47e53af70146859ca60ae05df521e60e4 Mon Sep 17 00:00:00 2001
+Message-Id: <bf7590c47e53af70146859ca60ae05df521e60e4.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 3 Jul 2009 08:29:34 -0500
-Subject: [PATCH 089/319] timers: Prepare for full preemption
+Subject: [PATCH 089/327] timers: Prepare for full preemption
 
 When softirqs can be preempted we need to make sure that cancelling
 the timer from the active thread can not deadlock vs. a running timer
@@ -9,7 +12,6 @@ callback. Add a waitqueue to resolve that.
 
 Signed-off-by: Ingo Molnar <mingo@elte.hu>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  include/linux/timer.h |  2 +-
  kernel/sched/core.c   |  9 +++++++--
@@ -172,5 +174,5 @@ index ae64cb819a9a..9019c9caf146 100644
  }
  
 -- 
-2.24.1
+2.17.1
 

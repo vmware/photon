@@ -1,7 +1,10 @@
-From d03ae7c172fdf6a8a3e83520417a2c0c3ef0740e Mon Sep 17 00:00:00 2001
+From 1e7b0ed8d23d5a93afc426a2701805787cb7459a Mon Sep 17 00:00:00 2001
+Message-Id: <1e7b0ed8d23d5a93afc426a2701805787cb7459a.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 8 Nov 2013 17:34:54 +0100
-Subject: [PATCH 035/319] usb: do no disable interrupts in giveback
+Subject: [PATCH 035/327] usb: do no disable interrupts in giveback
 
 Since commit 94dfd7ed ("USB: HCD: support giveback of URB in tasklet
 context") the USB code disables interrupts before invoking the complete
@@ -14,7 +17,6 @@ mixed with those two HCDs.
 Longeterm we should force all HCDs to complete in the same context.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/usb/core/hcd.c | 3 ---
  1 file changed, 3 deletions(-)
@@ -42,5 +44,5 @@ index b82a7d787add..2f3015356124 100644
  	usb_anchor_resume_wakeups(anchor);
  	atomic_dec(&urb->use_count);
 -- 
-2.24.1
+2.17.1
 

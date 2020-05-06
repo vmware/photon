@@ -1,14 +1,16 @@
-From 175ec0ffdf22844217ddcfb3450d4ffa44c17ed1 Mon Sep 17 00:00:00 2001
+From 2d27283a8f76ac017050287c1a62c14cddaf11d4 Mon Sep 17 00:00:00 2001
+Message-Id: <2d27283a8f76ac017050287c1a62c14cddaf11d4.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 26 Jul 2018 15:06:10 +0200
-Subject: [PATCH 018/319] efi: Allow efi=runtime
+Subject: [PATCH 018/327] efi: Allow efi=runtime
 
 In case the option "efi=noruntime" is default at built-time, the user
 could overwrite its sate by `efi=runtime' and allow it again.
 
 Acked-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  drivers/firmware/efi/efi.c | 3 +++
  1 file changed, 3 insertions(+)
@@ -28,5 +30,5 @@ index d54fca902e64..5db20908aa9c 100644
  }
  early_param("efi", parse_efi_cmdline);
 -- 
-2.24.1
+2.17.1
 

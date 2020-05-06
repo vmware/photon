@@ -1,7 +1,10 @@
-From 669d170533145dd48cc0aa2f74ecc324e14328f1 Mon Sep 17 00:00:00 2001
+From 79bc9b1cb45fe96b437ac97ffbbb28c1f02523a9 Mon Sep 17 00:00:00 2001
+Message-Id: <79bc9b1cb45fe96b437ac97ffbbb28c1f02523a9.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Clark Williams <williams@redhat.com>
 Date: Tue, 3 Jul 2018 13:34:30 -0500
-Subject: [PATCH 015/319] fscache: initialize cookie hash table raw spinlocks
+Subject: [PATCH 015/327] fscache: initialize cookie hash table raw spinlocks
 
 The fscache cookie mechanism uses a hash table of hlist_bl_head structures. The
 PREEMPT_RT patcheset adds a raw spinlock to this structure and so on PREEMPT_RT
@@ -12,7 +15,6 @@ Use the init function for fscache cookies.
 
 Signed-off-by: Clark Williams <williams@redhat.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  fs/fscache/cookie.c     | 8 ++++++++
  fs/fscache/main.c       | 1 +
@@ -60,5 +62,5 @@ index 84b90a79d75a..87a9330eafa2 100644
  /**
   * fscache_register_netfs - Register a filesystem as desiring caching services
 -- 
-2.24.1
+2.17.1
 

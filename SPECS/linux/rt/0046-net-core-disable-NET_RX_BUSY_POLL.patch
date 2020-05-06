@@ -1,7 +1,10 @@
-From 2a9ffe7a925e7452567e51c7988af4443e3cbc1b Mon Sep 17 00:00:00 2001
+From 996a1b580a6cc76c1463f9f69662448d34ebb398 Mon Sep 17 00:00:00 2001
+Message-Id: <996a1b580a6cc76c1463f9f69662448d34ebb398.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Sat, 27 May 2017 19:02:06 +0200
-Subject: [PATCH 046/319] net/core: disable NET_RX_BUSY_POLL
+Subject: [PATCH 046/327] net/core: disable NET_RX_BUSY_POLL
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -15,7 +18,6 @@ it and so it could take a while until the state is realeased and napi_poll()
 could be invoked again.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  net/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
@@ -34,5 +36,5 @@ index 228dfa382eec..bc8d01996f22 100644
  config BQL
  	bool
 -- 
-2.24.1
+2.17.1
 

@@ -1,13 +1,15 @@
-From 5aabee6720c1d83eaf3a3c066159732206930a6c Mon Sep 17 00:00:00 2001
+From 7dca342c202dd085c2ed2817d5bf9bdfb8d9fd4b Mon Sep 17 00:00:00 2001
+Message-Id: <7dca342c202dd085c2ed2817d5bf9bdfb8d9fd4b.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 3 Apr 2011 11:57:29 +0200
-Subject: [PATCH 071/319] genirq: Force interrupt thread on RT
+Subject: [PATCH 071/327] genirq: Force interrupt thread on RT
 
 Force threaded_irqs and optimize the code (force_irqthreads) in regard
 to this.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  include/linux/interrupt.h | 4 ++++
  kernel/irq/manage.c       | 2 ++
@@ -30,7 +32,7 @@ index eeceac3376fc..315f852b4981 100644
  #define force_irqthreads	(0)
  #endif
 diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index 23bcfa71077f..3c26d0708709 100644
+index efcb54ee0922..0809bf7743af 100644
 --- a/kernel/irq/manage.c
 +++ b/kernel/irq/manage.c
 @@ -24,6 +24,7 @@
@@ -50,5 +52,5 @@ index 23bcfa71077f..3c26d0708709 100644
  
  static void __synchronize_hardirq(struct irq_desc *desc, bool sync_chip)
 -- 
-2.24.1
+2.17.1
 

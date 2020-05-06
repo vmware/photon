@@ -1,12 +1,14 @@
-From 077c2141a5f32f7613ec56961f6a9733ee632c05 Mon Sep 17 00:00:00 2001
+From 2724f222d99a9ed81df4fa565d6cf82d34259d69 Mon Sep 17 00:00:00 2001
+Message-Id: <2724f222d99a9ed81df4fa565d6cf82d34259d69.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 18 Jul 2011 17:10:12 +0200
-Subject: [PATCH 051/319] mips: Disable highmem on RT
+Subject: [PATCH 051/327] mips: Disable highmem on RT
 
 The current highmem handling on -RT is not compatible and needs fixups.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  arch/mips/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
@@ -25,5 +27,5 @@ index a830a9701e50..3d5fae3891be 100644
  config CPU_SUPPORTS_HIGHMEM
  	bool
 -- 
-2.24.1
+2.17.1
 

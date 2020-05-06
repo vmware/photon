@@ -1,0 +1,44 @@
+From e7c83855d0557c416f5940cc7c57095b166f993f Mon Sep 17 00:00:00 2001
+Message-Id: <e7c83855d0557c416f5940cc7c57095b166f993f.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+From: Julien Grall <julien.grall@arm.com>
+Date: Wed, 21 Aug 2019 10:24:07 +0100
+Subject: [PATCH 294/327] hrtimer: Use READ_ONCE to access timer->base in
+ hrimer_grab_expiry_lock()
+
+[ Upstream commit 2c8fdbe7ef0ad06c1a326886c5954e117b5657d6 ]
+
+The update to timer->base is protected by the base->cpu_base->lock().
+However, hrtimer_grab_expirty_lock() does not access it with the lock.
+
+So it would theorically be possible to have timer->base changed under
+our feet. We need to prevent the compiler to refetch timer->base so the
+check and the access is performed on the same base.
+
+Other access of timer->base are either done with a lock or protected
+with READ_ONCE(). So use READ_ONCE() in hrtimer_grab_expirty_lock().
+
+Signed-off-by: Julien Grall <julien.grall@arm.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ kernel/time/hrtimer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
+index 94d97eae0a46..d6026c170c2d 100644
+--- a/kernel/time/hrtimer.c
++++ b/kernel/time/hrtimer.c
+@@ -941,7 +941,7 @@ EXPORT_SYMBOL_GPL(hrtimer_forward);
+ 
+ void hrtimer_grab_expiry_lock(const struct hrtimer *timer)
+ {
+-	struct hrtimer_clock_base *base = timer->base;
++	struct hrtimer_clock_base *base = READ_ONCE(timer->base);
+ 
+ 	if (base && base->cpu_base) {
+ 		spin_lock(&base->cpu_base->softirq_expiry_lock);
+-- 
+2.17.1
+

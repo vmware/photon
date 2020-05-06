@@ -1,9 +1,11 @@
-From aa1ee07372c9826aa12b48a40ecb187c8364d502 Mon Sep 17 00:00:00 2001
+From 8ad94df28becac218184cd246b017a0141a46247 Mon Sep 17 00:00:00 2001
+Message-Id: <8ad94df28becac218184cd246b017a0141a46247.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Sat, 27 May 2017 19:02:06 +0200
-Subject: [PATCH 027/319] kernel/sched/core: add migrate_disable()
+Subject: [PATCH 027/327] kernel/sched/core: add migrate_disable()
 
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  include/linux/preempt.h |  23 +++++++
  include/linux/sched.h   |   7 +++
@@ -54,7 +56,7 @@ index c01813c3fbe9..3196d0e76719 100644
  
  #ifdef MODULE
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 68e673278301..038d0faaa1d5 100644
+index 4298a87b9de6..0489d3e0e78c 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -662,6 +662,13 @@ struct task_struct {
@@ -262,5 +264,5 @@ index 78fadf0438ea..5027158d3908 100644
  #undef PN
  #undef __PN
 -- 
-2.24.1
+2.17.1
 

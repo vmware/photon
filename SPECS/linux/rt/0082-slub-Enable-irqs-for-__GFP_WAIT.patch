@@ -1,19 +1,21 @@
-From 0e05bdfbb5b326b94f9f257573f8e3532463d3b0 Mon Sep 17 00:00:00 2001
+From a84add7d6794ad6184fc6c5c6fbf63c20c733dac Mon Sep 17 00:00:00 2001
+Message-Id: <a84add7d6794ad6184fc6c5c6fbf63c20c733dac.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 9 Jan 2013 12:08:15 +0100
-Subject: [PATCH 082/319] slub: Enable irqs for __GFP_WAIT
+Subject: [PATCH 082/327] slub: Enable irqs for __GFP_WAIT
 
 SYSTEM_RUNNING might be too late for enabling interrupts. Allocations
 with GFP_WAIT can happen before that. So use this as an indicator.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  mm/slub.c | 9 ++++++++-
  1 file changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/mm/slub.c b/mm/slub.c
-index cbe47408c6eb..81c32ceab228 100644
+index 181b2cb6ffbb..555adbd96356 100644
 --- a/mm/slub.c
 +++ b/mm/slub.c
 @@ -1570,10 +1570,17 @@ static struct page *allocate_slab(struct kmem_cache *s, gfp_t flags, int node)
@@ -44,5 +46,5 @@ index cbe47408c6eb..81c32ceab228 100644
  	if (!page)
  		return NULL;
 -- 
-2.24.1
+2.17.1
 

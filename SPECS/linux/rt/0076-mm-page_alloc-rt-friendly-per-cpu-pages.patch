@@ -1,7 +1,10 @@
-From 25afd37ec505d98c3000f4fbb9338a63937ef74d Mon Sep 17 00:00:00 2001
+From 3c705eb7ff76685a9c4b40776b6d975e64cf6df0 Mon Sep 17 00:00:00 2001
+Message-Id: <3c705eb7ff76685a9c4b40776b6d975e64cf6df0.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 3 Jul 2009 08:29:37 -0500
-Subject: [PATCH 076/319] mm: page_alloc: rt-friendly per-cpu pages
+Subject: [PATCH 076/327] mm: page_alloc: rt-friendly per-cpu pages
 
 rt-friendly per-cpu pages: convert the irqs-off per-cpu locking
 method into a preemptible, explicit-per-cpu-locks method.
@@ -12,13 +15,12 @@ Contains fixes from:
 
 Signed-off-by: Ingo Molnar <mingo@elte.hu>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  mm/page_alloc.c | 63 +++++++++++++++++++++++++++++++++----------------
  1 file changed, 43 insertions(+), 20 deletions(-)
 
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 49f7bb170b4d..bff6c04eb359 100644
+index 9a4d150ea5b7..d6f9be9c6635 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
 @@ -60,6 +60,7 @@
@@ -216,7 +218,7 @@ index 49f7bb170b4d..bff6c04eb359 100644
  	return NULL;
  }
  
-@@ -8099,7 +8122,7 @@ void zone_pcp_reset(struct zone *zone)
+@@ -8129,7 +8152,7 @@ void zone_pcp_reset(struct zone *zone)
  	struct per_cpu_pageset *pset;
  
  	/* avoid races with drain_pages()  */
@@ -225,7 +227,7 @@ index 49f7bb170b4d..bff6c04eb359 100644
  	if (zone->pageset != &boot_pageset) {
  		for_each_online_cpu(cpu) {
  			pset = per_cpu_ptr(zone->pageset, cpu);
-@@ -8108,7 +8131,7 @@ void zone_pcp_reset(struct zone *zone)
+@@ -8138,7 +8161,7 @@ void zone_pcp_reset(struct zone *zone)
  		free_percpu(zone->pageset);
  		zone->pageset = &boot_pageset;
  	}
@@ -235,5 +237,5 @@ index 49f7bb170b4d..bff6c04eb359 100644
  
  #ifdef CONFIG_MEMORY_HOTREMOVE
 -- 
-2.24.1
+2.17.1
 

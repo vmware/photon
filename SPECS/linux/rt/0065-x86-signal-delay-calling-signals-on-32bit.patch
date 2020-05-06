@@ -1,7 +1,10 @@
-From 53600ca5e2d91b09173470da3698b872172b8e3a Mon Sep 17 00:00:00 2001
+From ad228035652dbf96f3ee14ca10e14e85fb4e5b3c Mon Sep 17 00:00:00 2001
+Message-Id: <ad228035652dbf96f3ee14ca10e14e85fb4e5b3c.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Yang Shi <yang.shi@linaro.org>
 Date: Thu, 10 Dec 2015 10:58:51 -0800
-Subject: [PATCH 065/319] x86/signal: delay calling signals on 32bit
+Subject: [PATCH 065/327] x86/signal: delay calling signals on 32bit
 
 When running some ptrace single step tests on x86-32 machine, the below problem
 is triggered:
@@ -26,7 +29,6 @@ from IST context") which was merged in v4.1-rc1.
 
 Signed-off-by: Yang Shi <yang.shi@linaro.org>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  arch/x86/include/asm/signal.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
@@ -45,5 +47,5 @@ index fb0438d06ca7..c00e27af2205 100644
  #endif
  
 -- 
-2.24.1
+2.17.1
 

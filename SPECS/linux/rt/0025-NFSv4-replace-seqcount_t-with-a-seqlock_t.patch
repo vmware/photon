@@ -1,7 +1,10 @@
-From ee624f64e49b67ed8912644b49a392651308fc12 Mon Sep 17 00:00:00 2001
+From 89760c7945fc386046ef15f564d7e91990f88ed8 Mon Sep 17 00:00:00 2001
+Message-Id: <89760c7945fc386046ef15f564d7e91990f88ed8.1588347332.git.zanussi@kernel.org>
+In-Reply-To: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
+References: <119971df8e4c3a8550b9b7479e5e409dc03f07b6.1588347332.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 28 Oct 2016 23:05:11 +0200
-Subject: [PATCH 025/319] NFSv4: replace seqcount_t with a seqlock_t
+Subject: [PATCH 025/327] NFSv4: replace seqcount_t with a seqlock_t
 
 The raw_write_seqcount_begin() in nfs4_reclaim_open_state() bugs me
 because it maps to preempt_disable() in -RT which I can't have at this
@@ -18,7 +21,6 @@ block readers).
 
 Reported-by: kernel test robot <xiaolong.ye@intel.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
  fs/nfs/delegation.c |  4 ++--
  fs/nfs/nfs4_fs.h    |  2 +-
@@ -27,7 +29,7 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  4 files changed, 21 insertions(+), 11 deletions(-)
 
 diff --git a/fs/nfs/delegation.c b/fs/nfs/delegation.c
-index 74ff459b75ef..6b422d1b5ae1 100644
+index b0c0c2fc2fba..26565ba05dc1 100644
 --- a/fs/nfs/delegation.c
 +++ b/fs/nfs/delegation.c
 @@ -162,11 +162,11 @@ static int nfs_delegation_claim_opens(struct inode *inode,
@@ -58,7 +60,7 @@ index 5b61520dce88..2771aafaca19 100644
  };
  
 diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
-index 7834b325394f..026164678f37 100644
+index 668b648064b7..187d411668ed 100644
 --- a/fs/nfs/nfs4proc.c
 +++ b/fs/nfs/nfs4proc.c
 @@ -2870,7 +2870,7 @@ static int _nfs4_open_and_get_state(struct nfs4_opendata *opendata,
@@ -132,5 +134,5 @@ index b3086e99420c..c9bf1eb7e1b2 100644
  }
  
 -- 
-2.24.1
+2.17.1
 
