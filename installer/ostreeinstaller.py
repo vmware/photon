@@ -16,6 +16,7 @@ class OstreeInstaller(object):
 
     def __init__(self, installer):
         self.repo_config = {}
+        self.installer_path = installer.installer_path
         self.repo_read_conf()
 
         # simulate inheritance
@@ -24,7 +25,6 @@ class OstreeInstaller(object):
         if self.install_config['ui']:
             self.progress_bar = installer.progress_bar
         self.photon_root = installer.photon_root
-        self.installer_path = installer.installer_path
         self._create_fstab = installer._create_fstab
         self.exit_gracefully = installer.exit_gracefully
         self._get_uuid = installer._get_uuid
@@ -38,13 +38,15 @@ class OstreeInstaller(object):
             self.ostree_ref = self.install_config['ostree']['repo_ref']
 
     def repo_read_conf(self):
-        with open("ostree-release-repo.conf") as repo_conf:
+        conf_path = os.path.abspath(self.installer_path + "/ostree-release-repo.conf")
+        with open(conf_path) as repo_conf:
             for line in repo_conf:
                 name, value = line.partition("=")[::2]
                 self.repo_config[name] = value.strip(' \n\t\r')
 
     def pull_repo(self, repo_url, repo_ref):
-        self.run([['ostree', 'remote', 'add', '--repo={}/ostree/repo'.format(self.photon_root), '--set=gpg-verify=false', 'photon', '{}'.format(repo_url)]], "Adding OSTree remote")
+        self.run([['ostree', 'remote', 'add', '--repo={}/ostree/repo'.format(self.photon_root), '--set=gpg-verify=false', 'photon', '{}'
+                 .format(repo_url)]], "Adding OSTree remote")
         if self.default_repo:
             self.run([['ostree', 'pull-local', '--repo={}/ostree/repo'.format(self.photon_root), '{}'.format(self.local_repo_path)]], "Pulling OSTree repo")
             cmd = []
@@ -72,7 +74,8 @@ class OstreeInstaller(object):
             "/var/spool/mail"]
 
         for prefix in prefixes:
-            command = ['systemd-tmpfiles', '--create', '--boot', '--root={}/ostree/deploy/photon/deploy/{}.0'.format(self.photon_root, commit_number), '--prefix={}'.format(prefix)]
+            command = ['systemd-tmpfiles', '--create', '--boot', '--root={}/ostree/deploy/photon/deploy/{}.0'
+                      .format(self.photon_root, commit_number), '--prefix={}'.format(prefix)]
             self.run([command], "systemd-tmpfiles command done")
 
     def create_symlink_directory(self, deployment):
@@ -103,20 +106,18 @@ class OstreeInstaller(object):
         """
         Ostree Installer  Main
         """
-        sysroot_boot = self.photon_root
-        sysroot_bootefi = self.photon_root
+        partition_data = {}
         for partition in self.install_config['partitions']:
-            if partition.get('mountpoint', '') == '/':
-                root_partition = partition
             if partition.get('mountpoint', '') == '/boot':
-                boot_partition = partition
-                sysroot_boot = sysroot_boot + partition['mountpoint']
+                partition_data['boot'] = self.photon_root + partition['mountpoint']
+                partition_data['bootdirectory'] = partition['mountpoint']
             if partition.get('mountpoint', '') == '/boot/efi' and partition['filesystem'] == 'vfat':
-                sysroot_bootefi = sysroot_bootefi + partition['mountpoint']
+                partition_data['bootefi'] = self.photon_root + partition['mountpoint']
+                partition_data['bootefidirectory'] = partition['mountpoint']
 
         sysroot_ostree = os.path.join(self.photon_root, "ostree")
-        loader0 = os.path.join(sysroot_boot, "loader.0")
-        loader1 = os.path.join(sysroot_boot, "loader.1")
+        loader0 = os.path.join(partition_data['boot'], "loader.0")
+        loader1 = os.path.join(partition_data['boot'], "loader.1")
 
         boot0 = os.path.join(sysroot_ostree, "boot.0")
         boot1 = os.path.join(sysroot_ostree, "boot.1")
@@ -127,18 +128,14 @@ class OstreeInstaller(object):
         self.get_ostree_repo_url()
 
         bootmode = self.install_config['bootmode']
-        if bootmode == 'dualboot' or bootmode == 'efi':
-            mount_efi = []
-            mount_efi.append(['mkdir', '-p', '{}/EFI/Boot'.format(sysroot_bootefi)])
-            mount_efi.append(['mkdir', '-p', '{}/boot/grub2/fonts'.format(sysroot_bootefi)])
-            mount_efi.append(['cp', '-r', '{}/boot/.'.format(self.installer_path), '{}/boot/grub2/fonts/'.format(sysroot_bootefi)])
-            self.run(mount_efi, "Mount and setup efi partition")
-
         if self.default_repo:
             self.run([['mkdir', '-p', '{}/repo'.format(self.photon_root)]])
             if self.install_config['ui']:
                 self.progress_bar.show_loading("Unpacking local OSTree repo")
-            self.run([['tar', '--warning=none', '-xf', '/mnt/media/ostree-repo.tar.gz', '-C' '{}/repo'.format(self.photon_root)]])
+            ostree_repo_tree = "/mnt/media/ostree-repo.tar.gz"
+            if not os.path.isfile(ostree_repo_tree):
+                ostree_repo_tree = os.path.abspath(os.getcwd() + "/../ostree-repo.tar.gz")
+            self.run([['tar', '--warning=none', '-xf', '{}'.format(ostree_repo_tree), '-C' '{}/repo'.format(self.photon_root)]])
             self.local_repo_path = "{}/repo".format(self.photon_root)
             self.ostree_repo_url = self.repo_config['OSTREEREPOURL']
             self.ostree_ref = self.repo_config['OSTREEREFS']
@@ -154,8 +151,10 @@ class OstreeInstaller(object):
         deployment = os.path.join(self.photon_root, "ostree/deploy/photon/deploy/" + commit_number + ".0/")
         self.create_symlink_directory(deployment)
 
-        deployment_boot = os.path.join(deployment, "boot")
         deployment_sysroot = os.path.join(deployment, "sysroot")
+        deployment_boot = os.path.join(deployment, "boot")
+        if bootmode == 'dualboot' or bootmode == 'efi':
+            deployment_bootefi = os.path.join(deployment, "boot/efi")
 
         if os.path.exists(loader1):
             cmd = []
@@ -163,20 +162,41 @@ class OstreeInstaller(object):
             cmd.append(['mv', '{}'.format(boot1), '{}'.format(boot0)])
             cmd.append(['mv', '{}'.format(boot11), '{}'.format(boot01)])
             self.run(cmd)
-        mount_bind = []
-        mount_bind.append(['mount', '--bind', '{}'.format(sysroot_boot), '{}'.format(deployment_boot)])
-        mount_bind.append(['mount', '--bind', '{}'.format(self.photon_root), '{}'.format(deployment_sysroot)])
-        self.run(mount_bind)
-        if bootmode == 'dualboot' or bootmode == 'bios':
-            self.run([['chroot', '{}'.format(deployment), 'bash', '-c', 'grub2-install --target=i386-pc --force --boot-directory=/boot {};'.format(self.install_config['disk'])]], "Generating Grub binaries for BIOS mode")
-        if bootmode == 'dualboot' or bootmode == 'efi':
-            self.run([['cp', '-r', '{}/EFI_x86_64/BOOT/.'.format(self.installer_path), '{}/EFI/Boot/'.format(sysroot_bootefi)]], "Generating grub.cfg for efi boot")
-            with open(os.path.join(sysroot_bootefi, 'boot/grub2/grub.cfg'), "w") as grub_cfg:
-                grub_cfg.write("search -n -u {} -s\n".format(self._get_uuid(boot_partition['path'])))
-                grub_cfg.write("configfile /grub2/grub.cfg\n")
-            self.run([['chroot', '{}'.format(deployment), 'bash', '-c', 'mkdir -p /boot/grub2;']])
 
-        self.run([['chroot', '{}'.format(deployment), 'bash', '-c', 'grub2-mkconfig -o /boot/grub2/grub.cfg;']])
+        mount_bind = []
+        mount_bind.append(['mount', '--bind', '{}'.format(self.photon_root), '{}'.format(deployment_sysroot)])
+        mount_bind.append(['mount', '--bind', '{}'.format(partition_data['boot']), '{}'.format(deployment_boot)])
+        if bootmode == 'dualboot' or bootmode == 'efi':
+            mount_bind.append(['mount', '--bind', '{}'.format(partition_data['bootefi']), '{}'.format(deployment_bootefi)])
+        self.run(mount_bind)
+
+        if bootmode == 'dualboot' or bootmode == 'bios':
+            self.run([['chroot', '{}'.format(deployment), 'bash', '-c', 'grub2-install --target=i386-pc --force --boot-directory={} {};'
+                     .format(partition_data['bootdirectory'], self.install_config['disk'])]], "Generating Grub binaries for BIOS mode")
+        if bootmode == 'dualboot' or bootmode == 'efi':
+            self.run([['mkdir', '-p', partition_data['bootefi'] + '/boot/grub2']], "Generating grub.cfg for efi boot")
+            with open(os.path.join(partition_data['bootefi'], 'boot/grub2/grub.cfg'), "w") as grub_cfg:
+                grub_cfg.write("search -n -u {} -s\n".format(self._get_uuid(self.install_config['partitions_data']['boot'])))
+                grub_cfg.write("configfile {}grub2/grub.cfg\n".format(self.install_config['partitions_data']['bootdirectory']))
+            self.run([['chroot', '{}'.format(deployment), 'bash', '-c', 'mkdir -p /boot/grub2;']])
+        self.run([['chroot', '{}'.format(deployment), 'bash', '-c', 'grub2-mkconfig -o {}/grub2/grub.cfg;'
+                 .format(partition_data['bootdirectory'])]])
+
+        if bootmode == 'dualboot' or bootmode == 'efi':
+            setup_efi = []
+            setup_efi.append(['chroot', '{}'.format(deployment), 'bash', '-c', 'cp -rpf /usr/lib/ostree-boot/grub2/* {}/boot/grub2/;'
+                             .format(partition_data['bootefidirectory'])])
+            setup_efi.append(['chroot', '{}'.format(deployment), 'bash', '-c', 'cp -rpf /usr/lib/ostree-boot/efi/* {};'
+                             .format(partition_data['bootefidirectory'])])
+            self.run(setup_efi, "Setup efi partition")
+
+        setup_boot = []
+        setup_boot.append(['chroot', '{}'.format(deployment), 'bash', '-c', 'rm -rf {}/grub2/fonts;'
+                          .format(partition_data['bootdirectory'])])
+        setup_boot.append(['chroot', '{}'.format(deployment), 'bash', '-c', 'ln -sf /usr/lib/ostree-boot/grub2/* {}/grub2/;'
+                          .format(partition_data['bootdirectory'])])
+        self.run(setup_boot, "Setup boot partition")
+
         if os.path.exists(loader0):
             cmd = []
             cmd.append(['mv', '{}'.format(loader0), '{}'.format(loader1)])
@@ -184,11 +204,13 @@ class OstreeInstaller(object):
             cmd.append(['mv', '{}'.format(boot01), '{}'.format(boot11)])
             self.run(cmd)
 
-        partuuid=self._get_partuuid(root_partition['path'])
+        partuuid=self._get_partuuid(self.install_config['partitions_data']['root'])
         if partuuid == "" :
-            self.run([['chroot', '{}'.format(deployment), 'bash', '-c', "ostree admin instutil set-kargs '$photon_cmdline' '$systemd_cmdline' root={};".format(root_partition['path'])]], "Add ostree  menu entry in grub.cfg")
+            self.run([['chroot', '{}'.format(deployment), 'bash', '-c', "ostree admin instutil set-kargs '$photon_cmdline' '$systemd_cmdline' root={};"
+                     .format(self.install_config['partitions_data']['root'])]], "Add ostree  menu entry in grub.cfg")
         else:
-            self.run([['chroot', '{}'.format(deployment), 'bash', '-c', "ostree admin instutil set-kargs '$photon_cmdline' '$systemd_cmdline' root=PARTUUID={};".format(partuuid)]], "Add ostree  menu entry in grub.cfg")
+            self.run([['chroot', '{}'.format(deployment), 'bash', '-c', "ostree admin instutil set-kargs '$photon_cmdline' '$systemd_cmdline' root=PARTUUID={};"
+                     .format(partuuid)]], "Add ostree  menu entry in grub.cfg")
 
         sysroot_grub2_grub_cfg = os.path.join(self.photon_root, "boot/grub2/grub.cfg")
         self.run([['ln', '-sf', '../loader/grub.cfg', '{}'.format(sysroot_grub2_grub_cfg)]])

@@ -388,7 +388,7 @@ src-iso: check-tools photon-stage $(PHOTON_PACKAGES)
 		--pkg-to-rpm-map-file $(PHOTON_PKGINFO_FILE) > \
 		$(PHOTON_LOGS_DIR)/sourceiso-installer.log 2>&1
 
-image: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
+image: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES) ostree-repo
 	@echo "Building image using $(CONFIG)..."
 	@cd $(PHOTON_IMAGE_BUILDER_DIR)
 	$(PHOTON_IMAGE_BUILDER) \
@@ -399,7 +399,7 @@ image: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 		--stage-path=$(PHOTON_STAGE) \
 		--rpm-path $(PHOTON_STAGE)/RPMS
 
-all-images: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
+all-images: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES) ostree-repo
 	@echo "Building all images - gce, ami, azure, ova..."
 	@cd $(PHOTON_IMAGE_BUILDER_DIR)
 	$(PHOTON_IMAGE_BUILDER) \
