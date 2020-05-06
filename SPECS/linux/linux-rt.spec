@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.115
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt50
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -61,6 +61,8 @@ Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
+# Fix CVE-2020-10711
+Patch40:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 Patch201:        0001-ARM-at91-add-TCB-registers-definitions.patch
@@ -493,6 +495,7 @@ Python programming language to use the interface to manipulate perf events.
 %patch36 -p1
 %patch38 -p1
 %patch39 -p1
+%patch40 -p1
 
 %patch201 -p1
 %patch202 -p1
@@ -1010,6 +1013,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{python3_sitelib}/*
 
 %changelog
+*   Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.115-2
+-   Add patch to fix CVE-2020-10711
 *   Wed May 06 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.115-1
 -   Upgrade to 4.19.115
 *   Wed Apr 29 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.98-5

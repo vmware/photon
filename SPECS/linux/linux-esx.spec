@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.112
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -73,6 +73,8 @@ Patch43:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 Patch44:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19074
 Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
+# Fix CVE-2020-10711
+Patch46:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -168,6 +170,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
+%patch46 -p1
 %patch98 -p1
 %patch100 -p1
 %patch101 -p1
@@ -301,6 +304,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.112-9
+-   Add patch to fix CVE-2020-10711
 *   Thu May 06 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-8
 -   Hardcoded the value of BARs in PCI_Probe for 2 more pci devices
 *   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.112-7
