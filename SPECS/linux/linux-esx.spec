@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.221
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -65,6 +65,8 @@ Patch48:        0008-xfs-enhance-dinode-verifier.patch
 Patch50:        fix_use_after_free_in_sockfs_setattr.patch
 # Fix for CVE-2019-12456
 Patch51:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
+# Fix for CVE-2020-10711
+Patch52:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
 # Fix for CVE-2019-12379
 Patch54:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2019-12381
@@ -159,6 +161,7 @@ The Linux package contains the Linux kernel doc files
 %patch48 -p1
 %patch50 -p1
 %patch51 -p1
+%patch52 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -256,6 +259,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 12 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.4.221-3
+-   Add patch to fix CVE-2020-10711
 *   Fri May 08 2020 Vikash Bansal <bvikas@vmware.com> 4.4.221-2
 -   PCI Probe Refactored - Backported from dev
 *   Tue May 05 2020 ashwin-h <ashwinh@vmware.com> 4.4.221-1
