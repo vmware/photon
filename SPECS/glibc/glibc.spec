@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.22
-Release:        26%{?dist}
+Release:        27%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -55,6 +55,7 @@ Patch27:        glibc-fix-CVE-2017-12132.patch
 Patch28:        glibc-Check-length-of-ifname-before-copying-it-into-to-ifreq-structure.patch
 Patch29:        glibc-fix-CVE-2018-19591.patch
 Patch30:        CVE-2019-9169.patch
+Patch31:        glibc-fix-CVE-2019-10739.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -111,6 +112,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
+%patch31 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -238,6 +240,8 @@ popd
 %{_datarootdir}/locale/locale.alias
 
 %changelog
+*   Thu May 07 2020 Keerthana K <keerthanak@vmware.com> 2.22-27
+-   Fix CVE-2019-10739
 *   Wed Apr 17 2019 Ashwin H <ashwinh@vmware.com> 2.22-26
 -   Bump up release number to fix AVX512 instruction generation.
 *   Fri Mar 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.22-25
