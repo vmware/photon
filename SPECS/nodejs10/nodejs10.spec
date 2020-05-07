@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs10
 Version:        10.19.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -19,7 +19,7 @@ Requires:       coreutils >= 8.22, openssl >= 1.0.1
 # Only one of the nodejs version can exist in system
 # Thus obsoleting nodejs if nodejs10 need to be installed
 # And in nodejs.spec, obsoleting nodejs10 if nodejs-8 need to be installed
-Obsoletes:      nodejs
+Obsoletes:      nodejs <= 8.11.4
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -76,6 +76,8 @@ make  %{?_smp_mflags} test
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Thu May 07 2020 Ankit Jain <ankitja@vmware.com> 10.19.0-2
+-   Obsoletes specific version of nodejs
 *   Thu Apr 09 2020 Siju Maliakkal <smaliakkal@vmware.com> 10.19.0-1
 -   Upgrade to 10.19.0 for CVE-2019-15604,CVE-2019-15605,CVE-2019-15606
 *   Thu Jan 30 2020 Siju Maliakkal <smaliakkal@vmware.com> 10.18.0-1
