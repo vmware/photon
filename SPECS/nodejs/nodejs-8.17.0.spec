@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        8.17.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -16,6 +16,8 @@ BuildRequires:  which
 Requires:       (coreutils >= 8.22 or toybox)
 Requires:       openssl >= 1.0.1
 Requires:       python2
+# To fix upgrade from photon-1.0 to photon-3.0
+Obsoletes:      nodejs10
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -73,6 +75,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Thu May 07 2020 Ankit Jain <ankitja@vmware.com> 8.17.0-2
+-   To fix upgrade from 1.0 to 3.0, obsoletes nodejs10
 *   Wed Jan 29 2020 Siju Maliakkal <smaliakkal@vmware.com> 8.17.0-1
 -   Upgrade to 8.17.0 for fixing multiple CVEs
 *   Mon Jan 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 8.11.4-3
