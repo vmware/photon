@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -19,6 +19,8 @@ Patch1:         glibc-2.24-bindrsvport-blacklist.patch
 Patch2:         0002-malloc-arena-fix.patch
 Patch3:         glibc-2.28-CVE-2018-19591.patch
 Patch4:         CVE-2019-9169.patch
+Patch5:         CVE-2019-10739.patch
+Patch6:         CVE-2020-10029.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -77,6 +79,8 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
+%patch6 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -281,6 +285,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Thu May 07 2020 Keerthana K <keerthanak@vmware.com> 2.28-5
+-   Fix CVE-2019-10739, CVE-2020-10029
 *   Fri Jul 12 2019 Ankit Jain <ankitja@vmware.com> 2.28-4
 -   Replaced spaces with tab in nsswitch.conf file
 *   Fri Mar 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.28-3
