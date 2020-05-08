@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.115
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -312,6 +312,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri May 08 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-4
+-   Backported Refactored PCI probe patch with from dev branch
 *   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.115-3
 -   Photon-checksum-generator version update to 1.1.
 *   Mon Apr 20 2020 Keerthana K <keerthanak@vmware.com> 4.19.115-2
