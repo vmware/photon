@@ -1,7 +1,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        10.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -17,8 +17,9 @@ Requires:       libxml2
 
 %description
 The LLVM Project is a collection of modular and reusable compiler and toolchain technologies.
-Despite its name, LLVM has little to do with traditional virtual machines, though it does provide helpful libraries that can be used to build them.
-The name "LLVM" itself is not an acronym; it is the full name of the project.
+Despite its name, LLVM has little to do with traditional virtual machines, though it does
+provide helpful libraries that can be used to build them. The name "LLVM" itself is not an
+acronym; it is the full name of the project.
 
 %package        devel
 Summary:        Development headers for llvm
@@ -33,12 +34,13 @@ for developing applications that use llvm.
 %build
 mkdir -p build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr           \
-      -DLLVM_ENABLE_FFI=ON                  \
-      -DCMAKE_BUILD_TYPE=Release            \
-      -DLLVM_BUILD_LLVM_DYLIB=ON            \
+cmake -DCMAKE_INSTALL_PREFIX=/usr               \
+      -DLLVM_ENABLE_FFI:BOOL=ON                 \
+      -DCMAKE_BUILD_TYPE=Release                \
+      -DLLVM_BUILD_LLVM_DYLIB:BOOL=ON           \
       -DLLVM_TARGETS_TO_BUILD="host;AMDGPU;BPF" \
-      -DLLVM_INCLUDE_GO_TESTS=No            \
+      -DLLVM_INCLUDE_GO_TESTS=No                \
+      -DLLVM_ENABLE_RTTI:BOOL=ON                \
       -Wno-dev ..
 make %{?_smp_mflags}
 %install
@@ -77,6 +79,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Thu Sep 10 2020 Susant Sahani Sahani <ssahani@vmware.com> 10.0.1-2
+-   Enable LLVM_ENABLE_RTTI
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 10.0.1-1
 -   Automatic Version Bump
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 6.0.1-4
