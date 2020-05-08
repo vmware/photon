@@ -3,23 +3,15 @@
 Summary:          Elastic Search
 Name:             elasticsearch
 Version:          6.8.8
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          Apache License Version 2.0
 URL:              https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
 Source0:          %{name}-%{version}.tar.gz
 %define sha1      %{name}-%{version}.tar.gz=57763d079d3f5cfbf123c536505e6814c7a432fb
 Source1:          cacerts
 %define sha1      cacerts=f584c7c1f48c552f39acfb5560a300a657d9f3bb
-# gradle installed dependencies all in one tarball
-# which includes benchmarks buildSrc client docs libs modules plugins qa rest-api-spec server test x-pack
-Source2:          gradle-tarball-1-for-elasticsearch-%{version}.tar.gz
-%define sha1      gradle-tarball-1-for-elasticsearch=ddf6e6f9bbf9577e002d2806012d9b0d66dee1b4
-# gradle installed dependencies all in one tarball, which includes distribution
-Source3:          gradle-tarball-2-for-elasticsearch-%{version}.tar.gz
-%define sha1      gradle-tarball-2-for-elasticsearch=3a849fa4ac03ee6f360febc22ad8d6684ad06d8c
-# gradle installed dependencies all in one tarball, which includes /root/.gradle
-Source4:          gradle-tarball-3-for-elasticsearch-%{version}.tar.gz
-%define sha1      gradle-tarball-3-for-elasticsearch=606d9b1a85bb31223116f0309dd1e7e4fce79931
+Source2:          distribution-for-elasticsearch-%{version}.tar.gz
+%define sha1      distribution-for-elasticsearch=7b1f5c24790e613eba29d20a862dff1bd31f38d2
 Group:            Development/Daemons
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -45,13 +37,6 @@ Elasticsearch is a highly distributed RESTful search engine built for the cloud.
 
 %prep
 %setup -qn %{name}-%{version}
-rm -rf benchmarks buildSrc client docs libs modules plugins qa rest-api-spec server test x-pack
-%setup -D -c -T -a 2 -n %{name}-%{version}/
-rm -rf distribution
-%setup -D -c -T -a 3 -n %{name}-%{version}/
-%setup -D -c -T -a 4 -n %{name}-%{version}/
-mv root/.gradle /root
-rm -rf root
 
 %build
 export LANG="en_US.UTF-8"
@@ -60,6 +45,12 @@ export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 export PATH=$JAVA_HOME/bin:$PATH
 export _JAVA_OPTIONS="-Xmx10g"
 cp %{SOURCE1} $JAVA_HOME/lib/security/
+#For building elasticsearch, we need to execute the below command
+
+#./gradlew assemble
+
+rm -rf distribution
+tar xf %{SOURCE2} --no-same-owner
 
 %install
 rm -rf %{buildroot}
@@ -131,6 +122,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+*   Fri May 08 2020 Tapas Kundu <tkundu@vmware.com> 6.8.8-2
+-   Optimize the src rpm.
 *   Wed Apr 15 2020 Tapas Kundu <tkundu@vmware.com> 6.8.8-1
 -   update to release 6.8.8
 *   Wed Oct 9 2019 Michelle Wang <michellew@vmware.com> 6.7.0-4

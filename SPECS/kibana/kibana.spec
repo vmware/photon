@@ -1,18 +1,16 @@
 Name:            kibana
 Summary:         Browser-based analytics and search dashboard for Elasticsearch.
 Version:         6.8.8
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         Apache License Version 2.0
 URL:             https://www.elastic.co/products/kibana
-Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}.tar.gz
+Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}-2.tar.gz
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Daemons
-%define sha1     %{name}-%{version}=e6d0b26f065fef6fad7ec3e88e97ce7c4c0f3bcd
-Source1:         node_modules_kibana_%{version}.tar.gz
-%define sha1     node_modules_kibana=8a45282f02db1e8cf7d74cad389c712689da9a73
-Source2:         kibana_build_%{version}.tar.gz
-%define sha1     kibana_build=5870573da792a26d842d765ca6a03ce7c3bde485
+%define sha1     %{name}-%{version}=74e9f4914554524bd952f89f05fa64c877dbaf12
+Source1:         kibana_build_%{version}-2.tar.gz
+%define sha1     kibana_build_%{version}=035633a48633dbb26f821f5c7605cb31a5f6f7d0
 BuildArch:       x86_64
 BuildRequires:   git
 BuildRequires:   yarn
@@ -40,12 +38,17 @@ It enables visual exploration and real-time analysis of your data in Elasticsear
 # 4) cd ..
 # 5) tar -zcvf kibana-6.7.0.tar.gz kibana-%{version}
 %setup -q -n %{name}-%{version}
-tar xf %{SOURCE1} --no-same-owner
 
 %build
 export PATH=${PATH}:/usr/bin
-tar xf %{SOURCE2} --no-same-owner
+#For building kibana pls, follow the below commands.
 
+#this command will download all the required node modules
+#yarn kbn bootstrap
+
+#this command will do the build
+#yarn build --oss --skip-os-packages
+tar xf %{SOURCE1} --no-same-owner
 
 %install
 mkdir -p %{buildroot}%{_datadir}/%{name}
@@ -129,7 +132,9 @@ exit
 %{_datadir}/%{name}
 
 %changelog
-*   Wed Apr 15 2020 Tapas Kundu <<tkundu@vmware.com> 6.8.8-1
+*   Fri May 08 2020 Tapas Kundu <tkundu@vmware.com> 6.8.8-2
+-   Optimized the src rpm.
+*   Wed Apr 15 2020 Tapas Kundu <tkundu@vmware.com> 6.8.8-1
 -   Update to release 6.8.8
 *   Fri Jan 24 2020 Ankit Jain <ankitja@vmware.com> 6.7.0-5
 -   Build with nodejs-10.15.3
