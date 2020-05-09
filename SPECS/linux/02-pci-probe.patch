@@ -1,4 +1,4 @@
-From c6e73db5fafa151b81a969a74c3138488a4310fa Mon Sep 17 00:00:00 2001
+From 1441e406fabe396aab8355cef50a9c834ecb7688 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 29 Sep 2015 15:55:49 -0700
 Subject: [PATCH] pci/probe.c: Hardcodded pci probe.
@@ -10,28 +10,24 @@ virtual PCI devices.
 
 is_known_device() has list of known devices and available
 resources (BARs) for them.
-It returns: 0 if BAR not available for the given device
-            1 if available and sz parameter will have BAR size
-
-guess_bar_count() returns maximum number of BARs for the given
-class to do not probe for all 6 bars
-
-has_rom() returns 0 if given class does not have any ROM BARs,
-which allows to skip ROM probing
 
 Added pci=scan_all cmdline parameter verifies hardcodded pci
 values at runtime.
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+
 ---
  drivers/pci/pci.c   |   2 +
  drivers/pci/pci.h   |   2 +
- drivers/pci/probe.c | 377 +++++++++++++++++++++++++++++++++++++++++++++++++++-
- 3 files changed, 377 insertions(+), 4 deletions(-)
+ drivers/pci/probe.c | 390 +++++++++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 390 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 6922964e3dff..e4db16e7c1d2 100644
+index e09653c7..0461b233 100644
 --- a/drivers/pci/pci.c
 +++ b/drivers/pci/pci.c
-@@ -5303,6 +5303,8 @@ static int __init pci_setup(char *str)
+@@ -5385,6 +5385,8 @@ static int __init pci_setup(char *str)
  				pcie_bus_config = PCIE_BUS_PEER2PEER;
  			} else if (!strncmp(str, "pcie_scan_all", 13)) {
  				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
@@ -41,7 +37,7 @@ index 6922964e3dff..e4db16e7c1d2 100644
  				printk(KERN_ERR "PCI: Unknown option `%s'\n",
  						str);
 diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index a5d37f6a9fb5..aaa456c9bf95 100644
+index a5d37f6a..aaa456c9 100644
 --- a/drivers/pci/pci.h
 +++ b/drivers/pci/pci.h
 @@ -163,6 +163,8 @@ void pci_no_msi(void);
@@ -54,14 +50,163 @@ index a5d37f6a9fb5..aaa456c9bf95 100644
  {
  	u16 control;
 diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index d266d800f246..11544ddd6e5c 100644
+index 16611cf3..c9bf917e 100644
 --- a/drivers/pci/probe.c
 +++ b/drivers/pci/probe.c
-@@ -163,6 +163,346 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+@@ -29,6 +29,148 @@ static struct resource busn_resource = {
+ 	.flags	= IORESOURCE_BUS,
+ };
+ 
++
++/**
++ *pci_dev_bar_info : Representation of BARs for PCI device
++ *@vid: Vendor ID of PCI device
++ *@pid: Product ID of PCI device
++ *@bars: Numbers of bars to be read for PCI device
++ *@sz[11]: Known Values of Bars and ROM
++ *        sz[0]--sz[6] is for offset 0x10 to 0x24
++ *	 sz[8] is for ROM offset 0x30
++ *	 sz[10] is reserved, but this is read for some devices
++ *	 sz[i] = 0: no BAR at this position.
++ *        sz[i] = 0xffffffff: BAR has to be scanned, applicable for variable
++ *                size BAR (such as video memory).
++ *        any other value: size in PCI BAR format.
++ */
++
++typedef struct {
++	u32 vid;
++	u32 pid;
++	u8  bars;
++	u32 sz[11];
++} pci_dev_bar_info;
++
++/*List of LSI Logic devices*/
++pci_dev_bar_info lsi_devs[]  = {
++	{0x1000, 0x0030,   /*53c1030 PCI-X Fusion-MPT Dual Ultra320 SCSI*/
++	4,         /*Number of bars*/
++	{0xff01, 0xfffe0004, 0, 0xfffe0004, 0, 0,  /*Bars*/
++	 0, 0, 0xffffc000, 0, 0} }, /*Rom + Extra*/
++
++	{0x1000, 0x0054,   /*LSI Logic : SAS1068 PCI-X Fusion-MPT SAS*/
++	4,         /*Number of bars*/
++	{0xff01, 0xffffc004, 0, 0xffff0004, 0, 0, /*Bars*/
++	 0, 0, 0xffffc000, 0, 0} }, /*Rom + Extra*/
++
++	{0, 0,   /*END of array marker*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0, 0, 0, 0} }
++};
++
++/*List of Intel Devices*/
++pci_dev_bar_info intel_devs[]  = {
++	{0x8086, 0x7110,   /*ISA bridge: 82371AB/EB/MB PIIX4 ISA*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0,        /*Bars*/
++	0, 0, 0, 0, 0} }, /*Rom + Extra*/
++
++	{0x8086, 0x7111,   /*IDE interface: 82371AB/EB/MB PIIX4 IDE*/
++	5,         /*Number of bars*/
++	{0, 0, 0, 0, 0xfffffff1, 0,        /*Bars*/
++	0, 0, 0, 0, 0} }, /*Rom + Extra*/
++
++	{0x8086, 0x7113,   /*Bridge: 82371AB/EB/MB PIIX4 ACPI*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0,                 /*Bars*/
++	0, 0, 0, 0, 0} },                    /*Rom + Extra*/
++
++	{0x8086, 0x7190,   /*Bridge: 82443BX/ZX/DX Host bridge*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0,                 /*Bars*/
++	0, 0, 0, 0, 0} },                   /*Rom + Extra*/
++
++	{0x8086, 0x7191,   /*PCI Bridge: Intel 440BX/ZX/DX - 82443BX/ZX/DX AGP*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0,                 /*Bars*/
++	0, 0, 0, 0, 0} },                   /*Rom + Extra*/
++
++	{0x8086, 0x10d3,   /*Eth controller[e1000e]: Intel 82574L Gigabit NIC*/
++	4,         /*Number of bars*/
++	{0xfffe0000, 0xfffe0000, 0xffffffe1, 0xffffc000, 0, 0, /*Bars*/
++	0, 0, 0xffff0000, 0, 0} },          /*Rom + Extra*/
++
++	{0x8086, 0x100f,   /*Eth controller[e1000]: Intel 82545EM Gigabit NIC*/
++	5,         /*Number of bars*/
++	{0xfffe0004, 0, 0xffff0004, 0, 0xffffffc1, 0, /*Bars*/
++	0, 0, 0xffff0000, 0, 0} },         /*Rom + Extra*/
++
++	{0, 0,   /*END of array marker*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0, 0, 0, 0} }
++};
++
++/*List of VmWare Devices*/
++pci_dev_bar_info vmw_devs[]  = {
++	{0x15ad, 0x0405,   /*VMware SVGA II Adapter*/
++	3,         /*Number of bars*/
++	{0xfffffff1, 0xffffffff, 0xff800000, 0, 0, 0, /*Bars*/
++	0, 0, 0xffff8000, 0, 0} },          /*Rom + Extra*/
++
++	{0x15ad, 0x0740,   /*VMware Virtual Machine Communication Interface*/
++	2,         /*Number of bars*/
++	{0xffffffc1, 0xffffe004, 0, 0, 0, 0,
++	0, 0, 0, 0, 0} },
++
++	{0x15ad, 0x0790,   /*VMware PCI bridge*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0} },
++
++	{0x15ad, 0x07a0,   /*VMware PCI Express Root Port*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0} },
++
++	{0x15ad, 0x07b0,   /*VMware VMXNET3 Ethernet Controller*/
++	4,         /*Number of bars*/
++	{0xfffff000, 0xfffff000, 0xffffe000, 0xfffffff1, 0, 0, /*Bars*/
++	0, 0, 0xffff0000, 0, 0} },           /*Rom + Extra*/
++
++	{0x15ad, 0x07c0,   /*VMware PVSCSI SCSI Controller*/
++	2,         /*Number of bars*/
++	{0xfffffff9, 0xffff8004, 0, 0, 0, 0, /*Bars*/
++	0, 0, 0xffff0000, 0, 0} },             /*Rom + Extra*/
++
++	{0x15ad, 0x07e0,   /*VMware SATA AHCI controller*/
++	6,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0xfffff000,        /*Bars*/
++	0, 0, 0xffff0000, 0, 0} },          /*Rom + Extra*/
++
++	{0x15ad, 0x0770,   /*VMware USB2 EHCI Controller*/
++	1,         /*Number of bars*/
++	{0xfffff000, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0} },
++
++	{0x15ad, 0x0774,   /*VMware USB1.1 UHCI Controller*/
++	5,         /*Number of bars*/
++	{0, 0, 0, 0, 0x0000ffe1, 0,
++	0, 0, 0, 0, 0} },
++
++	{0x15ad, 0x0779,   /*VMware USB3 xHCI 1.0 Controller*/
++	1,         /*Number of bars*/
++	{0xfffe0004, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0} },
++
++	{0, 0,   /*END of array marker*/
++	0,         /*Number of bars*/
++	{0, 0, 0, 0, 0, 0, 0, 0, 0} }
++};
++
++
++pci_dev_bar_info *vendors_table[] = {lsi_devs, vmw_devs, intel_devs, NULL};
++
+ /* Ugh.  Need to stop exporting this to modules. */
+ LIST_HEAD(pci_root_buses);
+ EXPORT_SYMBOL(pci_root_buses);
+@@ -163,6 +305,213 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
  
  #define PCI_COMMAND_DECODE_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_IO)
  
-+static int pci_scan_and_verify = 0;
++static int pci_scan_and_verify;
 +
 +void pci_scan_all(void)
 +{
@@ -72,7 +217,7 @@ index d266d800f246..11544ddd6e5c 100644
 +int __pci_read_base_shortcut(struct pci_dev *dev, enum pci_bar_type type,
 +		    struct resource *res, unsigned int pos, u32 sz_in, u32 sz2_in)
 +{
-+	u32 l, sz;
++	u32 l = 0, sz = 0;
 +	u64 l64, sz64, mask64;
 +	struct pci_bus_region region, inverted_region;
 +
@@ -114,7 +259,7 @@ index d266d800f246..11544ddd6e5c 100644
 +			res->flags |= IORESOURCE_ROM_ENABLE;
 +		l64 = l & PCI_ROM_ADDRESS_MASK;
 +		sz64 = sz & PCI_ROM_ADDRESS_MASK;
-+		mask64 = (u32)PCI_ROM_ADDRESS_MASK;
++		mask64 = PCI_ROM_ADDRESS_MASK;
 +	}
 +
 +	if (res->flags & IORESOURCE_MEM_64) {
@@ -137,7 +282,7 @@ index d266d800f246..11544ddd6e5c 100644
 +	}
 +
 +	if (res->flags & IORESOURCE_MEM_64) {
-+		if ((sizeof(dma_addr_t) < 8 || sizeof(resource_size_t) < 8) &&
++		if ((sizeof(pci_bus_addr_t) < 8 || sizeof(resource_size_t) < 8) &&
 +		    sz64 > 0x100000000ULL) {
 +			res->flags |= IORESOURCE_UNSET | IORESOURCE_DISABLED;
 +			res->start = 0;
@@ -147,7 +292,7 @@ index d266d800f246..11544ddd6e5c 100644
 +			goto out;
 +		}
 +
-+		if ((sizeof(dma_addr_t) < 8) && l) {
++		if ((sizeof(pci_bus_addr_t) < 8) && l) {
 +			/* Above 32-bit boundary; try to reallocate */
 +			res->flags |= IORESOURCE_UNSET;
 +			res->start = 0;
@@ -195,228 +340,95 @@ index d266d800f246..11544ddd6e5c 100644
 +	return (res->flags & IORESOURCE_MEM_64) ? 1 : 0;
 +}
 +
-+static int guess_bar_count(int class)
++#define REQUEST_BARS_INFO	BIT(8)
++
++/**
++ * is_known_device - Provide data for known PCI device
++ * @dev: the PCI device
++ * @req: type of request. Possible values are:
++ *	  - pos (8 bits): request of the size of BAR at specified BAR
++ *	    position in lower 8 bits. Other bits are zeroed.
++ *          There are 3 types of sizes:
++ *	     - 0: no BAR at this position.
++ *           - 0xffffffff: BAR has to be scanned, applicable for variable
++ *	       size BAR (such as video memory).
++ *	     - (value): size in PCI BAR format.
++ *	  - REQUEST_BARS_INFO - request for total number of BARs and
++ *	    ROM presence.
++ * @val: (out) double meaning depending on @req. If @req is:
++ *	  - pos (8 bits), returns size of BAR at specified position for
++ *	    known device or 0xffffffff for unknown one.
++ *	  - REQUEST_BARS_INFO, returns number of BARs for known device or
++ *	    6 (maximum namber of BARs in config space) for unknown one.
++ * @rom: (in/out) it will be set to zero if ROM is not present for known
++ *	 device or will be kept as is otherwise.
++ *
++ * Returns 1 if device is known, 0 if not.
++ */
++static int is_known_device(struct pci_dev *dev, int req, int *val, int *rom)
 +{
-+        if (class == 0x088000)
-+            return 2;
-+        if (class == 0x068000)
-+            return 0;
-+        if (class == 0x060100)
-+            return 0;
-+        if (class == 0x060000)
-+            return 0;
-+        if (class == 0x030000)
-+            return 3;
-+        if (class == 0x020000 || class == 0x010000)
-+            return 4;
-+        if (class == 0x00ff00)
-+            return 1;
-+        return 6;
-+}
++	int vid = dev->vendor;
++	int pid = dev->device;
++	pci_dev_bar_info *pdev = NULL;
++	pci_dev_bar_info *table;
++	int i, j;
++	int req_index;
 +
-+static int has_rom(int class, int rom)
-+{
-+        if (class == 0x088000 ||
-+	    class == 0x060100 ||
-+	    class == 0x060000 ||
-+	    class == 0x00ff00)
-+          return 0;
-+        return rom;
-+}
-+
-+static int is_known_device(struct pci_dev *dev, int pos, int *sz)
-+{
-+	switch (dev->vendor) {
-+		/* Intel Corporation */
-+		case 0x8086:
-+		switch (dev->device) {
-+			/* IDE interface: 82371AB/EB/MB PIIX4 IDE */
-+			case 0x7111:
-+			switch (pos) {
-+				case 0x20:
-+					*sz = 0xfffffff1;
-+					return 1;
-+				case 0x10:
-+				case 0x14:
-+				case 0x18:
-+				case 0x1c:
-+				case 0x24:
-+				case 0x30:
-+					*sz = 0; /* Not implemented */
-+					return 1;
-+			}
-+			break;
-+
-+			/* Bridge: 82371AB/EB/MB PIIX4 ACPI */
-+			case 0x7113:
-+			switch (pos) {
-+				case 0x10:
-+				case 0x14:
-+				case 0x18:
-+				case 0x1c:
-+				case 0x20:
-+				case 0x24:
-+				case 0x30:
-+					*sz = 0; /* Not implemented */
-+					return 1;
-+			}
-+			break;
++	for (i = 0; vendors_table[i]; i++) {
++		if (vendors_table[i]->vid != vid) {
++			continue;
 +		}
-+		break;
-+
-+		/* VMware, Inc */
-+		case 0x15ad:
-+		switch (dev->device) {
-+			/* VMware SVGA II Adapter */
-+			case 0x0405:
-+			switch (pos) {
-+				case 0x10:
-+					*sz = 0xfffffff1;
-+					return 1;
-+				case 0x14:
-+					/* variable mem size */
-+					*sz = 0xffffffff;
-+					return 0;
-+				case 0x18:
-+					*sz = 0xff800000;
-+					return 1;
-+				case 0x1c:
-+				case 0x20:
-+				case 0x24:
-+					*sz = 0; /* Not implemented */
-+					return 1;
-+				case 0x30:
-+					*sz = 0xffff8000;
-+					return 1;
++		table = vendors_table[i];
++		for (j = 0; table[j].pid != 0; j++) {
++			if (table[j].pid == pid) {
++				pdev = &table[j];
++				goto loop_out;
 +			}
-+			break;
-+
-+			/* VMware Virtual Machine Communication Interface */
-+			case 0x0740:
-+			switch (pos) {
-+				case 0x10:
-+					*sz = 0xffffffc1;
-+					return 1;
-+				case 0x14:
-+					*sz = 0xffffe004;
-+					return 1;
-+				case 0x1c:
-+				case 0x20:
-+				case 0x24:
-+				case 0x30:
-+					*sz = 0; /* Not implemented */
-+					return 1;
-+			}
-+			break;
-+
-+			/* VMware PCI bridge */
-+			case 0x0790:
-+			/* VMware PCI Express Root Port */
-+			case 0x07a0:
-+			switch (pos) {
-+				case 0x10:
-+				case 0x14:
-+				case 0x38:
-+					*sz = 0; /* Not implemented */
-+					return 1;
-+			}
-+			break;
-+
-+			/* VMware VMXNET3 Ethernet Controller */
-+			case 0x07b0:
-+			switch (pos) {
-+				case 0x10:
-+					*sz = 0xfffff000;
-+					return 1;
-+				case 0x14:
-+					*sz = 0xfffff000;
-+					return 1;
-+				case 0x18:
-+					*sz = 0xffffe000;
-+					return 1;
-+				case 0x1c:
-+					*sz = 0xfffffff1;
-+					return 1;
-+				case 0x20:
-+				case 0x24:
-+					*sz = 0; /* Not implemented */
-+					return 1;
-+				case 0x30:
-+					*sz = 0xffff0000;
-+					return 1;
-+			}
-+			break;
-+
-+			/* VMware PVSCSI SCSI Controller */
-+			case 0x07c0:
-+			switch (pos) {
-+				case 0x10:
-+					*sz = 0xfffffff9;
-+					return 1;
-+				case 0x14:
-+					*sz = 0xffff8000;
-+					return 1;
-+				case 0x1c:
-+				case 0x20:
-+				case 0x24:
-+					*sz = 0; /* Not implemented */
-+					return 1;
-+				case 0x30:
-+					*sz = 0xffff0000;
-+					return 1;
-+			}
-+			break;
 +		}
-+		break;
-+
-+		/* SCSI storage controller */
-+		case 0x1000:
-+		switch (dev->device) {
-+			/* LSI Logic */
-+			case 0x0030:
-+			switch (pos) {
-+				case 0x10:
-+					*sz = 0xff01;
-+					return 1;
-+				case 0x14:
-+					*sz = 0xfffe0004;
-+					return 1;
-+				case 0x1c:
-+					*sz = 0xfffe0004;
-+					return 1;
-+				case 0x18:
-+				case 0x20:
-+				case 0x24:
-+					*sz = 0; /* Not implemented */
-+					return 1;
-+				case 0x30:
-+					*sz = 0xffffc000;
-+					return 1;
-+			}
-+			break;
-+		}
-+		break;
++		break; /*Matched table for vendor not having dev, so break*/
 +	}
-+	*sz = 0xffffffff;
-+        return 0;
++
++loop_out:
++	if (pdev) {
++		if (req == REQUEST_BARS_INFO) {
++			*val = pdev->bars;
++			if (!pdev->sz[8]) {
++				*rom = 0;
++				return 1;
++			}
++		}
++		req_index = (req - PCI_BASE_ADDRESS_0) >> 2;
++		if (req_index <= 10) {
++			*val = pdev->sz[req_index];
++			if (*val == 0xffffffff)
++				return 0;
++			return 1;
++		}
++	}
++
++	if (req == REQUEST_BARS_INFO)
++		*val = 6;
++	else
++		*val = 0xffffffff;
++	return 0;
 +}
 +
  /**
   * pci_read_base - read a PCI BAR
   * @dev: the PCI device
-@@ -175,13 +515,20 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+@@ -175,13 +524,20 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
  int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		    struct resource *res, unsigned int pos)
  {
 -	u32 l, sz, mask;
-+	u32 l, sz, known_sz, mask;
++	u32 l = 0, sz = 0, known_sz, mask;
  	u64 l64, sz64, mask64;
  	u16 orig_cmd;
  	struct pci_bus_region region, inverted_region;
  
  	mask = type ? PCI_ROM_ADDRESS_MASK : ~0;
  
-+	if (is_known_device(dev, pos, &known_sz) && !pci_scan_and_verify)
++	if (is_known_device(dev, pos, &known_sz, NULL) && !pci_scan_and_verify)
 +		return __pci_read_base_shortcut(dev, type, res, pos, known_sz, 0);
 +
 +	res->name = pci_name(dev);
@@ -426,7 +438,7 @@ index d266d800f246..11544ddd6e5c 100644
  	/* No printks while decoding is disabled! */
  	if (!dev->mmio_always_on) {
  		pci_read_config_word(dev, PCI_COMMAND, &orig_cmd);
-@@ -191,7 +538,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -191,7 +547,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		}
  	}
  
@@ -434,7 +446,7 @@ index d266d800f246..11544ddd6e5c 100644
  
  	pci_read_config_dword(dev, pos, &l);
  	pci_write_config_dword(dev, pos, l | mask);
-@@ -207,6 +553,11 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -207,6 +562,11 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  	if (sz == 0xffffffff)
  		sz = 0;
  
@@ -446,7 +458,7 @@ index d266d800f246..11544ddd6e5c 100644
  	/*
  	 * I don't know how l can have all bits set.  Copied from old code.
  	 * Maybe it fixes a bug on some ancient platform.
-@@ -311,8 +662,19 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -311,8 +671,22 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  fail:
  	res->flags = 0;
  out:
@@ -455,19 +467,22 @@ index d266d800f246..11544ddd6e5c 100644
  		dev_printk(KERN_DEBUG, &dev->dev, "reg 0x%x: %pR\n", pos, res);
 +		if (pci_scan_and_verify) {
 +			int bar = (pos - PCI_BASE_ADDRESS_0) >> 2;
-+			int maxbar = guess_bar_count(dev->class);
-+			if (bar < 6 && bar >= maxbar)
++			int known_bars;
++			int known_rom = 1;
++			is_known_device(dev, REQUEST_BARS_INFO, &known_bars,
++					&known_rom);
++			if (bar < 6 && bar >= known_bars)
 +				dev_err(&dev->dev,
-+					"wrong guess_bar_count value %d\n",
-+					maxbar);
-+			if (pos == PCI_ROM_ADDRESS && !has_rom(dev->class, 1))
-+				dev_err(&dev->dev, "wrong has_rom value\n");
++					"wrong known bars count %d\n",
++					known_bars);
++			if (pos == PCI_ROM_ADDRESS && !known_rom)
++				dev_err(&dev->dev, "wrong known rom value\n");
 +		}
 +	}
  
  	return (res->flags & IORESOURCE_MEM_64) ? 1 : 0;
  }
-@@ -1265,7 +1627,14 @@ int pci_setup_device(struct pci_dev *dev)
+@@ -1266,7 +1640,15 @@ int pci_setup_device(struct pci_dev *dev)
  		if (class == PCI_CLASS_BRIDGE_PCI)
  			goto bad;
  		pci_read_irq(dev);
@@ -475,14 +490,15 @@ index d266d800f246..11544ddd6e5c 100644
 +
 +		if (pci_scan_and_verify)
 +			pci_read_bases(dev, 6, PCI_ROM_ADDRESS);
-+		else
-+			pci_read_bases(dev,
-+				guess_bar_count(dev->class),
-+				has_rom(dev->class, PCI_ROM_ADDRESS));
-+
++		else {
++			int bars;
++			int rom = PCI_ROM_ADDRESS;
++			is_known_device(dev, REQUEST_BARS_INFO, &bars, &rom);
++			pci_read_bases(dev, bars, rom);
++		}
  		pci_read_config_word(dev, PCI_SUBSYSTEM_VENDOR_ID, &dev->subsystem_vendor);
  		pci_read_config_word(dev, PCI_SUBSYSTEM_ID, &dev->subsystem_device);
  
 -- 
-2.11.0
+2.17.1
 
