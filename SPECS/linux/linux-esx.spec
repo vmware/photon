@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.221
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -256,6 +256,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri May 08 2020 Vikash Bansal <bvikas@vmware.com> 4.4.221-2
+-   PCI Probe Refactored - Backported from dev
 *   Tue May 05 2020 ashwin-h <ashwinh@vmware.com> 4.4.221-1
 -   Update to version 4.4.221
 *   Thu Apr 30 2020 ashwin-h <ashwinh@vmware.com> 4.4.220-1
