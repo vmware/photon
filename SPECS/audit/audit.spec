@@ -2,10 +2,10 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Kernel Audit Tool
 Name:           audit
-Version:        2.5
-Release:        9%{?dist}
+Version:        2.5.2
+Release:        1%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha1    audit=b684a8dca31776a4184044733cd5fd4b1b652298
+%define sha1    audit=54d2bf161f011b9feb5f4cc18d3ca429ea70f5da
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit/
@@ -149,6 +149,8 @@ find %{buildroot} -name '*.la' -delete
 %{python3_sitelib}/*
 
 %changelog
+*   Mon May 11 2020 Tapas Kundu <tkundu@vmware.com> 2.5.2-1
+-   Update to 2.5.2
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 2.5-9
 -   Bump up version to compile with new go version
 *   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 2.5-8
