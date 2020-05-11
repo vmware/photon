@@ -1,7 +1,7 @@
 Summary:	DBus for systemd
 Name:		dbus
 Version:	1.13.6
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+ or AFL
 URL:		http://www.freedesktop.org/wiki/Software/dbus
 Group:		Applications/File
@@ -21,7 +21,7 @@ The dbus package contains dbus.
 
 %package	devel
 Summary:	Header and development files
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 %description	devel
 It contains the libraries and header files to create applications
 
@@ -33,7 +33,7 @@ It contains the libraries and header files to create applications
 ./configure --prefix=%{_prefix}                 \
             --sysconfdir=%{_sysconfdir}         \
             --localstatedir=%{_var}             \
-            --docdir=%{_datadir}/doc/dbus-1.13.6  \
+            --docdir=%{_datadir}/doc/%{name}-%{version}  \
             --with-console-auth-dir=/run/console
 
 make %{?_smp_mflags}
@@ -46,17 +46,24 @@ make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
-/etc/*
-%{_bindir}/*
-%{_lib}/*
-/lib/*
-%{_libexecdir}/*
-%{_docdir}/*
+%{_sysconfdir}/dbus-1
+%{_bindir}/dbus-*
+%{_libdir}/libdbus-1.so.*
+%{_libdir}/cmake/DBus1
+%{_libdir}/dbus-1.0/include/
+%{_libdir}/tmpfiles.d/dbus.conf
+%exclude %{_libdir}/sysusers.d
+/lib/systemd/system/dbus.service
+/lib/systemd/system/dbus.socket
+/lib/systemd/system/multi-user.target.wants/dbus.service
+/lib/systemd/system/sockets.target.wants/dbus.socket
+%{_libexecdir}/dbus-daemon-launch-helper
+%{_docdir}/%{name}-%{version}
 %{_datadir}/dbus-1
 
 %files	devel
 %defattr(-,root,root)
-%{_includedir}/*
+%{_includedir}/dbus-1.0
 %{_datadir}/xml/dbus-1
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.la
@@ -64,6 +71,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+*   Mon May 11 2020 Ankit Jain <ankitja@vmware.com> 1.13.6-3
+-   Removed packaging of debug files
 *   Mon Jan 06 2020 Sujay G <gsujay@vmware.com> 1.13.6-2
 -   Fix CVE-2019-12749
 *   Wed Jun 19 2019 Sujay G <gsujay@vmware.com> 1.13.6-1
