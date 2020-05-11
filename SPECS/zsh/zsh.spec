@@ -2,15 +2,15 @@
 
 Summary:      Z shell
 Name:         zsh
-Version:      5.6.1
+Version:      5.8
 Release:      1%{?dist}
 License:      MIT
-URL:          http://zsh.sourceforge.net/
+URL:          http://zsh.org/
 Group:        System Environment/Shells
 Vendor:       VMware, Inc.
 Distribution: Photon
 Source0:      http://www.zsh.org/pub/%{name}-%{version}.tar.xz
-%define sha1  zsh=6caa65c72b2f8f52aecce9064e223139d3a37d85
+%define sha1  zsh=966ea0498fb94140f3caf12af88e98b0e4d02078
 Source1:      zprofile.rhs
 Source2:      zshrc
 
@@ -67,9 +67,6 @@ export LIBLDFLAGS='-z lazy'
 
 make all html
 
-%check
-rm -f Test/C02cond.ztst
-make check
 %install
 rm -rf $RPM_BUILD_ROOT
 
@@ -106,6 +103,10 @@ sed -i "s!$RPM_BUILD_ROOT%{_datadir}/%{name}/%{version}/help!%{_datadir}/%{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%check
+rm -f Test/C02cond.ztst
+make check
 
 %post
 if [ "$1" = 1 ]; then
@@ -144,6 +145,8 @@ fi
 %doc Doc/*.html
 
 %changelog
+*   Mon May 11 2020 Susant Sahani <ssahani@vmware.com> 5.8-1
+-   Upgrading to 5.8
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 5.6.1-1
 -   Upgrading to latest
 *   Mon Mar 19 2018 Xiaolin Li <xiaolinl@vmware.com> 5.3.1-5
