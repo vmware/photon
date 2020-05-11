@@ -16,6 +16,7 @@ class constants(object):
     buildPatch = False
     inputRPMSPath = ""
     rpmCheck = False
+    startSchedulerServer = False
     sourceRpmPath = ""
     publishBuildDependencies = False
     packageWeightsPath = None
@@ -405,6 +406,10 @@ class constants(object):
     @staticmethod
     def setRpmCheckStopOnError(rpmCheckStopOnError):
         constants.rpmCheckStopOnError = rpmCheckStopOnError
+
+    @staticmethod
+    def setStartSchedulerServer(startSchedulerServer):
+        constants.startSchedulerServer = startSchedulerServer
 
     @staticmethod
     def setPublishBuildDependencies(publishBuildDependencies):

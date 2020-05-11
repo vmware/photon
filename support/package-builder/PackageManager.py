@@ -202,19 +202,26 @@ class PackageManager(object):
         self._buildPackages(buildThreads)
 
     def _buildPackages(self, buildThreads):
-        statusEvent = threading.Event()
-        self._initializeScheduler(statusEvent)
-        self._initializeThreadPool(statusEvent)
+        if constants.startSchedulerServer:
+            import SchedulerServer
+            self._initializeScheduler(None)
+            SchedulerServer.mapPackageToCycle = self.mapPackageToCycle
+            serverThread = threading.Thread(target=SchedulerServer.startServer, name="serverthread")
+            serverThread.start()
+            serverThread.join()
+        else:
+            statusEvent = threading.Event()
+            self._initializeScheduler(statusEvent)
+            self._initializeThreadPool(statusEvent)
+            for i in range(0, buildThreads):
+                workerName = "WorkerThread" + str(i)
+                ThreadPool.addWorkerThread(workerName)
+                ThreadPool.startWorkerThread(workerName)
 
-        for i in range(0, buildThreads):
-            workerName = "WorkerThread" + str(i)
-            ThreadPool.addWorkerThread(workerName)
-            ThreadPool.startWorkerThread(workerName)
-
-        statusEvent.wait()
-        Scheduler.stopScheduling = True
-        self.logger.debug("Waiting for all remaining worker threads")
-        ThreadPool.join_all()
+            statusEvent.wait()
+            Scheduler.stopScheduling = True
+            self.logger.debug("Waiting for all remaining worker threads")
+            ThreadPool.join_all()
 
         setFailFlag = False
         allPackagesBuilt = False

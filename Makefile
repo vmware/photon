@@ -61,6 +61,12 @@ else
 PHOTON_RPMCHECK_FLAGS :=
 endif
 
+ifeq ($(SCHEDULER_SERVER),enable)
+START_SCHEDULER_SERVER := --start-scheduler-server True
+else
+START_SCHEDULER_SERVER :=
+endif
+
 # KAT build for FIPS certification
 # Use KAT_BUILD=enable to build a kat kernel. By default, KAT_BUILD is disabled.
 ifeq ($(KAT_BUILD),enable)
@@ -79,6 +85,12 @@ ifdef PKG_BUILD_OPTIONS
 PACKAGE_BUILD_OPTIONS = --pkg-build-option-file $(PKG_BUILD_OPTIONS)
 else
 PACKAGE_BUILD_OPTIONS =
+endif
+
+ifdef DISTRIBUTED_BUILD_CONFIG
+DISTRIBUTED_BUILD_OPTIONS = --distributed-build-option-file $(DISTRIBUTED_BUILD_CONFIG)
+else
+DISTRIBUTED_BUILD_OPTIONS =
 endif
 
 ifdef CROSS_TARGET
@@ -137,6 +149,7 @@ packages-minimal: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURC
 		--release-version $(PHOTON_RELEASE_VERSION) \
 		--pkginfo-file $(PHOTON_PKGINFO_FILE) \
 		$(PHOTON_RPMCHECK_FLAGS) \
+		$(START_SCHEDULER_SERVER) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS) \
 		--threads ${THREADS}
@@ -160,6 +173,7 @@ packages-initrd: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCE
 		--release-version $(PHOTON_RELEASE_VERSION) \
 		--pkginfo-file $(PHOTON_PKGINFO_FILE) \
 		$(PHOTON_RPMCHECK_FLAGS) \
+		$(START_SCHEDULER_SERVER) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS) \
 		--threads ${THREADS}
@@ -186,6 +200,7 @@ packages: check-docker-py check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) $(PHO
 		--pkginfo-file $(PHOTON_PKGINFO_FILE) \
 		$(PACKAGE_BUILD_OPTIONS) \
 		$(PHOTON_RPMCHECK_FLAGS) \
+		$(START_SCHEDULER_SERVER) \
 		$(PHOTON_KAT_BUILD_FLAGS) \
 		$(CROSS_TARGET_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
@@ -215,6 +230,7 @@ packages-docker: check-docker-py check-docker-service check-tools photon-stage $
 		--pkginfo-file $(PHOTON_PKGINFO_FILE) \
 		$(PACKAGE_BUILD_OPTIONS) \
 		$(PHOTON_RPMCHECK_FLAGS) \
+		$(START_SCHEDULER_SERVER) \
 		$(CROSS_TARGET_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS) \
@@ -240,6 +256,7 @@ updated-packages: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBL
 		--input-RPMS-path $(PHOTON_INPUT_RPMS_DIR) \
 		$(PHOTON_KAT_BUILD_FLAGS) \
 		$(PHOTON_RPMCHECK_FLAGS) \
+		$(START_SCHEDULER_SERVER) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS) \
 		--threads ${THREADS}
@@ -263,6 +280,7 @@ tool-chain-stage1: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOUR
 		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
 		$(PHOTON_RPMCHECK_FLAGS) \
+		$(START_SCHEDULER_SERVER) \
 		--tool-chain-stage stage1
 
 tool-chain-stage2: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
@@ -284,6 +302,7 @@ tool-chain-stage2: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOUR
 		--build-number $(PHOTON_BUILD_NUMBER) \
 		--release-version $(PHOTON_RELEASE_VERSION) \
 		$(PHOTON_RPMCHECK_FLAGS) \
+		$(START_SCHEDULER_SERVER) \
 		--tool-chain-stage stage2
 
 %: check-tools $(PHOTON_PUBLISH_RPMS) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_SOURCES) $(CONTAIN) check-spec-files $(eval PKG_NAME = $@)
@@ -305,6 +324,7 @@ tool-chain-stage2: check-tools photon-stage $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOUR
 		--release-version $(PHOTON_RELEASE_VERSION) \
 		$(PACKAGE_BUILD_OPTIONS) \
 		$(PHOTON_RPMCHECK_FLAGS) \
+		$(START_SCHEDULER_SERVER) \
 		$(PHOTON_KAT_BUILD_FLAGS) \
 		$(CROSS_TARGET_FLAGS) \
 		--log-path $(PHOTON_LOGS_DIR) \
@@ -336,6 +356,15 @@ check: packages
 		--enable-rpmcheck \
 		$(rpmcheck_stop_on_error) \
 		--threads ${THREADS}
+
+distributed-build:
+	@echo "Building RPMS through kubernetes ..."
+	@echo ""
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+	$(PHOTON_DISTRIBUTED_BUILDER) \
+		--log-path $(PHOTON_LOGS_DIR) \
+		--log-level $(LOGLEVEL) \
+		$(DISTRIBUTED_BUILD_OPTIONS)
 
 #-------------------------------------------------------------------------------
 

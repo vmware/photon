@@ -23,6 +23,9 @@ def getFileHash(filepath):
     return sha1.hexdigest()
 
 def get(package, source, sha1, sourcesPath, URLs, logger):
+    if not os.path.isdir(sourcesPath):
+        os.mkdir(sourcesPath)
+
     cmdUtils = CommandUtils()
     sourcePath = cmdUtils.findFile(source, sourcesPath)
     if sourcePath is not None and len(sourcePath) > 0:

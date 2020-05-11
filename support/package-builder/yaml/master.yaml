@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: master
+spec:
+  template:
+    metadata:
+      labels:
+        app: master
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: photon-master
+        image: photon:latest
+        ports:
+        - containerPort: 80
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: photon
+          mountPath: /root/photon
+        - name: sys
+          mountPath: /sys
+          readOnly: false
+        workingDir: /root/photon
+        command: ["/bin/bash"]
+        args: ["-c","tdnf remove -y toybox && \
+                     tdnf install -y build-essential createrepo texinfo wget sudo \
+                     findutils python3-pip git && \
+                     pip3 install flask requests pyOpenSSL docker==2.3.0 && \
+                     chmod 755 /sys "]
+      volumes:
+      - name: photon
+        persistentVolumeClaim:
+          claimName: photon
+      - name: sys
+        hostPath:
+          path: /sys
+  backoffLimit: 1

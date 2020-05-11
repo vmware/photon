@@ -42,6 +42,8 @@ def main():
     parser.add_argument("-v", "--release-version", dest="releaseVersion", default="NNNnNNN")
     parser.add_argument("-u", "--enable-rpmcheck", dest="rpmCheck",
                         default=False, action="store_true")
+    parser.add_argument("-ss", "--start-scheduler-server", dest="startSchedulerServer",
+                        default=False, action="store_true")
     parser.add_argument("-a", "--source-rpm-path", dest="sourceRpmPath",
                         default="../../stage/SRPMS")
     parser.add_argument("-w", "--pkginfo-file", dest="pkgInfoFile",
@@ -168,6 +170,7 @@ def main():
         constants.setPullSourcesURL(get_baseurl(options.pullsourcesConfig))
         constants.setInputRPMSPath(options.inputRPMSPath)
         constants.setRPMCheck(options.rpmCheck)
+        constants.setStartSchedulerServer(options.startSchedulerServer)
         constants.setRpmCheckStopOnError(options.rpmCheckStopOnError)
         constants.setPublishBuildDependencies(options.publishBuildDependencies)
         constants.setPackageWeightsPath(options.packageWeightsPath)
