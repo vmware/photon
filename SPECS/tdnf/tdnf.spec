@@ -5,7 +5,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        2.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -39,6 +39,7 @@ Source3:        cache-updateinfo.timer
 Source4:        updateinfo.sh
 Source5:        tdnfrepogpgcheck.conf
 Patch0:         tdnf-fix-distroverpkg-search.patch
+Patch1:         tdnf-fix-stale-solv-cache.patch
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
@@ -80,6 +81,7 @@ python bindings for tdnf
 %prep
 %setup -qn %{name}-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 mkdir build && cd build
@@ -203,6 +205,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{python3_sitelib}/*
 
 %changelog
+*   Tue May 12 2020 Keerthana K <keerthanak@vmware.com> 2.1.0-3
+-   Fix stale solv cache issue.
 *   Tue Mar 24 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.0-2
 -   Fix distroverpkg search to look for provides instead of name
 *   Thu Feb 20 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.0-1
