@@ -8,8 +8,8 @@
 %define _salttesting_ver 2016.5.11
 
 Name: salt
-Version: 2018.3.3
-Release: 2%{?dist}
+Version: 2019.2.4
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -18,7 +18,7 @@ URL:     http://saltstack.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0: http://pypi.python.org/packages/source/s/%{name}/%{name}-%{version}.tar.gz
-%define sha1 salt=18e148c2ef4418efe741c4b84d0ae284ebbf108b
+%define sha1 salt=44c8337105733cfd3cc3bbef734e22330d2e053f
 Source1: https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-2016.5.11.tar.gz
 %define sha1 SaltTesting=474dbd7029e3d48cdb468be3c63b2262e47556c8
 Source2: %{name}-master.service
@@ -26,7 +26,6 @@ Source3: %{name}-syndic.service
 Source4: %{name}-minion.service
 Source5: %{name}-api.service
 Source6: logrotate.salt
-Patch0:  CVE-2019-17361.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -135,7 +134,6 @@ Salt Package Manager
 %setup -T -D -a 1
 
 cd %{name}-%{version}
-%patch0 -p1
 
 %build
 
@@ -317,6 +315,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue May 12 2020 Keerthana K <keerthanak@vmware.com> 2019.2.4-1
+- Update to 2019.2.4 to fix CVE-2020-11651 CVE-2020-11652.
 * Thu Jan 30 2020 Keerthana K <keerthanak@vmware.com> 2018.3.3-2
 - Fix CVE-2019-17361
 * Mon Oct 14 2019 Keerthana K <keerthanak@vmware.com> 2018.3.3-1
