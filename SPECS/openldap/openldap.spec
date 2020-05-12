@@ -2,7 +2,7 @@
 Summary:	OpenLdap-2.4.43
 Name:		openldap
 Version:	2.4.43
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	OpenLDAP
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -13,6 +13,7 @@ Source0:	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}
 Patch0:		openldap-2.4.43-consolidated-1.patch
 Patch1:     openldap-CVE-2017-9287.patch
 Patch2:		openldap-2.4.40-gssapi-1.patch
+Patch3:         openldap-CVE-2020-12243.patch
 Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
 BuildRequires:  cyrus-sasl >= 2.1
 BuildRequires:  openssl-devel >= 1.0.1
@@ -31,6 +32,7 @@ libraries, and documentation for OpenLDAP.
 %patch2 -p1
 %patch0 -p1
 %patch1 -p1
+%patch3 -p1
 %build
 
 autoconf
@@ -73,6 +75,8 @@ rm -rf %{buildroot}/*
 /etc/openldap/*
 
 %changelog
+*       Tue May 12 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.43-4
+-       Fix CVE-2020-12243
 *	Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.43-3
 -	Applied patch for CVE-2017-9287
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.43-2
