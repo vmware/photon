@@ -1,0 +1,74 @@
+From 9bf2c538a0eb10d66e2365a655bf6c52f5ba3d10 Mon Sep 17 00:00:00 2001
+From: Zhiqiang Liu <liuzhiqiang26@huawei.com>
+Date: Sun, 5 May 2019 09:59:51 +0800
+Subject: [PATCH] ipnetns: use-after-free problem in get_netnsid_from_name func
+
+Follow the following steps:
+ # ip netns add net1
+ # export MALLOC_MMAP_THRESHOLD_=0
+ # ip netns list
+then Segmentation fault (core dumped) will occur.
+
+In get_netnsid_from_name func, answer is freed before
+rta_getattr_u32(tb[NETNSA_NSID]), where tb[] refers to answer`s
+content. If we set MALLOC_MMAP_THRESHOLD_=0, mmap will be adoped to
+malloc memory, which will be freed immediately after calling free
+func.  So reading tb[NETNSA_NSID] will access the released memory
+after free(answer).
+
+Here, we will call get_netnsid_from_name(tb[NETNSA_NSID]) before free(answer).
+
+Fixes: 86bf43c7c2f ("lib/libnetlink: update rtnl_talk to support malloc buff at run time")
+Reported-by: Huiying Kou <kouhuiying@huawei.com>
+Signed-off-by: Zhiqiang Liu <liuzhiqiang26@huawei.com>
+Acked-by: Phil Sutter <phil@nwl.cc>
+Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+---
+ ip/ipnetns.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/ip/ipnetns.c b/ip/ipnetns.c
+index 430d8844..52aefacf 100644
+--- a/ip/ipnetns.c
++++ b/ip/ipnetns.c
+@@ -107,7 +107,7 @@ int get_netnsid_from_name(const char *name)
+ 	struct nlmsghdr *answer;
+ 	struct rtattr *tb[NETNSA_MAX + 1];
+ 	struct rtgenmsg *rthdr;
+-	int len, fd;
++	int len, fd, ret = -1;
+ 
+ 	netns_nsid_socket_init();
+ 
+@@ -124,23 +124,22 @@ int get_netnsid_from_name(const char *name)
+ 
+ 	/* Validate message and parse attributes */
+ 	if (answer->nlmsg_type == NLMSG_ERROR)
+-		goto err_out;
++		goto out;
+ 
+ 	rthdr = NLMSG_DATA(answer);
+ 	len = answer->nlmsg_len - NLMSG_SPACE(sizeof(*rthdr));
+ 	if (len < 0)
+-		goto err_out;
++		goto out;
+ 
+ 	parse_rtattr(tb, NETNSA_MAX, NETNS_RTA(rthdr), len);
+ 
+ 	if (tb[NETNSA_NSID]) {
+-		free(answer);
+-		return rta_getattr_u32(tb[NETNSA_NSID]);
++		ret = rta_getattr_u32(tb[NETNSA_NSID]);
+ 	}
+ 
+-err_out:
++out:
+ 	free(answer);
+-	return -1;
++	return ret;
+ }
+ 
+ struct nsid_cache {
+-- 
+2.23.1
+

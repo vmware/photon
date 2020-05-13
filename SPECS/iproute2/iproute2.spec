@@ -1,7 +1,7 @@
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
 Version:        4.18.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.kernel.org/pub/linux/utils/net/iproute2
 Group:          Applications/System
@@ -11,6 +11,8 @@ Source0:        http://www.kernel.org/pub/linux/utils/net/iproute2/%{name}-%{ver
 %define sha1    iproute2=ff02c7352bae407a76d71b36558700bb489026fc
 Provides:       iproute
 Patch0:         replace_killall_by_pkill.patch
+# Fix for CVE-2019-20795
+Patch1:         0001-ipnetns-use-after-free-problem-in-get_netnsid_from_n.patch
 
 %description
 The IPRoute2 package contains programs for basic and advanced
@@ -31,6 +33,7 @@ sed -i /ARPD/d Makefile
 sed -i 's/arpd.8//' man/man8/Makefile
 sed -i 's/m_ipt.o//' tc/Makefile
 %patch0 -p1
+%patch1 -p1
 
 %build
 make VERBOSE=1 %{?_smp_mflags} DESTDIR= LIBDIR=%{_libdir}
@@ -70,6 +73,8 @@ cd ..
 %{_mandir}/man3/*
 
 %changelog
+*   Wed May 13 2020 Vikash Bansal <bvikas@vmware.com> 4.18.0-3
+-   Fix for CVE-2019-20795
 *   Fri Mar 08 2019 Fabio Rapposelli <fabio@vmware.com> 4.18.0-2
 -   Added "Provides: iproute" for better compatibility with other distributions
 *   Wed Sep 05 2018 Ankit Jain <ankitja@vmware.com> 4.18.0-1
