@@ -15,6 +15,7 @@ Source1:        91-ostree.preset
 Patch0:         dualboot-support.patch
 Patch1:         0001-ostree-Copying-photon-config-to-boot-directory.patch
 Patch2:         0002-ostree-Adding-load-env-to-menuentry.patch
+
 BuildRequires:  git
 BuildRequires:  autoconf automake libtool which
 BuildRequires:  gtk-doc
@@ -40,6 +41,7 @@ BuildRequires:  gpgme-devel
 BuildRequires:  systemd-devel
 BuildRequires:  dracut
 BuildRequires:  bison
+
 Requires: dracut
 Requires: systemd
 Requires: libassuan
@@ -102,14 +104,8 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} INSTALL="install -p -c" install
 find %{buildroot} -name '*.la' -delete
-install -D -m 0644 %{SOURCE1} %{buildroot}%{_prefix}/lib/systemd/system-preset/91-ostree.preset
+install -D -m 0644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system-preset/91-ostree.preset
 install -vdm 755 %{buildroot}/etc/ostree/remotes.d
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system/
-cp -R %{buildroot}/lib/systemd/system/*.service %{buildroot}%{_prefix}/lib/systemd/system/
-cp -R %{buildroot}/lib/systemd/system/ostree-finalize-staged.path %{buildroot}%{_prefix}/lib/systemd/system/
-mkdir -p %{buildroot}%{_libdir}/systemd/system-generators/
-cp -R %{buildroot}/lib/systemd/system-generators/ostree-system-generator %{buildroot}%{_libdir}/systemd/system-generators/
-rm -rf %{buildroot}/lib
 
 %post
 %systemd_post ostree-remount.service
@@ -128,20 +124,20 @@ rm -rf %{buildroot}/lib
 %{_datadir}/ostree
 %{_libdir}/initcpio/*
 %dir %{_libdir}/dracut/modules.d/98ostree
-%{_libdir}/systemd/system/ostree*.service
 %{_libdir}/systemd/system/ostree-finalize-staged.path
 %{_libdir}/dracut/modules.d/98ostree/*
-%{_mandir}/man1/ostree-admin*
 %{_libdir}/systemd/system-generators/ostree-system-generator
 %{_libdir}/systemd/system-preset/91-ostree.preset
-%exclude %{_sysconfdir}/grub.d/*ostree
-%exclude %{_libexecdir}/libostree/grub2*
+%{_libdir}/systemd/system/ostree*.service
 %{_libdir}/ostree/ostree-prepare-root
-%{_sysconfdir}/dracut.conf.d/ostree.conf
-%{_sysconfdir}/ostree-mkinitcpio.conf
 %{_libdir}/ostree/ostree-remount
 %{_libdir}/tmpfiles.d/ostree-tmpfiles.conf
+%{_sysconfdir}/dracut.conf.d/ostree.conf
+%{_sysconfdir}/ostree-mkinitcpio.conf
+%{_mandir}/man1/ostree-admin*
 %{_libexecdir}/libostree/*
+%exclude %{_sysconfdir}/grub.d/*ostree
+%exclude %{_libexecdir}/libostree/grub2*
 
 %files libs
 %{_sysconfdir}/ostree

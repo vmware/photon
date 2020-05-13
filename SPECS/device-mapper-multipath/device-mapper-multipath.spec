@@ -1,15 +1,16 @@
-Summary:    Provide tools to manage multipath devices
-Name:       device-mapper-multipath
-Version:    0.7.3
-Release:    3%{?dist}
-License:    GPL+
-Group:      System Environment/Base
-Vendor:     VMware, Inc.
+Summary:      Provide tools to manage multipath devices
+Name:         device-mapper-multipath
+Version:      0.8.3
+Release:      1%{?dist}
+License:      GPL+
+Group:        System Environment/Base
+Vendor:       VMware, Inc.
 Distribution: Photon
-URL:        http://christophe.varoqui.free.fr/
-Source0:    multipath-tools-a0e0752.tar.gz
-%define git_commit_short a0e0752
-%define sha1 multipath-tools=56c171d5ed567654a10996b6d9892944d9d0cb48
+URL:          http://christophe.varoqui.free.fr/
+Source0:      multipath-tools-6c3bd36.tar.gz
+%define       git_commit_short 6c3bd36
+%define       sha1 multipath-tools=474b8f09f96ae7d96bbfbaf60bb2f2864ef14517
+
 BuildRequires:  userspace-rcu-devel
 BuildRequires:  libaio-devel
 BuildRequires:  device-mapper-devel
@@ -17,6 +18,7 @@ BuildRequires:  readline-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  systemd-devel
 BuildRequires:  json-c-devel
+
 Requires:   userspace-rcu
 Requires:   libaio
 Requires:   device-mapper
@@ -72,15 +74,16 @@ rm -rf %{buildroot}
 /lib/udev/rules.d/*
 /lib64/*.so
 /lib64/*.so.*
-%{_unitdir}/*
 %{_libdir}/*.so
 %{_libdir}/*.so.*
 %{_libdir}/multipath/*.so
+/lib/systemd/system/multipathd.service
+/lib/systemd/system/multipathd.socket
+
 %{_mandir}/man5/*
 %{_mandir}/man8/mpathpersist.8.gz
 %{_mandir}/man8/multipath.8.gz
 %{_mandir}/man8/multipathd.8.gz
-%dir /etc/multipath
 
 %files devel
 %defattr(-,root,root,-)
@@ -95,6 +98,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+*   Wed Apr 08 2020 Susant Sahani<ssahani@vmware.com> 0.8.3-1
+-   Update to 0.8.3
 *   Thu Dec 06 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 0.7.3-3
 -   Make device-mapper a runtime dependency of kpartx.
 *   Wed Sep 26 2018 Anish Swaminathan <anishs@vmware.com>  0.7.3-2

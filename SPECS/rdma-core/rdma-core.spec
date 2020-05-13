@@ -269,7 +269,7 @@ cd build && make %{?_smp_mflags} check
 %config(noreplace) %{_sysconfdir}/udev/rules.d/70-persistent-ipoib.rules
 %{_unitdir}/rdma-hw.target
 %{_unitdir}/rdma-load-modules@.service
-/lib/udev/rdma_rename
+%{_libdir}/udev/rdma_rename
 %{_udevrulesdir}/60-rdma-persistent-naming.rules
 %{_udevrulesdir}/75-rdma-description.rules
 %{_udevrulesdir}/90-rdma-hw-modules.rules

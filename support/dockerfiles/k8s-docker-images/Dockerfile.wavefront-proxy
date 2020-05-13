@@ -17,7 +17,7 @@ COPY [ "./tmp/wavefront-proxy/etc/wavefront/wavefront-proxy/log4j2-stdout.xml", 
        "./tmp/wavefront-proxy/etc/wavefront/wavefront-proxy/wavefront.conf", \
        "/etc/wavefront/wavefront-proxy/" ]
 
-COPY ./tmp/wavefront-proxy/lib/systemd/system/wavefront-proxy.service /lib/systemd/system/ 
+COPY ./tmp/wavefront-proxy/usr/lib/systemd/system/wavefront-proxy.service /usr/lib/systemd/system/ 
 COPY ./tmp/wavefront-proxy/opt/wavefront-push-agent.jar /opt/
 COPY ./tmp/wavefront-proxy/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh /opt/wavefront/wavefront-proxy/bin/
 COPY ./tmp/wavefront-proxy/opt/wavefront/wavefront-proxy/bin/run.sh /

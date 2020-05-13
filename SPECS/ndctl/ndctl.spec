@@ -1,4 +1,4 @@
-%{!?_udevdir: %define _udevdir /lib/udev/}
+%{!?_udevdir: %define _udevdir /usr/lib/udev/}
 Summary:        Manage "libnvdimm" subsystem devices (Non-volatile Memory)
 Name:           ndctl
 Version:        62

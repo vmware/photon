@@ -63,7 +63,7 @@ make %{?_smp_mflags} -k check
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-/lib/udev/hid2hci
+%{_libdir}/udev/hid2hci
 %{_libexecdir}/bluetooth/obexd
 %{_libexecdir}/bluetooth/bluetoothd
 %{_datadir}/zsh/site-functions/_bluetoothctl
@@ -72,9 +72,9 @@ make %{?_smp_mflags} -k check
 %{_datadir}/dbus-1/system-services/org.bluez.service
 %{_datadir}/dbus-1/services/org.bluez.obex.service
 %{_libdir}/systemd/user/obex.service
-/lib/systemd/system/bluetooth.service
+%{_libdir}/systemd/system/bluetooth.service
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/bluetooth.conf
-/lib/udev/rules.d/97-hid2hci.rules
+%{_libdir}/udev/rules.d/97-hid2hci.rules
 %doc COPYING TODO
 
 %files devel

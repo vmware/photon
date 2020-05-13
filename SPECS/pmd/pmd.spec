@@ -284,8 +284,8 @@ rm -rf %{buildroot}/*
     %defattr(-,root,root,0755)
     %{_bindir}/pmd
     %{_bindir}/pmdprivsepd
-    /lib/systemd/system/pmd.service
-    /lib/systemd/system/pmdprivsepd.service
+    %{_libdir}/systemd/system/pmd.service
+    %{_libdir}/systemd/system/pmdprivsepd.service
     /etc/pmd/pmd.conf
     /etc/pmd/api_sddl.conf
     /etc/pmd/restapispec.json

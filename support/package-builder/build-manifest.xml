@@ -202,8 +202,6 @@
                  spec="lvm2"/>
         <package id="lvm2-libs"
                  spec="lvm2"/>
-        <package id="lvm2-python-libs"
-                 spec="lvm2"/>
         <package id="lzo"/>
         <package id="lzo-devel"
                  spec="lzo"/>
@@ -637,7 +635,6 @@
         <pkgref id="lvm2"/>
         <pkgref id="lvm2-devel"/>
         <pkgref id="lvm2-libs"/>
-        <pkgref id="lvm2-python-libs"/>
         <pkgref id="lua-devel"/>
         <pkgref id="lzo"/>
         <pkgref id="lzo-devel"/>

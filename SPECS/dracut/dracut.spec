@@ -4,21 +4,20 @@
 %define _unitdir /usr/lib/systemd/system
 
 Name:           dracut
-Version:        048
-Release:        4%{?dist}
+Version:        050
+Release:        1%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
 URL:            https://dracut.wiki.kernel.org/
 Source0:        http://www.kernel.org/pub/linux/utils/boot/dracut/dracut-%{version}.tar.xz
-%define sha1    dracut=70daaf4ef1175c87ab35ec76bb84ca1388a13a5d
+%define sha1    dracut=44f5b7304976b57ac4fca4dd94e99d1a131e6f62
 Source1:        https://www.gnu.org/licenses/lgpl-2.1.txt
 Patch1:         disable-xattr.patch
 Patch2:         fix-initrd-naming-for-photon.patch
-Patch3:	        lvm-no-read-only-locking.patch
-Patch4:         install-systemd-tty-ask-password-agent.patch
-Patch5:         0001-fips-changes.patch
+Patch3:         lvm-no-read-only-locking.patch
+Patch4:         fips-changes.patch
 
 Summary:        dracut to create initramfs
 Vendor:         VMware, Inc.
@@ -58,7 +57,6 @@ cp %{SOURCE1} .
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
-%patch5 -p1
 
 %build
 %configure --systemdsystemunitdir=%{_unitdir} --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
@@ -101,8 +99,6 @@ rm -f $RPM_BUILD_ROOT%{_mandir}/man?/*suse*
 mkdir -p $RPM_BUILD_ROOT%{_sbindir}
 ln -sr $RPM_BUILD_ROOT%{_bindir}/dracut $RPM_BUILD_ROOT%{_sbindir}/dracut
 
-%check
-make %{?_smp_mflags} -k clean  check
 %clean
 rm -rf -- $RPM_BUILD_ROOT
 
@@ -163,6 +159,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*   Fri Apr 24 2020 Susant Sahani <ssahani@vmware.com> 050-1
+-   Update to 050
 *   Fri Apr 03 2020 Vikash Bansal <bvikas@vmware.com> 048-4
 -   Added fips module
 *   Wed Apr 01 2020 Susant Sahani <ssahani@vmware.com> 048-3

@@ -1,9 +1,9 @@
-diff -Naur dracut-045.orig/modules.d/90lvm/module-setup.sh dracut-045/modules.d/90lvm/module-setup.sh
---- dracut-045.orig/modules.d/90lvm/module-setup.sh	2017-04-03 01:26:25.000000000 -0700
-+++ dracut-045/modules.d/90lvm/module-setup.sh	2019-10-10 13:45:33.565094711 -0700
-@@ -62,10 +62,6 @@
+diff -rupN dracut-050/modules.d/90lvm/module-setup.sh lvm-no-read-only-locking/modules.d/90lvm/module-setup.sh
+--- dracut-050/modules.d/90lvm/module-setup.sh	2020-03-04 11:43:22.000000000 +0100
++++ lvm-no-read-only-locking/modules.d/90lvm/module-setup.sh	2020-04-24 06:22:12.361882406 +0200
+@@ -62,10 +62,6 @@ install() {
      if [[ $hostonly ]] || [[ $lvmconf = "yes" ]]; then
-         if [ -f /etc/lvm/lvm.conf ]; then
+         if [ -f $dracutsysrootdir/etc/lvm/lvm.conf ]; then
              inst_simple -H /etc/lvm/lvm.conf
 -            # FIXME: near-term hack to establish read-only locking;
 -            # use command-line lvm.conf editor once it is available

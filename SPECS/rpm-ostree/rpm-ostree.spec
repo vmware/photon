@@ -17,6 +17,7 @@ Source4:        function.inc
 Source5:        mkostreerepo
 Patch0:         rpm-ostree-libdnf-build.patch
 Patch1:         rpm-ostree-disable-selinux.patch
+
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  check
@@ -126,7 +127,7 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_libdir}/*.so.1*
 %{_libdir}/girepository-1.0/*.typelib
 %{_sysconfdir}/dbus-1/system.d/*
-%{_prefix}%{_unitdir}/*.service
+%{_unitdir}/*.service
 %{_libexecdir}/*
 %{_datadir}/dbus-1/system-services/*
 %config(noreplace) %{_sysconfdir}/rpm-ostreed.conf

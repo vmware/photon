@@ -38,7 +38,7 @@ for i in man/*8 ; do
 done
 install -d -m 0755 %{buildroot}/etc/service
 install -D -m 0750 etc/2 %{buildroot}%{_sbindir}/runsvdir-start
-install -D -m 0755 %{SOURCE1} %{buildroot}/lib/systemd/system/runit.service
+install -D -m 0755 %{SOURCE1} %{buildroot}/%{_libdir}/systemd/system/runit.service
 
 %check
 sh package/check
@@ -50,7 +50,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{_sbindir}/*
 %{_mandir}/man8/*
-/lib/systemd/system/runit.service
+%{_libdir}/systemd/system/runit.service
 %dir /etc/service
 
 %changelog

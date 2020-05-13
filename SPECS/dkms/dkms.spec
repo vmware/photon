@@ -49,7 +49,7 @@ echo "disable dkms.service" > %{buildroot}/usr/lib/systemd/system-preset/50-dkms
 %{_sysconfdir}/%{name}/template-dkms-redhat-kmod.spec
 %{_sysconfdir}/kernel/postinst.d/dkms
 %{_sysconfdir}/kernel/prerm.d/dkms
-/lib/systemd/system/dkms.service
+%{_libdir}/systemd/system/dkms.service
 %{_libdir}/systemd/system-preset/50-dkms.preset
 %{_libdir}/%{name}/*
 %{_sbindir}/dkms
@@ -61,11 +61,11 @@ echo "disable dkms.service" > %{buildroot}/usr/lib/systemd/system-preset/50-dkms
 -   Upgraded to version 2.6.1
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.2.0.3-4
 -   Fixed logic to restart the active services after upgrade 
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.0.3-3
--	GA - Bump release of all rpms
-*	Tue Aug 25 2015 Alexey Makhalov <amakhalov@vmware.com> 2.2.0.3-2
--	Added systemd preset file with 'disable' default value.
--	Set BuildArch to noarch.
-*	Thu Aug 6 2015 Divya Thaluru <dthaluru@vmware.com> 2.2.0.3-1
--	Initial version
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.0.3-3
+-   GA - Bump release of all rpms
+*   Tue Aug 25 2015 Alexey Makhalov <amakhalov@vmware.com> 2.2.0.3-2
+-   Added systemd preset file with 'disable' default value.
+-   Set BuildArch to noarch.
+*   Thu Aug 6 2015 Divya Thaluru <dthaluru@vmware.com> 2.2.0.3-1
+-   Initial version
 

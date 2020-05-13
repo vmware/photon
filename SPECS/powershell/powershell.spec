@@ -22,6 +22,8 @@ BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang
 BuildRequires:  git
+BuildRequires:  photon-release
+
 Requires:       icu
 #gallery download scripts will fail without this
 Requires:       zlib-devel

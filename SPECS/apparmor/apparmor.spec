@@ -286,7 +286,7 @@ make DESTDIR=%{buildroot} install
 /lib/apparmor/apparmor.systemd
 %{_bindir}/aa-exec
 %{_bindir}/aa-enabled
-%attr(644,root,root) %{_prefix}%{_unitdir}/apparmor.service
+%attr(644,root,root) %{_unitdir}/apparmor.service
 %dir %{_sysconfdir}/apparmor
 %dir %{_sysconfdir}/apparmor.d
 %config(noreplace) %{_sysconfdir}/apparmor/parser.conf
