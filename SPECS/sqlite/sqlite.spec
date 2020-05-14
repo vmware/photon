@@ -2,7 +2,7 @@
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
 Version:        3.31.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
@@ -45,12 +45,12 @@ The sqlite3 library.
 
 %build
 %configure \
-    CFLAGS="%{optflags}"                \
-    CXXFLAGS="%{optflags}               \
-    -DSQLITE_ENABLE_FTS3=1              \
-    -DSQLITE_ENABLE_COLUMN_METADATA=1   \
-    -DSQLITE_ENABLE_UNLOCK_NOTIFY=1     \
-    -DSQLITE_SECURE_DELETE=1"           \
+    CFLAGS="%{optflags}               \
+    -DSQLITE_ENABLE_FTS3=1            \
+    -DSQLITE_ENABLE_COLUMN_METADATA=1 \
+    -DSQLITE_ENABLE_UNLOCK_NOTIFY=1   \
+    -DSQLITE_SECURE_DELETE=1"         \
+    CXXFLAGS="%{optflags}"            \
     --disable-static
 make
 
@@ -91,6 +91,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0
 
 %changelog
+*   Thu May 14 2020 Ankit Jain <ankitja@vmware.com> 3.31.1-4
+-   Macros defined need to be inside CFLAGS, else it was unused
+-   Certain symbols were undefined
 *   Wed Apr 15 2020 Siju Maliakkal <smaliakkal@vmware.com> 3.31.1-3
 -   Fix for CVE-2020-9327
 *   Mon Apr 13 2020 Ankit Jain <ankitja@vmware.com> 3.31.1-2
