@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.115
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -66,6 +66,9 @@ Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 # Fix for CVE-2020-10711
 Patch40:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
+# Fix CVE-2019-18885
+Patch41:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
+Patch42:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:        0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -204,6 +207,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch38 -p1
 %patch39 -p1
 %patch40 -p1
+%patch41 -p1
+%patch42 -p1
 
 %patch98 -p1
 %patch99 -p1
@@ -425,6 +430,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri May 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-4
+-   Fix for CVE-2019-18885
 *   Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.115-3
 -   Add patch to fix CVE-2020-10711
 *   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.115-2

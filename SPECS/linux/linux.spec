@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.115
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -55,6 +55,9 @@ Patch17:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 Patch18:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19074
 Patch19:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
+# Fix CVE-2019-18885
+Patch20:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
+Patch21:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
@@ -273,6 +276,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
+%patch20 -p1
+%patch21 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -611,6 +616,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri May 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-6
+-   Fix for CVE-2019-18885
 *   Tue May 12 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.115-5
 -   Add patch to fix CVE-2020-10711
 *   Wed May 06 2020 Ajay Kaher <akaher@vmware.com> 4.19.115-4

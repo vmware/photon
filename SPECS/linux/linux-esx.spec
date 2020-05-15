@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.115
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -76,6 +76,9 @@ Patch44:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 # Fix for CVE-2020-10711
 Patch46:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
+# Fix CVE-2019-18885
+Patch47:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
+Patch48:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 Patch55:        0001-p9fs_dir_readdir-offset-support.patch
 Patch56:	0002-Add-9p-zero-copy-data-path-using-crossfd.patch
@@ -178,6 +181,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch44 -p1
 %patch45 -p1
 %patch46 -p1
+%patch47 -p1
+%patch48 -p1
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
@@ -315,6 +320,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri May 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-6
+-   Fix for CVE-2019-18885
 *   Tue May 12 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.115-5
 -   Add patch to fix CVE-2020-10711
 *   Fri May 08 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-4
