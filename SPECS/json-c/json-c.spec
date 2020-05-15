@@ -1,7 +1,7 @@
 Summary:    A JSON implementation in C
 Name:       json-c
 Version:    0.13.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    MIT
 URL:        https://github.com/json-c/json-c/wiki
 Source0:    https://s3.amazonaws.com/json-c_releases/releases/%{name}-%{version}.tar.gz
@@ -9,6 +9,10 @@ Source0:    https://s3.amazonaws.com/json-c_releases/releases/%{name}-%{version}
 Group:		System Environment/Base
 Vendor:	    VMware, Inc.
 Distribution:	Photon
+Patch0:     CVE-2020-12762-Protect-array_list.patch
+Patch1:     CVE-2020-12762-division-by-zero.patch
+Patch2:     CVE-2020-12762-integer-overflow.patch
+
 %description
 JSON-C implements a reference counting object model that allows you to easily construct JSON objects in C, output them as JSON formatted strings and parse JSON formatted strings back into the C representation of JSON objects.
 
@@ -22,6 +26,9 @@ developing applications that use json-c.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 autoreconf -fiv
@@ -49,6 +56,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*       Fri May 15 2020 Ankit Jain <ankitja@vmware.com> 0.13.1-2
+-       Fix for CVE-2020-12762
 *       Wed Oct 10 2018 Ankit Jain <ankitja@vmware.com> 0.13.1-1
 -       Updated package to version 0.13.1
 *       Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 0.12.1-1
