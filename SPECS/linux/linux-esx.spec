@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.221
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -76,6 +76,9 @@ Patch55: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 Patch56: 0001-vhost-vsock-add-weight-support.patch
 # Fix for CVE-2020-10711
 Patch57: CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
+# Fix CVE-2019-18885
+Patch58:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
+Patch59:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -160,6 +163,8 @@ The Linux package contains the Linux kernel doc files
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
+%patch58 -p1
+%patch59 -p1
 
 %build
 
@@ -255,6 +260,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri May 15 2020 Vikash Bansal <bvikas@vmware.com> 4.9.221-4
+-   Fix for CVE-2019-18885
 *   Tue May 12 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.9.221-3
 -   Add patch to fix CVE-2020-10711
 *   Fri May 08 2020 Vikash Bansal <bvikas@vmware.com> 4.9.221-2
