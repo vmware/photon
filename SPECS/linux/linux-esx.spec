@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.224
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -43,9 +43,10 @@ Patch27:       net-9p-vdfs-zerocopy.patch
 Patch28:       0001-Enable-cache-loose-for-vdfs-9p.patch
 Patch29:       0001-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
 Patch30:       0001-9p-Transport-error-uninitialized.patch
+Patch31:       0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
 
 # Fix for CVE-2018-8043
-Patch31:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
+Patch33:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
 Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
@@ -81,6 +82,7 @@ Patch60:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 # For Spectre
 Patch70: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
+
 
 
 BuildRequires: bc
@@ -149,6 +151,7 @@ The Linux package contains the Linux kernel doc files
 %patch29 -p1
 %patch30 -p1
 %patch31 -p1
+%patch33 -p1
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
@@ -261,6 +264,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu May 26 2020 Albert Guo <aguo@vmware.com> 4.4.224-2
+-   9p: Ensure seekdir take effect
 *   Fri May 22 2020 Ajay Kaher <akaher@vmware.com> 4.4.224-1
 -   Update to version 4.4.224
 *   Tue May 19 2020 Vikash Bansal <bvikas@vmware.com> 4.4.221-4

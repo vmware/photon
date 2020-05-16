@@ -1,0 +1,98 @@
+From b49451ea1840499eff633f7020a375237e49e1e1 Mon Sep 17 00:00:00 2001
+From: Albert Guo <aguo@vmware.com>
+Date: Tue, 12 May 2020 10:25:46 -0700
+Subject: [PATCH] [9p] Ensure seekdir take effect when entries in readdir buf
+ hasn't been ran out.
+
+When running Samba server in a 9p mount point, we discovered a wide directory
+can't be listed correctly from Windows client due to a bug in Linux 9p driver.
+The problem is Windows client can seek to an offset while directory entries
+in the readdir buffer hasn't been run out. In this case, the directory seek
+isn't honored. The 9p driver still return entries from cache according to old
+current position.
+
+I wrote a test program which mimic the above behavior, and the issue can be
+reproduced.
+
+The fix is to force 9p driver to call TREADDIR whenever seekdir(v9fs_dir_llseek)
+is called. Please note that, if a caller just readdir sequentially, the seekdir
+won't be called.
+
+Testing Done:
+After my change, I can see the TREADDIR following the seek call starts from seeked offset:
+See offset 230704361578168321 was honored.
+(Previously TREADDIR didn't use the seeked offset at all in the specific case)
+
+\[12495.548915\] 9pnet: -- v9fs_dir_llseek (22895): name default seek to off: 230704361578168321 (0x333a06500000001)
+\[12495.548921\] 9pnet: -- v9fs_dir_readdir_dotl (22895): name default
+\[12495.548922\] 9pnet: (00022895) >>> TREADDIR fid 3 offset 230704361578168321 count 16276
+
+Tested with test program, now we can list directory entry correctly after seeking to
+a specific position.
+Tested with Windows SMB client, it can list 1000 files correctly.
+---
+ fs/9p/vfs_dir.c | 34 ++++++++++++++++++++++++++++++++--
+ 1 file changed, 32 insertions(+), 2 deletions(-)
+
+diff --git a/fs/9p/vfs_dir.c b/fs/9p/vfs_dir.c
+index 0576921..038556b 100644
+--- a/fs/9p/vfs_dir.c
++++ b/fs/9p/vfs_dir.c
+@@ -76,6 +76,36 @@ static inline int dt_type(struct p9_wstat *mistat)
+ 	return rettype;
+ }
+ 
++
++/**
++ * v9fs_dir_llseek - seek to a specific offset for further readdir
++ * @file:	file structure to seek on
++ * @offset:	file offset to seek to
++ * @whence:	type of seek
++ *
++ * This is implementation for directory seek in a 9p file system
++ */
++
++static loff_t v9fs_dir_llseek(struct file *file, loff_t offset, int whence)
++{
++	struct p9_fid *fid = file->private_data;
++	struct p9_rdir *rdir = fid->rdir;
++
++	/*
++	 * Reset head so that v9fs_dir_readdir_xxx will call p9_client_readdir to
++	 * refetch dir entries.
++	 * Some applications may reset the offset before previous readdir finishes.
++	 */
++	if (rdir) {
++		rdir->head = rdir->tail;
++	}
++
++	p9_debug(P9_DEBUG_VFS, "name %pD seek to off: %lld (0x%llx)\n",
++			file, offset, offset);
++	return generic_file_llseek(file, offset, whence);
++}
++
++
+ /**
+  * v9fs_alloc_rdir_buf - Allocate buffer used for read and readdir
+  * @filp: opened file structure
+@@ -232,7 +262,7 @@ int v9fs_dir_release(struct inode *inode, struct file *filp)
+ 
+ const struct file_operations v9fs_dir_operations = {
+ 	.read = generic_read_dir,
+-	.llseek = generic_file_llseek,
++	.llseek = v9fs_dir_llseek,
+ 	.iterate = v9fs_dir_readdir,
+ 	.open = v9fs_file_open,
+ 	.release = v9fs_dir_release,
+@@ -240,7 +270,7 @@ const struct file_operations v9fs_dir_operations = {
+ 
+ const struct file_operations v9fs_dir_operations_dotl = {
+ 	.read = generic_read_dir,
+-	.llseek = generic_file_llseek,
++	.llseek = v9fs_dir_llseek,
+ 	.iterate = v9fs_dir_readdir_dotl,
+ 	.open = v9fs_file_open,
+ 	.release = v9fs_dir_release,
+-- 
+2.6.2
+
