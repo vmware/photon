@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
 Version:        2.13.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -24,7 +24,7 @@ Requires:       python3-linux-procfs
 Requires:       python3-pygobject
 Requires:       python3-schedutils
 Requires:       python3-ethtool
-Requires:       python3-perf
+Requires:       linux-python3-perf
 Requires:       irqbalance
 Requires:       systemd
 %if %{with_check}
@@ -137,5 +137,7 @@ make test
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Wed May 13 2020 Tapas Kundu <tkundu@vmware.com> 2.13.0-2
+-   Replaced requires from python3-perf to linux-python3-perf.
 *   Wed Mar 18 2020 Tapas Kundu <tkundu@vmware.com> 2.13.0-1
 -   Initial release.

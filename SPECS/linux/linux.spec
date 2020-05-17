@@ -1,6 +1,6 @@
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %global security_hardening none
 %global photon_checksum_generator_version 1.1
-
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.112
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -159,9 +159,11 @@ BuildRequires:  audit-devel
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  binutils-devel
 BuildRequires:  xz-devel
-BuildRequires:  libunwind-devel
 BuildRequires:  slang-devel
 BuildRequires:  python3-devel
+%ifarch x86_64
+BuildRequires:  pciutils-devel
+%endif
 Requires:       filesystem kmod
 Requires(post):(coreutils or toybox)
 Requires(postun):(coreutils or toybox)
@@ -213,12 +215,25 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %package tools
 Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
 Group:          System/Tools
-Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-aws = %{version})
+Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-aws = %{version} or linux-rt = %{version})
 Requires:       audit elfutils-libelf binutils-libs xz-libs libunwind slang python3
+%ifarch x86_64
+Requires:       pciutils
+%endif
 Obsoletes:      linux-aws-tools <= 4.19.52-1
 Provides:       linux-aws-tools
 %description tools
-This package contains the 'perf' performance analysis tools for Linux kernel.
+This package contains kernel tools like perf, turbostat and cpupower.
+
+%package python3-perf
+Summary:        Python bindings for applications that will manipulate perf events.
+Group:          Development/Libraries
+Requires:       linux-tools = %{version}-%{release}
+Requires:       python3
+
+%description python3-perf
+This package provides a module that permits applications written in the
+Python programming language to use the interface to manipulate perf events.
 
 %ifarch aarch64
 %package dtb-rpi3
@@ -351,6 +366,9 @@ make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%
 make ARCH=%{arch} -C tools perf PYTHON=python3
 
 %ifarch x86_64
+#build turbostat and cpupower
+make ARCH=${arch} -C tools turbostat cpupower PYTHON=python3
+
 # build ENA module
 bldroot=`pwd`
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
@@ -490,6 +508,10 @@ cp arch/arm64/kernel/module.lds %{buildroot}/usr/src/%{name}-headers-%{uname_r}/
 # fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
 # Linux version that was affected is 4.4.26
 make -C tools ARCH=%{arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3
+make -C tools/perf ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} PYTHON=python3 install-python_ext
+%ifarch x86_64
+make -C tools ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
+%endif
 
 %include %{SOURCE2}
 %include %{SOURCE6}
@@ -582,6 +604,22 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 %{_libdir}/perf/examples/bpf/*
 %{_libdir}/perf/include/bpf/*
+%ifarch x86_64
+%{_includedir}/cpufreq.h
+%{_includedir}/cpuidle.h
+%{_lib64dir}/libcpupower.so
+%{_lib64dir}/libcpupower.so.*
+%config(noreplace) %{_sysconfdir}/cpufreq-bench.conf
+%{_sbindir}/cpufreq-bench
+%{_mandir}/man1/cpupower*.gz
+%{_mandir}/man8/turbostat*.gz
+%{_datadir}/locale/*
+%endif
+
+
+%files python3-perf
+%defattr(-,root,root)
+%{python3_sitelib}/*
 
 %ifarch aarch64
 %files dtb-rpi3
@@ -596,6 +634,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed May 20 2020 Tapas Kundu <tkundu@vmware.com> 4.19.112-7
+-   Added linux-python3-perf subpackage.
+-   Added turbostat and cpupower to tools for x86_64.
+-   linux-python3-perf replaces python3-perf.
 *   Fri May 15 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.112-6
 -   Add uio_pic_generic driver support in config
 *   Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.112-5

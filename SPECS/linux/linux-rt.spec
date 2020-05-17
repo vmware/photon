@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.115
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt50
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        5%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -29,7 +29,6 @@ Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         4.18-x86-vmware-STA-support.patch
 Patch7:         9p-trans_fd-extend-port-variable-to-u32.patch
-Patch8:         perf-scripts-python-Convert-python2-scripts-to-python3.patch
 Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 # ttyXRUSB support
 Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
@@ -412,14 +411,6 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
-BuildRequires:  elfutils-devel
-BuildRequires:  elfutils-libelf-devel
-BuildRequires:  binutils-devel
-BuildRequires:  xz-devel
-BuildRequires:  libunwind-devel
-BuildRequires:  slang-devel
-BuildRequires:  python3-devel
-BuildRequires:  pciutils-devel
 Requires:       filesystem kmod
 Requires(post):(coreutils or toybox)
 Requires(postun):(coreutils or toybox)
@@ -446,24 +437,6 @@ Requires:       python3
 %description docs
 The Linux package contains the Linux kernel doc files
 
-%package tools
-Summary:        This package contains kernel tools like perf, turbostat and cpupower
-Group:          System/Tools
-Requires:       %{name} = %{version}
-Requires:       audit elfutils-libelf binutils-libs xz-libs libunwind slang python3 pciutils
-%description tools
-This package contains kernel tools like perf, turbostat and cpupower.
-
-%package -n python3-perf
-Summary:        Python bindings for applications that will manipulate perf events.
-Group:          Development/Libraries
-Requires:       linux-rt-tools = %{version}-%{release}
-Requires:       python3
-
-%description -n python3-perf
-This package provides a module that permits applications written in the
-Python programming language to use the interface to manipulate perf events.
-
 %prep
 %setup -q -n linux-%{version}
 %ifarch x86_64
@@ -476,7 +449,6 @@ Python programming language to use the interface to manipulate perf events.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-%patch8 -p1
 %patch9 -p1
 %patch11 -p1
 %patch17 -p1
@@ -842,11 +814,6 @@ sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .conf
 %include %{SOURCE5}
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
-make ARCH=${arch} -C tools perf PYTHON=python3
-
-%ifarch x86_64
-make ARCH=${arch} -C tools turbostat cpupower PYTHON=python3
-%endif
 
 %ifarch x86_64
 # build XR module
@@ -947,17 +914,6 @@ cp .config %{buildroot}/usr/src/%{name}-headers-%{uname_r} # copy .config manual
 ln -sf "/usr/src/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
-
-# disable (JOBS=1) parallel build to fix this issue:
-# fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
-# Linux version that was affected is 4.4.26
-make -C tools ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3
-make -C tools/perf ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} PYTHON=python3 install-python_ext
-
-%ifarch x86_64
-make -C tools ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
-%endif
-
 %include %{SOURCE2}
 %include %{SOURCE4}
 
@@ -985,34 +941,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/build
 /usr/src/%{name}-headers-%{uname_r}
 
-%files tools
-%defattr(-,root,root)
-/usr/libexec
-%exclude %{_libdir}/debug
-%ifarch x86_64
-/usr/lib64/traceevent
-%endif
-%{_bindir}
-/etc/bash_completion.d/*
-/usr/share/perf-core/strace/groups/file
-/usr/share/doc/*
-%{_libdir}/perf/examples/bpf/*
-%{_libdir}/perf/include/bpf/*
-%{_includedir}/cpufreq.h
-%{_includedir}/cpuidle.h
-%{_lib64dir}/libcpupower.so
-%{_lib64dir}/libcpupower.so.*
-%config(noreplace) %{_sysconfdir}/cpufreq-bench.conf
-%{_sbindir}/cpufreq-bench
-%{_mandir}/man1/cpupower*.gz
-%{_mandir}/man8/turbostat*.gz
-%{_datadir}/locale/*
-
-%files -n python3-perf
-%defattr(-,root,root)
-%{python3_sitelib}/*
-
 %changelog
+*   Fri May 22 2020 Tapas Kundu <tkundu@vmware.com> 4.19.115-5
+-   Deprecate linux-rt-tools in favor of linux-tools.
+-   Deprecate python3-perf in favor of linux-python3-perf.
 *   Thu May 21 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-4
 -   Add ICE network driver support in config
 *   Fri May 15 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.115-3
