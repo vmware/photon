@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.221
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -77,6 +77,9 @@ Patch56:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 Patch57:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 #Fix for CVE-2018-13094
 Patch58:        0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
+# Fix CVE-2019-18885
+Patch59:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
+Patch60:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 # For Spectre
 Patch70: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -167,6 +170,8 @@ The Linux package contains the Linux kernel doc files
 %patch56 -p1
 %patch57 -p1
 %patch58 -p1
+%patch59 -p1
+%patch60 -p1
 
 %patch70 -p1
 
@@ -259,6 +264,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 19 2020 Vikash Bansal <bvikas@vmware.com> 4.4.221-4
+-   Fix for CVE-2019-18885
 *   Tue May 12 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.4.221-3
 -   Add patch to fix CVE-2020-10711
 *   Fri May 08 2020 Vikash Bansal <bvikas@vmware.com> 4.4.221-2

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.221
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -78,6 +78,9 @@ Patch51:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 Patch52:        0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 # Fix for CVE-2020-10711
 Patch53: CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
+# Fix CVE-2019-18885
+Patch54:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
+Patch55:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -201,6 +204,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch51 -p1
 %patch52 -p1
 %patch53 -p1
+%patch54 -p1
+%patch55 -p1
 %patch67 -p1
 
 %if 0%{?kat_build:1}
@@ -360,6 +365,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue May 19 2020 Vikash Bansal <bvikas@vmware.com> 4.4.221-3
+-   Fix for CVE-2019-18885
 *   Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.4.221-2
 -   Add patch to fix CVE-2020-10711
 *   Tue May 05 2020 ashwin-h <ashwinh@vmware.com> 4.4.221-1

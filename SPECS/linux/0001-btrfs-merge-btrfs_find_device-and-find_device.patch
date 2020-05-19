@@ -1,0 +1,267 @@
+From 09ba3bc9dd150457c506e4661380a6183af651c1 Mon Sep 17 00:00:00 2001
+From: Anand Jain <anand.jain@oracle.com>
+Date: Sat, 19 Jan 2019 14:48:55 +0800
+Subject: [PATCH] btrfs: merge btrfs_find_device and find_device
+
+commit 09ba3bc9dd150457c506e4661380a6183af651c1 upstream
+
+Both btrfs_find_device() and find_device() does the same thing except
+that the latter does not take the seed device onto account in the device
+scanning context. We can merge them.
+
+Signed-off-by: Anand Jain <anand.jain@oracle.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+
+---
+ fs/btrfs/dev-replace.c | 12 +++----
+ fs/btrfs/ioctl.c       |  6 ++--
+ fs/btrfs/scrub.c       |  5 +--
+ fs/btrfs/volumes.c     | 74 ++++++++++++++++++++++--------------------
+ fs/btrfs/volumes.h     |  4 +--
+ 5 files changed, 53 insertions(+), 48 deletions(-)
+
+diff --git a/fs/btrfs/dev-replace.c b/fs/btrfs/dev-replace.c
+index 1414a99b..14292ba6 100644
+--- a/fs/btrfs/dev-replace.c
++++ b/fs/btrfs/dev-replace.c
+@@ -135,11 +135,11 @@ no_valid_dev_replace_entry_found:
+ 		break;
+ 	case BTRFS_IOCTL_DEV_REPLACE_STATE_STARTED:
+ 	case BTRFS_IOCTL_DEV_REPLACE_STATE_SUSPENDED:
+-		dev_replace->srcdev = btrfs_find_device(fs_info, src_devid,
+-							NULL, NULL);
+-		dev_replace->tgtdev = btrfs_find_device(fs_info,
++		dev_replace->srcdev = btrfs_find_device(fs_info->fs_devices,
++						src_devid, NULL, NULL, true);
++		dev_replace->tgtdev = btrfs_find_device(fs_info->fs_devices,
+ 							BTRFS_DEV_REPLACE_DEVID,
+-							NULL, NULL);
++							NULL, NULL, true);
+ 		/*
+ 		 * allow 'btrfs dev replace_cancel' if src/tgt device is
+ 		 * missing
+@@ -647,8 +647,8 @@ static int btrfs_dev_replace_find_srcdev(struct btrfs_root *root, u64 srcdevid,
+ 
+ 	if (srcdevid) {
+ 		ret = 0;
+-		*device = btrfs_find_device(root->fs_info, srcdevid, NULL,
+-					    NULL);
++		*device = btrfs_find_device(root->fs_info->fs_devices,
++					    srcdevid, NULL, NULL, true);
+ 		if (!*device)
+ 			ret = -ENOENT;
+ 	} else {
+diff --git a/fs/btrfs/ioctl.c b/fs/btrfs/ioctl.c
+index 119b1c5c..0e4fb3d6 100644
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -1530,7 +1530,8 @@ static noinline int btrfs_ioctl_resize(struct file *file,
+ 		btrfs_info(root->fs_info, "resizing devid %llu", devid);
+ 	}
+ 
+-	device = btrfs_find_device(root->fs_info, devid, NULL, NULL);
++	device = btrfs_find_device(root->fs_info->fs_devices,
++				   devid, NULL, NULL, true);
+ 	if (!device) {
+ 		btrfs_info(root->fs_info, "resizer unable to find device %llu",
+ 		       devid);
+@@ -2772,7 +2773,8 @@ static long btrfs_ioctl_dev_info(struct btrfs_root *root, void __user *arg)
+ 		s_uuid = di_args->uuid;
+ 
+ 	mutex_lock(&fs_devices->device_list_mutex);
+-	dev = btrfs_find_device(root->fs_info, di_args->devid, s_uuid, NULL);
++	dev = btrfs_find_device(root->fs_info->fs_devices, di_args->devid,
++				s_uuid, NULL, true);
+ 
+ 	if (!dev) {
+ 		ret = -ENODEV;
+diff --git a/fs/btrfs/scrub.c b/fs/btrfs/scrub.c
+index cc9ccc42..9491373c 100644
+--- a/fs/btrfs/scrub.c
++++ b/fs/btrfs/scrub.c
+@@ -3836,7 +3836,7 @@ int btrfs_scrub_dev(struct btrfs_fs_info *fs_info, u64 devid, u64 start,
+ 
+ 
+ 	mutex_lock(&fs_info->fs_devices->device_list_mutex);
+-	dev = btrfs_find_device(fs_info, devid, NULL, NULL);
++	dev = btrfs_find_device(fs_info->fs_devices, devid, NULL, NULL, true);
+ 	if (!dev || (dev->missing && !is_dev_replace)) {
+ 		mutex_unlock(&fs_info->fs_devices->device_list_mutex);
+ 		return -ENODEV;
+@@ -4005,7 +4005,8 @@ int btrfs_scrub_progress(struct btrfs_root *root, u64 devid,
+ 	struct scrub_ctx *sctx = NULL;
+ 
+ 	mutex_lock(&root->fs_info->fs_devices->device_list_mutex);
+-	dev = btrfs_find_device(root->fs_info, devid, NULL, NULL);
++	dev = btrfs_find_device(root->fs_info->fs_devices, devid,
++				NULL, NULL, true);
+ 	if (dev)
+ 		sctx = dev->scrub_device;
+ 	if (sctx)
+diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
+index 55ce6543..22b3bcd0 100644
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -239,20 +239,6 @@ static struct btrfs_device *__alloc_device(void)
+ 	return dev;
+ }
+ 
+-static noinline struct btrfs_device *__find_device(struct list_head *head,
+-						   u64 devid, u8 *uuid)
+-{
+-	struct btrfs_device *dev;
+-
+-	list_for_each_entry(dev, head, dev_list) {
+-		if (dev->devid == devid &&
+-		    (!uuid || !memcmp(dev->uuid, uuid, BTRFS_UUID_SIZE))) {
+-			return dev;
+-		}
+-	}
+-	return NULL;
+-}
+-
+ static noinline struct btrfs_fs_devices *find_fsid(u8 *fsid)
+ {
+ 	struct btrfs_fs_devices *fs_devices;
+@@ -608,8 +594,8 @@ static noinline int device_list_add(const char *path,
+ 
+ 		device = NULL;
+ 	} else {
+-		device = __find_device(&fs_devices->devices, devid,
+-				       disk_super->dev_item.uuid);
++		device = btrfs_find_device(fs_devices, devid,
++				disk_super->dev_item.uuid, NULL, false);
+ 	}
+ 
+ 	if (!device) {
+@@ -1778,8 +1764,8 @@ int btrfs_rm_device(struct btrfs_root *root, char *device_path)
+ 		disk_super = (struct btrfs_super_block *)bh->b_data;
+ 		devid = btrfs_stack_device_id(&disk_super->dev_item);
+ 		dev_uuid = disk_super->dev_item.uuid;
+-		device = btrfs_find_device(root->fs_info, devid, dev_uuid,
+-					   disk_super->fsid);
++		device = btrfs_find_device(root->fs_info->fs_devices, devid, 
++					   dev_uuid, disk_super->fsid, true);
+ 		if (!device) {
+ 			ret = -ENOENT;
+ 			goto error_brelse;
+@@ -2062,8 +2048,8 @@ static int btrfs_find_device_by_path(struct btrfs_root *root, char *device_path,
+ 	disk_super = (struct btrfs_super_block *)bh->b_data;
+ 	devid = btrfs_stack_device_id(&disk_super->dev_item);
+ 	dev_uuid = disk_super->dev_item.uuid;
+-	*device = btrfs_find_device(root->fs_info, devid, dev_uuid,
+-				    disk_super->fsid);
++	*device = btrfs_find_device(root->fs_info->fs_devices, devid, dev_uuid,
++				    disk_super->fsid, true);
+ 	brelse(bh);
+ 	if (!*device)
+ 		ret = -ENOENT;
+@@ -2220,8 +2206,8 @@ next_slot:
+ 				   BTRFS_UUID_SIZE);
+ 		read_extent_buffer(leaf, fs_uuid, btrfs_device_fsid(dev_item),
+ 				   BTRFS_UUID_SIZE);
+-		device = btrfs_find_device(root->fs_info, devid, dev_uuid,
+-					   fs_uuid);
++		device = btrfs_find_device(root->fs_info->fs_devices, devid,
++					   dev_uuid, fs_uuid, true);
+ 		BUG_ON(!device); /* Logic error */
+ 
+ 		if (device->fs_devices->seeding) {
+@@ -6117,22 +6103,36 @@ int btrfs_map_bio(struct btrfs_root *root, int rw, struct bio *bio,
+ 	return 0;
+ }
+ 
+-struct btrfs_device *btrfs_find_device(struct btrfs_fs_info *fs_info, u64 devid,
+-				       u8 *uuid, u8 *fsid)
++/*
++ * Find a device specified by @devid or @uuid in the list of @fs_devices, or
++ * return NULL.
++ *
++ * If devid and uuid are both specified, the match must be exact, otherwise
++ * only devid is used.
++ *
++ * If @seed is true, traverse through the seed devices.
++ */
++struct btrfs_device *btrfs_find_device(struct btrfs_fs_devices *cur_devices,
++					u64 devid, u8 *uuid, u8 *fsid,
++					bool seed)
+ {
+ 	struct btrfs_device *device;
+-	struct btrfs_fs_devices *cur_devices;
+ 
+-	cur_devices = fs_info->fs_devices;
+ 	while (cur_devices) {
+ 		if (!fsid ||
+-		    !memcmp(cur_devices->fsid, fsid, BTRFS_UUID_SIZE)) {
+-			device = __find_device(&cur_devices->devices,
+-					       devid, uuid);
+-			if (device)
+-				return device;
++		    !memcmp(cur_devices->fsid, fsid, BTRFS_FSID_SIZE)) {
++			list_for_each_entry(device, &cur_devices->devices,
++					    dev_list) {
++				if (device->devid == devid &&
++				    (!uuid || memcmp(device->uuid, uuid,
++                                                    BTRFS_UUID_SIZE) == 0))
++                                       return device;
++                       }
+ 		}
+-		cur_devices = cur_devices->seed;
++		if (seed)
++			cur_devices = cur_devices->seed;
++		else
++			return NULL;
+ 	}
+ 	return NULL;
+ }
+@@ -6371,8 +6371,8 @@ static int read_one_chunk(struct btrfs_root *root, struct btrfs_key *key,
+ 		read_extent_buffer(leaf, uuid, (unsigned long)
+ 				   btrfs_stripe_dev_uuid_nr(chunk, i),
+ 				   BTRFS_UUID_SIZE);
+-		map->stripes[i].dev = btrfs_find_device(root->fs_info, devid,
+-							uuid, NULL);
++		map->stripes[i].dev = btrfs_find_device(root->fs_info->fs_devices,
++							devid, uuid, NULL, true);
+ 		if (!map->stripes[i].dev && !btrfs_test_opt(root, DEGRADED)) {
+ 			free_extent_map(em);
+ 			return -EIO;
+@@ -6501,7 +6501,8 @@ static int read_one_dev(struct btrfs_root *root,
+ 			return PTR_ERR(fs_devices);
+ 	}
+ 
+-	device = btrfs_find_device(root->fs_info, devid, dev_uuid, fs_uuid);
++	device = btrfs_find_device(root->fs_info->fs_devices, devid,
++				   dev_uuid, fs_uuid, true);
+ 	if (!device) {
+ 		if (!btrfs_test_opt(root, DEGRADED))
+ 			return -EIO;
+@@ -6964,7 +6965,8 @@ int btrfs_get_dev_stats(struct btrfs_root *root,
+ 	int i;
+ 
+ 	mutex_lock(&fs_devices->device_list_mutex);
+-	dev = btrfs_find_device(root->fs_info, stats->devid, NULL, NULL);
++	dev = btrfs_find_device(root->fs_info->fs_devices, stats->devid,
++				NULL, NULL, true);
+ 	mutex_unlock(&fs_devices->device_list_mutex);
+ 
+ 	if (!dev) {
+diff --git a/fs/btrfs/volumes.h b/fs/btrfs/volumes.h
+index d24f3ceb..038a5256 100644
+--- a/fs/btrfs/volumes.h
++++ b/fs/btrfs/volumes.h
+@@ -462,8 +462,8 @@ void btrfs_cleanup_fs_uuids(void);
+ int btrfs_num_copies(struct btrfs_fs_info *fs_info, u64 logical, u64 len);
+ int btrfs_grow_device(struct btrfs_trans_handle *trans,
+ 		      struct btrfs_device *device, u64 new_size);
+-struct btrfs_device *btrfs_find_device(struct btrfs_fs_info *fs_info, u64 devid,
+-				       u8 *uuid, u8 *fsid);
++struct btrfs_device *btrfs_find_device(struct btrfs_fs_devices *fs_devices, 
++				       u64 devid, u8 *uuid, u8 *fsid, bool seed);
+ int btrfs_shrink_device(struct btrfs_device *device, u64 new_size);
+ int btrfs_init_new_device(struct btrfs_root *root, char *path);
+ int btrfs_init_dev_replace_tgtdev(struct btrfs_root *root, char *device_path,
+-- 
+2.17.1
+
