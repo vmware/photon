@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          22%{?dist}
+Release:          23%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -51,6 +51,8 @@ Patch31:          sd-event-add-sd_event_source_disable_unref-helper.patch
 Patch32:          polkit-when-authorizing-via-PK-let-s-re-resolve-call.patch
 Patch33:          services-shouldnot-start-if-there-is-residual-processes-left-over.patch
 Patch34:          modify_systemd_watchdog_timeout.patch
+Patch35:          detect-vmware-hypervisor.patch
+
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -153,6 +155,7 @@ EOF
 %patch32 -p1
 %patch33 -p1
 %patch34 -p1
+%patch35 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -339,6 +342,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Wed May 27 2020 Shreenidhi Shedi <sshedi@vmware.com> 239-23
+*    Added patch to detect vmware hypervisor
 *    Thu May 21 2020 Tapas Kundu <tkundu@vmware.com> 239-22
 -    systemd: services shouldn't start if there is residual processes left over
 -    Services restart after systemd update
