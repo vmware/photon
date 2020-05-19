@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.221
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -81,6 +81,9 @@ Patch56: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 Patch57: 0001-vhost-vsock-add-weight-support.patch
 # Fix for CVE-2020-10711
 Patch58: CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
+# Fix CVE-2019-18885
+Patch59:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
+Patch60:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -246,6 +249,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch56 -p1
 %patch57 -p1
 %patch58 -p1
+%patch59 -p1
+%patch60 -p1
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -444,6 +449,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Fri May 15 2020 Vikash Bansal <bvikas@vmware.com> 4.9.221-3
+-   Fix for CVE-2019-18885
 *   Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.9.221-2
 -   Add patch to fix CVE-2020-10711
 *   Tue May 05 2020 ashwin-h <ashwinh@vmware.com> 4.9.221-1
