@@ -1,4 +1,4 @@
-From abb391d5d4edc1bc9ebb19d83b32548efc9f874c Mon Sep 17 00:00:00 2001
+From e9cb47b562de5e923b3b4212fe3978a14a7b7fe0 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 20 May 2020 00:33:07 -0700
 Subject: [PATCH] newca: new archive format
@@ -7,15 +7,125 @@ It is same as "newc" with only change that files data
 starts at page aligned boundary. By default it is
 4096 bytes. Can be set to different value by changing
 io block size.
-This change supports only "newca" compression.
+Extraction requires to specify -C option (e.g. -C 4096)
 ---
+ src/copyin.c  | 49 ++++++++++++++++++++++++++++++++++++++++++++-----
  src/copyout.c | 11 +++++++++--
  src/extern.h  |  3 ++-
  src/global.c  |  2 +-
  src/main.c    |  6 ++++++
  src/util.c    |  8 ++++++++
- 5 files changed, 26 insertions(+), 4 deletions(-)
+ 6 files changed, 70 insertions(+), 9 deletions(-)
 
+diff --git a/src/copyin.c b/src/copyin.c
+index b29f348..c9ded92 100644
+--- a/src/copyin.c
++++ b/src/copyin.c
+@@ -91,7 +91,8 @@ tape_skip_padding (int in_file_des, off_t offset)
+ {
+   off_t pad;
+ 
+-  if (archive_format == arf_crcascii || archive_format == arf_newascii)
++  if (archive_format == arf_crcascii || archive_format == arf_newascii
++	|| archive_format == arf_newasciialigned)
+     pad = (4 - (offset % 4)) % 4;
+   else if (archive_format == arf_binary || archive_format == arf_hpbinary)
+     pad = (2 - (offset % 2)) % 2;
+@@ -398,7 +399,8 @@ copyin_regular_file (struct cpio_file_stat* file_hdr, int in_file_des)
+       /* Can the current file be linked to a previously copied file? */
+       if (file_hdr->c_nlink > 1
+ 	  && (archive_format == arf_newascii
+-	      || archive_format == arf_crcascii) )
++	      || archive_format == arf_crcascii
++	      || archive_format == arf_newasciialigned) )
+ 	{
+ 	  int link_res;
+ 	  if (file_hdr->c_filesize == 0)
+@@ -508,6 +510,14 @@ copyin_regular_file (struct cpio_file_stat* file_hdr, int in_file_des)
+ 	error (0, 0, _("cannot swap bytes of %s: odd number of bytes"),
+ 	       file_hdr->c_name);
+     }
++  if (archive_format == arf_newasciialigned)
++    {
++      off_t input_position = input_bytes +
++	  (in_buff - input_buffer);
++      int offset = input_position % io_block_size;
++      if (offset)
++        tape_toss_input (in_file_des, io_block_size - offset);
++    }
+   copy_files_tape_to_disk (in_file_des, out_file_des, file_hdr->c_filesize);
+   disk_empty_output_buffer (out_file_des, true);
+   
+@@ -537,7 +547,8 @@ copyin_regular_file (struct cpio_file_stat* file_hdr, int in_file_des)
+ 
+   tape_skip_padding (in_file_des, file_hdr->c_filesize);
+   if (file_hdr->c_nlink > 1
+-      && (archive_format == arf_newascii || archive_format == arf_crcascii) )
++      && (archive_format == arf_newascii || archive_format == arf_crcascii
++	  || archive_format == arf_newasciialigned) )
+     {
+       /* (see comment above for how the newc and crc formats 
+ 	 store multiple links).  Now that we have the data 
+@@ -905,6 +916,8 @@ read_in_header (struct cpio_file_stat *file_hdr, int in_des)
+ 
+ 	  if (!strncmp (tmpbuf.s, "070701", 6))
+ 	    archive_format = arf_newascii;
++	  else if (!strncmp (tmpbuf.s, "0707ca", 6))
++	    archive_format = arf_newasciialigned;
+ 	  else if (!strncmp (tmpbuf.s, "070707", 6))
+ 	    archive_format = arf_oldascii;
+ 	  else if (!strncmp (tmpbuf.s, "070702", 6))
+@@ -960,6 +973,30 @@ read_in_header (struct cpio_file_stat *file_hdr, int in_des)
+ 	  read_in_new_ascii (file_hdr, in_des);
+ 	  break;
+ 	}
++      if (archive_format == arf_newasciialigned
++	  && !strncmp (magic.str, "0707ca", 6))
++	{
++	  if (bytes_skipped > 0)
++	    {
++	      error (0, 0, _("warning: skipped %ld byte of junk. Page aligned "
++	        "(newca) format detected. Try \"-C <PAGE SIZE>\" option "
++		"(e.g. -C 4096)"), bytes_skipped);
++	    }
++	  /*
++	   * We cannot represent "0707ca" string in octal format.
++	   * Good news, that file_hdr->c_magic for arf_newasciialigned
++	   * is used only for debug print messages in main loop of
++	   * process_copy_in(). It is safe to pick any non existing value.
++	   * Decimal value we picked 070312 has 0x70ca hex represintation,
++	   * which is lower 16 bits of full header 0x0707ca.
++	   * We do not want 'newca' header to be octal representable as
++	   * it can potentially conflict with newly added formats in future,
++	   * and we won't upstream 'newca' format.
++	   */
++	  file_hdr->c_magic = 070312;
++	  read_in_new_ascii (file_hdr, in_des);
++	  break;
++	}
+       if (archive_format == arf_crcascii
+ 	  && !strncmp (magic.str, "070702", 6))
+ 	{
+@@ -1334,7 +1371,8 @@ process_copy_in ()
+ 	     data for the links.  If it does, we'll copy in the data
+ 	     to the links, but not to this file.  */
+ 	  if (file_hdr.c_nlink > 1 && (archive_format == arf_newascii
+-	      || archive_format == arf_crcascii) )
++	      || archive_format == arf_crcascii
++	      || archive_format == arf_newasciialigned) )
+ 	    {
+ 	      if (create_defered_links_to_skipped(&file_hdr, in_file_des) < 0)
+ 	        {
+@@ -1423,7 +1461,8 @@ process_copy_in ()
+   if (append_flag)
+     return;
+ 
+-  if (archive_format == arf_newascii || archive_format == arf_crcascii)
++  if (archive_format == arf_newascii || archive_format == arf_crcascii
++      || archive_format == arf_newasciialigned)
+     {
+       create_final_defers ();
+     }
 diff --git a/src/copyout.c b/src/copyout.c
 index 8b0beb6..ca50a68 100644
 --- a/src/copyout.c

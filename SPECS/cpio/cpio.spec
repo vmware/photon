@@ -1,17 +1,16 @@
-Summary:	cpio-2.12
+Summary:	cpio archive utility
 Name:		cpio
-Version:	2.12
-Release:	6%{?dist}
+Version:	2.13
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/cpio/
 Group:		System Environment/System utilities
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
-%define sha1 cpio=60358408c76db354f6716724c4bcbcb6e18ab642
-Patch0:		newca-new-archive-format.patch
-Patch1:		cpio-CVE-2019-14866.patch
+%define sha1 cpio=4dcefc0e1bc36b11506a354768d82b15e3fe6bb8
 Conflicts:      toybox
+Patch0:		newca-new-archive-format.patch
 %description
 The cpio package contains tools for archiving.
 
@@ -25,12 +24,9 @@ These are the additional language files of cpio
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 %build
 sed -i -e '/gets is a/d' gnu/stdio.in.h
-sh configure \
-	--prefix=%{_prefix} \
-        --bindir=%{_bindir} \
+%configure \
         --enable-mt   \
         --with-rmt=/usr/libexec/rmt
 make %{?_smp_mflags}
@@ -58,6 +54,9 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Tue Jun 09 2020 Alexey Makhalov <amakhalov@vmware.com> 2.13-1
+- Version update
+- newca: extraction support
 * Tue May 19 2020 Alexey Makhalov <amakhalov@vmware.com> 2.12-6
 - newca: new archive format support
 * Thu Jan 23 2020 Siju Maliakkal <smaliakkal@vmware.com> 2.12-5
