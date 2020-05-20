@@ -1,16 +1,19 @@
-%define sourcever 3260000
+%define sourcever 3310100
 Summary:    A portable, high level programming interface to various calling conventions
 Name:           sqlite
-Version:        3.26.0
+Version:        3.31.1
 Release:        1%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://sqlite.org/2018/%{name}-autoconf-%{sourcever}.tar.gz
-%define sha1    sqlite=9af2df1a6da5db6e2ecf3f463625f16740e036e9
+Source0:        http://sqlite.org/2020/%{name}-autoconf-%{sourcever}.tar.gz
+%define sha1    sqlite=0c30f5b22152a8166aa3bebb0f4bc1f3e9cc508b
+Patch0:         sqlite-CVE-2020-11656.patch
+Patch1:         sqlite-CVE-2020-9327.patch
 Obsoletes:      sqlite-autoconf
+Obsoletes:      sqlite-devel <= 3.27.2-5
 Requires:       sqlite-libs = %{version}-%{release}
 Provides:       sqlite3
 %description
@@ -37,15 +40,17 @@ The sqlite3 library.
 
 %prep
 %setup -q -n %{name}-autoconf-%{sourcever}
+%patch0 -p1
+%patch1 -p1
 
 %build
 %configure \
-    CFLAGS="%{optflags}"                \
-    CXXFLAGS="%{optflags}               \
+    CFLAGS="%{optflags}                 \
     -DSQLITE_ENABLE_FTS3=1              \
     -DSQLITE_ENABLE_COLUMN_METADATA=1   \
     -DSQLITE_ENABLE_UNLOCK_NOTIFY=1     \
     -DSQLITE_SECURE_DELETE=1"           \
+    CXXFLAGS="%{optflags}"              \
     --disable-static
 make
 
@@ -77,15 +82,17 @@ rm -rf %{buildroot}/*
 %files devel
 %defattr(-,root,root)
 %{_libdir}/libsqlite3.so
-%{_libdir}/libsqlite3.so.0
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 
 %files libs
 %defattr(-,root,root)
 %{_libdir}/libsqlite3.so.0.8.6
+%{_libdir}/libsqlite3.so.0
 
 %changelog
+*   Thu May 14 2020 Ankit Jain <ankitja@vmware.com> 3.31.1-1
+-   Updated to 3.31.1
 *   Wed Feb 3 2019 Michelle Wang <michellew@vmware.com> 3.26.0-1
 -   Upgrade to 3.26.0 for a critical Vulnerability named 'Magallan'.
 *   Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 3.25.1-1

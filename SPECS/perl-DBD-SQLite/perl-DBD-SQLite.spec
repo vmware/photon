@@ -1,22 +1,23 @@
 %define perl_vendorarchdir %(test %{_host} == %{_build} && echo %{perl_vendorarch} || echo %{perl_vendorarch} | sed 's/x86_64-linux-thread-multi/%{_arch}-linux/')
 
-# Got the intial spec from Fedora and modified it
 Summary:        SQLite DBI Driver
 Name:           perl-DBD-SQLite
-Version:        1.62
-Release:        2%{?dist}
+Version:        1.64
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        (GPL+ or Artistic) and Public Domain
 URL:            http://search.cpan.org/dist/DBD-SQLite/
 Source0:        https://cpan.metacpan.org/authors/id/I/IS/ISHIGAKI/DBD-SQLite-%{version}.tar.gz
-%define sha1    DBD-SQLite=e4fb2fca987e92f5949fb5a50990bc963f8fe164
+%define sha1    DBD-SQLite=ab3dc0e88e75f5db0be79656a515b4bb7804997c
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Patch0:         use-system-sqlite.patch
 BuildRequires:  sqlite-devel >= 3.22.0
 BuildRequires:  perl >= 5.28.0
 BuildRequires:  perl-DBI
 Requires:       perl-DBI
 Requires:       perl >= 5.28.0
+Requires:       sqlite-libs >= 3.31.1
 
 %description
 SQLite is a public domain RDBMS database engine that you can find at
@@ -27,6 +28,8 @@ libraries.
 
 %prep
 %setup -q -n DBD-SQLite-%{version}
+%patch0 -p1
+rm sqlite*
 
 %build
 CFLAGS="%{optflags}" perl Makefile.PL INSTALLDIRS=vendor AR=%{_host}-ar CC=%{_host}-gcc LD=%{_host}-gcc OPTIMIZE="%{optflags}"
@@ -52,6 +55,8 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*   Thu May 14 2020 Ankit Jain <ankitja@vmware.com> 1.64-1
+-   Updated to 1.64, Use system sqlite instead of bundled one
 *   Wed Jul 03 2019 Alexey Makhalov <amakhalov@vmware.com> 1.62-2
 -   Cross compilation support
 *   Tue Jan 22 2019 Michelle Wang <michellew@vmware.com> 1.62-1
