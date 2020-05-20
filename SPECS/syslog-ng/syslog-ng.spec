@@ -3,7 +3,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        3.11.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -14,6 +14,7 @@ Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{v
 Source1:        60-syslog-ng-journald.conf
 Source2:        syslog-ng.service
 Patch0:         disable-pylint-test.patch
+Patch1:         support-jsonc-0.13.patch
 Requires:       glib
 Requires:       json-glib
 Requires:       json-c
@@ -69,6 +70,7 @@ Requires:       %{name} = %{version}
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 %build
@@ -203,6 +205,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Wed May 27 2020 Ankit Jain <ankitja@vmware.com> 3.11.1-4
+-   support for json-c-0.13 header
 *   Mon Sep 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-3
 -   Obsolete eventlog.
 *   Mon Sep 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-2
