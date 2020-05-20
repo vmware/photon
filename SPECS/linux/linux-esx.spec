@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.115
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -47,6 +47,7 @@ Patch17:        04-quiet-boot.patch
 Patch18:        05-pv-ops-clocksource.patch
 Patch19:        06-pv-ops-boot_clock.patch
 Patch20:        07-vmware-only.patch
+Patch21:        initramfs-support-for-page-aligned-format-newca.patch
 
 Patch22:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2019-18814
@@ -170,6 +171,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
+%patch21 -p1
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
@@ -328,6 +330,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri May 29 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.115-9
+-   initramfs: zero-copy support
 *   Thu May 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-8
 -   Keep modules of running kernel till next boot
 *   Fri May 22 2020 Ashwin H <ashwinh@vmware.com> 4.19.115-7
