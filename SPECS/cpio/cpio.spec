@@ -1,7 +1,7 @@
 Summary:	cpio-2.12
 Name:		cpio
 Version:	2.12
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/cpio/
 Group:		System Environment/System utilities
@@ -9,7 +9,8 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
 %define sha1 cpio=60358408c76db354f6716724c4bcbcb6e18ab642
-Patch0:		cpio-CVE-2019-14866.patch
+Patch0:		newca-new-archive-format.patch
+Patch1:		cpio-CVE-2019-14866.patch
 Conflicts:      toybox
 %description
 The cpio package contains tools for archiving.
@@ -24,6 +25,7 @@ These are the additional language files of cpio
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
 sed -i -e '/gets is a/d' gnu/stdio.in.h
 sh configure \
@@ -56,6 +58,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Tue May 19 2020 Alexey Makhalov <amakhalov@vmware.com> 2.12-6
+- newca: new archive format support
 * Thu Jan 23 2020 Siju Maliakkal <smaliakkal@vmware.com> 2.12-5
 - Patch for CVE-2019-14866
 * Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 2.12-4

@@ -1,0 +1,131 @@
+From abb391d5d4edc1bc9ebb19d83b32548efc9f874c Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Wed, 20 May 2020 00:33:07 -0700
+Subject: [PATCH] newca: new archive format
+
+It is same as "newc" with only change that files data
+starts at page aligned boundary. By default it is
+4096 bytes. Can be set to different value by changing
+io block size.
+This change supports only "newca" compression.
+---
+ src/copyout.c | 11 +++++++++--
+ src/extern.h  |  3 ++-
+ src/global.c  |  2 +-
+ src/main.c    |  6 ++++++
+ src/util.c    |  8 ++++++++
+ 5 files changed, 26 insertions(+), 4 deletions(-)
+
+diff --git a/src/copyout.c b/src/copyout.c
+index 8b0beb6..ca50a68 100644
+--- a/src/copyout.c
++++ b/src/copyout.c
+@@ -80,7 +80,8 @@ tape_pad_output (int out_file_des, int offset)
+ {
+   size_t pad;
+ 
+-  if (archive_format == arf_newascii || archive_format == arf_crcascii)
++  if (archive_format == arf_newascii || archive_format == arf_crcascii ||
++      archive_format == arf_newasciialigned)
+     pad = (4 - (offset % 4)) % 4;
+   else if (archive_format == arf_tar || archive_format == arf_ustar)
+     pad = (512 - (offset % 512)) % 512;
+@@ -546,6 +547,11 @@ write_out_header (struct cpio_file_stat *file_hdr, int out_des)
+     case arf_crcascii:
+       return write_out_new_ascii_header ("070702", file_hdr, out_des);
+       
++    case arf_newasciialigned:
++      /* Pick 0707ca header. Hoping it won't conflict with any new
++         headers in future.  */
++      return write_out_new_ascii_header ("0707ca", file_hdr, out_des);
++      
+     case arf_oldascii:
+       return write_out_old_ascii_header (makedev (file_hdr->c_dev_maj,
+ 						  file_hdr->c_dev_min),
+@@ -690,7 +696,8 @@ process_copy_out ()
+ 		      break;
+ 		    }
+ 		}
+-	      if ( (archive_format == arf_newascii || archive_format == arf_crcascii)
++	      if ( (archive_format == arf_newascii || archive_format == arf_crcascii ||
++		    archive_format == arf_newasciialigned)
+ 		  && (file_hdr.c_nlink > 1) )
+ 		{
+ 		  if (last_link (&file_hdr) )
+diff --git a/src/extern.h b/src/extern.h
+index 11ac6bf..d68cd53 100644
+--- a/src/extern.h
++++ b/src/extern.h
+@@ -24,11 +24,12 @@
+ enum archive_format
+ {
+   arf_unknown, arf_binary, arf_oldascii, arf_newascii, arf_crcascii,
+-  arf_tar, arf_ustar, arf_hpoldascii, arf_hpbinary
++  arf_tar, arf_ustar, arf_hpoldascii, arf_hpbinary, arf_newasciialigned
+ };
+ 
+ extern enum archive_format archive_format;
+ extern int reset_time_flag;
++#define IO_BLOCK_SIZE_DEFAULT 512
+ extern int io_block_size;
+ extern int create_dir_flag;
+ extern int rename_flag;
+diff --git a/src/global.c b/src/global.c
+index fb3abe9..bb6cf55 100644
+--- a/src/global.c
++++ b/src/global.c
+@@ -28,7 +28,7 @@
+ int reset_time_flag = false;
+ 
+ /* Block size value, initially 512.  -B sets to 5120.  */
+-int io_block_size = 512;
++int io_block_size = IO_BLOCK_SIZE_DEFAULT;
+ 
+ /* The header format to recognize and produce.  */
+ enum archive_format archive_format = arf_unknown;
+diff --git a/src/main.c b/src/main.c
+index b1bc70a..530c0ca 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -368,6 +368,8 @@ parse_opt (int key, char *arg, struct argp_state *state)
+ 	archive_format = arf_crcascii;
+       else if (!strcasecmp (arg, "newc"))
+ 	archive_format = arf_newascii;
++      else if (!strcasecmp (arg, "newca"))
++	archive_format = arf_newasciialigned;
+       else if (!strcasecmp (arg, "odc"))
+ 	archive_format = arf_oldascii;
+       else if (!strcasecmp (arg, "bin"))
+@@ -668,6 +670,10 @@ process_args (int argc, char *argv[])
+ 
+       if (!arf_stores_inode_p (archive_format))
+ 	renumber_inodes_option = ignore_devno_option = 0;
++      /* Set io_block_size to page size if not defined */
++      if (archive_format == arf_newasciialigned &&
++	  io_block_size == IO_BLOCK_SIZE_DEFAULT)
++	io_block_size = 4096;
+     }
+   else
+     {
+diff --git a/src/util.c b/src/util.c
+index 4421b20..cee3e7d 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -479,6 +479,14 @@ copy_files_disk_to_tape (int in_des, int out_des, off_t num_bytes,
+   int rc;
+   off_t original_num_bytes;
+ 
++  if (archive_format == arf_newasciialigned) {
++    /* Page align file content */
++    size = io_block_size - output_size;
++    if (size) {
++      write_nuls_to_file (size, out_des, tape_buffered_write);
++    }
++  }
++
+   original_num_bytes = num_bytes;
+ 
+   while (num_bytes > 0)
+-- 
+2.11.0
+
