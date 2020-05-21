@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.115
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt50
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1013,6 +1013,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{python3_sitelib}/*
 
 %changelog
+*   Thu May 21 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-4
+-   Add ICE network driver support in config
 *   Fri May 15 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.115-3
 -   Add uio_pic_generic driver support in config
 *   Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.115-2
