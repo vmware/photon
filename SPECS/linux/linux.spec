@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.221
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.224
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=784dc882d3473b6adc85ad26b8a9554ada1a3635
+%define sha1 linux=1eb70c1bdd7809ead5867b1b0d96e506a62320aa
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -76,8 +76,6 @@ Patch50:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 Patch51:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 #Fix for CVE-2018-13094
 Patch52:        0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
-# Fix for CVE-2020-10711
-Patch53: CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
 # Fix CVE-2019-18885
 Patch54:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch55:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
@@ -203,7 +201,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch50 -p1
 %patch51 -p1
 %patch52 -p1
-%patch53 -p1
 %patch54 -p1
 %patch55 -p1
 %patch67 -p1
@@ -365,6 +362,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri May 22 2020 Ajay Kaher <akaher@vmware.com> 4.4.224-1
+-   Update to version 4.4.224
 *   Tue May 19 2020 Vikash Bansal <bvikas@vmware.com> 4.4.221-3
 -   Fix for CVE-2019-18885
 *   Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.4.221-2

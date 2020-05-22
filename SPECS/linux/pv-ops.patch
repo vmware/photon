@@ -621,7 +621,7 @@ index f534a0e..93b24e4 100644
 +
  /* These are in entry.S */
  extern void native_iret(void);
- extern void native_irq_enable_sysexit(void);
+ extern void native_usergs_sysret32(void);
 @@ -328,6 +334,7 @@ struct pv_init_ops pv_init_ops = {
  struct pv_time_ops pv_time_ops = {
  	.sched_clock = native_sched_clock,

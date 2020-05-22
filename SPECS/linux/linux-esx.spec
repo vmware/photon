@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.221
-Release:       4%{?dist}
+Version:       4.4.224
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=784dc882d3473b6adc85ad26b8a9554ada1a3635
+%define sha1 linux=1eb70c1bdd7809ead5867b1b0d96e506a62320aa
 Source1:       config-esx
 Source2:       update_photon_cfg.postun
 Patch0:        double-tcp_mem-limits.patch
@@ -65,8 +65,6 @@ Patch48:        0008-xfs-enhance-dinode-verifier.patch
 Patch50:        fix_use_after_free_in_sockfs_setattr.patch
 # Fix for CVE-2019-12456
 Patch51:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
-# Fix for CVE-2020-10711
-Patch52:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
 # Fix for CVE-2019-12379
 Patch54:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2019-12381
@@ -164,7 +162,6 @@ The Linux package contains the Linux kernel doc files
 %patch48 -p1
 %patch50 -p1
 %patch51 -p1
-%patch52 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -264,6 +261,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri May 22 2020 Ajay Kaher <akaher@vmware.com> 4.4.224-1
+-   Update to version 4.4.224
 *   Tue May 19 2020 Vikash Bansal <bvikas@vmware.com> 4.4.221-4
 -   Fix for CVE-2019-18885
 *   Tue May 12 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.4.221-3
