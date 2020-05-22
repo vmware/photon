@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.112
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -97,6 +97,9 @@ Patch44:	secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
 Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
 # Fix CVE-2020-10711
 Patch46:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
+# Fix for CVE-2019-18885
+Patch47:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
+Patch48:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 # Patch to call drbg and dh crypto tests from tcrypt
@@ -306,6 +309,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch44 -p1
 %patch45 -p1
 %patch46 -p1
+%patch47 -p1
+%patch48 -p1
 
 %patch98 -p1
 %patch100 -p1
@@ -638,6 +643,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Jun 02 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-10
+-   Add patch to fix CVE-2019-18885
 *   Mon Jun 1 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.112-9
 -   Keep modules of running kernel till next boot
 *   Sat May 30 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.112-8

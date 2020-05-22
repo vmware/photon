@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.115
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt50
-Release:        6%{?kat_build:.%kat}%{?dist}
+Release:        7%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -65,6 +65,9 @@ Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 # Fix CVE-2020-10711
 Patch40:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
+# Fix for CVE-2019-18885
+Patch41:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
+Patch42:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 Patch201:        0001-ARM-at91-add-TCB-registers-definitions.patch
@@ -471,6 +474,8 @@ The Linux package contains the Linux kernel doc files
 %patch38 -p1
 %patch39 -p1
 %patch40 -p1
+%patch41 -p1
+%patch42 -p1
 
 %patch201 -p1
 %patch202 -p1
@@ -945,6 +950,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 02 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-7
+-   Add patch to fix CVE-2019-18885
 *   Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-6
 -   Keep modules of running kernel till next boot
 *   Fri May 22 2020 Tapas Kundu <tkundu@vmware.com> 4.19.115-5
