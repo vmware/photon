@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          21%{?dist}
+Release:          22%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -49,7 +49,8 @@ Patch29:          bus-message-introduce-two-kinds-of-references-to-bus.patch
 Patch30:          sd-bus-introduce-API-for-re-enqueuing-incoming-messa.patch
 Patch31:          sd-event-add-sd_event_source_disable_unref-helper.patch
 Patch32:          polkit-when-authorizing-via-PK-let-s-re-resolve-call.patch
-
+Patch33:          services-shouldnot-start-if-there-is-residual-processes-left-over.patch
+Patch34:          modify_systemd_watchdog_timeout.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -150,6 +151,8 @@ EOF
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
+%patch33 -p1
+%patch34 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -212,7 +215,27 @@ install -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/modules-load.d
 %find_lang %{name} ../%{name}.lang
 
 %post
+#we will restart services only while upgrade
+if [ $1 -eq 2 ] ; then
+    systemd-machine-id-setup &>/dev/null || :
+
+    systemctl daemon-reexec &>/dev/null || {
+        if [ $1 -gt 1 ] && [ -d /run/systemd/system ] ; then
+            kill -TERM 1 &>/dev/null || :
+        fi
+    }
+
+    journalctl --update-catalog &>/dev/null || :
+    systemd-tmpfiles --create &>/dev/null || :
+    udevadm hwdb --update &>/dev/null || :
+
+    systemctl restart systemd-udevd.service systemd-udevd-kernel.socket systemd-udevd-control.socket
+    systemctl restart systemd-logind.service
+    systemctl restart systemd-networkd.service systemd-networkd.socket
+
+fi
 /sbin/ldconfig
+
 %postun
 /sbin/ldconfig
 %clean
@@ -316,7 +339,11 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
-*    Sun Apr 13 2020 Susant Sahani <ssahani@vmware.com>  239-21
+*    Thu May 21 2020 Tapas Kundu <tkundu@vmware.com> 239-22
+-    systemd: services shouldn't start if there is residual processes left over
+-    Services restart after systemd update
+-    Increase watchdog timeout
+*    Mon Apr 13 2020 Susant Sahani <ssahani@vmware.com>  239-21
 -    Fix CVE-2020-1712
 *    Tue Mar 24 2020 Susant Sahani <ssahani@vmware.com>  239-20
 -    networkd: ipv6ra allow to ignore addresses
@@ -330,7 +357,7 @@ rm -rf %{buildroot}/*
 -    and obscure error message is also sligtly update generatedRoutingPolicyRule
 *    Fri Dec 06 2019 Susant Sahani <ssahani@vmware.com>  239-16
 -    Fix RoutingPolicyRule does not always apply - applies alternately.
-*    Tue Oct 28 2019 Piyush Gupta <guptapi@vmware.com>  239-15
+*    Mon Oct 28 2019 Piyush Gupta <guptapi@vmware.com>  239-15
 -    Added requires elfutils
 *    Wed Sep 11 2019 Susant Sahani <ssahani@vmware.com>  239-14
 -    Fix CVE-2019-15718
