@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.221
-Release:        4%{?dist}
+Version:        4.9.224
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f846801bfbdbc07b83f94dd81fba29a3aa00d5af
+%define sha1 linux=ff58d8f86dced1ac20e27717437d816a2c6e3f45
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        update_photon_cfg.postun
@@ -74,8 +74,6 @@ Patch54:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 Patch55: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 #Fix for CVE-2019-3900
 Patch56: 0001-vhost-vsock-add-weight-support.patch
-# Fix for CVE-2020-10711
-Patch57: CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
 # Fix CVE-2019-18885
 Patch58:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch59:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
@@ -162,7 +160,6 @@ The Linux package contains the Linux kernel doc files
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
-%patch57 -p1
 %patch58 -p1
 %patch59 -p1
 
@@ -260,6 +257,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri May 22 2020 Ajay Kaher <akaher@vmware.com> 4.9.224-1
+-   Update to version 4.9.224
 *   Fri May 15 2020 Vikash Bansal <bvikas@vmware.com> 4.9.221-4
 -   Fix for CVE-2019-18885
 *   Tue May 12 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.9.221-3
