@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.115
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -93,6 +93,8 @@ Patch44:	secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
 Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
 # Fix for CVE-2020-10711
 Patch46:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
+#Fix for CVE-2018-20669
+Patch47:        CVE-2018-20669-make-user_access_begin-do-access_ok.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -298,6 +300,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch44 -p1
 %patch45 -p1
 %patch46 -p1
+%patch47 -p1
 
 %patch98 -p1
 %patch100 -p1
@@ -616,6 +619,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri May 22 2020 Ashwin H <ashwinh@vmware.com> 4.19.115-8
+-   Fix for CVE-2018-20669
 *   Fri May 15 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.115-7
 -   Add uio_pic_generic driver support in config
 *   Fri May 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-6

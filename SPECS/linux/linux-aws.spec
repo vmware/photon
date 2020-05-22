@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.115
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -69,6 +69,8 @@ Patch40:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
 # Fix CVE-2019-18885
 Patch41:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch42:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
+#Fix CVE-2018-20669
+Patch43:        CVE-2018-20669-make-user_access_begin-do-access_ok.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:        0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -209,6 +211,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch40 -p1
 %patch41 -p1
 %patch42 -p1
+%patch43 -p1
 
 %patch98 -p1
 %patch99 -p1
@@ -430,6 +433,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri May 22 2020 Ashwin H <ashwinh@vmware.com> 4.19.115-5
+-   Fix for CVE-2018-20669
 *   Fri May 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-4
 -   Fix for CVE-2019-18885
 *   Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.115-3
