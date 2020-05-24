@@ -1,7 +1,7 @@
 Summary:        unbound dns server
 Name:           unbound
 Version:        1.6.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
@@ -14,6 +14,8 @@ Requires:       systemd
 BuildRequires:  systemd
 BuildRequires:  expat-devel
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Patch0:         patch_cve_2020-12662_2020-12663.diff
+
 %description
 Unbound is a validating, recursive, and caching DNS resolver.
 
@@ -32,6 +34,7 @@ unbound dns server docs
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 ./configure \
@@ -80,6 +83,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+*  Sun May 24 2020 Shreyas B. <shryasb@vmware.com> 1.6.8-2
+-  Fix for CVE-2020-12662 & CVE-2020-12663
 *  Mon Feb 3 2020 Michelle Wang <michellew@vmware.com> 1.6.8-1
 -  CVE-2017-15105: bump up version since 1.6.8 is released with the patch
 *  Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.6.1-3
