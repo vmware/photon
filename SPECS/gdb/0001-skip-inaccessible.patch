@@ -1,0 +1,49 @@
+From 35950658939fd06afec8791214068d451c0c023d Mon Sep 17 00:00:00 2001
+From: Vikash Bansal <bvikas@vmware.com>
+Date: Fri, 22 May 2020 00:45:02 +0530
+Subject: [PATCH] Stop inaccessible region from getting dumped
+
+Background : 7.12 onward version of gdb started dumping some
+inaccessible regions (e.g: alignment gaps) in coredump, which
+is increasing the size of core file. Bug 2564068 was raised
+for this issue.
+
+Fix:
+If a memory region in smaps file is having anonymous keyword
+and "read, write and execute" flags are "not set"
+Then that memory region is inaccessible, so should not be dumped.
+---
+ gdb/linux-tdep.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/gdb/linux-tdep.c b/gdb/linux-tdep.c
+index fd2bc15..9ed8374 100644
+--- a/gdb/linux-tdep.c
++++ b/gdb/linux-tdep.c
+@@ -1310,9 +1310,20 @@ linux_find_memory_regions_full (struct gdbarch *gdbarch,
+ 	    }
+ 
+ 	  if (has_anonymous)
+-	    should_dump_p = dump_mapping_p (filterflags, &v, priv,
+-					    mapping_anon_p, mapping_file_p,
+-					    filename);
++	    {
++	      if (read == 0 && write == 0 && exec == 0)
++    		{
++		  /* This is an inaccessible region and should not
++		     be dumped */
++		  should_dump_p = 0;
++		}
++	      else
++		{
++		  should_dump_p = dump_mapping_p (filterflags, &v, priv,
++						  mapping_anon_p, mapping_file_p,
++						  filename);
++		}
++	    }
+ 	  else
+ 	    {
+ 	      /* Older Linux kernels did not support the "Anonymous:" counter.
+-- 
+2.17.1
+
