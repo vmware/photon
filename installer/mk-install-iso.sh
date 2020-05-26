@@ -276,7 +276,8 @@ if [ "$LIVE_CD" = false ] ; then
 fi
 
 # Set password max days to 99999 (disable aging)
-sed -i '/^root.*/root::0:0:99999:7:::' "${BUILDROOT}/etc/shadow"
+# Do not run 'chage -R' from outside. It will not find nscd socket.
+chroot ${BUILDROOT} /bin/bash -c "chage -I -1 -m 0 -M 99999 -E -1 -W 7 root"
 
 # Generate the intird
 pushd $BUILDROOT
