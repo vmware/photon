@@ -1,14 +1,14 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2u
-Release:        3%{?dist}
+Version:        1.0.2v
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1    openssl=740916d79ab0d209d2775277b1c6c3ec2f6502b2
+Source0:        http://www.openssl.org/source/vmware-OpenSSL_1_0_2v.tar.gz
+%define sha1    vmware-OpenSSL_1_0_2v=8eb5f7b178b9b6824b183e44d9986c5045557031
 Source1:        rehash_ca_certificates.sh
 Patch0:         c_rehash.patch
 Patch1:         openssl-ipv6apps.patch
@@ -54,7 +54,7 @@ Requires: openssl = %{version}-%{release}
 Perl scripts that convert certificates and keys to various formats.
 
 %prep
-%setup -q
+%setup -q -n vmware-OpenSSL_1_0_2v
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -124,6 +124,9 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Tue May 26 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2v-1
+-   Update to 1.0.2v.
+-   Included fix for Implement blinding for scalar multiplication.
 *   Fri Feb 07 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2u-3
 -   Use fips 2.0.20
 *   Fri Jan 31 2020 Anish Swaminathan <anishs@vmware.com> 1.0.2u-2
