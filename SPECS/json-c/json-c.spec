@@ -1,7 +1,7 @@
 Summary:    A JSON implementation in C
 Name:       json-c
 Version:    0.13.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    MIT
 URL:        https://github.com/json-c/json-c/wiki
 Source0:    https://s3.amazonaws.com/json-c_releases/releases/%{name}-%{version}.tar.gz
@@ -56,6 +56,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*       Thu May 28 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 0.13.1-3
+-       Fix for size issue in CVE-2020-12762-integer-overflow.patch
 *       Fri May 15 2020 Ankit Jain <ankitja@vmware.com> 0.13.1-2
 -       Fix for CVE-2020-12762
 *       Wed Oct 10 2018 Ankit Jain <ankitja@vmware.com> 0.13.1-1
