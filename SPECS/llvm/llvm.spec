@@ -1,6 +1,6 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
-Version:        4.0.0
+Version:        6.0.1
 Release:        3%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
@@ -8,10 +8,11 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    llvm=aee4524e2407f9fe5afc6f70c753180b907011d0
+%define sha1    llvm=09a6316c5225cab255ba12391e7abe5ff4d28935
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
 BuildRequires:  libffi-devel
+BuildRequires:  python2
 Requires:       libxml2
 
 %description
@@ -35,7 +36,7 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr           \
       -DLLVM_ENABLE_FFI=ON                  \
       -DCMAKE_BUILD_TYPE=Release            \
       -DLLVM_BUILD_LLVM_DYLIB=ON            \
-      -DLLVM_TARGETS_TO_BUILD="host;AMDGPU" \
+      -DLLVM_TARGETS_TO_BUILD="host;AMDGPU;BPF" \
       -DLLVM_INCLUDE_GO_TESTS=No            \
       -Wno-dev ..
 
@@ -62,6 +63,14 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_libdir}/*.so
 %{_libdir}/*.so.*
+%dir %{_datadir}/opt-viewer
+%{_datadir}/opt-viewer/opt-diff.py
+%{_datadir}/opt-viewer/opt-stats.py
+%{_datadir}/opt-viewer/opt-viewer.py
+%{_datadir}/opt-viewer/optpmap.py
+%{_datadir}/opt-viewer/optrecord.py
+%{_datadir}/opt-viewer/style.css
+
 
 %files devel
 %{_libdir}/*.a
@@ -69,6 +78,12 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Mon Jan 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 6.0.1-3
+-   Added python2 dependency
+*   Wed Jun 26 2019 Keerthana K <keerthanak@vmware.com> 6.0.1-2
+-   Enable target BPF
+*   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1
+-   Update to version 6.0.1 to get it to build with gcc 7.3
 *   Thu Aug 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-3
 -   Make check fix
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-2

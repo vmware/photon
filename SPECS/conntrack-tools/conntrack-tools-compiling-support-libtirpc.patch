@@ -1,0 +1,110 @@
+From patchwork Tue Feb 12 23:38:28 2019
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [conntrack-tools,v2] Support compiling against libtirpc
+X-Patchwork-Submitter: Phil Sutter <phil@nwl.cc>
+X-Patchwork-Id: 1040906
+X-Patchwork-Delegate: pablo@netfilter.org
+Message-Id: <20190212233828.6455-1-phil@nwl.cc>
+To: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: netfilter-devel@vger.kernel.org, Jan Engelhardt <jengelh@inai.de>
+Date: Wed, 13 Feb 2019 00:38:28 +0100
+From: Phil Sutter <phil@nwl.cc>
+List-Id: <netfilter-devel.vger.kernel.org>
+
+Try compiling against libtirpc on systems where RPC headers are not
+provided by Glibc.
+
+Due to naming conflicts, rpc_call() has had to be renamed.
+
+Cc: Jan Engelhardt <jengelh@inai.de>
+Signed-off-by: Phil Sutter <phil@nwl.cc>
+---
+Note that I didn't do real functional testing apart from running
+conntrack and nfct testsuites. OTOH, in Fedora Rawhide the package is
+linked against libtirpc as well and seems to work.
+
+Changes since v1:
+- Fix @VAR@ into ${VAR} in Makefile.am as suggested by Jan Engelhardt.
+---
+ Make_global.am    | 3 ++-
+ Makefile.am       | 2 +-
+ configure.ac      | 6 ++++++
+ src/helpers/rpc.c | 7 ++++---
+ 4 files changed, 13 insertions(+), 5 deletions(-)
+
+diff --git a/Make_global.am b/Make_global.am
+index 80842493a4ad0..554bb3ccc6951 100644
+--- a/Make_global.am
++++ b/Make_global.am
+@@ -6,4 +6,5 @@ AM_CFLAGS = -std=gnu99 -W -Wall \
+ 	${LIBNETFILTER_CONNTRACK_CFLAGS} \
+ 	${LIBNETFILTER_CTTIMEOUT_CFLAGS} \
+ 	${LIBNETFILTER_QUEUE_CFLAGS} \
+-	${LIBNETFILTER_CTHELPER_CFLAGS}
++	${LIBNETFILTER_CTHELPER_CFLAGS} \
++	${LIBTIRPC_CFLAGS}
+diff --git a/Makefile.am b/Makefile.am
+index f64d60438d411..d73d7f4c54ff2 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -7,7 +7,7 @@ EXTRA_DIST = $(man_MANS) Make_global.am doc m4 tests
+ 
+ SUBDIRS   = extensions src
+ DIST_SUBDIRS = include src extensions
+-LIBS = @LIBNETFILTER_CONNTRACK_LIBS@
++LIBS = ${LIBNETFILTER_CONNTRACK_LIBS} ${LIBTIRPC_LIBS}
+ 
+ dist-hook:
+ 	rm -rf `find $(distdir)/doc -name *.orig`
+diff --git a/configure.ac b/configure.ac
+index 048d261ac1088..5384d3c80962c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -73,6 +73,12 @@ AM_CONDITIONAL([HAVE_SYSTEMD], [test "x$enable_systemd" = "xyes"])
+ 
+ AC_CHECK_HEADERS([linux/capability.h],, [AC_MSG_ERROR([Cannot find linux/capabibility.h])])
+ 
++# check for rpc_msg.h existence
++AC_CHECK_HEADER([rpc/rpc_msg.h], [have_rpc_msg_h=yes], [have_rpc_msg_h=no])
++AS_IF([test "x$have_rpc_msg_h" = "xno"],
++      [PKG_CHECK_MODULES([LIBTIRPC], [libtirpc], [],
++                         [AC_MSG_ERROR([No provider for rpc/rpc_msg.h found])])])
++
+ # Checks for libraries.
+ # FIXME: Replace `main' with a function in `-lc':
+ dnl AC_CHECK_LIB([c], [main])
+diff --git a/src/helpers/rpc.c b/src/helpers/rpc.c
+index 3a7b337135f04..bd24dd3269c8e 100644
+--- a/src/helpers/rpc.c
++++ b/src/helpers/rpc.c
+@@ -26,6 +26,7 @@
+ 
+ #include <errno.h>
+ 
++#include <rpc/clnt.h>
+ #include <rpc/rpc_msg.h>
+ #include <rpc/pmap_prot.h>
+ #define _GNU_SOURCE
+@@ -114,8 +115,8 @@ nf_nat_rpc(struct pkt_buff *pkt, int dir, struct nf_expect *exp,
+ #define ROUNDUP(n)	((((n) + 3)/4)*4)
+ 
+ static int
+-rpc_call(const uint32_t *data, uint32_t offset, uint32_t datalen,
+-	 struct rpc_info *rpc_info)
++rpc_parse_call(const uint32_t *data, uint32_t offset, uint32_t datalen,
++	       struct rpc_info *rpc_info)
+ {
+ 	uint32_t p, r;
+ 
+@@ -393,7 +394,7 @@ rpc_helper_cb(struct pkt_buff *pkt, uint32_t protoff,
+ 	}
+ 
+ 	if (rm_dir == CALL) {
+-		if (rpc_call(data, offset, datalen, rpc_info) < 0)
++		if (rpc_parse_call(data, offset, datalen, rpc_info) < 0)
+ 			goto out;
+ 
+ 		rpc_info->xid = xid;
+

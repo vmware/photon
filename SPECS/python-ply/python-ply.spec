@@ -2,17 +2,20 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-ply
-Version:        3.10
-Release:        1%{?dist}
+Version:        3.11
+Release:        2%{?dist}
 Summary:        Python Lex & Yacc
 License:        BSD-3-Clause
 Group:          Development/Languages/Python
 Url:            http://www.dabeaz.com/ply/
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/dabeaz/ply/archive/ply-%{version}.tar.gz 
-%define sha1    ply=13b8e62584f70b2cff5a791a4af7fea793ebd580
+Source0:        https://github.com/dabeaz/ply/archive/ply-%{version}.tar.gz
+%define sha1    ply=10a555a32095991fbc7f7ed10c677a14e21fad1d
 BuildRequires:  python2-devel
+%if %{with_check}
+BuildRequires:  python-six
+%endif
 Requires:       python2
 BuildArch:      noarch
 
@@ -30,6 +33,9 @@ It is compatible with both Python 2 and Python 3.
 %package -n     python3-ply
 Summary:        python3 version
 BuildRequires:  python3-devel
+%if %{with_check}
+BuildRequires:  python3-six
+%endif
 Requires:       python3
 
 %description -n python3-ply
@@ -55,6 +61,19 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 chmod a-x test/*
 popd
 
+%check
+pushd test
+
+python2 testlex.py
+python2 testyacc.py
+python2 testcpp.py
+
+python3 testlex.py
+python3 testyacc.py
+python3 testcpp.py
+
+popd
+
 %clean
 rm -rf %{buildroot}
 
@@ -67,5 +86,9 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 06 2018 Ashwin H <ashwinh@vmware.com> 3.11-2
+-   Add %check
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 3.11-1
+-   Update to version 3.11
 *   Fri Jul 14 2017 Kumar Kaushik <kaushikk@vmware.com> 3.10-1
 -   Initial packaging.

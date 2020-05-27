@@ -8,25 +8,29 @@
 
 Summary:        Practical Extraction and Report Language
 Name:           perl
-Version:        5.24.1
-Release:        4%{?dist}
+Version:        5.28.0
+Release:        5%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.bz2
-%define sha1    perl=d43ac3d39686462f86eed35b3c298ace74f1ffa0
-Patch0:         CVE-2017-12883.patch
-#https://perl5.git.perl.org/perl.git/patch/96c83ed78aeea1a0496dd2b2d935869a822dc8a5
-Patch1:         CVE-2017-12837.patch
+Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.gz
+%define sha1    perl=0622f86160e8969633cbd21a2cca9e11ae1f8c5a
+Patch0:         perl-CVE-2018-18311.patch
+Patch1:         perl-CVE-2018-18312.patch
+%if %{with_check}
+Patch2:         make-check-failure.patch
+Patch3:         make-check-failure2.patch
+%endif
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
+Provides:       perl(s)
 Provides:       /bin/perl
 BuildRequires:  zlib-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  gdbm-devel
-Requires:       zlib 
+Requires:       zlib
 Requires:       gdbm
 Requires:       glibc
 Requires:       libgcc
@@ -35,9 +39,13 @@ The Perl package contains the Practical Extraction and
 Report Language.
 %prep
 %setup -q
-sed -i 's/-fstack-protector/&-all/' Configure
 %patch0 -p1
 %patch1 -p1
+%if %{with_check}
+%patch2 -p1
+%patch3 -p1
+%endif
+sed -i 's/-fstack-protector/&-all/' Configure
 
 %build
 export BUILD_ZLIB=False
@@ -73,7 +81,18 @@ make test TEST_SKIP_VERSION_CHECK=1
 %dir %{_libdir}/perl5/%{version}
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
+
 %changelog
+*   Tue Feb 25 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.28.0-5
+-   Added a patch to fix make check
+*   Tue Oct 22 2019 Prashant S Chauhan <psinghchauha@vmware.com> 5.28.0-4
+-   Fix for make check failure added a patch
+*   Tue Feb 26 2019 Dweep Advani <dadvani@vmware.com> 5.28.0-3
+-   Fixed CVE-2018-18311 and CVE-2018-18312
+*   Wed Oct 24 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.28.0-2
+-   Add provides perl(s)
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 5.28.0-1
+-   Upgrade to version 5.28.0
 *   Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 5.24.1-4
 -   CVE-2017-12837 and CVE-2017-12883 patch from
 -   https://perl5.git.perl.org/perl.git/commitdiff/2be4edede4ae226e2eebd4eff28cedd2041f300f#patch1

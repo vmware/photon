@@ -1,0 +1,30 @@
+diff -crB --new-file requests-2.19.1-orig/Pipfile requests-2.19.1/Pipfile
+*** requests-2.19.1-orig/Pipfile	1970-01-01 05:30:00.000000000 +0530
+--- requests-2.19.1/Pipfile	2018-12-07 01:20:42.217275080 +0530
+***************
+*** 0 ****
+--- 1,24 ----
++ [[source]]
++ url = "https://pypi.org/simple/"
++ verify_ssl = true
++ name = "pypi"
++ 
++ [dev-packages]
++ pytest = ">=2.8.0"
++ codecov = "*"
++ pytest-httpbin = ">=0.0.7"
++ pytest-mock = "*"
++ pytest-cov = "*"
++ pytest-xdist = "*"
++ alabaster = "*"
++ readme-renderer = "*"
++ sphinx = "<=1.5.5"
++ pysocks = "*"
++ docutils = "*"
++ "flake8" = "*"
++ tox = "*"
++ detox = "*"
++ httpbin = ">=0.7.0"
++ 
++ [packages]
++ "e1839a8" = {path = ".", editable = true, extras = ["socks"]}

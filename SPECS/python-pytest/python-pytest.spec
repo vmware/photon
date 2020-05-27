@@ -4,16 +4,16 @@
 %{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
 Name:           python-pytest
-Version:        3.0.7
-Release:        3%{?dist}
+Version:        3.8.2
+Release:        1%{?dist}
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
 License:        MIT
 Group:          Development/Languages/Python
-Url:            https://docs.pytest.org
+URL:            https://docs.pytest.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/00/e9/f77dcd80bdb2e52760f38dbd904016da018ab4373898945da744e5e892e9/pytest-%{version}.tar.gz
-%define sha1    pytest=16bba5707c14d0ffffe92cba2380cf3bdc227068
+%define sha1    pytest=6e28889174cfec8ca42bd470fe6168ca19aa58f9
 
 BuildRequires:  python2
 BuildRequires:  python2-devel
@@ -23,6 +23,15 @@ BuildRequires:  python-py
 BuildRequires:  python-xml
 BuildRequires:  python-hypothesis
 BuildRequires:  python-Twisted
+BuildRequires:  python-setuptools_scm
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-py
+BuildRequires:  python3-hypothesis
+BuildRequires:  python3-Twisted
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-setuptools_scm
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-py
@@ -34,14 +43,6 @@ pytest framework makes it easy to write small tests, yet scales to support compl
 
 %package -n     python3-pytest
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-py
-BuildRequires:  python3-hypothesis
-BuildRequires:  python3-Twisted
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-py
@@ -98,6 +99,9 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Oct 09 2018 Tapas Kundu <tkundu@vmware.com> 3.8.2-1
+-   Updated to release 3.8.2
+-   Removed buildrequires from subpackage.
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.0.7-3
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.0.7-2

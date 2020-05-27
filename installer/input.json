@@ -1,0 +1,7 @@
+{
+    "minimal" : {
+        "title" : "1. Photon Minimal",
+        "packages": [ "minimal", "linux", "initramfs" ],
+        "visible" : true
+    }
+}

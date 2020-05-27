@@ -3,15 +3,15 @@
 
 Summary:        Docutils -- Python Documentation Utilities.
 Name:           python-docutils
-Version:        0.13.1
-Release:        3%{?dist}
+Version:        0.14
+Release:        1%{?dist}
 License:        public domain, Python, 2-Clause BSD, GPL 3 (see COPYING.txt)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/docutils
 Source0:        https://files.pythonhosted.org/packages/source/d/docutils/docutils-%{version}.tar.gz
-%define         sha1 docutils=c16e14ef18142fa248400cd174edb4fa40e51d5b
+%define sha1    docutils=32cefb69ac3dab5b04c4d150776f35419cc4c863
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -106,8 +106,10 @@ popd
 %{_bindir}/rst2latex3.py
 %{_bindir}/rst2html53.py
 %{_bindir}/rst2html3.py
-
+%{_bindir}/rst2html4.py
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.14-1
+-   Update to version 0.14
 *   Thu Jun 22 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.13.1-3
 -   Add BuildRequires python-xml and python3-xml for the tests to pass
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.13.1-2

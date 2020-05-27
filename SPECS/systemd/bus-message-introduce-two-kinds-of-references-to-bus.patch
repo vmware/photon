@@ -1,0 +1,185 @@
+From bc2d7df4fc21e9e54413169d5aad21616314d65e Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Thu, 17 Jan 2019 18:18:54 +0100
+Subject: [PATCH 07/10] bus-message: introduce two kinds of references to bus
+ messages
+
+Before this commit bus messages had a single reference count: when it
+reached zero the message would be freed. This simple approach meant a
+cyclic dependency was typically seen: a message that was enqueued in a
+bus connection object would reference the bus connection object but also
+itself be referenced by the bus connection object. So far out strategy
+to avoid cases like this was: make sure to process the bus connection
+regularly so that messages don#t stay queued, and at exit flush/close
+the connection so that the message queued would be emptied, and thus the
+cyclic dependencies resolved. Im many cases this isn't done properly
+however.
+
+With this change, let's address the issue more systematically: let's
+break the reference cycle. Specifically, there are now two types of
+references to a bus message:
+
+1. A regular one, which keeps both the message and the bus object it is
+   associated with pinned.
+
+2. A "queue" reference, which is weaker: it pins the message, but not
+   the bus object it is associated with.
+
+The idea is then that regular user handling uses regular references, but
+when a message is enqueued on its connection, then this takes a "queue"
+reference instead. This then means that a queued message doesn't imply
+the connection itself remains pinned, only regular references to the
+connection or a message associated with it do. Thus, if we end up in the
+situation where a user allocates a bus and a message and enqueues the
+latter in the former and drops all refs to both, then this will detect
+this case and free both.
+
+Note that this scheme isn't perfect, it only covers references between
+messages and the busses they are associated with. If OTOH a bus message
+is enqueued on a different bus than it is associated with cyclic deps
+cannot be recognized with this simple algorithm, and thus if you enqueue
+a message associated with a bus A on a bus B, and another message
+associated with bus B on a bus A, a cyclic ref will be in effect and not
+be discovered. However, given that this is an exotic case (though one
+that happens, consider systemd-bus-stdio-bridge), it should be OK not to
+cover with this, and people have to explicit flush all queues on exit in
+that case.
+
+Note that this commit only establishes the separate reference counters
+per message. A follow-up commit will start making use of this from the
+bus connection object.
+
+(cherry picked from commit 1b3f9dd759ca0ea215e7b89f8ce66d1b724497b9)
+Related: CVE-2020-1712
+---
+ src/libsystemd/sd-bus/bus-message.c | 60 ++++++++++++++++++++++++++---
+ src/libsystemd/sd-bus/bus-message.h | 14 ++++++-
+ 2 files changed, 68 insertions(+), 6 deletions(-)
+
+diff --git a/src/libsystemd/sd-bus/bus-message.c b/src/libsystemd/sd-bus/bus-message.c
+index 306b6d6816..7fe8929f82 100644
+--- a/src/libsystemd/sd-bus/bus-message.c
++++ b/src/libsystemd/sd-bus/bus-message.c
+@@ -120,7 +120,8 @@ static sd_bus_message* message_free(sd_bus_message *m) {
+ 
+         message_reset_parts(m);
+ 
+-        sd_bus_unref(m->bus);
++        /* Note that we don't unref m->bus here. That's already done by sd_bus_message_unref() as each user
++         * reference to the bus message also is considered a reference to the bus connection itself. */
+ 
+         if (m->free_fds) {
+                 close_many(m->fds, m->n_fds);
+@@ -893,27 +894,76 @@ int bus_message_new_synthetic_error(
+ }
+ 
+ _public_ sd_bus_message* sd_bus_message_ref(sd_bus_message *m) {
+-
+         if (!m)
+                 return NULL;
+ 
+-        assert(m->n_ref > 0);
++        /* We are fine if this message so far was either explicitly reffed or not reffed but queued into at
++         * least one bus connection object. */
++        assert(m->n_ref > 0 || m->n_queued > 0);
++
+         m->n_ref++;
+ 
++        /* Each user reference to a bus message shall also be considered a ref on the bus */
++        sd_bus_ref(m->bus);
+         return m;
+ }
+ 
+ _public_ sd_bus_message* sd_bus_message_unref(sd_bus_message *m) {
+-
+         if (!m)
+                 return NULL;
+ 
+         assert(m->n_ref > 0);
++
++        sd_bus_unref(m->bus); /* Each regular ref is also a ref on the bus connection. Let's hence drop it
++                               * here. Note we have to do this before decrementing our own n_ref here, since
++                               * otherwise, if this message is currently queued sd_bus_unref() might call
++                               * bus_message_unref_queued() for this which might then destroy the message
++                               * while we are still processing it. */
+         m->n_ref--;
+ 
+-        if (m->n_ref > 0)
++        if (m->n_ref > 0 || m->n_queued > 0)
+                 return NULL;
+ 
++        /* Unset the bus field if neither the user has a reference nor this message is queued. We are careful
++         * to reset the field only after the last reference to the bus is dropped, after all we might keep
++         * multiple references to the bus, once for each reference kept on outselves. */
++        m->bus = NULL;
++
++        return message_free(m);
++}
++
++sd_bus_message* bus_message_ref_queued(sd_bus_message *m, sd_bus *bus) {
++        if (!m)
++                return NULL;
++
++        /* If this is a different bus than the message is associated with, then implicitly turn this into a
++         * regular reference. This means that you can create a memory leak by enqueuing a message generated
++         * on one bus onto another at the same time as enqueueing a message from the second one on the first,
++         * as we'll not detect the cyclic references there. */
++        if (bus != m->bus)
++                return sd_bus_message_ref(m);
++
++        assert(m->n_ref > 0 || m->n_queued > 0);
++        m->n_queued++;
++
++        return m;
++}
++
++sd_bus_message* bus_message_unref_queued(sd_bus_message *m, sd_bus *bus) {
++        if (!m)
++                return NULL;
++
++        if (bus != m->bus)
++                return sd_bus_message_unref(m);
++
++        assert(m->n_queued > 0);
++        m->n_queued--;
++
++        if (m->n_ref > 0 || m->n_queued > 0)
++                return NULL;
++
++        m->bus = NULL;
++
+         return message_free(m);
+ }
+ 
+diff --git a/src/libsystemd/sd-bus/bus-message.h b/src/libsystemd/sd-bus/bus-message.h
+index 97f6060e30..ded88005e2 100644
+--- a/src/libsystemd/sd-bus/bus-message.h
++++ b/src/libsystemd/sd-bus/bus-message.h
+@@ -51,7 +51,16 @@ struct bus_body_part {
+ };
+ 
+ struct sd_bus_message {
+-        unsigned n_ref;
++        /* Caveat: a message can be referenced in two different ways: the main (user-facing) way will also
++         * pin the bus connection object the message is associated with. The secondary way ("queued") is used
++         * when a message is in the read or write queues of the bus connection object, which will not pin the
++         * bus connection object. This is necessary so that we don't have to have a pair of cyclic references
++         * between a message that is queued and its connection: as soon as a message is only referenced by
++         * the connection (by means of being queued) and the connection itself has no other references it
++         * will be freed. */
++
++        unsigned n_ref;     /* Counter of references that pin the connection */
++        unsigned n_queued;  /* Counter of references that do not pin the connection */
+ 
+         sd_bus *bus;
+ 
+@@ -216,3 +225,6 @@ int bus_message_append_sender(sd_bus_message *m, const char *sender);
+ 
+ void bus_message_set_sender_driver(sd_bus *bus, sd_bus_message *m);
+ void bus_message_set_sender_local(sd_bus *bus, sd_bus_message *m);
++
++sd_bus_message* bus_message_ref_queued(sd_bus_message *m, sd_bus *bus);
++sd_bus_message* bus_message_unref_queued(sd_bus_message *m, sd_bus *bus);
+-- 
+2.25.1
+

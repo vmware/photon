@@ -2,18 +2,29 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           PyYAML
-Version:        3.12
-Release:        2%{?dist}
+Version:        3.13
+Release:        5%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT
+Vendor:         VMware, Inc.
+Distribution:   Photon
 URL:            http://pyyaml.org/
 Source0:        http://pyyaml.org/download/pyyaml/%{name}-%{version}.tar.gz
-%define sha1 PyYAML=cb7fd3e58c129494ee86e41baedfec69eb7dafbe
-
+%define sha1 PyYAML=22f95fe2f5ef29ab17110f92c7186e2cfde6b419
+Patch0:         PyYAML-CVE-2017-18342.patch
+Patch1:         ConstructorError_fix.patch
+Patch2:         change_default_loader.patch
+Patch3:         PyYAML-lib3-CVE-2017-18342.patch
+Patch4:         PyYAML-CVE-2019-20477.patch
+Patch5:         PyYAML-CVE-2020-1747.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
+BuildRequires:  libyaml-devel
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 BuildRequires:  libyaml-devel
 
 Requires:       python2
@@ -35,11 +46,6 @@ configuration files to object serialization and persistence.
 
 %package -n     python3-PyYAML
 Summary:        python3-PyYAML
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  libyaml-devel
-
 Requires:       python3
 Requires:       python3-libs
 Requires:       libyaml
@@ -50,6 +56,13 @@ Python 3 version.
 
 %prep
 %setup -q -n PyYAML-%{version}
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -90,6 +103,18 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Wed Apr 08 2020 Tapas Kundu <tkundu@vmware.com> 3.13-5
+-   Fix for CVE-2020-1747
+*   Sat Mar 07 2020 Tapas Kundu <tkundu@vmware.com> 3.13-4
+-   Fix for CVE-2019-20477
+*   Tue Apr 16 2019 Tapas Kundu <tkundu@vmware.com> 3.13-3
+-   Added lib3 changes for CVE-2017-18342
+-   change default loader for yaml.add_constructor
+-   Add custom constructors to multiple loaders
+*   Thu Mar 28 2019 Ankit Jain <ankitja@vmware.com> 3.13-2
+-   Fix for CVE-2017-18342
+*   Thu Sep 20 2018 Tapas Kundu <tkundu@vmware.com> 3.13-1
+-   Updated to release 3.13
 *   Tue May 16 2017 Kumar Kaushik <kaushikk@vmware.com> 3.12-2
 -   Adding python3 support.
 *   Tue Apr 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.12-1

@@ -1,0 +1,13 @@
+diff --git a/proxy/pom.xml b/proxy/pom.xml
+index d1068f6..b2dbe09 100644
+--- a/proxy/pom.xml
++++ b/proxy/pom.xml
+@@ -108,7 +108,7 @@
+     <dependency>
+       <groupId>net.openhft</groupId>
+       <artifactId>chronicle-map</artifactId>
+-      <version>3.17.0</version>
++      <version>3.17.8</version>
+     </dependency>
+     <dependency>
+       <groupId>junit</groupId>

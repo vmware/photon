@@ -1,14 +1,14 @@
 Summary:	Apache Tomcat Connector
 Name:		httpd-mod_jk
-Version:	1.2.42
-Release:	2%{?dist}
+Version:	1.2.44
+Release:	1%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org/connectors-doc
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.apache.org/dist/tomcat/tomcat-connectors/jk/tomcat-connectors-%{version}-src.tar.gz
-%define sha1 tomcat-connectors=a1a6b284b0bd5577f76b497687af01771faff902
+%define sha1 tomcat-connectors=e9b9b6b07d1b83667cfafd949172b442ec8eacf3
 Requires:	httpd
 BuildRequires:	apr-devel
 BuildRequires:	apr-util-devel
@@ -44,6 +44,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %config(noreplace) %{_sysconfdir}/httpd/conf/workers.properties
 
 %changelog
+*       Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 1.2.44-1
+-       Upgrade to latest version
 *	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.42-2
 -	Ensure non empty debuginfo
 *	Tue Feb 21 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.42-1

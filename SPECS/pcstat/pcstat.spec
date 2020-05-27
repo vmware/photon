@@ -1,7 +1,7 @@
 Summary:        A tool that inspect which pages of a file or files are being cached by the Linux kernel
 Name:           pcstat 
 Version:        1
-Release:        5%{?dist}
+Release:        9%{?dist}
 License:        Apache 
 URL:            https://github.com/tobert/pcstat
 Group:          Development/Debuggers
@@ -11,6 +11,7 @@ Source0:        https://github.com/tobert/pcstat/archive/pcstat-1.zip
 %define sha1    pcstat=cd67c42d291763597dbe3fb19e8e367c54a4a898
 Source1:        https://github.com/golang/sys/golang-sys-08-02-2017.zip
 %define sha1    golang-sys=7f713451011d127755448c6603c15dc907bc47bc
+Patch0:         pcstat-aarch64-support.patch
 BuildRequires:  unzip go audit git
 Requires:       go
 %description
@@ -18,6 +19,8 @@ A tool that inspect which pages of a file or files are being cached by the Linux
 
 %prep
 %setup -qn pcstat-master
+%patch0 -p1
+
 %build
 cd ..
 unzip %{SOURCE1}
@@ -49,6 +52,14 @@ rm -rf %{buildroot}/*
 %{_bindir}/pcstat
 
 %changelog
+*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1-9
+-   Bump up version to compile with go 1.13.3-2
+*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1-8
+-   Bump up version to compile with go 1.13.3
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1-7
+-   Bump up version to compile with new go
+*   Wed Jan 03 2018 Alexey Makhalov <amakhalov@vmware.com> 1-6
+-   Aarch64 support
 *   Wed Aug 02 2017 Dheeraj Shetty <dheerajs@vmware.com> 1-5
 -   Remove the build time dependencies and avoid downloading from github
 *   Tue Mar 07 2017 XIaolin Li <xiaolinl@vmware.com> 1-4

@@ -1,0 +1,22 @@
+diff --git a/lib/priority.c b/lib/priority.c
+index de9dd4264..f120f342e 100644
+--- a/lib/priority.c
++++ b/lib/priority.c
+@@ -1916,11 +1916,16 @@ gnutls_priority_init(gnutls_priority_t * priority_cache,
+ 	gnutls_atomic_init(&(*priority_cache)->usage_cnt);
+ 
+ 	if (priorities == NULL) {
+-		priorities = _gnutls_default_priority_string;
++		priorities = "@SYSTEM";
+ 		resolved_match = 0;
+ 	}
+ 
+ 	darg = _gnutls_resolve_priorities(priorities);
++    if (!darg && !resolved_match) {
++        priorities = "NORMAL";
++        darg = _gnutls_resolve_priorities(priorities);
++    }
++
+ 	if (darg == NULL) {
+ 		gnutls_assert();
+ 		goto error;

@@ -1,0 +1,80 @@
+This header file is taken from:
+https://github.com/dlitz/pycrypto/commits/master/src/pycrypto_common.h
+
+
+
+--- a/src/pycrypto_common.h_org	2019-05-20 23:37:40.605460329 +0530
++++ b/src/pycrypto_common.h	2019-05-20 23:38:04.869460814 +0530
+@@ -0,0 +1,41 @@
++/*
++ *  pycrypto_compat.h: Common header file for PyCrypto
++ *
++ * Written in 2013 by Dwayne C. Litzenberger <dlitz@dlitz.net>
++ *
++ * ===================================================================
++ * The contents of this file are dedicated to the public domain.  To
++ * the extent that dedication to the public domain is not available,
++ * everyone is granted a worldwide, perpetual, royalty-free,
++ * non-exclusive license to exercise all rights associated with the
++ * contents of this file for any purpose whatsoever.
++ * No rights are reserved.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
++ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
++ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
++ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++ * SOFTWARE.
++ * ===================================================================
++ */
++#ifndef PYCRYPTO_COMMON_H
++#define PYCRYPTO_COMMON_H
++
++#include "Python.h"
++#include "pycrypto_compat.h"
++#include "config.h"
++#if HAVE_STDINT_H
++# include <stdint.h>
++#elif HAVE_INTTYPES_H
++# include <inttypes.h>
++#elif HAVE_SYS_INTTYPES_H
++# include <sys/inttypes.h>
++#else
++# error "stdint.h and inttypes.h not found"
++#endif
++
++
++#endif /* PYCRYPTO_COMMON_H */
+--- a/lib/Crypto/Cipher/blockalgo.py_org	2019-05-21 04:13:23.009790764 +0530
++++ b/lib/Crypto/Cipher/blockalgo.py	2019-05-21 04:14:16.781791838 +0530
+@@ -710,7 +710,7 @@ class BlockAlgo:
+             self._next = [self.encrypt, self.digest]
+         if self.mode == MODE_CCM:
+             if self._assoc_len is None:
+-                self._start_ccm(assoc_len=self._cipherMAC.get_len()
++                self._start_ccm(assoc_len=self._cipherMAC.get_len())
+             if self._msg_len is None:
+                 self._start_ccm(msg_len=len(plaintext))
+                 self._next = [self.digest]
+@@ -822,7 +822,7 @@ class BlockAlgo:
+             if self.mode == MODE_GCM:
+                 if not self._done_assoc_data:
+                     self._cipherMAC.zero_pad()
+-                     self._done_assoc_data = True
++                    self._done_assoc_data = True
+ 
+                 self._cipherMAC.update(ciphertext)
+                 self._msg_len += len(ciphertext)
+--- a/lib/Crypto/Protocol/KDF.py_org	2019-05-21 06:31:03.381955765 +0530
++++ b/lib/Crypto/Protocol/KDF.py	2019-05-21 06:31:21.849956134 +0530
+@@ -188,7 +188,7 @@ class S2V(object):
+ 
+         if self._n_updates==0:
+             raise TypeError("Too many components passed to S2V")
+-       self._n_updates -= 1
++        self._n_updates -= 1
+ 
+         mac = CMAC.new(self._key, msg=self._last_string, ciphermod=self._ciphermod)
+         self._cache = strxor(self._double(self._cache), mac.digest())

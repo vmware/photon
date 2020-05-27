@@ -12,7 +12,7 @@ Source0:        https://github.com/rtnpro/motdgen/archive/motdgen-a152954.tar.gz
 %define sha1    motdgen-a152954.tar.gz=fd0b535df54515ce5f56933e53b0ed73c77d1137
 Patch0:         strip-dnf.patch
 
-BuildArchitectures: noarch
+BuildArch: noarch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools

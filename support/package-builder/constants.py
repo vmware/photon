@@ -1,26 +1,37 @@
 from Logger import Logger
 
 class constants(object):
-    specPath=""
-    sourcePath=""
-    rpmPath=""
-    logPath=""
-    dist=""
-    buildNumber="0000000"
-    releaseVersion="NNNnNNN"
-    topDirPath=""
-    buildRootPath="/mnt"
-    prevPublishRPMRepo=""
-    prevPublishXRPMRepo=""
-    pullsourcesConfig=""
-    buildPatch=False
-    inputRPMSPath=""
-    rpmCheck=False
-    sourceRpmPath=""
-    publishBuildDependencies=False
-    packageWeightsPath=None
+    specPath = ""
+    sourcePath = ""
+    rpmPath = ""
+    logPath = ""
+    logLevel = "info"
+    topDirPath = ""
+    buildRootPath = "/mnt"
+    prevPublishRPMRepo = ""
+    prevPublishXRPMRepo = ""
+    pullsourcesURL = ""
+    extrasourcesURLs = {}
+    buildPatch = False
+    inputRPMSPath = ""
+    rpmCheck = False
+    sourceRpmPath = ""
+    publishBuildDependencies = False
+    packageWeightsPath = None
+    dockerUnixSocket = "/var/run/docker.sock"
+    buildContainerImage = "photon_build_container:latest"
+    userDefinedMacros = {}
+    dist = None
+    buildNumber = None
+    releaseVersion = None
+    katBuild = False
+    testForceRPMS = []
+    tmpDirPath = "/dev/shm"
+    buildOptions = {}
+    # will be extended later from listMakeCheckRPMPkgtoInstall
+    listMakeCheckRPMPkgWithVersionstoInstall = None
 
-    noDepsPackageList=[
+    noDepsPackageList = [
         "texinfo",
         "bzip2",
         "bzip2-libs",
@@ -33,7 +44,8 @@ class constants(object):
         "sqlite-libs"]
 
     # These packages will be built in first order as build-core-toolchain stage
-    listCoreToolChainPackages=[
+    # Put only main pakage names here. Do not add subpackages such as libgcc
+    listCoreToolChainPackages = [
         "filesystem",
         "linux-api-headers",
         "glibc",
@@ -43,9 +55,6 @@ class constants(object):
         "gmp",
         "mpfr",
         "mpc",
-        "libgcc",
-        "libstdc++",
-        "libgomp",
         "gcc",
         "pkg-config",
         "ncurses",
@@ -53,7 +62,8 @@ class constants(object):
         "bash"]
 
     # These packages will be built in a second stage to replace publish RPMS
-    listToolChainPackages=[
+    # Put only main pakage names here. Do not add subpackages such as libgcc
+    listToolChainPackages = [
         "filesystem",
         "linux-api-headers",
         "glibc",
@@ -87,7 +97,6 @@ class constants(object):
         "libtool",
         "flex",
         "bison",
-        "lua",
         "popt",
         "nspr",
         "nspr-devel",
@@ -115,7 +124,7 @@ class constants(object):
     # package. This list should be ordered by install order. On a stage1
     # and stage2 published rpms will/might be used after stage2 only local
     # RPMS will be used
-    listToolChainRPMsToInstall=[
+    listToolChainRPMsToInstall = [
         "filesystem",
         "linux-api-headers",
         "glibc",
@@ -124,8 +133,10 @@ class constants(object):
         "glibc-tools",
         "zlib",
         "zlib-devel",
+        "file-libs",
         "file",
         "binutils",
+        "binutils-libs",
         "binutils-devel",
         "gmp",
         "gmp-devel",
@@ -134,6 +145,7 @@ class constants(object):
         "mpc",
         "libgcc",
         "libgcc-devel",
+        "libgcc-atomic",
         "libstdc++",
         "libstdc++-devel",
         "libgomp",
@@ -171,8 +183,6 @@ class constants(object):
         "flex-devel",
         "bison",
         "readline-devel",
-        "lua",
-        "lua-devel",
         "popt",
         "popt-devel",
         "nspr",
@@ -197,64 +207,20 @@ class constants(object):
         "automake",
         "openssl",
         "openssl-devel",
-        "python2",
-        "python2-libs",
-        "python2-devel",
         "libcap",
         "libdb",
         "libdb-devel",
+        "lua",
+        "lua-devel",
         "rpm",
         "rpm-build",
         "rpm-devel",
         "rpm-libs",
-        "groff",
-        "man-pages",
-        "cpio",
-        "go"]
+        "cpio"]
 
-    perPackageToolChain = dict.fromkeys(["openjdk8", "openjdk8-doc", "openjdk8-src", "openjdk8-sample", "openjre8" ], [
-        "glib-devel",
-        "icu-devel",
-        "openjdk",
-        "openjre",
-        "icu",
-        "harfbuzz",
-        "harfbuzz-devel",
-        "freetype2",
-        "freetype2-devel",
-        "alsa-lib",
-        "alsa-lib-devel",
-        "xcb-proto",
-        "libXdmcp-devel",
-        "libXau-devel",
-        "util-macros",
-        "xtrans",
-        "libxcb-devel",
-        "fontconfig-devel",
-        "proto",
-        "libXdmcp",
-        "libxcb",
-        "libXau",
-        "fontconfig",
-        "xtrans-devel",
-        "libX11",
-        "libX11-devel",
-        "libXext",
-        "libXext-devel",
-        "libICE-devel",
-        "libSM",
-        "libICE",
-        "libSM-devel",
-        "libXt",
-        "libXmu",
-        "libXt-devel",
-        "libXmu-devel",
-        "libXrender",
-        "libXrender-devel"])
-    perPackageToolChain["apache-maven"] = ["apache-maven"]
     # List of RPMs which are not published. They will be created during the
     # build process
-    listOfRPMsProvidedAfterBuild=[
+    listOfRPMsProvidedAfterBuild = [
         "util-linux-devel",
         "flex-devel",
         "nspr-devel",
@@ -268,11 +234,12 @@ class constants(object):
         "xz-libs",
         "sqlite",
         "sqlite-libs",
+        "file-libs",
         "rpm-libs"]
 
     # List of packages that will be installed in addition for each
     # package to make check
-    listMakeCheckRPMPkgtoInstall=[
+    listMakeCheckRPMPkgtoInstall = [
         "python2",
         "python2-devel",
         "python2-libs",
@@ -284,7 +251,7 @@ class constants(object):
         "python3-setuptools",
         "ca-certificates",
         "linux",
-        "createrepo",
+        "createrepo_c",
         "sudo",
         "ruby",
         "curl",
@@ -306,8 +273,6 @@ class constants(object):
         "net-tools",
         "less",
         "iana-etc",
-        "yum-metadata-parser",
-        "yum",
         "libdb",
         "rpm-devel",
         "rpm",
@@ -321,119 +286,170 @@ class constants(object):
         "unzip",
         "systemd-devel",
         "gnupg",
-        "ncurses-terminfo" ]
-
-    listReInstallPackages=[
-        "go"]
+        "ncurses-terminfo"]
 
     # List of packages that requires privileged docker
     # to run make check.
-    listReqPrivilegedDockerForTest=[
+    listReqPrivilegedDockerForTest = [
         "elfutils", # SYS_PTRACE
         "gdb",
         "glibc",
         "tar"]
 
+    # List of Packages which causes "Makecheck" job
+    # to stuck indefinately or getting failed.
+    # Until these pkgs %check is fixed, these pkgs will be
+    # skip to run makecheck.
+    listMakeCheckPkgToSkip = [
+        "gtk-doc",
+        "libmspack",
+        "socat"]
+
     # .spec file might contain lines such as
     # Requires(post):/sbin/useradd
     # Build system should interpret it as
     # Requires: shadow
-    providedBy={
+    providedBy = {
         "/usr/sbin/useradd":"shadow",
         "/usr/sbin/groupadd":"shadow",
         "/usr/bin/which":"which",
         "/bin/sed":"sed"
     }
 
-    # list of spec files to skip for parsing for given arch
-    skipSpecsForArch={
-        "x86_64":[],
-        "aarch64":[
-            # fakeroot-ng does not support aarch64
-            "fakeroot-ng.spec",
-            # ipxe does not support aarch64
-            "ipxe.spec",
-            # kexec-tools for arm64 does not support fpic
-            "kexec-tools.spec",
-            # no TXT/tboot on arm64
-            "tboot.spec",
-            # backward-cpp does not support amd64
-            "backward-cpp.spec",
-            "envoy.spec",
-            # only generic linux is for arm64
-            "linux-esx.spec",
-            "linux-secure.spec",
-            # only linux-secure supports aufs
-            "aufs-util.spec",
-            # open-vm-tools does not support aarch64
-            "open-vm-tools.spec",
-            # TODO: mariadb build hangs on amd64
-            "mariadb.spec",
-            # TODO: mysql fails on amd64 with fpic
-            "mysql.spec",
-            # irqbalance for arm64 ?
-            "irqbalance.spec",
-            # no X rpms to build openjdk, skip all java packages
-            "openjdk8.spec",
-            "ant-contrib.spec",
-            "apache-ant.spec",
-            "apache-maven.spec",
-            "apache-tomcat.spec",
-            "cassandra.spec",
-            "commons-daemon.spec",
-            "jna.spec",
-            "kubernetes-dashboard.spec",
-            "lightwave.spec",
-            "mesos.spec",
-            "protobuf.spec",
-            "wavefront-proxy.spec",
-            "zookeeper.spec",
-            # requires lightwave
-            "pmd.spec",
-            # requires protobuf
-            "calico-felix.spec",
-            "lightstep-tracer-cpp.spec",
-            "protobuf-c.spec",
-            "runc.spec",
-            # requires cassandra
-            "python-cqlsh.spec",
-            # requires python-pyinstaller, but it has unresolved glibc deps
-            "calico-k8s-policy.spec",
-            "libcalico.spec",
-            # pcstat requires patching for aarch64
-            "pcstat.spec",
-            # sysdig for aarch64 requires luajit, skip it and falco
-            # https://github.com/draios/sysdig/issues/833
-            "sysdig.spec",
-            "falco.spec"
-        ]
-    }
+    @staticmethod
+    def setSpecPath(specPath):
+        constants.specPath = specPath
 
     @staticmethod
-    def initialize(options):
-        constants.dist = options.dist
-        constants.buildNumber = options.buildNumber
-        constants.releaseVersion = options.releaseVersion
-        constants.specPath = options.specPath
-        constants.sourcePath = options.sourcePath
-        constants.rpmPath = options.rpmPath
-        constants.sourceRpmPath = options.sourceRpmPath
-        constants.topDirPath = options.topDirPath
-        constants.logPath = options.logPath
-        constants.prevPublishRPMRepo = options.publishRPMSPath
-        constants.prevPublishXRPMRepo = options.publishXRPMSPath
-        constants.buildRootPath=options.buildRootPath
-        constants.pullsourcesConfig = options.pullsourcesConfig
-        constants.inputRPMSPath=options.inputRPMSPath
-        constants.testForceRPMS=[]
-        constants.rpmCheck = options.rpmCheck
-        constants.rpmCheckStopOnError = options.rpmCheckStopOnError
-        constants.publishBuildDependencies=options.publishBuildDependencies
-        constants.packageWeightsPath=options.packageWeightsPath
-        constants.tmpDirPath = "/dev/shm"
+    def setSourcePath(sourcePath):
+        constants.sourcePath = sourcePath
+
+    @staticmethod
+    def setRpmPath(rpmPath):
+        constants.rpmPath = rpmPath
+
+    @staticmethod
+    def setSourceRpmPath(sourceRpmPath):
+        constants.sourceRpmPath = sourceRpmPath
+
+    @staticmethod
+    def setTopDirPath(topDirPath):
+        constants.topDirPath = topDirPath
+
+    @staticmethod
+    def setLogLevel(logLevel):
+        constants.logLevel = logLevel
+
+    @staticmethod
+    def setLogPath(logPath):
+        constants.logPath = logPath
+
+    @staticmethod
+    def setPrevPublishRPMRepo(prevPublishRPMRepo):
+        constants.prevPublishRPMRepo = prevPublishRPMRepo
+
+    @staticmethod
+    def setPrevPublishXRPMRepo(prevPublishXRPMRepo):
+        constants.prevPublishXRPMRepo = prevPublishXRPMRepo
+
+    @staticmethod
+    def setBuildRootPath(buildRootPath):
+        constants.buildRootPath = buildRootPath
+
+    @staticmethod
+    def setPullSourcesURL(url):
+        constants.pullsourcesURL = url
+
+    @staticmethod
+    def setExtraSourcesURLs(packageName, urls):
+        constants.extrasourcesURLs[packageName] = urls
+
+    @staticmethod
+    def getPullSourcesURLs(packageName):
+        urls=[]
+        urls.append(constants.pullsourcesURL)
+        if packageName in constants.extrasourcesURLs:
+            urls.extend(constants.extrasourcesURLs[packageName])
+        return urls
+
+    @staticmethod
+    def setInputRPMSPath(inputRPMSPath):
+        constants.inputRPMSPath = inputRPMSPath
+
+    @staticmethod
+    def setRPMCheck(rpmCheck):
+        constants.rpmCheck = rpmCheck
+
+    @staticmethod
+    def setRpmCheckStopOnError(rpmCheckStopOnError):
+        constants.rpmCheckStopOnError = rpmCheckStopOnError
+
+    @staticmethod
+    def setPublishBuildDependencies(publishBuildDependencies):
+        constants.publishBuildDependencies = publishBuildDependencies
+
+    @staticmethod
+    def setPackageWeightsPath(packageWeightsPath):
+        constants.packageWeightsPath = packageWeightsPath
+
+    @staticmethod
+    def setDist(dist):
+        constants.dist = dist
+
+    @staticmethod
+    def setBuildNumber(buildNumber):
+        constants.buildNumber = buildNumber
+
+    @staticmethod
+    def setReleaseVersion(releaseVersion):
+        constants.releaseVersion = releaseVersion
+
+    @staticmethod
+    def setKatBuild(katBuild):
+        constants.katBuild = katBuild
+
+    @staticmethod
+    def initialize():
         if constants.rpmCheck:
-            constants.testLogger=Logger.getLogger("MakeCheckTest",constants.logPath)
+            constants.testLogger = Logger.getLogger("MakeCheckTest",
+                                                    constants.logPath, constants.logLevel)
+            constants.addMacro("with_check", "1")
+        else:
+            constants.addMacro("with_check", "0")
+
+        # adding distribution rpm macro
+        if constants.dist is not None:
+            constants.addMacro("dist", constants.dist)
+
+        # adding buildnumber rpm macro
+        if constants.buildNumber is not None:
+            constants.addMacro("photon_build_number", constants.buildNumber)
+
+        # adding releasenumber rpm macro
+        if constants.releaseVersion is not None:
+            constants.addMacro("photon_release_version", constants.releaseVersion)
+
+        if constants.katBuild:
+            constants.addMacro("kat_build", "1")
 
     @staticmethod
     def setTestForceRPMS(listsPackages):
-        constants.testForceRPMS=listsPackages
+        constants.testForceRPMS = listsPackages
+
+    @staticmethod
+    def addMacro(macroName, macroValue):
+        constants.userDefinedMacros[macroName] = macroValue
+
+    @staticmethod
+    def setBuildOptions(options):
+        constants.buildOptions = options
+
+    @staticmethod
+    def getAdditionalMacros(package):
+        macros = {}
+        if package in constants.buildOptions.keys():
+            pkg = constants.buildOptions[package]
+            for m in pkg["macros"]:
+                k, v = m.split(' ', 1)
+                macros[k] = v
+        return macros

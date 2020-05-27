@@ -2,40 +2,58 @@
 %global __os_install_post %{nil}
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
-Version:        3.10
-Release:        6%{?dist}
+Version:        3.11.5
+Release:        4%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/3.10/apache-%{name}-%{version}-src.tar.gz
-%define sha1    apache-cassandra=fa2bbeb62f930f5ff6fccee60cfb837d0794633a
-Source1:        cassandra.service
-Patch0:         build-fix.patch
+Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
+%define sha1    apache-cassandra=5e443e229819d70fcad963f3221109ab55a2c3a2
+# https://search.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar
+# https://search.maven.org/maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar
+# https://search.maven.org/maven2/org/apache/thrift/libthrift/0.9.3/libthrift-0.9.3.jar
+Source1:        cassandra-libthrift-logback-jars.tar.gz
+%define sha1    cassandra-libthrift-logback-jars=68f9251787cfc5f223f76b9eafcb2bfdf84f32c4
+Source2:        cassandra-jackson-jars.tar.gz
+%define sha1    cassandra-jackson-jars=71f573e2185c79cd8c619ddae179ed880ca8b762
+Source3:        cassandra.service
+Patch0:         cassandra-bump-jackson-version.patch
 BuildRequires:  apache-ant
 BuildRequires:  unzip zip
 BuildRequires:  openjdk8
 BuildRequires:  wget
 Requires:       openjre8
 Requires:       gawk
+Requires:       shadow
 %description
 Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store. Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
 
 %prep
 %setup -qn apache-%{name}-%{version}-src
-%patch0 -p1
 sed -i 's#\"logback-core\" version=\"1.1.3\"#\"logback-core\" version=\"1.2.0\"#g' build.xml
 sed -i 's#\"logback-classic\" version=\"1.1.3\"#\"logback-classic\" version=\"1.2.0\"#g' build.xml
+sed -i 's#\"libthrift\" version=\"0.9.2\"#\"libthrift\" version=\"0.9.3.1\"#g' build.xml
+
+rm lib/libthrift-*
 rm lib/logback-*
+rm lib/jackson-core-asl-1.9.13.jar
+rm lib/jackson-mapper-asl-1.9.13.jar
+
 mv lib/licenses/logback-core-1.1.3.txt lib/licenses/logback-core-1.2.0.txt
 mv lib/licenses/logback-classic-1.1.3.txt lib/licenses/logback-classic-1.2.0.txt
+mv lib/licenses/libthrift-0.9.2.txt lib/licenses/libthrift-0.9.3.txt
 
-wget http://central.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar -P lib
-wget http://central.maven.org/maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar -P lib
+tar -xf %{SOURCE1} --no-same-owner
+cp cassandra-libthrift-logback-jars/* lib/
+tar -xf %{SOURCE2} --no-same-owner
+cp cassandra-jackson-jars/* lib/
+
+%patch0 -p1
 
 %build
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
 
 ant jar javadoc -Drelease=true
 
@@ -83,7 +101,7 @@ cp tools/bin/cassandra-stress %{buildroot}%{_bindir}/
 cp tools/bin/cassandra-stressd %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}/lib/systemd/system
-install -p -D -m 644 %{SOURCE1}  %{buildroot}/lib/systemd/system/%{name}.service
+install -p -D -m 644 %{SOURCE3}  %{buildroot}/lib/systemd/system/%{name}.service
 
 cat >> %{buildroot}/etc/sysconfig/cassandra <<- "EOF"
 CASSANDRA_HOME=/var/opt/cassandra/
@@ -128,6 +146,24 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 3.11.5-4
+-   Changed openjdk install directory name
+*   Wed Feb 05 2020 Ankit Jain <ankitja@vmware.com> 3.11.5-3
+-   Bump jackson version to >= 2.9.5
+*   Wed Feb 05 2020 Shreyas B. <shreyasb@vmware.com> 3.11.5-2
+-   Shadow require by Cassandra for the installation.
+*   Fri Jan 17 2020 Ankit Jain <ankitja@vmware.com> 3.11.5-1
+-   Central maven repository not responding, Updated to 3.11.5
+*   Tue Dec 17 2019 Shreyas B. <shreyasb@vmware.com> 3.11.3-3
+-   Bumping up the thrift version to 0.9.3.1 to fix vulnerability.
+*   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 3.11.3-2
+-   Removed dependency on JAVA8_VERSION macro
+*   Mon Sep 03 2018 Keerthana K <keerthanak@vmware.com> 3.11.3-1
+-   Updated to version 3.11.3.
+*   Tue Apr 24 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-8
+-   Remove patch to build on openjdk-1.8.0.162, updated openjdk to 1.8.0.172
+*   Sat Jan 20 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-7
+-   Add patch to build on openjdk-1.8.0.162
 *   Thu Aug 17 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-6
 -   Add SuccessExitStatus to cassandra service file
 *   Thu Aug 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-5

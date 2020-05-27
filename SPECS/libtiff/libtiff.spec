@@ -1,20 +1,14 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
-Version:        4.0.8
-Release:        3%{?dist}
+Version:        4.1.0
+Release:        1%{?dist}
 License:        libtiff
-URL:            http://www.simplesystems.org/libtiff/
+URL:            https://gitlab.com/libtiff/libtiff
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://download.osgeo.org/%{name}/tiff-%{version}.tar.gz
-%define sha1    tiff=88717c97480a7976c94d23b6d9ed4ac74715267f
-# patches:      https://blogs.gentoo.org/ago/2017/01/01/libtiff-multiple-heap-based-buffer-overflow/
-Patch0:         libtiff-4.0.6-CVE-2015-7554.patch
-Patch1:         libtiff-4.0.6-CVE-2015-1547.patch
-Patch2:         libtiff-CVE-2017-10688.patch
-Patch3:         libtiff-4.0.8-CVE-2017-9936.patch
-Patch4:         libtiff-4.0.8-CVE-2017-11335.patch
+Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff-v%{version}.tar.gz
+%define sha1    libtiff-v=8fc266cdb1ecbf6d5d13c7f0ce73161f59ac0996
 BuildRequires:  libjpeg-turbo-devel
 Requires:       libjpeg-turbo
 %description
@@ -28,15 +22,11 @@ Requires:       libjpeg-turbo-devel
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q -n tiff-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
+%setup -q -n libtiff-v%{version}
+
 %build
-./configure \
-    --prefix=%{_prefix} \
+sh autogen.sh
+%configure \
     --disable-static
 make %{?_smp_mflags}
 
@@ -68,6 +58,37 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Fri Apr 03 2020 Sujay G <gsujay@vmware.com> 4.1.0-1
+-   Bump version to 4.1.0
+*   Mon Nov 18 2019 Anisha Kumari <kanisha@vmware.com> 4.0.10-5
+-   Fix for CVE-2019-17546
+*   Mon Jun 03 2019 Ashwin H <ashwinh@vmware.com> 4.0.10-4
+-   Fix for CVE-2019-7663
+*   Tue Feb 05 2019 Keerthana K <keerthanak@vmware.com> 4.0.10-3
+-   Fix for CVE-2019-6128.
+*   Mon Jan 28 2019 Keerthana K <keerthanak@vmware.com> 4.0.10-2
+-   Fix for CVE-2018-12900
+*   Mon Dec 10 2018 Ashwin H <ashwinh@vmware.com> 4.0.10-1
+-   Update to 4.0.10
+*   Sun Dec 02 2018 Ashwin H <ashwinh@vmware.com> 4.0.9-5
+-   Fix CVE-2018-17100, CVE-2018-17101
+*   Mon May 14 2018 Xiaolin Li <xiaolinl@vmware.com> 4.0.9-4
+-   Fix CVE-2018-7456, CVE-2018-8905, CVE-2018-5784, CVE-2017-11613
+*   Wed Feb 14 2018 Dheeraj Shetty <dheerajs@vmware.com> 4.0.9-3
+-   Patch for CVE-2017-17095
+*   Wed Jan 31 2018 Dheeraj Shetty <dheerajs@vmware.com> 4.0.9-2
+-   Repatched CVE-2017-9935
+*   Wed Jan 17 2018 Dheeraj Shetty <dheerajs@vmware.com> 4.0.9-1
+-   Updated to version 4.0.9 to fix CVE-2017-11613, CVE-2017-9937,
+-   CVE-2017-17973. Added a patch for CVE-2017-18013
+*   Mon Dec 11 2017 Xiaolin Li <xiaolinl@vmware.com> 4.0.8-7
+-   Added patch for CVE-2017-9935
+*   Mon Nov 27 2017 Xiaolin Li <xiaolinl@vmware.com> 4.0.8-6
+-   Added patches for CVE-2017-13726, CVE-2017-13727
+*   Mon Nov 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.0.8-5
+-   Patch : CVE-2017-12944
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.8-4
+-   Use standard configure macros
 *   Wed Aug 09 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.0.8-3
 -   Added patch for CVE-2017-9936, CVE-2017-11335
 *   Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 4.0.8-2

@@ -1,18 +1,21 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
-Version:       1.0.4
-Release:       3%{?dist}
+Version:       1.2
+Release:       5%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
+Distribution:  Photon
 License:       Apache 2.0
 URL:           http://www.github.com/vmware/c-rest-engine
-BuildArch:     x86_64
 Requires:      openssl >= 1.0.1
 BuildRequires: coreutils >= 8.22
 BuildRequires: openssl-devel >= 1.0.1
 Source0:       %{name}-%{version}.tar.gz
-%define sha1   c-rest-engine=3b2e8e421f1d3d2a3932502f24c5064c993e0ad0
-Patch0:        logLevelError.patch
+Patch0:        c-rest-engine-aarch64.patch
+Patch1:        c-rest-engine-fix-log-file-len.patch
+Patch2:        preprocess-timeout.patch
+Patch3:        fd_leak.patch
+%define sha1   c-rest-engine=25aa9d1f2680e26114dee18365c510692552f8e4
 
 %description
 c-rest-engine is a minimal embedded http(s) server written in C.
@@ -30,11 +33,15 @@ development libs and header files for c-rest-engine
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 cd build
 autoreconf -mif ..
 ../configure \
+    --host=%{_host} --build=%{_build} \
     --prefix=%{_prefix} \
     --with-ssl=/usr \
     --enable-debug=%{_enable_debug} \
@@ -62,6 +69,22 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Tue Oct 22 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2-5
+-  Remove make check as unit tests are not present in c-rest-engine
+*  Fri Jan 11 2019 Ankit Jain <ankitja@vmware.com> 1.2-4
+-  Added Makecheck
+*  Tue May 08 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-3
+-  Appying patch for fd leak issue.
+*  Fri Feb 23 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-2
+-  Appying patch for preprocess timeout.
+*  Wed Feb 14 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-1
+-  Upgrading to version 1.2. Removing all upstream patches.
+*  Thu Nov 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1-1
+-  Update to v1.1-1
+*  Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0.5-2
+-  Aarch64 support
+*  Thu Nov 02 2017 Kumar Kaushik <kaushikk@vmware.com> 1.0.5-1
+-  Adding version, 1.0.5, get peer info API.
 *  Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0.4-3
 -  Remove coreutils runtime dependency.
 *  Tue Sep 12 2017 Kumar Kaushik <kaushikk@vmware.com> 1.0.4-2

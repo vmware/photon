@@ -3,7 +3,7 @@
 
 Summary:        Python cryptography library
 Name:           python-cryptography
-Version:        2.0.3
+Version:        2.8
 Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
@@ -11,7 +11,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
-%define sha1    cryptography=918c788a03142e5058e23c3711fc3e6618f38a61
+%define sha1    cryptography=94ef5dc1261a4388572ce3ad9af1515691276d2c
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -19,6 +19,11 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-cffi
 BuildRequires:  openssl-devel
 
+%if %{with_check}
+BuildRequires:  python3-pip
+BuildRequires:  python-pip
+BuildRequires:  curl-devel
+%endif
 Requires:       python-cffi
 Requires:       openssl
 Requires:       python2
@@ -86,7 +91,9 @@ openssl req \
     -out photon.cert
 openssl rsa -in photon.key -out photon.pem
 mv photon.pem /etc/ssl/certs
+pip install pretend pytest hypothesis iso8601 cryptography_vectors pytz
 python2 setup.py test
+pip3 install pretend pytest hypothesis iso8601 cryptography_vectors pytz
 python3 setup.py test
 
 %files
@@ -98,6 +105,11 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Mar 03 2020 Tapas Kundu <tkundu@vmware.com> 2.8-1
+-   Update to version 2.8
+-   Fix make check
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.3.1-1
+-   Update to version 2.3.1
 *   Mon Aug 14 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.3-1
 -   Updated to version 2.0.3.
 *   Tue Jul 25 2017 Divya Thaluru <dthaluru@vmware.com> 1.8.1-4

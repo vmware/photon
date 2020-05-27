@@ -1,0 +1,41 @@
+From 19933a66e977da3d3ea52d68e7c2927856f3ac18 Mon Sep 17 00:00:00 2001
+From: Cristian Gafton <gafton@amazon.com>
+Date: Wed, 13 Feb 2013 05:34:40 +0000
+Subject: bump default tcp_wmem from 16KB to 20KB
+
+to account for skb structure growth since the 3.4.x kernel series
+
+(cherry picked from commit 4859c886f6ee760a0d99a68ee7711026090a1746)
+Signed-off-by: Cristian Gafton <gafton@amazon.com>
+(cherry picked from commit 64f08e9da01ff957cbebd44de8797373c589545f)
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/6834769/
+
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Frederick Lefebvre <fredlef@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
+CR: https://cr.amazon.com/r/8209723/
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ net/ipv4/tcp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 238a5c3..975aae9 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3857,7 +3857,7 @@ void __init tcp_init(void)
+ 	max_rshare = min(6UL*1024*1024, limit);
+ 
+ 	init_net.ipv4.sysctl_tcp_wmem[0] = SK_MEM_QUANTUM;
+-	init_net.ipv4.sysctl_tcp_wmem[1] = 16*1024;
++	init_net.ipv4.sysctl_tcp_wmem[1] = 20*1024;
+ 	init_net.ipv4.sysctl_tcp_wmem[2] = max(64*1024, max_wshare);
+ 
+ 	init_net.ipv4.sysctl_tcp_rmem[0] = SK_MEM_QUANTUM;
+-- 
+2.14.4
+

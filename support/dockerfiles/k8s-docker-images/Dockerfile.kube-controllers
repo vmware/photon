@@ -1,0 +1,13 @@
+FROM k8s-base-image:3.0
+
+MAINTAINER ashwinh@vmware.com
+
+# Minimum Docker API version required for libnetwork.
+ENV DOCKER_API_VERSION 1.21
+
+
+COPY [ "./tmp/calico/usr/bin/kube-controllers", \
+       "./tmp/calico/usr/bin/check-status", \
+       "/usr/bin/" ]
+
+CMD ["kube-controllers"]

@@ -1,6 +1,6 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2l
+Version:        1.0.2u
 Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
@@ -8,12 +8,19 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1    openssl=b58d5d0e9cea20e571d903aafa853e2ccd914138
+%define sha1    openssl=740916d79ab0d209d2775277b1c6c3ec2f6502b2
+Source1:        rehash_ca_certificates.sh
+%if 0%{?with_fips:1}
+Source100:      openssl-fips-2.0.20-vmw.tar.gz
+%define sha1    openssl-fips=973ac82a77285f573296ffe94809da8c019aab33
+%endif
 Patch0:         c_rehash.patch
-Patch1:         openssl-1.0.2f-ipv6apps.patch
+Patch1:         openssl-ipv6apps.patch
 Patch2:         openssl-init-conslidate.patch
 Patch3:         openssl-drbg-default-read-system-fips.patch
-Patch4:         openssl-CVE-2017-3735.patch
+%if 0%{?with_fips:1}
+Patch4:         fips-2.20-vmw.patch
+%endif
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -21,7 +28,7 @@ Requires:       bash glibc libgcc
 
 %description
 The OpenSSL package contains management tools and libraries relating
-to cryptography. These are useful for providing cryptography 
+to cryptography. These are useful for providing cryptography
 functions to other packages, such as OpenSSH, email applications and
 web browsers (for accessing HTTPS sites).
 
@@ -29,6 +36,7 @@ web browsers (for accessing HTTPS sites).
 Summary: Development Libraries for openssl
 Group: Development/Libraries
 Requires: openssl = %{version}-%{release}
+Obsoletes:  nxtgn-openssl-devel
 %description devel
 Header files for doing development with openssl.
 
@@ -57,23 +65,34 @@ Perl scripts that convert certificates and keys to various formats.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%if 0%{?with_fips:1}
 %patch4 -p1
+%endif
 
 %build
+%if 0%{?with_fips:1}
+tar xf %{SOURCE100} --no-same-owner -C ..
+# Do not package it to src.rpm
+:> %{SOURCE100}
+%endif
 export CFLAGS="%{optflags}"
 ./config \
-    --prefix=%{_prefix} \
+    --prefix=/usr \
     --libdir=lib \
     --openssldir=/%{_sysconfdir}/ssl \
     shared \
     zlib-dynamic \
-    %{?_with_fips} \
+%if 0%{?with_fips:1}
+    fips --with-fipsdir=%{_builddir}/openssl-2.0.20 \
+%endif
+    -Wl,-z,noexecstack \
     -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
 # does not support -j yet
 make
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make INSTALL_PREFIX=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
+install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
 ln -sf libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
 ln -sf libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
 
@@ -115,8 +134,37 @@ rm -rf %{buildroot}/*
 
 %files c_rehash
 /%{_bindir}/c_rehash
+/%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Mon Jan 20 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2u-2
+-   Configure with Wl flag.
+*   Thu Jan 09 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2u-1
+-   Updated to 1.0.2u
+-   Fix CVE-2019-1551
+*   Wed Oct 30 2019 Tapas Kundu <tkundu@vmware.com> 1.0.2t-2
+-   Use 2.0.20 fips
+*   Thu Sep 19 2019 Tapas Kundu <tkundu@vmware.com> 1.0.2t-1
+-   Updated to 1.0.2t
+-   Fix multiple CVEs
+*   Fri Jul 26 2019 Srinidhi Rao <srinidhir@vmware.com> 1.0.2s-2
+-   Increment the release version for nxtgn-openssl-1.1.1b compatibility
+*   Fri Jun 07 2019 Tapas Kundu <tkundu@vmware.com> 1.0.2s-1
+-   Updated to 1.0.2s
+*   Mon Mar 25 2019 Tapas Kundu <tkundu@vmware.com> 1.0.2r-1
+-   Updated to 1.0.2r for CVE-2019-1559
+*   Fri Dec 07 2018 Sujay G <gsujay@vmware.com> 1.0.2q-1
+-   Bump version to 1.0.2q
+*   Wed Oct 17 2018 Alexey Makhalov <amakhalov@vmware.com> 1.0.2p-2
+-   Move fips logic to spec file
+*   Fri Aug 17 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.0.2p-1
+-   Upgrade to 1.0.2p
+*   Wed Mar 21 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.0.2n-2
+-   Add script which rehashes the certificates
+*   Tue Jan 02 2018 Xiaolin Li <xiaolinl@vmware.com> 1.0.2n-1
+-   Upgrade to 1.0.2n
+*   Tue Nov 07 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2m-1
+-   Upgrade to 1.0.2m
 *   Tue Oct 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.2l-2
 -   Fix CVE-2017-3735 OOB read.
 *   Fri Aug 11 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2l-1
@@ -139,7 +187,7 @@ rm -rf %{buildroot}/*
 -   Security bug fix, CVE-2016-2182.
 *   Tue Sep 20 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.2h-4
 -   Security bug fix, CVE-2016-6303.
-*   Fri Jun 22 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2h-3
+*   Wed Jun 22 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2h-3
 -   Add patches for using openssl_init under all initialization and changing default RAND
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.2h-2
 -   GA - Bump release of all rpms

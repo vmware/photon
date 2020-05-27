@@ -1,0 +1,106 @@
+From 4eb745c8cb5c82a2e01e407648c708de5c5a7d3e Mon Sep 17 00:00:00 2001
+From: "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
+Date: Tue, 2 Oct 2018 17:17:36 -0700
+Subject: [PATCH] bpf, ext4, bonding: Fix compilation errors
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+In file included from kernel/bpf/core.c:24:0:
+kernel/bpf/core.c: In function ‘___bpf_prog_run’:
+./include/linux/filter.h:750:50: error: cast from function type ‘u64 (*)(u64,  u64,  u64,  u64,  u64) {aka long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int)}’ to non-matching type ‘u64 (*)(u64,  u64,  u64,  u64,  u64,  const struct bpf_insn *) {aka long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  const struct bpf_insn *)}’
+  ((u64 (*)(u64, u64, u64, u64, u64, const struct bpf_insn *)) \
+                                                  ^
+kernel/bpf/core.c:1132:13: note: in expansion of macro ‘__bpf_call_base_args’
+   BPF_R0 = (__bpf_call_base_args + insn->imm)(BPF_R1, BPF_R2,
+             ^~~~~~~~~~~~~~~~~~~~
+kernel/bpf/core.c: In function ‘bpf_patch_call_args’:
+./include/linux/filter.h:750:50: error: cast from function type ‘u64 (*)(u64,  u64,  u64,  u64,  u64) {aka long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int)}’ to non-matching type ‘u64 (*)(u64,  u64,  u64,  u64,  u64,  const struct bpf_insn *) {aka long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  const struct bpf_insn *)}’
+  ((u64 (*)(u64, u64, u64, u64, u64, const struct bpf_insn *)) \
+                                                  ^
+kernel/bpf/core.c:1410:3: note: in expansion of macro ‘__bpf_call_base_args’
+   __bpf_call_base_args;
+   ^~~~~~~~~~~~~~~~~~~~
+
+fs/ext4/sysfs.c:349:30: error: cast from function type ‘void (*)(const void *)’ to non-matching type ‘void (*)(struct kobject *)’
+  .release = (void (*)(struct kobject *))kfree,
+                              ^~~~~~~
+
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ drivers/gpu/drm/nouveau/Kbuild          | 2 ++
+ drivers/gpu/drm/nouveau/dispnv50/wndw.h | 4 ++--
+ fs/ext4/sysfs.c                         | 2 +-
+ include/linux/filter.h                  | 2 +-
+ include/net/bond_alb.h                  | 4 ++--
+ 5 files changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/gpu/drm/nouveau/Kbuild b/drivers/gpu/drm/nouveau/Kbuild
+index b17843d..d9a83ac 100644
+--- a/drivers/gpu/drm/nouveau/Kbuild
++++ b/drivers/gpu/drm/nouveau/Kbuild
+@@ -62,3 +62,5 @@ nouveau-y += nv84_fence.o
+ nouveau-y += nvc0_fence.o
+ 
+ obj-$(CONFIG_DRM_NOUVEAU) += nouveau.o
++
++OBJECT_FILES_NON_STANDARD := y
+diff --git a/drivers/gpu/drm/nouveau/dispnv50/wndw.h b/drivers/gpu/drm/nouveau/dispnv50/wndw.h
+index b0b6428..0770683 100644
+--- a/drivers/gpu/drm/nouveau/dispnv50/wndw.h
++++ b/drivers/gpu/drm/nouveau/dispnv50/wndw.h
+@@ -38,8 +38,8 @@ struct nv50_wndw {
+ 
+ int nv50_wndw_new_(const struct nv50_wndw_func *, struct drm_device *,
+ 		   enum drm_plane_type, const char *name, int index,
+-		   const u32 *format, enum nv50_disp_interlock_type,
+-		   u32 interlock_data, u32 heads, struct nv50_wndw **);
++		   const u32 *format, u32 heads, enum nv50_disp_interlock_type,
++		   u32 interlock_data, struct nv50_wndw **);
+ void nv50_wndw_init(struct nv50_wndw *);
+ void nv50_wndw_fini(struct nv50_wndw *);
+ void nv50_wndw_flush_set(struct nv50_wndw *, u32 *interlock,
+diff --git a/fs/ext4/sysfs.c b/fs/ext4/sysfs.c
+index b970a20..6255fe4 100644
+--- a/fs/ext4/sysfs.c
++++ b/fs/ext4/sysfs.c
+@@ -346,7 +346,7 @@ static struct kobj_type ext4_sb_ktype = {
+ static struct kobj_type ext4_feat_ktype = {
+ 	.default_attrs	= ext4_feat_attrs,
+ 	.sysfs_ops	= &ext4_attr_ops,
+-	.release	= (void (*)(struct kobject *))kfree,
++	.release	= (void (*)(struct kobject *))((void *)kfree),
+ };
+ 
+ static struct kobject *ext4_root;
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index c73dd73..4a4a7ff 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -748,7 +748,7 @@ void sk_filter_uncharge(struct sock *sk, struct sk_filter *fp);
+ u64 __bpf_call_base(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5);
+ #define __bpf_call_base_args \
+ 	((u64 (*)(u64, u64, u64, u64, u64, const struct bpf_insn *)) \
+-	 __bpf_call_base)
++	((void *) __bpf_call_base))
+ 
+ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog);
+ void bpf_jit_compile(struct bpf_prog *prog);
+diff --git a/include/net/bond_alb.h b/include/net/bond_alb.h
+index 313a8d3..092e434 100644
+--- a/include/net/bond_alb.h
++++ b/include/net/bond_alb.h
+@@ -172,8 +172,8 @@ int bond_alb_init_slave(struct bonding *bond, struct slave *slave);
+ void bond_alb_deinit_slave(struct bonding *bond, struct slave *slave);
+ void bond_alb_handle_link_change(struct bonding *bond, struct slave *slave, char link);
+ void bond_alb_handle_active_change(struct bonding *bond, struct slave *new_slave);
+-int bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
+-int bond_tlb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
++netdev_tx_t bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
++netdev_tx_t bond_tlb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
+ void bond_alb_monitor(struct work_struct *);
+ int bond_alb_set_mac_address(struct net_device *bond_dev, void *addr);
+ void bond_alb_clear_vlan(struct bonding *bond, unsigned short vlan_id);
+-- 
+2.7.4
+

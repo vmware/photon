@@ -1,0 +1,2 @@
+# Environment variables required for etcd service
+ETCD_UNSUPPORTED_ARCH=arm64

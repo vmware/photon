@@ -1,14 +1,14 @@
 Summary:	Stream editor
 Name:		sed
-Version:	4.4
-Release:	3%{?dist}
+Version:	4.5
+Release:	1%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/sed
 Group:		Applications/Editors
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/sed/%{name}-%{version}.tar.xz
-%define sha1 sed=a196cd036efd52a8e349cfe88ab4baa555fb29d5
+%define sha1 sed=6635c344956ef928cc33aca798ad20c6c1ea25f7
 Conflicts:      toybox
 
 %description
@@ -17,7 +17,7 @@ The Sed package contains a stream editor.
 %package lang
 Summary: Additional language files for sed
 Group: System Environment/Programming
-Requires: sed >= 4.4
+Requires: sed >= 4.5
 %description lang
 These are the additional language files of sed.
 
@@ -51,6 +51,8 @@ make check
 %defattr(-,root,root)
 
 %changelog
+* Tue Sep 18 2018 Srinidhi Rao <srinidhir@vmware.com> 4.5-1
+- Updating to version 4.5
 * Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4-3
 - Added conflicts toybox
 * Tue Aug 01 2017 Chang Lee <changlee@vmware.com> 4.4-2

@@ -1,18 +1,19 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
-Version:        1.43.4
-Release:        2%{?dist}
+Version:        1.45.5
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
-%define sha1    e2fsprogs=f7cf8c82805103b53f89ad5da641e1085281d411
+%define sha1    e2fsprogs=7c63cfe34319aa90de6f6cf76e17f40248f68802
 Requires:       %{name}-libs = %{version}-%{release}
+Conflicts:      toybox
+
 %description
-The E2fsprogs package contains the utilities for handling
-the ext2 file system.
+The E2fsprogs package contains the utilities for handling the ext2 file system.
 
 %package    libs
 Summary:    contains libraries used by other packages
@@ -21,9 +22,9 @@ It contains the libraries: libss and libcom_err
 
 %package    devel
 Summary:    Header and development files for e2fsprogs
-Requires:   %{name} = %{version}
+Requires:   %{name} = %{version}-%{release}
 %description    devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %package lang
 Summary: Additional language files for e2fsprogs
@@ -34,16 +35,13 @@ These are the additional language files of e2fsprogs
 
 %prep
 %setup -q
-install -vdm 755 build
 sed -i -e 's|^LD_LIBRARY_PATH.*|&:/tools/lib|' tests/test_config
 
 %build
-cd build
-LIBS=-L/tools/lib \
-CFLAGS=-I/tools/include \
-PKG_CONFIG_PATH=/tools/lib/pkgconfig \
-../configure \
-    --prefix=%{_prefix} \
+export LIBS=-L/tools/libi; \
+export CFLAGS=-I/tools/include; \
+export PKG_CONFIG_PATH=/tools/lib/pkgconfig
+%configure \
     --with-root-prefix='' \
     --enable-elf-shlibs \
     --disable-libblkid \
@@ -55,26 +53,25 @@ PKG_CONFIG_PATH=/tools/lib/pkgconfig \
 make %{?_smp_mflags}
 
 %install
-pushd build
 make DESTDIR=%{buildroot} install
 make DESTDIR=%{buildroot} install-libs
 chmod -v u+w %{buildroot}/%{_libdir}/{libcom_err,libe2p,libext2fs,libss}.a
 rm -rf %{buildroot}%{_infodir}
-popd
 %find_lang %{name}
 
 %check
-cd build
 make %{?_smp_mflags} check
 
 %post
 /sbin/ldconfig
+
 %postun
 /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
 %config %{_sysconfdir}/mke2fs.conf
+%config %{_sysconfdir}/e2scrub.conf
 %{_bindir}/compile_et
 %{_bindir}/mk_cmds
 %{_bindir}/chattr
@@ -88,21 +85,17 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_sbindir}/*
-/lib/libext2fs.so.2.4
-/lib/libe2p.so.2.3
-/lib/libe2p.so.2
-/lib/libext2fs.so.2
-/sbin/*
+%{_libdir}/libext2fs.so.2.4
+%{_libdir}/libe2p.so.2.3
+%{_libdir}/libe2p.so.2
+%{_libdir}/libext2fs.so.2
 %{_libdir}/libe2p.so
 %{_libdir}/libext2fs.so
 
 %files libs
-/lib/libss.so.2
-/lib/libcom_err.so.2.1
-/lib/libss.so.2.0
-/lib/libcom_err.so.2
-%{_libdir}/libcom_err.so
 %{_libdir}/libss.so
+%{_libdir}/libss.so.*
+%{_libdir}/libcom_err.*
 
 %files devel
 %{_includedir}/ss/ss_err.h
@@ -118,6 +111,7 @@ make %{?_smp_mflags} check
 %{_includedir}/ext2fs/ext3_extents.h
 %{_includedir}/ext2fs/ext2_types.h
 %{_includedir}/ext2fs/ext2_ext_attr.h
+%{_includedir}/ext2fs/hashmap.h
 %{_includedir}/e2p/e2p.h
 %{_includedir}/com_err.h
 %{_libdir}/libcom_err.a
@@ -134,26 +128,37 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Mon Jan 27 2020 Shreyas B. <shreyasb@vmware.com> 1.45.5-1
+-   Upgrade to version 1.45.5.
+*   Fri Jan 24 2020 Shreyas B. <shreyasb@vmware.com> 1.44.6-1
+-   Upgrade to version 1.44.6.
+*   Mon Nov 04 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.44.3-4
+-   make devel depend on the version-release instead of version alone
+*   Tue Oct 22 2019 Shreyas B. <shreyasb@vmware.com> 1.44.3-3
+-   Fixes for CVE-2019-5094.
+*   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 1.44.3-2
+-   Add conflicts toybox.
+*   Mon Sep 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.44.3-1
+-   Version update to fix compilation issue againts glibc-2.28.
 *   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 1.43.4-2
 -   Add lang package.
 *   Mon Apr 03 2017 Chang Lee <changlee@vmware.com> 1.43.4-1
--   Updated to version 1.43.4
+-   Updated to version 1.43.4.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-5
 -   Moved man3 to devel subpackage.
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-4
--   Create libs subpackage for krb5
+-   Create libs subpackage for krb5.
 *   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-3
--   Use symlinks - save a diskspace
+-   Use symlinks - save a diskspace.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.42.13-2
--   GA - Bump release of all rpms
+-   GA - Bump release of all rpms.
 *   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-1
--   Updated to version 1.42.13
+-   Updated to version 1.42.13.
 *   Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.42.9-4
 -   Edit post script.
 *   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.42.9-3
--   Handled locale files with macro find_lang
+-   Handled locale files with macro find_lang.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.42.9-2
 -   Update according to UsrMove.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.42.9-1
--   Initial build. First version
-
+-   Initial build First version.

@@ -1,0 +1,59 @@
+From 429966138df2fbc6a81203d587f87d12bb071b05 Mon Sep 17 00:00:00 2001
+From: Yangbo Lu <yangbo.lu@nxp.com>
+Date: Tue, 30 Jan 2018 20:22:24 +0800
+Subject: [PATCH 12/22] staging: fsl_ppfe/eth: clean up
+ iounmap(pfe->ddr_baseaddr)
+
+pfe->ddr_baseaddr was got through phys_to_virt() not ioremap(),
+so iounmap() for pfe->ddr_baseaddr should be removed.
+
+Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+
+[ Srinidhi Rao : Ported this patch to photon linux from
+  qoriq-components linux 'linux-4.14-nxp'
+  (https://source.codeaurora.org/external/qoriq/qoriq-components/linux)
+]
+
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+---
+ drivers/staging/fsl_ppfe/pfe_ls1012a_platform.c | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/drivers/staging/fsl_ppfe/pfe_ls1012a_platform.c b/drivers/staging/fsl_ppfe/pfe_ls1012a_platform.c
+index c579eb58f277..f3eb88de66a4 100644
+--- a/drivers/staging/fsl_ppfe/pfe_ls1012a_platform.c
++++ b/drivers/staging/fsl_ppfe/pfe_ls1012a_platform.c
+@@ -169,13 +169,7 @@ static int pfe_platform_probe(struct platform_device *pdev)
+ 
+ 	pfe->ddr_phys_baseaddr = res.start;
+ 	pfe->ddr_size = resource_size(&res);
+-
+ 	pfe->ddr_baseaddr = phys_to_virt(res.start);
+-	if (!pfe->ddr_baseaddr) {
+-		pr_err("ioremap() ddr failed\n");
+-		rc = -ENOMEM;
+-		goto err_ddr;
+-	}
+ 
+ 	pfe->scfg =
+ 		syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
+@@ -257,8 +251,6 @@ static int pfe_platform_probe(struct platform_device *pdev)
+ 	iounmap(pfe->cbus_baseaddr);
+ 
+ err_axi:
+-	iounmap(pfe->ddr_baseaddr);
+-
+ err_ddr:
+ 	platform_set_drvdata(pdev, NULL);
+ 
+@@ -281,7 +273,6 @@ static int pfe_platform_remove(struct platform_device *pdev)
+ 	rc = pfe_remove(pfe);
+ 
+ 	iounmap(pfe->cbus_baseaddr);
+-	iounmap(pfe->ddr_baseaddr);
+ 
+ 	platform_set_drvdata(pdev, NULL);
+ 
+-- 
+2.14.2
+

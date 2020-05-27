@@ -1,7 +1,7 @@
 Summary:	GIO-based library with Unix/Linux specific API
 Name:		libgsystem
 Version:	2015.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 Group:		Development/Libraries
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/libgsystem/%{version}/%{name}-%{version}.tar.gz
 %define sha1 libgsystem=d7f12beb17d3a3b288d68ca2cdcb595f9e5fccea
@@ -84,12 +84,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/gir-*/*.gir
 
 %changelog
+*   Tue Sep 18 2018 Keerthana K <keerthanak@vmware.com> 2015.2-2
+-   Removed % from autosetup in the changelog to address the
+-   build break with latest RPM version.
 *   Wed Apr 26 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2015.2-1
 -   Updated to version 2015.2
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.1-4
 -   BuildRequired attr-devel.
 *   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.1-3
--   Use %setup instead of %autosetup
+-   Use setup instead of autosetup
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2015.1-2
 -   GA - Bump release of all rpms
 *   Mon Nov 24 2014 Divya Thaluru <dthaluru@vmware.com> 2014.2-1

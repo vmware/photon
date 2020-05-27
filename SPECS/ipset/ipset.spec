@@ -1,6 +1,6 @@
 Summary:    administration tool for IP sets 
 Name:       ipset
-Version:    6.32
+Version:    6.38
 Release:    1%{?dist}
 License:    GPLv2
 URL:        http://ipset.netfilter.org/
@@ -8,7 +8,7 @@ Group:      System Environment/tools
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:     ipset.netfilter.org/%{name}-%{version}.tar.bz2
-%define sha1 ipset=2c03ac15aa6807c0f0344b61090147d4bfaa4fd2
+%define sha1 ipset=7e5a25c449067e95c2e3a2c60768a1e301f12458
 BuildRequires:    libmnl-devel
 Requires:         libmnl
 %description
@@ -45,8 +45,12 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot}
 find %{buildroot} -name '*.la' -delete
 
-#%check
-#make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+%check
+sed -i 's/tests=\"$tests nethash/#tests=\"$tests nethash/g' tests/runtest.sh
+sed -i 's/tests=\"$tests hash:net,port/#tests=\"$tests hash:net,port/g' tests/runtest.sh
+sed -i 's/tests=\"$tests hash:ip/#tests=\"$tests hash:ip/g' tests/runtest.sh
+sed -i 's/tests=\"$tests hash:net,iface/#tests=\"$tests hash:net,iface/g' tests/runtest.sh
+make tests |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 
 %post
@@ -71,6 +75,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libipset.pc
 
 %changelog
+*   Thu Sep 06 2018 Ankit Jain <ankitja@vmware.com> 6.38-1
+-   Upgrading version to 6.38
 *   Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 6.32-1
 -   Upgrading version to 6.32
 *   Wed Aug 3 2016 Xiaolin Li <xiaolinl@vmware.com> 6.29-1

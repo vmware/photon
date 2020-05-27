@@ -7,15 +7,15 @@
 %define        with_sqlite    1
 
 Name:          systemtap
-Version:       3.1
-Release:       4%{?dist}
+Version:       4.0
+Release:       2%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://sourceware.org/systemtap/
 Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
-%define sha1 systemtap=2927ee7e780b45e47d770798f80dfd5be62e095d
+%define sha1 systemtap=40a21d71b0d42bc216f75befd3fca82701821211
 License:       GPLv2+
 
 BuildRequires: elfutils-devel
@@ -31,7 +31,9 @@ BuildRequires: libxml2-devel
 BuildRequires: perl
 BuildRequires: python-setuptools
 BuildRequires: nss
-%if %with_boost 
+BuildRequires: shadow
+BuildRequires: python2-devel
+%if %with_boost
 BuildRequires: boost-devel
 %endif
 %if %with_crash
@@ -176,8 +178,10 @@ mkdir -p %{buildroot}%{_sysconfdir}/stap-server
 mkdir -p %{buildroot}%{_sysconfdir}/stap-server/conf.d
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 install -m 644 initscript/config.stap-server %{buildroot}%{_sysconfdir}/sysconfig/stap-server
-mkdir -p %{buildroot}%{_localstatedir}/log/stap-server
-touch %{buildroot}%{_localstatedir}/log/stap-server/log
+mkdir -p %{buildroot}%{_localstatedir}/log
+mkdir -p %{buildroot}%{_localstatedir}/opt/stap-server/log
+ln -sfv %{_localstatedir}/opt/stap-server/log %{buildroot}%{_localstatedir}/log/stap-server
+touch %{buildroot}%{_localstatedir}/opt/stap-server/log/log
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
 install -m 644 initscript/logrotate.stap-server %{buildroot}%{_sysconfdir}/logrotate.d/stap-server
 
@@ -273,6 +277,7 @@ fi
 %{_bindir}/stap-prep
 %{_bindir}/stap-report
 %{_bindir}/stapsh
+%{_bindir}/stapbpf
 %dir %{_datadir}/systemtap
 %dir %{_datadir}/systemtap/runtime
 %{_datadir}/systemtap/runtime/*.h
@@ -293,6 +298,7 @@ fi
 %{_mandir}/man7/stappaths.7*
 %{_mandir}/man8/stapsh.8*
 %{_mandir}/man8/systemtap.8*
+%{_mandir}/man8/stapbpf.8*
 %doc AUTHORS COPYING
 %{_bindir}/dtrace
 
@@ -341,13 +347,25 @@ fi
 %dir %{_sysconfdir}/stap-server
 %dir %{_sysconfdir}/stap-server/conf.d
 %config(noreplace) %{_sysconfdir}/sysconfig/stap-server
-%dir %attr(0755,stap-server,stap-server) %{_localstatedir}/log/stap-server
-%ghost %config %attr(0644,stap-server,stap-server) %{_localstatedir}/log/stap-server/log
+%dir %attr(0755,stap-server,stap-server) %{_localstatedir}/opt/stap-server/log
+%attr(0755,stap-server,stap-server) %{_localstatedir}/log/stap-server
+%ghost %config %attr(0644,stap-server,stap-server) %{_localstatedir}/opt/stap-server/log/log
 %{_mandir}/man7/error::*.7stap*
 %{_mandir}/man7/warning::debuginfo.7stap*
 %{_mandir}/man8/stap-server.8*
+%{_mandir}/man8/systemtap-service.8*
 
 %changelog
+*   Mon Jan 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.0-2
+-   Added python2-devel as build requirement
+*   Tue Dec 04 2018 Keerthana K <keerthanak@vmware.com> 4.0-1
+-   Updated to version 4.0
+*   Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 3.3-1
+-   Updated to version 3.3
+*   Tue Jan 23 2018 Divya Thaluru <dthaluru@vmware.com>  3.2-1
+-   Updated to version 3.2
+*   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  3.1-5
+-   Fixed the log file directory structure
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1-4
 -   Remove shadow from requires and use explicit tools for post actions
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1-3
@@ -362,18 +380,18 @@ fi
 -   Use sqlite-{devel,libs}
 *   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 3.0-2
 -   Modified %check
-*   Fri Jul 22 2016 Divya Thaluru <dthaluru@vmware.com> 3.0-1 
+*   Fri Jul 22 2016 Divya Thaluru <dthaluru@vmware.com> 3.0-1
 -   Updated version to 3.0
 -   Removing patch to enable kernel (fix is present in upstream)
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-5
 -   GA - Bump release of all rpms
 *   Mon May 23 2016 Harish Udaiya KUmar <hudaiyakumar@vmware.com> 2.9-4
 -   Added the patch to enable kernel building with Kernel 4.4
-*   Fri May 20 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-3 
+*   Fri May 20 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-3
 -   Fixed the stap-prep script to be compatible with Photon
 *   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-2
 -   Fix for upgrade issues
-*   Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-1 
+*   Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-1
 -   Updated version to 2.9
 *   Fri Dec 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7-2
 -   Move dtrace to the main package.

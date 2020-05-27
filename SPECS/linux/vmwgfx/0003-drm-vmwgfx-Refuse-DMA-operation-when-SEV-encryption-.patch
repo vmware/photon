@@ -1,0 +1,48 @@
+From cdee6d20caf8b7872a7b5686d701af1314a478af Mon Sep 17 00:00:00 2001
+From: Thomas Hellstrom <thellstrom@vmware.com>
+Date: Fri, 1 May 2020 17:48:27 +0530
+Subject: [PATCH 3/3] drm/vmwgfx: Refuse DMA operation when SEV encryption is
+ active
+
+commit 3b0d6458c7052af1795489976b600797ca07f7e9 upstream
+
+TTM doesn't yet fully support mapping of DMA memory when SEV is active,
+so in that case, refuse DMA operation. For guest-backed object operation
+this means 3D acceleration will be disabled. For host-backed, VRAM will be
+used for data transfer between the guest and the device.
+
+Signed-off-by: Thomas Hellstrom <thellstrom@vmware.com>
+Reviewed-by: Brian Paul <brianp@vmware.com>
+[Ajay: Modified to apply on v4.19.y]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ drivers/gpu/drm/vmwgfx/vmwgfx_drv.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
+index 7dc81cd..1fb84c2 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
+@@ -35,6 +35,7 @@
+ #include <drm/ttm/ttm_object.h>
+ #include <drm/ttm/ttm_module.h>
+ #include <linux/dma_remapping.h>
++#include <linux/mem_encrypt.h>
+ 
+ #define VMWGFX_DRIVER_DESC "Linux drm driver for VMware graphics devices"
+ #define VMWGFX_CHIP_SVGAII 0
+@@ -563,6 +564,11 @@ static int vmw_dma_select_mode(struct vmw_private *dev_priv)
+ 		[vmw_dma_alloc_coherent] = "Using coherent TTM pages.",
+ 		[vmw_dma_map_populate] = "Keeping DMA mappings.",
+ 		[vmw_dma_map_bind] = "Giving up DMA mappings early."};
++
++        /* TTM currently doesn't fully support SEV encryption. */
++        if (mem_encrypt_active())
++                return -EINVAL;
++
+ #ifdef CONFIG_X86
+ 	const struct dma_map_ops *dma_ops = get_dma_ops(dev_priv->dev->dev);
+ 
+-- 
+2.7.4
+

@@ -1,11 +1,11 @@
 Summary:	C based http parser for high performance applications.
 Name:		http-parser
-Version:	2.7.1
+Version:	2.8.1
 Release:	1%{?dist}
 License:	MIT
 URL:		https://github.com/nodejs/http-parser
 Source0:	%{name}-v%{version}.tar.gz
-%define sha1    http-parser=e122b1178ec5c9920186cc8293aca9eca7584b12
+%define sha1    http-parser=e980b680be6f31ea1f1a6d849d629248b5a9043e
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -23,13 +23,12 @@ This contains development tools and libraries for http-parser.
 
 %prep
 %setup -q
-sed -i 's/ln -s \$(LIBDIR)\/\$(SONAME) \$(LIBDIR)\/libhttp_parser.\$(SOEXT)/pushd \$(LIBDIR) \&\& ln -s  \$(SONAME)  libhttp_parser.\$(SOEXT) \&\& popd/g' Makefile
 
 %build
 make PREFIX=%{_prefix} %{?_smp_mflags}
 
 %install
-make PREFIX="%{buildroot}%{_prefix}" DESTDIR="%{buildroot}" install
+make PREFIX="%{_prefix}" DESTDIR="%{buildroot}" install
 
 %files
 %defattr(-,root,root)
@@ -41,5 +40,7 @@ make PREFIX="%{buildroot}%{_prefix}" DESTDIR="%{buildroot}" install
 %{_libdir}/libhttp_parser.so
 
 %changelog
+*    Fri Aug 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.8.1-1
+-    Update to version 2.8.1 to get it to build with gcc 7.3
 *    Wed Jul 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.7.1-1
 -    Initial version of http-parser package for Photon.

@@ -1,0 +1,44 @@
+From 68302c7e9fa14e46e86afafab0ba5918ddd8192b Mon Sep 17 00:00:00 2001
+From: Vallish Vaidyeshwara <vallish@amazon.com>
+Date: Mon, 12 Feb 2018 22:38:52 +0000
+Subject: drivers/amazon: add network device drivers support
+
+This is a place holder for network device driver updates.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+CR: https://cr.amazon.com/r/6834581/
+
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Reviewed-by: Anchal Agarwal <anchalag@amazon.com>
+Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
+CR: https://cr.amazon.com/r/8244644/
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/amazon/Makefile     | 1 +
+ drivers/amazon/net/Makefile | 3 +++
+ 2 files changed, 4 insertions(+)
+ create mode 100644 drivers/amazon/net/Makefile
+
+diff --git a/drivers/amazon/Makefile b/drivers/amazon/Makefile
+index 6b4996dcbe52..fc5f70dd7487 100644
+--- a/drivers/amazon/Makefile
++++ b/drivers/amazon/Makefile
+@@ -1,3 +1,4 @@
+ #
+ # Amazon Driver Updates
+ #
++obj-$(CONFIG_AMAZON_DRIVER_UPDATES)	+= net/
+diff --git a/drivers/amazon/net/Makefile b/drivers/amazon/net/Makefile
+new file mode 100644
+index 000000000000..6b4996dcbe52
+--- /dev/null
++++ b/drivers/amazon/net/Makefile
+@@ -0,0 +1,3 @@
++#
++# Amazon Driver Updates
++#
+-- 
+2.14.4
+

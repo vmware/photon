@@ -1,11 +1,11 @@
 Summary:        Library to find geographical and network information of an IP address
 Name:           geoip-api-c
-Version:        1.6.10
+Version:        1.6.12
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/maxmind/geoip-api-c
 Source0:        https://github.com/maxmind/geoip-api-c/releases/download/v%{version}/GeoIP-%{version}.tar.gz 
-%define sha1 GeoIP=d37a12bae0e375344288f6fe80c281cf9e6e107d
+%define sha1 GeoIP=ac1a6809afbb7624aff2f6e12ceb300b12de1715
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -60,6 +60,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/geoip.pc
 
 %changelog
+*   Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 1.6.12-1
+-   Update to version 1.6.12
 *   Wed Apr 05 2017 Danut Moraru <dmoraru@vmware.com> 1.6.10-1
 -   Upgrade geoip-api-c to 1.6.10
 *   Wed Jul 27 2016 Anish Swaminathan <anishs@vmware.com> 1.6.9-1

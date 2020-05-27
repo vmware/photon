@@ -1,0 +1,29 @@
+--- a/winbuild.py	2018-11-12 19:41:32.646746053 +0530
++++ b/winbuild.py	2018-11-12 19:42:28.186745866 +0530
+@@ -337,7 +337,7 @@ class OpensslBuilder(Builder):
+ 
+     @property
+     def dll_paths(self):
+-        raise NotImplemented
++        raise NotImplementedError
+ 
+     @property
+     def include_path(self):
+@@ -371,7 +371,7 @@ class CaresBuilder(Builder):
+ 
+     @property
+     def dll_paths(self):
+-        raise NotImplemented
++        raise NotImplementedError
+ 
+     @property
+     def include_path(self):
+@@ -431,7 +431,7 @@ BUILD_STATIC_LIB=1
+ 
+     @property
+     def dll_paths(self):
+-        raise NotImplemented
++        raise NotImplementedError
+ 
+     @property
+     def include_path(self):

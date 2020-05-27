@@ -1,0 +1,25 @@
+From 3df78f1a16a69a73b4712fafab674fdb39cc6f2e Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Thu, 10 Oct 2019 13:00:07 +0000
+Subject: [PATCH] This patch is to add saveenv to the boot command. So, shile
+ booting it will save the u-boot env variables in uboot.env file.
+
+---
+ include/config_distro_bootcmd.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/config_distro_bootcmd.h b/include/config_distro_bootcmd.h
+index 5813258e..a3503733 100644
+--- a/include/config_distro_bootcmd.h
++++ b/include/config_distro_bootcmd.h
+@@ -480,6 +480,7 @@
+ 		BOOTENV_SET_NVME_NEED_INIT                                \
+ 		BOOTENV_SET_IDE_NEED_INIT                                 \
+ 		BOOTENV_SET_VIRTIO_NEED_INIT                              \
++		"saveenv;"                                                \
+ 		"for target in ${boot_targets}; do "                      \
+ 			"run bootcmd_${target}; "                         \
+ 		"done\0"
+-- 
+2.19.0
+

@@ -1,0 +1,60 @@
+SPEC files that are derived from LFS sources:
+ca-certificates
+bash
+filesystem
+vim
+tzdata
+shadow
+ntp
+unzip
+docbook-xml
+docbook-xsl 
+ 
+SPEC files that are derived from LFS-RPM sources: 
+ncurses
+readline
+ 
+SPEC files that are derived from package sources: 
+haveged
+wavefront-proxy
+openipmi
+xinted
+python-iniparse
+ 
+SPEC files that are derived from Fedora SPEC files: 
+c-ares
+chkconfig : 
+initscripts :
+openvswitch :
+oniguruma : 
+elfutils :
+zsh
+perl-DBI 
+perl-DBIx 
+perl-exporter-tiny :
+perl-json-xs 
+perl-libintl 
+perl-list-moreutils
+perl-module-build
+perl-module-install
+perl-module-scandeps
+perl-object-accessor
+perl-types-serializer
+perl-www-curl
+perl-yaml
+perl-yaml-tiny
+tcsh
+tcl 
+python-pbr
+pypam
+pyyaml
+mariadb
+lvm2
+systemtap
+ 
+SPEC files that are derived from OpenSuse SPEC files: 
+python-jinja2
+acl
+ 
+SPEC files that are derived from Centos SPEC files: 
+libaio

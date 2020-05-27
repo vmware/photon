@@ -1,9 +1,9 @@
 Summary:	Access control list utilities
 Name:		acl
-Version:	2.2.52
-Release:	5%{?dist}
-Source0:	http://download.savannah.gnu.org/releases-noredirect/acl/acl-%{version}.src.tar.gz
-%define sha1 acl=537dddc0ee7b6aa67960a3de2d36f1e2ff2059d9
+Version:	2.2.53
+Release:	1%{?dist}
+Source0:	http://download.savannah.gnu.org/releases/acl/%{name}-%{version}.tar.gz
+%define sha1 %{name}=6c9e46602adece1c2dae91ed065899d7f810bf01
 License:	GPLv2+
 Group:		System Environment/Base
 URL:		http://acl.bestbits.at/
@@ -49,8 +49,6 @@ make %{?_smp_mflags} LIBTOOL="libtool --tag=CC"
 
 %install
 make install DESTDIR=%{buildroot}
-make install-dev DESTDIR=%{buildroot}
-make install-lib DESTDIR=%{buildroot}
 
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
@@ -59,8 +57,8 @@ chmod 0755 %{buildroot}%{_libdir}/libacl.so.*.*.*
 %find_lang %{name}
 
 %check
-if ./setfacl/setfacl -m u:`id -u`:rwx .; then
-    make  %{?_smp_mflags} root-tests
+if ./setfacl -m u:`id -u`:rwx .; then
+    make %{?_smp_mflags} check
 else
     echo '*** The chroot file system does not support all ACL options ***'
 fi
@@ -87,13 +85,14 @@ fi
 %{_mandir}/man3/acl_*
 %{_libdir}/libacl.a
 %{_datadir}/doc/acl/*   
-%{_libexecdir}/libacl.a
-%{_libexecdir}/libacl.so
+%{_libdir}/pkgconfig/libacl.pc
    
 %files -n libacl
 %{_libdir}/libacl.so.*
 
 %changelog
+* Mon Sep 17 2018 Ankit Jain <ankitja@vmware.com> 2.2.53-1
+- Updated to version 2.2.53
 * Fri Jul 28 2017 Chang Lee <changlee@vmware.com> 2.2.52-5
 - Fixed %check for filtering unsupported check env
 * Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2.2.52-4

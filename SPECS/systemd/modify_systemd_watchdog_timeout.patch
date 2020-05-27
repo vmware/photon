@@ -1,0 +1,44 @@
+--- a/units/systemd-journald.service.in	2020-05-24 21:03:47.825395950 +0800
++++ b/units/systemd-journald.service.in	2020-05-24 21:04:01.821727690 +0800
+@@ -22,7 +22,7 @@ ExecStart=@rootlibexecdir@/systemd-journ
+ Restart=always
+ RestartSec=0
+ StandardOutput=null
+-WatchdogSec=3min
++WatchdogSec=10min
+ FileDescriptorStoreMax=4224
+ CapabilityBoundingSet=CAP_SYS_ADMIN CAP_DAC_OVERRIDE CAP_SYS_PTRACE CAP_SYSLOG CAP_AUDIT_CONTROL CAP_AUDIT_READ CAP_CHOWN CAP_DAC_READ_SEARCH CAP_FOWNER CAP_SETUID CAP_SETGID CAP_MAC_OVERRIDE
+ MemoryDenyWriteExecute=yes
+--- a/units/systemd-udevd.service.in	2020-05-25 14:03:32.684628747 +0800
++++ b/units/systemd-udevd.service.in	2020-05-25 14:05:01.754720189 +0800
+@@ -23,7 +23,7 @@ Restart=always
+ RestartSec=0
+ ExecStart=@rootlibexecdir@/systemd-udevd
+ KillMode=mixed
+-WatchdogSec=3min
++WatchdogSec=10min
+ TasksMax=infinity
+ PrivateMounts=yes
+ MemoryDenyWriteExecute=yes
+--- a/units/systemd-networkd.service.in	2020-05-25 14:05:20.139151844 +0800
++++ b/units/systemd-networkd.service.in	2020-05-25 14:05:31.595420828 +0800
+@@ -23,7 +23,7 @@ Type=notify
+ Restart=on-failure
+ RestartSec=0
+ ExecStart=!!@rootlibexecdir@/systemd-networkd
+-WatchdogSec=3min
++WatchdogSec=10min
+ User=systemd-network
+ DynamicUser=yes
+ CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_BROADCAST CAP_NET_RAW
+--- a/units/systemd-logind.service.in	2020-05-25 14:05:50.731870125 +0800
++++ b/units/systemd-logind.service.in	2020-05-25 14:06:06.876249164 +0800
+@@ -24,7 +24,7 @@ ExecStart=@rootlibexecdir@/systemd-login
+ Restart=always
+ RestartSec=0
+ BusName=org.freedesktop.login1
+-WatchdogSec=3min
++WatchdogSec=10min
+ CapabilityBoundingSet=CAP_SYS_ADMIN CAP_MAC_ADMIN CAP_AUDIT_CONTROL CAP_CHOWN CAP_KILL CAP_DAC_READ_SEARCH CAP_DAC_OVERRIDE CAP_FOWNER CAP_SYS_TTY_CONFIG
+ MemoryDenyWriteExecute=yes
+ RestrictRealtime=yes

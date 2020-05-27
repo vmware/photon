@@ -3,21 +3,24 @@
 
 Summary:        Lightweight in-process concurrent programming
 Name:           python-greenlet
-Version:        0.4.12
-Release:        3%{?dist}
+Version:        0.4.15
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/pypi/greenlet
+URL:            https://pypi.python.org/pypi/greenlet
 Source0:        greenlet-%{version}.tar.gz
-%define sha1    greenlet=ac7f0341cd2395e0bdef70749c4e1dc89038ba99
+%define sha1    greenlet=0da9c069c38bf297923a1da0c601ef71c07ffb6d
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
 
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 Requires:       python2
 Requires:       python2-libs
 
@@ -28,9 +31,6 @@ A “greenlet”, on the other hand, is a still more primitive notion of micro-t
 
 %package -n     python3-greenlet
 Summary:        python-greenlet
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 Requires:       python3
 Requires:       python3-libs
 
@@ -61,9 +61,14 @@ python2 setup.py test
 %files -n python3-greenlet
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
-/usr/include/python3.6m/greenlet/greenlet.h
+/usr/include/python3.7m/greenlet/greenlet.h
 
 %changelog
+*   Fri Oct 05 2018 Tapas Kundu <tkundu@vmware.com> 0.4.15-2
+-   Updated using python 3.7
+-   removed buildrequires from subpackages
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.4.15-1
+-   Update to version 0.4.15
 *   Fri Aug 11 2017 Rongrong Qiu <rqiu@vmware.com> 0.4.12-3
 -   make check only support python3 for bug 1937030
 *   Thu Apr 27 2017 Siju Maliakkal <smaliakkal@vmware.com> 0.4.12-2

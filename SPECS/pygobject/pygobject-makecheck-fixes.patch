@@ -1,24 +1,7 @@
-diff --git a/tests/runtests.py b/tests/runtests.py.1
-index 6085ff9..df69e68 100755
---- a/tests/runtests.py
-+++ b/tests/runtests.py.1
-@@ -50,6 +50,10 @@ else:
-     names = []
-     for filename in glob.iglob(os.path.join(mydir, 'test_*.py')):
-         names.append(os.path.basename(filename)[:-3])
-+    names.remove('test_fields')
-+    names.remove('test_everything')
-+    names.remove('test_signal')
-+    names.remove('test_resulttuple')
- 
- loader = unittest.TestLoader()
- suite = loader.loadTestsFromNames(names)
-diff --git a/tests/test_error.py b/tests/test_error.py.1
-index 5702490..ce85f03 100644
---- a/tests/test_error.py
-+++ b/tests/test_error.py.1
-@@ -25,6 +25,8 @@
- import unittest
+--- a/tests/test_error.py	2018-09-29 00:32:59.220553524 +0530
++++ b/tests/test_error.py	2018-09-29 00:34:04.128556337 +0530
+@@ -28,6 +28,8 @@ import unittest
+ import pickle
  
  from gi.repository import GLib
 +import gi
@@ -26,23 +9,20 @@ index 5702490..ce85f03 100644
  from gi.repository import GIMarshallingTests
  
  
-diff --git a/tests/test_gi.py b/tests/test_gi.py.1
-index d0c72b6..7e2fc46 100644
---- a/tests/test_gi.py
-+++ b/tests/test_gi.py.1
-@@ -1475,6 +1475,7 @@ class TestPointer(unittest.TestCase):
+--- a/tests/test_gi.py	2018-09-29 00:34:17.392556911 +0530
++++ b/tests/test_gi.py	2018-09-29 00:34:42.848558014 +0530
+@@ -1783,7 +1783,7 @@ class TestPointer(unittest.TestCase):
+     def test_pointer_in_return(self):
          self.assertEqual(GIMarshallingTests.pointer_in_return(42), 42)
  
- 
+-
 +@unittest.skip("disabled photon build")
  class TestEnum(unittest.TestCase):
  
-     @classmethod
-diff --git a/tests/test_gtype.py b/tests/test_gtype.py.1
-index 8099101..0d7f33f 100644
---- a/tests/test_gtype.py
-+++ b/tests/test_gtype.py.1
-@@ -1,6 +1,8 @@
+     def test_enum(self):
+--- a/tests/test_gtype.py	2018-09-29 00:34:59.732558746 +0530
++++ b/tests/test_gtype.py	2018-09-29 00:35:30.048560060 +0530
+@@ -3,6 +3,8 @@ from __future__ import absolute_import
  import unittest
  
  from gi.repository import GObject
@@ -51,11 +31,9 @@ index 8099101..0d7f33f 100644
  from gi.repository import GIMarshallingTests
  
  
-diff --git a/tests/test_iochannel.py b/tests/test_iochannel.py.1
-index 5980a66..99333f6 100644
---- a/tests/test_iochannel.py
-+++ b/tests/test_iochannel.py.1
-@@ -51,6 +51,7 @@ second line
+--- a/tests/test_iochannel.py	2018-09-29 00:35:44.260560675 +0530
++++ b/tests/test_iochannel.py	2018-09-29 00:36:33.632562815 +0530
+@@ -55,6 +55,7 @@ second line
          self.assertEqual(ch.readline(), '')
          ch.shutdown(True)
  
@@ -63,12 +41,11 @@ index 5980a66..99333f6 100644
      def test_file_readline_latin1(self):
          ch = GLib.IOChannel(filename=self.testlatin1, mode='r')
          ch.set_encoding('latin1')
-@@ -113,6 +114,7 @@ second line
-         # invalid whence value
+@@ -118,6 +119,7 @@ second line
          self.assertRaises(ValueError, ch.seek, 0, 3)
+         ch.shutdown(True)
  
 +    @unittest.skip("disabled photon build")
      def test_file_write(self):
          ch = GLib.IOChannel(filename=self.testout, mode='w')
          ch.set_encoding('latin1')
-

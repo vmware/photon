@@ -1,0 +1,8 @@
+[Unit]
+Description=Userspace logging daemon for Netfilter
+
+[Service]
+ExecStart=/usr/sbin/ulogd
+
+[Install]
+WantedBy=multi-user.target

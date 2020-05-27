@@ -1,0 +1,44 @@
+diff --git a/privsep/fwmgmt_api.c b/privsep/fwmgmt_api.c
+index 482e9ed..d841a01 100644
+--- a/privsep/fwmgmt_api.c
++++ b/privsep/fwmgmt_api.c
+@@ -93,6 +93,7 @@ pmd_firewall_add_rules(
+ {
+     uint32_t dwError = 0;
+     char *pszCmd = NULL;
++    char *pszCmdToAdd = NULL;
+ 
+     if(IsNullOrEmptyString(pszChain) || IsNullOrEmptyString(pszRuleSpec))
+     {
+@@ -114,12 +115,21 @@ pmd_firewall_add_rules(
+ 
+     if(nPersist)
+     {
+-        dwError = add_firewall_rule_to_script(pszCmd);
++        dwError = PMDAllocateStringPrintf(
++                      &pszCmdToAdd,
++                      "%s -A %s %s",
++                      nIPV6 ? IP6TABLES_CMD : IPTABLES_CMD,
++                      pszChain,
++                      pszRuleSpec);
++        BAIL_ON_PMD_ERROR(dwError);
++
++        dwError = add_firewall_rule_to_script(pszCmdToAdd);
+         BAIL_ON_PMD_ERROR(dwError);
+     }
+ 
+ cleanup:
+     PMD_SAFE_FREE_MEMORY(pszCmd);
++    PMD_SAFE_FREE_MEMORY(pszCmdToAdd);
+     return dwError;
+ 
+ error:
+@@ -162,7 +172,7 @@ pmd_firewall_delete_rules(
+     {
+         dwError = PMDAllocateStringPrintf(
+                       &pszCmdToDelete,
+-                      "%s -A %s %s",
++                      "%s -D %s %s",
+                       nIPV6 ? IP6TABLES_CMD : IPTABLES_CMD,
+                       pszChain,
+                       pszRuleSpec);

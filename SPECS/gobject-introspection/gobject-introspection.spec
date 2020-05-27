@@ -3,13 +3,13 @@
 
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
-Version:        1.52.1
-Release:        4%{?dist}
+Version:        1.58.0
+Release:        5%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/gobject-introspection/1.52/%{name}-%{version}.tar.xz
-%define sha1 gobject-introspection=2a0c86bd23d27df0588b79404cfc5619ed6171e8
+%define sha1 gobject-introspection=4edc652656af31127988b125537d4f1994cdf7f2
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  gettext
@@ -17,11 +17,18 @@ BuildRequires:  intltool
 BuildRequires:  flex
 BuildRequires:  bison
 BuildRequires:  which
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.58.0
 BuildRequires:  libffi-devel
 BuildRequires:  go
+BuildRequires:  autoconf-archive
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+BuildRequires:  python-xml
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-xml
 Requires:       libffi
-Requires:       glib >= 2.52.1
+Requires:       glib >= 2.58.0
 Patch0:         disableFaultyTest.patch
 %description
 GObject Introspection can scan C header and source files in order to
@@ -33,9 +40,6 @@ things.
 Summary:        Python package for handling GObject introspection data
 Group:          Development/Languages
 Requires:       %{name} = %{version}-%{release}
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python-xml
 Requires:       python2
 Requires:       python-xml
 %description    python
@@ -46,9 +50,6 @@ data from Python.
 Summary:        Python3 package for handling GObject introspection data
 Group:          Development/Languages
 Requires:       %{name} = %{version}-%{release}
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-xml
 Requires:       python3-xml
 Requires:       python3
 %description -n python3-gobject-introspection
@@ -59,6 +60,7 @@ data from Python.
 Summary:        Libraries and headers for gobject-introspection
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-python = %{version}-%{release}
 Requires:       libffi-devel
 Requires:       glib-devel
 
@@ -69,6 +71,7 @@ Libraries and headers for gobject-introspection.
 %setup -q
 %patch0 -p1
 rm -rf ../p3dir
+autoreconf -fiv
 cp -a . ../p3dir
 
 %build
@@ -135,6 +138,18 @@ make  %{?_smp_mflags} check
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.58.0-5
+-   Bump up version to compile with go 1.13.3-2
+*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.58.0-4
+-   Bump up version to compile with go 1.13.3
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.58.0-3
+-   Bump up version to compile with new go
+*   Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.58.0-2
+-   -devel requires -python.
+*   Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 1.58.0-1
+-   Update version to 1.58.0
+*   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 1.52.1-5
+-   Add autoreconf to support automake-1.15.1
 *   Mon Aug 28 2017 Kumar Kaushik <kaushikk@vmware.com> 1.52.1-4
 -   Disabling make check for Regress-1.0.gir test, bug#1635886
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.52.1-3

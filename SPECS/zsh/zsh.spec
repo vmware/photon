@@ -2,15 +2,15 @@
 
 Summary:      Z shell
 Name:         zsh
-Version:      5.3.1
-Release:      4%{?dist}
+Version:      5.8
+Release:      1%{?dist}
 License:      MIT
 URL:          http://zsh.sourceforge.net/
 Group:        System Environment/Shells
 Vendor:       VMware, Inc.
 Distribution: Photon
 Source0:      http://www.zsh.org/pub/%{name}-%{version}.tar.xz
-%define sha1  zsh=ec2a98c080f213c1c6c465c0c64662b5eae6818f
+%define sha1  zsh=966ea0498fb94140f3caf12af88e98b0e4d02078
 Source1:      zprofile.rhs
 Source2:      zshrc
 
@@ -144,6 +144,12 @@ fi
 %doc Doc/*.html
 
 %changelog
+*   Mon Mar 23 2020 Siju Maliakkal <smaliakkal@vmware.com> 5.8-1
+-   Upgrade to 5.8 to mitigate CVE-2019-20044
+*   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 5.6.1-1
+-   Upgrading to latest
+*   Mon Mar 19 2018 Xiaolin Li <xiaolinl@vmware.com> 5.3.1-5
+-   Fix CVE-2018-7548
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 5.3.1-4
 -   Requires coreutils or toybox and /bin/grep
 *   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 5.3.1-3

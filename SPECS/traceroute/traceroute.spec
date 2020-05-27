@@ -1,7 +1,7 @@
 Name:           traceroute
 Summary:        Traces the route taken by packets over an IPv4/IPv6 network
 Version:        2.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 Group:          Applications/Internet
 Url:            http://traceroute.sourceforge.net
@@ -28,7 +28,6 @@ rm -rf %{buildroot}
 install -d %{buildroot}/bin
 install -m755 traceroute/traceroute %{buildroot}/bin
 pushd %{buildroot}/bin
-ln -s traceroute traceroute6
 popd
 
 install -d %{buildroot}%{_bindir}
@@ -37,7 +36,6 @@ install -m755 wrappers/tcptraceroute %{buildroot}%{_bindir}
 install -d %{buildroot}%{_mandir}/man8
 install -p -m644 traceroute/traceroute.8 $RPM_BUILD_ROOT%{_mandir}/man8
 pushd %{buildroot}%{_mandir}/man8
-ln -s traceroute.8 traceroute6.8
 ln -s traceroute.8 tcptraceroute.8
 popd
 
@@ -53,6 +51,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Fri Nov 30 2018 Ashwin H <ashwinh@vmware.com> 2.1.0-3
+-   Remove traceroute6 softlink as iputils provides traceroute6
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.0-2
 -   Ensure non empty debuginfo
 *   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.0-1

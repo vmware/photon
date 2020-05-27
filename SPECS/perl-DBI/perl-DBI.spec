@@ -10,29 +10,29 @@
 
 Summary:        A database access API for perl
 Name:           perl-DBI
-Version:        1.636
+Version:        1.641
 Release:        1%{?dist}
 Group:          Development/Libraries
 License:        GPL+ or Artistic
 URL:            http://dbi.perl.org/
 # The source tarball must be repackaged to remove the DBI/FAQ.pm, since the
-# license is not a FSF free license. 
-Source0:        http://www.cpan.org/authors/id/T/TI/TIMB/DBI-%{version}.tar.gz
+# license is not a FSF free license.
+Source0:        https://cpan.metacpan.org/authors/id/T/TI/TIMB/DBI-%{version}.tar.gz
 #Source0:        DBI-%{version}_repackaged.tar.gz
-%define sha1 DBI=fd305ba74fdf5a59605aaffd7e53bcd1018c99bb
+%define sha1 DBI=d14c34fac2dd058905b0b8237a4ca8b86eed6f5d
 Vendor:		VMware, Inc.
 Distribution:	Photon
-BuildRequires:  perl
-Requires:	perl
+BuildRequires:  perl >= 5.28.0
+Requires:	perl >= 5.28.0
 
-%description 
+%description
 DBI is a database access Application Programming Interface (API) for
 the Perl Language. The DBI API Specification defines a set of
 functions, variables and conventions that provide a consistent
 database interface independent of the actual database being used.
 
 %prep
-%setup -q -n DBI-%{version} 
+%setup -q -n DBI-%{version}
 for F in lib/DBD/Gofer.pm; do
     iconv -f ISO-8859-1 -t UTF-8 < "$F" > "${F}.utf8"
     touch -r "$F" "${F}.utf8"
@@ -64,7 +64,7 @@ done
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
-make 
+make
 
 %install
 make pure_install DESTDIR=%{buildroot}
@@ -86,11 +86,13 @@ make test
 %{_mandir}/man3/*.3*
 
 %changelog
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.641-1
+-   Update to version 1.641
 *   Mon Apr 3 2017 Robert Qi <qij@vmware.com> 1.636-1
 -   Upgraded to 1.636
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.634-2
--	GA - Bump release of all rpms
-*	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.634-1
--	Upgrade version
-*	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.633-1
--	Initial version.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.634-2
+-   GA - Bump release of all rpms
+*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.634-1
+-   Upgrade version
+*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.633-1
+-   Initial version.

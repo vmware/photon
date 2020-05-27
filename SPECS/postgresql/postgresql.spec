@@ -1,15 +1,16 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        9.6.5
-Release:        1%{?dist}
+Version:        10.10
+Release:        4%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.gz
-%define sha1    postgresql=77da008da8efd20a4c19ec33903ac80bb7ff7239
+Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
+%define sha1    postgresql=388b082ea05e385f42ce1521f1a9f7d11561227b
+Patch0:         CVE-2020-1720.patch
 # Common libraries needed
 BuildRequires:  krb5-devel
 BuildRequires:  libxml2-devel
@@ -19,6 +20,7 @@ BuildRequires:  readline-devel
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  tzdata
+BuildRequires:  systemd-devel
 Requires:       krb5
 Requires:       libxml2
 Requires:       openldap
@@ -26,6 +28,7 @@ Requires:       openssl
 Requires:       readline
 Requires:       zlib
 Requires:       tzdata
+Requires:       systemd
 
 Requires:   %{name}-libs = %{version}-%{release}
 
@@ -53,16 +56,19 @@ developing applications that use postgresql.
 
 %prep
 %setup -q
+%patch0 -p1
+
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h &&
-./configure \
+%configure \
     --enable-thread-safety \
-    --prefix=%{_prefix} \
     --with-ldap \
     --with-libxml \
     --with-openssl \
     --with-gssapi \
+    --with-uuid=e2fs \
     --with-readline \
+    --with-systemd \
     --with-system-tzdata=%{_datadir}/zoneinfo \
     --docdir=%{_docdir}/postgresql
 make %{?_smp_mflags}
@@ -73,6 +79,11 @@ cd contrib && make %{?_smp_mflags}
 make install DESTDIR=%{buildroot}
 cd contrib && make install DESTDIR=%{buildroot}
 
+# For postgresql 10+, commands are renamed
+# Ref: https://wiki.postgresql.org/wiki/New_in_postgres_10
+ln -sf pg_receivewal %{buildroot}%{_bindir}/pg_receivexlog
+ln -sf pg_resetwal %{buildroot}%{_bindir}/pg_resetxlog
+ln -sf  pg_waldump %{buildroot}%{_bindir}/pg_xlogdump
 %{_fixperms} %{buildroot}/*
 
 %check
@@ -93,14 +104,17 @@ rm -rf %{buildroot}/*
 %{_bindir}/pg_basebackup
 %{_bindir}/pg_controldata
 %{_bindir}/pg_ctl
+%{_bindir}/pg_receivewal
 %{_bindir}/pg_receivexlog
 %{_bindir}/pg_recvlogical
+%{_bindir}/pg_resetwal
 %{_bindir}/pg_resetxlog
 %{_bindir}/pg_rewind
 %{_bindir}/pg_standby
 %{_bindir}/pg_test_fsync
 %{_bindir}/pg_test_timing
 %{_bindir}/pg_upgrade
+%{_bindir}/pg_waldump
 %{_bindir}/pg_xlogdump
 %{_bindir}/pgbench
 %{_bindir}/postgres
@@ -115,10 +129,8 @@ rm -rf %{buildroot}/*
 %files libs
 %{_bindir}/clusterdb
 %{_bindir}/createdb
-%{_bindir}/createlang
 %{_bindir}/createuser
 %{_bindir}/dropdb
-%{_bindir}/droplang
 %{_bindir}/dropuser
 %{_bindir}/ecpg
 %{_bindir}/pg_config
@@ -151,6 +163,26 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Fri Apr 03 2020 Anisha Kumari <kanisha@vmware.com> 10.10-4
+-   added patch to fix CVE-2020-1720
+*   Mon Sep 02 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 10.10-3
+-   add uuid with e2fs configuration
+*   Thu Aug 29 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 10.10-2
+-   configure with systemd
+*   Fri Aug 09 2019 Siju Maliakkal <smaliakkal@vmware.com> 10.10-1
+-   Upgrade to 10.10 for 2019-10208
+*   Tue Jun 25 2019 Siju Maliakkal <smaliakkal@vmware.com> 10.9-1
+-   Upgrade to 10.9 for CVE-2019-10164
+*   Tue Apr 09 2019 Dweep Advani <dadvani@vmware.com> 10.5-2
+-   Fixed CVE-2018-16850
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 10.5-1
+-   Updated to version 10.5
+*   Tue Mar 27 2018 Dheeraj Shetty <dheerajs@vmware.com> 9.6.8-1
+-   Updated to version 9.6.8 to fix CVE-2018-1058
+*   Mon Feb 12 2018 Dheeraj Shetty <dheerajs@vmware.com> 9.6.7-1
+-   Updated to version 9.6.7
+*   Mon Nov 27 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.6-1
+-   Updated to version 9.6.6
 *   Fri Sep 08 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.5-1
 -   Updated to version 9.6.5
 *   Tue Aug 15 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.4-1
@@ -162,12 +194,12 @@ rm -rf %{buildroot}/*
 *   Tue Jun 06 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-1
 -   Upgraded to 9.6.3
 *   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.2-1
--   Upgrade to 9.6.2 for Photon upgrade bump 
+-   Upgrade to 9.6.2 for Photon upgrade bump
 *   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-6
 -   Applied CVE-2016-5423.patch
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 9.5.3-5
 -   Required krb5-devel.
-*   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 9.5.3-4 
+*   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 9.5.3-4
 -   Modified %check
 *   Thu May 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-3
 -   Add tzdata to buildrequires and requires.

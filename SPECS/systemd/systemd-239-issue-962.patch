@@ -1,0 +1,76 @@
+diff -rupN systemd-239/src/network/networkd-dhcp4.c systemd-239-issue-962/src/network/networkd-dhcp4.c
+--- systemd-239/src/network/networkd-dhcp4.c	2019-12-31 15:48:42.000000000 +0530
++++ systemd-239-issue-962/src/network/networkd-dhcp4.c	2020-01-02 16:49:51.473707705 +0530
+@@ -597,7 +597,14 @@ static int dhcp4_set_hostname(Link *link
+                 hn = hostname;
+         }
+ 
+-        return sd_dhcp_client_set_hostname(link->dhcp_client, hn);
++        r = sd_dhcp_client_set_hostname(link->dhcp_client, hn);
++        if (r == -EINVAL && hostname)
++                /* Ignore error when the machine's hostname is not suitable to send in DHCP packet. */
++                log_link_warning_errno(link, r, "DHCP4 CLIENT: Failed to set hostname from kernel hostname, ignoring: %m");
++        else if (r < 0)
++                return log_link_error_errno(link, r, "DHCP4 CLIENT: Failed to set hostname: %m");
++
++        return 0;
+ }
+ 
+ static bool promote_secondaries_enabled(const char *ifname) {
+diff -rupN systemd-239/src/network/networkd-dhcp6.c systemd-239-issue-962/src/network/networkd-dhcp6.c
+--- systemd-239/src/network/networkd-dhcp6.c	2019-12-31 15:48:42.000000000 +0530
++++ systemd-239-issue-962/src/network/networkd-dhcp6.c	2019-12-31 15:52:07.000000000 +0530
+@@ -457,7 +457,14 @@ static int dhcp6_set_hostname(sd_dhcp6_c
+                 hn = hostname;
+         }
+ 
+-        return sd_dhcp6_client_set_fqdn(client, hn);
++        r = sd_dhcp6_client_set_fqdn(client, hn);
++        if (r == -EINVAL && hostname)
++                /* Ignore error when the machine's hostname is not suitable to send in DHCP packet. */
++                log_link_warning_errno(link, r, "DHCP6 CLIENT: Failed to set hostname from kernel hostname, ignoring: %m");
++        else if (r < 0)
++                return log_link_error_errno(link, r, "DHCP6 CLIENT: Failed to set hostname: %m");
++
++        return 0;
+ }
+ 
+ int dhcp6_configure(Link *link) {
+diff -rupN systemd-239/src/network/networkd-routing-policy-rule.c systemd-239-issue-962/src/network/networkd-routing-policy-rule.c
+--- systemd-239/src/network/networkd-routing-policy-rule.c	2019-12-31 15:48:42.000000000 +0530
++++ systemd-239-issue-962/src/network/networkd-routing-policy-rule.c	2020-01-02 16:57:25.657310562 +0530
+@@ -1059,7 +1059,8 @@ void routing_policy_rule_purge(Manager *
+ 
+         SET_FOREACH(rule, m->rules_saved, i) {
+                 existing = set_get(m->rules_foreign, rule);
+-                if (!existing) {
++                if (!existing)
++                        continue; /* Saved rule does not exist anymore. */
+ 
+                 if (manager_links_have_routing_policy_rule(m, existing))
+                         continue; /* Existing links have the saved rule. */
+@@ -1067,16 +1068,15 @@ void routing_policy_rule_purge(Manager *
+                 /* Existing links do not have the saved rule. Let's drop the rule now, and re-configure it
+                  * later when it is requested. */
+ 
+-                 r = routing_policy_rule_remove(existing, link, NULL);
+-                 if (r < 0) {
+-                         log_warning_errno(r, "Could not remove routing policy rules: %m");
+-                         continue;
+-                 }
++                r = routing_policy_rule_remove(existing, link, NULL);
++                if (r < 0) {
++                        log_warning_errno(r, "Could not remove routing policy rules: %m");
++                        continue;
++                }
+ 
+-                 link->routing_policy_rule_remove_messages++;
++                link->routing_policy_rule_remove_messages++;
+ 
+-                 assert_se(set_remove(m->rules_foreign, existing) == existing);
+-                 routing_policy_rule_free(existing);
+-                }
++                assert_se(set_remove(m->rules_foreign, existing) == existing);
++                routing_policy_rule_free(existing);
+         }
+ }

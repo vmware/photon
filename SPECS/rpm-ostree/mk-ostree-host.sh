@@ -150,7 +150,7 @@ echo "Associating loopdevice to raw disk"
 DISK_DEVICE=`losetup --show -f $RAW_IMAGE_NAME`
 
 echo "Creating partition on raw disk"
-sgdisk -n 1::+2M -n 2::+300M -n 3: -p $DISK_DEVICE 
+sgdisk -n 1::+2M -n 2::+300M -n 3: -p $DISK_DEVICE
 sgdisk -t1:ef02 $DISK_DEVICE
 
 echo "Mapping device partition to loop device"

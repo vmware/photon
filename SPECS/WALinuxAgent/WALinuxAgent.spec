@@ -1,13 +1,14 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
-Version:        2.2.14
+Version:        2.2.35
 Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         photondistroadd.patch
-%define sha1 WALinuxAgent=f417009479ea7168ee0f2daa38328c167b4f874b
+Patch1:         CVE-2019-0804.patch
+%define sha1 WALinuxAgent=2cebed7efab54adb634c97519900f7a1de55403a
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -16,7 +17,7 @@ BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-xml
 BuildRequires:  systemd
-
+BuildRequires:  python-distro
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-xml
@@ -39,8 +40,9 @@ VMs in the Windows Azure cloud. This package should be installed on Linux disk
 images that are built to run in the Windows Azure environment.
 
 %prep
-%setup -q -n WALinuxAgent-2.2.14
+%setup -q -n %{name}-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %pre -p /bin/sh
 
@@ -51,7 +53,10 @@ python2 setup.py build -b py2
 python2 -tt setup.py build -b py2 install --prefix=%{_prefix} --lnx-distro='photonos' --root=%{buildroot} --force
 mkdir -p  %{buildroot}/%{_localstatedir}/log
 mkdir -p -m 0700 %{buildroot}/%{_sharedstatedir}/waagent
-touch %{buildroot}/%{_localstatedir}/log/waagent.log
+mkdir -p %{buildroot}/%{_localstatedir}/opt/waagent/log
+mkdir -p %{buildroot}/%{_localstatedir}/log/
+touch %{buildroot}/%{_localstatedir}/opt/waagent/log/waagent.log
+ln -sfv /opt/waagent/log/waagent.log %{buildroot}%{_localstatedir}/log/waagent.log
 
 %check
 python2 setup.py check && python2 setup.py test
@@ -73,11 +78,21 @@ python2 setup.py check && python2 setup.py test
 %attr(0755,root,root) %{_bindir}/waagent
 %attr(0755,root,root) %{_bindir}/waagent2.0
 %config %{_sysconfdir}/waagent.conf
-%ghost %{_localstatedir}/log/waagent.log
+%dir %{_localstatedir}/opt/waagent/log
+%{_localstatedir}/log/waagent.log
+%ghost %{_localstatedir}/opt/waagent/log/waagent.log
 %dir %attr(0700, root, root) %{_sharedstatedir}/waagent
 /usr/lib/python2.7/site-packages/*
 
 %changelog
+* Wed Apr 29 2020 Anisha Kumari <kanisha@vmware.com> 2.2.35-2
+- Fix - added patch for CVE-2019-0804
+* Tue Feb 12 2019 Tapas Kundu <tkundu@vmware.com> 2.2.35-1
+- Update to 2.2.35
+* Tue Oct 23 2018 Anish Swaminathan <anishs@vmware.com> 2.2.22-1
+- Update to 2.2.22
+* Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  2.2.14-3
+- Fixed the log file directory structure
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.2.14-2
 - Requires /bin/grep, /bin/sed and util-linux or toybox
 * Thu Jul 13 2017 Anish Swaminathan <anishs@vmware.com> 2.2.14-1
@@ -91,7 +106,7 @@ python2 setup.py check && python2 setup.py test
 * Thu Apr 28 2016 Anish Swaminathan <anishs@vmware.com> 2.0.18-1
 - Update to 2.0.18
 * Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.0.14-3
-- Removed redundant requires 
+- Removed redundant requires
 * Thu Aug 6 2015 Anish Swaminathan <anishs@vmware.com>
 - Added sha1sum
 * Fri Mar 13 2015 - mbassiouny@vmware.com

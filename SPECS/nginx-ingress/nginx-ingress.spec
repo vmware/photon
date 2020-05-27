@@ -1,11 +1,11 @@
 Summary:        NGINX Ingress Controller for Kubernetes
 Name:           nginx-ingress
-Version:        0.9.0
-Release:        1%{?dist}
+Version:        1.3.0
+Release:        4%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/nginxinc/kubernetes-ingress
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 nginx-ingress=ea71044b1c8298c85cf5f0971100f735f99240ce
+%define sha1 nginx-ingress=8afd675a2058990e60980d3170e54239f135d8ab
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -37,5 +37,15 @@ install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ nginx/template
 /usr/share/nginx-ingress/docker/nginx.*
 
 %changelog
+*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.3.0-4
+-   Bump up version to compile with go 1.13.3-2
+*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.3.0-3
+-   Bump up version to compile with go 1.13.3
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.3.0-2
+-   Bump up version to compile with new go
+*   Fri Sep 7 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.3.0-1
+-   Bumped up version to 1.3.0
+*   Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.1.1-1
+-   Bumped up version to 1.1.1
 *   Mon Aug 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.0-1
 -   K8S NGINX Ingress Controller for PhotonOS.

@@ -1,38 +1,65 @@
-Summary:          Systemd-233
+Summary:          systemd-239
 Name:             systemd
-Version:          233
-Release:          9%{?dist}
+Version:          239
+Release:          22%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          %{name}-%{version}.tar.gz
-%define sha1      systemd=432ec4ce665f65d1d616558358fb7e7cba953930
+%define sha1      systemd=8803baa484cbe36680463c8c5e6febeff074b8e7
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
 Source4:          99-dhcp-en.network
+Source5:          10-rdrand-rng.conf
 
 Patch0:           01-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           02-install-general-aliases.patch
-Patch2:           systemd-233-query-duid.patch
-Patch3:           systemd-233-ipv6-disabled-fix.patch
-Patch4:           systemd-233-default-dns-from-env.patch
-Patch5:           systemd-macros.patch
-Patch6:           systemd-233-resolv-conf-symlink.patch
-Patch7:           systemd-233-CVE-2017-9217.patch
-Patch8:           systemd-233-CVE-2017-9445-dns-oob.patch
-Patch9:           systemd-233-CVE-2017-1000082-1.patch
-Patch10:          systemd-233-CVE-2017-1000082-2.patch
-Patch11:          systemd-233-ra-improvements.patch
-
+Patch2:           systemd-239-default-dns-from-env.patch
+Patch3:           systemd-macros.patch
+Patch4:           systemd-239-query-duid.patch
+# Fix glibc-2.28 build issue. Checked in upstream after v239
+Patch5:           systemd-239-glibc-build-fix.patch
+Patch6:           systemd-239-revert-mtu.patch
+Patch7:           systemd-239-CVE-2018-15688.patch
+Patch8:           systemd-239-CVE-2018-15686.patch
+Patch9:           systemd-239-CVE-2018-15687.patch
+Patch10:          systemd-239-CVE-2018-16864.patch
+Patch11:          systemd-239-CVE-2018-16865.patch
+Patch12:          systemd-239-CVE-2018-16866.patch
+Patch13:          systemd-239-CVE-2019-3842.patch
+Patch14:          systemd-239-CVE-2019-6454.patch
+Patch15:          systemd-239-CVE-2019-3833-3844.patch
+Patch16:          systemd-239-CVE-2019-15718.patch
+Patch17:          systemd-239-bz-2471962.patch
+Patch18:          systemd-239-issue-962.patch
+Patch19:          systemd-239-CVE-2019-20386.patch
+Patch20:          shared-conf-parser-be-nice-and-ignore-lines-without.patch
+Patch21:          systemd-239-bz-2527177.patch
+Patch22:          ipv6ra-allow-to-ignore-addresses.patch
+Patch23:          sd-bus-make-rqueue-wqueue-sizes-of-type-size_t.patch
+Patch24:          sd-bus-reorder-bus-ref-and-bus-message-ref-handling.patch
+Patch25:          sd-bus-make-sure-dispatch_rqueue-initializes-return-.patch
+Patch26:          sd-bus-drop-two-inappropriate-empty-lines.patch
+Patch27:          sd-bus-initialize-mutex-after-we-allocated-the-wqueu.patch
+Patch28:          sd-bus-always-go-through-sd_bus_unref-to-free-messag.patch
+Patch29:          bus-message-introduce-two-kinds-of-references-to-bus.patch
+Patch30:          sd-bus-introduce-API-for-re-enqueuing-incoming-messa.patch
+Patch31:          sd-event-add-sd_event_source_disable_unref-helper.patch
+Patch32:          polkit-when-authorizing-via-PK-let-s-re-resolve-call.patch
+Patch33:          services-shouldnot-start-if-there-is-residual-processes-left-over.patch
+Patch34:          modify_systemd_watchdog_timeout.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
 Requires:         kmod
 Requires:         glib
+Requires:         libgcrypt
 Requires:         filesystem >= 1.1
+Requires:         elfutils
+
 BuildRequires:    intltool
 BuildRequires:    gperf
 BuildRequires:    libcap-devel
@@ -41,25 +68,42 @@ BuildRequires:    Linux-PAM-devel
 BuildRequires:    XML-Parser
 BuildRequires:    kbd
 BuildRequires:    kmod-devel
-BuildRequires:    util-linux-devel
+BuildRequires:    util-linux-devel >= 2.30
 BuildRequires:    libxslt
 BuildRequires:    docbook-xsl
 BuildRequires:    docbook-xml
 BuildRequires:    glib-devel
+BuildRequires:    meson
+BuildRequires:    gettext
+BuildRequires:    shadow
+BuildRequires:    libgcrypt-devel
 
 %description
-Systemd is an init replacement with better process control and security
+systemd is a system and service manager that runs as PID 1 and starts
+the rest of the system. It provides aggressive parallelization
+capabilities, uses socket and D-Bus activation for starting services,
+offers on-demand starting of daemons, keeps track of processes using
+Linux control groups, maintains mount and automount points, and
+implements an elaborate transactional dependency-based service control
+logic. systemd supports SysV and LSB init scripts and works as a
+replacement for sysvinit. Other parts of this package are a logging daemon,
+utilities to control basic system configuration like the hostname,
+date, locale, maintain a list of logged-in users, system accounts,
+runtime directories and settings, and daemons to manage simple network
+configuration, network time synchronization, log forwarding, and name
+resolution.
 
-%package devel
-Summary:        Development headers for systemd
-Requires:       %{name} = %{version}-%{release}
+%package   devel
+Summary:   Development headers for systemd
+Requires:  %{name} = %{version}-%{release}
+Requires:  glib-devel
 
 %description devel
 Development headers for developing applications linking to libsystemd
 
 %package lang
-Summary:        Language pack for systemd
-Requires:       %{name} = %{version}-%{release}
+Summary:   Language pack for systemd
+Requires:  %{name} = %{version}-%{release}
 
 %description lang
 Language pack for systemd
@@ -73,11 +117,6 @@ BLKID_LIBS="-lblkid"
 BLKID_CFLAGS="-I/usr/include/blkid"
 cc_cv_CFLAGS__flto=no
 EOF
-sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
-# xlocale.h has been removed from glibc 2.26
-# The above include of locale.h is sufficient
-# Further details: https://sourceware.org/git/?p=glibc.git;a=commit;h=f0be25b6336db7492e47d2e8e72eb8af53b5506d */
-sed -i "/xlocale.h/d" src/basic/parse-util.c
 
 %patch0 -p1
 %patch1 -p1
@@ -91,37 +130,62 @@ sed -i "/xlocale.h/d" src/basic/parse-util.c
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
+%patch16 -p1
+%patch17 -p1
+%patch18 -p1
+%patch19 -p1
+%patch20 -p1
+%patch21 -p1
+%patch22 -p1
+%patch23 -p1
+%patch24 -p1
+%patch25 -p1
+%patch26 -p1
+%patch27 -p1
+%patch28 -p1
+%patch29 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
+%patch33 -p1
+%patch34 -p1
 
-sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
+sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
 %build
-./autogen.sh
-./configure --prefix=%{_prefix}                                    \
-            --sysconfdir=/etc                                       \
-            --localstatedir=/var                                    \
-            --config-cache                                          \
-            --with-rootprefix=                                      \
-            --with-rootlibdir=/usr/lib                                  \
-            --enable-split-usr                                      \
-            --disable-firstboot                                     \
-            --disable-ldconfig                                      \
-            --disable-sysusers                                      \
-            --without-python                                        \
-            --enable-pam                                            \
-            --docdir=%{_prefix}/share/doc/systemd-228                     \
-            --with-dbuspolicydir=/etc/dbus-1/system.d               \
-            --with-dbusinterfacedir=%{_prefix}/share/dbus-1/interfaces    \
-            --with-dbussessionservicedir=%{_prefix}/share/dbus-1/services \
-            --with-dbussystemservicedir=%{_prefix}/share/dbus-1/system-services \
-            --enable-compat-libs \
-            --disable-elfutils \
-            --with-sysvinit-path=/etc/rc.d/init.d \
-            --with-rc-local-script-path-start=/etc/rc.d/rc.local
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+meson  --prefix %{_prefix}                                            \
+       --sysconfdir /etc                                              \
+       --localstatedir /var                                           \
+       -Dblkid=true                                                   \
+       -Dbuildtype=release                                            \
+       -Ddefault-dnssec=no                                            \
+       -Dfirstboot=false                                              \
+       -Dinstall-tests=false                                          \
+       -Dldconfig=false                                               \
+       -Drootprefix=                                                  \
+       -Drootlibdir=/lib                                              \
+       -Dsplit-usr=true                                               \
+       -Dsysusers=false                                               \
+       -Dpam=true                                                     \
+       -Dpolkit=true                                                  \
+       -Ddbuspolicydir=/etc/dbus-1/system.d                           \
+       -Ddbussessionservicedir=%{_prefix}/share/dbus-1/services       \
+       -Ddbussystemservicedir=%{_prefix}/share/dbus-1/system-services \
+       -Dsysvinit-path=/etc/rc.d/init.d                               \
+       -Drc-local=/etc/rc.d/rc.local                                  \
+       $PWD build &&
+       cd build &&
+       %ninja_build
 
-make %{?_smp_mflags}
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+cd build && %ninja_install
+
 install -vdm 755 %{buildroot}/sbin
 for tool in runlevel reboot shutdown poweroff halt telinit; do
      ln -sfv ../bin/systemctl %{buildroot}/sbin/${tool}
@@ -132,7 +196,9 @@ sed -i "s:0775 root lock:0755 root root:g" %{buildroot}/usr/lib/tmpfiles.d/legac
 sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}/lib/systemd/network/99-default.link
 sed -i "s:#LLMNR=yes:LLMNR=false:g" %{buildroot}/etc/systemd/resolved.conf
 rm -f %{buildroot}%{_var}/log/README
-mkdir -p %{buildroot}%{_localstatedir}/log/journal
+mkdir -p %{buildroot}%{_localstatedir}/opt/journal/log
+mkdir -p %{buildroot}%{_localstatedir}/log
+ln -sfv %{_localstatedir}/opt/journal/log %{buildroot}%{_localstatedir}/log/journal
 
 find %{buildroot} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
@@ -143,10 +209,33 @@ rm %{buildroot}/lib/systemd/system/default.target
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
 install -dm 0755 %{buildroot}/%{_sysconfdir}/systemd/network
 install -m 0644 %{SOURCE4} %{buildroot}/%{_sysconfdir}/systemd/network
-%find_lang %{name}
+%ifarch x86_64
+install -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/modules-load.d
+%endif
+%find_lang %{name} ../%{name}.lang
 
 %post
+#we will restart services only while upgrade
+if [ $1 -eq 2 ] ; then
+    systemd-machine-id-setup &>/dev/null || :
+
+    systemctl daemon-reexec &>/dev/null || {
+        if [ $1 -gt 1 ] && [ -d /run/systemd/system ] ; then
+            kill -TERM 1 &>/dev/null || :
+        fi
+    }
+
+    journalctl --update-catalog &>/dev/null || :
+    systemd-tmpfiles --create &>/dev/null || :
+    udevadm hwdb --update &>/dev/null || :
+
+    systemctl restart systemd-udevd.service systemd-udevd-kernel.socket systemd-udevd-control.socket
+    systemctl restart systemd-logind.service
+    systemctl restart systemd-networkd.service systemd-networkd.socket
+
+fi
 /sbin/ldconfig
+
 %postun
 /sbin/ldconfig
 %clean
@@ -173,6 +262,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.resolve1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.network1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.machine1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.portable1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.timesync1.conf
 %config(noreplace) %{_sysconfdir}/systemd/system.conf
 %config(noreplace) %{_sysconfdir}/systemd/user.conf
 %config(noreplace) %{_sysconfdir}/systemd/logind.conf
@@ -181,6 +272,9 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/systemd/coredump.conf
 %config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
 %config(noreplace) %{_sysconfdir}/pam.d/systemd-user
+%ifarch x86_64
+%config(noreplace) %{_sysconfdir}/modules-load.d/10-rdrand-rng.conf
+%endif
 %config(noreplace) %{_sysconfdir}/systemd/network/99-dhcp-en.network
 
 %dir %{_sysconfdir}/udev
@@ -197,20 +291,25 @@ rm -rf %{buildroot}/*
 /lib/systemd/network/80-container*
 /lib/systemd/*.so
 /lib/systemd/resolv.conf
+/lib/systemd/portablectl
 %config(noreplace) /lib/systemd/network/99-default.link
+%config(noreplace) /lib/systemd/portable/profile/default/service.conf
+%config(noreplace) /lib/systemd/portable/profile/nonetwork/service.conf
+%config(noreplace) /lib/systemd/portable/profile/strict/service.conf
+%config(noreplace) /lib/systemd/portable/profile/trusted/service.conf
 %{_libdir}/environment.d/99-environment.conf
-/var/lib/polkit-1/localauthority/10-vendor.d/systemd-networkd.pkla
 %exclude %{_libdir}/debug
 %exclude %{_datadir}/locale
 %{_libdir}/binfmt.d
 %{_libdir}/kernel
 %{_libdir}/modules-load.d
 %{_libdir}/rpm
-%{_libdir}/security
+/lib/security
 %{_libdir}/sysctl.d
 %{_libdir}/systemd
 %{_libdir}/tmpfiles.d
-%{_libdir}/*.so*
+/lib/*.so*
+/lib/modprobe.d/systemd.conf
 %{_bindir}/*
 /bin/*
 /sbin/*
@@ -222,12 +321,13 @@ rm -rf %{buildroot}/*
 %{_datadir}/polkit-1
 %{_datadir}/systemd
 %{_datadir}/zsh/*
-%dir %{_localstatedir}/log/journal
+%dir %{_localstatedir}/opt/journal/log
+%{_localstatedir}/log/journal
 
 %files devel
 %dir %{_includedir}/systemd
-%{_libdir}/libudev.so
-%{_libdir}/libsystemd.so
+/lib/libudev.so
+/lib/libsystemd.so
 %{_includedir}/systemd/*.h
 %{_includedir}/libudev.h
 %{_libdir}/pkgconfig/libudev.pc
@@ -239,13 +339,72 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Thu May 21 2020 Tapas Kundu <tkundu@vmware.com> 239-22
+-    systemd: services shouldn't start if there is residual processes left over
+-    Services restart after systemd update
+-    Increase watchdog timeout
+*    Mon Apr 13 2020 Susant Sahani <ssahani@vmware.com>  239-21
+-    Fix CVE-2020-1712
+*    Tue Mar 24 2020 Susant Sahani <ssahani@vmware.com>  239-20
+-    networkd: ipv6ra allow to ignore addresses
+*    Thu Mar 12 2020 Susant Sahani <ssahani@vmware.com>  239-19
+-    Don't treat syntax error as fatal, fix bz 2527776 and drop
+-    patch 16 as upstream dropped it.
+*    Tue Feb 04 2020 Susant Sahani <ssahani@vmware.com>  239-18
+-    Fix CVE-2019-20386
+*    Thu  Jan 02 2020 Susant Sahani <ssahani@vmware.com>  239-17
+-    Fix If system has invalid hostname, systemd-networkd dhcpv4 does not run
+-    and obscure error message is also sligtly update generatedRoutingPolicyRule
+*    Fri Dec 06 2019 Susant Sahani <ssahani@vmware.com>  239-16
+-    Fix RoutingPolicyRule does not always apply - applies alternately.
+*    Mon Oct 28 2019 Piyush Gupta <guptapi@vmware.com>  239-15
+-    Added requires elfutils
+*    Wed Sep 11 2019 Susant Sahani <ssahani@vmware.com>  239-14
+-    Fix CVE-2019-15718
+*    Fri Jun 28 2019 Susant Sahani <ssahani@vmware.com>  239-13
+-    Fix BZ-2361840
+*    Fri Jun 28 2019 Susant Sahani <ssahani@vmware.com>  239-12
+-    Fix CVE-2019-6454, CVE-2019-3843 CVE-2019-3844
+*    Thu Apr 18 2019 Anish Swaminathan <anishs@vmware.com>  239-11
+-    Fix CVE-2019-3842
+*    Thu Jan 10 2019 Anish Swaminathan <anishs@vmware.com>  239-10
+-    Fix CVE-2018-16864, CVE-2018-16865, CVE-2018-16866
+*    Wed Jan 09 2019 Keerthana K <keerthanak@vmware.com> 239-9
+-    Seting default values for tcp_timestamps, tcp_challenge_ack_limit and ip_forward.
+*    Wed Jan 02 2019 Anish Swaminathan <anishs@vmware.com>  239-8
+-    Fix CVE-2018-15686, CVE-2018-15687
+*    Sun Nov 11 2018 Tapas Kundu <tkundu@vmware.com> 239-7
+-    Fix CVE-2018-15688
+*    Fri Oct 26 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 239-6
+-    Auto-load rdrand-rng kernel module only on x86.
+*    Fri Oct 26 2018 Anish Swaminathan <anishs@vmware.com>  239-5
+-    Revert the commit that causes GCE networkd timeout
+-    https://github.com/systemd/systemd/commit/44b598a1c9d11c23420a5ef45ff11bcb0ed195eb
+*    Mon Oct 08 2018 Srinidhi Rao <srinidhir@vmware.com> 239-4
+-    Add glib-devel as a Requirement to systemd-devel
+*    Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 239-3
+-    Fix compilation issue against glibc-2.28
+*    Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 239-2
+-    Automatically load rdrand-rng kernel module on every boot.
+*    Tue Aug 28 2018 Anish Swaminathan <anishs@vmware.com>  239-1
+-    Update systemd to 239
+*    Wed Apr 11 2018 Xiaolin Li <xiaolinl@vmware.com>  236-3
+-    Build systemd with util-linux 2.32.
+*    Wed Jan 17 2018 Divya Thaluru <dthaluru@vmware.com>  236-2
+-    Fixed the log file directory structure
+*    Fri Dec 29 2017 Anish Swaminathan <anishs@vmware.com>  236-1
+-    Update systemd to 236
+*    Thu Nov 09 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-11
+-    Fix CVE-2017-15908 dns packet loop fix.
+*    Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-10
+-    Fix nullptr access during link disable.
 *    Mon Sep 18 2017 Anish Swaminathan <anishs@vmware.com>  233-9
 -    Backport router solicitation backoff from systemd 234
 *    Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  233-8
 -    Move network file to systemd package
 *    Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 233-7
 -    Fix compilation issue for glibc-2.26
-*    Fri Jul 20 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-6
+*    Fri Jul 21 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-6
 -    Fix for CVE-2017-1000082.
 *    Fri Jul 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-5
 -    Fix default-dns-from-env patch.
@@ -342,13 +501,13 @@ rm -rf %{buildroot}/*
 *    Tue Aug 25 2015 Alexey Makhalov <amakhalov@vmware.com> 216-9
 -    Reduce systemd-networkd boot time (exclude if-rename patch).
 *    Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 216-8
--    Adding sysvinit support 
+-    Adding sysvinit support
 *    Mon Jul 06 2015 Kumar Kaushik <kaushikk@vmware.com> 216-7
 -    Fixing networkd/udev race condition for renaming interface.
 *    Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 216-6
 -    Remove debug files.
 *    Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 216-5
--    Building compat libs 
+-    Building compat libs
 *    Mon Jun 1 2015 Alexey Makhalov <amakhalov@vmware.com> 216-4
 -    gudev support
 *    Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 216-3

@@ -1,12 +1,13 @@
 Summary:        DBus for systemd
 Name:           dbus
-Version:        1.11.12
-Release:        1%{?dist}
+Version:        1.13.6
+Release:        2%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
 Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.gz
-%define sha1    dbus=2e2247398abb22115e724b5e955fece2307dddb0
+%define sha1    dbus=368c14e3dde9524dd9d0775227ebf3932802c023
+Patch0:         CVE-2019-12749.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  expat-devel
@@ -23,13 +24,13 @@ Summary:    Header and development files
 Requires:   %{name} = %{version}
 Requires:  expat-devel
 %description    devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
 %setup -q
+%patch0 -p1
 %build
-./configure --prefix=%{_prefix}                 \
-            --sysconfdir=%{_sysconfdir}         \
+%configure                                      \
             --localstatedir=%{_var}             \
             --docdir=%{_datadir}/doc/dbus-1.11.12  \
             --enable-libaudit=no --enable-selinux=no \
@@ -51,6 +52,7 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/dbus-1
 %{_bindir}/*
 %{_libdir}/libdbus-1.so.*
+%{_libdir}/tmpfiles.d/dbus.conf
 %exclude %{_libdir}/sysusers.d
 /lib/*
 %{_libexecdir}/*
@@ -72,6 +74,10 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+*   Fri Oct 18 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.13.6-2
+-   Fix CVE-2019-12749
+*   Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 1.13.6-1
+-   Update to 1.13.6
 *   Fri Apr 21 2017 Bo Gan <ganb@vmware.com> 1.11.12-1
 -   Update to 1.11.12
 *   Tue Dec 20 2016 Xiaolin Li <xiaolinl@vmware.com> 1.8.8-8

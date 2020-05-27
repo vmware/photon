@@ -1,24 +1,27 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
-Version:        1.6.1
-Release:        4%{?dist}
+Version:        1.8.3
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
-%define sha1    iptables-=b2592490ca7a6c2cd0f069e167a4337c86acdf91
+%define sha1    %{name}-%{version}=6df99e90cb4d59032ab2050ebb426fe065249bd3
 Source1:        iptables.service
 Source2:        iptables
 Source3:        iptables.stop
 Source4:        ip4save
 Source5:        ip6save
+BuildRequires:  jansson-devel
+BuildRequires:  libmnl-devel
+BuildRequires:  libnftnl-devel
 BuildRequires:  systemd
 Requires:       systemd
 %description
-The next part of this chapter deals with firewalls. The principal 
-firewall tool for Linux is Iptables. You will need to install 
+The next part of this chapter deals with firewalls. The principal
+firewall tool for Linux is Iptables. You will need to install
 Iptables if you intend on using any form of a firewall.
 
 %package        devel
@@ -30,14 +33,11 @@ It contains the libraries and header files to create applications.
 %prep
 %setup -q
 %build
-./configure \
+%configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --disable-silent-rules \
-    --prefix=%{_prefix} \
     --exec-prefix= \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
     --with-xtlibdir=%{_libdir}/iptables \
     --with-pkgconfigdir=%{_libdir}/pkgconfig \
     --disable-nftables \
@@ -82,7 +82,7 @@ rm -rf %{buildroot}/*
 %config(noreplace) /etc/systemd/scripts/ip4save
 %config(noreplace) /etc/systemd/scripts/ip6save
 /lib/systemd/system/iptables.service
-/sbin/*
+%{_sbindir}/*
 %{_bindir}/*
 %{_libdir}/*.so.*
 %{_libdir}/iptables/*
@@ -97,6 +97,12 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Jul 30 2019 Shreyas B. <shreyasb@vmware.com> 1.8.3-1
+-   Updated to version 1.8.3
+*   Tue Feb 26 2019 Alexey Makhalov <amakhalov@vmware.com> 1.8.0-2
+-   Flush ip6tables on service stop
+*   Mon Sep 10 2018 Ankit Jain <ankitja@vmware.com> 1.8.0-1
+-   Updated to version 1.8.0
 *   Thu Aug 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-4
 -   fix ip4save script for upgrade issues.
 *   Mon Jul 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-3

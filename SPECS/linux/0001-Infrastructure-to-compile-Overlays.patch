@@ -1,0 +1,120 @@
+From 820accf8e0f013625b33272fcae97edb0efd3d5b Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Tue, 27 Aug 2019 14:51:08 +0530
+Subject: [PATCH] Infrastructure to compile Overlays
+
+---
+ arch/arm/boot/dts/Makefile          | 10 ++++++++++
+ arch/arm/boot/dts/overlays/Makefile |  9 +++++++++
+ arch/arm64/boot/dts/Makefile        |  1 +
+ arch/arm64/boot/dts/overlays        |  1 +
+ scripts/Makefile.dtbinst            |  8 ++++++--
+ scripts/Makefile.lib                | 12 ++++++++++++
+ 6 files changed, 39 insertions(+), 2 deletions(-)
+ create mode 100644 arch/arm/boot/dts/overlays/Makefile
+ create mode 120000 arch/arm64/boot/dts/overlays
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index b5bd3de..5c20452 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -1207,3 +1207,13 @@ dtb-$(CONFIG_ARCH_ASPEED) += \
+ 	aspeed-bmc-opp-zaius.dtb \
+ 	aspeed-bmc-portwell-neptune.dtb \
+ 	aspeed-bmc-quanta-q71l.dtb
++
++targets += dtbs dtbs_install
++targets += $(dtb-y)
++
++subdir-y	:= overlays
++
++# Enable fixups to support overlays on BCM2835 platforms
++ifeq ($(CONFIG_ARCH_BCM2835),y)
++	DTC_FLAGS ?= -@
++endif
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+new file mode 100644
+index 0000000..32f08b8
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -0,0 +1,9 @@
++# Overlays for the Raspberry Pi platform
++  
++targets += dtbs dtbs_install
++targets += $(dtbo-y)
++
++always          := $(dtbo-y)
++clean-files     := *.dtbo
++
++
+diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
+index 4690364..ad09e7d 100644
+--- a/arch/arm64/boot/dts/Makefile
++++ b/arch/arm64/boot/dts/Makefile
+@@ -26,3 +26,4 @@ subdir-y += synaptics
+ subdir-y += ti
+ subdir-y += xilinx
+ subdir-y += zte
++subdir-y += overlays
+diff --git a/arch/arm64/boot/dts/overlays b/arch/arm64/boot/dts/overlays
+new file mode 120000
+index 0000000..ded0864
+--- /dev/null
++++ b/arch/arm64/boot/dts/overlays
+@@ -0,0 +1 @@
++../../../arm/boot/dts/overlays
+\ No newline at end of file
+diff --git a/scripts/Makefile.dtbinst b/scripts/Makefile.dtbinst
+index 7301ab5..4ffd037 100644
+--- a/scripts/Makefile.dtbinst
++++ b/scripts/Makefile.dtbinst
+@@ -21,6 +21,7 @@ include $(src)/Makefile
+ 
+ dtbinst-files	:= $(sort $(dtb-y) $(if $(CONFIG_OF_ALL_DTBS), $(dtb-)))
+ dtbinst-dirs	:= $(subdir-y) $(subdir-m)
++dtboinst-files	:= $(sort $(dtbo-y) $(if $(CONFIG_OF_ALL_DTBS), $(dtb-)))
+ 
+ # Helper targets for Installing DTBs into the boot directory
+ quiet_cmd_dtb_install =	INSTALL $<
+@@ -31,10 +32,13 @@ install-dir = $(patsubst $(dtbinst_root)%,$(INSTALL_DTBS_PATH)%,$(obj))
+ $(dtbinst-files): %.dtb: $(obj)/%.dtb
+ 	$(call cmd,dtb_install,$(install-dir))
+ 
++$(dtboinst-files): %.dtbo: $(obj)/%.dtbo
++	$(call cmd,dtb_install,$(install-dir))
++
+ $(dtbinst-dirs):
+ 	$(Q)$(MAKE) $(dtbinst)=$(obj)/$@
+ 
+-PHONY += $(dtbinst-files) $(dtbinst-dirs)
+-__dtbs_install: $(dtbinst-files) $(dtbinst-dirs)
++PHONY += $(dtbinst-files) $(dtboinst-files) $(dtbinst-dirs)
++__dtbs_install: $(dtbinst-files) $(dtboinst-files) $(dtbinst-dirs)
+ 
+ .PHONY: $(PHONY)
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 61e5966..19f9648 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -292,6 +292,18 @@ cmd_dtc = mkdir -p $(dir ${dtc-tmp}) ; \
+ $(obj)/%.dtb: $(src)/%.dts $(DTC) FORCE
+ 	$(call if_changed_dep,dtc)
+ 
++quiet_cmd_dtco = DTCO    $@
++cmd_dtco = mkdir -p $(dir ${dtc-tmp}) ; \
++	$(CPP) $(dtc_cpp_flags) -x assembler-with-cpp -o $(dtc-tmp) $< ; \
++	$(DTC) -@ -H epapr -O dtb -o $@ -b 0 \
++		-i $(dir $<) $(DTC_FLAGS) \
++		-Wno-interrupts_property \
++		-d $(depfile).dtc.tmp $(dtc-tmp) ; \
++	cat $(depfile).pre.tmp $(depfile).dtc.tmp > $(depfile)
++
++$(obj)/%.dtbo: $(src)/%-overlay.dts FORCE
++	$(call if_changed_dep,dtco)
++
+ dtc-tmp = $(subst $(comma),_,$(dot-target).dts.tmp)
+ 
+ # Bzip2
+-- 
+2.7.4
+

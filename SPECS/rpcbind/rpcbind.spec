@@ -1,16 +1,15 @@
 Summary:        RPC program number mapper
 Name:           rpcbind
-Version:        0.2.4
-Release:        4%{?dist}
+Version:        1.2.5
+Release:        1%{?dist}
 License:        BSD
 URL:            http://nfsv4.bullopensource.org
 Group:          Applications/Daemons
 Source0:        http://downloads.sourceforge.net/rpcbind/%{name}-%{version}.tar.bz2
-%define sha1 rpcbind=8a6045dd3397e9f71bf3a7c9d269e255cca537bd
+%define sha1 rpcbind=e9f8046b69b45efe2396a8cca1c1f090644c6d31
 Source1:        rpcbind.service
 Source2:        rpcbind.socket
 Source3:        rpcbind.sysconfig
-Patch0:         rpcbind-CVE-2017-8779.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libtirpc-devel
@@ -26,12 +25,10 @@ The rpcbind program is a replacement for portmap. It is required for import or e
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 sed -i "/servname/s:rpcbind:sunrpc:" src/rpcbind.c
-./configure --prefix=%{_prefix}      \
-            --bindir=%{_sbindir}     \
+%configure \
             --enable-warmstarts \
             --disable-debug \
             --with-statedir=%{_localstatedir}/lib/rpcbind \
@@ -58,20 +55,20 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %config(noreplace) /etc/sysconfig/rpcbind
 %{_sbindir}/*
+%{_bindir}/*
 %{_mandir}/man8/*
 %dir %{_localstatedir}/lib/rpcbind
 %{_unitdir}/*
 %{_libdir}/systemd/system-preset/50-rpcbind.preset
 
 %pre
-rpcid=`getent passwd rpc | cut -d: -f 3`
-if [ -n "$rpcid" -a "$rpcid" != "31" ]; then
-    userdel  rpc 2> /dev/null || :
-    groupdel rpc 2> /dev/null || :
-fi
-if [ -z "$rpcid" -o "$rpcid" != "31" ]; then
-    groupadd -g 31 rpc > /dev/null 2>&1
+getent group rpc >/dev/null || groupadd -f -g 31 -r rpc
+if ! getent passwd rpc >/dev/null ; then
+if ! getent passwd 31 >/dev/null ; then
     useradd -d /var/lib/rpcbind -g rpc -s /bin/false -u 31 rpc > /dev/null 2>&1
+else
+    useradd -d /var/lib/rpcbind -g rpc -s /bin/false rpc > /dev/null 2>&1
+fi
 fi
 %preun
 %systemd_preun rpcbind.service rpcbind.socket
@@ -95,6 +92,10 @@ fi
 rm -rf %{buildroot}/*
 
 %changelog
+*   Fri Sep 21 2018 Keerthana K <keerthanak@vmware.com> 1.2.5-1
+-   Update to version 1.2.5
+*   Tue Mar 06 2018 Xiaolin Li <xiaolinl@vmware.com> 0.2.4-5
+-   Fix pre install script.
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 0.2.4-4
 -   Remove coreutils from requires and use explicit tools for post actions
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  0.2.4-3

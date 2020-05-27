@@ -2,7 +2,7 @@
 # Ubuntu-Dev Dockerfile for building Linux Distribution.
 #
 
-FROM vmware/photon:latest
+FROM photon:dev
 
 WORKDIR /workspace
 

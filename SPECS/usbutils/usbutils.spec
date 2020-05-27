@@ -1,14 +1,14 @@
 Summary:       USB Utils
 Name:          usbutils
-Version:       008
-Release:       4%{?dist}
+Version:       010
+Release:       1%{?dist}
 License:       GPLv2+
 URL:           http://linux-usb.sourceforge.net
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       https://www.kernel.org/pub/linux/utils/usb/usbutils/%{name}-%{version}.tar.xz
-%define sha1 usbutils=233dee6cd6829476be778554984045663b568b18
+%define sha1 usbutils=1f6ecf82aa36189e6385568d4ec1cd3096168bba
 Source1:       usb.ids
 BuildRequires: libusb-devel
 BuildRequires: pkg-config
@@ -41,10 +41,11 @@ install -p -m 0644 %{SOURCE1} %{buildroot}%{_datadir}/misc/
 %{_bindir}/lsusb.py
 %{_bindir}/usbhid-dump
 %{_mandir}/*/*
-%{_datadir}/pkgconfig/usbutils.pc
 %{_datadir}/misc/usb.ids
 
 %changelog
+*   Mon Sep 10 2018 Michelle Wang <michellew@vmware.com>  010-1
+-   Update version to 010.
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  008-4
 -   Change systemd dependency
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 008-3

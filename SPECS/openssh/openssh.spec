@@ -1,26 +1,34 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        7.5p1
-Release:        8%{?dist}
+Version:        7.8p1
+Release:        7%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha1    openssh=5e8f185d00afb4f4f89801e9b0f8b9cee9d87ebd
+%define sha1    openssh=27e267e370315561de96577fccae563bc2c37a60
 Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1    blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Source2:        sshd.service
 Source3:        sshd-keygen.service
 Patch0:         blfs_systemd_fixes.patch
-Patch1:         openssh-7.5p1-fips.patch
-Patch2:         openssh-7.5p1-configure-fips.patch
+Patch1:         openssh-7.8p1-fips.patch
+Patch2:         openssh-7.8p1-configure-fips.patch
+Patch3:         openssh-CVE-2018-20685.patch
+Patch4:         openssh-CVE-2019-6109.patch
+Patch5:         openssh-CVE-2019-6109-progressmeter.patch
+Patch6:         openssh-CVE-2019-6111.patch
+Patch7:         openssh-CVE-2019-6111-filenames.patch
+Patch8:         scp-name-validator-CVE-2019-6110.patch
+Patch9:         openssh-CVE-2019-16905.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
+BuildRequires:  groff
 Requires:       openssh-clients = %{version}-%{release}
 Requires:       openssh-server = %{version}-%{release}
 %description
@@ -42,6 +50,7 @@ Requires:   shadow
 Requires:   ncurses-terminfo
 Requires:   openssh-clients = %{version}-%{release}
 Requires(post): /bin/chown
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 %description server
 This provides the ssh server daemons, utilities, configuration and service files.
 
@@ -51,13 +60,15 @@ tar xf %{SOURCE1} --no-same-owner
 %patch0 -p0
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
 %build
-./configure \
-    CFLAGS="%{optflags}" \
-    CXXFLAGS="%{optflags}" \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
+%configure \
     --sysconfdir=/etc/ssh \
     --datadir=/usr/share/sshd \
     --with-md5-passwords \
@@ -178,6 +189,27 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Wed Jan 08 2020 Prashant S Chauhan <psinghchauha@vmware.com> 7.8p1-7
+-   Added groff as a build requirement
+*   Fri Nov 29 2019 Ankit Jain <ankitja@vmware.comm> 7.8p1-6
+-   Fix for CVE-2019-16905
+*   Wed Aug 07 2019 Anish Swaminathan <anishs@vmware.com> 7.8p1-5
+-   Check for fips mode before setting
+*   Mon Jun 03 2019 Ankit Jain <ankitja@vmware.comm> 7.8p1-4
+-   Fix for CVE-2019-6110.
+*   Thu May 09 2019 Ankit Jain <ankitja@vmware.comm> 7.8p1-3
+-   Fix CVE-2019-6109 and CVE-2019-6111.
+*   Thu Feb 14 2019 Ankit Jain <ankitja@vmware.comm> 7.8p1-2
+-   Fix CVE-2018-20685.
+-   Use %configure
+*   Tue Sep 11 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 7.8p1-1
+-   Update version
+*   Tue Nov 28 2017 Xiaolin Li <xiaolinl@vmware.comm> 7.5p1-11
+-   Fix CVE-2017-15906.
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 7.5p1-10
+-   Fix: openssh-server requires(pre) shadow tools
+*   Tue Nov 14 2017 Anish Swaminathan <anishs@vmware.com> 7.5p1-9
+-   Add ciphers aes128-gcm, aes256-gcm and kex dh14/16/18 in fips mode
 *   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 7.5p1-8
 -   No direct toybox dependency, shadow depends on toybox
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 7.5p1-7

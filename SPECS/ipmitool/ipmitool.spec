@@ -2,7 +2,7 @@
 Summary:        ipmitool - Utility for IPMI control
 Name:           ipmitool
 Version:        1.8.18
-Release:        1%{?dist}
+Release:        3%{?dist}
 License:        BSD
 
 Group:          System Environment/Utilities
@@ -10,6 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.bz2
 %define sha1    ipmitool=ff4781bb78f264d44fa4bf1767f268d4079d87ba
+Patch0:         CVE-2020-5208.patch
 
 %description
 This package contains a utility for interfacing with devices that support
@@ -28,18 +29,11 @@ setting LAN configuration, and chassis power control.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
-./configure --with-kerneldir \
-    --with-rpm-distro= \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --sbindir=%{_sbindir} \
-    --datadir=%{_datadir} \
-    --includedir=%{_includedir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
-    --sysconfdir=%{_sysconfdir}
+%configure --with-kerneldir \
+    --with-rpm-distro=
 make
 
 %install
@@ -61,5 +55,9 @@ make %{?_smp_mflags} check
 %doc %{_datadir}/doc/ipmitool
 
 %changelog
+*   Thu Mar 05 2020 Keerthana K <keerthanak@vmware.com> 1.8.18-3
+-   Fix %configure.
+*   Thu Feb 13 2020 Keerthana K <keerthanak@vmware.com> 1.8.18-2
+-   Fix CVE-2020-5208.
 *   Fri Aug 25 2017 Xiaolin Li <xiaolinl@vmware.com> 1.8.18-1
 -   Initial build.  First version

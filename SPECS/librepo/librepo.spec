@@ -1,107 +1,111 @@
-#dont terminate build for unpackaged files.
-%define _unpackaged_files_terminate_build 0
-%define librepo_name %{name}-%{name}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%define _python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
 
 Summary:        Repodata downloading library
 Name:           librepo
-Version:        1.7.20
+Version:        1.10.2
 Release:        2%{?dist}
 License:        LGPLv2+
-URL:            https://github.com/Tojaj/librepo/
-Group:          System Environment/Libraries
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    librepo=8aff436081320acf50b8d32a9982d02062e56bd6
-Source1:        pygpgme-0.3.tar.gz
-%define sha1    pygpgme=f8df35bd2705ac2e1642209fba732e6a42d03fd4
+URL:            https://github.com/rpm-software-management/librepo
+Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Requires:       curl-libs, gpgme, libassuan, libgpg-error
-Requires:       expat-libs
-Requires:       glib
-Requires:       openssl
-
+Source0:        https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
+%define sha1    %{name}-%{version}=9709bbca874a1afda9dff1c1775a3c68321c7182
 BuildRequires:  cmake
-BuildRequires:  glib-devel
+BuildRequires:  gcc
 BuildRequires:  check
-BuildRequires:  expat-devel
-BuildRequires:  curl-devel
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python2-tools
+BuildRequires:  glib-devel
 BuildRequires:  gpgme-devel
-BuildRequires:  openssl-devel
 BuildRequires:  attr-devel
+BuildRequires:  curl-devel
+BuildRequires:  libxml2-devel
+BuildRequires:  openssl-devel
+BuildRequires:  zchunk-devel
+BuildRequires:  python-sphinx
+BuildRequires:  python2-devel
+BuildRequires:  python3-devel
+BuildRequires:  python3-sphinx
+Requires:       curl-libs
+Requires:       gpgme
+Requires:       zchunk
 
 %description
-A library providing C and Python (libcURL like) API for downloading
-linux repository metadata and packages
+A library providing C and Python (libcURL like) API to downloading repository
+metadata.
 
 %package devel
-Summary: package config and headers for librepo
-Requires: %{name} = %{version}-%{release}
-Requires: curl-devel
-Requires: expat-devel
-Provides: pkgconfig(librepo)
+Summary:        Repodata downloading library
+Requires:       curl-libs
+Requires:       curl-devel
+Requires:       %{name} = %{version}-%{release}
+
 %description devel
-Package config and headers for librepo.
+Development files for librepo.
+
+%package -n python2-%{name}
+Summary:        Python bindings for the librepo library
+%{?python_provide:%python_provide python2-%{name}}
+Requires:       %{name} = %{version}-%{release}
+
+%description -n python2-%{name}
+Python 2 bindings for the librepo library.
+
+%package -n python3-%{name}
+Summary:        Python 3 bindings for the librepo library
+%{?python_provide:%python_provide python3-%{name}}
+Requires:       %{name} = %{version}-%{release}
+
+%description -n python3-%{name}
+Python 3 bindings for the librepo library.
 
 %prep
-%setup -q -n %{librepo_name}-%{version}
-tar xf %{SOURCE1} --no-same-owner
+%setup -q
+mkdir build-py2
+mkdir build-py3
 
 %build
-mkdir build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} -DLIB_INSTALL_DIR=%{_prefix}/lib ..
-make %{?_smp_mflags}
-
-%install
-mkdir -p %{buildroot}%{_libdir}
-mkdir -p %{buildroot}%{_includedir}/librepo
-mkdir -p %{buildroot}%{_libdir}/pkgconfig
-cp %{_builddir}/%{librepo_name}-%{version}/build/librepo/librepo.so* %{buildroot}%{_libdir}
-cp %{_builddir}/%{librepo_name}-%{version}/build/librepo.pc %{buildroot}%{_libdir}/pkgconfig
-cp %{_builddir}/%{librepo_name}-%{version}/librepo/*.h %{buildroot}%{_includedir}/librepo
-
-%check
-pushd build/tests
-./run_tests.sh
+pushd build-py2
+  %cmake -DPYTHON_DESIRED:FILEPATH=/usr/bin/python -DENABLE_PYTHON_TESTS=%{!?with_pythontests:OFF} ..
+  make %{?_smp_mflags}
 popd
 
-%post
-/sbin/ldconfig
+pushd build-py3
+  %cmake -DPYTHON_DESIRED:FILEPATH=/usr/bin/python3 -DENABLE_PYTHON_TESTS=%{!?with_pythontests:OFF} ..
+  make %{?_smp_mflags}
+popd
 
-%postun
-/sbin/ldconfig
+%install
+pushd build-py2
+  make DESTDIR=%{buildroot} install
+popd
+
+pushd build-py3
+  make DESTDIR=%{buildroot} install
+popd
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
-%defattr(-,root,root)
-%{_libdir}/librepo.so*
+%doc COPYING
+%doc README.md
+%{_libdir}/%{name}.so.*
 
 %files devel
-%{_libdir}/pkgconfig/librepo.pc
-%{_includedir}/librepo/*.h
+%{_libdir}/%{name}.so
+%{_libdir}/pkgconfig/%{name}.pc
+%{_includedir}/%{name}/
+
+%files -n python2-%{name}
+%{python_sitearch}/%{name}/
+
+%files -n python3-%{name}
+%{_python3_sitearch}/%{name}/
 
 %changelog
-*   Thu Jun 08 2017 Chang Lee <changlee@vmware.com> 1.7.20-2
--   Updated %check
-*   Thu Apr 20 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.20-1
--   Updated to version 1.7.20
-*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.7.17-6
--   Requires expat-libs, expat-devel and curl-libs.
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.17-5
--   BuildRequires curl-devel.
-*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.7.17-4
--   BuildRequired attr-devel.
-*   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.7.17-3
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.17-2
--   GA - Bump release of all rpms
-*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.17-1
--   Updated to version 1.7.17
-*   Wed Jun 17 2015 Anish Swaminathan <anishs@vmware.com> 1.7.15-1
--   Updated version and split devel package.
-*   Tue Dec 30 2014 Priyesh Padmavilasom <ppadmavilasom@vmware.com>
--   initial specfile.
-
-# EOF
+*   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-2
+-   Added for ARM Build
+*   Wed May 15 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-1
+-   Initial build. First version

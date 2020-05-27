@@ -1,29 +1,30 @@
 Summary:	High-Level Crypto API
 Name:		gpgme
-Version:	1.9.0
-Release:	3%{?dist}
+Version:	1.11.1
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.gnupg.org/(it)/related_software/gpgme/index.html
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://www.gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2
-%define sha1 gpgme=870719cd3d2ef6a7fcb1d6af9ce5446edba7bfc3
+%define sha1 gpgme=95b1fc427871ca8d30d6d3b1985c816fe0b5077b
 Requires:	libassuan
-Requires:	libgpg-error
+Requires:	libgpg-error >= 1.32
 # gpgme uses gnupg binaries only at runtime
 Requires:	gnupg
-BuildRequires:	libgpg-error-devel
+BuildRequires:	gnupg
+BuildRequires:	libgpg-error-devel >= 1.32
 BuildRequires:	libassuan >= 2.2.0
 
 %description
-The GPGME package is a C language library that allows to add support for cryptography to a program. It is designed to make access to public key crypto engines like GnuPG or GpgSM easier for applications. GPGME provides a high-level crypto API for encryption, decryption, signing, signature verification and key management.  
+The GPGME package is a C language library that allows to add support for cryptography to a program. It is designed to make access to public key crypto engines like GnuPG or GpgSM easier for applications. GPGME provides a high-level crypto API for encryption, decryption, signing, signature verification and key management.
 
 %package 	devel
 Group:          Development/Libraries
 Summary:        Static libraries and header files from GPGME, GnuPG Made Easy.
 Requires:	%{name} = %{version}-%{release}
-Requires:	libgpg-error-devel
+Requires:	libgpg-error-devel >= 1.32
 
 %description 	devel
 Static libraries and header files from GPGME, GnuPG Made Easy.
@@ -32,8 +33,8 @@ Static libraries and header files from GPGME, GnuPG Made Easy.
 %setup -q
 
 %build
-./configure \
-	--prefix=%{_prefix} \
+./autogen.sh
+%configure \
  	--disable-fd-passing \
 	--disable-static \
 	--enable-languages=cl \
@@ -52,7 +53,7 @@ cd tests && make check-TESTS
 
 %postun	-p /sbin/ldconfig
 
-%files 
+%files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 
@@ -65,6 +66,10 @@ cd tests && make check-TESTS
 %{_datadir}/common-lisp/source/gpgme/*
 
 %changelog
+*   Sat Oct 20 2018 Ankit Jain <ankitja@vmware.com> 1.11.1-2
+-   Removed gpg2, gnupg-2.2.10 doesn't provide gpg2
+*   Tue Sep 11 2018 Anish Swaminathan <anishs@vmware.com> 1.11.1-1
+-   Update version to 1.11.1
 *   Wed Aug 30 2017 Alexey Makhalov <amakhalov@vmware.com> 1.9.0-3
 -   Add requires gnupg
 *   Thu Apr 20 2017 Alexey Makhalov <amakhalov@vmware.com> 1.9.0-2

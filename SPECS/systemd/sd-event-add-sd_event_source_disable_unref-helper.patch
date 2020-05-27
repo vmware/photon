@@ -1,0 +1,133 @@
+From 73b87f8c73af714a32e7b56b217cd4e4f46a5ea7 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Wed, 8 May 2019 14:39:57 +0200
+Subject: [PATCH 09/10] sd-event: add sd_event_source_disable_unref() helper
+
+(cherry picked from commit afd15bbb4b6414b9356799c63029e36642dae8e4)
+Related: CVE-2020-1712
+---
+ man/rules/meson.build              |  4 +++-
+ man/sd_event_source_unref.xml      | 30 +++++++++++++++++++-----------
+ src/libsystemd/libsystemd.sym      |  1 +
+ src/libsystemd/sd-event/sd-event.c |  6 ++++++
+ src/systemd/sd-event.h             |  1 +
+ 5 files changed, 30 insertions(+), 12 deletions(-)
+
+diff --git a/man/rules/meson.build b/man/rules/meson.build
+index 989d11c9b9..7ae94ea265 100644
+--- a/man/rules/meson.build
++++ b/man/rules/meson.build
+@@ -340,7 +340,9 @@ manpages = [
+  ['sd_event_source_set_userdata', '3', ['sd_event_source_get_userdata'], ''],
+  ['sd_event_source_unref',
+   '3',
+-  ['sd_event_source_ref', 'sd_event_source_unrefp'],
++  ['sd_event_source_disable_unref',
++   'sd_event_source_ref',
++   'sd_event_source_unrefp'],
+   ''],
+  ['sd_event_wait',
+   '3',
+diff --git a/man/sd_event_source_unref.xml b/man/sd_event_source_unref.xml
+index d1b83c57aa..af8fed33f2 100644
+--- a/man/sd_event_source_unref.xml
++++ b/man/sd_event_source_unref.xml
+@@ -22,6 +22,7 @@
+     <refname>sd_event_source_unref</refname>
+     <refname>sd_event_source_unrefp</refname>
+     <refname>sd_event_source_ref</refname>
++    <refname>sd_event_source_disable_unref</refname>
+ 
+     <refpurpose>Increase or decrease event source reference counters</refpurpose>
+   </refnamediv>
+@@ -45,6 +46,10 @@
+         <paramdef>sd_event_source *<parameter>source</parameter></paramdef>
+       </funcprototype>
+ 
++      <funcprototype>
++        <funcdef>sd_event_source* <function>sd_event_source_disable_unref</function></funcdef>
++        <paramdef>sd_event_source *<parameter>source</parameter></paramdef>
++      </funcprototype>
+     </funcsynopsis>
+   </refsynopsisdiv>
+ 
+@@ -80,23 +85,26 @@
+     the passed event source object is
+     <constant>NULL</constant>.</para>
+ 
+-    <para>Note that event source objects stay alive and may be
+-    dispatched as long as they have a reference counter greater than
+-    zero. In order to drop a reference of an event source and make
+-    sure the associated event source handler function is not called
+-    anymore it is recommended to combine a call of
++    <para>Note that event source objects stay alive and may be dispatched as long as they have a reference
++    counter greater than zero. In order to drop a reference of an event source and make sure the associated
++    event source handler function is not called anymore it is recommended to combine a call of
+     <function>sd_event_source_unref()</function> with a prior call to
+-    <function>sd_event_source_set_enabled()</function> with
+-    <constant>SD_EVENT_OFF</constant>.</para>
++    <function>sd_event_source_set_enabled()</function> with <constant>SD_EVENT_OFF</constant> or call
++    <function>sd_event_source_disable_unref()</function>, see below.</para>
++
++    <para><function>sd_event_source_disable_unref()</function> combines a call to
++    <function>sd_event_source_set_enabled()</function> with <constant>SD_EVENT_OFF</constant> with
++    <function>sd_event_source_unref()</function>. This ensures that the source is disabled before the local
++    reference to it is lost. The <parameter>source</parameter> parameter is allowed to be
++    <constant>NULL</constant>.</para>
+   </refsect1>
+ 
+   <refsect1>
+     <title>Return Value</title>
+ 
+-    <para><function>sd_event_source_unref()</function> always returns
+-    <constant>NULL</constant>.
+-    <function>sd_event_source_ref()</function> always returns the
+-    event source object passed in.</para>
++    <para><function>sd_event_source_unref()</function> and
++    <function>sd_event_source_disable_unref()</function> always return <constant>NULL</constant>.
++    <function>sd_event_source_ref()</function> always returns the event source object passed in.</para>
+   </refsect1>
+ 
+   <xi:include href="libsystemd-pkgconfig.xml" />
+diff --git a/src/libsystemd/libsystemd.sym b/src/libsystemd/libsystemd.sym
+index e9972593a6..778e88a16c 100644
+--- a/src/libsystemd/libsystemd.sym
++++ b/src/libsystemd/libsystemd.sym
+@@ -570,4 +570,5 @@ global:
+         sd_event_source_set_destroy_callback;
+         sd_event_source_get_destroy_callback;
+         sd_bus_enqueue_for_read;
++        sd_event_source_disable_unref;
+ } LIBSYSTEMD_238;
+diff --git a/src/libsystemd/sd-event/sd-event.c b/src/libsystemd/sd-event/sd-event.c
+index d53b9a7026..0d3bf5cbb6 100644
+--- a/src/libsystemd/sd-event/sd-event.c
++++ b/src/libsystemd/sd-event/sd-event.c
+@@ -580,6 +580,12 @@ _public_ sd_event* sd_event_unref(sd_event *e) {
+         return NULL;
+ }
+ 
++_public_ sd_event_source* sd_event_source_disable_unref(sd_event_source *s) {
++        if (s)
++                (void) sd_event_source_set_enabled(s, SD_EVENT_OFF);
++        return sd_event_source_unref(s);
++}
++
+ static bool event_pid_changed(sd_event *e) {
+         assert(e);
+ 
+diff --git a/src/systemd/sd-event.h b/src/systemd/sd-event.h
+index 7fcae4ac49..9876be01c6 100644
+--- a/src/systemd/sd-event.h
++++ b/src/systemd/sd-event.h
+@@ -113,6 +113,7 @@ int sd_event_get_iteration(sd_event *e, uint64_t *ret);
+ 
+ sd_event_source* sd_event_source_ref(sd_event_source *s);
+ sd_event_source* sd_event_source_unref(sd_event_source *s);
++sd_event_source* sd_event_source_disable_unref(sd_event_source *s);
+ 
+ sd_event *sd_event_source_get_event(sd_event_source *s);
+ void* sd_event_source_get_userdata(sd_event_source *s);
+-- 
+2.25.1
+

@@ -1,11 +1,11 @@
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
-Version:        1.14.6
-Release:        1%{?dist}
+Version:        1.14.8
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Source0:        kubernetes-dns-%{version}.tar.gz
-%define sha1    kubernetes-dns-%{version}.tar.gz=456f28dcb52d5338ce076d62051e33b827172b2a
+%define sha1    kubernetes-dns-%{version}.tar.gz=cad22fbc8499901262dfea3da504eabb7f616129
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -18,7 +18,12 @@ Kubernetes DNS is a name lookup service for kubernetes pods.
 %setup -qn dns-%{version}
 
 %build
+%ifarch x86_64
 export ARCH=amd64
+%endif
+%ifarch aarch64
+export ARCH=arm64
+%endif
 export VERSION=%{version}
 export PKG=k8s.io/dns
 export GOARCH=${ARCH}
@@ -38,7 +43,7 @@ ARCH=${ARCH} VERSION=${VERSION} PKG=${PKG} go install \
 
 %install
 install -m 755 -d %{buildroot}%{_bindir}
-binaries=(dnsmasq-nanny e2e ginkgo kube-dns sidecar sidecar-e2e)
+binaries=(dnsmasq-nanny e2e kube-dns sidecar sidecar-e2e)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
   install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/bin/${bin}
@@ -59,12 +64,23 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/dnsmasq-nanny
 %{_bindir}/e2e
-%{_bindir}/ginkgo
 %{_bindir}/kube-dns
 %{_bindir}/sidecar
 %{_bindir}/sidecar-e2e
 
 %changelog
+*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.14.8-4
+-   Bump up version to compile with go 1.13.3-2
+*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.14.8-3
+-   Bump up version to compile with go 1.13.3
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.14.8-2
+-   Bump up version to compile with new go
+*   Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.14.8-1
+-   kubernetes-dns 1.14.8.
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.14.6-3
+-   Aarch64 support
+*   Wed Nov 01 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.14.6-2
+-   Remove go testing framework binary.
 *   Mon Oct 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.14.6-1
 -   kubernetes-dns 1.14.6.
 *   Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.14.4-1

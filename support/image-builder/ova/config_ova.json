@@ -1,0 +1,18 @@
+{
+    "installer": {
+        "bootmode":"dualboot",
+        "hostname": "photon-machine",
+        "packagelist_file": "packages_ova.json",
+        "password": {
+            "age": 0,
+            "crypted": false,
+            "text": "changeme"
+        },
+	"public_key": ""
+    },
+    "image_type": "ova",
+    "size": 16384,
+    "artifacttype": "ova",
+    "keeprawdisk": false
+}
+

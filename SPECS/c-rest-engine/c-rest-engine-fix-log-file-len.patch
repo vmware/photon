@@ -1,0 +1,13 @@
+diff --git a/server/restengine/httpUtilsInternal.c b/server/restengine/httpUtilsInternal.c
+index edc4033..ad7203f 100644
+--- a/server/restengine/httpUtilsInternal.c
++++ b/server/restengine/httpUtilsInternal.c
+@@ -520,7 +520,7 @@ VmRESTCopyConfig(
+ 
+     if (!(IsNullOrEmptyString(pConfig->pszDebugLogFile)))
+     {
+-        strncpy(pRESTConfig->pszDebugLogFile, pConfig->pszDebugLogFile, (MAX_DEAMON_NAME_LEN - 1));
++        strncpy(pRESTConfig->pszDebugLogFile, pConfig->pszDebugLogFile, (MAX_PATH_LEN - 1));
+     }
+ 
+     if (!(IsNullOrEmptyString(pConfig->pszDaemonName)))

@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
-Version:        0.15.1
+Version:        0.26.4
 Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/
@@ -9,19 +9,29 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
-%define sha1    sysdig=5b1a7a4978315176412989b5400572d849691917
-BuildRequires:  cmake 
+%define sha1    sysdig=42397930f9e6a85757b3f37cbef63875ee1f6b80
+BuildArch:      x86_64
+BuildRequires:  cmake
 BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  wget
+BuildRequires:  which
+BuildRequires:  grpc-devel
+BuildRequires:  jq-devel
+BuildRequires:  c-ares-devel
+BuildRequires:  protobuf-devel
 Requires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 Requires:       zlib
 Requires:       ncurses
 Requires:       openssl
 Requires:       curl
+Requires:       grpc
+Requires:       jq
+Requires:       c-ares
+Requires:       protobuf
 
 %description
  Sysdig is open source, system-level exploration: capture system state and activity from a running Linux instance, then save, filter and analyze. Sysdig is scriptable in Lua and includes a command line interface and a powerful interactive UI, csysdig, that runs in your terminal
@@ -33,15 +43,19 @@ Requires:       curl
 # fix for linux-4.9
 sed -i 's|task_thread_info(current)->status|current->thread.status|g' driver/main.c
 sed -i 's|task_thread_info(task)->status|current->thread.status|g' driver/ppm_syscall.h
-
+sed -i '/#include <stdlib.h>/a #include<sys/sysmacros.h>' userspace/libscap/scap_fds.c
+sed -i '/"${B64_LIB}"/a      "${CURL_LIBRARIES}"' userspace/libsinsp/CMakeLists.txt
 mkdir build
 cd build
-
 cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DUSE_BUNDLED_OPENSSL=OFF \
     -DUSE_BUNDLED_CURL=OFF \
     -DUSE_BUNDLED_ZLIB=OFF \
+    -DUSE_BUNDLED_CARES=OFF \
+    -DUSE_BUNDLED_PROTOBUF=OFF \
+    -DUSE_BUNDLED_GRPC=OFF \
+    -DUSE_BUNDLED_JQ=OFF \
     -DUSE_BUNDLED_NCURSES=OFF ..
 
 make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
@@ -64,16 +78,29 @@ rm -rf %{buildroot}/*
 
 %postun
 /sbin/depmod -a
- 
+
 %files
 %defattr(-,root,root)
-/etc/bash_completion.d/* 
+/etc/bash_completion.d/*
 %{_bindir}
 %exclude %{_usrsrc}
 %{_datadir}
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/sysdig-probe.ko
 
 %changelog
+*   Fri Sep 27 2019 Ajay Kaher <akaher@vmware.com> 0.26.4-1
+-   Update to version 0.26.4 to fix kernel NULL pointer
+-   dereference crash in record_event_consumer.part
+*   Wed Jun 26 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 0.26.0-1
+-   Fix for CVE-2019-8339
+*   Fri Dec 07 2018 Sujay G <gsujay@vmware.com> 0.23.1-3
+-   Disabled bundled JQ and use Photon maintained JQ
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 0.23.1-2
+-   Adding BuildArch
+*   Wed Sep 19 2018 Ajay Kaher <akaher@vmware.com> 0.23.1-1
+-   Update to version 0.23.1
+*   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 0.19.1-1
+-   Update to version 0.19.1
 *   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.15.1-1
 -   Update to version 0.15.1
 *   Wed Jan 11 2017 Alexey Makhalov <amakhalov@vmware.com> 0.10.1-6

@@ -3,15 +3,15 @@
 
 Summary:        Google's data interchange format
 Name:           protobuf
-Version:        3.2.0
-Release:        6%{?dist}
+Version:        3.6.1
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/google/protobuf/
 Source0:        protobuf-%{version}.tar.gz
-%define         sha1 protobuf=2d47c98c7f35d74d475ba0796d345a45c22030fd
+%define         sha1 protobuf=9238da8596b18b22b73327508a4f4e1e9848083e
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -105,8 +105,8 @@ popd
 pushd java
 mvn install
 install -vdm755 %{buildroot}%{_libdir}/java/protobuf
-install -vm644 core/target/protobuf-java-3.2.0.jar %{buildroot}%{_libdir}/java/protobuf
-install -vm644 util/target/protobuf-java-util-3.2.0.jar %{buildroot}%{_libdir}/java/protobuf
+install -vm644 core/target/protobuf-java-3.6.1.jar %{buildroot}%{_libdir}/java/protobuf
+install -vm644 util/target/protobuf-java-util-3.6.1.jar %{buildroot}%{_libdir}/java/protobuf
 popd
 
 %post   -p /sbin/ldconfig
@@ -146,6 +146,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Tue Sep 18 2018 Tapas Kundu <tkundu@vmware.com> 3.6.1-1
+-   Update to version 3.6.1
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-6
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.2.0-5

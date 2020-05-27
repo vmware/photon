@@ -1,7 +1,7 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		libffi
 Version:	3.2.1
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	BSD
 URL:		http://sourceware.org/libffi/
 Group:		System Environment/GeneralLibraries
@@ -46,11 +46,7 @@ make %{?_smp_mflags}
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 install -D -m644 LICENSE %{buildroot}/usr/share/licenses/%{name}/LICENSE
-%ifarch x86_64
 find %{buildroot}/%{_lib64dir} -name '*.la' -delete
-%else
-find %{buildroot}/%{_libdir} -name '*.la' -delete
-%endif
 rm -rf %{buildroot}/%{_infodir}
 %{_fixperms} %{buildroot}/*
 
@@ -64,11 +60,7 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%ifarch x86_64
 %{_lib64dir}/*.so*
-%else
-%{_libdir}/*.so*
-%endif
 
 %files devel
 %defattr(-,root,root)
@@ -78,6 +70,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.2.1-6
+-   Aarch64 support
 *   Wed Jul 12 2017 Alexey Makhalov <amakhalov@vmware.com> 3.2.1-5
 -   Get tcl, expect and dejagnu from packages
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.2.1-4

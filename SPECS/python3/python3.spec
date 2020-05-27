@@ -1,24 +1,28 @@
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.6.1
-Release:        9%{?dist}
+Version:        3.7.5
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=91d880a2a9fcfc6753cbfa132bf47a47e17e7b16
+%define sha1    Python=860f88886809ae8bfc86afa462536811c347a2a1
 Patch0:         cgi3.patch
 Patch1:         python3-support-photon-platform.patch
-#https://github.com/python/cpython/pull/1320/commits/a252330d53afad6f8a4645933989bb017dc35ad8
-Patch2:         skip-imaplib-test.patch
+Patch2:         CVE-2019-17514.patch
+Patch3:         CVE-2019-18348.patch
+Patch4:         CVE-2020-8492.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
 BuildRequires:  readline-devel
 BuildRequires:  xz-devel
+BuildRequires:  expat-devel >= 2.1.0
+BuildRequires:  libffi-devel >= 3.0.13
+BuildRequires:  sqlite-devel
 Requires:       ncurses
 Requires:       openssl
 Requires:       python3-libs = %{version}-%{release}
@@ -30,6 +34,12 @@ Provides:       /usr/bin/python
 Provides:       /bin/python
 Provides:       /bin/python3
 
+%if %{with_check}
+BuildRequires:  iana-etc
+BuildRequires:  tzdata
+BuildRequires:  curl-devel
+%endif
+
 %description
 The Python 3 package contains a new version of Python development environment.
 Python 3 brings more efficient ways of handling dictionaries, better unicode
@@ -39,10 +49,6 @@ code. It is incompatible with Python 2.x releases.
 %package libs
 Summary: The libraries for python runtime
 Group: Applications/System
-BuildRequires:  expat-devel >= 2.1.0
-BuildRequires:  libffi-devel >= 3.0.13
-BuildRequires:  ncurses-devel
-BuildRequires:  sqlite-devel
 Requires:       (coreutils or toybox)
 Requires:       expat >= 2.1.0
 Requires:       libffi >= 3.0.13
@@ -135,15 +141,14 @@ The test package contains all regression tests for Python as well as the modules
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 export OPT="${CFLAGS}"
-./configure \
+%configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
     --enable-shared \
     --with-system-expat \
     --with-system-ffi \
@@ -153,9 +158,9 @@ make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
-chmod -v 755 %{buildroot}%{_libdir}/libpython3.6m.so.1.0
+chmod -v 755 %{buildroot}%{_libdir}/libpython3.7m.so.1.0
 %{_fixperms} %{buildroot}/*
-ln -sf libpython3.6m.so %{buildroot}%{_libdir}/libpython3.6.so
+ln -sf libpython3.7m.so %{buildroot}%{_libdir}/libpython3.7.so
 
 # Remove unused stuff
 find %{buildroot}%{_libdir} -name '*.pyc' -delete
@@ -178,91 +183,124 @@ rm -rf %{buildroot}/*
 %{_bindir}/pydoc*
 %{_bindir}/pyvenv*
 %{_bindir}/python3
-%{_bindir}/python3.6
-%{_bindir}/python3.6m
+%{_bindir}/python3.7
+%{_bindir}/python3.7m
 %{_mandir}/*/*
 
-%dir %{_libdir}/python3.6
-%dir %{_libdir}/python3.6/site-packages
+%dir %{_libdir}/python3.7
+%dir %{_libdir}/python3.7/site-packages
 
 %{_libdir}/libpython3.so
-%{_libdir}/libpython3.6.so
-%{_libdir}/libpython3.6m.so.1.0
+%{_libdir}/libpython3.7.so
+%{_libdir}/libpython3.7m.so.1.0
 
 
-%exclude %{_libdir}/python3.6/ctypes/test
-%exclude %{_libdir}/python3.6/distutils/tests
-%exclude %{_libdir}/python3.6/sqlite3/test
-%exclude %{_libdir}/python3.6/idlelib/idle_test
-%exclude %{_libdir}/python3.6/test
-%exclude %{_libdir}/python3.6/lib-dynload/_ctypes_test.*.so
+%exclude %{_libdir}/python3.7/ctypes/test
+%exclude %{_libdir}/python3.7/distutils/tests
+%exclude %{_libdir}/python3.7/sqlite3/test
+%exclude %{_libdir}/python3.7/idlelib/idle_test
+%exclude %{_libdir}/python3.7/test
+%exclude %{_libdir}/python3.7/lib-dynload/_ctypes_test.*.so
 
 %files libs
 %defattr(-,root,root)
 %doc LICENSE README.rst
-%{_libdir}/python3.6
-%{_libdir}/python3.6/site-packages/easy_install.py
-%{_libdir}/python3.6/site-packages/README.txt
-%exclude %{_libdir}/python3.6/site-packages/
-%exclude %{_libdir}/python3.6/ctypes/test
-%exclude %{_libdir}/python3.6/distutils/tests
-%exclude %{_libdir}/python3.6/sqlite3/test
-%exclude %{_libdir}/python3.6/idlelib/idle_test
-%exclude %{_libdir}/python3.6/test
-%exclude %{_libdir}/python3.6/lib-dynload/_ctypes_test.*.so
-%exclude %{_libdir}/python3.6/xml
-%exclude %{_libdir}/python3.6/lib-dynload/pyexpat*.so
-%exclude %{_libdir}/python3.6/curses
-%exclude %{_libdir}/python3.6/lib-dynload/_curses*.so
+%{_libdir}/python3.7
+%{_libdir}/python3.7/site-packages/easy_install.py
+%{_libdir}/python3.7/site-packages/README.txt
+%exclude %{_libdir}/python3.7/site-packages/
+%exclude %{_libdir}/python3.7/ctypes/test
+%exclude %{_libdir}/python3.7/distutils/tests
+%exclude %{_libdir}/python3.7/sqlite3/test
+%exclude %{_libdir}/python3.7/idlelib/idle_test
+%exclude %{_libdir}/python3.7/test
+%exclude %{_libdir}/python3.7/lib-dynload/_ctypes_test.*.so
+%exclude %{_libdir}/python3.7/xml
+%exclude %{_libdir}/python3.7/lib-dynload/pyexpat*.so
+%exclude %{_libdir}/python3.7/curses
+%exclude %{_libdir}/python3.7/lib-dynload/_curses*.so
+%exclude %{_libdir}/python3.7/distutils/command/wininst-*.exe
 
 %files  xml
-%{_libdir}/python3.6/xml/*
-%{_libdir}/python3.6/lib-dynload/pyexpat*.so
+%{_libdir}/python3.7/xml/*
+%{_libdir}/python3.7/lib-dynload/pyexpat*.so
 
 %files  curses
-%{_libdir}/python3.6/curses/*
-%{_libdir}/python3.6/lib-dynload/_curses*.so
+%{_libdir}/python3.7/curses/*
+%{_libdir}/python3.7/lib-dynload/_curses*.so
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/pkgconfig/python-3.6.pc
-%{_libdir}/pkgconfig/python-3.6m.pc
+%{_libdir}/pkgconfig/python-3.7.pc
+%{_libdir}/pkgconfig/python-3.7m.pc
 %{_libdir}/pkgconfig/python3.pc
-%{_libdir}/libpython3.6m.so
+%{_libdir}/libpython3.7m.so
 %{_bindir}/python3-config
-%{_bindir}/python3.6-config
-%{_bindir}/python3.6m-config
+%{_bindir}/python3.7-config
+%{_bindir}/python3.7m-config
 
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
-%{_libdir}/libpython3.so
 %exclude %{_bindir}/2to3*
 %exclude %{_bindir}/idle*
 
 %files tools
 %defattr(-,root,root,755)
 %doc Tools/README
-%{_libdir}/python3.6/lib2to3
-%{_bindir}/2to3-3.6
+%{_libdir}/python3.7/lib2to3
+%{_bindir}/2to3-3.7
 %exclude %{_bindir}/idle*
 
 %files pip
 %defattr(-,root,root,755)
-%{_libdir}/python3.6/site-packages/pip/*
-%{_libdir}/python3.6/site-packages/pip-9.0.1.dist-info/*
+%{_libdir}/python3.7/site-packages/pip/*
+%{_libdir}/python3.7/site-packages/pip-19.2.3.dist-info/*
 %{_bindir}/pip*
 
 %files setuptools
 %defattr(-,root,root,755)
-%{_libdir}/python3.6/site-packages/pkg_resources/*
-%{_libdir}/python3.6/site-packages/setuptools/*
-%{_libdir}/python3.6/site-packages/setuptools-28.8.0.dist-info/*
-%{_bindir}/easy_install-3.6
+%{_libdir}/python3.7/site-packages/pkg_resources/*
+%{_libdir}/python3.7/site-packages/setuptools/*
+%{_libdir}/python3.7/site-packages/setuptools-41.2.0.dist-info/*
+%{_bindir}/easy_install-3.7
 
 %files test
-%{_libdir}/python3.6/test/*
+%{_libdir}/python3.7/test/*
 
 %changelog
+*   Thu Apr 02 2020 Tapas Kundu <tkundu@vmware.com> 3.7.5-3
+-   Fix for CVE-2020-8492
+*   Thu Mar 26 2020 Tapas Kundu <tkundu@vmware.com> 3.7.5-2
+-   Fix CVE-2019-18348
+*   Sun Nov 10 2019 Tapas Kundu <tkundu@vmware.com> 3.7.5-1
+-   Updated to 3.7.5 patch release
+*   Tue Nov 05 2019 Tapas Kundu <tkundu@vmware.com> 3.7.4-4
+-   Fix CVE-2019-17514
+*   Wed Oct 23 2019 Tapas Kundu <tkundu@vmware.com> 3.7.4-3
+-   Fix conflict of libpython3.so
+*   Mon Oct 21 2019 Shreyas B. <shreyasb@vmware.com> 3.7.4-2
+-   Fixed makecheck errors.
+*   Thu Oct 17 2019 Tapas Kundu <tkundu@vmware.com> 3.7.4-1
+-   Updated to patch release 3.7.4
+-   Fix CVE-2019-16935
+*   Wed Sep 11 2019 Tapas Kundu <tkundu@vmware.com> 3.7.3-3
+-   Fix CVE-2019-16056
+*   Mon Jun 17 2019 Tapas Kundu <tkundu@vmware.com> 3.7.3-2
+-   Fix for CVE-2019-10160
+*   Mon Jun 10 2019 Tapas Kundu <tkundu@vmware.com> 3.7.3-1
+-   Update to Python 3.7.3 release
+*   Thu May 23 2019 Tapas Kundu <tkundu@vmware.com> 3.7.0-6
+-   Fix for CVE-2019-5010
+*   Tue Mar 12 2019 Tapas Kundu <tkundu@vmware.com> 3.7.0-5
+-   Fix for CVE-2019-9636
+*   Mon Feb 11 2019 Taps Kundu <tkundu@vmware.com> 3.7.0-4
+-   Fix for CVE-2018-20406
+*   Fri Dec 21 2018 Tapas Kundu <tkundu@vmware.com> 3.7.0-3
+-   Fix for CVE-2018-14647
+*   Tue Dec 04 2018 Tapas Kundu <tkundu@vmware.com> 3.7.0-2
+-   Excluded windows installer from python3 libs packaging.
+*   Wed Sep 26 2018 Tapas Kundu <tkundu@vmware.com> 3.7.0-1
+-   Updated to version 3.7.0
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.6.1-9
 -   Requires coreutils or toybox
 -   Requires bzip2-libs

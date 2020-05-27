@@ -1,6 +1,8 @@
---- a/build.xml	2017-03-14 12:31:03.000000000 -0700
-+++ b/build.xml	2017-08-17 12:14:12.965910677 -0700
-@@ -345,7 +345,6 @@
+diff --git a/build.xml b/build.xml
+index f763f02..f4eea18 100644
+--- a/build.xml
++++ b/build.xml
+@@ -363,7 +363,6 @@
        <pathelement path="${build}/${jar}"/>
        <pathelement path="${test.classes}"/>
        <pathelement path="${build}/${testjar}"/>
@@ -8,7 +10,7 @@
        <path refid="test.libs"/>
      </path>
    </target>
-@@ -995,7 +994,6 @@
+@@ -1041,7 +1040,6 @@ osname=macosx;processor=x86;processor=x86-64;processor=ppc
      <copy todir="${build}/jws" file="${build}/${jar}"/>
      <copy todir="${build}/jws" file="${build}/${testjar}"/>
      <copy todir="${build}/jws" file="lib/junit.jar"/>
@@ -16,7 +18,7 @@
      <jar jarfile="${build}/jws/jnidispatch.jar">
        <fileset dir="${build.native}" includes="*jnidispatch.*"/>
      </jar>
-@@ -1004,7 +1002,7 @@
+@@ -1050,7 +1048,7 @@ osname=macosx;processor=x86;processor=x86-64;processor=ppc
      <!-- javaws -viewer (security tab, import CSR as CA-->
      <!--
      <signjar alias="jna" keystore="jna.keystore" storepass="jnadev" lazy="true">
@@ -25,7 +27,7 @@
      </signjar>
      -->
    </target>
-@@ -1121,27 +1119,6 @@
+@@ -1167,27 +1165,6 @@ osname=macosx;processor=x86;processor=x86-64;processor=ppc
      </subant>
    </target>
  
@@ -53,7 +55,7 @@
    <target name="javadoc" depends="-setup">
      <path id="javadoc.src.path">
        <path refid="src.path"/>
-@@ -1232,7 +1209,7 @@
+@@ -1278,7 +1255,7 @@ osname=macosx;processor=x86;processor=x86-64;processor=ppc
      <!-- Full sources required to build and test everything -->
      <zip zipfile="${dist}/src-full.zip">
        <zipfileset src="${dist}/src.zip"/>
@@ -62,7 +64,7 @@
        <zipfileset dir="." includes=".classpath,.project"/>
        <zipfileset dir="${native}" includes="libffi,libffi/**/*" prefix="native"/>
      </zip>
-@@ -1247,8 +1224,6 @@
+@@ -1293,8 +1270,6 @@ osname=macosx;processor=x86;processor=x86-64;processor=ppc
        <fileset dir="${build}"/>
      </delete>
      <delete quiet="true" includeEmptyDirs="true">
@@ -71,10 +73,3 @@
        <fileset dir="${javadoc}"/>
        <fileset dir="." includes="*~,**/*~,build.number,native/libffi/configure"/>
      </delete>
-@@ -1343,4 +1318,4 @@
-       <arg value="-Dgpg.useagent=true"/>
-     </artifact:mvn>
-   </target>
--</project>
-\ No newline at end of file
-+</project>

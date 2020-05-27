@@ -3,15 +3,15 @@
 
 Summary:        the blessed package to manage your versions by scm tags.
 Name:           python-setuptools_scm
-Version:        1.15.0
-Release:        2%{?dist}
+Version:        3.1.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/setuptools_scm
 Source0:        https://files.pythonhosted.org/packages/source/s/setuptools_scm/setuptools_scm-%{version}.tar.gz
-%define         sha1 setuptools_scm=273bb9fbc27d169cb9853b379db8f749ea7caede
+%define sha1    setuptools_scm=cffffd63429761edece3957321a50fbdb364f043
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -73,6 +73,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 3.1.0-1
+-   Update to version 3.1.0
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.0-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.0-1

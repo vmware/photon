@@ -1,12 +1,12 @@
 Summary:	A collection of PIN or passphrase entry dialogs
 Name:		pinentry
-Version:	1.0.0
-Release:	2%{?dist}
-License:	GPLv3+
+Version:	1.1.0
+Release:	1%{?dist}
+License:	GPLv2
 URL:		https://gnupg.org/software/pinentry/index.html
 Group:		Applications/Cryptography.
 Source0:        https://gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2
-%define sha1 pinentry=85d9ac81ebad3fb082514c505c90c39a0456f1f6
+%define sha1 pinentry=693bdf9f48dfb3e040d92f50b1bb464e268b9fb0
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  libassuan
@@ -40,7 +40,10 @@ make DESTDIR=%{buildroot} install
 %exclude %{_infodir}/dir
 
 %changelog
+*       Mon Sep 24 2018 Dweep Advani <dadvani@vmware.com> 1.1.0-1
+-       Update to version 1.1.0
 *       Wed Aug 16 2017 Danut Moraru <dmoraru@vmware.com> 1.0.0-2
-        Build pinentry-tty
+-       Build pinentry-tty
 *       Wed Jun 07 2017 Danut Moraru <dmoraru@vmware.com> 1.0.0-1
 -       Initial Build.
+

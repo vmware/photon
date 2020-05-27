@@ -1,3 +1,13 @@
 {
-    "packages":["sudo", "python-pyasn1", "gawk", "cloud-utils", "gptfdisk", "WALinuxAgent"]
+    "packages":[
+                "minimal",
+                "linux",
+                "initramfs",
+                "sudo",
+                "python-pyasn1",
+                "gawk",
+                "cloud-utils",
+                "gptfdisk",
+                "WALinuxAgent"
+                ]
 }

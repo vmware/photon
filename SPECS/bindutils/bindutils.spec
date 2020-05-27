@@ -1,32 +1,34 @@
-Summary:	Domain Name System software
-Name:		bindutils
-Version:	9.10.4
-Release:	4%{?dist}
-License:	ISC
-URL:		http://www.isc.org/downloads/bind/
-Source0:	ftp://ftp.isc.org/isc/bind9/%{version}-P1/bind-%{version}-P8.tar.gz
-%define sha1 bind=33a4c37bb85f632e7002bc157e9d357e389466da
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Requires:	openssl
+Summary:        Domain Name System software
+Name:           bindutils
+Version:        9.15.6
+Release:        1%{?dist}
+License:        ISC
+URL:            http://www.isc.org/downloads/bind/
+Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.gz
+%define sha1    bind=12b38c0982ee6d8ac1c9862257389aed028bd86b
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Requires:       openssl
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
-BuildRequires:	openssl-devel
+BuildRequires:  openssl-devel
+BuildRequires:  libuv-devel
 %description
-BIND is open source software that implements the Domain Name System (DNS) protocols 
-for the Internet. It is a reference implementation of those protocols, but it is 
+BIND is open source software that implements the Domain Name System (DNS) protocols
+for the Internet. It is a reference implementation of those protocols, but it is
 also production-grade software, suitable for use in high-volume and high-reliability applications.
 %prep
-%setup -qn bind-%{version}-P8
+%setup -qn bind-%{version}
 %build
-./configure \
-	--prefix=%{_prefix}
+%configure \
+    --without-python \
+    --disable-linux-caps
 make -C lib/dns %{?_smp_mflags}
 make -C lib/isc %{?_smp_mflags}
 make -C lib/bind9 %{?_smp_mflags}
 make -C lib/isccfg %{?_smp_mflags}
-make -C lib/lwres %{?_smp_mflags}
+make -C lib/irs %{?_smp_mflags}
 make -C bin/dig %{?_smp_mflags}
 %install
 make -C bin/dig DESTDIR=%{buildroot} install
@@ -51,7 +53,7 @@ if ! getent passwd named >/dev/null; then
 fi
 %post -p /sbin/ldconfig
 
-%postun	
+%postun
 /sbin/ldconfig
 if getent passwd named >/dev/null; then
     userdel named
@@ -67,8 +69,17 @@ fi
 %{_sysconfdir}/*
 %{_prefix}/lib/tmpfiles.d/named.conf
 
-
 %changelog
+*   Mon Feb 17 2020 Sujay G <gsujay@vmware.com> 9.15.6-1
+-   Bump version to 9.15.6 to fix CVE-2019-6470
+*   Mon Jan 27 2020 Tapas Kundu <tkundu@vmware.com> 9.15.5-2
+-   Bump bindutils release to build with latest openssl
+*   Thu Jan 09 2020 Sujay G <gsujay@vmware.com> 9.15.5-1
+-   Bump bindutils version to 9.15.5
+*   Sun Sep 23 2018 Sujay G <gsujay@vmware.com> 9.13.3-1
+-   Bump bindutils version to 9.13.3
+*   Mon Feb 12 2018 Xiaolin Li <xiaolinl@vmware.com> 9.10.6-1
+-   Upgrading version to 9.10.6-P1, fix CVE-2017-3145
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 9.10.4-4
 -   Remove shadow from requires and use explicit tools for post actions
 *   Fri Apr 14 2017 Kumar Kaushik <kaushikk@vmware.com> 9.10.4-3

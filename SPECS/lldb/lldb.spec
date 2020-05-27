@@ -1,15 +1,15 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
-Version:        4.0.0
-Release:        3%{?dist}
+Version:        6.0.1
+Release:        1%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    lldb=da78ed1453a5e62ff058bebf0cd91c8f51ec5504
+%define sha1    lldb=907a32c7170067f485121a1e8ff793b16d1ff491
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
 BuildRequires:  clang-devel = %{version}
@@ -80,10 +80,12 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/liblldb.so.*
+%{_libdir}/liblldbIntelFeatures.so.*
 
 %files devel
 %defattr(-,root,root)
 %{_libdir}/liblldb.so
+%{_libdir}/liblldbIntelFeatures.so
 %{_libdir}/*.a
 %{_includedir}/*
 
@@ -92,7 +94,10 @@ rm -rf %{buildroot}/*
 %{python2_sitelib}/*
 
 %changelog
-*   Thu Jul 10 2017 Chang Lee <changlee@vmware.com> 4.0.0-3
+*   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1
+-   Update to version 6.0.1 to get it to build with gcc 7.3
+-   Make python2_sitelib macro global to fix build error.
+*   Mon Jul 10 2017 Chang Lee <changlee@vmware.com> 4.0.0-3
 -   Commented out %check due to no test existence.
 *   Wed Jul 5 2017 Divya Thaluru <dthaluru@vmware.com> 4.0.0-2
 -   Added python-lldb package

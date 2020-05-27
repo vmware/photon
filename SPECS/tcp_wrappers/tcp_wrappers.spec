@@ -1,7 +1,7 @@
 Summary:	TCP/IP daemon wrapper package
 Name:		tcp_wrappers
 Version:	7.6
-Release:	4%{?dist}
+Release:	5%{?dist}
 License: 	BSD
 Group: 		System Environment/Networking
 URL: 		ftp://ftp.porcupine.org/pub/security/index.html
@@ -9,6 +9,8 @@ Source0: 	ftp://ftp.porcupine.org/pub/security/%{name}_%{version}.tar.gz
 %define sha1 tcp_wrappers=61689ec85b80f4ca0560aef3473eccd9e9e80481
 Patch0:		http://www.linuxfromscratch.org/patches/blfs/6.3/tcp_wrappers-7.6-shared_lib_plus_plus-1.patch
 Requires:       finger
+BuildRequires:  libnsl-devel
+Requires:       libnsl
 
 %description
 The TCP Wrapper package provides daemon wrapper programs that report the name of the client requesting network services and the requested service. 
@@ -16,6 +18,7 @@ The TCP Wrapper package provides daemon wrapper programs that report the name of
 %package devel
 Summary:	The libraries and header files needed for tcp_wrappers development.
 Requires: 	%{name} = %{version}-%{release}
+Requires:	libnsl-devel
 
 %description devel
 The libraries and header files needed for tcp_wrappers development.
@@ -54,6 +57,8 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/*.h
 
 %changelog
+* Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 7.6-5
+- Use libnsl
 * Mon Sep 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 7.6-4
 - Add finger to Requires
 * Wed Aug 23 2017 Alexey Makhalov <amakhalov@vmware.com> 7.6-3

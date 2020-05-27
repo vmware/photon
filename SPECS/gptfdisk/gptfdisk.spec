@@ -1,15 +1,15 @@
-Summary:	gptfdisk-1.0.1
+Summary:	gptfdisk-1.0.4
 Name:		gptfdisk
-Version:	1.0.1
-Release:	4%{?dist}
+Version:	1.0.4
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://sourceforge.net/projects/gptfdisk/
 Group:		System Environment/Filesystem and Disk management
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:	http://downloads.sourceforge.net/project/gptfdisk/gptfdisk/1.0.1/gptfdisk-1.0.1.tar.gz
-%define sha1 gptfdisk=ad28c511c642235815b83fffddf728c117057cba
-Patch0:	        gptfdisk-1.0.1-convenience-1.patch	
+Source0:	http://downloads.sourceforge.net/project/gptfdisk/%{name}/%{version}/%{name}-%{version}.tar.gz
+%define sha1 gptfdisk=4c2d60bedd4eac1014727e3b126de96966205410
+Patch0:	    gptfdisk-1.0.4-convenience-1.patch	
 Requires: 	popt >= 1.16
 BuildRequires:	popt-devel
 BuildRequires:	ncurses-devel
@@ -39,13 +39,15 @@ rm -rf %{buildroot}/*
 /sbin/*
 %{_mandir}/man8/*
 %changelog
-*	Mon Jun 05 2017 Bo Gan <ganb@vmware.com> 1.0.1-4
--	Fix dependency
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.0.1-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-2
--	GA - Bump release of all rpms
-*       Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.1-1
--       Updated Version.
-*	Thu Oct 30 2014 Divya Thaluru <dthaluru@vmware.com> 0.8.10-1
--	Initial build.	First version
+*   Tue Sep 11 2018 Anish Swaminathan <anishs@vmware.com> 1.0.4-1
+-   Update version to 1.0.4
+*   Mon Jun 05 2017 Bo Gan <ganb@vmware.com> 1.0.1-4
+-   Fix dependency
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.0.1-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-2
+-   GA - Bump release of all rpms
+*   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.1-1
+-   Updated Version.
+*   Thu Oct 30 2014 Divya Thaluru <dthaluru@vmware.com> 0.8.10-1
+-   Initial build.	First version

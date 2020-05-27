@@ -1,14 +1,14 @@
 Summary:        The GNU Database Manager
 Name:           gdbm
-Version:        1.13
-Release:        3%{?dist}
+Version:        1.18
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/gdbm
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/gdbm/%{name}-%{version}.tar.gz
-%define sha1    gdbm=7f2a8301497bbcac91808b011ca533380914fd21
+%define sha1    gdbm=0f1056ab3beb1bf09dad06f8083f2c79716a5b1b
 
 %description
 This is a disk file format database which stores key/data-pairs in
@@ -69,6 +69,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 1.18-1
+-   Update to version 1.18
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.13-3
 -   Add devel package.
 *   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 1.13-2

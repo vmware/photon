@@ -1,0 +1,14 @@
+[Unit]
+Description=Conntrack Daemon
+Documentation=man:conntrackd(8) man:conntrackd.conf(5)
+After=network.target
+
+[Service]
+Type=notify
+ExecStart=/usr/sbin/conntrackd -C /etc/conntrackd/conntrackd.conf
+ExecReload=/usr/bin/kill -HUP $MAINPID
+Restart=on-failure
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

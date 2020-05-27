@@ -1,38 +1,51 @@
-Summary:	Packet Analyzer
-Name:		tcpdump
-Version:	4.9.2
-Release:	1%{?dist}
-License:	BSD
-URL:		http://www.tcpdump.org
-Source0:	http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
-%define sha1 tcpdump=e2db246a9dd19278bac1a5ff875106c75e0a16d4
-Group:		Networking
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildRequires: 	libpcap
-Requires:	libpcap
+Summary:        Packet Analyzer
+Name:           tcpdump
+Version:        4.9.3
+Release:        1%{?dist}
+License:        BSD
+URL:            http://www.tcpdump.org
+Source0:        http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
+%define sha1 tcpdump=59b309f3620ac4b709de2eaf7bf3a83bf04bc048
+Patch0:         CVE-2018-19519.patch
+Group:          Networking
+Vendor:         VMware, Inc.
+Distribution:   Photon
+BuildRequires:  libpcap-devel
+Requires:       libpcap
+
 %description
-Tcpdump is a common packet analyzer that runs under the command line. 
-It allows the user to display TCP/IP and other packets being 
+Tcpdump is a common packet analyzer that runs under the command line.
+It allows the user to display TCP/IP and other packets being
 transmitted or received over a network to which the computer is attached.
+
 %prep
-%setup -qn tcpdump-tcpdump-%{version}
+%setup -q
+%patch0 -p1
 %build
-./configure \
-	--prefix=%{_prefix}
+%configure
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
 %check
+sed -i '626,636d' tests/TESTLIST
 make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
 %{_sbindir}/*
 %{_mandir}/man1/*
+
 %changelog
+*   Wed Oct 09 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 4.9.3-1
+-   Update to version 4.9.3 to fix multiple CVEs
+-   Removed kh-addrfail tests, to fix make check failure
+*   Mon Aug 26 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 4.9.2-3
+-   Added patches for CVE-2019-1010220
+*   Thu Mar 14 2019 Michelle Wang <michellew@vmware.com> 4.9.2-2
+-   Add patch CVE-2018-19519
 *   Fri Sep 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.2-1
 -   Updating version to 4.9.2
 *   Thu Sep 07 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.1-2

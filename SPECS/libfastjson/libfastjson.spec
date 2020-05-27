@@ -1,11 +1,11 @@
 Summary:    A fast json library for C
 Name:       libfastjson
-Version:    0.99.4
+Version:    0.99.8
 Release:    1%{?dist}
 License:    MIT
 URL:        https://github.com/rsyslog/libfastjson
 Source0:    %{name}-%{version}.tar.gz
-%define sha1 libfastjson=0c10dde7f29d112fc7fc7b78583719f839bd2f16
+%define sha1 libfastjson=df1ab2602bc73cf4c49a16860cf6a065b636fe6d
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 Distribution:   Photon
@@ -30,6 +30,7 @@ developing applications that use libfastjson.
 %build
 sh autogen.sh
 %configure --enable-shared --disable-static
+make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
@@ -52,5 +53,7 @@ make check
 
 
 %changelog
+*       Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 0.99.8-1
+-       Updated to version 0.99.8
 *       Mon Apr 17 2017 Siju Maliakkal <smaliakkal@vmware.com>  0.99.4-1
 -       Initial version

@@ -1,10 +1,12 @@
-FROM vmware/photon:2.0
+FROM k8s-base-image:3.0
 
 MAINTAINER kulkarniv@vmware.com
 
 ENV FLANNEL_ARCH=amd64
 
-RUN tdnf install -y iproute2 net-tools iptables
+COPY [ "./stage-rpms-tdnf.conf", "./tmp/stage-rpms.repo", "/tmp/tdnf/" ]
+RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y iproute2 iptables --refresh
+
 ADD tmp/flannel/usr/bin/flanneld /opt/bin/flanneld
 COPY tmp/flannel/usr/share/flannel/docker/mk-docker-opts.sh /opt/bin/
 RUN ln -s /usr/sbin/iptables /usr/local/bin/iptables

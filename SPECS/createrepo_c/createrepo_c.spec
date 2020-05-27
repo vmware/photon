@@ -1,14 +1,14 @@
-Summary: 	Creates a common metadata repository
-Name: 		createrepo_c
-Version: 	0.10.0
-Release: 	1%{?dist}
-License:	GPLv2+
-Group: 		System Environment/Base
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0: 	%{name}-%{version}.tar.gz
-%define sha1 createrepo_c=b2333b490575cf1199d78ca1945c5808f41c6440
-URL: 		https://github.com/rpm-software-management/createrepo_c
+Summary:        Creates a common metadata repository
+Name:           createrepo_c
+Version:        0.11.1
+Release:        2%{?dist}
+License:        GPLv2+
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    createrepo_c=89040f2c34200ae08876a645b4a160beb03a9298
+URL:            https://github.com/rpm-software-management/createrepo_c
 BuildRequires:  cmake
 BuildRequires:  curl-devel
 BuildRequires:  expat-devel
@@ -19,8 +19,14 @@ BuildRequires:  libxml2-devel
 BuildRequires:  rpm-devel
 BuildRequires:  xz-devel
 BuildRequires:  sqlite-devel
+BuildRequires:  python3-devel
+%if %{with_check}
+Requires:       libxml2
+%endif
 Obsoletes:      createrepo
 Provides:       createrepo
+Provides:       /bin/mergerepo
+Provides:       /bin/modifyrepo
 
 %description
 C implementation of the createrepo.
@@ -49,6 +55,8 @@ make %{?_smp_mflags}
 cd build
 make install DESTDIR=%{buildroot}
 ln -sf %{_bindir}/createrepo_c %{buildroot}%{_bindir}/createrepo
+ln -sf %{_bindir}/mergerepo_c %{buildroot}%{_bindir}/mergerepo
+ln -sf %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 
 %clean
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
@@ -69,5 +77,11 @@ ln -sf %{_bindir}/createrepo_c %{buildroot}%{_bindir}/createrepo
 %{_lib64dir}/pkgconfig/%{name}.pc
 
 %changelog
-* Wed Oct 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.10.0-1
-- Initial
+*   Wed Jun 19 2019 Ankit Jain <ankitja@vmware.com> 0.11.1-2
+-   Added libxml2 as Requires for makecheck.
+*   Tue Sep 04 2018 Keerthana K <keerthanak@vmware.com> 0.11.1-1
+-   Updated to version 0.11.1.
+*   Mon Jun 04 2018 Xiaolin Li <xiaolinl@vmware.com> 0.10.0-2
+-   Provides modifyrepo and merge repo
+*   Wed Oct 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.10.0-1
+-   Initial

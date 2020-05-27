@@ -1,9 +1,10 @@
 Summary:  Certificate Authority certificates 
 Name:   ca-certificates
-Version:  20170406
-Release:  3%{?dist}
+Version:  20190521
+Release:  1%{?dist}
 License:  Custom
-URL:    http://mxr.mozilla.org/mozilla/source/security/nss/lib/ckfw/builtins/
+# http://anduin.linuxfromscratch.org/BLFS/other/certdata.txt
+URL:    http://anduin.linuxfromscratch.org/BLFS/other/
 Group:    System Environment/Security
 Vendor:   VMware, Inc.
 Distribution: Photon
@@ -242,6 +243,12 @@ exit 0
 %defattr(-,root,root)
 /etc/pki/tls/certs/ca-bundle.crt
 %changelog
+* Wed May 22 2019 Gerrit Photon <photon-checkins@vmware.com> 20190521-1
+- Automatic Version Bump
+* Fri May 10 2019 Ankit Jain <ankitja@vmware.com> 20190509-1
+- Updating mozilla certdata.txt to latest revision
+* Tue Sep 25 2018 Ankit Jain <ankitja@vmware.com> 20180919-1
+- Updating mozilla certdata.txt to latest revision
 * Wed May  3 2017 Bo Gan <ganb@vmware.com> 20170406-3
 - Fixed dependency on coreutils
 * Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 20170406-2
@@ -252,7 +259,7 @@ exit 0
 - GA - Bump release of all rpms
 * Wed Feb 10 2016 Anish Swaminathan <anishs@vmware.com> 20160109-4
 - Add Provides field
-* Mon Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 20160109-3
+* Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 20160109-3
 - Force create links for certificates
 * Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 20160109-2
 - Remove c_rehash dependency

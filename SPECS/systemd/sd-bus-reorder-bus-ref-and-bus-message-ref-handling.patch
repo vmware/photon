@@ -1,0 +1,54 @@
+From 9c23ceef0a08ffdf4aed7a96ec440e1b110568ac Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Thu, 17 Jan 2019 18:14:17 +0100
+Subject: [PATCH 02/10] sd-bus: reorder bus ref and bus message ref handling
+
+Let's always place handling of these references together, so that all
+reference counting during allocation is at a single place.
+
+(cherry picked from commit e593b6a87a335267e5f7238b14683b7f840a01a3)
+Related: CVE-2020-1712
+---
+ src/libsystemd/sd-bus/bus-message.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/libsystemd/sd-bus/bus-message.c b/src/libsystemd/sd-bus/bus-message.c
+index 19cb2b9a97..e9cdf46c91 100644
+--- a/src/libsystemd/sd-bus/bus-message.c
++++ b/src/libsystemd/sd-bus/bus-message.c
+@@ -461,7 +461,6 @@ int bus_message_from_header(
+         if (!m)
+                 return -ENOMEM;
+ 
+-        m->n_ref = 1;
+         m->sealed = true;
+         m->header = header;
+         m->header_accessible = header_accessible;
+@@ -515,7 +514,9 @@ int bus_message_from_header(
+                 m->creds.mask |= SD_BUS_CREDS_SELINUX_CONTEXT;
+         }
+ 
++        m->n_ref = 1;
+         m->bus = sd_bus_ref(bus);
++
+         *ret = TAKE_PTR(m);
+ 
+         return 0;
+@@ -588,13 +589,13 @@ _public_ int sd_bus_message_new(
+                 return -ENOMEM;
+ 
+         t->n_ref = 1;
++        t->bus = sd_bus_ref(bus);
+         t->header = (struct bus_header*) ((uint8_t*) t + ALIGN(sizeof(struct sd_bus_message)));
+         t->header->endian = BUS_NATIVE_ENDIAN;
+         t->header->type = type;
+         t->header->version = bus->message_version;
+         t->allow_fds = bus->can_fds || !IN_SET(bus->state, BUS_HELLO, BUS_RUNNING);
+         t->root_container.need_offsets = BUS_MESSAGE_IS_GVARIANT(t);
+-        t->bus = sd_bus_ref(bus);
+ 
+         if (bus->allow_interactive_authorization)
+                 t->header->flags |= BUS_MESSAGE_ALLOW_INTERACTIVE_AUTHORIZATION;
+-- 
+2.25.1
+

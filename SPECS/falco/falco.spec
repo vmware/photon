@@ -1,19 +1,21 @@
 %global security_hardening none
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
-Version:        0.6.0
-Release:        3%{?kernelsubrelease}%{?dist}
+Version:        0.15.1
+Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/draios/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1    falco=04dc79c1c4773ba2080c2c49c718305e7920c2f7
-Source1:        https://github.com/draios/sysdig/archive/sysdig-0.15.1.tar.gz
-%define sha1    sysdig=5b1a7a4978315176412989b5400572d849691917
+%define sha1    falco=7c3cf3eecb04690aa087e7c0bfb642fc567ac7c1
+Source1:        https://github.com/draios/sysdig/archive/sysdig-0.26.0.tar.gz
+%define sha1    sysdig=0104006492afeda870b6b08a5d1f8e76d84559ff
 Source2:        http://libvirt.org/sources/libvirt-2.0.0.tar.xz
 %define sha1    libvirt=9a923b06df23f7a5526e4ec679cdadf4eb35a38f
+Patch0:         falco-CMakeLists.txt.patch
+BuildArch:      x86_64
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
@@ -22,11 +24,16 @@ BuildRequires:  ncurses-devel
 BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:  libgcrypt
 BuildRequires:  sysdig
+BuildRequires:  jq-devel
 BuildRequires:  git
 BuildRequires:  lua-devel
 BuildRequires:  libyaml-devel
 BuildRequires:  linux-api-headers
 BuildRequires:  wget
+BuildRequires:	which
+BuildRequires:	grpc-devel
+BuildRequires:	c-ares-devel
+BuildRequires:	protobuf-devel
 %if %{with_check}
 BuildRequires:  dkms
 BuildRequires:  xz-devel
@@ -40,30 +47,45 @@ Requires:       libyaml
 Requires:       lua
 Requires:       sysdig
 Requires:       dkms
+Requires:       grpc
+Requires:       jq
+Requires:       protobuf
+Requires:       c-ares
 
 %description
-Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules. 
+Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules.
 
 %prep
 %setup
 %setup -T -D -a 1
 tar xf %{SOURCE2} --no-same-owner
+%patch0 -p1
 
 %build
-mv sysdig-0.15.1 ../sysdig
+mv sysdig-0.26.0 ../sysdig
 sed -i 's|../falco/rules|rules|g' userspace/engine/CMakeLists.txt
 sed -i 's|../falco/userspace|userspace|g' userspace/engine/config_falco_engine.h.in
-# fix for linux-4.9
-sed -i 's|task_thread_info(current)->status|current->thread.status|g' ../sysdig/driver/main.c
-sed -i 's|task_thread_info(task)->status|current->thread.status|g' ../sysdig/driver/ppm_syscall.h
-cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} CMakeLists.txt
+sed -i '/#include <stdlib.h>/a #include<sys/sysmacros.h>' ../sysdig/userspace/libscap/scap_fds.c
+sed -i '/"${B64_LIB}"/a      "${CURL_LIBRARIES}"' ../sysdig/userspace/libsinsp/CMakeLists.txt
+sed -i 's+OPENSSL=../../openssl-prefix/src/openssl/target/bin/openssl+OPENSSL=/usr/bin/openssl+g' userspace/falco/verify_engine_fields.sh
+cmake \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DUSE_BUNDLED_OPENSSL=OFF \
+    -DUSE_BUNDLED_CURL=OFF \
+    -DUSE_BUNDLED_JQ=OFF \
+    -DUSE_BUNDLED_GRPC=OFF \
+    -DUSE_BUNDLED_ZLIB=OFF \
+    -DUSE_BUNDLED_CARES=OFF \
+    -DUSE_BUNDLED_PROTOBUF=OFF \
+    -DUSE_BUNDLED_NCURSES=OFF \
+    -DUSE_BUNDLED_LIBYAML=OFF \
+    CMakeLists.txt
 make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
 
 %install
 make install KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build" DESTDIR=%{buildroot}
 mkdir -p %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra
 mv driver/falco-probe.ko %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra
-sed -i 's|/var/lib/dkms/$PACKAGE_NAME/$SYSDIG_VERSION/$KERNEL_RELEASE/$ARCH/module/$PROBE_NAME.ko|/lib/modules/$KERNEL_RELEASE/extra/$PROBE_NAME.ko|g' %{buildroot}/usr/bin/falco-probe-loader
 
 #falco requires docker instance and dpkg to pass make check.
 #%check
@@ -86,7 +108,25 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/falco-probe.ko
 
+%post
+/sbin/depmod -a
+
+%postun
+/sbin/depmod -a
+
 %changelog
+*   Wed Jun 26 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 0.15.1-1
+-   Updated to fix CVE-2019-8339
+*   Wed Dec 12 2018 Sujay G <gsujay@vmware.com> 0.12.1-4
+-   Disabled bundled JQ, openssl and instead use Photon maintained packages.
+*   Wed Oct 24 2018 Ajay Kaher <akaher@vmware.com> 0.12.1-3
+-   Adding BuildArch
+*   Wed Oct 24 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.12.1-2
+-   Add depmod for falco-probe.ko and removed patch from new falco-probe-loader
+*   Mon Sep 24 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.12.1-1
+-   Update falco and sysdig versions to fix build error with linux 4.18
+*   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 0.8.1-1
+-   Version update to build against linux-4.14.y kernel
 *   Thu Aug 24 2017 Rui Gu <ruig@vmware.com> 0.6.0-3
 -   Disable check section (Bug 1900272).
 *   Thu May 11 2017 Chang Lee <changlee@vmware.com> 0.6.0-2

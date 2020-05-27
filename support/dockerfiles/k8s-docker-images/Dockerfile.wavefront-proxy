@@ -1,4 +1,4 @@
-FROM vmware/photon:2.0
+FROM k8s-base-image:3.0
 
 # This script may automatically configure wavefront without prompting, based on
 # these variables:
@@ -8,8 +8,8 @@ FROM vmware/photon:2.0
 #  WAVEFRONT_HOSTNAME      (default is the docker containers hostname)
 #  WAVEFRONT_USE_GRAPHITE  (default is false)
 
-
-RUN tdnf install -y net-tools sed openjre shadow
+COPY [ "./stage-rpms-tdnf.conf", "./tmp/stage-rpms.repo", "/tmp/tdnf/" ]
+RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y openjre8 shadow --refresh
 # Copy files
 COPY [ "./tmp/wavefront-proxy/etc/wavefront/wavefront-proxy/log4j2-stdout.xml", \
        "./tmp/wavefront-proxy/etc/wavefront/wavefront-proxy/log4j2.xml", \

@@ -1,10 +1,10 @@
-# Photon Base Build Container
-
-FROM vmware/photon:2.0
+FROM k8s-base-image:3.0
 
 MAINTAINER kulkarniv@vmware.com
 
-RUN tdnf install -y dnsmasq
+COPY [ "./stage-rpms-tdnf.conf", "./tmp/stage-rpms.repo", "/tmp/tdnf/" ]
+RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y dnsmasq --refresh
+
 RUN echo "user=root" > /etc/dnsmasq.conf
 RUN mkdir -p /var/run/
 STOPSIGNAL SIGCONT

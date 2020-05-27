@@ -1,7 +1,7 @@
 Summary:	Linux-native asynchronous I/O access library
 Name:		libaio
 Version:	0.3.110
-Release: 	2%{?dist}
+Release: 	3%{?dist}
 License:	LGPLv2+
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
@@ -9,6 +9,11 @@ Distribution:	Photon
 Source0:	https://fedorahosted.org/releases/l/i/libaio/libaio-0.3.110.tar.gz
 %define sha1 libaio=f8f6ed15f22e528f6f415939b07854539e3360e4
 Patch0:		libaio-install-to-destdir-slash-usr.patch
+
+%if %{with_check}
+BuildRequires:  e2fsprogs
+BuildRequires:  e2fsprogs-libs
+%endif
 
 %description
 The Linux-native asynchronous I/O facility ("async I/O", or "aio") has a
@@ -66,8 +71,10 @@ make %{?_smp_mflags} -k check
 %attr(0755,root,root) %{_libdir}/libaio.a
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.3.110-2
--	GA - Bump release of all rpms
+* Mon Aug 19 2019 Shreenidhi Shedi <sshedi@vmware.com> 0.3.110-3
+- Fix make check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.3.110-2
+- GA - Bump release of all rpms
 * Tue Mar 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.3.110-1
 - Initial version
 

@@ -1,9 +1,0 @@
-{   
-    "packages": ["glibc","zlib","filesystem","file","gmp","libgcc","libstdc++","bash","sed",
-                  "bzip2","pkg-config","ncurses","ncurses-compat","cracklib","cracklib-dicts","cracklib-python",
-                  "shadow","coreutils","grep","readline","findutils","xz","util-linux","e2fsprogs",
-                  "libffi","expat","linux","cpio","Linux-PAM","attr","libcap", "systemd","dbus",
-                  "gzip", "sqlite","nspr","nss","popt","lua","rpm","gptfdisk","tar", "librepo",
-                  "hawkey", "python2","python2-libs","pcre","glib", "tdnf", "python-requests",
-                  "grub2-pc", "grub2-efi", "dracut", "curl", "ostree", "dosfstools"]
-}

@@ -1,15 +1,14 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
-Version:        1.15.2
+Version:        1.17
 Release:        1%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/1.15/%{name}-%{version}.tar.gz
-%define sha1    krb5=579afa73cb4a3537acd7bb8b06c5217a1006723d
-Patch0:         krb5-1.15-never-unload-mechanisms.patch
+Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/1.16/%{name}-%{version}.tar.gz
+%define sha1    %{name}=0c404b081db9c996c581f636ce450ee28778f338
 Requires:       openssl
 Requires:       e2fsprogs-libs
 BuildRequires:  openssl-devel
@@ -36,21 +35,14 @@ These are the additional language files of krb5.
 
 %prep
 %setup -q
-%patch0 -p1
-%build
 
+%build
 cd src &&
-sed -e "s@python2.5/Python.h@& python2.7/Python.h@g" \
-    -e "s@-lpython2.5]@&,\n  AC_CHECK_LIB(python2.7,main,[PYTHON_LIB=-lpython2.7])@g" \
-    -i configure.in &&
 sed -e 's@\^u}@^u cols 300}@' \
     -i tests/dejagnu/config/default.exp &&
 CPPFLAGS="-D_GNU_SOURCE" \
 autoconf &&
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
+%configure \
     --sysconfdir=/etc \
         --localstatedir=/var/lib \
         --with-system-et         \
@@ -61,6 +53,7 @@ autoconf &&
         --enable-shared          \
         --without-tcl
 make %{?_smp_mflags}
+
 %install
 cd src
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -91,8 +84,10 @@ make check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -103,6 +98,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
+%{_mandir}/man7/*
 %{_datarootdir}/man/man5/.k5identity.5.gz
 %{_datarootdir}/man/man5/.k5login.5.gz
 
@@ -118,6 +114,12 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+*   Tue May 28 2019 Sujay G <gsujay@vware.com> 1.17-1
+-   Update to version 1.17
+*   Fri Sep 14 2018 Ankit Jain <ankitja@vmware.com> 1.16.1-1
+-   Update to version 1.16.1
+*   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.16-1
+-   Update to version 1.16 to address CVE-2017-15088
 *   Thu Sep 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.2-1
 -   Update to version 1.15.2
 *   Mon Jul 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.15.1-2

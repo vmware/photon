@@ -1,12 +1,12 @@
 Summary:        NFS client utils
 Name:           nfs-utils
-Version:        2.1.1
-Release:        7%{?dist}
+Version:        2.3.3
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/nfs
 Group:          Applications/Nfs-utils-client
-Source0:        http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.bz2
-%define sha1    nfs-utils=8f86ffef3bfc954f3ef9aee805b35cdca3802b14
+Source0:        http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.xz
+%define sha1    nfs-utils=a60aa17b057734c63bf7ce1598898e83f2132644
 Source1:        nfs-client.service
 Source2:        nfs-client.target
 Source3:        rpc-statd.service
@@ -16,13 +16,25 @@ Source6:        nfs-server.service
 Source7:        nfs-mountd.service
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  krb5
+BuildRequires:  libtool
+BuildRequires:  krb5-devel
+BuildRequires:  libcap-devel
 BuildRequires:  libtirpc-devel
 BuildRequires:  python3-devel
+BuildRequires:  libevent-devel
+BuildRequires:  device-mapper-devel
+BuildRequires:  systemd-devel
+BuildRequires:  keyutils-devel
+BuildRequires:  sqlite-devel
+BuildRequires:  libgssglue-devel
+BuildRequires:  libnfsidmap-devel
+BuildRequires:  e2fsprogs-devel
 Requires:       libtirpc
 Requires:       rpcbind
 Requires:       shadow
 Requires:       python3-libs
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 The nfs-utils package contains simple nfs client service
@@ -33,17 +45,22 @@ The nfs-utils package contains simple nfs client service
 sed -i "/daemon_init/s:\!::" utils/statd/statd.c
 sed '/unistd.h/a#include <stdint.h>' -i support/nsm/rpc.c
 find . -iname "*.py" | xargs -I file sed -i '1s/python/python3/g' file
+# fix --with-rpcgen=internal
+sed -i 's/RPCGEN_PATH" =/rpcgen_path" =/' configure
 
 %build
-./configure --prefix=%{_prefix}          \
-            --sysconfdir=%{_sysconfdir}      \
-            --enable-libmount-mount \
-            --without-tcp-wrappers \
-            --disable-nfsv4        \
-            --disable-gss \
+./configure --prefix=%{_prefix}         \
+            --sysconfdir=%{_sysconfdir} \
+            --enable-libmount-mount     \
+            --without-tcp-wrappers      \
+            --enable-gss                \
+            --enable-nfsv4              \
+	    --with-rpcgen=internal	\
             --disable-static
 
-make
+# fix building against new gcc
+sed -i 's/CFLAGS = -g/CFLAGS = -Wno-error=strict-prototypes/' support/nsm/Makefile
+make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 install -v -m644 utils/mount/nfsmount.conf /etc/nfsmount.conf
@@ -60,8 +77,16 @@ install -m644 %{SOURCE3} %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE4} %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE5} %{buildroot}/etc/default/nfs-utils
 install -m644 %{SOURCE6} %{buildroot}/lib/systemd/system/
-install -m644 systemd/proc-fs-nfsd.mount %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE7} %{buildroot}/lib/systemd/system/
+install -m644 systemd/proc-fs-nfsd.mount %{buildroot}/lib/systemd/system/
+install -m644 systemd/nfs-idmapd.service %{buildroot}/lib/systemd/system/
+install -m644 systemd/rpc_pipefs.target  %{buildroot}/lib/systemd/system/
+install -m644 systemd/var-lib-nfs-rpc_pipefs.mount  %{buildroot}/lib/systemd/system/
+install -m644 systemd/rpc-svcgssd.service %{buildroot}/lib/systemd/system/
+find %{buildroot}/%{_libdir} -name '*.la' -delete
+
+install -vdm755 %{buildroot}/usr/lib/systemd/system-preset
+echo "disable nfs-server.service" > %{buildroot}/usr/lib/systemd/system-preset/50-nfs-server.preset
 
 %check
 #ignore test that might require additional setup
@@ -69,17 +94,52 @@ sed -i '/check_root/i \
 exit 77' tests/t0001-statd-basic-mon-unmon.sh
 make check
 
+%pre
+if ! getent group nobody >/dev/null; then
+    groupadd -r nobody
+fi
+if ! getent passwd nobody >/dev/null; then
+    useradd -g named -s /bin/false -M -r nobody
+fi
+
+%post
+/sbin/ldconfig
+%systemd_post nfs-server.service
+
+%preun
+%systemd_preun nfs-server.service
+
+%postun
+/sbin/ldconfig
+%systemd_postun_with_restart nfs-server.service
+
 %files
 %defattr(-,root,root)
 %{_datadir}/*
 /sbin/*
 %{_sbindir}/*
 %{_sharedstatedir}/*
-/etc/default/nfs-utils
-/etc/exports
+%config(noreplace) /etc/default/nfs-utils
+%config(noreplace) /etc/exports
 /lib/systemd/system/*
+%{_libdir}/libnfsidmap.so.*
+%{_libdir}/libnfsidmap/nsswitch.so
+%{_libdir}/libnfsidmap/static.so
+%{_libdir}/systemd/system-preset/50-nfs-server.preset
 
+%{_includedir}/*
+%{_libdir}/libnfsidmap.so
+%{_libdir}/pkgconfig/libnfsidmap.pc
 %changelog
+*   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 2.3.3-2
+-   Fix compilation issue against glibc-2.28
+-   Use internal rpcgen, disable librpcsecgss dependency.
+*   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.3.3-1
+-   Update to 2.3.3
+*   Thu Jun 07 2018 Anish Swaminathan <anishs@vmware.com> 2.3.1-2
+-   Add noreplace qualifier to config files
+*   Fri Jan 26 2018 Xiaolin Li <xiaolinl@vmware.com> 2.3.1-1
+-   Update to 2.3.1 and enable nfsv4
 *   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 2.1.1-7
 -   No direct toybox dependency, shadow depends on toybox
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.1.1-6

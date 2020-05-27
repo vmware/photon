@@ -3,10 +3,10 @@
 
 Summary:        Kernel Audit Tool
 Name:           audit
-Version:        2.7.5
+Version:        2.8.5
 Release:        3%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha1    audit=7aaae7ea80f2280b25f243916e8d18b7338b5f53
+%define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit/
@@ -20,6 +20,10 @@ BuildRequires:  libcap-ng-devel
 BuildRequires:  swig
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 Requires:       systemd
 Requires:       krb5
 Requires:       openldap
@@ -42,8 +46,6 @@ The libraries and header files needed for audit development.
 %package        python
 Summary:        Python bindings for libaudit
 License:        LGPLv2+
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
 Requires:       %{name} = %{version}-%{release}
 Requires:       python2
 
@@ -54,8 +56,6 @@ and libauparse.
 %package  -n    python3-audit
 Summary:        Python3 bindings for libaudit
 License:        LGPLv2+
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3
 
@@ -67,12 +67,8 @@ and libauparse.
 %setup -q
 
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --exec_prefix=/usr \
-    --sbindir=%{_sbindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=%{_sysconfdir} \
     --with-python=yes \
     --with-python3=yes \
     --with-libwrap \
@@ -88,7 +84,8 @@ make %{?_smp_mflags}
 
 %install
 mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/audit/rules.d}
-mkdir -p %{buildroot}/%{_var}/log/audit
+mkdir -p %{buildroot}/%{_var}/opt/audit/log
+mkdir -p %{buildroot}/%{_var}/log
 mkdir -p %{buildroot}/%{_var}/spool/audit
 make install DESTDIR=%{buildroot}
 
@@ -98,7 +95,20 @@ echo "disable auditd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-
 %check
 make %{?_smp_mflags} check
 
+%pre
+if [ ! -d "%{_var}/opt/audit/log" ]
+then
+    if [ -d "%{_var}/log/audit" ]
+    then
+        mkdir -p "%{_var}/opt/audit/log" && \
+          cp -rf %{_var}/log/audit/ %{_var}/opt/audit/log && \
+            rm -rf "%{_var}/log/audit"
+    fi
+fi
+
+
 %post
+ln -sfv %{_var}/opt/audit/log %{_var}/log/audit
 /sbin/ldconfig
 %systemd_post  auditd.service
 
@@ -109,7 +119,7 @@ make %{?_smp_mflags} check
 %preun
 %systemd_preun auditd.service
 
-%files 
+%files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_sbindir}/*
@@ -120,7 +130,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man5/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
-%{_var}/log/audit
+%dir %{_var}/opt/audit/log
+%ghost %{_var}/log/audit
 %{_var}/spool/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit/rules.d
@@ -158,6 +169,22 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 2.8.5-3
+-   Bump up version to compile with go 1.13.3-2
+*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 2.8.5-2
+-   Bump up version to compile with go 1.13.3
+*   Thu Oct 17 2019 Shreyas B <shreyasb@vmware.com> 2.8.5-1
+-   Updated to version 2.8.5.
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 2.8.4-4
+-   Bump up version to compile with new go
+*   Sat Aug 10 2019 Dweep Advani <dadvani@vmware.com> 2.8.4-3
+-   Fixed the upgade failure due to empty /var/log/audit directory
+*   Fri May 03 2019 Dweep Advani <dadvani@vmware.com> 2.8.4-2
+-   Fixed type conflicts of log directory during upgrade
+*   Mon Sep 3 2018 Keerthana K <keerthanak@vmware.com> 2.8.4-1
+-   Updated to version 2.8.4.
+*   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-4
+-   Fixed the log file directory structure
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-3
 -   Disabled audit service by default
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.5-2

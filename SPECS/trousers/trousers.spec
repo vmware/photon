@@ -1,7 +1,7 @@
 Summary:    TCG Software Stack (TSS)
 Name:       trousers
 Version:    0.3.14
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    BSD
 URL:        https://sourceforge.net/projects/trousers/
 Group:      System Environment/Security
@@ -29,8 +29,7 @@ TSPI library
 %prep
 %setup -q -c %{name}-%{version}
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --disable-static
 
 make %{?_smp_mflags}
@@ -88,5 +87,7 @@ fi
 %exclude %{_libdir}/libtddl.a
 
 %changelog
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-2
+-   Use standard configure macros
 *   Thu Mar 2 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-1
 -   Initial build. First version

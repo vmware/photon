@@ -1,0 +1,119 @@
+commit 4ee1663e3ea53c2d50f8554b59ecddcab047e28d
+Author: Keerthana K <keerthanak@vmware.com>
+Date:   Wed Nov 20 10:52:57 2019 +0530
+
+    Subject: [PATCH] tcrypt: disable tests that are not enabled in photon
+    
+    1. Disable algorithmic tests which are fips_allowed and not supported in photon.
+    2. Added tests for DRBG and ECDH algorithms.
+    
+    Signed-off-by: Keerthana K <keerthanak@vmware.com>
+
+diff --git a/crypto/tcrypt.c b/crypto/tcrypt.c
+index d332988..a28ca2a 100644
+--- a/crypto/tcrypt.c
++++ b/crypto/tcrypt.c
+@@ -1736,7 +1736,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
+ 		ret += tcrypt_test("xts(aes)");
+ 		ret += tcrypt_test("ctr(aes)");
+ 		ret += tcrypt_test("rfc3686(ctr(aes))");
+-		ret += tcrypt_test("cfb(aes)");
+ 		break;
+ 
+ 	case 11:
+@@ -1898,22 +1897,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
+ 		ret += tcrypt_test("crct10dif");
+ 		break;
+ 
+-	case 48:
+-		ret += tcrypt_test("sha3-224");
+-		break;
+-
+-	case 49:
+-		ret += tcrypt_test("sha3-256");
+-		break;
+-
+-	case 50:
+-		ret += tcrypt_test("sha3-384");
+-		break;
+-
+-	case 51:
+-		ret += tcrypt_test("sha3-512");
+-		break;
+-
+ 	case 52:
+ 		ret += tcrypt_test("sm3");
+ 		break;
+@@ -1958,20 +1941,64 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
+ 		ret += tcrypt_test("vmac64(aes)");
+ 		break;
+ 
+-	case 111:
+-		ret += tcrypt_test("hmac(sha3-224)");
++	case 119:
++		ret += tcrypt_test("drbg_pr_ctr_aes128");
++		break;
++
++	case 120:
++		ret += tcrypt_test("drbg_pr_ctr_aes256");
++		break;
++
++	case 121:
++		ret += tcrypt_test("drbg_pr_hmac_sha1");
++		break;
++
++	case 122:
++		ret += tcrypt_test("drbg_pr_hmac_sha256");
++		break;
++
++	case 123:
++		ret += tcrypt_test("drbg_pr_hmac_sha384");
++		break;
++
++	case 124:
++		ret += tcrypt_test("drbg_pr_hmac_sha512");
++		break;
++
++	case 125:
++		ret += tcrypt_test("drbg_nopr_ctr_aes256");
++		break;
++
++	case 126:
++		ret += tcrypt_test("drbg_nopr_hmac_sha1");
++		break;
++
++	case 127:
++		ret += tcrypt_test("drbg_nopr_hmac_sha256");
++		break;
++
++	case 128:
++		ret += tcrypt_test("drbg_nopr_hmac_sha384");
+ 		break;
+ 
+-	case 112:
+-		ret += tcrypt_test("hmac(sha3-256)");
++	case 129:
++		ret += tcrypt_test("drbg_nopr_hmac_sha512");
+ 		break;
+ 
+-	case 113:
+-		ret += tcrypt_test("hmac(sha3-384)");
++	case 130:
++		ret += tcrypt_test("ecdh");
+ 		break;
+ 
+-	case 114:
+-		ret += tcrypt_test("hmac(sha3-512)");
++	case 131:
++		ret += tcrypt_test("pkcs1pad(rsa,sha256)");
++		break;
++ 
++	case 132:
++		ret += tcrypt_test("drbg_pr_sha256");
++		break;
++ 
++	case 133:
++		ret += tcrypt_test("drbg_nopr_sha256");
+ 		break;
+ 
+ 	case 150:

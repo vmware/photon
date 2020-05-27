@@ -1,5 +1,4 @@
 #
-#    Copyright (C) 2015 vmware inc.
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
@@ -8,7 +7,9 @@ from actionresult import ActionResult
 from action import Action
 
 class Menu(Action):
-    def __init__(self, starty, maxx, items, height = 0, selector_menu = False, can_navigate_outside = True, horizontal = False, default_selected = 0, save_sel = False, tab_enable = True):
+    def __init__(self, starty, maxx, items, height=0, selector_menu=False,
+                 can_navigate_outside=True, horizontal=False, default_selected=0,
+                 save_sel=False, tab_enable=True):
         self.can_navigate_outside = can_navigate_outside
         self.horizontal = horizontal
         self.horizontal_padding = 10
@@ -19,7 +20,7 @@ class Menu(Action):
         self.width = self.lengthen_items()
         self.num_items = len(self.items)
         self.save_sel = save_sel
-        self.tab_enable=tab_enable
+        self.tab_enable = tab_enable
         if height == 0 or height > self.num_items:
             self.height = self.num_items
         else:
@@ -85,9 +86,9 @@ class Menu(Action):
         elif self.position >= len(self.items):
             self.position = len(self.items)-1
 
-        if (self.position >= self.head_position + self.height):
+        if self.position >= self.head_position + self.height:
             self.head_position = self.position - self.height + 1
-        if (self.position < self.head_position):
+        if self.position < self.head_position:
             self.head_position = self.position
 
 
@@ -95,7 +96,7 @@ class Menu(Action):
         if self.show_scroll:
             remaining_above = self.head_position
             remaining_down = self.num_items - self.height - self.head_position#
-            
+
             up = int(round(remaining_above * self.height / float(self.num_items)))
             down = self.height - up - self.filled
 
@@ -119,12 +120,12 @@ class Menu(Action):
             for index in range(down):
                 self.window.addch(index + up + self.filled, self.width - 2, curses.ACS_CKBOARD)
 
-    def refresh(self, highligh = True):
-        self.window.clear()
+    def refresh(self, highligh=True):
+#        self.window.clear()
         for index, item in enumerate(self.items_strings):
-            if (index < self.head_position):
+            if index < self.head_position:
                 continue
-            elif (index > self.head_position + self.height - 1):
+            elif index > self.head_position + self.height - 1:
                 continue
             elif index == self.position:
                 if highligh:
@@ -189,9 +190,9 @@ class Menu(Action):
                     return ActionResult(False, {'diskIndex': self.position})
                 else:
                     return ActionResult(False, None)
-            
+
             elif key == curses.KEY_UP or key == curses.KEY_LEFT:
-                if not self.tab_enable and key==curses.KEY_LEFT:
+                if not self.tab_enable and key == curses.KEY_LEFT:
                     if self.save_sel:
                         return ActionResult(False, {'diskIndex': self.position, 'direction':-1})
                     elif self.selector_menu:
@@ -202,7 +203,7 @@ class Menu(Action):
                 self.navigate(-1)
 
             elif key == curses.KEY_DOWN or key == curses.KEY_RIGHT:
-                if not self.tab_enable and key==curses.KEY_RIGHT:
+                if not self.tab_enable and key == curses.KEY_RIGHT:
                     if self.save_sel:
                         return ActionResult(False, {'diskIndex': self.position, 'direction':1})
                     else:
@@ -217,4 +218,3 @@ class Menu(Action):
 
             elif key == curses.KEY_HOME:
                 self.navigate(-self.position)
-

@@ -2,16 +2,15 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Python SSH module
 Name:           paramiko
-Version:        2.1.2
-Release:        5%{?dist}
+Version:        2.7.1
+Release:        1%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.paramiko.org/
 Source0:        https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
-%define         sha1 paramiko=8802efc2f4b23f83c677885d9210e359fc20133c
-
+%define sha1 paramiko=a52fc133b817dc4d8b036bec71173c376e9dc38d
 BuildArch:      noarch
 
 BuildRequires:  python-setuptools
@@ -19,29 +18,39 @@ BuildRequires:  python2-devel
 BuildRequires:  ecdsa > 0.11
 BuildRequires:  pycrypto > 2.1
 BuildRequires:  python-cryptography
-
-Requires:       python2
-Requires:       pycrypto > 2.1
-Requires:       ecdsa > 0.11
-Requires:       python-cryptography
-
-
-%description
-"Paramiko" is a combination of the esperanto words for "paranoid" and "friend". It's a module for Python 2.6+ that implements the SSH2 protocol for secure (encrypted and authenticated) connections to remote machines. Unlike SSL (aka TLS), SSH2 protocol does not require hierarchical certificates signed by a powerful central authority.
-
-%package -n     python3-paramiko
-Summary:        python3-paramiko
 BuildRequires:  python3-devel
 BuildRequires:  python3-ecdsa > 0.11
 BuildRequires:  python3-pycrypto > 2.1
 BuildRequires:  python3-cryptography
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  python3-pip
+BuildRequires:  python3-bcrypt
+BuildRequires:  python3-PyNaCl
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+%endif
+Requires:       python2
+Requires:       pycrypto > 2.1
+Requires:       ecdsa > 0.11
+Requires:       python-cryptography
+Requires:       python-PyNaCl
+Requires:       python-bcrypt
+
+%description
+"Paramiko" is a combination of the esperanto words for "paranoid" and "friend". It's a module for Python 2.6+ that implements the SSH2 protocol for secure (encrypted and authenticated) connections to remote machines. Unlike SSL (aka TLS), SSH2 protocol does not require hierarchical certificates signed by a powerful central authority.
+
+%package -n     python3-paramiko
+Summary:        python3-paramiko
 
 Requires:       python3
 Requires:       python3-pycrypto > 2.1
 Requires:       python3-ecdsa > 0.11
 Requires:       python3-cryptography
+Requires:       python3-PyNaCl
+Requires:       python3-bcrypt
+
 %description -n python3-paramiko
 
 Python 3 version.
@@ -52,6 +61,7 @@ Python 3 version.
 %build
 python2 setup.py build
 python3 setup.py build
+
 
 %install
 %{__rm} -rf %{buildroot}
@@ -64,23 +74,36 @@ python3 setup.py install -O1 --skip-build \
     --single-version-externally-managed
 
 %check
-LANG=en_US.UTF-8 python2 test.py
-LANG=en_US.UTF-8 python3 test.py
+pip3 install -r dev-requirements.txt
+pytest
 
 %clean
 %{__rm} -rf %{buildroot}
 
 %files
 %defattr(-, root, root)
-%doc *.txt
 %{python2_sitelib}/*
 
 %files -n python3-paramiko
 %defattr(-, root, root)
-%doc *.txt
 %{python3_sitelib}/*
 
 %changelog
+*   Mon May 11 2020 Tapas Kundu <tkundu@vmware.com> 2.7.1-1
+-   Update to 2.7.1
+-   txt files have been moved in sitelib path.
+*   Thu Oct 17 2019 Tapas Kundu <tkundu@vmware.com> 2.4.3-1
+-   Updated to 2.4.3
+*   Fri Aug 23 2019 Anisha Kumari <kanisha@vmware.com> 2.4.2-3
+-   Added patch to update pytest version.
+*   Wed Mar 06 2019 Tapas Kundu <tkundu@vmware.com> 2.4.2-2
+-   Added bcrypt and PyNaCl to requires.
+*   Thu Jan 10 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.4.2-1
+-   Upgraded to 2.4.2 to mitigate CVE-2018-1000805
+*   Tue Sep 11 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.4.1-1
+-   Update version to 2.4.1
+*   Mon Apr 16 2018 Xiaolin Li <xiaolinl@vmware.com> 2.1.5-1
+-   Update version to 2.1.5 for CVE-2018-1000132
 *   Tue Jul 25 2017 Divya Thaluru <dthaluru@vmware.com> 2.1.2-5
 -   Fixed test command
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.2-4

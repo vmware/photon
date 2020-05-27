@@ -1,24 +1,24 @@
-Summary:	Apache Tomcat
-Name:		apache-tomcat
-Version:	8.5.23
-Release:	2%{?dist}
-License:	Apache
-URL:		http://tomcat.apache.org
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:        Apache Tomcat
+Name:           apache-tomcat
+Version:        8.5.51
+Release:        1%{?dist}
+License:        Apache
+URL:            http://tomcat.apache.org
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
-Source0:    http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1 apache-tomcat=ec7417f44ada9df348f9102fe7777b44d5c2c52f
+Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
+%define sha1    apache-tomcat=b49dc1568d74d3a44a764b04763020088d502ae7
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=d920d15a8d3431dd396be0d635e329bc9817c6cf
+%define sha1    base=37dbbd946c473a4dbb87b0edd44275dee2694734
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
-BuildRequires: openjre8
-BuildRequires: openjdk8
-BuildRequires: apache-ant
-Requires: openjre8
-Requires: apache-ant
+BuildRequires:  openjre8
+BuildRequires:  openjdk8
+BuildRequires:  apache-ant
+Requires:       openjre8
+Requires:       apache-ant
 
 %define _prefix /var/opt/%{name}
 %define _bindir %{_prefix}/bin
@@ -83,7 +83,16 @@ rm -rf %{buildroot}/*
 %dir %{_logsdir}
 %dir %{_tempdir}
 %{_bindir}/*
-%{_confdir}/*
+%config(noreplace) %{_confdir}/catalina.policy
+%config(noreplace) %{_confdir}/catalina.properties
+%config(noreplace) %{_confdir}/context.xml
+%config(noreplace) %{_confdir}/jaspic-providers.xml
+%config(noreplace) %{_confdir}/jaspic-providers.xsd
+%config(noreplace) %{_confdir}/logging.properties
+%config(noreplace) %{_confdir}/server.xml
+%config(noreplace) %{_confdir}/tomcat-users.xml
+%config(noreplace) %{_confdir}/tomcat-users.xsd
+%config(noreplace) %{_confdir}/web.xml
 %{_libdir}/*
 %{_webappsdir}/*
 %{_datadir}/java/tomcat/*.jar
@@ -92,6 +101,36 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Mon Mar 09 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.51-1
+-   Update to version 8.5.51 to fix CVE-2020-1938
+*   Fri Jan 03 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.50-1
+-   Update to version 8.5.50 to fix CVE-2019-17563
+*   Tue Oct 01 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.46-1
+-   Update to version 8.5.46
+*   Thu Jul 04 2019 Dweep Advani <dadvani@vmware.com> 8.5.40-2
+-   Fix CVE-2019-10072
+*   Fri Apr 19 2019 Dweep Advani <dadvani@vmware.com> 8.5.40-1
+-   Upgrade to version 8.5.40
+*   Thu Jan 10 2019 Dweep Advani <dadvani@vmware.com> 8.5.37-1
+-   Upgrade to version 8.5.37
+*   Fri Dec 07 2018 Dweep Advani <dadvani@vmware.com> 8.5.35-1
+-   Upgrade to version 8.5.35
+*   Wed Nov 21 2018 Dweep Advani <dadvani@vmware.com> 8.5.31-3
+-   Fix CVE-2018-8014
+*   Thu May 17 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.31-2
+-   Mark configuration files as config(noreplace)
+*   Mon May 07 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.31-1
+-   Upgraded to version 8.5.31
+*   Mon Apr 30 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.30-1
+-   Upgraded to version 8.5.30
+*   Tue Mar 20 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.29-1
+-   Upgraded to version 8.5.29
+*   Wed Feb 28 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.28-1
+-   Upgraded to version 8.5.28
+*   Fri Feb 02 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.27-1
+-   Upgraded to version 8.5.27
+*   Thu Dec 21 2017 Anish Swaminathan <anishs@vmware.com> 8.5.24-1
+-   Upgraded to version 8.5.24
 *   Mon Oct 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.5.23-2
 -   patch to keep using inmem keystore as jks.
 *   Tue Oct 10 2017 Anish Swaminathan <anishs@vmware.com> 8.5.23-1
@@ -99,7 +138,7 @@ rm -rf %{buildroot}/*
 *   Wed Sep 27 2017 Alexey Makhalov <amakhalov@vmware.com> 8.5.20-3
 -   Offline build, disable javadoc target
 *   Wed Sep 13 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.20-2
--   Updated the permissions on directories packaged 
+-   Updated the permissions on directories packaged
 *   Tue Aug 15 2017 Anish Swaminathan <anishs@vmware.com> 8.5.20-1
 -   Upgraded to version 8.5.20
 *   Thu Jul 6 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.16-1
@@ -130,6 +169,6 @@ rm -rf %{buildroot}/*
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 7.0.63-3
 -   Change path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 7.0.63-2
--   Updated dependency after repackaging openjdk. 
+-   Updated dependency after repackaging openjdk.
 *   Wed Jul 8 2015 Sriram Nambakam <snambakam@vmware.com> 7.0.63
--   Initial build.	First version
+-   Initial build.  First version

@@ -1,0 +1,30 @@
+From: https://gitlab.com/m2crypto/m2crypto/commit/0b22d79082afd7c564b2ac07fb0ef5d76d692586
+
+--- a/tests/test_rsa.py	2019-10-07 13:19:39.372661526 +0530
++++ b/tests/test_rsa.py	2019-10-07 13:34:13.444683235 +0530
+@@ -113,6 +113,8 @@ class RSATestCase(unittest.TestCase):
+         with self.assertRaises(TypeError):
+             priv.private_encrypt(self.gen_callback, RSA.pkcs1_padding)
+ 
++    @unittest.skipIf(m2.OPENSSL_VERSION_NUMBER < 0x1010103f,
++                     'Relies on fix which happened only in OpenSSL 1.1.1c')
+     def test_public_encrypt(self):
+         priv = RSA.load_key(self.privkey)
+         # pkcs1_padding, pkcs1_oaep_padding
+@@ -124,13 +126,11 @@ class RSATestCase(unittest.TestCase):
+ 
+         # sslv23_padding
+         ctxt = priv.public_encrypt(self.data, RSA.sslv23_padding)
+-        with self.assertRaises(RSA.RSAError):
+-            priv.private_decrypt(ctxt, RSA.sslv23_padding)
+-        with self.assertRaises(RSA.RSAError):
+-            priv.private_decrypt(ctxt, RSA.sslv23_padding)
++        res = priv.private_decrypt(ctxt, RSA.sslv23_padding)
++        self.assertEqual(res, self.data)
+ 
+         # no_padding
+-        with self.assertRaises(RSA.RSAError):
++        with six.assertRaisesRegex(self, TypeError, 'data too small'):
+             priv.public_encrypt(self.data, RSA.no_padding)
+ 
+         # Type-check the data to be encrypted.

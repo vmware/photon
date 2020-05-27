@@ -1,24 +1,28 @@
 %global security_hardening nonow
 %define glibc_target_cpu %{_build}
 
-Summary:	Main C library
-Name:		glibc
-Version:	2.26
-Release:	5%{?dist}
-License:	LGPLv2+
-URL:		http://www.gnu.org/software/libc
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
-%define sha1 glibc=7cf7d521f5ebece5dd27cfb3ca5e5f6b84da4bfd
-Source1:	locale-gen.sh
-Source2:	locale-gen.conf
-Patch0:   	http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
-Patch1:		glibc-2.24-bindrsvport-blacklist.patch
-Patch2:		0001-Fix-range-check-in-do_tunable_update_val.patch
-Patch3:		0002-malloc-arena-fix.patch
-Provides:	rtld(GNU_HASH)
+Summary:        Main C library
+Name:           glibc
+Version:        2.28
+Release:        6%{?dist}
+License:        LGPLv2+
+URL:            http://www.gnu.org/software/libc
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
+%define sha1    glibc=ccb5dc9e51a9884df8488f86982439d47b283b2a
+Source1:        locale-gen.sh
+Source2:        locale-gen.conf
+Patch0:         http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
+Patch1:         glibc-2.24-bindrsvport-blacklist.patch
+Patch2:         0002-malloc-arena-fix.patch
+Patch3:         glibc-2.28-CVE-2018-19591.patch
+Patch4:         CVE-2019-9169.patch
+Patch5:         CVE-2019-10739.patch
+Patch6:         CVE-2020-10029.patch
+Patch7:         CVE-2020-1752.patch
+Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
 This library provides the basic routines for allocating memory,
@@ -75,6 +79,10 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -106,36 +114,38 @@ chmod +x find_requires.sh
 %build
 cd %{_builddir}/%{name}-build
 ../%{name}-%{version}/configure \
-	--prefix=%{_prefix} \
-	--disable-profile \
-	--enable-kernel=2.6.32 \
-	--enable-obsolete-rpc \
-	--enable-obsolete-nsl \
-	--enable-bind-now \
-	--disable-experimental-malloc \
-	--disable-silent-rules
+        --prefix=%{_prefix} \
+        --disable-profile \
+        --enable-kernel=3.2 \
+        --enable-bind-now \
+        --disable-experimental-malloc \
+        --disable-silent-rules
 
 # Sometimes we have false "out of memory" make error
 # just rerun/continue make to workaroung it.
 make %{?_smp_mflags} || make %{?_smp_mflags} || make %{?_smp_mflags}
 
 %install
-#	Do not remove static libs
+#       Do not remove static libs
 pushd %{_builddir}/glibc-build
-#	Create directories
+#       Create directories
 make install_root=%{buildroot} install
 install -vdm 755 %{buildroot}%{_sysconfdir}/ld.so.conf.d
 install -vdm 755 %{buildroot}/var/cache/nscd
 install -vdm 755 %{buildroot}%{_libdir}/locale
 cp -v ../%{name}-%{version}/nscd/nscd.conf %{buildroot}%{_sysconfdir}/nscd.conf
-#	Install locale generation script and config file
+#       Install locale generation script and config file
 cp -v %{SOURCE2} %{buildroot}%{_sysconfdir}
 cp -v %{SOURCE1} %{buildroot}/sbin
-#	Remove unwanted cruft
+#       Remove unwanted cruft
 rm -rf %{buildroot}%{_infodir}
-#	Install configuration files
+#       Install configuration files
+
+# Spaces should not be used in nsswitch.conf in the begining of new line
+# Only tab should be used as it expects the same in source code.
+# Otherwise "altfiles" will not be added. which may cause dbus.service failure
 cat > %{buildroot}%{_sysconfdir}/nsswitch.conf <<- "EOF"
-#	Begin /etc/nsswitch.conf
+#       Begin /etc/nsswitch.conf
 
 	passwd: files
 	group: files
@@ -148,10 +158,10 @@ cat > %{buildroot}%{_sysconfdir}/nsswitch.conf <<- "EOF"
 	services: files
 	ethers: files
 	rpc: files
-#	End /etc/nsswitch.conf
+#       End /etc/nsswitch.conf
 EOF
 cat > %{buildroot}%{_sysconfdir}/ld.so.conf <<- "EOF"
-#	Begin /etc/ld.so.conf
+#       Begin /etc/ld.so.conf
 	/usr/local/lib
 	/opt/lib
 	include /etc/ld.so.conf.d/*.conf
@@ -205,6 +215,9 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %config(missingok,noreplace) %{_sysconfdir}/ld.so.cache
 %config %{_sysconfdir}/locale-gen.conf
 /lib64/*
+%ifarch aarch64
+%exclude /lib
+%endif
 %exclude /lib64/libpcprofile.so
 %{_lib64dir}/*.so
 /sbin/ldconfig
@@ -221,7 +234,6 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %exclude /usr/bin/mtrace
 %exclude /usr/bin/pcprofiledump
 %exclude /usr/bin/pldd
-%exclude /usr/bin/rpcgen
 %exclude /usr/bin/sotruss
 %exclude /usr/bin/sprof
 %exclude /usr/bin/xtrace
@@ -238,7 +250,6 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 /usr/bin/mtrace
 /usr/bin/pcprofiledump
 /usr/bin/pldd
-/usr/bin/rpcgen
 /usr/bin/sotruss
 /usr/bin/sprof
 /usr/bin/xtrace
@@ -267,10 +278,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %defattr(-,root,root)
 # TODO: Excluding for now to remove dependency on PERL
 # /usr/bin/mtrace
-%ifarch x86_64
 %{_lib64dir}/*.a
 %{_lib64dir}/*.o
-%endif
 %{_includedir}/*
 
 %files -f %{name}.lang lang
@@ -278,6 +287,28 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Wed May 20 2020 Keerthana K <keerthanak@vmware.com> 2.28-6
+-   Fix CVE-2020-1752
+*   Thu May 07 2020 Keerthana K <keerthanak@vmware.com> 2.28-5
+-   Fix CVE-2019-10739, CVE-2020-10029
+*   Fri Jul 12 2019 Ankit Jain <ankitja@vmware.com> 2.28-4
+-   Replaced spaces with tab in nsswitch.conf file
+*   Fri Mar 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.28-3
+-   Fix CVE-2019-9169
+*   Tue Jan 22 2019 Anish Swaminathan <anishs@vmware.com> 2.28-2
+-   Fix CVE-2018-19591
+*   Tue Aug 28 2018 Alexey Makhalov <amakhalov@vmware.com> 2.28-1
+-   Version update. Disable obsolete rpc (use libtirpc) and nsl.
+*   Tue Jan 23 2018 Xiaolin Li <xiaolinl@vmware.com> 2.26-10
+-   Fix CVE-2018-1000001 and CVE-2018-6485
+*   Mon Jan 08 2018 Xiaolin Li <xiaolinl@vmware.com> 2.26-9
+-   Fix CVE-2017-16997
+*   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 2.26-8
+-   Fix CVE-2017-17426
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-7
+-   Aarch64 support
+*   Wed Oct 25 2017 Xiaolin Li <xiaolinl@vmware.com> 2.26-6
+-   Fix CVE-2017-15670 and CVE-2017-15804
 *   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-5
 -   Compile out tcache.
 *   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 2.26-4

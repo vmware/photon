@@ -3,21 +3,22 @@ Name:		initscripts
 Version:	9.70
 License:	GPLv2
 Group:		System Environment/Base
-Release:	1%{?dist}
+Release:	3%{?dist}
 URL:		https://github.com/fedora-sysv/initscripts
 Source0:	https://github.com/fedora-sysv/initscripts/archive/%{name}-%{version}.tar.gz
 %define sha1 initscripts=6e2ba0946fa2f175f576614d9374ad00266aec66
 Patch0:     service.patch
+Patch1:     fix_return_code_during_set_error.patch
 Vendor:     	VMware, Inc.
 Distribution:   Photon
 Requires:	systemd
 Requires:	iproute2
-BuildRequires:	glib-devel 
+BuildRequires:	glib-devel
 BuildRequires:	python2
 BuildRequires:	python2-libs
-BuildRequires:	popt-devel 
-BuildRequires:	gettext 
-BuildRequires:	pkg-config 
+BuildRequires:	popt-devel
+BuildRequires:	gettext
+BuildRequires:	pkg-config
 BuildRequires:	systemd
 Provides:	/sbin/service
 
@@ -46,6 +47,7 @@ Binaries of init network
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 make
@@ -72,12 +74,29 @@ chmod 755 %{buildroot}%{_sysconfdir}/rc.d/rc.local
 ln -sfv rc.d/init.d %{buildroot}/etc/init.d
 rm -rf %{buildroot}%{_prefix}/lib/systemd
 
+cat >> %{buildroot}%{_sysconfdir}/sysconfig/network <<- "EOF"
+###
+# This file is used to specify information about the desired network configuration.
+# By default, it contains the following options:
+#
+
+# A boolean yes or no to Configure networking or not to configure networking.
+# NETWORKING=boolean
+
+# Hostname of your machine
+# HOSTNAME=value
+
+# where gwip is the IP address of the remote network gateway -if available.
+# GATEWAY=gwip
+EOF
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %dir %{_sysconfdir}/sysconfig/network-scripts
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/adjtime
 %config(noreplace) %{_sysconfdir}/sysconfig/init
 %config(noreplace) %{_sysconfdir}/sysconfig/netconsole
+%config(noreplace) %{_sysconfdir}/sysconfig/network
 %config(noreplace) %{_sysconfdir}/sysconfig/readonly-root
 %{_sysconfdir}/sysconfig/network-scripts/ifdown
 %{_sysconfdir}/sysconfig/network-scripts/ifdown-post
@@ -160,16 +179,20 @@ rm -rf %{buildroot}%{_prefix}/lib/systemd
 %{_sysconfdir}/profile.d/debug*
 
 %changelog
+*   Sat Jan 05 2019 Ankit Jain <ankitja@vmware.com> 9.70-3
+-   Added network configuration to fix "service --status-all"
+*   Tue Dec 26 2017 Divya Thaluru <dthaluru@vmware.com> 9.70-2
+-   Fixed return code in /etc/init.d/functions bash script
 *   Mon Apr 3 2017 Dheeraj Shetty <dheerajs@vmware.com> 9.70-1
 -   Updated to version 9.70
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.65-2
--	GA - Bump release of all rpms
-* Fri Feb 12 2016 Divya Thaluru <dthaluru@vmware.com> 9.65-2
-- Fixing service script to start services using systemctl by default
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.65-2
+-   GA - Bump release of all rpms
+*   Fri Feb 12 2016 Divya Thaluru <dthaluru@vmware.com> 9.65-2
+-   Fixing service script to start services using systemctl by default
 *   Tue Jan 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.65-1
 -   Updated to version 9.65
-* Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 9.63-1
-- Got Spec file from source tar ball and modified it to be compatible to build in Photon 
+*   Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 9.63-1
+-   Got Spec file from source tar ball and modified it to be compatible to build in Photon
 * Mon May 18 2015 Lukáš Nykrýn <lnykryn@redhat.com> - 9.63-1
 - remove ipcalc, it has its own package now
 - network: tell NM to reload its configuration during start
@@ -1166,7 +1189,7 @@ ng
 - run rc.sysinit, /etc/rc in monitor mode (part of #184340)
 - use a better check for 'native' services (#190989, #110761, adapted
   from <matthias@rpmforge.net>)
- 
+
 * Tue Sep 19 2006 Bill Nottingham <notting@redhat.com> 8.41-1
 - fix network ipv6 hang (#207137, others)
 - rc.sysinit: change blkid.tab path to /etc/blkid/blkid.tab
@@ -1511,7 +1534,7 @@ ng
   for ipv6calc (<pb@bierenger.de>, <pekkas@netcore.fi>)
 - fix quoting in daemon() (#144634)
 - make sysctl be silent (#144483)
- 
+
 * Mon Jan  3 2005 Bill Nottingham <notting@redhat.com> 8.02-1
 - remove initlog, minilogd
 - add a flag to kmodule for use with kudzu's socket mode, use it
@@ -1695,7 +1718,7 @@ ng
 - rc.sysinit: remove devfs compat and the remaining 2.4 compat
 - ifup-wireless: support multiple keys (#127957)
 - fix firmware loading (#129155, <bnocera@redhat.com>)
- 
+
 * Tue Aug 24 2004 Karsten Hopp <karsten@redhat.de> 7.68-1
 - execute zfcfconf.sh if available (mainframe)
 
@@ -1715,7 +1738,7 @@ ng
 
 * Fri Aug 20 2004 Bill Nottingham <notting@redhat.com> 7.64-1
 - rc.d/rc.sysinit: check for dev file too (#130350)
- 
+
 * Thu Aug 19 2004 Than Ngo <than@redhat.com> 7.63-1
 - allow CBCP with own number (#125710)
 
@@ -2276,7 +2299,7 @@ ng
 * Mon Oct 29 2001 Than Ngo <than@redhat.com>
 - fix bug in channel bundling if MSN is missed
 - support DEBUG option
- 
+
 * Wed Sep 19 2001 Than Ngo <than@redhat.com>
 - don't show user name by DSL connection
 
@@ -2456,7 +2479,7 @@ ng
 * Wed Jun 27 2001 Than Ngo <than@redhat.com>
 - fix pap/chap authentication for syncppp
 - support ippp options
- 
+
 * Mon Jun 25 2001 Bill Nottingham <notting@redhat.com>
 - add ifup-wireless
 
@@ -3124,7 +3147,7 @@ ng
 - set macaddr before bootp
 - zero in the /var/run/utmpx file (gafton)
 - don't set hostname on ppp/slip (kills X)
- 
+
 * Wed Mar 17 1999 Bill Nottingham <notting@redhat.com>
 - exit ifup if pump fails
 - fix stupid errors in reading commands from subprocess

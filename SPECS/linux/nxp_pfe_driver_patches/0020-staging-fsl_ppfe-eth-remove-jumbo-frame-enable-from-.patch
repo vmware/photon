@@ -1,0 +1,60 @@
+From 26a83eb4f3f492ad5454f6ebec86efe8da7a1641 Mon Sep 17 00:00:00 2001
+From: Calvin Johnson <calvin.johnson@nxp.com>
+Date: Wed, 20 Jun 2018 10:23:16 +0530
+Subject: [PATCH 20/22] staging: fsl_ppfe/eth: remove jumbo frame enable from
+ gemac init
+
+MAC Receive Control Register was configured to allow jumbo frames.
+This is removed as jumbo frames can be supported anytime by changing
+mtu which will in turn modify MAX_FL field of MAC RCR.
+Jumbo frames caused pfe to hang on LS1012A rev 1.0 Silicon due to
+erratum A-010897.
+
+Signed-off-by: Calvin Johnson <calvin.johnson@nxp.com>
+
+[ Srinidhi Rao : Ported this patch to photon linux from
+  qoriq-components linux 'linux-4.14-nxp'
+  (https://source.codeaurora.org/external/qoriq/qoriq-components/linux)
+]
+
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+---
+ drivers/staging/fsl_ppfe/pfe_eth.c | 1 -
+ drivers/staging/fsl_ppfe/pfe_hal.c | 9 ---------
+ 2 files changed, 10 deletions(-)
+
+diff --git a/drivers/staging/fsl_ppfe/pfe_eth.c b/drivers/staging/fsl_ppfe/pfe_eth.c
+index 77d7a7b682c6..b272e72baf5f 100644
+--- a/drivers/staging/fsl_ppfe/pfe_eth.c
++++ b/drivers/staging/fsl_ppfe/pfe_eth.c
+@@ -1272,7 +1272,6 @@ static int pfe_gemac_init(struct pfe_eth_priv_s *priv)
+ 	gemac_set_config(priv->EMAC_baseaddr, &cfg);
+ 	gemac_allow_broadcast(priv->EMAC_baseaddr);
+ 	gemac_enable_1536_rx(priv->EMAC_baseaddr);
+-	gemac_enable_rx_jmb(priv->EMAC_baseaddr);
+ 	gemac_enable_stacked_vlan(priv->EMAC_baseaddr);
+ 	gemac_enable_pause_rx(priv->EMAC_baseaddr);
+ 	gemac_set_bus_width(priv->EMAC_baseaddr, 64);
+diff --git a/drivers/staging/fsl_ppfe/pfe_hal.c b/drivers/staging/fsl_ppfe/pfe_hal.c
+index cb8cb9cbd42f..cfd02ccc313a 100644
+--- a/drivers/staging/fsl_ppfe/pfe_hal.c
++++ b/drivers/staging/fsl_ppfe/pfe_hal.c
+@@ -1028,15 +1028,6 @@ void gemac_set_rx_max_fl(void *base, int mtu)
+ 		| (mtu << 16), base + EMAC_RCNTRL_REG);
+ }
+ 
+-/* GEMAC enable jumbo function.
+- * @param[in]	base	GEMAC base address
+- */
+-void gemac_enable_rx_jmb(void *base)
+-{
+-	writel((readl(base + EMAC_RCNTRL_REG) & PFE_RCR_MAX_FL_MASK)
+-		| (JUMBO_FRAME_SIZE << 16), base + EMAC_RCNTRL_REG);
+-}
+-
+ /* GEMAC enable stacked vlan function.
+  * @param[in]	base	GEMAC base address
+  */
+-- 
+2.14.2
+

@@ -2,34 +2,38 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-six
-Version:        1.10.0
-Release:        8%{?dist}
+Version:        1.11.0
+Release:        3%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/source/s/six/six-%{version}.tar.gz
 Source0:        six-%{version}.tar.gz
-%define sha1    six=30d480d2e352e8e4c2aae042cf1bf33368ff0920
-
+%define sha1    six=3647372a0e104e7b53bd477762392024e1083ac0
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
-
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+%endif
 Requires:       python2
 Requires:       python2-libs
 
 BuildArch:      noarch
 
 %description
-Six is a Python 2 and 3 compatibility library. It provides utility functions for smoothing over the differences between the Python versions with the goal of writing Python code that is compatible on both Python versions. 
+Six is a Python 2 and 3 compatibility library. It provides utility functions for smoothing over the differences between the Python versions with the goal of writing Python code that is compatible on both Python versions.
 
 %package -n     python3-six
 Summary:        python-six
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -49,10 +53,13 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install pytest
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pytest==4.6
 python2 test_six.py
-easy_install-3.6 pytest
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pytest
 python3 test_six.py
+
 
 %files
 %defattr(-,root,root,-)
@@ -63,7 +70,14 @@ python3 test_six.py
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Jun 23 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.10.0-8
+*   Fri Aug 23 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0-3
+-   Fix makecheck
+-   Latest pytest is not compatible with python2
+*   Mon Nov 26 2018 Tapas Kundu <tkundu@vmware.com> 1.11.0-2
+-   Fix makecheck
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.11.0-1
+-   Update to version 1.11.0
+*   Fri Jun 23 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.10.0-8
 -   Add python-setuptools to BuildRequires to avoid Update issues
 *   Wed Jun 21 2017 Xiaolin Li <xiaolinl@vmware.com> 1.10.0-7
 -   Fix make check.

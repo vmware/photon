@@ -1,0 +1,63 @@
+From 2f10e883e3b12339b5c52070260bdc10a052ff92 Mon Sep 17 00:00:00 2001
+From: Anchal Agarwal <anchalag@amazon.com>
+Date: Thu, 22 Feb 2018 21:52:42 +0000
+Subject: x86/xen: Introduce new function to map HYPERVISOR_shared_info on
+ Resume
+
+Introduce a small function which re-uses shared page's PA allocated
+during guest initialization time in reserve_shared_info() and not
+allocate new page during resume flow.
+It also  does the mapping of shared_info_page by calling
+xen_hvm_init_shared_info() to use the function.
+
+Backport Notes:
+We don't need this commit 8d5ce0dad4ab2a4c8c8a3c36f6fb8c46b695b053 ("x86/xen:
+decouple shared_info mapping from xen_hvm_init_shared_info()") here since
+xen_hvm_init_shared_info changed in 4.14 kernel just to do the mapping and
+allocation of shared page is done in a separate function.
+We don't need to decouple this kernel API anymore
+
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+Reviewed-by: Sebastian Biemueller <sbiemue@amazon.com>
+Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+CR: https://cr.amazon.com/r/8273203/
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ arch/x86/xen/enlighten_hvm.c | 7 +++++++
+ arch/x86/xen/xen-ops.h       | 1 +
+ 2 files changed, 8 insertions(+)
+
+diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
+index 854508b00bbb..8afb6dd311f1 100644
+--- a/arch/x86/xen/enlighten_hvm.c
++++ b/arch/x86/xen/enlighten_hvm.c
+@@ -24,6 +24,13 @@
+ 
+ static unsigned long shared_info_pfn;
+ 
++void xen_hvm_map_shared_info(void)
++{
++        xen_hvm_init_shared_info();
++        if(shared_info_pfn)
++                 HYPERVISOR_shared_info = __va(PFN_PHYS(shared_info_pfn));
++}
++
+ void xen_hvm_init_shared_info(void)
+ {
+ 	struct xen_add_to_physmap xatp;
+diff --git a/arch/x86/xen/xen-ops.h b/arch/x86/xen/xen-ops.h
+index f377e1820c6c..94c8a009ab35 100644
+--- a/arch/x86/xen/xen-ops.h
++++ b/arch/x86/xen/xen-ops.h
+@@ -58,6 +58,7 @@ void xen_enable_syscall(void);
+ void xen_vcpu_restore(void);
+ 
+ void xen_callback_vector(void);
++void xen_hvm_map_shared_info(void);
+ void xen_hvm_init_shared_info(void);
+ void xen_unplug_emulated_devices(void);
+ 
+-- 
+2.14.4
+

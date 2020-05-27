@@ -1,0 +1,30 @@
+diff -Naur lightwave-1.3.1.7_orig/configure.ac lightwave-1.3.1.7/configure.ac
+--- lightwave-1.3.1.7_orig/configure.ac	2017-11-07 18:38:24.000000000 +0000
++++ lightwave-1.3.1.7/configure.ac	2017-12-30 08:19:16.578201072 +0000
+@@ -21,7 +21,7 @@
+         PLATFORM_LIB_PREFIX=lib64
+         ;;
+     linux*:aarch64)
+-        PLATFORM_LIB_PREFIX=lib
++        PLATFORM_LIB_PREFIX=lib64
+         ;;
+     darwin*:x86_64)
+         PLATFORM_LIB_PREFIX=lib
+@@ -224,7 +224,7 @@
+     OPEN_SSL_DEFAULT_PATH=/opt/vmware/lib
+     ;;
+     linux*:aarch64)
+-    OPEN_SSL_DEFAULT_PATH=/opt/vmware/lib
++    OPEN_SSL_DEFAULT_PATH=/opt/vmware/lib64
+     ;;
+     *)
+     AC_ERROR("Unsupported operating system - ${host_os}:${host_cpu}")
+@@ -445,7 +445,7 @@
+     LIKEWISE_DEFAULT_PATH=$LW_BASE_PATH/lib
+     ;;
+     linux*:aarch64)
+-    LIKEWISE_DEFAULT_PATH=$LW_BASE_PATH/lib
++    LIKEWISE_DEFAULT_PATH=$LW_BASE_PATH/lib64
+     ;;
+     *)
+     AC_ERROR("Unsupported operating system - ${host_os}:${host_cpu}")

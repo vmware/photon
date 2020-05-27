@@ -5,15 +5,15 @@
 
 Summary:        World timezone definitions, modern and historical
 Name:           python-pytz
-Version:        2017.2
-Release:        3%{?dist}
+Version:        2018.5
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pytz
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://files.pythonhosted.org/packages/source/p/pytz/pytz-%{version}.zip
-%define sha1    pytz=c2d0024d4a6bd649290813f0a57d849accf82fa9
+Source0:        https://files.pythonhosted.org/packages/source/p/pytz/pytz-%{version}.tar.gz
+%define sha1    pytz=014d842f110c031bc34f651c872f391756836758
 BuildArch:      noarch
 
 BuildRequires:  python2
@@ -22,6 +22,18 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  unzip
 BuildRequires:  python-pytest
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-pytest
+%if %{with_check}
+BuildRequires:  python-xml
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+%endif
+
 Requires:       python2
 Requires:       python2-libs
 Requires:       tzdata
@@ -35,14 +47,6 @@ Library Reference (``datetime.tzinfo``).
 
 %package -n     python3-pytz
 Summary:        python-pytz
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-pytest
-%if %{with_check}
-BuildRequires: python3-setuptools
-BuildRequires: python3-xml
-%endif
 
 Requires:       python3
 Requires:       python3-libs
@@ -69,10 +73,14 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pytest==4.6 freezegun funcsigs pathlib2 pluggy utils
 PATH=%{buildroot}%{_bindir}:${PATH} \
 PYTHONPATH=%{buildroot}%{python2_sitelib} \
     py.test%{python2_version} -v
 pushd ../p3dir
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pytest freezegun funcsigs pathlib2 pluggy utils
 PATH=%{buildroot}%{_bindir}:${PATH} \
 PYTHONPATH=%{buildroot}%{python3_sitelib} \
     py.test%{python3_version} -v
@@ -87,6 +95,10 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Sep 16 2019 Shreyas B. <shreyasb@vmware.com> 2018.5-2
+-   Fix makecheck.
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2018.5-1
+-   Update to version 2018.5
 *   Fri Aug 18 2017 Rongrong Qiu <rqiu@vmware.com> 2017.2-3
 -   add BuildRequires for make check bug 1937039
 *   Wed Apr 26 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.2-2

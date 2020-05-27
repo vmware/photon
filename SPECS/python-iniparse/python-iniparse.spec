@@ -105,12 +105,12 @@ popd
 -   Release 0.3.1
 *   Fri Feb 27 2009 Paramjit Oberoi <param@cs.wisc.edu> - 0.3.0-1
 -   Release 0.3.0
-*   Tue Dec 6 2008 Paramjit Oberoi <param@cs.wisc.edu> - 0.2.4-1
+*   Sat Dec 6 2008 Paramjit Oberoi <param@cs.wisc.edu> - 0.2.4-1
 -   Release 0.2.4
 -   added egg-info file to %%files
 *   Tue Dec 11 2007 Paramjit Oberoi <param@cs.wisc.edu> - 0.2.3-1
 -   Release 0.2.3
-*   Tue Sep 24 2007 Paramjit Oberoi <param@cs.wisc.edu> - 0.2.2-1
+*   Mon Sep 24 2007 Paramjit Oberoi <param@cs.wisc.edu> - 0.2.2-1
 -   Release 0.2.2
 *   Tue Aug 7 2007 Paramjit Oberoi <param@cs.wisc.edu> - 0.2.1-1
 -   Release 0.2.1

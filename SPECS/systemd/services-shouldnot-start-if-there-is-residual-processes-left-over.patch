@@ -1,0 +1,220 @@
+From c53d2d54bd29bd6f4c21705ae23425ade8c12167 Mon Sep 17 00:00:00 2001
+From: Daniel Black <daniel@linux.ibm.com>
+Date: Wed, 16 Jan 2019 21:20:18 +1100
+Subject: [PATCH] service: make killmode=cgroup|mixed, SendSIGKILL=no services
+ singletons
+
+KillMode=mixed and control group are used to indicate that all
+process should be killed off. SendSIGKILL is used for services
+that require a clean shutdown. These are typically database
+service where a SigKilled process would result in a lengthy
+recovery and who's shutdown or startup time is quite variable
+(so Timeout settings aren't of use).
+
+Here we take these two factors and refuse to start a service if
+there are existing processes within a control group. Databases,
+while generally having some protection against multiple instances
+running, lets not stress the rigor of these. Also ExecStartPre
+parts of the service aren't as rigoriously written to protect
+against against multiple use.
+
+closes #8630
+---
+ man/systemd.kill.xml    |  7 +++++--
+ src/basic/cgroup-util.c | 12 ++++++++----
+ src/basic/cgroup-util.h |  2 +-
+ src/core/service.c      | 28 ++++++++++++++++++++++++++--
+ src/core/unit.c         | 18 +++++++++++-------
+ src/core/unit.h         |  2 +-
+ 6 files changed, 52 insertions(+), 17 deletions(-)
+
+--- a/man/systemd.kill.xml_org	2020-05-21 20:05:43.535424419 +0800
++++ b/man/systemd.kill.xml	2020-05-21 20:10:25.136088970 +0800
+@@ -137,7 +137,11 @@
+         <listitem><para>Specifies whether to send
+         <constant>SIGKILL</constant> to remaining processes after a
+         timeout, if the normal shutdown procedure left processes of
+-        the service around. Takes a boolean value. Defaults to "yes".
++        the service around. When disabled, a
++        <varname>KillMode=</varname> of <constant>control-group</constant>
++        or <constant>mixed</constant> service will not restart if
++        processes from prior services exist within the control group.
++        Takes a boolean value. Defaults to "yes".
+         </para></listitem>
+       </varlistentry>
+ 
+--- a/src/basic/cgroup-util.c_org	2020-05-21 20:10:41.584617378 +0800
++++ b/src/basic/cgroup-util.c	2020-05-21 20:12:46.848622250 +0800
+@@ -222,7 +222,7 @@ int cg_kill(
+ 
+         _cleanup_set_free_ Set *allocated_set = NULL;
+         bool done = false;
+-        int r, ret = 0;
++        int r, ret = 0, ret_log_kill = 0;
+         pid_t my_pid;
+ 
+         assert(sig >= 0);
+@@ -266,7 +266,7 @@ int cg_kill(
+                                 continue;
+ 
+                         if (log_kill)
+-                                log_kill(pid, sig, userdata);
++                                ret_log_kill = log_kill(pid, sig, userdata);
+ 
+                         /* If we haven't killed this process yet, kill
+                          * it */
+@@ -277,8 +277,12 @@ int cg_kill(
+                                 if (flags & CGROUP_SIGCONT)
+                                         (void) kill(pid, SIGCONT);
+ 
+-                                if (ret == 0)
+-                                        ret = 1;
++                                if (ret == 0) {
++					if (log_kill)
++						ret = ret_log_kill;
++                                        else
++                                                ret = 1;
++                                }
+                         }
+ 
+                         done = false;
+--- a/src/basic/cgroup-util.h_org	2020-05-21 20:13:01.697094938 +0800
++++ b/src/basic/cgroup-util.h	2020-05-21 20:13:56.166825711 +0800
+@@ -139,7 +139,7 @@ typedef enum CGroupFlags {
+         CGROUP_REMOVE      = 4,
+ } CGroupFlags;
+ 
+-typedef void (*cg_kill_log_func_t)(pid_t pid, int sig, void *userdata);
++typedef int (*cg_kill_log_func_t)(pid_t pid, int sig, void *userdata);
+ 
+ int cg_kill(const char *controller, const char *path, int sig, CGroupFlags flags, Set *s, cg_kill_log_func_t kill_log, void *userdata);
+ int cg_kill_recursive(const char *controller, const char *path, int sig, CGroupFlags flags, Set *s, cg_kill_log_func_t kill_log, void *userdata);
+ 
+--- a/src/core/unit.c_org	2020-05-21 20:17:12.841039051 +0800
++++ b/src/core/unit.c	2020-05-21 20:19:36.453548466 +0800
+@@ -4460,7 +4460,7 @@ int unit_make_transient(Unit *u) {
+         return 0;
+ }
+ 
+-static void log_kill(pid_t pid, int sig, void *userdata) {
++static int log_kill(pid_t pid, int sig, void *userdata) {
+         _cleanup_free_ char *comm = NULL;
+ 
+         (void) get_process_comm(pid, &comm);
+@@ -4468,13 +4468,15 @@ static void log_kill(pid_t pid, int sig,
+         /* Don't log about processes marked with brackets, under the assumption that these are temporary processes
+            only, like for example systemd's own PAM stub process. */
+         if (comm && comm[0] == '(')
+-                return;
++                return 0;
+ 
+         log_unit_notice(userdata,
+                         "Killing process " PID_FMT " (%s) with signal SIG%s.",
+                         pid,
+                         strna(comm),
+                         signal_to_string(sig));
++
++	return 1;
+ }
+ 
+ static int operation_to_signal(KillContext *c, KillOperation k) {
+@@ -5349,29 +5351,31 @@ int unit_prepare_exec(Unit *u) {
+         return 0;
+ }
+ 
+-static void log_leftover(pid_t pid, int sig, void *userdata) {
++static int log_leftover(pid_t pid, int sig, void *userdata) {
+         _cleanup_free_ char *comm = NULL;
+ 
+         (void) get_process_comm(pid, &comm);
+ 
+         if (comm && comm[0] == '(') /* Most likely our own helper process (PAM?), ignore */
+-                return;
++                return 0;
+ 
+         log_unit_warning(userdata,
+                          "Found left-over process " PID_FMT " (%s) in control group while starting unit. Ignoring.\n"
+                          "This usually indicates unclean termination of a previous run, or service implementation deficiencies.",
+                          pid, strna(comm));
++
++	return 1;
+ }
+ 
+-void unit_warn_leftover_processes(Unit *u) {
++int unit_warn_leftover_processes(Unit *u) {
+         assert(u);
+ 
+         (void) unit_pick_cgroup_path(u);
+ 
+         if (!u->cgroup_path)
+-                return;
++                return 0;
+ 
+-        (void) cg_kill_recursive(SYSTEMD_CGROUP_CONTROLLER, u->cgroup_path, 0, 0, NULL, log_leftover, u);
++        return cg_kill_recursive(SYSTEMD_CGROUP_CONTROLLER, u->cgroup_path, 0, 0, NULL, log_leftover, u);
+ }
+ 
+ bool unit_needs_console(Unit *u) {
+--- a/src/core/unit.h_org	2020-05-21 20:19:49.745964920 +0800
++++ b/src/core/unit.h	2020-05-21 20:20:03.922408911 +0800
+@@ -788,7 +788,7 @@ void unit_unlink_state_files(Unit *u);
+ 
+ int unit_prepare_exec(Unit *u);
+ 
+-void unit_warn_leftover_processes(Unit *u);
++int unit_warn_leftover_processes(Unit *u);
+ 
+ bool unit_needs_console(Unit *u);
+ 
+--- a/src/core/service.c_org	2020-05-21 20:47:37.545729544 +0800
++++ b/src/core/service.c	2020-05-21 20:50:44.615515788 +0800
+@@ -1912,6 +1912,27 @@ static void service_kill_control_process
+         }
+ }
+ 
++static int service_adverse_to_leftover_processes(Service *s) {
++        assert(s);
++
++        /* KillMode=mixed and control group are used to indicate that all process should be killed off.
++         * SendSIGKILL is used for services that require a clean shutdown. These are typically database
++         * service where a SigKilled process would result in a lengthy recovery and who's shutdown or
++         * startup time is quite variable (so Timeout settings aren't of use).
++         *
++         * Here we take these two factors and refuse to start a service if there are existing processes
++         * within a control group. Databases, while generally having some protection against multiple
++         * instances running, lets not stress the rigor of these. Also ExecStartPre parts of the service
++         * aren't as rigoriously written to protect aganst against multiple use. */
++        if (unit_warn_leftover_processes(UNIT(s)) &&
++            IN_SET(s->kill_context.kill_mode, KILL_MIXED, KILL_CONTROL_GROUP) &&
++            !s->kill_context.send_sigkill) {
++            	log_unit_error(UNIT(s), "Will not start SendSIGKILL=no service of type KillMode=control-group or mixed while processes exist");
++		return -EBUSY;
++        }
++        return 0;
++}
++
+ static void service_enter_start(Service *s) {
+         ExecCommand *c;
+         usec_t timeout;
+@@ -1923,7 +1944,9 @@ static void service_enter_start(Service
+         service_unwatch_control_pid(s);
+         service_unwatch_main_pid(s);
+ 
+-        unit_warn_leftover_processes(UNIT(s));
++        r = service_adverse_to_leftover_processes(s);
++	if (r < 0)
++                goto fail;
+ 
+         if (s->type == SERVICE_FORKING) {
+                 s->control_command_id = SERVICE_EXEC_START;
+@@ -2012,7 +2035,9 @@ static void service_enter_start_pre(Serv
+         s->control_command = s->exec_command[SERVICE_EXEC_START_PRE];
+         if (s->control_command) {
+ 
+-                unit_warn_leftover_processes(UNIT(s));
++                r = service_adverse_to_leftover_processes(s);
++		if (r < 0)
++                	goto fail;
+ 
+                 s->control_command_id = SERVICE_EXEC_START_PRE;
+ 

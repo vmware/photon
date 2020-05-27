@@ -1,52 +1,49 @@
 Summary:        Git for operating system binaries
 Name:           ostree
-Version:        2017.4
-Release:        2%{?dist}
-Source0:        http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
-%define sha1    ostree=eb3546c552849ace2f4e3701bc0b826611f569cc
-Source1:        91-ostree.preset
+Version:        2019.2
+Release:        3%{?dist}
 License:        LGPLv2+
-URL:            http://live.gnome.org/OSTree
+URL:            https://ostree.readthedocs.io/en/latest
+Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+# Manually created Source tar which is equal to
+# Source0 + .git as it requires git hooks at build time
+Source0:        https://github.com/ostreedev/ostree/archive/%{name}-%{version}.tar.gz
+%define sha1    %{name}-%{version}=716f6b626203a188ecf267cc312ca817ef7dc875
+Source1:        91-ostree.preset
+Patch0:         dualboot-support.patch
+Patch1:         0001-ostree-Copying-photon-config-to-boot-directory.patch
+Patch2:         0002-ostree-Adding-load-env-to-menuentry.patch
 BuildRequires:  git
-BuildRequires:  which
-BuildRequires:  libgsystem-devel
-BuildRequires:  xz-devel
+BuildRequires:  autoconf automake libtool which
 BuildRequires:  gtk-doc
-BuildRequires:  e2fsprogs-devel
-BuildRequires:  libsoup-devel
-BuildRequires:  autogen
-Requires:       fuse
-Requires:       libgsystem
-Requires:       gpgme
-Requires:       libassuan
-Requires:       libgpg-error
-Requires:       systemd
-Requires:       libsoup
-Requires:       mkinitcpio
-Requires:       dracut
-Requires:       dracut-tools
-Requires:       libarchive
-Requires:		libgsystem
-BuildRequires:  attr-devel
-BuildRequires:  fuse-devel
-BuildRequires:  libgpg-error-devel
-BuildRequires:  python2-libs
-BuildRequires:  python2
+BuildRequires:  glib-devel
 BuildRequires:  gobject-introspection
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  gobject-introspection-python
-BuildRequires:  gpgme-devel
-BuildRequires:  libcap-devel
-BuildRequires:  libsoup
-BuildRequires:  libsoup-devel
+BuildRequires:  xz-devel
+BuildRequires:  icu-devel
+BuildRequires:  sqlite-devel
 BuildRequires:  mkinitcpio
-BuildRequires:  dracut
-BuildRequires:  dracut-tools
-BuildRequires:  systemd-devel
-BuildRequires:  libarchive
+BuildRequires:  e2fsprogs-devel
+BuildRequires:  libpsl-devel
+BuildRequires:  zlib-devel
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
+BuildRequires:  libsoup-devel
+BuildRequires:  attr-devel
 BuildRequires:  libarchive-devel
+BuildRequires:  fuse-devel
+BuildRequires:  libcap-devel
+BuildRequires:  gpgme-devel
+BuildRequires:  systemd-devel
+BuildRequires:  dracut
+BuildRequires:  bison
+Requires: dracut
+Requires: systemd
+Requires: libassuan
+Requires: gpgme
 
 %description
 OSTree is a tool for managing bootable, immutable, versioned
@@ -56,44 +53,63 @@ is it a tool for managing full disk images. Instead, it sits between
 those levels, offering a blend of the advantages (and disadvantages)
 of both.
 
+%package libs
+Summary: Development headers for %{name}
+Group: Development/Libraries
+Requires: libpsl
+Requires: libsoup
+Requires: icu
+
+
+%description libs
+The %{name}-libs provides shared libraries for %{name}.
+
 %package devel
 Summary: Development headers for %{name}
 Group: Development/Libraries
-Requires: %{name} = %{version}-%{release}
+Requires: %{name}-libs
 
 %description devel
-The %{name}-devel package includes the header files for the %{name} library
+The %{name}-devel package includes the header files for the %{name} library.
+
+%package grub2
+Summary: GRUB2 integration for OSTree
+Group: Development/Libraries
+Requires: grub2
+Requires: grub2-efi
+Requires: %{name}
+
+%description grub2
+GRUB2 integration for OSTree
 
 %prep
-%setup -n %{name}-%{version}
-(git clone git://git.gnome.org/libglnx libglnx  && cd libglnx && git checkout 602fdd9)
-(git clone https://github.com/mendsley/bsdiff bsdiff && cd bsdiff && git checkout 1edf9f6)
+%setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 env NOCONFIGURE=1 ./autogen.sh
 %configure \
-    --disable-silent-rules \
-    --enable-gtk-doc \
-    --with-dracut \
-    --with-mkinitcpio \
-    --enable-libsoup-client-certs  \
-    --prefix=%{_prefix}
+     --disable-silent-rules \
+     --enable-gtk-doc \
+     --with-dracut \
+     --with-mkinitcpio \
+     --without-selinux \
+     --enable-libsoup-client-certs
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot} INSTALL="install -p -c"
+make DESTDIR=%{buildroot} INSTALL="install -p -c" install
 find %{buildroot} -name '*.la' -delete
 install -D -m 0644 %{SOURCE1} %{buildroot}%{_prefix}/lib/systemd/system-preset/91-ostree.preset
 install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 mkdir -p %{buildroot}%{_prefix}/lib/systemd/system/
 cp -R %{buildroot}/lib/systemd/system/*.service %{buildroot}%{_prefix}/lib/systemd/system/
+cp -R %{buildroot}/lib/systemd/system/ostree-finalize-staged.path %{buildroot}%{_prefix}/lib/systemd/system/
+mkdir -p %{buildroot}%{_libdir}/systemd/system-generators/
+cp -R %{buildroot}/lib/systemd/system-generators/ostree-system-generator %{buildroot}%{_libdir}/systemd/system-generators/
 rm -rf %{buildroot}/lib
-
-%check
-make %{?_smp_mflags} check
-
-%clean
-rm -rf %{buildroot}
 
 %post
 %systemd_post ostree-remount.service
@@ -105,62 +121,53 @@ rm -rf %{buildroot}
 %systemd_postun_with_restart ostree-remount.service
 
 %files
-%doc COPYING README.md
+%doc COPYING
+%doc README.md
 %{_bindir}/ostree
 %{_bindir}/rofiles-fuse
-%{_libdir}/*.so.1*
-%{_mandir}/man*/*.gz
-%{_prefix}/lib/systemd/system-preset/91-ostree.preset
-%{_prefix}/lib/systemd/system/ostree*.service
-%dir %{_prefix}/lib/dracut/modules.d/*ostree
-%{_prefix}/lib/dracut/modules.d/98ostree/*
-%{_sysconfdir}/grub.d/*ostree
+%{_datadir}/ostree
+%{_libdir}/initcpio/*
+%dir %{_libdir}/dracut/modules.d/98ostree
+%{_libdir}/systemd/system/ostree*.service
+%{_libdir}/systemd/system/ostree-finalize-staged.path
+%{_libdir}/dracut/modules.d/98ostree/*
+%{_mandir}/man1/ostree-admin*
+%{_libdir}/systemd/system-generators/ostree-system-generator
+%{_libdir}/systemd/system-preset/91-ostree.preset
+%exclude %{_sysconfdir}/grub.d/*ostree
+%exclude %{_libexecdir}/libostree/grub2*
+%{_libdir}/ostree/ostree-prepare-root
 %{_sysconfdir}/dracut.conf.d/ostree.conf
 %{_sysconfdir}/ostree-mkinitcpio.conf
-%dir %{_sysconfdir}/ostree/remotes.d
-%{_libdir}/girepository-*/OSTree-*.typelib
-%{_libexecdir}/libostree/grub2*
-%{_libdir}/initcpio/*
-%{_libdir}/ostree/ostree-prepare-root
 %{_libdir}/ostree/ostree-remount
-%exclude %{_libexecdir}/libostree/ostree-trivial-httpd
+%{_libdir}/tmpfiles.d/ostree-tmpfiles.conf
+%{_libexecdir}/libostree/*
 
+%files libs
+%{_sysconfdir}/ostree
+%{_libdir}/*.so.1*
+%{_libdir}/girepository-1.0/OSTree-1.0.typelib
 
 %files devel
-%{_includedir}/*
 %{_libdir}/lib*.so
+%{_includedir}/*
 %{_libdir}/pkgconfig/*
-%dir %{_datadir}/gtk-doc/html/ostree
-%{_datadir}/gtk-doc/html/ostree/*
-%{_datadir}/ostree/*
+%{_prefix}/share/bash-completion/completions/ostree
+%{_datadir}/gtk-doc/html/ostree
 %{_datadir}/gir-1.0/OSTree-1.0.gir
+%exclude %{_mandir}/man1/ostree-admin*
+%{_mandir}/man1/*.gz
+%{_mandir}/man5/*.gz
+
+%files grub2
+%{_sysconfdir}/grub.d/*ostree
+%{_libexecdir}/libostree/grub2*
 
 %changelog
-*	Mon May 08 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2017.4-2
--	Use libgsystem-devel to build instead of libgsystem.
-*   Mon Apr 17 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2017.4-1
--   Update to 2017.4
-*   Wed Feb 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2015.7-10
--   libglnx: checkout commit 900b25f.
--   bsdiff:  checkout commit 1edf9f6.
-*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.7-9
--   BuildRequired attr-devel and libgpg-error-devel
-*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  2015.7-8
--   Change systemd dependency
-*   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.7-7
--   Use %setup instead of %autosetup
-*   Fri Oct 07 2016 ChangLee <changlee@vmware.com> 2015.7-6
--   Modified %check
-*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2015.7-5
--   Fixed logic to restart the active services after upgrade
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2015.7-4
--   GA - Bump release of all rpms
-*   Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 2015.7-3
--   Remove commented steps.
-*   Sat Jul 11 2015 Touseef Liaqat <tliaqat@vmware.com> 2015.7-2
--   Add dracut, mkinitcpio and libsoup as dependencies
-*   Wed Jun 17 2015 Anish Swaminathan <anishs@vmware.com> 2015.7-1
--   Updated the version
-*   Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 2014.11-1
+*   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2019.2-3
+-   Added for ARM Build
+*   Fri Sep 13 2019 Ankit Jain <ankitja@vmware.com> 2019.2-2
+-   Added support to get kernel and systemd commandline param
+-   from photon.cfg and systemd.cfg
+*   Tue May 14 2019 Ankit Jain <ankitja@vmware.com> 2019.2-1
 -   Initial build. First version
-

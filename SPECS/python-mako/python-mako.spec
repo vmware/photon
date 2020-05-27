@@ -2,19 +2,25 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-mako
-Version:        1.0.6
-Release:        5%{?dist}
+Version:        1.0.7
+Release:        2%{?dist}
 Summary:        Python templating language
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/56/4b/cb75836863a6382199aefb3d3809937e21fa4cb0db15a4f4ba0ecc2e7e8e/Mako-%{version}.tar.gz
 Source0:        Mako-%{version}.tar.gz
-%define sha1    Mako=8cbc52319268525208c88dd3ef62c929069e4b24
+%define sha1    Mako=bf0c1f4cdfca4dd37bc0c9f83e984a0558268b42
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-pytest
+
+%if %{with_check}
+BuildRequires:  python-markupsafe
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+%endif
 
 Requires:       python2
 Requires:       python2-libs
@@ -56,6 +62,11 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 nose
+$easy_install_2 httpretty
+$easy_install_2 mock
+$easy_install_2 pytest==4.6
 python2 setup.py test
 pushd ../p3dir
 python3 setup.py test
@@ -72,6 +83,10 @@ popd
 %{_bindir}/mako-render3
 
 %changelog
+*   Mon Sep 09 2019 Shreyas B. <shreyasb@vmware.com> 1.0.7-2
+-   Fix makecheck.
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.0.7-1
+-   Update to version 1.0.7
 *   Thu Jul 06 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0.6-5
 -   Fix make check issues.
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0.6-4

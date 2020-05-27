@@ -19,7 +19,7 @@ print_succeeded_in_green() {
 	return 0
 }
 run_command() {
-	# $1 = message 
+	# $1 = message
 	# $2 = command
 	# $3 = log file
 	local _start=$(date +%s)
@@ -28,11 +28,11 @@ run_command() {
 	local _logfile="${3}"
 	if [ "/dev/null" == "${_logfile}" ]; then
 		print_message "${_msg}: "
-		eval ${_cmd} >> ${_logfile} 2>&1 && print_succeeded_in_green || print_failed_in_red 
+		eval ${_cmd} >> ${_logfile} 2>&1 && print_succeeded_in_green || print_failed_in_red
 	else
 		print_message "${_msg}: "
 		printf "\n%s\n\n" "###       ${_msg}       ###" >> ${_logfile} 2>&1
-		eval ${_cmd} >> ${_logfile} 2>&1 && print_succeeded_in_green || print_failed_in_red 
+		eval ${_cmd} >> ${_logfile} 2>&1 && print_succeeded_in_green || print_failed_in_red
 		fi
 
 	local _end=$(date +%s)

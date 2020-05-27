@@ -1,7 +1,7 @@
 Summary:	Docbook-xsl-1.79.1
 Name:		docbook-xsl
 Version:	1.79.1
-Release:	5%{?dist}
+Release:	7%{?dist}
 License:	Apache License
 URL:		http://www.docbook.org
 Source0:	http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
@@ -11,16 +11,21 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires:	libxml2
 BuildRequires:	libxml2
+BuildRequires:  zip
 BuildArch:      noarch
 
 %description
-The DocBook XML DTD-4.5 package contains document type definitions for 
-verification of XML data files against the DocBook rule set. These are 
-useful for structuring books and software documentation to a standard 
+The DocBook XML DTD-4.5 package contains document type definitions for
+verification of XML data files against the DocBook rule set. These are
+useful for structuring books and software documentation to a standard
 allowing you to utilize transformations already written for that standard.
 %prep
 %setup -q
+
 %build
+zip -d tools/lib/jython.jar Lib/distutils/command/wininst-6.exe
+zip -d tools/lib/jython.jar Lib/distutils/command/wininst-7.1.exe
+
 %install
 install -v -m755 -d %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.79.1 &&
 
@@ -31,6 +36,10 @@ cp -v -R VERSION common eclipse epub extensions fo highlighting html \
     %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.79.1
 
 pushd %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.79.1
+rm extensions/saxon65.jar
+rm tools/lib/saxon.jar
+rm tools/lib/saxon9-ant.jar
+rm tools/lib/saxon9he.jar
 ln -s VERSION VERSION.xsl
 popd
 
@@ -41,8 +50,8 @@ install -v -m644    RELEASE-NOTES* NEWS* \
 
 #There is no source code for make check
 #%check
-#chmod 777 tests -R  
-#make %{?_smp_mflags} check 
+#chmod 777 tests -R
+#make %{?_smp_mflags} check
 
 %post
 if [ ! -d /etc/xml ]; then install -v -m755 -d /etc/xml; fi &&
@@ -82,7 +91,11 @@ fi
 %{_docdir}/*
 
 %changelog
-*	Thu Aug 18 2017 Rongrong Qiu <rqiu@vmware.com> 1.79.1-5
+*       Fri Jan 18 2019 Tapas Kundu <tkundu@vmware.com> 1.79.1-7
+-       Removed saxon jar files while installing
+*	Tue Dec 04 2018 Ashwin H<ashwinh@vmware.com> 1.79.1-6
+-       Remove windows installers
+*	Fri Aug 18 2017 Rongrong Qiu <rqiu@vmware.com> 1.79.1-5
 -	Update make check for bug 1635477
 *	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.79.1-4
 -	Fix arch

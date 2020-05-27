@@ -1,0 +1,776 @@
+From 7b8f80e2846fabd25f7d8081ecf4e6d01b88db1b Mon Sep 17 00:00:00 2001
+From: Kumar Kaushik <kaushikk@vmware.com>
+Date: Wed, 21 Feb 2018 15:20:36 -0800
+Subject: [PATCH] Preprocess timeouts and avoid any race
+
+Change-Id: Idf091f71e81256d3b9fa15268b2f7fac8b6de551
+---
+ common/sockinterface.c               |  30 +--
+ server/restengine/httpProtocolHead.c |  38 ++--
+ transport/posix/socket.c             | 418 +++++++++++++++++------------------
+ transport/posix/structs.h            |   2 +-
+ 4 files changed, 230 insertions(+), 258 deletions(-)
+
+diff --git a/common/sockinterface.c b/common/sockinterface.c
+index f737f78..197dd48 100644
+--- a/common/sockinterface.c
++++ b/common/sockinterface.c
+@@ -431,17 +431,11 @@ VmRESTOnConnectionTimeout(
+ 
+     VMREST_LOG_DEBUG(pRESTHandle,"%s","Connection Timeout..Closing conn..");
+ 
+-    dwError = VmRESTSendFailureResponse(
+-                  pRESTHandle,
+-                  errCodeTimeOut,
+-                  pRequest
+-                  );
+-    if (dwError != REST_ENGINE_SUCCESS)
+-    {
+-        VMREST_LOG_ERROR(pRESTHandle,"Double Failure case detected with error code %u....", dwError);
+-    }
+-    dwError = REST_ENGINE_SUCCESS;
+-
++    VmRESTSendFailureResponse(
++        pRESTHandle,
++        errCodeTimeOut,
++        pRequest
++        );
+ 
+     dwError = VmRESTDisconnectClient(
+                      pRESTHandle,
+@@ -481,7 +475,6 @@ VmRESTTcpReceiveNewData(
+     char*                            pszBuffer = NULL;
+     uint32_t                         nProcessed = 0;
+     uint32_t                         nBufLen = 0;
+-    uint32_t                         ret = REST_ENGINE_SUCCESS;
+     BOOLEAN                          bNextIO = FALSE;
+ 
+     if (!pSocket || !pRESTHandle || !pQueue)
+@@ -589,19 +582,6 @@ VmRESTTcpReceiveNewData(
+ 
+     VMREST_LOG_ERROR(pRESTHandle,"ERROR code %u", dwError);
+ 
+-    if ((dwError == VMREST_TRANSPORT_DEFERRED_TIMEOUT_PROCESS) && (bNextIO))
+-    {
+-         ret = VmRESTOnConnectionTimeout(
+-                     pRESTHandle,
+-                     pSocket
+-                     );
+-
+-         if (ret != REST_ENGINE_SUCCESS)
+-         {
+-            VMREST_LOG_ERROR(pRESTHandle,"Double failure on deferred timeout processing dwError, = %u", dwError);
+-            dwError = REST_ENGINE_ERROR_DOUBLE_FAILURE;
+-         }
+-    }
+     goto cleanup;
+ }
+ 
+diff --git a/server/restengine/httpProtocolHead.c b/server/restengine/httpProtocolHead.c
+index a7ca54a..c5b9f3c 100644
+--- a/server/restengine/httpProtocolHead.c
++++ b/server/restengine/httpProtocolHead.c
+@@ -1347,7 +1347,6 @@ VmRESTProcessBuffer(
+     )
+ {
+     uint32_t                         dwError = REST_ENGINE_SUCCESS;
+-    uint32_t                         ret = REST_ENGINE_SUCCESS;
+     VM_REST_PROCESSING_STATE         prevState = PROCESS_INVALID;
+     VM_REST_PROCESSING_STATE         currState = PROCESS_INVALID;
+     uint32_t                         nProcessed = 0;
+@@ -1415,10 +1414,6 @@ VmRESTProcessBuffer(
+                                &(pRequest->pResponse)
+                                );
+                  VMREST_LOG_INFO(pRESTHandle,"C-REST-ENGINE: Application callback returns dwError %u", dwError);
+-                 if ((dwError != REST_ENGINE_SUCCESS) && pRequest && pRequest->pResponse && pRequest->pResponse->statusLine)
+-                 {
+-                     VMREST_LOG_INFO(pRESTHandle,"C-REST-ENGINE: Status code: %s, header sent %d", pRequest->pResponse->statusLine->statusCode, pRequest->pResponse->bHeaderSent);
+-                 }
+                  BAIL_ON_VMREST_ERROR(dwError);
+                  bInitiateClose = TRUE;
+                  break;
+@@ -1446,21 +1441,14 @@ VmRESTProcessBuffer(
+ error:
+ 
+     VMREST_LOG_ERROR(pRESTHandle,"Process buffer failed with error code %u, sending failure response", dwError);
+-    ret = VmRESTSendFailureResponse(
+-                  pRESTHandle,
+-                  dwError,
+-                  pRequest
+-                  );
+-    if (ret != REST_ENGINE_SUCCESS)
+-    {
+-        VMREST_LOG_ERROR(pRESTHandle,"%s","Double Failure case detected ....");
+-        VMREST_LOG_ERROR(pRESTHandle,"%s","possible memory leak");
+-        dwError = REST_ENGINE_ERROR_DOUBLE_FAILURE;
+-    }
+-    else
+-    {
+-        dwError = REST_ENGINE_SUCCESS;
+-    }
++    VmRESTSendFailureResponse(
++        pRESTHandle,
++        dwError,
++        pRequest
++        );
++
++    dwError = REST_ENGINE_SUCCESS;
++
+     goto cleanup;
+ 
+ }
+@@ -1524,13 +1512,19 @@ VmRESTSendFailureResponse(
+     uint32_t                         nBytesWritten = 0;
+     PVM_REST_HTTP_RESPONSE_PACKET    pResponse = NULL;
+ 
+-    if (!pRequest || !pRequest->pResponse)
++    if (!pRESTHandle || !pRequest || !pRequest->pResponse)
+     {
+         VMREST_LOG_ERROR(pRESTHandle,"%s","Invalid params");
+         dwError =  VMREST_APPLICATION_INVALID_PARAMS;
+     }
+     BAIL_ON_VMREST_ERROR(dwError);
+ 
++    if (pRESTHandle->instanceState == VMREST_INSTANCE_STOPPED)
++    {
++        VMREST_LOG_ERROR(pRESTHandle, "%s", "Library trying to stop .. Rejecting request to send negative response");
++        goto cleanup;
++    }
++
+     pResponse = pRequest->pResponse;
+ 
+     VMREST_LOG_ERROR(pRESTHandle,"Preparing to send negative response to client, Error %u...", errorCode);
+@@ -1625,7 +1619,7 @@ VmRESTSendFailureResponse(
+     return dwError;
+ 
+ error:
+-    VMREST_LOG_ERROR(pRESTHandle,"%s", "Double failure observed ... No response will be sent to client and connection will be forcefully closed.");
++    VMREST_LOG_ERROR(pRESTHandle,"%s", "Double failure observed while sending negative response...");
+ 
+     goto cleanup;
+ 
+diff --git a/transport/posix/socket.c b/transport/posix/socket.c
+index b34ef15..44cfbfd 100644
+--- a/transport/posix/socket.c
++++ b/transport/posix/socket.c
+@@ -89,6 +89,12 @@ VmRESTCreateSSLObject(
+     PVM_SOCKET                       pSocket
+     );
+ 
++static
++void
++VmSockPosixPreProcessTimeouts(
++    PVMREST_HANDLE                   pRESTHandle,
++    PVM_SOCK_EVENT_QUEUE             pQueue
++    );
+ 
+ 
+ DWORD
+@@ -501,9 +507,7 @@ VmSockPosixWaitForEvent(
+     BOOLEAN                          bLocked = FALSE;
+     VM_SOCK_EVENT_TYPE               eventType = VM_SOCK_EVENT_TYPE_UNKNOWN;
+     PVM_SOCKET                       pSocket = NULL;
+-    BOOLEAN                          bFound = FALSE;
+     BOOLEAN                          bFreeEventQueue = 0;
+-    int                              i = 0;
+ 
+     if (!pQueue || !ppSocket || !pEventType)
+     {
+@@ -550,12 +554,21 @@ VmSockPosixWaitForEvent(
+     {
+         if (pQueue->iReady < pQueue->nReady)
+         {
++            /**** Preprocess timeouts ****/
++            if (pQueue->iReady == 0)
++            {
++                VmSockPosixPreProcessTimeouts(
++                    pRESTHandle,
++                    pQueue
++                    ); 
++            }
++
+             struct epoll_event* pEvent = &pQueue->pEventArray[pQueue->iReady];
+             PVM_SOCKET pEventSocket = (PVM_SOCKET)pEvent->data.ptr;
+ 
+             if (!pEventSocket)
+             {
+-                VMREST_LOG_ERROR(pRESTHandle,"%s","Bad socket information");
++                VMREST_LOG_DEBUG(pRESTHandle,"%s","Bad socket information");
+                 dwError = ERROR_INVALID_STATE;
+                 BAIL_ON_VMREST_ERROR(dwError);
+             }
+@@ -565,22 +578,16 @@ VmSockPosixWaitForEvent(
+             if (pEvent->events & (EPOLLERR | EPOLLHUP))
+             {
+                 eventType = VM_SOCK_EVENT_TYPE_CONNECTION_CLOSED;
+-                dwError = VmSockPosixDeleteEventFromQueue(
+-                              pRESTHandle,
+-                              pQueue,
+-                              pEventSocket
+-                              );
+-                BAIL_ON_VMREST_ERROR(dwError);
+                 pSocket = pEventSocket;
++                BAIL_ON_VMREST_ERROR(dwError);
+             }
+             else if (pEventSocket->type == VM_SOCK_TYPE_LISTENER)    // New connection request
+             {
+-                VMREST_LOG_INFO(pRESTHandle,"%s","C-REST-ENGINE: ========================  NEW REQUEST ==========================");
+                 dwError = VmSockPosixAcceptConnection(
+                               pEventSocket,
+                               &pSocket);
+                 BAIL_ON_VMREST_ERROR(dwError);
+-                VMREST_LOG_INFO(pRESTHandle,"C-REST-ENGINE: Accepted new connection with socket fd %d", pSocket->fd);
++                VMREST_LOG_INFO(pRESTHandle,"C-REST-ENGINE: ( NEW REQUEST ) Accepted new connection with socket fd %d", pSocket->fd);
+ 
+                 dwError = VmSockPosixSetNonBlocking(pRESTHandle,pSocket);
+                 BAIL_ON_VMREST_ERROR(dwError);
+@@ -643,120 +650,60 @@ VmSockPosixWaitForEvent(
+             }
+             else if (pEventSocket->type == VM_SOCK_TYPE_TIMER) // Time out event
+             {
+-                eventType = VM_SOCK_EVENT_TYPE_UNKNOWN;
+                 pSocket = pEventSocket;
++                VMREST_LOG_INFO(pRESTHandle, "Timeout event happened on IO Socket fd %d, timer fd %d", pSocket->pIoSocket->fd, pSocket->fd);
+ 
+-                VMREST_LOG_DEBUG(pRESTHandle, "Timeout event happened on timer fd %d", pSocket->fd);
+-              
+-                if (pSocket->pIoSocket != NULL)
++                if (pSocket->pIoSocket)
+                 {
+-                    /*** Scan pQueue and look for IO event corresponding to this timer event ***/
+-                    for ((i = (pQueue->iReady + 1)); i < pQueue->nReady ; i++)
+-                    {
+-                        struct epoll_event* pEventTemp = &pQueue->pEventArray[i];
+-                        PVM_SOCKET pEventSocketTemp = (PVM_SOCKET)pEventTemp->data.ptr;
+-                        if (pEventSocketTemp->fd == pEventSocket->pIoSocket->fd)
+-                        {
+-                            pEventSocket->pIoSocket->pTimerSocket = NULL;
+-                            bFound = TRUE;
+-                            break;
+-                        }
+-                    }
++                   /**** Delete IO socket from queue so that we don't get any further notification ****/
++                    dwError = VmSockPosixDeleteEventFromQueue(
++                                  pRESTHandle,
++                                  pQueue,
++                                  pSocket->pIoSocket
++                                  );
++                    BAIL_ON_VMREST_ERROR(dwError);
+ 
+-                    if (bFound)
++                    if ((pRESTHandle->pSSLInfo->isSecure) && (!(pSocket->pIoSocket->bSSLHandShakeCompleted)))
+                     {
+-                        VMREST_LOG_DEBUG(pRESTHandle,"Action: DEFERRED, IO sock found in queue(Succeeding),  Io Sock %d, timer %d", pSocket->pIoSocket->fd, pSocket->fd );
+-                        pEventSocket->pIoSocket->pTimerSocket = NULL;
++                        /**** SSL handshake is not completed, no response will be sent, free IoSocket ****/
++                        VmSockPosixCloseSocket(pRESTHandle,pSocket->pIoSocket);
++                        VmSockPosixReleaseSocket(pRESTHandle,pSocket->pIoSocket);
++                        pSocket = NULL;
+                     }
+                     else
+                     {
+-                        if (pSocket->pIoSocket->bInUse == TRUE)
+-                        {
+-                            VMREST_LOG_DEBUG(pRESTHandle,"Action: DEFERRED, IO Soc in use, IoSocket %d, timer %d", pSocket->pIoSocket->fd, pSocket->fd );
+-                            pEventSocket->pIoSocket->pTimerSocket = NULL;
+-                        }
+-                        else
+-                        {
+-                             /**** We are good to close actual IO Socket here ****/
+-                             VMREST_LOG_INFO(pRESTHandle,"Action: IO DELETION, IoSocket %d, timer %d", pSocket->pIoSocket->fd, pSocket->fd );
+-
+-                             pSocket = pEventSocket->pIoSocket;
+-                             /**** Delete IO from queue ****/
+-                             VmSockPosixDeleteEventFromQueue(
+-                                           pRESTHandle,
+-                                           pQueue,
+-                                           pSocket
+-                                           );
+-
+-                             if ((pRESTHandle->pSSLInfo->isSecure) && (!(pSocket->bSSLHandShakeCompleted)))
+-                             {
+-                                 /**** SSL handshake is not completed, no response will be sent, free IoSocket ****/
+-                                 pEventSocket->pIoSocket = NULL;
+-                                 VmSockPosixCloseSocket(pRESTHandle,pSocket);
+-                                 VmSockPosixReleaseSocket(pRESTHandle,pSocket);
+-                                 eventType = VM_SOCK_EVENT_TYPE_UNKNOWN;
+-                             }
+-                             else
+-                             {
+-                                 eventType = VM_SOCK_EVENT_TYPE_CONNECTION_TIMEOUT;
+-                                 pEventSocket->pIoSocket->pTimerSocket = NULL;
+-                             }
+-                        }
++                        pSocket = pSocket->pIoSocket;
++                        eventType = VM_SOCK_EVENT_TYPE_CONNECTION_TIMEOUT;
+                     }
+                 }
+-
+-                /** Close and free the timer socket ****/
+-                VmSockPosixCloseSocket(pRESTHandle,pEventSocket);
+-                VmSockPosixReleaseSocket(pRESTHandle,pEventSocket);
+-
+-                if (eventType == VM_SOCK_EVENT_TYPE_UNKNOWN)
+-                {
+-                    pSocket = NULL;
+-                }
+             }
+             else  // Data available on IO Socket
+             {
+                  pSocket = pEventSocket;
++                 VMREST_LOG_DEBUG(pRESTHandle,"Data notification on socket fd %d", pSocket->fd);
++
++                 /**** stop the timer ****/
++                 dwError = VmSockPosixReArmTimer(
++                               pRESTHandle,
++                               pSocket->pTimerSocket,
++                               0
++                               );
++                 BAIL_ON_VMREST_ERROR(dwError);
+ 
+-                 /**** Mark IO socket in use - timer out event cannot modify IO till this is done ****/
+-                 pSocket->bInUse = TRUE;
+-
+-                 if (pSocket->pTimerSocket == NULL)
++                 /**** If SSL handshake is not yet complete, do the needful ****/
++                 if ((pRESTHandle->pSSLInfo->isSecure) && (!(pSocket->bSSLHandShakeCompleted)))
+                  {
+-                     /**** Time out already occurred on this socket.. request won't be processed ****/
+-                     VmSockPosixCloseSocket(pRESTHandle,pSocket);
+-                     VmSockPosixReleaseSocket(pRESTHandle,pSocket);
++                      dwError = VmRESTAcceptSSLContext(
++                                    pRESTHandle,
++                                    pSocket,
++                                    TRUE
++                                    );
++                      BAIL_ON_VMREST_ERROR(dwError); 
++                      pSocket = NULL;
+                  }
+                  else
+                  {
+-                      /**** Process data  ****/
+-                      VMREST_LOG_DEBUG(pRESTHandle,"Data notification on socket fd %d", pSocket->fd);
+-
+-                      /**** If SSL handshake is not yet complete, do the needful ****/
+-                      if ((pRESTHandle->pSSLInfo->isSecure) && (!(pSocket->bSSLHandShakeCompleted)))
+-                      {
+-                          dwError = VmRESTAcceptSSLContext(
+-                                        pRESTHandle,
+-                                        pSocket,
+-                                        TRUE
+-                                        );
+-                          BAIL_ON_VMREST_ERROR(dwError);
+-
+-                          /**** We do not need IO any more ..mark as available for timer ****/
+-                          pSocket->bInUse = FALSE;
+-                      }
+-                      else
+-                      {
+-                          eventType = VM_SOCK_EVENT_TYPE_DATA_AVAILABLE;
+-
+-                          /*** Disarm timer associated with this IO socket .. dont delete ***/
+-                          dwError = VmSockPosixReArmTimer(
+-                                        pRESTHandle,
+-                                        pSocket->pTimerSocket,
+-                                        0
+-                                        );
+-                          BAIL_ON_VMREST_ERROR(dwError);
+-                      }
++                      eventType = VM_SOCK_EVENT_TYPE_DATA_AVAILABLE;
+                  }
+             }
+         }
+@@ -792,6 +739,10 @@ VmSockPosixWaitForEvent(
+     {
+         VMREST_LOG_INFO(pRESTHandle,"C-REST-ENGINE: Shutting down...Cleaning worker thread %d", (pQueue->thrCnt  + 1));
+     }
++    else if(dwError == ERROR_INVALID_STATE)
++    {
++         VMREST_LOG_DEBUG(pRESTHandle,"%s", "Skipping IO processing for timeout");
++    }
+     else
+     {
+         VMREST_LOG_ERROR(pRESTHandle,"Error while processing socket event, dwError = %u", dwError);
+@@ -1035,29 +986,11 @@ VmSockPosixRead(
+ 
+ error:
+ 
+-    if (pSocket && pRESTHandle && pRESTHandle->pSockContext)
++    if (pSocket)
+     {
+-        /**** Delete the socket from poller ****/
+-            VmSockPosixDeleteEventFromQueue(
+-            pRESTHandle,
+-            pRESTHandle->pSockContext->pEventQueue,
+-            pSocket
+-            );
+-
+         pSocket->pszBuffer = NULL;
+         pSocket->nProcessed = 0;
+         pSocket->nBufData = 0;
+-
+-        if (pSocket->pTimerSocket)
+-        {
+-            pSocket->pTimerSocket->pIoSocket = NULL;
+-            VmSockPosixReArmTimer(
+-                pRESTHandle,
+-                pSocket->pTimerSocket,
+-                1
+-                );
+-        }
+-
+     }
+ 
+     if (pszBufPrev)
+@@ -1197,6 +1130,11 @@ VmSockPosixReleaseSocket(
+ {
+     if (pSocket)
+     {
++        if (pSocket->pTimerSocket)
++        {
++            VmSockPosixFreeSocket(pSocket->pTimerSocket);
++            pSocket->pTimerSocket = NULL;
++        }
+         VmSockPosixFreeSocket(pSocket);
+     }
+ }
+@@ -1210,9 +1148,11 @@ VmSockPosixCloseSocket(
+     DWORD                            dwError = REST_ENGINE_SUCCESS;
+     int                              ret = 0;
+     uint32_t                         errorCode = 0;
+-    BOOLEAN                          bLocked = FALSE;
++    BOOLEAN                          bLockedIO = FALSE;
++    BOOLEAN                          bLockedTimer = FALSE;
++    PVM_SOCKET                       pTimerSocket = NULL;
+ 
+-    if (!pRESTHandle || !pSocket )
++    if (!pRESTHandle || !pSocket || !(pRESTHandle->pSockContext))
+     {
+         VMREST_LOG_ERROR(pRESTHandle,"%s","Invalid Params..");
+         dwError = ERROR_INVALID_PARAMETER;
+@@ -1221,23 +1161,59 @@ VmSockPosixCloseSocket(
+ 
+     VMREST_LOG_INFO(pRESTHandle,"C-REST-ENGINE: Closing socket with fd %d, Socket Type %u ( 2-Io / 5-Timer )", pSocket->fd, pSocket->type);
+ 
++    pTimerSocket = pSocket->pTimerSocket;
++
++    /**** Close the timer socket ****/
++    if (pTimerSocket)
++    {
++        dwError = VmRESTLockMutex(pTimerSocket->pMutex);
++        BAIL_ON_VMREST_ERROR(dwError);
++
++        bLockedTimer = TRUE;
++
++        dwError = VmSockPosixDeleteEventFromQueue(
++                      pRESTHandle,
++                      pRESTHandle->pSockContext->pEventQueue,
++                      pTimerSocket
++                      );
++        BAIL_ON_VMREST_ERROR(dwError);
++
++        if (pTimerSocket->fd > 0)
++        {
++            close(pTimerSocket->fd);
++            pTimerSocket->fd = INVALID;
++        }
++        VmRESTUnlockMutex(pTimerSocket->pMutex);
++        bLockedTimer = FALSE;
++    }
++
+     dwError = VmRESTLockMutex(pSocket->pMutex);
+     BAIL_ON_VMREST_ERROR(dwError);
+ 
+-    bLocked = TRUE;
++    bLockedIO = TRUE;
+ 
+-    if (pSocket->pTimerSocket)
++    /**** Delete from queue if this is NOT timeout ****/
++    if ((pSocket->type == VM_SOCK_TYPE_SERVER) && (!(pSocket->bTimerExpired)))
+     {
+-        pSocket->pTimerSocket->pIoSocket = NULL;
++         dwError = VmSockPosixDeleteEventFromQueue(
++                       pRESTHandle,
++                       pRESTHandle->pSockContext->pEventQueue,
++                       pSocket
++                       );
++         BAIL_ON_VMREST_ERROR(dwError);
+     }
+ 
++    /**** Close IO socket fd ****/
+     if (pRESTHandle->pSSLInfo->isSecure && pSocket->ssl && (pSocket->type != VM_SOCK_TYPE_TIMER))
+     {
+-        ret =  SSL_shutdown(pSocket->ssl);
+-        if (ret < 0)
++        if (pSocket->bSSLHandShakeCompleted)
+         {
+-            errorCode = SSL_get_error(pSocket->ssl, ret);
+-            VMREST_LOG_ERROR(pRESTHandle,"Error on SSL_shutdown on socket %d, return value %d, errorCode %u, errno %d", pSocket->fd, ret, errorCode, errno);
++            ret =  SSL_shutdown(pSocket->ssl);
++            if (ret < 0)
++            {
++                errorCode = SSL_get_error(pSocket->ssl, ret);
++                VMREST_LOG_ERROR(pRESTHandle,"Error on SSL_shutdown on socket %d, return value %d, errorCode %u, errno %d", pSocket->fd, ret, errorCode, errno);
++            }
+         }
+         SSL_free(pSocket->ssl);
+         pSocket->ssl = NULL;
+@@ -1249,17 +1225,25 @@ VmSockPosixCloseSocket(
+         pSocket->fd = -1;
+     }
+ 
+-cleanup:
++    VmRESTUnlockMutex(pSocket->pMutex);
++    bLockedIO = FALSE;
+ 
+-    if (bLocked)
+-    {
+-        VmRESTUnlockMutex(pSocket->pMutex);
+-    }
++cleanup:
+ 
+     return dwError;
+ 
+ error:
+ 
++    if (bLockedTimer)
++    {
++        VmRESTUnlockMutex(pTimerSocket->pMutex);
++    }
++
++    if (bLockedIO)
++    {
++        VmRESTUnlockMutex(pSocket->pMutex);
++    }
++
+     goto cleanup;
+ }
+ 
+@@ -1419,7 +1403,7 @@ VmSockPosixAcceptConnection(
+     pSocket->pTimerSocket = NULL;
+     pSocket->pIoSocket = NULL;
+     pSocket->bSSLHandShakeCompleted = FALSE;
+-    pSocket->bInUse = FALSE;
++    pSocket->bTimerExpired = FALSE;
+ 
+     *ppSocket = pSocket;
+ 
+@@ -1639,58 +1623,24 @@ VmSockPosixSetRequestHandle(
+ 
+     pSocket->nProcessed = nProcessed;
+ 
+-    if (bCompleted)
++    if (!bCompleted)
+     {
+-        /**** We are done with request - no need to add back to poller *****/
+-        if (pSocket->pTimerSocket != NULL)
+-        {
+-            pSocket->pTimerSocket->pIoSocket = NULL;
+-
+-            /**** Give immediate notification to timer for cleanup ****/
+-            dwError = VmSockPosixReArmTimer(
+-                           pRESTHandle,
+-                           pSocket->pTimerSocket,
+-                           1
+-                           );
+-            BAIL_ON_VMREST_ERROR(dwError);
+-        }
+-
+-        /**** Delete actual IO socket from poller ****/
+-        dwError = VmSockPosixDeleteEventFromQueue(
++        /***** Add back IO socket to poller for next IO cycle and restart timer ****/
++        dwError = VmSockPosixReArmTimer(
+                       pRESTHandle,
+-                      pQueue,
+-                      pSocket
++                      pSocket->pTimerSocket,
++                      ((pRESTHandle->pRESTConfig->connTimeoutSec) * 1000)
+                       );
+         BAIL_ON_VMREST_ERROR(dwError);
+-    }
+-    else
+-    {
+-        /***** Add back IO socket to poller for next IO cycle ****/
+-        if (pSocket->pTimerSocket == NULL)
+-        {
+-            /**** Timeout already happened. Notify HTTP layer to send 408 Req timeout - if possible ****/
+-            dwError = VMREST_TRANSPORT_DEFERRED_TIMEOUT_PROCESS;
+-        }
+-        else
+-        {
+-            /*** Rearm timer and add IO socket to poller ****/
+-            dwError = VmSockPosixReArmTimer(
+-                           pRESTHandle,
+-                           pSocket->pTimerSocket,
+-                           ((pRESTHandle->pRESTConfig->connTimeoutSec) * 1000)
+-                           );
+-            BAIL_ON_VMREST_ERROR(dwError);
+ 
+-            event.data.ptr = pSocket;
+-            event.events = EPOLLIN;
++        event.data.ptr = pSocket;
++        event.events = EPOLLIN;
+ 
+-            event.events = event.events | EPOLLONESHOT;
++        event.events = event.events | EPOLLONESHOT;
+ 
+-            if (epoll_ctl(pQueue->epollFd, EPOLL_CTL_MOD, pSocket->fd, &event) < 0)
+-            {
+-                dwError = VM_SOCK_POSIX_ERROR_SYS_CALL_FAILED;
+-                BAIL_ON_VMREST_ERROR(dwError);
+-            }
++        if (epoll_ctl(pQueue->epollFd, EPOLL_CTL_MOD, pSocket->fd, &event) < 0)
++        {
++            dwError = VM_SOCK_POSIX_ERROR_SYS_CALL_FAILED;
+         }
+         BAIL_ON_VMREST_ERROR(dwError);
+     }
+@@ -1701,10 +1651,6 @@ VmSockPosixSetRequestHandle(
+     {
+         VmRESTUnlockMutex(pSocket->pMutex);
+     }
+-    if (!bCompleted && pSocket && (pSocket->pTimerSocket != NULL))
+-    {
+-        pSocket->bInUse = FALSE;
+-    }
+ 
+     return dwError;
+ 
+@@ -1871,13 +1817,13 @@ VmSockPosixCreateTimer(
+ 
+     pTimerSocket->type = VM_SOCK_TYPE_TIMER;
+     pTimerSocket->fd = timerFd;
+-    pTimerSocket->bInUse = FALSE;
+     pTimerSocket->pIoSocket = pSocket;
+     pTimerSocket->pRequest = NULL;
+     pTimerSocket->pszBuffer = NULL;
+     pTimerSocket->nBufData = 0;
+     pTimerSocket->nProcessed = 0;
+     pTimerSocket->pTimerSocket = NULL;
++    pTimerSocket->bTimerExpired = FALSE;
+ 
+     pSocket->pTimerSocket = pTimerSocket;
+ 
+@@ -1902,6 +1848,11 @@ VmSockPosixCreateTimer(
+ 
+ error:
+ 
++    if (timerFd > 0)
++    {
++        close(timerFd);
++    }
++
+     if (pTimerSocket)
+     {
+         VmSockPosixFreeSocket(pTimerSocket);
+@@ -1988,26 +1939,6 @@ VmRESTAcceptSSLContext(
+ 
+ error:
+ 
+-    if (pRESTHandle && pRESTHandle->pSockContext)
+-    {
+-        /**** Delete from poller ****/
+-        VmSockPosixDeleteEventFromQueue(
+-            pRESTHandle,
+-            pRESTHandle->pSockContext->pEventQueue,
+-            pSocket
+-            );
+-
+-        if (bWatched && pSocket && pSocket->pTimerSocket)
+-        {
+-            pSocket->pTimerSocket->pIoSocket = NULL;
+-            VmSockPosixReArmTimer(
+-                pRESTHandle,
+-                pSocket->pTimerSocket,
+-                1
+-                );
+-        }
+-    }
+-
+     goto cleanup;
+ 
+ }
+@@ -2067,3 +1998,70 @@ VmRESTCreateSSLObject(
+     goto cleanup;
+ 
+ }
++
++static
++void
++VmSockPosixPreProcessTimeouts(
++    PVMREST_HANDLE                   pRESTHandle,
++    PVM_SOCK_EVENT_QUEUE             pQueue
++    )
++{
++    struct epoll_event*              pQueueEvent = NULL;
++    PVM_SOCKET                       pSocket = NULL;
++    PVM_SOCKET                       pTimerSocket = NULL;
++    PVM_SOCKET                       pIoSocket = NULL;
++    int                              index = 0;
++    uint32_t                         nTimerEvents = 0;
++
++    /**** Mark all IO socket from corresponding timer as expired ****/
++    for (index = 0; index < pQueue->nReady; index++)
++    {
++        pQueueEvent = &pQueue->pEventArray[index];
++        if (pQueueEvent)
++        {
++            pSocket =  (PVM_SOCKET)pQueueEvent->data.ptr;
++            if (pSocket && (pSocket->type == VM_SOCK_TYPE_TIMER))
++            {
++                pTimerSocket = pSocket;
++                pIoSocket = pTimerSocket->pIoSocket;
++                if (pIoSocket)
++                {
++                    pIoSocket->bTimerExpired = TRUE;
++                    nTimerEvents++;
++                    VMREST_LOG_DEBUG(pRESTHandle,"Timeout found for IoSocket fd %d, Timer fd %d", pIoSocket->fd, pTimerSocket->fd);
++                }
++                pTimerSocket = NULL;
++                pIoSocket = NULL;
++            }
++            pSocket = NULL;
++        }
++        pQueueEvent = NULL;
++    }
++
++    /**** Set QueueEvent->data.ptr to NULL for all expired IO socket if present in the current queue - worker will not process those ****/
++    if (nTimerEvents > 0)
++    {
++        pSocket = NULL;
++        pQueueEvent = NULL;
++        index = 0;
++
++        for (index = 0; index < pQueue->nReady; index++)
++        {
++            pQueueEvent = &pQueue->pEventArray[index];
++            if (pQueueEvent)
++            {
++                pSocket =  (PVM_SOCKET)pQueueEvent->data.ptr;
++                if (pSocket && (pSocket->type == VM_SOCK_TYPE_SERVER) && (pSocket->bTimerExpired == TRUE))
++                {
++                    pQueueEvent->data.ptr = NULL;
++                    VMREST_LOG_WARNING(pRESTHandle,"Near race detected for IoSocket fd %d", pSocket->fd);
++                }
++                pSocket = NULL;
++            }
++            pQueueEvent = NULL;
++        }
++    }
++
++    return;
++}
++
+diff --git a/transport/posix/structs.h b/transport/posix/structs.h
+index 369cfcb..82047fe 100644
+--- a/transport/posix/structs.h
++++ b/transport/posix/structs.h
+@@ -20,7 +20,7 @@ typedef struct _VM_SOCKET
+     int                              fd;
+     SSL*                             ssl;
+     BOOLEAN                          bSSLHandShakeCompleted;
+-    BOOLEAN                          bInUse;
++    BOOLEAN                          bTimerExpired;
+     char*                            pszBuffer;
+     uint32_t                         nBufData;
+     uint32_t                         nProcessed;

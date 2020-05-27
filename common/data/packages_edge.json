@@ -1,0 +1,9 @@
+{
+    "packages": [
+                 "minimal",
+                 "linux",
+                 "initramfs",
+                 "edgex",
+                 "liota"
+                 ]
+}

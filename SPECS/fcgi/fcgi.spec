@@ -1,7 +1,7 @@
 Summary:	FastCGI development kit
 Name:		fcgi
 Version:	2.4.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		http://www.fastcgi.com
 Source0:	http://fastcgi.com/dist/fcgi-%{version}.tar.gz
@@ -29,8 +29,7 @@ provides high performance without the limitations of server specific APIs.
 %patch1 -p1
 
 %build
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--disable-static
 make
 
@@ -56,7 +55,9 @@ make check
 %{_includedir}/*
 
 %changelog
-*	Wed May 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.0-2
--	Patch for CVE-2012-6687
-*	Fri Dec 16 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.4.0-1
--	Initial build. First version
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.0-3
+-   Use standard configure macros
+*   Wed May 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.0-2
+-   Patch for CVE-2012-6687
+*   Fri Dec 16 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.4.0-1
+-   Initial build. First version

@@ -1,19 +1,21 @@
 Summary:        A high-level scripting language
 Name:           python2
-Version:        2.7.13
-Release:        10%{?dist}
+Version:        2.7.17
+Release:        4%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=18a8f30a0356c751b8d0ea6f76e764cab13ee046
+%define sha1    Python=dc5784d11d09c29fbf3fc155e2f242b3d3309454
 Patch0:         cgi.patch
-Patch1:         added-compiler-flags-for-curses-module.patch
-Patch2:         added-pyopenssl-ipaddress-certificate-validation.patch
-Patch3:         python2-support-photon-platform.patch
-Patch4:         back-port-random-dot-c.patch
+Patch1:         added-pyopenssl-ipaddress-certificate-validation.patch
+Patch2:         python2-support-photon-platform.patch
+Patch3:         CVE-2019-17514.patch
+Patch4:         CVE-2019-9674.patch
+Patch5:         CVE-2019-18348.patch
+Patch6:         CVE-2020-8492.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
@@ -28,11 +30,14 @@ Provides:       python-sqlite
 Provides:       python(abi)
 Provides:       /bin/python
 Provides:       /bin/python2
+%if %{with_check}
+BuildRequires:  iana-etc
+%endif
 
 %description
-The Python 2 package contains the Python development environment. It 
-is useful for object-oriented programming, writing scripts, 
-prototyping large programs or developing entire applications. This 
+The Python 2 package contains the Python development environment. It
+is useful for object-oriented programming, writing scripts,
+prototyping large programs or developing entire applications. This
 version is for backward compatibility with other dependent packages.
 
 %package libs
@@ -50,8 +55,8 @@ Requires:       bzip2-libs
 # Requires: binutils
 
 %description libs
-The python interpreter can be embedded into applications wanting to 
-use python as an embedded scripting language.  The python-libs package 
+The python interpreter can be embedded into applications wanting to
+use python as an embedded scripting language.  The python-libs package
 provides the libraries needed for this.
 
 %package -n python-xml
@@ -63,7 +68,7 @@ Requires: python2-libs = %{version}-%{release}
 The python-xml package provides the libraries needed for XML manipulation.
 
 %package -n python-curses
-Summary: Python module interface for NCurses Library 
+Summary: Python module interface for NCurses Library
 Group: Applications/System
 Requires: python2-libs = %{version}-%{release}
 Requires: ncurses
@@ -115,15 +120,14 @@ The test package contains all regression tests for Python as well as the modules
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
+%patch6 -p1
 
 %build
 export OPT="${CFLAGS}"
-./configure \
+%configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
     --enable-shared \
     --with-ssl \
     --with-system-expat \
@@ -131,11 +135,12 @@ export OPT="${CFLAGS}"
     --enable-unicode=ucs4 \
     --with-dbmliborder=gdbm:ndbm
 make %{?_smp_mflags}
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 chmod -v 755 %{buildroot}%{_libdir}/libpython2.7.so.1.0
-%{_fixperms} %{buildroot}/* 
+%{_fixperms} %{buildroot}/*
 
 # Remove unused stuff
 find $RPM_BUILD_ROOT/ -name "*~"|xargs rm -f
@@ -155,9 +160,9 @@ find %{buildroot}%{_libdir} -name '*.pyo' -delete
 rm -rf %{buildroot}/*
 
 %check
-make test
+LANG=en_US.UTF-8 make %{?_smp_mflags} test
 
-%files 
+%files
 %defattr(-, root, root)
 %doc LICENSE README
 %{_bindir}/pydoc*
@@ -191,6 +196,7 @@ make test
 %exclude %{_libdir}/python2.7/bsddb/test
 %exclude %{_libdir}/python2.7/ctypes/test
 %exclude %{_libdir}/python2.7/distutils/tests
+%exclude %{_libdir}/python2.7/distutils/command/wininst*exe
 %exclude %{_libdir}/python2.7/email/test
 %exclude %{_libdir}/python2.7/json/tests
 %exclude %{_libdir}/python2.7/sqlite3/test
@@ -236,6 +242,47 @@ make test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Sat Apr 04 2020 Tapas Kundu <tkundu@vmware.com> 2.7.17-4
+-   Fix for CVE-2020-8492
+*   Thu Mar 26 2020 Tapas Kundu <tkundu@vmware.com> 2.7.17-3
+-   Fix for CVE-2019-18348
+*   Wed Feb 12 2020 Tapas Kundu <tkundu@vmware.com> 2.7.17-2
+-   Fix CVE-2019-9674
+*   Mon Nov 18 2019 Tapas Kundu <tkundu@vmware.com> 2.7.17-1
+-   Update to 2.7.17
+*   Thu Oct 31 2019 Tapas Kundu <tkundu@vmware.com> 2.7.16-3
+-   Fix for CVE-2019-17514
+*   Mon Oct 21 2019 Shreyas B. <shreyasb@vmware.com> 2.7.16-2
+-   Fixed makecheck errors.
+*   Thu Oct 17 2019 Tapas Kundu <tkundu@vmware.com> 2.7.16-1
+-   Updated to 2.7.16
+*   Fri Oct 11 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-11
+-   Fix for CVE-2019-16935
+*   Mon Sep 16 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-10
+-   Fix for CVE-2019-16056
+*   Fri Jul 19 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-9
+-   Fix for CVE-2018-20852
+*   Thu Jun 13 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-8
+-   Fix for CVE-2019-10160
+*   Sat May 25 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-7
+-   Applied patch for CVE-2019-9740
+*   Wed May 22 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-6
+-   Patched reworked changes for CVE-2019-9948
+-   Patch for CVE-2019-9740
+*   Thu Mar 28 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-5
+-   Fix for CVE-2019-9948
+*   Tue Mar 12 2019 Tapas Kundu <tkundu@vmware.com> 2.7.15-4
+-   Added fix for CVE-2019-9636
+*   Fri Dec 21 2018 Tapas Kundu <tkundu@vmware.com> 2.7.15-3
+-   Fix for CVE-2018-14647
+*   Mon Sep 17 2018 Dweep Advani <dadvani@vmware.com> 2.7.15-2
+-   Remove vulnerable Windows installers from python-libs rpm
+*   Mon Aug 20 2018 Dweep Advani <dadvani@vmware.com> 2.7.15-1
+-   Update to version 2.7.15
+*   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-12
+-   Fix CVE-2017-1000030
+*   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-11
+-   Fix CVE-2017-1000158
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.13-10
 -   Requires coreutils or toybox
 -   Requires bzip2-libs
@@ -268,7 +315,7 @@ make test
 *   Wed Sep 14 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-7
 -   Improvised pyopenssl patch
 *   Wed Sep 7 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-6
--   Added patch to python openssl to validate certificates by ipaddress 
+-   Added patch to python openssl to validate certificates by ipaddress
 *   Mon Jun 20 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-5
 -   Added stack-protector flag for ncurses module
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.11-4

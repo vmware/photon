@@ -1,5 +1,4 @@
 #
-#    Copyright (C) 2015 vmware inc.
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
@@ -9,27 +8,32 @@ from action import Action
 
 class Window(Action):
 
-    def __init__(self, height, width, maxy, maxx, title, can_go_back, action_panel = None, items = [], menu_helper = None, position = 0, tab_enabled = True, can_go_next = False, read_text=False):
+    def __init__(self, height, width, maxy, maxx, title, can_go_back,
+                 action_panel=None, items=None, menu_helper=None, position=0,
+                 tab_enabled=True, can_go_next=False, read_text=False):
         self.can_go_back = can_go_back
         self.can_go_next = can_go_next
         self.height = height
-        self.width = width;
+        self.width = width
         self.y = (maxy - height) // 2
-        self.x = (maxx - width ) // 2
+        self.x = (maxx - width) // 2
         title = ' ' + title + ' '
 
         self.contentwin = curses.newwin(height - 1, width -1)
         self.contentwin.bkgd(' ', curses.color_pair(2)) #Default Window color
         self.contentwin.erase()
         self.contentwin.box()
-        self.tab_enabled=tab_enabled
-        self.read_text=read_text
+        self.tab_enabled = tab_enabled
+        self.read_text = read_text
 
         self.position = position
-        self.items = items
+        if items:
+            self.items = items
+        else:
+            self.items = []
         self.menu_helper = menu_helper
-        self.contentwin.addstr(0, (width - 1 - len(title)) // 2 , title)#
-        newy = 5;
+        self.contentwin.addstr(0, (width - 1 - len(title)) // 2, title)#
+        newy = 5
 
         if self.can_go_back:
             self.contentwin.addstr(height - 3, 5, '<Go Back>')
@@ -38,16 +42,16 @@ class Window(Action):
 
         self.dist = 0
 
-        if items:
+        if len(self.items) > 0:
         #To select items, we need to identify up left right keys
 
-            self.dist=self.width-11
-            self.dist-=len('<Go Back>')
-            count=0
+            self.dist = self.width-11
+            self.dist -= len('<Go Back>')
+            count = 0
             for item in self.items:
-                self.dist-=len(item[0])
-                count+=1
-            self.dist=self.dist//count
+                self.dist -= len(item[0])
+                count += 1
+            self.dist = self.dist // count
             self.contentwin.keypad(1)
             newy += len('<Go Back>')
             newy += self.dist
@@ -67,23 +71,25 @@ class Window(Action):
         self.shadowpanel = curses.panel.new_panel(self.shadowwin)
 
         self.action_panel = action_panel
-        self.refresh(0, True)
+#        self.refresh(0, True)
         self.hide_window()
 
     def update_next_item(self):
-        self.position=1
+        self.position = 1
         self.items.append(('<Next>', self.next_function, False))
-        self.tab_enabled=False
+        self.tab_enabled = False
 
 
-    def next_function(self, params):
+    def next_function(self):
         return ActionResult(True, None)
 
     def set_action_panel(self, action_panel):
         self.action_panel = action_panel
 
-    def update_menu(self,action_result):
-        if action_result.result and 'goNext' in action_result.result and action_result.result['goNext']:
+    def update_menu(self, action_result):
+        if (action_result.result and
+                'goNext' in action_result.result and
+                action_result.result['goNext']):
             return ActionResult(True, None)
         if self.position == 0:
             self.contentwin.addstr(self.height - 3, 5, '<Go Back>')
@@ -92,12 +98,13 @@ class Window(Action):
             self.action_panel.hide()
             return ActionResult(False, None)
         else:
-            if (action_result.result != None and 'diskIndex' in action_result.result):
+            if (action_result.result != None and
+                    'diskIndex' in action_result.result):
                 params = action_result.result['diskIndex']
                 if self.menu_helper:
                     self.menu_helper(params)
 
-            result = self.items[self.position-1][1](None)
+            result = self.items[self.position-1][1]()
             if result.success:
                 self.hide_window()
                 self.action_panel.hide()
@@ -118,18 +125,24 @@ class Window(Action):
         action_result = self.action_panel.do_action()
 
         if action_result.success:
-            if action_result.result and 'goNext' in action_result.result and action_result.result['goNext']:
+            if (action_result.result and
+                    'goNext' in action_result.result and
+                    action_result.result['goNext']):
                 return ActionResult(True, None)
-            if self.position!=0:    #saving the disk index
-                self.items[self.position-1][1](None)
+            if self.position != 0:    #saving the disk index
+                self.items[self.position-1][1]()
             if self.items:
                 return self.update_menu(action_result)
             self.hide_window()
             return action_result
         else:
-            if not self.tab_enabled and action_result.result !=None and 'direction' in action_result.result:
+            if (not self.tab_enabled and
+                    action_result.result != None and
+                    'direction' in action_result.result):
                 self.refresh(action_result.result['direction'], True)
-            if (action_result.result != None and 'goBack' in action_result.result and action_result.result['goBack']):
+            if (action_result.result != None and
+                    'goBack' in action_result.result
+                    and action_result.result['goBack']):
                 self.hide_window()
                 self.action_panel.hide()
                 return action_result
@@ -139,7 +152,7 @@ class Window(Action):
 
         while action_result.success == False:
             if self.read_text:
-                is_go_back= self.position==0
+                is_go_back = self.position == 0
                 action_result = self.action_panel.do_action(returned=True, go_back=is_go_back)
                 if action_result.success:
                     if self.items:
@@ -147,7 +160,9 @@ class Window(Action):
                     self.hide_window()
                     return action_result
                 else:
-                    if (action_result.result != None and 'goBack' in action_result.result and action_result.result['goBack']):
+                    if (action_result.result != None and
+                            'goBack' in action_result.result and
+                            action_result.result['goBack']):
                         self.hide_window()
                         self.action_panel.hide()
                         return action_result
@@ -164,11 +179,12 @@ class Window(Action):
                         self.action_panel.hide()
                         return ActionResult(False, None)
                     else:
-                        if (action_result.result != None and 'diskIndex' in action_result.result):
+                        if (action_result.result != None and
+                                'diskIndex' in action_result.result):
                             params = action_result.result['diskIndex']
                             if self.menu_helper:
                                 self.menu_helper(params)
-                        result = self.items[self.position-1][1](None)
+                        result = self.items[self.position-1][1]()
                         if result.success:
                             self.hide_window()
                             self.action_panel.hide()
@@ -181,7 +197,7 @@ class Window(Action):
                                 return ActionResult(False, None)
                 elif key in [ord('\t')]:
                     if not self.tab_enabled:
-                        continue;
+                        continue
                     #remove highlight from Go Back
                     self.refresh(0, False)
                     # go do the action inside the panel
@@ -193,7 +209,7 @@ class Window(Action):
                         #highlight the GoBack and keep going
                         self.refresh(0, True)
                 elif key == curses.KEY_UP or key == curses.KEY_LEFT:
-                    if key == curses.KEY_UP and self.tab_enabled==False:
+                    if key == curses.KEY_UP and self.tab_enabled == False:
                         self.action_panel.navigate(-1)
                         action_result = self.action_panel.do_action()
                         if action_result.success:
@@ -209,7 +225,7 @@ class Window(Action):
                         self.refresh(-1, True)
 
                 elif key == curses.KEY_DOWN or key == curses.KEY_RIGHT:
-                    if key == curses.KEY_DOWN and self.tab_enabled==False:
+                    if key == curses.KEY_DOWN and self.tab_enabled == False:
                         self.action_panel.navigate(1)
                         action_result = self.action_panel.do_action()
                         if action_result.success:
@@ -237,7 +253,7 @@ class Window(Action):
         if not self.items and not self.can_go_next:
             self.position = 0
         #add the highlight
-        newy = 5;
+        newy = 5
         if self.position == 0:   #go back
             if select:
                 self.contentwin.addstr(self.height - 3, 5, '<Go Back>', curses.color_pair(3))
@@ -273,7 +289,7 @@ class Window(Action):
                 newy += self.dist
                 index += 1
 
-        self.contentwin.refresh()   
+        self.contentwin.refresh()
 
     def show_window(self):
         y = self.y
@@ -303,7 +319,7 @@ class Window(Action):
         curses.panel.update_panels()
         curses.doupdate()
 
-    def addstr(self, y, x, str, mode = 0):
+    def addstr(self, y, x, str, mode=0):
         self.textwin.addstr(y, x, str, mode)
 
     def adderror(self, str):
@@ -317,4 +333,3 @@ class Window(Action):
 
     def content_window(self):
         return self.textwin
-

@@ -1,7 +1,8 @@
-diff -ru open-vm-tools-stable-10.1.10/open-vm-tools/libDeployPkg/linuxDeployment.c open-vm-tools-stable-10.1.10-modified/open-vm-tools/libDeployPkg/linuxDeployment.c
---- open-vm-tools-stable-10.1.10/open-vm-tools/libDeployPkg/linuxDeployment.c	2017-07-28 14:59:15.000000000 -0700
-+++ open-vm-tools-stable-10.1.10-modified/open-vm-tools/libDeployPkg/linuxDeployment.c	2017-08-22 12:30:18.862037086 -0700
-@@ -582,13 +582,17 @@
+diff --git a/open-vm-tools/libDeployPkg/linuxDeployment.c b/open-vm-tools/libDeployPkg/linuxDeployment.c
+index 1af08936..227fb381 100644
+--- a/open-vm-tools/libDeployPkg/linuxDeployment.c
++++ b/open-vm-tools/libDeployPkg/linuxDeployment.c
+@@ -651,13 +651,17 @@ GetPackageInfo(const char* packageName,
     close(fd);
  
     // Create space and copy the command
@@ -21,24 +22,28 @@ diff -ru open-vm-tools-stable-10.1.10/open-vm-tools/libDeployPkg/linuxDeployment
     *archiveType = hdr.payloadType;
     *flags = hdr.reserved;
  
-@@ -1094,6 +1098,20 @@
-    } else {
-       sLog(log_info, "cloud-init is either not installed or the flag to enable \
-            cloud-init is not set.\n Executing traditional GOSC workflow");
-+      if ((strstr(command, "scripts/Customize.pl") != NULL) || (strstr(command, "scripts/customize.sh") != NULL)) {
-+          free (command);
-+          const char* PHOTON_OS_LAUNCH_COMMAND = "/bin/bash /usr/share/open-vm-tools/GOSC/gosc-scripts/imc-shell/imgcust-scripts/customize.sh /tmp/.vmware/linux/deploy/cust.cfg";
-+
-+          // The command will be parsed alter and can be of arbitrary length
-+          command = StrUtil_ReplaceAll(PHOTON_OS_LAUNCH_COMMAND, TMP_PATH_VAR, tmpDirPath);
-+          if (!command) {
-+             SetDeployError("Error allocating memory.");
-+             return DEPLOY_ERROR;
-+          }
-+          _DeployPkg_SkipReboot(true);
-+      }
-+      // Run the deployment command
-+      sLog(log_info, "Launching deployment %s.  \n", command);
-       deploymentResult = ForkExecAndWaitCommand(command);
+@@ -1315,6 +1319,24 @@ Deploy(const char* packageName)
        free(command);
- 
+       deployPkgStatus = CloudInitSetup(imcDirPath);
+    } else {
++       if (strstr(command, "scripts/Customize.pl") || strstr(command, "scripts/customize.sh")) {
++           char PHOTON_OS_LAUNCH_COMMAND[256] = {0};
++
++           free(command);
++           command = NULL;
++
++           snprintf(PHOTON_OS_LAUNCH_COMMAND, sizeof(PHOTON_OS_LAUNCH_COMMAND),
++                   "/bin/bash /usr/share/open-vm-tools/GOSC/gosc-scripts/imc-shell/imgcust-scripts/customize.sh %s/cust.cfg",
++                   imcDirPath);
++
++           // The command will be parsed alter and can be of arbitrary length
++           command = strdup(PHOTON_OS_LAUNCH_COMMAND);
++           if (!command) {
++               SetDeployError("Error allocating memory.");
++               return DEPLOYPKG_STATUS_ERROR;
++           }
++           _DeployPkg_SkipReboot(true);
++       }
+       sLog(log_info, "Executing traditional GOSC workflow.\n");
+       deploymentResult = ForkExecAndWaitCommand(command, false);
+       free(command);

@@ -1,12 +1,12 @@
 Summary:	An interpreted language that may be embedded into an application to make the application extensible.
 Name:		slang
-Version:	2.3.1a
-Release:	2%{?dist}
+Version:	2.3.2
+Release:	1%{?dist}
 License:	GNU General Public License
 URL:		http://www.jedsoft.org/slang/index.html
 Group:		Development/Languages
-Source0:	http://www.jedsoft.org/releases/%{name}/old/%{name}-%{version}.tar.bz2
-%define sha1 slang=a8ea7f1b5736160a94efb67b137a0f5b9916bdf2
+Source0:	http://www.jedsoft.org/releases/%{name}/%{name}-%{version}.tar.bz2
+%define sha1 slang=bbf7f2dcc14e7c7fca40868fd4b411a2bd9e2655
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	readline-devel
@@ -39,7 +39,7 @@ make DESTDIR=%{buildroot} install_doc_dir=%{_docdir}/slang-%{version}   \
      SLSH_DOC_DIR=%{_docdir}/slang-%{version}/slsh \
      install-all
 
-chmod -v 755 %{buildroot}%{_libdir}/libslang.so.2.3.1 \
+chmod -v 755 %{buildroot}%{_libdir}/libslang.so.2.3.2 \
              %{buildroot}%{_libdir}/slang/v2/modules/*.so
 
 %check
@@ -61,6 +61,8 @@ make  check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Tue Sep 18 2018 Srinidhi Rao <srinidhir@vmware.com> 2.3.2-1
+-       Updating the version to 2.3.2
 *       Wed Aug 02 2017 Chang Lee <changlee@vmware.com> 2.3.1a-2
 -       Skipped %check test cases for pseudo terminal-/dev/pts/*
 *       Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.3.1a-1

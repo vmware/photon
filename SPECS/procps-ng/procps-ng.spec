@@ -1,14 +1,14 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
-Version:        3.3.12
-Release:        3%{?dist}
+Version:        3.3.15
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://procps.sourceforge.net/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
-%define sha1    procps-ng=82c0745f150f1385ca01fe7d24f05f74e31c94c6
+%define sha1    procps-ng=2929bc64f0cf7b2db997eef79b7187658e47230d
 BuildRequires:  ncurses-devel
 Requires:       ncurses
 Conflicts:      toybox
@@ -91,6 +91,7 @@ make %{?_smp_mflags} check
 %{_includedir}/proc/slab.h
 %{_includedir}/proc/alloc.h
 %{_includedir}/proc/whattime.h
+%{_includedir}/proc/numa.h
 %{_libdir}/pkgconfig/libprocps.pc
 %{_libdir}/libprocps.so
 %{_mandir}/man3/*
@@ -99,6 +100,10 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Fri Aug 10 2018 Tapas Kundu <tkundu@vmware.com> 3.3.15-1
+-   Upgrade version to 3.3.15.
+-   Fix for CVE-2018-1122 CVE-2018-1123 CVE-2018-1124 CVE-2018-1125
+-   Fix for CVE-2018-1126
 *   Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 3.3.12-3
 -   Added conflicts toybox
 *   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 3.3.12-2

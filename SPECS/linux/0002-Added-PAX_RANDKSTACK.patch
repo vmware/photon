@@ -1,0 +1,212 @@
+From 2b47c1cf5f3aeceb383cd020d3934ddc12ccb594 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Sat, 4 Feb 2017 04:15:14 +0000
+Subject: [PATCH 2/3] Added PAX_RANDKSTACK
+
+   Reworked to randomize kernel stack at entry of each syscall instead of exit
+   
+   Documentation of the original patch
+
+   1. Design
+
+   The goal of RANDKSTACK is to introduce randomness into the kernel stack
+   addresses of a task.
+
+   Linux assigns two pages of kernel stack to every task. This stack is used
+   whenever the task enters the kernel (system call, device interrupt, CPU
+   exception, etc). Note that once the task is executing in kernel land,
+   further kernel (re)entry events (device interrupts or CPU exceptions can
+   occur at almost any time) will not cause a stack switch.
+
+   By the time the task returns to userland, the kernel land stack pointer
+   will be at the point of the initial entry to the kernel (this also means
+   that signals are not delivered to the task until it is ready to return to
+   userland, that is signals are asynchronous notifications from the userland
+   point of view, not from the kernel's).
+
+   This behaviour means that a userland originating attack against a kernel
+   bug would find itself always at the same place on the task's kernel stack
+   therefore we will introduce randomization into the initial value of the
+   task's kernel stack pointer. There is another interesting consequence in
+   that we can not only introduce but also change the randomization at each
+   userland/kernel transition (compare this to RANDUSTACK where the userland
+   stack pointer is randomized only once at the very beginning of the task's
+   life therefore it is vulnerable to information leaking attacks). In the
+   current implementation we opted for changing the randomization at every
+   system call since that is the most likely method of kernel entry during
+   an attack. Note that while per system call randomization prevents making
+   use of leaked information about the randomization in a given task, it does
+   not help with attacks where more than one task is involved (where one task
+   may be able to learn the randomization of another and then communicate it
+   to the other without having to enter the kernel).
+
+   2. Implementation
+
+   RANDKSTACK randomizes every task's kernel stack pointer before returning
+   from a system call to userland. The i386 specific system call entry point
+   is in arch/i386/kernel/entry.S and this is where PaX adds a call to the
+   kernel stack pointer randomization function pax_randomize_kstack() found
+   in arch/i386/kernel/process.c. The code in entry.S needs to duplicate some
+   code found at the ret_from_sys_call label because this code can be reached
+   from different paths (e.g., exception handlers) where we do not want to
+   apply randomization. Note also that if the task is being debugged (via
+   the ptrace() interface) then new randomization is not applied.
+
+   pax_randomize_kstack() gathers entropy from the rdtsc instruction (read
+   time stamp counter) and applies it to bits 2-6 of the kernel stack pointer.
+   This means that 5 bits are randomized providing a maximum shift of 128
+   bytes - this was deemed safe enough to not cause kernel stack overflows
+   yet give enough randomness to deter guessing/brute forcing attempts.
+
+   The use of rdtsc is justified by the facts that we need a quick entropy
+   source and that by the time a remote attacker would get to execute his
+   code to exploit a kernel bug, enough system calls would have been issued
+   by the attacked process to accumulate more than 5 bits of 'real' entropy
+   in the randomized bits (this is why xor is used to apply the rdtsc output).
+   Note that most likely due to its microarchitecture, the Intel P4 CPU seems
+   to always return the same value in the least significant bit of the time
+   stamp counter therefore we ignore it in kernels compiled for the P4.
+
+   The kernel stack pointer has to be modified at two places: tss->esp0 which
+   is the ring-0 stack pointer in the Task State Segment of the current CPU
+   (and is used to load esp on a ring transition, such as a system call), and
+   second, current->thread.esp0 which is used to reload tss->esp0 on a context
+   switch. There is one last subtlety: since the randomization is applied via
+   xor and the initial kernel stack pointer of a new task points just above
+   its assigned stack (and hence is a page aligned address), we would produce
+   esp values pointing above the assigned stack, therefore in copy_thread() we
+   initialize thread.esp0 to 4 bytes less than usual so that the randomization
+   will shift it within the assigned stack and not above. Since this solution
+   'wastes' a mere 4 bytes on the kernel stack, we saw no need to apply it
+   selectively to specific tasks only.
+
+Signed-off-by: Him Kalyan Bordoloi<bordoloih@vmware.com>
+
+---
+ arch/x86/entry/entry_64.S    | 37 +++++++++++++++++++++++++++++++++++++
+ arch/x86/kernel/process_64.c | 15 +++++++++++++++
+ security/Kconfig             | 16 ++++++++++++++++
+ 3 files changed, 68 insertions(+)
+
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index 8ae7ffd..f7c721d 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -53,6 +53,15 @@ ENTRY(native_usergs_sysret64)
+ END(native_usergs_sysret64)
+ #endif /* CONFIG_PARAVIRT */
+ 
++#ifdef CONFIG_PAX_RANDKSTACK
++.macro PAX_RAND_KSTACK
++	movq	%rsp, %rdi
++	call	pax_randomize_kstack
++	movq    %rsp, %rdi
++	movq    %rax, %rsp
++.endm
++#endif
++
+ .macro TRACE_IRQS_FLAGS flags:req
+ #ifdef CONFIG_TRACE_IRQFLAGS
+ 	btl	$9, \flags		/* interrupts off? */
+@@ -233,9 +242,28 @@ GLOBAL(entry_SYSCALL_64_after_hwframe)
+ 	TRACE_IRQS_OFF
+ 
+ 	/* IRQs are off. */
++
++	/*
++	 * do_syscall_64 expects syscall-nr (pt_regs->orig_ax) as the first
++	 * argument (%rdi) and pointer to pt_regs as the second argument (%rsi).
++	 */
++#ifdef CONFIG_PAX_RANDKSTACK
++	pushq	%rax
++	movq	%rsp, %rdi
++	call	pax_randomize_kstack
++	popq	%rdi
++	movq    %rsp, %rsi
++	movq    %rax, %rsp
++
++	pushq	%rsi
++#else
+ 	movq	%rax, %rdi
+ 	movq	%rsp, %rsi
++#endif
+ 	call	do_syscall_64		/* returns with IRQs disabled */
++#ifdef CONFIG_PAX_RANDKSTACK
++	popq	%rsp
++#endif
+ 
+ 	TRACE_IRQS_IRETQ		/* we're about to change IF */
+ 
+@@ -401,8 +429,17 @@ ENTRY(ret_from_fork)
+ 
+ 2:
+ 	UNWIND_HINT_REGS
++#ifdef CONFIG_PAX_RANDKSTACK
++	PAX_RAND_KSTACK
++	pushq	%rdi
++#else
+ 	movq	%rsp, %rdi
++#endif
+ 	call	syscall_return_slowpath	/* returns with IRQs disabled */
++#ifdef CONFIG_PAX_RANDKSTACK
++	popq	%rsp
++#endif
++
+ 	TRACE_IRQS_ON			/* user mode is traced as IRQS on */
+ 	jmp	swapgs_restore_regs_and_return_to_usermode
+ 
+diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+index 0091a73..31b697c 100644
+--- a/arch/x86/kernel/process_64.c
++++ b/arch/x86/kernel/process_64.c
+@@ -61,6 +61,21 @@
+ 
+ __visible DEFINE_PER_CPU(unsigned long, rsp_scratch);
+ 
++#ifdef CONFIG_PAX_RANDKSTACK
++unsigned long pax_randomize_kstack(struct pt_regs *regs)
++{
++	unsigned long time;
++	unsigned long sp1;
++
++	if (!randomize_va_space)
++		return (unsigned long)regs;
++
++	time = rdtsc() & 0xFUL;
++	sp1 = (unsigned long)regs - (time << 4);
++	return sp1;
++}
++#endif
++
+ /* Prints also some state that isn't saved in the pt_regs */
+ void __show_regs(struct pt_regs *regs, enum show_regs_mode mode)
+ {
+diff --git a/security/Kconfig b/security/Kconfig
+index 564e975..7ef4ec8 100644
+--- a/security/Kconfig
++++ b/security/Kconfig
+@@ -80,6 +80,22 @@ config PAX_MPROTECT
+ 	  the enforcement of non-executable pages.
+ 
+ endif
++
++config PAX_RANDKSTACK
++	bool "Randomize kernel stack base"
++	depends on X86_TSC && X86
++	help
++	  By saying Y here the kernel will randomize every task's kernel
++	  stack on every system call.  This will not only force an attacker
++	  to guess it but also prevent him from making use of possible
++	  leaked information about it.
++
++	  Since the kernel stack is a rather scarce resource, randomization
++	  may cause unexpected stack overflows, therefore you should very
++	  carefully test your system.  Note that once enabled in the kernel
++	  configuration, this feature cannot be disabled on a per file basis.
++
++
+ endif
+ 
+ source security/keys/Kconfig
+-- 
+2.7.4

@@ -1,7 +1,7 @@
 Summary:	Programs to parse command-line options
 Name:		popt
 Version:	1.16
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	MIT
 URL:		http://rpm5.org/files/popt
 Group:		Applications/System
@@ -30,9 +30,7 @@ These are the additional language files of popt.
 %prep
 %setup -q
 %build
-./configure \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
+%configure \
 	--disable-silent-rules
 make %{?_smp_mflags}
 %install
@@ -61,6 +59,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.16-5
+-   Use standard configure macros
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.16-4
 -   Added -lang subpackage
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.16-3

@@ -1,0 +1,21 @@
+--- a/src/OpenSSL/crypto.py	2016-10-15 18:26:14.000000000 +0530
++++ b/src/OpenSSL/crypto.py	2018-06-14 06:48:09.056973800 +0530
+@@ -1567,6 +1567,8 @@
+     def _init(self):
+         """
+         Set up the store context for a subsequent verification operation.
++        Calling this method more than once without first calling
++        :meth:`_cleanup` will leak memory.
+         """
+         ret = _lib.X509_STORE_CTX_init(
+             self._store_ctx, self._store._store, self._cert._x509, _ffi.NULL
+@@ -1627,6 +1629,9 @@
+         """
+         # Always re-initialize the store context in case
+         # :meth:`verify_certificate` is called multiple times.
++        # :meth:`_init` is called in :meth:`__init__` so _cleanup is called
++        # before _init to ensure memory is not leaked.
++        self._cleanup()
+         self._init()
+         ret = _lib.X509_verify_cert(self._store_ctx)
+         self._cleanup()

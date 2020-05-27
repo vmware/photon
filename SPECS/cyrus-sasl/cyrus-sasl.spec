@@ -1,7 +1,7 @@
 Summary:        Cyrus Simple Authentication Service Layer (SASL) library
 Name:           cyrus-sasl
 Version:        2.1.26
-Release:        13%{?dist}
+Release:        16%{?dist}
 License:        Custom
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
@@ -11,6 +11,7 @@ Source0:        ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
 %define sha1    cyrus-sasl=d6669fb91434192529bd13ee95737a8a5040241c
 Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.26-fixes-3.patch
 Patch1:         cyrus-sasl-mem-leak-fix.patch
+Patch2:         CVE-2019-19906.patch
 BuildRequires:  systemd
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel >= 1.12
@@ -21,29 +22,26 @@ Requires:       krb5 >= 1.12
 Requires:       Linux-PAM
 Requires:       systemd
 %description
-The Cyrus SASL package contains a Simple Authentication and Security 
-Layer, a method for adding authentication support to 
+The Cyrus SASL package contains a Simple Authentication and Security
+Layer, a method for adding authentication support to
 connection-based protocols. To use SASL, a protocol includes a command
-for identifying and authenticating a user to a server and for 
+for identifying and authenticating a user to a server and for
 optionally negotiating protection of subsequent protocol interactions.
-If its use is negotiated, a security layer is inserted between the 
+If its use is negotiated, a security layer is inserted between the
 protocol and the connection.
 %prep
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %build
 autoreconf -fi
 pushd saslauthd
 autoreconf -fi
 popd
-./configure \
+%configure \
     CFLAGS="%{optflags} -fPIC" \
     CXXFLAGS="%{optflags}" \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=/etc \
     --with-plugindir=%{_libdir}/sasl2 \
     --without-dblib \
     --with-saslauthd=/run/saslauthd \
@@ -52,7 +50,8 @@ popd
     --disable-sample \
     --disable-digest \
     --disable-otp \
-    --disable-plain \
+    --enable-plain \
+    --enable-login \
     --disable-anon \
     --enable-srp \
     --enable-gss_mutexes \
@@ -107,7 +106,7 @@ echo "disable saslauthd.service" > %{buildroot}%{_libdir}/systemd/system-preset/
 make %{?_smp_mflags} check
 
 %post
-%{_sbindir}/ldconfig 
+%{_sbindir}/ldconfig
 %systemd_post saslauthd.service
 
 %postun
@@ -134,6 +133,12 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/saslauthd.8.gz
 
 %changelog
+*   Fri May 08 2020 Tapas Kundu <tkundu@vmware.com> 2.1.26-16
+-   Enable login and plain
+*   Thu Apr 02 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com>  2.1.26-15
+-   Fix CVE-2019-19906
+*   Tue Nov 21 2017 Anish Swaminathan <anishs@vmware.com>  2.1.26-14
+-   Update patch for memory leak fix
 *   Tue Oct 10 2017 Anish Swaminathan <anishs@vmware.com>  2.1.26-13
 -   Add patch for memory leak fix
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.1.26-12

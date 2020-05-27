@@ -1,12 +1,14 @@
-Summary:	Default file system
-Name:		filesystem
-Version:	1.1
-Release:	1%{?dist}
-License:	GPLv3
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
-URL:		http://www.linuxfromscratch.org
-Distribution:	Photon
+Summary:        Default file system
+Name:           filesystem
+Version:        1.1
+Release:        4%{?dist}
+License:        GPLv3
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
+URL:            http://www.linuxfromscratch.org
+Source0:        filesystem-1.1.tar.gz
+%define sha1 filesystem=049c5d858f2cab6298ebdb83571cedd47741433a
+Distribution:   Photon
 
 %description
 The filesystem package is one of the basic packages that is installed
@@ -41,15 +43,12 @@ ln -svfn ../bin %{buildroot}/usr/lib/debug/usr/bin
 ln -svfn ../sbin %{buildroot}/usr/lib/debug/usr/sbin
 ln -svfn ../lib %{buildroot}/usr/lib/debug/usr/lib
 
-#	Symlinks for AMD64
-%ifarch x86_64
 	ln -svfn usr/lib %{buildroot}/lib64
 	ln -svfn lib %{buildroot}/usr/lib64
 	ln -svfn lib %{buildroot}/usr/local/lib64
         ln -svfn lib %{buildroot}/usr/lib/debug/lib64
         ln -svfn ../lib %{buildroot}/usr/lib/debug/usr/lib64
 
-%endif
 install -vdm 755 %{buildroot}/var/{log,mail,spool,mnt,srv}
 
 ln -svfn var/srv %{buildroot}/srv
@@ -70,7 +69,7 @@ touch %{buildroot}/var/log/{btmp,lastlog,wtmp}
 #	Configuration files
 #
 cat > %{buildroot}/etc/passwd <<- "EOF"
-root::0:0:root:/root:/bin/bash
+root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/dev/null:/bin/false
 daemon:x:6:6:Daemon User:/dev/null:/bin/false
 messagebus:x:18:18:D-Bus Message Daemon User:/var/run/dbus:/bin/false
@@ -532,15 +531,19 @@ EOF
 /var/lock
 /var/run
 
-#	Symlinks for AMD64
-%ifarch x86_64
 /lib64
 /usr/lib64
 /usr/local/lib64
 /usr/lib/debug/lib64
 /usr/lib/debug/usr/lib64
-%endif
+
 %changelog
+*   Wed May 8 2019 Alexey Makhalov <amakhalov@vmware.com> 1.1-4
+-   Use 'x' as a root password placeholder
+*   Tue May 7 2019 Michelle Wang <michellew@vmware.com> 1.1-3
+-   Add sources0 for OSSTP tickets
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1-2
+-   Aarch64 support
 *   Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  1.1-1
 -   Move network file from filesystem package
 *   Fri Apr 21 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0-13

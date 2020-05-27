@@ -1,0 +1,142 @@
+From 712afe03195e9747a442cac633b03dc5c8bfa54c Mon Sep 17 00:00:00 2001
+From: "Todd C. Miller" <Todd.Miller@sudo.ws>
+Date: Sat, 14 Mar 2020 11:13:55 -0600
+Subject: [PATCH] Ignore a failure to restore the RLIMIT_CORE resource limit.
+ Linux containers don't allow RLIMIT_CORE to be set back to RLIM_INFINITY if
+ we set the limit to zero, even for root.  This is not a problem outside the
+ container.
+
+--- a/src/limits.c	2020-04-02 12:50:19.706103290 +0530
++++ b/src/limits.c	2020-04-02 14:08:13.109937649 +0530
+@@ -114,13 +114,21 @@ disable_coredump(void)
+ 
+     if (getrlimit(RLIMIT_CORE, &corelimit) == -1)
+ 	sudo_warn("getrlimit(RLIMIT_CORE)");
++    sudo_debug_printf(SUDO_DEBUG_INFO, "RLIMIT_CORE [%lld, %lld] -> [0, 0]",
++	(long long)corelimit.rlim_cur, (long long)corelimit.rlim_max);
+     if (setrlimit(RLIMIT_CORE, &rl) == -1)
+ 	sudo_warn("setrlimit(RLIMIT_CORE)");
+ #ifdef __linux__
+     /* On Linux, also set PR_SET_DUMPABLE to zero (reset by execve). */
+-    if ((dumpflag = prctl(PR_GET_DUMPABLE, 0, 0, 0, 0)) == -1)
++    if ((dumpflag = prctl(PR_GET_DUMPABLE, 0, 0, 0, 0)) == -1) {
++	sudo_debug_printf(SUDO_DEBUG_ERROR|SUDO_DEBUG_ERRNO,
++	    "prctl(PR_GET_DUMPABLE, 0, 0, 0, 0)");
+ 	dumpflag = 0;
+-    (void) prctl(PR_SET_DUMPABLE, 0, 0, 0, 0);
++    }
++    if (prctl(PR_SET_DUMPABLE, 0, 0, 0, 0) == -1) {
++	sudo_debug_printf(SUDO_DEBUG_ERROR|SUDO_DEBUG_ERRNO,
++	    "prctl(PR_SET_DUMPABLE, %d, 0, 0, 0)", dumpflag);
++    }
+ #endif /* __linux__ */
+     coredump_disabled = true;
+ 
+@@ -136,10 +144,20 @@ restore_coredump(void)
+     debug_decl(restore_coredump, SUDO_DEBUG_UTIL)
+ 
+     if (coredump_disabled) {
+-	if (setrlimit(RLIMIT_CORE, &corelimit) == -1)
+-	    sudo_warn("setrlimit(RLIMIT_CORE)");
++	/*
++	 * Linux containers don't allow RLIMIT_CORE to be set back to
++	 * RLIM_INFINITY if we set the limit to zero, even for root.
++	 */
++	if (setrlimit(RLIMIT_CORE, &corelimit) == -1) {
++	    sudo_debug_printf(SUDO_DEBUG_ERROR|SUDO_DEBUG_ERRNO,
++		"setrlimit(RLIMIT_CORE, [%lld, %lld])",
++		(long long)corelimit.rlim_cur, (long long)corelimit.rlim_max);
++	}
+ #ifdef __linux__
+-	(void) prctl(PR_SET_DUMPABLE, dumpflag, 0, 0, 0);
++	if (prctl(PR_SET_DUMPABLE, dumpflag, 0, 0, 0) == -1) {
++	    sudo_debug_printf(SUDO_DEBUG_ERROR|SUDO_DEBUG_ERRNO,
++		"prctl(PR_SET_DUMPABLE, %d, 0, 0, 0)", dumpflag);
++	}
+ #endif /* __linux__ */
+     }
+     debug_return;
+@@ -162,8 +180,14 @@ unlimit_nproc(void)
+ 
+     if (getrlimit(RLIMIT_NPROC, &nproclimit) != 0)
+ 	sudo_warn("getrlimit(RLIMIT_NPROC)");
++    sudo_debug_printf(SUDO_DEBUG_INFO, "RLIMIT_NPROC [%lld, %lld] -> [inf, inf]",
++	(long long)nproclimit.rlim_cur, (long long)nproclimit.rlim_max);
+     if (setrlimit(RLIMIT_NPROC, &rl) == -1) {
+ 	rl.rlim_cur = rl.rlim_max = nproclimit.rlim_max;
++	sudo_debug_printf(SUDO_DEBUG_INFO,
++	    "RLIMIT_NPROC [%lld, %lld] -> [%lld, %lld]",
++	    (long long)nproclimit.rlim_cur, (long long)nproclimit.rlim_max,
++	    (long long)rl.rlim_cur, (long long)rl.rlim_max);
+ 	if (setrlimit(RLIMIT_NPROC, &rl) != 0)
+ 	    sudo_warn("setrlimit(RLIMIT_NPROC)");
+     }
+@@ -180,8 +204,11 @@ restore_nproc(void)
+ #ifdef __linux__
+     debug_decl(restore_nproc, SUDO_DEBUG_UTIL)
+ 
+-    if (setrlimit(RLIMIT_NPROC, &nproclimit) != 0)
+-	sudo_warn("setrlimit(RLIMIT_NPROC)");
++    if (setrlimit(RLIMIT_NPROC, &nproclimit) != 0) {
++	sudo_debug_printf(SUDO_DEBUG_ERROR|SUDO_DEBUG_ERRNO,
++	    "setrlimit(RLIMIT_NPROC, [%lld, %lld])",
++	    (long long)nproclimit.rlim_cur, (long long)nproclimit.rlim_max);
++    }
+ 
+     debug_return;
+ #endif /* __linux__ */
+@@ -203,6 +230,11 @@ unlimit_sudo(void)
+ 	struct saved_limit *lim = &saved_limits[idx];
+ 	if (getrlimit(lim->resource, &lim->oldlimit) == -1)
+ 	    continue;
++	sudo_debug_printf(SUDO_DEBUG_INFO,
++	    "getrlimit(lim->name) -> [%lld, %lld]",
++	    (long long)lim->oldlimit.rlim_cur,
++	    (long long)lim->oldlimit.rlim_max);
++
+ 	lim->saved = true;
+ 	if (lim->newlimit.rlim_cur != RLIM_INFINITY) {
+ 	    /* Don't reduce the soft resource limit. */
+@@ -217,13 +249,28 @@ unlimit_sudo(void)
+ 		lim->newlimit.rlim_max = lim->oldlimit.rlim_max;
+ 	}
+ 	if ((rc = setrlimit(lim->resource, &lim->newlimit)) == -1) {
+-	    if (lim->fallback != NULL)
+-		rc = setrlimit(lim->resource, lim->fallback);
++	    sudo_debug_printf(SUDO_DEBUG_ERROR|SUDO_DEBUG_ERRNO,
++		"setrlimit(%s, [%lld, %lld])", lim->name,
++		(long long)lim->newlimit.rlim_cur,
++		(long long)lim->newlimit.rlim_max);
++	    if (lim->fallback != NULL) {
++		if ((rc = setrlimit(lim->resource, lim->fallback)) == -1) {
++		    sudo_debug_printf(SUDO_DEBUG_ERROR|SUDO_DEBUG_ERRNO,
++			"setrlimit(%s, [%lld, %lld])", lim->name,
++			(long long)lim->fallback->rlim_cur,
++			(long long)lim->fallback->rlim_max);
++		}
++	    }
+ 	    if (rc == -1) {
+ 		/* Try setting new rlim_cur to old rlim_max. */
+ 		lim->newlimit.rlim_cur = lim->oldlimit.rlim_max;
+ 		lim->newlimit.rlim_max = lim->oldlimit.rlim_max;
+-		rc = setrlimit(lim->resource, &lim->newlimit);
++		if ((rc = setrlimit(lim->resource, &lim->newlimit)) == -1) {
++		    sudo_debug_printf(SUDO_DEBUG_ERROR|SUDO_DEBUG_ERRNO,
++			"setrlimit(%s, [%lld, %lld])", lim->name,
++			(long long)lim->newlimit.rlim_cur,
++			(long long)lim->newlimit.rlim_max);
++		}
+ 	    }
+ 	    if (rc == -1)
+ 		sudo_warn("setrlimit(%s)", lim->name);
+@@ -254,6 +301,10 @@ restore_limits(void)
+ 		if (rc != -1 || errno != EINVAL)
+ 		    break;
+ 
++		sudo_debug_printf(SUDO_DEBUG_ERROR|SUDO_DEBUG_ERRNO,
++		    "setrlimit(%s, [%lld, %lld])", lim->name,
++		    (long long)rl.rlim_cur, (long long)rl.rlim_max);
++
+ 		/*
+ 		 * Soft limit could be lower than current resource usage.
+ 		 * This can be an issue on NetBSD with RLIMIT_STACK and ASLR.

@@ -1,22 +1,18 @@
 Summary:        Grep for perl compatible regular expressions
 Name:           pcre
-Version:        8.40
-Release:        4%{?dist}
+Version:        8.42
+Release:        1%{?dist}
 License:        BSD
 URL:            ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-%{version}.tar.bz2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%{name}-%{version}.tar.bz2
-%define sha1 pcre=12f338719b8b028a2eecbf9192fcc00a13fc04f6
-#Fixes CVE-2017-7244, CVE-2017-7245, CVE-2017-7246
-Patch0:         pcre-8.40-Fix-Unicode-property-crash-for-32-bit-characters-gre.patch
-#Fixes CVE-2017-7186
-Patch1:         pcre-8.40-Fix-character-type-detection-when-32-bit-and-UCP-are.patch
+%define sha1    pcre=df0d1c2ff04c359220cb902539a6e134af4497f4
 BuildRequires:  bzip2-devel
 BuildRequires:  readline-devel
 Requires:       libgcc
-Requires:		readline
+Requires:       readline
 Requires:       libstdc++
 Requires:       pcre-libs = %{version}-%{release}
 %description
@@ -39,8 +35,6 @@ This package contains minimal set of shared pcre libraries.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 %build
 ./configure --prefix=/usr                     \
             --docdir=/usr/share/doc/pcre-%{version} \
@@ -67,7 +61,7 @@ make %{?_smp_mflags} check
 %postun -p /sbin/ldconfig
 %files 
 %defattr(-,root,root)
-%{_bindir}/pcregrep  
+%{_bindir}/pcregrep
 %{_bindir}/pcretest
 %{_mandir}/man1/pcregrep.1*
 %{_mandir}/man1/pcretest.1*
@@ -77,7 +71,7 @@ make %{?_smp_mflags} check
 %files devel
 %defattr(-, root, root)
 %{_bindir}/*
-%exclude %{_bindir}/pcregrep  
+%exclude %{_bindir}/pcregrep
 %exclude %{_bindir}/pcretest
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
@@ -91,6 +85,10 @@ make %{?_smp_mflags} check
 %{_libdir}/libpcre.so.*
 
 %changelog
+*   Tue Sep 11 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.42-1
+-   Update to version 8.42
+*   Wed Dec 20 2017 Xiaolin Li <xiaolinl@vmware.com> 8.41-1
+-   Update to version 8.41
 *   Wed Jul 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.40-4
 -   Added fix for CVE-2017-11164 by adding stack recursion limit
 *   Wed May 24 2017 Divya Thaluru <dthaluru@vmware.com> 8.40-3
@@ -112,4 +110,4 @@ make %{?_smp_mflags} check
 *   Mon Nov 30 2015 Sharath George <sharathg@vmware.com> 8.36-2
     Add symlink for libpcre.so.1
 *   Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 8.36-1
-    Initial version 
+    Initial version

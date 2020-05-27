@@ -2,16 +2,24 @@
 
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.4.0.0
-Release:        1%{?dist}
+Version:        2.8.10
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha1 ansible=b56f4667bc21efbc76e61b8441614d0445d60f00
 
+Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
+%define sha1 %{name}=4e1e909fb8f01c4327766f8a544362dfa3ca1c4e
+
+Patch0:         ansible-tdnf.patch
+Patch1:         CVE-2020-1733.patch
+Patch2:         CVE-2020-1735.patch
+Patch3:         CVE-2020-1738.patch
+Patch4:         CVE-2020-1739.patch
+Patch5:         CVE-2020-1740.patch
+Patch6:         CVE-2020-10684.patch
 
 BuildArch:      noarch
 
@@ -21,12 +29,27 @@ BuildRequires:  python-setuptools
 
 Requires:       python2
 Requires:       python2-libs
+Requires:       python-jinja2
+Requires:       PyYAML
+Requires:       python-xml
+Requires:       paramiko
+%if %{with_check}
+Requires:       python2-devel
+%endif
 
 %description
 Ansible is a radically simple IT automation system. It handles configuration-management, application deployment, cloud provisioning, ad-hoc task-execution, and multinode orchestration - including trivializing things like zero downtime rolling updates with load balancers.
 
 %prep
-%setup -q -n %{name}-%{version}-1
+%setup -q
+
+%patch0 -p2
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
 
 %build
 python2 setup.py build
@@ -36,12 +59,37 @@ python2 setup.py build
 python2 setup.py install -O1 --skip-build \
     --root "%{buildroot}"
 
-%files 
+%check
+python3 setup.py test
+
+%files
 %defattr(-, root, root)
 %{_bindir}/*
 %{python2_sitelib}/*
 
 %changelog
+*   Mon Apr 20 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.10-2
+-   Fix CVE-2020-1733, CVE-2020-1739
+*   Fri Apr 03 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.10-1
+-   Upgrade version to 2.8.10 & various CVEs fixed
+*   Sun Feb 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.3-6
+-   Fix 'make check'
+*   Thu Feb 06 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.3-5
+-   Fix for CVE-2019-14864
+*   Mon Nov 18 2019 Tapas Kundu <tkundu@vmware.com> 2.8.3-4
+-   Added additional missing dependencies
+*   Fri Nov 08 2019 Tapas Kundu <tkundu@vmware.com> 2.8.3-3
+-   Fix dependencies
+*   Mon Sep 09 2019 Anish Swaminathan <anishs@vmware.com> 2.8.3-2
+-   Patch to support tdnf operations
+*   Mon Aug 12 2019 Shreenidhi Shedi <sshedi@vmware.com> 2.8.3-1
+-   Upgraded to version 2.8.3
+*   Tue Apr 16 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.7.6-2
+-   Applied patch for CVE-2019-3828
+*   Tue Jan 22 2019 Anish Swaminathan <anishs@vmware.com> 2.7.6-1
+-   Version update to 2.7.6, fix CVE-2018-16876
+*   Mon Sep 17 2018 Ankit Jain <ankitja@vmware.com> 2.6.4-1
+-   Version update to 2.6.4
 *   Thu Oct 12 2017 Anish Swaminathan <anishs@vmware.com> 2.4.0.0-1
 -   Version update to 2.4.0.0
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.2.2.0-2

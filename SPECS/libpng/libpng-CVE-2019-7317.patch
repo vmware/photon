@@ -1,0 +1,25 @@
+commit 9c0d5c77bf5bf2d7c1e11f388de40a70e0191550
+Author: Cosmin Truta <ctruta@gmail.com>
+Date:   Sun Feb 3 22:40:56 2019 -0500
+
+    Call png_image_free_function without guarding it with png_safe_execute
+    
+    png_image_free_function (or any other destructor) should never fail.
+    Destructors need not and must not be executed under png_safe_execute.
+    
+    Reference: CVE-2019-7317, use-after-free in png_image_free
+
+diff --git a/png.c b/png.c
+index 9d9926f63..efd1aecfb 100644
+--- a/png.c
++++ b/png.c
+@@ -4588,8 +4588,7 @@ png_image_free(png_imagep image)
+    if (image != NULL && image->opaque != NULL &&
+       image->opaque->error_buf == NULL)
+    {
+-      /* Ignore errors here: */
+-      (void)png_safe_execute(image, png_image_free_function, image);
++      png_image_free_function(image);
+       image->opaque = NULL;
+    }
+ }

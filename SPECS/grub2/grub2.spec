@@ -3,16 +3,37 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.02
-Release:    9%{?dist}
+Release:    13%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    http://alpha.gnu.org/gnu/grub/grub-2.02~rc2.tar.xz
-%define sha1 grub=4f6f3719fd7dbb0449a58547c1b08c9801337663
-Patch0:     Fix_to_boot_entries_with_out_password.patch
-Patch1:     0001-Secure-Boot-support.patch
+Source0:    ftp://ftp.gnu.org/gnu/grub/grub-2.02.tar.xz
+%define sha1 grub=3d7eb6eaab28b88cb969ba9ab24af959f4d1b178
+Patch0:     release-to-master.patch
+Patch1:     0001-Add-support-for-Linux-EFI-stub-loading.patch
+Patch2:     0002-Rework-linux-command.patch
+Patch3:     0003-Rework-linux16-command.patch
+Patch4:     0004-Add-secureboot-support-on-efi-chainloader.patch
+Patch5:     0005-Make-any-of-the-loaders-that-link-in-efi-mode-honor-.patch
+Patch6:     0006-Handle-multi-arch-64-on-32-boot-in-linuxefi-loader.patch
+Patch7:     0067-Fix-security-issue-when-reading-username-and-passwor.patch
+Patch8:     0127-Core-TPM-support.patch
+Patch9:     0128-Measure-kernel-initrd.patch
+Patch10:    0131-Measure-the-kernel-commandline.patch
+Patch11:    0132-Measure-commands.patch
+Patch12:    0133-Measure-multiboot-images-and-modules.patch
+Patch13:    0135-Rework-TPM-measurements.patch
+Patch14:    0136-Fix-event-log-prefix.patch
+Patch15:    0139-Make-TPM-errors-less-fatal.patch
+Patch16:    0156-TPM-Fix-hash_log_extend_event-function-prototype.patch
+Patch17:    0157-TPM-Fix-compiler-warnings.patch
+Patch18:    0216-Disable-multiboot-multiboot2-and-linux16-modules-on-.patch
+Patch19:    0224-Rework-how-the-fdt-command-builds.patch
+%ifarch aarch64
+Patch100:   0001-efinet-do-not-start-EFI-networking-at-module-init-ti.patch
+%endif
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
 BuildRequires:  systemd-devel
@@ -28,12 +49,14 @@ Requires: %{name} = %{version}
 %description lang
 These are the additional language files of grub.
 
+%ifarch x86_64
 %package pc
 Summary: GRUB Library for BIOS
 Group: System Environment/Programming
 Requires: %{name} = %{version}
 %description pc
 Additional library files for grub
+%endif
 
 %package efi
 Summary: GRUB Library for UEFI
@@ -43,54 +66,83 @@ Requires: %{name} = %{version}
 Additional library files for grub
 
 %prep
-%setup -qn grub-2.02~rc2
+%setup -qn grub-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
+%patch16 -p1
+%patch17 -p1
+%patch18 -p1
+%patch19 -p1
+%ifarch aarch64
+%patch100 -p1
+%endif
 %build
 ./autogen.sh
-mkdir build-for-pc build-for-efi
-cd build-for-pc
+%ifarch x86_64
+mkdir build-for-pc
+pushd build-for-pc
 ../configure \
     --prefix=%{_prefix} \
     --sbindir=/sbin \
     --sysconfdir=%{_sysconfdir} \
-    --disable-grub-emu-usb \
     --disable-werror \
     --disable-efiemu \
     --with-grubdir=grub2 \
     --with-platform=pc \
     --target=i386 \
     --program-transform-name=s,grub,%{name}, \
-    --with-bootdir="/boot" 
+    --with-bootdir="/boot"
 make %{?_smp_mflags}
 make DESTDIR=$PWD/../install-for-pc install
-cd ../build-for-efi
+popd
+%endif
+
+mkdir build-for-efi
+pushd build-for-efi
 ../configure \
     --prefix=%{_prefix} \
     --sbindir=/sbin \
     --sysconfdir=%{_sysconfdir} \
-    --disable-grub-emu-usb \
     --disable-werror \
     --disable-efiemu \
     --with-grubdir=grub2 \
     --with-platform=efi \
-    --target=x86_64 \
+    --target=%{_arch} \
     --program-transform-name=s,grub,%{name}, \
     --with-bootdir="/boot"
 make %{?_smp_mflags}
 make DESTDIR=$PWD/../install-for-efi install
+popd
 
 #make sure all the files are same between two configure except the /usr/lib/grub
 %check
+%ifarch x86_64
 diff -sr install-for-efi/sbin install-for-pc/sbin && \
 diff -sr install-for-efi%{_bindir} install-for-pc%{_bindir} && \
 diff -sr install-for-efi%{_sysconfdir} install-for-pc%{_sysconfdir} && \
 diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
+%endif
 
 %install
 mkdir -p %{buildroot}
 cp -a install-for-efi/. %{buildroot}/.
+%ifarch x86_64
 cp -a install-for-pc/. %{buildroot}/.
+%endif
 mkdir %{buildroot}%{_sysconfdir}/default
 touch %{buildroot}%{_sysconfdir}/default/grub
 mkdir %{buildroot}%{_sysconfdir}/sysconfig
@@ -120,17 +172,33 @@ rm -rf %{buildroot}%{_infodir}
 %{_sysconfdir}/default/grub
 %ghost %config(noreplace) /boot/%{name}/grub.cfg
 
+%ifarch x86_64
 %files pc
 %{_libdir}/grub/i386-pc
-
 %files efi
 %{_libdir}/grub/x86_64-efi
+%endif
+
+%ifarch aarch64
+%files efi
+%{_libdir}/grub/*
+%endif
 
 %files lang
 %defattr(-,root,root)
 %{_datarootdir}/locale/*
 
 %changelog
+*   Wed Aug 14 2019 Alexey Makhalov <amakhalov@vmware.com> 2.02-13
+-   Add one more patch from fc30 to fix arm64 build.
+*   Thu Feb 21 2019 Alexey Makhalov <amakhalov@vmware.com> 2.02-12
+-   Update grub version from ~rc3 to release.
+-   Enhance SB + TPM support (19 patches from grub2-2.02-70.fc30)
+-   Remove i386-pc modules from grub2-efi
+*   Fri Jan 25 2019 Alexey Makhalov <amakhalov@vmware.com> 2.02-11
+-   Disable efinet for aarch64 to workwround NXP ls1012a frwy PFE bug.
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.02-10
+-   Aarch64 support
 *   Fri Jun 2  2017 Bo Gan <ganb@vmware.com> 2.02-9
 -   Split grub2 to grub2 and grub2-pc, remove grub2-efi spec
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com>  2.02-8

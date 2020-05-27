@@ -102,7 +102,7 @@ make %{?_smp_mflags} check
 -       Updated to version 7.0
 *       Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 6.3-6
 -       Move docs and man to the devel package
-*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 6.3-5
+*       Tue Oct 04 2016 ChangLee <changlee@vmware.com> 6.3-5
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.3-4
 -	GA - Bump release of all rpms

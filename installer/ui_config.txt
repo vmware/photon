@@ -1,0 +1,17 @@
+UI config file is a json format with following possible parameters:
+
+Note: All top level keys must be optional.
+
+"download_screen" (depends on "network_screen")
+	Used to show a window where user can input a custom URL from
+	which a file can be downloaded and placed in a custom location
+	in the installed system.
+
+	"title" (required)
+		A short title to identify this screen
+	"intro" (required)
+		An brief 2 line intro of what URL you are requesting the
+		user to input
+	"destination" (required)
+		String; Path to where in the installed system you would
+		like to see this file

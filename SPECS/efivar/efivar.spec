@@ -1,14 +1,14 @@
 Summary:	Tools and libraries to manipulate EFI variables
 Name:		efivar
-Version:	31
+Version:	36
 Release:	1%{?dist}
 License:	GPLv2
-URL:		https://github.com/rhinstaller/efivar/
+URL:		https://github.com/rhboot/efivar
 Group:		System Environment/System Utilities
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:	https://github.com/rhinstaller/efivar/releases/download/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 efivar=ae5b4c3aeb29fe0ef5212142b0a21d6f003dd266
+Source0:	https://github.com/rhboot/efivar/releases/download/%{version}/%{name}-%{version}.tar.bz2
+%define sha1 efivar=3c74c8a0d8bc7a39b74de52cad2a791c00cdfd67
 BuildRequires: popt-devel
 %description
 efivar provides a simle CLI to the UEFI variable facility
@@ -51,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Sep 18 2018 Sujay G <gsujay@vmware.com> 36-1
+-   Bump efivar version to 36
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 31-1
 -   Version update. Added -devel subpackage.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.20-3

@@ -1,4 +1,3 @@
-#! /usr/bin/python2
 #
 #    Copyright (C) 2015 VMware, Inc. All rights reserved.
 
@@ -36,7 +35,7 @@ class publishConst:
     @constant
     def sha1():
         return "sha1"
-#other 
+#other
     @constant
     def sha1allfilename():
         return 'sha1-all'

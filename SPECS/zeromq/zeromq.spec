@@ -1,6 +1,6 @@
 Summary:        library for fast, message-based applications
 Name:           zeromq
-Version:        4.1.4
+Version:        4.2.3
 Release:        3%{?dist}
 URL:            http://www.zeromq.org
 License:        LGPLv3+
@@ -8,7 +8,9 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://archive.org/download/zeromq_4.1.4/%{name}-%{version}.tar.gz
-%define sha1 zeromq=b632a4b6f8a14390dc17824e37ff7b10831ce2b4
+%define sha1 zeromq=a4d00313d11f0fe38fd7a24a65c2363c80675494
+Patch0:		zeromq-CVE-2019-13132.patch	
+Patch1:		zeromq-CVE-2019-6250.patch
 Requires:       libstdc++
 
 %description
@@ -22,12 +24,14 @@ access to multiple transport protocols and more.
 Summary:    Header and development files for zeromq
 Requires:   %{name} = %{version}
 %description    devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 %build
-./configure \
+sh configure \
     --prefix=%{_prefix} \
     --with-libsodium=no \
     --disable-static
@@ -57,6 +61,12 @@ make check
 %{_mandir}/*
 
 %changelog
+*   Wed Aug 07 2019 Siju Maliakkal <smaliakkal@vmwre.com> 4.2.3-3
+-   Apply patch for CVE-2019-6250
+*   Mon Jul 22 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.2.3-2
+-   Apply patch for CVE-2019-13132
+*   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 4.2.3-1
+-   Updated to latest version
 *   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 4.1.4-3
 -   Remove devpts mount
 *   Mon Aug 07 2017 Chang Lee <changlee@vmware.com> 4.1.4-2

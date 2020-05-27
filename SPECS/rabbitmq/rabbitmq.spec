@@ -1,24 +1,28 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.6.10
+Version:       3.7.20
 Release:       2%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       MPLv1.1
 URL:           https://github.com/rabbitmq/rabbitmq-server
-Source0:       http://www.rabbitmq.com/releases/rabbitmq-server/v%{version}/%{name}-%{version}.tar.xz
-%define sha1 rabbitmq=0d879f998683079a31c1e872ce4c5640ebd35406
+source0:       https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
+%define sha1 rabbitmq=dc2ade335755a9342524651e994597199219b172
 Source1:       rabbitmq.config
 Requires:      erlang
+Requires:      erlang-sd_notify
 Requires:      /bin/sed
 Requires:      socat
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 BuildRequires: erlang
 BuildRequires: rsync
 BuildRequires: zip
+BuildRequires: git
 BuildRequires: libxslt
+BuildRequires: xmlto
 BuildRequires: python-xml
+BuildRequires: elixir
 BuildArch:     noarch
 
 %description
@@ -28,7 +32,8 @@ rabbitmq messaging server
 %setup -q
 
 %build
-make
+LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
+make %{?_smp_mflags}
 
 %install
 make install DESTDIR=$RPM_BUILD_ROOT \
@@ -38,7 +43,9 @@ make install DESTDIR=$RPM_BUILD_ROOT \
 install -vdm755 %{buildroot}/var/lib/rabbitmq/
 install -vdm755 %{buildroot}/%{_sysconfdir}/rabbitmq/
 install -vdm755 %{buildroot}/usr/lib/systemd/system/
-mkdir -p %{buildroot}/var/log/rabbitmq
+mkdir -p %{buildroot}/var/log
+mkdir -p %{buildroot}/var/opt/rabbitmq/log
+ln -sfv /var/opt/rabbitmq/log %{buildroot}/var/log/rabbitmq
 
 cp %{SOURCE1} %{buildroot}/%{_sysconfdir}/rabbitmq/
 mkdir -p %{buildroot}/usr/lib/systemd/system
@@ -62,6 +69,9 @@ ExecStop=/usr/lib/rabbitmq/lib/rabbitmq_server-%{version}/sbin/rabbitmqctl stop
 WantedBy=multi-user.target
 EOF
 
+%check
+make tests
+
 %pre
 if ! getent group rabbitmq >/dev/null; then
   groupadd -r rabbitmq
@@ -75,8 +85,8 @@ fi
 %post
 chown -R rabbitmq:rabbitmq /var/lib/rabbitmq
 chown -R rabbitmq:rabbitmq /etc/rabbitmq
+chmod g+s /etc/rabbitmq
 %systemd_post %{name}.service
-systemctl daemon-reload
 
 %preun
 %systemd_preun %{name}.service
@@ -89,12 +99,27 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%dir %attr(0750, rabbitmq, rabbitmq) /var/log/rabbitmq
+%dir %attr(0750, rabbitmq, rabbitmq) /var/opt/rabbitmq/log
+%attr(0750, rabbitmq, rabbitmq) /var/log/rabbitmq
 %{_libdir}/*
 %{_sysconfdir}/*
 /var/lib/*
 
 %changelog
+* Mon Apr 27 2020 Tapas Kundu <tkundu@vmware.com> 3.7.20-2
+- Fix rabbitmq server issue when we enable rabbitmq plugin.
+* Tue Oct 29 2019 Keerthana K <keerthanak@vmware.com> 3.7.20-1
+- Update to version 3.7.20
+* Mon Aug 19 2019 Keerthana K <keerthanak@vmware.com> 3.7.3-1
+- Update to version 3.7.3
+* Thu Jan 31 2019 Siju Maliakkal <smaliakkal@vmware.com> 3.6.15-3
+- Consuming erlang 19.3
+* Mon Sep 24 2018 Dweep Advani <dadvani@vmware.com> 3.6.15-2
+- Consuming updated erlang version of 21.0
+* Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 3.6.15-1
+- Update to version 3.6.15
+* Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  3.6.10-3
+- Fixed the log file directory structure
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.6.10-2
 - Remove shadow from requires and use explicit tools for post actions
 * Wed May 31 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.6.10-1

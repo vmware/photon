@@ -1,25 +1,35 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        10.1.10
+Version:        11.0.5
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 open-vm-tools=26ac84e86b4c862006b8de7973802e45dfd77464
-Source1:        gosc-scripts-1.0.tar.gz
-%define sha1 gosc-scripts-1.0=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
+%define sha1 open-vm-tools=74e64ef0bb18acdf2a4222ba333b5edf24abbea2
+Source1:        gosc-scripts-1.2.tar.gz
+%define sha1 gosc-scripts-1.2=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
+
 Patch0:         IPv6Support.patch
 Patch1:         hostnameReCustomizationFix.patch
 Patch2:         PureIPv6-hosts.patch
 Patch3:         GOSC-libDeploy.patch
 Patch4:         timezoneCust.patch
+Patch5:         gosc-post-custom.patch
+Patch6:         gosc-enable-custom-scripts.patch
+Patch7:         gosc-fix-vmtoolsd-binary-path.patch
+
+BuildArch:      x86_64
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
+BuildRequires:  libxml2-devel
+BuildRequires:  xmlsec1-devel
+BuildRequires:  libltdl-devel
 BuildRequires:  xml-security-c-devel
 BuildRequires:  libdnet-devel
 BuildRequires:  libmspack-devel
@@ -28,6 +38,10 @@ BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  fuse-devel
 BuildRequires:  systemd
+BuildRequires:  rpcsvc-proto-devel
+BuildRequires:  libtirpc-devel
+BuildRequires:  xmlsec1-devel
+
 Requires:       fuse
 Requires:       xerces-c
 Requires:       libdnet
@@ -37,6 +51,10 @@ Requires:       xml-security-c
 Requires:       openssl
 Requires:       systemd
 Requires:       libstdc++
+Requires:       libtirpc
+Requires:       xmlsec1
+Requires:       which
+
 %description
 VmWare virtualization user mode tools
 
@@ -49,15 +67,20 @@ It contains the libraries and header files to create applications.
 %prep
 %setup -q -n %{name}-stable-%{version}/%{name}
 %setup -a 1 -n %{name}-stable-%{version}/%{name}
+
 %patch0 -p0
 %patch1 -p0
 %patch2 -p0
 %patch3 -p2
 %patch4 -p0
+%patch5 -p0
+%patch6 -p0
+%patch7 -p0
+
 %build
 touch ChangeLog
 autoreconf -i
-sh ./configure --prefix=/usr --without-x --without-kernel-modules --without-icu --disable-static
+sh ./configure --prefix=/usr --without-x --without-kernel-modules --without-icu --disable-static --with-tirpc
 make %{?_smp_mflags}
 %install
 
@@ -92,13 +115,24 @@ if [ "$1" = "0" -a                      \
    %{_bindir}/vmware-rpctool 'tools.set.version 0' &> /dev/null || /bin/true
 fi
 
-%postun 
+%postun
 /sbin/ldconfig
 %systemd_postun_with_restart vmtoolsd.service vgauthd.service
 
-%files 
+%files
 %defattr(-,root,root)
-%{_libdir}/open-vm-tools/plugins/*
+%dir %{_libdir}/%{name}
+%dir %{_libdir}/%{name}/plugins
+%dir %{_libdir}/%{name}/plugins/common
+%dir %{_libdir}/%{name}/plugins/vmsvc
+%{_libdir}/%{name}/plugins/vmsvc/libdeployPkgPlugin.so
+%{_libdir}/%{name}/plugins/vmsvc/libguestInfo.so
+%{_libdir}/%{name}/plugins/vmsvc/libpowerOps.so
+%{_libdir}/%{name}/plugins/vmsvc/libresolutionKMS.so
+%{_libdir}/%{name}/plugins/vmsvc/libtimeSync.so
+%{_libdir}/%{name}/plugins/vmsvc/libvmbackup.so
+%{_libdir}/%{name}/plugins/common/libhgfsServer.so
+%{_libdir}/%{name}/plugins/common/libvix.so
 %{_libdir}/*.so.*
 %{_bindir}/*
 %{_sysconfdir}/*
@@ -113,6 +147,44 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Thu Mar 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.0.5-1
+-   Upgrade version to 11.0.5
+*   Mon Mar 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 10.3.10-9
+-   Fix gosc script vmtoolsd path - revisited
+*   Thu Feb 20 2020 Keerthana K <keerthanak@vmware.com> 10.3.10-8
+-   Fix gosc script vmtoolsd path.
+*   Wed Dec 18 2019 Shreyas B. <shreyasb@vmware.com> 10.3.10-7
+-   Start vmtoolsd after dbus service.
+*   Thu Oct 31 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-6
+-   Check enable-custom-script only when there is custom script added in spec.
+*   Mon Oct 21 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-5
+-   Remove the /etc/security directory from the guest vm-support bundle.
+*   Wed Oct 16 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-4
+-   Change to Stop customization unless the custom script is explictly enabled by tools config.
+*   Fri Oct 11 2019 Anish Swaminathan <anishs@vmware.com> 10.3.10-3
+-   Update memory leak fix patch to include
+-   https://github.com/vmware/open-vm-tools/commit/26b9edbeb79d1c67b9ae73a0c97c48999c1fb503
+*   Sun Sep 15 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-2
+-   Fix memory leak issues in vix.
+-   Added enable-custom-scripts parsing code in GOSC scripts.
+*   Wed May 08 2019 Ankit Jain <ankitja@vmware.com> 10.3.10-1
+-   Updating version to 10.3.10
+*   Wed Mar 27 2019 Anish Swaminathan <anishs@vmware.com> 10.3.0-4
+-   Start vmtoolsd before cloud-init
+*   Tue Jan 29 2019 Tapas Kundu <tkundu@vmware.com> 10.3.0-3
+-   Fix to remove all files associated with open-vm-tools on uninstallation.
+*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 10.3.0-2
+-   Adding BuildArch
+*   Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 10.3.0-1
+-   Version update. Use rpcsvc-proto, libtirpc, xmlsec1
+*   Tue Jul 10 2018 Keerthana K <keerthanak@vmware.com> 10.2.0-4
+-   Fix for post custom script failure.
+*   Mon Apr 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 10.2.0-3
+-   Revert regex changes to gosc scripts.
+*   Wed Mar 21 2018 Anish Swaminathan <anishs@vmware.com> 10.2.0-2
+-   Fix gosc patch to call customization
+*   Wed Jan 24 2018 Kumar Kaushik <kaushikk@vmware.com> 10.2.0-1
+-   Updating version to 10.2.0.
 *   Tue Aug 22 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.10-1
 -   Updating version to 10.1.10, removing upstream patches.
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 10.1.5-6

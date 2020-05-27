@@ -1,0 +1,9 @@
+--- a/sysstat.sysconfig.in	2019-11-20 15:05:32.880164166 +0530
++++ b/sysstat.sysconfig.in	2019-11-20 15:08:30.816157860 +0530
+@@ -33,3 +33,6 @@ ZIP="@ZIP@"
+ # the permissions on the files (e.g. use 0027 to adhere to more strict
+ # security standards).
+ UMASK=0022
++
++# Enable data collection:
++ENABLED="true"

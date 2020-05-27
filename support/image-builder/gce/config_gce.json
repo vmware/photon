@@ -1,0 +1,16 @@
+{
+    "installer": {
+        "hostname": "photon-machine",
+        "postinstallscripts": [ "gce-patch.sh" ],
+        "additional_files": [
+            {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"},
+            {"ntpd.service": "/usr/lib/systemd/system/ntpd.service"}
+        ],
+        "packagelist_file": "packages_gce.json"
+    },
+    "image_type": "gce",
+    "size": 16384,
+    "artifacttype": "tgz",
+    "keeprawdisk": false
+}
+

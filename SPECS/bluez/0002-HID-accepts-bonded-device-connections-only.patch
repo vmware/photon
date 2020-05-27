@@ -1,0 +1,138 @@
+From 3cccdbab2324086588df4ccf5f892fb3ce1f1787 Mon Sep 17 00:00:00 2001
+From: Alain Michaud <alainm@chromium.org>
+Date: Tue, 10 Mar 2020 02:35:18 +0000
+Subject: [PATCH] HID accepts bonded device connections only.
+
+This change adds a configuration for platforms to choose a more secure
+posture for the HID profile.  While some older mice are known to not
+support pairing or encryption, some platform may choose a more secure
+posture by requiring the device to be bonded  and require the
+connection to be encrypted when bonding is required.
+
+Reference:
+https://www.intel.com/content/www/us/en/security-center/advisory/intel-sa-00352.html
+---
+ profiles/input/device.c   | 23 ++++++++++++++++++++++-
+ profiles/input/device.h   |  1 +
+ profiles/input/input.conf |  8 ++++++++
+ profiles/input/manager.c  | 13 ++++++++++++-
+ 4 files changed, 43 insertions(+), 2 deletions(-)
+
+diff --git a/profiles/input/device.c b/profiles/input/device.c
+index 2cb3811..d89da2d 100644
+--- a/profiles/input/device.c
++++ b/profiles/input/device.c
+@@ -92,6 +92,7 @@ struct input_device {
+ 
+ static int idle_timeout = 0;
+ static bool uhid_enabled = false;
++static bool classic_bonded_only = false;
+ 
+ void input_set_idle_timeout(int timeout)
+ {
+@@ -103,6 +104,11 @@ void input_enable_userspace_hid(bool state)
+ 	uhid_enabled = state;
+ }
+ 
++void input_set_classic_bonded_only(bool state)
++{
++	classic_bonded_only = state;
++}
++
+ static void input_device_enter_reconnect_mode(struct input_device *idev);
+ static int connection_disconnect(struct input_device *idev, uint32_t flags);
+ 
+@@ -970,8 +976,18 @@ static int hidp_add_connection(struct input_device *idev)
+ 	if (device_name_known(idev->device))
+ 		device_get_name(idev->device, req->name, sizeof(req->name));
+ 
++	/* Make sure the device is bonded if required */
++	if (classic_bonded_only && !device_is_bonded(idev->device,
++				btd_device_get_bdaddr_type(idev->device))) {
++		error("Rejected connection from !bonded device %s", dst_addr);
++		goto cleanup;
++	}
++
+ 	/* Encryption is mandatory for keyboards */
+-	if (req->subclass & 0x40) {
++	/* Some platforms may choose to require encryption for all devices */
++	/* Note that this only matters for pre 2.1 devices as otherwise the */
++	/* device is encrypted by default by the lower layers */
++	if (classic_bonded_only || req->subclass & 0x40) {
+ 		if (!bt_io_set(idev->intr_io, &gerr,
+ 					BT_IO_OPT_SEC_LEVEL, BT_IO_SEC_MEDIUM,
+ 					BT_IO_OPT_INVALID)) {
+@@ -1203,6 +1219,11 @@ static void input_device_enter_reconnect_mode(struct input_device *idev)
+ 	DBG("path=%s reconnect_mode=%s", idev->path,
+ 				reconnect_mode_to_string(idev->reconnect_mode));
+ 
++	/* Make sure the device is bonded if required */
++	if (classic_bonded_only && !device_is_bonded(idev->device,
++				btd_device_get_bdaddr_type(idev->device)))
++		return;
++
+ 	/* Only attempt an auto-reconnect when the device is required to
+ 	 * accept reconnections from the host.
+ 	 */
+diff --git a/profiles/input/device.h b/profiles/input/device.h
+index 51a9aee..3044db6 100644
+--- a/profiles/input/device.h
++++ b/profiles/input/device.h
+@@ -29,6 +29,7 @@ struct input_conn;
+ 
+ void input_set_idle_timeout(int timeout);
+ void input_enable_userspace_hid(bool state);
++void input_set_classic_bonded_only(bool state);
+ 
+ int input_device_register(struct btd_service *service);
+ void input_device_unregister(struct btd_service *service);
+diff --git a/profiles/input/input.conf b/profiles/input/input.conf
+index 3e1d65a..166aff4 100644
+--- a/profiles/input/input.conf
++++ b/profiles/input/input.conf
+@@ -11,3 +11,11 @@
+ # Enable HID protocol handling in userspace input profile
+ # Defaults to false (HIDP handled in HIDP kernel module)
+ #UserspaceHID=true
++
++# Limit HID connections to bonded devices
++# The HID Profile does not specify that devices must be bonded, however some
++# platforms may want to make sure that input connections only come from bonded
++# device connections. Several older mice have been known for not supporting
++# pairing/encryption.
++# Defaults to false to maximize device compatibility.
++#ClassicBondedOnly=true
+diff --git a/profiles/input/manager.c b/profiles/input/manager.c
+index 1d31b06..5cd27b8 100644
+--- a/profiles/input/manager.c
++++ b/profiles/input/manager.c
+@@ -96,7 +96,7 @@ static int input_init(void)
+ 	config = load_config_file(CONFIGDIR "/input.conf");
+ 	if (config) {
+ 		int idle_timeout;
+-		gboolean uhid_enabled;
++		gboolean uhid_enabled, classic_bonded_only;
+ 
+ 		idle_timeout = g_key_file_get_integer(config, "General",
+ 							"IdleTimeout", &err);
+@@ -114,6 +114,17 @@ static int input_init(void)
+ 			input_enable_userspace_hid(uhid_enabled);
+ 		} else
+ 			g_clear_error(&err);
++
++		classic_bonded_only = g_key_file_get_boolean(config, "General",
++						"ClassicBondedOnly", &err);
++
++		if (!err) {
++			DBG("input.conf: ClassicBondedOnly=%s",
++					classic_bonded_only ? "true" : "false");
++			input_set_classic_bonded_only(classic_bonded_only);
++		} else
++			g_clear_error(&err);
++
+ 	}
+ 
+ 	btd_profile_register(&input_profile);
+-- 
+2.7.4
+

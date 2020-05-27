@@ -3,38 +3,29 @@
 
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.9.4
-Release:        12%{?dist}
+Version:        2.9.10
+Release:        2%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
-Patch0:         libxml2-2.9.4-support-cve-2016-5131.patch
-Patch1:         libxml2-2.9.4-cve-2016-5131.patch
-# Proposed patch from https://bugzilla.gnome.org/show_bug.cgi?id=772726#c17
-# Fix for CVE-2016-9318
-Patch2:         cve-2016-9318.patch
-# Fix for CVE-2017-9047 and CVE-2017-9048
-Patch3:         libxml2-fix-buffer-size-checks.patch
-# Fix for CVE-2017-9049 and CVE-2017-9050
-Patch4:         libxml2-fix-handling-of-parameter-entity-references.patch
-Patch5:         libxml2-fix-handling-of-parameter-entity-references-test.patch
-Patch6:         CVE-2017-8872.patch
-#https://bugs.python.org/issue23524
-Patch7:         libxml2-2.9.4-remove-_PyVerify_fd-call.patch
-%define sha1    libxml2=958ae70baf186263a4bd801a81dd5d682aedd1db
+%define sha1    libxml2=db6592ec9ca9708c4e71bf6bfd907bbb5cd40644
+Patch0:         CVE-2020-7595.patch
+Patch1:         CVE-2019-20388.patch
+
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+BuildRequires:  python3-devel
 Provides:       pkgconfig(libxml-2.0)
 
 %description
-The libxml2 package contains libraries and utilities used for parsing XML files. 
+The libxml2 package contains libraries and utilities used for parsing XML files.
 
 %package python
 Summary:        The libxml2 python module
 Group:          Development/Languages/Python
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
 Requires:       %{name} = %{version}
 Requires:       python2
 Requires:       python2-libs
@@ -45,7 +36,6 @@ The libxml2 python module
 %package -n     python3-libxml2
 Summary:        Python 3 bindings for libxml2.
 Group:          Development/Libraries
-BuildRequires:  python3-devel
 Requires:       %{name} = %{version}
 Requires:       python3
 
@@ -63,22 +53,9 @@ Static libraries and header files for the support library for libxml
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-sed \
-  -e /xmlInitializeCatalog/d \
-  -e 's/((ent->checked =.*&&/(((ent->checked == 0) ||\
-          ((ent->children == NULL) \&\& (ctxt->options \& XML_PARSE_NOENT))) \&\&/' \
-  -i parser.c
+
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
+%configure \
     --disable-static \
     --with-history
 make %{?_smp_mflags}
@@ -90,10 +67,7 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
 make clean
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
+%configure \
     --disable-static \
     --with-python=/usr/bin/python3
 make %{?_smp_mflags}
@@ -132,8 +106,22 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libxml-2.0.pc
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
-
 %changelog
+*   Wed Feb 05 2020 Shreyas B <shreyasb@vmware.com> 2.9.10-2
+-   Fix for CVE-2019-20388(Fix memory leak in xmlSchemaValidateStream).
+*   Thu Jan 30 2020 Shreyas B <shreyasb@vmware.com> 2.9.10-1
+-   Updgrade to v2.9.10 to address CVE-2019-19956(memory leak issue).
+-   Fix CVE-2020-7595(end-of-file issue).
+*   Mon Jul 07 2019 Sujay G <gsujay@vmware.com> 2.9.9-1
+-   Bump version to 2.9.9
+*   Fri Dec 07 2018 Dweep Advani <dadvani@vmware.com> 2.9.8-2
+-   Fix CVE-2018-14404 and improve build and install sections
+*   Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 2.9.8-1
+-   Update to version 2.9.8
+*   Mon Feb 12 2018 Xiaolin Li <xiaolinl@vmware.com> 2.9.7-1
+-   Update to version 2.9.7
+*   Wed Oct 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-1
+-   Update to version 2.9.6
 *   Mon Oct 2 2017 Anish Swaminathan <anishs@vmware.com> 2.9.4-12
 -   Remove call to _PyVerify_fd
 *   Wed Aug 09 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.9.4-11
@@ -164,7 +152,7 @@ rm -rf %{buildroot}/*
 -   Upgraded to version 2.9.3
 *   Thu Jan 28 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.2-1
 -   Downgrade to version 2.9.2
--   libxml 2.9.3 has been found to have major functional issues. 
+-   libxml 2.9.3 has been found to have major functional issues.
 -   Until these are resolved, please roadmap updating to 2.9.2.
 *   Wed Dec 2 2015 Xiaolin Li <xiaolinl@vmware.com> 2.9.3-1
 -   Update to version 2.9.3

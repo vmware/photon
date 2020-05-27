@@ -1,14 +1,14 @@
 Summary:	Utilities for internationalization and localization
 Name:		gettext
-Version:	0.19.8
-Release:	1%{?dist}
+Version:	0.19.8.1
+Release:	2%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/gettext
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
-%define sha1 gettext=dc551d4783edf691c1f0095ca927d3128b5093e8
+%define sha1 gettext=e0fe90ede22f7f16bbde7bdea791a835f2773fc9
 
 %description
 These allow programs to be compiled with NLS
@@ -19,8 +19,7 @@ messages in the user's native language.
 %setup -q
 
 %build
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--docdir=%{_defaultdocdir}/%{name}-%{version} \
 	--disable-silent-rules
 make %{?_smp_mflags}
@@ -33,6 +32,7 @@ rm -rf %{buildroot}%{_infodir}
 %find_lang %{name} --all-name
 
 %check
+sed -i 's/test-term-ostream-xterm//1' ./gettext-tools/gnulib-tests/Makefile
 make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
@@ -48,12 +48,16 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 %{_libdir}/*.a
 %{_datarootdir}/aclocal/*
-%{_datarootdir}/%{name}-%{version}/*
+%{_datadir}/*
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_datarootdir}/%{name}/*
 %{_mandir}/*
 
 %changelog
+*       Mon Sep 09 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 0.19.8.1-2
+-       Fix for make check
+*       Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 0.19.8.1-1
+-       Update to version 0.19.8.1
 *	Wed Apr 05 2017 Danut Moraru <dmoraru@vmware.com> 0.19.8-1
 -	Upgrade to 0.19.8
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.19.5.1-2

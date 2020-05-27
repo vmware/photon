@@ -1,7 +1,7 @@
 Summary:	A C++ JSON Parser/Generator
 Name:		json_spirit
 Version:	4.08
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	MIT
 URL:		https://www.codeproject.com/Articles/20027/JSON-Spirit-A-C-JSON-Parser-Generator-Implemented
 Source0:	https://www.codeproject.com/KB/recipes/JSON_Spirit/json_spirit_v4.08.zip
@@ -50,6 +50,11 @@ cd build
 make DESTDIR=%{buildroot} install
 install -v -D json_spirit/libjson_spirit.so -t %{buildroot}/usr/lib/
 
+%check
+cd build
+#Test waits for key press in the end.
+json_test/json_test <<< "key_press\n"
+
 %files
 %defattr(-,root,root)
 %{_libdir}/libjson_spirit.so*
@@ -60,6 +65,8 @@ install -v -D json_spirit/libjson_spirit.so -t %{buildroot}/usr/lib/
 %{_libdir}/libjson_spirit.a
 
 %changelog
+*    Sun Nov 25 2018 Ashwin H <ashwinh@vmware.com> 4.08-3
+-    Add %check
 *    Thu Jun 1  2017 Bo Gan <ganb@vmware.com> 4.08-2
 -    Fix file paths
 *    Sat Mar 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.08-1

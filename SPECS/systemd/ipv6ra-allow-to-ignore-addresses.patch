@@ -1,0 +1,81 @@
+diff -rupN systemd-239/man/systemd.network.xml systemd-239-ignore-ra-addresses/man/systemd.network.xml
+--- systemd-239/man/systemd.network.xml	2018-06-22 13:11:49.000000000 +0200
++++ systemd-239-ignore-ra-addresses/man/systemd.network.xml	2020-03-23 21:04:18.686178342 +0100
+@@ -1402,6 +1402,22 @@
+         </varlistentry>
+ 
+         <varlistentry>
++          <term><varname>UseAutonomousPrefix=</varname></term>
++          <listitem>
++            <para>When true (the default), the autonomous prefix received in the Router Advertisement will be used and take
++            precedence over any statically configured ones.</para>
++          </listitem>
++        </varlistentry>
++
++        <varlistentry>
++          <term><varname>UseOnLinkPrefix=</varname></term>
++          <listitem>
++            <para>When true (the default), the onlink prefix received in the Router Advertisement will be used and take
++            precedence over any statically configured ones.</para>
++          </listitem>
++        </varlistentry>
++
++        <varlistentry>
+           <term><varname>RouteTable=<replaceable>num</replaceable></varname></term>
+           <listitem>
+             <para>The table identifier for the routes received in the Router Advertisement
+Binary files systemd-239/src/basic/.macro.h.swp and systemd-239-ignore-ra-addresses/src/basic/.macro.h.swp differ
+diff -rupN systemd-239/src/network/networkd-ndisc.c systemd-239-ignore-ra-addresses/src/network/networkd-ndisc.c
+--- systemd-239/src/network/networkd-ndisc.c	2018-06-22 13:11:49.000000000 +0200
++++ systemd-239-ignore-ra-addresses/src/network/networkd-ndisc.c	2020-03-23 21:00:21.850840571 +0100
+@@ -588,9 +588,12 @@ static void ndisc_router_process_options
+                                 return;
+                         }
+ 
+-                        if (flags & ND_OPT_PI_FLAG_ONLINK)
++                        if (link->network->ipv6_accept_ra_use_onlink_prefix &&
++                            FLAGS_SET(flags, ND_OPT_PI_FLAG_ONLINK))
+                                 ndisc_router_process_onlink_prefix(link, rt);
+-                        if (flags & ND_OPT_PI_FLAG_AUTO)
++
++                        if (link->network->ipv6_accept_ra_use_autonomous_prefix &&
++                            FLAGS_SET(flags, ND_OPT_PI_FLAG_AUTO))
+                                 ndisc_router_process_autonomous_prefix(link, rt);
+ 
+                         break;
+diff -rupN systemd-239/src/network/networkd-network.c systemd-239-ignore-ra-addresses/src/network/networkd-network.c
+--- systemd-239/src/network/networkd-network.c	2018-06-22 13:11:49.000000000 +0200
++++ systemd-239-ignore-ra-addresses/src/network/networkd-network.c	2020-03-23 21:01:47.061900700 +0100
+@@ -190,6 +190,8 @@ static int network_load_one(Manager *man
+         network->dhcp = ADDRESS_FAMILY_NO;
+         network->dhcp_use_ntp = true;
+         network->dhcp_use_dns = true;
++        network->ipv6_accept_ra_use_autonomous_prefix = true;
++        network->ipv6_accept_ra_use_onlink_prefix = true;
+         network->dhcp_use_hostname = true;
+         network->dhcp_use_routes = true;
+         /* NOTE: this var might be overwriten by network_apply_anonymize_if_set */
+diff -rupN systemd-239/src/network/networkd-network-gperf.gperf systemd-239-ignore-ra-addresses/src/network/networkd-network-gperf.gperf
+--- systemd-239/src/network/networkd-network-gperf.gperf	2018-06-22 13:11:49.000000000 +0200
++++ systemd-239-ignore-ra-addresses/src/network/networkd-network-gperf.gperf	2020-03-23 21:02:31.285037381 +0100
+@@ -138,6 +138,8 @@ DHCP.UseTimezone,
+ DHCP.IAID,                              config_parse_iaid,                              0,                             offsetof(Network, iaid)
+ DHCP.ListenPort,                        config_parse_uint16,                            0,                             offsetof(Network, dhcp_client_port)
+ DHCP.RapidCommit,                       config_parse_bool,                              0,                             offsetof(Network, rapid_commit)
++IPv6AcceptRA.UseAutonomousPrefix,       config_parse_bool,                              0,                             offsetof(Network, ipv6_accept_ra_use_autonomous_prefix)
++IPv6AcceptRA.UseOnLinkPrefix,           config_parse_bool,                              0,                             offsetof(Network, ipv6_accept_ra_use_onlink_prefix)
+ IPv6AcceptRA.UseDNS,                    config_parse_bool,                              0,                             offsetof(Network, ipv6_accept_ra_use_dns)
+ IPv6AcceptRA.UseDomains,                config_parse_dhcp_use_domains,                  0,                             offsetof(Network, ipv6_accept_ra_use_domains)
+ IPv6AcceptRA.RouteTable,                config_parse_uint32,                            0,                             offsetof(Network, ipv6_accept_ra_route_table)
+diff -rupN systemd-239/src/network/networkd-network.h systemd-239-ignore-ra-addresses/src/network/networkd-network.h
+--- systemd-239/src/network/networkd-network.h	2018-06-22 13:11:49.000000000 +0200
++++ systemd-239-ignore-ra-addresses/src/network/networkd-network.h	2020-03-23 21:03:00.411011005 +0100
+@@ -202,6 +202,8 @@ struct Network {
+         uint32_t ipv6_mtu;
+ 
+         bool ipv6_accept_ra_use_dns;
++        bool ipv6_accept_ra_use_autonomous_prefix;
++        bool ipv6_accept_ra_use_onlink_prefix;
+         bool active_slave;
+         bool primary_slave;
+         DHCPUseDomains ipv6_accept_ra_use_domains;

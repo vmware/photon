@@ -83,7 +83,7 @@ popd
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Tue May 16 2017 Kumar Kaushik <kaushikk@vmware.com> 0.7.2-4
 -   Adding python3 support.
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 0.7.2-3
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 0.7.2-3
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.2-2
 -   GA - Bump release of all rpms

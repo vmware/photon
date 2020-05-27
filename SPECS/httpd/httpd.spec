@@ -1,15 +1,15 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.28
-Release:        1%{?dist}
+Version:        2.4.43
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://httpd.apache.org/dev/dist/%{name}-%{version}.tar.bz2
-%define sha1    httpd=0b37522b808dcee72e1d56d656b0def530b820a2
-Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.27-blfs_layout-1.patch
+Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.bz2
+%define sha1    httpd=fc078df062503ffcf19319c4bf4e8cf27fe30cb4
+Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/%{name}-%{version}-blfs_layout-1.patch
 Patch1:         httpd-uncomment-ServerName.patch
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
@@ -28,6 +28,9 @@ Requires:       lua
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 Provides:       apache2
+
+%define _confdir %{_sysconfdir}
+
 %description
 The Apache HTTP Server.
 
@@ -58,27 +61,22 @@ The httpd-tools of httpd.
 %patch1 -p1
 
 %build
-./configure --prefix=%{_sysconfdir}/httpd \
-            --exec-prefix=%{_prefix} \
-            --bindir=%{_bindir}                             \
-            --sbindir=%{_sbindir}                           \
-            --mandir=%{_mandir}                             \
-            --libdir=%{_libdir}                             \
-            --sysconfdir=%{_sysconfdir}/httpd/conf          \
-            --includedir=%{_includedir}/httpd               \
-            --libexecdir=%{_libdir}/httpd/modules           \
-            --enable-authnz-fcgi                            \
-            --enable-mods-shared="all cgi"                  \
-            --enable-mpms-shared=all                        \
-            --with-apr=%{_prefix}                           \
-            --with-apr-util=%{_prefix}
-
+%configure \
+            --prefix=%{_sysconfdir}/httpd          \
+            --sysconfdir=%{_confdir}/httpd/conf    \
+            --libexecdir=%{_libdir}/httpd/modules  \
+            --datadir=%{_sysconfdir}/httpd         \
+            --enable-authnz-fcgi                   \
+            --enable-mods-shared="all cgi"         \
+            --enable-mpms-shared=all               \
+            --with-apr=%{_prefix}                  \
+            --with-apr-util=%{_prefix}             \
+            --enable-layout=RPM
 make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
 install -vdm755 %{buildroot}/usr/lib/systemd/system
-install -vdm755 %{buildroot}/etc/httpd/logs
 
 cat << EOF >> %{buildroot}/usr/lib/systemd/system/httpd.service
 [Unit]
@@ -87,7 +85,7 @@ After=network.target remote-fs.target nss-lookup.target
 
 [Service]
 Type=forking
-PIDFile=/var/run/httpd.pid
+PIDFile=/var/run/httpd/httpd.pid
 ExecStart=/usr/sbin/httpd -k start
 ExecStop=/usr/sbin/httpd -k stop
 ExecReload=/usr/sbin/httpd -k graceful
@@ -102,6 +100,11 @@ echo "disable httpd.service" > %{buildroot}/usr/lib/systemd/system-preset/50-htt
 
 ln -s /usr/sbin/httpd %{buildroot}/usr/sbin/apache2
 ln -s /etc/httpd/conf/httpd.conf %{buildroot}/etc/httpd/httpd.conf
+
+mkdir -p %{buildroot}%{_libdir}/tmpfiles.d
+cat >> %{buildroot}%{_libdir}/tmpfiles.d/httpd.conf << EOF
+d /var/run/httpd 0755 root root -
+EOF
 
 %post
 /sbin/ldconfig
@@ -121,6 +124,7 @@ if [ $1 -eq 1 ]; then
 fi
 
 ln -sf /etc/httpd/conf/mime.types /etc/mime.types
+systemd-tmpfiles --create httpd.conf
 %systemd_post httpd.service
 
 %preun
@@ -159,7 +163,7 @@ fi
 %exclude %{_bindir}/dbmmanage
 %{_sbindir}/*
 %{_datadir}/*
-%{_sysconfdir}/httpd/build/*
+%{_sysconfdir}/httpd/html/index.html
 %{_sysconfdir}/httpd/cgi-bin/*
 %{_sysconfdir}/httpd/conf/extra
 %{_sysconfdir}/httpd/conf/original
@@ -168,12 +172,12 @@ fi
 %config(noreplace) %{_sysconfdir}/httpd/conf/httpd.conf
 %{_sysconfdir}/httpd/conf/mime.types
 %{_sysconfdir}/httpd/error/*
-%{_sysconfdir}/httpd/htdocs/*
 %{_sysconfdir}/httpd/icons/*
 %{_sysconfdir}/httpd/httpd.conf
-%dir %{_sysconfdir}/httpd/logs
 %{_libdir}/systemd/system/httpd.service
 %{_libdir}/systemd/system-preset/50-httpd.preset
+%{_libdir}/tmpfiles.d/httpd.conf
+%{_localstatedir}/log/httpd
 
 %files tools
 %defattr(-,root,root)
@@ -181,6 +185,27 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Mon Apr 08 2020 Dweep Advani <dadvani@vmware.com> 2.4.43-2
+-   Fixed failed httpd service startup issue on reboots
+*   Mon Apr 06 2020 Shreyas B. <shreyasb@vmware.com> 2.4.43-1
+-   Upgrading to 2.4.43 to address following CVEs.
+-   (1) CVE-2020-1927 (2) CVE-2020-1934
+*   Mon Sep 30 2019 Shreyas B. <shreyasb@vmware.com> 2.4.41-1
+-   Upgrading to 2.4.41 to address following CVEs.
+-   (1) CVE-2019-10092 (2) CVE-2019-10098 (3) CVE-2019-10082
+-   (4) CVE-2019-10081 (5) CVE-2019-9517
+*   Thu Apr 25 2019 Dweep Advani <dadvani@vmware.com> 2.4.39-1
+-   Upgrading to 2.4.39 for fixing multiple CVEs
+-   (1) CVE-2018-17189 (2) CVE-2018-17199 (3) CVE-2019-0190
+-   (4) CVE-2019-0211 (5) CVE-2019-0215 (6) CVE-2019-0217
+*   Wed Mar 13 2019 Michelle Wang <michellew@vmware.com> 2.4.34-4
+-   Fix configure for rel_libexecdir variable with RPMS layout
+*   Thu Mar 7 2019 Michelle Wang <michellew@vmware.com> 2.4.34-3
+-   Update build configure for httpd to use RPM layout
+*   Thu Jan 24 2019 Dweep Advani <dadvani@vmware.com> 2.4.34-2
+-   Fixed CVE-2018-11763
+*   Wed Aug 29 2018 Tapas Kundu <tkundu@vmware.com> 2.4.34-1
+-   Updated to version 2.4.34, fix CVE-2018-1333
 *   Mon Oct 02 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.28-1
 -   Updated to version 2.4.28
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.27-3

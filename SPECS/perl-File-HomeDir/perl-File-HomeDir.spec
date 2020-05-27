@@ -1,20 +1,20 @@
 Summary:        File-HomeDir
 Name:           perl-File-HomeDir
-Version:        1.00
-Release:        3%{?dist}
+Version:        1.004
+Release:        1%{?dist}
 License:        The Perl 5 License (Artistic 1 & GPL 1)
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-HomeDir/
-Source0:        http://search.cpan.org/CPAN/authors/id/A/AD/ADAMK/File-HomeDir-1.00.tar.gz
-%define sha1 File-HomeDir=c89743d57e15fba79238728f0456f80160aff024
+Source0:        https://cpan.metacpan.org/authors/id/R/RE/REHSACK/File-HomeDir-%{version}.tar.gz
+%define sha1 File-HomeDir=7d2ceddfd2f331cc1ac0dc160b0d4a91302ee418
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch
-BuildRequires:	perl
+BuildRequires:	perl >= 5.28.0
 %if %{with_check}
 BuildRequires:  perl-File-Which
 %endif
-Requires:	perl
+Requires:	perl >= 5.28.0
 Requires:   perl-File-Which
 
 %description
@@ -58,12 +58,14 @@ make test
 %{_mandir}/man3/File::HomeDir::Windows.3.gz
 
 %changelog
-*	Tue Aug 08 2017 Chang Lee <changlee@vmware.com> 1.00-3
--	Add perl-File-Which for make check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.00-2
--	GA - Bump release of all rpms
-*	Thu Mar 3 2016 Xiaolin Li <xiaolinl@vmware.com> 1.00-1
--	Initial version.
+*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.004-1
+-   Update to version 1.004
+*   Tue Aug 08 2017 Chang Lee <changlee@vmware.com> 1.00-3
+-   Add perl-File-Which for make check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.00-2
+-   GA - Bump release of all rpms
+*   Thu Mar 3 2016 Xiaolin Li <xiaolinl@vmware.com> 1.00-1
+-   Initial version.
 
 
 

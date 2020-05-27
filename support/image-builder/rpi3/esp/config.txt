@@ -1,0 +1,27 @@
+# Based on documentation: http://elinux.org/RPiconfig
+
+# Set 256 MB for the GPU and remaining for ARM CPU
+gpu_mem=256
+
+# Enable camera module
+start_x=1
+
+# Force monitor to HDMI mode
+hdmi_drive=2
+
+# Chainload U-Boot -> grub-efi -> Linux
+kernel=u-boot.bin
+# Without uart u-boot will not boot
+enable_uart=1
+
+# Speed up the boot. Use turbo mode for first 45 seconds
+initial_turbo=45
+
+# Enable ARMv8
+arm_control=0x200
+
+# Disable warning overlay and allow turbo when low-voltage is present
+avoid_warnings=2
+
+# Enable hardware graphic acceleration
+dtoverlay=vc4-kms-v3d

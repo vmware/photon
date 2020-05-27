@@ -1,6 +1,6 @@
 diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
 --- cyrus-sasl-2.1.26/plugins/srp.c	2012-10-12 07:05:48.000000000 -0700
-+++ cyrus-sasl-2.1.26-new/plugins/srp.c	2017-10-10 16:35:43.846721591 -0700
++++ cyrus-sasl-2.1.26-new/plugins/srp.c	2017-11-21 17:01:53.628237347 -0800
 @@ -1,10 +1,9 @@
  /* SRP SASL plugin
   * Ken Murchison
@@ -913,7 +913,7 @@ diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
  
      BN_CTX_free(ctx);
      
-@@ -2495,30 +2556,30 @@ static int CalculateA(context_t *text  _
+@@ -2495,30 +2556,29 @@ static int CalculateA(context_t *text  _
  }
  	
  static int ClientCalculateK(context_t *text, char *salt, int saltlen,
@@ -948,7 +948,6 @@ diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
      if (r) goto err;
 -    BN_init(&u);
 -    BN_bin2bn(hash, hashlen, &u);
-+    u = BN_new();
 +    BN_bin2bn(hash, hashlen, u);
      
      /* per Tom Wu: make sure u != 0 */
@@ -957,7 +956,7 @@ diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
  	SETERROR(text->utils, "SRP: Illegal value for 'u'\n");
  	r = SASL_BADPROT;
  	goto err;
-@@ -2530,48 +2591,43 @@ static int ClientCalculateK(context_t *t
+@@ -2530,48 +2590,43 @@ static int ClientCalculateK(context_t *t
      if (r) return r;
      
      /* a + ux */
@@ -1025,7 +1024,7 @@ diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
      
      return r;
  }
-@@ -2709,7 +2765,7 @@ static int srp_client_mech_new(void *glo
+@@ -2709,7 +2764,7 @@ static int srp_client_mech_new(void *glo
      }
      
      memset(text, 0, sizeof(context_t));
@@ -1034,7 +1033,7 @@ diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
      text->state = 1;
      text->utils = params->utils;
  
-@@ -2866,7 +2922,7 @@ srp_client_mech_step2(context_t *text,
+@@ -2866,7 +2921,7 @@ srp_client_mech_step2(context_t *text,
      }
  
      /* Check N and g to see if they are one of the recommended pairs */
@@ -1043,7 +1042,7 @@ diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
      if (result) {
  	params->utils->log(NULL, SASL_LOG_ERR,
  			   "Values of 'N' and 'g' are not recommended\n");
-@@ -2874,7 +2930,7 @@ srp_client_mech_step2(context_t *text,
+@@ -2874,7 +2929,7 @@ srp_client_mech_step2(context_t *text,
      }
      
      /* Per [SRP]: reject B <= 0, B >= N */
@@ -1052,7 +1051,7 @@ diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
  	SETERROR(params->utils, "Illegal value for 'B'\n");
  	result = SASL_BADPROT;
  	goto cleanup;
-@@ -2913,7 +2969,7 @@ srp_client_mech_step2(context_t *text,
+@@ -2913,7 +2968,7 @@ srp_client_mech_step2(context_t *text,
      }
  
      /* Calculate A */
@@ -1061,7 +1060,7 @@ diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
      if (result) {
  	params->utils->seterror(params->utils->conn, 0, 
  				"Error calculating A");
-@@ -2924,7 +2980,7 @@ srp_client_mech_step2(context_t *text,
+@@ -2924,7 +2979,7 @@ srp_client_mech_step2(context_t *text,
      result = ClientCalculateK(text, text->salt, text->saltlen,
  			      (char *) oparams->authid, 
  			      text->password->data, text->password->len,
@@ -1070,7 +1069,7 @@ diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
  			      text->K, &text->Klen);
      if (result) {
  	params->utils->log(NULL, SASL_LOG_ERR,
-@@ -2933,8 +2989,8 @@ srp_client_mech_step2(context_t *text,
+@@ -2933,8 +2988,8 @@ srp_client_mech_step2(context_t *text,
      }
      
      /* Calculate M1 (client evidence) */
@@ -1081,7 +1080,7 @@ diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
  			 text->K, text->Klen, (char *) oparams->user,
  			 text->server_options, text->M1, &text->M1len);
      if (result) {
-@@ -2944,7 +3000,7 @@ srp_client_mech_step2(context_t *text,
+@@ -2944,7 +2999,7 @@ srp_client_mech_step2(context_t *text,
      }
  
      /* Create cIV (client initial vector) */
@@ -1090,7 +1089,7 @@ diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
      
      /* Send out:
       *
-@@ -2957,7 +3013,7 @@ srp_client_mech_step2(context_t *text,
+@@ -2957,7 +3012,7 @@ srp_client_mech_step2(context_t *text,
       */
      result = MakeBuffer(text->utils, &text->out_buf, &text->out_buf_len,
  			clientoutlen, "%m%o%s%o",
@@ -1099,7 +1098,7 @@ diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
  			sizeof(text->cIV), text->cIV);
      if (result) {
  	params->utils->log(NULL, SASL_LOG_ERR, "Error making output buffer\n");
-@@ -2985,13 +3041,13 @@ srp_client_mech_step3(context_t *text,
+@@ -2985,13 +3040,13 @@ srp_client_mech_step3(context_t *text,
  		      sasl_out_params_t *oparams)
  {
      int result;    
@@ -1118,7 +1117,7 @@ diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
      
      /* Expect:
       *
-@@ -3012,7 +3068,7 @@ srp_client_mech_step3(context_t *text,
+@@ -3012,7 +3067,7 @@ srp_client_mech_step3(context_t *text,
      }
  
      /* calculate our own M2 */
@@ -1127,7 +1126,7 @@ diff -rupN cyrus-sasl-2.1.26/plugins/srp.c cyrus-sasl-2.1.26-new/plugins/srp.c
  			 text->K, text->Klen, (char *) oparams->user,
  			 text->client_options, "", 0,
  			 myM2, &myM2len);
-@@ -3182,3 +3238,4 @@ int srp_client_plug_init(const sasl_util
+@@ -3182,3 +3237,4 @@ int srp_client_plug_init(const sasl_util
      
      return SASL_OK;
  }

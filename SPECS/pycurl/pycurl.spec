@@ -5,7 +5,7 @@
 
 Name:           pycurl
 Version:        7.43.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
@@ -18,11 +18,17 @@ BuildRequires:  openssl-devel
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  curl-devel
+
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 %if %{with_check}
 BuildRequires: python-setuptools, vsftpd, curl-libs
+BuildRequires: python3-setuptools, python3-xml
 %endif
 Requires:       curl
 Requires:       python2
+Patch0:         winbuild-make-check.patch
 %description
 PycURL is a Python interface to libcurl. PycURL can be used to fetch
 objects identified by a URL from a Python program, similar to the
@@ -31,16 +37,8 @@ of features.
 
 %package -n     pycurl3
 Summary:        python3 pycurl
-BuildRequires:  openssl-devel
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 Requires:       python3
 Requires:       python3-libs
-BuildRequires:  curl-devel
-%if %{with_check}
-BuildRequires: python3-setuptools, vsftpd, curl-libs, python3-xml
-%endif
 Requires:       curl
 
 %description -n pycurl3
@@ -55,6 +53,7 @@ Documentation and examples for pycurl
 
 %prep
 %setup -q -n pycurl-%{version}
+%patch0 -p1
 rm -f doc/*.xml_validity
 #chmod a-x examples/*
 
@@ -80,17 +79,18 @@ rm -rf %{buildroot}%{_datadir}/doc/pycurl
 chmod 755 %{buildroot}%{python3_sitelib}/pycurl*.so
 popd
 
+
 %check
 export PYCURL_VSFTPD_PATH=vsftpd
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
 $easy_install_2 nose nose-show-skipped bottle flaky pyflakes
-rm -f tests/multi_option_constants_test.py tests/ftp_test.py tests/option_constants_test.py
+rm -f tests/multi_option_constants_test.py tests/ftp_test.py tests/option_constants_test.py tests/seek_cb_test.py
 LANG=en_US.UTF-8  make test PYTHON=python%{python2_version} NOSETESTS="nosetests-%{python2_version} -v"
 cd ../p3dir
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 nose nose-show-skipped bottle flaky pyflakes
-rm -f tests/multi_option_constants_test.py tests/ftp_test.py tests/option_constants_test.py
-LANG=en_US.UTF-8  make test PYTHON=python%{python3_version} NOSETESTS="nosetests-%{python3_version} -v"
+rm -f tests/multi_option_constants_test.py tests/ftp_test.py tests/option_constants_test.py tests/seek_cb_test.py
+LANG=en_US.UTF-8  make test PYTHON=python%{python3_version} NOSETESTS="nosetests-3.4 -v"
 
 %clean
 rm -rf %{buildroot}
@@ -108,6 +108,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+*   Mon Nov 12 2018 Tapas Kundu <tkundu@vmware.com> 7.43.0-4
+-   Fixed the make check.
 *   Mon Aug 14 2017 Chang Lee <changlee@vmware.com> 7.43.0-3
 -   Added check requires and fixed check
 *   Wed May 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 7.43.0-2

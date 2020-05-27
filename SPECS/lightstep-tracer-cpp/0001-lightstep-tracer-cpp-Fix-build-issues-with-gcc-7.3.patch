@@ -1,0 +1,24 @@
+From 6baf14372d7126285bf8b661731b69c400d2106c Mon Sep 17 00:00:00 2001
+From: "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
+Date: Fri, 31 Aug 2018 10:20:31 -0700
+Subject: [PATCH] lightstep-tracer-cpp: Fix build issues with gcc 7.3
+
+In file included from lightstep/impl.h:11:0,
+                 from span.cc:1:
+./lightstep/options.h:42:8: error: 'function' in namespace 'std' does not name a template type
+   std::function<uint64_t()> guid_generator;
+        ^~~~~~~~
+
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+diff -Naurp lightstep-tracer-cpp-0.19-orig/src/c++11/lightstep/impl.h lightstep-tracer-cpp-0.19-modified/src/c++11/lightstep/impl.h
+--- lightstep-tracer-cpp-0.19-orig/src/c++11/lightstep/impl.h	2016-11-30 14:51:38.000000000 -0800
++++ lightstep-tracer-cpp-0.19-modified/src/c++11/lightstep/impl.h	2018-08-31 10:21:13.049573107 -0700
+@@ -6,6 +6,7 @@
+ #include <memory>
+ #include <mutex>
+ #include <random>
++#include <functional>
+ 
+ #include "lightstep/collector.pb.h"
+ #include "lightstep/options.h"

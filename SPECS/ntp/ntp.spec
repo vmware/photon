@@ -1,14 +1,14 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
-Version:        4.2.8p10
-Release:        4%{?dist}
+Version:        4.2.8p14
+Release:        1%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha1    ntp=503d68cfd3e6a9354e0e28dd38b39d850b1228b2
+%define sha1    ntp=c6f353278cd5b7c8aa11e1189d3ac80985370b8f
 
 #https://github.com/darkhelmet/ntpstat
 Source1: ntpstat-master.zip
@@ -24,10 +24,20 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires:       openssl
 Requires:       libcap >= 2.24
 %description
-The ntp package contains a client and server to keep the time 
-synchronized between various computers over a network. This 
-package is the official reference implementation of the 
+The ntp package contains a client and server to keep the time
+synchronized between various computers over a network. This
+package is the official reference implementation of the
 NTP protocol.
+
+%package        perl
+Summary:        Perl scripts for ntp
+Group:          Utilities
+Requires:       ntp = %{version}-%{release}, perl >= 5
+Requires:       perl-Net-SSLeay
+Requires:       perl-IO-Socket-SSL
+%description    perl
+Perl scripts for ntp.
+
 
 %package -n ntpstat
 Summary:    Utilities
@@ -40,7 +50,7 @@ state of the NTP daemon running on the local machine.
 %setup -q -a 1
 
 %build
-./configure \
+sh configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --disable-silent-rules \
@@ -60,6 +70,7 @@ install -v -m755    -d %{buildroot}%{_datadir}/doc/%{name}-%{version}
 cp -v -R html/*     %{buildroot}%{_datadir}/doc/%{name}-%{version}/
 install -vdm 755 %{buildroot}/etc
 
+mkdir -p %{buildroot}/var/lib/ntp/drift
 mkdir -p %{buildroot}/etc/sysconfig
 cp %{SOURCE2} %{buildroot}/etc/sysconfig/ntp
 pushd ntpstat-master
@@ -110,7 +121,7 @@ if ! getent passwd ntp >/dev/null; then
     useradd -c "Network Time Protocol" -d /var/lib/ntp -u 87 -g ntp -s /bin/false ntp
 fi
 %post
-%{_sbindir}/ldconfig 
+%{_sbindir}/ldconfig
 %systemd_post ntpd.service
 
 %preun
@@ -123,20 +134,41 @@ fi
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
+%dir /var/lib/ntp/drift
+%attr(0755, ntp, ntp) /var/lib/ntp/drift
 %attr(0750, root, root) %config(noreplace) /etc/ntp.conf
 %attr(0750, root, root) %config(noreplace) /etc/sysconfig/ntp
 /lib/systemd/system/ntpd.service
 %{_libdir}/systemd/system-preset/50-ntpd.preset
-%exclude %{_bindir}/ntpstat
-%exclude %{_mandir}/man8/ntpstat.8*
-%{_bindir}/*
+%{_bindir}/ntpd
+%{_bindir}/ntpdate
+%{_bindir}/ntpdc
+%{_bindir}/ntp-keygen
+%{_bindir}/ntpq
+%{_bindir}/ntptime
+%{_bindir}/sntp
+%{_bindir}/tickadj
 %{_datadir}/doc/%{name}-%{version}/*
 %{_datadir}/doc/ntp/*
 %{_datadir}/doc/sntp/*
 %{_datadir}/licenses/ntp/LICENSE
-%{_mandir}/man1/*
+%{_mandir}/man1/ntpd.1.gz
+%{_mandir}/man1/ntpdc.1.gz
+%{_mandir}/man1/ntp-keygen.1.gz
+%{_mandir}/man1/ntpq.1.gz
+%{_mandir}/man1/sntp.1.gz
 %{_mandir}/man5/*
+
+%files perl
+%{_bindir}/calc_tickadj
+%{_bindir}/ntptrace
+%{_bindir}/ntp-wait
+%{_bindir}/update-leap
 %{_datadir}/ntp/lib/NTP/Util.pm
+%{_mandir}/man1/calc_tickadj.1.gz
+%{_mandir}/man1/ntptrace.1.gz
+%{_mandir}/man1/ntp-wait.1.gz
+%{_mandir}/man1/update-leap.1.gz
 
 %files -n ntpstat
 %defattr(-,root,root)
@@ -144,6 +176,16 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Wed Apr 29 2020 Dweep Advani <dadvani@vmware.com> 4.2.8p14-1
+-   Upgrade to version 4.2.8p14, addresses CVE-2020-11868.
+*   Tue Jul 16 2019 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p13-1
+-   Upgrade to version 4.2.8p13
+*   Wed May 29 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.2.8p12-2
+-   PR#2355310  created drift directory owning ntp user
+*   Fri Aug 24 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p12-1
+-   Upgrade version to 4.2.8p12.
+*   Mon Mar 05 2018 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p11-1
+-   Upgrade version to 4.2.8p11 and move perl scripts to perl subpackage.
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.2.8p10-4
 -   Remove shadow from requires and use explicit tools for post actions
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  4.2.8p10-3

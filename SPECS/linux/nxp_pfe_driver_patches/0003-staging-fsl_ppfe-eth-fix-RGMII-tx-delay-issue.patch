@@ -1,0 +1,42 @@
+From 76f019fd039a2329ce85ece89ef7e9fa6b0d0f11 Mon Sep 17 00:00:00 2001
+From: Calvin Johnson <calvin.johnson@nxp.com>
+Date: Wed, 11 Oct 2017 19:23:38 +0530
+Subject: [PATCH 03/22] staging: fsl_ppfe/eth: fix RGMII tx delay issue
+
+Recently logic to enable RGMII tx delay was changed by
+below patch.
+
+https://patchwork.kernel.org/patch/9447581/
+
+Based on the patch, appropriate change is made in PFE driver.
+
+Signed-off-by: Calvin Johnson <calvin.johnson@nxp.com>
+Signed-off-by: Anjaneyulu Jagarlmudi <anji.jagarlmudi@nxp.com>
+
+[ Srinidhi Rao : Ported this patch to photon linux from
+  qoriq-components linux 'linux-4.14-nxp'
+  (https://source.codeaurora.org/external/qoriq/qoriq-components/linux)
+]
+
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+---
+ drivers/staging/fsl_ppfe/pfe_eth.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/staging/fsl_ppfe/pfe_eth.c b/drivers/staging/fsl_ppfe/pfe_eth.c
+index 5aa718be42c2..a0171f3e7537 100644
+--- a/drivers/staging/fsl_ppfe/pfe_eth.c
++++ b/drivers/staging/fsl_ppfe/pfe_eth.c
+@@ -1068,7 +1068,8 @@ static void pfe_eth_adjust_link(struct net_device *ndev)
+ 			new_state = 1;
+ 			gemac_set_speed(priv->EMAC_baseaddr,
+ 					pfe_get_phydev_speed(phydev));
+-			if (priv->einfo->mii_config == PHY_INTERFACE_MODE_RGMII)
++			if (priv->einfo->mii_config ==
++					PHY_INTERFACE_MODE_RGMII_TXID)
+ 				pfe_set_rgmii_speed(phydev);
+ 			priv->oldspeed = phydev->speed;
+ 		}
+-- 
+2.14.2
+

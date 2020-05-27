@@ -1,11 +1,12 @@
 Summary:	Crypto Libraries
 Name:		libgcrypt
-Version:	1.8.1
+Version:	1.8.5
 Release:	1%{?dist}
 License:        GPLv2+ and LGPLv2+
 URL:            http://www.gnu.org/software/libgcrypt/
 Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
-%define sha1 libgcrypt=dd35f00da45602afe81e01f4d60c40bbdd826fe6
+%define sha1 libgcrypt=2d8781e92f88706707a1e76fb628b499ad538a30
+Patch0:     libgcrypt-00-ac_cv_sys_symbol_underscore.patch
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 BuildRequires:	libgpg-error-devel
@@ -25,33 +26,52 @@ developing applications that use libgcrypt.
 
 %prep
 %setup -q
+
+%patch0 -p1
+
 %build
-./configure \
-	--prefix=%{_prefix}
+if [ %{_host} != %{_build} ] ; then
+%configure \
+    --with-sysroot=/target-%{_arch} \
+    ac_cv_sys_symbol_underscore=no
+else
+%configure
+fi
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
-rm %{buildroot}%{_infodir}/*
+rm -rf %{buildroot}%{_infodir}
 
 %check
 make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so.*
 %{_mandir}/man1/*
-%{_libdir}/*.la
-/usr/share/aclocal/libgcrypt.m4
+
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*.h
+%{_datadir}/aclocal/*
+%{_libdir}/*.la
 %{_libdir}/*.so
+%{_libdir}/pkgconfig/libgcrypt.pc
+
 %changelog
+*   Thu Oct 17 2019 Ankit Jain <ankitja@vmware.com> 1.8.5-1
+-   Updated to version 1.8.5
+*   Tue Nov 06 2018 Sriram Nambakam <snambakam@vmware.com> 1.8.3-2
+-   Cross compilation support
+*   Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 1.8.3-1
+-   Update to 1.8.3
 *   Tue Oct 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-1
--   Udpated to v1.8.1 to address CVE-2017-0379
+-   Updated to v1.8.1 to address CVE-2017-0379
 *   Tue Apr 04 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.6-1
 -   Udpated to version 1.7.6
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.6.5-3

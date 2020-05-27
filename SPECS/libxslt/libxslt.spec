@@ -1,16 +1,19 @@
 Summary:        Libxslt-1.1.29
 Name:           libxslt
-Version:        1.1.29
-Release:        4%{?dist}
+Version:        1.1.32
+Release:        6%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
-%define sha1    libxslt=edcaeabb3555ae44853bdc406ee9521fb65c620d
-Patch0:         libxslt-CVE-2017-5029.patch
-Patch1:         libxslt-CVE-2015-9019.patch
+%define sha1    libxslt=c47969f16747a72f9095b6a7a56d3afdd1e6e9ac
+Patch0:         libxslt-CVE-2019-11068.patch
+Patch1:         libxslt-CVE-2019-13117.patch
+Patch2:         libxslt-CVE-2019-13118.patch
+Patch3:         CVE-2019-18197.patch
+Patch4:         libxslt-CVE-2019-5815.patch
 Requires:       libxml2-devel
 BuildRequires:  libxml2-devel
 %description
@@ -27,8 +30,12 @@ Header files for doing development with libxslt.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+
 %build
-./configure \
+sh configure \
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --libdir=%{_libdir} \
@@ -66,6 +73,18 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Dec 17 2019 Shreyas B. <shreyasb@vmware.com> 1.1.32-6
+-   Apply patch for CVE-2019-5815: READ heap-buffer-overflow in libxslt.
+*   Tue Oct 29 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.1.32-5
+-   Apply patch for CVE-2019-18197
+*   Mon Jul 22 2019 Shreyas B. <shreyasb@vmware.com> 1.1.32-4
+-   Apply patch for CVE-2019-13118
+*   Thu Jul 18 2019 Shreyas Behera <shreyasb@vmware.com> 1.1.32-3
+-   Apply patch for CVE-2019-13117
+*   Fri Apr 12 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.1.32-2
+-   Applied patch for CVE-2019-11068
+*   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.1.32-1
+-   Update to version 1.1.32.
 *   Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 1.1.29-4
 -   Applied patches for CVE-2015-9019 and CVE-2017-5029.
 *   Tue May 23 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1.29-3

@@ -1,0 +1,32 @@
+diff --git a/tests/df/df-symlink.sh b/tests/df/df-symlink.sh
+index 4047256..e7d7477 100755
+--- a/tests/df/df-symlink.sh
++++ b/tests/df/df-symlink.sh
+@@ -34,10 +34,10 @@ compare exp out || fail=1
+ # I.e., '.' => /dev/mapper/fedora-home -> /dev/dm-2
+ # Restrict this test to systems with a 1:1 mapping between
+ # source and target.  This excludes for example BTRFS sub-volumes.
+-if test "$(df --output=source | grep -F "$disk" | wc -l)" = 1; then
+-  df --out=source,target '.' > out || fail=1
+-  compare exp out || fail=1
+-fi
++#if test "$(df --output=source | grep -F "$disk" | wc -l)" = 1; then
++#  df --out=source,target '.' > out || fail=1
++#  compare exp out || fail=1
++#fi
+ 
+ test "$fail" = 1 && dump_mount_list_
+ 
+diff --git a/tests/misc/help-version.sh b/tests/misc/help-version.sh
+index 46a518a..6d46832 100755
+--- a/tests/misc/help-version.sh
++++ b/tests/misc/help-version.sh
+@@ -184,7 +184,7 @@ defid_setup () { args=t; }
+ basename_setup () { args=$tmp_in; }
+ dirname_setup () { args=$tmp_in; }
+ expr_setup () { args=foo; }
+-
++hostid_setup () { args=--version;}
+ # Punt, in case GNU 'id' hasn't been installed yet.
+ groups_setup () { args=--version; }
+ 

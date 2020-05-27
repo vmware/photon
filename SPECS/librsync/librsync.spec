@@ -1,7 +1,7 @@
 Summary:        Rsync libraries
 Name:           librsync
-Version:        2.0.0
-Release:        2%{?dist}
+Version:        2.0.2
+Release:        1%{?dist}
 URL:            http://librsync.sourcefrog.net/
 License:        LGPLv2+
 Group:          System Environment/Libraries
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 #https://github.com/librsync/librsync/archive/v2.0.0.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    librsync=c24a623bba5f9eae48bd3b6cb99ee43d2a40b8c6
+%define sha1    librsync=f8e74edf82520e682e6c213f0de644874829da9a
 
 BuildRequires:  cmake
 
@@ -51,12 +51,12 @@ based on librsync.
 %build
 mkdir -p build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr   \
-      -DCMAKE_BUILD_TYPE=Release    \
-      -Wno-dev ..
+%{cmake} -DCMAKE_SKIP_RPATH:BOOL=YES \
+         -DCMAKE_SKIP_INSTALL_RPATH:BOOL=YES \
+         -DENABLE_STATIC:BOOL=NO ..
+make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 cd build
 make DESTDIR=%{buildroot} install
 
@@ -71,15 +71,18 @@ make test
 %defattr(-,root,root)
 %doc AUTHORS COPYING
 %{_bindir}/rdiff
-%{_libdir}/librsync.so.*
+%{_libdir}/*.so.*
+%{_mandir}/man1/*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/librsync.so
-
+%{_mandir}/man3/*
+%{_libdir}/*.so
 
 %changelog
+*   Sun Sep 30 2018 Bo Gan <ganb@vmware.com> 2.0.2-1
+-   Update to 2.0.2
 *   Wed Jun 28 2017 Chang Lee <changlee@vmware.com>  2.0.0-2
 -   Updated %check
 *   Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.0-1

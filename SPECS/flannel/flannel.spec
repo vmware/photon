@@ -1,11 +1,11 @@
 Summary:        Overlay network for containers based on etcd
 Name:           flannel
-Version:        0.8.0
-Release:        2%{?dist}
+Version:        0.11.0
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/coreos/flannel
-Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.tar.gz
-%define sha1 flannel=d8eb057233de1babd306297d4fc3af098ccbea16
+Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.zip
+%define sha1 flannel=4f885d6a3aa630e6d0213be4f9fa472e870dadda
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -93,6 +93,18 @@ GOPATH=%{_builddir} make test
 %config(noreplace) %{_sysconfdir}/flannel/flanneld.conf
 
 %changelog
+*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 0.11.0-4
+-   Bump up version to compile with go 1.13.3-2
+*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 0.11.0-3
+-   Bump up version to compile with go 1.13.3
+*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 0.11.0-2
+-   Bump up version to compile with new go
+*   Sat Mar 16 2019 Ashwin H <ashwinh@vmware.com> 0.11.0-1
+-   Update Flannel to 0.11.0.
+*   Tue Dec 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.1-1
+-   Flannel 0.9.1.
+*   Tue Nov 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.0-1
+-   Flannel 0.9.0.
 *   Fri Sep 01 2017 Chang Lee <changlee@vmware.com> 0.8.0-2
 -   Fixed %check according to version upgrade
 *   Tue Aug 08 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.8.0-1

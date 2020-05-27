@@ -1,6 +1,6 @@
 Summary:        Utilities for managing the XFS filesystem
 Name:           xfsprogs
-Version:        4.10.0
+Version:        4.18.0
 Release:        2%{?dist}
 License:        GPL+ and LGPLv2+
 URL:            http://oss.sgi.com/projects/xfs/
@@ -8,7 +8,7 @@ Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://kernel.org/pub/linux/utils/fs/xfs/xfsprogs/%{name}-%{version}.tar.xz
-%define sha1    xfsprogs=cd6750ea88133092815aad37fad993c17a80f9c3
+%define sha1    xfsprogs=29c6388a1f58e1e9c7a8624d72b8cac8def04ac5
 BuildRequires:  gettext
 BuildRequires:  readline-devel
 
@@ -35,10 +35,13 @@ These are the additional language files of xfsprogs.
 %setup -q
 
 %build
+%configure \
+        --enable-readline=yes	\
+	--enable-blkid=yes
+
 make DEBUG=-DNDEBUG     \
      INSTALL_USER=root  \
-     INSTALL_GROUP=root \
-     LOCAL_CONFIGURE_OPTIONS="--enable-readline"
+     INSTALL_GROUP=root  %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} PKG_DOC_DIR=%{_usr}/share/doc/%{name}-%{version} install
@@ -50,9 +53,6 @@ find %{buildroot}/%{_lib64dir} -name '*.a' -delete
 
 %find_lang %{name}
 
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-
 %clean
 rm -rf %{buildroot}/*
 
@@ -62,9 +62,11 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%doc doc/CHANGES doc/COPYING doc/CREDITS README
+%doc %{_docdir}/%{name}-%{version}/*
 /sbin/*
 /lib64/*.so.*.*
+/usr/lib64/*/*.cron
+%{_mandir}/man2/*
 %{_mandir}/man8/*
 %{_mandir}/man5/*
 %{_sbindir}/*
@@ -82,6 +84,12 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Tue Oct 22 2019 Prashant S Chauhan <psinghchauha@vmware.com> 4.18.0-2
+-   Removed %check since this package does not come with test suite
+*   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 4.18.0-1
+-   Updated to latest version
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 4.10.0-3
+-   Use standard configure macros
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.10.0-2
 -   Ensure non empty debuginfo
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 4.10.0-1

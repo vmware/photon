@@ -6,39 +6,44 @@
 %define _mech_id 1.3.6.1.4.1.6876.11711.2.1.2
 %define _python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
 
-Summary:	Photon Management Daemon
-Name:		pmd
-Version:	0.0.5
-Release:	2%{?dist}
-Vendor:		VMware, Inc.
-Distribution:	Photon
-License:	Apache 2.0
+Summary:        Photon Management Daemon
+Name:           pmd
+Version:        0.0.6
+Release:        2%{?dist}
+Vendor:         VMware, Inc.
+Distribution:   Photon
+License:        Apache 2.0
 URL:            https://www.github.com/vmware/pmd
-Group:		Applications/System
+Group:          Applications/System
 Requires:       copenapi
-Requires:	c-rest-engine
+Requires:       c-rest-engine >= 1.1
 Requires:       jansson
-Requires:	likewise-open >= 6.2.9
+Requires:       likewise-open >= 6.2.9
 Requires:       netmgmt
-Requires:	systemd
-Requires:	tdnf >= 1.2.0
+Requires:       systemd
+Requires:       tdnf >= 2.1.0
 Requires:       lightwave-client-libs
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       shadow
 BuildRequires:  copenapi-devel
-BuildRequires:	c-rest-engine-devel
-BuildRequires:	curl-devel
-BuildRequires:	hawkey-devel >= 2017.1
+BuildRequires:  c-rest-engine-devel >= 1.1
+BuildRequires:  curl-devel
+BuildRequires:  expat-devel
+BuildRequires:  libsolv-devel
 BuildRequires:  jansson-devel
-BuildRequires:	krb5-devel
-BuildRequires:	likewise-open-devel >= 6.2.9
-BuildRequires:	netmgmt-cli-devel
-BuildRequires:	netmgmt-devel
-BuildRequires:	tdnf-devel >= 1.2.0
+BuildRequires:  krb5-devel
+BuildRequires:  likewise-open-devel >= 6.2.9
+BuildRequires:  netmgmt-cli-devel
+BuildRequires:  netmgmt-devel
+BuildRequires:  tdnf-devel >= 2.1.0
 BuildRequires:  lightwave-devel
-Source0:	%{name}-%{version}.tar.gz
-%define sha1 pmd=b49e8ab237da29010ebcd2728a3b767a9e0a633e
-Patch0:         pmd-local-rpc-and-coverity-scan.patch
+BuildRequires: python2-devel >= 2.7
+BuildRequires: python3-devel >= 3.5
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    pmd=a8a3a920647a80e08094d23437330fb498770700
+Patch0:         pmd-rename-DNS_MODE_INVALID-with-DNS_MODE_UNKNOWN.patch
+Patch1:         pmd-fw-bugfix.patch
+Patch2:         pmd-tdnf-updateinfosummary.patch
 
 %description
 Photon Management Daemon
@@ -71,7 +76,6 @@ Summary: Python2 bindings for photon management daemon
 Group: Development/Libraries
 Requires: python2 >= 2.7
 Requires: %{name}-cli = %{version}-%{release}
-BuildRequires: python2-devel >= 2.7
 
 %description python2
 Python2 bindings for photon management daemon
@@ -81,7 +85,6 @@ Summary: Python3 bindings for photon management daemon
 Group: Development/Libraries
 Requires: python3 >= 3.5
 Requires: %{name}-cli = %{version}-%{release}
-BuildRequires: python3-devel >= 3.5
 
 %description python3
 Python3 bindings for photon management daemon
@@ -89,16 +92,14 @@ Python3 bindings for photon management daemon
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
-sed -i 's/pmd, 0.0.1/pmd, 0.0.5/' configure.ac
+sed -i 's/pmd, 0.0.1/pmd, 0.0.6/' configure.ac
 sed -i 's,-lcrypto,-lcrypto -lgssapi_krb5 @top_builddir@/client/libpmdclient.la,' server/Makefile.am
 autoreconf -mif
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=/etc \
+%configure \
     --with-likewise=/opt/likewise \
     --enable-python=no \
     --disable-static
@@ -120,7 +121,9 @@ rm -f %{buildroot}%{python_sitearch}/pmd.so
 python3 setup.py install --skip-build --root %{buildroot}
 popd
 
-install -d $RPM_BUILD_ROOT/var/log/pmd
+install -d $RPM_BUILD_ROOT/var/log
+install -d $RPM_BUILD_ROOT/var/opt/pmd/log
+ln -sfv /var/opt/pmd/log $RPM_BUILD_ROOT/var/log/pmd
 install -vdm755 %{buildroot}%{_unitdir}
 install -D -m 444 pmd.service %{buildroot}%{_unitdir}
 install -D -m 444 pmdprivsepd.service %{buildroot}%{_unitdir}
@@ -129,6 +132,8 @@ install -D -m 444 conf/api_sddl.conf %{buildroot}/etc/pmd/api_sddl.conf
 install -D -m 444 conf/restconfig.txt %{buildroot}/etc/pmd/restconfig.txt
 install -d -m 0755 %{buildroot}/usr/lib/tmpfiles.d/
 install -m 0644 conf/pmd-tmpfiles.conf %{buildroot}/usr/lib/tmpfiles.d/%{name}.conf
+install -d -m 0755 %{buildroot}/etc/pmd.roles.d/
+install -d -m 0755 %{buildroot}/etc/pmd.roles.plugins.d/
 
 # Pre-install
 %pre
@@ -285,8 +290,11 @@ rm -rf %{buildroot}/*
     /etc/pmd/api_sddl.conf
     /etc/pmd/restapispec.json
     /etc/pmd/restconfig.txt
-    %attr(0766, %{name}, %{name}) %dir /var/log/%{name}
+    %attr(0766, %{name}, %{name}) %dir /var/opt/%{name}/log
+    %attr(0766, %{name}, %{name}) /var/log/%{name}
     %_tmpfilesdir/%{name}.conf
+    %dir /etc/pmd.roles.plugins.d/
+    %dir /etc/pmd.roles.d/
 
 %files libs
     %{_libdir}/libpmdclient.so*
@@ -307,18 +315,37 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
-*       Sat Sep 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-2
--       Apply patch for local rpc connection separation
--       patch for couple of minor coverity scan fixes.
-*       Thu Sep 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-1
--       Update to version 0.0.5
-*       Sat Sep 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.4-1
--       Add privilege separation
-*       Tue Aug 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.3-1
--       Fix REST param handling, CLI locale.
-*       Thu Jun 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.2-1
--       Fix python3 string issues.
-*       Tue May 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-2
--       Changes for lightwave dependencies
-*       Thu May 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-1
--       Initial build.  First version
+*   Tue Feb 25 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.6-2
+-   apply patch for tdnf-2.1.0
+*   Mon Sep 30 2019 Tapas Kundu <tkundu@vmware.com> 0.0.6-1
+-   Updated to release 0.0.6
+-   Included role mgmt changes.
+*   Wed Jan 23 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-9
+-   Fix a bug in firewall management persist commands
+*   Tue Dec 18 2018 Tapas Kundu <tkundu@vmware.com> 0.0.5-8
+-   Fix for if_iaid and duid.
+*   Tue Dec 11 2018 Michelle Wang <michellew@vmware.com> 0.0.5-7
+-   DNS_MODE_INVALID is renamed with DNS_MODE_UNKNOWN in netmgmt 1.2.0.
+*   Thu Mar 01 2018 Xiaolin Li <xiaolinl@vmware.com> 0.0.5-6
+-   Build with tdnf 2.0.0.
+*   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  0.0.5-5
+-   Fixed the log file directory structure
+*   Thu Nov 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-4
+-   update to use c-rest-engine-1.11
+*   Tue Oct 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-3
+-   Bug fixes and net commands fixes
+*   Sat Sep 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-2
+-   Apply patch for local rpc connection separation
+-   patch for couple of minor coverity scan fixes.
+*   Thu Sep 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-1
+-   Update to version 0.0.5
+*   Sat Sep 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.4-1
+-   Add privilege separation
+*   Tue Aug 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.3-1
+-   Fix REST param handling, CLI locale.
+*   Thu Jun 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.2-1
+-   Fix python3 string issues.
+*   Tue May 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-2
+-   Changes for lightwave dependencies
+*   Thu May 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-1
+-   Initial build.  First version

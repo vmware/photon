@@ -1,58 +1,91 @@
 %global security_hardening none
+%global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.53
-Release:        3%{?dist}
+Version:        4.19.115
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b3e6e5608b6684d103fea702cd08b498162a4c96
+%define sha1 linux=bdcf13e181be2e9b8a1cc7bac26f9fc1dc0c67dd
 Source1:        config-secure
-Source2:        aufs4.9.tar.gz
-%define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
-Source3:        initramfs.trigger
+Source2:        initramfs.trigger
+Source3:        update_photon_cfg.postun
+Source4:        check_for_config_applicability.inc
+# Photon-checksum-generator kernel module
+Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
+%define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
+Source6:        genhmac.inc
 # common
-Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
-Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
-Patch2:         x86-vmware-add-basic-paravirt-ops-support.patch
-Patch3:         x86-vmware-add-paravirt-sched-clock.patch
-Patch4:         x86-vmware-log-kmsg-dump-on-panic.patch
-Patch5:         double-tcp_mem-limits.patch
-Patch6:         linux-4.9-sysctl-sched_weighted_cpuload_uses_rla.patch
-Patch7:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch9:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch11:        net-9p-vsock.patch
-Patch12:        x86-vmware-sta.patch
+Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
+Patch1:         double-tcp_mem-limits.patch
+# TODO: disable this patch, check for regressions
+#Patch2:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch5:         vsock-transport-for-9p.patch
+Patch6:         4.18-x86-vmware-STA-support.patch
+Patch7:	        9p-trans_fd-extend-port-variable-to-u32.patch
+Patch8:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 # secure
+Patch12:        0001-bpf-ext4-bonding-Fix-compilation-errors.patch
 Patch13:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
-Patch14:        0002-Added-rap_plugin.patch
-Patch15:        0003-Added-PAX_RANDKSTACK.patch
+Patch14:        0002-Added-PAX_RANDKSTACK.patch
+Patch15:        0003-Added-rap_plugin.patch
 # HyperV Patches
 Patch16:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
-Patch17:        0005-Drivers-hv-utils-Fix-the-mapping-between-host-versio.patch
-Patch18:        0006-Drivers-hv-vss-Improve-log-messages.patch
-Patch19:        0007-Drivers-hv-vss-Operation-timeouts-should-match-host-.patch
-Patch20:        0008-Drivers-hv-vmbus-Use-all-supported-IC-versions-to-ne.patch
-Patch21:        0009-Drivers-hv-Log-the-negotiated-IC-versions.patch
-Patch22:        0010-vmbus-fix-missed-ring-events-on-boot.patch
-Patch23:        0011-vmbus-remove-goto-error_clean_msglist-in-vmbus_open.patch
-Patch24:        0012-vmbus-dynamically-enqueue-dequeue-the-channel-on-vmb.patch
-Patch25:        0013-vmbus-fix-the-missed-signaling-in-hv_signal_on_read.patch
-Patch26:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
-#FIPS patches - allow some algorithms
-Patch27:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
-Patch28:        0002-allow-also-ecb-cipher_null.patch
-Patch29:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2017-11472
-Patch30:        ACPICA-Namespace-fix-operand-cache-leak.patch
+# Fix CVE-2019-19072
+Patch19:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
+# Fix CVE-2019-19073
+Patch20:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
+# Fix CVE-2019-19074
+Patch21:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
+
+Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Fix CVE-2019-18814
+Patch27:        apparmor-Fix-use-after-free-in-aa_audit_rule_init.patch
 # Fix CVE-2017-1000252
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
+# Out-of-tree patches from AppArmor:
+Patch32:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch33:        4.17-0002-apparmor-af_unix-mediation.patch
+Patch34:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+# RDRAND-based RNG driver to enhance the kernel's entropy pool:
+Patch35:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+# Fix for CVE-2019-12456
+Patch36:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
+# Fix for CVE-2019-12379
+Patch37:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+# Fix for CVE-2019-12380
+Patch38:        0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
+# Fix for CVE-2019-12381
+Patch39:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
+# Fix for CVE-2019-12378
+Patch41:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
+# Fix for CVE-2019-12455
+Patch42:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
+# Fix for CVE-2020-10711
+Patch43:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
+# Fix CVE-2019-18885
+Patch44:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
+Patch45:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
+
+# Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
+Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
+# Patch to call drbg and dh crypto tests from tcrypt
+Patch100:       0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+# Patch to perform continuous testing on RNG from Noise Source
+Patch101:       0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
+
+%if 0%{?kat_build:1}
+Patch1000:      fips-kat-tests.patch
+%endif
+BuildArch:      x86_64
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
@@ -66,10 +99,18 @@ BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 Requires:       filesystem kmod
 Requires(post):(coreutils or toybox)
+Requires(postun):(coreutils or toybox)
 %define uname_r %{version}-%{release}-secure
 
 %description
 Security hardened Linux kernel.
+
+%package lkcm
+Summary:       LKCM module
+Group:         System Environment/Kernel
+Requires:      %{name} = %{version}-%{release}
+%description lkcm
+The Linux package contains the LKCM driver module
 
 %package devel
 Summary:       Kernel Dev
@@ -87,72 +128,61 @@ Requires:      %{name} = %{version}-%{release}
 %description docs
 The Linux package contains the Linux kernel doc files
 
+%package hmacgen
+Summary:	HMAC SHA256/HMAC SHA512 generator
+Group:		System Environment/Kernel
+Requires:      %{name} = %{version}-%{release}
+Enhances:       %{name}
+%description hmacgen
+This Linux package contains hmac sha generator kernel module.
+
 %prep
 %setup -q -n linux-%{version}
-%setup -D -b 2 -n linux-%{version}
-
-# apply aufs patch
-patch -p1 < ../aufs4-standalone-aufs4.9/aufs4-kbuild.patch
-patch -p1 < ../aufs4-standalone-aufs4.9/aufs4-base.patch
-patch -p1 < ../aufs4-standalone-aufs4.9/aufs4-mmap.patch
-patch -p1 < ../aufs4-standalone-aufs4.9/aufs4-standalone.patch
-cp -a ../aufs4-standalone-aufs4.9/Documentation/ .
-cp -a ../aufs4-standalone-aufs4.9/fs/ .
-cp ../aufs4-standalone-aufs4.9/include/uapi/linux/aufs_type.h include/uapi/linux/
-
-cat >> %{SOURCE1} << "EOF"
-CONFIG_AUFS_FS=m
-CONFIG_AUFS_BRANCH_MAX_127=y
-# CONFIG_AUFS_BRANCH_MAX_511 is not set
-# CONFIG_AUFS_BRANCH_MAX_1023 is not set
-# CONFIG_AUFS_BRANCH_MAX_32767 is not set
-CONFIG_AUFS_SBILIST=y
-# CONFIG_AUFS_HNOTIFY is not set
-# CONFIG_AUFS_EXPORT is not set
-# CONFIG_AUFS_XATTR is not set
-# CONFIG_AUFS_FHSM is not set
-# CONFIG_AUFS_RDU is not set
-# CONFIG_AUFS_SHWH is not set
-# CONFIG_AUFS_BR_RAMFS is not set
-# CONFIG_AUFS_BR_FUSE is not set
-CONFIG_AUFS_BDEV_LOOP=y
-# CONFIG_AUFS_DEBUG is not set
-EOF
+%setup -D -b 5 -n linux-%{version}
 
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
+%patch8 -p1
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
-%patch17 -p1
 %patch19 -p1
 %patch20 -p1
 %patch21 -p1
-%patch22 -p1
-%patch23 -p1
-%patch24 -p1
-%patch25 -p1
 %patch26 -p1
 %patch27 -p1
-%patch28 -p1
-%patch29 -p1
-%patch30 -p1
 %patch31 -p1
+%patch32 -p1
+%patch33 -p1
+%patch34 -p1
+%patch35 -p1
+%patch36 -p1
+%patch37 -p1
+%patch38 -p1
+%patch39 -p1
+%patch41 -p1
+%patch42 -p1
+%patch43 -p1
+%patch44 -p1
+%patch45 -p1
 
+%patch98 -p1
 pushd ..
 %patch99 -p0
 popd
+%patch100 -p1
+%patch101 -p1
+
+%if 0%{?kat_build:1}
+%patch1000 -p1
+%endif
 
 %build
 # patch vmw_balloon driver
@@ -161,11 +191,21 @@ sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
 make mrproper
 cp %{SOURCE1} .config
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
-make LC_ALL= oldconfig
+
+%include %{SOURCE4}
+
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 # build LKCM module
 bldroot=`pwd`
 pushd ../LKCM
+sed -i '/#include <asm\/uaccess.h>/d' drv_fips_test.c
+sed -i '/#include <asm\/uaccess.h>/d' fips_test.c
+make -C $bldroot M=`pwd` modules
+popd
+
+#build photon-checksum-generator module
+bldroot=`pwd`
+pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
 make -C $bldroot M=`pwd` modules
 popd
 
@@ -177,6 +217,8 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
 done \
 %{nil}
 
+%include %{SOURCE6}
+
 # __os_install_post strips signature from modules. We need to resign it again
 # and then compress. Extra step is added to the default __spec_install_post.
 %define __spec_install_post\
@@ -184,13 +226,13 @@ done \
     %{__arch_install_post}\
     %{__os_install_post}\
     %{__modules_install_post}\
+    %{__modules_gen_hmac}\
 %{nil}
 
 %install
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
-install -vdm 755 %{buildroot}/etc/modprobe.d
 install -vdm 755 %{buildroot}/usr/src/linux-headers-%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
 # install LKCM module
@@ -198,6 +240,13 @@ bldroot=`pwd`
 pushd ../LKCM
 make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
+
+#install photon-checksum-generator module
+bldroot=`pwd`
+pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
+make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
+
 cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{uname_r}
 cp -v System.map        %{buildroot}/boot/System.map-%{uname_r}
 cp -v .config            %{buildroot}/boot/config-%{uname_r}
@@ -209,7 +258,7 @@ cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_
 # because .ko files will be loaded from the memory (LoadPin: obj=<unknown>)
 cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta loadpin.enabled=0 slub_debug=P page_poison=1
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta loadpin.enabled=0 audit=1 slub_debug=P page_poison=1 slab_nomerge pti=on
 photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
@@ -217,7 +266,7 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn"
+--add-drivers "tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn lvm dm-mod"
 EOF
 
 # cleanup dangling symlinks
@@ -236,23 +285,42 @@ cp .config %{buildroot}/usr/src/linux-headers-%{uname_r}
 ln -sf /usr/src/linux-headers-%{uname_r} %{buildroot}/lib/modules/%{uname_r}/build
 
 
+%include %{SOURCE2}
 %include %{SOURCE3}
 
 %post
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
+
+%post lkcm
+/sbin/depmod -a %{uname_r}
+
+%post hmacgen
+/sbin/depmod -a %{uname_r}
 
 %files
 %defattr(-,root,root)
 /boot/System.map-%{uname_r}
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
+/boot/.vmlinuz-%{uname_r}.hmac
 %config(noreplace) /boot/linux-%{uname_r}.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
-/lib/firmware/*
 /lib/modules/*
 %exclude /lib/modules/%{uname_r}/build
 %exclude /usr/src
+%exclude /lib/modules/%{uname_r}/extra/fips_lkcm.ko.xz
+%exclude /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
+%exclude /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
+
+%files lkcm
+%defattr(-,root,root)
+/lib/modules/%{uname_r}/extra/fips_lkcm.ko.xz
+
+%files hmacgen
+%defattr(-,root,root)
+/lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
+/lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %files docs
 %defattr(-,root,root)
@@ -264,6 +332,142 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri May 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-4
+-   Fix for CVE-2019-18885
+*   Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.115-3
+-   Add patch to fix CVE-2020-10711
+*   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.115-2
+-   Photon-checksum-generator version update to 1.1.
+*   Mon Apr 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-1
+-   Update to version 4.19.115
+*   Wed Apr 08 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-2
+-   HMAC-SHA256 digest of hmac_generator module moved to hmacgen package
+*   Mon Mar 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.112-1
+-   Update to version 4.19.112
+*   Tue Mar 17 2020 Vikash Bansal <bvikas@vmware.com> 4.19.104-3
+-   hmac generation of crypto modules and initrd generation changes if fips=1
+*   Mon Mar 16 2020 Keerthana K <keerthanak@vmware.com> 4.19.104-2
+-   Adding Enhances depedency to hmacgen.
+*   Mon Mar 09 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.104-1
+-   Update to version 4.19.104
+*   Wed Mar 04 2020 Vikash Bansal <bvikas@vmware.com> 4.19.97-5
+-   Backporting of patch continuous testing of RNG from urandom
+*   Tue Feb 25 2020 Ajay Kaher <akaher@vmware.com> 4.19.97-4
+-   Fix CVE-2019-16234
+*   Tue Feb 11 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-3
+-   Add photon-checksum-generator source tarball and remove hmacgen patch.
+-   Exclude hmacgen.ko from base package.
+*   Wed Jan 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.97-2
+-   Update tcrypt to test drbg_pr_sha256 and drbg_nopr_sha256.
+-   Update testmgr to add drbg_pr_ctr_aes256 test vectors.
+*   Fri Jan 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.97-1
+-   Update to version 4.19.97
+*   Tue Jan 14 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.87-4
+-   Enable DRBG HASH and DRBG CTR support.
+*   Thu Jan 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.87-3
+-   Modify tcrypt to remove tests for algorithms that are not supported in photon.
+-   Added tests for DH, DRBG algorithms.
+*   Fri Dec 20 2019 Keerthana K <keerthanak@vmware.com> 4.19.87-2
+-   Update fips Kat tests.
+*   Fri Dec 06 2019 Ajay Kaher <akaher@vmware.com> 4.19.87-1
+-   Update to version 4.19.87
+*   Tue Dec 03 2019 Keerthana K <keerthanak@vmware.com> 4.19.84-3
+-   Adding hmac sha256/sha512 generator kernel module for fips.
+*   Tue Nov 26 2019 Ajay Kaher <akaher@vmware.com> 4.19.84-2
+-   Fix CVE-2019-19062, CVE-2019-19066, CVE-2019-19072,
+-   CVE-2019-19073, CVE-2019-19074, CVE-2019-19078
+*   Tue Nov 12 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.84-1
+-   Update to version 4.19.84
+-   Fix CVE-2019-18814
+*   Fri Nov 08 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.82-1
+-   Update to version 4.19.82
+*   Thu Nov 07 2019 Jorgen Hansen (VMware) <jhansen@vmware.com> 4.19.79-2
+-   Fix vsock QP detach with outgoing data
+*   Thu Oct 17 2019 Ajay Kaher <akaher@vmware.com> 4.19.79-1
+-   Update to version 4.19.79
+-   Fix CVE-2019-17133
+*   Thu Oct 10 2019 Harinadh D <hdommaraju@vmware.com> 4.19.76-2
+-   Adding lvm and dm-mod modules to support root as lvm
+*   Wed Oct 02 2019 Ajay Kaher <akaher@vmware.com> 4.19.76-1
+-   Update to version 4.19.76
+*   Thu Sep 19 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.72-2
+-   Avoid oldconfig which leads to potential build hang
+*   Wed Sep 11 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.72-1
+-   Update to version 4.19.72
+*   Fri Aug 30 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.69-1
+-   Update to version 4.19.69
+*   Tue Aug 06 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.65-1
+-   Update to version 4.19.65
+-   Fix CVE-2019-1125 (SWAPGS)
+*   Tue Jul 30 2019 Keerthana K <keerthanak@vmware.com> 4.19.52-3
+-   Fix Postun scriplet
+*   Tue Jul 02 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.52-2
+-   Fix 9p vsock 16bit port issue.
+*   Mon Jun 17 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.52-1
+-   Update to version 4.19.52
+-   Fix CVE-2019-12456, CVE-2019-12379, CVE-2019-12380, CVE-2019-12381,
+-   CVE-2019-12382, CVE-2019-12378, CVE-2019-12455
+*   Tue May 28 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.40-3
+-   Change default I/O scheduler to 'deadline' to fix performance issue.
+*   Tue May 14 2019 Keerthana K <keerthanak@vmware.com> 4.19.40-2
+-   Fix to parse through /boot folder and update symlink (/boot/photon.cfg) if
+-   mulitple kernels are installed and current linux kernel is removed.
+*   Tue May 07 2019 Ajay Kaher <akaher@vmware.com> 4.19.40-1
+-   Update to version 4.19.40
+*   Fri Mar 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-2
+-   Fix CVE-2019-10125
+*   Wed Mar 27 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.32-1
+-   Update to version 4.19.32
+*   Thu Mar 14 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.29-1
+-   Update to version 4.19.29
+*   Tue Mar 05 2019 Ajay Kaher <akaher@vmware.com> 4.19.26-1
+-   Update to version 4.19.26
+*   Thu Feb 21 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.15-2
+-   Fix CVE-2019-8912
+*   Tue Jan 15 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.15-1
+-   Update to version 4.19.15
+*   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-4
+-   cmdline: added audit=1 pti=on
+-   config: PANIC_TIMEOUT=-1, DEBUG_RODATA_TEST=y
+*   Wed Jan 09 2019 Alexey Makhalov <amakhalov@vmware.com> 4.19.6-3
+-   Additional security hardening options in the config.
+*   Fri Jan 04 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-2
+-   Enable AppArmor by default.
+*   Mon Dec 10 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.6-1
+-   Update to version 4.19.6
+*   Thu Nov 15 2018 Ajay Kaher <akaher@vmware.com> 4.19.1-2
+-   Adding BuildArch
+*   Thu Nov 08 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.1-1
+-   Update to version 4.19.1
+*   Tue Oct 30 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.18.9-3
+-   Fix PAX randkstack and RAP plugin patches to avoid boot panic.
+*   Mon Oct 22 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.18.9-2
+-   Use updated steal time accounting patch.
+*   Tue Sep 25 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.18.9-1
+-   Update to version 4.18.9
+*   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
+-   Update to version 4.14.67
+*   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-4
+-   Add rdrand-based RNG driver to enhance kernel entropy.
+*   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-3
+-   Add full retpoline support by building with retpoline-enabled gcc.
+*   Thu Aug 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-2
+-   Apply out-of-tree patches needed for AppArmor.
+*   Mon Jul 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-1
+-   Update to version 4.14.54
+*   Mon Mar 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-2
+-   Extra hardening: slab_nomerge and some .config changes
+*   Fri Feb 16 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-1
+-   Version update to v4.14 LTS. Drop aufs support.
+*   Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-1
+-   Version update
+*   Tue Nov 21 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.64-1
+-   Version update
+*   Wed Nov 08 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.60-2
+-   Update LKCM module
+-   Add -lkcm subpackage
+*   Mon Nov 06 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.60-1
+-   Version update
 *   Wed Oct 11 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-3
 -   Add patch "KVM: Don't accept obviously wrong gsi values via
     KVM_IRQFD" to fix CVE-2017-1000252.
@@ -308,7 +512,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Tue Jul 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-1
 -   Fix CVE-2017-11176 and CVE-2017-10911
 *   Fri Jul 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-3
--   Remove aufs source tarballs from git repo 
+-   Remove aufs source tarballs from git repo
 *   Mon Jul 03 2017 Xiaolin Li <xiaolinl@vmware.com> 4.9.34-2
 -   Add libdnet-devel, kmod-devel and libmspack-devel to BuildRequires
 *   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-1
@@ -345,7 +549,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Wed Feb 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-2
 -   rap_plugin improvement: throw error on function type casting
     function signatures were cleaned up using this feature.
--   Added RAP_ENTRY for asm functions. 
+-   Added RAP_ENTRY for asm functions.
 *   Thu Feb 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-1
 -   Update to linux-4.9.9 to fix CVE-2016-10153, CVE-2017-5546,
     CVE-2017-5547, CVE-2017-5548 and CVE-2017-5576.
@@ -373,5 +577,4 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   .config: add netfilter_xt_match_{cgroup,ipvs} support
 -   .config: disable /dev/mem
 *   Mon Oct 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-1
-    Initial commit. 
-
+    Initial commit.

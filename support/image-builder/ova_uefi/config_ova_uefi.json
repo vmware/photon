@@ -1,0 +1,18 @@
+{
+    "installer": {
+        "bootmode":"efi",
+        "hostname": "photon-machine",
+        "password": {
+            "age": 0,
+            "crypted": false,
+            "text": "changeme"
+        },
+	"public_key": "",
+        "packagelist_file": "packages_ova.json"
+    },
+    "image_type": "ova_uefi",
+    "size": 16384,
+    "artifacttype": "ova",
+    "keeprawdisk": false
+}
+

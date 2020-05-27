@@ -1,0 +1,126 @@
+From 714e41d9a80fea7d22665574b4653cbe2b979343 Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Wed, 12 Jul 2017 23:35:17 +0000
+Subject: xen/manage: keep track of the on-going suspend mode
+
+To differentiate between Xen suspend, PM suspend and PM hibernation,
+keep track of the on-going suspend mode by mainly using a new PM
+notifier. Since Xen suspend doesn't have corresponding PM event, its
+main logic is modfied to acquire pm_mutex and set the current mode.
+
+Note that we may see deadlock if PM suspend/hibernation is interrupted
+by Xen suspend. PM suspend/hibernation depends on xenwatch thread to
+process xenbus state transactions, but the thread will sleep to wait
+pm_mutex which is already held by PM suspend/hibernation context in the
+scenario. Though, acquirng pm_mutex is still right thing to do, and we
+would need to modify Xen shutdown code to avoid the issue. This will be
+fixed by a separate patch.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+Reviewed-by: Sebastian Biemueller <sbiemue@amazon.com>
+Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+CR: https://cr.amazon.com/r/8273194/
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/xen/manage.c | 58 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 58 insertions(+)
+
+diff --git a/drivers/xen/manage.c b/drivers/xen/manage.c
+index 587d12829925..1c9750fefa64 100644
+--- a/drivers/xen/manage.c
++++ b/drivers/xen/manage.c
+@@ -13,6 +13,7 @@
+ #include <linux/freezer.h>
+ #include <linux/syscore_ops.h>
+ #include <linux/export.h>
++#include <linux/suspend.h>
+ 
+ #include <xen/xen.h>
+ #include <xen/xenbus.h>
+@@ -39,6 +40,16 @@ enum shutdown_state {
+ /* Ignore multiple shutdown requests. */
+ static enum shutdown_state shutting_down = SHUTDOWN_INVALID;
+ 
++enum suspend_modes {
++        NO_SUSPEND = 0,
++        XEN_SUSPEND,
++        PM_SUSPEND,
++        PM_HIBERNATION,
++};
++
++/* Protected by pm_mutex */
++static enum suspend_modes suspend_mode = NO_SUSPEND;
++
+ struct suspend_info {
+ 	int cancelled;
+ };
+@@ -101,6 +112,10 @@ static void do_suspend(void)
+ 	int err;
+ 	struct suspend_info si;
+ 
++	lock_system_sleep();
++
++	suspend_mode = XEN_SUSPEND;
++
+ 	shutting_down = SHUTDOWN_SUSPEND;
+ 
+ 	err = freeze_processes();
+@@ -164,6 +179,10 @@ static void do_suspend(void)
+ 	thaw_processes();
+ out:
+ 	shutting_down = SHUTDOWN_INVALID;
++
++	suspend_mode = NO_SUSPEND;
++
++	unlock_system_sleep();
+ }
+ #endif	/* CONFIG_HIBERNATE_CALLBACKS */
+ 
+@@ -387,3 +406,42 @@ int xen_setup_shutdown_event(void)
+ EXPORT_SYMBOL_GPL(xen_setup_shutdown_event);
+ 
+ subsys_initcall(xen_setup_shutdown_event);
++
++static int xen_pm_notifier(struct notifier_block *notifier,
++			   unsigned long pm_event, void *unused)
++{
++	switch (pm_event) {
++	case PM_SUSPEND_PREPARE:
++		suspend_mode = PM_SUSPEND;
++		break;
++	case PM_HIBERNATION_PREPARE:
++	case PM_RESTORE_PREPARE:
++		suspend_mode = PM_HIBERNATION;
++		break;
++	case PM_POST_SUSPEND:
++	case PM_POST_RESTORE:
++	case PM_POST_HIBERNATION:
++		/* Set back to the default */
++		suspend_mode = NO_SUSPEND;
++		break;
++	default:
++		pr_warn("Receive unknown PM event 0x%lx\n", pm_event);
++		return -EINVAL;
++	}
++
++	return 0;
++};
++
++static struct notifier_block xen_pm_notifier_block = {
++	.notifier_call = xen_pm_notifier
++};
++
++static int xen_setup_pm_notifier(void)
++{
++	if (!xen_hvm_domain())
++		return -ENODEV;
++
++	return register_pm_notifier(&xen_pm_notifier_block);
++}
++
++subsys_initcall(xen_setup_pm_notifier);
+-- 
+2.14.4
+

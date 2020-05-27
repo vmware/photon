@@ -1,5 +1,4 @@
 #
-#    Copyright (C) 2015 vmware inc.
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
@@ -26,11 +25,11 @@ class ProgressBar(object):
         self.progress = 0
 
         self.new_win = new_win
-        self.x=startx
-        self.y=starty
+        self.x = startx
+        self.y = starty
 
         if new_win:
-            self.contentwin = curses.newwin(7, width+2)
+            self.contentwin = curses.newwin(7, width + 2)
             self.contentwin.bkgd(' ', curses.color_pair(2)) #Default Window color
             self.contentwin.erase()
             self.contentwin.box()
@@ -59,7 +58,7 @@ class ProgressBar(object):
         self.message = message
         self.render_message()
 
-    def increment(self, step = 1):
+    def increment(self, step=1):
         self.progress += step
         self.render_progress()
 
@@ -73,7 +72,9 @@ class ProgressBar(object):
         if self.progress == 0:
             self.time_remaining = 60
         else:
-            self.time_remaining = int(math.ceil(self.time_elapsed * self.num_items / float(self.progress))) - self.time_elapsed
+            self.time_remaining = (int(math.ceil(self.time_elapsed *
+                                                 self.num_items / float(self.progress))) -
+                                   self.time_elapsed)
         self.render_time()
 
     def render_message(self):
@@ -120,18 +121,21 @@ class ProgressBar(object):
     def update_loading_symbol(self):
         with self.loadding_timer_lock:
             if self.loadding_timer != None:
-                self.loadding_timer = threading.Timer(self.loading_interval, self.update_loading_symbol)
+                self.loadding_timer = threading.Timer(self.loading_interval,
+                                                      self.update_loading_symbol)
                 self.loadding_timer.start()
 
         self.loading_count += 1
         self.render_loading()
 
     def render_loading(self):
-        self.window.addstr(0, self.message_len + 1, self.loading_chars[self.loading_count % len(self.loading_chars)])
+        self.window.addstr(0, self.message_len + 1,
+                           self.loading_chars[self.loading_count % len(self.loading_chars)])
         self.window.refresh()
 
     def show_loading(self, message):
-        self.loadding_timer = threading.Timer(self.loading_interval, self.update_loading_symbol)
+        self.loadding_timer = threading.Timer(self.loading_interval,
+                                              self.update_loading_symbol)
         self.loadding_timer.start()
         self.update_loading_message(message)
 
@@ -169,18 +173,17 @@ class ProgressBar(object):
         completed_spaces = ''
         remaining_spaces = ''
         for i in range(completed_width):
-            if (i in range(start, end)):
+            if i in range(start, end):
                 completed_spaces += per[index]
                 index += 1
             else:
                 completed_spaces += ' '
 
         for i in range(completed_width, total_width):
-            if (i in range(start, end)):
+            if i in range(start, end):
                 remaining_spaces += per[index]
                 index += 1
             else:
                 remaining_spaces += ' '
 
         return completed_spaces, remaining_spaces
-

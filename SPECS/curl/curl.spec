@@ -1,28 +1,39 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.54.1
-Release:        1%{?dist}
+Version:        7.61.1
+Release:        6%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
-%define sha1    curl=5e549585a3e9746bd672f52cea2a7ea4936021ef
+Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
+%define sha1    curl=1f0732185e13d71d35a700f8314c3d5790968bb3
+Patch0:         CVE-2018-16839.patch
+Patch1:         CVE-2018-16840.patch
+Patch2:         CVE-2018-16842.patch
+Patch3:         curl-CVE-2018-16890.patch
+Patch4:         curl-CVE-2019-3822.patch
+Patch5:         curl-CVE-2019-3823.patch
+Patch6:         curl-CVE-2019-5436.patch
+Patch7:         curl-CVE-2019-5481.patch
+Patch8:         curl-CVE-2019-5482.patch
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
 BuildRequires:  libssh2-devel
+BuildRequires:  libmetalink-devel
 Requires:       ca-certificates
 Requires:       openssl
 Requires:       krb5
 Requires:       libssh2
+Requires:       libmetalink
 Requires:       curl-libs = %{version}-%{release}
 %description
-The cURL package contains an utility and a library used for 
-transferring files with URL syntax to any of the following 
-protocols: FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET, 
-DICT, LDAP, LDAPS and FILE. Its ability to both download and 
+The cURL package contains an utility and a library used for
+transferring files with URL syntax to any of the following
+protocols: FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET,
+DICT, LDAP, LDAPS and FILE. Its ability to both download and
 upload files can be incorporated into other programs to support
 functions like streaming media.
 
@@ -41,21 +52,29 @@ This package contains minimal set of shared curl libraries.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+
 %build
-./configure \
+%configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
     --disable-static \
     --enable-threaded-resolver \
     --with-ssl \
     --with-gssapi \
     --with-libssh2 \
-    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
+    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt \
+    --with-libmetalink
 make %{?_smp_mflags}
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
@@ -67,9 +86,12 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
+
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -88,6 +110,32 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Fri Jan 24 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.61.1-6
+-   Build with libmetalink support
+*   Tue Sep 24 2019 Dweep Advani <dadvani@vmware.com> 7.61.1-5
+-   Fix for CVE-2019-5481 and CVE-2019-5482
+*   Thu May 30 2019 Siju Maliakkal <smaliakkal@vmware.com> 7.61.1-4
+-   Patch for CVE-2019-5436
+*   Tue Feb 19 2019 Dweep Advani <dadvani@vmware.com> 7.61.1-3
+-   Fixed CVE-2018-16890, CVE-2019-3822 and CVE-2019-3823
+*   Tue Jan 08 2019 Dweep Advani <dadvani@vmware.com> 7.61.1-2
+-   Fix of CVE-2018-16839, CVE-2018-16840 and CVE-2018-16842
+*   Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 7.61.1-1
+-   Upgraded to version 7.61.1
+*   Wed Apr 04 2018 Dheeraj Shetty <dheerajs@vmware.com> 7.59.0-1
+-   Update to version 7.59.0
+*   Thu Feb 08 2018 Xiaolin Li <xiaolinl@vmware.com> 7.58.0-1
+-   Fix CVE-2017-8817.
+*   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 7.56.1-2
+-   Fix CVE-2017-8818.
+*   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 7.56.1-1
+-   Update to version 7.56.1
+*   Mon Nov 27 2017 Xiaolin Li <xiaolinl@vmware.com> 7.54.1-4
+-   Fix CVE-2017-1000257
+*   Mon Nov 06 2017 Xiaolin Li <xiaolinl@vmware.com> 7.54.1-3
+-   Fix CVE-2017-1000254
+*   Thu Nov 02 2017 Xiaolin Li <xiaolinl@vmware.com> 7.54.1-2
+-   Fix CVE-2017-1000099, CVE-2017-1000100, CVE-2017-1000101
 *   Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 7.54.1-1
 -   Update to 7.54.1
 *   Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 7.54.0-1

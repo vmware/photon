@@ -1,0 +1,27 @@
+From 55a2e695e47abe7a4d5f5d3b79b8f0565aa72aa1 Mon Sep 17 00:00:00 2001
+From: Stanislav Levin <slev@altlinux.org>
+Date: Mon, 20 Aug 2018 16:43:40 +0300
+Subject: [PATCH] Fix "test_before_across_chunks" test
+
+Pipe like "openssl rand -base64 2097152 | head -n 500" leads to "Broken pipe"
+error on some systems. This is an unexpected behavior. So errors must be
+suppressed.
+
+Fixes: https://github.com/pexpect/pexpect/issues/523
+---
+ tests/test_expect.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/test_expect.py b/tests/test_expect.py
+index 795518ab..2c747443 100755
+--- a/tests/test_expect.py
++++ b/tests/test_expect.py
+@@ -411,7 +411,7 @@ def test_buffer_interface(self):
+     def test_before_across_chunks(self):
+         # https://github.com/pexpect/pexpect/issues/478
+         child = pexpect.spawn(
+-            '''/bin/bash -c "openssl rand -base64 {} | head -500 | nl --number-format=rz --number-width=5 2>&1 ; echo 'PATTERN!!!'"'''.format(1024 * 1024 * 2),
++            '''/bin/bash -c "openssl rand -base64 {} 2>/dev/null | head -500 | nl --number-format=rz --number-width=5 2>&1 ; echo 'PATTERN!!!'"'''.format(1024 * 1024 * 2),
+             searchwindowsize=128
+         )
+         child.expect(['PATTERN'])

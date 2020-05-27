@@ -14,10 +14,11 @@ if [ $# -lt 1 ]; then
 fi
 
 PUBLISHRPMSPATHDIR=$1
+INPUTFILE=xrpmfilelist-$(uname -m)
 
 if [ $# -eq 2 ]; then
    PUBLISHCACHE=$2
-   while read FILE; do cp -r $PUBLISHCACHE/$FILE $PUBLISHRPMSPATHDIR/$FILE; done < xrpmfilelist
+   while read FILE; do cp -r $PUBLISHCACHE/$FILE $PUBLISHRPMSPATHDIR/$FILE; done < $INPUTFILE
 else
-   cat xrpmfilelist | awk '{print "https://bintray.com/artifact/download/vmware/photon_publish_x_rpms/"$1}' | xargs -n 1 -P 10 wget --user-agent Mozilla/4.0 -c -nv -nc -r -nH --cut-dirs=4 -P ${PUBLISHRPMSPATHDIR}
+   cat $INPUTFILE | awk '{print "https://bintray.com/artifact/download/vmware/photon_publish_x_rpms/"$1}' | xargs -n 1 -P 10 wget --user-agent Mozilla/4.0 -c -nv -nc -r -nH --quiet --cut-dirs=4 -P ${PUBLISHRPMSPATHDIR}
 fi

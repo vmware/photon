@@ -1,12 +1,12 @@
 Summary:	The New GNU Portable Threads Library.
 Name:		npth
-Version:	1.3
+Version:	1.6
 Release:	1%{?dist}
 License:	GPLv2+ and LGPLv3+
 URL:		https://github.com/gpg/npth
 Group:		System Environment/Libraries.
 Source0:        https://github.com/gpg/%{name}/archive/%{name}-%{version}.tar.gz 
-%define sha1 npth=d82a2db3c3687a427c39c741616e71be98fd351b
+%define sha1 npth=3f3c68d439c2f8a798423de38b9a6eb32c0c417e
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -57,5 +57,7 @@ make %{?_smp_mflags} -k check
 %{_datadir}/aclocal/*
 
 %changelog
+*       Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.6-1
+-       Upgrade to 1.6.
 *       Tue Apr 11 2017 Danut Moraru <dmoraru@vmware.com> 1.3-1
 -       Initial Build.

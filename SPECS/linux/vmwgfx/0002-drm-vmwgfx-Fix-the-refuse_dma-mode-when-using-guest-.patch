@@ -1,0 +1,79 @@
+From 6ba3372b88ae87b25d08097dceeb3af7d677b9e4 Mon Sep 17 00:00:00 2001
+From: Thomas Hellstrom <thellstrom@vmware.com>
+Date: Fri, 1 May 2020 17:42:30 +0530
+Subject: [PATCH 2/3] drm/vmwgfx: Fix the refuse_dma mode when using
+ guest-backed objects
+
+commit 81a00960d3fa83bbff9939ff52e89f0b74801937 upstream
+
+When we refuse DMA from system pages for whatever reason, we don't
+handle that correctly when guest-backed objects was enabled.
+Since guest-backed objects by definition require DMA to and from
+system pages, disable all functionality that relies on them.
+That basically amounts to 3D acceleration and screen targets.
+
+Signed-off-by: Thomas Hellstrom <thellstrom@vmware.com>
+Reviewed-by: Brian Paul <brianp@vmware.com>
+[Ajay: Modified to apply on v4.19.y]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ drivers/gpu/drm/vmwgfx/vmwgfx_cmdbuf.c | 3 ++-
+ drivers/gpu/drm/vmwgfx/vmwgfx_drv.c    | 6 ++++--
+ drivers/gpu/drm/vmwgfx/vmwgfx_stdu.c   | 2 +-
+ 3 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_cmdbuf.c b/drivers/gpu/drm/vmwgfx/vmwgfx_cmdbuf.c
+index ce1ad7c..1ca8f39 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_cmdbuf.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_cmdbuf.c
+@@ -1236,7 +1236,8 @@ int vmw_cmdbuf_set_pool_size(struct vmw_cmdbuf_man *man,
+ 		 * actually call into the already enabled manager, when
+ 		 * binding the MOB.
+ 		 */
+-		if (!(dev_priv->capabilities & SVGA_CAP_DX))
++		if (!(dev_priv->capabilities & SVGA_CAP_DX) ||
++		    !dev_priv->has_mob)
+ 			return -ENOMEM;
+ 
+ 		ret = ttm_bo_create(&dev_priv->bdev, size, ttm_bo_type_device,
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
+index 05a8008..7dc81cd 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
+@@ -716,8 +716,10 @@ static int vmw_driver_load(struct drm_device *dev, unsigned long chipset)
+ 
+ 	ret = vmw_dma_select_mode(dev_priv);
+ 	if (unlikely(ret != 0)) {
+-		DRM_INFO("Restricting capabilities due to IOMMU setup.\n");
++		DRM_INFO("Restricting capabilities since DMA not available.\n");
+ 		refuse_dma = true;
++		if (dev_priv->capabilities & SVGA_CAP_GBOBJECTS)
++			DRM_INFO("Disabling 3D acceleration.\n");
+ 	}
+ 
+ 	dev_priv->vram_size = vmw_read(dev_priv, SVGA_REG_VRAM_SIZE);
+@@ -907,7 +909,7 @@ static int vmw_driver_load(struct drm_device *dev, unsigned long chipset)
+ 		dev_priv->has_gmr = false;
+ 	}
+ 
+-	if (dev_priv->capabilities & SVGA_CAP_GBOBJECTS) {
++	if (dev_priv->capabilities & SVGA_CAP_GBOBJECTS && !refuse_dma) {
+ 		dev_priv->has_mob = true;
+ 		if (ttm_bo_init_mm(&dev_priv->bdev, VMW_PL_MOB,
+ 				   VMW_PL_MOB) != 0) {
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_stdu.c b/drivers/gpu/drm/vmwgfx/vmwgfx_stdu.c
+index f30e839..88fcd82 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_stdu.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_stdu.c
+@@ -1588,7 +1588,7 @@ int vmw_kms_stdu_init_display(struct vmw_private *dev_priv)
+ 
+ 
+ 	/* Do nothing if Screen Target support is turned off */
+-	if (!VMWGFX_ENABLE_SCREEN_TARGET_OTABLE)
++	if (!VMWGFX_ENABLE_SCREEN_TARGET_OTABLE || !dev_priv->has_mob)
+ 		return -ENOSYS;
+ 
+ 	if (!(dev_priv->capabilities & SVGA_CAP_GBOBJECTS))
+-- 
+2.7.4
+

@@ -1,0 +1,31 @@
+From 8cdbd3b09f29da29374e2f83369df24228da0ad1 Mon Sep 17 00:00:00 2001
+From: Alain Michaud <alainm@chromium.org>
+Date: Tue, 10 Mar 2020 02:35:16 +0000
+Subject: [PATCH] HOGP must only accept data from bonded devices.
+
+HOGP 1.0 Section 6.1 establishes that the HOGP must require bonding.
+
+Reference:
+https://www.intel.com/content/www/us/en/security-center/advisory/intel-sa-00352.htm
+---
+ profiles/input/hog.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/profiles/input/hog.c b/profiles/input/hog.c
+index 83c017d..dfac689 100644
+--- a/profiles/input/hog.c
++++ b/profiles/input/hog.c
+@@ -186,6 +186,10 @@ static int hog_accept(struct btd_service *service)
+ 			return -EINVAL;
+ 	}
+ 
++	/* HOGP 1.0 Section 6.1 requires bonding */
++	if (!device_is_bonded(device, btd_device_get_bdaddr_type(device)))
++		return -ECONNREFUSED;
++
+ 	/* TODO: Replace GAttrib with bt_gatt_client */
+ 	bt_hog_attach(dev->hog, attrib);
+ 
+-- 
+2.7.4
+

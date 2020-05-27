@@ -1,0 +1,208 @@
+diff -rupN systemd-239/src/network/networkd-link.c systemd-239-bz-2527177/src/network/networkd-link.c
+--- systemd-239/src/network/networkd-link.c	2020-03-14 07:51:45.000000000 +0530
++++ systemd-239-bz-2527177/src/network/networkd-link.c	2020-03-17 09:50:27.887996584 +0530
+@@ -630,7 +630,7 @@ int link_get(Manager *m, int ifindex, Li
+         return 0;
+ }
+ 
+-static void link_set_state(Link *link, LinkState state) {
++void link_set_state(Link *link, LinkState state) {
+         assert(link);
+ 
+         if (link->state == state)
+@@ -740,7 +740,7 @@ static void link_enter_configured(Link *
+         assert(link);
+         assert(link->network);
+ 
+-        if (link->state != LINK_STATE_SETTING_ROUTES)
++        if (link->state != LINK_STATE_CONFIGURING)
+                 return;
+ 
+         log_link_info(link, "Configured");
+@@ -842,8 +842,7 @@ static int route_handler(sd_netlink *rtn
+         int r;
+ 
+         assert(link->route_messages > 0);
+-        assert(IN_SET(link->state, LINK_STATE_SETTING_ADDRESSES,
+-                      LINK_STATE_SETTING_ROUTES, LINK_STATE_FAILED,
++        assert(IN_SET(link->state, LINK_STATE_CONFIGURING, LINK_STATE_FAILED,
+                       LINK_STATE_LINGER));
+ 
+         link->route_messages--;
+@@ -870,12 +869,10 @@ static int link_enter_set_routes(Link *l
+ 
+         assert(link);
+         assert(link->network);
+-        assert(link->state == LINK_STATE_SETTING_ADDRESSES);
++        assert(link->state != _LINK_STATE_INVALID);
+ 
+         (void) link_set_routing_policy_rule(link);
+ 
+-        link_set_state(link, LINK_STATE_SETTING_ROUTES);
+-
+         LIST_FOREACH(routes, rt, link->network->static_routes) {
+                 r = route_configure(rt, link, route_handler);
+                 if (r < 0) {
+@@ -905,7 +902,7 @@ int link_route_remove_handler(sd_netlink
+         assert(link);
+         assert(link->ifname);
+ 
+-        if (IN_SET(link->state, LINK_STATE_FAILED, LINK_STATE_LINGER))
++        if (IN_SET(link->state, LINK_STATE_CONFIGURING, LINK_STATE_FAILED, LINK_STATE_LINGER))
+                 return 1;
+ 
+         r = sd_netlink_message_get_errno(m);
+@@ -924,7 +921,7 @@ static int address_handler(sd_netlink *r
+         assert(link);
+         assert(link->ifname);
+         assert(link->address_messages > 0);
+-        assert(IN_SET(link->state, LINK_STATE_SETTING_ADDRESSES,
++        assert(IN_SET(link->state, LINK_STATE_CONFIGURING,
+                LINK_STATE_FAILED, LINK_STATE_LINGER));
+ 
+         link->address_messages--;
+@@ -1097,8 +1094,6 @@ static int link_enter_set_addresses(Link
+         if (r < 0)
+                 return r;
+ 
+-        link_set_state(link, LINK_STATE_SETTING_ADDRESSES);
+-
+         LIST_FOREACH(addresses, ad, link->network->static_addresses) {
+                 r = address_configure(ad, link, address_handler, false);
+                 if (r < 0) {
+@@ -2381,11 +2376,12 @@ static int link_enter_join_netdev(Link *
+ 
+         assert(link);
+         assert(link->network);
+-        assert(link->state == LINK_STATE_PENDING);
++        assert(link->state == LINK_STATE_INITIALIZED);
+ 
+-        link_set_state(link, LINK_STATE_ENSLAVING);
++        link_set_state(link, LINK_STATE_CONFIGURING);
+ 
+         link_dirty(link);
++        link->enslaving = 0;
+ 
+         if (!link->network->bridge &&
+             !link->network->bond &&
+@@ -2770,7 +2766,7 @@ static int link_configure(Link *link) {
+ 
+         assert(link);
+         assert(link->network);
+-        assert(link->state == LINK_STATE_PENDING);
++        assert(link->state == LINK_STATE_INITIALIZED);
+ 
+         if (STRPTR_IN_SET(link->kind, "can", "vcan"))
+                 return link_configure_can(link);
+@@ -2920,10 +2916,13 @@ static int link_initialized_and_synced(s
+         assert(link->ifname);
+         assert(link->manager);
+ 
+-        if (link->state != LINK_STATE_PENDING)
++        /* We may get called either from the asynchronous netlink callback,
++         * or directly for link_add() if running in a container. See link_add(). */
++        if (!IN_SET(link->state, LINK_STATE_PENDING, LINK_STATE_INITIALIZED))
+                 return 1;
+ 
+         log_link_debug(link, "Link state is up-to-date");
++        link_set_state(link, LINK_STATE_INITIALIZED);
+ 
+         r = link_new_bound_by_list(link);
+         if (r < 0)
+@@ -2988,6 +2987,7 @@ int link_initialized(Link *link, struct
+                 return 0;
+ 
+         log_link_debug(link, "udev initialized link");
++        link_set_state(link, LINK_STATE_INITIALIZED);
+ 
+         link->udev_device = udev_device_ref(device);
+ 
+@@ -3267,7 +3267,7 @@ int link_ipv6ll_gained(Link *link, const
+         link->ipv6ll_address = *address;
+         link_check_ready(link);
+ 
+-        if (!IN_SET(link->state, LINK_STATE_PENDING, LINK_STATE_UNMANAGED, LINK_STATE_FAILED)) {
++        if (IN_SET(link->state, LINK_STATE_CONFIGURING, LINK_STATE_CONFIGURED)) {
+                 r = link_acquire_ipv6_conf(link);
+                 if (r < 0) {
+                         link_enter_failed(link);
+@@ -3283,13 +3283,14 @@ static int link_carrier_gained(Link *lin
+ 
+         assert(link);
+ 
+-        if (!IN_SET(link->state, LINK_STATE_PENDING, LINK_STATE_UNMANAGED, LINK_STATE_FAILED)) {
++        if (IN_SET(link->state, LINK_STATE_CONFIGURING, LINK_STATE_CONFIGURED)) {
+                 r = link_acquire_conf(link);
+                 if (r < 0) {
+                         link_enter_failed(link);
+                         return r;
+                 }
+ 
++                link_set_state(link, LINK_STATE_CONFIGURING);
+                 r = link_enter_set_addresses(link);
+                 if (r < 0)
+                         return r;
+@@ -3374,7 +3375,7 @@ int link_update(Link *link, sd_netlink_m
+         if (link->state == LINK_STATE_LINGER) {
+                 link_ref(link);
+                 log_link_info(link, "Link readded");
+-                link_set_state(link, LINK_STATE_ENSLAVING);
++                link_set_state(link, LINK_STATE_CONFIGURING);
+ 
+                 r = link_new_carrier_maps(link);
+                 if (r < 0)
+@@ -3962,14 +3963,11 @@ void link_clean(Link *link) {
+ }
+ 
+ static const char* const link_state_table[_LINK_STATE_MAX] = {
+-        [LINK_STATE_PENDING] = "pending",
+-        [LINK_STATE_ENSLAVING] = "configuring",
+-        [LINK_STATE_SETTING_ADDRESSES] = "configuring",
+-        [LINK_STATE_SETTING_ROUTES] = "configuring",
+-        [LINK_STATE_CONFIGURED] = "configured",
+-        [LINK_STATE_UNMANAGED] = "unmanaged",
+-        [LINK_STATE_FAILED] = "failed",
+-        [LINK_STATE_LINGER] = "linger",
++         [LINK_STATE_PENDING] = "pending",
++         [LINK_STATE_INITIALIZED] = "initialized",
++         [LINK_STATE_CONFIGURING] = "configuring",
++         [LINK_STATE_CONFIGURED] = "configured",
++         [LINK_STATE_UNMANAGED] = "unmanaged",
+ };
+ 
+ DEFINE_STRING_TABLE_LOOKUP(link_state, LinkState);
+diff -rupN systemd-239/src/network/networkd-link.h systemd-239-bz-2527177/src/network/networkd-link.h
+--- systemd-239/src/network/networkd-link.h	2020-03-14 07:51:45.000000000 +0530
++++ systemd-239-bz-2527177/src/network/networkd-link.h	2020-03-14 08:26:43.401723149 +0530
+@@ -18,15 +18,14 @@
+ #include "set.h"
+ 
+ typedef enum LinkState {
+-        LINK_STATE_PENDING,
+-        LINK_STATE_ENSLAVING,
+-        LINK_STATE_SETTING_ADDRESSES,
+-        LINK_STATE_SETTING_ROUTES,
+-        LINK_STATE_CONFIGURED,
+-        LINK_STATE_UNMANAGED,
+-        LINK_STATE_FAILED,
+-        LINK_STATE_LINGER,
+-        _LINK_STATE_MAX,
++        LINK_STATE_PENDING,     /* udev has not initialized the link */
++        LINK_STATE_INITIALIZED, /* udev has initialized the link */
++        LINK_STATE_CONFIGURING, /* configuring addresses, routes, etc. */
++        LINK_STATE_CONFIGURED,  /* everything is configured */
++        LINK_STATE_UNMANAGED,   /* Unmanaged=yes is set */
++        LINK_STATE_FAILED,      /* at least one configuration process failed */
++        LINK_STATE_LINGER,      /* RTM_DELLINK for the link has been received */
++       _LINK_STATE_MAX,
+         _LINK_STATE_INVALID = -1
+ } LinkState;
+ 
+@@ -143,6 +142,7 @@ int link_route_remove_handler(sd_netlink
+ void link_enter_failed(Link *link);
+ int link_initialized(Link *link, struct udev_device *device);
+ 
++void link_set_state(Link *link, LinkState state);
+ void link_check_ready(Link *link);
+ 
+ void link_update_operstate(Link *link);

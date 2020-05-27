@@ -4,7 +4,7 @@ FROM vmware/photon:2.0
 
 MAINTAINER kulkarniv@vmware.com
 
-RUN tdnf install -y ebtables iptables iproute2 shadow socat
+RUN tdnf install -y ebtables iptables iproute2 shadow socat --refresh
 ADD tmp/k8s/usr/bin/kube-proxy /usr/bin/kube-proxy
 RUN ln -s /usr/bin/kube-proxy /usr/local/bin/kube-proxy
 

@@ -1,25 +1,34 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.13.5
-Release:        1%{?dist}
+Version:        1.16.1
+Release:        3%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nginx=8eac59db4ee2a90373a8a44f174317110b666526
+%define sha1    nginx=77ce4d26481b62f7a9d83e399454df0912f01a4b
 Source1:        nginx.service
+Source2:        nginx-njs-0.2.1.tar.gz
+%define sha1    nginx-njs=fd8c3f2d219f175be958796e3beaa17f3b465126
+Patch0:         nginx-CVE-2019-20372.patch
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
+BuildRequires:  which
 %description
-NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as well as an IMAP/POP3 proxy server. 
+NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as well as an IMAP/POP3 proxy server.
 
 %prep
 %setup -q
+%patch0 -p1
+pushd ../
+mkdir nginx-njs
+tar -C nginx-njs -xf %{SOURCE2}
+popd
 
 %build
-./configure \
+sh configure \
     --prefix=%{_sysconfdir}//nginx              \
     --sbin-path=/usr/sbin/nginx                 \
     --conf-path=/etc/nginx/nginx.conf           \
@@ -27,26 +36,75 @@ NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as
     --lock-path=/var/run/nginx.lock             \
     --error-log-path=/var/log/nginx/error.log   \
     --http-log-path=/var/log/nginx/access.log   \
+    --add-module=../nginx-njs/njs-0.2.1/nginx   \
     --with-http_ssl_module \
     --with-pcre \
     --with-ipv6 \
-    --with-stream
+    --with-stream \
+    --with-http_auth_request_module \
+    --with-http_sub_module \
+    --with-http_stub_status_module \
+    --with-http_v2_module
 
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 install -vdm755 %{buildroot}/usr/lib/systemd/system
-install -vdm755 %{buildroot}%{_var}/log/nginx
+install -vdm755 %{buildroot}%{_var}/log
+install -vdm755 %{buildroot}%{_var}/opt/nginx/log
+ln -sfv %{_var}/opt/nginx/log %{buildroot}%{_var}/log/nginx
 install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/*
+%config(noreplace) %{_sysconfdir}/%{name}/fastcgi.conf
+%config(noreplace) %{_sysconfdir}/%{name}/fastcgi.conf.default
+%config(noreplace) %{_sysconfdir}/%{name}/fastcgi_params
+%config(noreplace) %{_sysconfdir}/%{name}/fastcgi_params.default
+%config(noreplace) %{_sysconfdir}/%{name}/koi-utf
+%config(noreplace) %{_sysconfdir}/%{name}/koi-win
+%config(noreplace) %{_sysconfdir}/%{name}/mime.types
+%config(noreplace) %{_sysconfdir}/%{name}/mime.types.default
+%config(noreplace) %{_sysconfdir}/%{name}/nginx.conf
+%config(noreplace) %{_sysconfdir}/%{name}/nginx.conf.default
+%config(noreplace) %{_sysconfdir}/%{name}/scgi_params
+%config(noreplace) %{_sysconfdir}/%{name}/scgi_params.default
+%config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params
+%config(noreplace) %{_sysconfdir}/%{name}/uwsgi_params.default
+%{_sysconfdir}/%{name}/win-utf
+%{_sysconfdir}/%{name}/html/*
 %{_sbindir}/*
 %{_libdir}/systemd/system/nginx.service
-%dir %{_var}/log/nginx
+%dir %{_var}/opt/nginx/log
+%{_var}/log/nginx
 
 %changelog
+*   Mon May 04 2020 Keerthana K <keerthanak@vmware.com> 1.16.1-3
+-   Adding http v2 module support.
+*   Tue Feb 11 2020 Ankit Jain <ankitja@vmware.com> 1.16.1-2
+-   Fix for CVE-2019-20372
+*   Thu Aug 29 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.16.1-1
+-   Update to version 1.16.1-1
+*   Fri Mar 15 2019 Keerthana K <keerthanak@vmware.com> 1.15.3-6
+-   Enable https_stub_status_module.
+*   Mon Feb 25 2019 Ankit Jain <ankitja@vmware.com> 1.15.3-5
+-   Fix for CVE-2018-16843 and CVE-2018-16844
+*   Thu Feb 21 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.15.3-4
+-   Fix CVE-2018-16845
+*   Wed Nov 07 2018 Ajay Kaher <akaher@vmware.com> 1.15.3-3
+-   mark config files as non replaceable on upgrade.
+*   Mon Sep 17 2018 Keerthana K <keerthanak@vmware.com> 1.15.3-2
+-   Adding http_auth_request_module and http_sub_module.
+*   Fri Sep 7 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.15.3-1
+-   Upgrade to version 1.15.3
+*   Fri Jul 20 2018 Keerthana K <keerthanak@vmware.com> 1.13.8-3
+-   Restarting nginx on failure.
+*   Fri Jun 08 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.13.8-2
+-   adding module njs.
+*   Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.13.8-1
+-   Update to version 1.13.8 to support nginx-ingress
+*   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  1.13.5-2
+-   Fixed the log file directory structure
 *   Wed Oct 04 2017 Xiaolin Li <xiaolinl@vmware.com> 1.13.5-1
 -   Update to version 1.13.5
 *   Mon May 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.11.13-2

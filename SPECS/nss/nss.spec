@@ -1,15 +1,15 @@
 Summary:        Security client
 Name:           nss
-Version:        3.31
+Version:        3.44
 Release:        3%{?dist}
 License:        MPLv2.0
-URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_31_RTM/src/%{name}-%{version}.tar.gz
+URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_44_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nss=006a13a5e52867c49ea1e7d986b7c02a3cd8ebfb
-Patch:          nss-3.31-standalone-1.patch
+%define sha1    nss=11eab8681754472a9d1eb196e3c604d794ebe7f3
+Patch:          nss-3.44-standalone-1.patch
 Requires:       nspr
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -43,6 +43,7 @@ This package contains minimal set of shared nss libraries.
 %prep
 %setup -q
 %patch -p1
+
 %build
 cd nss
 # -j is not supported by nss
@@ -50,8 +51,9 @@ make VERBOSE=1 BUILD_OPT=1 \
     NSPR_INCLUDE_DIR=%{_includedir}/nspr \
     USE_SYSTEM_ZLIB=1 \
     ZLIB_LIBS=-lz \
-    $([ $(uname -m) = x86_64 ] && echo USE_64=1) \
+    USE_64=1 \
     $([ -f %{_includedir}/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1)
+
 %install
 cd nss
 cd ../dist
@@ -65,11 +67,21 @@ chmod 644 %{buildroot}%{_includedir}/nss/*
 install -v -m755 Linux*/bin/{certutil,nss-config,pk12util} %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_libdir}/pkgconfig
 install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
+%define __spec_install_post \
+  %{?__debug_package:%{__debug_install_post}} \
+  %{__arch_install_post} \
+  %{__os_install_post} \
+  LD_LIBRARY_PATH=%{buildroot}%{_libdir} Linux*/bin/shlibsign -i %{buildroot}%{_libdir}/libsoftokn3.so \
+  LD_LIBRARY_PATH=%{buildroot}%{_libdir} Linux*/bin/shlibsign -i %{buildroot}%{_libdir}/libnssdbm3.so \
+  LD_LIBRARY_PATH=%{buildroot}%{_libdir} Linux*/bin/shlibsign -i %{buildroot}%{_libdir}/libfreebl3.so \
+  LD_LIBRARY_PATH=%{buildroot}%{_libdir} Linux*/bin/shlibsign -i %{buildroot}%{_libdir}/libfreeblpriv3.so \
+%{nil}
 
 %check
-cd nss/tests
 chmod g+w . -R
+cd nss/tests
 useradd test -G root -m
+sed -i '/RUN_FIPS/a export HOST=localhost DOMSUF=localdomain BUILD_OPT=1 USE_64=1' all.sh
 HOST=localhost DOMSUF=localdomain BUILD_OPT=1
 sudo -u test ./all.sh && userdel test -r -f
 
@@ -87,7 +99,7 @@ sudo -u test ./all.sh && userdel test -r -f
 
 %files devel
 %{_includedir}/*
-%exclude %{_libdir}/*.a
+%{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
 
 %files libs
@@ -97,6 +109,18 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Thu Oct 10 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 3.44-3
+-   Makecheck fixes
+*   Fri Aug 09 2019 Ashwin H <ashwinh@vmware.com> 3.44-2
+-   Fix to enable nss in fips mode
+*   Wed May 29 2019 Michelle Wang <michellew@vmware.com> 3.44-1
+-   Upgrade to 3.44 for CVE-2018-12404
+*   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.39-1
+-   Upgrade to 3.39.
+*   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 3.31-5
+-   Add static libcrmf.a library to devel package
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.31-4
+-   Aarch64 support
 *   Fri Jul 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.31-3
 -   Fix buildrequires.
 *   Thu Jun 29 2017 Xiaolin Li <xiaolinl@vmware.com> 3.31-2
@@ -109,7 +133,7 @@ sudo -u test ./all.sh && userdel test -r -f
 -   Added libs subpackage to reduce tdnf dependent tree
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.25-3
 -   Use sqlite-libs as runtime dependency
-*   Mon Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2
+*   Tue Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2
 -   Modified %check
 *   Tue Jul 05 2016 Anish Swaminathan <anishs@vmware.com> 3.25-1
 -   Upgrade to 3.25

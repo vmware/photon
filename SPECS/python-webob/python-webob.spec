@@ -3,15 +3,15 @@
 
 Summary:        WebOb provides objects for HTTP requests and responses..
 Name:           python-webob
-Version:        1.7.2
-Release:        3%{?dist}
+Version:        1.8.2
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/WebOb
 Source0:        https://pypi.python.org/packages/1a/2b/322d6e01ba19c1e28349efe46dab1bd480c81a55af0658d63dc48ed62ee6/WebOb-%{version}.tar.gz
-%define sha1    WebOb=d8619c778a968f089cb0ce8c0b9153b0973cac21
+%define sha1    WebOb=6f23a2eec1510ceee66efd51d3a2b7025c4cdc2b
 
 BuildArch:      noarch
 
@@ -79,6 +79,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.8.2-1
+-   Update to version 1.8.2
 *   Mon Aug 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.2-3
 -   Fixed make check errors
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.2-2

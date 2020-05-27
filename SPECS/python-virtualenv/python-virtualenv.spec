@@ -2,14 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-virtualenv
-Version:        15.1.0
-Release:        1%{?dist}
+Version:        16.0.0
+Release:        3%{?dist}
 Summary:        Virtual Python Environment builder
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/virtualenv
 Source0:        virtualenv-%{version}.tar.gz
-%define sha1    virtualenv=995ce0fa007210ac2f10258999d06813ecdd6eeb
+%define sha1    virtualenv=33831525c360459671d25f9e5abac931c414d2f7
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -20,6 +20,15 @@ BuildRequires:  python-pytest
 Requires:       python2
 Requires:       python2-libs
 BuildRequires:  python-setuptools
+%if %{with_check}
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+BuildRequires:  python-pip
+BuildRequires:  python3-devel
+Requires:       python3-devel
+BuildRequires:  python3-pip
+BuildRequires:  python-pip
+%endif
 
 BuildArch:      noarch
 
@@ -59,8 +68,13 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
+pip install zipp>=0.5
+pip install pytest
+pip install mock
 python2 setup.py test
 pushd ../p3dir
+pip3 install pytest
+pip3 install mock
 python3 setup.py test
 popd
 
@@ -74,5 +88,11 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Mar 02 2020 Shreyas B. <shreyasb@vmware.com> 16.0.0-3
+-   Fix make check.
+*   Mon Sep 09 2019 Shreyas B. <shreyasb@vmware.com> 16.0.0-2
+-   Fix make check.
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 16.0.0-1
+-   Update to version 16.0.0
 *   Fri Aug 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 15.1.0-1
 -   Initial version of python-virtualenv package for Photon.

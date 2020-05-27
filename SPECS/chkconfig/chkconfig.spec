@@ -353,7 +353,7 @@ rm -rf %{buildroot}
 * Fri Jun  4 2004 Bill Nottingham <notting@redhat.com> 1.3.11-1
 - fix LSB comment parsing (#85678)
 
-* Wed May 29 2004 Bill Nottingham <notting@redhat.com> 1.3.10-1
+* Sat May 29 2004 Bill Nottingham <notting@redhat.com> 1.3.10-1
 - mark alternatives help output for translation (#110526)
 
 * Wed Oct 22 2003 Bill Nottingham <notting@redhat.com> 1.3.9-1
@@ -423,7 +423,7 @@ rm -rf %{buildroot}
 * Sun Jan 27 2002 Erik Troan <ewt@redhat.com>
 - reimplemented update-alternatives as just alternatives
 
-* Thu Jan 25 2002 Bill Nottingham <notting@redhat.com>
+* Fri Jan 25 2002 Bill Nottingham <notting@redhat.com>
 - add in update-alternatives stuff (perl ATM)
 
 * Mon Aug 27 2001 Trond Eivind Glomsrød <teg@redhat.com>
@@ -468,10 +468,10 @@ rm -rf %{buildroot}
 * Sun Aug 20 2000 Matt Wilson <msw@redhat.com>
 - new translations
 
-* Tue Aug 16 2000 Nalin Dahyabhai <nalin@redhat.com>
+* Wed Aug 16 2000 Nalin Dahyabhai <nalin@redhat.com>
 - don't worry about extra whitespace on chkconfig: lines (#16150)
 
-* Wed Aug 10 2000 Trond Eivind Glomsrød <teg@redhat.com>
+* Thu Aug 10 2000 Trond Eivind Glomsrød <teg@redhat.com>
 - i18n merge
 
 * Wed Jul 26 2000 Matt Wilson <msw@redhat.com>

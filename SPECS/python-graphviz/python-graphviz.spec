@@ -3,7 +3,7 @@
 
 Summary:        Graph visualization dot render
 Name:           python-graphviz
-Version:        0.8
+Version:        0.9
 Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
@@ -11,16 +11,16 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/graphviz
 #wget https://github.com/xflr6/graphviz/archive/0.8.tar.gz -O graphviz-0.8.tar.gz
-Source0:        graphviz-%{version}.tar.gz
-%define         sha1 graphviz=2aee1f3576b1ba08e0b70a0c83ef8e9e7d82d82f
+Source0:        graphviz-%{version}.zip
+%define sha1    graphviz=6864163a3647609bc517ee5d5acbf2c302954161
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-xml
+BuildRequires:  unzip
 Requires:       python2
 Requires:       python2-libs
-
 BuildArch:      noarch
 
 %description
@@ -70,5 +70,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.9-1
+-   Update to version 0.9
 *   Thu Jul 13 2017 Divya Thaluru <dthaluru@vmware.com> 0.8-1
 -   Initial packaging for Photon
