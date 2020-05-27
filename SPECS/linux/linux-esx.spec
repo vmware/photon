@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.115
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -39,6 +39,7 @@ Patch10:        9p-file-attributes-caching-support.patch
 Patch11:        fs-9p-cache-container-support.patch
 
 # -esx
+Patch12:        fs-9p-support-for-local-file-lock.patch
 Patch13:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch14:        01-clear-linux.patch
 Patch15:        02-pci-probe.patch
@@ -163,6 +164,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
@@ -330,6 +332,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri May 29 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.115-10
+-   fs/9p: local lock support
 *   Fri May 29 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.115-9
 -   initramfs: zero-copy support
 *   Thu May 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-8
