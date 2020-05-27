@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.115
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        4.19.124
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bdcf13e181be2e9b8a1cc7bac26f9fc1dc0c67dd
+%define sha1 linux=30dda1958aa1affd09bf9c564f4c91bc948596c8
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -68,8 +68,6 @@ Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
-# Fix for CVE-2020-10711
-Patch40:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
 # Fix CVE-2019-18885
 Patch41:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch42:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
@@ -211,7 +209,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch36 -p1
 %patch38 -p1
 %patch39 -p1
-%patch40 -p1
 %patch41 -p1
 %patch42 -p1
 %patch43 -p1
@@ -436,6 +433,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu May 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-1
+-   Update to version 4.19.124
 *   Thu May 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-6
 -   Keep modules of running kernel till next boot
 *   Fri May 22 2020 Ashwin H <ashwinh@vmware.com> 4.19.115-5

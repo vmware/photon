@@ -59,9 +59,9 @@ index 429d201..0487e6a 100644
 --- a/drivers/block/xen-blkfront.c
 +++ b/drivers/block/xen-blkfront.c
 @@ -47,6 +47,8 @@
- #include <linux/bitmap.h>
  #include <linux/list.h>
  #include <linux/workqueue.h>
+ #include <linux/sched/mm.h>
 +#include <linux/completion.h>
 +#include <linux/delay.h>
  

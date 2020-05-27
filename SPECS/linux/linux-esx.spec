@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.115
-Release:        10%{?kat_build:.kat}%{?dist}
+Version:        4.19.124
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bdcf13e181be2e9b8a1cc7bac26f9fc1dc0c67dd
+%define sha1 linux=30dda1958aa1affd09bf9c564f4c91bc948596c8
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -80,8 +80,6 @@ Patch43:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 Patch44:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19074
 Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
-# Fix for CVE-2020-10711
-Patch46:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
 # Fix CVE-2019-18885
 Patch47:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch48:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
@@ -191,7 +189,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
-%patch46 -p1
 %patch47 -p1
 %patch48 -p1
 %patch49 -p1
@@ -332,6 +329,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri May 29 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-1
+-   Update to version 4.19.124
 *   Fri May 29 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.115-10
 -   fs/9p: local lock support
 *   Fri May 29 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.115-9

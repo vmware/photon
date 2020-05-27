@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux
-Version:        4.19.115
-Release:        10%{?kat_build:.kat}%{?dist}
+Version:        4.19.124
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bdcf13e181be2e9b8a1cc7bac26f9fc1dc0c67dd
+%define sha1 linux=30dda1958aa1affd09bf9c564f4c91bc948596c8
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -96,8 +96,6 @@ Patch42:	secure-boot-patches/0003-integrity-Load-certs-to-the-platform-keyring.p
 Patch43:	secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
 Patch44:	secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
 Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
-# Fix for CVE-2020-10711
-Patch46:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
 #Fix for CVE-2018-20669
 Patch47:        CVE-2018-20669-make-user_access_begin-do-access_ok.patch
 
@@ -320,7 +318,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
-%patch46 -p1
 %patch47 -p1
 
 %patch98 -p1
@@ -662,6 +659,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu May 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-1
+-   Update to version 4.19.124
 *   Thu May 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-10
 -   Keep modules of running kernel till next boot
 *   Thu May 28 2020 Tapas Kundu <tkundu@vmware.com> 4.19.115-9
