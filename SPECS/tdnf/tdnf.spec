@@ -4,8 +4,8 @@
 #
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        2.1.0
-Release:        3%{?dist}
+Version:        2.1.1
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -20,6 +20,7 @@ BuildRequires:  rpm-devel
 BuildRequires:  openssl-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  curl-devel
+BuildRequires:  libmetalink-devel
 #plugin repogpgcheck
 BuildRequires:  gpgme-devel
 BuildRequires:  cmake
@@ -32,14 +33,13 @@ BuildRequires:  libxml2
 Obsoletes:      yum
 Provides:       yum
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    tdnf=74e88364cdca65c3fe9da5df8da7d8e14e724e54
+%define sha1    tdnf=643e0dd1bf62b7b7261fdbf292d6e3db45b9d015
 Source1:        cache-updateinfo
 Source2:        cache-updateinfo.service
 Source3:        cache-updateinfo.timer
 Source4:        updateinfo.sh
 Source5:        tdnfrepogpgcheck.conf
-Patch0:         tdnf-fix-distroverpkg-search.patch
-Patch1:         tdnf-fix-stale-solv-cache.patch
+Patch0:         tdnf_fix_project_version.patch
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
@@ -81,7 +81,6 @@ python bindings for tdnf
 %prep
 %setup -qn %{name}-%{version}
 %patch0 -p1
-%patch1 -p1
 
 %build
 mkdir build && cd build
@@ -167,6 +166,20 @@ rm -rf /var/cache/tdnf/cached-updateinfo.txt
 echo "detected upgrade of tdnf/motd, restarting tdnf-cache-updateinfo.timer" >&2
 systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 
+%post cli-libs
+
+    # First argument is 1 => New Installation
+    # First argument is 2 => Upgrade
+
+    /sbin/ldconfig
+
+%postun cli-libs
+
+    /sbin/ldconfig
+
+    # First argument is 0 => Uninstall
+    # First argument is 1 => Upgrade
+
 %files
     %defattr(-,root,root,0755)
     %{_bindir}/tdnf
@@ -205,6 +218,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{python3_sitelib}/*
 
 %changelog
+*   Fri May 29 2020 Tapas Kundu <tkundu@vmware.com> 2.1.1-1
+-   Update to 2.1.1
 *   Tue May 12 2020 Keerthana K <keerthanak@vmware.com> 2.1.0-3
 -   Fix stale solv cache issue.
 *   Tue Mar 24 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.0-2
