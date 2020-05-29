@@ -1,7 +1,7 @@
 Summary:        SQLite DBI Driver
 Name:           perl-DBD-SQLite
 Version:        1.64
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 License:        (GPL+ or Artistic) and Public Domain
 URL:            http://search.cpan.org/dist/DBD-SQLite/
@@ -15,7 +15,7 @@ BuildRequires:  perl >= 5.28.0
 BuildRequires:  perl-DBI
 Requires:       perl-DBI
 Requires:       perl >= 5.28.0
-Requires:       sqlite-libs >= 3.31.1
+Requires:       sqlite-libs >= 3.32.1
 
 %description
 SQLite is a public domain RDBMS database engine that you can find at
@@ -48,6 +48,8 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 1.64-3
+-   Use latest sqlite
 *   Thu May 14 2020 Ankit Jain <ankitja@vmware.com> 1.64-2
 -   Use system sqlite instead of bundled one
 *   Thu Apr 16 2020 Siju Maliakkal <smaliakkal@vmware.com> 1.64-1

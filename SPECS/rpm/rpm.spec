@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -252,6 +252,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 4.14.2-8
+-   Use latest sqlite
 *   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.14.2-7
 -   Added %config(noreplace) for /etc/rpm/macros file.
 *   Sat Jan 04 2020 Neal Gompa <ngompa13@gmail.com> 4.14.2-6

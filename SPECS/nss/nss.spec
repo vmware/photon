@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.44
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_44_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
@@ -109,6 +109,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 3.44-4
+-   Use latest sqlite
 *   Thu Oct 10 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 3.44-3
 -   Makecheck fixes
 *   Fri Aug 09 2019 Ashwin H <ashwinh@vmware.com> 3.44-2
