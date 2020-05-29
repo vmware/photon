@@ -5,19 +5,22 @@ Name:           linux-rt
 Version:        4.19.115
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt50
-Release:        5%{?kat_build:.%kat}%{?dist}
+Release:        6%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
+
+%define uname_r %{version}-%{rt_version}-%{release}-rt
+
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=bdcf13e181be2e9b8a1cc7bac26f9fc1dc0c67dd
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
 %define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
-Source4:        update_photon_cfg.postun
+Source4:        pre-preun-postun-tasks.inc
 Source5:        check_for_config_applicability.inc
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
@@ -412,15 +415,14 @@ BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
 Requires:       filesystem kmod
+Requires(pre): (coreutils or toybox)
+Requires(preun): (coreutils or toybox)
 Requires(post):(coreutils or toybox)
 Requires(postun):(coreutils or toybox)
-
-%define uname_r %{version}-%{rt_version}-%{release}-rt
 
 %description
 The Linux package contains the Linux kernel with RT (real-time)
 features.
-
 
 %package devel
 Summary:        Kernel Dev
@@ -442,6 +444,7 @@ The Linux package contains the Linux kernel doc files
 %ifarch x86_64
 %setup -D -b 3 -n linux-%{version}
 %endif
+
 %patch0 -p1
 %patch1 -p1
 %patch3 -p1
@@ -942,6 +945,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-6
+-   Keep modules of running kernel till next boot
 *   Fri May 22 2020 Tapas Kundu <tkundu@vmware.com> 4.19.115-5
 -   Deprecate linux-rt-tools in favor of linux-tools.
 -   Deprecate python3-perf in favor of linux-python3-perf.

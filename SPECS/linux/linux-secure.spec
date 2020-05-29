@@ -3,17 +3,20 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.112
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+%define uname_r %{version}-%{release}-secure
+
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=266f149294b7222b23eab3292d0db98791343b0e
 Source1:        config-secure
 Source2:        initramfs.trigger
-Source3:        update_photon_cfg.postun
+Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
@@ -94,9 +97,10 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 Requires:       filesystem kmod
+Requires(pre): (coreutils or toybox)
+Requires(preun): (coreutils or toybox)
 Requires(post):(coreutils or toybox)
 Requires(postun):(coreutils or toybox)
-%define uname_r %{version}-%{release}-secure
 
 %description
 Security hardened Linux kernel.
@@ -326,6 +330,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.112-6
+-   Keep modules of running kernel till next boot
 *   Wed May 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.19.112-5
 -   Add patch to fix CVE-2020-10711
 *   Mon May 04 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.112-4

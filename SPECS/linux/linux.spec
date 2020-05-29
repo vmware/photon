@@ -14,12 +14,15 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.112
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
+
+%define uname_r %{version}-%{release}
+
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=266f149294b7222b23eab3292d0db98791343b0e
 Source1:	config_%{_arch}
@@ -29,7 +32,7 @@ Source3:	https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.t
 %define sha1 ena_linux=c8ec9094f9db8d324d68a13b0b3dcd2c5271cbc0
 Source4:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
 %define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
-Source6:        update_photon_cfg.postun
+Source6:        pre-preun-postun-tasks.inc
 Source7:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source8:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
@@ -165,13 +168,13 @@ BuildRequires:  python3-devel
 BuildRequires:  pciutils-devel
 %endif
 Requires:       filesystem kmod
-Requires(post):(coreutils or toybox)
-Requires(postun):(coreutils or toybox)
-%define uname_r %{version}-%{release}
+Requires(pre): (coreutils or toybox)
+Requires(preun): (coreutils or toybox)
+Requires(post): (coreutils or toybox)
+Requires(postun): (coreutils or toybox)
 
 %description
 The Linux package contains the Linux kernel.
-
 
 %package devel
 Summary:        Kernel Dev
@@ -267,6 +270,7 @@ This Linux package contains hmac sha generator kernel module.
 %setup -D -b 4 -n linux-%{version}
 %setup -D -b 8 -n linux-%{version}
 %endif
+
 %patch0 -p1
 %patch1 -p1
 %patch3 -p1
@@ -634,6 +638,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Jun 1 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.112-9
+-   Keep modules of running kernel till next boot
 *   Sat May 30 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.112-8
 -   .config: add gs_usb module
 *   Wed May 20 2020 Tapas Kundu <tkundu@vmware.com> 4.19.112-7
