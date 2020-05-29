@@ -2,19 +2,23 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.224
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+%define uname_r %{version}-%{release}-secure
+
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=ff58d8f86dced1ac20e27717437d816a2c6e3f45
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
 Source3:        initramfs.trigger
-Source4:        update_photon_cfg.postun
+Source4:        pre-preun-postun-tasks.inc
+
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
 Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
@@ -113,9 +117,10 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 Requires:       filesystem kmod
+Requires(pre): (coreutils or toybox)
+Requires(preun): (coreutils or toybox)
 Requires(post):(coreutils or toybox)
 Requires(postun):(coreutils or toybox)
-%define uname_r %{version}-%{release}-secure
 
 %description
 Security hardened Linux kernel.
@@ -360,6 +365,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.9.224-2
+-   Keep modules of running kernel till next boot
 *   Fri May 22 2020 Ajay Kaher <akaher@vmware.com> 4.9.224-1
 -   Update to version 4.9.224
 *   Fri May 15 2020 Vikash Bansal <bvikas@vmware.com> 4.9.221-3
@@ -584,7 +591,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Tue Jul 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-1
 -   Fix CVE-2017-11176 and CVE-2017-10911
 *   Fri Jul 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-3
--   Remove aufs source tarballs from git repo 
+-   Remove aufs source tarballs from git repo
 *   Mon Jul 03 2017 Xiaolin Li <xiaolinl@vmware.com> 4.9.34-2
 -   Add libdnet-devel, kmod-devel and libmspack-devel to BuildRequires
 *   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-1
@@ -621,7 +628,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Wed Feb 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-2
 -   rap_plugin improvement: throw error on function type casting
     function signatures were cleaned up using this feature.
--   Added RAP_ENTRY for asm functions. 
+-   Added RAP_ENTRY for asm functions.
 *   Thu Feb 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-1
 -   Update to linux-4.9.9 to fix CVE-2016-10153, CVE-2017-5546,
     CVE-2017-5547, CVE-2017-5548 and CVE-2017-5576.
@@ -649,5 +656,4 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   .config: add netfilter_xt_match_{cgroup,ipvs} support
 -   .config: disable /dev/mem
 *   Mon Oct 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-1
-    Initial commit. 
-
+    Initial commit.

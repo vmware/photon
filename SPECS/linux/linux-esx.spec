@@ -2,17 +2,21 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.224
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+%define uname_r %{version}-%{release}-esx
+
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=ff58d8f86dced1ac20e27717437d816a2c6e3f45
 Source1:        config-esx
 Source2:        initramfs.trigger
-Source3:        update_photon_cfg.postun
+Source3:        pre-preun-postun-tasks.inc
+
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
 Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
@@ -93,7 +97,6 @@ BuildRequires: lz4
 Requires:      filesystem kmod
 Requires(post):(coreutils or toybox)
 Requires(postun):(coreutils or toybox)
-%define uname_r %{version}-%{release}-esx
 
 %description
 The Linux kernel build for GOS for VMware hypervisor.
@@ -257,6 +260,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.9.224-2
+-   Keep modules of running kernel till next boot
 *   Fri May 22 2020 Ajay Kaher <akaher@vmware.com> 4.9.224-1
 -   Update to version 4.9.224
 *   Fri May 15 2020 Vikash Bansal <bvikas@vmware.com> 4.9.221-4
@@ -665,7 +670,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Thu Aug 13 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-3
 -   Added environment file(photon.cfg) for a grub.
 *   Tue Aug 11 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-2
-    Added pci-probe-vmware.patch. Removed unused modules. Decreased boot time. 
+    Added pci-probe-vmware.patch. Removed unused modules. Decreased boot time.
 *   Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-1
-    Initial commit. Use patchset from Clear Linux. 
+    Initial commit. Use patchset from Clear Linux.
 

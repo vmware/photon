@@ -2,17 +2,21 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.224
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
+
+%define uname_r %{version}-%{release}-aws
+
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=ff58d8f86dced1ac20e27717437d816a2c6e3f45
-Source1:	config-aws
-Source2:	initramfs.trigger
-Source3:	update_photon_cfg.postun
+Source1:        config-aws
+Source2:        initramfs.trigger
+Source3:        pre-preun-postun-tasks.inc
+
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
 Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
@@ -153,9 +157,10 @@ BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:	audit-devel
 Requires:       filesystem kmod
-Requires(post):(coreutils or toybox)
-Requires(postun):(coreutils or toybox)
-%define uname_r %{version}-%{release}-aws
+Requires(pre): (coreutils or toybox)
+Requires(preun): (coreutils or toybox)
+Requires(post): (coreutils or toybox)
+Requires(postun): (coreutils or toybox)
 
 %description
 The Linux package contains the Linux kernel.
@@ -200,6 +205,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 
 %prep
 %setup -q -n linux-%{version}
+
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -446,6 +452,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.9.224-2
+-   Keep modules of running kernel till next boot
 *   Fri May 22 2020 Ajay Kaher <akaher@vmware.com> 4.9.224-1
 -   Update to version 4.9.224
 *   Fri May 15 2020 Vikash Bansal <bvikas@vmware.com> 4.9.221-3
