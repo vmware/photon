@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        1.2.3
-Release:        10%{?dist}
+Release:        11%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -164,6 +164,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 1.2.3-11
+-   Use latest sqlite
 *   Fri Jul 19 2019 Ankit Jain <ankitja@vmware.com> 1.2.3-10
 -   Added check.at for skipobsoletes and skipconflicts check command
 *   Mon Jul 15 2019 Keerthana K <keerthanak@vmware.com> 1.2.3-9
