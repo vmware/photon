@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.44
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/mozilla.org/security/nss/
 Group:          Applications/System
@@ -88,6 +88,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 3.44-3
+-   use latest sqlite
 *   Fri Aug 09 2019 Ashwin H <ashwinh@vmware.com> 3.44-2
 -   Fix to enable nss in fips mode
 *   Wed May 29 2019 Michelle Wang <michellew@vmware.com> 3.44-1

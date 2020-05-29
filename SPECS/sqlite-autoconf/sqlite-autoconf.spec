@@ -1,17 +1,15 @@
-%define sourcever 3310100
+%define sourcever 3320100
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite-autoconf
-Version:        3.31.1
-Release:        3%{?dist}
+Version:        3.32.1
+Release:        1%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://sqlite.org/2020/%{name}-3310100.tar.gz
-%define sha1    sqlite=0c30f5b22152a8166aa3bebb0f4bc1f3e9cc508b
-Patch0:         sqlite-CVE-2020-11656.patch
-Patch1:		sqlite-CVE-2020-9327.patch
+Source0:        http://sqlite.org/2020/%{name}-3320100.tar.gz
+%define sha1    sqlite=3d34d86ef726b66edeb0b93b2a4c0d036ea8dcf3
 Obsoletes:      libsqlite
 Provides:       sqlite3
 
@@ -22,8 +20,6 @@ C/C++ interface specs and other miscellaneous documentation.
 
 %prep
 %setup -q -n %{name}-%{sourcever}
-%patch0 -p1
-%patch1 -p1
 
 %build
 ./configure \
@@ -69,6 +65,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+*   Thu May 28 2020 Siju Maliakkal <smaliakkal@vmware.com> 3.32.1-1
+-   Upgrade to 3.32.1 for following CVEs
+-   CVE-2020-13630 CVE-2020-13434 CVE-2020-13435 CVE-2020-13631 CVE-2020-13632
 *   Wed Apr 15 2020 Siju Maliakkal <smaliakkal@vmware.com> 3.31.1-3
 -   Fix for CVE-2020-9327
 *   Mon Apr 13 2020 Ankit Jain <ankitja@vmware.com> 3.31.1-2

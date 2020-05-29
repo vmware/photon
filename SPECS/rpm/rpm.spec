@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -240,6 +240,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 4.13.0.2-3
+-   use latest sqlite-autoconf
 *   Mon Aug 19 2019 Kuladeep Rayalla <krayalla@vmware.com> 4.13.0.2-2
 -   Include PayloadIsXz support
 *   Sat Nov 03 2018 Tapas Kundu <tkundu@vmware.com> 4.13.0.2-1

@@ -4,7 +4,7 @@
 Summary:	dnf/yum equivalent using C libs
 Name:		tdnf
 Version:	1.1.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
 License:	VMware
@@ -93,6 +93,8 @@ ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
     %{_libdir}/pkgconfig/tdnf.pc
 
 %changelog
+*       Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 1.1.0-4
+-	use latest sqlite-autoconf
 *       Wed Oct 11 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.0-3
 -       Patch to report curl error for repo sync or download
 *       Fri Sep 29 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
