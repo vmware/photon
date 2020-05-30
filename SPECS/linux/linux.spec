@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.112
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -634,6 +634,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Sat May 30 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.112-8
+-   .config: add gs_usb module
 *   Wed May 20 2020 Tapas Kundu <tkundu@vmware.com> 4.19.112-7
 -   Added linux-python3-perf subpackage.
 -   Added turbostat and cpupower to tools for x86_64.
