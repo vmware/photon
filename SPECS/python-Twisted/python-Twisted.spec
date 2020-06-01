@@ -4,7 +4,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python-Twisted
 Version:        19.10.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -50,6 +50,7 @@ Requires:       python-constantly
 Requires:       python-hyperlink
 Requires:       python-attrs
 Requires:       python-PyHamcrest
+Requires:       python-service_identity >= 18.1.0
 %description
 Twisted is an event-driven networking engine written in Python and licensed under the open source ​MIT license. Twisted runs on Python 2 and an ever growing subset also works with Python 3.
 
@@ -67,6 +68,7 @@ Requires:       python3-constantly
 Requires:       python3-hyperlink
 Requires:       python3-attrs
 Requires:       python3-PyHamcrest
+Requires:       python3-service_identity >= 18.1.0
 
 %description -n python3-Twisted
 Python 3 version.
@@ -133,6 +135,8 @@ popd
 %{_bindir}/cftp3
 
 %changelog
+*   Mon Jun 01 2020 Tapas Kundu <tkundu@vmware.com> 19.10.0-3
+-   Requires service_identity
 *   Wed Mar 04 2020 Tapas Kundu <tkundu@vmware.com> 19.10.0-2
 -   Fix make check
 *   Mon Nov 18 2019 Tapas Kundu <tkundu@vmware.com> 19.10.0-1
