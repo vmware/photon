@@ -1,7 +1,8 @@
-diff -rupN cloud-init-18.3/tools/ds-identify cloud-init-18.3_ds-identity-fixed/tools/ds-identify
---- cloud-init-18.3/tools/ds-identify	2018-06-20 00:19:26.000000000 +0000
-+++ cloud-init-18.3_ds-identity-fixed/tools/ds-identify	2018-12-04 12:50:04.673777694 +0000
-@@ -85,7 +85,7 @@ _DI_LOGGED=""
+diff --git a/tools/ds-identify b/tools/ds-identify
+index c93d4a77..d70f9aee 100755
+--- a/tools/ds-identify
++++ b/tools/ds-identify
+@@ -93,7 +93,7 @@ _DI_LOGGED=""
  DI_MAIN=${DI_MAIN:-main}
  
  DI_BLKID_OUTPUT=""

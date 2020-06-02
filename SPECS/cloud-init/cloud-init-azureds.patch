@@ -1,7 +1,8 @@
-diff -rup cloud-init-18.3/cloudinit/sources/DataSourceAzure.py cloud-init-18.3-new/cloudinit/sources/DataSourceAzure.py
---- cloud-init-18.3/cloudinit/sources/DataSourceAzure.py	2018-06-20 05:49:26.000000000 +0530
-+++ cloud-init-18.3-new/cloudinit/sources/DataSourceAzure.py	2018-09-20 21:06:26.700264085 +0530
-@@ -27,7 +27,7 @@ LOG = logging.getLogger(__name__)
+diff --git a/cloudinit/sources/DataSourceAzure.py b/cloudinit/sources/DataSourceAzure.py
+index 24f448c5..f82330a1 100755
+--- a/cloudinit/sources/DataSourceAzure.py
++++ b/cloudinit/sources/DataSourceAzure.py
+@@ -40,7 +40,7 @@ LOG = logging.getLogger(__name__)
  
  DS_NAME = 'Azure'
  DEFAULT_METADATA = {"instance-id": "iid-AZURE-NODE"}
@@ -10,33 +11,39 @@ diff -rup cloud-init-18.3/cloudinit/sources/DataSourceAzure.py cloud-init-18.3-n
  AGENT_START_BUILTIN = "__builtin__"
  BOUNCE_COMMAND_IFUP = [
      'sh', '-xc',
-diff -rup cloud-init-18.3/cloudinit/sources/helpers/azure.py cloud-init-18.3-new/cloudinit/sources/helpers/azure.py
---- cloud-init-18.3/cloudinit/sources/helpers/azure.py	2018-06-20 05:49:26.000000000 +0530
-+++ cloud-init-18.3-new/cloudinit/sources/helpers/azure.py	2018-09-20 22:29:32.376130787 +0530
-@@ -7,6 +7,7 @@ import re
- import socket
+diff --git a/cloudinit/sources/helpers/azure.py b/cloudinit/sources/helpers/azure.py
+index fc760581..2e81fec0 100755
+--- a/cloudinit/sources/helpers/azure.py
++++ b/cloudinit/sources/helpers/azure.py
+@@ -8,6 +8,7 @@ import socket
  import struct
  import time
+ import textwrap
 +import configobj
  
  from cloudinit.net import dhcp
  from cloudinit import stages
-@@ -18,9 +18,10 @@
- from cloudinit import url_helper
- from cloudinit import util
+@@ -22,6 +23,7 @@ from cloudinit import distros
  from cloudinit.reporting import events
+ from cloudinit.net.dhcp import EphemeralDHCPv4
+ from datetime import datetime
 +from io import StringIO
  
  LOG = logging.getLogger(__name__)
--
+ 
+@@ -32,6 +34,7 @@ DEFAULT_WIRESERVER_ENDPOINT = "a8:3f:81:10"
+ BOOT_EVENT_TYPE = 'boot-telemetry'
+ SYSTEMINFO_EVENT_TYPE = 'system-info'
+ DIAGNOSTIC_EVENT_TYPE = 'diagnostic'
 +NETWORKD_LEASES_DIR = '/run/systemd/netif/leases'
  
  azure_ds_reporter = events.ReportEventStack(
      name="azure-ds",
-@@ -332,6 +333,32 @@
+@@ -474,6 +477,32 @@ class WALinuxAgentShim(object):
+                     '{_file} is not valid JSON data'.format(_file=hook_file))
          return dhcp_options
  
-     @staticmethod
++    @staticmethod
 +    def networkd_parse_lease(content):
 +        """Parse a systemd lease file content as in /run/systemd/netif/leases/
 +        Parse this (almost) ini style file even though it says:
@@ -62,19 +69,14 @@ diff -rup cloud-init-18.3/cloudinit/sources/helpers/azure.py cloud-init-18.3-new
 +                util.load_file(os.path.join(leases_d, lfile)))
 +        return ret
 +
-+    @staticmethod
+     @staticmethod
      @azure_ds_telemetry_reporter
      def _get_value_from_dhcpoptions(dhcp_options):
-         if dhcp_options is None:
-@@ -306,8 +334,9 @@ class WALinuxAgentShim(object):
-             # Option-245 stored in /run/cloud-init/dhclient.hooks/<ifc>.json
-             # a dhclient exit hook that calls cloud-init-dhclient-hook
+@@ -506,6 +535,7 @@ class WALinuxAgentShim(object):
              LOG.debug('Finding Azure endpoint from hook json...')
--            dhcp_options = WALinuxAgentShim._load_dhclient_json()
--            value = WALinuxAgentShim._get_value_from_dhcpoptions(dhcp_options)
-+            value = WALinuxAgentShim._networkd_get_value_from_leases()
+             dhcp_options = WALinuxAgentShim._load_dhclient_json()
+             value = WALinuxAgentShim._get_value_from_dhcpoptions(dhcp_options)
 +            LOG.debug('networkd value from lease %s', value)
-+
          if value is None:
              # Fallback and check the leases file if unsuccessful
-             LOG.debug("Unable to find endpoint in dhclient logs. "
+             report_diagnostic_event("No Azure endpoint from dhclient logs")

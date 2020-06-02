@@ -1,8 +1,8 @@
 diff --git a/config/cloud.cfg.tmpl b/config/cloud.cfg.tmpl
-index 25db43e0..d2d30444 100644
+index 1bb97f83..af669e50 100644
 --- a/config/cloud.cfg.tmpl
 +++ b/config/cloud.cfg.tmpl
-@@ -10,23 +10,34 @@ syslog_fix_perms: root:root
+@@ -10,17 +10,28 @@ syslog_fix_perms: root:root
  # A set of users which may be applied and/or used by various modules
  # when a 'default' entry is found it will reference the 'default_user'
  # from the distro configuration specified below
@@ -30,8 +30,11 @@ index 25db43e0..d2d30444 100644
 +disable_vmware_customization: true
 +{% endif %}
 +
- {% if variant in ["centos", "fedora", "rhel"] %}
+ {% if variant in ["amazon", "centos", "fedora", "rhel"] %}
  mount_default_fields: [~, ~, 'auto', 'defaults,nofail', '0', '2']
+ {% if variant == "amazon" %}
+@@ -28,8 +39,8 @@ resize_rootfs: noblock
+ {% endif %}
  resize_rootfs_tmp: /dev
  ssh_pwauth:   0
 -
@@ -40,10 +43,10 @@ index 25db43e0..d2d30444 100644
  # This will cause the set+update hostname module to not operate (if true)
  preserve_hostname: false
  
-@@ -34,6 +45,24 @@ preserve_hostname: false
+@@ -37,15 +48,32 @@ preserve_hostname: false
  # This should not be required, but leave it in place until the real cause of
- # not beeing able to find -any- datasources is resolved.
- datasource_list: ['ConfigDrive', 'Azure', 'OpenStack', 'Ec2']
+ # not finding -any- datasources is resolved.
+ datasource_list: ['NoCloud', 'ConfigDrive', 'Azure', 'OpenStack', 'Ec2']
 +{% elif variant in ["photon"] %}
 +# datasources to check for cloud-config
 +datasource_list: [
@@ -63,11 +66,21 @@ index 25db43e0..d2d30444 100644
 +    None
 +    ]
  {% endif %}
++
  # Example datasource config
  # datasource:
-@@ -58,7 +87,9 @@ cloud_init_modules:
+ #    Ec2:
+ #      metadata_urls: [ 'blah.com' ]
+ #      timeout: 5 # (defaults to 50 seconds)
+ #      max_wait: 10 # (defaults to 120 seconds)
+-
+-
+ {% if variant == "amazon" %}
+ # Amazon Linux relies on ec2-net-utils for network configuration
+ network:
+@@ -72,7 +100,9 @@ cloud_init_modules:
   - update_hostname
- {% if variant not in ["freebsd"] %}
+ {% if variant not in ["freebsd", "netbsd"] %}
   - update_etc_hosts
 +{% if variant not in ["photon"] %}
   - ca-certs
@@ -75,9 +88,9 @@ index 25db43e0..d2d30444 100644
   - rsyslog
  {% endif %}
   - users-groups
-@@ -73,11 +104,17 @@ cloud_config_modules:
+@@ -86,11 +116,17 @@ cloud_config_modules:
+  - emit_upstart
   - snap
-  - snap_config  # DEPRECATED- Drop in version 18.2
  {% endif %}
 +{% if variant not in ["photon"] %}
   - ssh-import-id
@@ -95,7 +108,7 @@ index 25db43e0..d2d30444 100644
   - yum-add-repo
  {% endif %}
  {% if variant in ["ubuntu", "unknown", "debian"] %}
-@@ -101,6 +138,10 @@ cloud_config_modules:
+@@ -114,6 +150,10 @@ cloud_config_modules:
   - byobu
  {% endif %}
  
@@ -105,22 +118,20 @@ index 25db43e0..d2d30444 100644
 +
  # The modules that run in the 'final' stage
  cloud_final_modules:
- {% if variant in ["ubuntu", "unknown", "debian"] %}
-@@ -137,7 +178,7 @@ cloud_final_modules:
+  - package-update-upgrade-install
+@@ -145,7 +185,7 @@ cloud_final_modules:
  # (not accessible to handlers/transforms)
  system_info:
     # This will affect which distro class gets used
--{% if variant in ["centos", "debian", "fedora", "rhel", "suse", "ubuntu", "freebsd"] %}
-+{% if variant in ["centos", "debian", "fedora", "rhel", "suse", "ubuntu", "freebsd", "photon"] %}
+-{% if variant in ["amazon", "arch", "centos", "debian", "fedora", "freebsd", "netbsd", "openbsd", "rhel", "suse", "ubuntu"] %}
++{% if variant in ["amazon", "arch", "centos", "debian", "fedora", "freebsd", "netbsd", "openbsd", "rhel", "suse", "ubuntu", "photon"] %}
     distro: {{ variant }}
  {% else %}
     # Unknown/fallback distro.
-@@ -211,5 +252,14 @@ system_info:
-      gecos: FreeBSD
+@@ -247,6 +287,15 @@ system_info:
       groups: [wheel]
       sudo: ["ALL=(ALL) NOPASSWD:ALL"]
--     shell: /bin/tcsh
-+     shell: /bin/tcsih
+      shell: /bin/ksh
 +{% elif variant == "photon" %}
 +   # Other config here will be given to the distro class and/or path classes
 +   paths:
@@ -131,16 +142,18 @@ index 25db43e0..d2d30444 100644
 +
 +#manage_etc_hosts: true
  {% endif %}
+ {% if variant in ["freebsd", "netbsd", "openbsd"] %}
+    network:
 diff --git a/tools/render-cloudcfg b/tools/render-cloudcfg
-index 8b7cb875..8b77505c 100755
+index 9322b2c3..6e973dde 100755
 --- a/tools/render-cloudcfg
 +++ b/tools/render-cloudcfg
-@@ -4,7 +4,7 @@ import argparse
- import os
+@@ -5,7 +5,7 @@ import os
  import sys
  
--VARIANTS = ["bsd", "centos", "fedora", "rhel", "suse", "ubuntu", "unknown"]
-+VARIANTS = ["bsd", "centos", "fedora", "rhel", "suse", "ubuntu", "photon", "unknown"]
+ VARIANTS = ["amazon", "arch", "centos", "debian", "fedora", "freebsd",
+-            "netbsd", "openbsd", "rhel", "suse", "ubuntu", "unknown"]
++            "netbsd", "openbsd", "rhel", "suse", "ubuntu", "photon", "unknown"]
+ 
  
  if "avoid-pep8-E402-import-not-top-of-file":
-     _tdir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

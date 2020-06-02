@@ -1,0 +1,132 @@
+commit 58b9b3ebb92b7be7fcae0648d75473f0de093af8
+Author: Shreenidhi Shedi <sshedi@vmware.com>
+Date:   Fri Jul 10 15:35:31 2020 +0530
+
+    cc_final_message: don't create directories when writing boot-finished (#445)
+    
+    If the instance symlink doesn't exist, then we shouldn't create a
+    directory in its place, because that breaks future boots.
+    
+    Launchpad bug: #1883903
+    
+    write_file in util.py is backported from master branch, without it
+    test_final_message.py will fail.
+    
+    ssh_util.py was using copy_mode while calling write_file, fixed it
+    
+    This patch fixes the issue of /var/lib/cloud/instance being a directory
+    instead of symlink
+    
+    Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+
+diff --git a/cloudinit/config/cc_final_message.py b/cloudinit/config/cc_final_message.py
+index fd141541..3441f7a9 100644
+--- a/cloudinit/config/cc_final_message.py
++++ b/cloudinit/config/cc_final_message.py
+@@ -78,7 +78,7 @@ def handle(_name, cfg, cloud, log, args):
+     boot_fin_fn = cloud.paths.boot_finished
+     try:
+         contents = "%s - %s - v. %s\n" % (uptime, ts, cver)
+-        util.write_file(boot_fin_fn, contents)
++        util.write_file(boot_fin_fn, contents, ensure_dir_exists=False)
+     except Exception:
+         util.logexc(log, "Failed to write boot finished file %s", boot_fin_fn)
+ 
+diff --git a/cloudinit/config/tests/test_final_message.py b/cloudinit/config/tests/test_final_message.py
+new file mode 100644
+index 00000000..76cb0ad1
+--- /dev/null
++++ b/cloudinit/config/tests/test_final_message.py
+@@ -0,0 +1,33 @@
++# This file is part of cloud-init. See LICENSE file for license information.
++from unittest import mock
++
++import pytest
++
++from cloudinit.config.cc_final_message import handle
++
++
++class TestHandle:
++    # TODO: Expand these tests to cover full functionality; currently they only
++    # cover the logic around how the boot-finished file is written (and not its
++    # contents).
++
++    @pytest.mark.parametrize(
++        "instance_dir_exists,file_is_written", [(True, True), (False, False)]
++    )
++    def test_boot_finished_written(
++        self, instance_dir_exists, file_is_written, tmpdir
++    ):
++        instance_dir = tmpdir.join("var/lib/cloud/instance")
++        if instance_dir_exists:
++            instance_dir.ensure_dir()
++        boot_finished = instance_dir.join("boot-finished")
++
++        m_cloud = mock.Mock(
++            paths=mock.Mock(boot_finished=boot_finished.strpath)
++        )
++
++        handle(None, {}, m_cloud, mock.Mock(), [])
++
++        # We should not change the status of the instance directory
++        assert instance_dir_exists == instance_dir.exists()
++        assert file_is_written == boot_finished.exists()
+diff --git a/cloudinit/ssh_util.py b/cloudinit/ssh_util.py
+index c3a9b5b7..f9097878 100644
+--- a/cloudinit/ssh_util.py
++++ b/cloudinit/ssh_util.py
+@@ -344,7 +344,7 @@ def update_ssh_config(updates, fname=DEF_SSHD_CFG):
+     changed = update_ssh_config_lines(lines=lines, updates=updates)
+     if changed:
+         util.write_file(
+-            fname, "\n".join([str(l) for l in lines]) + "\n", copy_mode=True)
++            fname, "\n".join([str(l) for l in lines]) + "\n", preserve_mode=True)
+     return len(changed) != 0
+ 
+ 
+diff --git a/cloudinit/util.py b/cloudinit/util.py
+index 4cae7ec8..9bb3f01c 100644
+--- a/cloudinit/util.py
++++ b/cloudinit/util.py
+@@ -1934,7 +1934,15 @@ def chmod(path, mode):
+             os.chmod(path, real_mode)
+ 
+ 
+-def write_file(filename, content, mode=0o644, omode="wb", copy_mode=False):
++def write_file(
++    filename,
++    content,
++    mode=0o644,
++    omode="wb",
++    preserve_mode=False,
++    *,
++    ensure_dir_exists=True
++):
+     """
+     Writes a file with the given content and sets the file mode as specified.
+     Restores the SELinux context if possible.
+@@ -1943,16 +1951,22 @@ def write_file(filename, content, mode=0o644, omode="wb", copy_mode=False):
+     @param content: The content to write to the file.
+     @param mode: The filesystem mode to set on the file.
+     @param omode: The open mode used when opening the file (w, wb, a, etc.)
++    @param preserve_mode: If True and `filename` exists, preserve `filename`s
++                          current mode instead of applying `mode`.
++    @param ensure_dir_exists: If True (the default), ensure that the directory
++                              containing `filename` exists before writing to
++                              the file.
+     """
+ 
+-    if copy_mode:
++    if preserve_mode:
+         try:
+             file_stat = os.stat(filename)
+             mode = stat.S_IMODE(file_stat.st_mode)
+         except OSError:
+             pass
+ 
+-    ensure_dir(os.path.dirname(filename))
++    if ensure_dir_exists:
++        ensure_dir(os.path.dirname(filename))
+     if 'b' in omode.lower():
+         content = encode_text(content)
+         write_type = 'bytes'

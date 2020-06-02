@@ -1,87 +1,68 @@
-diff --git a/cloudinit/cmd/tests/test_query.py b/cloudinit/cmd/tests/test_query.py
-index 28738b1e..19ada508 100644
---- a/cloudinit/cmd/tests/test_query.py
-+++ b/cloudinit/cmd/tests/test_query.py
-@@ -4,6 +4,7 @@ import errno
- from six import StringIO
- from textwrap import dedent
- import os
-+import unittest2
+commit a023c667c0bdccc5f0b62f65dabb1ac473030e01
+Author: Shreenidhi Shedi <sshedi@vmware.com>
+Date:   Fri Jul 10 15:41:40 2020 +0530
+
+    fix make check
+    
+    test_resolv_conf.py takes care of tests after systemd-resolved-config.patch
+    test_util.py changes are needed because of instance-dir.patch
+    
+    Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+
+diff --git a/cloudinit/config/tests/test_resolv_conf.py b/cloudinit/config/tests/test_resolv_conf.py
+index f3d97b82..68811208 100644
+--- a/cloudinit/config/tests/test_resolv_conf.py
++++ b/cloudinit/config/tests/test_resolv_conf.py
+@@ -16,10 +16,10 @@ EXPECTED_HEADER = """\
+ class TestGenerateResolvConf:
+     @mock.patch("cloudinit.config.cc_resolv_conf.templater.render_to_file")
+     def test_default_target_fname_is_etc_resolvconf(self, m_render_to_file):
+-        generate_resolv_conf("templates/resolv.conf.tmpl", mock.MagicMock())
++        generate_resolv_conf("templates/systemd.resolved.conf.tmpl", mock.MagicMock())
  
- from collections import namedtuple
- from cloudinit.cmd import query
-@@ -13,7 +14,6 @@ from cloudinit.sources import (
- from cloudinit.tests.helpers import CiTestCase, mock
- from cloudinit.util import ensure_dir, write_file
+         assert [
+-            mock.call(mock.ANY, "/etc/resolv.conf", mock.ANY)
++            mock.call(mock.ANY, "/etc/systemd/resolved.conf", mock.ANY)
+         ] == m_render_to_file.call_args_list
  
--
- class TestQuery(CiTestCase):
- 
-     with_logs = True
-@@ -142,6 +142,8 @@ class TestQuery(CiTestCase):
-             '{\n "my_var": "it worked",\n "userdata": "vd",\n '
-             '"vendordata": "vd"\n}\n', m_stdout.getvalue())
- 
-+
-+    @unittest2.skip("fails, reason not known yet")
-     def test_handle_args_dumps_all_instance_data(self):
-         """When --all is specified query will dump all instance data vars."""
-         write_file(self.instance_data, '{"my-var": "it worked"}')
-@@ -179,7 +181,8 @@ class TestQuery(CiTestCase):
-         with mock.patch('sys.stdout', new_callable=StringIO) as m_stdout:
-             self.assertEqual(0, query.handle_args('anyname', args))
-         self.assertEqual('value-2\n', m_stdout.getvalue())
--
-+    
-+    @unittest2.skip("fails, reason not known yet")
-     def test_handle_args_returns_standardized_vars_to_top_level_aliases(self):
-         """Any standardized vars under v# are promoted as top-level aliases."""
-         write_file(
-diff --git a/tests/unittests/test_datasource/test_azure_helper.py b/tests/unittests/test_datasource/test_azure_helper.py
-index 02556165..cd9d252d 100644
---- a/tests/unittests/test_datasource/test_azure_helper.py
-+++ b/tests/unittests/test_datasource/test_azure_helper.py
-@@ -83,6 +83,7 @@ class TestFindEndpoint(CiTestCase):
-             ' option {0} {1};'.format(endpoint, encoded_address),
-             '}'])
- 
-+    @unittest2.skip("fails, reason not known yet")
-     def test_from_dhcp_client(self):
-         self.dhcp_options.return_value = {"eth0": {"unknown_245": "5:4:3:2"}}
-         self.assertEqual('5.4.3.2', wa_shim.find_endpoint(None))
+     @mock.patch("cloudinit.config.cc_resolv_conf.templater.render_to_file")
 diff --git a/tests/unittests/test_util.py b/tests/unittests/test_util.py
-index 0e71db82..eb39c86a 100644
+index e45bedc1..7c9a5477 100644
 --- a/tests/unittests/test_util.py
 +++ b/tests/unittests/test_util.py
-@@ -13,6 +13,7 @@ import json
- import six
- import sys
- import yaml
-+import unittest2
+@@ -117,29 +117,29 @@ class TestWriteFile(helpers.TestCase):
+         file_stat = os.stat(path)
+         self.assertEqual(0o666, stat.S_IMODE(file_stat.st_mode))
  
- from cloudinit import importer, util
- from cloudinit.tests import helpers
-@@ -758,6 +759,7 @@ class TestSubp(helpers.CiTestCase):
-         # but by using bash, we remove dependency on another program.
-         return([BASH, '-c', 'printf "$@"', 'printf'] + list(args))
+-    def test_copy_mode_no_existing(self):
+-        """Verify that file is created with mode 0o644 if copy_mode
++    def test_preserve_mode_no_existing(self):
++        """Verify that file is created with mode 0o644 if preserve_mode
+         is true and there is no prior existing file."""
+         path = os.path.join(self.tmp, "NewFile.txt")
+         contents = "Hey there"
  
-+    @unittest2.skip("fails, reason not known yet")
-     def test_subp_handles_bytestrings(self):
-         """subp can run a bytestring command if shell is True."""
-         tmp_file = self.tmp_path('test.out')
-@@ -767,6 +769,7 @@ class TestSubp(helpers.CiTestCase):
-         self.assertEqual(u'', _err)
-         self.assertEqual('HI MOM\n', util.load_file(tmp_file))
+-        util.write_file(path, contents, copy_mode=True)
++        util.write_file(path, contents, preserve_mode=True)
  
-+    @unittest2.skip("fails, reason not known yet")
-     def test_subp_handles_strings(self):
-         """subp can run a string command if shell is True."""
-         tmp_file = self.tmp_path('test.out')
-@@ -855,6 +858,7 @@ class TestSubp(helpers.CiTestCase):
-                                    r'Missing #! in script\?',
-                                    util.subp, (noshebang,))
+         self.assertTrue(os.path.exists(path))
+         self.assertTrue(os.path.isfile(path))
+         file_stat = os.stat(path)
+         self.assertEqual(0o644, stat.S_IMODE(file_stat.st_mode))
  
-+    @unittest2.skip("fails, reason not known yet")
-     def test_subp_combined_stderr_stdout(self):
-         """Providing combine_capture as True redirects stderr to stdout."""
-         data = b'hello world'
+-    def test_copy_mode_with_existing(self):
++    def test_preserve_mode_with_existing(self):
+         """Verify that file is created using mode of existing file
+-        if copy_mode is true."""
++        if preserve_mode is true."""
+         path = os.path.join(self.tmp, "NewFile.txt")
+         contents = "Hey there"
+ 
+         open(path, 'w').close()
+         os.chmod(path, 0o666)
+ 
+-        util.write_file(path, contents, copy_mode=True)
++        util.write_file(path, contents, preserve_mode=True)
+ 
+         self.assertTrue(os.path.exists(path))
+         self.assertTrue(os.path.isfile(path))
