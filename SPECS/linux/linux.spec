@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.224
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -42,7 +42,8 @@ Patch20:        0001-Enable-cache-loose-for-vdfs-9p.patch
 Patch21:        0001-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
 Patch22:        0001-9p-Transport-error-uninitialized.patch
 Patch23:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
-
+# Fix for CVE-2018-5995
+Patch24:        0001-percpu-stop-printing-kernel-addresses.patch
 # Fix for CVE-2018-8043
 Patch25:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
@@ -183,6 +184,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch21 -p1
 %patch22 -p1
 %patch23 -p1
+%patch24 -p1
 %patch25 -p1
 %patch26 -p1
 %patch27 -p1
@@ -365,6 +367,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Jun 02 2020 Ajay Kaher <akaher@vmware.com> 4.4.224-3
+-   Fix for CVE-2018-5995
 *   Wed May 26 2020 Albert Guo <aguo@vmware.com> 4.4.224-2
 -   [9p] Ensure seekdir take effect
 *   Fri May 22 2020 Ajay Kaher <akaher@vmware.com> 4.4.224-1

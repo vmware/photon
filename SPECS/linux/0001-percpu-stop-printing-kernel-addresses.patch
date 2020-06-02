@@ -1,0 +1,53 @@
+From b89b1b7b803b2e85cae8e16d2cb6885239b7ea55 Mon Sep 17 00:00:00 2001
+From: Matteo Croce <mcroce@redhat.com>
+Date: Tue, 2 Jun 2020 18:30:01 +0530
+Subject: [PATCH] percpu: stop printing kernel addresses
+
+commit 00206a69ee32f03e6f40837684dcbe475ea02266 upstream.
+
+Since commit ad67b74d2469d9b8 ("printk: hash addresses printed with %p"),
+at boot "____ptrval____" is printed instead of actual addresses:
+
+    percpu: Embedded 38 pages/cpu @(____ptrval____) s124376 r0 d31272 u524288
+
+Instead of changing the print to "%px", and leaking kernel addresses,
+just remove the print completely, cfr. e.g. commit 071929dbdd865f77
+("arm64: Stop printing the virtual memory layout").
+
+Signed-off-by: Matteo Croce <mcroce@redhat.com>
+Signed-off-by: Dennis Zhou <dennis@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ mm/percpu.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/mm/percpu.c b/mm/percpu.c
+index 1c784df..0434275 100644
+--- a/mm/percpu.c
++++ b/mm/percpu.c
+@@ -2049,8 +2049,8 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
+ #endif
+ 	}
+ 
+-	pr_info("PERCPU: Embedded %zu pages/cpu @%p s%zu r%zu d%zu u%zu\n",
+-		PFN_DOWN(size_sum), base, ai->static_size, ai->reserved_size,
++	pr_info("PERCPU: Embedded %zu pages/cpu s%zu r%zu d%zu u%zu\n",
++		PFN_DOWN(size_sum), ai->static_size, ai->reserved_size,
+ 		ai->dyn_size, ai->unit_size);
+ 
+ 	rc = pcpu_setup_first_chunk(ai, base);
+@@ -2163,8 +2163,8 @@ int __init pcpu_page_first_chunk(size_t reserved_size,
+ 	}
+ 
+ 	/* we're ready, commit */
+-	pr_info("PERCPU: %d %s pages/cpu @%p s%zu r%zu d%zu\n",
+-		unit_pages, psize_str, vm.addr, ai->static_size,
++	pr_info("PERCPU: %d %s pages/cpu s%zu r%zu d%zu\n",
++		unit_pages, psize_str, ai->static_size,
+ 		ai->reserved_size, ai->dyn_size);
+ 
+ 	rc = pcpu_setup_first_chunk(ai, vm.addr);
+-- 
+2.7.4
+

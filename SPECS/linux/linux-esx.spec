@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.224
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -44,7 +44,8 @@ Patch28:       0001-Enable-cache-loose-for-vdfs-9p.patch
 Patch29:       0001-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
 Patch30:       0001-9p-Transport-error-uninitialized.patch
 Patch31:       0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
-
+# Fix for CVE-2018-5995
+Patch32:        0001-percpu-stop-printing-kernel-addresses.patch
 # Fix for CVE-2018-8043
 Patch33:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
@@ -151,6 +152,7 @@ The Linux package contains the Linux kernel doc files
 %patch29 -p1
 %patch30 -p1
 %patch31 -p1
+%patch32 -p1
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
@@ -264,6 +266,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 02 2020 Ajay Kaher <akaher@vmware.com> 4.4.224-3
+-   Fix for CVE-2018-5995
 *   Thu May 26 2020 Albert Guo <aguo@vmware.com> 4.4.224-2
 -   9p: Ensure seekdir take effect
 *   Fri May 22 2020 Ajay Kaher <akaher@vmware.com> 4.4.224-1
