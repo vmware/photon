@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        8.11.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -14,6 +14,7 @@ Patch0:         nodejs-CVE-2018-12116.patch
 Patch1:         nodejs-CVE-2018-12121.patch
 Patch2:         nodejs-CVE-2018-12122.patch
 Patch3:         nodejs-CVE-2019-5737.patch
+Patch4:		CVE-2018-0734.patch
 
 BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
 BuildRequires:  python2
@@ -43,6 +44,7 @@ for developing applications that use nodejs.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 ./configure --prefix=%{_prefix} \
@@ -86,6 +88,8 @@ make  %{?_smp_mflags} test
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 8.11.4-4
+-   Fix for CVE-2018-0734
 *   Fri Nov 08 2019 Ankit Jain <ankitja@vmware.com> 8.11.4-3
 -   Fixed CVE-2018-12116, CVE-2018-12121, CVE-2018-12122, CVE-2019-5737
 *   Tue Apr 16 2019 Ankit Jain <ankitja@vmware.com> 8.11.4-2
