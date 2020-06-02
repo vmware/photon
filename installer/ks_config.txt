@@ -103,6 +103,13 @@ Kickstart config file is a json format with following possible parameters:
 	Each partition is a dictionary of the following items:
 	"filesystem" (required)
 		Filesystem type. Supported values are: "swap", "ext4", "vfat".
+	"disk" (optional if single disk device is available,
+                required if multiple disk devices are available)
+               Target disk device will have the defined partition
+               Supported values are:
+               "/dev/loop": loop devices
+               "/dev/sdX" : scsi drives based devices
+               "/dev/hdX" : IDE drives based devices
 	"mountpoint" (required for non "swap" partitions)
 		Mount point for the partition.
 	"size" (required)
@@ -134,6 +141,28 @@ Kickstart config file is a json format with following possible parameters:
 				"fs_options": "-n EFI"
 			},
 			{"size": 128, "filesystem": "swap"} ] }
+	Example: Multiple Disk device partition table
+		{ "partitions": [
+					{
+					"disk": "/dev/sda",
+					"mountpoint": "/",
+					"size": 0,
+					"filesystem": "ext4"
+					},
+					{
+					"disk": "/dev/sdb",
+					"mountpoint": "/sdb",
+					"size": 0,
+					"filesystem": "ext4"
+					},
+					{
+					"disk": "/dev/sdc",
+					"mountpoint": "/sdc",
+					"size": 0,
+					"filesystem": "ext4"
+					},
+				]
+		}
 
 "network" (optional)
 	Used to configure network in live/installed system.

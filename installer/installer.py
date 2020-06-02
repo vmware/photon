@@ -235,15 +235,18 @@ class Installer(object):
         if 'install_linux_esx' not in install_config:
             install_config['install_linux_esx'] = False
 
-        # Perform 2 checks here:
+        # Perform following checks here:
         # 1) Only one extensible partition is allowed per disk
         # 2) /boot can not be LVM
         # 3) / must present
+        # 4) Duplicate mountpoints should not be present
         has_extensible = {}
         has_root = False
+        mountpoints = []
         default_disk = install_config['disk']
         for partition in install_config['partitions']:
             disk = partition.get('disk', default_disk)
+            mntpoint = partition.get('mountpoint', '')
             if disk not in has_extensible:
                 has_extensible[disk] = False
             size = partition['size']
@@ -252,12 +255,17 @@ class Installer(object):
                     return "Disk {} has more than one extensible partition".format(disk)
                 else:
                     has_extensible[disk] = True
-            if partition.get('mountpoint', '') == '/boot' and 'lvm' in partition:
+            if mntpoint != '':
+                mountpoints.append(mntpoint)
+            if mntpoint == '/boot' and 'lvm' in partition:
                 return "/boot on LVM is not supported"
-            if partition.get('mountpoint', '') == '/':
+            elif mntpoint == '/':
                 has_root = True
         if not has_root:
             return "There is no partition assigned to root '/'"
+
+        if len(mountpoints) != len(set(mountpoints)):
+            return "Duplicate mountpoints exist in partition table!!"
 
         if install_config['arch'] not in ["aarch64", 'x86_64']:
             return "Unsupported target architecture {}".format(install_config['arch'])
@@ -422,18 +430,21 @@ class Installer(object):
             retval = self.cmd.run(["vgchange", "-v", "-an", vg])
             if retval != 0:
                 self.logger.error("Failed to deactivate LVM volume group: {}".format(vg))
-        disk = self.install_config['disk']
-        if 'loop' in disk:
-            # Simulate partition hot remove to notify LVM
-            for pv in self.lvs_to_detach['pvs']:
-                retval = self.cmd.run(["dmsetup", "remove", pv])
+
+        # Get the disks from partition table
+        disks = set(partition.get('disk', self.install_config['disk']) for partition in self.install_config['partitions'])
+        for disk in disks:
+            if 'loop' in disk:
+                # Simulate partition hot remove to notify LVM
+                for pv in self.lvs_to_detach['pvs']:
+                    retval = self.cmd.run(["dmsetup", "remove", pv])
+                    if retval != 0:
+                        self.logger.error("Failed to detach LVM physical volume: {}".format(pv))
+                # Uninitialize device paritions mapping
+                retval = self.cmd.run(['kpartx', '-d', disk])
                 if retval != 0:
-                    self.logger.error("Failed to detach LVM physical volume: {}".format(pv))
-            # Uninitialize device paritions mapping
-            retval = self.cmd.run(['kpartx', '-d', disk])
-            if retval != 0:
-                self.logger.error("Failed to unmap partitions of the disk image {}". format(disk))
-                return None
+                    self.logger.error("Failed to unmap partitions of the disk image {}". format(disk))
+                    return None
 
     def _bind_installer(self):
         """
