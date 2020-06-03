@@ -3,7 +3,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.0.0533
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -14,6 +14,7 @@ Source0:        %{name}-%{version}.tar.gz
 BuildRequires:  ncurses-devel
 Patch0:         CVE-2017-17087.patch
 Patch1:		vim-CVE-2019-12735.patch
+Patch2:         CVE-2019-20807.patch
 
 %description
 The Vim package contains a powerful text editor.
@@ -30,6 +31,7 @@ The vim extra package contains a extra files for powerful text editor.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 %build
@@ -183,6 +185,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+*   Wed Jun 03 2020 Anisha Kumari <kanisha@vmwre.com> 8.0.0533-8
+-   Fix for CVE-2019-20807
 *   Thu Jun 06 2019 Siju Maliakkal <smaliakkal@vmwre.com> 8.0.0533-7
 -   Fix for CVE-2019-12735
 *   Tue Jan 29 2019 Dweep Advani <dadvani@vmware.com> 8.0.0533-6
