@@ -1,0 +1,166 @@
+From e1bae9ddd151861d6924377deb4b4b4f0ae228ef Mon Sep 17 00:00:00 2001
+From: Manish <manishja@vmware.com>
+Date: Thu, 28 May 2020 13:35:48 -0700
+Subject: [PATCH] Enabling configuring options for geneve device.
+
+This patch enables following two options in
+/proc/sys/net/{ipv4/ipv6}/conf/<geneve device> filesystem.
+
+config_md_mode: config metadata mode if enabled can collect and set the
+metatdata without the geneve device being created as external.
+
+skip_inner_mac_validation: if enabled the rx packet is accepted just
+based upon the tunnel id of the device and mac address validation
+for inner header is skipped.
+---
+ drivers/net/geneve.c | 82 ++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 80 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index ff83408733d4..335b2e5f6e26 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -52,6 +52,34 @@ struct geneve_dev_node {
+ 	struct geneve_dev *geneve;
+ };
+ 
++#define GENEVE_CONFIG_MD_MODE_VAR       0
++#define GENEVE_SKIP_IN_MAC_VALIDATION   1
++#define SYSCTL_ATTR_VAR_MAX     2
++/* sysfs configuring options */
++struct geneve_sysctl_table {
++	struct ctl_table_header *sysctl_header;
++	struct ctl_table vars[SYSCTL_ATTR_VAR_MAX + 1];
++} sysctl_entry_template = {
++	.sysctl_header = NULL,
++	.vars = {
++		[GENEVE_CONFIG_MD_MODE_VAR] = {
++			.procname = "config_md_mode",
++			.data = NULL,
++			.maxlen = sizeof(int),
++			.mode = 0644,
++			.proc_handler = &proc_dointvec,
++		},
++		[GENEVE_SKIP_IN_MAC_VALIDATION] = {
++			.procname = "skip_inner_mac_validation",
++			.data = NULL,
++			.maxlen = sizeof(int),
++			.mode = 0644,
++			.proc_handler = &proc_dointvec,
++		},
++		{},
++	},
++};
++
+ /* Pseudo network device */
+ struct geneve_dev {
+ 	struct geneve_dev_node hlist4;	/* vni hash table for IPv4 socket */
+@@ -67,6 +95,13 @@ struct geneve_dev {
+ #endif
+ 	struct list_head   next;	/* geneve's per namespace list */
+ 	struct gro_cells   gro_cells;
++	struct geneve_sysctl_table *sysctl_table;
++	int		   config_md_mode; /* metadata mode without external */
++
++	/* if enabled process all packets which has the device tunnel id and
++	 * ignore the inner mac addresses
++	 */
++	int		   skip_inner_mac_validation;
+ 	bool		   collect_md;
+ 	bool		   use_udp6_rx_checksums;
+ };
+@@ -220,7 +255,8 @@ static void geneve_rx(struct geneve_dev *geneve, struct geneve_sock *gs,
+ 	int err = 0;
+ 	void *oiph;
+ 
+-	if (ip_tunnel_collect_metadata() || gs->collect_md) {
++	if (ip_tunnel_collect_metadata() || gs->collect_md ||
++			geneve->config_md_mode) {
+ 		__be16 flags;
+ 
+ 		flags = TUNNEL_KEY | TUNNEL_GENEVE_OPT |
+@@ -251,6 +287,9 @@ static void geneve_rx(struct geneve_dev *geneve, struct geneve_sock *gs,
+ 
+ 	skb_reset_mac_header(skb);
+ 	skb->protocol = eth_type_trans(skb, geneve->dev);
++	if (skb->pkt_type == PACKET_OTHERHOST &&
++			geneve->skip_inner_mac_validation)
++		skb->pkt_type = PACKET_HOST;
+ 	skb_postpull_rcsum(skb, eth_hdr(skb), ETH_HLEN);
+ 
+ 	if (tun_dst)
+@@ -311,6 +350,8 @@ static void geneve_rx(struct geneve_dev *geneve, struct geneve_sock *gs,
+ static int geneve_init(struct net_device *dev)
+ {
+ 	struct geneve_dev *geneve = netdev_priv(dev);
++	char path[sizeof("net/ipv4/conf/") + IFNAMSIZ];
++	struct geneve_sysctl_table *systbl = NULL;
+ 	int err;
+ 
+ 	dev->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
+@@ -329,16 +370,53 @@ static int geneve_init(struct net_device *dev)
+ 		gro_cells_destroy(&geneve->gro_cells);
+ 		return err;
+ 	}
++	geneve->sysctl_table = NULL;
++
++	if (geneve->collect_md)
++		return 0;
++	systbl = kmemdup(&sysctl_entry_template, sizeof(*systbl), GFP_KERNEL);
++	if (!systbl)
++		goto free;
++#if IS_ENABLED(CONFIG_IPV6)
++	if (geneve->info.mode & IP_TUNNEL_INFO_IPV6) {
++		snprintf(path, sizeof(path), "net/ipv6/conf/%s", dev->name);
++	} else
++#endif
++		snprintf(path, sizeof(path), "net/ipv4/conf/%s", dev->name);
++
++	systbl->vars[GENEVE_CONFIG_MD_MODE_VAR].data =
++		&geneve->config_md_mode;
++	systbl->vars[GENEVE_SKIP_IN_MAC_VALIDATION].data =
++		&geneve->skip_inner_mac_validation;
++	systbl->sysctl_header = register_net_sysctl(geneve->net, path,
++			systbl->vars);
++
++	if (!systbl->sysctl_header) {
++		kfree(systbl);
++		goto free;
++	}
++	geneve->sysctl_table = systbl;
+ 	return 0;
++free:
++	free_percpu(dev->tstats);
++	gro_cells_destroy(&geneve->gro_cells);
++	dst_cache_destroy(&geneve->info.dst_cache);
++	return -ENOMEM;
+ }
+ 
+ static void geneve_uninit(struct net_device *dev)
+ {
+ 	struct geneve_dev *geneve = netdev_priv(dev);
++	struct geneve_sysctl_table *systbl = geneve->sysctl_table;
+ 
+ 	dst_cache_destroy(&geneve->info.dst_cache);
+ 	gro_cells_destroy(&geneve->gro_cells);
+ 	free_percpu(dev->tstats);
++	if (systbl) {
++		unregister_net_sysctl_table(systbl->sysctl_header);
++		kfree(systbl);
++		geneve->sysctl_table  = NULL;
++	}
+ }
+ 
+ /* Callback from net/ipv4/udp.c to receive packets */
+@@ -906,7 +984,7 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	struct ip_tunnel_info *info = NULL;
+ 	int err;
+ 
+-	if (geneve->collect_md) {
++	if (geneve->collect_md || geneve->config_md_mode) {
+ 		info = skb_tunnel_info(skb);
+ 		if (unlikely(!info || !(info->mode & IP_TUNNEL_INFO_TX))) {
+ 			err = -EINVAL;
+-- 
+2.14.2
+
