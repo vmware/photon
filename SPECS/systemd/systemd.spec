@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          57%{?dist}
+Release:          58%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -60,6 +60,7 @@ Patch42:          core-donot-include-libmount.h-in-header-file.patch
 Patch43:          systemd-228-CVE-2019-6454.patch
 Patch44:          systemd-228-do-not-fail-networkd-if-dbus-not-active.patch
 Patch45:          systemd-228-CVE-2019-20386.patch
+Patch46:          systemd-228-CVE-2020-1712.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -141,27 +142,28 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
+%patch46 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
 ./autogen.sh
-./configure --prefix=%{_prefix}                                    \
-            --sysconfdir=/etc                                       \
-            --localstatedir=/var                                    \
-            --config-cache                                          \
-            --with-rootprefix=                                      \
-            --with-rootlibdir=/usr/lib                                  \
-            --enable-split-usr                                      \
-            --disable-firstboot                                     \
-            --disable-ldconfig                                      \
-            --disable-sysusers                                      \
-            --without-python                                        \
-            --enable-pam                                            \
-            --docdir=%{_prefix}/share/doc/systemd-228                     \
-            --with-dbuspolicydir=/etc/dbus-1/system.d               \
-            --with-dbusinterfacedir=%{_prefix}/share/dbus-1/interfaces    \
-            --with-dbussessionservicedir=%{_prefix}/share/dbus-1/services \
+./configure --prefix=%{_prefix}                                                 \
+            --sysconfdir=/etc                                                   \
+            --localstatedir=/var                                                \
+            --config-cache                                                      \
+            --with-rootprefix=                                                  \
+            --with-rootlibdir=/usr/lib                                          \
+            --enable-split-usr                                                  \
+            --disable-firstboot                                                 \
+            --disable-ldconfig                                                  \
+            --disable-sysusers                                                  \
+            --without-python                                                    \
+            --enable-pam                                                        \
+            --docdir=%{_prefix}/share/doc/systemd-228                           \
+            --with-dbuspolicydir=/etc/dbus-1/system.d                           \
+            --with-dbusinterfacedir=%{_prefix}/share/dbus-1/interfaces          \
+            --with-dbussessionservicedir=%{_prefix}/share/dbus-1/services       \
             --with-dbussystemservicedir=%{_prefix}/share/dbus-1/system-services \
             --enable-compat-libs \
             --with-sysvinit-path=/etc/rc.d/init.d \
@@ -282,7 +284,9 @@ rm -rf %{buildroot}/*
 
 
 %changelog
-*    Tue Apr 20 2020 Susant Sahani <ssahani@vmware.com>  228-57
+*    Wed Jun 03 2020 Susant Sahani <ssahani@vmware.com> 228-58
+-    Fix CVE-2020-1712
+*    Mon Apr 20 2020 Susant Sahani <ssahani@vmware.com> 228-57
 -    Fix CVE-2019-20386
 *    Tue Sep 10 2019 Tapas Kundu <tkundu@vmware.com> 228-56
 -    Networkd should not exit if dbus is not active, it should retry.
