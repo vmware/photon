@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.224
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -52,7 +52,8 @@ Patch26:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch27:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch28:        0002-allow-also-ecb-cipher_null.patch
 Patch29:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-
+# Fix CVE-2020-10757
+Patch30:        0001-mm-Fix-mremap-not-considering-huge-pmd-devmap.patch
 # Fix CVE-2017-1000252
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
 Patch32:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
@@ -205,6 +206,7 @@ EOF
 %patch27 -p1
 %patch28 -p1
 %patch29 -p1
+%patch30 -p1
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
@@ -365,6 +367,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 04 2020 Ajay Kaher <akaher@vmware.com> 4.9.224-3
+-   Fix for CVE-2020-10757
 *   Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.9.224-2
 -   Keep modules of running kernel till next boot
 *   Fri May 22 2020 Ajay Kaher <akaher@vmware.com> 4.9.224-1

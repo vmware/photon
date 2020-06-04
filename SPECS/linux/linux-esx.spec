@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.224
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -42,7 +42,8 @@ Patch19:        05-pv-ops-clocksource.patch
 Patch20:        06-pv-ops-boot_clock.patch
 Patch21:        07-vmware-only.patch
 Patch22:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-
+# Fix CVE-2020-10757
+Patch23:        0001-mm-Fix-mremap-not-considering-huge-pmd-devmap.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
 Patch25:        init-do_mounts-recreate-dev-root.patch
@@ -142,6 +143,7 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
+%patch23 -p1
 %patch24 -p1
 %patch25 -p1
 %patch30 -p1
@@ -260,6 +262,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 04 2020 Ajay Kaher <akaher@vmware.com> 4.9.224-3
+-   Fix for CVE-2020-10757
 *   Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.9.224-2
 -   Keep modules of running kernel till next boot
 *   Fri May 22 2020 Ajay Kaher <akaher@vmware.com> 4.9.224-1
