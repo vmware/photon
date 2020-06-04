@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -22,6 +22,7 @@ Patch4:         CVE-2019-9169.patch
 Patch5:         CVE-2019-10739.patch
 Patch6:         CVE-2020-10029.patch
 Patch7:         CVE-2020-1752.patch
+Patch8:         CVE-2019-19126.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -83,6 +84,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -287,6 +289,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Thu Jun 04 2020 Keerthana K <keerthanak@vmware.com> 2.28-7
+-   Fix CVE-2019-19126
 *   Wed May 20 2020 Keerthana K <keerthanak@vmware.com> 2.28-6
 -   Fix CVE-2020-1752
 *   Thu May 07 2020 Keerthana K <keerthanak@vmware.com> 2.28-5
