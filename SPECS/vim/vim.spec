@@ -2,17 +2,15 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        8.1.0388
-Release:        7%{?dist}
+Version:        8.1.1365
+Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    vim=727cc80b05c99ba57eaf116faa04f184f5c1877a
-Patch0:		CVE-2019-12735.patch
-Patch1:         CVE-2019-20807.patch
+%define sha1    vim=dcf9785d0128497a1d9e4d5d9619142dc6fb02ad
 
 BuildRequires:  ncurses-devel
 
@@ -30,8 +28,6 @@ The vim extra package contains a extra files for powerful text editor.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 %build
 
@@ -190,6 +186,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+*   Thu Jun 04 2020 Tapas Kundu <tkundu@vmware.com> 8.1.1365-1
+-   Update to 8.1.1365 to take Ex command changes along with CVE-2019-20807
 *   Mon Jun 1 2020 Anisha Kumari <kanisha@vmware.com> 8.1.0388-7
 -   Fix for CVE-2019-20807.
 *   Thu Feb 20 2020 Prashant Singh Chauhan <psinghchauha@vmware.com> 8.1.0388-6
