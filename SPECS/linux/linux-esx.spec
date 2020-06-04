@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.124
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -74,6 +74,8 @@ Patch34:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch35:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 Patch36:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
+# Fix CVE-2020-10757
+Patch37:        0001-mm-Fix-mremap-not-considering-huge-pmd-devmap.patch
 # Fix CVE-2019-19072
 Patch43:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 # Fix CVE-2019-19073
@@ -186,6 +188,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch37 -p1
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
@@ -329,6 +332,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Jun 04 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-2
+-   Fix for CVE-2020-10757
 *   Fri May 29 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-1
 -   Update to version 4.19.124
 *   Fri May 29 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.115-10

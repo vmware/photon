@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.124
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -63,7 +63,8 @@ Patch19:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-18885
 Patch20:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch21:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
-
+# Fix CVE-2020-10757
+Patch22:        0001-mm-Fix-mremap-not-considering-huge-pmd-devmap.patch
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
@@ -299,6 +300,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch19 -p1
 %patch20 -p1
 %patch21 -p1
+%patch22 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -659,6 +661,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Jun 04 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-2
+-   Fix for CVE-2020-10757
 *   Thu May 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-1
 -   Update to version 4.19.124
 *   Thu May 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-10

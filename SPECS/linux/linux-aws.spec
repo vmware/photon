@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.124
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -36,6 +36,8 @@ Patch7:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 #HyperV patches
 Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 
+# Fix CVE-2020-10757
+Patch16:        0001-mm-Fix-mremap-not-considering-huge-pmd-devmap.patch
 # Fix CVE-2019-19072
 Patch17:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 # Fix CVE-2019-19073
@@ -193,6 +195,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch6 -p1
 %patch7 -p1
 %patch13 -p1
+%patch16 -p1
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
@@ -433,6 +436,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Jun 04 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-2
+-   Fix for CVE-2020-10757
 *   Thu May 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-1
 -   Update to version 4.19.124
 *   Thu May 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-6

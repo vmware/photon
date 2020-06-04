@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.124
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -41,6 +41,8 @@ Patch14:        0002-Added-PAX_RANDKSTACK.patch
 Patch15:        0003-Added-rap_plugin.patch
 # HyperV Patches
 Patch16:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+# Fix CVE-2020-10757
+Patch17:        0001-mm-Fix-mremap-not-considering-huge-pmd-devmap.patch
 # Fix CVE-2019-19072
 Patch19:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 # Fix CVE-2019-19073
@@ -158,6 +160,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 %patch19 -p1
 %patch20 -p1
 %patch21 -p1
@@ -336,6 +339,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 04 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-2
+-   Fix for CVE-2020-10757
 *   Thu May 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-1
 -   Update to version 4.19.124
 *   Thu May 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-6
