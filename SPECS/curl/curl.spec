@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.61.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -22,10 +22,12 @@ BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
 BuildRequires:  libssh2-devel
+BuildRequires:  libmetalink-devel
 Requires:       ca-certificates
 Requires:       openssl
 Requires:       krb5
 Requires:       libssh2
+Requires:       libmetalink
 Requires:       curl-libs = %{version}-%{release}
 %description
 The cURL package contains an utility and a library used for
@@ -69,7 +71,8 @@ This package contains minimal set of shared curl libraries.
     --with-ssl \
     --with-gssapi \
     --with-libssh2 \
-    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
+    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt \
+    --with-libmetalink
 make %{?_smp_mflags}
 
 %install
@@ -107,6 +110,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Thu Jun 04 2020 Tapas Kundu <tkundu@vmware.com> 7.61.1-4
+-   Build with libmetalink support
 *   Tue Sep 24 2019 Dweep Advani <dadvani@vmware.com> 7.61.1-3
 -   Fix CVEs CVE-2018-16890, CVE-2019-{3822/3823/5436/5481/5482}
 *   Tue Jan 08 2019 Dweep Advani <dadvani@vmware.com> 7.61.1-2
