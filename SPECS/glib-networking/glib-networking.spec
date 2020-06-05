@@ -1,7 +1,7 @@
 Summary:    Glib networking modules
 Name:       glib-networking
 Version:    2.50.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/glib-networking
 Group:      System Environment/Development
@@ -9,6 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://ftp.gnome.org/pub/GNOME/sources/glib-networking/2.50/%{name}-%{version}.tar.xz
 %define sha1 glib-networking=d8f6a52fd977acc0ff32fe3152ad4cb3f699c053
+Patch0:     CVE-2020-13645.patch
 BuildRequires:	nettle-devel
 BuildRequires:	autogen-libopts-devel
 BuildRequires:	libtasn1-devel
@@ -37,6 +38,7 @@ These are the additional language files of glib-networking.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -65,6 +67,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*	Fri Jun 05 2020 <ashwinh@vmware.com> 2.50.0-2
+-      Fix CVE-2020-13645
 *	Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.50.0-1
 -	Updated to version 2.50.0 
 *       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.46.1-3
