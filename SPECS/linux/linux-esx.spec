@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.115
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -319,6 +319,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 4.19.115-5
+-   Enabled CONFIG_BINFMT_MISC
 *   Wed Jun 03 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.115-4
 -   fs/9p: local lock support
 *   Tue Jun 02 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-3

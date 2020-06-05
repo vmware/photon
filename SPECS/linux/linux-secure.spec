@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.112
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -335,6 +335,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 4.19.112-8
+-   Enabled CONFIG_BINFMT_MISC
 *   Tue Jun 02 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-7
 -   Add patch to fix CVE-2019-18885
 *   Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.112-6

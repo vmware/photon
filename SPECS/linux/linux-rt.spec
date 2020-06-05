@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.115
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt50
-Release:        7%{?kat_build:.%kat}%{?dist}
+Release:        8%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -950,6 +950,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 4.19.115-8
+-   Enabled CONFIG_BINFMT_MISC
 *   Tue Jun 02 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-7
 -   Add patch to fix CVE-2019-18885
 *   Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.115-6

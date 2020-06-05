@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.112
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -643,6 +643,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 4.19.112-11
+-   Enabled CONFIG_BINFMT_MISC
 *   Tue Jun 02 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-10
 -   Add patch to fix CVE-2019-18885
 *   Mon Jun 1 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.112-9
