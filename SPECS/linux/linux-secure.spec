@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.124
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.126
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=30dda1958aa1affd09bf9c564f4c91bc948596c8
+%define sha1 linux=b0380fb7e8624af7e142aa4985c37f57cd37a736
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -51,8 +51,6 @@ Patch20:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 Patch21:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2019-18814
-Patch27:        apparmor-Fix-use-after-free-in-aa_audit_rule_init.patch
 # Fix CVE-2017-1000252
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
@@ -165,7 +163,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch20 -p1
 %patch21 -p1
 %patch26 -p1
-%patch27 -p1
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
@@ -339,6 +336,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jun 05 2020 Vikash Bansal <bvikas@vmware.com> 4.19.126-1
+-   Update to version 4.19.126
 *   Thu Jun 04 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-2
 -   Fix for CVE-2020-10757
 *   Thu May 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-1

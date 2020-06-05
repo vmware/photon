@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.124
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.126
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=30dda1958aa1affd09bf9c564f4c91bc948596c8
+%define sha1 linux=b0380fb7e8624af7e142aa4985c37f57cd37a736
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -87,8 +87,6 @@ Patch47:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch48:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 #Fix CVE-2018-20669
 Patch49:        CVE-2018-20669-make-user_access_begin-do-access_ok.patch
-# Fix CVE-2019-18814
-Patch50:        apparmor-Fix-use-after-free-in-aa_audit_rule_init.patch
 
 Patch55:        0001-p9fs_dir_readdir-offset-support.patch
 Patch56:	0002-Add-9p-zero-copy-data-path-using-crossfd.patch
@@ -197,7 +195,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch47 -p1
 %patch48 -p1
 %patch49 -p1
-%patch50 -p1
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
@@ -335,6 +332,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Jun 05 2020 Vikash Bansal <bvikas@vmware.com> 4.19.126-1
+-   Update to version 4.19.126
 *   Thu Jun 04 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.124-3
 -   Support for NSX security requirements
 *   Thu Jun 04 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-2
