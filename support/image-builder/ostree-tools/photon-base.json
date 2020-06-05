@@ -24,12 +24,12 @@
                 "attr", "libcap", "kmod", "expat", "dbus", "file",
                 "sed", "grep", "cpio", "gzip",
                 "openssl", "ca-certificates", "curl",
-                "systemd",
+                "systemd", "rpm", "e2fsprogs", "iputils",
                 "openssh", "iptables",
                 "photon-release",
                 "vim", "photon-repos",
                 "docker", "bridge-utils",
                 "dracut", "dracut-tools", "rpm-ostree", "nss-altfiles", "which"],
 
-    "packages-x86_64": ["grub2-pc"]
+    "packages-x86_64": ["grub2-pc", "open-vm-tools"]
 }

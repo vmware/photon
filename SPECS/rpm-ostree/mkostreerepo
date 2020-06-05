@@ -79,14 +79,14 @@ cat > $JSONFILE << EOF
                      "attr", "libcap", "kmod", "expat", "dbus", "file",
                      "sed", "grep", "cpio", "gzip",
                      "openssl", "ca-certificates", "curl",
-                     "systemd",
+                     "systemd", "rpm", "e2fsprogs", "iputils",
                      "openssh", "iptables",
                      "photon-release",
                      "vim", "photon-repos",
                      "docker", "bridge-utils",
                      "dracut", "dracut-tools", "rpm-ostree", "nss-altfiles", "which"],
 
-        "packages-x86_64": ["grub2-pc"]
+        "packages-x86_64": ["grub2-pc", "open-vm-tools"]
 }
 EOF
   elif [ -f $REPOPATH/photon-base.json ]; then
@@ -112,8 +112,8 @@ function generating-repos()
   if [ "$DEFAULT" == "YES" ] && [ ! -f $REPOPATH/photon.repo ]; then
 cat > $REPOPATH/photon.repo << EOF
 [photon]
-name=VMware Photon Linux 3.0(_arch)
-baseurl=https://dl.bintray.com/vmware/photon_release_3.0_\$basearch
+name=VMware Photon Linux 3.0 (\$basearch)
+baseurl=https://packages.vmware.com/photon/3.0/photon_release_3.0_\$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
@@ -123,8 +123,8 @@ EOF
   if [ ! -f $REPOPATH/photon-updates.repo ]; then
 cat > $REPOPATH/photon-updates.repo << EOF
 [photon-updates]
-name=VMware Photon Linux 3.0(_arch) Updates
-baseurl=https://dl.bintray.com/vmware/photon_updates_3.0_\$basearch
+name=VMware Photon Linux 3.0 (\$basearch) Updates
+baseurl=https://packages.vmware.com/photon/3.0/photon_updates_3.0_\$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
@@ -134,8 +134,8 @@ EOF
   if [ ! -f $REPOPATH/photon-extras.repo ]; then
 cat > $REPOPATH/photon-extras.repo << EOF
 [photon-extras]
-name=VMware Photon Extras 3.0(_arch)
-baseurl=https://dl.bintray.com/vmware/photon_extras_3.0_\$basearch
+name=VMware Photon Extras 3.0 (\$basearch)
+baseurl=https://packages.vmware.com/photon/3.0/photon_extras_3.0_\$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
