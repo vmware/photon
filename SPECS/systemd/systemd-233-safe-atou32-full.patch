@@ -1,0 +1,62 @@
+diff -rupN systemd-233/src/basic/parse-util.c systemd-233-safe-atou32-full/src/basic/parse-util.c
+--- systemd-233/src/basic/parse-util.c	2017-03-01 21:43:06.000000000 +0000
++++ systemd-233-safe-atou32-full/src/basic/parse-util.c	2020-06-06 03:56:19.624708256 +0000
+@@ -590,3 +590,37 @@ int parse_ip_port(const char *s, uint16_
+ 
+         return 0;
+ }
++
++int safe_atou_full(const char *s, unsigned base, unsigned *ret_u) {
++        char *x = NULL;
++        unsigned long l;
++
++        assert(s);
++        assert(base <= 16);
++
++        /* strtoul() is happy to parse negative values, and silently
++         * converts them to unsigned values without generating an
++         * error. We want a clean error, hence let's look for the "-"
++         * prefix on our own, and generate an error. But let's do so
++         * only after strtoul() validated that the string is clean
++         * otherwise, so that we return EINVAL preferably over
++         * ERANGE. */
++
++        s += strspn(s, WHITESPACE);
++
++        errno = 0;
++        l = strtoul(s, &x, base);
++        if (errno > 0)
++                return -errno;
++        if (!x || x == s || *x != 0)
++                return -EINVAL;
++        if (s[0] == '-')
++                return -ERANGE;
++        if ((unsigned long) (unsigned) l != l)
++                return -ERANGE;
++
++        if (ret_u)
++                *ret_u = (unsigned) l;
++
++        return 0;
++}
+diff -rupN systemd-233/src/basic/parse-util.h systemd-233-safe-atou32-full/src/basic/parse-util.h
+--- systemd-233/src/basic/parse-util.h	2017-03-01 21:43:06.000000000 +0000
++++ systemd-233-safe-atou32-full/src/basic/parse-util.h	2020-06-06 04:04:08.193577187 +0000
+@@ -50,9 +50,15 @@ int safe_atou8(const char *s, uint8_t *r
+ int safe_atou16(const char *s, uint16_t *ret);
+ int safe_atoi16(const char *s, int16_t *ret);
+ 
+-static inline int safe_atou32(const char *s, uint32_t *ret_u) {
++int safe_atou_full(const char *s, unsigned base, unsigned *ret_u);
++
++static inline int safe_atou32_full(const char *s, unsigned base, uint32_t *ret_u) {
+         assert_cc(sizeof(uint32_t) == sizeof(unsigned));
+-        return safe_atou(s, (unsigned*) ret_u);
++        return safe_atou_full(s, base, (unsigned*) ret_u);
++}
++
++static inline int safe_atou32(const char *s, uint32_t *ret_u) {
++        return safe_atou32_full(s, 0, (unsigned*) ret_u);
+ }
+ 
+ static inline int safe_atoi32(const char *s, int32_t *ret_i) {

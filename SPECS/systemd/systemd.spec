@@ -1,7 +1,7 @@
-Summary:          Systemd-233
+Summary:          systemd-233
 Name:             systemd
 Version:          233
-Release:          26%{?dist}
+Release:          27%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -46,6 +46,8 @@ Patch27:          systemd-233-BZ-2257208.patch
 Patch28:          systemd-233-bz-2451788.patch
 Patch29:          systemd-233-CVE-2020-1712.patch
 Patch30:          systemd-233-CVE-2019-20386.patch
+Patch31:          systemd-233-safe-atou32-full.patch
+Patch32:          systemd-233-CVE-2020-13776.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -53,6 +55,7 @@ Requires:         xz
 Requires:         kmod
 Requires:         glib
 Requires:         filesystem >= 1.1
+
 BuildRequires:    intltool
 BuildRequires:    gperf
 BuildRequires:    libcap-devel
@@ -68,7 +71,19 @@ BuildRequires:    docbook-xml
 BuildRequires:    glib-devel
 
 %description
-Systemd is an init replacement with better process control and security
+systemd is a system and service manager that runs as PID 1 and starts
+the rest of the system. It provides aggressive parallelization
+capabilities, uses socket and D-Bus activation for starting services,
+offers on-demand starting of daemons, keeps track of processes using
+Linux control groups, maintains mount and automount points, and
+implements an elaborate transactional dependency-based service control
+logic. systemd supports SysV and LSB init scripts and works as a
+replacement for sysvinit. Other parts of this package are a logging daemon,
+utilities to control basic system configuration like the hostname,
+date, locale, maintain a list of logged-in users, system accounts,
+runtime directories and settings, and daemons to manage simple network
+configuration, network time synchronization, log forwarding, and name
+resolution.
 
 %package devel
 Summary:        Development headers for systemd
@@ -130,27 +145,29 @@ sed -i "/xlocale.h/d" src/basic/parse-util.c
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
+%patch31 -p1
+%patch32 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
 ./autogen.sh
-./configure --prefix=%{_prefix}                                    \
-            --sysconfdir=/etc                                       \
-            --localstatedir=/var                                    \
-            --config-cache                                          \
-            --with-rootprefix=                                      \
-            --with-rootlibdir=/usr/lib                                  \
-            --enable-split-usr                                      \
-            --disable-firstboot                                     \
-            --disable-ldconfig                                      \
-            --disable-sysusers                                      \
-            --without-python                                        \
-            --enable-pam                                            \
-            --docdir=%{_prefix}/share/doc/systemd-228                     \
-            --with-dbuspolicydir=/etc/dbus-1/system.d               \
-            --with-dbusinterfacedir=%{_prefix}/share/dbus-1/interfaces    \
-            --with-dbussessionservicedir=%{_prefix}/share/dbus-1/services \
+./configure --prefix=%{_prefix}                                                 \
+            --sysconfdir=/etc                                                   \
+            --localstatedir=/var                                                \
+            --config-cache                                                      \
+            --with-rootprefix=                                                  \
+            --with-rootlibdir=/usr/lib                                          \
+            --enable-split-usr                                                  \
+            --disable-firstboot                                                 \
+            --disable-ldconfig                                                  \
+            --disable-sysusers                                                  \
+            --without-python                                                    \
+            --enable-pam                                                        \
+            --docdir=%{_prefix}/share/doc/systemd-228                           \
+            --with-dbuspolicydir=/etc/dbus-1/system.d                           \
+            --with-dbusinterfacedir=%{_prefix}/share/dbus-1/interfaces          \
+            --with-dbussessionservicedir=%{_prefix}/share/dbus-1/services       \
             --with-dbussystemservicedir=%{_prefix}/share/dbus-1/system-services \
             --enable-compat-libs \
             --disable-elfutils \
@@ -191,6 +208,7 @@ install -m 0644 %{SOURCE5} %{buildroot}/%{_sysconfdir}/modules-load.d
 /sbin/ldconfig
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %dir %{_sysconfdir}/systemd
@@ -280,6 +298,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Sat Jun 06 2020 Susant Sahani <ssahani@vmware.com> 233-27
+-    Fix CVE-2020-13776
 *    Tue Apr 21 2020 Susant Sahani <ssahani@vmware.com> 233-26
 -    Fix CVE-2019-20386
 *    Sun Feb 09 2020 Susant Sahani <ssahani@vmware.com> 233-25
