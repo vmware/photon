@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          23%{?dist}
+Release:          24%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -52,6 +52,8 @@ Patch32:          polkit-when-authorizing-via-PK-let-s-re-resolve-call.patch
 Patch33:          services-shouldnot-start-if-there-is-residual-processes-left-over.patch
 Patch34:          modify_systemd_watchdog_timeout.patch
 Patch35:          detect-vmware-hypervisor.patch
+Patch36:          safe-atou32-full.patch
+Patch37:          systemd-239-CVE-2020-13776.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -156,6 +158,8 @@ EOF
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
+%patch36 -p1
+%patch37 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -342,6 +346,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Sat Jun 06 2020 Susant Sahani <ssahani@vmware.com> 239-24
+-    Fix CVE-2020-13776
 *    Wed May 27 2020 Shreenidhi Shedi <sshedi@vmware.com> 239-23
 *    Added patch to detect vmware hypervisor
 *    Thu May 21 2020 Tapas Kundu <tkundu@vmware.com> 239-22
