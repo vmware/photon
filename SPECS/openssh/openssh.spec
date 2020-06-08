@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.4p1
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -22,6 +22,11 @@ Patch7:         openssh-CVE-2019-6109-progressmeter.patch
 Patch8:         openssh-CVE-2019-6111.patch
 Patch9:         openssh-CVE-2019-6111-filenames.patch
 Patch10:        scp-name-validator-CVE-2019-6110.patch
+Patch11:        openssh-CVE-2020-12062.patch
+Patch12:        openssh-CVE-2020-12062-another-case.patch
+Patch13:        openssh-Fix-error-message-close.patch
+Patch14:        openssh-vasnmprintf-fix.patch
+Patch15:        openssh-expose-vasnmprintf.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM
 BuildRequires:  krb5
@@ -50,6 +55,11 @@ tar xf %{SOURCE1}
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
 %build
 ./configure \
     CFLAGS="%{optflags}" \
@@ -158,6 +168,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*   Mon Jun 08 2020 Ankit Jain <ankitja@vmware.comm> 7.4p1-12
+-   Fix for CVE-2020-12062
 *   Wed Aug 07 2019 Anish Swaminathan <anishs@vmware.com> 7.4p1-11
 -   Check for fips mode before setting
 *   Thu Jun 06 2019 Ankit Jain <ankitja@vmware.comm> 7.4p1-10

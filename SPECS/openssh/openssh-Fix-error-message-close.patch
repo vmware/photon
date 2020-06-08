@@ -1,0 +1,45 @@
+From 5ad3c3a33ef038b55a14ebd31faeeec46073db2c Mon Sep 17 00:00:00 2001
+From: "millert@openbsd.org" <millert@openbsd.org>
+Date: Fri, 29 May 2020 21:22:02 +0000
+Subject: [PATCH] upstream: Fix error message on close(2) and add printf format
+
+attributes. From Christos Zoulas, OK markus@
+
+OpenBSD-Commit-ID: 41523c999a9e3561fcc7082fd38ea2e0629ee07e
+---
+ scp.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/scp.c b/scp.c
+index b4492a062..6b1a0c8be 100644
+--- a/scp.c
++++ b/scp.c
+@@ -1,4 +1,4 @@
+-/* $OpenBSD: scp.c,v 1.210 2020/05/06 20:57:38 djm Exp $ */
++/* $OpenBSD: scp.c,v 1.211 2020/05/29 21:22:02 millert Exp $ */
+ /*
+  * scp - secure remote copy.  This is basically patched BSD rcp which
+  * uses ssh to do the data transfer (instead of using rcmd).
+@@ -373,8 +373,11 @@ typedef struct {
+ BUF *allocbuf(BUF *, int, int);
+ void lostconn(int);
+ int okname(char *);
+-void run_err(const char *,...);
+-int note_err(const char *,...);
++void run_err(const char *,...)
++    __attribute__((__format__ (printf, 1, 2)))
++    __attribute__((__nonnull__ (1)));
++int note_err(const char *,...)
++    __attribute__((__format__ (printf, 1, 2)));
+ void verifydir(char *);
+ 
+ struct passwd *pwd;
+@@ -1520,7 +1523,7 @@ bad:			run_err("%s: %s", np, strerror(errno));
+ 				}
+ 		}
+ 		if (close(ofd) == -1)
+-			note_err(np, "%s: close: %s", np, strerror(errno));
++			note_err("%s: close: %s", np, strerror(errno));
+ 		(void) response();
+ 		if (showprogress)
+ 			stop_progress_meter();
