@@ -1,13 +1,15 @@
 Summary:        Calico Network Policy for Kubernetes
 Name:           calico-k8s-policy
 Version:        1.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/k8s-policy
 Source0:        %{name}-%{version}.tar.gz
 %define sha1 calico-k8s-policy=612eafdb2afee6ffbfc432e0110c787823b66ccc
 Source1:        go-27704.patch
 Source2:        go-27842.patch
+Source3:        glide-cache-for-%{name}-%{version}.tar.xz
+%define sha1 glide-cache-for-%{name}=49f87c7fa8c35ca303361733c7cfcea384a61f87
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -66,6 +68,7 @@ echo "VERSION='`git describe --tags --dirty`'" > version.py
 
 %build
 mkdir -p /root/.glide
+tar -C ~/.glide -xf %{SOURCE3}
 mkdir -p ${GOPATH}/src/github.com/projectcalico/k8s-policy
 cp -r * ${GOPATH}/src/github.com/projectcalico/k8s-policy
 pushd ${GOPATH}/src/github.com/projectcalico/k8s-policy
@@ -87,6 +90,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 %{_bindir}/controller
 
 %changelog
+*   Tue Jun 09 2020 Ashwin H <ashwinh@vmware.com> 1.0.0-3
+-   Use cache for dependencies
 *   Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 1.0.0-2
 -   Fix CVE-2018-17846 and CVE-2018-17143
 *   Tue Nov 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.0-1

@@ -1,7 +1,7 @@
 Summary:       A per-host daemon for Calico
 Name:          calico-felix
 Version:       2.6.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
@@ -12,6 +12,8 @@ Source1:       gogo-protobuf-0.4.tar.gz
 %define sha1 gogo-protobuf-0.4=4fc5dda432ad929ce203486c861b7d3e48681150
 Source2:       go-27704.patch
 Source3:       go-27842.patch
+Source4:        glide-cache-for-%{name}-%{version}.tar.xz
+%define sha1 glide-cache-for-%{name}=a0adba2f8275b99892e1a143e731a6d812d69526
 Distribution:  Photon
 BuildRequires: git
 BuildRequires: glide
@@ -31,6 +33,7 @@ pushd ${GOPATH}/src/github.com/gogo/protobuf
 make install
 popd
 mkdir -p /root/.glide
+tar -C ~/.glide -xf %{SOURCE4}
 mkdir -p ${GOPATH}/src/github.com/projectcalico/felix
 cp -r * ${GOPATH}/src/github.com/projectcalico/felix/.
 pushd ${GOPATH}/src/github.com/projectcalico/felix
@@ -58,6 +61,8 @@ install ${GOPATH}/src/github.com/projectcalico/felix/bin/calico-felix %{buildroo
 %{_bindir}/calico-felix
 
 %changelog
+*   Tue Jun 09 2020 Ashwin H <ashwinh@vmware.com> 2.6.0-3
+-   Use cache for dependencies
 *    Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 2.6.0-2
 -    Fix CVE-2018-17846 and CVE-2018-17143
 *    Fri Nov 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.0-1

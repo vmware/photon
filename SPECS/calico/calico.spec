@@ -1,11 +1,13 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/calico
 Source0:        %{name}-%{version}.tar.gz
 %define sha1 calico=43310c3ae20b7806ae030d11ae99c135a35badac
+Source1:        glide-cache-for-%{name}-%{version}.tar.xz
+%define sha1 glide-cache-for-%{name}=0b6f17cb3f30fa4ec21cc859026330c69663b89a
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -22,9 +24,11 @@ Calico node is a container that bundles together various components reqiured for
 
 %build
 mkdir -p /root/.glide
+tar -C ~/.glide -xf %{SOURCE1}
 mkdir -p ${GOPATH}/src/github.com/projectcalico/node
 cp -r * ${GOPATH}/src/github.com/projectcalico/node
 pushd ${GOPATH}/src/github.com/projectcalico/node
+#glide install checks by default .glide dir before downloading from internet.
 glide install --strip-vendor
 mkdir -p dist
 mkdir -p .go-pkg-cache
@@ -47,6 +51,8 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
+*   Tue Jun 09 2020 Ashwin H <ashwinh@vmware.com> 3.6.1-2
+-   Use cache for dependencies
 *   Wed May 08 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-1
 -   Update to 3.6.1
 *   Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 2.6.7-4
