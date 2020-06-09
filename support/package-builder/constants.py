@@ -264,6 +264,8 @@ class constants(object):
         "libXrandr-devel"])
 
     perPackageToolChain["apache-maven"] = ["apache-maven"]
+
+    perPackageToolChain["elasticsearch"] = ["openjdk12"]
     # List of RPMs which are not published. They will be created during the
     # build process
     listOfRPMsProvidedAfterBuild=[

@@ -1,27 +1,25 @@
 Name:            kibana
 Summary:         Browser-based analytics and search dashboard for Elasticsearch.
-Version:         6.7.0
-Release:         3%{?dist}
+Version:         6.8.9
+Release:         1%{?dist}
 License:         Apache License Version 2.0
 URL:             https://www.elastic.co/products/kibana
 Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}.tar.gz
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Daemons
-%define sha1     %{name}-%{version}=36bc3dea07c787c395d1b6aaf46e2ade93c5b7a9
-Source1:         node_modules_kibana_6.7.0.tar.gz
-%define sha1     node_modules_kibana=bb056b73894050cc7007100d685a8817101f286a
-Source2:         kibana_build_6.7.0.tar.gz
-%define sha1     kibana_build=c259f2374e42a20cadada3665b9adfac1e056570
+%define sha1     %{name}-%{version}=3d927c871e4640785509ce25de6d3a3ae0c9c05a
+Source1:         kibana_build-%{version}.tar.gz
+%define sha1     kibana_build-%{version}=7fd82956cf81b4d991d6fa872c37046574fd291f
 BuildArch:       x86_64
 BuildRequires:   git
 BuildRequires:   yarn
-BuildRequires:   nodejs = 10.15.2
+BuildRequires:   nodejs = 10.19.0
 BuildRequires:   zip
 BuildRequires:   photon-release
 BuildRequires:   systemd
 Requires:        systemd
-Requires:        nodejs = 10.15.2
+Requires:        nodejs = 10.19.0
 Requires:        elasticsearch
 
 %global debug_package %{nil}
@@ -41,11 +39,16 @@ It enables visual exploration and real-time analysis of your data in Elasticsear
 # 5) tar -zcvf kibana-6.7.0.tar.gz kibana-%{version}
 %setup -q -n %{name}-%{version}
 
-tar xf %{SOURCE1} --no-same-owner
-
 %build
 export PATH=${PATH}:/usr/bin
-tar xf %{SOURCE2} --no-same-owner
+#For building kibana pls, follow the below commands.
+
+#this command will download all the required node modules
+#yarn kbn bootstrap
+
+#this command will do the build
+#yarn build --oss --skip-os-packages
+tar xf %{SOURCE1} --no-same-owner
 
 %install
 mkdir -p %{buildroot}%{_datadir}/%{name}
@@ -76,8 +79,8 @@ install -D -m 644 src/dev/build/tasks/os_packages/service_templates/systemd/etc/
 mkdir -p %{buildroot}%{_sysconfdir}/%{name}
 install -D -m 644 config/%{name}.yml %{buildroot}%{_sysconfdir}/%{name}
 
-mkdir -p %{buildroot}%{_sysconfdir}/init.d
-install -D -m 644 src/dev/build/tasks/os_packages/service_templates/sysv/etc/init.d/%{name} %{buildroot}%{_sysconfdir}/init.d
+mkdir -p %{buildroot}%{_sysconfdir}/rc.d/init.d
+install -D -m 644 src/dev/build/tasks/os_packages/service_templates/sysv/etc/init.d/%{name} %{buildroot}%{_sysconfdir}/rc.d/init.d
 
 rm -rf %{buildroot}%{_datadir}/%{name}/node_modules/clipboardy
 
@@ -122,13 +125,15 @@ exit
 %doc %{_datadir}/%{name}/README.txt
 %{_sysconfdir}/systemd/system/%{name}.service
 %{_sysconfdir}/default/%{name}
-%{_sysconfdir}/init.d/%{name}
+%{_sysconfdir}/rc.d/init.d/%{name}
 %{_sysconfdir}/%{name}/%{name}.yml
 %{_datadir}/%{name}/package.json
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}
 
 %changelog
+*   Mon Jun 08 2020 Tapas Kundu <tkundu@vmware.com> 6.8.9-1
+-   Update to release 6.8.9
 *   Wed Oct 09 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-3
 -   Use bundled source to build
 *   Thu Jul 18 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-2

@@ -1,14 +1,14 @@
 Summary:	Logstash is a tool for managing events and logs.
 Name:           logstash
-Version:        6.7.0
-Release:        7%{?dist}
+Version:        6.8.9
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:		https://github.com/elastic/logstash/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}.tar.gz=7c009c19e8d7c733173b94b5152f48deee8a76ef
+%define sha1 %{name}-%{version}.tar.gz=08af6be4d6034b700c1b436f9881eae35bfa798c
 Source1:        %{name}.service
 Source2:        %{name}.conf
 BuildArch:      x86_64
@@ -20,8 +20,6 @@ Requires:	ruby
 Requires:       systemd
 Requires:       elasticsearch
 Requires:       kibana
-Patch0:         jackson_update.patch
-Patch1:         logstash_input_beats_update.patch
 
 %description
 Logstash is a server-side data processing pipeline that ingests data from a multitude of sources simultaneously, transforms it, and then sends it to your favorite "stash."
@@ -31,8 +29,6 @@ Logstash is a server-side data processing pipeline that ingests data from a mult
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 
 %build
 export OSS=true
@@ -117,6 +113,8 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+*   Mon Jun 08 2020 Tapas Kundu <tkundu@vmware.com> 6.8.9-1
+-   Update to 6.8.9
 *   Thu Nov 28 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-7
 -   Updated the logstash-input-beat version to fix CVE-2019-7620
 *   Wed Sep 18 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-6
