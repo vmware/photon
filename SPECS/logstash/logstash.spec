@@ -1,14 +1,14 @@
 Summary:	Logstash is a tool for managing events and logs.
 Name:           logstash
-Version:        6.7.0
-Release:        7%{?dist}
+Version:        6.8.9
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:		https://github.com/elastic/logstash/archive/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}.tar.gz=7c009c19e8d7c733173b94b5152f48deee8a76ef
+%define sha1 %{name}-%{version}.tar.gz=08af6be4d6034b700c1b436f9881eae35bfa798c
 Source1:        %{name}.service
 Source2:        %{name}.conf
 BuildRequires:	openjdk
@@ -16,10 +16,8 @@ BuildRequires:	ruby
 Requires:	openjdk
 Requires:	ruby
 Requires:       systemd
-Requires:       elasticsearch
-Requires:       kibana
-Patch0:         jackson_update.patch
-Patch1:         logstash_input_beats_update.patch
+Requires:       elasticsearch = %{version}
+Requires:       kibana = %{version}
 
 %description
 Logstash is a tool to collect, process, and forward events and log messages. Collection is accomplished via configurable input plugins including raw socket/packet communication, file tailing, and several message bus clients. Once an input plugin has collected data it can be processed by any number of filters which modify and annotate the event data. Finally logstash routes events to output plugins which can forward the events to a variety of external programs including Elasticsearch, local files and several message bus implementations.
@@ -28,8 +26,6 @@ Logstash is a tool to collect, process, and forward events and log messages. Col
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 
 %build
 export OSS=true
@@ -116,6 +112,8 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+*   Tue May 05 2020 Tapas Kundu <tkundu@vmware.com> 6.8.9-1
+-   Update to 6.8.9
 *   Thu Nov 28 2019 Ankit Jain <ankitja@vmware.com> 6.7.0-7
 -   Updated the logstash-input-beat version to fix CVE-2019-7620
 *   Mon Sep 16 2019 Tapas Kundu <tkundu@vmware.com> 6.7.0-6

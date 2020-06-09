@@ -1,20 +1,17 @@
 Summary:        Fast, reliable, and secure dependency management.
 Name:           yarn
-Version:        1.10.1
-Release:        6%{?dist}
+Version:        1.21.1
+Release:        1%{?dist}
 License:        BSD 2-Clause
 URL:            https://yarnpkg.com
 Source0:        https://github.com/yarnpkg/yarn/archive/%{name}-%{version}.tar.gz
-%define sha1    yarn=2f5d4c9e3fe876108d3e48db6645332195676e95
-Source1:        node_modules_yarn_1.10.1.tar.gz
-%define sha1    node_modules_yarn=81e9e4db4d99783baac50c0dd2aa410a8e465db7
+%define sha1    yarn=88bcbdfb28c27c8348f92b327826111cba116c11
+Source1:        node_modules_yarn_1.21.tar.gz
+%define sha1    node_modules_yarn=0017116df1538cde49ef06635811343b167c3d92
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Developement/Languages/NodeJs
-Patch0:         CVE-2019-5448-forces-using-https-for-registries.patch
-Patch1:         CVE-2019-10773.patch
-Patch2:         CVE-2020-8131-Fix-arbitrary-file-write-on-fetch.patch
-Patch3:         CVE-2019-15608.patch
+Patch0:         CVE-2020-8131-Fix-arbitrary-file-write-on-fetch.patch
 BuildRequires:  nodejs
 
 %global debug_package %{nil}
@@ -30,9 +27,6 @@ Yarn uses checksums to verify the integrity of every installed package before it
 %setup -q -n %{name}-%{version}
 
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
 
 tar xf %{SOURCE1} --no-same-owner
 
@@ -55,6 +49,8 @@ ln -sf %{_libdir}/node_modules/%{name}/bin/yarn.js %{buildroot}%{_bindir}/yarnpk
 %{_libdir}/node_modules/%{name}
 
 %changelog
+*   Tue May 05 2020 Tapas Kundu <tkundu@vmware.com> 1.21.1-1
+-   Update to 1.21.1
 *   Thu Apr 02 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 1.10.1-6
 -   Add patch to fix CVE-2019-15608
 *   Thu Mar 05 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 1.10.1-5

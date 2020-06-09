@@ -105,8 +105,7 @@ class constants(object):
         "readline",
         "bash"]
 
-    # List of X library RPMS that will be installed in a chroot prior to build openjdk & openjre package. 
-    listToolChainXRPMsToInstall=[
+    perPackageToolChain = dict.fromkeys(["openjdk", "openjdk-doc", "openjdk-src", "openjdk-sample", "openjre", "openjdk9", "openjdk9-doc", "openjdk9-src", "openjdk9-sample", "openjre9", "openjdk10", "openjdk10-doc", "openjdk10-src", "openjdk10-sample", "openjre10", "openjdk11", "openjdk11-doc", "openjdk11-src", "openjdk11-sample" ], [
         "glib-devel",
         "icu-devel",
         "openjdk",
@@ -155,7 +154,9 @@ class constants(object):
         "libXrender",
         "libXrender-devel",
         "libXrandr",
-        "libXrandr-devel"]
+        "libXrandr-devel"])
+
+    perPackageToolChain["elasticsearch"] = ["openjdk12"]
 
     listToolChainRPMPkgsToInstall=[
         "linux-api-headers",

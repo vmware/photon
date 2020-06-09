@@ -133,8 +133,10 @@ class ToolChainUtils(object):
             raise Exception("RPM installation failed")
 
         self.logger.info("Installed default toolchain successfully on chroot:"+chrootID)
-        if re.match("openjdk*", packageName) is not None or re.match("openjdk*", packageName) is not None:
-            self.installToolChainXRPMS(chrootID);
+        self.logger.info("Building Package:"+ packageName)
+        if packageName in constants.perPackageToolChain:
+            self.logger.info("perPackageToolChain for package %s:%s" % (packageName , constants.perPackageToolChain[packageName]))
+            self.installCustomToolChainRPMS(chrootID, constants.perPackageToolChain[packageName], packageName);
 
     def installCoreToolChainPackages(self,chrootID):
         self.logger.info("Installing toolchain.....")
@@ -273,17 +275,22 @@ class ToolChainUtils(object):
             raise Exception("RPM installation failed")
 
         self.logger.info("Successfully installed default Tool Chain RPMS in Chroot:"+chrootID)
-        if re.match("openjdk*", packageName) is not None or re.match("openjdk*", packageName) is not None:
-            self.installToolChainXRPMS(chrootID);
+        self.logger.info("Building Package:"+ packageName)
+        if packageName in constants.perPackageToolChain:
+            self.logger.info("perPackageToolChain for package %s:%s" % (packageName , constants.perPackageToolChain[packageName]))
+            self.installCustomToolChainRPMS(chrootID, constants.perPackageToolChain[packageName], packageName);
 
-    def installToolChainXRPMS(self, chrootID):
-        self.logger.info("Installing Tool Chain X package RPMS.......")
+    def installCustomToolChainRPMS(self, chrootID, listOfToolChainPkgs, packageName):
+        self.logger.info("Installing package specific tool chain RPMs for " + packageName + ".......")
         rpmFiles = ""
         packages = ""
-        for package in constants.listToolChainXRPMsToInstall:
+        for package in listOfToolChainPkgs:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             print "DEBUG:" + package
-            rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
+            if "openjre" in packageName or "openjdk" in packageName:
+                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
+            else:
+                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
             if rpmFile is None:
                 self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                 raise Exception("Input Error")
