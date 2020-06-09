@@ -5,7 +5,7 @@
 Summary:        Little IoT Agent
 Name:           liota
 Version:        0.4.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD 2-Clause License.
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -41,7 +41,7 @@ Little IoT Agent (liota) is an open source project offering some convenience for
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/var/log/%{name}
 mkdir -p %{buildroot}/etc/%{name}
-mkdir -p %{buildroot}/etc/init.d/
+mkdir -p %{buildroot}/etc/rc.d/init.d/
 mkdir -p %{buildroot}/usr/lib/%{name}/examples
 mkdir -p %{buildroot}/usr/lib/%{name}/packages
 mkdir -p %{buildroot}/%{python2_sitelib}/%{name}
@@ -52,20 +52,22 @@ python setup.py install
 cp /usr/lib/liota/config/liota.conf %{buildroot}/etc/%{name}/
 cp /usr/lib/liota/config/logging.json %{buildroot}/etc/%{name}/
 cp /usr/lib/liota/config/README.md %{buildroot}/etc/%{name}/
-cp scripts/autostartliota %{buildroot}/etc/init.d/
+cp scripts/autostartliota %{buildroot}/etc/rc.d/init.d/
 cp -r packages/liotad/* %{buildroot}/usr/lib/%{name}/packages/
 cp -r liota/* %{buildroot}/%{python2_sitelib}/%{name}/
 cp -r packages/liotad/* %{buildroot}/usr/lib/%{name}/packages/liotad/
 
 %files
 %defattr(-,root,root)
-/etc/init.d/autostartliota
+/etc/rc.d/init.d/autostartliota
 /usr/lib/%{name}/
 /var/log/%{name}
 /etc/%{name}
 %{python2_sitelib}/%{name}/
 
 %changelog
+*   Tue Jun 09 2020 Tapas Kundu <tkundu@vmware.com> 0.4.1-3
+-   Fix the init.d path
 *   Tue Sep 11 2018 Tapas Kundu <tkundu@vmware.com> 0.4.1-2
 -   Added fix to build with pip greater than version 10.
 *   Mon Aug 13 2018 Tapas Kundu <tkundu@vmware.com> 0.4.1-1

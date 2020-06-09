@@ -1,16 +1,16 @@
 Name:            kibana
 Summary:         Browser-based analytics and search dashboard for Elasticsearch.
-Version:         6.8.8
-Release:         2%{?dist}
+Version:         6.8.9
+Release:         1%{?dist}
 License:         Apache License Version 2.0
 URL:             https://www.elastic.co/products/kibana
-Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}-2.tar.gz
+Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}.tar.gz
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Daemons
-%define sha1     %{name}-%{version}=74e9f4914554524bd952f89f05fa64c877dbaf12
-Source1:         kibana_build_%{version}-2.tar.gz
-%define sha1     kibana_build_%{version}=035633a48633dbb26f821f5c7605cb31a5f6f7d0
+%define sha1     %{name}-%{version}=3d927c871e4640785509ce25de6d3a3ae0c9c05a
+Source1:         kibana_build-%{version}.tar.gz
+%define sha1     kibana_build-%{version}=7fd82956cf81b4d991d6fa872c37046574fd291f
 BuildArch:       x86_64
 BuildRequires:   git
 BuildRequires:   yarn
@@ -79,8 +79,8 @@ install -D -m 644 src/dev/build/tasks/os_packages/service_templates/systemd/etc/
 mkdir -p %{buildroot}%{_sysconfdir}/%{name}
 install -D -m 644 config/%{name}.yml %{buildroot}%{_sysconfdir}/%{name}
 
-mkdir -p %{buildroot}%{_sysconfdir}/init.d
-install -D -m 644 src/dev/build/tasks/os_packages/service_templates/sysv/etc/init.d/%{name} %{buildroot}%{_sysconfdir}/init.d
+mkdir -p %{buildroot}%{_sysconfdir}/rc.d/init.d
+install -D -m 644 src/dev/build/tasks/os_packages/service_templates/sysv/etc/init.d/%{name} %{buildroot}%{_sysconfdir}/rc.d/init.d
 
 rm -rf %{buildroot}%{_datadir}/%{name}/node_modules/clipboardy
 
@@ -125,13 +125,15 @@ exit
 %doc %{_datadir}/%{name}/README.txt
 %{_sysconfdir}/systemd/system/%{name}.service
 %{_sysconfdir}/default/%{name}
-%{_sysconfdir}/init.d/%{name}
+%{_sysconfdir}/rc.d/init.d/%{name}
 %{_sysconfdir}/%{name}/%{name}.yml
 %{_datadir}/%{name}/package.json
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}
 
 %changelog
+*   Mon Jun 08 2020 Tapas Kundu <tkundu@vmware.com> 6.8.9-1
+-   Update to release 6.8.9
 *   Fri May 08 2020 Tapas Kundu <tkundu@vmware.com> 6.8.8-2
 -   Optimized the src rpm.
 *   Wed Apr 15 2020 Tapas Kundu <tkundu@vmware.com> 6.8.8-1

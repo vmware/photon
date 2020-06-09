@@ -2,16 +2,16 @@
 
 Summary:          Elastic Search
 Name:             elasticsearch
-Version:          6.8.8
-Release:          2%{?dist}
+Version:          6.8.9
+Release:          1%{?dist}
 License:          Apache License Version 2.0
 URL:              https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
 Source0:          %{name}-%{version}.tar.gz
-%define sha1      %{name}-%{version}.tar.gz=57763d079d3f5cfbf123c536505e6814c7a432fb
+%define sha1      %{name}-%{version}.tar.gz=94d004bb0588e66cc82dbe9579f3f206327cb243
 Source1:          cacerts
 %define sha1      cacerts=f584c7c1f48c552f39acfb5560a300a657d9f3bb
 Source2:          distribution-for-elasticsearch-%{version}.tar.gz
-%define sha1      distribution-for-elasticsearch=7b1f5c24790e613eba29d20a862dff1bd31f38d2
+%define sha1      distribution-for-elasticsearch=32848961226ddfad9e2bf7162e9fb631d94ed2eb
 Group:            Development/Daemons
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -59,7 +59,6 @@ mkdir -p %{buildroot}/etc/%{name}
 mkdir -p %{buildroot}/usr/lib/sysctl.d/
 mkdir -p %{buildroot}/usr/lib/systemd/system/
 mkdir -p %{buildroot}/usr/lib/tmpfiles.d/
-mkdir -p %{buildroot}/etc/init.d/elasticsearch
 mkdir -p %{buildroot}/etc/sysconfig/elasticsearch
 mkdir -p %{buildroot}/var/lib/elasticsearch
 mkdir -p %{buildroot}/var/log/elasticsearch
@@ -122,6 +121,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+*   Mon Jun 08 2020 Tapas Kundu <tkundu@vmware.com> 6.8.9-1
+-   Update to release 6.8.9
 *   Fri May 08 2020 Tapas Kundu <tkundu@vmware.com> 6.8.8-2
 -   Optimize the src rpm.
 *   Wed Apr 15 2020 Tapas Kundu <tkundu@vmware.com> 6.8.8-1
