@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.126
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -29,6 +29,8 @@ Source7:        check_for_config_applicability.inc
 Source8:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
 %define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
 Source9:        genhmac.inc
+Source10:	https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_1.6.tar.gz
+%define sha1 DCAP=84df31e729c4594f25f4fcb335940e06a2408ffc
 
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
@@ -212,6 +214,14 @@ Requires:       python3
 The Linux package contains the Linux kernel doc files
 
 %ifarch x86_64
+%package drivers-intel-sgx
+Summary:	Intel SGX driver
+Group:		System Environment/Kernel
+Requires:	%{name} = %{version}-%{release}
+Requires(post): /usr/sbin/groupadd
+%description drivers-intel-sgx
+This Linux package contains Intel SGX kernel module.
+
 %package oprofile
 Summary:        Kernel driver for oprofile, a statistical profiler for Linux systems
 Group:          System Environment/Kernel
@@ -272,6 +282,7 @@ This Linux package contains hmac sha generator kernel module.
 %ifarch x86_64
 %setup -D -b 3 -n linux-%{version}
 %setup -D -b 5 -n linux-%{version}
+%setup -D -b 10 -n linux-%{version}
 %endif
 %setup -D -b 8 -n linux-%{version}
 
@@ -391,10 +402,17 @@ bldroot=`pwd`
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
 popd
+
 # build XR module
 bldroot=`pwd`
 pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
 make KERNELDIR=$bldroot %{?_smp_mflags} all
+popd
+
+# build Intel SGX module
+bldroot=`pwd`
+pushd ../SGXDataCenterAttestationPrimitives-DCAP_1.6/driver/linux
+make KDIR=$bldroot %{?_smp_mflags}
 popd
 %endif
 
@@ -451,6 +469,14 @@ popd
 bldroot=`pwd`
 pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
 make KERNELDIR=$bldroot INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
+
+# install Intel SGX module
+bldroot=`pwd`
+pushd ../SGXDataCenterAttestationPrimitives-DCAP_1.6/driver/linux
+mkdir -p %{buildroot}/%{_sysconfdir}/udev/rules.d
+install -vm 644 10-sgx.rules %{buildroot}/%{_sysconfdir}/udev/rules.d
+install -vm 644 intel_sgx.ko %{buildroot}/lib/modules/%{uname_r}/extra/
 popd
 
 # Verify for build-id match
@@ -555,6 +581,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /sbin/depmod -a %{uname_r}
 
 %ifarch x86_64
+%post drivers-intel-sgx
+/sbin/depmod -a %{uname_r}
+getent group sgx_prv >/dev/null || groupadd -r sgx_prv
+
 %post oprofile
 /sbin/depmod -a %{uname_r}
 %endif
@@ -579,6 +609,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 %ifarch x86_64
 %exclude /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
+%exclude /lib/modules/%{uname_r}/extra/intel_sgx.ko.xz
 %endif
 
 %files docs
@@ -608,6 +639,11 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %ifarch x86_64
+%files drivers-intel-sgx
+%defattr(-,root,root)
+/lib/modules/%{uname_r}/extra/intel_sgx.ko.xz
+%config(noreplace) %{_sysconfdir}/udev/rules.d/10-sgx.rules
+
 %files oprofile
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
@@ -658,6 +694,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Jun 15 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.126-3
+-   Add intel_sgx module (-drivers-intel-sgx subpackage)
 *   Wed Jun 10 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.126-2
 -   Enable CONFIG_VFIO_NOIOMMU
 *   Fri Jun 05 2020 Vikash Bansal <bvikas@vmware.com> 4.19.126-1
