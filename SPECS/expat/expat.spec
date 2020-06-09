@@ -1,15 +1,15 @@
 Summary:	An XML parser library
 Name:		expat
-Version:	2.2.4
-Release:	2%{?dist}
+Version:	2.2.9
+Release:	1%{?dist}
 License:	MIT
 URL:		http://expat.sourceforge.net/
 Group:		System Environment/GeneralLibraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 expat=3394d6390c041a8f5dec1d5fe7c4af0a23ae4504
-Patch0:		expat-CVE-2018-20843.patch
+Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.xz
+%define sha1 expat=90a361e4c97f8c469479ffadc0de0b121a911fb5
+
 Requires:       expat-libs = %{version}-%{release}
 %description
 The Expat package contains a stream oriented C library for parsing XML.
@@ -28,7 +28,7 @@ This package contains minimal set of shared expat libraries.
 
 %prep
 %setup -q
-%patch0 -p2
+
 %build
 ./configure \
 	CFLAGS="%{optflags}" \
@@ -56,7 +56,11 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %doc AUTHORS Changes
 %{_bindir}/*
-%{_mandir}/man1/*
+
+## TODO: There's some change in man page build path according to release notes.
+## https://github.com/libexpat/libexpat/blob/R_2_2_7/expat/Changes
+## #158 #263  CMake: Build man page in PROJECT_BINARY_DIR not _SOURCE_DIR
+#%{_mandir}/man1/*
 
 %files devel
 %{_includedir}/*
@@ -67,7 +71,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libexpat.so.*
 
 %changelog
-
+*   Tue Jun 09 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 2.2.9-1
+-   Update to version 2.2.9 to fix CVE-2019-15903
 *   Mon Jul 8 2019 Siddharth Chandrasekaran <csiddharth@vmware.com> 2.2.4-2
 -   Add patch for CVE-2018-20843
 *   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 2.2.4-1
