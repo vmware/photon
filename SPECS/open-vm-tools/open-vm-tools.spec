@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        11.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -23,6 +23,7 @@ Patch4:         timezoneCust.patch
 Patch5:         gosc-post-custom.patch
 Patch6:         gosc-enable-custom-scripts.patch
 Patch7:         gosc-fix-vmtoolsd-binary-path.patch
+Patch8:         gosc-force-run-cust-script.patch
 
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
@@ -76,6 +77,7 @@ It contains the libraries and header files to create applications.
 %patch5 -p0
 %patch6 -p0
 %patch7 -p0
+%patch8 -p0
 
 %build
 autoreconf -i
@@ -145,6 +147,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Mon Jun 08 2020 Keerthana K <keerthanak@vmware.com> 11.1.0-2
+-   Add gosc FORCE-RUN-CUST-SCRIPT changes.
 *   Mon May 18 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.0-1
 -   Upgrade version to 11.1.0
 -   Removed BuildArch, this version supports aarch64 & x86_64

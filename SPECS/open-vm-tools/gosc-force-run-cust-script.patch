@@ -1,0 +1,69 @@
+commit ed208b2cce5583ad860e9f37a0c565cc7859f424
+Author: Keerthana K <keerthanak@vmware.com>
+Date:   Mon Jun 8 17:34:37 2020 +0530
+
+    custom script: Add FORCE-RUN-POST-CUST-SCRIPT
+    
+    FORCE-RUN-POST-CUST-SCRIPT is added to cust.cfg. Custom Scripts are
+    run based on this flag (0/1/not set).
+    1. If FORCE-RUN-POST-CUST-SCRIPT is yes in cust.cfg, we don't read enable-custom-scripts value. Run custom script.
+    2. If FORCE-RUN-POST-CUST-SCRIPT is no / not exist in cust.cfg, enable-custom-scripts is true, run custom script.
+    3. If FORCE-RUN-POST-CUST-SCRIPT is no / not exist in cust.cfg, enable-custom-scripts is false / not set, report error and abort the guest customization.
+
+diff --git gosc-scripts/imc-shell/imgcust-scripts/ConfigFile.sh gosc-scripts-modify/imc-shell/imgcust-scripts/ConfigFile.sh
+index 1d6e064..884980e 100755
+--- gosc-scripts/imc-shell/imgcust-scripts/ConfigFile.sh
++++ gosc-scripts-modify/imc-shell/imgcust-scripts/ConfigFile.sh
+@@ -1400,3 +1400,19 @@ ConfigFile_GetPrimaryNic()
+   echo "$primary"
+ }
+ 
++# Retrieves whether to force run post custom script.
++#
++# Args:
++#   None
++# Results:
++#   boolean: 1 for yes/YES, 0 for no/NO, an empty string if it wasn't specified
++# Throws:
++#   Dies in case setting is present, but is not yes/YES or no/NO.
++ConfigFile_GetForceRunPostCustScript()
++{
++  local val='' # has to be declared before assigned
++
++  val=$(ConfigFile_GetOptionalBoolean 'MISC|FORCE-RUN-POST-CUST-SCRIPT') || exit 1
++
++  echo "$val"
++}
+diff --git gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh gosc-scripts-modify/imc-shell/imgcust-scripts/PhotonCustomization.sh
+index 10d8795..0e61e68 100755
+--- gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh
++++ gosc-scripts-modify/imc-shell/imgcust-scripts/PhotonCustomization.sh
+@@ -13,16 +13,22 @@ RunCloudConfig()
+   ConfigFile_LoadConfigFile $configPath
+ 
+   #Check whether post custom script is present and the file is non empty then
+-  #Read enable-custom-scripts value from /etc/vmware-tools/tools.conf through vmware-toolbox-cmd command
+-  #If enable-custom-scripts value is false then cancel the guest customization and Report failure.
++  #Check whether FORCE-RUN-POST-CUST-SCRIPT is set or not, and run post custom script only on following conditions:
++    #  If FORCE-RUN-POST-CUST-SCRIPT is yes in cust.cfg, then don't read enable-custom-scripts value. Run custom script.
++    #  If FORCE-RUN-POST-CUST-SCRIPT is no / not exist in cust.cfg, and enable-custom-scripts is true, run custom script.
++    #  If FORCE-RUN-POST-CUST-SCRIPT is no / not exist in cust.cfg, enable-custom-scripts is false / not set, report error and abort the guest customization.
+   local postScript=$(ConfigFile_GetCustomScriptName)
+   if [[ -n "$postScript" ]]; then
+      postScript=`${DIRNAME} $configFilePath`"/$postScript"
+      if [[ -f "$postScript" && -s "$postScript" ]]; then
+-        local value=$(GetToolsConfig "deployPkg" "enable-custom-scripts")
+-        if !(echo $value | grep -iqwF "true"); then
+-           PostDeployPkgStatus "enable-custom-scripts is set to false"
+-           Die "enable-custom-scripts is set to false. Failing customization"
++        local forceCustomScript=$(ConfigFile_GetForceRunPostCustScript)
++        Debug "FORCE-RUN-POST-CUST-SCRIPT: [$forceCustomScript]"
++        if [[ -z "$forceCustomScript" || $forceCustomScript == 0 ]]; then
++           local value=$(GetToolsConfig "deployPkg" "enable-custom-scripts")
++           if !(echo $value | grep -iqwF "true"); then
++              PostDeployPkgStatus "enable-custom-scripts is set to false"
++              Die "enable-custom-scripts is set to false. Failing customization"
++           fi
+         fi
+      fi
+   fi
