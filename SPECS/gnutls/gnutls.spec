@@ -1,23 +1,23 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.6.13
+Version:        3.6.14
 Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
-%define sha1    gnutls=0d3d0d093d6a7cf589612a7c21dbb46cb31c644b
+%define sha1    gnutls=bea1b5abcb691acf014e592f41d0a9580a41216a
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Patch0:         gnutls-3.6.9-default-priority.patch
-BuildRequires:  nettle-devel
+BuildRequires:  nettle-devel >= 3.4.1
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  guile-devel
 BuildRequires:  gc-devel
-Requires:       nettle
+Requires:       nettle >= 3.4.1
 Requires:       autogen-libopts
 Requires:       libtasn1
 Requires:       openssl
@@ -31,9 +31,9 @@ GnuTLS is a secure communications library implementing the SSL, TLS and DTLS pro
 
 %package devel
 Summary:    Development libraries and header files for gnutls
-Requires:   gnutls
+Requires:   gnutls = %{version}-%{release}
 Requires:   libtasn1-devel
-Requires:   nettle-devel
+Requires:   nettle-devel >= 3.4.1
 
 %description devel
 The package contains libraries and header files for
@@ -94,6 +94,9 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Jun 09 2020 Tapas Kundu <tkundu@vmware.com> 3.6.14-1
+-   Update to 3.6.14
+-   Fix CVE-2020-13777
 *   Fri Apr 10 2020 Tapas Kundu <tkundu@vmware.com> 3.6.13-1
 -   Update to 3.6.13
 -   Fix CVE-2020-11501
