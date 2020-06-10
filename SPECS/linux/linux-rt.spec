@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.115
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt50
-Release:        8%{?kat_build:.%kat}%{?dist}
+Release:        9%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -950,6 +950,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Jun 10 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-9
+-   Enable CONFIG_VFIO_NOIOMMU
 *   Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 4.19.115-8
 -   Enabled CONFIG_BINFMT_MISC
 *   Tue Jun 02 2020 Vikash Bansal <bvikas@vmware.com> 4.19.115-7

@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.112
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -679,6 +679,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed Jun 10 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.112-13
+-   Enable CONFIG_VFIO_NOIOMMU
 *   Tue Jun 09 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.112-12
 -   Add intel_sgx module (-drivers-intel-sgx subpackage)
 *   Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 4.19.112-11
