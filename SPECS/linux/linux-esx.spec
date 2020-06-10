@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.224
-Release:        3%{?dist}
+Version:        4.9.226
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=ff58d8f86dced1ac20e27717437d816a2c6e3f45
+%define sha1 linux=d7dbf6c324dedc9a68768391b10de7ff5971278b
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -262,6 +262,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jun 08 2020 Vikash Bansal <bvikas@vmware.com> 4.9.226-1
+-   Update to version 4.9.226
 *   Thu Jun 04 2020 Ajay Kaher <akaher@vmware.com> 4.9.224-3
 -   Fix for CVE-2020-10757
 *   Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.9.224-2
