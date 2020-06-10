@@ -4,7 +4,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
 License:        GPLv2+
@@ -84,8 +84,7 @@ make %{?_smp_mflags}
 
 %install
 mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/audit/rules.d}
-mkdir -p %{buildroot}/%{_var}/opt/audit/log
-mkdir -p %{buildroot}/%{_var}/log
+mkdir -p %{buildroot}/%{_var}/log/audit
 mkdir -p %{buildroot}/%{_var}/spool/audit
 make install DESTDIR=%{buildroot}
 
@@ -96,19 +95,15 @@ echo "disable auditd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-
 make %{?_smp_mflags} check
 
 %pre
-if [ ! -d "%{_var}/opt/audit/log" ]
-then
-    if [ -d "%{_var}/log/audit" ]
-    then
-        mkdir -p "%{_var}/opt/audit/log" && \
-          cp -rf %{_var}/log/audit/ %{_var}/opt/audit/log && \
-            rm -rf "%{_var}/log/audit"
-    fi
-fi
-
+# Fix audit-2.4.8-2: move logs from /var/opt/audit back to /var/log/audit
+# Delete symlink and let package to install it as a folder.
+# After installation and service restart, /var/opt/audit/* will
+# remain in the system, as it might have useful information.
+# TODO: this hook can be removed after consumers migrated back
+# to /var/log/audit/
+test -L /var/log/audit && rm /var/log/audit ||:
 
 %post
-ln -sfv %{_var}/opt/audit/log %{_var}/log/audit
 /sbin/ldconfig
 %systemd_post  auditd.service
 
@@ -130,8 +125,7 @@ ln -sfv %{_var}/opt/audit/log %{_var}/log/audit
 %{_mandir}/man5/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
-%dir %{_var}/opt/audit/log
-%ghost %{_var}/log/audit
+%dir %{_var}/log/audit
 %{_var}/spool/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit/rules.d
@@ -169,6 +163,8 @@ ln -sfv %{_var}/opt/audit/log %{_var}/log/audit
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 10 2020 Alexey Makhalov <amakhalov@vmware.com> 2.8.5-4
+-   Use /var/log/audit
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 2.8.5-3
 -   Bump up version to compile with go 1.13.3-2
 *   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 2.8.5-2
