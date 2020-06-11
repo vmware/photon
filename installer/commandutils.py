@@ -51,11 +51,7 @@ class CommandUtils(object):
     @staticmethod
     def generate_password_hash(password):
         """Generate hash for the password"""
-        shadow_password = crypt.crypt(
-            password, "$6$" + "".join(
-                [random.choice(
-                    string.ascii_letters + string.digits) for _ in range(16)]))
-        return shadow_password
+        return crypt.crypt(password)
 
     @staticmethod
     def _requests_get(url, verify):
