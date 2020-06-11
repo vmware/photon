@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.126
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -658,6 +658,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Jun 10 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.126-2
+-   Enable CONFIG_VFIO_NOIOMMU
 *   Fri Jun 05 2020 Vikash Bansal <bvikas@vmware.com> 4.19.126-1
 -   Update to version 4.19.126
 *   Thu Jun 04 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-2
