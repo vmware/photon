@@ -1,14 +1,14 @@
 Summary:    nghttp2 is an implementation of HTTP/2 and its header compression algorithm, HPACK.
 Name:       nghttp2
-Version:    1.33.0
+Version:    1.41.0
 Release:    1%{?dist}
 License:    MIT
 URL:        https://nghttp2.org
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution: Photon
-Source0:	https://github.com/nghttp2/nghttp2/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha1 nghttp2=0a11f7de6ea8e66fbecc9fe4ddc61b6ab40af469
+Source0:	https://github.com/nghttp2/nghttp2/releases/download/v%{version}/%{name}-%{version}.tar.gz
+%define sha1 nghttp2=809b2f948d02e271adc498d8ef225d30509dc0d0
 
 BuildRequires: c-ares-devel
 BuildRequires: openssl-devel
@@ -33,6 +33,7 @@ These are the header files of nghttp2.
 %setup -q
 
 %build
+autoreconf -i
 ./configure --prefix=%{_prefix}        \
             --disable-static           \
             --enable-lib-only          \
@@ -58,6 +59,8 @@ rm %{buildroot}/%{_libdir}/*.la
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Thu Jun 11 2020 Ashwin H <ashwinh@vmware.com> 1.41.0-1
+-   Upgrade to version 1.41.0
 *   Fri Sep 7 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.33.0-1
 -   Upgrade to version 1.33.0
 *   Tue Jun 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.23.1-1
