@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.28.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -24,6 +24,8 @@ Patch2:         make-check-failure.patch
 Patch3:         make-check-failure2.patch
 %endif
 Patch4:         perl-CVE-2020-10543.patch
+Patch5:         perl-CVE-2020-10878.patch
+Patch6:         perl-CVE-2020-12723.patch
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
 Provides:       perl(s)
@@ -47,6 +49,8 @@ Report Language.
 %patch3 -p1
 %endif
 %patch4 -p1
+%patch5 -p1
+%patch6 -p1
 sed -i 's/-fstack-protector/&-all/' Configure
 
 %build
@@ -85,6 +89,8 @@ make test TEST_SKIP_VERSION_CHECK=1
 %{_mandir}/*/*
 
 %changelog
+*   Wed Jun 16 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.28.0-7
+-   Added patches, Fix CVE-2020-10878, Fix CVE-2020-12723
 *   Mon Jun 15 2020 Dweep Advani <dadvani@vmware.com> 5.28.0-6
 -   Patched for fixing CVE-2020-10543
 *   Tue Feb 25 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.28.0-5
