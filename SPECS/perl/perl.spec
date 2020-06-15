@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.24.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -30,6 +30,8 @@ Patch8:         perl-CVE-2018-18313.patch
 Patch9:         perl-CVE-2018-18314.patch
 Patch10:        perl-CVE-2018-18312.patch
 Patch11:        perl-CVE-2020-10543.patch
+Patch12:        perl-CVE-2020-10878.patch
+Patch13:        perl-CVE-2020-12723.patch
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
 Provides:       /bin/perl
@@ -55,6 +57,8 @@ Report Language.
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
+%patch13 -p1
 
 sed -i 's/-fstack-protector/&-all/' Configure
 
@@ -87,6 +91,8 @@ unset BUILD_ZLIB BUILD_BZIP2
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
 %changelog
+*   Tue Jun 16 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.24.1-6
+-   Added patches, Fix CVE-2020-10878 & CVE-2020-12723
 *   Mon Jun 15 2020 Dweep Advani <dadvani@vmware.com> 5.24.1-5
 -   Patched for fixing CVE-2020-10543
 *   Fri Mar 01 2019 Dweep Advani <dadvani@vmware.com> 5.24.1-4
