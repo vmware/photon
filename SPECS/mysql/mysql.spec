@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.19
+Version:        8.0.20
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=d2ff524f697fc1f674505e1e5f31fd99cc923798
+%define         sha1 mysql-boost=c3bf2fe528c4a652c8f72cfa980f7bc50c44d28b
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -61,6 +61,7 @@ make test
 %{_libdir}/plugin/*
 %{_libdir}/*.so.*
 %{_libdir}/mysqlrouter/*.so
+%{_libdir}/mysqlrouter/private/libmysql*.so.*
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_mandir}/man8/*
@@ -77,6 +78,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 8.0.20-1
+-   Update to 8.0.20
 *   Thu Apr 16 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.19-1
 -   Upgrade to version 8.0.19 to fix several CVEs
 *   Wed Jul 31 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.17-1
