@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.129
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -690,6 +690,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Sat Jun 27 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.129-2
+-   .config: add zram module
 *   Sat Jun 27 2020 Keerthana K <keerthanak@vmware.com> 4.19.129-1
 -   Update to version 4.19.129
 *   Tue Jun 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.126-4
