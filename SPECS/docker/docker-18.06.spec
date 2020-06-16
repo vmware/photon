@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -47,6 +47,8 @@ Requires:       libseccomp
 Requires:       systemd
 Requires:       device-mapper-libs
 Requires:       shadow
+# bash completion uses awk
+Requires:       gawk
 
 %description
 Docker is an open source project to build, ship and run any application as a lightweight container.
@@ -232,6 +234,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Jun 15 2020 Alexey Makhalov <amakhalov@vmware.com> 18.06.2-4
+-   Requires: gawk
 *   Mon Apr 27 2020 Ankit Jain <ankitja@vmware.com> 18.06.2-3
 -   Multiple CVEs fixes
 -   Added Requires shadow
