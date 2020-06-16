@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -46,6 +46,8 @@ BuildRequires:  libapparmor
 BuildRequires:  libapparmor-devel
 Requires:       docker-engine = %{version}-%{release}
 Requires:       docker-cli = %{version}-%{release}
+# bash completion uses awk
+Requires:       gawk
 
 %description
 Docker is an open source project to build, ship and run any application as a lightweight container.
@@ -285,6 +287,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Jun 15 2020 Alexey Makhalov <amakhalov@vmware.com> 18.09.9-4
+-   Requires: gawk
 *   Mon May 04 2020 Harinadh D <hdommaraju@vmware.com> 18.09.9-3
 -   Bump up version to compile with go 1.13.3-2
 *   Mon Apr 27 2020 Ankit Jain <ankitja@vmware.com> 18.09.9-2

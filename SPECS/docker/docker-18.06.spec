@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -49,6 +49,8 @@ Requires:       libseccomp >= 2.4.0
 Requires:       systemd
 Requires:       device-mapper-libs
 Requires:       shadow
+# bash completion uses awk
+Requires:       gawk
 
 # To fix downgrade from docker 18.09 to docker 18.06
 Obsoletes:      docker-cli
@@ -239,6 +241,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Jun 15 2020 Alexey Makhalov <amakhalov@vmware.com> 18.06.2-13
+-   Requires: gawk
 *   Thu Apr 30 2020 Ankit Jain <ankitja@vmware.com> 18.06.2-12
 -   Fix CVE-2019-16884, updated runc and containerd version
 *   Wed Apr 29 2020 Harinadh D <hdommaraju@vmware.com> 18.06.2-11
