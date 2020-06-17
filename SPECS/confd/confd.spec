@@ -1,7 +1,7 @@
 Summary:        confd is a lightweight configuration management tool
 Name:           confd
 Version:        3.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/confd
 Source0:        %{name}-%{version}.tar.gz
@@ -28,13 +28,20 @@ This is a Calico-specific version of confd. It is heavily modified from the orig
 %build
 mkdir -p /root/.glide
 tar -C ~/.glide -xf %{SOURCE3}
+pushd /root/.glide/cache/src
+ln -s https-cloud.google.com-go https-code.googlesource.com-gocloud
+popd
+
 #projectcalico version of confd is forked from kelseyhightower.
 #Code still uses kelseyhightower in package naming in src files.
 mkdir -p ${GOPATH}/src/github.com/kelseyhightower/confd
 cp -r * ${GOPATH}/src/github.com/kelseyhightower/confd
 pushd ${GOPATH}/src/github.com/kelseyhightower/confd
+
+glide mirror set https://cloud.google.com/go https://code.googlesource.com/gocloud
 #glide install checks by default .glide dir before downloading from internet.
 glide install --strip-vendor
+
 pushd vendor/golang.org/x/net
 patch -p1 < %{SOURCE1}
 patch -p1 < %{SOURCE2}
@@ -56,6 +63,8 @@ cp -r confd/etc/ %{buildroot}%{_sysconfdir}
 %config(noreplace) %{_sysconfdir}/calico
 
 %changelog
+*   Wed Jun 17 2020 Ashwin H <ashwinh@vmware.com> 3.6-3
+-   Fix dependency for cloud.google.com-go
 *   Tue Jun 09 2020 Ashwin H <ashwinh@vmware.com> 3.6-2
 -   Use cache for dependencies
 *   Fri Aug 16 2019 Ashwin H <ashwinh@vmware.com> 3.6-1

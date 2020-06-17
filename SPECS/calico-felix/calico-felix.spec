@@ -1,7 +1,7 @@
 Summary:       A per-host daemon for Calico
 Name:          calico-felix
 Version:       2.6.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
@@ -34,10 +34,17 @@ make install
 popd
 mkdir -p /root/.glide
 tar -C ~/.glide -xf %{SOURCE4}
+pushd /root/.glide/cache/src
+ln -s https-cloud.google.com-go https-code.googlesource.com-gocloud
+popd
+
 mkdir -p ${GOPATH}/src/github.com/projectcalico/felix
 cp -r * ${GOPATH}/src/github.com/projectcalico/felix/.
 pushd ${GOPATH}/src/github.com/projectcalico/felix
+
+glide mirror set https://cloud.google.com/go https://code.googlesource.com/gocloud
 glide install --strip-vendor
+
 pushd vendor/golang.org/x/net
 patch -p1 < %{SOURCE2}
 patch -p1 < %{SOURCE3}
@@ -61,6 +68,8 @@ install ${GOPATH}/src/github.com/projectcalico/felix/bin/calico-felix %{buildroo
 %{_bindir}/calico-felix
 
 %changelog
+*   Wed Jun 17 2020 Ashwin H <ashwinh@vmware.com> 2.6.0-4
+-   Fix dependency for cloud.google.com-go
 *   Tue Jun 09 2020 Ashwin H <ashwinh@vmware.com> 2.6.0-3
 -   Use cache for dependencies
 *    Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 2.6.0-2
