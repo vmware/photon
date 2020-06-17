@@ -1,8 +1,10 @@
-%define python2_ver %(python2 -c "import sys;print sys.version[0:3]")
+%define python3_ver %(python3 -c "import sys;print sys.version[0:3]")
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%define debug_package %{nil}
 
-Name:           python-subprocess32
+Name:           python3-subprocess32
 Version:        3.5.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A backport of the subprocess module from Python 3.2/3.3 for use on 2.x
 License:        PSF
 Group:          Development/Languages/Python
@@ -12,17 +14,17 @@ Source0:        subprocess32-%{version}.tar.gz
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python-setuptools
-BuildRequires:  python-pytest
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-pytest
 %if %{with_check}
-BuildRequires:  python2-test
+BuildRequires:  python3-test
 %endif
 
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-setuptools
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-setuptools
 
 %description
 A backport of the subprocess module from Python 3.2/3.3 for use on 2.x
@@ -31,19 +33,21 @@ A backport of the subprocess module from Python 3.2/3.3 for use on 2.x
 %setup -n subprocess32-%{version}
 
 %build
-python2 setup.py build
+python3 setup.py build
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-PYTHONPATH=build/lib.linux-%{_arch}-%{python2_ver}/ python2 test_subprocess32.py
+PYTHONPATH=build/lib.linux-%{_arch}-%{python3_ver}/ python3 test_subprocess32.py
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/*
+%{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 3.5.2-3
+-   Mass removal python2
 *   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 3.5.2-2
 -   Added BuildRequires python2-devel
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 3.5.2-1

@@ -1,81 +1,56 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
-Name:           docker-py
+Name:           docker-py3
 Version:        3.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python API for docker
 License:        ASL2.0
 Group:          Development/Languages/Python
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Url:            https://github.com/docker/docker-py
-Source0:        %{name}-%{version}.tar.gz
+Source0:        docker-py-%{version}.tar.gz
 %define sha1    docker-py=d742bfa49b86502150a9cffe2e066a39eb8ab778
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python-ipaddress
-BuildRequires:  python-pip
-BuildRequires:  python-requests
-BuildRequires:  python-setuptools
-BuildRequires:  python-six
-BuildRequires:  python-xml
-Requires:       python2
-Requires:       python2-libs
-Requires:       docker-pycreds
-Requires:       python-backports.ssl_match_hostname
-Requires:       python-ipaddress
-Requires:       python-requests
-Requires:       python-six
-Requires:       python-websocket-client
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-ipaddress
+BuildRequires:  python3-pip
+BuildRequires:  python3-requests
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-six
+BuildRequires:  python3-xml
+Requires:       python3
+Requires:       python3-libs
+Requires:       docker-pycreds3
+Requires:       python3-backports.ssl_match_hostname
+Requires:       python3-ipaddress
+Requires:       python3-requests
+Requires:       python3-six
+Requires:       python3-websocket-client
 
 BuildArch:      noarch
 
 %description
 Python API for docker
 
-%package -n     docker-py3
-Summary:        Python3 API for docker
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-pip
-
-Requires:       python3
-Requires:       python3-libs
-Requires:       docker-pycreds3
-Requires:       python3-requests
-Requires:       python3-six
-Requires:       python3-websocket-client
-
-%description -n docker-py3
-Python3 API for docker
 
 %prep
-%setup -n %{name}-%{version}
-rm -rf ../p3dir
-cp -a . ../p3dir
+%setup -n docker-py-%{version}
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %files
-%defattr(-,root,root,-)
-%{python2_sitelib}/*
-
-%files -n docker-py3
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 3.5.0-2
+-   Mass removal python2
 *   Tue Sep 04 2018 Tapas Kundu <tkundu@vmware.com> 3.5.0-1
 -   Upgraded to 3.5.0 release.
 *   Fri Dec 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2.3.0-3

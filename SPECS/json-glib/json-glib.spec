@@ -1,7 +1,7 @@
 Summary:    	Library providing serialization and deserialization support for the JSON format
 Name:       	json-glib
 Version:    	1.4.4
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	LGPLv2+
 Group:      	Development/Libraries
 Source0:    	http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.4/%{name}-%{version}.tar.xz
@@ -11,14 +11,14 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  autoconf
 BuildRequires:  automake
-BuildRequires:  gobject-introspection-python
+BuildRequires:  python3-gobject-introspection
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  glib-devel
 BuildRequires:  libtool
 BuildRequires:  which
 BuildRequires:	meson
-BuildRequires:	python2
-BuildRequires:	python2-libs
+BuildRequires:	python3
+BuildRequires:	python3-libs
 BuildRequires:  gtk-doc
 Requires:	glib
 Provides:	pkgconfig(json-glib-1.4)
@@ -87,6 +87,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/installed-tests/*
 
 %changelog
+*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 1.4.4-2
+-   Build with python3
+-   Mass removal python2
 *   Fri Sep 21 2018 Ankit Jain <ankitja@vmware.com> 1.4.4-1
 -   Updated package to version 1.4.4
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.2.8-1

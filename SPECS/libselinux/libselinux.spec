@@ -1,9 +1,8 @@
-%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/20191204/%{name}-%{version}.tar.gz
@@ -13,7 +12,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libsepol-devel = %{version}
 BuildRequires:  pcre-devel, swig
-BuildRequires:  python2-devel
 BuildRequires:  python3-devel
 Requires:       pcre-libs
 # libselinux optionally uses libsepol by dlopen it.
@@ -61,17 +59,6 @@ Provides:       pkgconfig(libselinux)
 The libselinux-devel package contains the libraries and header files
 needed for developing SELinux applications.
 
-%package        python
-Summary:        SELinux python2 bindings for libselinux
-Group:          Development/Libraries
-Requires:       libselinux = %{version}-%{release}
-Requires:       python2
-Requires:       python2-libs
-
-%description    python
-The libselinux-python package contains the python2 bindings for developing
-SELinux applications.
-
 %package        python3
 Summary:        SELinux python3 bindings for libselinux
 Group:          Development/Libraries
@@ -88,12 +75,9 @@ SELinux applications.
 
 %build
 make %{?_smp_mflags}
-make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=/usr/bin/python2 pywrap
 make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=/usr/bin/python3 pywrap
 
 %install
-make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" BINDIR="%{_bindir}" SBINDIR="%{_sbindir}" PYTHON=/usr/bin/python2 install install-pywrap
-
 make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" BINDIR="%{_bindir}" SBINDIR="%{_sbindir}" PYTHON=/usr/bin/python3 install install-pywrap
 
 mkdir -p %{buildroot}/%{_prefix}/lib/tmpfiles.d
@@ -127,15 +111,13 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_libdir}/libselinux.a
 %{_mandir}/man3/*
 
-%files python
-%defattr(-,root,root,-)
-%{python2_sitelib}/*
-
 %files python3
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 3.0-3
+-   Mass removal python2
 *   Fri Apr 24 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-2
 -   Remove libsepol runtime dependency.
 *   Sat Apr 18 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-1

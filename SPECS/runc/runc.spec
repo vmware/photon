@@ -1,7 +1,7 @@
 Summary:        CLI tool for spawning and running containers per OCI spec.
 Name:           runc
 Version:        1.0.0.rc8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://runc.io/
 Source0:        https://github.com/opencontainers/runc/archive/%{name}-v1.0.0-rc8.tar.gz
@@ -30,7 +30,7 @@ BuildRequires:  libseccomp
 BuildRequires:  libseccomp-devel
 BuildRequires:  protobuf-devel
 BuildRequires:  protobuf-c-devel
-BuildRequires:  python2-devel
+BuildRequires:  python3-devel
 BuildRequires:  unzip
 Requires:       glibc
 Requires:       libgcc
@@ -76,6 +76,9 @@ make install BINDIR=%{buildroot}%{_sbindir}
 %{_sbindir}/runc
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.0.0.rc8-2
+-   Build with python3
+-   Mass removal python2
 *   Thu Jun 13 2019 Tapas Kundu <tkundu@vmware.com> 1.0.0.rc8-1
 -   Update to release 1.0.0-rc8
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.1-2

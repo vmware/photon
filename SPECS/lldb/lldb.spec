@@ -1,8 +1,9 @@
-%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        6.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -10,6 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
 %define sha1    lldb=907a32c7170067f485121a1e8ff793b16d1ff491
+Patch0:         fix_python3_lldb.patch
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
 BuildRequires:  clang-devel = %{version}
@@ -17,6 +19,7 @@ BuildRequires:  ncurses-devel
 BuildRequires:  swig
 BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
+BuildRequires:  python3-devel
 Requires:       llvm = %{version}
 Requires:       clang = %{version}
 Requires:       ncurses
@@ -34,17 +37,17 @@ Requires:       %{name} = %{version}-%{release}
 The lldb-devel package contains libraries, header files and documentation
 for developing applications that use lldb.
 
-%package -n python-lldb
+%package -n python3-lldb
 Summary:        Python module for lldb
 Requires:       %{name} = %{version}-%{release}
-BuildRequires:  python2-devel
-Requires:       python-six
+Requires:       python3-six
 
-%description -n python-lldb
-The package contains the LLDB Python module.
+%description -n python3-lldb
+The package contains the LLDB Python3 module.
 
 %prep
 %setup -q -n %{name}-%{version}.src
+%patch0 -p1
 
 %build
 mkdir -p build
@@ -65,7 +68,7 @@ cd build
 make DESTDIR=%{buildroot} install
 
 #Remove bundled python-six files
-rm -f %{buildroot}%{python2_sitelib}/six.*
+rm -f %{buildroot}%{python3_sitelib}/six.*
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -89,11 +92,13 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.a
 %{_includedir}/*
 
-%files -n python-lldb
-%defattr(-,root,root)
-%{python2_sitelib}/*
+%files -n python3-lldb
+%defattr(-,root,root,-)
+%{python3_sitelib}/*
 
 %changelog
+*   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 6.0.1-2
+-   Removed python2
 *   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1
 -   Update to version 6.0.1 to get it to build with gcc 7.3
 -   Make python2_sitelib macro global to fix build error.

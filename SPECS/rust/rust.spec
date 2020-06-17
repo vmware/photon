@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.34.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -15,7 +15,7 @@ BuildRequires:  git
 BuildRequires:  cmake
 BuildRequires:  glibc
 BuildRequires:  binutils
-BuildRequires:  python2
+BuildRequires:  python3
 BuildRequires:  curl-devel
 
 %description
@@ -60,6 +60,9 @@ rm %{buildroot}%{_docdir}/%{name}/*.old
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.34.2-3
+-   Build with python3
+-   Mass removal python2
 *   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 1.34.2-2
 -   Added for ARM Build
 *   Wed May 15 2019 Ankit Jain <ankitja@vmware.com> 1.34.2-1

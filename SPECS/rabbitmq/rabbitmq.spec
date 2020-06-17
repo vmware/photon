@@ -1,7 +1,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.7.20
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -21,8 +21,8 @@ BuildRequires: zip
 BuildRequires: git
 BuildRequires: libxslt
 BuildRequires: xmlto
-BuildRequires: python-xml
-BuildRequires: python2
+BuildRequires: python3-xml
+BuildRequires: python3
 BuildRequires: elixir
 BuildArch:     noarch
 
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/lib/*
 
 %changelog
+* Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 3.7.20-3
+- Build with python3
+- Mass removal python2
 * Mon Apr 27 2020 Tapas Kundu <tkundu@vmware.com> 3.7.20-2
 - Fix rabbitmq server issue when we enable rabbitmq plugin.
 * Tue Oct 29 2019 Keerthana K <keerthanak@vmware.com> 3.7.20-1

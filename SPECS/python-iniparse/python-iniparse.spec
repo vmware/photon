@@ -1,9 +1,8 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
-Name:           python-iniparse
+Name:           python3-iniparse
 Version:        0.4
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Python Module for Accessing and Modifying Configuration Data in INI files
 Group:          Development/Libraries
 License:        MIT
@@ -16,11 +15,15 @@ Distribution:   Photon
 
 BuildArch:      noarch
 
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python2-test
-
-Requires:       python2
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-test
+BuildRequires:  python3-devel
+BuildRequires:  python3-six
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-pycparser
+Requires:       python3-six
 
 %description
 iniparse is an INI parser for Python which is API compatible
@@ -29,64 +32,34 @@ files (order of sections & options, indentation, comments, and blank
 lines are preserved when data is updated), and is more convenient to
 use.
 
-%package -n     python3-iniparse
-Summary:        python-iniparse
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-six
-BuildRequires:  python3-test
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-pycparser
-Requires:       python3-six
-
-%description -n python3-iniparse
-Python 3 version.
 
 %prep
 %setup -q -n iniparse-%{version}
-rm -rf ../p3dir
-cp -a . ../p3dir
-pushd ../p3dir
 %patch0 -p1
-popd
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
 # fixes
 chmod 644 %{buildroot}/usr/share/doc/iniparse-%{version}/index.html
 mv %{buildroot}/usr/share/doc/iniparse-%{version} %{buildroot}/usr/share/doc/python-iniparse-%{version}
 
 
 %check
-python2 runtests.py
-
-pushd ../p3dir
 python3 runtests.py
-popd
 
 
 %files
 %defattr(-,root,root,-)
 %doc  %{_docdir}/python-iniparse-%{version}/*
-%{python2_sitelib}/*
-
-%files -n python3-iniparse
-%defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 
 %changelog
+*   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.4-7
+-   Mass removal python2
 *   Tue Jul 11 2017 Xiaolin Li <xiaolinl@vmware.com> 0.4-6
 -   Fix python3 and make check issues.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.4-5
@@ -105,12 +78,12 @@ popd
 -   Release 0.3.1
 *   Fri Feb 27 2009 Paramjit Oberoi <param@cs.wisc.edu> - 0.3.0-1
 -   Release 0.3.0
-*   Tue Dec 6 2008 Paramjit Oberoi <param@cs.wisc.edu> - 0.2.4-1
+*   Sat Dec 6 2008 Paramjit Oberoi <param@cs.wisc.edu> - 0.2.4-1
 -   Release 0.2.4
 -   added egg-info file to %%files
 *   Tue Dec 11 2007 Paramjit Oberoi <param@cs.wisc.edu> - 0.2.3-1
 -   Release 0.2.3
-*   Tue Sep 24 2007 Paramjit Oberoi <param@cs.wisc.edu> - 0.2.2-1
+*   Mon Sep 24 2007 Paramjit Oberoi <param@cs.wisc.edu> - 0.2.2-1
 -   Release 0.2.2
 *   Tue Aug 7 2007 Paramjit Oberoi <param@cs.wisc.edu> - 0.2.1-1
 -   Release 0.2.1

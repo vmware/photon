@@ -1,12 +1,10 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
-%{!?python2_version: %define python2_version %(python2 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
 Summary:        Code coverage measurement for Python.
-Name:           python-coverage
+Name:           python3-coverage
 Version:        4.5.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -15,21 +13,15 @@ Url:            https://pypi.python.org/pypi/coverage
 Source0:        https://files.pythonhosted.org/packages/source/c/coverage/coverage-%{version}.tar.gz
 %define         sha1 coverage=ec7c2ee6eae78708bee08af8b85e03dd8d673ef2
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 %if %{with_check}
-BuildRequires:  python-pytest
-BuildRequires:  python-six
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
-BuildRequires:  python-pip
 BuildRequires:  iana-etc
 %endif
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-xml
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -43,48 +35,19 @@ BuildRequires:  python3-six
 Code coverage measurement for Python.
 Coverage.py measures code coverage, typically during test execution. It uses the code analysis tools and tracing hooks provided in the Python standard library to determine which lines are executable, and which have been executed.
 
-%package -n     python3-coverage
-Summary:        python-coverage
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-xml
-
-%description -n python3-coverage
-Python 3 version.
-
 %prep
 %setup -q -n coverage-%{version}
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
 
 %check
-easy_install pytest==4.6
-easy_install tox
-easy_install PyContracts
-LANG=en_US.UTF-8 tox -e py27
-pushd ../p3dir
 LANG=en_US.UTF-8 tox -e py36
-popd
 
 %files
-%defattr(-,root,root)
-%{python2_sitelib}/*
-%{_bindir}/coverage2
-%{_bindir}/coverage-%{python2_version}
-
-%files -n python3-coverage
 %defattr(-,root,root)
 %{python3_sitelib}/*
 %{_bindir}/coverage
@@ -92,6 +55,8 @@ popd
 %{_bindir}/coverage-%{python3_version}
 
 %changelog
+*   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 4.5.1-3
+-   Mass removal python2
 *   Mon Oct 21 2019 Shreyas B. <shreyasb@vmware.com> 4.5.1-2
 -   Fixed makecheck errors.
 *   Sat Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 4.5.1-1

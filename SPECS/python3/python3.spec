@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -180,10 +180,7 @@ rm %{buildroot}%{_bindir}/2to3
 make  %{?_smp_mflags} test
 
 %post
-if [ "$(stat -c %d:%i /)" == "$(stat -c %d:%i /proc/1/root/.)" ]; then
-#if we are not in chroot
-    ln -sf /usr/bin/python3 /usr/bin/python
-fi
+ln -sf /usr/bin/python3 /usr/bin/python
 /sbin/ldconfig
 
 %postun
@@ -291,6 +288,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Fri Jul 17 2020 Tapas Kundu <tkundu@vmware.com> 3.7.5-3
+-   symlink python to python3
 *   Fri May 01 2020 Alexey Makhalov <amakhalov@vmware.com> 3.7.5-2
 -   -setuptools requires -xml.
 *   Sat Dec 07 2019 Tapas Kundu <tkundu@vmware.com> 3.7.5-1

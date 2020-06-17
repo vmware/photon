@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        provides a pure-Python implementation of immutable URLs
-Name:           python-hyperlink
+Name:           python3-hyperlink
 Version:        18.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -13,19 +12,13 @@ Url:            https://github.com/python-hyper/hyperlink
 Source0:        https://github.com/python-hyper/hyperlink/archive/hyperlink-%{version}.tar.gz
 %define sha1    hyperlink=f51f4495795e51ae9468a13dd79ff26b3f457f40
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-Requires:       python2
-Requires:       python2-libs
+Requires:       python3
+Requires:       python3-libs
 %if %{with_check}
-BuildRequires:  python-idna
 BuildRequires:  python3-idna
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
@@ -35,53 +28,29 @@ BuildArch:      noarch
 %description
 Hyperlink provides a pure-Python implementation of immutable URLs. Based on RFC 3986 and 3987, the Hyperlink URL makes working with both URIs and IRIs easy.
 
-%package -n     python3-hyperlink
-Summary:        provides a pure-Python implementation of immutable URLs
-
-Requires:       python3
-Requires:       python3-libs
-
-%description -n python3-hyperlink
-Python 3 version.
-
 %prep
 %setup -q -n hyperlink-%{version}
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 
 %install
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 pytest
-pytest
-pushd ../p3dir
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 pytest
 pytest
-popd
 
 
 %files
 %defattr(-,root,root)
-%{python2_sitelib}/*
-
-%files -n python3-hyperlink
-%defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 18.0.0-3
+-   Mass removal python2
 *   Thu Dec 06 2018 Tapas Kundu <tkundu@vmware.com> 18.0.0-2
 -   Fix make check.
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 18.0.0-1

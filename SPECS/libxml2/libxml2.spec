@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -13,23 +12,13 @@ Distribution:   Photon
 Source0:        ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
 %define sha1    libxml2=db6592ec9ca9708c4e71bf6bfd907bbb5cd40644
 Patch0:         CVE-2020-7595.patch
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 BuildRequires:  python3-devel
 Provides:       pkgconfig(libxml-2.0)
 
 %description
 The libxml2 package contains libraries and utilities used for parsing XML files.
-
-%package python
-Summary:        The libxml2 python module
-Group:          Development/Languages/Python
-Requires:       %{name} = %{version}
-Requires:       python2
-Requires:       python2-libs
-
-%description    python
-The libxml2 python module
 
 %package -n     python3-libxml2
 Summary:        Python 3 bindings for libxml2.
@@ -88,10 +77,6 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 
-%files python
-%defattr(-,root,root)
-%{python2_sitelib}/*
-
 %files -n python3-libxml2
 %defattr(-,root,root)
 %{python3_sitelib}/*
@@ -104,6 +89,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
 %changelog
+*   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.9.10-2
+-   Mass removal python2
 *   Fri Jan 31 2020 Shreyas B <shreyasb@vmware.com> 2.9.10-1
 -   Updgrade to v2.9.10 to address CVE-2019-19956(memory leak issue).
 -   Fix CVE-2020-7595(end-of-file issue).

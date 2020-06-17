@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -19,6 +18,15 @@ BuildRequires:  libstdc++
 BuildRequires:  curl
 BuildRequires:  make
 BuildRequires:  unzip
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  chkconfig
+BuildRequires:  openjre8 >= 1.8.0.45
+BuildRequires:  openjdk8 >= 1.8.0.45
+BuildRequires:  apache-maven >= 3.3.3
 
 %description
 Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data. You can find protobuf's documentation on the Google Developers site.
@@ -40,28 +48,10 @@ Requires:       protobuf = %{version}-%{release}
 %description    static
 The protobuf-static package contains static protobuf libraries.
 
-%package        python
-Summary:        protobuf python lib
-Group:          Development/Libraries
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-Requires:       python2
-Requires:       python2-libs
-Requires:       protobuf = %{version}-%{release}
-
-%description    python
-This contains protobuf python libraries.
 
 %package        python3
 Summary:        protobuf python3 lib
 Group:          Development/Libraries
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       protobuf = %{version}-%{release}
@@ -72,10 +62,6 @@ This contains protobuf python3 libraries.
 %package        java
 Summary:        protobuf java
 Group:          Development/Libraries
-BuildRequires:  chkconfig
-BuildRequires:  openjre8 >= 1.8.0.45
-BuildRequires:  openjdk8 >= 1.8.0.45
-BuildRequires:  apache-maven >= 3.3.3
 Requires:       openjre8 >= 1.8.0.45
 
 %description    java
@@ -89,7 +75,6 @@ autoreconf -iv
 %configure --disable-silent-rules
 make %{?_smp_mflags}
 pushd python
-python2 setup.py build
 python3 setup.py build
 popd
 pushd java
@@ -99,7 +84,6 @@ popd
 %install
 make DESTDIR=%{buildroot} install
 pushd python
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 pushd java
@@ -136,8 +120,6 @@ popd
 %{_libdir}/libprotobuf.a
 %{_libdir}/libprotoc.a
 
-%files python
-%{python2_sitelib}/*
 
 %files python3
 %{python3_sitelib}/*
@@ -146,6 +128,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 3.6.1-2
+-   Mass removal python2
 *   Tue Sep 18 2018 Tapas Kundu <tkundu@vmware.com> 3.6.1-1
 -   Update to version 3.6.1
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-6

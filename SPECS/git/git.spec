@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.26.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
@@ -10,7 +10,8 @@ Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
 %define sha1    git=bdb5eb6c014d7c372be70782a5155d964abe2c08
 BuildRequires:  curl-devel
-BuildRequires:  python2
+BuildRequires:  python3
+BuildRequires:  python3-devel
 BuildRequires:  openssl-devel
 Requires:       openssl
 Requires:       curl
@@ -20,7 +21,7 @@ Requires:       perl-YAML
 Requires:       perl-DBI
 Requires:       perl-CGI
 Requires:       subversion-perl
-Requires:       python2
+Requires:       python3
 
 %description
 Git is a free and open source, distributed version control system
@@ -91,6 +92,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 2.26.2-2
+-   Build python3
 *   Tue May 19 2020 Prashant S Chauhan <psinghchauhan@vmware.com> 2.26.2-1
 -   Updated to version 2.26.2, fix CVE-2020-11008, CVE-2020-5260
 *   Mon Apr 27 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.26.0-2
@@ -112,7 +115,7 @@ rm -rf %{buildroot}/*
 *   Mon Aug 21 2017 Rui Gu <ruig@vmware.com> 2.9.3-4
 -   Fix make check with non-root mode.
 *   Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.3-3
--   Remove python2 from requires.
+-   Mass removal python2 from requires.
 *   Mon Apr 17 2017 Robert Qi <qij@vmware.com> 2.9.3-2
 -   Update since perl version got updated.
 *   Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.9.3-1

@@ -1,9 +1,8 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Python SSH module
-Name:           paramiko
+Name:           python3-paramiko
 Version:        2.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -14,30 +13,12 @@ Source0:        https://github.com/paramiko/paramiko/archive/paramiko-%{version}
 
 BuildArch:      noarch
 
-BuildRequires:  python-setuptools
-BuildRequires:  python2-devel
-BuildRequires:  ecdsa > 0.11
-BuildRequires:  pycrypto > 2.1
-BuildRequires:  python-cryptography
 BuildRequires:  python3-devel
 BuildRequires:  python3-ecdsa > 0.11
 BuildRequires:  python3-pycrypto > 2.1
 BuildRequires:  python3-cryptography
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-Requires:       python2
-Requires:       pycrypto > 2.1
-Requires:       ecdsa > 0.11
-Requires:       python-cryptography
-Requires:       python-PyNaCl
-Requires:       python-bcrypt
-
-%description
-"Paramiko" is a combination of the esperanto words for "paranoid" and "friend". It's a module for Python 2.6+ that implements the SSH2 protocol for secure (encrypted and authenticated) connections to remote machines. Unlike SSL (aka TLS), SSH2 protocol does not require hierarchical certificates signed by a powerful central authority.
-
-%package -n     python3-paramiko
-Summary:        python3-paramiko
-
 Requires:       python3
 Requires:       python3-pycrypto > 2.1
 Requires:       python3-ecdsa > 0.11
@@ -45,29 +26,23 @@ Requires:       python3-cryptography
 Requires:       python3-PyNaCl
 Requires:       python3-bcrypt
 
-%description -n python3-paramiko
+%description
+"Paramiko" is a combination of the esperanto words for "paranoid" and "friend". It's a module for Python 2.6+ that implements the SSH2 protocol for secure (encrypted and authenticated) connections to remote machines. Unlike SSL (aka TLS), SSH2 protocol does not require hierarchical certificates signed by a powerful central authority.
 
-Python 3 version.
 
 %prep
-%setup -q
+%setup -q -n paramiko-%{version}
 
 %build
-python2 setup.py build
 python3 setup.py build
 
 %install
 %{__rm} -rf %{buildroot}
-python2 setup.py install -O1 --skip-build \
-    --root "%{buildroot}" \
-    --single-version-externally-managed
-
 python3 setup.py install -O1 --skip-build \
     --root "%{buildroot}" \
     --single-version-externally-managed
 
 %check
-LANG=en_US.UTF-8 python2 test.py
 LANG=en_US.UTF-8 python3 test.py
 
 %clean
@@ -75,13 +50,11 @@ LANG=en_US.UTF-8 python3 test.py
 
 %files
 %defattr(-, root, root)
-%{python2_sitelib}/*
-
-%files -n python3-paramiko
-%defattr(-, root, root)
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 08 2020 Tapas Kundu <tkundu@vmware.com> 2.7.1-2
+-   Mass removal python2
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.7.1-1
 -   Automatic Version Bump
 *   Wed Mar 06 2019 Tapas Kundu <tkundu@vmware.com> 2.4.2-2

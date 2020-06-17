@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        tzinfo object for the local timezone.
-Name:           python-tzlocal
+Name:           python3-tzlocal
 Version:        1.5.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -13,11 +12,6 @@ Url:            https://pypi.python.org/pypi/tzlocal/1.4
 Source0:        https://files.pythonhosted.org/packages/source/t/tzlocal/tzlocal-%{version}.tar.gz
 %define sha1    tzlocal=98dc51724f3201f66f4ec36f22b99bd03f3059bd
 Patch0:         tzlocal-make-check-fix.patch
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-BuildRequires:  python-six
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -28,9 +22,9 @@ BuildRequires:  python3-xml
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 %endif
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-pytz
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-pytz
 BuildArch:      noarch
 
 %description
@@ -42,48 +36,27 @@ Also, with Windows different timezone system using pytz isn’t of much use unle
 
 With tzlocal you only need to call get_localzone() and you will get a tzinfo object with the local time zone info. On some Unices you will still not get to know what the timezone name is, but you don’t need that when you have the tzinfo file. However, if the timezone name is readily available it will be used.
 
-%package -n     python3-tzlocal
-Summary:        python-tzlocal
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-pytz
-
-%description -n python3-tzlocal
-Python 3 version.
 
 %prep
 %setup -q -n tzlocal-%{version}
 %patch0 -p1
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
 
 %check
-python2 setup.py test
-pushd ../p3dir
 python3 setup.py test
-popd
 
 %files
-%defattr(-,root,root)
-%{python2_sitelib}/*
-
-%files -n python3-tzlocal
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 1.5.1-3
+-   Mass removal python2
 *   Mon Nov 26 2018 Tapas Kundu <tkundu@vmware.com> 1.5.1-2
 -   Fix make check
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.5.1-1

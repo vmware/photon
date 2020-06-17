@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Pure Python Vi Implementation.
-Name:           python-pyvim
+Name:           python3-pyvim
 Version:        2.0.22
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,79 +17,54 @@ Source0:        pyvim-%{version}.tar.gz
 Source1:        pyvim-tests-%{version}.tar.gz
 %define sha1 pyvim-tests=57c48d48d1e20ae997975a99504be26191b2a662
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 %if %{with_check}
-BuildRequires:  python-pytest
-BuildRequires:  python-prompt_toolkit
 BuildRequires:  python3-pytest
 BuildRequires:  python3-prompt_toolkit
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
-BuildRequires:  python-atomicwrites
 BuildRequires:  python3-atomicwrites
-BuildRequires:  python-attrs
 BuildRequires:  python3-attrs
-BuildRequires:  python-xml
 BuildRequires:  python3-xml
-BuildRequires:  python-pip
 BuildRequires:  python3-pip
 %endif
 
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-prompt_toolkit
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-prompt_toolkit
 
 BuildArch:      noarch
 
 %description
 An implementation of Vim in Python.
 
-%package -n     python3-pyvim
-Summary:        python-pyvim
-
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-prompt_toolkit
-%description -n python3-pyvim
-Python 3 version.
 
 %prep
 %setup -q -n pyvim-%{version}
 tar -xf %{SOURCE1} --no-same-owner
 
 %build
-python2 setup.py build
 python3 setup.py build
 
 %install
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 mv %{buildroot}/%{_bindir}/pyvim %{buildroot}/%{_bindir}/pyvim3
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-pip install pathlib2 funcsigs pluggy more-itertools pyflakes
-PYTHONPATH=./ py.test2
 pip3 install pathlib2 funcsigs pluggy more-itertools pyflakes
 PYTHONPATH=./ py.test3
 
 %files
 %defattr(-,root,root)
-%{python2_sitelib}/*
-%{_bindir}/pyvim
-
-%files -n python3-pyvim
-%defattr(-,root,root)
 %{python3_sitelib}/*
 %{_bindir}/pyvim3
 
 %changelog
+*   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 2.0.22-6
+-   Mass removal python2
 *   Wed Feb 26 2020 Tapas Kundu <tkundu@vmware.com> 2.0.22-5
 -   Fix makecheck
 *   Mon Sep 09 2019 Tapas Kundu <tkundu@vmware.com> 2.0.22-4

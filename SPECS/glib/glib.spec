@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.58.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
 Group:		Applications/System
@@ -15,9 +15,9 @@ BuildRequires:	pcre-devel
 BuildRequires:	libffi-devel
 BuildRequires:	pkg-config
 BuildRequires:	which
-BuildRequires:	python-xml
-BuildRequires:	python2 >= 2.7
-BuildRequires:	python2-libs >= 2.7
+BuildRequires:	python3-xml
+BuildRequires:	python3
+BuildRequires:	python3-libs
 BuildRequires:	util-linux-devel
 BuildRequires:	elfutils-libelf-devel
 Requires:	elfutils-libelf
@@ -37,10 +37,10 @@ The GLib package contains a low-level libraries useful for providing data struct
 Summary:	Header files for the glib library
 Group:		Development/Libraries
 Requires:	glib = %{version}-%{release}
-Requires:	python-xml
+Requires:	python3-xml
 Requires:	pcre-devel
 Requires:	util-linux-devel
-Requires:	python2
+Requires:	python3
 Requires:	libffi-devel
 Requires:	elfutils-libelf-devel
 
@@ -106,6 +106,9 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 2.58.0-6
+-   Build with python3
+-   Mass removal python2
 *   Fri Aug 09 2019 Alexey Makhalov <amakhalov@vmware.com> 2.58.0-5
 -   Cross compilation support
 *   Tue Jul 09 2019 Ankit Jain <ankitja@vmware.com> 2.58.0-4

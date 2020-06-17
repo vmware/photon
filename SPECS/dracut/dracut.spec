@@ -5,7 +5,7 @@
 
 Name:           dracut
 Version:        050
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -25,7 +25,7 @@ Distribution:   Photon
 BuildRequires:  bash git
 BuildRequires:  pkg-config
 BuildRequires:  kmod-devel
-BuildRequires:  asciidoc
+BuildRequires:  asciidoc3
 Requires:       bash >= 4
 Requires:       (coreutils or toybox)
 Requires:       kmod
@@ -159,6 +159,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 050-2
+-   Use asciidoc3
 *   Fri Apr 24 2020 Susant Sahani <ssahani@vmware.com> 050-1
 -   Update to 050
 *   Fri Apr 03 2020 Vikash Bansal <bvikas@vmware.com> 048-4

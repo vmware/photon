@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.58.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
@@ -21,9 +20,6 @@ BuildRequires:  glib-devel >= 2.58.0
 BuildRequires:  libffi-devel
 BuildRequires:  go
 BuildRequires:  autoconf-archive
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python-xml
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-xml
@@ -35,16 +31,6 @@ GObject Introspection can scan C header and source files in order to
 generate introspection "typelib" files.  It also provides an API to examine
 typelib files, useful for creating language bindings among other
 things.
-
-%package        python
-Summary:        Python package for handling GObject introspection data
-Group:          Development/Languages
-Requires:       %{name} = %{version}-%{release}
-Requires:       python2
-Requires:       python-xml
-%description    python
-This package contains a Python package for handling the introspection
-data from Python.
 
 %package -n     python3-gobject-introspection
 Summary:        Python3 package for handling GObject introspection data
@@ -60,7 +46,7 @@ data from Python.
 Summary:        Libraries and headers for gobject-introspection
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
-Requires:       %{name}-python = %{version}-%{release}
+Requires:       python3-gobject-introspection = %{version}-%{release}
 Requires:       libffi-devel
 Requires:       glib-devel
 
@@ -70,34 +56,19 @@ Libraries and headers for gobject-introspection.
 %prep
 %setup -q
 %patch0 -p1
-rm -rf ../p3dir
 autoreconf -fiv
-cp -a . ../p3dir
 
 %build
-%configure --with-python=/usr/bin/python2
-make %{?_smp_mflags}
-
-pushd ../p3dir
 %configure --with-python=/usr/bin/python3
 make %{?_smp_mflags}
-popd
 
 %install
 rm -rf %{buildroot}/*
 
-pushd ../p3dir
 make install DESTDIR=%{buildroot}
 # Move the python3 modules to the correct location
 mkdir -p %{buildroot}/%{python3_sitelib}
 mv %{buildroot}/%{_libdir}/gobject-introspection/giscanner %{buildroot}/%{python3_sitelib}
-popd
-
-make install DESTDIR=%{buildroot}
-# Move the python modules to the correct location
-mkdir -p %{buildroot}/%{python2_sitelib}
-mv %{buildroot}/%{_libdir}/gobject-introspection/giscanner %{buildroot}/%{python2_sitelib}
-
 rm -rf $RPM_BUILD_ROOT/%{_datarootdir}/gtk-doc/html
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
@@ -117,10 +88,6 @@ make  %{?_smp_mflags} check
 %dir %{_libdir}/girepository-1.0
 %{_libdir}/girepository-1.0/*.typelib
 
-%files python
-%defattr(-,root,root,-)
-%{python2_sitelib}/giscanner
-
 %files -n python3-gobject-introspection
 %defattr(-,root,root,-)
 %{python3_sitelib}/giscanner
@@ -138,6 +105,8 @@ make  %{?_smp_mflags} check
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 1.58.0-3
+-   Mass removal python2
 *   Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.58.0-2
 -   -devel requires -python.
 *   Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 1.58.0-1

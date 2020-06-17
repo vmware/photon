@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Hawkey
 Name:           hawkey
 Version:        2017.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            http://fedoraproject.org/wiki/Features/Hawkey
 Source0:        https://github.com/rpm-software-management/hawkey/archive/%{name}-%{version}.tar.gz
@@ -18,10 +17,14 @@ BuildRequires:  check
 BuildRequires:  cmake
 BuildRequires:  rpm
 BuildRequires:  rpm-devel
+BuildRequires:  python3-devel
+BuildRequires:  python3-sphinx
+BuildRequires:  python3-libs
+BuildRequires:  python3
 Requires:       libsolv
 
 %description
-Hawkey is a library allowing clients to query and resolve dependencies of RPM 
+Hawkey is a library allowing clients to query and resolve dependencies of RPM
 packages based on the current state of RPMDB and yum repositories.
 
 %package devel
@@ -33,26 +36,9 @@ Provides:       pkgconfig(hawkey)
 %description devel
 Development files for hawkey.
 
-%package -n python-hawkey
-Summary:    Python 2 bindings for the hawkey library
-Group:      Development/Languages
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python-pip
-BuildRequires:  python-requests
-BuildRequires:  python-setuptools
-BuildRequires:  python-sphinx
-Requires:   %{name} = %{version}-%{release}
-Requires:   python2
-
-%description -n python-hawkey
-Python 2 bindings for the hawkey library.
-
 %package -n python3-%{name}
 Summary:        Python 3 bindings for the hawkey library
 %{?python_provide:%python_provide python3-%{name}}
-BuildRequires:  python3-devel
-BuildRequires:  python3-sphinx
 Requires:       %{name} = %{version}-%{release}
 
 %description -n python3-%{name}
@@ -67,7 +53,8 @@ mkdir build-py3
 %build
 pushd build
 cmake \
-    -DCMAKE_INSTALL_PREFIX=%{_prefix} ..
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} .. \
+    -DPYTHON_DESIRED="3"
 make %{?_smp_mflags}
 popd
 pushd build-py3
@@ -100,10 +87,6 @@ popd
 %defattr(-,root,root)
 %{_lib64dir}/libhawkey.so.*
 
-%files -n python-hawkey
-%defattr(-,root,root)
-%{python2_sitelib}/*
-
 %files -n python3-hawkey
 %defattr(-,root,root)
 %{python3_sitelib}/*
@@ -116,6 +99,8 @@ popd
 %exclude %{python_sitearch}/*
 
 %changelog
+*   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 2017.1-5
+-   Mass removal python2 subpackage
 *   Thu Sep 14 2017 Xiaolin Li <xiaolinl@vmware.com> 2017.1-4
 -   Fix core dump caused by corrupt metadata (repomd.xml).
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2017.1-3

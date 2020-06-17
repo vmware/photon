@@ -1,6 +1,6 @@
 Name:       btrfs-progs
 Version:    5.7
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    Userspace programs for btrfs
 Group:      System Environment/Base
 License:    GPLv2+
@@ -11,11 +11,11 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 BuildRequires:  lzo-devel
 BuildRequires:  e2fsprogs-devel,libacl-devel
-BuildRequires:  xmlto
-BuildRequires:  asciidoc
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  xmlto
+BuildRequires:  asciidoc3
 Requires:   e2fsprogs, lzo
 
 %description
@@ -40,7 +40,8 @@ btrfs filesystem-specific programs.
 %build
 ./autogen.sh
 %configure \
-	--disable-zstd
+	--disable-zstd \
+        --disable-documentation
 make DISABLE_DOCUMENTATION=1 %{?_smp_mflags}
 
 %install
@@ -76,6 +77,8 @@ rm -rf %{buildroot}
 %{_libdir}/libbtrfsutil.so
 
 %changelog
+*   Fri Jul 17 2020 Tapas Kundu <tkundu@vmware.com> 5.7-2
+-   Use asciidoc3
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 5.7-1
 -   Automatic Version Bump
 *   Mon Nov 19 2018 Sujay G <gsujay@vmware.com> 4.19-1

@@ -1,16 +1,15 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
-Name:           PyYAML
+Name:           python3-PyYAML
 Version:        3.13
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://pyyaml.org/
-Source0:        http://pyyaml.org/download/pyyaml/%{name}-%{version}.tar.gz
+Source0:        http://pyyaml.org/download/pyyaml/PyYAML-%{version}.tar.gz
 %define sha1 PyYAML=22f95fe2f5ef29ab17110f92c7186e2cfde6b419
 Patch0:         PyYAML-CVE-2017-18342.patch
 Patch1:         ConstructorError_fix.patch
@@ -18,17 +17,13 @@ Patch2:         change_default_loader.patch
 Patch3:         PyYAML-lib3-CVE-2017-18342.patch
 Patch4:         PyYAML-CVE-2019-20477.patch
 Patch5:         PyYAML-CVE-2020-1747.patch
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
 BuildRequires:  libyaml-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-BuildRequires:  libyaml-devel
 
-Requires:       python2
-Requires:       python2-libs
+Requires:       python3
+Requires:       python3-libs
 Requires:       libyaml
 
 %description
@@ -44,16 +39,6 @@ to represent an arbitrary Python object.
 PyYAML is applicable for a broad range of tasks from complex
 configuration files to object serialization and persistence.
 
-%package -n     python3-PyYAML
-Summary:        python3-PyYAML
-Requires:       python3
-Requires:       python3-libs
-Requires:       libyaml
-
-%description -n python3-PyYAML
-Python 3 version.
-
-
 %prep
 %setup -q -n PyYAML-%{version}
 %patch0 -p1
@@ -63,46 +48,31 @@ Python 3 version.
 %patch4 -p1
 %patch5 -p1
 
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/%{_bindir}
-python2 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
-chmod a-x examples/yaml-highlight/yaml_hl.py
-pushd ../p3dir
 python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 chmod a-x examples/yaml-highlight/yaml_hl.py
-popd
 
 %check
-python2 setup.py test
-pushd ../p3dir
 python3 setup.py test
-popd
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(-,root,root)
-%doc PKG-INFO README LICENSE examples
-%{python2_sitelib}/*
-
-%files -n python3-PyYAML
 %defattr(-,root,root,-)
 %doc PKG-INFO README LICENSE examples
 %{python3_sitelib}/*
 
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 3.13-6
+-   Mass removal python2
 *   Wed Apr 08 2020 Tapas Kundu <tkundu@vmware.com> 3.13-5
 -   Fix for CVE-2020-1747
 *   Sat Mar 07 2020 Tapas Kundu <tkundu@vmware.com> 3.13-4

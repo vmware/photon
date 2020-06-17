@@ -1,17 +1,18 @@
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
-Version:    2.1.14
-Release:    2%{?dist}
+Version:    2.3.1
+Release:    1%{?dist}
 License:    LGPLv3+
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://www.samba.org/ftp/talloc/talloc-%{version}.tar.gz
-%define sha1 talloc=9d563b768148b620bdae1c97b36cfc30928a1044
+%define sha1 talloc=1ff430a62264b29efac39a3fa26290586c019800
 BuildRequires: libxslt
 BuildRequires: docbook-xsl
-BuildRequires: python2-devel
+BuildRequires: python3-devel
+BuildRequires: which
 
 %description
 Libtalloc alloc is a hierarchical, reference counted memory pool system with destructors. It is the core memory allocator used in Samba.
@@ -24,20 +25,20 @@ Requires:       %{name} = %{version}-%{release}
 %description    devel
 The libtalloc-devel package contains libraries and header files for libtalloc
 
-%package -n python-talloc
+%package -n python3-talloc
 Group: Development/Libraries
 Summary: Python bindings for the Talloc library
 Requires: libtalloc = %{version}-%{release}
-
-%description -n python-talloc
+Requires: python3
+%description -n python3-talloc
 Python 2 libraries for creating bindings using talloc
 
-%package -n python-talloc-devel
+%package -n python3-talloc-devel
 Group: Development/Libraries
 Summary: Development libraries for python-talloc
-Requires: python-talloc = %{version}-%{release}
+Requires: python3-talloc = %{version}-%{release}
 
-%description -n python-talloc-devel
+%description -n python3-talloc-devel
 Development libraries for python-talloc
 
 %prep
@@ -68,16 +69,20 @@ make check
 %{_libdir}/pkgconfig/talloc.pc
 %{_mandir}/man3/talloc*.3.gz
 
-%files -n python-talloc
-%{_libdir}/libpytalloc-util.so.*
-%{_libdir}/python2.7/site-packages/*
+%files -n python3-talloc
+%{_libdir}/python3.7/site-packages/*
+%{_libdir}/libpytalloc-util.cpython-37m-x86-64-linux-gnu.so.2
+%{_libdir}/libpytalloc-util.cpython-37m-x86-64-linux-gnu.so.2.3.1
 
-%files -n python-talloc-devel
+%files -n python3-talloc-devel
 %{_includedir}/pytalloc.h
-%{_libdir}/pkgconfig/pytalloc-util.pc
-%{_libdir}/libpytalloc-util.so
+%{_libdir}/libpytalloc-util.cpython-37m-x86-64-linux-gnu.so
+%{_libdir}/pkgconfig/pytalloc-util.cpython-37m-x86_64-linux-gnu.pc
 
 %changelog
+*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-1
+-   Update to 2.3.1
+-   Mass removal python2 and build with python3
 *   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.1.14-2
 -   Added BuildRequires python2-devel
 *   Tue Sep 11 2018 Bo Gan <ganb@vmware.com> 2.1.14-1

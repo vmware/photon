@@ -1,29 +1,25 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        ECDSA cryptographic signature library (pure python)
-Name:           ecdsa
+Name:           python3-ecdsa
 Version:        0.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.python.org/pypi/ecdsa
 
-Source0:        https://pypi.python.org/packages/source/e/ecdsa/%{name}-%{version}.tar.gz
+Source0:        https://pypi.python.org/packages/source/e/ecdsa/ecdsa-%{version}.tar.gz
 %define         sha1 ecdsa=5ac84f3012d807793bcb98a8e9c86c63b9965596
 
 BuildArch:      noarch
 
-BuildRequires:  python-setuptools
-BuildRequires:  python2-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-
 Requires:       python3
-Requires:       python2
+
 
 %description
 This is an easy-to-use implementation of ECDSA cryptography (Elliptic Curve
@@ -33,46 +29,31 @@ key and verifying key), sign messages, and verify the signatures. The keys
 and signatures are very short, making them easy to handle and incorporate
 into other protocols.
 
-%package -n     python3-ecdsa
-Summary:        python3-ecdsa
-Requires:       python3
-%description -n python3-ecdsa
-
-Python 3 version.
-
 %prep
-%setup -q
+%setup -q -n ecdsa-%{version}
 
 %build
-python2 setup.py build
 python3 setup.py build
 
 %install
 %{__rm} -rf %{buildroot}
-python2 setup.py install -O1 --skip-build \
-    --root "%{buildroot}" \
-    --single-version-externally-managed
-
 python3 setup.py install -O1 --skip-build \
     --root "%{buildroot}" \
     --single-version-externally-managed
 
 %check
-python2 setup.py test
 python3 setup.py test
 
 %clean
 %{__rm} -rf %{buildroot}
 
 %files
-%defattr(-, root, root)
-%{python2_sitelib}/*
-
-%files -n python3-ecdsa
-%defattr(-, root, root)
+%defattr(-, root, root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 08 2020 Tapas Kundu <tkundu@vmware.com> 0.15-2
+-   Mass removal python2
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.15-1
 -   Automatic Version Bump
 *   Mon Jun 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.13-5

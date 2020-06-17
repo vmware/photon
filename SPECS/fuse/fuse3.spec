@@ -17,7 +17,6 @@ Source0:        https://github.com/libfuse/libfuse/archive/%{name}-%{version}.ta
 %define sha1    fuse3=a7cbd0fd45db48a926c6dfd4d106536f2ee11014
 
 BuildRequires:  meson >= 0.38.0
-BuildRequires:  python-pytest
 BuildRequires:  systemd-devel
 
 %if %{with_check}

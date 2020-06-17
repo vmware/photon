@@ -1,7 +1,7 @@
 Summary:       Mozilla's JavaScript engine.
 Name:          js
 Version:       1.8.5
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPLv1.1
@@ -70,6 +70,9 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/mozjs185.pc
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.8.5-4
+-   Build with python3
+-   Mass removal python2
 *   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 1.8.5-3
 -   Added BuildRequires python2
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.5-2

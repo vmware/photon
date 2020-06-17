@@ -1,11 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python2_version: %define python2_version %(python2 -c "import sys; sys.stdout.write(sys.version[:3])")}
 %{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
-Name:           pycurl
+Name:           pycurl3
 Version:        7.43.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
@@ -15,19 +13,18 @@ Source0:        http://pycurl.sourceforge.net/download/pycurl-%{version}.tar.gz
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  openssl-devel
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
 BuildRequires:  curl-devel
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 %if %{with_check}
-BuildRequires: python-setuptools, vsftpd, curl-libs
-BuildRequires: python3-setuptools, python3-xml
+BuildRequires: python3-setuptools, vsftpd, curl-libs
+BuildRequires: python3-xml
 %endif
 Requires:       curl
-Requires:       python2
+Requires:       python3
+Requires:       python3-libs
 Patch0:         winbuild-make-check.patch
 %description
 PycURL is a Python interface to libcurl. PycURL can be used to fetch
@@ -35,14 +32,6 @@ objects identified by a URL from a Python program, similar to the
 urllib Python module. PycURL is mature, very fast, and supports a lot
 of features.
 
-%package -n     pycurl3
-Summary:        python3 pycurl
-Requires:       python3
-Requires:       python3-libs
-Requires:       curl
-
-%description -n pycurl3
-Python 3 version.
 
 %package doc
 Summary:    Documentation and examples for pycurl
@@ -59,34 +48,19 @@ rm -f doc/*.xml_validity
 
 # removing prebuilt-binaries
 rm -f tests/fake-curl/libcurl/*.so
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-CFLAGS="$RPM_OPT_FLAGS -DHAVE_CURL_OPENSSL" python2 setup.py build
-pushd ../p3dir
 CFLAGS="$RPM_OPT_FLAGS -DHAVE_CURL_OPENSSL" python3 setup.py build
-popd
 
 %install
 rm -rf %{buildroot}
-python2 setup.py install -O1 --skip-build --root %{buildroot}
-rm -rf %{buildroot}%{_datadir}/doc/pycurl
-chmod 755 %{buildroot}%{python2_sitelib}/pycurl*.so
-pushd ../p3dir
 python3 setup.py install -O1 --skip-build --root %{buildroot}
 rm -rf %{buildroot}%{_datadir}/doc/pycurl
 chmod 755 %{buildroot}%{python3_sitelib}/pycurl*.so
-popd
 
 
 %check
 export PYCURL_VSFTPD_PATH=vsftpd
-easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 nose nose-show-skipped bottle flaky pyflakes
-rm -f tests/multi_option_constants_test.py tests/ftp_test.py tests/option_constants_test.py tests/seek_cb_test.py
-LANG=en_US.UTF-8  make test PYTHON=python%{python2_version} NOSETESTS="nosetests-%{python2_version} -v"
-cd ../p3dir
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 nose nose-show-skipped bottle flaky pyflakes
 rm -f tests/multi_option_constants_test.py tests/ftp_test.py tests/option_constants_test.py tests/seek_cb_test.py
@@ -97,10 +71,6 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%{python2_sitelib}/*
-
-%files -n pycurl3
-%defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %files doc
@@ -108,6 +78,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 7.43.0-5
+-   Mass removal python2
 *   Mon Nov 12 2018 Tapas Kundu <tkundu@vmware.com> 7.43.0-4
 -   Fixed the make check.
 *   Mon Aug 14 2017 Chang Lee <changlee@vmware.com> 7.43.0-3

@@ -1,3 +1,4 @@
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %define        with_boost     1
 %define        with_crash     1
 %define        with_docs      0
@@ -8,7 +9,7 @@
 
 Name:          systemtap
 Version:       4.3
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -29,10 +30,10 @@ BuildRequires: libstdc++-devel
 BuildRequires: libtirpc-devel
 BuildRequires: libxml2-devel
 BuildRequires: perl
-BuildRequires: python-setuptools
+BuildRequires: python3-setuptools
 BuildRequires: nss
 BuildRequires: shadow
-BuildRequires: python2-devel
+BuildRequires: python3-devel
 %if %with_boost
 BuildRequires: boost-devel
 %endif
@@ -70,14 +71,6 @@ Requires:      initscripts
 
 %description initscript
 Initscript for Systemtap scripts.
-
-%package python
-Group:         System/Tools
-Summary:       Python interface for systemtap
-Requires:      python2
-
-%description python
-This packages has the python interface to systemtap
 
 %package runtime
 Group:         System/Tools
@@ -142,7 +135,6 @@ sed -i "s#"devel"#"dev"#g" stap-prep
 	--disable-silent-rules
 
 make
-
 %install
 [ "%{buildroot}" != / ] && rm -rf ""
 %makeinstall
@@ -314,11 +306,6 @@ fi
 %dir %{_localstatedir}/cache/systemtap
 %dir %{_localstatedir}/run/systemtap
 
-%files python
-%defattr(-,root,root)
-/usr/lib/python2.7/site-packages/*
-/usr/libexec/systemtap/python/stap-resolve-module-function.py
-
 %files runtime
 %defattr(-,root,root)
 %attr(4111,root,root) %{_bindir}/staprun
@@ -358,6 +345,8 @@ fi
 %{_mandir}/man8/systemtap-service.8*
 
 %changelog
+*   Fri Jul 17 2020 Tapas Kundu <tkundu@vmware.com> 4.3-2
+-   Mass removal python2
 *   Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 4.3-1
 -   Automatic Version Bump
 *   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 4.0-2

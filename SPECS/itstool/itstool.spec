@@ -1,7 +1,7 @@
-Summary:        Itstool-2.0.2
+Summary:        Itstool-2.0.6
 Name:           itstool
 Version:        2.0.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            http://itstool.org
 Source0:        http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2
@@ -11,11 +11,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  docbook-xml >= 4.5
 BuildRequires:  libxml2
-BuildRequires:  libxml2-python
-BuildRequires:  python2 >= 2.7.8
-BuildRequires:  python2-libs >= 2.7.8
-Requires:       python2
-Requires:       libxml2-python
+BuildRequires:  python3-libxml2
+BuildRequires:  python3
+BuildRequires:  python3-libs
+Requires:       python3
+Requires:       python3-libxml2
 BuildArch:      noarch
 
 %description
@@ -25,7 +25,8 @@ to translate and how to chunk it into messages using the W3C Internationalizatio
 %prep
 %setup -q
 %build
-./configure --prefix=%{_prefix}
+export PYTHON=/usr/bin/python3
+%configure
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -36,15 +37,18 @@ make DESTDIR=%{buildroot} install
 /usr/share/%{name}/*
 %{_mandir}/man1/*
 %changelog
-*Tue Jul 07 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.6-1
--Automatic Version Bump
-*	Mon May 1 2017 Divya Thaluru <dthaluru@vmware.com> 2.0.2-5
--	Added runtime dependencies for itstool
-*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.2-4
--	Fix arch
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.2-3
--	GA - Bump release of all rpms
+*   Mon Jul 20 2020 Tapas Kundu <tkundu@vmware.com> 2.0.6-2
+-   Build with python3
+-   Mass removal python2
+*   Tue Jul 07 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.6-1
+-   Automatic Version Bump
+*   Mon May 1 2017 Divya Thaluru <dthaluru@vmware.com> 2.0.2-5
+-   Added runtime dependencies for itstool
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.2-4
+-   Fix arch
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.2-3
+-   GA - Bump release of all rpms
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.0.2-2
 -   Updated group.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.0.2-1
--	Initial build. First version
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.0.2-1
+-   Initial build. First version

@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Interface for Python to call C code
-Name:           python-cffi
+Name:           python3-cffi
 Version:        1.11.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
@@ -13,74 +12,46 @@ Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-%{version}.tar.gz
 %define sha1    cffi=1686e6689a691414d3d22626c837adeee3996dd9
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-BuildRequires:  libffi-devel
-BuildRequires:  python-pycparser
 BuildRequires:  python3
-BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-BuildRequires:  python3-pycparser
+BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  libffi-devel
+BuildRequires:  python3-pycparser
 BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:	openssl-devel
 BuildRequires:  curl-devel
-BuildRequires:  python-pip
 BuildRequires:  python3-pip
 %endif
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-pycparser
-
-%description
-Foreign Function Interface for Python, providing a convenient and reliable way of calling existing C code from Python. The interface is based on LuaJIT’s FFI.
-
-%package -n     python3-cffi
-Summary:        python-cffi
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-pycparser
 
-%description -n python3-cffi
-Python 3 version.
+%description
+Foreign Function Interface for Python, providing a convenient and reliable way of calling existing C code from Python. The interface is based on LuaJIT’s FFI.
+
 
 %prep
 %setup -q -n cffi-%{version}
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
 
 %check
-pip install pytest
-python2 setup.py test
-pushd ../p3dir
 pip3 install pytest
 python3 setup.py test
-popd
 
 %files
-%defattr(-,root,root)
-%{python2_sitelib}/*
-
-%files -n python3-cffi
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 1.11.5-5
+-   Mass removal python2
 *   Wed Feb 26 2020 Tapas Kundu <tkundu@vmware.com> 1.11.5-4
 -   Fixed make check errors.
 *   Thu Sep 05 2019 Shreyas B. <shreyasb@vmware.com> 1.11.5-3

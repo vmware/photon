@@ -1,9 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Library for interacting with Calico data model.
 Name:           libcalico
 Version:        0.19.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/libcalico
 Source0:        %{name}-%{version}.tar.gz
@@ -15,43 +15,43 @@ BuildRequires:  git
 BuildRequires:  libffi-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng
-BuildRequires:  python2
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python-asn1crypto
-BuildRequires:  python-backports.ssl_match_hostname
-BuildRequires:  python-ConcurrentLogHandler
-BuildRequires:  python-cffi
-BuildRequires:  pycrypto
-BuildRequires:  python-cryptography
-BuildRequires:  python-dnspython
-BuildRequires:  python-docopt
-BuildRequires:  python-enum34
-BuildRequires:  python-etcd
-BuildRequires:  python-idna
-BuildRequires:  python-ipaddress
-BuildRequires:  python-netaddr
-BuildRequires:  python-ndg-httpsclient
-BuildRequires:  python-pyOpenSSL
-BuildRequires:  python-pip
-BuildRequires:  python-prettytable
-BuildRequires:  python-prometheus_client
-BuildRequires:  python-pyasn1
-BuildRequires:  python-pycparser
-BuildRequires:  python-pyinstaller
-BuildRequires:  PyYAML
-BuildRequires:  python-requests
-BuildRequires:  python-setuptools
-BuildRequires:  python-simplejson
-BuildRequires:  python-six
-BuildRequires:  python-subprocess32
-BuildRequires:  python-urllib3
-BuildRequires:  python-websocket-client
-BuildRequires:  python-virtualenv
 BuildRequires:  python3
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-asn1crypto
+BuildRequires:  python3-backports.ssl_match_hostname
+BuildRequires:  python3-ConcurrentLogHandler
+BuildRequires:  python3-cffi
+BuildRequires:  python3-pycrypto
+BuildRequires:  python3-cryptography
+BuildRequires:  python3-dnspython
+BuildRequires:  python3-docopt
+#BuildRequires:  python3-enum
+BuildRequires:  python3-etcd
+BuildRequires:  python3-idna
+BuildRequires:  python3-ipaddress
+BuildRequires:  python3-netaddr
+BuildRequires:  python3-ndg-httpsclient
+BuildRequires:  python3-pyOpenSSL
+BuildRequires:  python3-pip
+BuildRequires:  python3-prettytable
+BuildRequires:  python3-prometheus_client
+BuildRequires:  python3-pyasn1
+BuildRequires:  python3-pycparser
+BuildRequires:  python3-pyinstaller
+BuildRequires:  python3-PyYAML
+BuildRequires:  python3-requests
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-simplejson
+BuildRequires:  python3-six
+BuildRequires:  python3-subprocess32
+BuildRequires:  python3-urllib3
+BuildRequires:  python3-websocket-client
+BuildRequires:  python3-virtualenv
+BuildRequires:  python3
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-setuptools
 %define debug_package %{nil}
 
 %description
@@ -61,15 +61,17 @@ Library for interacting with Calico data model.
 %setup
 
 %build
-python2 setup.py build
+python3 setup.py build
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %files
 %defattr(-,root,root)
-%{python2_sitelib}/*
+%{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 0.19.0-2
+-   Mass removal python2
 *   Wed Aug 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.19.0-1
 -   libcalico for PhotonOS.

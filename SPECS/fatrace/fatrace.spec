@@ -1,12 +1,12 @@
 Summary:	fatrace reports file access events from all running processes.
 Name:		fatrace
 Version:	0.13
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPLv3
 URL:		https://launchpad.net/fatrace
 Source0:	https://launchpad.net/fatrace/trunk/%{version}/+download/%{name}-%{version}.tar.bz2
 %define sha1 fatrace=b0aa7eed9894df25f4c3fd41b48a98bde001e482
-Requires:	python2
+Requires:	python3
 Group:		Utilities
 Vendor:		VMware, Inc.
 Distribution:   Photon
@@ -34,6 +34,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/*
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 0.13-2
+-   Require python3
 *   Thu Sep 20 2018 Sujay G <gsujay@vmware.com> 0.13-1
 -   Bump fatrace version to 0.13
 *   Fri Mar 24 2017 Alexey Makhalov <amakhalov@vmware.com> 0.12-2

@@ -1,9 +1,8 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
-Name:           python-M2Crypto
+Name:           python3-M2Crypto
 Version:        0.30.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 License:        MIT
@@ -13,17 +12,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 %define sha1    M2Crypto=8e2eb23196afbac08ad566ecb3378de9f35c5f12
 Patch0:         fix_test_public_encrypt.patch
-BuildRequires:  python2-devel
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
-BuildRequires:  python-setuptools
-BuildRequires:  python-typing
-Requires:       python-typing
-Requires:       python2
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-typing
 BuildRequires:  python3-xml
+Requires:       python3-typing
+Requires:       python3
 
 %description
 M2Crypto is a crypto and SSL toolkit for Python featuring the following:
@@ -35,52 +31,30 @@ HMAC'ing AuthCookies for web session management. FTP/TLS client and
 server. S/MIME. ZServerSSL: A HTTPS server for Zope. ZSmime: An S/MIME
 messenger for Zope.
 
-%package -n     python3-M2Crypto
-Summary:        python3 version of Crypto and SSL toolkit
-
-Requires:       python3-typing
-Requires:       python3
-
-%description -n python3-M2Crypto
-Python 3 version.
-
 %prep
 %setup -q -n M2Crypto-%{version}
 %patch0 -p1
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-CFLAGS="%{optflags}" python2 setup.py build
-pushd ../p3dir
 CFLAGS="%{optflags}" python3 setup.py build
-popd
 
 %install
 rm -rf %{buildroot}
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
 
 %check
-python2 setup.py test
-pushd ../p3dir
 python3 setup.py test
-popd
 
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%{python2_sitelib}/*
-
-%files -n python3-M2Crypto
-%defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.30.1-4
+-   Mass removal python2
 *   Mon Oct 07 2019 Shreyas B. <shreyasb@vmware.com> 0.30.1-3
 -   Fixed makecheck errors.
 *   Mon Dec 03 2018 Ashwin H <ashwinh@vmware.com> 0.30.1-2

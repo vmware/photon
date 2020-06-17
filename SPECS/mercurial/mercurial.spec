@@ -1,22 +1,21 @@
-%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        A free, distributed source control management tool.
 Name:           mercurial
-Version:        4.7.1
-Release:        3%{?dist}
+Version:        5.4
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://www.mercurial-scm.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.mercurial-scm.org/release/%{name}-%{version}.tar.gz
-%define sha1    mercurial=33e7e6abb29136ee613c347a0c48a72d978a830c
+%define sha1    mercurial=652a2c61dec85f5e9eb101425861e9648bd6369a
 Patch0:         mercurial-disable-zstd.patch
-Patch1:         mercurial-fix-CVE-2018-17983.patch
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-Requires:       python2
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-devel
+Requires:       python3
 
 %description
 Mercurial is a distributed source control management tool similar to Git and Bazaar.
@@ -24,16 +23,15 @@ Mercurial is written in Python and is used by projects such as Mozilla and Vim.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 
 %build
+ln -sf /usr/bin/python3 /usr/bin/python
 make %{?_smp_mflags} build
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 mkdir -p %{buildroot}/%{_bindir}
-python2 setup.py install --skip-build --root %{buildroot}
+python3 setup.py install --skip-build --root %{buildroot}
 
 cat >> %{buildroot}/.hgrc << "EOF"
 [ui]
@@ -58,9 +56,13 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 /.hgrc
 %{_bindir}/hg
-%{python2_sitelib}/*
+%{python3_sitelib}/*
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 5.4-1
+-   Upgrade to 5.4
+-   Build with python3
+-   Mass removal python2
 *   Mon May 06 2019 Keerthana K <keerthanak@vmware.com> 4.7.1-3
 -   Fix CVE-2018-17983
 *   Thu Oct 25 2018 Sujay G <gsujay@vmware.com> 4.7.1-2

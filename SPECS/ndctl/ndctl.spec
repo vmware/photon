@@ -2,7 +2,7 @@
 Summary:        Manage "libnvdimm" subsystem devices (Non-volatile Memory)
 Name:           ndctl
 Version:        62
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          System Environment/Base
 Url:            https://github.com/pmem/ndctl
@@ -11,7 +11,7 @@ Distribution:   Photon
 Source0:        https://github.com/pmem/%{name}/archive/%{name}-%{version}.tar.gz
 %define sha1    ndctl=0f906e39f1af10fe60748b8862e761fe36abd985
 
-BuildRequires:  asciidoc
+BuildRequires:  asciidoc3
 BuildRequires:  which
 BuildRequires:  xmlto
 BuildRequires:  libtool
@@ -112,6 +112,8 @@ make check
 %{_libdir}/pkgconfig/libdaxctl.pc
 
 %changelog
+*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 62-2
+-   Use asciidoc3
 *   Wed Sep 12 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 62-1
 -   Upgrade to v62
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 56-3

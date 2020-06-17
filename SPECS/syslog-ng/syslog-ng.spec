@@ -1,9 +1,8 @@
-%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        3.17.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -23,9 +22,6 @@ BuildRequires:  glib-devel
 BuildRequires:  json-glib-devel
 BuildRequires:  json-c-devel
 BuildRequires:  systemd-devel
-BuildRequires:  python2-devel
-BuildRequires:  python2
-BuildRequires:  python2-libs
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -39,14 +35,6 @@ Obsoletes:	eventlog
  system logging tool. It is often used to manage log messages and implement
  centralized logging, where the aim is to collect the log messages of several
  devices to a single, central log server.
-
-%package -n     python2-syslog-ng
-Summary:        python2-syslog-ng
-Requires:       python2
-Requires:       python2-libs
-
-%description -n python2-syslog-ng
-Python 2 version.
 
 %package -n     python3-syslog-ng
 Summary:        python3-syslog-ng
@@ -81,27 +69,10 @@ cp -a . ../p3dir
     --with-jsonc=system \
     --disable-java \
     --disable-redis \
-    --with-python=2 \
-    PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
-make %{?_smp_mflags}
-pushd ../p3dir
-%configure \
-    CFLAGS="%{optflags}" \
-    CXXFLAGS="%{optflags}" \
-    --disable-silent-rules \
-    --sysconfdir=/etc/syslog-ng \
-    --enable-systemd \
-    --with-systemdsystemunitdir=%{_libdir}/systemd/system \
-    --enable-json=yes \
-    --with-jsonc=system \
-    --disable-java \
-    --disable-redis \
     --with-python=3 \
     PYTHON=/bin/python3 \
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
 make %{?_smp_mflags}
-
-popd
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -113,32 +84,18 @@ install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -p -m 644 %{SOURCE2} %{buildroot}%{_libdir}/systemd/system/
 %{_fixperms} %{buildroot}/*
-pushd ../p3dir
-make DESTDIR=%{buildroot} install
-rm %{buildroot}/%{_libdir}/systemd/system/syslog-ng@.service
-rm -rf %{buildroot}/%{_infodir}
 sed -i 's/eventlog//g'  %{buildroot}%{_libdir}/pkgconfig/syslog-ng.pc
-find %{buildroot} -name "*.la" -exec rm -f {} \;
-popd
 
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable syslog-ng.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-syslog-ng.preset
 
 %check
-easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 unittest2
-$easy_install_2 nose
-$easy_install_2 ply
-$easy_install_2 pep8
-make %{?_smp_mflags} check
-pushd ../p3dir
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 unittest2
 $easy_install_3 nose
 $easy_install_3 ply
 $easy_install_3 pep8
 make %{?_smp_mflags} check
-popd
 
 %post
 if [ $1 -eq 1 ] ; then
@@ -175,10 +132,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/syslog-ng/lib*.so
 /usr/share/syslog-ng/*
 
-%files -n python2-syslog-ng
-%defattr(-,root,root)
-%{python2_sitelib}/*
-
 %files -n python3-syslog-ng
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
@@ -192,6 +145,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 3.17.2-2
+-   Mass removal python2
 *   Wed Oct 10 2018 Ankit Jain <ankitja@vmware.com> 3.17.2-1
 -   Update to version 3.17.2
 *   Mon Sep 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-3

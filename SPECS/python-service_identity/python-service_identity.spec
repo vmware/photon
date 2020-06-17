@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Service identity verification for pyOpenSSL.
-Name:           python-service_identity
+Name:           python3-service_identity
 Version:        18.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -14,23 +13,11 @@ Source0:        service_identity-%{version}.tar.gz
 %define sha1    service_identity=0134269b0229c470da5af6045877698061bc9b88
 Source1:        service_identity_tests-%{version}.tar.gz
 %define sha1    service_identity_tests=684ff23501c0a41f4a01ab1904023625f57ef5a4
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-BuildRequires:  python-incremental
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 %if %{with_check}
-BuildRequires:	python-pytest
-BuildRequires:	python-pyasn1-modules
-BuildRequires:	python-pyasn1
-BuildRequires:	python-attrs
-BuildRequires:	python-pyOpenSSL
-BuildRequires:	python-idna
-BuildRequires:  python-pip
 BuildRequires:  python3-pip
 BuildRequires:  python3-pytest
 BuildRequires:  python3-pyasn1-modules
@@ -40,12 +27,12 @@ BuildRequires:  python3-pyOpenSSL
 BuildRequires:  python3-idna
 %endif
 
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-pyasn1-modules
-Requires:       python-pyasn1
-Requires:       python-attrs
-Requires:       python-pyOpenSSL
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-pyasn1-modules
+Requires:       python3-pyasn1
+Requires:       python3-attrs
+Requires:       python3-pyOpenSSL
 
 BuildArch:      noarch
 
@@ -54,37 +41,18 @@ service_identity aspires to give you all the tools you need for verifying whethe
 
 In the simplest case, this means host name verification. However, service_identity implements RFC 6125 fully and plans to add other relevant RFCs too.
 
-%package -n     python3-service_identity
-Summary:        python-service_identity
-
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-pyasn1-modules
-Requires:       python3-pyasn1
-Requires:       python3-attrs
-Requires:       python3-pyOpenSSL
-%description -n python3-service_identity
-Python 3 version.
 
 %prep
 %setup -q -n service_identity-%{version}
 tar xf %{SOURCE1} --no-same-owner
 
 %build
-python2 setup.py build
 python3 setup.py build
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-pip install pathlib2
-pip install funcsigs
-pip install pluggy
-pip install atomicwrites
-pip install more-itertools
-PYTHONPATH="%{buildroot}%{python2_sitelib}" py.test2
 pip3 install pathlib2
 pip3 install funcsigs
 pip3 install pluggy
@@ -94,13 +62,11 @@ PYTHONPATH="%{buildroot}%{python3_sitelib}" py.test3
 
 %files
 %defattr(-,root,root)
-%{python2_sitelib}/*
-
-%files -n python3-service_identity
-%defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 18.1.0-2
+-   Mass removal python2
 *   Mon Jun 01 2020 Tapas Kundu <tkundu@vmware.com> 18.1.0-1
 -   Update to 18.1.0
 *   Mon Jan 14 2019 Tapas Kundu <tkundu@vmware.com> 17.0.0-2

@@ -1,9 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        The Python SQL Toolkit and Object Relational Mapper
-Name:           python-sqlalchemy
+Name:           python3-sqlalchemy
 Version:        1.2.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            http://www.sqlalchemy.org
 License:        MIT
 Group:          Development/Languages/Python
@@ -11,11 +11,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/29/18/a78469bc449d9f92f6269cc62d0d6fbe6bf394d1031b447ad5e54463c3a0/SQLAlchemy-%{version}.tar.gz
 %define sha1    SQLAlchemy=cec4f8ed911e52930c06090458ccf19229a2381a
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python-setuptools
-Requires:       python2
-Requires:       python2-libs
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+Requires:       python3
+Requires:       python3-libs
 
 %description
 SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that gives application developers the full power and flexibility of SQL. SQLAlchemy provides a full suite of well known enterprise-level persistence patterns, designed for efficient and high-performing database access, adapted into a simple and Pythonic domain language.
@@ -25,23 +25,26 @@ SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that gives app
 %setup -q -n SQLAlchemy-%{version}
 
 %build
-python2 setup.py build
+python3 setup.py build
 
 %check
 easy_install apipkg
 easy_install py
 easy_install mock
 export PYTHONPATH=$PYTHONPATH:%{_builddir}/SQLAlchemy-%{version}/.eggs/pytest-3.0.3-py2.7.egg
-python2 setup.py test
+python3 setup.py test
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %files
 %defattr(-,root,root)
-%{python2_sitelib}/*
+%{python3_sitelib}/*
 
 %changelog
+*   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 1.2.11-3
+-   Build with python3
+-   Mass removal python2
 *   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 1.2.11-2
 -   Added BuildRequires python2-devel
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.2.11-1

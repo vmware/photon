@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        10.15.2
+Version:        14.5.0
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,13 +8,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
-%define         sha1 node=e1523b5b5bec534cc570b79c9a1eb9273a47564a
+%define         sha1 node=7a0a77084f5e0475d386be3f8f494d7bce429014
 
 BuildRequires:  coreutils >= 8.22, zlib
-BuildRequires:  python2
+BuildRequires:  python3
 BuildRequires:  which
 Requires:       (coreutils >= 8.22 or toybox)
-Requires:       python2
+Requires:       python3
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -65,11 +65,14 @@ make cctest
 %defattr(-,root,root)
 %{_includedir}/*
 %{_docdir}/node/lldb_commands.py
-%{_docdir}/node/lldbinit
 %{_docdir}/node/gdbinit
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Mon Jul 06 2020 Tapas Kundu <tkundu@vmware.com> 14.5.0-1
+-   Update nodejs
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 10.15.2-2
+-   Build with python2
 *   Thu Apr 25 2019 Ankit Jain <ankitja@vmware.com> 10.15.2-1
 -   Updated to 10.15.2
 *   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 10.14.1-2

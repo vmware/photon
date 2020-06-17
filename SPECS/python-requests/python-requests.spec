@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Awesome Python HTTP Library That's Actually Usable
-Name:           python-requests
+Name:           python3-requests
 Version:        2.19.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -15,19 +14,9 @@ Patch0:         make_check_add_pipfile.patch
 Patch1:         CVE-2018-18074.patch
 %define sha1    requests=b6e6ed992c86835aa1a7d7a81fec2aee0d385416
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python-setuptools
 %if %{with_check}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
-BuildRequires:  python-atomicwrites
-BuildRequires:  python-pytest
-BuildRequires:  python-attrs
-BuildRequires:  python-urllib3
-BuildRequires:  python-chardet
-BuildRequires:  python-certifi
-BuildRequires:  python-idna
 %endif
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -42,14 +31,13 @@ BuildRequires:  python3-chardet
 BuildRequires:  python3-certifi
 BuildRequires:  python3-idna
 %endif
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-urllib3
-Requires:       python-chardet
-Requires:       python-pyOpenSSL
-Requires:       python-certifi
-Requires:       python-idna
-
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-urllib3
+Requires:       python3-chardet
+Requires:       python3-pyOpenSSL
+Requires:       python3-certifi
+Requires:       python3-idna
 BuildArch:      noarch
 
 %description
@@ -76,44 +64,18 @@ Features:
 - Simple Authentication
     + Simple URL + HTTP Auth Registry
 
-%package -n     python3-requests
-Summary:        python-requests
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-urllib3
-Requires:       python3-chardet
-Requires:       python3-pyOpenSSL
-Requires:       python3-certifi
-Requires:       python3-idna
-
-%description -n python3-requests
-Python 3 version.
-
 %prep
 %setup -q -n requests-%{version}
 %patch0 -p1
 %patch1 -p1
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
 
 %check
-easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 pathlib2 funcsigs pluggy more_itertools pysocks
-$easy_install_2 pytest-mock pytest-httpbin
-LANG=en_US.UTF-8  PYTHONPATH=%{buildroot}%{python2_sitelib} \
-py.test2
 
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 pathlib2 funcsigs pluggy more_itertools pysocks
@@ -124,14 +86,11 @@ py.test3
 %files
 %defattr(-,root,root)
 %doc README.rst HISTORY.rst LICENSE
-%{python2_sitelib}/*
-
-%files -n python3-requests
-%defattr(-,root,root)
-%doc README.rst HISTORY.rst LICENSE
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 2.19.1-5
+-   Mass removal python2
 *   Thu Mar 28 2019 Tapas Kundu <tkundu@vmware.com> 2.19.1-4
 -   Fix for CVE-2018-18074
 *   Thu Dec 06 2018 Ashwin H <ashwinh@vmware.com> 2.19.1-3
@@ -149,7 +108,7 @@ py.test3
 -   Updated to version 2.13.0.
 *   Wed Mar 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.1-4
 -   Added python3 package.
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 2.9.1-3
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 2.9.1-3
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.1-2
 -   GA - Bump release of all rpms

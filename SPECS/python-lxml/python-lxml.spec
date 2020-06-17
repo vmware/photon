@@ -1,9 +1,8 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        XML and HTML with Python
-Name:           python-lxml
+Name:           python3-lxml
 Version:        4.2.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
@@ -12,69 +11,45 @@ Source0:        https://pypi.python.org/packages/39/e8/a8e0b1fa65dd021d48fe21464
 Patch0:         lxml-make-check-fix.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python-xml
 BuildRequires:  libxslt
 BuildRequires:  libxslt-devel
-BuildRequires:  cython
+BuildRequires:  cython3
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-Requires:       python2
+Requires:       python3
+Requires:       python3-libs
 Requires:       libxslt
 
 %description
-The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxslt. It is unique in that it combines the speed and XML feature completeness of these libraries with the simplicity of a native Python API, mostly compatible but superior to the well-known ElementTree API. 
+The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxslt. It is unique in that it combines the speed and XML feature completeness of these libraries with the simplicity of a native Python API, mostly compatible but superior to the well-known ElementTree API.
 
-%package -n     python3-lxml
-Summary:        python-lxml
-Requires:       libxslt
-Requires:       python3
-Requires:       python3-libs
-
-%description -n python3-lxml
-Python 3 version.
 
 %prep
 %setup -q -n lxml-%{version}
 %patch0 -p1
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
-python2 setup.py install --skip-build --root %{buildroot}
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
 
 %check
 export LC_ALL=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 make test
-pushd ../p3dir
-make test
-popd
 
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%{python2_sitelib}/lxml/*
-%{python2_sitelib}/lxml-%{version}-py2.7.egg-info
-
-%files -n python3-lxml
-%defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 4.2.4-3
+-   Mass removal python2
 *   Wed Nov 28 2018 Tapas Kundu <tkundu@vmware.com> 4.2.4-2
 -   Fix make check
 -   moved build requires from subpackage

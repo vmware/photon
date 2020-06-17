@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Markdown to reStructuredText converter.
-Name:           python-m2r
+Name:           python3-m2r
 Version:        0.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -13,12 +12,6 @@ Url:            https://pypi.python.org/pypi/m2r
 Source0:        https://github.com/miyakogi/m2r/archive/v%{version}/m2r-%{version}.tar.gz
 %define sha1    m2r=a8da99cfb8d964fbd1404eff8fe3782dfa2ff3a6
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-BuildRequires:  python-mistune
-BuildRequires:  python-docutils
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -26,18 +19,16 @@ BuildRequires:  python3-xml
 BuildRequires:  python3-mistune
 BuildRequires:  python3-docutils
 %if %{with_check}
-BuildRequires:  python-Pygments
 BuildRequires:  python3-Pygments
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
-BuildRequires:  python-pip
 BuildRequires:  python3-pip
 %endif
 
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-mistune
-Requires:       python-docutils
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-mistune
+Requires:       python3-docutils
 
 BuildArch:      noarch
 
@@ -48,53 +39,29 @@ Why another converter?
 
 I wanted to write sphinx document in markdown, since it’s widely used now and easy to write code blocks and lists. However, converters using pandoc or recommonmark do not support many reST markups and sphinx extensions. For example, reST’s reference link like see `ref`_ (this is very convenient in long document in which same link appears multiple times) will be converted to a code block in HTML like see <code>ref</code>_, which is not expected.
 
-%package -n     python3-m2r
-Summary:        python-m2r
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-mistune
-Requires:       python3-docutils
-
-%description -n python3-m2r
-Python 3 version.
 
 %prep
 %setup -q -n m2r-%{version}
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 mv %{buildroot}/%{_bindir}/m2r %{buildroot}/%{_bindir}/m2r3
-popd
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-pip install mock
-python2 setup.py test -s tests
-pushd ../p3dir
 pip3 install mock
 python3 setup.py test -s tests
-popd
 
 %files
-%defattr(-,root,root)
-%{python2_sitelib}/*
-%{_bindir}/m2r
-
-%files -n python3-m2r
 %defattr(-,root,root)
 %{python3_sitelib}/*
 %{_bindir}/m2r3
 
 %changelog
+*   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.2.0-4
+-   Mass removal python2
 *   Thu Feb 27 2020 Tapas Kundu <tkundu@vmware.com> 0.2.0-3
 -   Fix makecheck
 *   Mon Nov 26 2018 Tapas Kundu <tkundu@vmware.com> 0.2.0-2

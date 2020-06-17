@@ -1,9 +1,8 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
-Name:           python-prometheus_client
+Name:           python3-prometheus_client
 Version:        0.3.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python client for the Prometheus monitoring system.
 License:        Apache-2.0
 Group:          Development/Languages/Python
@@ -15,67 +14,43 @@ Source1:        client_python-tests-%{version}.tar.gz
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python-setuptools
-BuildRequires:  python-pytest
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-pytest
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-setuptools
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-setuptools
+
 BuildArch:      noarch
 
 %description
 Python client for the Prometheus monitoring system.
 
-%package -n     python3-prometheus_client
-Summary:        python-prometheus_client
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-setuptools
-
-%description -n python3-prometheus_client
-Python 3 version.
 
 %prep
 %setup -n prometheus_client-%{version}
 tar xf %{SOURCE1} --no-same-owner
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 
 %check
-#test incompatible with python2
-pushd ../p3dir
 python3 setup.py test
-popd
 
 %files
-%defattr(-,root,root,-)
-%{python_sitelib}/*
-
-%files -n python3-prometheus_client
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 0.3.1-3
+-   Mass removal python2
 *   Mon Jan 14 2019 Tapas Kundu <tkundu@vmware.com> 0.3.1-2
 -   Fix make check
 -   uploaded test source

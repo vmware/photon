@@ -1,14 +1,13 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
-Version:        1.10.1
+Version:        2.0.3
 Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    kubernetes-dashboard=ad2d26be3a7d099e0d917f04b873a72945694d58
-Source1:        npm-sources-9.9.0.tar.gz
-%define sha1    npm-sources=0d50a69bd3a2e0cd637b752d67759755d94ece4c
-Source2:        package-lock.json
+%define sha1    kubernetes-dashboard=267597cdd64fb20b4aa66e890349b79230e31154
+Source1:        dashboard-dist-%{version}.tar.gz
+%define sha1    dashboard-dist=f4ac3b53dd1053abeb94836ad3083bc6de3b9f4e
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -18,10 +17,12 @@ BuildRequires:  git
 BuildRequires:  glibc-devel
 BuildRequires:  go
 BuildRequires:  linux-api-headers
-BuildRequires:  nodejs = 9.11.2
+BuildRequires:  nodejs
 BuildRequires:  openjre8
 BuildRequires:  which
-Requires:       nodejs = 9.11.2
+BuildRequires:  ncurses-terminfo
+BuildRequires:  bc
+Requires:       nodejs
 Requires:       openjre8
 
 %description
@@ -32,12 +33,21 @@ Kubernetes Dashboard UI.
 
 %build
 export PATH=${PATH}:/usr/bin
+# During building, it looks .git/hooks in the root path
+# But tar.gz file  from github/kibana/tag doesn't provide .git/hooks
+# inside it. so did below steps to create the tar
+# 1) git clone git@github.com:kubernetes/dashboard.git dashboard-%{version}
+# 2) cd dashboard-%{version}
+# 3) git checkout tags/v2.0.3 -b 2.0.3
+# 4) cd ..
+# 5) tar -zcvf kubernetes-dashboard-2.0.3.tar.gz dashboard-%{version}
+
+#download npm sources in node_modules
+#npm ci --unsafe-perm
+
+#npm run build
+
 tar xf %{SOURCE1} --no-same-owner
-cp %{SOURCE2} .
-#npm install --unsafe-perm
-#Remove the lines which strips the debuginfo.
-sed -i '/https:\/\/golang.org\/cmd\/link\//,+2d' ./build/backend.js
-./node_modules/.bin/gulp build
 
 %install
 mkdir -p %{buildroot}%{_bindir}
@@ -45,7 +55,7 @@ mkdir -p %{buildroot}/opt/k8dashboard
 cp -p -r ./dist/amd64/dashboard %{buildroot}%{_bindir}/
 cp -p -r ./dist/amd64/locale_conf.json %{buildroot}/opt/k8dashboard/
 cp -p -r ./dist/amd64/public %{buildroot}/opt/k8dashboard/
-cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
+cp -p -r ./dist/amd64/Dockerfile %{buildroot}/opt/k8dashboard/
 
 %check
 # dashboard unit tests require chrome browser binary not present in PhotonOS
@@ -58,6 +68,8 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
+*    Mon Jul 06 2020 Tapas Kundu <tkundu@vmware.com> 2.0.3-1
+-    Build with latest nodejs
 *    Wed Jan 23 2019 Keerthana K <keerthanak@vmware.com> 1.10.1-1
 -    Updating kubernetes-dashboard to 1.10.1 for security fix
 *    Mon Jan 07 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.8.3-4

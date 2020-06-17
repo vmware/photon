@@ -1,9 +1,8 @@
-%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.12.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -25,7 +24,6 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-six
 BuildRequires:  python3-xml
-BuildRequires:  python2
 Requires:       libgcc-atomic
 Requires:       libcap-ng
 Requires:       openssl
@@ -39,14 +37,6 @@ Requires:       gawk
 Open vSwitch provides standard network bridging functions and
 support for the OpenFlow protocol for remote per-flow control of
 traffic.
-
-%package -n     python-openvswitch
-Summary:        python-openvswitch
-Requires:       python2
-Requires:       python2-libs
-
-%description -n python-openvswitch
-Python 2 openvswith bindings.
 
 %package -n     python3-openvswitch
 Summary:        python3-openvswitch
@@ -122,9 +112,7 @@ make %{_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot}/%{_libdir} -name '*.la' -delete
-mkdir -p %{buildroot}/%{python2_sitelib}
 mkdir -p %{buildroot}/%{python3_sitelib}
-cp -a %{buildroot}/%{_datadir}/openvswitch/python/ovs/* %{buildroot}/%{python2_sitelib}
 cp -a %{buildroot}/%{_datadir}/openvswitch/python/ovs/* %{buildroot}/%{python3_sitelib}
 
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
@@ -197,9 +185,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datadir}/openvswitch/scripts/ovs-*
 %config(noreplace) %{_sysconfdir}/sysconfig/openvswitch
 
-%files -n python-openvswitch
-%{python2_sitelib}/*
-
 %files -n python3-openvswitch
 %{python3_sitelib}/*
 
@@ -263,6 +248,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.12.0-2
+-   Mass removal python2
 *   Wed Feb 05 2020 Tapas Kundu <tkundu@vmware.com> 2.12.0-1
 -   Build with Python3
 *   Tue Nov 13 2018 Anish Swaminathan <anishs@vmware.com> 2.8.2-3

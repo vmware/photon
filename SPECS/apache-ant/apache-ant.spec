@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.10.5
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -27,7 +27,7 @@ The Ant package contains binaries for a build system
 %package -n ant-scripts
 Summary:        Additional scripts for ant
 Requires:       %{name} = %{version}
-Requires:       python2
+Requires:       python3
 %description -n ant-scripts
 Apache Ant is a Java-based build tool.
 
@@ -122,6 +122,8 @@ bootstrap/bin/ant -v run-tests
 %{_bindir}/runant.pl
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.10.5-5
+-   Require python3
 *   Wed Sep 11 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.5-4
 -   Fix Make check
 *   Tue Dec 04 2018 Dweep Advani <dadvani@vmware.com> 1.10.5-3

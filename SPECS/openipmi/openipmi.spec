@@ -1,14 +1,16 @@
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
-Version:        2.0.25
-Release:        2%{?dist}
+Version:        2.0.29
+Release:        1%{?dist}
 URL:            https://sourceforge.net/projects/openipmi/
 License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://sourceforge.net/projects/openipmi/files/latest/download/%{name}-%{version}.tar.gz
-%define sha1    openipmi=06751d0cd4353edc9711405f829fa7039533239d
+Source0:        https://sourceforge.net/projects/openipmi/files/latest/download/OpenIPMI-%{version}.tar.gz
+%define sha1    OpenIPMI=a8dd1a9b877e94926af1da69421e8f2bd642c9c7
 Source1:        openipmi-helper
 Source2:        ipmi.service
 BuildRequires:  systemd
@@ -17,7 +19,9 @@ BuildRequires:  popt-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
 BuildRequires:  swig
-BuildRequires:  python2-devel
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3
 Requires:       systemd
 
 %description
@@ -42,12 +46,12 @@ Requires:       openipmi = %{version}-%{release}, perl >= 5
 %description    perl
 A Perl interface for OpenIPMI.
 
-%package        python
+%package        python3
 Summary:        Python interface for OpenIPMI
 Group:          Utilities
-Requires:       openipmi = %{version}-%{release}, python2
+Requires:       openipmi = %{version}-%{release}, python3
 
-%description    python
+%description    python3
 A Python interface for OpenIPMI.
 
 %package        ui
@@ -79,7 +83,9 @@ This package contains a network IPMI listener.
     --with-tkinter=no                       \
     --docdir=%{_docdir}/%{name}-%{version}  \
     --with-perl=yes                         \
-    --with-perlinstall=%{perl_vendorarch}
+    --with-perlinstall=%{perl_vendorarch}   \
+    --with-python=/usr/bin/python3.7        \
+    --with-pythoninstall=%{python3_sitelib}
 make
 
 %install
@@ -130,8 +136,8 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{perl_vendorarch}
 %doc swig/OpenIPMI.i swig/perl/sample swig/perl/ipmi_powerctl
 
-%files python
-%defattr(-,root,root)
+%files python3
+%defattr(-,root,root,-)
 %{_libdir}/python*/site-packages/*OpenIPMI.*
 %doc swig/OpenIPMI.i
 
@@ -177,6 +183,9 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
+*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2.0.29-1
+-   Build with python3
+-   Mass removal python2
 *   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 2.0.25-2
 -   Added BuildRequires python2-devel
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.0.25-1

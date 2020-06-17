@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.64.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -14,10 +14,10 @@ BuildRequires:   glib-devel
 BuildRequires:   gobject-introspection
 BuildRequires:   libxml2-devel
 BuildRequires:   intltool
-BuildRequires:   python2
-BuildRequires:   python2-libs
-BuildRequires:   python2-devel
-BuildRequires:   python2-tools
+BuildRequires:   python3
+BuildRequires:   python3-libs
+BuildRequires:   python3-devel
+BuildRequires:   python3-tools
 BuildRequires:   glib-networking
 BuildRequires:   autogen
 BuildRequires:   sqlite-devel
@@ -100,6 +100,9 @@ make  check
 %defattr(-,root,root)
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 2.64.0-3
+-   Build with python3
+-   Mass removal python2
 *   Fri Dec 07 2018 Keerthana <keerthanak@vmware.com> 2.64.0-2
 -   Fix Make check failures.
 *   Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 2.64.0-1

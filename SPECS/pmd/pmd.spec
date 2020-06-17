@@ -9,7 +9,7 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -37,8 +37,7 @@ BuildRequires:  netmgmt-cli-devel
 BuildRequires:  netmgmt-devel
 BuildRequires:  tdnf-devel >= 2.1.1
 BuildRequires:  lightwave-devel
-BuildRequires: python2-devel >= 2.7
-BuildRequires: python3-devel >= 3.5
+BuildRequires:  python3-devel >= 3.5
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    pmd=a8a3a920647a80e08094d23437330fb498770700
 Patch0:         pmd-rename-DNS_MODE_INVALID-with-DNS_MODE_UNKNOWN.patch
@@ -71,15 +70,6 @@ Group: Development/Libraries
 %description devel
 photon management daemon client devel
 
-%package python2
-Summary: Python2 bindings for photon management daemon
-Group: Development/Libraries
-Requires: python2 >= 2.7
-Requires: %{name}-cli = %{version}-%{release}
-
-%description python2
-Python2 bindings for photon management daemon
-
 %package python3
 Summary: Python3 bindings for photon management daemon
 Group: Development/Libraries
@@ -106,7 +96,6 @@ autoreconf -mif
 make
 
 pushd python
-python2 setup.py build
 python3 setup.py build
 popd
 
@@ -116,7 +105,6 @@ make DESTDIR=%{buildroot} install
 rm -f %{buildroot}%{_libdir}/*.la
 
 pushd python
-python2 setup.py install --skip-build --root %{buildroot}
 rm -f %{buildroot}%{python_sitearch}/pmd.so
 python3 setup.py install --skip-build --root %{buildroot}
 popd
@@ -306,15 +294,13 @@ rm -rf %{buildroot}/*
     %{_includedir}/pmd/*.h
     %{_libdir}/pkgconfig/pmdclient.pc
 
-%files python2
-    %{python_sitearch}/%{name}/
-    %{python_sitearch}/%{name}_python-*.egg-info
-
 %files python3
     %{_python3_sitearch}/%{name}/
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.0.6-4
+-   Mass removal python2
 *   Thu Jun 04 2020 Tapas Kundu <tkundu@vmware.com> 0.0.6-3
 -   Build with tdnf 2.1.1
 *   Tue Feb 25 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.6-2

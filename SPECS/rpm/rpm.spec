@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -30,7 +29,6 @@ BuildRequires:  elfutils-devel
 BuildRequires:  libcap-devel
 BuildRequires:  xz-devel
 BuildRequires:  file-devel
-BuildRequires:  python2-devel
 BuildRequires:  python3-devel
 
 %description
@@ -73,12 +71,6 @@ Requires:       %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of rpm.
 
-%package -n     python-rpm
-Summary:        Python 2 bindings for rpm.
-Group:          Development/Libraries
-Requires:       python2
-%description -n python-rpm
-
 %package -n     python3-rpm
 Summary:        Python 3 bindings for rpm.
 Group:          Development/Libraries
@@ -113,7 +105,6 @@ sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 make %{?_smp_mflags}
 
 pushd python
-python2 setup.py build
 python3 setup.py build
 popd
 
@@ -131,7 +122,6 @@ install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm/
 install -vm755 %{SOURCE3} %{buildroot}%{_libdir}/rpm/
 
 pushd python
-python2 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 popd
 
@@ -244,15 +234,13 @@ rm -rf %{buildroot}
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
-%files -n python-rpm
-%defattr(-,root,root)
-%{python2_sitelib}/*
-
 %files -n python3-rpm
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 4.14.2-9
+-   Mass removal python2
 *   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.14.2-8
 -   Added %config(noreplace) for /etc/rpm/macros file.
 *   Sat Jan 04 2020 Neal Gompa <ngompa13@gmail.com> 4.14.2-7
@@ -280,7 +268,7 @@ rm -rf %{buildroot}
 *   Mon Jun 05 2017 Bo Gan <ganb@vmware.com> 4.13.0.1-3
 -   Fix Dependency
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-2
--   Remove python2 from requires of rpm-devel subpackages.
+-   Mass removal python2 from requires of rpm-devel subpackages.
 *   Wed May 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.13.0.1-1
 -   Update to 4.13.0.1
 *   Fri Apr 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.13.0-1

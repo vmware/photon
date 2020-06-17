@@ -1,9 +1,8 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
-Name:           python-ndg-httpsclient
+Name:           python3-ndg-httpsclient
 Version:        0.5.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Enhanced HTTPS support for httplib and urllib2 using PyOpenSSL.
 License:        BSD
 Group:          Development/Languages/Python
@@ -13,28 +12,6 @@ Source0:        ndg_httpsclient-%{version}.tar.gz
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  python2
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python-pip
-BuildRequires:  python-setuptools
-%if %{with_check}
-BuildRequires:  python-urllib3
-BuildRequires:  python-pyOpenSSL
-BuildRequires:  openssl-devel
-BuildRequires:  curl-devel
-BuildRequires:  libffi-devel
-%endif
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-setuptools
-BuildArch:      noarch
-
-%description
-Enhanced HTTPS support for httplib and urllib2 using PyOpenSSL.
-
-%package -n     python3-ndg-httpsclient
-Summary:        Python3 version of ndg-httpsclient.
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -43,27 +20,27 @@ BuildRequires:  python3-setuptools
 %if %{with_check}
 BuildRequires:  python3-urllib3
 BuildRequires:  python3-pyOpenSSL
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+BuildRequires:  libffi-devel
 %endif
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-setuptools
+BuildArch:      noarch
 
-%description -n python3-ndg-httpsclient
-Python3 version of ndg-httpsclient.
+%description
+Enhanced HTTPS support for httplib and urllib2 using PyOpenSSL.
+
 
 %prep
 %setup -n ndg_httpsclient-%{version}
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 pushd ndg/httpsclient/test
@@ -80,13 +57,6 @@ fi
 
 trap "{ kill $openssl_pid ; }" EXIT
 
-function run_python2_test()
-{
-    test_script="$1"
-    PATH=%{buildroot}%{_bindir}:${PATH} \
-    PYTHONPATH=%{buildroot}%{python2_sitelib} \
-    python2 $test_script
-}
 
 function run_python3_test()
 {
@@ -99,7 +69,6 @@ function run_python3_test()
 test_cases=(test_urllib2.py test_https.py test_utils.py)
 for test_case in "${test_cases[@]}"
 do
-    run_python2_test $test_case
     run_python3_test $test_case
 done
 
@@ -108,16 +77,14 @@ popd
 %files
 %defattr(-,root,root,-)
 %{_bindir}/ndg_httpclient
-%{python2_sitelib}/*
-
-%files -n python3-ndg-httpsclient
-%defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 0.5.1-3
+-   Remove python3
 *   Wed Dec 05 2018 Ashwin H <ashwinh@vmware.com> 0.5.1-2
 -   Add %check
-*   Sat Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.5.1-1
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.5.1-1
 -   Updated to 0.5.1
 *   Tue Aug 29 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.4.2-1
 -   Initial version of python ndg-httpsclient for PhotonOS.

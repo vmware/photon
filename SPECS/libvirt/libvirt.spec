@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        4.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
@@ -20,7 +20,7 @@ BuildRequires:  libselinux-devel
 BuildRequires:  libssh2-devel
 BuildRequires:  systemd-devel
 BuildRequires:  parted
-BuildRequires:  python2-devel
+BuildRequires:  python3-devel
 BuildRequires:  readline-devel
 BuildRequires:  libxslt
 BuildRequires:  libtirpc-devel
@@ -35,7 +35,7 @@ Requires:       libselinux
 Requires:       libssh2
 Requires:       systemd
 Requires:       parted
-Requires:       python2
+Requires:       python3
 Requires:       readline
 Requires:       libtirpc
 
@@ -59,11 +59,8 @@ This contains development tools and libraries for libvirt.
 %prep
 %setup -q
 %build
-./configure \
+%configure \
     --disable-silent-rules \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
     --with-udev=no \
     --with-pciaccess=no
 
@@ -117,6 +114,9 @@ make check
 %{_mandir}/*
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 4.7.0-3
+-   Build with python3
+-   Mass removal python2
 *   Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 4.7.0-2
 -   Use libtirpc
 *   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 4.7.0-1
@@ -126,7 +126,7 @@ make check
 *   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-3
 -   Fix CVE-2017-1000256
 *   Wed Aug 23 2017 Rui Gu <ruig@vmware.com> 3.2.0-2
--   Fix missing deps in devel package 
+-   Fix missing deps in devel package
 *   Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com> 3.2.0-1
 -   Upgrading version to 3.2.0
 *   Fri Feb 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-1

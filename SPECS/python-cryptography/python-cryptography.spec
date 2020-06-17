@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Python cryptography library
-Name:           python-cryptography
+Name:           python3-cryptography
 Version:        2.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -12,36 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
 %define sha1    cryptography=94ef5dc1261a4388572ce3ad9af1515691276d2c
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-BuildRequires:  python-cffi
 BuildRequires:  openssl-devel
-
-%if %{with_check}
-BuildRequires:  python3-pip
-BuildRequires:  python-pip
-BuildRequires:  curl-devel
-%endif
-Requires:       python-cffi
-Requires:       openssl
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-idna
-Requires:       python-pyasn1
-Requires:       python-ipaddress
-Requires:       python-setuptools
-Requires:       python-packaging
-Requires:       python-enum34
-Requires:       python-asn1crypto
-Requires:       python-six
-
-%description
-Cryptography is a Python library which exposes cryptographic recipes and primitives.
-
-%package -n     python3-cryptography
-Summary:        python-cryptography
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -49,6 +19,11 @@ BuildRequires:  python3-cffi
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 
+%if %{with_check}
+BuildRequires:  python3-pip
+BuildRequires:  curl-devel
+%endif
+Requires:       openssl
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-cffi
@@ -58,26 +33,18 @@ Requires:       python3-six
 Requires:       python3-packaging
 Requires:       python3-asn1crypto
 
-%description -n python3-cryptography
+%description
+Cryptography is a Python library which exposes cryptographic recipes and primitives.
 
-Python 3 version.
 
 %prep
 %setup -q -n cryptography-%{version}
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
 
 %check
 openssl req \
@@ -91,20 +58,16 @@ openssl req \
     -out photon.cert
 openssl rsa -in photon.key -out photon.pem
 mv photon.pem /etc/ssl/certs
-pip install pretend pytest hypothesis iso8601 cryptography_vectors pytz
-python2 setup.py test
 pip3 install pretend pytest hypothesis iso8601 cryptography_vectors pytz
 python3 setup.py test
 
 %files
-%defattr(-,root,root)
-%{python2_sitelib}/*
-
-%files -n python3-cryptography
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 2.8-2
+-   Mass removal python2
 *   Tue Mar 03 2020 Tapas Kundu <tkundu@vmware.com> 2.8-1
 -   Update to version 2.8
 -   Fix make check

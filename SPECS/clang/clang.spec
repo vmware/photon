@@ -1,7 +1,7 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
 Version:        6.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
@@ -14,13 +14,13 @@ BuildRequires:  llvm-devel = %{version}
 BuildRequires:  ncurses-devel
 BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
-BuildRequires:  python2-devel
+BuildRequires:  python3-devel
 Requires:       libstdc++-devel
 Requires:       ncurses
 Requires:       llvm
 Requires:       zlib
 Requires:       libxml2
-Requires:       python2
+Requires:       python3
 
 %description
 The goal of the Clang project is to create a new C based language front-end: C, C++, Objective C/C++, OpenCL C and others for the LLVM compiler. You can get and build the source today.
@@ -76,6 +76,9 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 6.0.1-2
+-   Build with python3
+-   Mass removal python2
 *   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1
 -   Update to version 6.0.1 to get it to build with gcc 7.3
 *   Wed Jun 28 2017 Chang Lee <changlee@vmware.com> 4.0.0-2

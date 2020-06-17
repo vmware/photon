@@ -1,0 +1,41 @@
+--- po/xgettext_sh.py_org	2020-06-23 21:38:21.800746759 +0800
++++ po/xgettext_sh.py	2020-06-23 21:38:44.197301680 +0800
+@@ -69,38 +69,6 @@ def xgettext(arq):
+ 
+     f.close()
+ 
+-def xgettext(arq):
+-    line = 0
+-    f = open(arq, "r")
+-
+-    while 1:
+-        l = f.readline()
+-        if not l: break
+-        line = line + 1
+-        if l[0:1] == '#':       continue
+-        elif l[0:1] == '\n':    continue
+-        else:
+-            for match in pattern.finditer(l):
+-                pos = match.start()
+-                p1 = l.find('"',pos) + 1
+-                p2 = p1+1
+-                while 1:
+-                    p2 = l.find('"',p2)
+-                    if p2 == -1:
+-                        p2 = p1
+-                        break
+-                    if l[p2-1] == '\\':
+-                        p2 = p2 + 1
+-                    else:
+-                        break
+-                text = l[p1:p2]
+-				#text = split(l[pos:], '"')[1]
+-				if s.has_key(text):
+-				    s[text].append((arq, line))
+-				else:
+-				    s[text] = [(arq, line)]
+-	f.close()
+-
+ def print_header():
+     print('msgid ""')
+     print('msgstr ""')

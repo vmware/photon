@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        An asynchronous networking framework written in Python
-Name:           python-Twisted
+Name:           python3-Twisted
 Version:        19.10.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -15,17 +14,6 @@ Source0:        https://pypi.python.org/packages/source/T/Twisted/Twisted-%{vers
 Patch0:         extra_dependency.patch
 Patch1:         no_packet.patch
 Patch2:         CVE-2020-10108_10109.patch
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-BuildRequires:  python-incremental
-BuildRequires:  python-zope.interface
-BuildRequires:  python-cryptography
-BuildRequires:  python-pyOpenSSL
-BuildRequires:  python-six
-BuildRequires:  python-xml
-
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-incremental
@@ -38,27 +26,7 @@ BuildRequires:  net-tools
 BuildRequires:  sudo
 BuildRequires:  shadow
 BuildRequires:  curl-devel
-BuildRequires:  python3-pip
 %endif
-
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-zope.interface
-Requires:       python-netaddr
-Requires:       python-incremental
-Requires:       python-constantly
-Requires:       python-hyperlink
-Requires:       python-attrs
-Requires:       python-PyHamcrest
-Requires:       python-service_identity >= 18.1.0
-%description
-Twisted is an event-driven networking engine written in Python and licensed under the open source ​MIT license. Twisted runs on Python 2 and an ever growing subset also works with Python 3.
-
-Twisted also supports many common network protocols, including SMTP, POP3, IMAP, SSHv2, and DNS.
-
-%package -n     python3-Twisted
-Summary:        python-Twisted
-
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-zope.interface
@@ -70,25 +38,22 @@ Requires:       python3-attrs
 Requires:       python3-PyHamcrest
 Requires:       python3-service_identity >= 18.1.0
 
-%description -n python3-Twisted
-Python 3 version.
+%description
+Twisted is an event-driven networking engine written in Python and licensed under the open source ​MIT license. Twisted runs on Python 2 and an ever growing subset also works with Python 3.
+
+Twisted also supports many common network protocols, including SMTP, POP3, IMAP, SSHv2, and DNS.
+
 
 %prep
 %setup -q -n Twisted-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 mv %{buildroot}/%{_bindir}/twistd %{buildroot}/%{_bindir}/twistd3
 mv %{buildroot}/%{_bindir}/trial %{buildroot}/%{_bindir}/trial3
@@ -98,8 +63,6 @@ mv %{buildroot}/%{_bindir}/twist %{buildroot}/%{_bindir}/twist3
 mv %{buildroot}/%{_bindir}/conch %{buildroot}/%{_bindir}/conch3
 mv %{buildroot}/%{_bindir}/ckeygen %{buildroot}/%{_bindir}/ckeygen3
 mv %{buildroot}/%{_bindir}/cftp %{buildroot}/%{_bindir}/cftp3
-popd
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
@@ -112,20 +75,8 @@ popd
 
 %files
 %defattr(-,root,root)
-%{python2_sitelib}/*
-%{_bindir}/twistd
-%{_bindir}/trial
-%{_bindir}/tkconch
-%{_bindir}/pyhtmlizer
-%{_bindir}/twist
-%{_bindir}/mailmail
-%{_bindir}/conch
-%{_bindir}/ckeygen
-%{_bindir}/cftp
-
-%files -n python3-Twisted
-%defattr(-,root,root)
 %{python3_sitelib}/*
+%{_bindir}/mailmail
 %{_bindir}/twistd3
 %{_bindir}/trial3
 %{_bindir}/tkconch3
@@ -136,6 +87,8 @@ popd
 %{_bindir}/cftp3
 
 %changelog
+*   Wed Jul 08 2020 Tapas Kundu <tkundu@vmware.com> 19.10.0-5
+-   Mass removal python2
 *   Sat Jun 27 2020 Tapas Kundu <tkundu@vmware.com> 19.10.0-4
 -   Address CVE-2020-10108 and CVE-2020-10109
 *   Mon Jun 01 2020 Tapas Kundu <tkundu@vmware.com> 19.10.0-3

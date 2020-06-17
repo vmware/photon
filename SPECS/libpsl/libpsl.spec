@@ -1,17 +1,17 @@
 Summary:    libpsl - C library to handle the Public Suffix List
 Name:       libpsl
-Version:    0.20.2
-Release:    2%{?dist}
+Version:    0.21.0
+Release:    1%{?dist}
 License:    MIT
 URL:        https://github.com/rockdaboot/libpsl
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://github.com/rockdaboot/libpsl/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1 libpsl=890376d6038652911cfa853ccfb5b993ae0743ee
+%define sha1 libpsl=142a4abbf7ebab9651942b6e7a1b334742307f06
 
 BuildRequires: icu-devel
-BuildRequires: python2
+BuildRequires: python3
 Requires:      icu
 
 %description
@@ -59,6 +59,7 @@ is acceptable for domains and so on.
 %setup -q
 
 %build
+sed -i 's/env python/&3/' src/psl-make-dafsa
 %configure --disable-silent-rules \
            --disable-static
 make %{?_smp_mflags}
@@ -93,6 +94,10 @@ make check
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 0.21.0-1
+-   Update to 0.21.0
+-   Build with python3
+-   Mass removal python2
 *   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 0.20.2-2
 -   Added BuildRequires python2
 *   Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 0.20.2-1

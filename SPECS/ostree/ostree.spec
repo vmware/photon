@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2019.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -22,7 +22,7 @@ BuildRequires:  gtk-doc
 BuildRequires:  glib-devel
 BuildRequires:  gobject-introspection
 BuildRequires:  gobject-introspection-devel
-BuildRequires:  gobject-introspection-python
+BuildRequires:  python3-gobject-introspection
 BuildRequires:  xz-devel
 BuildRequires:  icu-devel
 BuildRequires:  sqlite-devel
@@ -160,6 +160,8 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2019.2-4
+-   Build with gobject-introspection-python3
 *   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2019.2-3
 -   Added for ARM Build
 *   Fri Sep 13 2019 Ankit Jain <ankitja@vmware.com> 2019.2-2

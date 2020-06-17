@@ -1,7 +1,7 @@
 Summary:    Modular initramfs image creation utility
 Name:       mkinitcpio
 Version:    24
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        https://projects.archlinux.org/mkinitcpio.git/
 Group:      System Environment/Development
@@ -10,9 +10,10 @@ Distribution:   Photon
 Source0:    https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
 %define sha1 mkinitcpio=416789532960f7deecb4d5734a398da2437bbb58
 Patch0:     mkinitcpio-shutdown-ramfs.service.patch
-BuildRequires: asciidoc
-BuildRequires: python2
-BuildRequires: python-xml
+BuildRequires: asciidoc3
+BuildRequires: git
+BuildRequires: python3
+BuildRequires: python3-xml
 BuildRequires: docbook-xsl
 BuildRequires: libxml2-devel
 BuildRequires: libxslt
@@ -30,7 +31,7 @@ Multi-format archive and compression library
 for i in "hooks/*" ; do sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" $i; done
 sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" init
 sed -i "s/\#\!\/usr\/bin\/ash/\#\!\/bin\/bash/" shutdown
-sed -i "s/a2x/a2x --verbose --no-xmllint/" Makefile
+sed -i "s/a2x/a2x3 --verbose --no-xmllint/" Makefile
 
 make %{?_smp_mflags}
 
@@ -49,6 +50,9 @@ make DESTDIR=%{buildroot} install
 /usr/share/*
 
 %changelog
+*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 24-3
+-   Build with python3
+-   Mass removal python2
 *   Fri Jan 18 2019 Alexey Makhalov <amakhalov@vmware.com> 24-2
 -   Added buildRequires python2.
 *   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 24-1

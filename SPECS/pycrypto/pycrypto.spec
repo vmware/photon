@@ -1,13 +1,12 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        The Python Cryptography Toolkit.
-Name:           pycrypto
+Name:           python3-pycrypto
 Version:        2.6.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Public Domain and Python
 URL:            http://www.pycrypto.org/
-Source0:        https://ftp.dlitz.net/pub/dlitz/crypto/pycrypto/%{name}-%{version}.tar.gz
+Source0:        https://ftp.dlitz.net/pub/dlitz/crypto/pycrypto/pycrypto-%{version}.tar.gz
 %define         sha1 pycrypto=aeda3ed41caf1766409d4efc689b9ca30ad6aeb2
 Patch0:         pycrypto-2.6.1-CVE-2013-7459.patch
 Patch1:		pycrypto-2.6.1-CVE-2018-6594.patch
@@ -20,24 +19,16 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  python-setuptools
-BuildRequires:  python2-devel
+BuildRequires:  python3-setuptools
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-Requires:       python2
+Requires:       python3
 %description
 This is a collection of both secure hash functions (such as SHA256 and RIPEMD160), and various encryption algorithms (AES, DES, RSA, ElGamal, etc.).
 
-%package -n     python3-pycrypto
-Summary:        python3-pycrypto
-
-Requires:       python3
-%description -n python3-pycrypto
-
-Python 3 version.
 
 %prep
-%setup -q
+%setup -q -n pycrypto-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -48,26 +39,21 @@ Python 3 version.
 
 
 %build
-python2 setup.py build
 python3 setup.py build
 
 %install
-python2 setup.py install -O1 --root=%{buildroot} --prefix=/usr
 python3 setup.py install -O1 --root=%{buildroot} --prefix=/usr
 
 %check
-python2 setup.py test
 python3 setup.py test
 
 %files
-%defattr(-,root,root)
-%{python2_sitelib}/*
-
-%files -n python3-pycrypto
-%defattr(-, root, root)
+%defattr(-, root, root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 2.6.1-6
+-   Mass removal python2
 *   Fri May 17 2019 Tapas Kundu <tkundu@vmware.com> 2.6.1-5
 -   Add support for GCM mode (AES only).
 *   Thu Nov 29 2018 Siju Maliakkal <smaliakkal@vmware.com> 2.6.1-4

@@ -1,9 +1,8 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
-Name:           python-ply
+Name:           python3-ply
 Version:        3.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python Lex & Yacc
 License:        BSD-3-Clause
 Group:          Development/Languages/Python
@@ -12,11 +11,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/dabeaz/ply/archive/ply-%{version}.tar.gz
 %define sha1    ply=10a555a32095991fbc7f7ed10c677a14e21fad1d
-BuildRequires:  python2-devel
+BuildRequires:  python3-devel
 %if %{with_check}
-BuildRequires:  python-six
+BuildRequires:  pytho3-six
 %endif
-Requires:       python2
+Requires:       python3
 BuildArch:      noarch
 
 %description
@@ -30,43 +29,18 @@ productions, precedence rules, error recovery, and support for ambiguous grammar
 PLY is extremely easy to use and provides very extensive error checking.
 It is compatible with both Python 2 and Python 3.
 
-%package -n     python3-ply
-Summary:        python3 version
-BuildRequires:  python3-devel
-%if %{with_check}
-BuildRequires:  python3-six
-%endif
-Requires:       python3
-
-%description -n python3-ply
-Python 3 version.
-
 %prep
 %setup -q -n ply-%{version}
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-CFLAGS="%{optflags}" python2 setup.py build
-pushd ../p3dir
 CFLAGS="%{optflags}" python3 setup.py build
-popd
 
 %install
-rm -rf %{buildroot}
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-chmod a-x test/*
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 chmod a-x test/*
-popd
 
 %check
 pushd test
-
-python2 testlex.py
-python2 testyacc.py
-python2 testcpp.py
 
 python3 testlex.py
 python3 testyacc.py
@@ -78,14 +52,12 @@ popd
 rm -rf %{buildroot}
 
 %files
-%defattr(-,root,root)
-%{python2_sitelib}/*
-
-%files -n python3-ply
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 3.11-3
+-   Mass removal python2
 *   Thu Dec 06 2018 Ashwin H <ashwinh@vmware.com> 3.11-2
 -   Add %check
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 3.11-1

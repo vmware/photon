@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.127
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -111,7 +111,7 @@ The Linux package contains the LKCM driver module
 %package devel
 Summary:       Kernel Dev
 Group:         System Environment/Kernel
-Requires:      python2 gawk
+Requires:      python3 gawk
 Requires:      %{name} = %{version}-%{release}
 %description devel
 The Linux package contains the Linux kernel dev files
@@ -119,7 +119,7 @@ The Linux package contains the Linux kernel dev files
 %package docs
 Summary:       Kernel docs
 Group:         System Environment/Kernel
-Requires:      python2
+Requires:      python3
 Requires:      %{name} = %{version}-%{release}
 %description docs
 The Linux package contains the Linux kernel doc files
@@ -324,6 +324,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 4.19.127-2
+-   Require python3
 *   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1
 -   Update to version 4.19.127
 *   Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 4.19.112-8

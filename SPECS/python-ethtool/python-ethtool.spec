@@ -7,7 +7,7 @@
 %global pypi_name ethtool
 Name:           python3-ethtool
 Version:        0.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python module to interface with ethtool
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -21,12 +21,11 @@ BuildRequires:  gcc
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  libnl-devel
-BuildRequires:  asciidoc
+BuildRequires:  asciidoc3
 # For 'xml'
 BuildRequires: docbook-xml
 BuildRequires: xmlto
 BuildRequires: python3-defusedxml
-BuildRequires: python-defusedxml
 Requires:      libnl
 
 %if %{with_check}
@@ -44,8 +43,8 @@ PCI locations.
 
 %build
 python3 setup.py build
-a2x -d manpage -f manpage man/pethtool.8.asciidoc
-a2x -d manpage -f manpage man/pifconfig.8.asciidoc
+a2x3 -d manpage -f manpage man/pethtool.8.asciidoc
+a2x3 -d manpage -f manpage man/pifconfig.8.asciidoc
 
 %install
 python3 setup.py install --skip-build --root %{buildroot}
@@ -72,5 +71,7 @@ LANG=en_US.UTF-8 python3 -m unittest discover -v
 %{python3_sitearch}/%{pypi_name}-%{version}-py*.egg-info
 
 %changelog
+*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 0.14-2
+-   Use asciidoc3
 *   Thu Mar 19 2020 Shreyas B. <shreyasb@vmware.com> 0.14-1
 -   Initial version.

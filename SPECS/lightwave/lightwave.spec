@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       5%{?dist}
+Release:       6%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -9,7 +9,7 @@ URL: 	       https://github.com/vmware/lightwave
 Source0:       lightwave-%{version}.tar.gz
 %define sha1 lightwave=93cc2c0518753a7ec7efd250bb0988de727067ff
 Distribution:  Photon
-
+Patch0:    lightwave_build_with_python3.patch
 Requires:  apache-tomcat >= 8.5.8
 Requires:  boost = 1.66.0
 Requires:  commons-daemon >= 1.0.15
@@ -38,7 +38,8 @@ BuildRequires: krb5-devel >= 1.14
 BuildRequires: likewise-open-devel >= 6.2.10
 BuildRequires: openjdk8
 BuildRequires: openssl-devel >= 1.0.2
-BuildRequires: python2-devel >= 2.7.8
+BuildRequires: python3-devel
+BuildRequires: python3-libs
 BuildRequires: sqlite-devel >= 3.14
 BuildRequires: cmocka >= 1.1
 BuildRequires: go
@@ -159,6 +160,7 @@ sed -i 's#$COMMONS_DAEMON_HOME#usr#g' configure.ac
 sed -i 's|http://central.maven.org|https://search.maven.org|' vmafd/jdepends/build.xml
 sed -i 's|http://central.maven.org|https://search.maven.org|' vmca/jdepends/build.xml
 sed -i 's|http://central.maven.org|https://search.maven.org|' config/jdepends/build.xml
+%patch0 -p1
 
 %build
 
@@ -1395,6 +1397,9 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.3.1.34-6
+-   Build with python3
+-   Mass removal python2
 *   Thu Apr 02 2020 Alexey Makhalov <amakhalov@vmware.com> 1.3.1.34-5
 -   Fix compilation issue with gcc-8.4.0
 *   Sun Jan 19 2020 Ankit Jain <ankitja@vmware.com> 1.3.1.34-4

@@ -1,0 +1,11 @@
+--- a/configure.ac	2020-06-23 18:59:17.985419654 +0800
++++ b/configure.ac	2020-06-23 18:59:59.226449072 +0800
+@@ -743,7 +743,7 @@ AC_ARG_WITH([python-includes],
+         PYTHON_INCLUDES="-I$withval"
+     ],
+     [
+-        PYTHON_INCLUDES="-I$PYTHON_BASE_PATH/include/python2.7"
++        PYTHON_INCLUDES="-I$PYTHON_BASE_PATH/include/python3.7m"
+     ])
+ 
+ AC_ARG_WITH([python-libs],

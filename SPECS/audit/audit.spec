@@ -1,11 +1,10 @@
-%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %define with_golang 0
 
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
 License:        GPLv2+
@@ -20,8 +19,6 @@ BuildRequires:  libcap-ng-devel
 BuildRequires:  swig
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 %if %{with_golang}
@@ -33,8 +30,6 @@ Requires:       openldap
 Requires:       tcp_wrappers
 Requires:       libcap-ng
 Requires:       gawk
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 
@@ -50,15 +45,6 @@ Requires:       %{name} = %{version}-%{release}
 %description    devel
 The libraries and header files needed for audit development.
 
-%package        python
-Summary:        Python bindings for libaudit
-License:        LGPLv2+
-Requires:       %{name} = %{version}-%{release}
-Requires:       python2
-
-%description python
-The audit-python package contains the python2 bindings for libaudit
-and libauparse.
 
 %package  -n    python3-audit
 Summary:        Python3 bindings for libaudit
@@ -77,7 +63,6 @@ and libauparse.
 %configure \
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --exec_prefix=/usr \
-    --with-python=yes \
     --with-python3=yes \
     --with-libwrap \
     --enable-gssapi-krb5=yes \
@@ -160,15 +145,14 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 /usr/share/aclocal/audit.m4
 
-%files python
-%defattr(-,root,root)
-%{python2_sitelib}/*
 
 %files -n python3-audit
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2.8.5-3
+-   Mass removal python2
 *   Tue Nov 26 2019 Alexey Makhalov <amakhalov@vmware.com> 2.8.5-2
 -   Cross compilation support.
 -   Do not use BuildRequires in subpackages.

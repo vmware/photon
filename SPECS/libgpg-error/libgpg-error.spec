@@ -43,10 +43,10 @@ rm -rf %{buildroot}/%{_infodir}
 %check
 make %{?_smp_mflags} check
 
-%post 
+%post
 /sbin/ldconfig
 
-%postun 
+%postun
 /sbin/ldconfig
 
 %files

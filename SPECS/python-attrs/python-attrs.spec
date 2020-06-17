@@ -2,9 +2,9 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Attributes without boilerplate.
-Name:           python-attrs
+Name:           python3-attrs
 Version:        18.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pypi.python.org/pypi/attrs
 License:        MIT
 Group:          Development/Languages/Python
@@ -14,11 +14,6 @@ Source0:        attrs-%{version}.tar.gz
 %define sha1    attrs=51a52e1afdd9e8c174ac0b65c2905a8360788dd2
 
 BuildArch:      noarch
-
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -31,38 +26,21 @@ BuildRequires:  openssl-devel
 BuildRequires:  python3-zope.interface
 BuildRequires:  python3-pip
 %endif
-Requires:       python2
-Requires:       python2-libs
-
-%description
-Attributes without boilerplate.
-
-%package -n     python3-attrs
-Summary:        python-attrs
 
 Requires:       python3
 Requires:       python3-libs
 
-%description -n python3-attrs
-
-Python 3 version.
+%description
+Attributes without boilerplate.
 
 %prep
 %setup -q -n attrs-%{version}
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-popd
 
 %check
 #python2 does not support for tests
@@ -70,14 +48,12 @@ pip3 install pytest hypothesis==4.38.0
 python3 setup.py test
 
 %files
-%defattr(-,root,root)
-%{python2_sitelib}/*
-
-%files -n python3-attrs
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 18.2.0-4
+-   Mass removal python2
 *   Thu Feb 27 2020 Tapas Kundu <tkundu@vmware.com> 18.2.0-3
 -   hypothesis 4.38.2 has requirement attrs>=19.2.0,
 -   but we have attrs 18.2.0 which is incompatible.

@@ -1,8 +1,8 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
-Name:           python-ipaddress
+Name:           python3-ipaddress
 Version:        1.0.22
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Port of the 3.3+ ipaddress module to 2.6, 2.7, 3.2
 License:        Python Software Foundation License (Python Software Foundation License)
 Group:          Development/Languages/Python
@@ -12,12 +12,12 @@ Distribution: 	Photon
 Source0:        ipaddress-%{version}.tar.gz
 %define sha1    ipaddress=7b60cef3c7fdb7fa9c991ddff5968754cec6adb0
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
 
-Requires:       python2
-Requires:       python2-libs
+Requires:       python3
+Requires:       python3-libs
 
 BuildArch:      noarch
 
@@ -28,19 +28,21 @@ IPv4/IPv6 manipulation library
 %setup -n ipaddress-%{version}
 
 %build
-python2 setup.py build
+python3 setup.py build
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-python2 setup.py test
+python3 setup.py test
 
 %files
 %defattr(-,root,root,-)
-%{python2_sitelib}/*
+%{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 1.0.22-3
+-   Mass removal python2
 *   Thu Sep 13 2018 Tapas Kundu <tkundu@vmware.com> 1.0.22-2
 -   Updated the license
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.0.22-1

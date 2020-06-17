@@ -1,11 +1,10 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 # Got this spec from http://downloads.sourceforge.net/cracklib/cracklib-2.9.6.tar.gz
 
 Summary:        A password strength-checking library.
 Name:           cracklib
 Version:        2.9.6
-Release:        9%{?dist}
+Release:        10%{?dist}
 Group:          System Environment/Libraries
 Source:         cracklib-%{version}.tar.gz
 %define sha1    cracklib-%{version}=9199e7b8830717565a844430653f5a90a04fcd65
@@ -16,10 +15,6 @@ URL:            http://sourceforge.net/projects/cracklib/
 License:        GPL
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
@@ -75,16 +70,6 @@ Requires:   cracklib
 The cracklib devel package include the needed library link and
 header files for development.
 
-%package    python
-Summary:    The cracklib python module
-Group:      Development/Languages/Python
-Requires:   cracklib
-Requires:   python2
-Requires:   python2-libs
-
-%description python
-The cracklib python module
-
 %package -n python3-cracklib
 Summary:        The cracklib python module
 Group:          Development/Languages/Python
@@ -125,7 +110,6 @@ export CFLAGS="$RPM_OPT_FLAGS"
 
 make
 pushd python
-python2 setup.py build
 python3 setup.py build
 popd
 
@@ -144,7 +128,6 @@ ln -s cracklib-format $RPM_BUILD_ROOT/%{_sbindir}/mkdict
 ln -s cracklib-packer $RPM_BUILD_ROOT/%{_sbindir}/packer
 
 pushd python
-python2 setup.py install --skip-build --root %{buildroot}
 python3 setup.py install --skip-build --root %{buildroot}
 popd
 
@@ -198,10 +181,6 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %{_libdir}/libcrack.so
 %{_libdir}/libcrack.la
 
-%files python
-%defattr(-,root,root)
-%{python2_sitelib}/*
-
 %files -n python3-cracklib
 %defattr(-,root,root)
 %{python3_sitelib}/*
@@ -216,6 +195,8 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %{_datadir}/locale/*
 
 %changelog
+*   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 2.9.6-10
+-   Mass removal python2
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-9
 -   Cross compilation support
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-8

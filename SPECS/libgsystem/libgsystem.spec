@@ -1,7 +1,7 @@
 Summary:	GIO-based library with Unix/Linux specific API
 Name:		libgsystem
 Version:	2015.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 Group:		Development/Libraries
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/libgsystem/%{version}/%{name}-%{version}.tar.gz
 %define sha1 libgsystem=d7f12beb17d3a3b288d68ca2cdcb595f9e5fccea
@@ -26,7 +26,7 @@ BuildRequires:	libffi-devel
 BuildRequires:	python3
 BuildRequires:	python3-libs
 BuildRequires:	gobject-introspection-devel
-BuildRequires:	gobject-introspection-python
+BuildRequires:	python3-gobject-introspection
 Requires:	glib
 Requires:	libcap
 Requires:	libffi
@@ -84,6 +84,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/gir-*/*.gir
 
 %changelog
+*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2015.2-3
+-   Build with python3
+-   Mass removal python2
 *   Tue Sep 18 2018 Keerthana K <keerthanak@vmware.com> 2015.2-2
 -   Removed % from autosetup in the changelog to address the
 -   build break with latest RPM version.

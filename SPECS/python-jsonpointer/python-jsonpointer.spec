@@ -1,75 +1,50 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
-Name:           python-jsonpointer
+Name:           python3-jsonpointer
 Version:        2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Url:            https://pypi.python.org/packages/source/j/jsonpointer/jsonpointer-%{version}.tar.gz
 Source0:        jsonpointer-%{version}.tar.gz
 %define sha1    jsonpointer=f0733349a44b0c777ef9b8e0256d628e2530624b
 
-BuildRequires: python2
-BuildRequires: python2-libs
-BuildRequires: python-setuptools
-
-Requires: python2
-Requires: python2-libs
+BuildRequires: python3
+BuildRequires: python3-libs
+BuildRequires: python3-setuptools
+BuildRequires: python3-xml
+Requires: python3
+Requires: python3-libs
 
 BuildArch:      noarch
 
 %description
 Library to apply JSON Patches according to RFC 6902.
 
-%package -n     python3-jsonpointer
-Summary:        python-jsonpointer
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-
-Requires:       python3
-Requires:       python3-libs
-
-%description -n python3-jsonpointer
 
 %prep
 %setup -n jsonpointer-%{version}
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %check
-python2 tests.py
-pushd ../p3dir
 python3 tests.py
-popd
 
 %install
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-mv %{buildroot}/%{_bindir}/jsonpointer %{buildroot}/%{_bindir}/jsonpointer3
-popd
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%{python2_sitelib}/*
 %{_bindir}/jsonpointer
-
-%files -n python3-jsonpointer
-%defattr(-,root,root,-)
 %{python3_sitelib}/*
-%{_bindir}/jsonpointer3
 
 %changelog
+*   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.0-2
+-   Mass removal python2
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.0-1
 -   Update to version 2.0
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.10-6

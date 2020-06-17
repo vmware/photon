@@ -50,6 +50,7 @@ rm -rf %{buildroot}/*
 %changelog
 *	Fri Dec 06 2019 Tapas Kundu <tkundu@vmware.com> 0.6-6
 -	Build with python3
+-	Mass removal python2
 *	Fri Jun 16 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.6-5
 -	Use python2 explicitly
 *	Thu Jun 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.6-4

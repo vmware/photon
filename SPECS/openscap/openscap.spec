@@ -1,7 +1,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.2.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
@@ -19,7 +19,7 @@ BuildRequires:  util-linux-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  curl-devel
 BuildRequires:  popt-devel
-BuildRequires:  python2-devel
+BuildRequires:  python3-devel
 Requires:       curl
 Requires:       popt
 %description
@@ -41,21 +41,18 @@ Requires: openscap = %{version}-%{release}
 %description perl
 Perl scripts.
 
-%package python
+%package python3
 Summary: openscap python
 Group: Development/Libraries
 Requires: openscap = %{version}-%{release}
-BuildRequires:  python2-devel
-%description python
+%description python3
 Python bindings.
 
 
 %prep
 %setup -q
 %build
-./configure --prefix=/usr \
-            --sysconfdir=/etc \
-            --enable-sce \
+%configure  --enable-sce \
             --enable-perl
 make
 %install
@@ -90,11 +87,13 @@ find %{buildroot} -name '*.la' -delete
 %defattr(-,root,root)
 %{_libdir}/perl5/*
 
-%files python
+%files python3
 %defattr(-,root,root)
-%{_libdir}/python2.7/*
+%{_libdir}/python3.7/*
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.2.17-2
+-   Mass removal python2
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.2.17-1
 -   Update to 1.2.17
 *   Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 1.2.14-3

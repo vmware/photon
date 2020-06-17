@@ -1,10 +1,9 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Self-service finite-state machines for the programmer on the go.
-Name:           python-automat
+Name:           python3-automat
 Version:        0.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -13,36 +12,6 @@ Url:            https://pypi.python.org/pypi/Automat
 Source0:        https://files.pythonhosted.org/packages/source/A/Automat/Automat-%{version}.tar.gz
 %define sha1    Automat=b96a67647f5c1650f0e4cc39bed762fdc2ac90b4
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-BuildRequires:  python-m2r
-BuildRequires:  python-setuptools_scm
-BuildRequires:  python-attrs
-BuildRequires:  python-six
-BuildRequires:  python-docutils
-BuildRequires:  python-mistune
-BuildRequires:  python-graphviz
-BuildRequires:  python-Twisted
-
-
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-attrs
-Requires:       python-six
-Requires:       python-graphviz
-Requires:       python-Twisted
-
-BuildArch:      noarch
-
-%description
-Self-service finite-state machines for the programmer on the go.
-
-Automat is a library for concise, idiomatic Python expression of finite-state automata (particularly deterministic finite-state transducers).
-
-%package -n     python3-automat
-Summary:        python-automat
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-m2r
@@ -63,44 +32,34 @@ Requires:       python3-six
 Requires:       python3-graphviz
 Requires:       python3-Twisted
 
-%description -n python3-automat
-Python 3 version.
+BuildArch:      noarch
+
+%description
+Self-service finite-state machines for the programmer on the go.
+
+Automat is a library for concise, idiomatic Python expression of finite-state automata (particularly deterministic finite-state transducers).
 
 %prep
 %setup -q -n Automat-%{version}
-rm -rf ../p3dir
-cp -a . ../p3dir
 
 %build
-python2 setup.py build
-pushd ../p3dir
 python3 setup.py build
-popd
 
 %install
-pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 mv %{buildroot}/%{_bindir}/automat-visualize %{buildroot}/%{_bindir}/automat-visualize3
-popd
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-python2 setup.py test
-pushd ../p3dir
 python3 setup.py test
-popd
 
 %files
-%defattr(-,root,root)
-%{python2_sitelib}/*
-%{_bindir}/automat-visualize
-
-%files -n python3-automat
 %defattr(-,root,root)
 %{python3_sitelib}/*
 %{_bindir}/automat-visualize3
 
 %changelog
+*   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 0.7.0-2
+-   Mass removal python2
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.7.0-1
 -   Update to version 0.7.0
 *   Mon Jul 17 2017 Divya Thaluru <dthaluru@vmware.com> 0.5.0-4

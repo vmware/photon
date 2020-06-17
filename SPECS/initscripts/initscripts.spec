@@ -3,19 +3,20 @@ Name:		initscripts
 Version:	9.70
 License:	GPLv2
 Group:		System Environment/Base
-Release:	3%{?dist}
+Release:	4%{?dist}
 URL:		https://github.com/fedora-sysv/initscripts
 Source0:	https://github.com/fedora-sysv/initscripts/archive/%{name}-%{version}.tar.gz
 %define sha1 initscripts=6e2ba0946fa2f175f576614d9374ad00266aec66
 Patch0:     service.patch
 Patch1:     fix_return_code_during_set_error.patch
+Patch2:     fix_build_python3.patch
 Vendor:     	VMware, Inc.
 Distribution:   Photon
 Requires:	systemd
 Requires:	iproute2
 BuildRequires:	glib-devel
-BuildRequires:	python2
-BuildRequires:	python2-libs
+BuildRequires:	python3
+BuildRequires:	python3-libs
 BuildRequires:	popt-devel
 BuildRequires:	gettext
 BuildRequires:	pkg-config
@@ -48,6 +49,7 @@ Binaries of init network
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 make
@@ -179,6 +181,8 @@ EOF
 %{_sysconfdir}/profile.d/debug*
 
 %changelog
+*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 9.70-4
+-   Build using python3
 *   Tue Jan 05 2019 Ankit Jain <ankitja@vmware.com> 9.70-3
 -   Added network configuration to fix "service --status-all"
 *   Tue Dec 26 2017 Divya Thaluru <dthaluru@vmware.com> 9.70-2

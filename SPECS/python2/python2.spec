@@ -295,7 +295,7 @@ LANG=en_US.UTF-8 make %{?_smp_mflags} test
 -   Added fix for CVE-2019-9636
 *   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 2.7.15-4
 -   Mode libpython2.7.so to python2-libs
--   Remove python2 dependency from python2-libs
+-   Mass removal python2 dependency from python2-libs
 *   Fri Dec 21 2018 Tapas Kundu <tkundu@vmware.com> 2.7.15-3
 -   Fix for CVE-2018-14647
 *   Mon Sep 17 2018 Dweep Advani <dadvani@vmware.com> 2.7.15-2
