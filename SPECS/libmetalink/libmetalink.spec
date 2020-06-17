@@ -1,7 +1,7 @@
 Summary:       A Metalink library written in C language
 Name:          libmetalink
 Version:       0.1.3
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 License:       MIT
@@ -27,9 +27,7 @@ Development files for libmetalink
 %setup -q
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --disable-static
+%configure --disable-static
 make %{?_smp_mflags}
 
 %install
@@ -58,5 +56,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+*  Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 0.1.3-2
+-  Used configure macro
 *  Thu Jun 04 2020 Tapas Kundu <tkundu@vmware.com> 0.1.3-1
 -  Initial packaging in Photon.
