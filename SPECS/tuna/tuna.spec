@@ -2,7 +2,7 @@
 
 Name:           tuna
 Version:        0.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Summary:        Application tuning command line utility
 Group:          Applications/System
@@ -15,8 +15,8 @@ Source:         https://www.kernel.org/pub/software/utils/%{name}/%{name}-%{vers
 BuildArch:      noarch
 BuildRequires:  python3-devel, gettext
 Requires:       python3-ethtool
-Requires:       python3-linux-procfs >= 0.6
-Requires:       python3-schedutils >= 0.6
+Requires:       python3-linux-procfs
+Requires:       python3-schedutils
 
 %description
 Provides command line interface for changing scheduler and IRQ tunables,
@@ -65,5 +65,7 @@ done
 %{_datadir}/polkit-1/actions/org.tuna.policy
 
 %changelog
-*   Thu Mar 19 2020 Shreyas B. <shreyasb@vmware.com> 0.14-1
--   Initial version of tuna spec.
+* Tue Jun 16 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 0.14-2
+- Remove unnecessary version constraint for runtime package dependency.
+* Thu Mar 19 2020 Shreyas B. <shreyasb@vmware.com> 0.14-1
+- Initial version of tuna spec.
