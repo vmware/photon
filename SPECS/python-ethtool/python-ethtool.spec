@@ -13,7 +13,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        GPLv2
-URL:            https://github.com/fedora-python/python-ethtool
+URL:            https://pypi.org/project/ethtool/
 Source0:        python-ethtool-%{version}.tar.gz
 %define sha1 python-ethtool=6e811ede779f2eac9d30950b6dc7abba61372262
 
