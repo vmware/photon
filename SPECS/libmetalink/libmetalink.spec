@@ -1,7 +1,7 @@
 Summary:       A Metalink library written in C language
 Name:          libmetalink
 Version:       0.1.3
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 License:       MIT
@@ -16,7 +16,7 @@ BuildRequires: expat-devel
 A Metalink library written in C language.
 
 %package devel
-Summary:    Development files for libmetalink 
+Summary:    Development files for libmetalink
 Group:      Development/Libraries
 Requires:   %{name} = %{version}-%{release}
 
@@ -27,9 +27,7 @@ Development files for libmetalink
 %setup -q
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --disable-static
+%configure --disable-static
 make %{?_smp_mflags}
 
 %install
@@ -58,5 +56,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+*  Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 0.1.3-2
+-  Used configure macro
 *  Fri Jan 24 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.1.3-1
 -  Initial
