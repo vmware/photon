@@ -4,7 +4,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
 License:        GPLv2+
@@ -84,7 +84,6 @@ make %{?_smp_mflags}
 
 %install
 mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/audit/rules.d}
-mkdir -p %{buildroot}/%{_var}/log/audit
 mkdir -p %{buildroot}/%{_var}/spool/audit
 make install DESTDIR=%{buildroot}
 
@@ -104,6 +103,7 @@ make %{?_smp_mflags} check
 test -L /var/log/audit && rm /var/log/audit ||:
 
 %post
+mkdir -p /var/log/audit
 /sbin/ldconfig
 %systemd_post  auditd.service
 
@@ -125,7 +125,7 @@ test -L /var/log/audit && rm /var/log/audit ||:
 %{_mandir}/man5/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
-%dir %{_var}/log/audit
+%ghost %dir %{_var}/log/audit
 %{_var}/spool/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit/rules.d
@@ -163,6 +163,8 @@ test -L /var/log/audit && rm /var/log/audit ||:
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 17 2020 Alexey Makhalov <amakhalov@vmware.com> 2.8.5-5
+-   Create /var/log/audit folder at %post time
 *   Wed Jun 10 2020 Alexey Makhalov <amakhalov@vmware.com> 2.8.5-4
 -   Use /var/log/audit
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 2.8.5-3
