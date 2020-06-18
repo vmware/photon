@@ -1,7 +1,7 @@
 Summary:	Utilities for internationalization and localization
 Name:		gettext
 Version:	0.19.8.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/gettext
 Group:		Applications/System
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
 %define sha1 gettext=e0fe90ede22f7f16bbde7bdea791a835f2773fc9
+Patch0:         gettext-0.19.8.1-CVE-2018-18751.patch
 
 %description
 These allow programs to be compiled with NLS
@@ -17,6 +18,7 @@ messages in the user's native language.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 %configure \
@@ -54,6 +56,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+*       Thu Jun 18 2020 Ashwin H <ashwinh@vmware.com> 0.19.8.1-3
+-       Fix CVE-2018-18751
 *       Mon Sep 09 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 0.19.8.1-2
 -       Fix for make check
 *       Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 0.19.8.1-1
