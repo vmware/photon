@@ -31,7 +31,6 @@ rm /root/.ssh/authorized_keys
 rm /etc/ssh/sshd_config
 
 echo "AuthorizedKeysFile .ssh/authorized_keys" >> /etc/ssh/sshd_config
-echo "UsePrivilegeSeparation sandbox" >> /etc/ssh/sshd_config
 echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
 echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
 echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
