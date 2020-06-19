@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        11.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -147,6 +147,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Fri Jun 19 2020 Keerthana K <keerthanak@vmware.com> 11.1.0-3
+-   Update gosc FORCE-RUN-CUST-SCRIPT to DEFAULT-RUN-POST-CUST-SCRIPT.
 *   Mon Jun 08 2020 Keerthana K <keerthanak@vmware.com> 11.1.0-2
 -   Add gosc FORCE-RUN-CUST-SCRIPT changes.
 *   Mon May 18 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.0-1
