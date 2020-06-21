@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.227
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -54,6 +54,12 @@ Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch35:       0001-scsi-libsas-direct-call-probe-and-destruct.patch
 # Fix for CVE-2018-10323
 Patch36:       0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
+# Fix for CVE-2019-19922
+Patch37:       0001-sched-fair-Fix-bandwidth-timer-clock-drift-condition.patch
+Patch38:       0002-sched-fair-Fix-low-cpu-usage-with-high-throttling-by.patch
+Patch39:       0003-sched-fair-Fix-Wunused-but-set-variable-warnings.patch
+# Fix for CVE-2019-20811
+Patch40:        0001-net-sysfs-call-dev_hold-if-kobject_init_and_add-succ.patch
 # Fix for CVE-2018-10322 (following 8 patches)
 Patch41:        0001-xfs-add-missing-include-dependencies-to-xfs_dir2.h.patch
 Patch42:        0002-xfs-replace-xfs_mode_to_ftype-table-with-switch-stat.patch
@@ -157,6 +163,10 @@ The Linux package contains the Linux kernel doc files
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch37 -p1
+%patch38 -p1
+%patch39 -p1
+%patch40 -p1
 %patch41 -p1
 %patch42 -p1
 %patch43 -p1
@@ -266,6 +276,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jun 22 2020 Vikash Bansal <bvikas@vmware.com> 4.4.227-2
+-   Add patch to fix CVE-2019-19922 & CVE-2019-20811
 *   Thu Jun 18 2020 Keerthana K <keerthanak@vmware.com> 4.4.227-1
 -   Update to version 4.4.227
 *   Tue Jun 02 2020 Ajay Kaher <akaher@vmware.com> 4.4.224-3

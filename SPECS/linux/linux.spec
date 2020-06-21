@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.227
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -54,6 +54,12 @@ Patch27:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch28:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
 # Fix for CVE-2018-10323
 Patch29:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
+# Fix for CVE-2019-19922
+Patch30:        0001-sched-fair-Fix-bandwidth-timer-clock-drift-condition.patch
+Patch31:        0002-sched-fair-Fix-low-cpu-usage-with-high-throttling-by.patch
+Patch32:        0003-sched-fair-Fix-Wunused-but-set-variable-warnings.patch
+# Fix for CVE-2019-20811
+Patch33:        0001-net-sysfs-call-dev_hold-if-kobject_init_and_add-succ.patch
 # Fix for CVE-2018-10322 (following 8 patches)
 Patch34:        0001-xfs-add-missing-include-dependencies-to-xfs_dir2.h.patch
 Patch35:        0002-xfs-replace-xfs_mode_to_ftype-table-with-switch-stat.patch
@@ -190,6 +196,10 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch27 -p1
 %patch28 -p1
 %patch29 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
+%patch33 -p1
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
@@ -367,6 +377,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Jun 22 2020 Vikash Bansal <bvikas@vmware.com> 4.4.227-2
+-   Add patch to fix CVE-2019-19922 & CVE-2019-20811
 *   Thu Jun 18 2020 Keerthana K <keerthanak@vmware.com> 4.4.227-1
 -   Update to version 4.4.227
 *   Tue Jun 02 2020 Ajay Kaher <akaher@vmware.com> 4.4.224-3

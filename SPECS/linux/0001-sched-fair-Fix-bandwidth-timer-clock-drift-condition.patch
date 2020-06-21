@@ -1,0 +1,136 @@
+From e7d6048fbdd41afca5ebfce9eb8c68852e172746 Mon Sep 17 00:00:00 2001
+From: Xunlei Pang <xlpang@linux.alibaba.com>
+Date: Sun, 21 Jun 2020 18:57:49 +0000
+Subject: [PATCH 1/3] sched/fair: Fix bandwidth timer clock drift condition
+
+commit 512ac999d2755d2b7109e996a76b6fb8b888631d upstream
+
+I noticed that cgroup task groups constantly get throttled even
+if they have low CPU usage, this causes some jitters on the response
+time to some of our business containers when enabling CPU quotas.
+
+It's very simple to reproduce:
+
+  mkdir /sys/fs/cgroup/cpu/test
+  cd /sys/fs/cgroup/cpu/test
+  echo 100000 > cpu.cfs_quota_us
+  echo $$ > tasks
+
+then repeat:
+
+  cat cpu.stat | grep nr_throttled  # nr_throttled will increase steadily
+
+After some analysis, we found that cfs_rq::runtime_remaining will
+be cleared by expire_cfs_rq_runtime() due to two equal but stale
+"cfs_{b|q}->runtime_expires" after period timer is re-armed.
+
+The current condition to judge clock drift in expire_cfs_rq_runtime()
+is wrong, the two runtime_expires are actually the same when clock
+drift happens, so this condtion can never hit. The orginal design was
+correctly done by this commit:
+
+  a9cf55b28610 ("sched: Expire invalid runtime")
+
+... but was changed to be the current implementation due to its locking bug.
+
+This patch introduces another way, it adds a new field in both structures
+cfs_rq and cfs_bandwidth to record the expiration update sequence, and
+uses them to figure out if clock drift happens (true if they are equal).
+
+Signed-off-by: Xunlei Pang <xlpang@linux.alibaba.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Ben Segall <bsegall@google.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Fixes: 51f2176d74ac ("sched/fair: Fix unlocked reads of some cfs_b->quota/period")
+Link: http://lkml.kernel.org/r/20180620101834.24455-1-xlpang@linux.alibaba.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+---
+ kernel/sched/fair.c  | 14 ++++++++------
+ kernel/sched/sched.h |  5 ++++-
+ 2 files changed, 12 insertions(+), 7 deletions(-)
+
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 971e31e47bfd..a206b38b6900 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -3444,6 +3444,7 @@ void __refill_cfs_bandwidth_runtime(struct cfs_bandwidth *cfs_b)
+ 	now = sched_clock_cpu(smp_processor_id());
+ 	cfs_b->runtime = cfs_b->quota;
+ 	cfs_b->runtime_expires = now + ktime_to_ns(cfs_b->period);
++	cfs_b->expires_seq++;
+ }
+ 
+ static inline struct cfs_bandwidth *tg_cfs_bandwidth(struct task_group *tg)
+@@ -3466,6 +3467,7 @@ static int assign_cfs_rq_runtime(struct cfs_rq *cfs_rq)
+ 	struct task_group *tg = cfs_rq->tg;
+ 	struct cfs_bandwidth *cfs_b = tg_cfs_bandwidth(tg);
+ 	u64 amount = 0, min_amount, expires;
++	int expires_seq;
+ 
+ 	/* note: this is a positive sum as runtime_remaining <= 0 */
+ 	min_amount = sched_cfs_bandwidth_slice() - cfs_rq->runtime_remaining;
+@@ -3482,6 +3484,7 @@ static int assign_cfs_rq_runtime(struct cfs_rq *cfs_rq)
+ 			cfs_b->idle = 0;
+ 		}
+ 	}
++	expires_seq = cfs_b->expires_seq;
+ 	expires = cfs_b->runtime_expires;
+ 	raw_spin_unlock(&cfs_b->lock);
+ 
+@@ -3491,8 +3494,10 @@ static int assign_cfs_rq_runtime(struct cfs_rq *cfs_rq)
+ 	 * spread between our sched_clock and the one on which runtime was
+ 	 * issued.
+ 	 */
+-	if ((s64)(expires - cfs_rq->runtime_expires) > 0)
++	if (cfs_rq->expires_seq != expires_seq) {
++		cfs_rq->expires_seq = expires_seq;
+ 		cfs_rq->runtime_expires = expires;
++	}
+ 
+ 	return cfs_rq->runtime_remaining > 0;
+ }
+@@ -3518,12 +3523,9 @@ static void expire_cfs_rq_runtime(struct cfs_rq *cfs_rq)
+ 	 * has not truly expired.
+ 	 *
+ 	 * Fortunately we can check determine whether this the case by checking
+-	 * whether the global deadline has advanced. It is valid to compare
+-	 * cfs_b->runtime_expires without any locks since we only care about
+-	 * exact equality, so a partial write will still work.
++	 * whether the global deadline(cfs_b->expires_seq) has advanced.
+ 	 */
+-
+-	if (cfs_rq->runtime_expires != cfs_b->runtime_expires) {
++	if (cfs_rq->expires_seq == cfs_b->expires_seq) {
+ 		/* extend local deadline, drift is bounded above by 2 ticks */
+ 		cfs_rq->runtime_expires += TICK_NSEC;
+ 	} else {
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 8afd9d62c56e..bb202cc29630 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -226,8 +226,10 @@ struct cfs_bandwidth {
+ 	u64 quota, runtime;
+ 	s64 hierarchical_quota;
+ 	u64 runtime_expires;
++	int expires_seq;
+ 
+-	int idle, period_active;
++	short idle;
++	short period_active;
+ 	struct hrtimer period_timer, slack_timer;
+ 	struct list_head throttled_cfs_rq;
+ 
+@@ -415,6 +417,7 @@ struct cfs_rq {
+ 
+ #ifdef CONFIG_CFS_BANDWIDTH
+ 	int runtime_enabled;
++	int expires_seq;
+ 	u64 runtime_expires;
+ 	s64 runtime_remaining;
+ 
+-- 
+2.23.1
+

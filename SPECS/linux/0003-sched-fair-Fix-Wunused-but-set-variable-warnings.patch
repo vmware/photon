@@ -1,0 +1,74 @@
+From 8c2a3f96e95c6ae0f43ea0365f6021df1c1f7f77 Mon Sep 17 00:00:00 2001
+From: Qian Cai <cai@lca.pw>
+Date: Sun, 21 Jun 2020 19:01:14 +0000
+Subject: [PATCH 3/3] sched/fair: Fix -Wunused-but-set-variable warnings
+
+commit 763a9ec06c409dcde2a761aac4bb83ff3938e0b3 upstream
+
+Commit:
+
+   de53fd7aedb1 ("sched/fair: Fix low cpu usage with high throttling by removing expiration of cpu-local slices")
+
+introduced a few compilation warnings:
+
+  kernel/sched/fair.c: In function '__refill_cfs_bandwidth_runtime':
+  kernel/sched/fair.c:4365:6: warning: variable 'now' set but not used [-Wunused-but-set-variable]
+  kernel/sched/fair.c: In function 'start_cfs_bandwidth':
+  kernel/sched/fair.c:4992:6: warning: variable 'overrun' set but not used [-Wunused-but-set-variable]
+
+Also, __refill_cfs_bandwidth_runtime() does no longer update the
+expiration time, so fix the comments accordingly.
+
+Signed-off-by: Qian Cai <cai@lca.pw>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Ben Segall <bsegall@google.com>
+Reviewed-by: Dave Chiluk <chiluk+linux@indeed.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: pauld@redhat.com
+Fixes: de53fd7aedb1 ("sched/fair: Fix low cpu usage with high throttling by removing expiration of cpu-local slices")
+Link: https://lkml.kernel.org/r/1566326455-8038-1-git-send-email-cai@lca.pw
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+[4.4.y backport comment:
+ A part of commit f1d1be8aee6c ("sched/fair: Advance global expiration
+ when period timer is restarted") is folded into this patch.]
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+---
+ kernel/sched/fair.c | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
+
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index a8f47d3f7f60..e58247958f63 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -3428,21 +3428,16 @@ static inline u64 sched_cfs_bandwidth_slice(void)
+ }
+ 
+ /*
+- * Replenish runtime according to assigned quota and update expiration time.
+- * We use sched_clock_cpu directly instead of rq->clock to avoid adding
+- * additional synchronization around rq->lock.
++ * Replenish runtime according to assigned quota. We use sched_clock_cpu
++ * directly instead of rq->clock to avoid adding additional synchronization
++ * around rq->lock.
+  *
+  * requires cfs_b->lock
+  */
+ void __refill_cfs_bandwidth_runtime(struct cfs_bandwidth *cfs_b)
+ {
+-	u64 now;
+-
+-	if (cfs_b->quota == RUNTIME_INF)
+-		return;
+-
+-	now = sched_clock_cpu(smp_processor_id());
+-	cfs_b->runtime = cfs_b->quota;
++	if (cfs_b->quota != RUNTIME_INF)
++		cfs_b->runtime = cfs_b->quota;
+ }
+ 
+ static inline struct cfs_bandwidth *tg_cfs_bandwidth(struct task_group *tg)
+-- 
+2.23.1
+
