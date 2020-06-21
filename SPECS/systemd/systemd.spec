@@ -1,7 +1,7 @@
 Summary:          systemd-233
 Name:             systemd
 Version:          233
-Release:          27%{?dist}
+Release:          28%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -48,6 +48,7 @@ Patch29:          systemd-233-CVE-2020-1712.patch
 Patch30:          systemd-233-CVE-2019-20386.patch
 Patch31:          systemd-233-safe-atou32-full.patch
 Patch32:          systemd-233-CVE-2020-13776.patch
+Patch33:          systemd-233-ipv6ll.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -147,6 +148,7 @@ sed -i "/xlocale.h/d" src/basic/parse-util.c
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
+%patch33 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -169,9 +171,9 @@ sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
             --with-dbusinterfacedir=%{_prefix}/share/dbus-1/interfaces          \
             --with-dbussessionservicedir=%{_prefix}/share/dbus-1/services       \
             --with-dbussystemservicedir=%{_prefix}/share/dbus-1/system-services \
-            --enable-compat-libs \
-            --disable-elfutils \
-            --with-sysvinit-path=/etc/rc.d/init.d \
+            --enable-compat-libs                                                \
+            --disable-elfutils                                                  \
+            --with-sysvinit-path=/etc/rc.d/init.d                               \
             --with-rc-local-script-path-start=/etc/rc.d/rc.local
 
 make %{?_smp_mflags}
@@ -298,6 +300,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Sun Jun 21 2020 Susant Sahani <ssahani@vmware.com> 233-28
+-    Do not start ndisc when IPv6LL not available.
 *    Sat Jun 06 2020 Susant Sahani <ssahani@vmware.com> 233-27
 -    Fix CVE-2020-13776
 *    Tue Apr 21 2020 Susant Sahani <ssahani@vmware.com> 233-26
