@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.115
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt50
-Release:        9%{?kat_build:.%kat}%{?dist}
+Release:        10%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -22,6 +22,9 @@ Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
 %define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
 Source4:        pre-preun-postun-tasks.inc
 Source5:        check_for_config_applicability.inc
+%define i40e_version 2.11.29
+Source6:	https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
+%define sha1 i40e=9dcd03653430d15154572c64b7a92c6d2521cf2a
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -446,6 +449,7 @@ The Linux package contains the Linux kernel doc files
 %setup -q -n linux-%{version}
 %ifarch x86_64
 %setup -D -b 3 -n linux-%{version}
+%setup -D -b 6 -n linux-%{version}
 %endif
 
 %patch0 -p1
@@ -829,6 +833,13 @@ bldroot=`pwd`
 pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
 make KERNELDIR=$bldroot %{?_smp_mflags} all
 popd
+
+# build i40e module
+bldroot=`pwd`
+pushd ../i40e-%{i40e_version}
+make -C src KSRC=$bldroot clean
+make -C src KSRC=$bldroot %{?_smp_mflags}
+popd
 %endif
 
 %define __modules_install_post \
@@ -866,6 +877,12 @@ make INSTALL_MOD_PATH=%{buildroot} modules_install
 bldroot=`pwd`
 pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
 make KERNELDIR=$bldroot INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
+
+# install i40e module
+bldroot=`pwd`
+pushd ../i40e-%{i40e_version}
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
 # Verify for build-id match
@@ -943,6 +960,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %files docs
 %defattr(-,root,root)
 %{_defaultdocdir}/%{name}-%{uname_r}/*
+%{_mandir}/*
 
 %files devel
 %defattr(-,root,root)
@@ -950,6 +968,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 16 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.115-10
+-   Add latest out of tree version of i40e driver
 *   Wed Jun 10 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-9
 -   Enable CONFIG_VFIO_NOIOMMU
 *   Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 4.19.115-8

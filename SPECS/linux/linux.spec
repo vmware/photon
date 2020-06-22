@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.112
-Release:        13%{?kat_build:.kat}%{?dist}
+Release:        14%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -40,6 +40,9 @@ Source7:        check_for_config_applicability.inc
 Source8:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
 %define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
 Source9:        genhmac.inc
+%define i40e_version 2.11.29
+Source10:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
+%define sha1 i40e=9dcd03653430d15154572c64b7a92c6d2521cf2a
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -282,6 +285,7 @@ This Linux package contains hmac sha generator kernel module.
 %setup -D -b 3 -n linux-%{version}
 %setup -D -b 4 -n linux-%{version}
 %setup -D -b 5 -n linux-%{version}
+%setup -D -b 10 -n linux-%{version}
 %endif
 %setup -D -b 8 -n linux-%{version}
 
@@ -406,6 +410,13 @@ bldroot=`pwd`
 pushd ../SGXDataCenterAttestationPrimitives-DCAP_1.6/driver/linux
 make KDIR=$bldroot ARCH=%{arch} %{?_smp_mflags}
 popd
+
+# build i40e module
+bldroot=`pwd`
+pushd ../i40e-%{i40e_version}
+make -C src KSRC=$bldroot clean
+make -C src KSRC=$bldroot %{?_smp_mflags}
+popd
 %endif
 
 #build photon-checksum-generator module
@@ -461,6 +472,12 @@ pushd ../SGXDataCenterAttestationPrimitives-DCAP_1.6/driver/linux
 mkdir -p %{buildroot}/%{_sysconfdir}/udev/rules.d
 install -vm 644 10-sgx.rules %{buildroot}/%{_sysconfdir}/udev/rules.d
 install -vm 644 intel_sgx.ko %{buildroot}/lib/modules/%{uname_r}/extra/
+popd
+
+# install i40e module
+bldroot=`pwd`
+pushd ../i40e-%{i40e_version}
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
 # Verify for build-id match
@@ -599,6 +616,7 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %files docs
 %defattr(-,root,root)
 %{_defaultdocdir}/%{name}-%{uname_r}/*
+%{_mandir}/*
 
 %files devel
 %defattr(-,root,root)
@@ -679,6 +697,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Tue Jun 16 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.112-14
+-   Add latest out of tree version of i40e driver
 *   Wed Jun 10 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.112-13
 -   Enable CONFIG_VFIO_NOIOMMU
 *   Tue Jun 09 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.112-12
