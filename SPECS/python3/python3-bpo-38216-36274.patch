@@ -1,0 +1,124 @@
+From 2784e78dc3445c6dd59e915d86c336374c1fa09a Mon Sep 17 00:00:00 2001
+From: "Jason R. Coombs" <jaraco@jaraco.com>
+Date: Tue, 8 Oct 2019 13:36:44 -0400
+Subject: [PATCH] [3.5] bpo-38216, bpo-36274: Allow subclasses to separately
+ override validation and encoding behavior (GH-16448) (#16475)
+
+* [3.5] bpo-38216, bpo-36274: Allow subclasses to separately override validation and encoding behavior (GH-16448)
+---
+ Lib/http/client.py                            | 32 ++++++++++++-------
+ Lib/test/test_httplib.py                      | 29 +++++++++++++++++
+ .../2019-09-27-15-24-45.bpo-38216.-7yvZR.rst  |  4 +++
+ 3 files changed, 54 insertions(+), 11 deletions(-)
+ create mode 100644 Misc/NEWS.d/next/Library/2019-09-27-15-24-45.bpo-38216.-7yvZR.rst
+
+diff --git a/Lib/http/client.py b/Lib/http/client.py
+index 76b9be69a3748..85dc8028ef57f 100644
+--- a/Lib/http/client.py
++++ b/Lib/http/client.py
+@@ -984,20 +984,15 @@ def putrequest(self, method, url, skip_host=False,
+         else:
+             raise CannotSendRequest(self.__state)
+ 
+-        # Save the method we use, we need it later in the response phase
++        # Save the method for use later in the response phase
+         self._method = method
+-        if not url:
+-            url = '/'
+-        # Prevent CVE-2019-9740.
+-        match = _contains_disallowed_url_pchar_re.search(url)
+-        if match:
+-            raise InvalidURL("URL can't contain control characters. {!r} "
+-                             "(found at least {!r})".format(url,
+-                                                            match.group()))
++
++        url = url or '/'
++        self._validate_path(url)
++
+         request = '%s %s %s' % (method, url, self._http_vsn_str)
+ 
+-        # Non-ASCII characters should have been eliminated earlier
+-        self._output(request.encode('ascii'))
++        self._output(self._encode_request(request))
+ 
+         if self._http_vsn == 11:
+             # Issue some standard headers for better HTTP/1.1 compliance
+@@ -1075,6 +1070,21 @@ def putrequest(self, method, url, skip_host=False,
+             # For HTTP/1.0, the server will assume "not chunked"
+             pass
+ 
++    def _encode_request(self, request):
++        # ASCII also helps prevent CVE-2019-9740.
++        return request.encode('ascii')
++
++    def _validate_path(self, url):
++        """Validate a url for putrequest."""
++        # Prevent CVE-2019-9740.
++        match = _contains_disallowed_url_pchar_re.search(url)
++        if match:
++            msg = (
++                "URL can't contain control characters. {url!r} "
++                "(found at least {matched!r})"
++            ).format(matched=match.group(), **locals())
++            raise InvalidURL(msg)
++
+     def putheader(self, header, *values):
+         """Send a request header line to the server.
+ 
+diff --git a/Lib/test/test_httplib.py b/Lib/test/test_httplib.py
+index 61ed6bbbd7cf3..c12a4298bb04e 100644
+--- a/Lib/test/test_httplib.py
++++ b/Lib/test/test_httplib.py
+@@ -986,6 +986,34 @@ def run_server():
+             thread.join()
+         self.assertEqual(result, b"proxied data\n")
+ 
++    def test_putrequest_override_validation(self):
++        """
++        It should be possible to override the default validation
++        behavior in putrequest (bpo-38216).
++        """
++        class UnsafeHTTPConnection(client.HTTPConnection):
++            def _validate_path(self, url):
++                pass
++
++        conn = UnsafeHTTPConnection('example.com')
++        conn.sock = FakeSocket('')
++        conn.putrequest('GET', '/\x00')
++
++    def test_putrequest_override_encoding(self):
++        """
++        It should be possible to override the default encoding
++        to transmit bytes in another encoding even if invalid
++        (bpo-36274).
++        """
++        class UnsafeHTTPConnection(client.HTTPConnection):
++            def _encode_request(self, str_url):
++                return str_url.encode('utf-8')
++
++        conn = UnsafeHTTPConnection('example.com')
++        conn.sock = FakeSocket('')
++        conn.putrequest('GET', '/☃')
++
++
+ class ExtendedReadTest(TestCase):
+     """
+     Test peek(), read1(), readline()
+@@ -1110,6 +1138,7 @@ def test_peek_0(self):
+         p = self.resp.peek(0)
+         self.assertLessEqual(0, len(p))
+ 
++
+ class ExtendedReadTestChunked(ExtendedReadTest):
+     """
+     Test peek(), read1(), readline() in chunked mode
+diff --git a/Misc/NEWS.d/next/Library/2019-09-27-15-24-45.bpo-38216.-7yvZR.rst b/Misc/NEWS.d/next/Library/2019-09-27-15-24-45.bpo-38216.-7yvZR.rst
+new file mode 100644
+index 0000000000000..ac8e2b042d929
+--- /dev/null
++++ b/Misc/NEWS.d/next/Library/2019-09-27-15-24-45.bpo-38216.-7yvZR.rst
+@@ -0,0 +1,4 @@
++Allow the rare code that wants to send invalid http requests from the
++`http.client` library a way to do so.  The fixes for bpo-30458 led to
++breakage for some projects that were relying on this ability to test their
++own behavior in the face of bad requests.
