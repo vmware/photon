@@ -36,7 +36,7 @@ These are the header files of nghttp2.
 ./configure --prefix=%{_prefix}        \
             --disable-static           \
             --enable-lib-only          \
-            --disable-python-bindings 
+            --disable-python-bindings
 
 make %{?_smp_mflags}
 
