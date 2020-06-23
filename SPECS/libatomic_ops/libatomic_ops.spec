@@ -1,12 +1,12 @@
 Summary:    Atomic memory update operations portable implementation
 Name:       libatomic_ops
-Version:    7.6.6
+Version:    7.6.10
 Release:    1%{?dist}
 License:    GPLv2 and MIT
 URL:        https://github.com/ivmai/libatomic_ops
 Group:      Development/Libraries
 Source0:    http://www.ivmaisoft.com/_bin/atomic_ops/libatomic_ops-%{version}.tar.gz
-%define sha1 libatomic_ops=89a320bc94860fc63069615a0a7ee6f38eee9b70
+%define sha1 libatomic_ops=ad1c9cd6cc22e042a784e34baa360874083e5f60
 Vendor:     VMware, Inc.
 Distribution:   Photon
 
@@ -65,6 +65,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/atomic_ops.pc
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 7.6.10-1
+-   Automatic Version Bump
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 7.6.6-1
 -   Updated to latest version
 *   Tue Jul 26 2016 Xiaolin Li <xiaolinl@vmware.com> 7.4.4-1
