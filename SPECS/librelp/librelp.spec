@@ -1,17 +1,20 @@
 Summary:	RELP Library
 Name:		librelp
-Version:	1.2.17
-Release:	3%{?dist}
+Version:	1.6.0
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.librelp.com
 Source0:	http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
-%define sha1 librelp=701d69e7723fe614b96750af8cba5ee9a54085fe
+%define sha1 librelp=e603c83cb9df691ccb47c5eb9dd33ebb778abd8b
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
+
 BuildRequires:	gnutls-devel
 BuildRequires:	autogen
+
 Requires:	gnutls
+
 %description
 Librelp is an easy to use library for the RELP protocol. RELP (stands
 for Reliable Event Logging Protocol) is a general-purpose, extensible
@@ -72,6 +75,8 @@ make check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon Jun 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.6.0-1
+- Upgrade to version 1.6.0
 * Mon Aug 19 2019 Shreenidhi Shedi <sshedi@vmware.com> 1.2.17-3
 - Further fix for make check
 * Tue Nov 20 2018 Ashwin H <ashwinh@vmware.com> 1.2.17-2
