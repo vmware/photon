@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
-Version:        0.26.4
+Version:        0.27.0
 Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/
@@ -9,7 +9,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
-%define sha1    sysdig=42397930f9e6a85757b3f37cbef63875ee1f6b80
+%define sha1    sysdig=bad5831e23e35b3635ca75d3d67e74522f0d7dac
 BuildArch:      x86_64
 BuildRequires:  cmake
 BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
@@ -23,6 +23,7 @@ BuildRequires:  grpc-devel
 BuildRequires:  jq-devel
 BuildRequires:  c-ares-devel
 BuildRequires:  protobuf-devel
+BuildRequires:  git
 Requires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 Requires:       zlib
 Requires:       ncurses
@@ -88,6 +89,8 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/sysdig-probe.ko
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.27.0-1
+-   Automatic Version Bump
 *   Fri Sep 27 2019 Ajay Kaher <akaher@vmware.com> 0.26.4-1
 -   Update to version 0.26.4 to fix kernel NULL pointer
 -   dereference crash in record_event_consumer.part
