@@ -15,7 +15,7 @@ index f763f02..f4eea18 100644
      <copy todir="${build}/jws" file="${build}/${testjar}"/>
      <copy todir="${build}/jws" file="lib/junit.jar"/>
 -    <copy todir="${build}/jws" file="lib/clover.jar"/>
-     <jar jarfile="${build}/jws/jnidispatch.jar">
+     <jar jarfile="${build}/jws/jnidispatch.jar" createUnicodeExtraFields="never" encoding="UTF-8">
        <fileset dir="${build.native}" includes="*jnidispatch.*"/>
      </jar>
 @@ -1050,7 +1048,7 @@ osname=macosx;processor=x86;processor=x86-64;processor=ppc
