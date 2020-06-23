@@ -1,11 +1,11 @@
-Summary: C/C++ configuration file library
-Name:    libconfig
-Version: 1.5
-Release: 2%{?dist}
-License: LGPLv2
-URL: http://www.hyperrealm.com/libconfig/
-Source: %{name}-%{version}.tar.gz
-%define sha1 libconfig=24306c7efce07669a4053d0977a45e2f3a3add79
+Summary:    C/C++ configuration file library
+Name:       libconfig
+Version:    1.7
+Release:    1%{?dist}
+License:    LGPLv2
+URL:        http://www.hyperrealm.com/libconfig/
+Source:     %{name}-%{version}.tar.gz
+%define sha1 libconfig=3d82f34ba92a9971767f8173704206c19c6069cd
 Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:  Photon
@@ -38,9 +38,13 @@ rm -rf %{buildroot}%{_infodir}/dir
 %{_includedir}/libconfig*
 %{_libdir}/libconfig*.so
 %{_libdir}/pkgconfig/libconfig*.pc
+%exclude %{_libdir}/cmake/libconfig++/libconfig++Config.cmake
+%exclude %{_libdir}/cmake/libconfig/libconfigConfig.cmake
 %{_infodir}/libconfig.info*
 
 %changelog
+*   Mon Jul 20 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7-1
+-   Upgrade to version 1.7
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5-2
 -	GA - Bump release of all rpms
 *	Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 0.7.2-1
