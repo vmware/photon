@@ -1,23 +1,19 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
-Version:        2.2.5
-Release:        4%{?dist}
+Version:        2.3.0
+Release:        1%{?dist}
 License:        MIT
 URL:            https://libgd.github.io/
 Group:          System/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/libgd/libgd/releases/download/gd-%{version}/%{name}-%{version}.tar.xz
-%define sha1    libgd=b777b005c401b6fa310ccf09eeb29f6c6e17ab2c
-Patch0:         CVE-2018-1000222.patch
-Patch1:         libgd-CVE-2019-6978.patch
-Patch2:         libgd-add-tests-gdimagecolormatch.patch
-Patch3:         libgd-CVE-2019-6977.patch
-Patch4:         libgd-CVE-2018-14553.patch
+Source0:        https://github.com/libgd/libgd/releases/download/gd-%{version}/%{name}-%{version}.tar.gz
+%define sha1    libgd=77bf57a17107da22612ed606fc2f941fe7c067f0
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  libpng-devel
 BuildRequires:  libwebp-devel
 BuildRequires:  libtiff-devel
+BuildRequires:  libltdl-devel
 Requires:       libpng
 Requires:       libwebp
 Requires:       libtiff
@@ -33,19 +29,16 @@ Requires:   %{name} = %{version}-%{release}
 %description    devel
 Header & Development files
 %prep
-%setup  -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
+%setup -c -n %{name}
 
 %build
+cd %{name}-gd-%{version}
 # To use the system installed automake latest version instead of given version in source
-autoreconf -fi
+./bootstrap.sh
 %configure --with-webp --with-tiff --with-jpeg --with-png --disable-werror --disable-static
 make %{?_smp_mflags}
 %install
+cd %{name}-gd-%{version}
 make DESTDIR=%{buildroot} install
 
 %check
@@ -63,6 +56,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1
+-   Automatic Version Bump
 *   Thu Mar 05 2020 Ankit Jain <ankitja@vmware.com>  2.2.5-4
 -   Fix for CVE-2019-6977, CVE-2018-14553
 *   Wed Jan 30 2019 Ankit Jain <ankitja@vmware.com>  2.2.5-3
