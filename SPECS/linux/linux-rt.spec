@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.115
+Version:        4.19.127
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt50
-Release:        10%{?kat_build:.%kat}%{?dist}
+%define rt_version rt55
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bdcf13e181be2e9b8a1cc7bac26f9fc1dc0c67dd
+%define sha1 linux=5da7a67e59fcc7133fa26515f85ef325d20b5d2d
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
@@ -46,8 +46,6 @@ Patch18:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 Patch19:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 Patch20:	perf-Make-perf-able-to-build-with-latest-libbfd.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2019-18814
-Patch27:        apparmor-Fix-use-after-free-in-aa_audit_rule_init.patch
 # Out-of-tree patches from AppArmor:
 Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
@@ -66,11 +64,6 @@ Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
-# Fix CVE-2020-10711
-Patch40:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
-# Fix for CVE-2019-18885
-Patch41:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
-Patch42:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 Patch201:        0001-ARM-at91-add-TCB-registers-definitions.patch
@@ -399,8 +392,11 @@ Patch523:        0323-lib-ubsan-Remove-flags-parameter-from-calls-to-ubsan.patch
 Patch524:        0324-irq_work-Fix-checking-of-IRQ_WORK_LAZY-flag-set-on-n.patch
 Patch525:        0325-tasklet-Address-a-race-resulting-in-double-enqueue.patch
 Patch526:        0326-hrtimer-fix-logic-for-when-grabbing-softirq_expiry_l.patch
+Patch527:        0327-fs-dcache-Include-swait.h-header.patch
+Patch528:        0328-mm-slub-Always-flush-the-delayed-empty-slubs-in-flus.patch
+Patch529:        0329-tasklet-Fix-UP-case-for-tasklet-CHAINED-state.patch
 # Keep rt_version matched up with this patch.
-Patch527:        0327-Linux-4.19.115-rt50-REBASE.patch
+Patch530:        0330-Linux-4.19.127-rt55-REBASE.patch
 
 %if 0%{?kat_build:1}
 Patch1000:        %{kat_build}.patch
@@ -466,7 +462,6 @@ The Linux package contains the Linux kernel doc files
 %patch19 -p1
 %patch20 -p1
 %patch26 -p1
-%patch27 -p1
 %patch29 -p1
 %patch30 -p1
 %patch31 -p1
@@ -477,9 +472,6 @@ The Linux package contains the Linux kernel doc files
 %patch36 -p1
 %patch38 -p1
 %patch39 -p1
-%patch40 -p1
-%patch41 -p1
-%patch42 -p1
 
 %patch201 -p1
 %patch202 -p1
@@ -808,6 +800,9 @@ The Linux package contains the Linux kernel doc files
 %patch525 -p1
 %patch526 -p1
 %patch527 -p1
+%patch528 -p1
+%patch529 -p1
+%patch530 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -968,6 +963,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1
+-   Update to version 4.19.127
 *   Tue Jun 16 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.115-10
 -   Add latest out of tree version of i40e driver
 *   Wed Jun 10 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.115-9

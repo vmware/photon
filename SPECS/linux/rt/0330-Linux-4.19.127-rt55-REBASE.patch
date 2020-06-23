@@ -1,0 +1,23 @@
+From ba502b6eab1519d57f6ea13cb61984415fa7c361 Mon Sep 17 00:00:00 2001
+Message-Id: <ba502b6eab1519d57f6ea13cb61984415fa7c361.1592846147.git.zanussi@kernel.org>
+In-Reply-To: <07cd0dbc80b976663c80755496a03f288decfe5a.1592846146.git.zanussi@kernel.org>
+References: <07cd0dbc80b976663c80755496a03f288decfe5a.1592846146.git.zanussi@kernel.org>
+From: Tom Zanussi <zanussi@kernel.org>
+Date: Wed, 10 Jun 2020 12:21:34 -0500
+Subject: [PATCH 330/330] Linux 4.19.127-rt55 REBASE
+
+Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 1199ebade17b..51b05e9abe6f 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt16
++-rt55
+-- 
+2.17.1
+

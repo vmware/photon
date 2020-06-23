@@ -1,0 +1,38 @@
+From c4fafd10ae410a9b577a4016b0071034e3113ffd Mon Sep 17 00:00:00 2001
+Message-Id: <c4fafd10ae410a9b577a4016b0071034e3113ffd.1592846147.git.zanussi@kernel.org>
+In-Reply-To: <07cd0dbc80b976663c80755496a03f288decfe5a.1592846146.git.zanussi@kernel.org>
+References: <07cd0dbc80b976663c80755496a03f288decfe5a.1592846146.git.zanussi@kernel.org>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Thu, 16 Apr 2020 12:42:15 +0200
+Subject: [PATCH 327/330] fs/dcache: Include swait.h header
+
+[ Upstream commit 279f90ddf53cd6bd3c203fbbf488d642ea2603de ]
+
+Include the swait.h header so it compiles even if not all patches are
+applied.
+
+Reported-by: kbuild test robot <lkp@intel.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+
+ Conflicts:
+	fs/proc/base.c
+---
+ fs/proc/base.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/fs/proc/base.c b/fs/proc/base.c
+index a45d4d640f01..56b1c4f1e8c0 100644
+--- a/fs/proc/base.c
++++ b/fs/proc/base.c
+@@ -95,6 +95,7 @@
+ #include <linux/flex_array.h>
+ #include <linux/posix-timers.h>
+ #include <trace/events/oom.h>
++#include <linux/swait.h>
+ #include "internal.h"
+ #include "fd.h"
+ 
+-- 
+2.17.1
+

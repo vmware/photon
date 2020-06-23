@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.112
-Release:        8%{?kat_build:.kat}%{?dist}
+Version:        4.19.127
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=266f149294b7222b23eab3292d0db98791343b0e
+%define sha1 linux=5da7a67e59fcc7133fa26515f85ef325d20b5d2d
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -47,8 +47,6 @@ Patch20:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19074
 Patch21:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2019-18814
-Patch27:        apparmor-Fix-use-after-free-in-aa_audit_rule_init.patch
 # Fix CVE-2017-1000252
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
@@ -69,11 +67,6 @@ Patch39:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch41:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch42:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
-# Fix CVE-2020-10711
-Patch43:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
-# Fix CVE-2019-18885
-Patch44:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
-Patch45:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -160,7 +153,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch20 -p1
 %patch21 -p1
 %patch26 -p1
-%patch27 -p1
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
@@ -172,9 +164,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch39 -p1
 %patch41 -p1
 %patch42 -p1
-%patch43 -p1
-%patch44 -p1
-%patch45 -p1
 
 %patch98 -p1
 pushd ..
@@ -335,6 +324,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1
+-   Update to version 4.19.127
 *   Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 4.19.112-8
 -   Enabled CONFIG_BINFMT_MISC
 *   Tue Jun 02 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-7

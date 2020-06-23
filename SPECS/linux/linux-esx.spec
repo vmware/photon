@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.115
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.127
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bdcf13e181be2e9b8a1cc7bac26f9fc1dc0c67dd
+%define sha1 linux=5da7a67e59fcc7133fa26515f85ef325d20b5d2d
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -50,8 +50,6 @@ Patch20:        07-vmware-only.patch
 Patch21:        initramfs-support-for-page-aligned-format-newca.patch
 
 Patch22:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2019-18814
-Patch23:        apparmor-Fix-use-after-free-in-aa_audit_rule_init.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
@@ -79,11 +77,6 @@ Patch43:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 Patch44:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19074
 Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
-# Fix CVE-2020-10711
-Patch46:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
-# Fix CVE-2019-18885
-Patch47:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
-Patch48:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -167,7 +160,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
-%patch23 -p1
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
@@ -183,9 +175,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
-%patch46 -p1
-%patch47 -p1
-%patch48 -p1
 %patch98 -p1
 %patch100 -p1
 %patch101 -p1
@@ -319,6 +308,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1
+-   Update to version 4.19.127
 *   Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 4.19.115-5
 -   Enabled CONFIG_BINFMT_MISC
 *   Wed Jun 03 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.115-4

@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.112
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        4.19.127
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=266f149294b7222b23eab3292d0db98791343b0e
+%define sha1 linux=5da7a67e59fcc7133fa26515f85ef325d20b5d2d
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -45,8 +45,6 @@ Patch19:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2019-18814
-Patch27:        apparmor-Fix-use-after-free-in-aa_audit_rule_init.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
@@ -67,11 +65,6 @@ Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
-# Fix CVE-2020-10711
-Patch40:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
-# Fix CVE-2019-18885
-Patch41:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
-Patch42:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:        0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -197,7 +190,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch18 -p1
 %patch19 -p1
 %patch26 -p1
-%patch27 -p1
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
@@ -209,9 +201,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch36 -p1
 %patch38 -p1
 %patch39 -p1
-%patch40 -p1
-%patch41 -p1
-%patch42 -p1
 
 %patch98 -p1
 %patch99 -p1
@@ -433,6 +422,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1
+-   Update to version 4.19.127
 *   Tue Jun 02 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-6
 -   Add patch to fix CVE-2019-18885
 *   Fri May 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.19.112-5

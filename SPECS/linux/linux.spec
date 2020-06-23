@@ -13,8 +13,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        4.19.112
-Release:        14%{?kat_build:.kat}%{?dist}
+Version:        4.19.127
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -24,7 +24,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=266f149294b7222b23eab3292d0db98791343b0e
+%define sha1 linux=5da7a67e59fcc7133fa26515f85ef325d20b5d2d
 Source1:	config_%{_arch}
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -71,8 +71,6 @@ Patch20:        perf-Make-perf-able-to-build-with-latest-libbfd.patch
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2019-18814
-Patch27:        apparmor-Fix-use-after-free-in-aa_audit_rule_init.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
@@ -100,11 +98,6 @@ Patch42:	secure-boot-patches/0003-integrity-Load-certs-to-the-platform-keyring.p
 Patch43:	secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
 Patch44:	secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
 Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
-# Fix CVE-2020-10711
-Patch46:        CVE-2020-10711-linux-netlabel-cope-with-null-catmap.patch
-# Fix for CVE-2019-18885
-Patch47:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
-Patch48:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 # Patch to call drbg and dh crypto tests from tcrypt
@@ -305,7 +298,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch19 -p1
 %patch20 -p1
 %patch26 -p1
-%patch27 -p1
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
@@ -323,9 +315,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
-%patch46 -p1
-%patch47 -p1
-%patch48 -p1
 
 %patch98 -p1
 %patch100 -p1
@@ -697,6 +686,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1
+-   Update to version 4.19.127
 *   Tue Jun 16 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.112-14
 -   Add latest out of tree version of i40e driver
 *   Wed Jun 10 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.112-13

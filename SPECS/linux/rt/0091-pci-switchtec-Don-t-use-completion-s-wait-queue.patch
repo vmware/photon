@@ -26,7 +26,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 13 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/pci/switch/switchtec.c b/drivers/pci/switch/switchtec.c
-index 43431816412c..a8df847bedee 100644
+index 291c0074a..a8df847be 100644
 --- a/drivers/pci/switch/switchtec.c
 +++ b/drivers/pci/switch/switchtec.c
 @@ -43,10 +43,11 @@ struct switchtec_user {
@@ -55,7 +55,7 @@ index 43431816412c..a8df847bedee 100644
  	kref_get(&stuser->kref);
  	stuser->read_len = sizeof(stuser->data);
  	stuser_set_state(stuser, MRPC_QUEUED);
--	init_completion(&stuser->comp);
+-	reinit_completion(&stuser->comp);
 +	stuser->cmd_done = false;
  	list_add_tail(&stuser->list, &stdev->mrpc_queue);
  
