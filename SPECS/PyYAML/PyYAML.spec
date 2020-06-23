@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-PyYAML
-Version:        3.13
-Release:        6%{?dist}
+Version:        5.3.1
+Release:        1%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT
@@ -10,13 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://pyyaml.org/
 Source0:        http://pyyaml.org/download/pyyaml/PyYAML-%{version}.tar.gz
-%define sha1 PyYAML=22f95fe2f5ef29ab17110f92c7186e2cfde6b419
-Patch0:         PyYAML-CVE-2017-18342.patch
-Patch1:         ConstructorError_fix.patch
-Patch2:         change_default_loader.patch
-Patch3:         PyYAML-lib3-CVE-2017-18342.patch
-Patch4:         PyYAML-CVE-2019-20477.patch
-Patch5:         PyYAML-CVE-2020-1747.patch
+%define sha1 PyYAML=3b20272e119990b2bbeb03815a1dd3f3e48af07e
 BuildRequires:  libyaml-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -41,12 +35,6 @@ configuration files to object serialization and persistence.
 
 %prep
 %setup -q -n PyYAML-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
 
 
 %build
@@ -71,6 +59,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Wed Jul 29 2020 Gerrit Photon <photon-checkins@vmware.com> 5.3.1-1
+-   Automatic Version Bump
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 3.13-6
 -   Mass removal python2
 *   Wed Apr 08 2020 Tapas Kundu <tkundu@vmware.com> 3.13-5
