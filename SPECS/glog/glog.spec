@@ -1,11 +1,11 @@
 Summary:	Google's C++ logging module
 Name:		glog
-Version:	0.3.5
+Version:	0.4.0
 Release:	1%{?dist}
 License:	BSD
 URL:		https://github.com/google/glog
 Source0:	https://github.com/google/glog/archive/%{name}-%{version}.tar.gz
-%define sha1 glog=61067502c5f9769d111ea1ee3f74e6ddf0a5f9cc
+%define sha1 glog=0d79fb524591dee0f46213e9a23f609f74e0cbb2
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -35,6 +35,7 @@ The contains glog package doc files.
 %setup -n %{name}-%{version}
 
 %build
+./autogen.sh
 %configure \
     --disable-silent-rules
 make %{?_smp_mflags}
@@ -59,6 +60,8 @@ find %{buildroot} -name '*.la' -delete
 %{_docdir}/*
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.4.0-1
+-   Automatic Version Bump
 *   Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 0.3.5-1
 -   Update version to 0.3.5.
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.4-3
