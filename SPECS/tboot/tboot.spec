@@ -1,14 +1,14 @@
 Summary:    Trusted pre-kernel module and tools.
 Name:       tboot
-Version:    1.9.7
-Release:    3%{?dist}
+Version:    1.9.12
+Release:    1%{?dist}
 License:    BSD
 URL:        https://sourceforge.net/projects/tboot/
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:    %{name}-%{version}.tar.gz
-%define sha1 tboot=ea0d4e8d2346114c5a2b86f35e34cd626ee75556
+%define sha1 tboot=c79a2a65b3a8d9f2180c3f262940c778745e6993
 BuildArch:     x86_64
 BuildRequires: trousers-devel
 Requires:      libtspi
@@ -20,7 +20,6 @@ and verified launch of an OS kernel/VMM.
 %prep
 %setup -q
 %build
-CFLAGS="%{optflags}"
 export CFLAGS
 make debug=y %{?_smp_mflags}
 
@@ -36,6 +35,8 @@ make debug=y DESTDIR=%{buildroot} install
 %exclude %{_sysconfdir}
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.12-1
+-   Automatic Version Bump
 *   Fri Dec 14 2018 Ankit Jain <ankitja@vmware.com> 1.9.7-3
 -   Resolved conflict while installing the package
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.9.7-2
