@@ -1,7 +1,7 @@
 %global commit 7c3e7c52a3816c82fc8a0ef4bed9cebedc9dd02d
 Summary:	Dynamic Kernel Module Support
 Name:		dkms
-Version:	2.6.1
+Version:	2.8.2
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://linux.dell.com/dkms/
@@ -9,7 +9,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	https://github.com/dell/dkms/archive/%{name}-%{version}.tar.gz
-%define sha1 dkms=9cdfecc29116d578e693cf3273ea9695d9471cf2
+%define sha1 dkms=dc2efb96f52cba1b123846a472f3078b88b42788
 BuildArch:	noarch
 BuildRequires:	systemd
 Requires:	systemd
@@ -57,10 +57,12 @@ echo "disable dkms.service" > %{buildroot}/usr/lib/systemd/system-preset/50-dkms
 %{_localstatedir}/lib/dkms/dkms_dbversion
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8.2-1
+-   Automatic Version Bump
 *   Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 2.6.1-1
 -   Upgraded to version 2.6.1
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.2.0.3-4
--   Fixed logic to restart the active services after upgrade 
+-   Fixed logic to restart the active services after upgrade
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.0.3-3
 -   GA - Bump release of all rpms
 *   Tue Aug 25 2015 Alexey Makhalov <amakhalov@vmware.com> 2.2.0.3-2
