@@ -1,13 +1,13 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        C extensions for Python
 Name:           cython
-Version:        0.28.5
-Release:        2%{?dist}
+Version:        0.29.20
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        Apache License
 URL:            http://cython.org/
 Source0:         https://github.com/cython/cython/archive/Cython-%{version}.tar.gz
-%define sha1 Cython=fc813f1cbc931ac230bbd6142b30f792af2db390
+%define sha1 Cython=fc7cb31dadceb4b30df452d005bc1a6a70ab7ab2
 Patch0:         fix_abc_tests.patch
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -45,6 +45,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+*  Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.29.20-1
+-  Automatic Version Bump
 *  Thu Jan 10 2019 Michelle Wang <michellew@vmware.com> 0.28.5-2
 -  Add fix_abc_tests.patch to fix make check test.
 *  Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 0.28.5-1
