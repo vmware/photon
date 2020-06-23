@@ -26,15 +26,15 @@ patch by Lerh Chuan Low; reviewed by jasobrown for CASSANDRA-14427
  delete mode 100644 lib/licenses/jackson-mapper-asl-1.9.13.txt
 
 diff --git a/CHANGES.txt b/CHANGES.txt
-index c0c02ad..698b223 100644
+index e50cb29..efbfe75 100644
 --- a/CHANGES.txt
 +++ b/CHANGES.txt
 @@ -1,4 +1,5 @@
- 3.11.5
+ 3.11.6
 + * Bump jackson version to >= 2.9.5 (CASSANDRA-14427)
-  * Fix SASI non-literal string comparisons (range operators) (CASSANDRA-15169)
-  * Make sure user defined compaction transactions are always closed (CASSANDRA-15123)
-  * Fix cassandra-env.sh to use $CASSANDRA_CONF to find cassandra-jaas.config (CASSANDRA-14305)
+  * Fix bad UDT sstable metadata serialization headers written by C* 3.0 on upgrade and in sstablescrub (CASSANDRA-15035)
+  * Fix nodetool compactionstats showing extra pending task for TWCS - patch implemented (CASSANDRA-15409)
+  * Fix SELECT JSON formatting for the "duration" type (CASSANDRA-15075)
 diff --git a/lib/licenses/jackson-annotations-2.9.5.txt b/lib/licenses/jackson-annotations-2.9.5.txt
 new file mode 100644
 index 0000000..d645695
