@@ -1,7 +1,7 @@
 Summary:    Irqbalance daemon
 Name:       irqbalance
-Version:    1.4.0
-Release:    3%{?dist}
+Version:    1.6.0
+Release:    1%{?dist}
 License:    GPLv2
 URL:        https://github.com/Irqbalance/irqbalance
 Group:      System Environment/Services
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 # https://github.com/Irqbalance/%{name}/archive/v%{version}.tar.gz
 Source0:    %{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}=4eb861313d6b93b3be5d5933a7f45ee7b51c7ddb
+%define sha1 %{name}-%{version}=2659292d8fc50f6b178ce446cc293bd49c16f4b3
 BuildRequires:  systemd-devel
 BuildRequires:  glib-devel
 Requires:  systemd
@@ -52,6 +52,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datadir}/*
 
 %changelog
+*   Wed Jul 15 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.0-1
+-   Automatic Version Bump
 *   Fri Jul 10 2020 Tapas Kundu <tkundu@vmware.com> 1.4.0-3
 -   Remove BuildArch
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.4.0-2
