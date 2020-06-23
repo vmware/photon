@@ -1,33 +1,34 @@
-Summary:	Apache Commons Daemon
-Name:		commons-daemon
-Version:	1.1.0
-Release:	2%{?dist}
-License:	Apache
-URL:		http://commons.apache.org/proper/commons-daemon
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://apache.mesi.com.ar//commons/daemon/source/commons-daemon-1.1.0-src.tar.gz
-%define sha1 commons-daemon=5a64221b8020d32c02bf44a115f8a95016d3c76e
-BuildRequires: openjre8
-BuildRequires: openjdk8
-BuildRequires: apache-ant
-Requires: openjre8
+Summary:        Apache Commons Daemon
+Name:           commons-daemon
+Version:        1.2.2
+Release:        1%{?dist}
+License:        Apache
+URL:            https://commons.apache.org/proper/commons-daemon/download_daemon.cgi
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://mirrors.ocf.berkeley.edu/apache//commons/daemon/source/%{name}-%{version}-src.tar.gz
+%define sha1    commons-daemon-%{version}-src=67b092544b3ff42099161ec8d30ff9b455806944
+Source1:        https://mirrors.ocf.berkeley.edu/apache//commons/daemon/binaries/%{name}-%{version}-bin.tar.gz
+%define sha1    commons-daemon-%{version}-bin=beb17d7d8123999bed3466126fa117566fe2e608
+BuildRequires:  openjre8
+BuildRequires:  openjdk8
+BuildRequires:  apache-ant
+Requires:       openjre8
 
 %description
-The Daemon Component contains a set of Java and native code, including a set of Java interfaces applications must implement and Unix native
-code to control a Java daemon from a Unix operating system.
+The Daemon Component contains a set of Java and native code,
+including a set of Java interfaces applications must implement
+and Unix native code to control a Java daemon from a Unix operating system.
 
 %prep
-
 %setup -q -n %{name}-%{version}-src
-
-%clean
-rm -rf %{buildroot}
+mkdir dist
+cd dist
+tar -xf %{SOURCE1} --no-same-owner
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
-ant dist
 
 %ifarch x86_64
 export CFLAGS=-m64
@@ -39,21 +40,17 @@ sed -i 's/supported_os="aarch64"/supported_os="linux"/' src/native/unix/configur
 %endif
 
 CURDIR=`pwd`
-
-cd src/native/unix && ./configure && make
-
+cd src/native/unix
+%configure && make
 cd $CURDIR
 
 %install
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 DIST_DIR=%{buildroot}%{_datadir}/java
-
 mkdir -p -m 755 $DIST_DIR
 mkdir -p -m 755 %{buildroot}%{_bindir}
-
 cp %{_builddir}/%{name}-%{version}-src/src/native/unix/jsvc %{buildroot}%{_bindir}
-cp %{_builddir}/%{name}-%{version}-src/dist/%{name}-%{version}.jar $DIST_DIR/%{name}.jar
-
+cp %{_builddir}/%{name}-%{version}-src/dist/%{name}-%{version}/%{name}-%{version}.jar $DIST_DIR/%{name}.jar
 chmod -R 755 $DIST_DIR
 
 %files
@@ -62,6 +59,8 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.2-1
+-   Automatic Version Bump
 *   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
 -   Removed dependency on JAVA8_VERSION macro
 *   Tue Dec 26 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-1
