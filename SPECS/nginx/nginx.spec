@@ -1,17 +1,17 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.16.1
-Release:        2%{?dist}
+Version:        1.19.0
+Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nginx=77ce4d26481b62f7a9d83e399454df0912f01a4b
+%define sha1    nginx=8b6d9de3fa84124a7b40d60be528427ca583f314
 Source1:        nginx.service
-Source2:        nginx-njs-0.2.1.tar.gz
-%define sha1    nginx-njs=fd8c3f2d219f175be958796e3beaa17f3b465126
+Source2:        nginx-njs-0.4.2.tar.gz
+%define sha1    nginx-njs=1927a613d0e5f3ef6fe3c0a6c8dbb06b39bb9c3c
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  which
@@ -34,7 +34,7 @@ sh configure \
     --lock-path=/var/run/nginx.lock             \
     --error-log-path=/var/log/nginx/error.log   \
     --http-log-path=/var/log/nginx/access.log   \
-    --add-module=../nginx-njs/njs-0.2.1/nginx   \
+    --add-module=../nginx-njs/njs-0.4.2/nginx   \
     --with-http_ssl_module \
     --with-pcre \
     --with-ipv6 \
@@ -77,6 +77,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %{_var}/log/nginx
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.19.0-1
+-   Automatic Version Bump
 *   Mon May 04 2020 Keerthana K <keerthanak@vmware.com> 1.16.1-2
 -   Adding http v2 module support.
 *   Mon Oct 14 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.16.1-1
