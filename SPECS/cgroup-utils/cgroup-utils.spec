@@ -2,31 +2,31 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Utility tools for control groups of Linux
 Name:           cgroup-utils
-Version:        0.6
-Release:        6%{?dist}
+Version:        0.8
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Development/Libraries
 URL:            https://pypi.python.org/pypi/cgroup-utils/0.6
-
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        https://github.com/peo3/cgroup-utils/archive/%{name}-%{version}.tar.gz
-%define sha1    cgroup-utils=c0c9c6ddcd7e5ce2eb04394aa1ad46e1b05eb669
+%define sha1    cgroup-utils=33c50a033dbcc8f490850a368a41d6348def9114
 
 Patch0:         cgutil-support-space-in-procname.patch
 BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
-
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 
 
 %description
-cgroup-utils provides utility tools and libraries for control groups of Linux. For example, 
+cgroup-utils provides utility tools and libraries for control groups of Linux. For example,
 cgutil top is a top-like tool which shows activities of running processes in control groups.
 
 %package -n     python3-cgroup-utils
 Summary:        python3-cgroup-utils
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 
 %description -n python3-cgroup-utils
 %prep
@@ -68,8 +68,10 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.8-1
+-   Automatic Version Bump
 *   Fri Aug 11 2017 Rongrong Qiu <rqiu@vmware.com> 0.6-6
--   fix make check for bug 1900249 
+-   fix make check for bug 1900249
 *   Tue Jun 13 2017 Xiaolin Li <xiaolinl@vmware.com> 0.6-5
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Fri Jun 09 2017 Xiaolin Li <xiaolinl@vmware.com> 0.6-4
