@@ -1,6 +1,6 @@
 Name:            kibana
 Summary:         Browser-based analytics and search dashboard for Elasticsearch.
-Version:         6.8.9
+Version:         6.8.10
 Release:         1%{?dist}
 License:         Apache License Version 2.0
 URL:             https://www.elastic.co/products/kibana
@@ -8,9 +8,9 @@ Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}.ta
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Daemons
-%define sha1     %{name}-%{version}=3d927c871e4640785509ce25de6d3a3ae0c9c05a
+%define sha1     %{name}-%{version}=fa8ad376bec1d8859fe0a3ea6477cfa1ee0442ff
 Source1:         kibana_build-%{version}.tar.gz
-%define sha1     kibana_build-%{version}=7fd82956cf81b4d991d6fa872c37046574fd291f
+%define sha1     kibana_build-%{version}=db6bfac2cac39e5dbe2bebb7f8067b17fdfd83fa
 BuildArch:       x86_64
 BuildRequires:   git
 BuildRequires:   yarn
@@ -20,7 +20,7 @@ BuildRequires:   photon-release
 BuildRequires:   systemd
 Requires:        systemd
 Requires:        nodejs
-Requires:        elasticsearch
+Requires:        elasticsearch = %{version}
 
 %global debug_package %{nil}
 
@@ -132,6 +132,8 @@ exit
 %{_datadir}/%{name}
 
 %changelog
+*   Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 6.8.10-1
+-   Update to release 6.8.10
 *   Mon Jun 08 2020 Tapas Kundu <tkundu@vmware.com> 6.8.9-1
 -   Update to release 6.8.9
 *   Fri May 08 2020 Tapas Kundu <tkundu@vmware.com> 6.8.8-2
