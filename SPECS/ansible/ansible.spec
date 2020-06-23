@@ -1,9 +1,9 @@
-%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.8.10
-Release:        2%{?dist}
+Version:        2.9.10
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -11,30 +11,29 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha1 %{name}=4e1e909fb8f01c4327766f8a544362dfa3ca1c4e
+%define sha1 %{name}=7b37caa080cf922a21f9a087eca10e01b6395195
 
 Patch0:         ansible-tdnf.patch
-Patch1:         CVE-2020-1733.patch
-Patch2:         CVE-2020-1735.patch
-Patch3:         CVE-2020-1738.patch
-Patch4:         CVE-2020-1739.patch
-Patch5:         CVE-2020-1740.patch
-Patch6:         CVE-2020-10684.patch
 
 BuildArch:      noarch
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
 
-Requires:       python2
-Requires:       python2-libs
+Requires:       python3
+Requires:       python3-libs
 Requires:       python-jinja2
 Requires:       PyYAML
 Requires:       python-xml
 Requires:       paramiko
+
 %if %{with_check}
-Requires:       python2-devel
+BuildRequires:  python3-devel
+BuildRequires:  python3-pip
+BuildRequires:  python3-cryptography
+BuildRequires:  python3-PyYAML
+BuildRequires:  python3-jinja2
 %endif
 
 %description
@@ -44,19 +43,13 @@ Ansible is a radically simple IT automation system. It handles configuration-man
 %setup -q
 
 %patch0 -p2
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
 
 %build
-python2 setup.py build
+python3 setup.py build
 
 %install
 %{__rm} -rf %{buildroot}
-python2 setup.py install -O1 --skip-build \
+python3 setup.py install -O1 --skip-build \
     --root "%{buildroot}"
 
 %check
@@ -65,9 +58,12 @@ python3 setup.py test
 %files
 %defattr(-, root, root)
 %{_bindir}/*
-%{python2_sitelib}/*
+%{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 03 2020 Shreendihi Shedi <sshedi@vmware.com> 2.9.10-1
+-   Upgrade to version 2.9.10
+-   Removed python2 dependancy
 *   Mon Apr 20 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.10-2
 -   Fix CVE-2020-1733, CVE-2020-1739
 *   Fri Apr 03 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.10-1
