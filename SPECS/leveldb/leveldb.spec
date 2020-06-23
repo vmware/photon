@@ -1,26 +1,32 @@
 Summary:	A fast and lightweight key/value database library by Google
 Name:		leveldb
-Version:	1.20
-Release:	2%{?dist}
+Version:	1.22
+Release:	1%{?dist}
 License:	BSD
 URL:		https://github.com/google/leveldb
 Source0:	https://github.com/google/leveldb/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha1 leveldb=df11440c30deed5987263730180225db98de9f57
+%define sha1 leveldb=8d310af5cfb53dc836bfb412ff4b3c8aea578627
 Group:		Development/Libraries/C and C++
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
+BuildRequires:  cmake
+BuildRequires:  gcc
+BuildRequires:  make
+BuildRequires:  snappy-devel
+BuildRequires:  sqlite-devel
+
 %description
-leveldb implements a system for maintaining a persistent key/value store.
+A fast and lightweight key/value database library.
 
 %package	devel
 Summary:	Header and development files
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 %description	devel
-leveldb implements a system for maintaining a persistent key/value store.
+%{summary}.
 
 %prep
-%setup -q
+%autosetup -p1
 
 cat > %{name}.pc << EOF
 prefix=%{_prefix}
@@ -35,39 +41,40 @@ Libs: -l%{name}
 EOF
 
 %build
-make
+%cmake .
+%make_build
 
 %install
-mkdir -p %{buildroot}{%{_libdir}/pkgconfig,%{_includedir}}
-cp -a out-shared/lib%{name}.so* %{buildroot}%{_libdir}/
-cp -a out-static/lib%{name}.a %{buildroot}%{_libdir}/
-cp -a include/%{name}/ %{buildroot}%{_includedir}/
+%make_install
+mkdir -p %{buildroot}%{_libdir}/pkgconfig
 cp -a %{name}.pc %{buildroot}%{_libdir}/pkgconfig/
+rm -rf %{buildroot}/%{_libdir}/cmake
 
 %check
-make check
+ctest -V %{?_smp_mflags}
 
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
 %defattr(-,root,root)
-%{_libdir}/*.so.*
+%license LICENSE
+%{_libdir}/lib%{name}.so.*
 
 %files devel
 %defattr(-,root,root)
-%{_includedir}/leveldb/
-%{_libdir}/libleveldb.so
-%{_libdir}/libleveldb.a
+%doc doc/
+%{_includedir}/%{name}/
+%{_libdir}/lib%{name}.so
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
-*	Tue Apr 25 2017 Divya Thaluru <dthaluru@vmware.com> 1.20-2
--	Added pkgconfig file for leveldb
-*	Thu Mar 30 2017 Divya Thaluru <dthaluru@vmware.com> 1.20-1
--	Updated to version 1.20
-*	Wed Dec 21 2016 Dheeraj Shetty <Dheerajs@vmware.com> 1.19-2
--	Fixed parallel build error
-*	Fri Dec 16 2016 Dheeraj Shetty <Dheerajs@vmware.com> 1.19-1
--	Initial build. First version
+*   Wed Jul 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.22-1
+-   Upgrade to version 1.22
+*   Tue Apr 25 2017 Divya Thaluru <dthaluru@vmware.com> 1.20-2
+-   Added pkgconfig file for leveldb
+*   Thu Mar 30 2017 Divya Thaluru <dthaluru@vmware.com> 1.20-1
+-   Updated to version 1.20
+*   Wed Dec 21 2016 Dheeraj Shetty <Dheerajs@vmware.com> 1.19-2
+-   Fixed parallel build error
+*   Fri Dec 16 2016 Dheeraj Shetty <Dheerajs@vmware.com> 1.19-1
+-   Initial build. First version
