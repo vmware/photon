@@ -1,6 +1,6 @@
 Summary:	Round Robin Database Tool to store and display time-series data
 Name:		rrdtool
-Version:	1.7.0
+Version:	1.7.2
 Release:	1%{?dist}
 License:	LGPLv2 or MPLv1.1
 URL:		http://oss.oetiker.ch/rrdtool/
@@ -8,7 +8,7 @@ Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://github.com/oetiker/rrdtool-1.x/releases/download/v1.6.0/%{name}-%{version}.tar.gz
-%define sha1 rrdtool=15a2009e2ee67eb41a2598d1a0f1f7cf1a651c78
+%define sha1 rrdtool=f0e54258b0f871099623e3a866751928abbb47af
 BuildRequires:	pkg-config
 BuildRequires:	libpng-devel
 BuildRequires:	pango-devel
@@ -29,13 +29,12 @@ display time-series data.
 Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
 %description	devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
-%setup -q 
+%setup -q
 %build
-./configure \
-	--prefix=%{_prefix}	\
+%configure \
 	--disable-tcl		\
 	--disable-python 	\
 	--disable-perl		\
@@ -79,6 +78,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.2-1
+-       Automatic Version Bump
 *       Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 1.7.0-1
 -       Updated to version 1.7.0
 *       Wed Apr 5 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.6.0-1
