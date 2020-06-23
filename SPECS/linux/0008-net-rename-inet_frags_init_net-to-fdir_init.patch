@@ -1,0 +1,99 @@
+From 9cce45f22ceedf639cbb5fb5dfe612a278d36b58 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Fri, 24 May 2019 09:03:37 -0700
+Subject: [PATCH v4.9.y 08/16] net: rename inet_frags_init_net() to fdir_init()
+
+commit 9cce45f22ceedf639cbb5fb5dfe612a278d36b58 upstream
+
+And pass an extra parameter, since we will soon
+dynamically allocate fqdir structures.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+---
+ include/net/inet_frag.h                 | 3 ++-
+ net/ieee802154/6lowpan/reassembly.c     | 3 +--
+ net/ipv4/ip_fragment.c                  | 3 +--
+ net/ipv6/netfilter/nf_conntrack_reasm.c | 3 +--
+ net/ipv6/reassembly.c                   | 3 +--
+ 5 files changed, 6 insertions(+), 9 deletions(-)
+
+diff --git a/include/net/inet_frag.h b/include/net/inet_frag.h
+index 07df534395d4..370db2589f26 100644
+--- a/include/net/inet_frag.h
++++ b/include/net/inet_frag.h
+@@ -105,8 +105,9 @@ struct inet_frags {
+ int inet_frags_init(struct inet_frags *);
+ void inet_frags_fini(struct inet_frags *);
+ 
+-static inline int inet_frags_init_net(struct fqdir *fqdir)
++static inline int fqdir_init(struct fqdir *fqdir, struct inet_frags *f)
+ {
++	fqdir->f = f;
+ 	atomic_long_set(&fqdir->mem, 0);
+ 	return rhashtable_init(&fqdir->rhashtable, &fqdir->f->rhash_params);
+ }
+diff --git a/net/ieee802154/6lowpan/reassembly.c b/net/ieee802154/6lowpan/reassembly.c
+index bf9f287ec7d0..d439d1c416fa 100644
+--- a/net/ieee802154/6lowpan/reassembly.c
++++ b/net/ieee802154/6lowpan/reassembly.c
+@@ -541,9 +541,8 @@ static int __net_init lowpan_frags_init_net(struct net *net)
+ 	ieee802154_lowpan->fqdir.high_thresh = IPV6_FRAG_HIGH_THRESH;
+ 	ieee802154_lowpan->fqdir.low_thresh = IPV6_FRAG_LOW_THRESH;
+ 	ieee802154_lowpan->fqdir.timeout = IPV6_FRAG_TIMEOUT;
+-	ieee802154_lowpan->fqdir.f = &lowpan_frags;
+ 
+-	res = inet_frags_init_net(&ieee802154_lowpan->fqdir);
++	res = fqdir_init(&ieee802154_lowpan->fqdir, &lowpan_frags);
+ 	if (res < 0)
+ 		return res;
+ 	res = lowpan_frags_ns_sysctl_register(net);
+diff --git a/net/ipv4/ip_fragment.c b/net/ipv4/ip_fragment.c
+index 6e1d206e283c..fd04847b675b 100644
+--- a/net/ipv4/ip_fragment.c
++++ b/net/ipv4/ip_fragment.c
+@@ -674,9 +674,8 @@ static int __net_init ipv4_frags_init_net(struct net *net)
+ 	net->ipv4.fqdir.timeout = IP_FRAG_TIME;
+ 
+ 	net->ipv4.fqdir.max_dist = 64;
+-	net->ipv4.fqdir.f = &ip4_frags;
+ 
+-	res = inet_frags_init_net(&net->ipv4.fqdir);
++	res = fqdir_init(&net->ipv4.fqdir, &ip4_frags);
+ 	if (res < 0)
+ 		return res;
+ 	res = ip4_frags_ns_ctl_register(net);
+diff --git a/net/ipv6/netfilter/nf_conntrack_reasm.c b/net/ipv6/netfilter/nf_conntrack_reasm.c
+index eeafb9d80abe..896d970f1813 100644
+--- a/net/ipv6/netfilter/nf_conntrack_reasm.c
++++ b/net/ipv6/netfilter/nf_conntrack_reasm.c
+@@ -496,9 +496,8 @@ static int nf_ct_net_init(struct net *net)
+ 	net->nf_frag.fqdir.high_thresh = IPV6_FRAG_HIGH_THRESH;
+ 	net->nf_frag.fqdir.low_thresh = IPV6_FRAG_LOW_THRESH;
+ 	net->nf_frag.fqdir.timeout = IPV6_FRAG_TIMEOUT;
+-	net->nf_frag.fqdir.f = &nf_frags;
+ 
+-	res = inet_frags_init_net(&net->nf_frag.fqdir);
++	res = fqdir_init(&net->nf_frag.fqdir, &nf_frags);
+ 	if (res < 0)
+ 		return res;
+ 	res = nf_ct_frag6_sysctl_register(net);
+diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
+index d5aa65894c5b..ea73a49db77e 100644
+--- a/net/ipv6/reassembly.c
++++ b/net/ipv6/reassembly.c
+@@ -516,9 +516,8 @@ static int __net_init ipv6_frags_init_net(struct net *net)
+ 	net->ipv6.fqdir.high_thresh = IPV6_FRAG_HIGH_THRESH;
+ 	net->ipv6.fqdir.low_thresh = IPV6_FRAG_LOW_THRESH;
+ 	net->ipv6.fqdir.timeout = IPV6_FRAG_TIMEOUT;
+-	net->ipv6.fqdir.f = &ip6_frags;
+ 
+-	res = inet_frags_init_net(&net->ipv6.fqdir);
++	res = fqdir_init(&net->ipv6.fqdir, &ip6_frags);
+ 	if (res < 0)
+ 		return res;
+ 
+-- 
+2.23.1
+

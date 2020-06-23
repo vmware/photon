@@ -1,0 +1,72 @@
+From 8668d0e2bfdfe3ab85c3bbc45ad2e60ed2dca71c Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Fri, 24 May 2019 09:03:34 -0700
+Subject: [PATCH v4.9.y 05/16] ipv6: no longer reference init_net in 
+ ip6_frags_ns_ctl_table
+
+commit 8668d0e2bfdfe3ab85c3bbc45ad2e60ed2dca71c upstream
+
+(struct net *)->ipv6.fqdir will soon be a pointer, so make
+sure ip6_frags_ns_ctl_table[] does not reference init_net.
+
+ip6_frags_ns_ctl_register() can perform the needed initialization
+for all netns.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+---
+ net/ipv6/reassembly.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
+
+diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
+index bef3c15e0235..d5aa65894c5b 100644
+--- a/net/ipv6/reassembly.c
++++ b/net/ipv6/reassembly.c
+@@ -401,23 +401,18 @@ static const struct inet6_protocol frag_protocol = {
+ static struct ctl_table ip6_frags_ns_ctl_table[] = {
+ 	{
+ 		.procname	= "ip6frag_high_thresh",
+-		.data		= &init_net.ipv6.fqdir.high_thresh,
+ 		.maxlen		= sizeof(unsigned long),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_doulongvec_minmax,
+-		.extra1		= &init_net.ipv6.fqdir.low_thresh
+ 	},
+ 	{
+ 		.procname	= "ip6frag_low_thresh",
+-		.data		= &init_net.ipv6.fqdir.low_thresh,
+ 		.maxlen		= sizeof(unsigned long),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_doulongvec_minmax,
+-		.extra2		= &init_net.ipv6.fqdir.high_thresh
+ 	},
+ 	{
+ 		.procname	= "ip6frag_time",
+-		.data		= &init_net.ipv6.fqdir.timeout,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_jiffies,
+@@ -449,13 +444,13 @@ static int __net_init ip6_frags_ns_sysctl_register(struct net *net)
+ 		if (!table)
+ 			goto err_alloc;
+ 
+-		table[0].data = &net->ipv6.fqdir.high_thresh;
+-		table[0].extra1 = &net->ipv6.fqdir.low_thresh;
+-		table[0].extra2 = &init_net.ipv6.fqdir.high_thresh;
+-		table[1].data = &net->ipv6.fqdir.low_thresh;
+-		table[1].extra2 = &net->ipv6.fqdir.high_thresh;
+-		table[2].data = &net->ipv6.fqdir.timeout;
+ 	}
++	table[0].data   = &net->ipv6.fqdir.high_thresh;
++	table[0].extra1 = &net->ipv6.fqdir.low_thresh;
++	table[0].extra2 = &init_net.ipv6.fqdir.high_thresh;
++	table[1].data   = &net->ipv6.fqdir.low_thresh;
++	table[1].extra2 = &net->ipv6.fqdir.high_thresh;
++	table[2].data   = &net->ipv6.fqdir.timeout;
+ 
+ 	hdr = register_net_sysctl(net, "net/ipv6", table);
+ 	if (!hdr)
+-- 
+2.23.1
+

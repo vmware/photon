@@ -1,0 +1,76 @@
+From d2dfd43598f3ce5441daabc7b352cdfea811e021 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Fri, 24 May 2019 09:03:36 -0700
+Subject: [PATCH v4.9.y 07/16] ieee820154: 6lowpan: no longer reference init_net in 
+ lowpan_frags_ns_ctl_table
+
+commit d2dfd43598f3ce5441daabc7b352cdfea811e021 upstream
+
+(struct net *)->ieee802154_lowpan.fqdir will soon be a pointer, so make
+sure lowpan_frags_ns_ctl_table[] does not reference init_net.
+
+lowpan_frags_ns_sysctl_register() can perform the needed initialization
+for all netns.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+---
+ net/ieee802154/6lowpan/reassembly.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
+
+diff --git a/net/ieee802154/6lowpan/reassembly.c b/net/ieee802154/6lowpan/reassembly.c
+index fed6b102700d..bf9f287ec7d0 100644
+--- a/net/ieee802154/6lowpan/reassembly.c
++++ b/net/ieee802154/6lowpan/reassembly.c
+@@ -414,23 +414,18 @@ int lowpan_frag_rcv(struct sk_buff *skb, u8 frag_type)
+ static struct ctl_table lowpan_frags_ns_ctl_table[] = {
+ 	{
+ 		.procname	= "6lowpanfrag_high_thresh",
+-		.data		= &init_net.ieee802154_lowpan.fqdir.high_thresh,
+ 		.maxlen		= sizeof(unsigned long),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_doulongvec_minmax,
+-		.extra1		= &init_net.ieee802154_lowpan.fqdir.low_thresh
+ 	},
+ 	{
+ 		.procname	= "6lowpanfrag_low_thresh",
+-		.data		= &init_net.ieee802154_lowpan.fqdir.low_thresh,
+ 		.maxlen		= sizeof(unsigned long),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_doulongvec_minmax,
+-		.extra2		= &init_net.ieee802154_lowpan.fqdir.high_thresh
+ 	},
+ 	{
+ 		.procname	= "6lowpanfrag_time",
+-		.data		= &init_net.ieee802154_lowpan.fqdir.timeout,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_jiffies,
+@@ -465,17 +460,17 @@ static int __net_init lowpan_frags_ns_sysctl_register(struct net *net)
+ 		if (table == NULL)
+ 			goto err_alloc;
+ 
+-		table[0].data = &ieee802154_lowpan->fqdir.high_thresh;
+-		table[0].extra1 = &ieee802154_lowpan->fqdir.low_thresh;
+-		table[0].extra2 = &init_net.ieee802154_lowpan.fqdir.high_thresh;
+-		table[1].data = &ieee802154_lowpan->fqdir.low_thresh;
+-		table[1].extra2 = &ieee802154_lowpan->fqdir.high_thresh;
+-		table[2].data = &ieee802154_lowpan->fqdir.timeout;
+ 
+ 		/* Don't export sysctls to unprivileged users */
+ 		if (net->user_ns != &init_user_ns)
+ 			table[0].procname = NULL;
+ 	}
++	table[0].data   = &ieee802154_lowpan->fqdir.high_thresh;
++	table[0].extra1 = &ieee802154_lowpan->fqdir.low_thresh;
++	table[0].extra2 = &init_net.ieee802154_lowpan.fqdir.high_thresh;
++	table[1].data   = &ieee802154_lowpan->fqdir.low_thresh;
++	table[1].extra2 = &ieee802154_lowpan->fqdir.high_thresh;
++	table[2].data   = &ieee802154_lowpan->fqdir.timeout;
+ 
+ 	hdr = register_net_sysctl(net, "net/ieee802154/6lowpan", table);
+ 	if (hdr == NULL)
+-- 
+2.23.1
+

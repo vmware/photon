@@ -1,0 +1,81 @@
+From 6b73d19711d0989cbdcd19c61faa0f79a1a5e466 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Mon, 27 May 2019 16:56:47 -0700
+Subject: [PATCH v4.9.y 12/16] inet: frags: uninline fqdir_init()
+
+commit 6b73d19711d0989cbdcd19c61faa0f79a1a5e466 upstream
+
+fqdir_init() is not fast path and is getting bigger.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+---
+ include/net/inet_frag.h  | 20 +-------------------
+ net/ipv4/inet_fragment.c | 19 +++++++++++++++++++
+ 2 files changed, 20 insertions(+), 19 deletions(-)
+
+diff --git a/include/net/inet_frag.h b/include/net/inet_frag.h
+index 83cdadbb7465..04f229b4879b 100644
+--- a/include/net/inet_frag.h
++++ b/include/net/inet_frag.h
+@@ -106,25 +106,7 @@ struct inet_frags {
+ int inet_frags_init(struct inet_frags *);
+ void inet_frags_fini(struct inet_frags *);
+ 
+-static inline int fqdir_init(struct fqdir **fqdirp, struct inet_frags *f,
+-			     struct net *net)
+-{
+-	struct fqdir *fqdir = kzalloc(sizeof(*fqdir), GFP_KERNEL);
+-	int res;
+-
+-	if (!fqdir)
+-		return -ENOMEM;
+-	fqdir->f = f;
+-	fqdir->net = net;
+-	res = rhashtable_init(&fqdir->rhashtable, &fqdir->f->rhash_params);
+-	if (res < 0) {
+-		kfree(fqdir);
+-		return res;
+-	}
+-	*fqdirp = fqdir;
+-	return 0;
+-}
+-
++int fqdir_init(struct fqdir **fqdirp, struct inet_frags *f, struct net *net);
+ void fqdir_exit(struct fqdir *fqdir);
+ 
+ void inet_frag_kill(struct inet_frag_queue *q);
+diff --git a/net/ipv4/inet_fragment.c b/net/ipv4/inet_fragment.c
+index 2a99752f227c..4444140c8f3c 100644
+--- a/net/ipv4/inet_fragment.c
++++ b/net/ipv4/inet_fragment.c
+@@ -144,6 +144,25 @@ static void inet_frags_free_cb(void *ptr, void *arg)
+ 	inet_frag_put(fq);
+ }
+ 
++int fqdir_init(struct fqdir **fqdirp, struct inet_frags *f, struct net *net)
++{
++	struct fqdir *fqdir = kzalloc(sizeof(*fqdir), GFP_KERNEL);
++	int res;
++
++	if (!fqdir)
++		return -ENOMEM;
++	fqdir->f = f;
++	fqdir->net = net;
++	res = rhashtable_init(&fqdir->rhashtable, &fqdir->f->rhash_params);
++	if (res < 0) {
++		kfree(fqdir);
++		return res;
++	}
++	*fqdirp = fqdir;
++	return 0;
++}
++EXPORT_SYMBOL(fqdir_init);
++
+ void fqdir_exit(struct fqdir *fqdir)
+ {
+ 	fqdir->high_thresh = 0; /* prevent creation of new frags */
+-- 
+2.23.1
+

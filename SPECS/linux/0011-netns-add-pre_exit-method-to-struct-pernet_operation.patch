@@ -1,0 +1,158 @@
+From d7d99872c144a2c2f5d9c9d83627fa833836cba5 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue, 18 Jun 2019 11:08:59 -0700
+Subject: [PATCH v4.9.y 11/16] netns: add pre_exit method to struct pernet_operations
+
+commit d7d99872c144a2c2f5d9c9d83627fa833836cba5 upstream
+
+Current struct pernet_operations exit() handlers are highly
+discouraged to call synchronize_rcu().
+
+There are cases where we need them, and exit_batch() does
+not help the common case where a single netns is dismantled.
+
+This patch leverages the existing synchronize_rcu() call
+in cleanup_net()
+
+Calling optional ->pre_exit() method before ->exit() or
+->exit_batch() allows to benefit from a single synchronize_rcu()
+call.
+
+Note that the synchronize_rcu() calls added in this patch
+are only in error paths or slow paths.
+
+Tested:
+
+$ time for i in {1..1000}; do unshare -n /bin/false;done
+
+real    0m2.612s
+user    0m0.171s
+sys     0m2.216s
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[4.9.y backport comments:
+ commit 6056415d3a513(net: Add comment about pernet_operations
+ methods and synchronization) is bundled into this patch.]
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+---
+ include/net/net_namespace.h | 23 +++++++++++++++++++++++
+ net/core/net_namespace.c    | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 51 insertions(+)
+
+diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
+index 0cdafe3935a6..8d798505b9ef 100644
+--- a/include/net/net_namespace.h
++++ b/include/net/net_namespace.h
+@@ -300,7 +300,30 @@ struct net *get_net_ns_by_id(struct net *net, int id);
+ 
+ struct pernet_operations {
+ 	struct list_head list;
++	/*
++	 * Below methods are called without any exclusive locks.
++	 * More than one net may be constructed and destructed
++	 * in parallel on several cpus. Every pernet_operations
++	 * have to keep in mind all other pernet_operations and
++	 * to introduce a locking, if they share common resources.
++	 *
++	 * The only time they are called with exclusive lock is
++	 * from register_pernet_subsys(), unregister_pernet_subsys()
++	 * register_pernet_device() and unregister_pernet_device().
++	 *
++	 * Exit methods using blocking RCU primitives, such as
++	 * synchronize_rcu(), should be implemented via exit_batch.
++	 * Then, destruction of a group of net requires single
++	 * synchronize_rcu() related to these pernet_operations,
++	 * instead of separate synchronize_rcu() for every net.
++	 * Please, avoid synchronize_rcu() at all, where it's possible.
++	 *
++	 * Note that a combination of pre_exit() and exit() can
++	 * be used, since a synchronize_rcu() is guaranteed between
++	 * the calls.
++	 */
+ 	int (*init)(struct net *net);
++	void (*pre_exit)(struct net *net);
+ 	void (*exit)(struct net *net);
+ 	void (*exit_batch)(struct list_head *net_exit_list);
+ 	int *id;
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index 7630fa80db92..7faf0e49e240 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -127,6 +127,17 @@ static void ops_free(const struct pernet_operations *ops, struct net *net)
+ 	}
+ }
+ 
++static void ops_pre_exit_list(const struct pernet_operations *ops,
++			      struct list_head *net_exit_list)
++{
++	struct net *net;
++
++	if (ops->pre_exit) {
++		list_for_each_entry(net, net_exit_list, exit_list)
++			ops->pre_exit(net);
++	}
++}
++
+ static void ops_exit_list(const struct pernet_operations *ops,
+ 			  struct list_head *net_exit_list)
+ {
+@@ -301,6 +312,12 @@ static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
+ 	 * for the pernet modules whose init functions did not fail.
+ 	 */
+ 	list_add(&net->exit_list, &net_exit_list);
++	saved_ops = ops;
++	list_for_each_entry_continue_reverse(ops, &pernet_list, list)
++		ops_pre_exit_list(ops, &net_exit_list);
++
++	synchronize_rcu();
++
+ 	saved_ops = ops;
+ 	list_for_each_entry_continue_reverse(ops, &pernet_list, list)
+ 		ops_exit_list(ops, &net_exit_list);
+@@ -462,10 +479,15 @@ static void cleanup_net(struct work_struct *work)
+ 	}
+ 	rtnl_unlock();
+ 
++	/* Run all of the network namespace pre_exit methods */
++	list_for_each_entry_reverse(ops, &pernet_list, list)
++		ops_pre_exit_list(ops, &net_exit_list);
++
+ 	/*
+ 	 * Another CPU might be rcu-iterating the list, wait for it.
+ 	 * This needs to be before calling the exit() notifiers, so
+ 	 * the rcu_barrier() below isn't sufficient alone.
++	 * Also the pre_exit() and exit() methods need this barrier.
+ 	 */
+ 	synchronize_rcu();
+ 
+@@ -836,6 +858,8 @@ static int __register_pernet_operations(struct list_head *list,
+ out_undo:
+ 	/* If I have an error cleanup all namespaces I initialized */
+ 	list_del(&ops->list);
++	ops_pre_exit_list(ops, &net_exit_list);
++	synchronize_rcu();
+ 	ops_exit_list(ops, &net_exit_list);
+ 	ops_free_list(ops, &net_exit_list);
+ 	return error;
+@@ -849,6 +873,8 @@ static void __unregister_pernet_operations(struct pernet_operations *ops)
+ 	list_del(&ops->list);
+ 	for_each_net(net)
+ 		list_add_tail(&net->exit_list, &net_exit_list);
++	ops_pre_exit_list(ops, &net_exit_list);
++	synchronize_rcu();
+ 	ops_exit_list(ops, &net_exit_list);
+ 	ops_free_list(ops, &net_exit_list);
+ }
+@@ -873,6 +899,8 @@ static void __unregister_pernet_operations(struct pernet_operations *ops)
+ 	} else {
+ 		LIST_HEAD(net_exit_list);
+ 		list_add(&init_net.exit_list, &net_exit_list);
++		ops_pre_exit_list(ops, &net_exit_list);
++		synchronize_rcu();
+ 		ops_exit_list(ops, &net_exit_list);
+ 		ops_free_list(ops, &net_exit_list);
+ 	}
+-- 
+2.23.1
+

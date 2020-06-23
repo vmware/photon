@@ -1,0 +1,140 @@
+From 89fb900514d1623cf6019848f39d0557a3d31890 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Fri, 24 May 2019 09:03:31 -0700
+Subject: [PATCH v4.9.y 02/16] net: rename inet_frags_exit_net() to fqdir_exit()
+
+commit 89fb900514d1623cf6019848f39d0557a3d31890 upstream
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+---
+ include/net/inet_frag.h                 | 2 +-
+ net/ieee802154/6lowpan/reassembly.c     | 4 ++--
+ net/ipv4/inet_fragment.c                | 4 ++--
+ net/ipv4/ip_fragment.c                  | 4 ++--
+ net/ipv6/netfilter/nf_conntrack_reasm.c | 4 ++--
+ net/ipv6/reassembly.c                   | 4 ++--
+ 6 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/include/net/inet_frag.h b/include/net/inet_frag.h
+index aa7fd82f7d41..07df534395d4 100644
+--- a/include/net/inet_frag.h
++++ b/include/net/inet_frag.h
+@@ -110,7 +110,7 @@ static inline int inet_frags_init_net(struct fqdir *fqdir)
+ 	atomic_long_set(&fqdir->mem, 0);
+ 	return rhashtable_init(&fqdir->rhashtable, &fqdir->f->rhash_params);
+ }
+-void inet_frags_exit_net(struct fqdir *fqdir);
++void fqdir_exit(struct fqdir *fqdir);
+ 
+ void inet_frag_kill(struct inet_frag_queue *q);
+ void inet_frag_destroy(struct inet_frag_queue *q);
+diff --git a/net/ieee802154/6lowpan/reassembly.c b/net/ieee802154/6lowpan/reassembly.c
+index 708fdb9affde..fd38644b78f0 100644
+--- a/net/ieee802154/6lowpan/reassembly.c
++++ b/net/ieee802154/6lowpan/reassembly.c
+@@ -553,7 +553,7 @@ static int __net_init lowpan_frags_init_net(struct net *net)
+ 		return res;
+ 	res = lowpan_frags_ns_sysctl_register(net);
+ 	if (res < 0)
+-		inet_frags_exit_net(&ieee802154_lowpan->frags);
++		fqdir_exit(&ieee802154_lowpan->frags);
+ 	return res;
+ }
+ 
+@@ -563,7 +563,7 @@ static void __net_exit lowpan_frags_exit_net(struct net *net)
+ 		net_ieee802154_lowpan(net);
+ 
+ 	lowpan_frags_ns_sysctl_unregister(net);
+-	inet_frags_exit_net(&ieee802154_lowpan->frags);
++	fqdir_exit(&ieee802154_lowpan->frags);
+ }
+ 
+ static struct pernet_operations lowpan_frags_ops = {
+diff --git a/net/ipv4/inet_fragment.c b/net/ipv4/inet_fragment.c
+index ee17ee56a198..fb851a465c78 100644
+--- a/net/ipv4/inet_fragment.c
++++ b/net/ipv4/inet_fragment.c
+@@ -144,13 +144,13 @@ static void inet_frags_free_cb(void *ptr, void *arg)
+ 	inet_frag_put(fq);
+ }
+ 
+-void inet_frags_exit_net(struct fqdir *fqdir)
++void fqdir_exit(struct fqdir *fqdir)
+ {
+ 	fqdir->high_thresh = 0; /* prevent creation of new frags */
+ 
+ 	rhashtable_free_and_destroy(&fqdir->rhashtable, inet_frags_free_cb, NULL);
+ }
+-EXPORT_SYMBOL(inet_frags_exit_net);
++EXPORT_SYMBOL(fqdir_exit);
+ 
+ void inet_frag_kill(struct inet_frag_queue *fq)
+ {
+diff --git a/net/ipv4/ip_fragment.c b/net/ipv4/ip_fragment.c
+index f9fd5f7721af..3ec39abc3ea9 100644
+--- a/net/ipv4/ip_fragment.c
++++ b/net/ipv4/ip_fragment.c
+@@ -687,14 +687,14 @@ static int __net_init ipv4_frags_init_net(struct net *net)
+ 		return res;
+ 	res = ip4_frags_ns_ctl_register(net);
+ 	if (res < 0)
+-		inet_frags_exit_net(&net->ipv4.frags);
++		fqdir_exit(&net->ipv4.frags);
+ 	return res;
+ }
+ 
+ static void __net_exit ipv4_frags_exit_net(struct net *net)
+ {
+ 	ip4_frags_ns_ctl_unregister(net);
+-	inet_frags_exit_net(&net->ipv4.frags);
++	fqdir_exit(&net->ipv4.frags);
+ }
+ 
+ static struct pernet_operations ip4_frags_ops = {
+diff --git a/net/ipv6/netfilter/nf_conntrack_reasm.c b/net/ipv6/netfilter/nf_conntrack_reasm.c
+index cb459aa004ac..1e947d62ef73 100644
+--- a/net/ipv6/netfilter/nf_conntrack_reasm.c
++++ b/net/ipv6/netfilter/nf_conntrack_reasm.c
+@@ -508,14 +508,14 @@ static int nf_ct_net_init(struct net *net)
+ 		return res;
+ 	res = nf_ct_frag6_sysctl_register(net);
+ 	if (res < 0)
+-		inet_frags_exit_net(&net->nf_frag.frags);
++		fqdir_exit(&net->nf_frag.frags);
+ 	return res;
+ }
+ 
+ static void nf_ct_net_exit(struct net *net)
+ {
+ 	nf_ct_frags6_sysctl_unregister(net);
+-	inet_frags_exit_net(&net->nf_frag.frags);
++	fqdir_exit(&net->nf_frag.frags);
+ }
+ 
+ static struct pernet_operations nf_ct_net_ops = {
+diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
+index 6808e1cd6a8f..0a621c78bff0 100644
+--- a/net/ipv6/reassembly.c
++++ b/net/ipv6/reassembly.c
+@@ -529,14 +529,14 @@ static int __net_init ipv6_frags_init_net(struct net *net)
+ 
+ 	res = ip6_frags_ns_sysctl_register(net);
+ 	if (res < 0)
+-		inet_frags_exit_net(&net->ipv6.frags);
++		fqdir_exit(&net->ipv6.frags);
+ 	return res;
+ }
+ 
+ static void __net_exit ipv6_frags_exit_net(struct net *net)
+ {
+ 	ip6_frags_ns_sysctl_unregister(net);
+-	inet_frags_exit_net(&net->ipv6.frags);
++	fqdir_exit(&net->ipv6.frags);
+ }
+ 
+ static struct pernet_operations ip6_frags_ops = {
+-- 
+2.23.1
+

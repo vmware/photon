@@ -1,0 +1,494 @@
+From 6ce3b4dcee4f96a5000d3f790403eb6997e3d553 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Fri, 24 May 2019 09:03:30 -0700
+Subject: [PATCH v4.9.y 01/16] inet: rename netns_frags to fqdir
+
+commit 6ce3b4dcee4f96a5000d3f790403eb6997e3d553 upstream
+
+1) struct netns_frags is renamed to struct fqdir
+  This structure is really holding many frag queues in a hash table.
+
+2) (struct inet_frag_queue)->net field is renamed to fqdir
+  since net is generally associated to a 'struct net' pointer
+  in networking stack.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S.i Miller <davem@davemloft.net>
+[4.9.y backport comment:
+ refcount APIs replaced with atomic APIs]
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+---
+ include/net/inet_frag.h                 | 29 +++++++-------
+ include/net/netns/ieee802154_6lowpan.h  |  2 +-
+ include/net/netns/ipv4.h                |  2 +-
+ include/net/netns/ipv6.h                |  4 +-
+ net/ieee802154/6lowpan/reassembly.c     |  2 +-
+ net/ipv4/inet_fragment.c                | 52 ++++++++++++-------------
+ net/ipv4/ip_fragment.c                  | 20 +++++-----
+ net/ipv6/netfilter/nf_conntrack_reasm.c |  4 +-
+ net/ipv6/reassembly.c                   |  6 +--
+ 9 files changed, 61 insertions(+), 60 deletions(-)
+
+diff --git a/include/net/inet_frag.h b/include/net/inet_frag.h
+index c2c724abde57..aa7fd82f7d41 100644
+--- a/include/net/inet_frag.h
++++ b/include/net/inet_frag.h
+@@ -3,7 +3,8 @@
+ 
+ #include <linux/rhashtable.h>
+ 
+-struct netns_frags {
++/* Per netns frag queues directory */
++struct fqdir {
+ 	/* sysctls */
+ 	long			high_thresh;
+ 	long			low_thresh;
+@@ -64,7 +65,7 @@ struct frag_v6_compare_key {
+  * @meat: length of received fragments so far
+  * @flags: fragment queue flags
+  * @max_size: maximum received fragment size
+- * @net: namespace that this frag belongs to
++ * @fqdir: pointer to struct fqdir
+  * @rcu: rcu head for freeing deferall
+  */
+ struct inet_frag_queue {
+@@ -85,7 +86,7 @@ struct inet_frag_queue {
+ 	int			meat;
+ 	__u8			flags;
+ 	u16			max_size;
+-	struct netns_frags      *net;
++	struct fqdir		*fqdir;
+ 	struct rcu_head		rcu;
+ };
+ 
+@@ -104,16 +105,16 @@ struct inet_frags {
+ int inet_frags_init(struct inet_frags *);
+ void inet_frags_fini(struct inet_frags *);
+ 
+-static inline int inet_frags_init_net(struct netns_frags *nf)
++static inline int inet_frags_init_net(struct fqdir *fqdir)
+ {
+-	atomic_long_set(&nf->mem, 0);
+-	return rhashtable_init(&nf->rhashtable, &nf->f->rhash_params);
++	atomic_long_set(&fqdir->mem, 0);
++	return rhashtable_init(&fqdir->rhashtable, &fqdir->f->rhash_params);
+ }
+-void inet_frags_exit_net(struct netns_frags *nf);
++void inet_frags_exit_net(struct fqdir *fqdir);
+ 
+ void inet_frag_kill(struct inet_frag_queue *q);
+ void inet_frag_destroy(struct inet_frag_queue *q);
+-struct inet_frag_queue *inet_frag_find(struct netns_frags *nf, void *key);
++struct inet_frag_queue *inet_frag_find(struct fqdir *fqdir, void *key);
+ 
+ /* Free all skbs in the queue; return the sum of their truesizes. */
+ unsigned int inet_frag_rbtree_purge(struct rb_root *root);
+@@ -126,19 +127,19 @@ static inline void inet_frag_put(struct inet_frag_queue *q)
+ 
+ /* Memory Tracking Functions. */
+ 
+-static inline long frag_mem_limit(const struct netns_frags *nf)
++static inline long frag_mem_limit(const struct fqdir *fqdir)
+ {
+-	return atomic_long_read(&nf->mem);
++	return atomic_long_read(&fqdir->mem);
+ }
+ 
+-static inline void sub_frag_mem_limit(struct netns_frags *nf, long val)
++static inline void sub_frag_mem_limit(struct fqdir *fqdir, long val)
+ {
+-	atomic_long_sub(val, &nf->mem);
++	atomic_long_sub(val, &fqdir->mem);
+ }
+ 
+-static inline void add_frag_mem_limit(struct netns_frags *nf, long val)
++static inline void add_frag_mem_limit(struct fqdir *fqdir, long val)
+ {
+-	atomic_long_add(val, &nf->mem);
++	atomic_long_add(val, &fqdir->mem);
+ }
+ 
+ /* RFC 3168 support :
+diff --git a/include/net/netns/ieee802154_6lowpan.h b/include/net/netns/ieee802154_6lowpan.h
+index 8170f8d7052b..5168cff82e93 100644
+--- a/include/net/netns/ieee802154_6lowpan.h
++++ b/include/net/netns/ieee802154_6lowpan.h
+@@ -15,7 +15,7 @@ struct netns_sysctl_lowpan {
+ 
+ struct netns_ieee802154_lowpan {
+ 	struct netns_sysctl_lowpan sysctl;
+-	struct netns_frags	frags;
++	struct fqdir	frags;
+ };
+ 
+ #endif
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index af1c5e7c7e94..51e841aa69f5 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -56,7 +56,7 @@ struct netns_ipv4 {
+ 
+ 	struct inet_peer_base	*peers;
+ 	struct sock  * __percpu	*tcp_sk;
+-	struct netns_frags	frags;
++	struct fqdir	frags;
+ #ifdef CONFIG_NETFILTER
+ 	struct xt_table		*iptable_filter;
+ 	struct xt_table		*iptable_mangle;
+diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
+index 5cae575db07b..13de4531c5b3 100644
+--- a/include/net/netns/ipv6.h
++++ b/include/net/netns/ipv6.h
+@@ -43,7 +43,7 @@ struct netns_ipv6 {
+ 	struct ipv6_devconf	*devconf_all;
+ 	struct ipv6_devconf	*devconf_dflt;
+ 	struct inet_peer_base	*peers;
+-	struct netns_frags	frags;
++	struct fqdir	frags;
+ #ifdef CONFIG_NETFILTER
+ 	struct xt_table		*ip6table_filter;
+ 	struct xt_table		*ip6table_mangle;
+@@ -89,7 +89,7 @@ struct netns_ipv6 {
+ 
+ #if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
+ struct netns_nf_frag {
+-	struct netns_frags	frags;
++	struct fqdir	frags;
+ };
+ #endif
+ 
+diff --git a/net/ieee802154/6lowpan/reassembly.c b/net/ieee802154/6lowpan/reassembly.c
+index 5936bfafb1c4..708fdb9affde 100644
+--- a/net/ieee802154/6lowpan/reassembly.c
++++ b/net/ieee802154/6lowpan/reassembly.c
+@@ -159,7 +159,7 @@ static int lowpan_frag_queue(struct lowpan_frag_queue *fq,
+ 		fq->q.flags |= INET_FRAG_FIRST_IN;
+ 
+ 	fq->q.meat += skb->len;
+-	add_frag_mem_limit(fq->q.net, skb->truesize);
++	add_frag_mem_limit(fq->q.fqdir, skb->truesize);
+ 
+ 	if (fq->q.flags == (INET_FRAG_FIRST_IN | INET_FRAG_LAST_IN) &&
+ 	    fq->q.meat == fq->q.len) {
+diff --git a/net/ipv4/inet_fragment.c b/net/ipv4/inet_fragment.c
+index 2325cd3454a6..e7b14df40212 100644
+--- a/net/ipv4/inet_fragment.c
++++ b/net/ipv4/inet_fragment.c
+@@ -144,11 +144,11 @@ static void inet_frags_free_cb(void *ptr, void *arg)
+ 	inet_frag_put(fq);
+ }
+ 
+-void inet_frags_exit_net(struct netns_frags *nf)
++void inet_frags_exit_net(struct fqdir *fqdir)
+ {
+-	nf->high_thresh = 0; /* prevent creation of new frags */
++	fqdir->high_thresh = 0; /* prevent creation of new frags */
+ 
+-	rhashtable_free_and_destroy(&nf->rhashtable, inet_frags_free_cb, NULL);
++	rhashtable_free_and_destroy(&fqdir->rhashtable, inet_frags_free_cb, NULL);
+ }
+ EXPORT_SYMBOL(inet_frags_exit_net);
+ 
+@@ -158,10 +158,10 @@ void inet_frag_kill(struct inet_frag_queue *fq)
+ 		atomic_dec(&fq->refcnt);
+ 
+ 	if (!(fq->flags & INET_FRAG_COMPLETE)) {
+-		struct netns_frags *nf = fq->net;
++		struct fqdir *fqdir = fq->fqdir;
+ 
+ 		fq->flags |= INET_FRAG_COMPLETE;
+-		rhashtable_remove_fast(&nf->rhashtable, &fq->node, nf->f->rhash_params);
++		rhashtable_remove_fast(&fqdir->rhashtable, &fq->node, fqdir->f->rhash_params);
+ 		atomic_dec(&fq->refcnt);
+ 	}
+ }
+@@ -171,7 +171,7 @@ static void inet_frag_destroy_rcu(struct rcu_head *head)
+ {
+ 	struct inet_frag_queue *q = container_of(head, struct inet_frag_queue,
+ 						 rcu);
+-	struct inet_frags *f = q->net->f;
++	struct inet_frags *f = q->fqdir->f;
+ 
+ 	if (f->destructor)
+ 		f->destructor(q);
+@@ -203,7 +203,7 @@ EXPORT_SYMBOL(inet_frag_rbtree_purge);
+ void inet_frag_destroy(struct inet_frag_queue *q)
+ {
+ 	struct sk_buff *fp;
+-	struct netns_frags *nf;
++	struct fqdir *fqdir;
+ 	unsigned int sum, sum_truesize = 0;
+ 	struct inet_frags *f;
+ 
+@@ -212,8 +212,8 @@ void inet_frag_destroy(struct inet_frag_queue *q)
+ 
+ 	/* Release all fragment data. */
+ 	fp = q->fragments;
+-	nf = q->net;
+-	f = nf->f;
++	fqdir = q->fqdir;
++	f = fqdir->f;
+ 	if (fp) {
+ 		do {
+ 			struct sk_buff *xp = fp->next;
+@@ -229,26 +229,26 @@ void inet_frag_destroy(struct inet_frag_queue *q)
+ 
+ 	call_rcu(&q->rcu, inet_frag_destroy_rcu);
+ 
+-	sub_frag_mem_limit(nf, sum);
++	sub_frag_mem_limit(fqdir, sum);
+ }
+ EXPORT_SYMBOL(inet_frag_destroy);
+ 
+-static struct inet_frag_queue *inet_frag_alloc(struct netns_frags *nf,
++static struct inet_frag_queue *inet_frag_alloc(struct fqdir *fqdir,
+ 					       struct inet_frags *f,
+ 					       void *arg)
+ {
+ 	struct inet_frag_queue *q;
+ 
+-	if (!nf->high_thresh || frag_mem_limit(nf) > nf->high_thresh)
++	if (!fqdir->high_thresh || frag_mem_limit(fqdir) > fqdir->high_thresh)
+ 		return NULL;
+ 
+ 	q = kmem_cache_zalloc(f->frags_cachep, GFP_ATOMIC);
+ 	if (!q)
+ 		return NULL;
+ 
+-	q->net = nf;
++	q->fqdir = fqdir;
+ 	f->constructor(q, arg);
+-	add_frag_mem_limit(nf, f->qsize);
++	add_frag_mem_limit(fqdir, f->qsize);
+ 
+ 	setup_timer(&q->timer, f->frag_expire, (unsigned long)q);
+ 	spin_lock_init(&q->lock);
+@@ -257,21 +257,21 @@ static struct inet_frag_queue *inet_frag_alloc(struct netns_frags *nf,
+ 	return q;
+ }
+ 
+-static struct inet_frag_queue *inet_frag_create(struct netns_frags *nf,
++static struct inet_frag_queue *inet_frag_create(struct fqdir *fqdir,
+ 						void *arg,
+ 						struct inet_frag_queue **prev)
+ {
+-	struct inet_frags *f = nf->f;
++	struct inet_frags *f = fqdir->f;
+ 	struct inet_frag_queue *q;
+ 
+-	q = inet_frag_alloc(nf, f, arg);
++	q = inet_frag_alloc(fqdir, f, arg);
+ 	if (!q) {
+ 		*prev = ERR_PTR(-ENOMEM);
+ 		return NULL;
+ 	}
+-	mod_timer(&q->timer, jiffies + nf->timeout);
++	mod_timer(&q->timer, jiffies + fqdir->timeout);
+ 
+-	*prev = rhashtable_lookup_get_insert_key(&nf->rhashtable, &q->key,
++	*prev = rhashtable_lookup_get_insert_key(&fqdir->rhashtable, &q->key,
+ 						 &q->node, f->rhash_params);
+ 	if (*prev) {
+ 		q->flags |= INET_FRAG_COMPLETE;
+@@ -284,14 +284,14 @@ static struct inet_frag_queue *inet_frag_create(struct netns_frags *nf,
+ EXPORT_SYMBOL(inet_frag_create);
+ 
+ /* TODO : call from rcu_read_lock() and no longer use refcount_inc_not_zero() */
+-struct inet_frag_queue *inet_frag_find(struct netns_frags *nf, void *key)
++struct inet_frag_queue *inet_frag_find(struct fqdir *fqdir, void *key)
+ {
+ 	struct inet_frag_queue *fq = NULL, *prev;
+ 
+ 	rcu_read_lock();
+-	prev = rhashtable_lookup(&nf->rhashtable, key, nf->f->rhash_params);
++	prev = rhashtable_lookup(&fqdir->rhashtable, key, fqdir->f->rhash_params);
+ 	if (!prev)
+-		fq = inet_frag_create(nf, key, &prev);
++		fq = inet_frag_create(fqdir, key, &prev);
+ 	if (prev && !IS_ERR(prev)) {
+ 		fq = prev;
+ 		if (!atomic_inc_not_zero(&fq->refcnt))
+@@ -402,7 +402,7 @@ void *inet_frag_reasm_prepare(struct inet_frag_queue *q, struct sk_buff *skb,
+ 
+ 	delta += head->truesize;
+ 	if (delta)
+-		add_frag_mem_limit(q->net, delta);
++		add_frag_mem_limit(q->fqdir, delta);
+ 
+ 	/* If the first fragment is fragmented itself, we split
+ 	 * it to two chunks: the first with data and paged part
+@@ -424,7 +424,7 @@ void *inet_frag_reasm_prepare(struct inet_frag_queue *q, struct sk_buff *skb,
+ 		head->truesize += clone->truesize;
+ 		clone->csum = 0;
+ 		clone->ip_summed = head->ip_summed;
+-		add_frag_mem_limit(q->net, clone->truesize);
++		add_frag_mem_limit(q->fqdir, clone->truesize);
+ 		skb_shinfo(head)->frag_list = clone;
+ 		nextp = &clone->next;
+ 	} else {
+@@ -477,7 +477,7 @@ void inet_frag_reasm_finish(struct inet_frag_queue *q, struct sk_buff *head,
+ 			rbn = rbnext;
+ 		}
+ 	}
+-	sub_frag_mem_limit(q->net, head->truesize);
++	sub_frag_mem_limit(q->fqdir, head->truesize);
+ 
+ 	*nextp = NULL;
+ 	head->next = NULL;
+@@ -511,7 +511,7 @@ struct sk_buff *inet_frag_pull_head(struct inet_frag_queue *q)
+ 	if (head == q->fragments_tail)
+ 		q->fragments_tail = NULL;
+ 
+-	sub_frag_mem_limit(q->net, head->truesize);
++	sub_frag_mem_limit(q->fqdir, head->truesize);
+ 
+ 	return head;
+ }
+diff --git a/net/ipv4/ip_fragment.c b/net/ipv4/ip_fragment.c
+index 6e9ba9dfb5b2..f9fd5f7721af 100644
+--- a/net/ipv4/ip_fragment.c
++++ b/net/ipv4/ip_fragment.c
+@@ -81,7 +81,7 @@ static int ip_frag_reasm(struct ipq *qp, struct sk_buff *skb,
+ static void ip4_frag_init(struct inet_frag_queue *q, const void *a)
+ {
+ 	struct ipq *qp = container_of(q, struct ipq, q);
+-	struct netns_ipv4 *ipv4 = container_of(q->net, struct netns_ipv4,
++	struct netns_ipv4 *ipv4 = container_of(q->fqdir, struct netns_ipv4,
+ 					       frags);
+ 	struct net *net = container_of(ipv4, struct net, ipv4);
+ 
+@@ -89,7 +89,7 @@ static void ip4_frag_init(struct inet_frag_queue *q, const void *a)
+ 
+ 	q->key.v4 = *key;
+ 	qp->ecn = 0;
+-	qp->peer = q->net->max_dist ?
++	qp->peer = q->fqdir->max_dist ?
+ 		inet_getpeer_v4(net->ipv4.peers, key->saddr, key->vif, 1) :
+ 		NULL;
+ }
+@@ -140,7 +140,7 @@ static void ip_expire(unsigned long arg)
+ 	int err;
+ 
+ 	qp = container_of((struct inet_frag_queue *) arg, struct ipq, q);
+-	net = container_of(qp->q.net, struct net, ipv4.frags);
++	net = container_of(qp->q.fqdir, struct net, ipv4.frags);
+ 
+ 	rcu_read_lock();
+ 	spin_lock(&qp->q.lock);
+@@ -221,7 +221,7 @@ static struct ipq *ip_find(struct net *net, struct iphdr *iph,
+ static int ip_frag_too_far(struct ipq *qp)
+ {
+ 	struct inet_peer *peer = qp->peer;
+-	unsigned int max = qp->q.net->max_dist;
++	unsigned int max = qp->q.fqdir->max_dist;
+ 	unsigned int start, end;
+ 
+ 	int rc;
+@@ -238,7 +238,7 @@ static int ip_frag_too_far(struct ipq *qp)
+ 	if (rc) {
+ 		struct net *net;
+ 
+-		net = container_of(qp->q.net, struct net, ipv4.frags);
++		net = container_of(qp->q.fqdir, struct net, ipv4.frags);
+ 		__IP_INC_STATS(net, IPSTATS_MIB_REASMFAILS);
+ 	}
+ 
+@@ -249,13 +249,13 @@ static int ip_frag_reinit(struct ipq *qp)
+ {
+ 	unsigned int sum_truesize = 0;
+ 
+-	if (!mod_timer(&qp->q.timer, jiffies + qp->q.net->timeout)) {
++	if (!mod_timer(&qp->q.timer, jiffies + qp->q.fqdir->timeout)) {
+ 		atomic_inc(&qp->q.refcnt);
+ 		return -ETIMEDOUT;
+ 	}
+ 
+ 	sum_truesize = inet_frag_rbtree_purge(&qp->q.rb_fragments);
+-	sub_frag_mem_limit(qp->q.net, sum_truesize);
++	sub_frag_mem_limit(qp->q.fqdir, sum_truesize);
+ 
+ 	qp->q.flags = 0;
+ 	qp->q.len = 0;
+@@ -273,7 +273,7 @@ static int ip_frag_reinit(struct ipq *qp)
+ /* Add new segment to existing queue. */
+ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
+ {
+-	struct net *net = container_of(qp->q.net, struct net, ipv4.frags);
++	struct net *net = container_of(qp->q.fqdir, struct net, ipv4.frags);
+ 	int ihl, end, flags, offset;
+ 	struct sk_buff *prev_tail;
+ 	struct net_device *dev;
+@@ -352,7 +352,7 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
+ 	qp->q.stamp = skb->tstamp;
+ 	qp->q.meat += skb->len;
+ 	qp->ecn |= ecn;
+-	add_frag_mem_limit(qp->q.net, skb->truesize);
++	add_frag_mem_limit(qp->q.fqdir, skb->truesize);
+ 	if (offset == 0)
+ 		qp->q.flags |= INET_FRAG_FIRST_IN;
+ 
+@@ -399,7 +399,7 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buff *skb)
+ static int ip_frag_reasm(struct ipq *qp, struct sk_buff *skb,
+ 			 struct sk_buff *prev_tail, struct net_device *dev)
+ {
+-	struct net *net = container_of(qp->q.net, struct net, ipv4.frags);
++	struct net *net = container_of(qp->q.fqdir, struct net, ipv4.frags);
+ 	struct iphdr *iph;
+ 	void *reasm_data;
+ 	int len, err;
+diff --git a/net/ipv6/netfilter/nf_conntrack_reasm.c b/net/ipv6/netfilter/nf_conntrack_reasm.c
+index 0b53d1907e4a..cb459aa004ac 100644
+--- a/net/ipv6/netfilter/nf_conntrack_reasm.c
++++ b/net/ipv6/netfilter/nf_conntrack_reasm.c
+@@ -150,7 +150,7 @@ static void nf_ct_frag6_expire(unsigned long data)
+ 	struct net *net;
+ 
+ 	fq = container_of((struct inet_frag_queue *)data, struct frag_queue, q);
+-	net = container_of(fq->q.net, struct net, nf_frag.frags);
++	net = container_of(fq->q.fqdir, struct net, nf_frag.frags);
+ 
+ 	ip6frag_expire_frag_queue(net, fq);
+ }
+@@ -281,7 +281,7 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
+ 	fq->ecn |= ecn;
+ 	if (payload_len > fq->q.max_size)
+ 		fq->q.max_size = payload_len;
+-	add_frag_mem_limit(fq->q.net, skb->truesize);
++	add_frag_mem_limit(fq->q.fqdir, skb->truesize);
+ 
+ 	/* The first fragment.
+ 	 * nhoffset is obtained from the first fragment, of course.
+diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
+index 3f488555999e..6808e1cd6a8f 100644
+--- a/net/ipv6/reassembly.c
++++ b/net/ipv6/reassembly.c
+@@ -78,7 +78,7 @@ static void ip6_frag_expire(unsigned long data)
+ 	struct net *net;
+ 
+ 	fq = container_of((struct inet_frag_queue *)data, struct frag_queue, q);
+-	net = container_of(fq->q.net, struct net, ipv6.frags);
++	net = container_of(fq->q.fqdir, struct net, ipv6.frags);
+ 
+ 	ip6frag_expire_frag_queue(net, fq);
+ }
+@@ -199,7 +199,7 @@ static int ip6_frag_queue(struct frag_queue *fq, struct sk_buff *skb,
+ 	fq->q.stamp = skb->tstamp;
+ 	fq->q.meat += skb->len;
+ 	fq->ecn |= ecn;
+-	add_frag_mem_limit(fq->q.net, skb->truesize);
++	add_frag_mem_limit(fq->q.fqdir, skb->truesize);
+ 
+ 	fragsize = -skb_network_offset(skb) + skb->len;
+ 	if (fragsize > fq->q.max_size)
+@@ -253,7 +253,7 @@ static int ip6_frag_queue(struct frag_queue *fq, struct sk_buff *skb,
+ static int ip6_frag_reasm(struct frag_queue *fq, struct sk_buff *skb,
+ 			  struct sk_buff *prev_tail, struct net_device *dev)
+ {
+-	struct net *net = container_of(fq->q.net, struct net, ipv6.frags);
++	struct net *net = container_of(fq->q.fqdir, struct net, ipv6.frags);
+ 	unsigned int nhoff;
+ 	void *reasm_data;
+ 	int payload_len;
+-- 
+2.23.1
+

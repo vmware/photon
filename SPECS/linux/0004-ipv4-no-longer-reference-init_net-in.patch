@@ -1,0 +1,81 @@
+From 8dfdb31335ee5aa99c30bbfd37294844a7ffb648 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Fri, 24 May 2019 09:03:33 -0700
+Subject: [PATCH v4.9.y 04/16] ipv4: no longer reference init_net in 
+ ip4_frags_ns_ctl_table[]
+
+commit 8dfdb31335ee5aa99c30bbfd37294844a7ffb648 upstream
+
+(struct net *)->ipv4.fqdir will soon be a pointer, so make
+sure ip4_frags_ns_ctl_table[] does not reference init_net.
+
+ip4_frags_ns_ctl_register() can perform the needed initialization
+for all netns.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+---
+ net/ipv4/ip_fragment.c | 20 +++++++-------------
+ 1 file changed, 7 insertions(+), 13 deletions(-)
+
+diff --git a/net/ipv4/ip_fragment.c b/net/ipv4/ip_fragment.c
+index 9d6de0b6e5a3..6e1d206e283c 100644
+--- a/net/ipv4/ip_fragment.c
++++ b/net/ipv4/ip_fragment.c
+@@ -545,30 +545,24 @@ static int dist_min;
+ static struct ctl_table ip4_frags_ns_ctl_table[] = {
+ 	{
+ 		.procname	= "ipfrag_high_thresh",
+-		.data		= &init_net.ipv4.fqdir.high_thresh,
+ 		.maxlen		= sizeof(unsigned long),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_doulongvec_minmax,
+-		.extra1		= &init_net.ipv4.fqdir.low_thresh
+ 	},
+ 	{
+ 		.procname	= "ipfrag_low_thresh",
+-		.data		= &init_net.ipv4.fqdir.low_thresh,
+ 		.maxlen		= sizeof(unsigned long),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_doulongvec_minmax,
+-		.extra2		= &init_net.ipv4.fqdir.high_thresh
+ 	},
+ 	{
+ 		.procname	= "ipfrag_time",
+-		.data		= &init_net.ipv4.fqdir.timeout,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_jiffies,
+ 	},
+ 	{
+ 		.procname	= "ipfrag_max_dist",
+-		.data		= &init_net.ipv4.fqdir.max_dist,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+@@ -601,14 +595,14 @@ static int __net_init ip4_frags_ns_ctl_register(struct net *net)
+ 		if (!table)
+ 			goto err_alloc;
+ 
+-		table[0].data = &net->ipv4.fqdir.high_thresh;
+-		table[0].extra1 = &net->ipv4.fqdir.low_thresh;
+-		table[0].extra2 = &init_net.ipv4.fqdir.high_thresh;
+-		table[1].data = &net->ipv4.fqdir.low_thresh;
+-		table[1].extra2 = &net->ipv4.fqdir.high_thresh;
+-		table[2].data = &net->ipv4.fqdir.timeout;
+-		table[3].data = &net->ipv4.fqdir.max_dist;
+ 	}
++	table[0].data   = &net->ipv4.fqdir.high_thresh;
++	table[0].extra1 = &net->ipv4.fqdir.low_thresh;
++	table[0].extra2 = &init_net.ipv4.fqdir.high_thresh;
++	table[1].data   = &net->ipv4.fqdir.low_thresh;
++	table[1].extra2 = &net->ipv4.fqdir.high_thresh;
++	table[2].data   = &net->ipv4.fqdir.timeout;
++	table[3].data   = &net->ipv4.fqdir.max_dist;
+ 
+ 	hdr = register_net_sysctl(net, "net/ipv4", table);
+ 	if (!hdr)
+-- 
+2.23.1
+

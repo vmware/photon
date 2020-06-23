@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.228
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -108,6 +108,24 @@ Patch73: 0003-UBUNTU-SAUCE-apparmor-Add-the-ability-to-mediate-mou.patch
 # Fix for CVE-2020-16166
 Patch74: 0001-random32-update-the-net-random-state-on-interrupt-an.patch
 Patch75: 0002-random32-remove-net_rand_state-from-the-latent-entro.patch
+
+# Fix use-after-free issue in network stack
+Patch76: 0001-inet-rename-netns_frags-to-fqdir.patch
+Patch77: 0002-net-rename-inet_frags_exit_net-to-fqdir_exit.patch
+Patch78: 0003-net-rename-struct-fqdir-fields.patch
+Patch79: 0004-ipv4-no-longer-reference-init_net-in.patch
+Patch80: 0005-ipv6-no-longer-reference-init_net-in.patch
+Patch81: 0006-netfilter-ipv6-nf_defrag-no-longer-reference-init_ne.patch
+Patch82: 0007-ieee820154-6lowpan-no-longer-reference-init_net-in.patch
+Patch83: 0008-net-rename-inet_frags_init_net-to-fdir_init.patch
+Patch84: 0009-net-add-a-net-pointer-to-struct-fqdir.patch
+Patch85: 0010-net-dynamically-allocate-fqdir-structures.patch
+Patch86: 0011-netns-add-pre_exit-method-to-struct-pernet_operation.patch
+Patch87: 0012-inet-frags-uninline-fqdir_init.patch
+Patch88: 0013-inet-frags-rework-rhashtable-dismantle.patch
+Patch89: 0014-inet-frags-fix-use-after-free-read-in-inet_frag_dest.patch
+Patch90: 0015-inet-fix-various-use-after-free-in-defrags-units.patch
+Patch91: 0016-netns-restore-ops-before-calling-ops_exit_list.patch
 
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 
@@ -247,6 +265,23 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch73 -p1
 %patch74 -p1
 %patch75 -p1
+
+%patch76 -p1
+%patch77 -p1
+%patch78 -p1
+%patch79 -p1
+%patch80 -p1
+%patch81 -p1
+%patch82 -p1
+%patch83 -p1
+%patch84 -p1
+%patch85 -p1
+%patch86 -p1
+%patch87 -p1
+%patch88 -p1
+%patch89 -p1
+%patch90 -p1
+%patch91 -p1
 
 %patch111 -p1
 
@@ -420,6 +455,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Aug 13 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-4
+-   Fix network stack for use-after-free issue in case timeout happens
+-   on fragment queue and ip_expire is called
 *   Thu Aug 06 2020 Ashwin H <ashwinh@vmware.com> 4.9.228-3
 -   Fix CVE-2020-16166
 *   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.228-2
