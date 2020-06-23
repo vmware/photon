@@ -1,16 +1,16 @@
 Summary:        A network performance benchmark tool.
 Name:           iperf
-Version:        3.6
+Version:        3.8.1
 Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/esnet/iperf
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-#Source download URL: https://github.com/esnet/iperf/archive/3.6.tar.gz
+#Source download URL: https://github.com/esnet/iperf/archive/3.8.1.tar.gz
 Source0:        https://github.com/esnet/iperf/archive/%{name}-%{version}.tar.gz
 Patch1:         disablepg.patch
-%define sha1 iperf=a92382c168f183a276e7a812b94417392871a5bf
+%define sha1 iperf=b7d95e89589d7976ddc5c09bf308d472746400a5
 BuildRequires:  autoconf
 BuildRequires:  automake
 
@@ -33,19 +33,7 @@ Requires:       %{name} = %{version}-%{release}
 %build
 echo "VDBG optflags: " %{optflags}
 ./bootstrap.sh
-./configure \
-        CFLAGS="%{optflags}" \
-        CXXFLAGS="%{optflags}" \
-        --disable-silent-rules \
-        --prefix=%{_prefix} \
-        --bindir=%{_bindir} \
-        --sbindir=%{_sbindir} \
-        --includedir=%{_includedir} \
-        --libdir=%{_libdir} \
-        --mandir=%{_mandir} \
-        --infodir=%{_infodir} \
-        --datadir=%{_datarootdir} \
-        --sysconfdir=/etc
+%configure --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
@@ -67,6 +55,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
+*       Mon Jun 22 2020 Ankit Jain <ankitja@vmware.com> 3.8.1-1
+-       Automatic Version Bump
 *       Wed Sep 05 2018 Ankit Jain <ankitja@vmware.com> 3.6-1
 -       Upgraded to version 3.6
 *       Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.1.7-1
