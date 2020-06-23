@@ -1,6 +1,6 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.41
+Version:        2.4.46
 Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
@@ -8,8 +8,9 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    httpd=b46a02237f03384fa50ddbde9be62092dc23e684
-Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/%{name}-%{version}-blfs_layout-1.patch
+%define sha1    httpd=1b7cd10ff3a2a07a576d77e34f0204d95fa4aceb
+#Patch0:        http://www.linuxfromscratch.org/patches/blfs/svn/%{name}-%{version}-blfs_layout-1.patch
+Patch0:         httpd-2.4.46-blfs_layout-1.patch
 Patch1:         httpd-uncomment-ServerName.patch
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
@@ -63,7 +64,6 @@ The httpd-tools of httpd.
 %build
 %configure \
             --prefix=%{_sysconfdir}/httpd          \
-            --exec-prefix=%{_prefix}               \
             --sysconfdir=%{_confdir}/httpd/conf    \
             --libexecdir=%{_libdir}/httpd/modules  \
             --datadir=%{_sysconfdir}/httpd         \
@@ -71,8 +71,8 @@ The httpd-tools of httpd.
             --enable-mods-shared="all cgi"         \
             --enable-mpms-shared=all               \
             --with-apr=%{_prefix}                  \
-            --with-apr-util=%{_prefix}
-
+            --with-apr-util=%{_prefix}             \
+            --enable-layout=RPM
 make %{?_smp_mflags}
 
 %install
@@ -160,16 +160,15 @@ fi
 %exclude %{_bindir}/dbmmanage
 %{_sbindir}/*
 %{_datadir}/*
-%{_sysconfdir}/httpd/build/*
 %{_sysconfdir}/httpd/cgi-bin/*
 %{_sysconfdir}/httpd/conf/extra
 %{_sysconfdir}/httpd/conf/original
+%{_sysconfdir}/httpd/html/index.html
 %config(noreplace) %{_sysconfdir}/httpd/conf/magic
 %{_sysconfdir}/httpd/conf/envvars
 %config(noreplace) %{_sysconfdir}/httpd/conf/httpd.conf
 %{_sysconfdir}/httpd/conf/mime.types
 %{_sysconfdir}/httpd/error/*
-%{_sysconfdir}/httpd/htdocs/*
 %{_sysconfdir}/httpd/icons/*
 %{_sysconfdir}/httpd/httpd.conf
 %dir %{_sysconfdir}/httpd/logs
@@ -182,6 +181,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.46-1
+-   Automatic Version Bump
 *   Mon Sep 30 2019 Shreyas B. <shreyasb@vmware.com> 2.4.41-1
 -   Upgrading to 2.4.41 to address following CVEs.
 -   (1) CVE-2019-10092 (2) CVE-2019-10098 (3) CVE-2019-10082
