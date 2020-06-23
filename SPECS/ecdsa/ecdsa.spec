@@ -3,8 +3,8 @@
 
 Summary:        ECDSA cryptographic signature library (pure python)
 Name:           ecdsa
-Version:        0.13
-Release:        5%{?dist}
+Version:        0.15
+Release:        1%{?dist}
 License:        MIT
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -12,13 +12,17 @@ Distribution:   Photon
 URL:            https://pypi.python.org/pypi/ecdsa
 
 Source0:        https://pypi.python.org/packages/source/e/ecdsa/%{name}-%{version}.tar.gz
-%define         sha1 ecdsa=7bcf6d1773d08bcc4bdd28cd05c545969f5aa162
+%define         sha1 ecdsa=5ac84f3012d807793bcb98a8e9c86c63b9965596
 
 BuildArch:      noarch
 
 BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
+Requires:       python3
 Requires:       python2
 
 %description
@@ -31,9 +35,6 @@ into other protocols.
 
 %package -n     python3-ecdsa
 Summary:        python3-ecdsa
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 %description -n python3-ecdsa
 
@@ -72,6 +73,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.15-1
+-   Automatic Version Bump
 *   Mon Jun 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.13-5
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.13-4
