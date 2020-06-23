@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2019.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
@@ -153,6 +153,8 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+*   Tue Jun 23 2020 Ankit Jain <ankitja@vmware.com> 2019.3-5
+-   Added sshd and sshd-keygen in units to enable it on bootup
 *   Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 2019.3-4
 -   Modified mkostreerepo with updated repos
 *   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2019.3-3

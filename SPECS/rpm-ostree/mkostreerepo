@@ -86,7 +86,9 @@ cat > $JSONFILE << EOF
                      "docker", "bridge-utils",
                      "dracut", "dracut-tools", "rpm-ostree", "nss-altfiles", "which"],
 
-        "packages-x86_64": ["grub2-pc", "open-vm-tools"]
+        "packages-x86_64": ["grub2-pc", "open-vm-tools"],
+
+        "units": ["sshd-keygen.service", "sshd.service"]
 }
 EOF
   elif [ -f $REPOPATH/photon-base.json ]; then
