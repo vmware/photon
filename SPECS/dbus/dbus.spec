@@ -1,12 +1,12 @@
 Summary:        DBus for systemd
 Name:           dbus
-Version:        1.13.14
+Version:        1.13.18
 Release:        1%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
 Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
-%define sha1    dbus=7ac47ba3eb982a33f1fcf5810dde9d7172f2b06d
+%define sha1    dbus=09e90abe435ac3bd8d2d6d1fafc886b0d97c8185
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  expat-devel
@@ -69,6 +69,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.13.18-1
+-   Automatic Version Bump
 *   Wed May 06 2020 Susant Sahani <ssahani@vmware.com> 1.13.14-1
 -   Update to 1.13.14
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.13.6-2
