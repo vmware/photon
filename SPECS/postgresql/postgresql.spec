@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        11.5
+Version:        12.3
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=24ceee589a0aec775ea7c4c4a001c710ff27a0d4
+%define sha1    postgresql=2730f6c0c22037646c84b902a13f5aaa56308ab8
 
 # Common libraries needed
 BuildRequires:  krb5-devel
@@ -113,11 +113,11 @@ rm -rf %{buildroot}/*
 %{_bindir}/pg_upgrade
 %{_bindir}/pg_waldump
 %{_bindir}/pg_xlogdump
+%{_bindir}/pg_checksums
 %{_bindir}/pgbench
 %{_bindir}/postgres
 %{_bindir}/postmaster
 %{_bindir}/vacuumlo
-%{_bindir}/pg_verify_checksums
 %{_datadir}/postgresql/*
 %{_libdir}/postgresql/*
 %{_docdir}/postgresql/extension/*.example
@@ -152,15 +152,17 @@ rm -rf %{buildroot}/*
 %{_libdir}/libecpg*.so
 %{_libdir}/libpgtypes*.so
 %{_libdir}/libpq*.so
-%{_libdir}/libpgcommon.a
+%{_libdir}/libpgcommon*.a
 %{_libdir}/libpgfeutils.a
-%{_libdir}/libpgport.a
+%{_libdir}/libpgport*.a
 %{_libdir}/libpq.a
 %{_libdir}/libecpg.a
 %{_libdir}/libecpg_compat.a
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 12.3-1
+-   Automatic Version Bump
 *   Mon Aug 12 2019 Shreenidhi Shedi <sshedi@vmware.com> 11.5-1
 -   Upgraded to version 11.5
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 10.5-1
