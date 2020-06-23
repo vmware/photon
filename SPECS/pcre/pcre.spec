@@ -1,14 +1,14 @@
 Summary:        Grep for perl compatible regular expressions
 Name:           pcre
-Version:        8.42
+Version:        8.44
 Release:        1%{?dist}
 License:        BSD
 URL:            ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-%{version}.tar.bz2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%{name}-%{version}.tar.bz2
-%define sha1    pcre=df0d1c2ff04c359220cb902539a6e134af4497f4
+Source0:        https://ftp.pcre.org/pub/pcre/%{name}-%{version}.tar.bz2
+%define sha1    pcre=8179b083053fce9b4a766513fa1f14807aabee42
 BuildRequires:  bzip2-devel
 BuildRequires:  readline-devel
 Requires:       libgcc
@@ -36,8 +36,7 @@ This package contains minimal set of shared pcre libraries.
 %prep
 %setup -q
 %build
-./configure --prefix=/usr                     \
-            --docdir=/usr/share/doc/pcre-%{version} \
+%configure --docdir=/usr/share/doc/pcre-%{version} \
             --enable-unicode-properties       \
             --enable-pcre16                   \
             --enable-pcre32                   \
@@ -59,7 +58,7 @@ make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
-%files 
+%files
 %defattr(-,root,root)
 %{_bindir}/pcregrep
 %{_bindir}/pcretest
@@ -85,6 +84,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libpcre.so.*
 
 %changelog
+*   Mon Jun 22 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 8.44-1
+-   Update to version 8.44 and fix for CVE-2020-14155
 *   Tue Sep 11 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.42-1
 -   Update to version 8.42
 *   Wed Dec 20 2017 Xiaolin Li <xiaolinl@vmware.com> 8.41-1
