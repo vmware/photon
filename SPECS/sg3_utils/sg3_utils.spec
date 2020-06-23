@@ -1,12 +1,11 @@
 Summary:        Tools and Utilities for interaction with SCSI devices.
 Name:           sg3_utils
-Version:        1.43
-Release:        2%{?dist}
+Version:        1.44
+Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/hreinecke/sg3_utils
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 sg3_utils=235b2d4ebe506ba23fd7960ff9541830e72d305f
-Patch0:         sg3_utils-ctr-init.patch
+%define sha1 sg3_utils=961eaf240aa4fa3b0112bb58660753555d436344
 Group:          System/Tools.
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -24,7 +23,6 @@ Package containing static library object for development.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 #make some fixes required by glibc-2.28:
@@ -55,6 +53,8 @@ install -m 755 scripts/rescan-scsi-bus.sh %{buildroot}/%{_bindir}
 %{_includedir}/scsi/*
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.44-1
+-   Automatic Version Bump
 *   Mon Sep 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.43-2
 -   Fix compilation issue against glibc-2.28
 *   Tue Oct 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.43-1
