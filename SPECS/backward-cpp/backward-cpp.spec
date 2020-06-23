@@ -1,11 +1,11 @@
 Summary:        Pretty stack trace printer for C++.
 Name:           backward-cpp
-Version:        1.4
-Release:        3%{?dist}
+Version:        1.5
+Release:        1%{?dist}
 License:        MIT
 URL:            https://github.com/bombela/backward-cpp
 Source0:        %{name}-v%{version}.tar.gz
-%define sha1    backward-cpp=a29b22917ebcfeb58f3aa3039d8a866aba049c16
+%define sha1    backward-cpp=c76754a92d92690be9cf99a35823839da8cced89
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -32,7 +32,7 @@ make %{?_smp_mflags}
 %install
 cd build
 make DESTDIR=%{buildroot} install
-install -vm644 libbackward.so %{buildroot}%{_libdir}/
+install -vm644 libbackward.so %{buildroot}%{_lib64dir}/
 
 %check
 cd build
@@ -48,10 +48,12 @@ make test
 %files
 %defattr(-,root,root)
 %{_includedir}/backward.hpp
-%{_libdir}/backward/BackwardConfig.cmake
-%{_libdir}/libbackward.so
+%{_lib64dir}/backward/BackwardConfig.cmake
+%{_lib64dir}/libbackward.so
 
 %changelog
+*    Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5-1
+-    Automatic Version Bump
 *    Tue Nov 20 2018 Sujay G <gsujay@vmware.com> 1.4-3
 -    Added %check section
 *    Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.4-2
