@@ -1,11 +1,11 @@
 Summary:        Cron Daemon
 Name:           cronie
-Version:        1.5.1
+Version:        1.5.5
 Release:        1%{?dist}
 License:        GPLv2+ and MIT and BSD and ISC
 URL:            https://github.com/cronie-crond/cronie
 Source0:        https://github.com/cronie-crond/cronie/releases/download/cronie-%{version}/cronie-%{version}.tar.gz
-%define sha1    cronie=0d757921c1ed248cffa14a754a50ccd27e9a8245
+%define sha1    cronie=1e616d6d119b3b313f05edb381436e45f98477be
 Source1:        run-parts.sh
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -27,8 +27,7 @@ sed -i 's/^\s*auth\s*include\s*password-auth$/auth       include    system-auth/
      s/^\s*account\s*include\s*password-auth$/account    include    system-account/g;
      s/^\s*session\s*include\s*password-auth$/session    include    system-session/g;' pam/crond
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --sysconfdir=/etc   \
     --localstatedir=/var\
     --with-pam          \
@@ -102,6 +101,7 @@ make %{?_smp_mflags} check
 
 %attr(4755,root,root) %{_bindir}/crontab
 %{_bindir}/run-parts
+%{_bindir}/cronnext
 %{_sbindir}/crond
 %{_sbindir}/anacron
 
@@ -119,6 +119,8 @@ make %{?_smp_mflags} check
 %ghost %attr(0600,root,root) %{_localstatedir}/spool/anacron/cron.weekly
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.5-1
+-   Automatic Version Bump
 *   Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 1.5.1-1
 -   Update to 1.5.1
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.5.0-13
