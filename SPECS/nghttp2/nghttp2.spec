@@ -1,7 +1,7 @@
 Summary:    nghttp2 is an implementation of HTTP/2 and its header compression algorithm, HPACK.
 Name:       nghttp2
 Version:    1.41.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    MIT
 URL:        https://nghttp2.org
 Group:      Applications/System
@@ -34,10 +34,10 @@ These are the header files of nghttp2.
 
 %build
 autoreconf -i
-./configure --prefix=%{_prefix}        \
-            --disable-static           \
-            --enable-lib-only          \
-            --disable-python-bindings 
+%configure  \
+    --disable-static \
+    --enable-lib-only \
+    --disable-python-bindings
 
 make %{?_smp_mflags}
 
@@ -59,6 +59,8 @@ rm %{buildroot}/%{_libdir}/*.la
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Wed Jun 24 2020 Tapas Kundu <tkundu@vmware.com> 1.41.0-2
+-   Used configure macro and removed whitespaces
 *   Thu Jun 11 2020 Ashwin H <ashwinh@vmware.com> 1.41.0-1
 -   Upgrade to version 1.41.0
 *   Fri Sep 7 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.33.0-1
