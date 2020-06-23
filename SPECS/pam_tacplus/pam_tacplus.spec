@@ -1,6 +1,6 @@
 Summary:        PAM Tacacs+ module
 Name:           pam_tacplus
-Version:        1.4.1
+Version:        1.5.1
 Release:        1%{?dist}
 License:        GPL
 URL:            http://tacplus.sourceforge.net/
@@ -8,7 +8,7 @@ Group:          System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    pam_tacplus=2138724a9a2e0978ab1fecc1c7b29a3288728dca
+%define sha1    pam_tacplus=a0103f8e907889d5e22379c4288f7870f52fc93b
 BuildRequires:  Linux-PAM-devel
 
 %description
@@ -82,5 +82,7 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.1-1
+-   Automatic Version Bump
 *   Tue Apr 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.4.1-1
 -   Initial packaging for Photon.
