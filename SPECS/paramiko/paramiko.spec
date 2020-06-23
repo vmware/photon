@@ -2,15 +2,15 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Python SSH module
 Name:           paramiko
-Version:        2.4.2
-Release:        2%{?dist}
+Version:        2.7.1
+Release:        1%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.paramiko.org/
 Source0:        https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
-%define         sha1 paramiko=f9b9729b57f53f47ef09ae10af9bdc89a5c4201c
+%define         sha1 paramiko=a52fc133b817dc4d8b036bec71173c376e9dc38d
 
 BuildArch:      noarch
 
@@ -75,15 +75,15 @@ LANG=en_US.UTF-8 python3 test.py
 
 %files
 %defattr(-, root, root)
-%doc *.txt
 %{python2_sitelib}/*
 
 %files -n python3-paramiko
 %defattr(-, root, root)
-%doc *.txt
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.7.1-1
+-   Automatic Version Bump
 *   Wed Mar 06 2019 Tapas Kundu <tkundu@vmware.com> 2.4.2-2
 -   Added bcrypt and PyNaCl to requires.
 *   Thu Jan 10 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.4.2-1
