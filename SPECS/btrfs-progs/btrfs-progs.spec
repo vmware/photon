@@ -1,12 +1,12 @@
 Name:       btrfs-progs
-Version:    4.19
+Version:    5.7
 Release:    1%{?dist}
 Summary:    Userspace programs for btrfs
 Group:      System Environment/Base
 License:    GPLv2+
 URL:        http://btrfs.wiki.kernel.org/index.php/Main_Page
 Source0:    https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/%{name}-v%{version}.tar.xz
-%define sha1 btrfs-progs=df4d34b8ecf5eaac177a0b121b41e67fce9612e1
+%define sha1 btrfs-progs=ba1608e1d5b17692ed0b149f5aa82935b44b7d3e
 Vendor:     VMware, Inc.
 Distribution:   Photon
 BuildRequires:  lzo-devel
@@ -47,6 +47,8 @@ make DISABLE_DOCUMENTATION=1 %{?_smp_mflags}
 #disabled the documentation
 make DISABLE_DOCUMENTATION=1 mandir=%{_mandir} bindir=%{_sbindir} libdir=%{_libdir} incdir=%{_includedir} install DESTDIR=%{buildroot}
 
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}
 
@@ -68,12 +70,14 @@ rm -rf %{buildroot}
 
 %files devel
 %{_includedir}/*
-%{_libdir}/libbtrfs.a
-%{_libdir}/libbtrfsutil.a
+%exclude %{_libdir}/libbtrfs.a
+%exclude %{_libdir}/libbtrfsutil.a
 %{_libdir}/libbtrfs.so
 %{_libdir}/libbtrfsutil.so
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 5.7-1
+-   Automatic Version Bump
 *   Mon Nov 19 2018 Sujay G <gsujay@vmware.com> 4.19-1
 -   Bump btrfs-progs version to 4.19
 *   Wed Sep 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.10.2-2
