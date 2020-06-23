@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.126
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -73,7 +73,10 @@ Patch41:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch42:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 #Fix CVE-2018-20669
 Patch43:        CVE-2018-20669-make-user_access_begin-do-access_ok.patch
-
+#Fix for CVE-2020-12888
+Patch44:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
+Patch45:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
+Patch46:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:        0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 # Patch to call drbg and dh crypto tests from tcrypt
@@ -212,6 +215,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch41 -p1
 %patch42 -p1
 %patch43 -p1
+%patch44 -p1
+%patch45 -p1
+%patch46 -p1
 
 %patch98 -p1
 %patch99 -p1
@@ -433,6 +439,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Jun 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.126-2
+-   Fix for CVE-2020-12888
 *   Fri Jun 05 2020 Vikash Bansal <bvikas@vmware.com> 4.19.126-1
 -   Update to version 4.19.126
 *   Thu Jun 04 2020 Ajay Kaher <akaher@vmware.com> 4.19.124-2

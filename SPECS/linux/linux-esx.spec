@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.126
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -87,6 +87,10 @@ Patch47:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch48:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 #Fix CVE-2018-20669
 Patch49:        CVE-2018-20669-make-user_access_begin-do-access_ok.patch
+#Fix for CVE-2020-12888
+Patch50:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
+Patch51:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
+Patch52:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 
 Patch55:        0001-p9fs_dir_readdir-offset-support.patch
 Patch56:	0002-Add-9p-zero-copy-data-path-using-crossfd.patch
@@ -195,6 +199,9 @@ This Linux package contains hmac sha generator kernel module.
 %patch47 -p1
 %patch48 -p1
 %patch49 -p1
+%patch50 -p1
+%patch51 -p1
+%patch52 -p1
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
@@ -332,6 +339,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Jun 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.126-2
+-   Fix for CVE-2020-12888
 *   Fri Jun 05 2020 Vikash Bansal <bvikas@vmware.com> 4.19.126-1
 -   Update to version 4.19.126
 *   Thu Jun 04 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.124-3

@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.126
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -99,6 +99,10 @@ Patch44:	secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
 Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
 #Fix for CVE-2018-20669
 Patch47:        CVE-2018-20669-make-user_access_begin-do-access_ok.patch
+#Fix for CVE-2020-12888
+Patch48:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
+Patch49:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
+Patch50:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -329,6 +333,9 @@ This Linux package contains hmac sha generator kernel module.
 %patch44 -p1
 %patch45 -p1
 %patch47 -p1
+%patch48 -p1
+%patch49 -p1
+%patch50 -p1
 
 %patch98 -p1
 %patch100 -p1
@@ -694,6 +701,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Tue Jun 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.126-4
+-   Fix for CVE-2020-12888
 *   Mon Jun 15 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.126-3
 -   Add intel_sgx module (-drivers-intel-sgx subpackage)
 *   Wed Jun 10 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.126-2
