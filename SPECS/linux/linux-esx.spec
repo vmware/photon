@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.226
+Version:        4.9.228
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d7dbf6c324dedc9a68768391b10de7ff5971278b
+%define sha1 linux=6634eb065b0e58b89a69517970e07c58fb3a9ab7
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -42,8 +42,6 @@ Patch19:        05-pv-ops-clocksource.patch
 Patch20:        06-pv-ops-boot_clock.patch
 Patch21:        07-vmware-only.patch
 Patch22:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2020-10757
-Patch23:        0001-mm-Fix-mremap-not-considering-huge-pmd-devmap.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
 Patch25:        init-do_mounts-recreate-dev-root.patch
@@ -143,7 +141,6 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
-%patch23 -p1
 %patch24 -p1
 %patch25 -p1
 %patch30 -p1
@@ -262,6 +259,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.9.228-1
+-   Update to version 4.9.228
 *   Mon Jun 08 2020 Vikash Bansal <bvikas@vmware.com> 4.9.226-1
 -   Update to version 4.9.226
 *   Thu Jun 04 2020 Ajay Kaher <akaher@vmware.com> 4.9.224-3

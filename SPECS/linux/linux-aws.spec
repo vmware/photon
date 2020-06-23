@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.226
+Version:        4.9.228
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d7dbf6c324dedc9a68768391b10de7ff5971278b
+%define sha1 linux=6634eb065b0e58b89a69517970e07c58fb3a9ab7
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -46,8 +46,6 @@ Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch24:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch25:        0002-allow-also-ecb-cipher_null.patch
 Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2020-10757
-Patch27:        0001-mm-Fix-mremap-not-considering-huge-pmd-devmap.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 Patch30:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
@@ -232,7 +230,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
-%patch27 -p1
 %patch28 -p1
 %patch30 -p1
 %patch31 -p1
@@ -454,6 +451,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.9.228-1
+-   Update to version 4.9.228
 *   Mon Jun 08 2020 Vikash Bansal <bvikas@vmware.com> 4.9.226-1
 -   Update to version 4.9.226
 *   Thu Jun 04 2020 Ajay Kaher <akaher@vmware.com> 4.9.224-3
