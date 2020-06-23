@@ -1,13 +1,13 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
-Version:        0.11.1
-Release:        2%{?dist}
+Version:        0.16.0
+Release:        1%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    createrepo_c=89040f2c34200ae08876a645b4a160beb03a9298
+%define sha1    createrepo_c=dab1acedd6b3f92bccf5448dee432b5ee1d1432f
 URL:            https://github.com/rpm-software-management/createrepo_c
 BuildRequires:  cmake
 BuildRequires:  curl-devel
@@ -20,6 +20,10 @@ BuildRequires:  rpm-devel
 BuildRequires:  xz-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  python3-devel
+BuildRequires:  drpm-devel
+BuildRequires:  zchunk-devel
+Requires:       drpm
+Requires:       zchunk-libs
 %if %{with_check}
 Requires:       libxml2
 %endif
@@ -48,7 +52,7 @@ sed -i 's|g_thread_init|//g_thread_init|'  src/sqliterepo_c.c
 
 %build
 mkdir build && cd build
-cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr ..
+cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DWITH_LIBMODULEMD=OFF ..
 make %{?_smp_mflags}
 
 %install
@@ -64,7 +68,6 @@ ln -sf %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 
 %files
 %defattr(-, root, root)
-/etc/bash_completion.d/createrepo_c.bash
 %{_bindir}/*
 %{_lib64dir}/*.so.*
 %{_mandir}/*
@@ -77,6 +80,8 @@ ln -sf %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 %{_lib64dir}/pkgconfig/%{name}.pc
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.16.0-1
+-   Automatic Version Bump
 *   Wed Jun 19 2019 Ankit Jain <ankitja@vmware.com> 0.11.1-2
 -   Added libxml2 as Requires for makecheck.
 *   Tue Sep 04 2018 Keerthana K <keerthanak@vmware.com> 0.11.1-1
