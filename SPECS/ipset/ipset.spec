@@ -1,6 +1,6 @@
-Summary:    administration tool for IP sets 
+Summary:    administration tool for IP sets
 Name:       ipset
-Version:    6.38
+Version:    7.6
 Release:    1%{?dist}
 License:    GPLv2
 URL:        http://ipset.netfilter.org/
@@ -8,7 +8,7 @@ Group:      System Environment/tools
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:     ipset.netfilter.org/%{name}-%{version}.tar.bz2
-%define sha1 ipset=7e5a25c449067e95c2e3a2c60768a1e301f12458
+%define sha1 ipset=6f2bcf61ae657a1c4ac5cce1c2523d3ca2127fde
 BuildRequires:    libmnl-devel
 Requires:         libmnl
 %description
@@ -24,7 +24,7 @@ then ipset may be the proper tool for you.
 %package devel
 Summary:    Development files for the ipset library
 Group:      Development/Libraries
-Requires:   ipset
+Requires:   %{name} = %{version}-%{release}
 
 %description devel
 Libraries and header files for ipset.
@@ -33,10 +33,7 @@ Libraries and header files for ipset.
 %setup -q
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
+%configure \
     --enable-static=no \
     --with-kmod=no
 make %{?_smp_mflags}
@@ -75,6 +72,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libipset.pc
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 7.6-1
+-   Automatic Version Bump
 *   Thu Sep 06 2018 Ankit Jain <ankitja@vmware.com> 6.38-1
 -   Upgrading version to 6.38
 *   Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 6.32-1
