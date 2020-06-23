@@ -2,16 +2,16 @@
 
 Summary:          Elastic Search
 Name:             elasticsearch
-Version:          6.8.9
+Version:          6.8.10
 Release:          1%{?dist}
 License:          Apache License Version 2.0
 URL:              https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
 Source0:          %{name}-%{version}.tar.gz
-%define sha1      %{name}-%{version}.tar.gz=94d004bb0588e66cc82dbe9579f3f206327cb243
+%define sha1      %{name}-%{version}.tar.gz=063835b80b35d1c97bcbc0f0adc4fa566926c6c2
 Source1:          cacerts
 %define sha1      cacerts=f584c7c1f48c552f39acfb5560a300a657d9f3bb
 Source2:          distribution-for-elasticsearch-%{version}.tar.gz
-%define sha1      distribution-for-elasticsearch=32848961226ddfad9e2bf7162e9fb631d94ed2eb
+%define sha1      distribution-for-elasticsearch=0035e7622d2ab5df36bc91f6302c282718e4294b
 Group:            Development/Daemons
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -83,8 +83,10 @@ chmod 755 %{buildroot}/var/run/%{name}/
 chmod 755 %{buildroot}%{_datadir}/%{name}/data
 
 %pre
-getent group elasticsearch >/dev/null || /usr/sbin/groupadd -r elasticsearch
-getent passwd elasticsearch >/dev/null || /usr/sbin/useradd --comment "ElasticSearch" --shell /bin/bash -M -r --groups elasticsearch --home /usr/share/elasticsearch elasticsearch
+if [ $1 -eq 1 ] ; then
+    getent group elasticsearch >/dev/null || /usr/sbin/groupadd -r elasticsearch
+    getent passwd elasticsearch >/dev/null || /usr/sbin/useradd --comment "ElasticSearch" --shell /bin/bash -M -r --groups elasticsearch --home /usr/share/elasticsearch elasticsearch
+fi
 
 %post
 %{_sbindir}/ldconfig
@@ -122,6 +124,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+*    Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 6.8.10-1
+-    Update to release 6.8.10
 *    Tue Jun 09 2020 Tapas Kundu <tkundu@vmware.com> 6.8.9-1
 -    update to release 6.8.9
 *    Wed Oct 9 2019 Michelle Wang <michellew@vmware.com> 6.7.0-4
