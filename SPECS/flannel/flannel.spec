@@ -1,11 +1,12 @@
+%define debug_package %{nil}
 Summary:        Overlay network for containers based on etcd
 Name:           flannel
-Version:        0.9.1
+Version:        0.12.0
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/coreos/flannel
 Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.tar.gz
-%define sha1 flannel=6182ef01f4ce21c1173c3124983b4d2b9331d28a
+%define sha1    flannel=6c077472ff5746b6394e66065448bc1bebd63bae
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,7 +15,6 @@ BuildRequires:  gcc
 BuildRequires:  unzip
 BuildRequires:  go
 Requires:       etcd >= 2.0.0
-%define debug_package %{nil}
 
 %description
 flannel is a virtual network that provides a subnet to a container runtime
@@ -93,6 +93,8 @@ GOPATH=%{_builddir} make test
 %config(noreplace) %{_sysconfdir}/flannel/flanneld.conf
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.12.0-1
+-   Automatic Version Bump
 *   Tue Dec 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.1-1
 -   Flannel 0.9.1.
 *   Tue Nov 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.0-1
