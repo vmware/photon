@@ -3,8 +3,8 @@
 %global gem_name fluent-plugin-s3
 
 Name: rubygem-fluent-plugin-s3
-Version:        1.1.6
-Release:        2%{?dist}
+Version:        1.4.0
+Release:        1%{?dist}
 Summary:        Amazon S3 output plugin for Fluentd event collector.
 Group:          Development/Languages
 License:        Apache 2.0
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/fluent-plugin-s3-%{version}.gem
-%define sha1    fluent-plugin-s3=e911d12945058ddfc5982767c8d7cebbbf96913a
+%define sha1    fluent-plugin-s3=4e79e5fe29667884e653f3ef2a04a4866cc2f1fc
 BuildRequires:  ruby
 %if %{with_check}
 BuildRequires:  git
@@ -45,6 +45,8 @@ rake test
 %{gemdir}
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.0-1
+-   Automatic Version Bump
 *   Tue Nov 27 2018 Sujay G <gsujay@vmware.com> 1.1.6-2
 -   Added %check section
 *   Mon Sep 17 2018 srinidhira0 <srinidhir@vmware.com> 1.1.6-1

@@ -4,7 +4,7 @@
 
 Name: rubygem-http
 Version:        0.9.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An easy-to-use client library for making requests from Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -38,5 +38,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 0.9.8-2
+-   rebuilt with ruby-2.7.1
 *   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.9.8-1
 -   Initial build

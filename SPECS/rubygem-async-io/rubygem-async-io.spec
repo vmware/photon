@@ -3,7 +3,7 @@
 %global gem_name async-io
 
 Name: rubygem-async-io
-Version:        1.25.0
+Version:        1.30.0
 Release:        1%{?dist}
 Summary:        Provides support for asynchonous TCP, UDP, UNIX and SSL sockets.
 Group:          Development/Libraries
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    async-io=2fb2c7655b4f888fa24321ad8924945266e4cddb
+%define sha1    async-io=0b1c652f400af70306bdf7339fcbc576e86b7994
 BuildRequires:  ruby >= 2.3.0, ruby < 3.0.0
 
 Requires: rubygem-async >= 1.14.0, rubygem-async < 2.0.0
@@ -35,5 +35,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.30.0-1
+-   Automatic Version Bump
 *   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 1.25.0-1
 -   Initial build

@@ -3,7 +3,7 @@
 %global gem_name async-http
 
 Name: rubygem-async-http
-Version:        0.48.2
+Version:        0.52.4
 Release:        1%{?dist}
 Summary:        A HTTP client and server library.
 Group:          Development/Libraries
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    async-http=d1e3bf88e199f418c71a15849f38cc406e4c6566
+%define sha1    async-http=404252d4440091b8b7b1f614edb8739f35d8304d
 BuildRequires:  ruby
 
 Requires: rubygem-async >= 1.19.0, rubygem-async < 2.0.0
@@ -41,5 +41,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 0.52.4-1
+-   Automatic Version Bump
 *   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.48.2-1
 -   Initial build

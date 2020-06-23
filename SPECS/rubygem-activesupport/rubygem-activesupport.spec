@@ -3,14 +3,16 @@
 %global gem_name activesupport
 
 Name: rubygem-activesupport
-Version:        5.2.1
+Version:        6.0.3.2
 Release:        1%{?dist}
 Summary:        Support libaries for Rails framework.
 Group:          Development/Languages
 License:        MIT
+Vendor:         VMware, Inc.
+Distribution:   Photon
 URL:            https://rubygems.org/gems/activesupport/versions/%{version}
 Source0:        https://rubygems.org/downloads/activesupport-%{version}.gem
-%define sha1    activesupport=8ddcbf455baa1f8fbf1ce94d075d45ab67fd3cda
+%define sha1    activesupport=b92c473960b1ef01ee562d318604e1c8d1e6b175
 BuildRequires:  ruby
 
 %description
@@ -31,6 +33,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.3.2-1
+-   Automatic Version Bump
 *   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 5.2.1-1
 -   Update to version 5.2.1
 *   Fri Aug 25 2017 Kumar Kaushik <kaushikk@vmware.com> 5.0.0.1-1

@@ -3,7 +3,7 @@
 %global gem_name fluent-plugin-kubernetes_metadata_filter
 
 Name: rubygem-fluent-plugin-kubernetes_metadata_filter
-Version:        2.2.0
+Version:        2.5.2
 Release:        1%{?dist}
 Summary:        Fluentd Filter plugin to add Kubernetes metadata.
 Group:          Development/Libraries
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        Apache-2.0
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    fluent-plugin-kubernetes_metadata_filter=8048f933d5a5cf80be039ff6970dc7b6507085b0
+%define sha1    fluent-plugin-kubernetes_metadata_filter=6e8b3dff1b227a2c22ba2796ad1885ce1fa67a77
 BuildRequires:  ruby >= 2.1
 
 Requires: rubygem-fluentd >= 0.14.0, rubygem-fluentd < 2.0.0
@@ -45,5 +45,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.2-1
+-   Automatic Version Bump
 *   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 2.2.0-1
 -   Initial build

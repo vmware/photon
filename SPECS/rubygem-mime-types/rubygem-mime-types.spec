@@ -3,7 +3,7 @@
 %global gem_name mime-types
 
 Name: rubygem-mime-types
-Version:        3.2.2
+Version:        3.3.1
 Release:        1%{?dist}
 Summary:        The mime-types library provides a library and registry for information about MIME content type definitions.
 Group:          Development/Libraries
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    mime-types=c1403f642bf029c7e7cc206816e2538d73b7b9bf
+%define sha1    mime-types=cf163ec2292220917c000f77257d42a8fce9236f
 BuildRequires:  ruby >= 2.0
 
 Requires: rubygem-mime-types-data >= 3.2015.0, rubygem-mime-types-data < 4.0.0
@@ -42,5 +42,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3.1-1
+-   Automatic Version Bump
 *   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 3.2.2-1
 -   Initial build

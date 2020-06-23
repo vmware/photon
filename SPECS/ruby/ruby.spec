@@ -1,14 +1,14 @@
 Summary:        Ruby
 Name:           ruby
-Version:        2.5.8
-Release:        2%{?dist}
+Version:        2.7.1
+Release:        1%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://cache.ruby-lang.org/pub/ruby/2.5/%{name}-%{version}.tar.bz2
-%define sha1    ruby=823b6b009a6e44fef27d2dacb069067fe355d5d8
+Source0:        https://cache.ruby-lang.org/pub/ruby/2.7/%{name}-%{version}.tar.bz2
+%define sha1    ruby=e83a084a4329e1e3f55591bf5ac0c8ebed6444b3
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -17,21 +17,32 @@ BuildRequires:  tzdata
 Requires:       ca-certificates
 Requires:       openssl
 Requires:       gmp
+
 %description
 The Ruby package contains the Ruby development environment.
 This is useful for object-oriented scripting.
 
 %prep
 %setup -q
+
 %build
+# below loop fixes the files in libexec to point correct ruby
+# Only verfied and to be used with ruby version 2.7.1
+# Any future versions needs to be verified
+for f in `grep -ril "\/usr\/local\/bin\/ruby" ./libexec/`; do
+  sed -i "s|/usr/local/bin/ruby|/usr/bin/ruby|g" $f
+  head -1 $f
+done
 %configure \
         --enable-shared \
         --docdir=%{_docdir}/%{name}-%{version} \
 	--with-compress-debug-sections=no
 make %{?_smp_mflags} COPY="cp -p"
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
+
 %check
 chmod g+w . -R
 useradd test -G root -m
@@ -39,8 +50,10 @@ sudo -u test  make check TESTS="-v"
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -52,8 +65,11 @@ rm -rf %{buildroot}/*
 %{_datadir}/ri/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
+%{_mandir}/man5/*
 
 %changelog
+*   Tue Sep 01 2020 Sujay G <gsujay@vmware.com> 2.7.1-1
+-   Bump version to 2.7.1
 *   Fri Jul 17 2020 Ankit Jain <ankitja@vmware.com> 2.5.8-2
 -   Added --with-compress-debug-sections=no to fix build issue
 *   Wed May 13 2020 Sujay G <gsujay@vmware.com> 2.5.8-1

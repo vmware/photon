@@ -3,7 +3,7 @@
 %global gem_name mime-types-data
 
 Name: rubygem-mime-types-data
-Version:        3.2015.1120
+Version:        3.2020.0512
 Release:        1%{?dist}
 Summary:        Provides a registry for information about MIME media type definitions.
 Group:          Development/Libraries
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    mime-types-data=7e0ba3069053eb0aa536fa9bf08f9de59d7bc5df
+%define sha1    mime-types-data=b88617eb20be7bf97ca26ff37480ea402a89fa3c
 BuildRequires:  ruby >= 2.0
 
 BuildArch: noarch
@@ -36,5 +36,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2020.0512-1
+-   Automatic Version Bump
 *   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 3.2015.1120-1
 -   Initial build

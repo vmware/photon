@@ -4,7 +4,7 @@
 
 Name: rubygem-domain_name
 Version:        0.5.20190701
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        This is a Domain Name manipulation library for Ruby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -35,5 +35,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 0.5.20190701-2
+-   Rebuilt using ruby-2.7.1
 *   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.5.20190701-1
 -   Initial build

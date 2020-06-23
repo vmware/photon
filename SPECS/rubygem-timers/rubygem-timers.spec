@@ -4,7 +4,7 @@
 
 Name: rubygem-timers
 Version:        4.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Schedule procs to run after a certain time, or at periodic intervals, using any API that accepts a timeout.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -33,5 +33,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 4.3.0-2
+-   Rebuilt using ruby-2.7.1
 *   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 4.3.0-1
 -   Initial build

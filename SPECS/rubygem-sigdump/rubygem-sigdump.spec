@@ -4,9 +4,11 @@
 
 Name: rubygem-sigdump
 Version:        0.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        signal handler which dumps backtrace of running threads
 Group:          Development/Languages
+Vendor:         VMware, Inc.
+Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/sigdump-%{version}.gem
@@ -32,5 +34,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 0.2.4-2
+-   rebuilt using ruby-2.7.1
 *   Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 0.2.4-1
 -   Initial build

@@ -3,7 +3,7 @@
 %global gem_name console
 
 Name: rubygem-console
-Version:        1.4.0
+Version:        1.9.0
 Release:        1%{?dist}
 Summary:        Beautiful logging for Ruby.
 Group:          Development/Libraries
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    console=f06b54e69f4838b23b77de56741294004f70ebb9
+%define sha1    console=c69eae796e7092cf55956725a309a2b44b30bb80
 BuildRequires:  ruby
 
 BuildArch: noarch
@@ -33,5 +33,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.0-1
+-   Automatic Version Bump
 *   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 1.4.0-1
 -   Initial build

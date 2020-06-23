@@ -3,8 +3,8 @@
 %global gem_name nio4r
 
 Name: rubygem-nio4r
-Version:        2.4.0
-Release:        2%{?dist}
+Version:        2.5.2
+Release:        1%{?dist}
 Summary:        Cross-platform asynchronous I/O primitives for scalable network clients and servers.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    nio4r=dbad76d9a1a7d130aebd1c6d1d5c59a0c2fcacb9
+%define sha1    nio4r=39ad93e566cf491fc0f480459cf79110fe77498a
 BuildRequires:  gmp-devel
 BuildRequires:  ruby >= 2.3.0
 
@@ -33,6 +33,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.2-1
+-   Automatic Version Bump
 *   Wed Sep 4 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 2.4.0-2
 -   Enabled build for non x86_64 build archs
 *   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 2.4.0-1

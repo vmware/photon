@@ -4,9 +4,11 @@
 
 Name: rubygem-jmespath
 Version:        1.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Implements JMESPath for Ruby.
 Group:          Development/Languages
+Vendor:         VMware, Inc.
+Distribution:   Photon
 License:        Apache 2.0
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/jmespath-%{version}.gem
@@ -29,5 +31,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.4.0-2
+-   rebuilt with ruby-2.7.1
 *   Mon Jul 30 2018 Srinidhi Rao <srinidhir@vmware.com> 1.4.0-1
 -   Initial build

@@ -4,8 +4,8 @@
 %global gem_name backports
 
 Name: rubygem-backports
-Version:        3.11.4
-Release:        2%{?dist}
+Version:        3.18.2
+Release:        1%{?dist}
 Summary:        Backports of Ruby features for older Ruby
 Group:          Development/Languages
 License:        MIT
@@ -13,7 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://github.com/marcandre/backports
 Source0:        https://rubygems.org/gems/backports-%{version}.gem
-%define sha1    backports=edf08f3a0d9e202048857d78ddda44e59294084c
+%define sha1    backports=d2376d0d275cd3fa51d9d978d58b199754cfd701
 BuildRequires:  ruby
 BuildRequires:  rubygem-activesupport
 BuildRequires:  rubygem-i18n
@@ -52,6 +52,8 @@ rake test
 
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.18.2-1
+-   Automatic Version Bump
 *   Fri Nov 23 2018 Sujay G <gsujay@vmware.com> 3.11.4-2
 -   Updated %check section
 *   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 3.11.4-1

@@ -4,9 +4,11 @@
 
 Name: rubygem-thread_safe
 Version:        0.3.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Thread safe programming support for Ruby.
 Group:          Development/Languages
+Vendor:         VMware, Inc.
+Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/activesupport/thread_safe/%{version}
 Source0:        https://rubygems.org/downloads/thread_safe-%{version}.gem
@@ -29,5 +31,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 0.3.6-2
+-   Rebuilt using ruby-2.7.1
 *   Fri Aug 25 2017 Kumar Kaushik <kaushikk@vmware.com> 0.3.6-1
 -   Initial build

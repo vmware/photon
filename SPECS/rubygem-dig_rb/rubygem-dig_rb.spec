@@ -4,9 +4,11 @@
 
 Name: rubygem-dig_rb
 Version:        1.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Array/Hash/Struct#dig backfill for ruby
 Group:          Development/Languages
+Vendor:         VMware, Inc.
+Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/dig_rb-%{version}.gem
@@ -30,5 +32,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.0.1-2
+-   Rebuilt using ruby-2.7.1
 *   Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 1.0.1-1
 -   Initial build

@@ -4,7 +4,7 @@
 
 Name: rubygem-protocol-http2
 Version:        0.9.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A low level implementation of the HTTP/2 protocol.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -36,5 +36,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 2 2020 Sujay G <gsujay@vmware.com> 0.9.5-2
+-   Rebuilt with ruby-2.7.1
 *   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.9.5-1
 -   Initial build

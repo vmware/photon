@@ -3,7 +3,7 @@
 %global gem_name protocol-hpack
 
 Name: rubygem-protocol-hpack
-Version:        1.4.1
+Version:        1.4.2
 Release:        1%{?dist}
 Summary:        A compresssor and decompressor for HTTP 2.0 HPACK.
 Group:          Development/Libraries
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    protocol-hpack=06f6a9e2fa1d38dec5724ced2bcc55f0c4eeb1c4
+%define sha1    protocol-hpack=eb126382026e825577ae2dee206c613ee6076d24
 BuildRequires:  ruby
 
 BuildArch: noarch
@@ -33,5 +33,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.2-1
+-   Automatic Version Bump
 *   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 1.4.1-1
 -   Initial build

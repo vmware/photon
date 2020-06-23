@@ -4,7 +4,7 @@
 
 Name: rubygem-protocol-http
 Version:        0.12.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provides abstractions to handle HTTP protocols.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -33,5 +33,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 0.12.1-2
+-   Rebuild the gem with ruby-2.7.1
 *   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.12.1-1
 -   Initial build

@@ -5,7 +5,7 @@
 Name:           rubygem-syslog_protocol
 Summary:        Syslog Protocol
 Version:        0.9.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -32,5 +32,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 0.9.2-2
+-   Rebuilt using ruby-2.7.1
 *   Mon Jan 27 2020 Nikolay Stanchev <nstanchev@vmware.com> 0.9.2-1
 -   Initial build

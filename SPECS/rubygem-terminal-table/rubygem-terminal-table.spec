@@ -3,7 +3,7 @@
 %define gem_name terminal-table
 Name:           rubygem-terminal-table
 Version:        1.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Simple, feature rich ascii table generation library
 Group:          Applications/Programming
 Vendor:         VMware, Inc.
@@ -15,17 +15,24 @@ Source0:        https://rubygems.org/downloads/terminal-table-%{version}.gem
 BuildRequires:  ruby
 Requires:       ruby
 Requires:       rubygem-unicode-display_width
+
 %description
 Simple, feature rich ascii table generation library
+
 %prep
 %setup -q -c -T
+
 %build
 %install
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+
 %files
 %defattr(-,root,root,-)
 %{gemdir}
+
 %changelog
+*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.8.0-2
+-   Rebuilt using ruby-2.7.1
 *   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 1.8.0-1
 -   Update to version 1.8.0
 *   Wed Mar 29 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.3-2

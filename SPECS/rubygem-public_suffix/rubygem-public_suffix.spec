@@ -4,7 +4,7 @@
 
 Name: rubygem-public_suffix
 Version:        3.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        PublicSuffix can parse and decompose a domain name into top level domain, domain and subdomains.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -33,5 +33,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 3.1.1-2
+-   Built with ruby-2.7.1
 *   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 3.1.1-1
 -   Initial build

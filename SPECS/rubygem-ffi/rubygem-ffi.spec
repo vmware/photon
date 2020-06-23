@@ -3,14 +3,14 @@
 %global gem_name ffi
 
 Name: rubygem-ffi
-Version:        1.9.25
-Release:        3%{?dist}
+Version:        1.13.1
+Release:        1%{?dist}
 Summary:        Ruby FFI library
 Group:          Development/Languages
 License:        BSD-2-Clause
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/ffi-%{version}.gem
-%define sha1    ffi=86fa011857f977254ccf39f507587310f9ade768
+%define sha1    ffi=cfa25e7a3760c3ec16723cb8263d9b7a52d0eadf
 BuildRequires:  ruby > 2.1.0
 
 %description
@@ -30,6 +30,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %exclude /usr/lib/ruby/gems/2.5.0/gems/ffi-1.9.25/ext/ffi_c/libffi-%{_arch}-linux/include/ffitarget.h
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.13.1-1
+-   Automatic Version Bump
 *   Tue Sep 25 2018 Ajay Kaher <akaher@vmware.com> 1.9.25-3
 -   Adding aarch64 support.
 *   Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 1.9.25-2

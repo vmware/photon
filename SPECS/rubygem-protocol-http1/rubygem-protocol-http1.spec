@@ -4,7 +4,7 @@
 
 Name: rubygem-protocol-http1
 Version:        0.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A low level implementation of the HTTP/1 protocol.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -35,5 +35,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 0.9.0-2
+-   Rebuilt with ruby-2.7.1
 *   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.9.0-1
 -   Initial build

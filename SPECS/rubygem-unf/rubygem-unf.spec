@@ -4,7 +4,7 @@
 
 Name: rubygem-unf
 Version:        0.1.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        This is a wrapper library to bring Unicode Normalization Form support to Ruby/JRuby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -34,5 +34,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 0.1.4-2
+-   rebuilt with ruby-2.7.1
 *   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.1.4-1
 -   Initial build

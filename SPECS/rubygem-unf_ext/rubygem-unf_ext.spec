@@ -3,8 +3,8 @@
 %global gem_name unf_ext
 
 Name: rubygem-unf_ext
-Version:        0.0.7.6
-Release:        2%{?dist}
+Version:        0.0.7.7
+Release:        1%{?dist}
 Summary:        Unicode Normalization Form support library for CRuby.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    unf_ext=e1d4eb2d5832e6c6f58c0384c3c33521042cc498
+%define sha1    unf_ext=d0d10680d5bb965d1186ccefb6c01a35e31c4a56
 BuildRequires:  ruby
 BuildRequires:  gmp-devel
 
@@ -32,6 +32,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 0.0.7.7-1
+-   Automatic Version Bump
 *   Wed Sep 4 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.0.7.6-2
 -   Enabled build for non x86_64 build archs
 *   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.0.7.6-1

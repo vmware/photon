@@ -5,7 +5,7 @@
 Name:           rubygem-remote_syslog_sender
 Summary:        Message sender that sends directly to a remote syslog endpoint (Support UDP, TCP, TCP+TLS)
 Version:        1.2.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -35,6 +35,8 @@ patch -d %{buildroot}/%{gemdir}/gems/%{gem_name}-%{version} -p1 < %{PATCH0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.2.1-3
+-   Rebuilt using ruby-2.7.1
 *   Wed Mar 11 2020 Nikolay Stanchev <nstanchev@vmware.com> 1.2.1-2
 *   Mon Jan 27 2020 Nikolay Stanchev <nstanchev@vmware.com> 1.2.1-1
 -   Initial build

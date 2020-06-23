@@ -2,8 +2,8 @@
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name trollop
 Name:           rubygem-trollop
-Version:        2.9.9
-Release:        2%{?dist}
+Version:        2.9.10
+Release:        1%{?dist}
 Summary:        Commandline option parser for Ruby
 Group:          Applications/Programming
 License:        BSD
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL: https://rubygems.org/gems/%{gem_name}
 Source0: https://rubygems.org/downloads/trollop-%{version}.gem
-%define sha1 trollop=744730e58c4c56b5d652e210cb36974593eb1556
+%define sha1 trollop=2957df69faed52eac64ab67c43c5de7e38fd6d61
 BuildRequires: ruby
 %if %{with_check}
 BuildRequires: git
@@ -34,6 +34,8 @@ rake test
 %defattr(-,root,root,-)
 %{gemdir}
 %changelog
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.10-1
+- Automatic Version Bump
 * Tue Nov 27 2018 Sujay G <gsujay@vmware.com> 2.9.9-2
 - Added %check section
 * Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 2.9.9-1

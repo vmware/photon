@@ -3,7 +3,7 @@
 %global gem_name fluentd
 
 Name: rubygem-fluentd
-Version:        1.6.3
+Version:        1.11.2
 Release:        1%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        Apache 2
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/fluentd-%{version}.gem
-%define sha1    fluentd=1cfa3644b36c33ef700ea4c490060f4d9a907570
+%define sha1    fluentd=3a4d0b93d5b54770343c3e3b6350ecbc25b3684b
 BuildRequires:  ruby >= 2.1
 
 Requires(post): systemd
@@ -55,6 +55,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.11.2-1
+-   Automatic Version Bump
 *   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 1.6.3-1
 -   Update to version 1.6.3
 *   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 1.2.5-1
