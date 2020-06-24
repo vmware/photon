@@ -1,7 +1,7 @@
 Summary:	advanced key-value store
 Name:		redis
 Version:	4.0.14
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://redis.io/
 Group:		Applications/Databases
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
 %define sha1 redis=21a4e37d532ff2469943864096db36fd1b8f43bb
 Patch0:         redis-conf.patch
+Patch1:         CVE-2020-14147.patch
 BuildRequires:  gcc
 BuildRequires:  systemd
 BuildRequires:  make
@@ -22,6 +23,7 @@ Redis is an in-memory data structure store, used as database, cache and message 
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 make %{?_smp_mflags}
@@ -78,6 +80,8 @@ exit 0
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+* Wed Jun 24 2020 Shreyas B <shreyasb@vmware.com> 4.0.14-2
+- Fix for CVE-2020-14147
 * Wed Aug 14 2019 Kuladeep Rayalla <krayalla@vmware.com> 4.0.14-1
 - Upgrade redis to 4.0.14 to fix CVE-2019-10193
 - Deleting the path for CVE-2019-10192, redis-4.0.14 includes the fix
