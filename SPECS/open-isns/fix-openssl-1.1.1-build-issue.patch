@@ -1,0 +1,24 @@
+--- open-isns-0.100/pki.c	2020-01-23 21:02:36.000000000 +0000
++++ open-isns-0.100_/pki.c	2020-06-24 07:02:33.094143758 +0000
+@@ -56,6 +56,10 @@
+     if (priv_key != NULL)
+         *priv_key = d->priv_key;
+ }
++#else
++/* EVP_dss1 is now gone completely, so just use EVP_sha1 instead. */
++#define EVP_dss1 EVP_sha1
++#endif
+ BN_GENCB *BN_GENCB_new(void)
+ {
+     return OPENSSL_malloc(sizeof(BN_GENCB));
+@@ -64,10 +68,6 @@
+ {
+     OPENSSL_free(cb);
+ }
+-#else
+-/* EVP_dss1 is now gone completely, so just use EVP_sha1 instead. */
+-#define EVP_dss1 EVP_sha1
+-#endif
+ 
+ 
+ static int	isns_openssl_init = 0;
