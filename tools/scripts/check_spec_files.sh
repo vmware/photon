@@ -90,7 +90,7 @@ function check-for-configure()
     exit 1
   fi
 
-  grep "%configure" $1 > /dev/null || exit 0
+  grep "%configure" $1 > /dev/null || return
 
   grep -Pzo ".*\\\\(\n)%configure.*" $1
   if [ $? -eq 0 ] ; then
