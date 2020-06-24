@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           nxtgn-openssl
 Version:        1.1.1g
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -68,7 +68,6 @@ make
 make DESTDIR=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=nxtgn-openssl install
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
 
-mv %{buildroot}/%{_includedir}/openssl %{buildroot}/%{_includedir}/nxtgn-openssl
 mv %{buildroot}/%{_bindir}/openssl %{buildroot}/%{_bindir}/nxtgn-openssl
 mv %{buildroot}/%{_bindir}/c_rehash %{buildroot}/%{_bindir}/nxtgn-c_rehash
 
@@ -101,7 +100,7 @@ rm -rf %{buildroot}/*
 %exclude %{_docdir}/*
 
 %files devel
-%{_includedir}/nxtgn-openssl/
+%{_includedir}/openssl/
 %exclude %{_mandir}/man3/*
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/libssl.a
@@ -110,15 +109,17 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcrypto.so
 
 %files perl
-/%{_sysconfdir}/nxtgn-openssl/misc/tsget
-/%{_sysconfdir}/nxtgn-openssl/misc/tsget.pl
-/%{_sysconfdir}/nxtgn-openssl/misc/CA.pl
+%{_sysconfdir}/nxtgn-openssl/misc/tsget
+%{_sysconfdir}/nxtgn-openssl/misc/tsget.pl
+%{_sysconfdir}/nxtgn-openssl/misc/CA.pl
 
 %files c_rehash
-/%{_bindir}/nxtgn-c_rehash
-/%{_bindir}/nxtgn-rehash_ca_certificates.sh
+%{_bindir}/nxtgn-c_rehash
+%{_bindir}/nxtgn-rehash_ca_certificates.sh
 
 %changelog
+*   Wed Jun 24 2020 Alexey Makhalov <amakhalov@vmware.com> 1.1.1g-2
+-   Move headers to original location /usr/include/openssl
 *   Tue Apr 21 2020 Srinidhi Rao <srinidhir@vmware.com> 1.1.1g-1
 -   Upgrade to openssl-1.1.1g release
 *   Thu Apr 16 2020 Srinidhi Rao <srinidhir@vmware.com> 1.1.1d-3
