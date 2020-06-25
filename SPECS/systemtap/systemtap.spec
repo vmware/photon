@@ -7,15 +7,15 @@
 %define        with_sqlite    1
 
 Name:          systemtap
-Version:       4.0
-Release:       2%{?dist}
+Version:       4.3
+Release:       1%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://sourceware.org/systemtap/
 Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
-%define sha1 systemtap=40a21d71b0d42bc216f75befd3fca82701821211
+%define sha1 systemtap=14769266f6591b85895a5f40e516f8228e83476e
 License:       GPLv2+
 
 BuildRequires: elfutils-devel
@@ -296,6 +296,7 @@ fi
 %{_mandir}/man1
 %{_mandir}/man3/stap*.3stap*
 %{_mandir}/man7/warning::symbols.7stap*
+%{_mandir}/man7/warning::buildid.7stap*
 %{_mandir}/man7/stappaths.7*
 %{_mandir}/man8/stapsh.8*
 %{_mandir}/man8/systemtap.8*
@@ -357,6 +358,8 @@ fi
 %{_mandir}/man8/systemtap-service.8*
 
 %changelog
+*   Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 4.3-1
+-   Automatic Version Bump
 *   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 4.0-2
 -   Added BuildRequires python2-devel
 *   Tue Dec 04 2018 Keerthana K <keerthanak@vmware.com> 4.0-1
