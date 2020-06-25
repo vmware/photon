@@ -2,14 +2,14 @@
 %global debug_package %{nil}
 Summary:        U-Boot EFI firmware
 Name:		u-boot
-Version:	2019.10
-Release:	2%{?dist}
+Version:	2020.07
+Release:	1%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        ftp://ftp.denx.de/pub/u-boot/u-boot-%{version}.tar.bz2
-%define sha1 u-boot=f50493fd92e926b8558671bc248e78de2b57299f
+%define sha1 u-boot=59dd6875b0ceeb5202ef027f26bf3c99a8d
 Source1:        rpi_3_photon_defconfig
 Source2:        fw_env.config
 Patch0:		0001-XXX-openSUSE-XXX-Load-dtb-from-part.patch
@@ -59,6 +59,8 @@ install -D -m 0644 %{SOURCE2} %{buildroot}/etc/fw_env.config
 /usr/bin/fw_setenv
 
 %changelog
+*   Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 2020.07-1
+-   Automatic Version Bump
 *   Thu Oct 31 2019 Alexey Makhalov <amakhalov@vmware.com> 2019.10-2
 -   Move /boot/esp/u-boot.bin to /boot/efi/u-boot.bin.
 *   Thu Oct 10 2019 Ajay Kaher <akaher@vmware.com> 2019.10-1
