@@ -1,6 +1,6 @@
 Summary:	software font engine.
 Name:		freetype2
-Version:	2.9.1
+Version:	2.10.2
 Release:	1%{?dist}
 License:	BSD/GPL
 URL:		http://www.freetype.org/
@@ -8,7 +8,7 @@ Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
-%define sha1 freetype=7498739e34e5dca4c61d05efdde6191ba69a2df0
+%define sha1 freetype=2c53944cd7eaefb9cb207672d8a4368c31aa97c4
 BuildRequires:	libtool
 BuildRequires:	zlib-devel
 
@@ -19,15 +19,13 @@ FreeType is a software font engine that is designed to be small, efficient, high
 Summary:	Header and development files
 Requires:	freetype2 = %{version}-%{release}
 %description	devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
 %setup -q -n freetype-%{version}
 
 %build
-./configure \
-	--prefix=%{_prefix} \
-	--with-harfbuzz=no
+%configure --with-harfbuzz=no
 make %{?_smp_mflags}
 
 %install
@@ -56,6 +54,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 2.10.2-1
+- Automatic Version Bump
 *	Wed Sep 12 2018 Sujay G <gsujay@vmware.com> 2.9.1-1
 -	version bump to 2.9.1
 *       Thu Jun 14 2018 Tapas Kundu <tkundu@vmware.com> 2.7.1-4
