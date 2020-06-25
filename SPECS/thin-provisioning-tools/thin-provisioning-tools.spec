@@ -1,12 +1,12 @@
 Summary:        Thin provisioning tools
 Name:           thin-provisioning-tools
-Version:        0.7.0
+Version:        0.8.5
 Release:        1%{?dist}
 License:        GPLv3+
 Group:          System Environment/Base
 URL:            https://github.com/jthornber/thin-provisioning-tools
 Source0:        thin-provisioning-tools-%{version}.tar.gz
-%define sha1    thin-provisioning-tools=618dd1e11d34ba99ce2eb3880303283ade5b708e
+%define sha1    thin-provisioning-tools=69a716544832f6727db75e8c90938fbfb6a4704f
 Patch0:         thin-provisioning-tools-fix-for-gcc-6.3.patch
 BuildRequires:  expat-devel, libaio-devel, boost-devel
 Requires:       expat, libaio
@@ -43,29 +43,11 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %doc COPYING README.md
 %{_mandir}/man8/*
-%{_sbindir}/pdata_tools
-%{_sbindir}/cache_check
-%{_sbindir}/cache_dump
-%{_sbindir}/cache_metadata_size
-%{_sbindir}/cache_restore
-%{_sbindir}/cache_repair
-%{_sbindir}/cache_writeback
-%{_sbindir}/era_check
-%{_sbindir}/era_dump
-%{_sbindir}/era_restore
-%{_sbindir}/era_invalidate
-%{_sbindir}/thin_check
-%{_sbindir}/thin_dump
-%{_sbindir}/thin_metadata_size
-%{_sbindir}/thin_restore
-%{_sbindir}/thin_repair
-%{_sbindir}/thin_rmap
-%{_sbindir}/thin_delta
-%{_sbindir}/thin_ls
-%{_sbindir}/thin_trim
-%{_sbindir}/thin_show_duplicates
+%{_sbindir}/*
 
 %changelog
+*   Wed Jun 10 2020 Gerrit Photon <photon-checkins@vmware.com> 0.8.5-1
+-   Automatic Version Bump
 *   Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 0.7.0-1
 -   Update version to stable release version 0.7.0.
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.6.3-3
