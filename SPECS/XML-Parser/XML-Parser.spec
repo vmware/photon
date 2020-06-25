@@ -1,11 +1,11 @@
 Summary:	XML-Parser perl module
 Name:		XML-Parser
-Version:	2.44
-Release:	6%{?dist}
+Version:	2.46
+Release:	1%{?dist}
 License:	GPL+
 URL:		http://search.cpan.org/~toddr/%{name}-%{version}/
 Source0:		http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/%{name}-%{version}.tar.gz
-%define sha1 XML-Parser=0ab6b932713ec1f9927a1b1c619b6889a5c12849
+%define sha1 XML-Parser=40cba8a10847b71804684e5c72a410277f47f8ce
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -45,6 +45,8 @@ make %{?_smp_mflags} test
 %{_libdir}/perl5/*
 %{_mandir}/man3/*
 %changelog
+*   Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 2.46-1
+-   Automatic Version Bump
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.44-6
 -   Cross compilation support
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 2.44-5
