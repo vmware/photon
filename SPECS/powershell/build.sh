@@ -1,7 +1,7 @@
 #!/bin/bash
 #See https://github.com/PowerShell/PowerShell/blob/master/docs/building/internals.md
 
-set -e
+set -ex
 
 for f in src/powershell-unix src/ResGen src/TypeCatalogGen; do
   dotnet restore $f
@@ -22,7 +22,8 @@ popd
 
 #
 touch DELETE_ME_TO_DISABLE_CONSOLEHOST_TELEMETRY
-dotnet publish /property:GenerateFullPaths=true --configuration Linux --framework netcoreapp2.1 --runtime linux-x64 src/powershell-unix --output bin
+dotnet publish /property:GenerateFullPaths=true --configuration Linux --framework netcoreapp3.1 --runtime linux-x64 src/powershell-unix --output bin
 
 # Even after powershell rpm built, dotnet processes are alive, following to kill them:
 killall -15 dotnet
+
