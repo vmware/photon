@@ -34,7 +34,7 @@ To configure Photon OS to handle a networking use case, such as setting a static
 
 After you create a network configuration file with a `.network` extension, you must run the `chmod` command to set the new file's mode bits to `644`. Example: 
 
-    chmod 644 10-static-en.network
+    chown systemd-network:systemd-network 10-static-en.network
 
 For Photon OS to apply the new configuration, you must restart the `systemd-networkd` service by running the following command: 
 
