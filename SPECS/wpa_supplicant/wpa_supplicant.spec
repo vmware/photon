@@ -1,14 +1,14 @@
 Summary:          WPA client
 Name:             wpa_supplicant
-Version:          2.7
-Release:          2%{?dist}
+Version:          2.9
+Release:          1%{?dist}
 License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          https://w1.fi/releases/%{name}-%{version}.tar.gz
-%define sha1 wpa=3c3c2c6bc493fb32b919d9b410768324f3729e25
+%define sha1 wpa=b784c0e5e56889c81d027757a4623659bf15f9a8
 Patch0:           CVE-2019-16275_AP_Silently_ignore_management_frame_from_unexpected_source_address.patch
 
 BuildRequires:    libnl-devel openssl-devel
@@ -97,6 +97,8 @@ EOF
 %{_sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 
 %changelog
+*   Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9-1
+-   Automatic Version Bump
 *   Wed Oct 23 2019 Shreyas B. <shreyasb@vmware.com> 2.7-2
 -   Fixes for CVE-2019-16275.
 *   Thu Jan 3 2019 Michelle Wang <michellew@vmware.com> 2.7-1
