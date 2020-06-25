@@ -1,12 +1,11 @@
-diff -Naur xml-security-c-1.7.3.orig/xsec/tools/checksig/InteropResolver.cpp xml-security-c-1.7.3/xsec/tools/checksig/InteropResolver.cpp
---- xml-security-c-1.7.3.orig/xsec/tools/checksig/InteropResolver.cpp	2012-07-23 09:56:10.000000000 -0700
-+++ xml-security-c-1.7.3/xsec/tools/checksig/InteropResolver.cpp	2017-03-11 19:23:48.540875297 -0800
-@@ -645,7 +645,7 @@
+--- xml-security-c-1.7.3.orig/xsec/tools/checksig/InteropResolver.cpp	2020-06-19 03:30:26.414051453 +0000
++++ xml-security-c-1.7.3/xsec/tools/checksig/InteropResolver.cpp	2020-06-19 03:31:02.470050815 +0000
+@@ -422,7 +422,7 @@
+         }
+     }
  
- 	}
- 
--	return false;
-+	return NULL;
+-    return false;
++    return NULL;
  
  }
  
