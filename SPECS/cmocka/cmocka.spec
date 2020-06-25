@@ -1,13 +1,13 @@
 Summary:       unit testing framework for C
 Name:          cmocka
 Version:       1.1.5
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 License:       Apache 2.0
 URL:           https://cmocka.org/
 Source0:       https://cmocka.org/files/1.1/%{name}-%{version}.tar.xz
-%define sha1 cmocka=2c0892423f6653062f45566172b85a4621a74ddb
+%define sha1 cmocka=eb708adc176e0c60c43e437f9a5f58a8fea79d5a
 Distribution:  Photon
 BuildRequires: cmake
 
@@ -40,12 +40,14 @@ make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}/*
 
 %files
-%exclude %{_libdir}/cmake
-%{_libdir}/libcmocka.*
-%{_libdir}/pkgconfig/cmocka.pc
+%exclude %{_lib64dir}/cmake
+%{_lib64dir}/libcmocka.*
+%{_lib64dir}/pkgconfig/cmocka.pc
 %{_includedir}/*
 
 %changelog
+*  Thu Jun 25 2020 Ajay Kaher <akaher@vmware.com> 1.1.5-2
+-  Corrected include file path
 *  Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.5-1
 -  Automatic Version Bump
 *  Fri Sep 07 2018 Ajay Kaher <akaher@vmware.com> 1.1.2-1
