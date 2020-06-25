@@ -1,14 +1,14 @@
 Summary:        Programs for compressing and decompressing files
 Name:           xz
-Version:        5.2.4
-Release:        2%{?dist}
+Version:        5.2.5
+Release:        1%{?dist}
 URL:            http://tukaani.org/xz
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://tukaani.org/xz/%{name}-%{version}.tar.xz
-%define sha1    xz=1d3a6910c28d40df0134f4a49e5570e8249120c5
+%define sha1    xz=fa2ae4db119f639a01b02f99f1ba671ece2828eb
 Requires:       xz-libs = %{version}-%{release}
 %description
 The Xz package contains programs for compressing and
@@ -80,6 +80,7 @@ make  %{?_smp_mflags}  check
 %{_bindir}/xzgrep
 %{_bindir}/xzdec
 %{_mandir}/man1/*
+%exclude %{_mandir}/de/man1/*
 
 %files devel
 %{_includedir}/lzma.h
@@ -95,6 +96,8 @@ make  %{?_smp_mflags}  check
 %defattr(-,root,root)
 
 %changelog
+*   Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 5.2.5-1
+-   Automatic Version Bump
 *   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 5.2.4-2
 -   Cross compilation support
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 5.2.4-1
