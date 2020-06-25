@@ -1,0 +1,18 @@
+diff --git a/bin/zkServer.sh b/bin/zkServer.sh
+--- a/bin/zkServer.sh  2020-06-19 23:40:37.997872185 +0000
++++ b/bin/zkServer.sh 2020-06-19 23:41:07.148271767 +0000
+@@ -91,14 +91,7 @@
+     ZOOCFG="$2"
+ fi
+
+-if $cygwin
+-then
+-    ZOOCFG=`cygpath -wp "$ZOOCFG"`
+-    # cygwin has a "kill" in the shell itself, gets confused
+-    KILL=/bin/kill
+-else
+-    KILL=kill
+-fi
++KILL=kill
+
+ echo "Using config: $ZOOCFG" >&2
