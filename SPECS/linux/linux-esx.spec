@@ -2,16 +2,20 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.230
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
+
+%define uname_r %{version}-%{release}-esx
+
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=93ecfd65f75f21d1980939b14e26f3415e6bd3c3
 Source1:       config-esx
-Source2:       update_photon_cfg.postun
+Source2:       pre-preun-postun-tasks.inc
+
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch2:        linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
@@ -98,8 +102,6 @@ Patch64:        4.4-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.pa
 # For Spectre
 Patch70: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 
-
-
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -112,8 +114,10 @@ BuildRequires: Linux-PAM
 BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
 Requires:      filesystem kmod coreutils
+Requires(pre): coreutils
+Requires(preun): coreutils
+Requires(post): coreutils
 Requires(postun): coreutils
-%define uname_r %{version}-%{release}-esx
 
 %description
 The Linux kernel build for GOS for VMware hypervisor.
@@ -289,6 +293,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Aug 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.4.230-3
+-   Keep modules of running kernel till next boot
 *   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.230-2
 -   Fix CVE-2020-14331
 *   Tue Jul 21 2020 Sharan Turlapati <sturlapati@vmware.com> 4.4.230-1
@@ -687,7 +693,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Thu Aug 13 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-3
 -   Added environment file(photon.cfg) for a grub.
 *   Tue Aug 11 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-2
-    Added pci-probe-vmware.patch. Removed unused modules. Decreased boot time. 
+    Added pci-probe-vmware.patch. Removed unused modules. Decreased boot time.
 *   Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-1
-    Initial commit. Use patchset from Clear Linux. 
-
+-   Initial commit. Use patchset from Clear Linux.

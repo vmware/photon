@@ -2,19 +2,23 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.230
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
+
+%define uname_r %{version}-%{release}
+
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
 %define sha1 linux=93ecfd65f75f21d1980939b14e26f3415e6bd3c3
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
 %define sha1 ena_linux=84138e8d7eb230b45cb53835edf03ca08043d471
-Source3:        update_photon_cfg.postun
+Source3:        pre-preun-postun-tasks.inc
+
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch2:         linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
@@ -100,10 +104,10 @@ Patch60:        4.4-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.pa
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 
-
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
 %endif
+
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -117,12 +121,13 @@ BuildRequires:  openssl-devel audit-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  elfutils-libelf-devel
 Requires:       filesystem kmod coreutils
+Requires(pre): coreutils
+Requires(preun): coreutils
+Requires(post): coreutils
 Requires(postun): coreutils
-%define uname_r %{version}-%{release}
 
 %description
-The Linux package contains the Linux kernel. 
-
+The Linux package contains the Linux kernel.
 
 %package dev
 Summary:    Kernel Dev
@@ -169,7 +174,6 @@ Requires:     audit
 Requires:    %{name} = %{version}-%{release}
 %description tools
 This package contains the 'perf' performance analysis tools for Linux kernel.
-
 
 %prep
 %setup -q
@@ -390,6 +394,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Wed Aug 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.4.230-3
+-   Keep modules of running kernel till next boot
 *   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.230-2
 -   Fix CVE-2020-14331
 *   Tue Jul 21 2020 Sharan Turlapati <sturlapati@vmware.com> 4.4.230-1
@@ -710,7 +716,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 -   patch: e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 -   .config: disable rt group scheduling - not supported by systemd
 *   Wed Jun 15 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.8-7
--   fixed the capitalization for - System.map 
+-   fixed the capitalization for - System.map
 *   Thu May 26 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-6
 -   patch: REVERT-sched-fair-Beef-up-wake_wide.patch
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.8-5
@@ -787,7 +793,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 *   Mon Nov 09 2015 Vinay Kulkarni <kulkarniv@vmware.com> 4.2.0-2
 -   Enable Geneve module support for generic kernel.
 *   Fri Oct 23 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-1
--   Upgraded the generic linux kernel to version 4.2.0 & and updated timer handling to full tickless mode. 
+-   Upgraded the generic linux kernel to version 4.2.0 & and updated timer handling to full tickless mode.
 *   Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.0.9-5
 -   Added driver support for frame buffer devices and ACPI
 *   Wed Sep 2 2015 Alexey Makhalov <amakhalov@vmware.com> 4.0.9-4
@@ -803,11 +809,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 -   Rename -gpu-drivers to -drivers-gpu in accordance to directory structure.
 -   Added -sound package/
 *   Tue Aug 11 2015 Anish Swaminathan<anishs@vmware.com> 3.19.2-4
--   Removed Requires dependencies. 
+-   Removed Requires dependencies.
 *   Fri Jul 24 2015 Harish Udaiya Kumar <hudaiyakumar@gmail.com> 3.19.2-3
 -   Updated the config file to include graphics drivers.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.13.3-2
 -   Update according to UsrMove.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.13.3-1
 -   Initial build. First version
-
