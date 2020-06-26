@@ -1,22 +1,25 @@
 Summary:        Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:           atftp
 Version:        0.7.1
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            http://sourceforge.net/projects/atftp
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://sourceforge.net/projects/atftp/files/latest/download/%{name}-%{version}.tar.gz
 
+Source0:        http://sourceforge.net/projects/atftp/files/latest/download/%{name}-%{version}.tar.gz
 %define sha1 atftp=fc9e9f821dfd2f257b4a5c32b948ed60b4e31fd1
-Patch0:         atftpd_circumvent_tftp_size_restrictions.patch
+
+Patch0:         atftpd-circumvent-tftp-size-restrictions.patch
+Patch1:         CVE-2019-11365.patch
+Patch2:         CVE-2019-11366.patch
 
 BuildRequires:  systemd
 Requires:       systemd
-Requires:	shadow
-Provides: tftp-server
-Obsoletes: tftp-server
+Requires:	    shadow
+Provides:       tftp-server
+Obsoletes:      tftp-server
 
 %description
 Multithreaded TFTP server implementing all options (option extension and
@@ -31,15 +34,15 @@ Obsoletes: tftp
 Summary: Advanced Trivial File Transfer Protocol (ATFTP) - TFTP client
 Group: Applications/Internet
 
-
 %description client
 Advanced Trivial File Transfer Protocol client program for requesting
 files using the TFTP protocol.
 
-
 %prep
 %setup
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 sed -i "s/-g -Wall -D_REENTRANT/-g -Wall -D_REENTRANT -std=gnu89/" configure.ac
 
 %build
@@ -54,7 +57,7 @@ mkdir -p %{buildroot}/%{_var}/lib/tftpboot
 mkdir -p %{buildroot}/lib/systemd/system
 cat << EOF >> %{buildroot}/lib/systemd/system/atftpd.service
 [Unit]
-Description=The tftp server serves files using the trivial file transfer protocol. 
+Description=The tftp server serves files using the trivial file transfer protocol.
 
 [Service]
 EnvironmentFile=/etc/sysconfig/atftpd
@@ -91,11 +94,14 @@ if [ $1 -eq 1 ] ; then
     getent group  tftp  >/dev/null || groupadd -r tftp
     getent passwd tftp  >/dev/null || useradd  -c "tftp" -s /bin/false -g tftp -M -r tftp
 fi
+
 %preun
 %systemd_preun atftpd.socket
+
 %post
 /sbin/ldconfig
 %systemd_post atftpd.socket
+
 %postun
 /sbin/ldconfig
 if [ $1 -eq 0 ] ; then
@@ -125,12 +131,13 @@ fi
 %{_mandir}/man1/atftp.1.gz
 %{_bindir}/atftp
 
-
 %changelog
+*   Fri Jun 26 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.7.1-9
+-   Fix CVE-2019-11365, CVE-2019-11366
 *   Wed Oct 18 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.1-8
 -   apply patch for large file support
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-7
--   Fixed logic to restart the active services after upgrade 
+-   Fixed logic to restart the active services after upgrade
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.1-6
 -	GA - Bump release of all rpms
 *   Fri May 6 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-5
@@ -142,6 +149,5 @@ fi
 -   Use systemctl to enable/disable service.
 *	Mon Nov 23 2015 Xiaolin Li <xiaolinl@vmware.com> 0.7.1-2
 -	Chang tftpd from xinetd service to systemd service.
-*       Thu Nov 12 2015 Kumar Kaushik <kaushikk@vmware.com> 0.7.1-1
--       Initial build.  First version
-
+*   Thu Nov 12 2015 Kumar Kaushik <kaushikk@vmware.com> 0.7.1-1
+-   Initial build.  First version
