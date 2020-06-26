@@ -1,0 +1,163 @@
+Fate #303031: Circumvent TFTP size restrictions in atftpd
+The size of a single image file that can be transferred with TFTP is limited to
+2^(2*8) *BLOCKSIZE (as per RFC 1350 there are only two bytes for the block
+counter). This is problematic for one of our customers who needs to transfer
+100+ MB Windows images using a TFTP client (NT bootloader) which has a
+hardwared BLOCKSIZE setting of 1432).
+
+block rollover
+http://www.compuphase.com/tftp.htm
+
+Patch originally from OpenSUSE:
+https://build.opensuse.org/package/view_file/openSUSE:Leap:42.2/atftp/atftpd-0.7_circumvent_tftp_size_restrictions.patch?expand=1
+
+Modified to apply for atftp-0.7.1 used in PhotonOS
+
+diff --git a/tftp_def.h b/tftp_def.h.new
+index e4b338d..6849d6f 100644
+--- a/tftp_def.h
++++ b/tftp_def.h.new
+@@ -32,6 +32,7 @@
+ #define TIMEOUT       5         /* Client timeout */
+ #define S_TIMEOUT     5         /* Server timout. */
+ #define NB_OF_RETRY   5
++#define MAXBLOCKS   1000000      /* maximum number of blocks in a download */
+ 
+ /* definition to use tftp_options structure */
+ #define OPT_FILENAME  0
+diff --git a/tftp_file.c b/tftp_file.c.new
+index 27ae4d0..baab66c 100644
+--- a/tftp_file.c
++++ b/tftp_file.c.new
+@@ -622,8 +622,8 @@ int tftp_send_file(struct client_data *data)
+      int state = S_SEND_REQ;    /* current state in the state machine */
+      int timeout_state = state; /* what state should we go on when timeout */
+      int result;
+-     int block_number = 0;
+-     int last_block = -1;
++     long block_number = 0;
++     long last_block = -1;
+      int data_size;             /* size of data received */
+      int sockfd = data->sockfd; /* just to simplify calls */
+      struct sockaddr_storage sa; /* a copy of data.sa_peer */
+@@ -637,8 +637,8 @@ int tftp_send_file(struct client_data *data)
+      int convert = 0;           /* if true, do netascii convertion */
+      char string[MAXLEN];
+ 
+-     int prev_block_number = 0; /* needed to support netascii convertion */
+-     int prev_file_pos = 0;
++     long prev_block_number = 0; /* needed to support netascii convertion */
++     long prev_file_pos = 0;
+      int temp = 0;
+ 
+      data->file_size = 0;
+@@ -745,7 +745,7 @@ int tftp_send_file(struct client_data *data)
+                               data_size, data->data_buffer);
+                data->file_size += data_size;
+                if (data->trace)
+-                    fprintf(stderr, "sent DATA <block: %d, size: %d>\n",
++                    fprintf(stderr, "sent DATA <block: %ld, size: %d>\n",
+                             block_number + 1, data_size - 4);
+                state = S_WAIT_PACKET;
+                break;
+@@ -785,7 +785,7 @@ int tftp_send_file(struct client_data *data)
+                     }
+                     block_number = ntohs(tftphdr->th_block);
+                     if (data->trace)
+-                         fprintf(stderr, "received ACK <block: %d>\n",
++                         fprintf(stderr, "received ACK <block: %ld>\n",
+                                  block_number);
+                     if ((last_block != -1) && (block_number > last_block))
+                     {
+diff --git a/tftp_io.c b/tftp_io.c.new
+index 605a9c2..b559d5a 100644
+--- a/tftp_io.c
++++ b/tftp_io.c.new
+@@ -350,8 +350,8 @@ int tftp_get_packet(int sock1, int sock2, int *sock, struct sockaddr_storage *sa
+ /*
+  * Read from file and do netascii conversion if needed
+  */
+-int tftp_file_read(FILE *fp, char *data_buffer, int data_buffer_size, int block_number,
+-                   int convert, int *prev_block_number, int *prev_file_pos, int *temp)
++int tftp_file_read(FILE *fp, char *data_buffer, int data_buffer_size, long block_number,
++                   int convert, long *prev_block_number, long *prev_file_pos, int *temp)
+ {
+      int i;
+      int c;
+diff --git a/tftp_io.h b/tftp_io.h.new
+index da8c369..7840744 100644
+--- a/tftp_io.h
++++ b/tftp_io.h.new
+@@ -52,8 +52,8 @@ int tftp_send_data(int socket, struct sockaddr_storage *s_inn, short block_numbe
+ int tftp_get_packet(int sock1, int sock2, int *sock, struct sockaddr_storage *sa,
+                     struct sockaddr_storage *from, struct sockaddr_storage *to,
+                     int timeout, int *size, char *data);
+-int tftp_file_read(FILE *fp, char *buffer, int buffer_size, int block_number, int convert,
+-                   int *prev_block_number, int *prev_file_pos, int *temp);
++int tftp_file_read(FILE *fp, char *buffer, int buffer_size, long block_number, int convert,
++                   long *prev_block_number, long *prev_file_pos, int *temp);
+ int tftp_file_write(FILE *fp, char *data_buffer, int data_buffer_size, int block_number,
+                     int data_size, int convert, int *prev_block_number, int *temp);
+ #endif
+diff --git a/tftpd_file.c b/tftpd_file.c.new
+index da1d6c9..3b37f94 100644
+--- a/tftpd_file.c
++++ b/tftpd_file.c.new
+@@ -407,8 +407,9 @@ int tftpd_send_file(struct thread_data *data)
+      int state = S_BEGIN;
+      int timeout_state = state;
+      int result;
+-     int block_number = 0;
+-     int last_block = -1;
++     long block_number = 0;
++     long last_block = -1;
++     int block_loops = 0;
+      int data_size;
+      struct sockaddr_storage *sa = &data->client_info->client;
+      struct sockaddr_storage from;
+@@ -431,8 +432,8 @@ int tftpd_send_file(struct thread_data *data)
+      struct client_info *client_old = NULL;
+      struct tftp_opt options[OPT_NUMBER];
+ 
+-     int prev_block_number = 0; /* needed to support netascii convertion */
+-     int prev_file_pos = 0;
++     long prev_block_number = 0; /* needed to support netascii convertion */
++     long prev_file_pos = 0;
+      int temp = 0;
+ 
+      /* look for mode option */
+@@ -565,11 +566,12 @@ int tftpd_send_file(struct thread_data *data)
+           logger(LOG_INFO, "blksize option -> %d", result);
+      }
+ 
+-     /* Verify that the file can be sent in 2^16 block of BLKSIZE octets */
+-     if ((file_stat.st_size / (data->data_buffer_size - 4)) > 65535)
++     /* Verify that the file can be sent in MAXBLOCKS blocks of BLKSIZE octets */
++     if ((file_stat.st_size / (data->data_buffer_size - 4)) > MAXBLOCKS)
+      {
+           tftp_send_error(sockfd, sa, EUNDEF, data->data_buffer, data->data_buffer_size);
+-          logger(LOG_NOTICE, "Requested file to big, increase BLKSIZE");
++          logger(LOG_NOTICE, "Requested file too big, increase BLKSIZE");
++          logger(LOG_NOTICE, "Only %d blocks of %d bytes can be served.", MAXBLOCKS, data->data_buffer_size);
+           if (data->trace)
+                logger(LOG_DEBUG, "sent ERROR <code: %d, msg: %s>", EUNDEF,
+                       tftp_errmsg[EUNDEF]);
+@@ -880,10 +882,15 @@ int tftpd_send_file(struct thread_data *data)
+                     }
+                     /* The ACK is from the current client */
+                     number_of_timeout = 0;
+-                    block_number = ntohs(tftphdr->th_block);
++                    block_number = (block_loops * 65536) + ntohs(tftphdr->th_block);
+                     if (data->trace)
+-                         logger(LOG_DEBUG, "received ACK <block: %d>",
+-                                block_number);
++                    {
++                         logger(LOG_DEBUG, "received ACK <block: %d>", block_number);
++                    }
++                    if (ntohs(tftphdr->th_block) == 65535)
++                    {
++                         block_loops++;
++                    };
+                     if ((last_block != -1) && (block_number > last_block))
+                     {
+                          state = S_END;
