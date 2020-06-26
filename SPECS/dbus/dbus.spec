@@ -1,7 +1,7 @@
 Summary:        DBus for systemd
 Name:           dbus
 Version:        1.11.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
@@ -9,6 +9,8 @@ Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar
 %define sha1    dbus=2e2247398abb22115e724b5e955fece2307dddb0
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Patch0:         CVE-2020-12049-1.patch
+Patch1:         CVE-2020-12049-2.patch
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
 BuildRequires:  xz-devel
@@ -27,6 +29,8 @@ It contains the libraries and header files to create applications
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 %build
 ./configure --prefix=%{_prefix}                 \
             --sysconfdir=%{_sysconfdir}         \
@@ -72,6 +76,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+*   Fri Jun 27 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.11.12-2
+-   Added patches, Fix CVE-2020-12049
 *   Fri Apr 21 2017 Bo Gan <ganb@vmware.com> 1.11.12-1
 -   Update to 1.11.12
 *   Tue Dec 20 2016 Xiaolin Li <xiaolinl@vmware.com> 1.8.8-8
