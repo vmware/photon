@@ -4,7 +4,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python-Twisted
 Version:        17.1.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -12,7 +12,7 @@ Distribution:   Photon
 Url:            https://twistedmatrix.com
 Source0:        https://files.pythonhosted.org/packages/source/T/Twisted/Twisted-%{version}.tar.bz2
 %define         sha1 Twisted=1cd9e3e39323f555a89d882cbbcf001015bd3113
-
+Patch0:         CVE-2020-10108_10109.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -53,6 +53,8 @@ Python 3 version.
 
 %prep
 %setup -q -n Twisted-%{version}
+%patch0 -p1
+
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -78,6 +80,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Sat Jun 27 2020 Tapas Kundu <tkundu@vmware.com> 17.1.0-8
+-   Address CVE-2020-10108 and CVE-2020-10109
 *   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 17.1.0-7
 -   Release bump to use python 3.5.4.
 *   Thu Jun 01 2017 Xiaolin Li <rqiu@vmware.com> 17.1.0-6
