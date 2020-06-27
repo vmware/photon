@@ -690,7 +690,7 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
-*   Mon Jun 22 2020 Keerthana K <keerthanak@vmware.com> 4.19.129-1
+*   Sat Jun 27 2020 Keerthana K <keerthanak@vmware.com> 4.19.129-1
 -   Update to version 4.19.129
 *   Tue Jun 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.126-4
 -   Fix for CVE-2020-12888
