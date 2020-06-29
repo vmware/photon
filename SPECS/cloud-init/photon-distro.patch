@@ -1,12 +1,11 @@
-diff --git a/cloudinit/distros/photon.py b/cloudinit/distros/photon.py
-index e69de29b..f3a973fd 100644
---- a/cloudinit/distros/photon.py
-+++ b/cloudinit/distros/photon.py
-@@ -0,0 +1,356 @@
+diff -rupN cloud-init-19.1/cloudinit/distros/photon.py cloud-init-19.1-v2-network-config/cloudinit/distros/photon.py
+--- cloud-init-19.1/cloudinit/distros/photon.py	1970-01-01 00:00:00.000000000 +0000
++++ cloud-init-19.1-v2-network-config/cloudinit/distros/photon.py	2020-06-30 12:04:58.748906745 +0000
+@@ -0,0 +1,453 @@
 +# vi: ts=4 expandtab
 +#
-+# Copyright (C) 2017 VMware Inc.
-+#    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
++# Copyright (C) 2020 VMware Inc.
++# Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 +#
 +
 +import os
@@ -22,6 +21,8 @@ index e69de29b..f3a973fd 100644
 +from cloudinit.net.network_state import mask_to_net_prefix
 +
 +from cloudinit.settings import PER_INSTANCE
++from pwd import getpwnam
++from grp import getgrnam
 +
 +LOG = logging.getLogger(__name__)
 +
@@ -68,6 +69,101 @@ index e69de29b..f3a973fd 100644
 +    def install_packages(self, pkglist):
 +        #self.update_package_sources()
 +        self.package_command('install', pkgs=pkglist)
++
++    def _write_network_config(self, netconfig):
++          ifindex = 10
++          conf = ""
++          link= ""
++
++          LOG.debug("Setting Networking Config Version 2")
++
++          for k, v in netconfig.items():
++              if (k == "ethernets"):
++                   for key,val in v.items():
++                      link = key
++
++                      conf = "[Match]\n"
++                      # Generate [Match] section
++                      if ('match' in val):
++                          match = val['match']
++
++                          for i in match:
++                              if (i == 'macaddress'):
++                                  conf += "MACAddress=%s\n\n" % (match['macaddress'])
++                              elif (i == 'driver'):
++                                  conf += "Driver=%s\n" % (match['driver'])
++                                  conf += "Name=%s\n\n" % (link)
++                              elif (i == 'name'):
++                                  conf += "Name=%s\n\n" % (match['name'])
++                      else:
++                          conf += "Name=%s\n\n" % link
++
++                      # Generate [Link] section
++                      if ('mtu' in val):
++                          conf += "[Link]\nMTUBytes=%s\n\n" % (val['mtu'])
++
++                      # Generate [Network] section
++                      conf += "[Network]\n"
++
++                      if ('dhcp4' in val and 'dhcp6' in val):
++                          if (val['dhcp4'] == True and val['dhcp6'] == True):
++                              conf += "DHCP=yes\n"
++                          if (val['dhcp4'] == True and val['dhcp6'] == False):
++                              conf += "DHCP=ipv4\n"
++                          if (val['dhcp4'] == False and val['dhcp6'] == True):
++                             conf += "DHCP=ipv6\n"
++                          if (val['dhcp4'] == False and val['dhcp6'] == False):
++                              conf += "DHCP=no\n"
++                      elif ('dhcp4' in val):
++                          if val['dhcp4'] == True:
++                              conf += "DHCP=ipv4\n"
++                      elif ('dhcp6' in val):
++                           if (val['dhcp6'] == True):
++                               conf += "DHCP=ipv6\n"
++
++                      if ('nameservers' in val):
++                          nameservers = val['nameservers']
++
++                          if ('search' in nameservers):
++                              search = nameservers['search']
++                              s = ' '.join(search)
++                              conf += "Domains=%s\n" %  s
++                          if ('addresses' in nameservers):
++                              s = nameservers['addresses']
++                              conf += "DNS=%s\n" %  ' '.join(s)
++
++                      # Generate [Address] section
++                      if ('addresses' in val):
++                             for i in val['addresses']:
++                                 conf += "\n[Address]\nAddress=%s\n" % (i)
++
++                      # Generate [Route] section
++                      if ('gateway4' in val):
++                               conf += "\n[Route]\nGateway=%s\n" % (val['gateway4'])
++
++                      if ('gateway6' in val):
++                               conf += "\n[Route]\nGateway=%s\n" % (val['gateway6'])
++
++                      if ('routes' in val):
++                          routes = val['routes']
++                          conf += "\n[Route]\n"
++
++                          for i in routes:
++                             if (i['via']):
++                                   conf += "Gateway=%s\n" % (i['via'])
++                             if (i['to']):
++                                   conf += "Destination=%s\n" % (i['to'])
++                             if (i['metric']):
++                                   conf += "Metric=%s\n" % (i['metric'])
++
++          net_fn = network_file_name(self.network_conf_dir, link)
++          if not net_fn:
++             net_fn = self.network_conf_dir + str(ifindex) + '-' + link + '.network'
++          else:
++             net_fn = self.network_conf_dir + net_fn
++
++          util.write_file(net_fn, conf)
++          os.chown(net_fn, getpwnam('systemd-network')[2] , getgrnam('systemd-network')[2])
 +
 +    def _write_network(self, settings):
 +        entries = net_util.translate_network(settings)

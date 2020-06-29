@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -157,6 +157,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Mon Jul 13 2020 Susant Sahani <ssahani@vmware.com> 19.4-2
+-   For Photon implement Networking Config Version 2
 *   Fri Jul 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.4-1
 -   Upgrade version to 19.4
 *   Fri Mar 27 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.1-8
