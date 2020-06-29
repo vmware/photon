@@ -1,6 +1,6 @@
 Name:           toybox
 Version:        0.8.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox/
@@ -143,6 +143,10 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %triggerpostun -- diffutils
 [ $2 -eq 0 ] || exit 0
 %mktoy /usr/bin/cmp
+
+%triggerpostun -- elixir
+[ $2 -eq 0 ] || exit 0
+%mktoy /usr/bin/mix
 
 %triggerpostun -- expect
 [ $2 -eq 0 ] || exit 0
@@ -384,6 +388,9 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 # diffutils
 %ghost /usr/bin/cmp
 
+# elixir
+%ghost /usr/bin/mix
+
 # expect
 %ghost /usr/bin/mkpasswd
 
@@ -535,6 +542,9 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 /usr/bin/uuencode
 
 %changelog
+*   Tue Jun 30 2020 Prashant S Chauhan <psinghchauhan@vmware.com> 0.8.2-3
+-   Avoid conflicts with other packages by not packaging (%ghost-ing) symlinks
+-   Added elixir
 *   Wed Apr 15 2020 Alexey Makhalov <amakhalov@vmware.com> 0.8.2-2
 -   Avoid conflicts with other packages by not packaging (%ghost-ing) symlinks
 -   Use system zlib as it is installed by tdnf

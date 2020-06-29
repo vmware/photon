@@ -2,7 +2,7 @@
 Name:            elixir
 Summary:         A modern approach to programming for the Erlang VM
 Version:         1.8.2
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         ASL 2.0
 URL:             http://elixir-lang.org/
 Source0:         https://github.com/elixir-lang/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -14,6 +14,7 @@ BuildRequires:   git
 BuildRequires:   sed
 BuildRequires:   erlang
 Requires:        erlang
+Conflicts:       toybox < 0.8.2-3
 
 %description
 Elixir is a programming language built on top of the Erlang VM.
@@ -46,6 +47,8 @@ ln -s %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}/%
 %{_datadir}/%{name}
 
 %changelog
+*   Tue Jun 30 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.8.2-2
+-   Do not conflict with toybox >= 0.8.2-3
 *   Tue Oct 29 2019 Keerthana K <keerthanak@vmware.com> 1.8.2-1
 -   Update to 1.8.2
 *   Mon Aug 26 2019 Keerthana K <keerthanak@vmware.com> 1.5.0-1
