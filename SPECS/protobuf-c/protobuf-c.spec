@@ -1,6 +1,6 @@
 Summary:        Google's data interchange format - C implementation
 Name:           protobuf-c
-Version:        1.3.1
+Version:        1.3.3
 Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/google/protobuf-c/
 Source0:        %{name}-%{version}.tar.gz
-%define         sha1 protobuf-c=37cbb1e8dc07d8819328f2cac9aec757c8d51756
+%define         sha1 protobuf-c=f70f592e8db0363013492df1e69e47ee8213e003
 BuildRequires:  protobuf >= 2.6.0
 BuildRequires:  protobuf-devel >= 2.6.0
 BuildRequires:  autoconf
@@ -72,6 +72,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/libprotobuf-c.a
 
 %changelog
+*   Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.3.3-1
+-   Automatic Version Bump
 *   Wed Sep 19 2018 Tapas Kundu <tkundu@vmware.com> 1.3.1-1
 -   Updated to release 1.3.1
 *   Thu Mar 30 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.1-2

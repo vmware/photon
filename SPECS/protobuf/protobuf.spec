@@ -2,15 +2,15 @@
 
 Summary:        Google's data interchange format
 Name:           protobuf
-Version:        3.6.1
-Release:        2%{?dist}
+Version:        3.12.3
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/google/protobuf/
 Source0:        protobuf-%{version}.tar.gz
-%define         sha1 protobuf=9238da8596b18b22b73327508a4f4e1e9848083e
+%define         sha1 protobuf=552c0ee45bcbf970d789252ba45f7bb0358e6a54
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -89,8 +89,8 @@ popd
 pushd java
 mvn install
 install -vdm755 %{buildroot}%{_libdir}/java/protobuf
-install -vm644 core/target/protobuf-java-3.6.1.jar %{buildroot}%{_libdir}/java/protobuf
-install -vm644 util/target/protobuf-java-util-3.6.1.jar %{buildroot}%{_libdir}/java/protobuf
+install -vm644 core/target/protobuf-java-%{version}.jar %{buildroot}%{_libdir}/java/protobuf
+install -vm644 util/target/protobuf-java-util-%{version}.jar %{buildroot}%{_libdir}/java/protobuf
 popd
 
 %post   -p /sbin/ldconfig
@@ -128,6 +128,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.12.3-1
+-   Automatic Version Bump
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 3.6.1-2
 -   Mass removal python2
 *   Tue Sep 18 2018 Tapas Kundu <tkundu@vmware.com> 3.6.1-1
