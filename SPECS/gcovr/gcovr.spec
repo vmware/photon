@@ -2,12 +2,12 @@
 
 Summary:	The gcovr command provides a utility for managing the use of the GNU gcov utility
 Name:		gcovr
-Version:	4.1
-Release:	4%{?dist}
+Version:	4.2
+Release:	1%{?dist}
 License:	BSD Clause-3
 URL:		http://gcovr.com/
 Source0:	https://github.com/gcovr/gcovr/archive/%{name}-%{version}.tar.gz
-%define sha1 gcovr=69520213d49bc46966fa23de336cc11b64a0fc2e
+%define sha1 gcovr=3094f90ed0ca30eb3aa0a9b1b236d9cff1279600
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -53,6 +53,8 @@ python3 setup.py test
 %{python3_sitelib}*
 
 %changelog
+*   Tue Jul 29 2020 Gerrit Photon <photon-checkins@vmware.com> 4.2-1
+-   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 4.1-4
 -   Mass removal python2
 *   Wed Sep 18 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 4.1-3
