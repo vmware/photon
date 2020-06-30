@@ -1,14 +1,14 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
-Version:        3.3.15
-Release:        3%{?dist}
+Version:        3.3.16
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://procps.sourceforge.net/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
-%define sha1    procps-ng=2929bc64f0cf7b2db997eef79b7187658e47230d
+%define sha1    procps-ng=1645168d28b70837d787f4337fd85f6f82f0a251
 BuildRequires:  ncurses-devel
 Requires:       ncurses
 Conflicts:      toybox < 0.8.2-2
@@ -103,6 +103,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3.16-1
+-   Automatic Version Bump
 *   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 3.3.15-3
 -   Do not conflict with toybox >= 0.8.2-2
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 3.3.15-2
