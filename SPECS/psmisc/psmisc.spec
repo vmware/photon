@@ -1,14 +1,14 @@
 Summary:	Displays information about running processes
 Name:		psmisc
-Version:	23.2
-Release:	2%{?dist}
+Version:	23.3
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://psmisc.sourceforge.net/
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://prdownloads.sourceforge.net/psmisc/%{name}-%{version}.tar.xz
-%define sha1 psmisc=2bf3ec1c87ab3bc0610c819452c21cf4b849b0b8
+%define sha1 psmisc=417f24fb15d7dd8967f2dd646b52b8685239a68d
 BuildRequires:	ncurses-devel
 Requires:	ncurses
 %description
@@ -17,9 +17,9 @@ about running processes.
 %prep
 %setup -q
 %build
-./configure \
-	--prefix=%{_prefix} 
+%configure
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/bin
@@ -36,6 +36,8 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+* Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 23.3-1
+- Automatic Version Bump
 * Tue Oct 2 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 23.2-2
 - Updated the tarball for v23.2
 * Mon Sep 10 2018 Alexey Makhalov <amakhalov@vmware.com> 23.2-1
