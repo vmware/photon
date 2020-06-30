@@ -1,6 +1,6 @@
 Summary:        Terminal multiplexer
 Name:           tmux
-Version:        2.7
+Version:        3.1b
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://tmux.github.io/
@@ -8,17 +8,21 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/tmux/tmux/releases/download/%{version}/%{name}-%{version}.tar.gz
-%define sha1    tmux=a12bb094bf0baf0275b6d5cc718c938639712e97
+%define sha1    tmux=727ae2ecdf0e420aa5b5a210d61ef2794bbc03d8
 Requires:       libevent ncurses
 BuildRequires:  libevent-devel ncurses-devel
+
 %description
 Terminal multiplexer
+
 %prep
 %setup -q
+
 %build
-./configure \
-    --prefix=%{_prefix}
+sh autogen.sh
+%configure
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 
@@ -31,7 +35,10 @@ make  %{?_smp_mflags} check
 %exclude /usr/lib
 /usr/share/*
 %exclude /usr/src
+
 %changelog
+*   Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1b-1
+-   Automatic Version Bump
 *   Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 2.7-1
 -   Updated to version 2.7.
 *   Tue May 02 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4-1
