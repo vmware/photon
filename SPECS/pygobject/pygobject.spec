@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-pygobject
-Version:        3.30.1
-Release:        3%{?dist}
+Version:        3.36.1
+Release:        1%{?dist}
 Summary:        Python Bindings for GObject
 Group:          Development/Languages
 License:        LGPLv2+
@@ -11,8 +11,7 @@ Distribution:   Photon
 URL:            https://pypi.org/project/PyGObject
 Source0:        https://pypi.org/project/PyGObject/#files/PyGObject-%{version}.tar.gz
 Patch0:         pygobject-makecheck-fixes.patch
-Patch1:         build_without_cairo.patch
-%define sha1    PyGObject=d5a369f15dfd415dba7fad4c0f9811b56c597e10
+%define sha1    PyGObject=efe1f4b589c4cc98162fe7f706b7651506fc4386
 Requires:       python3
 Requires:       gobject-introspection
 Requires:       glib
@@ -47,14 +46,14 @@ Development files for pygobject.
 %prep
 %setup -q -n PyGObject-%{version}
 %patch0 -p1
-%patch1 -p1
 
 %build
+export PYGOBJECT_WITHOUT_PYCAIRO='True'
 python3 setup.py build
 
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
@@ -73,6 +72,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+*   Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.36.1-1
+-   Automatic Version Bump
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 3.30.1-3
 -   Mass removal python2
 *   Thu Dec 06 2018 Tapas Kundu <tkundu@vmware.com> 3.30.1-2
