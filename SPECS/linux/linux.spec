@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.228
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -88,10 +88,12 @@ Patch52:        0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 # Fix CVE-2019-18885
 Patch54:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch55:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
-
 #9p uninitialized fid->iounit
-Patch56:	0001-Initialize-fid-iounit-during-creation-of-p9_fid.patch
-
+Patch56:        0001-Initialize-fid-iounit-during-creation-of-p9_fid.patch
+#Fix for CVE-2020-12888
+Patch57:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
+Patch58:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
+Patch59:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 
@@ -222,6 +224,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
+%patch57 -p1
+%patch58 -p1
+%patch59 -p1
 %patch67 -p1
 
 %if 0%{?kat_build:1}
@@ -381,6 +386,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Jul 09 2020 Ajay Kaher <akaher@vmware.com> 4.4.228-3
+-   Fix for CVE-2020-12888
 *   Fri Jul 03 2020 Mounesh Badiger <badigerm@vmware.com> 4.4.228-2
 -   9p: Initialize fid->iounit during creation of p9_fid
 *   Wed Jun 24 2020 Keerthana K <keerthanak@vmware.com> 4.4.228-1
@@ -391,7 +398,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 -   Update to version 4.4.227
 *   Tue Jun 02 2020 Ajay Kaher <akaher@vmware.com> 4.4.224-3
 -   Fix for CVE-2018-5995
-*   Wed May 26 2020 Albert Guo <aguo@vmware.com> 4.4.224-2
+*   Tue May 26 2020 Albert Guo <aguo@vmware.com> 4.4.224-2
 -   [9p] Ensure seekdir take effect
 *   Fri May 22 2020 Ajay Kaher <akaher@vmware.com> 4.4.224-1
 -   Update to version 4.4.224

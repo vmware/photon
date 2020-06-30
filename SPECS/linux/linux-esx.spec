@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.228
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -69,8 +69,8 @@ Patch45:        0005-xfs-sanity-check-inode-di_mode.patch
 Patch46:        0006-xfs-verify-dinode-header-first.patch
 Patch47:        0007-xfs-move-inode-fork-verifiers-to-xfs_dinode_verify.patch
 Patch48:        0008-xfs-enhance-dinode-verifier.patch
-Patch49:	0001-Initialize-fid-iounit-during-creation-of-p9_fid.patch
-
+#9p uninitialized fid->iounit
+Patch49:        0001-Initialize-fid-iounit-during-creation-of-p9_fid.patch
 #Fix CVE-2019-8912
 Patch50:        fix_use_after_free_in_sockfs_setattr.patch
 # Fix for CVE-2019-12456
@@ -88,7 +88,10 @@ Patch58:        0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 # Fix CVE-2019-18885
 Patch59:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch60:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
-
+#Fix for CVE-2020-12888
+Patch61:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
+Patch62:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
+Patch63:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 # For Spectre
 Patch70: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 
@@ -187,6 +190,9 @@ The Linux package contains the Linux kernel doc files
 %patch58 -p1
 %patch59 -p1
 %patch60 -p1
+%patch61 -p1
+%patch62 -p1
+%patch63 -p1
 
 %patch70 -p1
 
@@ -279,6 +285,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jul 09 2020 Ajay Kaher <akaher@vmware.com> 4.4.228-3
+-   Fix for CVE-2020-12888
 *   Fri Jul 03 2020 Mounesh Badiger <badigerm@vmware.com> 4.4.228-2
 -   9p: Initialize fid->iounit during creation of p9_fid
 *   Wed Jun 24 2020 Keerthana K <keerthanak@vmware.com> 4.4.228-1
@@ -289,7 +297,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   Update to version 4.4.227
 *   Tue Jun 02 2020 Ajay Kaher <akaher@vmware.com> 4.4.224-3
 -   Fix for CVE-2018-5995
-*   Thu May 26 2020 Albert Guo <aguo@vmware.com> 4.4.224-2
+*   Tue May 26 2020 Albert Guo <aguo@vmware.com> 4.4.224-2
 -   9p: Ensure seekdir take effect
 *   Fri May 22 2020 Ajay Kaher <akaher@vmware.com> 4.4.224-1
 -   Update to version 4.4.224

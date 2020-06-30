@@ -1,0 +1,85 @@
+From 75e702f7106cca6d0363262859e063e76d61bbc9 Mon Sep 17 00:00:00 2001
+From: Alex Williamson <alex.williamson@redhat.com>
+Date: Tue, 30 Jun 2020 23:33:52 +0530
+Subject: [PATCH] vfio/type1: Support faulting PFNMAP vmas
+
+commit 41311242221e3482b20bfed10fa4d9db98d87016 upstream.
+
+With conversion to follow_pfn(), DMA mapping a PFNMAP range depends on
+the range being faulted into the vma.  Add support to manually provide
+that, in the same way as done on KVM with hva_to_pfn_remapped().
+
+Reviewed-by: Peter Xu <peterx@redhat.com>
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+[Ajay: Regenerated the patch for v4.4]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ drivers/vfio/vfio_iommu_type1.c | 29 ++++++++++++++++++++++++++---
+ mm/gup.c                        |  1 +
+ 2 files changed, 27 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index d394911..aae33b1 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -211,6 +211,25 @@ static int put_pfn(unsigned long pfn, int prot)
+ 	return 0;
+ }
+ 
++static int follow_fault_pfn(struct vm_area_struct *vma, struct mm_struct *mm,
++			    unsigned long vaddr, unsigned long *pfn,
++			    bool write_fault)
++{
++	int ret;
++
++	ret = follow_pfn(vma, vaddr, pfn);
++	if (ret) {
++		ret = fixup_user_fault(NULL, mm, vaddr,
++				       (write_fault ?  FAULT_FLAG_WRITE : 0));
++		if (ret)
++			return ret;
++
++		ret = follow_pfn(vma, vaddr, pfn);
++	}
++
++	return ret;
++}
++
+ static int vaddr_get_pfn(unsigned long vaddr, int prot, unsigned long *pfn)
+ {
+ 	struct page *page[1];
+@@ -224,12 +243,16 @@ static int vaddr_get_pfn(unsigned long vaddr, int prot, unsigned long *pfn)
+ 
+ 	down_read(&current->mm->mmap_sem);
+ 
++retry:
+ 	vma = find_vma_intersection(current->mm, vaddr, vaddr + 1);
+ 
+ 	if (vma && vma->vm_flags & VM_PFNMAP) {
+-		if (!follow_pfn(vma, vaddr, pfn) &&
+-		    is_invalid_reserved_pfn(*pfn))
+-			ret = 0;
++		ret = follow_fault_pfn(vma, current->mm, vaddr, pfn, prot & IOMMU_WRITE);
++		if (ret == -EAGAIN)
++			goto retry;
++
++		if (!ret && !is_invalid_reserved_pfn(*pfn))
++			ret = -EFAULT;
+ 	}
+ 
+ 	up_read(&current->mm->mmap_sem);
+diff --git a/mm/gup.c b/mm/gup.c
+index 4c58578..1a96a89 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -632,6 +632,7 @@ int fixup_user_fault(struct task_struct *tsk, struct mm_struct *mm,
+ 	}
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(fixup_user_fault);
+ 
+ static __always_inline long __get_user_pages_locked(struct task_struct *tsk,
+ 						struct mm_struct *mm,
+-- 
+2.7.4
+
