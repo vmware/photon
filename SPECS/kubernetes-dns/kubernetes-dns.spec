@@ -21,9 +21,11 @@ Kubernetes DNS is a name lookup service for kubernetes pods.
 %ifarch x86_64
 export ARCH=amd64
 %endif
+
 %ifarch aarch64
 export ARCH=arm64
 %endif
+
 export VERSION=%{version}
 export PKG=k8s.io/dns
 export GOARCH=${ARCH}
