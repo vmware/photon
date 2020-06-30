@@ -1,7 +1,7 @@
 Summary:          Programs for basic networking
 Name:             iputils
 Version:          20190709
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          BSD-3 and GPLv2+
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
@@ -9,6 +9,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 #https://github.com/iputils/iputils/archive/s20180629.tar.gz
 Source0:          %{name}-s%{version}.tar.gz
+Patch0:           avoid-variable-name-collision.patch
 BuildRequires:    libcap-devel libgcrypt-devel
 BuildRequires:    ninja-build
 BuildRequires:    meson
@@ -20,6 +21,7 @@ Obsoletes:        inetutils
 The Iputils package contains programs for basic networking.
 %prep
 %setup -q -n %{name}-s%{version}
+%patch0 -p1
 
 %build
 meson --prefix /usr --buildtype=plain builddir \
@@ -73,6 +75,8 @@ mv -f RELNOTES.tmp RELNOTES.old
 %caps(cap_net_raw=p cap_net_admin=p) %{_bindir}/ping6
 
 %changelog
+*   Wed Aug 12 2020 Tapas Kundu <tkundu@vmware.com> 20190709-2
+-   Fix variable name collision with libcap update
 *   Mon Jul 06 2020 Gerrit Photon <photon-checkins@vmware.com> 20190709-1
 -   Automatic Version Bump
 *   Thu Oct 10 2019 Tapas Kundu <tkundu@vmware.com> 20180629-2

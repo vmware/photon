@@ -1,0 +1,48 @@
+From 18f9a84e0e702841d6cc4d5f593de4fbd1348e83 Mon Sep 17 00:00:00 2001
+From: Sami Kerola <kerolasa@iki.fi>
+Date: Sat, 28 Dec 2019 17:16:27 +0000
+Subject: [PATCH] ninfod: change variable name to avoid colliding with function
+ name
+
+The sys/capability.h header has 'extern int cap_setuid(uid_t uid);'
+function prototype.
+
+Addresses: https://github.com/iputils/iputils/issues/246
+Signed-off-by: Sami Kerola <kerolasa@iki.fi>
+---
+ ninfod/ninfod.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/ninfod/ninfod.c b/ninfod/ninfod.c
+index 26112d0..95583de 100644
+--- a/ninfod/ninfod.c
++++ b/ninfod/ninfod.c
+@@ -455,7 +455,7 @@ static void do_daemonize(void)
+ /* --------- */
+ #ifdef HAVE_LIBCAP
+ static const cap_value_t cap_net_raw = CAP_NET_RAW;
+-static const cap_value_t cap_setuid =  CAP_SETUID; 
++static const cap_value_t cap_setuserid = CAP_SETUID;
+ static cap_flag_value_t cap_ok;
+ #else
+ static uid_t euid;
+@@ -487,7 +487,7 @@ static void limit_capabilities(void)
+ 
+ 	cap_get_flag(cap_cur_p, CAP_SETUID, CAP_PERMITTED, &cap_ok);
+ 	if (cap_ok != CAP_CLEAR)
+-		cap_set_flag(cap_p, CAP_PERMITTED, 1, &cap_setuid, CAP_SET);
++		cap_set_flag(cap_p, CAP_PERMITTED, 1, &cap_setuserid, CAP_SET);
+ 
+ 	if (cap_set_proc(cap_p) < 0) {
+ 		DEBUG(LOG_ERR, "cap_set_proc: %s\n", strerror(errno));
+@@ -520,8 +520,8 @@ static void drop_capabilities(void)
+ 
+ 	/* setuid / setuid */
+ 	if (cap_ok != CAP_CLEAR) {
+-		cap_set_flag(cap_p, CAP_PERMITTED, 1, &cap_setuid, CAP_SET);
+-		cap_set_flag(cap_p, CAP_EFFECTIVE, 1, &cap_setuid, CAP_SET);
++		cap_set_flag(cap_p, CAP_PERMITTED, 1, &cap_setuserid, CAP_SET);
++		cap_set_flag(cap_p, CAP_EFFECTIVE, 1, &cap_setuserid, CAP_SET);
+ 
+ 		if (cap_set_proc(cap_p) < 0) {
+ 			DEBUG(LOG_ERR, "cap_set_proc: %s\n", strerror(errno));
