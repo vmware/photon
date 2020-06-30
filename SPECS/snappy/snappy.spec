@@ -1,11 +1,11 @@
 Summary:	Fast compression and decompression library
 Name:		snappy
-Version:	1.1.7
-Release:	2%{?dist}
+Version:	1.1.8
+Release:	1%{?dist}
 License:	BSD and LGPLv2 and Sleepycat
 URL:		http://code.google.com/p/snappy/
 Source0:	https://github.com/google/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1 snappy=1ec676b842fc96fd8a95b03c12758935e7f257b0
+%define sha1 snappy=1eeb144e7b564dd726136c97f869b453d2fb7924
 Group:		System/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -65,6 +65,8 @@ make test
 %{_lib64dir}/libsnappy.so
 
 %changelog
+*  Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.8-1
+-  Automatic Version Bump
 *  Wed Jan 09 2019 Michelle Wang <michellew@vmware.com> 1.1.7-2
 -  Fix make check for snappy.
 *  Wed Sep 19 2018 Srinidhi Rao <srinidhir@vmware.com> 1.1.7-1
