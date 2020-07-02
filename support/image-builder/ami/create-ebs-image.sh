@@ -20,12 +20,6 @@ VOLUME_WAIT=60
 SNAPSHOT_WAIT=60
 LOOP_TRIAL=100
 
-#AMI_IDS of different US Regions
-AMI_ID_US_EAST_1="ami-09d95fab7fff3776c"
-AMI_ID_US_EAST_2="ami-45311120"
-AMI_ID_US_WEST_1="ami-e04b6380"
-AMI_ID_US_WEST_2="ami-c0df50a0"
-
 while [[ $# > 0 ]]
 do
         key="$1"
@@ -34,10 +28,6 @@ do
         case $key in
                 -g|--GN)
                 GROUP_NAME="$1"
-                shift
-        ;;
-                -ai|--AMI_ID)
-                AMI_ID="$1"
                 shift
         ;;
                 -tf|--TAR_FILE)
@@ -75,7 +65,6 @@ do
                 -h|--help)
                 echo 'Usage:'
                 echo '-g|--GN                  :security group name for the instance'
-                echo '-ai|--AMI_ID             :ami id for launching an instance. This is optional'
                 echo '-tf|--TAR_FILE           :tar filename without extension'
                 echo '-kn|--KEY_NAME           :pem filename without pem extension to download'
                 echo '-n|--IMG_NAME            :sets name of the ebs image'
@@ -91,32 +80,6 @@ do
         ;;
         esac
 done
-
-if [ $ARGS_PASSED -eq $[$NARGS-2] ]; then
-  if [ ! -z "${AMI_ID:-}" ]; then
-   echo "Error in the arguments passed. Try ./create-ebs-image.sh -h for help"
-   exit 1
-  fi
-  key=$DEFAULT_REGION
-  case $key in
-      us-east-1)
-      AMI_ID=$AMI_ID_US_EAST_1
-  ;;
-      us-east-2)
-      AMI_ID=$AMI_ID_US_EAST_2
-  ;;
-      us-west-1)
-      AMI_ID=$AMI_ID_US_WEST_1
-  ;;
-      us-west-2)
-      AMI_ID=$AMI_ID_US_WEST_2
-  ;;
-  *)
-      #unknown region
-      exit 1
-  esac
-  ARGS_PASSED=$[$ARGS_PASSED+2]
-fi
 
 if [ $ARGS_PASSED -ne $NARGS ]; then
    echo "Error in the arguments passed. Try ./create-ebs-image.sh -h for help"
@@ -173,6 +136,7 @@ SECURITY_GROUP_ID=`aws ec2 describe-security-groups --filters Name=vpc-id,Values
 aws ec2 authorize-security-group-ingress --group-id ${SECURITY_GROUP_ID} --protocol tcp --port 22 --cidr 0.0.0.0/0
 aws ec2 create-key-pair --key-name $KEY_NAME --query 'KeyMaterial' --output text > $KEY_FILE
 chmod 400 $KEY_FILE
+AMI_ID=`aws ssm get-parameters --names /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2 --query 'Parameters[0].[Value]' --output text`
 INSTANCE_ID=`aws ec2 run-instances --subnet-id $SUBNET_ID --image-id ${AMI_ID} --security-group-ids $SECURITY_GROUP_ID --count 1 --instance-type t3.large --key-name $KEY_NAME --output=text --query 'Instances[0].InstanceId' --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=photon-ami-builder-${TAR_FILE}}]" "ResourceType=volume,Tags=[{Key=Name,Value=photon-ami-builder-root-${TAR_FILE}}]"`
 AVAILABILITY_ZONE=`aws ec2 describe-instances --instance-ids $INSTANCE_ID --output=text --query 'Reservations[0].Instances[0].Placement.AvailabilityZone'`
 
@@ -282,9 +246,10 @@ ssh -i $KEY_FILE ec2-user@$IP sudo -- "mkdir -p /mnt/copy/files" >> $LOGFILE
 ssh -i $KEY_FILE ec2-user@$IP sudo -- "chown ec2-user:ec2-user /mnt/copy/files" >> $LOGFILE
 scp -i $KEY_FILE $TAR_FILE.tar.gz ec2-user@$IP:/mnt/copy/files/$TAR_FILE.tar.gz >> $LOGFILE
 ssh -i $KEY_FILE ec2-user@$IP sudo -- "ls -la /mnt/copy/files/" >> $LOGFILE
-ssh -i $KEY_FILE ec2-user@$IP sudo -- "tar -xf /mnt/copy/files/$TAR_FILE.tar.gz --directory /mnt/copy/files/ && dd if=/mnt/copy/files/$TAR_FILE.raw of=$DEVICE bs=1M" >> $LOGFILE
-ssh -i $KEY_FILE ec2-user@$IP sudo -- 'umount /mnt/copy'
-ssh -i $KEY_FILE ec2-user@$IP sudo -- 'rm -rf /mnt/copy /mnt/ebs'
+ssh -i $KEY_FILE ec2-user@$IP sudo -- "tar -xf /mnt/copy/files/$TAR_FILE.tar.gz --directory /mnt/copy/files/" >> $LOGFILE
+ssh -i $KEY_FILE ec2-user@$IP sudo -- "dd if=/mnt/copy/files/$TAR_FILE.raw of=$DEVICE bs=1M" >> $LOGFILE
+ssh -i $KEY_FILE ec2-user@$IP sudo -- 'umount /mnt/copy' >> $LOGFILE
+ssh -i $KEY_FILE ec2-user@$IP sudo -- 'rm -rf /mnt/copy /mnt/ebs' >> $LOGFILE
 
 #detach the volume
 aws ec2 detach-volume --volume-id $VOLUMEID --region $AWS_DEFAULT_REGION >> $LOGFILE
@@ -316,7 +281,7 @@ while : ; do
  else
   count=$[$count+1]
  fi
- check_counter $count $LOOP_TRIAL "Snapshot creation for snapshot with ID $SNAPSHOT_ID failed"
+ check_counter $count $LOOP_TRIAL "Snapshot creation for snapshot with ID $SNAPSHOT_ID still in progress."
  sleep $SNAPSHOT_WAIT
 done
 
