@@ -167,7 +167,7 @@ done
 sleep $SSH_WAIT
 
 while : ; do
- output=$(eval ssh -o StrictHostKeyChecking=no -i $KEY_FILE root@$IP 'tdnf install -y kpartx wget')
+ output=$(eval ssh -o StrictHostKeyChecking=no -i $KEY_FILE ec2-user@$IP 'sudo yum install -y kpartx wget')
  ret=$?
  if [ "$ret" -eq 0 ]; then
   break
