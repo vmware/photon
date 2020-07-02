@@ -1,0 +1,1307 @@
+From 488bdd0b80cd1084359e34b8d36ae536520b1f86 Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Tue, 7 May 2019 12:26:14 -0400
+Subject: [PATCH 01/17] Use optionsForClientTLS to verify server certificate by
+ default
+
+---
+ .../words/protocols/jabber/xmlstream.py       |  2 +-
+ .../words/test/test_jabberxmlstream.py        | 61 +++++++++++++------
+ 2 files changed, 44 insertions(+), 19 deletions(-)
+
+diff --git a/src/twisted/words/protocols/jabber/xmlstream.py b/src/twisted/words/protocols/jabber/xmlstream.py
+index c191e9ae219..70d9267b705 100644
+--- a/src/twisted/words/protocols/jabber/xmlstream.py
++++ b/src/twisted/words/protocols/jabber/xmlstream.py
+@@ -414,7 +414,7 @@ def onProceed(self, obj):
+         """
+ 
+         self.xmlstream.removeObserver('/failure', self.onFailure)
+-        ctx = ssl.CertificateOptions()
++        ctx = ssl.optionsForClientTLS(self.xmlstream.otherEntity.host)
+         self.xmlstream.transport.startTLS(ctx)
+         self.xmlstream.reset()
+         self.xmlstream.sendHeader()
+diff --git a/src/twisted/words/test/test_jabberxmlstream.py b/src/twisted/words/test/test_jabberxmlstream.py
+index 302171d7297..ccccf87372c 100644
+--- a/src/twisted/words/test/test_jabberxmlstream.py
++++ b/src/twisted/words/test/test_jabberxmlstream.py
+@@ -14,6 +14,7 @@
+ from twisted.internet import defer, task
+ from twisted.internet.error import ConnectionLost
+ from twisted.internet.interfaces import IProtocolFactory
++from twisted.internet._sslverify import ClientTLSOptions
+ from twisted.python import failure
+ from twisted.python.compat import unicode
+ from twisted.test import proto_helpers
+@@ -665,7 +666,7 @@ def setUp(self):
+ 
+         self.savedSSL = xmlstream.ssl
+ 
+-        self.authenticator = xmlstream.Authenticator()
++        self.authenticator = xmlstream.ConnectAuthenticator(u'example.com')
+         self.xmlstream = xmlstream.XmlStream(self.authenticator)
+         self.xmlstream.send = self.output.append
+         self.xmlstream.connectionMade()
+@@ -679,9 +680,9 @@ def tearDown(self):
+         xmlstream.ssl = self.savedSSL
+ 
+ 
+-    def testWantedSupported(self):
++    def test_wantedSupported(self):
+         """
+-        Test start when TLS is wanted and the SSL library available.
++        When TLS is wanted and SSL available, StartTLS is initiated.
+         """
+         self.xmlstream.transport = proto_helpers.StringTransport()
+         self.xmlstream.transport.startTLS = lambda ctx: self.done.append('TLS')
+@@ -690,7 +691,8 @@ def testWantedSupported(self):
+ 
+         d = self.init.start()
+         d.addCallback(self.assertEqual, xmlstream.Reset)
+-        starttls = self.output[0]
++        self.assertEqual(2, len(self.output))
++        starttls = self.output[1]
+         self.assertEqual('starttls', starttls.name)
+         self.assertEqual(NS_XMPP_TLS, starttls.uri)
+         self.xmlstream.dataReceived("<proceed xmlns='%s'/>" % NS_XMPP_TLS)
+@@ -698,40 +700,63 @@ def testWantedSupported(self):
+ 
+         return d
+ 
++
++    def test_certificateVerify(self):
++        """
++        The server certificate will be verified.
++        """
++
++        def fakeStartTLS(contextFactory):
++            self.assertIsInstance(contextFactory, ClientTLSOptions)
++            self.assertEqual(contextFactory._hostname, u"example.com")
++            self.done.append('TLS')
++
++        self.xmlstream.transport = proto_helpers.StringTransport()
++        self.xmlstream.transport.startTLS = fakeStartTLS
++        self.xmlstream.reset = lambda: self.done.append('reset')
++        self.xmlstream.sendHeader = lambda: self.done.append('header')
++
++        d = self.init.start()
++        self.xmlstream.dataReceived("<proceed xmlns='%s'/>" % NS_XMPP_TLS)
++        self.assertEqual(['TLS', 'reset', 'header'], self.done)
++        return d
++
++
+     if not xmlstream.ssl:
+         testWantedSupported.skip = "SSL not available"
++        test_certificateVerify = "SSL not available"
+ 
+ 
+-    def testWantedNotSupportedNotRequired(self):
++    def test_wantedNotSupportedNotRequired(self):
+         """
+-        Test start when TLS is wanted and the SSL library available.
++        No StartTLS is initiated when wanted, not required, SSL not available.
+         """
+         xmlstream.ssl = None
+ 
+         d = self.init.start()
+         d.addCallback(self.assertEqual, None)
+-        self.assertEqual([], self.output)
++        self.assertEqual(1, len(self.output))
+ 
+         return d
+ 
+ 
+-    def testWantedNotSupportedRequired(self):
++    def test_wantedNotSupportedRequired(self):
+         """
+-        Test start when TLS is wanted and the SSL library available.
++        TLSNotSupported is raised when TLS is required but not available.
+         """
+         xmlstream.ssl = None
+         self.init.required = True
+ 
+         d = self.init.start()
+         self.assertFailure(d, xmlstream.TLSNotSupported)
+-        self.assertEqual([], self.output)
++        self.assertEqual(1, len(self.output))
+ 
+         return d
+ 
+ 
+-    def testNotWantedRequired(self):
++    def test_notWantedRequired(self):
+         """
+-        Test start when TLS is not wanted, but required by the server.
++        TLSRequired is raised when TLS is not wanted, but required by server.
+         """
+         tls = domish.Element(('urn:ietf:params:xml:ns:xmpp-tls', 'starttls'))
+         tls.addElement('required')
+@@ -739,15 +764,15 @@ def testNotWantedRequired(self):
+         self.init.wanted = False
+ 
+         d = self.init.start()
+-        self.assertEqual([], self.output)
++        self.assertEqual(1, len(self.output))
+         self.assertFailure(d, xmlstream.TLSRequired)
+ 
+         return d
+ 
+ 
+-    def testNotWantedNotRequired(self):
++    def test_notWantedNotRequired(self):
+         """
+-        Test start when TLS is not wanted, but required by the server.
++        No StartTLS is initiated when not wanted and not required.
+         """
+         tls = domish.Element(('urn:ietf:params:xml:ns:xmpp-tls', 'starttls'))
+         self.xmlstream.features = {(tls.uri, tls.name): tls}
+@@ -755,13 +780,13 @@ def testNotWantedNotRequired(self):
+ 
+         d = self.init.start()
+         d.addCallback(self.assertEqual, None)
+-        self.assertEqual([], self.output)
++        self.assertEqual(1, len(self.output))
+         return d
+ 
+ 
+-    def testFailed(self):
++    def test_failed(self):
+         """
+-        Test failed TLS negotiation.
++        TLSFailed is raised when the server responds with a failure.
+         """
+         # Pretend that ssl is supported, it isn't actually used when the
+         # server starts out with a failure in response to our initial
+
+From 0ff32b1bf115acc90d223b9ce9820063cf89003d Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Tue, 7 May 2019 15:54:33 -0400
+Subject: [PATCH 02/17] Fix client example to print disconnection reason
+
+---
+ docs/words/examples/xmpp_client.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/docs/words/examples/xmpp_client.py b/docs/words/examples/xmpp_client.py
+index cb80202c67f..4a3651009b4 100644
+--- a/docs/words/examples/xmpp_client.py
++++ b/docs/words/examples/xmpp_client.py
+@@ -53,8 +53,9 @@ def connected(self, xs):
+         xs.rawDataOutFn = self.rawDataOut
+ 
+ 
+-    def disconnected(self, xs):
++    def disconnected(self, reason):
+         print('Disconnected.')
++        print(reason)
+ 
+         self.finished.callback(None)
+ 
+
+From 89954dfb18e613be583c74e22a3dd55d66e7d975 Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Tue, 7 May 2019 18:23:49 -0400
+Subject: [PATCH 03/17] Allow for custom contextFactory to TLS initializer
+
+---
+ .../words/protocols/jabber/xmlstream.py       |  6 ++++-
+ .../words/test/test_jabberxmlstream.py        | 24 +++++++++++++++++++
+ 2 files changed, 29 insertions(+), 1 deletion(-)
+
+diff --git a/src/twisted/words/protocols/jabber/xmlstream.py b/src/twisted/words/protocols/jabber/xmlstream.py
+index 70d9267b705..51a8466b16a 100644
+--- a/src/twisted/words/protocols/jabber/xmlstream.py
++++ b/src/twisted/words/protocols/jabber/xmlstream.py
+@@ -406,6 +406,7 @@ class TLSInitiatingInitializer(BaseFeatureInitiatingInitializer):
+ 
+     feature = (NS_XMPP_TLS, 'starttls')
+     wanted = True
++    contextFactory = None
+     _deferred = None
+ 
+     def onProceed(self, obj):
+@@ -414,7 +415,10 @@ def onProceed(self, obj):
+         """
+ 
+         self.xmlstream.removeObserver('/failure', self.onFailure)
+-        ctx = ssl.optionsForClientTLS(self.xmlstream.otherEntity.host)
++        if self.contextFactory:
++            ctx = self.contextFactory
++        else:
++            ctx = ssl.optionsForClientTLS(self.xmlstream.otherEntity.host)
+         self.xmlstream.transport.startTLS(ctx)
+         self.xmlstream.reset()
+         self.xmlstream.sendHeader()
+diff --git a/src/twisted/words/test/test_jabberxmlstream.py b/src/twisted/words/test/test_jabberxmlstream.py
+index ccccf87372c..863cad0f328 100644
+--- a/src/twisted/words/test/test_jabberxmlstream.py
++++ b/src/twisted/words/test/test_jabberxmlstream.py
+@@ -14,6 +14,7 @@
+ from twisted.internet import defer, task
+ from twisted.internet.error import ConnectionLost
+ from twisted.internet.interfaces import IProtocolFactory
++from twisted.internet.ssl import CertificateOptions
+ from twisted.internet._sslverify import ClientTLSOptions
+ from twisted.python import failure
+ from twisted.python.compat import unicode
+@@ -722,9 +723,32 @@ def fakeStartTLS(contextFactory):
+         return d
+ 
+ 
++    def test_certificateVerifyContext(self):
++        """
++        A custom contextFactory is passed through to startTLS.
++        """
++        ctx = CertificateOptions()
++        self.init.contextFactory = ctx
++
++        def fakeStartTLS(contextFactory):
++            self.assertIs(ctx, contextFactory)
++            self.done.append('TLS')
++
++        self.xmlstream.transport = proto_helpers.StringTransport()
++        self.xmlstream.transport.startTLS = fakeStartTLS
++        self.xmlstream.reset = lambda: self.done.append('reset')
++        self.xmlstream.sendHeader = lambda: self.done.append('header')
++
++        d = self.init.start()
++        self.xmlstream.dataReceived("<proceed xmlns='%s'/>" % NS_XMPP_TLS)
++        self.assertEqual(['TLS', 'reset', 'header'], self.done)
++        return d
++
++
+     if not xmlstream.ssl:
+         testWantedSupported.skip = "SSL not available"
+         test_certificateVerify = "SSL not available"
++        test_certificateVerifyContext = "SSL not available"
+ 
+ 
+     def test_wantedNotSupportedNotRequired(self):
+
+From 4759e27af0ffa2e61538d5e0a66c3e57e20d3f5b Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Wed, 8 May 2019 13:19:17 -0400
+Subject: [PATCH 04/17] Add docstrings for new contextFactory attribute
+
+---
+ src/twisted/words/protocols/jabber/xmlstream.py | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/twisted/words/protocols/jabber/xmlstream.py b/src/twisted/words/protocols/jabber/xmlstream.py
+index 51a8466b16a..88ad21f76a6 100644
+--- a/src/twisted/words/protocols/jabber/xmlstream.py
++++ b/src/twisted/words/protocols/jabber/xmlstream.py
+@@ -402,6 +402,11 @@ class TLSInitiatingInitializer(BaseFeatureInitiatingInitializer):
+ 
+     @cvar wanted: indicates if TLS negotiation is wanted.
+     @type wanted: C{bool}
++
++    @cvar contextFactory: An object which creates appropriately configured TLS
++        connections. This is passed to C{startTLS} on the transport and is
++        preferably created using L{twisted.internet.ssl.optionsForClientTLS}.
++    @type contextFactory: L{IOpenSSLClientConnectionCreator}
+     """
+ 
+     feature = (NS_XMPP_TLS, 'starttls')
+
+From fa18e8e65cf486ea9adc8e9a9a6df7e168098ce8 Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Thu, 9 May 2019 11:11:14 -0400
+Subject: [PATCH 05/17] Clean up connecting authenticators
+
+This adds an option `required` argument to the inits of initializers
+deriving from BaseFeatureInitiatingInitializer, to simplify setup.
+Additionally it changes the requiredness of two initializers used by
+XMPPAuthenticator:
+
+* Setup of TLS is now required by default. This ensures that if StartTLS
+is not advertized by the server, initialization fails instead of
+silently proceeding to authentication without encryption.
+* Binding a resource is required by default, because without it servers
+will not allow any further meaningful interaction.
+---
+ src/twisted/words/protocols/jabber/client.py  | 28 +++++--------
+ .../words/protocols/jabber/xmlstream.py       |  9 +++--
+ src/twisted/words/test/test_jabberclient.py   | 39 ++++++++++++++++++-
+ .../words/test/test_jabberxmlstream.py        |  9 +++++
+ 4 files changed, 61 insertions(+), 24 deletions(-)
+
+diff --git a/src/twisted/words/protocols/jabber/client.py b/src/twisted/words/protocols/jabber/client.py
+index ffe6c939d8a..566bc9ff177 100644
+--- a/src/twisted/words/protocols/jabber/client.py
++++ b/src/twisted/words/protocols/jabber/client.py
+@@ -206,14 +206,10 @@ def associateWithStream(self, xs):
+         xs.version = (0, 0)
+         xmlstream.ConnectAuthenticator.associateWithStream(self, xs)
+ 
+-        inits = [ (xmlstream.TLSInitiatingInitializer, False),
+-                  (IQAuthInitializer, True),
+-                ]
+-
+-        for initClass, required in inits:
+-            init = initClass(xs)
+-            init.required = required
+-            xs.initializers.append(init)
++        xs.initializers = [
++            xmlstream.TLSInitiatingInitializer(xs, required=False),
++            IQAuthInitializer(xs),
++        ]
+ 
+     # TODO: move registration into an Initializer?
+ 
+@@ -377,14 +373,10 @@ def associateWithStream(self, xs):
+         """
+         xmlstream.ConnectAuthenticator.associateWithStream(self, xs)
+ 
+-        xs.initializers = [CheckVersionInitializer(xs)]
+-        inits = [ (xmlstream.TLSInitiatingInitializer, False),
+-                  (sasl.SASLInitiatingInitializer, True),
+-                  (BindInitializer, False),
+-                  (SessionInitializer, False),
++        xs.initializers = [
++                CheckVersionInitializer(xs),
++                xmlstream.TLSInitiatingInitializer(xs, required=True),
++                sasl.SASLInitiatingInitializer(xs, required=True),
++                BindInitializer(xs, required=True),
++                SessionInitializer(xs, required=False),
+                 ]
+-
+-        for initClass, required in inits:
+-            init = initClass(xs)
+-            init.required = required
+-            xs.initializers.append(init)
+diff --git a/src/twisted/words/protocols/jabber/xmlstream.py b/src/twisted/words/protocols/jabber/xmlstream.py
+index 88ad21f76a6..f7512016c5a 100644
+--- a/src/twisted/words/protocols/jabber/xmlstream.py
++++ b/src/twisted/words/protocols/jabber/xmlstream.py
+@@ -316,16 +316,17 @@ class BaseFeatureInitiatingInitializer(object):
+ 
+     @cvar feature: tuple of (uri, name) of the stream feature root element.
+     @type feature: tuple of (C{str}, C{str})
++
+     @ivar required: whether the stream feature is required to be advertized
+                     by the receiving entity.
+     @type required: C{bool}
+     """
+ 
+     feature = None
+-    required = False
+ 
+-    def __init__(self, xs):
++    def __init__(self, xs, required=False):
+         self.xmlstream = xs
++        self.required = required
+ 
+ 
+     def initialize(self):
+@@ -400,10 +401,10 @@ class TLSInitiatingInitializer(BaseFeatureInitiatingInitializer):
+     set the C{wanted} attribute to False instead of removing it from the list
+     of initializers, so a proper exception L{TLSRequired} can be raised.
+ 
+-    @cvar wanted: indicates if TLS negotiation is wanted.
++    @ivar wanted: indicates if TLS negotiation is wanted.
+     @type wanted: C{bool}
+ 
+-    @cvar contextFactory: An object which creates appropriately configured TLS
++    @ivar contextFactory: An object which creates appropriately configured TLS
+         connections. This is passed to C{startTLS} on the transport and is
+         preferably created using L{twisted.internet.ssl.optionsForClientTLS}.
+     @type contextFactory: L{IOpenSSLClientConnectionCreator}
+diff --git a/src/twisted/words/test/test_jabberclient.py b/src/twisted/words/test/test_jabberclient.py
+index d54f88651ad..19be60b34eb 100644
+--- a/src/twisted/words/test/test_jabberclient.py
++++ b/src/twisted/words/test/test_jabberclient.py
+@@ -379,6 +379,41 @@ def onSession(iq):
+ 
+ 
+ 
++class BasicAuthenticatorTests(unittest.TestCase):
++    """
++    Test for both XMPPAuthenticator and XMPPClientFactory.
++    """
++    def testBasic(self):
++        """
++        Test basic operations.
++
++        Setup a basicClientFactory, which sets up a BasicAuthenticator, and let
++        it produce a protocol instance. Then inspect the instance variables of
++        the authenticator and XML stream objects.
++        """
++        self.client_jid = jid.JID('user@example.com/resource')
++
++        # Get an XmlStream instance. Note that it gets initialized with the
++        # XMPPAuthenticator (that has its associateWithXmlStream called) that
++        # is in turn initialized with the arguments to the factory.
++        xs = client.basicClientFactory(self.client_jid,
++                                      'secret').buildProtocol(None)
++
++        # test authenticator's instance variables
++        self.assertEqual('example.com', xs.authenticator.otherHost)
++        self.assertEqual(self.client_jid, xs.authenticator.jid)
++        self.assertEqual('secret', xs.authenticator.password)
++
++        # test list of initializers
++        tls, auth = xs.initializers
++
++        self.assertIsInstance(tls, xmlstream.TLSInitiatingInitializer)
++        self.assertIsInstance(auth, client.IQAuthInitializer)
++
++        self.assertFalse(tls.required)
++
++
++
+ class XMPPAuthenticatorTests(unittest.TestCase):
+     """
+     Test for both XMPPAuthenticator and XMPPClientFactory.
+@@ -412,7 +447,7 @@ def testBasic(self):
+         self.assertIsInstance(bind, client.BindInitializer)
+         self.assertIsInstance(session, client.SessionInitializer)
+ 
+-        self.assertFalse(tls.required)
++        self.assertTrue(tls.required)
+         self.assertTrue(sasl.required)
+-        self.assertFalse(bind.required)
++        self.assertTrue(bind.required)
+         self.assertFalse(session.required)
+diff --git a/src/twisted/words/test/test_jabberxmlstream.py b/src/twisted/words/test/test_jabberxmlstream.py
+index 863cad0f328..6df336deb20 100644
+--- a/src/twisted/words/test/test_jabberxmlstream.py
++++ b/src/twisted/words/test/test_jabberxmlstream.py
+@@ -681,6 +681,15 @@ def tearDown(self):
+         xmlstream.ssl = self.savedSSL
+ 
+ 
++    def test_initRequired(self):
++        """
++        Passing required sets the instance variable.
++        """
++        self.init = xmlstream.TLSInitiatingInitializer(self.xmlstream,
++                                                       required=True)
++        self.assertTrue(self.init.required)
++
++
+     def test_wantedSupported(self):
+         """
+         When TLS is wanted and SSL available, StartTLS is initiated.
+
+From cadf08f3481b689929ad471a17ce29683dc0635d Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Thu, 9 May 2019 12:05:21 -0400
+Subject: [PATCH 06/17] Provide a way to use custom certificate options for
+ XMPP clients
+
+This adds an optional `contextFactory` argument to `XMPPClientFactory`
+that is passed on to `XMPPAuthenticator`, which in turn passes it to
+`TLSInitiatingInitializer`.
+---
+ src/twisted/words/protocols/jabber/client.py  | 25 ++++++++++---
+ .../words/protocols/jabber/xmlstream.py       |  9 +++++
+ src/twisted/words/test/test_jabberclient.py   | 35 ++++++++++++++++---
+ 3 files changed, 61 insertions(+), 8 deletions(-)
+
+diff --git a/src/twisted/words/protocols/jabber/client.py b/src/twisted/words/protocols/jabber/client.py
+index 566bc9ff177..4b310e34f38 100644
+--- a/src/twisted/words/protocols/jabber/client.py
++++ b/src/twisted/words/protocols/jabber/client.py
+@@ -298,7 +298,7 @@ def start(self):
+ 
+ 
+ 
+-def XMPPClientFactory(jid, password):
++def XMPPClientFactory(jid, password, contextFactory=None):
+     """
+     Client factory for XMPP 1.0 (only).
+ 
+@@ -310,12 +310,20 @@ def XMPPClientFactory(jid, password):
+ 
+     @param jid: Jabber ID to connect with.
+     @type jid: L{jid.JID}
++
+     @param password: password to authenticate with.
+     @type password: L{unicode}
++
++    @param contextFactory: An object which creates appropriately configured TLS
++        connections. This is passed to C{startTLS} on the transport and is
++        preferably created using L{twisted.internet.ssl.optionsForClientTLS}.
++        See L{xmlstream.TLSInitiatingInitializer} for details.
++    @type contextFactory: L{IOpenSSLClientConnectionCreator}
++
+     @return: XML stream factory.
+     @rtype: L{xmlstream.XmlStreamFactory}
+     """
+-    a = XMPPAuthenticator(jid, password)
++    a = XMPPAuthenticator(jid, password, contextFactory=contextFactory)
+     return xmlstream.XmlStreamFactory(a)
+ 
+ 
+@@ -350,16 +358,24 @@ class XMPPAuthenticator(xmlstream.ConnectAuthenticator):
+                resource binding step, and this is stored in this instance
+                variable.
+     @type jid: L{jid.JID}
++
+     @ivar password: password to be used during SASL authentication.
+     @type password: L{unicode}
++
++    @ivar contextFactory: An object which creates appropriately configured TLS
++        connections. This is passed to C{startTLS} on the transport and is
++        preferably created using L{twisted.internet.ssl.optionsForClientTLS}.
++        See L{xmlstream.TLSInitiatingInitializer} for details.
++    @type contextFactory: L{IOpenSSLClientConnectionCreator}
+     """
+ 
+     namespace = 'jabber:client'
+ 
+-    def __init__(self, jid, password):
++    def __init__(self, jid, password, contextFactory=None):
+         xmlstream.ConnectAuthenticator.__init__(self, jid.host)
+         self.jid = jid
+         self.password = password
++        self.contextFactory = contextFactory
+ 
+ 
+     def associateWithStream(self, xs):
+@@ -375,7 +391,8 @@ def associateWithStream(self, xs):
+ 
+         xs.initializers = [
+                 CheckVersionInitializer(xs),
+-                xmlstream.TLSInitiatingInitializer(xs, required=True),
++                xmlstream.TLSInitiatingInitializer(
++                    xs, required=True, contextFactory=self.contextFactory),
+                 sasl.SASLInitiatingInitializer(xs, required=True),
+                 BindInitializer(xs, required=True),
+                 SessionInitializer(xs, required=False),
+diff --git a/src/twisted/words/protocols/jabber/xmlstream.py b/src/twisted/words/protocols/jabber/xmlstream.py
+index f7512016c5a..1ed79d47726 100644
+--- a/src/twisted/words/protocols/jabber/xmlstream.py
++++ b/src/twisted/words/protocols/jabber/xmlstream.py
+@@ -407,6 +407,9 @@ class TLSInitiatingInitializer(BaseFeatureInitiatingInitializer):
+     @ivar contextFactory: An object which creates appropriately configured TLS
+         connections. This is passed to C{startTLS} on the transport and is
+         preferably created using L{twisted.internet.ssl.optionsForClientTLS}.
++        If C{None}, the default is to verify the server certificate against
++        the trust roots as provided by the platform. See
++        L{twisted.internet._sslverify.platformTrust}.
+     @type contextFactory: L{IOpenSSLClientConnectionCreator}
+     """
+ 
+@@ -415,6 +418,12 @@ class TLSInitiatingInitializer(BaseFeatureInitiatingInitializer):
+     contextFactory = None
+     _deferred = None
+ 
++    def __init__(self, xs, required=True, contextFactory=None):
++        super(TLSInitiatingInitializer, self).__init__(
++                xs, required=required)
++        self.contextFactory = contextFactory
++
++
+     def onProceed(self, obj):
+         """
+         Proceed with TLS negotiation and reset the XML stream.
+diff --git a/src/twisted/words/test/test_jabberclient.py b/src/twisted/words/test/test_jabberclient.py
+index 19be60b34eb..2e39de72cee 100644
+--- a/src/twisted/words/test/test_jabberclient.py
++++ b/src/twisted/words/test/test_jabberclient.py
+@@ -9,7 +9,7 @@
+ 
+ from hashlib import sha1
+ 
+-from twisted.internet import defer
++from twisted.internet import defer, ssl
+ from twisted.python.compat import unicode
+ from twisted.trial import unittest
+ from twisted.words.protocols.jabber import client, error, jid, xmlstream
+@@ -381,9 +381,10 @@ def onSession(iq):
+ 
+ class BasicAuthenticatorTests(unittest.TestCase):
+     """
+-    Test for both XMPPAuthenticator and XMPPClientFactory.
++    Test for both BasicAuthenticator and basicClientFactory.
+     """
+-    def testBasic(self):
++
++    def test_basic(self):
+         """
+         Test basic operations.
+ 
+@@ -418,7 +419,8 @@ class XMPPAuthenticatorTests(unittest.TestCase):
+     """
+     Test for both XMPPAuthenticator and XMPPClientFactory.
+     """
+-    def testBasic(self):
++
++    def test_basic(self):
+         """
+         Test basic operations.
+ 
+@@ -451,3 +453,28 @@ def testBasic(self):
+         self.assertTrue(sasl.required)
+         self.assertTrue(bind.required)
+         self.assertFalse(session.required)
++
++
++    def test_tlsContextFactory(self):
++        """
++        Test basic operations.
++
++        Setup an XMPPClientFactory, which sets up an XMPPAuthenticator, and let
++        it produce a protocol instance. Then inspect the instance variables of
++        the authenticator and XML stream objects.
++        """
++        self.client_jid = jid.JID('user@example.com/resource')
++
++        # Get an XmlStream instance. Note that it gets initialized with the
++        # XMPPAuthenticator (that has its associateWithXmlStream called) that
++        # is in turn initialized with the arguments to the factory.
++        contextFactory = ssl.CertificateOptions()
++        factory = client.XMPPClientFactory(self.client_jid, 'secret',
++                                           contextFactory=contextFactory)
++        xs = factory.buildProtocol(None)
++
++        # test list of initializers
++        version, tls, sasl, bind, session = xs.initializers
++
++        self.assertIsInstance(tls, xmlstream.TLSInitiatingInitializer)
++        self.assertIs(contextFactory, tls.contextFactory)
+
+From 5ed194c0514a04500b3190b0ecbad0cce8b9b82d Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Thu, 9 May 2019 12:12:32 -0400
+Subject: [PATCH 07/17] Adjust tests to TLSInitiatingInitializer being required
+ by default
+
+---
+ src/twisted/words/test/test_jabberxmlstream.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/twisted/words/test/test_jabberxmlstream.py b/src/twisted/words/test/test_jabberxmlstream.py
+index 6df336deb20..2b8dcd9516e 100644
+--- a/src/twisted/words/test/test_jabberxmlstream.py
++++ b/src/twisted/words/test/test_jabberxmlstream.py
+@@ -765,6 +765,7 @@ def test_wantedNotSupportedNotRequired(self):
+         No StartTLS is initiated when wanted, not required, SSL not available.
+         """
+         xmlstream.ssl = None
++        self.init.required = False
+ 
+         d = self.init.start()
+         d.addCallback(self.assertEqual, None)
+@@ -810,6 +811,7 @@ def test_notWantedNotRequired(self):
+         tls = domish.Element(('urn:ietf:params:xml:ns:xmpp-tls', 'starttls'))
+         self.xmlstream.features = {(tls.uri, tls.name): tls}
+         self.init.wanted = False
++        self.init.required = False
+ 
+         d = self.init.start()
+         d.addCallback(self.assertEqual, None)
+
+From a1f43907c60cb3f92699067c43fdf166cbac2cea Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Mon, 27 May 2019 11:00:39 +0200
+Subject: [PATCH 08/17] Add news fragments
+
+---
+ src/twisted/words/newsfragments/9561.bugfix  | 1 +
+ src/twisted/words/newsfragments/9561.feature | 1 +
+ 2 files changed, 2 insertions(+)
+ create mode 100644 src/twisted/words/newsfragments/9561.bugfix
+ create mode 100644 src/twisted/words/newsfragments/9561.feature
+
+diff --git a/src/twisted/words/newsfragments/9561.bugfix b/src/twisted/words/newsfragments/9561.bugfix
+new file mode 100644
+index 00000000000..ac5f905a104
+--- /dev/null
++++ b/src/twisted/words/newsfragments/9561.bugfix
+@@ -0,0 +1 @@
++twisted.words.protocols.jabber.xmlstream.TLSInitiatingInitializer now properly verifies the server's certificate against platform CAs and the stream's domain.
+diff --git a/src/twisted/words/newsfragments/9561.feature b/src/twisted/words/newsfragments/9561.feature
+new file mode 100644
+index 00000000000..955790a0f24
+--- /dev/null
++++ b/src/twisted/words/newsfragments/9561.feature
+@@ -0,0 +1 @@
++twisted.words.protocols.jabber.xmlstream.TLSInitiatingInitializer and twisted.words.protocols.jabber.client.XMPPClientFactory now take an optional contextFactory for customizing certificate options for StartTLS.
+
+From 0a93949f91ea22cfc5453c326e36e927c8da1015 Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Mon, 27 May 2019 13:53:31 +0200
+Subject: [PATCH 09/17] Fix skipping renamed test when SSL is not available
+
+---
+ src/twisted/words/test/test_jabberxmlstream.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/twisted/words/test/test_jabberxmlstream.py b/src/twisted/words/test/test_jabberxmlstream.py
+index 2b8dcd9516e..d9f4962ec0c 100644
+--- a/src/twisted/words/test/test_jabberxmlstream.py
++++ b/src/twisted/words/test/test_jabberxmlstream.py
+@@ -755,7 +755,7 @@ def fakeStartTLS(contextFactory):
+ 
+ 
+     if not xmlstream.ssl:
+-        testWantedSupported.skip = "SSL not available"
++        test_wantedSupported.skip = "SSL not available"
+         test_certificateVerify = "SSL not available"
+         test_certificateVerifyContext = "SSL not available"
+ 
+
+From 751ac6f754146e5b61ab65d2995be2a9534bd41d Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Mon, 27 May 2019 14:48:26 +0200
+Subject: [PATCH 10/17] Skip TLS tests if OpenSSL is not available
+
+---
+ src/twisted/words/test/test_jabberclient.py   | 12 +++++++++-
+ .../words/test/test_jabberxmlstream.py        | 22 ++++++++++++-------
+ 2 files changed, 25 insertions(+), 9 deletions(-)
+
+diff --git a/src/twisted/words/test/test_jabberclient.py b/src/twisted/words/test/test_jabberclient.py
+index 2e39de72cee..8afb92951f7 100644
+--- a/src/twisted/words/test/test_jabberclient.py
++++ b/src/twisted/words/test/test_jabberclient.py
+@@ -9,13 +9,21 @@
+ 
+ from hashlib import sha1
+ 
+-from twisted.internet import defer, ssl
++from twisted.internet import defer
+ from twisted.python.compat import unicode
+ from twisted.trial import unittest
+ from twisted.words.protocols.jabber import client, error, jid, xmlstream
+ from twisted.words.protocols.jabber.sasl import SASLInitiatingInitializer
+ from twisted.words.xish import utility
+ 
++try:
++   from twisted.internet import ssl
++except ImportError:
++    ssl = None
++    skipWhenNoSSL = "SSL not available"
++else:
++    skipWhenNoSSL = None
++
+ IQ_AUTH_GET = '/iq[@type="get"]/query[@xmlns="jabber:iq:auth"]'
+ IQ_AUTH_SET = '/iq[@type="set"]/query[@xmlns="jabber:iq:auth"]'
+ NS_BIND = 'urn:ietf:params:xml:ns:xmpp-bind'
+@@ -478,3 +486,5 @@ def test_tlsContextFactory(self):
+ 
+         self.assertIsInstance(tls, xmlstream.TLSInitiatingInitializer)
+         self.assertIs(contextFactory, tls.contextFactory)
++
++    test_tlsContextFactory.skip = skipWhenNoSSL
+diff --git a/src/twisted/words/test/test_jabberxmlstream.py b/src/twisted/words/test/test_jabberxmlstream.py
+index d9f4962ec0c..aad0305ef99 100644
+--- a/src/twisted/words/test/test_jabberxmlstream.py
++++ b/src/twisted/words/test/test_jabberxmlstream.py
+@@ -14,8 +14,6 @@
+ from twisted.internet import defer, task
+ from twisted.internet.error import ConnectionLost
+ from twisted.internet.interfaces import IProtocolFactory
+-from twisted.internet.ssl import CertificateOptions
+-from twisted.internet._sslverify import ClientTLSOptions
+ from twisted.python import failure
+ from twisted.python.compat import unicode
+ from twisted.test import proto_helpers
+@@ -23,7 +21,15 @@
+ from twisted.words.xish import domish
+ from twisted.words.protocols.jabber import error, ijabber, jid, xmlstream
+ 
+-
++try:
++   from twisted.internet import ssl
++except ImportError:
++    ssl = None
++    skipWhenNoSSL = "SSL not available"
++else:
++    skipWhenNoSSL = None
++    from twisted.internet.ssl import CertificateOptions
++    from twisted.internet._sslverify import ClientTLSOptions
+ 
+ NS_XMPP_TLS = 'urn:ietf:params:xml:ns:xmpp-tls'
+ 
+@@ -710,6 +716,8 @@ def test_wantedSupported(self):
+ 
+         return d
+ 
++    test_wantedSupported.skip = skipWhenNoSSL
++
+ 
+     def test_certificateVerify(self):
+         """
+@@ -731,6 +739,8 @@ def fakeStartTLS(contextFactory):
+         self.assertEqual(['TLS', 'reset', 'header'], self.done)
+         return d
+ 
++    test_certificateVerify.skip = skipWhenNoSSL
++
+ 
+     def test_certificateVerifyContext(self):
+         """
+@@ -753,11 +763,7 @@ def fakeStartTLS(contextFactory):
+         self.assertEqual(['TLS', 'reset', 'header'], self.done)
+         return d
+ 
+-
+-    if not xmlstream.ssl:
+-        test_wantedSupported.skip = "SSL not available"
+-        test_certificateVerify = "SSL not available"
+-        test_certificateVerifyContext = "SSL not available"
++    test_certificateVerifyContext.skip = skipWhenNoSSL
+ 
+ 
+     def test_wantedNotSupportedNotRequired(self):
+
+From 672a6338dea08a17cbe18af3d47bdb14fcd0d84b Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Mon, 27 May 2019 15:33:20 +0200
+Subject: [PATCH 11/17] Fix indents
+
+---
+ src/twisted/words/test/test_jabberclient.py    | 4 ++--
+ src/twisted/words/test/test_jabberxmlstream.py | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/twisted/words/test/test_jabberclient.py b/src/twisted/words/test/test_jabberclient.py
+index 8afb92951f7..7c31bed8656 100644
+--- a/src/twisted/words/test/test_jabberclient.py
++++ b/src/twisted/words/test/test_jabberclient.py
+@@ -17,7 +17,7 @@
+ from twisted.words.xish import utility
+ 
+ try:
+-   from twisted.internet import ssl
++    from twisted.internet import ssl
+ except ImportError:
+     ssl = None
+     skipWhenNoSSL = "SSL not available"
+@@ -406,7 +406,7 @@ def test_basic(self):
+         # XMPPAuthenticator (that has its associateWithXmlStream called) that
+         # is in turn initialized with the arguments to the factory.
+         xs = client.basicClientFactory(self.client_jid,
+-                                      'secret').buildProtocol(None)
++                                       'secret').buildProtocol(None)
+ 
+         # test authenticator's instance variables
+         self.assertEqual('example.com', xs.authenticator.otherHost)
+diff --git a/src/twisted/words/test/test_jabberxmlstream.py b/src/twisted/words/test/test_jabberxmlstream.py
+index aad0305ef99..7b384645a2c 100644
+--- a/src/twisted/words/test/test_jabberxmlstream.py
++++ b/src/twisted/words/test/test_jabberxmlstream.py
+@@ -22,7 +22,7 @@
+ from twisted.words.protocols.jabber import error, ijabber, jid, xmlstream
+ 
+ try:
+-   from twisted.internet import ssl
++    from twisted.internet import ssl
+ except ImportError:
+     ssl = None
+     skipWhenNoSSL = "SSL not available"
+
+From a649757186c12d2b4f4a8e215b4d36ba26bd331f Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Tue, 28 May 2019 16:53:22 +0200
+Subject: [PATCH 12/17] Better docstring for BasicAuthenticatorTests
+
+---
+ src/twisted/words/test/test_jabberclient.py | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/src/twisted/words/test/test_jabberclient.py b/src/twisted/words/test/test_jabberclient.py
+index 7c31bed8656..1403131baf6 100644
+--- a/src/twisted/words/test/test_jabberclient.py
++++ b/src/twisted/words/test/test_jabberclient.py
+@@ -394,11 +394,14 @@ class BasicAuthenticatorTests(unittest.TestCase):
+ 
+     def test_basic(self):
+         """
+-        Test basic operations.
+-
+-        Setup a basicClientFactory, which sets up a BasicAuthenticator, and let
+-        it produce a protocol instance. Then inspect the instance variables of
+-        the authenticator and XML stream objects.
++        Authenticator and stream are properly constructed by the factory.
++
++        The L{xmlstream.XmlStream} protocol created by the factory has the new
++        L{client.BasicAuthenticator} instance in its C{authenticator}
++        attribute.  It is set up with C{jid} and C{password} as passed to the
++        factory, C{otherHost} taken from the client JID. The stream futher has
++        two initializers, for TLS and authentication, of which the first has
++        its C{required} attribute set to C{True}.
+         """
+         self.client_jid = jid.JID('user@example.com/resource')
+ 
+
+From ea2d28f7035cdbc56063a0672acef426086875ff Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Sun, 16 Jun 2019 18:41:49 +0200
+Subject: [PATCH 13/17] Rename contextFactory to configurationForTLS, make
+ private vars
+
+---
+ src/twisted/words/newsfragments/9561.feature  |  2 +-
+ src/twisted/words/protocols/jabber/client.py  | 37 +++++++++++--------
+ .../words/protocols/jabber/xmlstream.py       | 28 +++++++-------
+ src/twisted/words/test/test_jabberclient.py   | 26 +++++++------
+ .../words/test/test_jabberxmlstream.py        |  3 ++
+ 5 files changed, 55 insertions(+), 41 deletions(-)
+
+diff --git a/src/twisted/words/newsfragments/9561.feature b/src/twisted/words/newsfragments/9561.feature
+index 955790a0f24..c3b41a6a4c3 100644
+--- a/src/twisted/words/newsfragments/9561.feature
++++ b/src/twisted/words/newsfragments/9561.feature
+@@ -1 +1 @@
+-twisted.words.protocols.jabber.xmlstream.TLSInitiatingInitializer and twisted.words.protocols.jabber.client.XMPPClientFactory now take an optional contextFactory for customizing certificate options for StartTLS.
++twisted.words.protocols.jabber.xmlstream.TLSInitiatingInitializer and twisted.words.protocols.jabber.client.XMPPClientFactory now take an optional configurationForTLS for customizing certificate options for StartTLS.
+diff --git a/src/twisted/words/protocols/jabber/client.py b/src/twisted/words/protocols/jabber/client.py
+index 4b310e34f38..db4cbfccf21 100644
+--- a/src/twisted/words/protocols/jabber/client.py
++++ b/src/twisted/words/protocols/jabber/client.py
+@@ -298,7 +298,7 @@ def start(self):
+ 
+ 
+ 
+-def XMPPClientFactory(jid, password, contextFactory=None):
++def XMPPClientFactory(jid, password, configurationForTLS=None):
+     """
+     Client factory for XMPP 1.0 (only).
+ 
+@@ -314,16 +314,18 @@ def XMPPClientFactory(jid, password, contextFactory=None):
+     @param password: password to authenticate with.
+     @type password: L{unicode}
+ 
+-    @param contextFactory: An object which creates appropriately configured TLS
+-        connections. This is passed to C{startTLS} on the transport and is
+-        preferably created using L{twisted.internet.ssl.optionsForClientTLS}.
+-        See L{xmlstream.TLSInitiatingInitializer} for details.
+-    @type contextFactory: L{IOpenSSLClientConnectionCreator}
++    @param configurationForTLS: An object which creates appropriately
++        configured TLS connections. This is passed to C{startTLS} on the
++        transport and is preferably created using
++        L{twisted.internet.ssl.optionsForClientTLS}.  See
++        L{xmlstream.TLSInitiatingInitializer} for details.
++    @type configurationForTLS: L{IOpenSSLClientConnectionCreator}
+ 
+     @return: XML stream factory.
+     @rtype: L{xmlstream.XmlStreamFactory}
+     """
+-    a = XMPPAuthenticator(jid, password, contextFactory=contextFactory)
++    a = XMPPAuthenticator(jid, password,
++                          configurationForTLS=configurationForTLS)
+     return xmlstream.XmlStreamFactory(a)
+ 
+ 
+@@ -361,21 +363,23 @@ class XMPPAuthenticator(xmlstream.ConnectAuthenticator):
+ 
+     @ivar password: password to be used during SASL authentication.
+     @type password: L{unicode}
+-
+-    @ivar contextFactory: An object which creates appropriately configured TLS
+-        connections. This is passed to C{startTLS} on the transport and is
+-        preferably created using L{twisted.internet.ssl.optionsForClientTLS}.
+-        See L{xmlstream.TLSInitiatingInitializer} for details.
+-    @type contextFactory: L{IOpenSSLClientConnectionCreator}
+     """
+ 
+     namespace = 'jabber:client'
+ 
+-    def __init__(self, jid, password, contextFactory=None):
++    def __init__(self, jid, password, configurationForTLS=None):
++        """
++        @param configurationForTLS: An object which creates appropriately
++            configured TLS connections. This is passed to C{startTLS} on the
++            transport and is preferably created using
++            L{twisted.internet.ssl.optionsForClientTLS}. See
++            L{xmlstream.TLSInitiatingInitializer} for details.
++        @type configurationForTLS: L{IOpenSSLClientConnectionCreator}
++        """
+         xmlstream.ConnectAuthenticator.__init__(self, jid.host)
+         self.jid = jid
+         self.password = password
+-        self.contextFactory = contextFactory
++        self._configurationForTLS = configurationForTLS
+ 
+ 
+     def associateWithStream(self, xs):
+@@ -392,7 +396,8 @@ def associateWithStream(self, xs):
+         xs.initializers = [
+                 CheckVersionInitializer(xs),
+                 xmlstream.TLSInitiatingInitializer(
+-                    xs, required=True, contextFactory=self.contextFactory),
++                    xs, required=True,
++                    configurationForTLS=self._configurationForTLS),
+                 sasl.SASLInitiatingInitializer(xs, required=True),
+                 BindInitializer(xs, required=True),
+                 SessionInitializer(xs, required=False),
+diff --git a/src/twisted/words/protocols/jabber/xmlstream.py b/src/twisted/words/protocols/jabber/xmlstream.py
+index 1ed79d47726..135d71295df 100644
+--- a/src/twisted/words/protocols/jabber/xmlstream.py
++++ b/src/twisted/words/protocols/jabber/xmlstream.py
+@@ -403,25 +403,27 @@ class TLSInitiatingInitializer(BaseFeatureInitiatingInitializer):
+ 
+     @ivar wanted: indicates if TLS negotiation is wanted.
+     @type wanted: C{bool}
+-
+-    @ivar contextFactory: An object which creates appropriately configured TLS
+-        connections. This is passed to C{startTLS} on the transport and is
+-        preferably created using L{twisted.internet.ssl.optionsForClientTLS}.
+-        If C{None}, the default is to verify the server certificate against
+-        the trust roots as provided by the platform. See
+-        L{twisted.internet._sslverify.platformTrust}.
+-    @type contextFactory: L{IOpenSSLClientConnectionCreator}
+     """
+ 
+     feature = (NS_XMPP_TLS, 'starttls')
+     wanted = True
+-    contextFactory = None
+     _deferred = None
++    _configurationForTLS = None
+ 
+-    def __init__(self, xs, required=True, contextFactory=None):
++    def __init__(self, xs, required=True, configurationForTLS=None):
++        """
++        @param configurationForTLS: An object which creates appropriately
++            configured TLS connections. This is passed to C{startTLS} on the
++            transport and is preferably created using
++            L{twisted.internet.ssl.optionsForClientTLS}.  If C{None}, the
++            default is to verify the server certificate against the trust roots
++            as provided by the platform. See
++            L{twisted.internet._sslverify.platformTrust}.
++        @type configurationForTLS: L{IOpenSSLClientConnectionCreator}
++        """
+         super(TLSInitiatingInitializer, self).__init__(
+                 xs, required=required)
+-        self.contextFactory = contextFactory
++        self._configurationForTLS = configurationForTLS
+ 
+ 
+     def onProceed(self, obj):
+@@ -430,8 +432,8 @@ def onProceed(self, obj):
+         """
+ 
+         self.xmlstream.removeObserver('/failure', self.onFailure)
+-        if self.contextFactory:
+-            ctx = self.contextFactory
++        if self._configurationForTLS:
++            ctx = self._configurationForTLS
+         else:
+             ctx = ssl.optionsForClientTLS(self.xmlstream.otherEntity.host)
+         self.xmlstream.transport.startTLS(ctx)
+diff --git a/src/twisted/words/test/test_jabberclient.py b/src/twisted/words/test/test_jabberclient.py
+index 1403131baf6..4f5c8092419 100644
+--- a/src/twisted/words/test/test_jabberclient.py
++++ b/src/twisted/words/test/test_jabberclient.py
+@@ -466,28 +466,32 @@ def test_basic(self):
+         self.assertFalse(session.required)
+ 
+ 
+-    def test_tlsContextFactory(self):
++    def test_tlsConfiguration(self):
+         """
+-        Test basic operations.
+-
+-        Setup an XMPPClientFactory, which sets up an XMPPAuthenticator, and let
+-        it produce a protocol instance. Then inspect the instance variables of
+-        the authenticator and XML stream objects.
++        A TLS configuration is passed to the TLS initializer.
+         """
++        configs = []
++
++        def init(self, xs, required=True, configurationForTLS=None):
++            configs.append(configurationForTLS)
++
+         self.client_jid = jid.JID('user@example.com/resource')
+ 
+         # Get an XmlStream instance. Note that it gets initialized with the
+         # XMPPAuthenticator (that has its associateWithXmlStream called) that
+         # is in turn initialized with the arguments to the factory.
+-        contextFactory = ssl.CertificateOptions()
+-        factory = client.XMPPClientFactory(self.client_jid, 'secret',
+-                                           contextFactory=contextFactory)
++        configurationForTLS = ssl.CertificateOptions()
++        factory = client.XMPPClientFactory(
++            self.client_jid, 'secret',
++            configurationForTLS=configurationForTLS)
++        self.patch(xmlstream.TLSInitiatingInitializer, "__init__", init)
+         xs = factory.buildProtocol(None)
+ 
+         # test list of initializers
+         version, tls, sasl, bind, session = xs.initializers
+ 
+         self.assertIsInstance(tls, xmlstream.TLSInitiatingInitializer)
+-        self.assertIs(contextFactory, tls.contextFactory)
++        self.assertIs(configurationForTLS, configs[0])
++
+ 
+-    test_tlsContextFactory.skip = skipWhenNoSSL
++    test_tlsConfiguration.skip = skipWhenNoSSL
+diff --git a/src/twisted/words/test/test_jabberxmlstream.py b/src/twisted/words/test/test_jabberxmlstream.py
+index 7b384645a2c..85f6d195d4a 100644
+--- a/src/twisted/words/test/test_jabberxmlstream.py
++++ b/src/twisted/words/test/test_jabberxmlstream.py
+@@ -747,6 +747,9 @@ def test_certificateVerifyContext(self):
+         A custom contextFactory is passed through to startTLS.
+         """
+         ctx = CertificateOptions()
++        self.init = xmlstream.TLSInitiatingInitializer(
++            self.xmlstream, configurationForTLS=ctx)
++
+         self.init.contextFactory = ctx
+ 
+         def fakeStartTLS(contextFactory):
+
+From 05556b6ca14a49e4c7f3b5e8ede83137b869926e Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Sun, 16 Jun 2019 19:02:52 +0200
+Subject: [PATCH 14/17] Move check for configurationTLS being None to __init__
+
+---
+ src/twisted/words/protocols/jabber/xmlstream.py | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/src/twisted/words/protocols/jabber/xmlstream.py b/src/twisted/words/protocols/jabber/xmlstream.py
+index 135d71295df..dd4bd8f1932 100644
+--- a/src/twisted/words/protocols/jabber/xmlstream.py
++++ b/src/twisted/words/protocols/jabber/xmlstream.py
+@@ -423,7 +423,11 @@ def __init__(self, xs, required=True, configurationForTLS=None):
+         """
+         super(TLSInitiatingInitializer, self).__init__(
+                 xs, required=required)
+-        self._configurationForTLS = configurationForTLS
++        if configurationForTLS:
++            self._configurationForTLS = configurationForTLS
++        else:
++            self._configurationForTLS = ssl.optionsForClientTLS(
++                self.xmlstream.authenticator.otherHost)
+ 
+ 
+     def onProceed(self, obj):
+@@ -432,11 +436,7 @@ def onProceed(self, obj):
+         """
+ 
+         self.xmlstream.removeObserver('/failure', self.onFailure)
+-        if self._configurationForTLS:
+-            ctx = self._configurationForTLS
+-        else:
+-            ctx = ssl.optionsForClientTLS(self.xmlstream.otherEntity.host)
+-        self.xmlstream.transport.startTLS(ctx)
++        self.xmlstream.transport.startTLS(self._configurationForTLS)
+         self.xmlstream.reset()
+         self.xmlstream.sendHeader()
+         self._deferred.callback(Reset)
+
+From 7caf8ac8795492e346e8f52633ff6d343a07edde Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Sun, 16 Jun 2019 19:11:35 +0200
+Subject: [PATCH 15/17] Document configurationForTLS being None directly
+
+---
+ src/twisted/words/protocols/jabber/client.py    | 16 ++++++++++------
+ src/twisted/words/protocols/jabber/xmlstream.py |  3 ++-
+ 2 files changed, 12 insertions(+), 7 deletions(-)
+
+diff --git a/src/twisted/words/protocols/jabber/client.py b/src/twisted/words/protocols/jabber/client.py
+index db4cbfccf21..8f197cdafe1 100644
+--- a/src/twisted/words/protocols/jabber/client.py
++++ b/src/twisted/words/protocols/jabber/client.py
+@@ -317,9 +317,10 @@ def XMPPClientFactory(jid, password, configurationForTLS=None):
+     @param configurationForTLS: An object which creates appropriately
+         configured TLS connections. This is passed to C{startTLS} on the
+         transport and is preferably created using
+-        L{twisted.internet.ssl.optionsForClientTLS}.  See
+-        L{xmlstream.TLSInitiatingInitializer} for details.
+-    @type configurationForTLS: L{IOpenSSLClientConnectionCreator}
++        L{twisted.internet.ssl.optionsForClientTLS}. If C{None}, the default is
++        to verify the server certificate against the trust roots as provided by
++        the platform. See L{twisted.internet._sslverify.platformTrust}.
++    @type configurationForTLS: L{IOpenSSLClientConnectionCreator} or C{None}
+ 
+     @return: XML stream factory.
+     @rtype: L{xmlstream.XmlStreamFactory}
+@@ -372,9 +373,12 @@ def __init__(self, jid, password, configurationForTLS=None):
+         @param configurationForTLS: An object which creates appropriately
+             configured TLS connections. This is passed to C{startTLS} on the
+             transport and is preferably created using
+-            L{twisted.internet.ssl.optionsForClientTLS}. See
+-            L{xmlstream.TLSInitiatingInitializer} for details.
+-        @type configurationForTLS: L{IOpenSSLClientConnectionCreator}
++            L{twisted.internet.ssl.optionsForClientTLS}. If C{None}, the
++            default is to verify the server certificate against the trust roots
++            as provided by the platform. See
++            L{twisted.internet._sslverify.platformTrust}.
++        @type configurationForTLS: L{IOpenSSLClientConnectionCreator} or
++            C{None}
+         """
+         xmlstream.ConnectAuthenticator.__init__(self, jid.host)
+         self.jid = jid
+diff --git a/src/twisted/words/protocols/jabber/xmlstream.py b/src/twisted/words/protocols/jabber/xmlstream.py
+index dd4bd8f1932..905402c5360 100644
+--- a/src/twisted/words/protocols/jabber/xmlstream.py
++++ b/src/twisted/words/protocols/jabber/xmlstream.py
+@@ -419,7 +419,8 @@ def __init__(self, xs, required=True, configurationForTLS=None):
+             default is to verify the server certificate against the trust roots
+             as provided by the platform. See
+             L{twisted.internet._sslverify.platformTrust}.
+-        @type configurationForTLS: L{IOpenSSLClientConnectionCreator}
++        @type configurationForTLS: L{IOpenSSLClientConnectionCreator} or
++            C{None}
+         """
+         super(TLSInitiatingInitializer, self).__init__(
+                 xs, required=required)
+
+From a66878c15abe99fdb3c72d7ec533ee0ef54e7f95 Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Sun, 16 Jun 2019 19:14:04 +0200
+Subject: [PATCH 16/17] Mention CVE-2019-12855 in news fragment
+
+---
+ src/twisted/words/newsfragments/9561.bugfix | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/twisted/words/newsfragments/9561.bugfix b/src/twisted/words/newsfragments/9561.bugfix
+index ac5f905a104..033a128491c 100644
+--- a/src/twisted/words/newsfragments/9561.bugfix
++++ b/src/twisted/words/newsfragments/9561.bugfix
+@@ -1 +1 @@
+-twisted.words.protocols.jabber.xmlstream.TLSInitiatingInitializer now properly verifies the server's certificate against platform CAs and the stream's domain.
++twisted.words.protocols.jabber.xmlstream.TLSInitiatingInitializer now properly verifies the server's certificate against platform CAs and the stream's domain, mitigating CVE-2019-12855.
+
+From abbf0fd52c13b1fb5e1429189a3fcc48565870a5 Mon Sep 17 00:00:00 2001
+From: Ralph Meijer <ralphm@ik.nu>
+Date: Sun, 16 Jun 2019 19:50:33 +0200
+Subject: [PATCH 17/17] Revert "Move check for configurationTLS being None to
+ __init__"
+
+This reverts commit 05556b6ca14a49e4c7f3b5e8ede83137b869926e.
+---
+ src/twisted/words/protocols/jabber/xmlstream.py | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/src/twisted/words/protocols/jabber/xmlstream.py b/src/twisted/words/protocols/jabber/xmlstream.py
+index 905402c5360..20948c6d3be 100644
+--- a/src/twisted/words/protocols/jabber/xmlstream.py
++++ b/src/twisted/words/protocols/jabber/xmlstream.py
+@@ -424,11 +424,7 @@ def __init__(self, xs, required=True, configurationForTLS=None):
+         """
+         super(TLSInitiatingInitializer, self).__init__(
+                 xs, required=required)
+-        if configurationForTLS:
+-            self._configurationForTLS = configurationForTLS
+-        else:
+-            self._configurationForTLS = ssl.optionsForClientTLS(
+-                self.xmlstream.authenticator.otherHost)
++        self._configurationForTLS = configurationForTLS
+ 
+ 
+     def onProceed(self, obj):
+@@ -437,7 +433,11 @@ def onProceed(self, obj):
+         """
+ 
+         self.xmlstream.removeObserver('/failure', self.onFailure)
+-        self.xmlstream.transport.startTLS(self._configurationForTLS)
++        if self._configurationForTLS:
++            ctx = self._configurationForTLS
++        else:
++            ctx = ssl.optionsForClientTLS(self.xmlstream.otherEntity.host)
++        self.xmlstream.transport.startTLS(ctx)
+         self.xmlstream.reset()
+         self.xmlstream.sendHeader()
+         self._deferred.callback(Reset)
