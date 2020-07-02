@@ -7,20 +7,21 @@ PRGNAME=${0##*/}  # script name minus the path
 LOGFILE="${PRGNAME}-$(date +%Y-%m-%d).log"
 
 #expected number of command line argument
-NARGS=16
+NARGS=20
 ARGS_PASSED=$#
-VOLUME_SIZE=10
+VOLUME_SIZE=8
 COPY_VOLUME_SIZE=20
 DEVICE="/dev/xvdd"
 COPY_DEVICE="/dev/xvdc"
 EBS_IMAGE_ROOT_DEVICE_NAME="/dev/xvda"
 LOOP_WAIT=2
-SSH_WAIT=30
+SSH_WAIT=60
+VOLUME_WAIT=60
 SNAPSHOT_WAIT=60
 LOOP_TRIAL=100
 
 #AMI_IDS of different US Regions
-AMI_ID_US_EAST_1="ami-83614695"
+AMI_ID_US_EAST_1="ami-09d95fab7fff3776c"
 AMI_ID_US_EAST_2="ami-45311120"
 AMI_ID_US_WEST_1="ami-e04b6380"
 AMI_ID_US_WEST_2="ami-c0df50a0"
@@ -63,6 +64,14 @@ do
                 DEFAULT_REGION="$1"
                 shift
         ;;
+                -sub|--SUBNET_ID)
+                SUBNET_ID="$1"
+                shift
+        ;;
+                -vi|--VPC_ID)
+                VPC_ID="$1"
+                shift
+        ;;
                 -h|--help)
                 echo 'Usage:'
                 echo '-g|--GN                  :security group name for the instance'
@@ -73,6 +82,8 @@ do
                 echo '-aki|--ACCESS_KEY_ID     :aws access key id'
                 echo '-sak|--SECRET_ACCESS_KEY :aws secret access key'
                 echo '-dr|--DEFAULT_REEGION    :aws default region'
+                echo '-sub|--SUBNET_ID         :aws subnet to launch the instance in'
+                echo '-vi|--VPC_ID             :aws vpc id to work in'
                 exit 0
         ;;
         *)
@@ -101,7 +112,7 @@ if [ $ARGS_PASSED -eq $[$NARGS-2] ]; then
       AMI_ID=$AMI_ID_US_WEST_2
   ;;
   *)
-      #unkown region
+      #unknown region
       exit 1
   esac
   ARGS_PASSED=$[$ARGS_PASSED+2]
@@ -133,12 +144,15 @@ function cleanup {
    aws ec2 delete-volume --volume-id $VOLUMEID_COPY
   fi
   if [ ! -z "${GROUP_NAME:-}" ]; then
-   aws ec2 delete-security-group --group-name $GROUP_NAME
+   SECURITY_GROUP_ID=`aws ec2 describe-security-groups --filters Name=vpc-id,Values=${VPC_ID},Name=group-name,Values=${GROUP_NAME} --output=text --query 'SecurityGroups[0].GroupId'`
+   if [ ! -z "${SECURITY_GROUP_ID:-}" ]; then
+    aws ec2 delete-security-group --group-id ${SECURITY_GROUP_ID}
+   fi
   fi
   if [ ! -z "${KEY_NAME:-}" ]; then
    aws ec2 delete-key-pair --key-name $KEY_NAME
   fi
-  rm $KEY_FILE
+  rm -rf $KEY_FILE
 }
 trap 'cleanup' EXIT
 
@@ -154,12 +168,12 @@ function check_counter {
 }
 
 #Start an AMI Instance
-aws ec2 create-security-group --group-name $GROUP_NAME --description "AMI Creation Sec Group"
-aws ec2 authorize-security-group-ingress --group-name $GROUP_NAME --protocol tcp --port 22 --cidr 0.0.0.0/0
+aws ec2 create-security-group --vpc-id ${VPC_ID} --group-name $GROUP_NAME --description "AMI Creation Sec Group"
+SECURITY_GROUP_ID=`aws ec2 describe-security-groups --filters Name=vpc-id,Values=${VPC_ID},Name=group-name,Values=${GROUP_NAME} --output=text --query 'SecurityGroups[0].GroupId'`
+aws ec2 authorize-security-group-ingress --group-id ${SECURITY_GROUP_ID} --protocol tcp --port 22 --cidr 0.0.0.0/0
 aws ec2 create-key-pair --key-name $KEY_NAME --query 'KeyMaterial' --output text > $KEY_FILE
 chmod 400 $KEY_FILE
-SECURITY_GROUP_ID=`aws ec2 describe-security-groups --group-name $GROUP_NAME --output=text --query 'SecurityGroups[0].GroupId'`
-INSTANCE_ID=`aws ec2 run-instances --image-id $AMI_ID --security-group-ids $SECURITY_GROUP_ID --count 1 --instance-type m3.medium --key-name $KEY_NAME --output=text --query 'Instances[0].InstanceId'`
+INSTANCE_ID=`aws ec2 run-instances --subnet-id $SUBNET_ID --image-id ${AMI_ID} --security-group-ids $SECURITY_GROUP_ID --count 1 --instance-type t3.large --key-name $KEY_NAME --output=text --query 'Instances[0].InstanceId' --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=photon-ami-builder-${TAR_FILE}}]" "ResourceType=volume,Tags=[{Key=Name,Value=photon-ami-builder-root-${TAR_FILE}}]"`
 AVAILABILITY_ZONE=`aws ec2 describe-instances --instance-ids $INSTANCE_ID --output=text --query 'Reservations[0].Instances[0].Placement.AvailabilityZone'`
 
 count=0
@@ -257,14 +271,20 @@ while : ; do
  sleep $LOOP_WAIT
 done
 
+sleep ${VOLUME_WAIT}
+
 #Copy the image file
-ssh -i $KEY_FILE root@$IP 'rm -rf /mnt/copy; rm -rf /mnt/ebs; mkdir /mnt/copy; mkdir /mnt/ebs' >> $LOGFILE
-ssh -i $KEY_FILE root@$IP "mkfs.ext4 $COPY_DEVICE" >> $LOGFILE
-ssh -i $KEY_FILE root@$IP "mount $COPY_DEVICE /mnt/copy" >> $LOGFILE
-scp -i $KEY_FILE $TAR_FILE.tar.gz root@$IP:/mnt/copy >> $LOGFILE
-ssh -i $KEY_FILE root@$IP "cd /mnt/copy; tar -xf $TAR_FILE.tar.gz; dd if=$TAR_FILE.raw of=$DEVICE bs=1M" >> $LOGFILE
-ssh -i $KEY_FILE root@$IP 'umount /mnt/copy'
-ssh -i $KEY_FILE root@$IP 'rm -rf /mnt/copy /mnt/ebs'
+ssh -i $KEY_FILE ec2-user@$IP sudo -- 'rm -rf /mnt/copy /mnt/ebs' >> $LOGFILE
+ssh -i $KEY_FILE ec2-user@$IP sudo -- "mkfs.ext4 $COPY_DEVICE" >> $LOGFILE
+ssh -i $KEY_FILE ec2-user@$IP sudo -- 'mkdir -p /mnt/{copy,ebs}' >> $LOGFILE
+ssh -i $KEY_FILE ec2-user@$IP sudo -- "mount $COPY_DEVICE /mnt/copy" >> $LOGFILE
+ssh -i $KEY_FILE ec2-user@$IP sudo -- "mkdir -p /mnt/copy/files" >> $LOGFILE
+ssh -i $KEY_FILE ec2-user@$IP sudo -- "chown ec2-user:ec2-user /mnt/copy/files" >> $LOGFILE
+scp -i $KEY_FILE $TAR_FILE.tar.gz ec2-user@$IP:/mnt/copy/files/$TAR_FILE.tar.gz >> $LOGFILE
+ssh -i $KEY_FILE ec2-user@$IP sudo -- "ls -la /mnt/copy/files/" >> $LOGFILE
+ssh -i $KEY_FILE ec2-user@$IP sudo -- "tar -xf /mnt/copy/files/$TAR_FILE.tar.gz --directory /mnt/copy/files/ && dd if=/mnt/copy/files/$TAR_FILE.raw of=$DEVICE bs=1M" >> $LOGFILE
+ssh -i $KEY_FILE ec2-user@$IP sudo -- 'umount /mnt/copy'
+ssh -i $KEY_FILE ec2-user@$IP sudo -- 'rm -rf /mnt/copy /mnt/ebs'
 
 #detach the volume
 aws ec2 detach-volume --volume-id $VOLUMEID --region $AWS_DEFAULT_REGION >> $LOGFILE
