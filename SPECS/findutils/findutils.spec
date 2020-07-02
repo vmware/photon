@@ -1,7 +1,7 @@
 Summary:	This package contains programs to find files
 Name:		findutils
 Version:	4.6.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/findutils
 Group:		Applications/File
@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/findutils/%{name}-%{version}.tar.gz
 %define sha1 findutils=f18e8aaee3f3d4173a1f598001003be8706d28b0
-Conflicts:      toybox
+Conflicts:      toybox < 0.8.2-2
 %description
 These programs are provided to recursively search through a
 directory tree and to create, maintain, and search a database
@@ -61,6 +61,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.6.0-6
+- Do not conflict with toybox >= 0.8.2-2
 * Sun Sep 09 2018 Alexey Makhalov <amakhalov@vmware.com> 4.6.0-5
 - Fix compilation issue against glibc-2.28
 * Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 4.6.0-4

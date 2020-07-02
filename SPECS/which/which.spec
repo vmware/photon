@@ -1,7 +1,7 @@
 Summary:	Program shows full path of (shell) commands
 Name:		which
 Version:	2.21
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3+
 URL:		http://savannah.gnu.org/projects/which
 Source0:	http://ftp.gnu.org/gnu/which/%{name}-%{version}.tar.gz
@@ -9,7 +9,7 @@ Source0:	http://ftp.gnu.org/gnu/which/%{name}-%{version}.tar.gz
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: Photon
-Conflicts:      toybox
+Conflicts:      toybox < 0.8.2-2
 %description
 Program for showing the full the path of (shell) commands.
 %prep
@@ -25,6 +25,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_bindir}/*
 %{_mandir}/man1/*
 %changelog
+* Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.21-6
+- Do not conflict with toybox >= 0.8.2-2
 * Thu Oct 19 2017 Alexey Makhalov <amakhalov@vmware.com> 2.21-5
 - Remove infodir
 - Use standard configure/build macros

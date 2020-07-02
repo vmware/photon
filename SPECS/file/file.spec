@@ -1,7 +1,7 @@
 Summary:        Contains a utility for determining file types
 Name:           file
 Version:        5.38
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            http://www.darwinsys.com/file
 Group:          Applications/File
@@ -10,7 +10,7 @@ Distribution:   Photon
 Source0:        ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
 %define sha1    file=57cad9341c3f74f8681c2ef931786c420105f35e
 Requires:       %{name}-libs = %{version}-%{release}
-Conflicts:      toybox
+Conflicts:      toybox < 0.8.2-2
 %description
 The package contains a utility for determining the type of a
 given file or files
@@ -59,6 +59,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*man3/*
 
 %changelog
+*   Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.38-2
+-   Do not conflict with toybox >= 0.8.2-2
 *   Mon Apr 6  2020 Siju Maliakkal <smaliakkal@vmware.com> 5.38-1
 -   Upgrade to 5.38
 -   CVE-2019-8904, CVE-2019-8905, CVE-2019-8906, CVE-2019-8907

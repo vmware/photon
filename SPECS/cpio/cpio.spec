@@ -1,7 +1,7 @@
 Summary:	cpio archive utility
 Name:		cpio
 Version:	2.13
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/cpio/
 Group:		System Environment/System utilities
@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
 %define sha1 cpio=4dcefc0e1bc36b11506a354768d82b15e3fe6bb8
-Conflicts:      toybox
+Conflicts:      toybox < 0.8.2-2
 Patch0:		newca-new-archive-format.patch
 %description
 The cpio package contains tools for archiving.
@@ -54,6 +54,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.13-2
+- Do not conflict with toybox >= 0.8.2-2
 * Tue Jun 09 2020 Alexey Makhalov <amakhalov@vmware.com> 2.13-1
 - Version update
 - newca: extraction support

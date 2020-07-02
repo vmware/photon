@@ -1,7 +1,7 @@
 Summary:	Basic system utilities
 Name:		coreutils
 Version:	8.30
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/coreutils
 Group:		System Environment/Base
@@ -18,7 +18,7 @@ Patch1:         make-check-failure.patch
 %endif
 Requires:	gmp
 Provides:	sh-utils
-Conflicts:      toybox
+Conflicts:      toybox < 0.8.2-2
 %description
 The Coreutils package contains utilities for showing and setting
 the basic system
@@ -87,6 +87,8 @@ make NON_ROOT_USERNAME=nobody check
 %defattr(-,root,root)
 
 %changelog
+* Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 8.30-3
+- Do not conflict with toybox >= 0.8.2-2
 * Thu Sep 12 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 8.30-2
 - Fix for makecheck failure added a patch
 * Fri Sep 07 2018 Alexey Makhalov <amakhalov@vmware.com> 8.30-1

@@ -3,7 +3,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.1.1365
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -21,7 +21,7 @@ The Vim package contains a powerful text editor.
 Summary:    Extra files for Vim text editor
 Group:      Applications/Editors
 Requires:   tcsh
-Conflicts:  toybox
+Conflicts:  toybox < 0.8.2-2
 
 %description extra
 The vim extra package contains a extra files for powerful text editor.
@@ -186,6 +186,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+*   Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 8.1.1365-2
+-   Do not conflict with toybox >= 0.8.2-2
 *   Thu Jun 04 2020 Tapas Kundu <tkundu@vmware.com> 8.1.1365-1
 -   Update to 8.1.1365 to take Ex command changes along with CVE-2019-20807
 *   Mon Jun 1 2020 Anisha Kumari <kanisha@vmware.com> 8.1.0388-7

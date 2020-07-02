@@ -1,7 +1,7 @@
 Summary:	Networking Tools
 Name:		net-tools
 Version:	1.60
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	GPLv2+
 URL:		http://net-tools.sourceforge.net
 Group:		System Environment/Base
@@ -41,7 +41,7 @@ Patch28:	Bug#561161-statistics.c-long_numbers.patch
 Patch29:	Bug#508110-inet6.c-initialize_fields.patch
 Patch30:	Ubuntu_unit_conversion.patch
 Obsoletes:	inetutils 
-Conflicts:      toybox
+Conflicts:      toybox < 0.8.2-2
 %description
 The Net-tools package is a collection of programs for controlling the network subsystem of the Linux kernel. 
 %prep
@@ -105,6 +105,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.60-12
+-   Do not conflict with toybox >= 0.8.2-2
 *   Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 1.60-11
 -   Added conflicts toybox
 *   Wed Dec 14 2016 Alexey Makhalov <amakhalov@vmware.com> 1.60-10
