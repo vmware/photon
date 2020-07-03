@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          25%{?dist}
+Release:          26%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -55,6 +55,7 @@ Patch35:          detect-vmware-hypervisor.patch
 Patch36:          safe-atou32-full.patch
 Patch37:          systemd-239-CVE-2020-13776.patch
 Patch38:          systemd-mount-fixes.patch
+Patch39:          systemd-239-bz-2597079.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -162,6 +163,7 @@ EOF
 %patch36 -p1
 %patch37 -p1
 %patch38 -p1
+%patch39 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -348,6 +350,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Fri Jul 03 2020 Susant Sahani <ssahani@vmware.com> 239-26
+-    Fix BZ-2597079
 *    Tue Jun 23 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 239-25
 -    mount fixes
 *    Sat Jun 06 2020 Susant Sahani <ssahani@vmware.com> 239-24

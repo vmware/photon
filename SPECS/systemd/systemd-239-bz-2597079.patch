@@ -1,0 +1,84 @@
+diff --color -rupN systemd-239-1/src/network/networkd-link.c systemd-239-bz-2597079/src/network/networkd-link.c
+--- systemd-239-1/src/network/networkd-link.c	2020-07-03 04:37:07.001665965 +0000
++++ systemd-239-bz-2597079/src/network/networkd-link.c	2020-07-03 05:55:08.307864137 +0000
+@@ -734,6 +734,9 @@ void link_check_ready(Link *link) {
+         if (!link->network)
+                 return;
+ 
++        if (!link->addresses_configured)
++                return;
++
+         if (!link->static_routes_configured)
+                 return;
+ 
+@@ -780,6 +783,9 @@ static int link_set_routing_policy_rule(
+         assert(link);
+         assert(link->network);
+ 
++        link_set_state(link, LINK_STATE_CONFIGURING);
++        link->routing_policy_rules_configured = false;
++
+         LIST_FOREACH(rules, rule, link->network->rules) {
+                 r = routing_policy_rule_get(link->manager, rule->family, &rule->from, rule->from_prefixlen, &rule->to,
+                                             rule->to_prefixlen, rule->tos, rule->fwmark, rule->table, rule->iif, rule->oif, &rrule);
+@@ -842,7 +848,12 @@ static int link_enter_set_routes(Link *l
+         assert(link->network);
+         assert(link->state != _LINK_STATE_INVALID);
+ 
+-        (void) link_set_routing_policy_rule(link);
++        link_set_state(link, LINK_STATE_CONFIGURING);
++        link->static_routes_configured = false;
++
++        r = link_set_routing_policy_rule(link);
++        if (r < 0)
++                return r;
+ 
+         LIST_FOREACH(routes, rt, link->network->static_routes) {
+                 r = route_configure(rt, link, route_handler);
+@@ -907,6 +918,7 @@ static int address_handler(sd_netlink *r
+ 
+         if (link->address_messages == 0) {
+                 log_link_debug(link, "Addresses set");
++                link->addresses_configured = true;
+                 link_enter_set_routes(link);
+         }
+ 
+@@ -1060,6 +1072,13 @@ static int link_enter_set_addresses(Link
+         assert(link->network);
+         assert(link->state != _LINK_STATE_INVALID);
+ 
++        link_set_state(link, LINK_STATE_CONFIGURING);
++
++        /* Reset all *_configured flags we are configuring. */
++        link->addresses_configured = false;
++        link->static_routes_configured = false;
++        link->routing_policy_rules_configured = false;
++
+         r = link_set_bridge_fdb(link);
+         if (r < 0)
+                 return r;
+@@ -1205,9 +1224,10 @@ static int link_enter_set_addresses(Link
+                 log_link_debug(link, "Offering DHCPv4 leases");
+         }
+ 
+-        if (link->address_messages == 0)
++        if (link->address_messages == 0) {
++                link->addresses_configured = true;
+                 link_enter_set_routes(link);
+-        else
++        } else
+                 log_link_debug(link, "Setting addresses");
+ 
+         return 0;
+diff --color -rupN systemd-239-1/src/network/networkd-link.h systemd-239-bz-2597079/src/network/networkd-link.h
+--- systemd-239-1/src/network/networkd-link.h	2020-07-03 04:37:06.997665951 +0000
++++ systemd-239-bz-2597079/src/network/networkd-link.h	2020-07-03 04:38:15.409900178 +0000
+@@ -79,6 +79,8 @@ typedef struct Link {
+         Set *routes;
+         Set *routes_foreign;
+ 
++        bool addresses_configured;
++
+         sd_dhcp_client *dhcp_client;
+         sd_dhcp_lease *dhcp_lease;
+         char *lease_file;
