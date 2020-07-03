@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.228
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -69,6 +69,8 @@ Patch45:        0005-xfs-sanity-check-inode-di_mode.patch
 Patch46:        0006-xfs-verify-dinode-header-first.patch
 Patch47:        0007-xfs-move-inode-fork-verifiers-to-xfs_dinode_verify.patch
 Patch48:        0008-xfs-enhance-dinode-verifier.patch
+Patch49:	0001-Initialize-fid-iounit-during-creation-of-p9_fid.patch
+
 #Fix CVE-2019-8912
 Patch50:        fix_use_after_free_in_sockfs_setattr.patch
 # Fix for CVE-2019-12456
@@ -175,6 +177,7 @@ The Linux package contains the Linux kernel doc files
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
+%patch49 -p1
 %patch50 -p1
 %patch51 -p1
 %patch54 -p1
@@ -276,6 +279,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jul 03 2020 Mounesh Badiger <badigerm@vmware.com> 4.4.228-2
+-   9p: Initialize fid->iounit during creation of p9_fid
 *   Wed Jun 24 2020 Keerthana K <keerthanak@vmware.com> 4.4.228-1
 -   Update to version 4.4.228
 *   Mon Jun 22 2020 Vikash Bansal <bvikas@vmware.com> 4.4.227-2

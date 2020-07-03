@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.228
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -88,6 +88,9 @@ Patch52:        0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 # Fix CVE-2019-18885
 Patch54:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch55:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
+
+#9p uninitialized fid->iounit
+Patch56:	0001-Initialize-fid-iounit-during-creation-of-p9_fid.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -218,6 +221,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch52 -p1
 %patch54 -p1
 %patch55 -p1
+%patch56 -p1
 %patch67 -p1
 
 %if 0%{?kat_build:1}
@@ -377,6 +381,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri Jul 03 2020 Mounesh Badiger <badigerm@vmware.com> 4.4.228-2
+-   9p: Initialize fid->iounit during creation of p9_fid
 *   Wed Jun 24 2020 Keerthana K <keerthanak@vmware.com> 4.4.228-1
 -   Update to version 4.4.228
 *   Mon Jun 22 2020 Vikash Bansal <bvikas@vmware.com> 4.4.227-2
