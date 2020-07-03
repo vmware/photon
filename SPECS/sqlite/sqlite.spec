@@ -1,7 +1,7 @@
-%define sourcever 3310100
+%define sourcever 3320100
 Summary:    A portable, high level programming interface to various calling conventions
 Name:           sqlite
-Version:        3.31.1
+Version:        3.32.1
 Release:        1%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
@@ -9,9 +9,8 @@ Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sqlite.org/2020/%{name}-autoconf-%{sourcever}.tar.gz
-%define sha1    sqlite=0c30f5b22152a8166aa3bebb0f4bc1f3e9cc508b
-Patch0:         sqlite-CVE-2020-11656.patch
-Patch1:         sqlite-CVE-2020-9327.patch
+%define sha1    sqlite=3d34d86ef726b66edeb0b93b2a4c0d036ea8dcf3
+Patch0:         sqlite-CVE-2020-15358.patch
 Obsoletes:      sqlite-autoconf
 Obsoletes:      sqlite-devel <= 3.27.2-5
 Requires:       sqlite-libs = %{version}-%{release}
@@ -41,7 +40,6 @@ The sqlite3 library.
 %prep
 %setup -q -n %{name}-autoconf-%{sourcever}
 %patch0 -p1
-%patch1 -p1
 
 %build
 %configure \
@@ -91,9 +89,12 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0
 
 %changelog
+*   Fri Jul 03 2020 Shreyas B <shreyasb@vmware.com> 3.32.1-1
+-   Upgrade to 3.32.1 & fix CVE-2020-15358
+-   CVE-2020-13630 CVE-2020-13434 CVE-2020-13435 CVE-2020-13631 CVE-2020-13632
 *   Thu May 14 2020 Ankit Jain <ankitja@vmware.com> 3.31.1-1
 -   Updated to 3.31.1
-*   Wed Feb 3 2019 Michelle Wang <michellew@vmware.com> 3.26.0-1
+*   Sun Feb 3 2019 Michelle Wang <michellew@vmware.com> 3.26.0-1
 -   Upgrade to 3.26.0 for a critical Vulnerability named 'Magallan'.
 *   Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 3.25.1-1
 -   Upgrade to version 3.25.1
