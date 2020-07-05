@@ -1,6 +1,24 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/sysnetwork.fc selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/sysnetwork.fc
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/sysnetwork.fc	2020-07-09 12:50:34.028443273 +0530
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/sysnetwork.fc	2020-07-09 13:20:19.000533117 +0530
+@@ -40,6 +40,14 @@
+ /var/run/systemd/resolve/resolv\.conf   --  gen_context(system_u:object_r:net_conf_t,s0)
+ /var/run/systemd/resolve/stub-resolv\.conf   --  gen_context(system_u:object_r:net_conf_t,s0)
+ ')
++ifdef(`distro_photon',`
++/etc/sysconfig/network-scripts/.*resolv\.conf -- gen_context(system_u:object_r:net_conf_t,s0)
++/etc/sysconfig/networking(/.*)? gen_context(system_u:object_r:net_conf_t,s0)
++/etc/sysconfig/network-scripts(/.*)? gen_context(system_u:object_r:net_conf_t,s0)
++/var/run/systemd/network(/.*)?  gen_context(system_u:object_r:net_conf_t,s0)
++/var/run/systemd/resolve/resolv\.conf   --  gen_context(system_u:object_r:net_conf_t,s0)
++/var/run/systemd/resolve/stub-resolv\.conf   --  gen_context(system_u:object_r:net_conf_t,s0)
++')
+ /var/run/NetworkManager/resolv\.conf.*   --  gen_context(system_u:object_r:net_conf_t,s0)
+ 
+ /var/run/cloud-init(/.*)?     gen_context(system_u:object_r:net_conf_t,s0)
 diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/sysnetwork.if selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/sysnetwork.if
---- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/sysnetwork.if	2020-04-09 16:24:32.000000000 +0000
-+++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/sysnetwork.if	2020-04-23 20:40:22.933608083 +0000
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/sysnetwork.if	2020-07-09 12:50:34.028443273 +0530
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/sysnetwork.if	2020-07-09 13:27:06.900553649 +0530
 @@ -450,6 +450,13 @@
  		read_files_pattern($1, net_conf_t, net_conf_t)
  	')

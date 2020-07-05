@@ -1,7 +1,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        3.14.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Source0:        https://github.com/fedora-selinux/%{name}/archive/ad1d35503f55f535401daa0a59913aa559c38d44/%{name}-ad1d3550.tar.gz
@@ -113,6 +113,8 @@ fi
 %{_sharedstatedir}/selinux/default
 
 %changelog
+* Sun Jul 05 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-3
+- Resolve "avc:  denied" errors
 * Thu Jun 04 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-2
 - Add coreutils-selinux in requires, needed for setting labels
 * Fri Apr 24 2020 Alexey Makhalov <amakhalov@vmware.com> 3.14.5-1
