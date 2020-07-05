@@ -1,7 +1,7 @@
 Summary:        SELinux policy module utils
 Name:           semodule-utils
 Version:        3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/20191204/%{name}-%{version}.tar.gz
@@ -11,6 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libsepol-devel = %{version}
 Requires:       libsepol = %{version}
+Requires:       libselinux-utils
 
 %description
 semodule-utils is set of tools for SELinux policy module manipulations.
@@ -38,5 +39,7 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_mandir}/man8/semodule_unpackage.8.gz
 
 %changelog
+* Sun Jul 05 2020 Vikash Bansal <bvikas@vmware.com> 3.0-2
+- Add libselinux-utils in requires
 * Thu Apr 30 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-1
 - Initial build.
