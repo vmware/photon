@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.51
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -15,6 +15,7 @@ Source1:        base-for-%{name}-%{version}.tar.gz
 %define sha1    base=37dbbd946c473a4dbb87b0edd44275dee2694734
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
 Patch1:         apache-tomcat-CVE-2020-9484.patch
+Patch2:         apache-tomcat-CVE-2020-11996.patch
 BuildRequires:  openjre
 BuildRequires:  openjdk
 BuildRequires:  apache-ant
@@ -40,6 +41,7 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
 %setup -D -b 1 -n %{name}-%{version}-src
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
@@ -104,6 +106,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Fri Jul 03 2020 Dweep Advani <dadvani@vmware.com> 8.5.51-3
+-   Patched for CVE-2020-11996
 *   Wed May 27 2020 Dweep Advani <dadvani@vmware.com> 8.5.51-2
 -   Patched for CVE-2020-9484
 *   Mon Mar 09 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.51-1
