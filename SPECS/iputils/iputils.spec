@@ -1,7 +1,7 @@
 Summary:          Programs for basic networking
 Name:             iputils
-Version:          20180629
-Release:          2%{?dist}
+Version:          20190709
+Release:          1%{?dist}
 License:          BSD-3 and GPLv2+
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
@@ -10,22 +10,26 @@ Distribution:     Photon
 #https://github.com/iputils/iputils/archive/s20180629.tar.gz
 Source0:          %{name}-s%{version}.tar.gz
 BuildRequires:    libcap-devel libgcrypt-devel
+BuildRequires:    ninja-build
+BuildRequires:    meson
 Requires:         libcap
 Requires:         libgcrypt
 Obsoletes:        inetutils
-%define sha1 iputils=353df20691bf027ad35fcaaf6894b122c39d8f2d
+%define sha1 iputils=9a2d85a6b2656ed3669f49e737588e3262f02ff8
 %description
 The Iputils package contains programs for basic networking.
 %prep
 %setup -q -n %{name}-s%{version}
 
 %build
-make %{?_smp_mflags} USE_IDN=no USE_GCRYPT=yes
-(
-cd ninfod
-%configure
-make %{?_smp_mflags}
-)
+meson --prefix /usr --buildtype=plain builddir \
+-DUSE_IDN=false \
+-DUSE_GCRYPT=true \
+-DBUILD_MANS=false \
+-DBUILD_TRACEROUTE6=true
+
+ninja -v -C builddir
+
 #make html
 #make man
 
@@ -35,6 +39,7 @@ mkdir -p %{buildroot}%{_sbindir}
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}/%{_unitdir}
 
+cd builddir
 install -c clockdiff %{buildroot}%{_sbindir}/
 install -cp arping %{buildroot}%{_sbindir}/
 install -cp ping %{buildroot}%{_bindir}/
@@ -47,6 +52,8 @@ ln -sf /usr/bin/ping %{buildroot}%{_bindir}/ping6
 ln -sf ../bin/tracepath %{buildroot}%{_sbindir}
 ln -sf ../bin/traceroute6 %{buildroot}%{_sbindir}
 
+cd ../
+cp Documentation/RELNOTES.old ./
 iconv -f ISO88591 -t UTF8 RELNOTES.old -o RELNOTES.tmp
 touch -r RELNOTES.old RELNOTES.tmp
 mv -f RELNOTES.tmp RELNOTES.old
@@ -66,6 +73,8 @@ mv -f RELNOTES.tmp RELNOTES.old
 %caps(cap_net_raw=p cap_net_admin=p) %{_bindir}/ping6
 
 %changelog
+*   Mon Jul 06 2020 Gerrit Photon <photon-checkins@vmware.com> 20190709-1
+-   Automatic Version Bump
 *   Thu Oct 10 2019 Tapas Kundu <tkundu@vmware.com> 20180629-2
 -   Provided ping6 as symlink of ping
 *   Thu Sep 06 2018 Ankit Jain <ankitja@vmware.com> 20180629-1
