@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        13.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -17,6 +17,7 @@ BuildRequires:  libxml2-devel
 BuildRequires:  openldap
 BuildRequires:  perl
 BuildRequires:  readline-devel
+BuildRequires:  libedit-devel
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  tzdata
@@ -25,6 +26,7 @@ Requires:       libxml2
 Requires:       openldap
 Requires:       openssl
 Requires:       readline
+Requires:       libedit
 Requires:       zlib
 Requires:       tzdata
 
@@ -64,6 +66,7 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
     --with-libxml \
     --with-openssl \
     --with-gssapi \
+    --with-libedit-preferred \
     --with-readline \
     --with-system-tzdata=%{_datadir}/zoneinfo \
     --docdir=%{_docdir}/postgresql
@@ -162,6 +165,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Wed Sep 30 2020 Dweep Advani <dadvani@vmware.com> 13.0-3
+-   Prefer libedit over readline
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 13.0-2
 -   openssl 1.1.1
 *   Thu Sep 24 2020 Gerrit Photon <photon-checkins@vmware.com> 13.0-1
