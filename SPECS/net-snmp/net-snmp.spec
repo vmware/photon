@@ -2,7 +2,7 @@
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
@@ -12,6 +12,7 @@ Source0:        http://sourceforge.net/projects/%{name}/files/%{name}/%{version}
 %define sha1 net-snmp=78f70731df9dcdb13fe8f60eb7d80d7583da4d2c
 Source1:        snmpd.service
 Source2:        snmptrapd.service
+Patch0:         net-snmp-CVE-2019-20892.patch
 BuildRequires:  openssl-devel
 BuildRequires:  perl
 BuildRequires:  systemd
@@ -30,6 +31,7 @@ The net-snmp-devel package contains headers and libraries for building SNMP appl
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 %configure \
@@ -93,6 +95,8 @@ rm -rf %{buildroot}/*
 %exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %changelog
+*   Tue Jul 07 2020 Shreyas B. <shreyasb@vmware.com> 5.8-3
+-   Fix for CVE-2019-20892
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 5.8-2
 -   Using %configure and changing for perl upgrade
 *   Wed Sep 19 2018 Keerthana K <keerthanak@vmware.com> 5.8-1
