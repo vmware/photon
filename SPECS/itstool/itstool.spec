@@ -1,11 +1,11 @@
 Summary:        Itstool-2.0.2
 Name:           itstool
-Version:        2.0.2
-Release:        5%{?dist}
+Version:        2.0.6
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://itstool.org
 Source0:        http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2
-%define sha1 itstool=5084a2cecca8d70d184f22d2aecf5e2cb715917f
+%define sha1 itstool=9a7a3cd6e33763f6f369a907e79da98cc47b86e7
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,8 +19,8 @@ Requires:       libxml2-python
 BuildArch:      noarch
 
 %description
-Itstool extracts messages from XML files and outputs PO template files, then merges 
-translations from MO files to create translated XML files. It determines what 
+Itstool extracts messages from XML files and outputs PO template files, then merges
+translations from MO files to create translated XML files. It determines what
 to translate and how to chunk it into messages using the W3C Internationalization Tag Set (ITS).
 %prep
 %setup -q
@@ -36,6 +36,8 @@ make DESTDIR=%{buildroot} install
 /usr/share/%{name}/*
 %{_mandir}/man1/*
 %changelog
+*Tue Jul 07 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.6-1
+-Automatic Version Bump
 *	Mon May 1 2017 Divya Thaluru <dthaluru@vmware.com> 2.0.2-5
 -	Added runtime dependencies for itstool
 *	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.2-4
