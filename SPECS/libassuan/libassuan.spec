@@ -1,6 +1,6 @@
 Summary:	Provides IPC between GnuPG Components
 Name:		libassuan
-Version:	2.5.1
+Version:	2.5.3
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		https://www.gnupg.org/(fr)/related_software/libassuan/index.html
@@ -8,7 +8,7 @@ Group:		Development/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://ftp.gnupg.org/gcrypt/%{name}/%{name}-%{version}.tar.bz2
-%define sha1 libassuan=c8432695bf1daa914a92f51e911881ed93d50604
+%define sha1 libassuan=6d81bf42fa91ed2894df8b65764ce899e39776f8
 Requires:	libgpg-error >= 1.21
 BuildRequires:	libgpg-error-devel >= 1.21
 %description
@@ -38,8 +38,11 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 %{_includedir}/*.h
 %{_libdir}/*.so*
+%{_libdir}/pkgconfig/libassuan.pc
 %{_datadir}/aclocal/*
 %changelog
+*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.3-1
+-   Automatic Version Bump
 *   Fri Sep 21 2018 Keerthana K <keerthanak@vmware.com> 2.5.1-1
 -   Update to version 2.5.1
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.3-1
