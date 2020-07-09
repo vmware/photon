@@ -1,14 +1,14 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
-Version:        4.6
-Release:        5%{?dist}
+Version:        4.8.1
+Release:        1%{?dist}
 URL:            https://github.com/shadow-maint/
 License:        BSD
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/shadow-maint/shadow/releases/download/4.6/%{name}-%{version}.tar.xz
-%define sha1    shadow=0b84eb1010fda5edca2a9d1733f9480200e02de6
+%define sha1    shadow=63457a0ba58dc4e81b2663b839dc6c89d3343f12
 Source1:        chage
 Source2:        chpasswd
 Source3:        login
@@ -20,7 +20,6 @@ Source8:        system-account
 Source9:        system-auth
 Source10:       system-password
 Source11:       system-session
-Patch1:         chkname-allowcase.patch
 BuildRequires:  cracklib
 BuildRequires:  cracklib-devel
 Requires:       cracklib
@@ -49,7 +48,6 @@ These are the additional language files of shadow.
 
 %prep
 %setup -q -n %{name}-%{version}
-%patch1 -p1
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in
 find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
 sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
@@ -169,6 +167,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 4.8.1-1
+-   Fix for Automatic Version Bump
 *   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 4.6-5
 -   Do not conflict with toybox >= 0.8.2-2
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 4.6-4
