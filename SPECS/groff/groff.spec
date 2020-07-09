@@ -1,14 +1,14 @@
 Summary:	Programs for processing and formatting text
 Name:		groff
-Version:	1.22.3
-Release:	3%{?dist}
+Version:	1.22.4
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/groff
 Group:		Applications/Text
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/groff/%{name}-%{version}.tar.gz
-%define sha1 groff=61a6808ea1ef715df9fa8e9b424e1f6b9fa8c091
+%define sha1 groff=2ce4ab107e3fab1414fef2c5b5312f562a4e4d35
 Provides:	perl(oop_fh.pl)
 Provides:	perl(main_subs.pl)
 Provides:   perl(man.pl)
@@ -44,6 +44,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_datarootdir}/%{name}/*
 %{_mandir}/*/*
 %changelog
+* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.22.4-1
+- Automatic Version Bump
 * Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.22.3-3
 - Cross compilation support
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.22.3-2
