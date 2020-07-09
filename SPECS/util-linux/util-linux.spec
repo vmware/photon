@@ -1,14 +1,14 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
-Version:        2.32
-Release:        3%{?dist}
+Version:        2.35.1
+Release:        1%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
-%define sha1    util-linux=4a21387d51f73bab44230c3bf9fe5a291e761111
+%define sha1    util-linux=a3fba2e7fe0ce117525a38498ef4eda9687bf3b3
 BuildRequires:  ncurses-devel
 %if %{with_check}
 BuildRequires:  ncurses-terminfo
@@ -96,6 +96,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.35.1-1
+-   Automatic Version Bump
 *   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 2.32-3
 -   Do not conflict with toybox >= 0.8.2-2
 *   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 2.32-2
