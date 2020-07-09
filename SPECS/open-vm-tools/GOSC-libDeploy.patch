@@ -1,28 +1,25 @@
 diff --git a/open-vm-tools/libDeployPkg/linuxDeployment.c b/open-vm-tools/libDeployPkg/linuxDeployment.c
-index 1af08936..227fb381 100644
+index eba1f311..811258af 100644
 --- a/open-vm-tools/libDeployPkg/linuxDeployment.c
 +++ b/open-vm-tools/libDeployPkg/linuxDeployment.c
-@@ -651,13 +651,17 @@ GetPackageInfo(const char* packageName,
+@@ -659,13 +659,14 @@ GetPackageInfo(const char* packageName,
     close(fd);
  
     // Create space and copy the command
 -   *command = malloc(VMWAREDEPLOYPKG_CMD_LENGTH);
-+   *command = malloc(VMWAREDEPLOYPKG_CMD_LENGTH + 1);
-    if (!*command) {
++   *command = calloc(VMWAREDEPLOYPKG_CMD_LENGTH + 1, 1);
+    if (*command == NULL) {
        SetDeployError("Error allocating memory.");
        return FALSE;
     }
  
 -   memcpy(*command, hdr.command, VMWAREDEPLOYPKG_CMD_LENGTH);
-+   // will pad with '\0' if necessary
 +   strncpy(*command, hdr.command, VMWAREDEPLOYPKG_CMD_LENGTH);
-+   // hdr.command is a structure of fixed length VMWAREDEPLOYPKG_CMD_LENGTH
-+   (*command)[VMWAREDEPLOYPKG_CMD_LENGTH] = '\0';
 +
     *archiveType = hdr.payloadType;
     *flags = hdr.reserved;
  
-@@ -1315,6 +1319,24 @@ Deploy(const char* packageName)
+@@ -1375,6 +1376,24 @@ Deploy(const char* packageName)
        free(command);
        deployPkgStatus = CloudInitSetup(imcDirPath);
     } else {

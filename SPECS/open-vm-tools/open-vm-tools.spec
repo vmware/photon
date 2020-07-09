@@ -1,6 +1,6 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        11.0.5
+Version:        11.1.0
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 open-vm-tools=74e64ef0bb18acdf2a4222ba333b5edf24abbea2
+%define sha1 open-vm-tools=6c0afb297899b47055ebf036ab68657b3bb94264
 Source1:        gosc-scripts-1.2.tar.gz
 %define sha1 gosc-scripts-1.2=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
@@ -23,8 +23,8 @@ Patch4:         timezoneCust.patch
 Patch5:         gosc-post-custom.patch
 Patch6:         gosc-enable-custom-scripts.patch
 Patch7:         gosc-fix-vmtoolsd-binary-path.patch
+Patch8:         gosc-force-run-cust-script.patch
 
-BuildArch:      x86_64
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  libxml2-devel
@@ -61,6 +61,7 @@ VmWare virtualization user mode tools
 %package        devel
 Summary:        Header and development files for open-vm-tools
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 It contains the libraries and header files to create applications.
 
@@ -76,14 +77,14 @@ It contains the libraries and header files to create applications.
 %patch5 -p0
 %patch6 -p0
 %patch7 -p0
+%patch8 -p0
 
 %build
-touch ChangeLog
 autoreconf -i
 sh ./configure --prefix=/usr --without-x --without-kernel-modules --without-icu --disable-static --with-tirpc
 make %{?_smp_mflags}
-%install
 
+%install
 #collecting hacks to manually drop the vmhgfs module
 install -vdm 755 %{buildroot}/lib/systemd/system
 install -vdm 755 %{buildroot}/usr/share/open-vm-tools/GOSC/
@@ -94,8 +95,6 @@ install -p -m 644 %{SOURCE3} %{buildroot}/lib/systemd/system
 make DESTDIR=%{buildroot} install
 rm -f %{buildroot}/sbin/mount.vmhgfs
 chmod -x %{buildroot}/etc/pam.d/vmtoolsd
-# Move vm-support to /usr/bin
-mv %{buildroot}%{_sysconfdir}/vmware-tools/vm-support %{buildroot}%{_bindir}
 find %{buildroot}/usr/lib/ -name '*.la' -delete
 
 %check
@@ -133,6 +132,7 @@ fi
 %{_libdir}/%{name}/plugins/vmsvc/libvmbackup.so
 %{_libdir}/%{name}/plugins/common/libhgfsServer.so
 %{_libdir}/%{name}/plugins/common/libvix.so
+%{_libdir}/%{name}/plugins/vmsvc/libappInfo.so
 %{_libdir}/*.so.*
 %{_bindir}/*
 %{_sysconfdir}/*
@@ -147,6 +147,9 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Thu Jul 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.0-1
+-   Upgrade to version 11.1.0
+-   Added gosc DEFAULT-RUN-POST-CUST-SCRIPT changes
 *   Thu Mar 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.0.5-1
 -   Upgrade version to 11.0.5
 *   Mon Mar 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 10.3.10-9
