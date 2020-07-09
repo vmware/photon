@@ -1,16 +1,18 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
-Version:        3.1.3
-Release:        2%{?dist}
+Version:        3.2.2
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org/
 Source0:        https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
-%define sha1    rsync=82e7829c0b3cefbd33c233005341e2073c425629
+%define sha1    rsync=f73d49bcac52016894a29339701d390fe1a9aac9
 Group:          Appication/Internet
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  zlib-devel
 BuildRequires:  systemd
+BuildRequires:  lz4-devel
+Requires:       lz4
 Requires:       zlib
 Requires:       systemd
 %description
@@ -18,7 +20,7 @@ Rsync is a fast and extraordinarily versatile file copying tool. It can copy loc
 %prep
 %setup -q
 %build
-%configure --with-included-zlib=no
+%configure --with-included-zlib=no --disable-xxhash --disable-zstd
 make %{?_smp_mflags}
 
 %install
@@ -56,6 +58,8 @@ make %{?_smp_mflags} check
 %{_libdir}/systemd/system/rsyncd.service
 %{_sysconfdir}/rsyncd.conf
 %changelog
+*   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.2-1
+-   Automatic Version Bump
 *   Mon Oct 15 2018 Ankit Jain <ankitja@vmware.com> 3.1.3-2
 -   Building rsync with system zlib instead of outdated zlib in rsync source
 *   Tue May 01 2018 Xiaolin Li <xiaolinl@vmware.com> 3.1.3-1
