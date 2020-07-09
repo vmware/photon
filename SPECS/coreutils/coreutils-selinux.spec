@@ -1,24 +1,24 @@
-Summary:	Basic system utilities (SELinux enabled)
-Name:		coreutils-selinux
-Version:	8.30
-Release:	3%{?dist}
-License:	GPLv3
-URL:		http://www.gnu.org/software/coreutils
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:	http://ftp.gnu.org/gnu/coreutils/coreutils-%{version}.tar.xz
-%define sha1 coreutils=bd5d495c162730873a2774acd1c5091fbf0c55a4
+Summary:        Basic system utilities (SELinux enabled)
+Name:           coreutils-selinux
+Version:        8.32
+Release:        1%{?dist}
+License:        GPLv3
+URL:            http://www.gnu.org/software/coreutils
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.gnu.org/gnu/coreutils/coreutils-%{version}.tar.xz
+%define sha1    coreutils=b2b12195e276c64c8e850cf40ea2cff9b3aa53f6
 # make this package to own serial console profile since it utilizes stty tool
-Source1:	serial-console.sh
-Patch0:		http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.30-i18n-1.patch
+Source1:        serial-console.sh
+Patch0:         http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.32-i18n-1.patch
 %if %{with_check}
 # Commented out one symlink test because device node and '.' are mounted on different folder
 Patch1:         make-check-failure.patch
 %endif
 BuildRequires:  libselinux-devel
-Requires:	gmp
-Provides:	sh-utils
+Requires:       gmp
+Provides:       sh-utils
 Provides:       coreutils = %{version}-%{release}
 Obsoletes:      coreutils
 %description
@@ -30,6 +30,7 @@ SELinux enabled coreutils package.
 %if %{with_check}
 %patch1 -p1
 %endif
+
 %build
 autoreconf -fiv
 export FORCE_UNSAFE_CONFIGURE=1
@@ -38,6 +39,7 @@ export FORCE_UNSAFE_CONFIGURE=1
 	--with-selinux \
 	--disable-silent-rules
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/bin
@@ -79,6 +81,8 @@ make NON_ROOT_USERNAME=nobody check
 %{_mandir}/*/*
 
 %changelog
+* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 8.32-1
+- Automatic Version Bump
 * Sat Apr 18 2020 Alexey Makhalov <amakhalov@vmware.com> 8.30-3
-- coreutils-selinux: new package, cloned from coreutils. Keep
-  version-release in sync with coreutils.
+- coreutils-selinux: new package, cloned from coreutils.
+- keep version-release in sync with coreutils.

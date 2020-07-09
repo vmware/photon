@@ -1,23 +1,23 @@
-Summary:	Basic system utilities
-Name:		coreutils
-Version:	8.30
-Release:	4%{?dist}
-License:	GPLv3
-URL:		http://www.gnu.org/software/coreutils
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:	http://ftp.gnu.org/gnu/coreutils/%{name}-%{version}.tar.xz
-%define sha1 coreutils=bd5d495c162730873a2774acd1c5091fbf0c55a4
+Summary:        Basic system utilities
+Name:           coreutils
+Version:        8.32
+Release:        1%{?dist}
+License:        GPLv3
+URL:            http://www.gnu.org/software/coreutils
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.gnu.org/gnu/coreutils/%{name}-%{version}.tar.xz
+%define sha1    coreutils=b2b12195e276c64c8e850cf40ea2cff9b3aa53f6
 # make this package to own serial console profile since it utilizes stty tool
-Source1:	serial-console.sh
-Patch0:		http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.30-i18n-1.patch
+Source1:        serial-console.sh
+Patch0:         http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.32-i18n-1.patch
 %if %{with_check}
 # Commented out one symlink test because device node and '.' are mounted on different folder
 Patch1:         make-check-failure.patch
 %endif
-Requires:	gmp
-Provides:	sh-utils
+Requires:       gmp
+Provides:       sh-utils
 Conflicts:      toybox < 0.8.2-2
 %description
 The Coreutils package contains utilities for showing and setting
@@ -36,6 +36,7 @@ These are the additional language files of coreutils.
 %if %{with_check}
 %patch1 -p1
 %endif
+
 %build
 autoreconf -fiv
 export FORCE_UNSAFE_CONFIGURE=1
@@ -43,6 +44,7 @@ export FORCE_UNSAFE_CONFIGURE=1
 	--enable-no-install-program=kill,uptime \
 	--disable-silent-rules
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/bin
@@ -58,6 +60,7 @@ mv -v %{buildroot}%{_bindir}/{head,sleep,nice} %{buildroot}/bin
 rm -rf %{buildroot}%{_infodir}
 install -vdm755 %{buildroot}/etc/profile.d
 install -m 0644 %{SOURCE1} %{buildroot}/etc/profile.d/
+
 %find_lang %{name}
 
 %check
@@ -87,6 +90,8 @@ make NON_ROOT_USERNAME=nobody check
 %defattr(-,root,root)
 
 %changelog
+* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 8.32-1
+- Automatic Version Bump
 * Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 8.30-4
 - Do not conflict with toybox >= 0.8.2-2
 * Fri Nov 01 2019 Alexey Makhalov <amakhalov@vmware.com> 8.30-3
