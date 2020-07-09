@@ -1,14 +1,14 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		libffi
-Version:	3.2.1
-Release:	7%{?dist}
+Version:	3.3
+Release:	1%{?dist}
 License:	BSD
 URL:		http://sourceware.org/libffi/
 Group:		System Environment/GeneralLibraries
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://sourceware.org/pub/libffi/%{name}-%{version}.tar.gz
-%define sha1 libffi=280c265b789e041c02e5c97815793dfc283fb1e6
+%define sha1 libffi=8df6cb570c8d6596a67d1c0773bf00650154f7aa
 Provides:	pkgconfig(libffi)
 %if %{with_check}
 BuildRequires:  dejagnu
@@ -65,6 +65,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3-1
+-   Automatic Version Bump
 *   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 3.2.1-7
 -   Cross compilation support
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.2.1-6
