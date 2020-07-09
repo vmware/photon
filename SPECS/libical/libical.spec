@@ -1,13 +1,13 @@
 Summary:	Libical — an implementation of iCalendar protocols and data formats
 Name:		libical
-Version:	3.0.7
+Version:	3.0.8
 Release: 	1%{?dist}
 License:	MPL-2.0
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://github.com/libical/libical/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1 libical=6cffa9c188ee4bde003f2279d37ba2e68163fd7a
+%define sha1 libical=d2a9cecb9b8d825d5b6989e44b424235a27173a7
 BuildRequires:  cmake
 BuildRequires:  glib-devel
 BuildRequires:  libxml2-devel
@@ -59,6 +59,8 @@ make %{?_smp_mflags} -k check
 /usr/local/lib64/pkgconfig/*.pc
 
 %changelog
+* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.8-1
+- Automatic Version Bump
 * Mon Jan 6 2020 Ajay Kaher <akaher@vmware.com> 3.0.7-1
 - Initial version
 
