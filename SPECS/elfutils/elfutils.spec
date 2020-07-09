@@ -1,22 +1,23 @@
 # -*- rpm-spec-*-
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
-Version:	0.174
-Release:	3%{?dist}
+Version:	0.180
+Release:	1%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 URL:    	https://sourceware.org/elfutils
 Source0:	https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 elfutils=95899ce5fa55002e46bf4e02d01a249516e296fd
-Patch0:         CVE-2018-18310.patch
-Patch1:         remove-unused-internal-__elf64_msize-functions.patch
+%define sha1 elfutils=c1ed871515b0f7fcdf2d94fea23e4b8ba67e8fe3
 Vendor:		VMware, Inc.
 Distribution:	Photon
+Patch0:         elfutils-adapt-debuginfod-to-API-change.patch
 
 Obsoletes:	libelf libelf-devel
 Requires:	elfutils-libelf = %{version}-%{release}
 Requires:	glibc >= 2.7
 Requires:	bzip2-libs
+Requires:	libmicrohttpd
+Requires:	curl
 # ExcludeArch: xxx
 
 BuildRequires:	gcc >= 4.1.2-33
@@ -26,6 +27,10 @@ BuildRequires:	flex >= 2.5.4a
 BuildRequires:	m4
 BuildRequires:	gettext
 BuildRequires:	bzip2-devel
+BuildRequires:	libmicrohttpd-devel
+BuildRequires:	curl-devel
+BuildRequires:	libarchive-devel
+BuildRequires:	sqlite-devel
 
 %define _gnu %{nil}
 %define _programprefix eu-
@@ -108,7 +113,7 @@ These are the additional language files of elfutils.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
+
 %build
 %configure --program-prefix=%{_programprefix}
 make %{?_smp_mflags}
@@ -120,7 +125,6 @@ mkdir -p ${RPM_BUILD_ROOT}%{_prefix}
 %makeinstall
 
 chmod +x ${RPM_BUILD_ROOT}/usr/lib/lib*.so*
-chmod +x ${RPM_BUILD_ROOT}/usr/lib/elfutils/lib*.so*
 
 # XXX Nuke unpackaged files
 { pushd ${RPM_BUILD_ROOT}
@@ -151,33 +155,36 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root)
 %doc COPYING COPYING-GPLV2 COPYING-LGPLV3 README TODO CONTRIBUTING
 %{_bindir}/eu-*
-%exclude %{_bindir}/eu-ld
+%{_bindir}/debuginfod
+%{_bindir}/debuginfod-find
 %{_libdir}/libasm-%{version}.so
 %{_libdir}/libdw-%{version}.so
 %{_libdir}/libasm.so.*
 %{_libdir}/libdw.so.*
-%dir %{_libdir}/elfutils
-%{_libdir}/elfutils/lib*.so
+%{_libdir}/libdebuginfod.so.*
+%{_mandir}/man1/eu-*.1*
+%{_mandir}/man1/debuginfod*.1*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/dwarf.h
 %dir %{_includedir}/elfutils
 %{_includedir}/elfutils/elf-knowledge.h
-#%{_includedir}/elfutils/libasm.h
-%{_includedir}/elfutils/libebl.h
 %{_includedir}/elfutils/libdw.h
 %{_includedir}/elfutils/libdwfl.h
 %{_includedir}/elfutils/known-dwarf.h
 %{_includedir}/elfutils/libdwelf.h
-%{_libdir}/libebl.a
-#%{_libdir}/libasm.so
+%{_includedir}/elfutils/debuginfod.h
 %{_libdir}/libdw.so
+%{_libdir}/libdebuginfod.so
+%{_libdir}/libdebuginfod-%{version}.so
 %{_libdir}/pkgconfig/*.pc
+%{_mandir}/man3/elf_*.3*
+%{_mandir}/man3/debuginfod*.3*
+%{_mandir}/man8/debuginfod.8*
 
 %files devel-static
 %{_libdir}/libdw.a
-#%{_libdir}/libasm.a
 
 %files libelf
 %defattr(-,root,root)
@@ -199,6 +206,11 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root)
 
 %changelog
+* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 0.180-1
+- Automatic Version Bump
+- Updated to 0.180
+- libdir/elfutils is removed
+- libebl.h and libebl.a is removed
 * Tue Mar 31 2020 Alexey Makhalov <amakhalov@vmware.com> 0.174-3
 - Fix compilation issue with gcc-8.4.0
 * Thu Jan 24 2019 Keerthana K <keerthanak@vmware.com> 0.174-2

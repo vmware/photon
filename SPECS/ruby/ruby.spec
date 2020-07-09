@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.5.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -26,7 +26,8 @@ This is useful for object-oriented scripting.
 %build
 %configure \
         --enable-shared \
-        --docdir=%{_docdir}/%{name}-%{version}
+        --docdir=%{_docdir}/%{name}-%{version} \
+	--with-compress-debug-sections=no
 make %{?_smp_mflags} COPY="cp -p"
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -51,7 +52,10 @@ rm -rf %{buildroot}/*
 %{_datadir}/ri/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
+
 %changelog
+*   Fri Jul 17 2020 Ankit Jain <ankitja@vmware.com> 2.5.8-2
+-   Added --with-compress-debug-sections=no to fix build issue
 *   Wed May 13 2020 Sujay G <gsujay@vmware.com> 2.5.8-1
 -   Bump version to 2.5.8
 *   Tue Jan 01 2019 Sujay G <gsujay@vmware.com> 2.5.3-1

@@ -9,7 +9,7 @@
 
 Name:          systemtap
 Version:       4.3
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -33,6 +33,7 @@ BuildRequires: perl
 BuildRequires: python3-setuptools
 BuildRequires: nss
 BuildRequires: shadow
+BuildRequires: curl-devel
 BuildRequires: python3-devel
 %if %with_boost
 BuildRequires: boost-devel
@@ -345,6 +346,8 @@ fi
 %{_mandir}/man8/systemtap-service.8*
 
 %changelog
+*   Wed Aug 19 2020 Ankit Jain <ankitja@vmware.com> 4.3-3
+-   BuildRequires curl-devel, required by libdebuginfod.so
 *   Fri Jul 17 2020 Tapas Kundu <tkundu@vmware.com> 4.3-2
 -   Mass removal python2
 *   Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 4.3-1
