@@ -1,14 +1,14 @@
 Summary:        Programs for finding and viewing man pages
 Name:           man-db
-Version:        2.8.4
+Version:        2.9.0
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.nongnu.org/man-db
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        %{name}-%{version}.tar.xz
-%define sha1    man-db=729096a35fec13df8b7b350fdc1b323f990b6144
+Source0:        http://download.savannah.nongnu.org/releases/man-db/%{name}-%{version}.tar.xz
+%define sha1    man-db=807392e422d22d3dc9e9fec3fdd0fe7ce9c53fc7
 Requires:       libpipeline
 Requires:       gdbm
 Requires:       xz
@@ -22,6 +22,8 @@ BuildRequires:  libpipeline-devel
 BuildRequires:  gdbm-devel
 BuildRequires:  xz
 BuildRequires:  groff
+BuildRequires:  systemd
+Requires:       systemd
 
 %description
 The Man-DB package contains programs for finding and viewing man pages.
@@ -32,6 +34,7 @@ The Man-DB package contains programs for finding and viewing man pages.
 %configure \
     --docdir=%{_defaultdocdir}/%{name}-%{version} \
     --disable-setuid \
+    --with-systemdsystemunitdir=%{_unitdir} \
     --with-browser=%{_bindir}/lynx \
     --with-vgrind=%{_bindir}/vgrind \
     --with-grap=%{_bindir}/grap \
@@ -66,7 +69,9 @@ fi
 
 %files -f %{name}.lang
 %defattr(-,root,root)
-%{_sysconfdir}/man_db.conf
+%{_unitdir}/man-db.service
+%{_unitdir}/man-db.timer
+%config(noreplace) %{_sysconfdir}/man_db.conf
 %{_bindir}/*
 %{_sbindir}/*
 %{_libexecdir}/man-db/*
@@ -76,6 +81,8 @@ fi
 %{_libdir}/tmpfiles.d/man-db.conf
 
 %changelog
+*   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.0-1
+-   Automatic Version Bump
 *   Mon Oct 22 2018 Sujay G <gsujay@vmware.com> 2.8.4-1
 -   Bump man-db version to 2.8.4
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.6-4
