@@ -1,14 +1,14 @@
 Summary:	Key table files, console fonts, and keyboard utilities
 Name:		kbd
-Version:	2.0.4
-Release:	4%{?dist}
+Version:	2.2.0
+Release:	1%{?dist}
 License:	GPLv2
 URL:		http://ftp.altlinux.org/pub/people/legion/kbd
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.altlinux.org/pub/people/legion/kbd/%{name}-%{version}.tar.xz
-%define sha1 kbd=cf5d45c62d6af70b8b1f210d89193b52f5efb05d
+%define sha1 kbd=0180f70c7d34452a04d106e0b8cfadebe0e1b2a8
 Patch0:		kbd-2.0.4-backspace-1.patch
 BuildRequires:	check >= 0.9.4
 Conflicts:      toybox < 0.8.2-2
@@ -50,6 +50,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 2.2.0-1
+-   Automatic Version Bump
 *   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 2.0.4-4
 -   Do not conflict with toybox >= 0.8.2-2
 *   Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 2.0.4-3
