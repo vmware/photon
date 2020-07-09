@@ -1,6 +1,6 @@
 Summary:	fuse filesystem to access remote ssh servers
 Name:           sshfs
-Version:        3.5.0
+Version:        3.7.0
 Release:        1%{?dist}
 License:        GPLv2
 Url:		https://github.com/libfuse/sshfs
@@ -11,15 +11,16 @@ Source0:        https://github.com/libfuse/sshfs/archive/%{name}-%{version}.tar.
 Requires:	fuse >= 2.3
 Requires:	fuse3 >= 3.0.0
 Requires:	glib > 2.0
+Requires:       meson
 BuildRequires:  fuse3-devel >= 3.0.0
 BuildRequires:  meson >= 0.38.0
 
-%define sha1 sshfs=18263ec29d4542320e52dd5390b64ca12efe536f
+%define sha1 sshfs=4efb70f498020b6169adf18aa1dd746ff15ad42a
 %description
 This is a usermode fuse client to mount remote filesystems through SSH File Transfer Protocol.
 
 %prep
-%setup -q -n sshfs-sshfs-3.5.0
+%setup -q -n sshfs-sshfs-%{version}
 %build
 mkdir build &&
 cd build &&
@@ -42,6 +43,8 @@ DESTDIR=%{buildroot}/ ninja install
 %exclude %{_prefix}/src
 
 %changelog
+*       Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.7.0-1
+-       Automatic Version Bump
 *       Mon Oct 08 2018 Srinidhi Rao <srinidhir@vmware.com> 3.5.0-1
 -       Updated to version 3.5.0
 *       Mon Apr 17 2017 Danut Moraru <dmoraru@vmware.com> 2.9-1
