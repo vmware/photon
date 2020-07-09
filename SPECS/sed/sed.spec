@@ -1,14 +1,14 @@
 Summary:	Stream editor
 Name:		sed
-Version:	4.5
-Release:	2%{?dist}
+Version:	4.8
+Release:	1%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/sed
 Group:		Applications/Editors
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/sed/%{name}-%{version}.tar.xz
-%define sha1 sed=6635c344956ef928cc33aca798ad20c6c1ea25f7
+%define sha1 sed=61bd770062d49cdab3f0f45df473e2bf950ba266
 Conflicts:      toybox < 0.8.2-2
 
 %description
@@ -51,6 +51,8 @@ make check
 %defattr(-,root,root)
 
 %changelog
+* Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 4.8-1
+- Automatic Version Bump
 * Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 4.5-2
 - Do not conflict with toybox >= 0.8.2-2
 * Tue Sep 18 2018 Srinidhi Rao <srinidhir@vmware.com> 4.5-1
