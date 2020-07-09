@@ -1,12 +1,12 @@
 Summary:	cifs client utils
 Name:		cifs-utils
-Version:	6.8
+Version:	6.10
 Release:	1%{?dist}
 License:	GPLv3
 URL:		http://wiki.samba.org/index.php/LinuxCIFS_utils
 Group:		Applications/Nfs-utils-client
 Source0:        https://ftp.samba.org/pub/linux-cifs/cifs-utils/cifs-utils-%{version}.tar.bz2
-%define sha1 cifs-utils=3440625e73a2e8ea58c63c61b46a61f5b7f95bac
+%define sha1 cifs-utils=944d10c4d62b2c30d5c5520676b55f27f6754d8d
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  libcap-ng-devel
@@ -26,7 +26,7 @@ Requires:   cifs-utils = %{version}-%{release}
 Provides header files needed for Cifs-Utils development.
 
 %prep
-%setup -q 
+%setup -q
 
 %build
 autoreconf -fiv &&./configure --prefix=%{_prefix}
@@ -40,6 +40,7 @@ make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
+%{_bindir}/*
 /sbin/mount.cifs
 
 %files devel
@@ -47,7 +48,9 @@ make %{?_smp_mflags} check
 %{_includedir}/cifsidmap.h
 
 %changelog
-*       Fri Sep 07 2017 Ajay Kaher <akaher@vmware.com> 6.8-1
+*       Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 6.10-1
+-       Automatic Version Bump
+*       Fri Sep 07 2018 Ajay Kaher <akaher@vmware.com> 6.8-1
 -       Upgraded to version 6.8
 *       Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 6.7-1
 -       Upgraded to version 6.7
