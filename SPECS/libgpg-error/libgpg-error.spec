@@ -1,12 +1,12 @@
 Summary:      	libgpg-error
 Name:         	libgpg-error
-Version:      	1.32
+Version:      	1.38
 Release:      	1%{?dist}
 License:      	GPLv2+
-URL:          	ftp://ftp.gnupg.org/gcrypt/alpha/libgpg-error/
+URL:          	ftp://ftp.gnupg.org/gcrypt/libgpg-error/
 Group:		Development/Libraries
-Source0:	ftp://ftp.gnupg.org/gcrypt/alpha/libgpg-error/%{name}-%{version}.tar.bz2
-%define sha1 libgpg-error=e310718c7737c816cb1313a2f3baf60fd6a6d5d3
+Source0:	ftp://ftp.gnupg.org/gcrypt/libgpg-error/%{name}-%{version}.tar.bz2
+%define sha1 libgpg-error=cb50ade98f8ba088f8bb9b910ca8f00abaac5d0a
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -62,7 +62,8 @@ make %{?_smp_mflags} check
 %{_bindir}/gpgrt-config
 %{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/*.la
+%exclude %{_libdir}/*.la
+%{_libdir}/pkgconfig/gpg-error.pc
 %{_datadir}/libgpg-error
 %{_datadir}/aclocal/*
 %{_datadir}/common-lisp/source/gpg-error
@@ -71,6 +72,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*       Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.38-1
+-       Automatic Version Bump
 *       Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 1.32-1
 -       Update to 1.32
 *	Tue Apr 04 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.27-1
