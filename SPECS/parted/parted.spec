@@ -1,14 +1,15 @@
 Summary:        GNU Parted manipulates partition tables
 Name:           parted
-Version:        3.2
-Release:        8%{?dist}
+Version:        3.3
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/parted/%{name}-%{version}.tar.xz
-%define sha1 parted=8cabb2d6789badec15c857dcc003d0dd931a818b
+%define sha1 parted=e639500f9587cf6fa9b0dbc08e5e760244614595
+Patch0:         parted-freelocale.patch
 Conflicts:      toybox < 0.8.2-2
 
 %description
@@ -19,6 +20,8 @@ command-line frontend, parted, which can also be used in scripts.
 
 %prep
 %setup -q
+%patch0 -p1
+
 %build
 #Add a header to allow building with glibc-2.28 or later
 sed -i '/utsname.h/a#include <sys/sysmacros.h>' libparted/arch/linux.c &&
@@ -46,6 +49,8 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/*
 
 %changelog
+*  Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3-1
+-  Automatic Version Bump
 *  Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 3.2-8
 -  Do not conflict with toybox >= 0.8.2-2
 *  Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 3.2-7
