@@ -1,6 +1,6 @@
 Summary:	Man pages
 Name:		man-pages
-Version:	4.16
+Version:	5.05
 Release:	1%{?dist}
 License:	GPLv2+ and BSD
 URL:		http://www.kernel.org/doc/man-pages
@@ -8,7 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.kernel.org/pub/linux/docs/man-pages/%{name}-%{version}.tar.gz
-%define sha1 man-pages=354b253235052e398fa9677fd29aacfa87b1117f
+%define sha1 man-pages=f4d61d8c8d10925022caa5cef20d28e24955027d
 BuildArch:	noarch
 
 %description
@@ -37,6 +37,8 @@ rm -vf %{buildroot}%{_mandir}/man5/passwd.5
 %{_mandir}/man8/*
 
 %changelog
+*   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 5.05-1
+-   Automatic Version Bump
 *   Thu Sep 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.16-1
 -   Update to version 4.16
 *   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 4.10-1
