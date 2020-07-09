@@ -1,16 +1,15 @@
 Summary:	advanced key-value store
 Name:		redis
-Version:	5.0.5
-Release:	2%{?dist}
+Version:	6.0.5
+Release:	1%{?dist}
 License:	BSD
 URL:		http://redis.io/
 Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha1 redis=71e38ae09ac70012b5bc326522b976bcb8e269d6
+%define sha1 redis=9aabd4ad8a007342741933c73314a87402f6e279
 Patch0:         redis-conf.patch
-Patch1:         CVE-2020-14147.patch
 BuildRequires:  gcc
 BuildRequires:  systemd
 BuildRequires:  make
@@ -26,7 +25,6 @@ Redis is an in-memory data structure store, used as database, cache and message 
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 
 %build
 make %{?_smp_mflags}
@@ -85,6 +83,8 @@ exit 0
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.5-1
+- Automatic Version Bump
 * Wed Jun 24 2020 Shreyas B <shreyasb@vmware.com> 5.0.5-2
 - Fix for CVE-2020-14147
 * Mon Jul 22 2019 Shreyas B. <shreyasb@vmware.com> 5.0.5-1
