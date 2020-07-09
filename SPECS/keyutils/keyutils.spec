@@ -1,11 +1,11 @@
 Summary:	Linux Key Management Utilities
 Name:		keyutils
-Version:	1.5.10
+Version:	1.6.1
 Release:	1%{?dist}
 License:	GPL-2.0+ and LGPL-2.1+
 URL:		http://people.redhat.com/~dhowells/keyutils/
 Source0:	http://people.redhat.com/~dhowells/keyutils/keyutils-%{version}.tar.bz2
-%define sha1 keyutils=c139dc6f86d772dc608e4572d67c6e023a34a783
+%define sha1 keyutils=79fb86ea60de1207183ecd0c3a038380d036b1cc
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -19,10 +19,10 @@ instantiated.
 Summary:	Header and development files
 Requires:	%{name} = %{version}
 %description	devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
-%setup -q 
+%setup -q
 
 %build
 make %{?_smp_mflags}
@@ -47,6 +47,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /sbin/*
 /bin/*
 %{_libdir}/*.so.*
+%{_libdir}/pkgconfig/*.pc
 %{_datadir}/keyutils
 %{_mandir}/man1/*
 %{_mandir}/man5/*
@@ -62,6 +63,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.1-1
+-   Automatic Version Bump
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.5.10-1
 -   Updated to version 1.5.10
 *   Fri Dec 16 2016 Dheeraj Shetty <Dheerajs@vmware.com> 1.5.9-1
