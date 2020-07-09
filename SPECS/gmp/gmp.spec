@@ -1,14 +1,14 @@
 Summary:         Math libraries
 Name:            gmp
-Version:         6.1.2
-Release:         3%{?dist}
+Version:         6.2.0
+Release:         1%{?dist}
 License:         LGPLv3+
 URL:             http://www.gnu.org/software/gmp
 Group:           Applications/System
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Source0:         http://ftp.gnu.org/gnu/gmp/%{name}-%{version}.tar.xz
-%define sha1 gmp=9dc6981197a7d92f339192eea974f5eca48fcffe
+%define sha1 gmp=052a5411dc74054240eec58132d2cf41211d0ff6
 
 %description
 The GMP package contains math libraries. These have useful functions
@@ -61,12 +61,15 @@ make %{?_smp_mflags} check
 %files devel
 %{_includedir}/gmp.h
 %{_libdir}/libgmp.so
+%{_libdir}/pkgconfig/*.pc
 %{_docdir}/%{name}-%{version}/tasks.html
 %{_docdir}/%{name}-%{version}/projects.html
 %{_docdir}/%{name}-%{version}/configuration
 %{_docdir}/%{name}-%{version}/isa_abi_headache
 
 %changelog
+*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 6.2.0-1
+-   Automatic Version Bump
 *   Wed Sep 04 2019 Alexey Makhalov <amakhalov@vmware.com> 6.1.2-3
 -   Use -mtune -march options for generic CPU (x86_64)
 *   Tue Apr 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.1.2-2
