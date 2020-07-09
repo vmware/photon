@@ -1,13 +1,11 @@
-
-
 Summary:        agent for collecting, processing, aggregating, and writing metrics.
 Name:           telegraf
-Version:        1.7.4
+Version:        1.14.5
 Release:        1%{?dist}
 License:        MIT
 URL:            https://github.com/influxdata/telegraf
 Source0:        https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
-%define sha1    telegraf=f6ecf299a5147bb592d779affff4efd236970831
+%define sha1    telegraf=4d6e45da3ab4aeab18915daaa81bd573b704e5ad
 Source1:        https://github.com/wavefrontHQ/telegraf/archive/telegraf-plugin-1.4.0.zip
 %define sha1    telegraf-plugin=51d2bedf6b7892dbe079e7dd948d60c31a2fc436
 Source2:        https://raw.githubusercontent.com/wavefrontHQ/integrations/master/telegraf/telegraf.conf
@@ -54,9 +52,6 @@ pushd ../telegraf-1.4.0
 cp -r *  ${GOPATH}/src/github.com/wavefronthq/telegraf/
 popd
 pushd ${GOPATH}/src/github.com/influxdata/telegraf
-sed -i '/import (/ a \\t_ "github.com/wavefronthq/telegraf/plugins/outputs/wavefront"' ${GOPATH}/src/github.com/influxdata/telegraf/plugins/outputs/all/all.go
-sed -i 's/m.UnixNano()/m.Time().UnixNano()/g' ${GOPATH}/src/github.com/wavefronthq/telegraf/plugins/outputs/wavefront/wavefront.go
-sed -i 's/github.com\/golang\/lint\/golint/golang.org\/x\/lint\/golint/g' ${GOPATH}/src/github.com/influxdata/telegraf/Makefile
 make
 popd
 
@@ -97,6 +92,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+*   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.5-1
+-   Automatic Version Bump
 *   Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 1.7.4-1
 -   Update version to 1.7.4 and its plugin version to 1.4.0.
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.4-2
