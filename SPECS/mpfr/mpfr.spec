@@ -1,14 +1,14 @@
 Summary:	Functions for multiple precision math
 Name:		mpfr
-Version:	4.0.1
-Release:	2%{?dist}
+Version:	4.0.2
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.mpfr.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.mpfr.org/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1 mpfr=655e3cf416a0cc9530d9cb3c38dc8839504f0e98
+Source0:	http://www.mpfr.org/%{name}-%{version}/%{name}-%{version}.tar.xz
+%define sha1 mpfr=52c1f2a4c9a202f46cf3275a8d46b562aa584208
 Requires:	gmp
 %description
 The MPFR package contains functions for multiple precision math.
@@ -63,6 +63,8 @@ make %{?_smp_mflags} check
 %{_docdir}/mpfr-%{version}/COPYING
 
 %changelog
+*   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0.2-1
+-   Automatic Version Bump
 *   Wed Sep 04 2019 Alexey Makhalov <amakhalov@vmware.com> 4.0.1-2
 -   Bump up release number to get generic mtune option from gmp.h
 *   Thu Sep 20 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.0.1-1
