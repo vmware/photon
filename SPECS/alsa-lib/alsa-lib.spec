@@ -1,24 +1,24 @@
-Summary:	ALSA library
-Name:		alsa-lib
-Version:	1.1.7
-Release:	1%{?dist}
-License:	LGPLv2+
-URL:		http://alsa-project.org
-Group:		Applications/Internet
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	ftp://ftp.alsa-project.org/pub/lib/alsa-lib-1.1.7.tar.bz2
-%define sha1 alsa-lib=eca62790517220297ec82ba8a5258bcb6e708866
+Summary:        ALSA library
+Name:           alsa-lib
+Version:        1.2.3.2
+Release:        1%{?dist}
+License:        LGPLv2+
+URL:            http://alsa-project.org
+Group:          Applications/Internet
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        ftp://ftp.alsa-project.org/pub/lib/%{name}-%{version}.tar.bz2
+%define sha1    alsa-lib=2dfe24ae4872c0a390791a515d50de4047eff02b
 BuildRequires:	python2-devel python2-libs
-Requires:	python2
+Requires:       python2
 %description
 The ALSA Library package contains the ALSA library used by programs
 (including ALSA Utilities) requiring access to the ALSA sound interface.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}
-%description	devel
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}
+%description    devel
 It contains the libraries and header files to create applications
 
 %prep
@@ -43,5 +43,7 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/*
 
 %changelog
+* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.3.2-1
+- Automatic Version Bump
 * Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.7-1
 - initial version, moved from Vivace
