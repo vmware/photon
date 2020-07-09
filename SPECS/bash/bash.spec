@@ -1,6 +1,6 @@
 Summary:        Bourne-Again SHell
 Name:           bash
-Version:        4.4.18
+Version:        5.0
 Release:        1%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/bash/
@@ -8,9 +8,10 @@ Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
-%define sha1    bash=6cf9b3c23930ba8a721fee177d1558e5b7cb6104
+%define sha1    bash=d116b469b9e6ea5264a74661d3a4c797da7f997b
 Source1:        bash_completion
 Patch0:         bash-4.4.patch
+Patch1:         CVE-2019-18276.patch
 Provides:       /bin/sh
 Provides:       /bin/bash
 BuildRequires:  readline
@@ -36,8 +37,10 @@ Requires: bash >= 4.4
 These are the additional language files of bash.
 
 %prep
-%setup -q -n bash-4.4.18
+%setup -q -n bash-%{version}
 %patch0 -p1
+%patch1 -p1
+
 %build
 %configure \
     "CFLAGS=-fPIC" \
@@ -322,6 +325,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 5.0-1
+-   Automatic Version Bump
 *   Mon Sep 24 2018 Sujay G <gsujay@vmware.com> 4.4.18-1
 -   Bump bash version to 4.4.18
 *   Fri Jan 26 2018 Alexey Makhalov <amakhalov@vmware.com> 4.4.12-3
