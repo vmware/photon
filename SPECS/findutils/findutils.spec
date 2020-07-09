@@ -1,14 +1,14 @@
 Summary:	This package contains programs to find files
 Name:		findutils
-Version:	4.6.0
-Release:	6%{?dist}
+Version:	4.7.0
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/findutils
 Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/findutils/%{name}-%{version}.tar.gz
-%define sha1 findutils=f18e8aaee3f3d4173a1f598001003be8706d28b0
+Source0:	http://ftp.gnu.org/gnu/findutils/%{name}-%{version}.tar.xz
+%define sha1 findutils=bd2fae4add80334173e03272aeed5635d4a0fa03
 Conflicts:      toybox < 0.8.2-2
 %description
 These programs are provided to recursively search through a
@@ -31,8 +31,7 @@ sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' gl/lib/*.c
 sed -i '/unistd/a #include <sys/sysmacros.h>' gl/lib/mountlist.c
 echo "#define _IO_IN_BACKUP 0x100" >> gl/lib/stdio-impl.h
 
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--localstatedir=%{_sharedstatedir}/locate \
 	--disable-silent-rules
 make %{?_smp_mflags}
@@ -61,6 +60,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 4.7.0-1
+- Automatic Version Bump
 * Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 4.6.0-6
 - Do not conflict with toybox >= 0.8.2-2
 * Sun Sep 09 2018 Alexey Makhalov <amakhalov@vmware.com> 4.6.0-5
