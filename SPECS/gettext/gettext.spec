@@ -1,15 +1,14 @@
-Summary:	Utilities for internationalization and localization
-Name:		gettext
-Version:	0.19.8.1
-Release:	3%{?dist}
-License:	GPLv3
-URL:		http://www.gnu.org/software/gettext
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
-%define sha1 gettext=e0fe90ede22f7f16bbde7bdea791a835f2773fc9
-Patch0:         gettext-0.19.8.1-CVE-2018-18751.patch
+Summary:        Utilities for internationalization and localization
+Name:           gettext
+Version:        0.21
+Release:        1%{?dist}
+License:        GPLv3
+URL:            http://www.gnu.org/software/gettext
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
+%define sha1    gettext=9d75b47baed1a612c0120991c4b6d9cf95e0d430
 
 %description
 These allow programs to be compiled with NLS
@@ -18,12 +17,11 @@ messages in the user's native language.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 %configure \
-	--docdir=%{_defaultdocdir}/%{name}-%{version} \
-	--disable-silent-rules
+    --docdir=%{_defaultdocdir}/%{name}-%{version} \
+    --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
@@ -37,7 +35,6 @@ rm -rf %{buildroot}%{_infodir}
 make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
-
 %postun	-p /sbin/ldconfig
 
 %files -f %{name}.lang
@@ -55,6 +52,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 0.21-1
+- Automatic Version Bump
 * Thu Jun 18 2020 Ashwin H <ashwinh@vmware.com> 0.19.8.1-3
 - Fix CVE-2018-18751
 * Thu Nov 08 2018 Alexey Makhalov <amakhalov@vmware.com> 0.19.8.1-2
