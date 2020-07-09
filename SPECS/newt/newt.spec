@@ -1,12 +1,12 @@
 Summary:	A library for text mode user interfaces
 Name:		newt
-Version:	0.52.20
+Version:	0.52.21
 Release:	1%{?dist}
 License:	GNU Library General Public License
 URL:		https://admin.fedoraproject.org/pkgdb/package/newt/
 Group:		Development/Languages
 Source0:	https://fedorahosted.org/releases/n/e/newt/%{name}-%{version}.tar.gz
-%define sha1 newt=aec1a633abe595eadb55e568b759e7188d2a6766
+%define sha1 newt=b21152ad289bb0e363357ba3325a0b9c493d5ed1
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires: slang
@@ -28,7 +28,7 @@ Summary:	Header and development files for newt
 Requires:	%{name} = %{version}
 
 %description	devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -61,6 +61,8 @@ make %{?_smp_mflags} test
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.52.21-1
+-Automatic Version Bump
 *	Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.52.20-1
 -	Update to 0.52.20
 *       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 0.52.18-3
