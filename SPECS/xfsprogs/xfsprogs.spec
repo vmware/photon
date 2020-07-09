@@ -1,14 +1,14 @@
 Summary:        Utilities for managing the XFS filesystem
 Name:           xfsprogs
-Version:        4.18.0
-Release:        2%{?dist}
+Version:        5.6.0
+Release:        1%{?dist}
 License:        GPL+ and LGPLv2+
 URL:            http://oss.sgi.com/projects/xfs/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://kernel.org/pub/linux/utils/fs/xfs/xfsprogs/%{name}-%{version}.tar.xz
-%define sha1    xfsprogs=29c6388a1f58e1e9c7a8624d72b8cac8def04ac5
+%define sha1    xfsprogs=838f878120c0ebdc85e961bd40d597131bed17bd
 BuildRequires:  gettext
 BuildRequires:  readline-devel
 
@@ -84,6 +84,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 5.6.0-1
+-   Automatic Version Bump
 *   Tue Oct 22 2019 Prashant S Chauhan <psinghchauha@vmware.com> 4.18.0-2
 -   Removed %check since this package does not come with test suite
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 4.18.0-1
