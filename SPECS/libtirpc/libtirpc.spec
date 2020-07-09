@@ -1,9 +1,9 @@
 Summary:        Libraries for Transport Independent RPC
 Name:           libtirpc
-Version:        1.1.4
-Release:        2%{?dist}
+Version:        1.2.6
+Release:        1%{?dist}
 Source0:        http://downloads.sourceforge.net/project/libtirpc/libtirpc/0.3.2/%{name}-%{version}.tar.bz2
-%define sha1    libtirpc=d85717035cb9bd6c45557a1eb1351d3af9a69ff7
+%define sha1    libtirpc=f182235e32942fc0ac6b9b5b6fe7e32f69362659
 License:        BSD
 Group:          System Environment/Libraries
 URL:            http://nfsv4.bullopensource.org/
@@ -66,6 +66,8 @@ make install DESTDIR=%{buildroot}
 %{_libdir}/*.la
 
 %changelog
+*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.6-1
+-   Automatic Version Bump
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.4-2
 -   Cross compilation support
 *   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.1.4-1
