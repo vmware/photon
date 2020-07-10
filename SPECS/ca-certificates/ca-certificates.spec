@@ -1,6 +1,6 @@
 Summary:        Certificate Authority certificates
 Name:           ca-certificates
-Version:        20190521
+Version:        20200708
 Release:        1%{?dist}
 License:        Custom
 # http://anduin.linuxfromscratch.org/BLFS/other/certdata.txt
@@ -252,6 +252,8 @@ exit 0
 /etc/pki/tls/certs/ca-bundle.crt
 
 %changelog
+* Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 20200708-1
+- Automatic Version Bump
 * Wed May 22 2019 Gerrit Photon <photon-checkins@vmware.com> 20190521-1
 - Automatic Version Bump
 * Tue Sep 25 2018 Ankit Jain <ankitja@vmware.com> 20180919-1
