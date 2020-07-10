@@ -24,7 +24,7 @@ This package contains development headers and static library for xml parser.
 %prep
 %setup -q
 %build
-./configure --prefix=/usr
+%configure --prefix=/usr
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
