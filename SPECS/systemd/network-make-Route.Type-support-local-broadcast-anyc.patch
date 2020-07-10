@@ -1,0 +1,132 @@
+From 070d194f10a055da6994eaac3ca2983f58bbe340 Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Sun, 12 Jul 2020 07:28:22 +0000
+Subject: [PATCH] =?UTF-8?q?network:=20make=20Route.Type=3D=20support=20loc?=
+ =?UTF-8?q?al,=20broadcast,=20anycast,=20multicas=E2=80=A6?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+…t, nat, and xresolve
+
+Backport https://github.com/systemd/systemd/commit/94d6e299637db582f156612af32f167643caf4c9
+---
+ man/systemd.network.xml      | 17 +++++++++++------
+ src/network/networkd-route.c | 36 +++++++++++++++++++++++++-----------
+ src/network/networkd-route.h |  3 +++
+ 3 files changed, 39 insertions(+), 17 deletions(-)
+
+diff --git a/man/systemd.network.xml b/man/systemd.network.xml
+index 42ac92e..4cca402 100644
+--- a/man/systemd.network.xml
++++ b/man/systemd.network.xml
+@@ -1078,12 +1078,17 @@
+         <varlistentry>
+           <term><varname>Type=</varname></term>
+           <listitem>
+-            <para>The Type identifier for special route types, which can be
+-            <literal>unicast</literal> route to a destination network address which describes the path to the destination,
+-            <literal>blackhole</literal> packets are discarded silently,
+-            <literal>unreachable</literal> packets are discarded and the ICMP message host unreachable is generated,
+-            <literal>prohibit</literal> packets are discarded and the ICMP message communication administratively
+-            prohibited is generated. Defaults to <literal>unicast</literal>.
++            <para>Specifies the type for the route. Takes one of <literal>unicast</literal>,
++            <literal>local</literal>, <literal>broadcast</literal>, <literal>anycast</literal>,
++            <literal>multicast</literal>, <literal>blackhole</literal>, <literal>unreachable</literal>,
++            <literal>prohibit</literal>, <literal>throw</literal>, <literal>nat</literal>, and
++            <literal>xresolve</literal>. If <literal>unicast</literal>, a regular route is defined, i.e. a
++            route indicating the path to take to a destination network address. If <literal>blackhole</literal>, packets
++            to the defined route are discarded silently. If <literal>unreachable</literal>, packets to the defined route
++            are discarded and the ICMP message "Host Unreachable" is generated. If <literal>prohibit</literal>, packets
++            to the defined route are discarded and the ICMP message "Communication Administratively Prohibited" is
++            generated. If <literal>throw</literal>, route lookup in the current routing table will fail and the route
++            selection process will return to Routing Policy Database (RPDB). Defaults to <literal>unicast</literal>.
+             </para>
+           </listitem>
+         </varlistentry>
+diff --git a/src/network/networkd-route.c b/src/network/networkd-route.c
+index b335fdb..af62c78 100644
+--- a/src/network/networkd-route.c
++++ b/src/network/networkd-route.c
+@@ -11,6 +11,7 @@
+ #include "parse-util.h"
+ #include "set.h"
+ #include "string-util.h"
++#include "string-table.h"
+ #include "sysctl-util.h"
+ #include "util.h"
+ 
+@@ -1038,6 +1039,23 @@ int config_parse_route_protocol(
+         return 0;
+ }
+ 
++static const char * const route_type_table[__RTN_MAX] = {
++        [RTN_UNICAST]     = "unicast",
++        [RTN_LOCAL]       = "local",
++        [RTN_BROADCAST]   = "broadcast",
++        [RTN_ANYCAST]     = "anycast",
++        [RTN_MULTICAST]   = "multicast",
++        [RTN_BLACKHOLE]   = "blackhole",
++        [RTN_UNREACHABLE] = "unreachable",
++        [RTN_PROHIBIT]    = "prohibit",
++        [RTN_THROW]       = "throw",
++        [RTN_NAT]         = "nat",
++        [RTN_XRESOLVE]    = "xresolve",
++};
++
++assert_cc(__RTN_MAX <= UCHAR_MAX);
++DEFINE_STRING_TABLE_LOOKUP(route_type, int);
++
+ int config_parse_route_type(
+                 const char *unit,
+                 const char *filename,
+@@ -1052,25 +1070,21 @@ int config_parse_route_type(
+ 
+         Network *network = userdata;
+         _cleanup_(route_freep) Route *n = NULL;
+-        int r;
++        int t, r;
+ 
+         r = route_new_static(network, filename, section_line, &n);
+         if (r < 0)
+                 return r;
+ 
+-        if (streq(rvalue, "unicast"))
+-                n->type = RTN_UNICAST;
+-        else if (streq(rvalue, "blackhole"))
+-                n->type = RTN_BLACKHOLE;
+-        else if (streq(rvalue, "unreachable"))
+-                n->type = RTN_UNREACHABLE;
+-        else if (streq(rvalue, "prohibit"))
+-                n->type = RTN_PROHIBIT;
+-        else {
+-                log_syntax(unit, LOG_ERR, filename, line, r, "Could not parse route type \"%s\", ignoring assignment: %m", rvalue);
++        t = route_type_from_string(rvalue);
++        if (t < 0) {
++                log_syntax(unit, LOG_ERR, filename, line, 0,
++                           "Could not parse route type \"%s\", ignoring assignment: %m", rvalue);
+                 return 0;
+         }
+ 
++        n->type = (unsigned char) t;
++
+         TAKE_PTR(n);
+         return 0;
+ }
+diff --git a/src/network/networkd-route.h b/src/network/networkd-route.h
+index 75da0e3..b79d14c 100644
+--- a/src/network/networkd-route.h
++++ b/src/network/networkd-route.h
+@@ -58,6 +58,9 @@ int route_expire_handler(sd_event_source *s, uint64_t usec, void *userdata);
+ 
+ DEFINE_TRIVIAL_CLEANUP_FUNC(Route*, route_free);
+ 
++const char* route_type_to_string(int t) _const_;
++int route_type_from_string(const char *s) _pure_;
++
+ CONFIG_PARSER_PROTOTYPE(config_parse_gateway);
+ CONFIG_PARSER_PROTOTYPE(config_parse_preferred_src);
+ CONFIG_PARSER_PROTOTYPE(config_parse_destination);
+-- 
+2.27.0
+

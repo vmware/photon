@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          26%{?dist}
+Release:          27%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -56,6 +56,8 @@ Patch36:          safe-atou32-full.patch
 Patch37:          systemd-239-CVE-2020-13776.patch
 Patch38:          systemd-mount-fixes.patch
 Patch39:          systemd-239-bz-2597079.patch
+Patch40:          sd-bus-use-queue-message-references-for-managing-r-w.patch
+Patch41:          network-make-Route.Type-support-local-broadcast-anyc.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -164,6 +166,8 @@ EOF
 %patch37 -p1
 %patch38 -p1
 %patch39 -p1
+%patch40 -p1
+%patch41 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -350,6 +354,9 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Thu Jul 09 2020 Susant Sahani <ssahani@vmware.com> 239-27
+-    sd-bus: use "queue" message references for managing r/w message queus in connection objects
+-    Backport network - Route.Type
 *    Fri Jul 03 2020 Susant Sahani <ssahani@vmware.com> 239-26
 -    Fix BZ-2597079
 *    Tue Jun 23 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 239-25
