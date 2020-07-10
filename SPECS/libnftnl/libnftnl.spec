@@ -1,14 +1,15 @@
 Summary:        Library for low-level netlink programming interface to the in-kernel nf_tables subsystem
 Name:           libnftnl
-Version:        1.1.1
+Version:        1.1.7
 Release:        1%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 License:        GPLv2+
 URL:            http://netfilter.org/projects/libnftnl/
 Source0:        https://netfilter.org/projects/libnftnl/files/%{name}-%{version}.tar.bz2
-%define sha1 %{name}-%{version}=d2be642a54e0f105cb5564471ae4aaaed8b97ca6
+%define sha1 %{name}-%{version}=0e6108a3ea11c7939eaae0e3ee5fedd5aeaee655
 Distribution:   Photon
+
 BuildRequires:  libmnl-devel
 BuildRequires:  jansson-devel
 
@@ -26,11 +27,7 @@ Development files for %{name}
 %setup -q
 
 %build
-./configure \
-         --prefix=%{_prefix} \
-         --disable-static \
-         --disable-silent-rules \
-         --with-json-parsing
+%configure --prefix=%{_prefix} --disable-static --disable-silent-rules --with-json-parsing
 make %{?_smp_mflags}
 
 %check
@@ -56,5 +53,7 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}
 
 %changelog
+* Fri Jul 10 2020 Susant sahani <ssahani@vmware.com> 1.1.7-1
+- Update to 1.1.7
 * Mon Sep 10 2018 Ankit Jain <ankitja@vmware.com> 1.1.1-1
 - Initial version
