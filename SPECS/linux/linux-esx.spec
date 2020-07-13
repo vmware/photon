@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.145
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -100,6 +100,15 @@ Patch58:	0004-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
 Patch60:        0001-lib-iov_iter-adding-new-function-iov_iter_to_pfns.patch
 Patch61:        0001-net-9p-Enhance-p9_client_read_dotx-and-p9_client_wri.patch
 Patch62:        0002-fs-9p-Add-read_cache_pages_inchunks.patch
+
+#Fix for CVE-2019-19813 and CVE-2019-19816
+Patch66:        0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
+Patch67:        0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
+Patch68:        0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
+Patch69:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
+Patch70:        0005-btrfs-tree-checker-Verify-dev-item.patch
+Patch71:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
+Patch72:        0007-btrfs-tree-checker-Verify-inode-item.patch
 
 # inherit tcp_limit_output_bytes
 Patch90:	tcp-inherit-TSQ-limit-from-root-namespace.patch
@@ -233,6 +242,15 @@ This Linux package contains hmac sha generator kernel module.
 %patch60 -p1
 %patch61 -p1
 %patch62 -p1
+
+%patch66 -p1
+%patch67 -p1
+%patch68 -p1
+%patch69 -p1
+%patch70 -p1
+%patch71 -p1
+%patch72 -p1
+
 %patch90 -p1
 %patch98 -p1
 %patch100 -p1
@@ -378,6 +396,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-4
+-   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Thu Sep 22 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-3
 -   Add extraction support for multi-image initramfs
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-2

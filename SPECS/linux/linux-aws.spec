@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.145
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -64,6 +64,15 @@ Patch40:        0001-net-packet-make-tp_drops-atomic.patch
 Patch41:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 # Fix for CVE-2020-25211
 Patch42:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
+#Fix for CVE-2019-19813 and CVE-2019-19816
+Patch47:        0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
+Patch48:        0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
+Patch49:        0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
+Patch50:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
+Patch51:        0005-btrfs-tree-checker-Verify-dev-item.patch
+Patch52:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
+Patch53:        0007-btrfs-tree-checker-Verify-inode-item.patch
+
 # Upgrade vmxnet3 driver to version 4
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
 Patch82:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
@@ -207,6 +216,14 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch40 -p1
 %patch41 -p1
 %patch42 -p1
+
+%patch47 -p1
+%patch48 -p1
+%patch49 -p1
+%patch50 -p1
+%patch51 -p1
+%patch52 -p1
+%patch53 -p1
 
 %patch81 -p1
 %patch82 -p1
@@ -436,6 +453,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-3
+-   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-2
 -   Fix for CVE-2020-25211
 *   Tue Sep 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.145-1

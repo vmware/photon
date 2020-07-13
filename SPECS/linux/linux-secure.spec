@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.145
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -68,6 +68,15 @@ Patch43:        0001-net-packet-make-tp_drops-atomic.patch
 Patch44:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 # Fix for CVE-2020-25211
 Patch45:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
+#Fix for CVE-2019-19813 and CVE-2019-19816
+Patch50:        0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
+Patch51:        0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
+Patch52:        0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
+Patch53:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
+Patch54:        0005-btrfs-tree-checker-Verify-dev-item.patch
+Patch55:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
+Patch56:        0007-btrfs-tree-checker-Verify-inode-item.patch
+
 # Upgrade vmxnet3 driver to version 4
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
 Patch82:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
@@ -94,6 +103,7 @@ Patch106:       0005-fou_unknown.patch
 Patch107:       0006-trunk.patch
 Patch108:       0007-arpfilter.patch
 Patch109:       0008-macflap_macflaplong.patch
+
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -182,6 +192,14 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
+
+%patch50 -p1
+%patch51 -p1
+%patch52 -p1
+%patch53 -p1
+%patch54 -p1
+%patch55 -p1
+%patch56 -p1
 
 %patch81 -p1
 %patch82 -p1
@@ -357,6 +375,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-3
+-   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-2
 -   Fix for CVE-2020-25211
 *   Tue Sep 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.145-1

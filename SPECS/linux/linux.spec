@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.145
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -95,6 +95,15 @@ Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.
 Patch46:        0001-net-packet-make-tp_drops-atomic.patch
 Patch47:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 
+#Fix for CVE-2019-19813 and CVE-2019-19816
+Patch51:        0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
+Patch52:        0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
+Patch53:        0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
+Patch54:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
+Patch55:        0005-btrfs-tree-checker-Verify-dev-item.patch
+Patch56:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
+Patch57:        0007-btrfs-tree-checker-Verify-inode-item.patch
+
 # Upgrade vmxnet3 driver to version 4
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
 Patch82:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
@@ -159,6 +168,7 @@ Patch204:        0001-Add-SPI-and-Sound-to-rpi3-device-trees.patch
 Patch205:        0001-Infrastructure-to-compile-Overlays.patch
 Patch206:        0002-spi0-overlays-files.patch
 Patch207:        0003-audio-overlays-files.patch
+
 
 # NXP LS10XXa FRWY patches
 Patch211:        0001-staging-fsl_ppfe-eth-header-files-for-pfe-driver.patch
@@ -365,6 +375,14 @@ This Linux package contains hmac sha generator kernel module.
 %patch45 -p1
 %patch46 -p1
 %patch47 -p1
+
+%patch51 -p1
+%patch52 -p1
+%patch53 -p1
+%patch54 -p1
+%patch55 -p1
+%patch56 -p1
+%patch57 -p1
 
 %patch81 -p1
 %patch82 -p1
@@ -788,6 +806,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-3
+-   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-2
 -   Fix for CVE-2020-25211
 *   Tue Sep 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.145-1
