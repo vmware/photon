@@ -1,7 +1,7 @@
 Summary:        Portable Hardware Locality
 Name:           hwloc
 Version:        2.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        BSD
@@ -72,7 +72,9 @@ rm -rf %{buildroot}/*
 %files
     %defattr(-,root,root)
     %{_bindir}/*
+    %ifarch x86_64
     %{_sbindir}/*
+    %endif
     %{_libdir}/*.so.*
     %{_sysconfdir}/bash_completion.d/hwloc-completion.bash
 
@@ -89,5 +91,7 @@ rm -rf %{buildroot}/*
     %{_datadir}/%{name}/*
 
 %changelog
+* Tue Jul 14 2020 Michelle Wang <michellew@vmware.com> 2.1.0-2
+- exclude %{_sbindir}/* hwloc aarch64 rpm
 * Mon Nov 25 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.0-1
 - Initial build.  First version
