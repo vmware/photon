@@ -1,11 +1,11 @@
-Summary:	Cmake-3.16.1
+Summary:	Cmake
 Name:		cmake
-Version:	3.16.1
+Version:	3.18.0
 Release:	1%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.16/%{name}-%{version}.tar.gz
-%define sha1 cmake=c8bf4a1277f969fa0bc85489d7d822a5eb290000
+%define sha1    cmake=dde98ed67e38b822d4d92e2e58e673cfc352cb7f
 Source1:	macros.cmake
 Group:		Development/Tools
 Vendor:		VMware, Inc.
@@ -31,6 +31,7 @@ Requires:       bzip2
 %description
 CMake is an extensible, open-source system that manages the build process in an
 operating system and in a compiler-independent manner.
+
 %prep
 %setup -q
 %build
@@ -49,12 +50,17 @@ make  %{?_smp_mflags} test
 %files
 %defattr(-,root,root)
 /usr/share/%{name}-*/*
+/usr/share/bash-completion/completions/*
+/usr/share/emacs/site-lisp/cmake-mode.el
+/usr/share/vim/vimfiles/*
 %{_bindir}/*
 /usr/doc/%{name}-*/*
 /usr/share/aclocal/*
 %{_libdir}/rpm/macros.d/macros.cmake
 
 %changelog
+*       Tue Jul 14 2020 Gerrit Photon <photon-checkins@vmware.com> 3.18.0-1
+-       Automatic Version Bump
 *       Mon Dec 16 2019 Sriram Nambakam <snambakam@vmware.com> 3.16.1-1
 -       Upgraded to 3.16.1
 *       Thu Jan 17 2019 Ankit Jain <ankitja@vmware.com> 3.12.1-4
