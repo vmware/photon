@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.228
-Release:        7%{?kat_build:.%kat_build}%{?dist}
+Release:        8%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -135,6 +135,16 @@ Patch88: 0013-inet-frags-rework-rhashtable-dismantle.patch
 Patch89: 0014-inet-frags-fix-use-after-free-read-in-inet_frag_dest.patch
 Patch90: 0015-inet-fix-various-use-after-free-in-defrags-units.patch
 Patch91: 0016-netns-restore-ops-before-calling-ops_exit_list.patch
+
+#Fix CVE-2019-19813 and CVE-2019-19816
+Patch92:	0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
+Patch93:	0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
+Patch94:	0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
+Patch95:	0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
+Patch96:	0005-btrfs-tree-checker-Verify-dev-item.patch
+Patch97:	0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
+Patch98:	0007-btrfs-tree-checker-Verify-inode-item.patch
+Patch99:	0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
 
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 
@@ -279,7 +289,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch73 -p1
 %patch74 -p1
 %patch75 -p1
-
 %patch76 -p1
 %patch77 -p1
 %patch78 -p1
@@ -296,6 +305,14 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch89 -p1
 %patch90 -p1
 %patch91 -p1
+%patch92 -p1
+%patch93 -p1
+%patch94 -p1
+%patch95 -p1
+%patch96 -p1
+%patch97 -p1
+%patch98 -p1
+%patch99 -p1
 
 %patch111 -p1
 
@@ -469,6 +486,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.228-8
+-   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.9.228-7
 -   Fix for CVE-2020-25211
 *   Thu Sep 10 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-6

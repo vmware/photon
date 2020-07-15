@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.228
-Release:        7%{?kat_build:.%kat_build}%{?dist}
+Release:        8%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -127,6 +127,16 @@ Patch86: 0013-inet-frags-rework-rhashtable-dismantle.patch
 Patch87: 0014-inet-frags-fix-use-after-free-read-in-inet_frag_dest.patch
 Patch88: 0015-inet-fix-various-use-after-free-in-defrags-units.patch
 Patch89: 0016-netns-restore-ops-before-calling-ops_exit_list.patch
+
+#Fix CVE-2019-19813 and CVE-2019-19816
+Patch90: 0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
+Patch91: 0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
+Patch92: 0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
+Patch93: 0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
+Patch94: 0005-btrfs-tree-checker-Verify-dev-item.patch
+Patch95: 0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
+Patch96: 0007-btrfs-tree-checker-Verify-inode-item.patch
+Patch97: 0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
 
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
@@ -289,6 +299,15 @@ EOF
 %patch88 -p1
 %patch89 -p1
 
+%patch90 -p1
+%patch91 -p1
+%patch92 -p1
+%patch93 -p1
+%patch94 -p1
+%patch95 -p1
+%patch96 -p1
+%patch97 -p1
+
 # secure
 %patch13 -p1
 %patch14 -p1
@@ -421,6 +440,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.228-8
+-   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.9.228-7
 -   Fix for CVE-2020-25211
 *   Thu Sep 10 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-6

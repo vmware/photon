@@ -1,0 +1,47 @@
+From 80e46cf22ba0bcb57b39c7c3b52961ab3a0fd5f2 Mon Sep 17 00:00:00 2001
+From: Qu Wenruo <wqu@suse.com>
+Date: Wed, 13 Mar 2019 12:17:50 +0800
+Subject: [PATCH 6/8] btrfs: tree-checker: Enhance chunk checker to validate chunk
+ profile
+
+commit 80e46cf22ba0bcb57b39c7c3b52961ab3a0fd5f2 upstream
+
+Btrfs-progs already have a comprehensive type checker, to ensure there
+is only 0 (SINGLE profile) or 1 (DUP/RAID0/1/5/6/10) bit set for chunk
+profile bits.
+
+Do the same work for kernel.
+
+Reported-by: Yoon Jungyeon <jungyeon@gatech.edu>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=202765
+Reviewed-by: Nikolay Borisov <nborisov@suse.com>
+Reviewed-by: Johannes Thumshirn <jthumshirn@suse.de>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
+---
+ fs/btrfs/tree-checker.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/fs/btrfs/tree-checker.c b/fs/btrfs/tree-checker.c
+index 956155d6c277..77a3ee65adf9 100644
+--- a/fs/btrfs/tree-checker.c
++++ b/fs/btrfs/tree-checker.c
+@@ -518,6 +518,13 @@ static int btrfs_check_chunk_valid(struct btrfs_root *root,
+ 		return -EUCLEAN;
+ 	}
+ 
++	if (!is_power_of_2(type & BTRFS_BLOCK_GROUP_PROFILE_MASK) &&
++	    (type & BTRFS_BLOCK_GROUP_PROFILE_MASK) != 0) {
++		chunk_err(root->fs_info, leaf, chunk, logical,
++		"invalid chunk profile flag: 0x%llx, expect 0 or 1 bit set",
++			  type & BTRFS_BLOCK_GROUP_PROFILE_MASK);
++		return -EUCLEAN;
++	}
+ 	if ((type & BTRFS_BLOCK_GROUP_TYPE_MASK) == 0) {
+ 		chunk_err(root->fs_info, leaf, chunk, logical,
+ 		         "missing chunk type flag, have 0x%llx one bit must be set in 0x%llx",
+-- 
+2.17.1
+

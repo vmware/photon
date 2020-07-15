@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.228
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -93,6 +93,16 @@ Patch58:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch59:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 # Fix for CVE-2020-14331
 Patch60:        4.9-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
+
+#Fix CVE-2019-19813 and CVE-2019-19816
+Patch61: 0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
+Patch62: 0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
+Patch63: 0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
+Patch64: 0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
+Patch65: 0005-btrfs-tree-checker-Verify-dev-item.patch
+Patch66: 0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
+Patch67: 0007-btrfs-tree-checker-Verify-inode-item.patch
+Patch68: 0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
 
 # Fix use-after-free issue in network stack
 Patch74: 0001-inet-rename-netns_frags-to-fqdir.patch
@@ -203,6 +213,14 @@ The Linux package contains the Linux kernel doc files
 %patch58 -p1
 %patch59 -p1
 %patch60 -p1
+%patch61 -p1
+%patch62 -p1
+%patch63 -p1
+%patch64 -p1
+%patch65 -p1
+%patch66 -p1
+%patch67 -p1
+%patch68 -p1
 
 %patch74 -p1
 %patch75 -p1
@@ -314,6 +332,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.228-8
+-   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.9.228-7
 -   Fix for CVE-2020-25211
 *   Thu Sep 10 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-6
