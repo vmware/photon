@@ -1,7 +1,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        3.14.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Source0:        https://github.com/fedora-selinux/%{name}/archive/ad1d35503f55f535401daa0a59913aa559c38d44/%{name}-ad1d3550.tar.gz
@@ -84,6 +84,7 @@ make %{?_smp_flags} DESTDIR=%{buildroot} SEMODULE="%{_sbindir}/semodule -p %{bui
 make %{?_smp_flags} DESTDIR=%{buildroot} install-headers
 mkdir %{buildroot}%{_datadir}/selinux/devel
 cp doc/Makefile.example %{buildroot}%{_datadir}/selinux/devel/Makefile
+cp config/file_contexts.subs_dist %{buildroot}%{_sysconfdir}/selinux/default/contexts/files/
 cat > %{buildroot}%{_sysconfdir}/selinux/config << EOF
 # This file controls the state of SELinux on the system.
 # SELINUX= can take one of these three values:
@@ -106,6 +107,7 @@ fi
 %dir %{_sysconfdir}/selinux/
 %config(noreplace) %{_sysconfdir}/selinux/config
 %{_sysconfdir}/selinux/default
+%{_sysconfdir}/selinux/default/contexts/files/file_contexts.subs_dist
 
 %files devel
 %defattr(-,root,root,-)
@@ -113,6 +115,9 @@ fi
 %{_sharedstatedir}/selinux/default
 
 %changelog
+* Wed Jul 15 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-4
+- Added file_contexts.subs_dist
+- This file is used to configure base path aliases
 * Sun Jul 05 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-3
 - Resolve "avc:  denied" errors
 * Thu Jun 04 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-2
