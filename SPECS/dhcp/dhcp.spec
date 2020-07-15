@@ -1,17 +1,16 @@
 Summary:	Dynamic host configuration protocol
 Name:		dhcp
-Version:	4.3.5
-Release:	5%{?dist}
+Version:	4.4.2
+Release:	1%{?dist}
 License:	ISC
 Url:      	http://isc.org/products/DHCP/
 Source0:  	ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
-%define sha1 dhcp=6140a0cf6b3385057d76c14278294284ba19e5a5
+%define sha1 dhcp=cb4ba6617e1bc2e3cbf770be5c0443b1ad276db5
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Patch0:		dhcp-4.3.5-client_script-1.patch
-Patch1:		dhcp-4.3.5-missing_ipv6-1.patch
-Patch2:         dhcp-nowplusinterval.patch
+Patch0:         dhcp-4.4.2-client_script-1.patch
+Patch1:         dhcp-nowplusinterval.patch
 BuildRequires:	systemd
 %description
 The ISC DHCP package contains both the client and server programs for DHCP. dhclient (the client) is used for connecting to a network which uses DHCP to assign network addresses. dhcpd (the server) is used for assigning network addresses on private networks
@@ -44,7 +43,6 @@ The ISC DHCP Client, dhclient, provides a means for configuring one or more netw
 %setup -qn %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 %build
 CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'         \
         -D_PATH_DHCPD_CONF='\"/etc/dhcp/dhcpd.conf\"'               \
@@ -129,11 +127,11 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
 %defattr(-,root,root)
 %{_libdir}/libdhcpctl.a
 %{_libdir}/libomapi.a
+%{_libdir}/libdhcp.a
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/dhcpctl/dhcpctl.h
-%{_includedir}/isc-dhcp/dst.h
 %{_includedir}/omapip/*.h
 
 %files server
@@ -173,6 +171,8 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+*   Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 4.4.2-1
+-   Automatic Version Bump
 *   Thu Sep 19 2019 Keerthana K <keerthanak@vmware.com> 4.3.5-5
 -   Fix dhcpd fails with "Unable to set up timer: out of range"
 *   Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 4.3.5-4

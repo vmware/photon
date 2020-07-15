@@ -1,0 +1,90 @@
+diff --git a/client/scripts/linux b/client/scripts/linux
+index 0c42969..0706070 100755
+--- a/client/scripts/linux
++++ b/client/scripts/linux
+@@ -1,36 +1,22 @@
+ #!/bin/bash
+ # dhclient-script for Linux. Dan Halbert, March, 1997.
+ # Updated for Linux 2.[12] by Brian J. Murrell, January 1999.
+-# No guarantees about this. I'm a novice at the details of Linux
+-# networking.
+ 
+-# Notes:
++# Modified for Debian.  Matt Zimmerman and Eloy Paris, December 2003
++# Modified to remove useless tests for antiquated kernel versions that
++# this doesn't even work with anyway, and introduces a dependency on /usr
++# being mounted, which causes cosmetic errors on hosts that NFS mount /usr
++# Andrew Pollock, February 2005
++# Modified to work on point-to-point links. Andrew Pollock, June 2005
++# Modified to support passing the parameters called with to the hooks. Andrew Pollock, November 2005
++# Modified to use the script with Linux From Scratch by Armin K., May 2012
+ 
+-# 0. This script is based on the netbsd script supplied with dhcp-970306.
+-
+-# 1. ifconfig down apparently deletes all relevant routes and flushes
+-# the arp cache, so this doesn't need to be done explicitly.
+-
+-# 2. The alias address handling here has not been tested AT ALL.
+-# I'm just going by the doc of modern Linux ip aliasing, which uses
+-# notations like eth0:0, eth0:1, for each alias.
+-
+-# 3. I have to calculate the network address, and calculate the broadcast
+-# address if it is not supplied. This might be much more easily done
+-# by the dhclient C code, and passed on.
+-
+-# 4. TIMEOUT not tested. ping has a flag I don't know, and I'm suspicious
+-# of the $1 in its args.
+-
+-# 5. Script refresh in 2017. The aliasing code was too convoluted and needs
++# Script refresh in 2017. The aliasing code was too convoluted and needs
+ # to go away. Migrated DHCPv4 script to ip command from iproute2 suite.
+ # This is based on Debian script with some tweaks. ifconfig is no longer
+ # used. Everything is done using ip tool from ip-route2.
+ 
+-# 'ip' just looks too weird. Also, we now have unit-tests! Those unit-tests
+-# overwirte this line to use a fake ip-echo tool. It's also convenient
+-# if your system holds ip tool in a non-standard location.
+-ip=/sbin/ip
++# The alias handling in here probably still sucks. -mdz
+ 
+ # update /etc/resolv.conf based on received values
+ # This updated version mostly follows Debian script by Andrew Pollock et al.
+@@ -165,12 +151,12 @@ exit_with_hooks() {
+     exit_status=$1
+ 
+     # Source the documented exit-hook script, if it exists
+-    if ! run_hook /etc/dhclient-exit-hooks; then
++    if ! run_hook /etc/dhcp/dhclient-exit-hooks; then
+         exit_status=$?
+     fi
+ 
+     # Now run scripts in the Debian-specific directory.
+-    if ! run_hookdir /etc/dhclient-exit-hooks.d; then
++    if ! run_hookdir /etc/dhcp/dhclient-exit-hooks.d; then
+         exit_status=$?
+     fi
+ 
+@@ -227,9 +213,21 @@ add_ipv6_addr_with_DAD() {
+     return 0
+ }
+ 
++# The 576 MTU is only used for X.25 and dialup connections
++# where the admin wants low latency.  Such a low MTU can cause
++# problems with UDP traffic, among other things.  As such,
++# disallow MTUs from 576 and below by default, so that broken
++# MTUs are ignored, but higher stuff is allowed (1492, 1500, etc).
++
++if [ -z "$new_interface_mtu" ] || [ "$new_interface_mtu" -le 576 ]; then
++    new_interface_mtu=''
++fi
++
++# The action starts here
++
+ # Invoke the local dhcp client enter hooks, if they exist.
+-run_hook /etc/dhclient-enter-hooks
+-run_hookdir /etc/dhclient-enter-hooks.d
++run_hook /etc/dhcp/dhclient-enter-hooks
++run_hookdir /etc/dhcp/dhclient-enter-hooks.d
+ 
+ # Execute the operation
+ case "$reason" in

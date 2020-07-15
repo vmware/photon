@@ -1,21 +1,21 @@
-diff -up dhcp-4.2.3-P2/common/dispatch.c.nowplusinterval dhcp-4.2.3-P2/common/dispatch.c
---- dhcp-4.2.3-P2/common/dispatch.c.nowplusinterval	2012-02-15 14:58:27.902930829 +0100
-+++ dhcp-4.2.3-P2/common/dispatch.c	2012-02-16 14:01:36.503430552 +0100
-@@ -172,9 +172,9 @@ isclib_timer_callback(isc_task_t  *taskp
+diff --git a/common/dispatch.c b/common/dispatch.c
+index 0207ad3..ee07dc3 100644
+--- a/common/dispatch.c
++++ b/common/dispatch.c
+@@ -191,8 +191,9 @@ isclib_timer_callback(isc_task_t  *taskp,
  	return;
  }
  
 -/* maximum value for usec */
 -#define USEC_MAX 1000000
--#define DHCP_SEC_MAX  0xFFFFFFFF
-+#define NS_PER_US	1000		/*%< Nanoseconds per microsecond. */
-+#define US_PER_S	1000000		/*%< Microseconds per second. */
-+#define DHCP_SEC_MAX	0xFFFFFFFF	/*%< 2^^32-1 */
++#define NS_PER_US      1000            /*%< Nanoseconds per microsecond. */
++#define US_PER_S       1000000         /*%< Microseconds per second. */
++#define DHCP_SEC_MAX   0xFFFFFFFF      /*%< 2^^32-1 */
  
  void add_timeout (when, where, what, ref, unref)
  	struct timeval *when;
-@@ -246,26 +246,40 @@ void add_timeout (when, where, what, ref
- 	 * the working code use the same values.
+@@ -264,27 +265,40 @@ void add_timeout (when, where, what, ref, unref)
+ 	 * code and * the working code use the same values.
  	 */
  
 +	/*
@@ -39,8 +39,7 @@ diff -up dhcp-4.2.3-P2/common/dispatch.c.nowplusinterval dhcp-4.2.3-P2/common/di
 +	}
  	sec  = when->tv_sec - cur_tv.tv_sec;
  	usec = when->tv_usec - cur_tv.tv_usec;
--	
-+
+ 	
  	if ((when->tv_usec != 0) && (usec < 0)) {
  		sec--;
 -		usec += USEC_MAX;
@@ -50,10 +49,11 @@ diff -up dhcp-4.2.3-P2/common/dispatch.c.nowplusinterval dhcp-4.2.3-P2/common/di
  	if (sec < 0) {
  		sec  = 0;
  		usec = 0;
--	} else if (sec > DHCP_SEC_MAX) {
--		log_error("Timeout requested too large "
--			  "reducing to 2^^32-1");
--		sec = DHCP_SEC_MAX;
+-	} else if (sec >= TIME_MAX) {
+-		log_error("Timeout too large "
+-			  "reducing to: %lu (TIME_MAX - 1)",
+-			  (unsigned long)(TIME_MAX - 1));
+-		sec = TIME_MAX - 1;
 -		usec = 0;
  	} else if (usec < 0) {
  		usec = 0;
@@ -64,23 +64,12 @@ diff -up dhcp-4.2.3-P2/common/dispatch.c.nowplusinterval dhcp-4.2.3-P2/common/di
  	}
  
  	/* 
-@@ -273,7 +287,7 @@ void add_timeout (when, where, what, ref
- 	 * here in case we want to compare timing information
- 	 * for some reason, like debugging.
- 	 */
--	q->when.tv_sec  = cur_tv.tv_sec + (sec & DHCP_SEC_MAX);
-+	q->when.tv_sec  = cur_tv.tv_sec + sec;
- 	q->when.tv_usec = usec;
- 
- #if defined (TRACING)
-@@ -324,9 +324,9 @@ void add_timeout (when, where, what, ref
+@@ -343,7 +357,7 @@ void add_timeout (when, where, what, ref, unref)
  	q->next  = timeouts;
  	timeouts = q;
  
--	isc_interval_set(&interval, sec & DHCP_SEC_MAX, usec * 1000);
+-	isc_interval_set(&interval, sec, usec * 1000);
 +	isc_interval_set(&interval, sec, usec * NS_PER_US);
  	status = isc_time_nowplusinterval(&expires, &interval);
  	if (status != ISC_R_SUCCESS) {
  		/*
- 		 * The system time function isn't happy or returned
- 		 * a value larger than isc_time_t can hold.
