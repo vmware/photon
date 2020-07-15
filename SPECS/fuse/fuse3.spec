@@ -6,7 +6,7 @@
 
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
-Version:        3.9.1
+Version:        3.9.4
 Release:        1%{?dist}
 License:        GPL+
 Url:            http://fuse.sourceforge.net/
@@ -14,11 +14,9 @@ Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libfuse/libfuse/archive/%{name}-%{version}.tar.gz
-%define sha1    fuse3=a7cbd0fd45db48a926c6dfd4d106536f2ee11014
-
+%define sha1    fuse3=412f063f1aafc4d409271810f40b0f31e07239bb
 BuildRequires:  meson >= 0.38.0
 BuildRequires:  systemd-devel
-
 %if %{with_check}
 BuildRequires:  python3-devel
 BuildRequires:  python3
@@ -48,7 +46,7 @@ Requires:	systemd-devel
 It contains the libraries and header files to create fuse applications.
 
 %prep
-%setup -n libfuse-fuse-%{version}
+%setup -qn libfuse-fuse-%{version}
 
 %build
 %meson -D examples=false
@@ -89,6 +87,8 @@ rm -f %{buildroot}%{_sysconfdir}/init.d/fuse3
 %{_libdir}/libfuse3.so*
 
 %changelog
+*   Wed Jul 15 2020 Gerrit Photon <photon-checkins@vmware.com> 3.9.4-1
+-   Automatic Version Bump
 *   Tue Apr 07 2020 Susant Sahani <ssahani@vmware.com> 3.9.1-1
 -   Update to 3.9.1
 *   Fri Nov 23 2018 Ashwin H <ashwinh@vmware.com> 3.2.6-2
