@@ -1,6 +1,6 @@
 Summary:        Security client
 Name:           nss
-Version:        3.39
+Version:        3.55
 Release:        1%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_39_RTM/src/%{name}-%{version}.tar.gz
@@ -8,41 +8,44 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nss=351e0e9607ead50174efe5f5107e2dc97e7358f2
-Patch:          nss-standalone-1.patch
+%define sha1    nss=348bb25a1aa6b01319e125afcbcb49c61bdaafb3
+Patch:          http://www.linuxfromscratch.org/patches/blfs/svn/nss-3.55-standalone-1.patch
 Requires:       nspr
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
 Requires:       nss-libs = %{version}-%{release}
 
 %description
- The Network Security Services (NSS) package is a set of libraries
- designed to support cross-platform development of security-enabled
- client and server applications. Applications built with NSS can
- support SSL v2 and v3, TLS, PKCS #5, PKCS #7, PKCS #11, PKCS #12,
- S/MIME, X.509 v3 certificates, and other security standards.
- This is useful for implementing SSL and S/MIME or other Internet
- security standards into an application.
+The Network Security Services (NSS) package is a set of libraries
+designed to support cross-platform development of security-enabled
+client and server applications. Applications built with NSS can
+support SSL v2 and v3, TLS, PKCS #5, PKCS #7, PKCS #11, PKCS #12,
+S/MIME, X.509 v3 certificates, and other security standards.
+This is useful for implementing SSL and S/MIME or other Internet
+security standards into an application.
 
-%package devel
-Summary: Development Libraries for Network Security Services
-Group: Development/Libraries
-Requires: nspr-devel
-Requires: nss = %{version}-%{release}
-%description devel
+%package        devel
+Summary:        Development Libraries for Network Security Services
+Group:          Development/Libraries
+Requires:       nspr-devel
+Requires:       nss = %{version}-%{release}
+
+%description    devel
 Header files for doing development with Network Security Services.
 
-%package libs
-Summary: Libraries for Network Security Services
-Group:      System Environment/Libraries
-Requires:   sqlite-libs
-Requires:   nspr
-%description libs
+%package        libs
+Summary:        Libraries for Network Security Services
+Group:          System Environment/Libraries
+Requires:       sqlite-libs
+Requires:       nspr
+
+%description    libs
 This package contains minimal set of shared nss libraries.
 
 %prep
 %setup -q
 %patch -p1
+
 %build
 cd nss
 # -j is not supported by nss
@@ -51,7 +54,9 @@ make VERBOSE=1 BUILD_OPT=1 \
     USE_SYSTEM_ZLIB=1 \
     ZLIB_LIBS=-lz \
     USE_64=1 \
+    NSS_ENABLE_WERROR=0 \
     $([ -f %{_includedir}/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1)
+
 %install
 cd nss
 cd ../dist
@@ -73,7 +78,7 @@ useradd test -G root -m
 HOST=localhost DOMSUF=localdomain BUILD_OPT=1
 sudo -u test ./all.sh && userdel test -r -f
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -97,6 +102,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Tue Jul 14 2020 Gerrit Photon <photon-checkins@vmware.com> 3.55-1
+-   Automatic Version Bump
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.39-1
 -   Upgrade to 3.39.
 *   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 3.31-5
@@ -115,7 +122,7 @@ sudo -u test ./all.sh && userdel test -r -f
 -   Added libs subpackage to reduce tdnf dependent tree
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.25-3
 -   Use sqlite-libs as runtime dependency
-*   Mon Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2
+*   Tue Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2
 -   Modified %check
 *   Tue Jul 05 2016 Anish Swaminathan <anishs@vmware.com> 3.25-1
 -   Upgrade to 3.25
