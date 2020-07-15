@@ -1,24 +1,14 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.61.1
-Release:        5%{?dist}
+Version:        7.72.0
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha1    curl=1f0732185e13d71d35a700f8314c3d5790968bb3
-Patch0:         CVE-2018-16839.patch
-Patch1:         CVE-2018-16840.patch
-Patch2:         CVE-2018-16842.patch
-Patch3:         curl-CVE-2018-16890.patch
-Patch4:         curl-CVE-2019-3822.patch
-Patch5:         curl-CVE-2019-3823.patch
-Patch6:         curl-CVE-2019-5436.patch
-Patch7:         curl-CVE-2019-5481.patch
-Patch8:         curl-CVE-2019-5482.patch
-Patch9:         curl-CVE-2020-8177.patch
+%define sha1    curl=735352fc82f7ebeeaaba2b584e564c78642d3dac
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -30,6 +20,7 @@ Requires:       krb5
 Requires:       libssh2
 Requires:       libmetalink
 Requires:       curl-libs = %{version}-%{release}
+
 %description
 The cURL package contains an utility and a library used for
 transferring files with URL syntax to any of the following
@@ -38,31 +29,21 @@ DICT, LDAP, LDAPS and FILE. Its ability to both download and
 upload files can be incorporated into other programs to support
 functions like streaming media.
 
-%package devel
-Summary:    Libraries and header files for curl
-Requires:   %{name} = %{version}-%{release}
-%description devel
+%package        devel
+Summary:        Libraries and header files for curl
+Requires:       %{name} = %{version}-%{release}
+%description    devel
 Static libraries and header files for the support library for curl
 
-%package libs
-Summary: Libraries for curl
-Group:      System Environment/Libraries
+%package        libs
+Summary:        Libraries for curl
+Group:          System Environment/Libraries
 Requires:       ca-certificates-pki
-%description libs
+%description    libs
 This package contains minimal set of shared curl libraries.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
 
 %build
 %configure \
@@ -88,7 +69,6 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %clean
@@ -112,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Tue Jul 14 2020 Gerrit Photon <photon-checkins@vmware.com> 7.72.0-1
+-   Automatic Version Bump
 *   Wed Jun 17 2020 Ankit Jain <ankitja@vmware.com> 7.61.1-5
 -   Fix for CVE-2020-8177
 *   Thu Jun 04 2020 Tapas Kundu <tkundu@vmware.com> 7.61.1-4
