@@ -1,19 +1,18 @@
-Summary:        Certificate Authority certificates
-Name:           ca-certificates
-Version:        20200708
-Release:        1%{?dist}
-License:        Custom
-# http://anduin.linuxfromscratch.org/BLFS/other/certdata.txt
-URL:            http://anduin.linuxfromscratch.org/BLFS/other/
-Group:          System Environment/Security
-Vendor:         VMware, Inc.
-Distribution:   Photon
-Source0:        certdata.txt
-Requires:       openssl
-BuildRequires:  openssl
-Requires:       ca-certificates-pki = %{version}-%{release}
-Requires(post): /bin/ln
-Provides:       ca-certificates-mozilla
+Summary:             Certificate Authority certificates
+Name:                ca-certificates
+Version:             20200709
+Release:             1%{?dist}
+License:             Custom
+URL:                 http://anduin.linuxfromscratch.org/BLFS/other/
+Group:               System Environment/Security
+Vendor:              VMware, Inc.
+Distribution:        Photon
+Source0:             certdata.txt
+Requires:            openssl
+BuildRequires:       openssl
+Requires:            ca-certificates-pki = %{version}-%{release}
+Requires(posttrans): /bin/ln
+Provides:            ca-certificates-mozilla
 
 %description
 The Public Key Inrastructure is used for many security issues in a
@@ -234,7 +233,7 @@ install -Dm644 bin/make-cert.pl %{buildroot}/bin/make-cert.pl
 install -Dm644 bin/remove-expired-certs.sh %{buildroot}/bin/remove-expired-certs.sh
 %{_fixperms} %{buildroot}/*
 
-%post
+%posttrans
 cd /etc/ssl/certs;
 for file in *.pem; do ln -sf $file `openssl x509 -hash -noout -in $file`.0; done
 exit 0
@@ -252,6 +251,9 @@ exit 0
 /etc/pki/tls/certs/ca-bundle.crt
 
 %changelog
+* Wed Jul 15 2020 Gerrit Photon <photon-checkins@vmware.com> 20200709-1
+- Automatic Version Bump
+- Fix for OpenSSL CA certs not generated in latest tags move %post to %posttrans
 * Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 20200708-1
 - Automatic Version Bump
 * Wed May 22 2019 Gerrit Photon <photon-checkins@vmware.com> 20190521-1
