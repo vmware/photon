@@ -1,16 +1,20 @@
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
-Version:        6.1
-Release:        2%{?dist}
+Version:        6.2
+Release:        1%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-%global ncursessubversion 20180908
+%global ncursessubversion 20200711
 Source0:        ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-%{ncursessubversion}.tgz
-%define sha1    ncurses=86f99ef885761f1cb1fa2037a5ddff4df02bbc4a
+%define sha1    ncurses=e4d288a923a5787053c7964ed9af569d59f3a69a
+
 Requires:       ncurses-libs = %{version}-%{release}
+BuildRequires:  gcc
+BuildRequires:  pkg-config
+
 %description
 The Ncurses package contains libraries for terminal-independent
 handling of character screens.
@@ -70,6 +74,7 @@ ln -s ../configure .
 make %{?_smp_mflags}
 popd
 mkdir v5
+
 pushd v5
 ln -s ../configure .
 %configure \
@@ -84,6 +89,7 @@ ln -s ../configure .
     --with-abi-version=5
 make %{?_smp_mflags}
 popd
+
 %install
 make -C v5 DESTDIR=%{buildroot} install.libs
 make -C v6 DESTDIR=%{buildroot} install
@@ -93,7 +99,6 @@ for lib in ncurses form panel menu ; do \
     rm -vf %{buildroot}%{_libdir}/lib${lib}.so ; \
     echo "INPUT(-l${lib}w)" > %{buildroot}%{_libdir}/lib${lib}.so ; \
     ln -sfv lib${lib}w.a %{buildroot}%{_libdir}/lib${lib}.a ; \
-    ln -sfv ${lib}w.pc %{buildroot}/lib/pkgconfig/${lib}.pc
 done
 ln -sfv libncurses++w.a %{buildroot}%{_libdir}/libncurses++.a
 rm -vf %{buildroot}%{_libdir}/libcursesw.so
@@ -102,8 +107,6 @@ ln -sfv libncurses.so %{buildroot}%{_libdir}/libcurses.so
 ln -sfv libncursesw.a %{buildroot}%{_libdir}/libcursesw.a
 ln -sfv libncurses.a %{buildroot}%{_libdir}/libcurses.a
 install -vdm 755  %{buildroot}%{_defaultdocdir}/%{name}-%{version}
-ln -sv libncursesw.so.6.0 %{buildroot}%{_libdir}/libncurses.so.6
-ln -sv libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 
 %check
@@ -148,15 +151,6 @@ make
 %{_libdir}/libformw.a
 %{_libdir}/libpanel.a
 %{_libdir}/libmenuw.a
-/lib/pkgconfig/panelw.pc
-/lib/pkgconfig/panel.pc
-/lib/pkgconfig/form.pc
-/lib/pkgconfig/menu.pc
-/lib/pkgconfig/ncursesw.pc
-/lib/pkgconfig/ncurses++w.pc
-/lib/pkgconfig/menuw.pc
-/lib/pkgconfig/formw.pc
-/lib/pkgconfig/ncurses.pc
 %{_libdir}/libncursesw.a
 %{_libdir}/libcursesw.a
 %{_libdir}/libncurses++w.a
@@ -165,7 +159,6 @@ make
 %{_libdir}/libpanelw.a
 %{_libdir}/libncurses++.a
 %{_libdir}/libmenu.a
-%{_libdir}/libncursesw.so
 %{_libdir}/libpanelw.so
 %{_libdir}/libcurses.so
 %{_libdir}/libformw.so
@@ -175,6 +168,13 @@ make
 %{_libdir}/libcursesw.so
 %{_libdir}/libpanel.so
 %{_libdir}/libmenu.so
+/lib/pkgconfig/formw.pc
+/lib/pkgconfig/menuw.pc
+/lib/pkgconfig/ncurses++w.pc
+/lib/pkgconfig/ncursesw.pc
+/lib/pkgconfig/panelw.pc
+/usr/lib/libncursesw.so
+
 %{_docdir}/ncurses-%{version}/html/*
 %{_docdir}/ncurses-%{version}/*.doc
 %{_mandir}/man3/*
@@ -185,6 +185,8 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Wed Aug 13 2020 Susant Sahani <ssahani@vmware.com> 6.2-1
+-   Update to version 6.2.
 *   Wed Nov 07 2018 Alexey Makhalov <amakhalov@vmware.com> 6.1-2
 -   Cross compilation support
 *   Wed Sep 12 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 6.1-1
