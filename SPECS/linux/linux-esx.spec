@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.234
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -99,6 +99,16 @@ Patch63:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 
 # For Spectre
 Patch70: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
+
+#Fix CVE-2019-19813 and CVE-2019-19816
+Patch71: 0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
+Patch72: 0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
+Patch73: 0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
+Patch74: 0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
+Patch75: 0005-btrfs-tree-checker-Verify-dev-item.patch
+Patch76: 0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
+Patch77: 0007-btrfs-tree-checker-Verify-inode-item.patch
+Patch78: 0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -201,6 +211,14 @@ The Linux package contains the Linux kernel doc files
 %patch63 -p1
 
 %patch70 -p1
+%patch71 -p1
+%patch72 -p1
+%patch73 -p1
+%patch74 -p1
+%patch75 -p1
+%patch76 -p1
+%patch77 -p1
+%patch78 -p1
 
 %build
 # patch vmw_balloon driver
@@ -291,6 +309,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.234-4
+-   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.4.234-3
 -   Fix for CVE-2020-25211
 *   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.4.234-2

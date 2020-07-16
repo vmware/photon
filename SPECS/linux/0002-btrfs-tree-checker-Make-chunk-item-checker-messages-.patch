@@ -1,0 +1,178 @@
+From f114024376bceb1c0f61a7bad4a72a0f978767af Mon Sep 17 00:00:00 2001
+From: Qu Wenruo <wqu@suse.com>
+Date: Wed, 20 Mar 2019 13:36:06 +0800
+Subject: [PATCH 2/8] btrfs: tree-checker: Make chunk item checker messages more
+ readable
+
+commit f114024376bceb1c0f61a7bad4a72a0f978767af upstream
+
+Old error message would be something like:
+  BTRFS error (device dm-3): invalid chunk num_stipres: 0
+
+New error message would be:
+  Btrfs critical (device dm-3): corrupt superblock syschunk array: chunk_start=2097152, invalid chunk num_stripes: 0
+Or
+  Btrfs critical (device dm-3): corrupt leaf: root=3 block=8388608 slot=3 chunk_start=2097152, invalid chunk num_stripes: 0
+
+And for certain error message, also output expected value.
+
+The error message levels are changed from error to critical.
+
+Reviewed-by: Johannes Thumshirn <jthumshirn@suse.de>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
+---
+ fs/btrfs/tree-checker.c | 89 ++++++++++++++++++++++++++++++++---------
+ 1 file changed, 71 insertions(+), 18 deletions(-)
+
+diff --git a/fs/btrfs/tree-checker.c b/fs/btrfs/tree-checker.c
+index 8a1c1a93874d..89c46d8e8b48 100644
+--- a/fs/btrfs/tree-checker.c
++++ b/fs/btrfs/tree-checker.c
+@@ -409,6 +409,52 @@ static int check_block_group_item(struct btrfs_fs_info *fs_info,
+ 	return 0;
+ }
+ 
++__printf(5, 6)
++__cold
++static void chunk_err(const struct btrfs_fs_info *fs_info,
++		      const struct extent_buffer *leaf,
++		      const struct btrfs_chunk *chunk, u64 logical,
++		      const char *fmt, ...)
++{
++	bool is_sb;
++	struct va_format vaf;
++	va_list args;
++	int i;
++	int slot = -1;
++
++	/* Only superblock eb is able to have such small offset */
++	is_sb = (leaf->start == BTRFS_SUPER_INFO_OFFSET);
++
++	if (!is_sb) {
++		/*
++		 * Get the slot number by iterating through all slots, this
++		 * would provide better readability.
++		 */
++		for (i = 0; i < btrfs_header_nritems(leaf); i++) {
++			if (btrfs_item_ptr_offset(leaf, i) ==
++					(unsigned long)chunk) {
++				slot = i;
++				break;
++			}
++		}
++	}
++	va_start(args, fmt);
++	vaf.fmt = fmt;
++	vaf.va = &args;
++
++	if (is_sb)
++		btrfs_crit(fs_info,
++		"corrupt superblock syschunk array: chunk_start=%llu, %pV",
++			   logical, &vaf);
++	else
++		btrfs_crit(fs_info,
++	"corrupt leaf: root=%llu block=%llu slot=%d chunk_start=%llu, %pV",
++			   BTRFS_CHUNK_TREE_OBJECTID, leaf->start, slot,
++			   logical, &vaf);
++	va_end(args);
++}
++
++
+ /*
+  * The common chunk check which could also work on super block sys chunk array.
+  *
+@@ -434,47 +480,54 @@ int btrfs_check_chunk_valid(struct btrfs_root *root,
+ 	type = btrfs_chunk_type(leaf, chunk);
+ 
+ 	if (!num_stripes) {
+-		btrfs_err(root->fs_info, "invalid chunk num_stripes: %u",
+-			  num_stripes);
++		chunk_err(root->fs_info, leaf, chunk, logical,
++      				"invalid chunk num_stripes, have %u", num_stripes);
+ 		return -EIO;
+ 	}
+ 	if (!IS_ALIGNED(logical, root->sectorsize)) {
+-		btrfs_err(root->fs_info,
+-			  "invalid chunk logical %llu", logical);
++		chunk_err(root->fs_info, leaf, chunk, logical,
++				"invalid chunk logical, have %llu should aligned to %u",
++				logical, root->sectorsize);
+ 		return -EIO;
+ 	}
+ 	if (btrfs_chunk_sector_size(leaf, chunk) != root->sectorsize) {
+-		btrfs_err(root->fs_info, "invalid chunk sectorsize %u",
+-			  btrfs_chunk_sector_size(leaf, chunk));
++		chunk_err(root->fs_info, leaf, chunk, logical,
++				"invalid chunk sectorsize, have %u expect %u",
++				btrfs_chunk_sector_size(leaf, chunk),
++				root->sectorsize);
+ 		return -EIO;
+ 	}
+ 	if (!length || !IS_ALIGNED(length, root->sectorsize)) {
+-		btrfs_err(root->fs_info,
+-			"invalid chunk length %llu", length);
++		chunk_err(root->fs_info, leaf, chunk, logical,
++				"invalid chunk length, have %llu", length);
+ 		return -EIO;
+ 	}
+ 	if (!is_power_of_2(stripe_len)) {
+-		btrfs_err(root->fs_info, "invalid chunk stripe length: %llu",
+-			  stripe_len);
++		chunk_err(root->fs_info, leaf, chunk, logical,
++				"invalid chunk stripe length: %llu",
++				stripe_len);
+ 		return -EIO;
+ 	}
+ 	if (~(BTRFS_BLOCK_GROUP_TYPE_MASK | BTRFS_BLOCK_GROUP_PROFILE_MASK) &
+ 	    type) {
+-		btrfs_err(root->fs_info, "unrecognized chunk type: %llu",
+-			  ~(BTRFS_BLOCK_GROUP_TYPE_MASK |
+-			    BTRFS_BLOCK_GROUP_PROFILE_MASK) &
+-			  btrfs_chunk_type(leaf, chunk));
++		chunk_err(root->fs_info, leaf, chunk, logical,
++				"unrecognized chunk type: 0x%llx",
++				~(BTRFS_BLOCK_GROUP_TYPE_MASK |
++				BTRFS_BLOCK_GROUP_PROFILE_MASK) &
++				btrfs_chunk_type(leaf, chunk));
+ 		return -EIO;
+ 	}
+ 
+ 	if ((type & BTRFS_BLOCK_GROUP_TYPE_MASK) == 0) {
+-		btrfs_err(root->fs_info, "missing chunk type flag: 0x%llx", type);
++		chunk_err(root->fs_info, leaf, chunk, logical,
++				"missing chunk type flag, have 0x%llx one bit must be set in 0x%llx",
++				type, BTRFS_BLOCK_GROUP_TYPE_MASK);
+ 		return -EIO;
+ 	}
+ 
+ 	if ((type & BTRFS_BLOCK_GROUP_SYSTEM) &&
+ 	    (type & (BTRFS_BLOCK_GROUP_METADATA | BTRFS_BLOCK_GROUP_DATA))) {
+-		btrfs_err(root->fs_info,
++		chunk_err(root->fs_info, leaf, chunk, logical,
+ 			"system chunk with data or metadata type: 0x%llx", type);
+ 		return -EIO;
+ 	}
+@@ -486,7 +539,7 @@ int btrfs_check_chunk_valid(struct btrfs_root *root,
+ 	if (!mixed) {
+ 		if ((type & BTRFS_BLOCK_GROUP_METADATA) &&
+ 		    (type & BTRFS_BLOCK_GROUP_DATA)) {
+-			btrfs_err(root->fs_info,
++			chunk_err(root->fs_info, leaf, chunk, logical,
+ 			"mixed chunk type in non-mixed mode: 0x%llx", type);
+ 			return -EIO;
+ 		}
+@@ -499,7 +552,7 @@ int btrfs_check_chunk_valid(struct btrfs_root *root,
+ 	    (type & BTRFS_BLOCK_GROUP_DUP && num_stripes != 2) ||
+ 	    ((type & BTRFS_BLOCK_GROUP_PROFILE_MASK) == 0 &&
+ 	     num_stripes != 1)) {
+-		btrfs_err(root->fs_info,
++		chunk_err(root->fs_info, leaf, chunk, logical,
+ 			"invalid num_stripes:sub_stripes %u:%u for profile %llu",
+ 			num_stripes, sub_stripes,
+ 			type & BTRFS_BLOCK_GROUP_PROFILE_MASK);
+-- 
+2.17.1
+

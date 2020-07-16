@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.234
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -101,6 +101,16 @@ Patch59:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
+
+#Fix CVE-2019-19813 and CVE-2019-19816
+Patch68: 0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
+Patch69: 0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
+Patch70: 0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
+Patch71: 0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
+Patch72: 0005-btrfs-tree-checker-Verify-dev-item.patch
+Patch73: 0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
+Patch74: 0007-btrfs-tree-checker-Verify-inode-item.patch
+Patch75: 0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -234,6 +244,14 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch58 -p1
 %patch59 -p1
 %patch67 -p1
+%patch68 -p1
+%patch69 -p1
+%patch70 -p1
+%patch71 -p1
+%patch72 -p1
+%patch73 -p1
+%patch74 -p1
+%patch75 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -392,6 +410,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.234-4
+-   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.4.234-3
 -   Fix for CVE-2020-25211
 *   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.4.234-2

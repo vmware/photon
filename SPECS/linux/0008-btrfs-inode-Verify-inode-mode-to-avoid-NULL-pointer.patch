@@ -1,0 +1,199 @@
+From 6bf9e4bd6a277840d3fe8c5d5d530a1fbd3db592 Mon Sep 17 00:00:00 2001
+From: Qu Wenruo <wqu@suse.com>
+Date: Wed, 13 Mar 2019 13:55:11 +0800
+Subject: [PATCH 8/8] btrfs: inode: Verify inode mode to avoid NULL pointer
+ dereference
+
+commit 6bf9e4bd6a277840d3fe8c5d5d530a1fbd3db592 upstream
+
+[BUG]
+When accessing a file on a crafted image, btrfs can crash in block layer:
+
+  BUG: unable to handle kernel NULL pointer dereference at 0000000000000008
+  PGD 136501067 P4D 136501067 PUD 124519067 PMD 0
+  CPU: 3 PID: 0 Comm: swapper/3 Not tainted 5.0.0-rc8-default #252
+  RIP: 0010:end_bio_extent_readpage+0x144/0x700
+  Call Trace:
+   <IRQ>
+   blk_update_request+0x8f/0x350
+   blk_mq_end_request+0x1a/0x120
+   blk_done_softirq+0x99/0xc0
+   __do_softirq+0xc7/0x467
+   irq_exit+0xd1/0xe0
+   call_function_single_interrupt+0xf/0x20
+   </IRQ>
+  RIP: 0010:default_idle+0x1e/0x170
+
+[CAUSE]
+The crafted image has a tricky corruption, the INODE_ITEM has a
+different type against its parent dir:
+
+        item 20 key (268 INODE_ITEM 0) itemoff 2808 itemsize 160
+                generation 13 transid 13 size 1048576 nbytes 1048576
+                block group 0 mode 121644 links 1 uid 0 gid 0 rdev 0
+                sequence 9 flags 0x0(none)
+
+This mode number 0120000 means it's a symlink.
+
+But the dir item think it's still a regular file:
+
+        item 8 key (264 DIR_INDEX 5) itemoff 3707 itemsize 32
+                location key (268 INODE_ITEM 0) type FILE
+                transid 13 data_len 0 name_len 2
+                name: f4
+        item 40 key (264 DIR_ITEM 51821248) itemoff 1573 itemsize 32
+                location key (268 INODE_ITEM 0) type FILE
+                transid 13 data_len 0 name_len 2
+                name: f4
+
+For symlink, we don't set BTRFS_I(inode)->io_tree.ops and leave it
+empty, as symlink is only designed to have inlined extent, all handled
+by tree block read.  Thus no need to trigger btrfs_submit_bio_hook() for
+inline file extent.
+
+However end_bio_extent_readpage() expects tree->ops populated, as it's
+reading regular data extent.  This causes NULL pointer dereference.
+
+[FIX]
+This patch fixes the problem in two ways:
+
+- Verify inode mode against its dir item when looking up inode
+  So in btrfs_lookup_dentry() if we find inode mode mismatch with dir
+  item, we error out so that corrupted inode will not be accessed.
+
+- Verify inode mode when getting extent mapping
+  Only regular file should have regular or preallocated extent.
+  If we found regular/preallocated file extent for symlink or
+  the rest, we error out before submitting the read bio.
+
+With this fix that crafted image can be rejected gracefully:
+
+  BTRFS critical (device loop0): inode mode mismatch with dir: inode mode=0121644 btrfs type=7 dir type=1
+
+Reported-by: Yoon Jungyeon <jungyeon@gatech.edu>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=202763
+Reviewed-by: Nikolay Borisov <nborisov@suse.com>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
+---
+ fs/btrfs/inode.c             | 40 +++++++++++++++++++++++++++++-------
+ fs/btrfs/tests/inode-tests.c |  1 +
+ 2 files changed, 34 insertions(+), 7 deletions(-)
+
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index 972475eeb2dd..d639270d58a4 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -5354,11 +5354,13 @@ no_delete:
+ }
+ 
+ /*
+- * this returns the key found in the dir entry in the location pointer.
++ * Return the key found in the dir entry in the location pointer, fill @type
++ * with BTRFS_FT_*, and return 0.
++ *
+  * If no dir entries were found, location->objectid is 0.
+  */
+ static int btrfs_inode_by_name(struct inode *dir, struct dentry *dentry,
+-			       struct btrfs_key *location)
++			       struct btrfs_key *location, u8 *type)
+ {
+ 	const char *name = dentry->d_name.name;
+ 	int namelen = dentry->d_name.len;
+@@ -5380,6 +5382,8 @@ static int btrfs_inode_by_name(struct inode *dir, struct dentry *dentry,
+ 		goto out_err;
+ 
+ 	btrfs_dir_item_key_to_cpu(path->nodes[0], di, location);
++	if (!ret)
++		*type = btrfs_dir_type(path->nodes[0], di);
+ out:
+ 	btrfs_free_path(path);
+ 	return ret;
+@@ -5665,19 +5669,25 @@ static struct inode *new_simple_dir(struct super_block *s,
+ 	return inode;
+ }
+ 
++static inline u8 btrfs_inode_type(struct inode *inode)
++{
++	return btrfs_type_by_mode[(inode->i_mode & S_IFMT) >> S_SHIFT];
++}
++
+ struct inode *btrfs_lookup_dentry(struct inode *dir, struct dentry *dentry)
+ {
+ 	struct inode *inode;
+ 	struct btrfs_root *root = BTRFS_I(dir)->root;
+ 	struct btrfs_root *sub_root = root;
+ 	struct btrfs_key location;
++	u8 di_type = 0;
+ 	int index;
+ 	int ret = 0;
+ 
+ 	if (dentry->d_name.len > BTRFS_NAME_LEN)
+ 		return ERR_PTR(-ENAMETOOLONG);
+ 
+-	ret = btrfs_inode_by_name(dir, dentry, &location);
++	ret = btrfs_inode_by_name(dir, dentry, &location, &di_type);
+ 	if (ret < 0)
+ 		return ERR_PTR(ret);
+ 
+@@ -5686,6 +5696,18 @@ struct inode *btrfs_lookup_dentry(struct inode *dir, struct dentry *dentry)
+ 
+ 	if (location.type == BTRFS_INODE_ITEM_KEY) {
+ 		inode = btrfs_iget(dir->i_sb, &location, root, NULL);
++		if (IS_ERR(inode))
++			return inode;
++
++		/* Do extra check against inode mode with di_type */
++		if (btrfs_inode_type(inode) != di_type) {
++			btrfs_crit(root->fs_info,
++				  "inode mode mismatch with dir: inode mode=0%o btrfs type=%u dir type=%u",
++				  inode->i_mode, btrfs_inode_type(inode),
++				  di_type);
++			iput(inode);
++			return ERR_PTR(-EUCLEAN);
++		}
+ 		return inode;
+ 	}
+ 
+@@ -6299,10 +6321,6 @@ fail:
+ 	return ERR_PTR(ret);
+ }
+ 
+-static inline u8 btrfs_inode_type(struct inode *inode)
+-{
+-	return btrfs_type_by_mode[(inode->i_mode & S_IFMT) >> S_SHIFT];
+-}
+ 
+ /*
+  * utility function to add 'inode' into 'parent_inode' with
+@@ -6888,6 +6906,14 @@ again:
+ 	extent_start = found_key.offset;
+ 	if (found_type == BTRFS_FILE_EXTENT_REG ||
+ 	    found_type == BTRFS_FILE_EXTENT_PREALLOC) {
++   		/* Only regular file could have regular/prealloc extent */
++		if (!S_ISREG(inode->i_mode)) {
++			ret = -EUCLEAN;
++			btrfs_crit(root->fs_info,
++		"regular/prealloc extent found for non-regular inode %llu",
++				btrfs_ino(inode));
++			goto out;
++		}
+ 		extent_end = extent_start +
+ 		       btrfs_file_extent_num_bytes(leaf, item);
+ 	} else if (found_type == BTRFS_FILE_EXTENT_INLINE) {
+diff --git a/fs/btrfs/tests/inode-tests.c b/fs/btrfs/tests/inode-tests.c
+index 054fc0d97131..5ff676df698f 100644
+--- a/fs/btrfs/tests/inode-tests.c
++++ b/fs/btrfs/tests/inode-tests.c
+@@ -235,6 +235,7 @@ static noinline int test_btrfs_get_extent(void)
+ 		return ret;
+ 	}
+ 
++	inode->i_mode = S_IFREG;
+ 	BTRFS_I(inode)->location.type = BTRFS_INODE_ITEM_KEY;
+ 	BTRFS_I(inode)->location.objectid = BTRFS_FIRST_FREE_OBJECTID;
+ 	BTRFS_I(inode)->location.offset = 0;
+-- 
+2.17.1
+

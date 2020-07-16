@@ -1,0 +1,79 @@
+From 075cb3c78fe7976c9f29ca1fa23f9728634ecefc Mon Sep 17 00:00:00 2001
+From: Qu Wenruo <wqu@suse.com>
+Date: Wed, 20 Mar 2019 13:42:33 +0800
+Subject: [PATCH 4/8] btrfs: tree-checker: Check chunk item at tree block read time
+
+commit 075cb3c78fe7976c9f29ca1fa23f9728634ecefc upstream
+
+Since we have btrfs_check_chunk_valid() in tree-checker, let's do
+chunk item verification in tree-checker too.
+
+Since the tree-checker is run at endio time, if one chunk leaf fails
+chunk verification, we can still retry the other copy, making btrfs more
+robust to fuzzed image as we may still get a good chunk item.
+
+Also since we have done chunk verification in tree block read time, skip
+the btrfs_check_chunk_valid() call in read_one_chunk() if we're reading
+chunk items from leaf.
+
+Reviewed-by: Johannes Thumshirn <jthumshirn@suse.de>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
+---
+ fs/btrfs/tree-checker.c |  6 ++++++
+ fs/btrfs/volumes.c      | 13 ++++++++++---
+ 2 files changed, 16 insertions(+), 3 deletions(-)
+
+diff --git a/fs/btrfs/tree-checker.c b/fs/btrfs/tree-checker.c
+index 28366c6af48f..91fd788952cc 100644
+--- a/fs/btrfs/tree-checker.c
++++ b/fs/btrfs/tree-checker.c
+@@ -571,6 +571,7 @@ static int check_leaf_item(struct btrfs_root *root,
+ 			   struct btrfs_key *key, int slot)
+ {
+ 	int ret = 0;
++	struct btrfs_chunk *chunk;
+ 
+ 	switch (key->type) {
+ 	case BTRFS_EXTENT_DATA_KEY:
+@@ -587,6 +588,11 @@ static int check_leaf_item(struct btrfs_root *root,
+ 	case BTRFS_BLOCK_GROUP_ITEM_KEY:
+ 		ret = check_block_group_item(root->fs_info, leaf, key, slot);
+ 		break;
++	case BTRFS_CHUNK_ITEM_KEY:
++		chunk = btrfs_item_ptr(leaf, slot, struct btrfs_chunk);
++		ret = btrfs_check_chunk_valid(root, leaf, chunk,
++					      key->offset);
++		break;
+ 	}
+ 	return ret;
+ }
+diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
+index 98326690c345..f5f446abe964 100644
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -6230,9 +6230,16 @@ static int read_one_chunk(struct btrfs_root *root, struct btrfs_key *key,
+ 	stripe_len = btrfs_chunk_stripe_len(leaf, chunk);
+ 	num_stripes = btrfs_chunk_num_stripes(leaf, chunk);
+ 
+-	ret = btrfs_check_chunk_valid(root, leaf, chunk, logical);
+-	if (ret)
+-		return ret;
++	/*
++	 * Only need to verify chunk item if we're reading from sys chunk array,
++	 * as chunk item in tree block is already verified by tree-checker.
++	 */
++	if (leaf->start == BTRFS_SUPER_INFO_OFFSET) {
++		ret = btrfs_check_chunk_valid(root, leaf, chunk, logical);
++		if (ret)
++			return ret;
++	}
++
+ 
+ 	read_lock(&map_tree->map_tree.lock);
+ 	em = lookup_extent_mapping(&map_tree->map_tree, logical, 1);
+-- 
+2.17.1
+
