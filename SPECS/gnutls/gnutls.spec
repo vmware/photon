@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.6.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
@@ -94,6 +94,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Jul 22 2020 Tapas Kundu <tkundu@vmware.com> 3.6.13-2
+-   Bump to build with latest libffi
 *   Fri Apr 10 2020 Tapas Kundu <tkundu@vmware.com> 3.6.13-1
 -   Update to 3.6.13
 -   Fix CVE-2020-11501

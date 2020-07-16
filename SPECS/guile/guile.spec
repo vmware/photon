@@ -1,7 +1,7 @@
 Summary:	GNU Ubiquitous Intelligent Language for Extensions
 Name:		guile
 Version:	2.0.13
-Release:	2%{?dist}
+Release:	3%{?dist}
 License: 	LGPLv3+
 URL:		http://www.gnu.org/software/guile/
 Source0: 	ftp://ftp.gnu.org/pub/gnu/guile/%{name}-%{version}.tar.gz
@@ -38,9 +38,7 @@ developing applications that use guile.
 %prep
 %setup -q
 %build
-./configure \
-	--prefix=%{_prefix} \
-	--disable-static
+%configure --disable-static
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -66,6 +64,8 @@ make  %{?_smp_mflags} check
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*       Thu Jul 16 2020 Tapas Kundu <tkundu@vmware.com> 2.0.13-3
+-       Bump to build with latest libffi
 *       Wed May 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-2
 -       Adding glibc-iconv to Requires section
 *       Wed Jan 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-1
