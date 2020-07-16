@@ -1,14 +1,14 @@
 Summary:	High-Level Crypto API
 Name:		gpgme
-Version:	1.11.1
-Release:	2%{?dist}
+Version:	1.14.0
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.gnupg.org/(it)/related_software/gpgme/index.html
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://www.gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2
-%define sha1 gpgme=95b1fc427871ca8d30d6d3b1985c816fe0b5077b
+%define sha1 gpgme=90a1b678703b0cabdb953035a4bee012e5685dce
 Requires:	libassuan
 Requires:	libgpg-error >= 1.32
 # gpgme uses gnupg binaries only at runtime
@@ -61,11 +61,14 @@ cd tests && make check-TESTS
 %defattr(-,root,root)
 %{_bindir}/*
 %{_includedir}/*.h
-%{_libdir}/*.so*
+%{_libdir}/*.so
 %{_datadir}/aclocal/*
 %{_datadir}/common-lisp/source/gpgme/*
+%{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.0-1
+-   Automatic Version Bump
 *   Sat Oct 20 2018 Ankit Jain <ankitja@vmware.com> 1.11.1-2
 -   Removed gpg2, gnupg-2.2.10 doesn't provide gpg2
 *   Tue Sep 11 2018 Anish Swaminathan <anishs@vmware.com> 1.11.1-1
