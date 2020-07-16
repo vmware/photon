@@ -1,18 +1,18 @@
-Summary:	opentype text shaping engine
-Name:		harfbuzz
-Version:	1.9.0
-Release:	1%{?dist}
-License:	MIT
-URL:		http://harfbuzz.org
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	https://www.freedesktop.org/software/harfbuzz/release/%{name}-%{version}.tar.bz2
-%define sha1 harfbuzz=b1b607216af1ee16d2f86c8427ecc36b6f2fd9dd
-BuildRequires:	glib-devel
-BuildRequires:	freetype2
-BuildRequires:	freetype2-devel
-Requires:	glib
+Summary:        opentype text shaping engine
+Name:           harfbuzz
+Version:        2.6.7
+Release:        1%{?dist}
+License:        MIT
+URL:            http://harfbuzz.org
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://www.freedesktop.org/software/harfbuzz/release/%{name}-%{version}.tar.xz
+%define sha1    harfbuzz=caeec8262fbd90a77b62c928b6c033a1b104546b
+BuildRequires:  glib-devel
+BuildRequires:  freetype2
+BuildRequires:  freetype2-devel
+Requires:       glib
 
 %description
 HarfBuzz is an implementation of the OpenType Layout engine.
@@ -58,6 +58,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/cmake/harfbuzz/harfbuzz-config.cmake
 
 %changelog
+*       Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 2.6.7-1
+-       Automatic Version Bump
 *       Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 1.9.0-1
 -       Update to version 1.9.0
 *       Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 1.4.5-2
