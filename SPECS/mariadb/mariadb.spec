@@ -1,14 +1,14 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
-Version:        10.3.11
-Release:        2%{?dist}
+Version:        10.5.4
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://mariadb.org/
 Source0:        https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define         sha1 mariadb=7b75d7ec06642f26ce197e07f5ba16283061cc87
+%define         sha1 mariadb=7956af3b670b9615e3ef07e294e77b5279058d37
 BuildRequires:  cmake
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
@@ -90,6 +90,8 @@ mkdir -p %{buildroot}/%{_libdir}/systemd/system
 
 mv  %{buildroot}/usr/share/systemd/mariadb.service %{buildroot}/%{_libdir}/systemd/system/mariadb.service
 mv  %{buildroot}/usr/share/systemd/mariadb@.service %{buildroot}/%{_libdir}/systemd/system/mariadb@.service
+mv  %{buildroot}/usr/share/systemd/mysql.service %{buildroot}/%{_libdir}/systemd/system/mysql.service
+mv  %{buildroot}/usr/share/systemd/mysqld.service %{buildroot}/%{_libdir}/systemd/system/mysqld.service
 rm %{buildroot}/%{_sbindir}/rcmysql
 rm %{buildroot}/%{_libdir}/*.a
 mkdir -p %{buildroot}/%{_var}/lib/mysql
@@ -138,6 +140,39 @@ rm -rf %{buildroot}
 %{_libdir}/libmysqlclient_r.so
 %{_libdir}/libmariadb.so.*
 %{_libdir}/libmariadbd.so.*
+%{_bindir}/aria_s3_copy
+%{_bindir}/mariadb
+%{_bindir}/mariadb-access
+%{_bindir}/mariadb-admin
+%{_bindir}/mariadb-backup
+%{_bindir}/mariadb-binlog
+%{_bindir}/mariadb-check
+%{_bindir}/mariadb-client-test
+%{_bindir}/mariadb-client-test-embedded
+%{_bindir}/mariadb-conv
+%{_bindir}/mariadb-convert-table-format
+%{_bindir}/mariadb-dump
+%{_bindir}/mariadb-dumpslow
+%{_bindir}/mariadb-embedded
+%{_bindir}/mariadb-find-rows
+%{_bindir}/mariadb-fix-extensions
+%{_bindir}/mariadb-hotcopy
+%{_bindir}/mariadb-import
+%{_bindir}/mariadb-install-db
+%{_bindir}/mariadb-ldb
+%{_bindir}/mariadb-plugin
+%{_bindir}/mariadb-secure-installation
+%{_bindir}/mariadb-setpermission
+%{_bindir}/mariadb-show
+%{_bindir}/mariadb-slap
+%{_bindir}/mariadb-test
+%{_bindir}/mariadb-test-embedded
+%{_bindir}/mariadb-tzinfo-to-sql
+%{_bindir}/mariadb-upgrade
+%{_bindir}/mariadb-waitpid
+%{_bindir}/mariadbd-multi
+%{_bindir}/mariadbd-safe
+%{_bindir}/mariadbd-safe-helper
 %{_bindir}/msql2mysql
 %{_bindir}/mysql
 %{_bindir}/mysql_find_rows
@@ -197,13 +232,15 @@ rm -rf %{buildroot}
 %{_mandir}/man1/perror.1.gz
 %{_datadir}/mysql/charsets/*
 %{_datadir}/magic
+/usr/share/pam_user_map.so
+/usr/share/user_map.conf
+%config(noreplace) /etc/my.cnf.d/s3.cnf
+%config(noreplace) /etc/my.cnf.d/spider.cnf
 %doc COPYING CREDITS
 
 %exclude /usr/share/mysql/bench
 %exclude /usr/share/mysql/test
-%exclude /usr/data/test/db.opt
 %exclude /usr/share/doc/mariadb-10.2.8/*
-%exclude /etc/init.d/mysql
 
 %files server
 %config(noreplace) %{_sysconfdir}/logrotate.d/mysql
@@ -244,11 +281,11 @@ rm -rf %{buildroot}
 %{_bindir}/wsrep_sst_mysqldump
 %{_bindir}/wsrep_sst_rsync
 %{_bindir}/wsrep_sst_rsync_wan
-%{_bindir}/wsrep_sst_xtrabackup
-%{_bindir}/wsrep_sst_xtrabackup-v2
 %{_sbindir}/*
 %{_libdir}/systemd/system/mariadb.service
 %{_libdir}/systemd/system/mariadb@.service
+%{_libdir}/systemd/system/mysql.service
+%{_libdir}/systemd/system/mysqld.service
 %{_libdir}/systemd/system-preset/50-mariadb.preset
 %{_datadir}/binary-configure
 %{_datadir}/mysql-log-rotate
@@ -286,22 +323,52 @@ rm -rf %{buildroot}
 %{_mandir}/man1/replace.1.gz
 %{_mandir}/man1/resolveip.1.gz
 %{_mandir}/man1/resolve_stack_dump.1.gz
-%{_mandir}/man1/tokuftdump.1.gz
-%{_mandir}/man1/tokuft_logprint.1.gz
 %{_mandir}/man1/wsrep_sst_common.1.gz
 %{_mandir}/man1/wsrep_sst_mysqldump.1.gz
 %{_mandir}/man1/wsrep_sst_rsync.1.gz
-%{_mandir}/man1/wsrep_sst_xtrabackup.1.gz
-%{_mandir}/man1/wsrep_sst_xtrabackup-v2.1.gz
 %{_mandir}/man1/mariabackup.1.gz
 %{_mandir}/man1/mbstream.1.gz
 %{_mandir}/man1/mysql_embedded.1.gz
 %{_mandir}/man1/mysql_ldb.1.gz
 %{_mandir}/man1/wsrep_sst_mariabackup.1.gz
 %{_mandir}/man1/wsrep_sst_rsync_wan.1.gz
+%{_mandir}/man1/mariadb-access.1.gz
+%{_mandir}/man1/mariadb-admin.1.gz
+%{_mandir}/man1/mariadb-backup.1.gz
+%{_mandir}/man1/mariadb-binlog.1.gz
+%{_mandir}/man1/mariadb-check.1.gz
+%{_mandir}/man1/mariadb-client-test-embedded.1.gz
+%{_mandir}/man1/mariadb-client-test.1.gz
+%{_mandir}/man1/mariadb-conv.1.gz
+%{_mandir}/man1/mariadb-convert-table-format.1.gz
+%{_mandir}/man1/mariadb-dump.1.gz
+%{_mandir}/man1/mariadb-dumpslow.1.gz
+%{_mandir}/man1/mariadb-embedded.1.gz
+%{_mandir}/man1/mariadb-find-rows.1.gz
+%{_mandir}/man1/mariadb-fix-extensions.1.gz
+%{_mandir}/man1/mariadb-hotcopy.1.gz
+%{_mandir}/man1/mariadb-import.1.gz
+%{_mandir}/man1/mariadb-install-db.1.gz
+%{_mandir}/man1/mariadb-ldb.1.gz
+%{_mandir}/man1/mariadb-plugin.1.gz
+%{_mandir}/man1/mariadb-secure-installation.1.gz
+%{_mandir}/man1/mariadb-setpermission.1.gz
+%{_mandir}/man1/mariadb-show.1.gz
+%{_mandir}/man1/mariadb-slap.1.gz
+%{_mandir}/man1/mariadb-test-embedded.1.gz
+%{_mandir}/man1/mariadb-test.1.gz
+%{_mandir}/man1/mariadb-tzinfo-to-sql.1.gz
+%{_mandir}/man1/mariadb-upgrade.1.gz
+%{_mandir}/man1/mariadb-waitpid.1.gz
+%{_mandir}/man1/mariadb.1.gz
+%{_mandir}/man1/mariadb_config.1.gz
+%{_mandir}/man1/mariadbd-multi.1.gz
+%{_mandir}/man1/mariadbd-safe-helper.1.gz
+%{_mandir}/man1/mariadbd-safe.1.gz
+%{_mandir}/man1/myrocks_hotbackup.1.gz
+%{_mandir}/man1/mytop.1.gz
 %{_mandir}/man8/*
 %{_datadir}/mysql/fill_help_tables.sql
-%{_datadir}/mysql/install_spider.sql
 %{_datadir}/mysql/maria_add_gis_sp.sql
 %{_datadir}/mysql/maria_add_gis_sp_bootstrap.sql
 %{_datadir}/mysql/mroonga/install.sql
@@ -333,8 +400,8 @@ rm -rf %{buildroot}
 %{_libdir}/libmariadb.so
 %{_libdir}/libmariadbd.so
 %{_libdir}/libmysqld.so
+%{_libdir}/pkgconfig/mariadb.pc
 %{_libdir}/pkgconfig/libmariadb.pc
-%{_datadir}/pkgconfig/mariadb.pc
 
 %files errmsg
 %{_datadir}/mysql/czech/errmsg.sys
@@ -364,6 +431,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 10.5.4-1
+-   Automatic Version Bump
 *   Wed Jan 23 2019 Ajay Kaher <akaher@vmware.com> 10.3.11-2
 -   Remove PerconaFT from mariadb pkg because of AGPL licence
 *   Wed Jan 02 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.3.11-1
