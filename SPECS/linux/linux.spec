@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux
-Version:        4.19.129
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.132
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=1a49d2d147a2038ce4d2bafdd3b1337834321924
+%define sha1 linux=b292a467da38927d948f1b99c53f03ab479363c9
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -44,7 +44,7 @@ Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         4.18-x86-vmware-STA-support.patch
-Patch7:	        9p-trans_fd-extend-port-variable-to-u32.patch
+Patch7:         9p-trans_fd-extend-port-variable-to-u32.patch
 Patch8:         perf-scripts-python-Convert-python2-scripts-to-python3.patch
 Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 # ttyXRUSB support
@@ -150,7 +150,7 @@ Patch234:        0001-fsl_dpaa_mac-wait-for-phy-probe-to-complete.patch
 %endif
 
 %if 0%{?kat_build:1}
-Patch1000:	fips-kat-tests.patch
+Patch1000:       fips-kat-tests.patch
 %endif
 
 BuildRequires:  bc
@@ -711,6 +711,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Thu Jul 16 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-1
+-   Update to version 4.19.132
 *   Thu Jul 16 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.129-3
 -   Add latest out of tree version of i40e driver
 *   Sat Jun 27 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.129-2

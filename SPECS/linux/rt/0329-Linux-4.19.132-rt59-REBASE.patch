@@ -1,0 +1,23 @@
+From 6265ef0553174b6089ea56bc534d3c517b67d4cb Mon Sep 17 00:00:00 2001
+Message-Id: <6265ef0553174b6089ea56bc534d3c517b67d4cb.1594742967.git.zanussi@kernel.org>
+In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From: Tom Zanussi <zanussi@kernel.org>
+Date: Tue, 14 Jul 2020 10:31:04 -0500
+Subject: [PATCH 329/329] Linux 4.19.132-rt59 REBASE
+
+Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 1199ebade17b..8cdeb45db6e2 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt16
++-rt59
+-- 
+2.17.1
+

@@ -1,0 +1,59 @@
+From 59eae7f9b913be891996c958eeb8bd21ac786558 Mon Sep 17 00:00:00 2001
+Message-Id: <59eae7f9b913be891996c958eeb8bd21ac786558.1594742966.git.zanussi@kernel.org>
+In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 7 Jun 2011 09:19:06 +0200
+Subject: [PATCH 110/329] sched: Do not account rcu_preempt_depth on RT in
+ might_sleep()
+
+RT changes the rcu_preempt_depth semantics, so we cannot check for it
+in might_sleep().
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ include/linux/rcupdate.h | 7 +++++++
+ kernel/sched/core.c      | 2 +-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
+index 68cbe111420b..027c58cdbb6e 100644
+--- a/include/linux/rcupdate.h
++++ b/include/linux/rcupdate.h
+@@ -73,6 +73,11 @@ void synchronize_rcu(void);
+  * types of kernel builds, the rcu_read_lock() nesting depth is unknowable.
+  */
+ #define rcu_preempt_depth() (current->rcu_read_lock_nesting)
++#ifndef CONFIG_PREEMPT_RT_FULL
++#define sched_rcu_preempt_depth()	rcu_preempt_depth()
++#else
++static inline int sched_rcu_preempt_depth(void) { return 0; }
++#endif
+ 
+ #else /* #ifdef CONFIG_PREEMPT_RCU */
+ 
+@@ -96,6 +101,8 @@ static inline int rcu_preempt_depth(void)
+ 	return 0;
+ }
+ 
++#define sched_rcu_preempt_depth()	rcu_preempt_depth()
++
+ #endif /* #else #ifdef CONFIG_PREEMPT_RCU */
+ 
+ /* Internal to kernel */
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index dba77f924ec8..dec4822184bb 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6191,7 +6191,7 @@ void __init sched_init(void)
+ #ifdef CONFIG_DEBUG_ATOMIC_SLEEP
+ static inline int preempt_count_equals(int preempt_offset)
+ {
+-	int nested = preempt_count() + rcu_preempt_depth();
++	int nested = preempt_count() + sched_rcu_preempt_depth();
+ 
+ 	return (nested == preempt_offset);
+ }
+-- 
+2.17.1
+

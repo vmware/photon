@@ -1,0 +1,39 @@
+From 7c1315ffc5e93492cbf98ca4a9794d6f1daab01e Mon Sep 17 00:00:00 2001
+Message-Id: <7c1315ffc5e93492cbf98ca4a9794d6f1daab01e.1594742966.git.zanussi@kernel.org>
+In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From: Ingo Molnar <mingo@elte.hu>
+Date: Fri, 3 Jul 2009 08:44:03 -0500
+Subject: [PATCH 041/329] mm: Allow only slub on RT
+
+Disable SLAB and SLOB on -RT. Only SLUB is adopted to -RT needs.
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ init/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/init/Kconfig b/init/Kconfig
+index 47035b5a46f6..ae9a0113a699 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1637,6 +1637,7 @@ choice
+ 
+ config SLAB
+ 	bool "SLAB"
++	depends on !PREEMPT_RT_FULL
+ 	select HAVE_HARDENED_USERCOPY_ALLOCATOR
+ 	help
+ 	  The regular slab allocator that is established and known to work
+@@ -1657,6 +1658,7 @@ config SLUB
+ config SLOB
+ 	depends on EXPERT
+ 	bool "SLOB (Simple Allocator)"
++	depends on !PREEMPT_RT_FULL
+ 	help
+ 	   SLOB replaces the stock allocator with a drastically simpler
+ 	   allocator. SLOB is generally more space efficient but
+-- 
+2.17.1
+

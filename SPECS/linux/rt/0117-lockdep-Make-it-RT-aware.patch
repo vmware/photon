@@ -1,0 +1,80 @@
+From d95c9b99941927302bb971d15be6c1aa134b9651 Mon Sep 17 00:00:00 2001
+Message-Id: <d95c9b99941927302bb971d15be6c1aa134b9651.1594742966.git.zanussi@kernel.org>
+In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sun, 17 Jul 2011 18:51:23 +0200
+Subject: [PATCH 117/329] lockdep: Make it RT aware
+
+teach lockdep that we don't really do softirqs on -RT.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ include/linux/irqflags.h | 23 +++++++++++++++--------
+ kernel/locking/lockdep.c |  2 ++
+ 2 files changed, 17 insertions(+), 8 deletions(-)
+
+diff --git a/include/linux/irqflags.h b/include/linux/irqflags.h
+index 21619c92c377..b20eeb25e9fa 100644
+--- a/include/linux/irqflags.h
++++ b/include/linux/irqflags.h
+@@ -43,14 +43,6 @@ do {						\
+ do {						\
+ 	current->hardirq_context--;		\
+ } while (0)
+-# define lockdep_softirq_enter()		\
+-do {						\
+-	current->softirq_context++;		\
+-} while (0)
+-# define lockdep_softirq_exit()			\
+-do {						\
+-	current->softirq_context--;		\
+-} while (0)
+ #else
+ # define trace_hardirqs_on()		do { } while (0)
+ # define trace_hardirqs_off()		do { } while (0)
+@@ -64,6 +56,21 @@ do {						\
+ # define lockdep_softirq_exit()		do { } while (0)
+ #endif
+ 
++#if defined(CONFIG_TRACE_IRQFLAGS) && !defined(CONFIG_PREEMPT_RT_FULL)
++# define lockdep_softirq_enter()		\
++do {						\
++	current->softirq_context++;		\
++} while (0)
++# define lockdep_softirq_exit()			\
++do {						\
++	current->softirq_context--;		\
++} while (0)
++
++#else
++# define lockdep_softirq_enter()	do { } while (0)
++# define lockdep_softirq_exit()		do { } while (0)
++#endif
++
+ #if defined(CONFIG_IRQSOFF_TRACER) || \
+ 	defined(CONFIG_PREEMPT_TRACER)
+  extern void stop_critical_timings(void);
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index 8a1758b094b7..376b1ef4396a 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -3830,6 +3830,7 @@ static void check_flags(unsigned long flags)
+ 		}
+ 	}
+ 
++#ifndef CONFIG_PREEMPT_RT_FULL
+ 	/*
+ 	 * We dont accurately track softirq state in e.g.
+ 	 * hardirq contexts (such as on 4KSTACKS), so only
+@@ -3844,6 +3845,7 @@ static void check_flags(unsigned long flags)
+ 			DEBUG_LOCKS_WARN_ON(!current->softirqs_enabled);
+ 		}
+ 	}
++#endif
+ 
+ 	if (!debug_locks)
+ 		print_irqtrace_events(current);
+-- 
+2.17.1
+

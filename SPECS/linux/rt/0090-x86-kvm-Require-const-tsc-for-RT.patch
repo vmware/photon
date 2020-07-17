@@ -1,0 +1,39 @@
+From 6d433304f1894bb7aefb0b6e58e8e41e5e18a6b4 Mon Sep 17 00:00:00 2001
+Message-Id: <6d433304f1894bb7aefb0b6e58e8e41e5e18a6b4.1594742966.git.zanussi@kernel.org>
+In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sun, 6 Nov 2011 12:26:18 +0100
+Subject: [PATCH 090/329] x86: kvm Require const tsc for RT
+
+Non constant TSC is a nightmare on bare metal already, but with
+virtualization it becomes a complete disaster because the workarounds
+are horrible latency wise. That's also a preliminary for running RT in
+a guest on top of a RT host.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/x86/kvm/x86.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 0aa5c4134b90..5dcb794b88e2 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -6848,6 +6848,13 @@ int kvm_arch_init(void *opaque)
+ 		goto out;
+ 	}
+ 
++#ifdef CONFIG_PREEMPT_RT_FULL
++	if (!boot_cpu_has(X86_FEATURE_CONSTANT_TSC)) {
++		printk(KERN_ERR "RT requires X86_FEATURE_CONSTANT_TSC\n");
++		return -EOPNOTSUPP;
++	}
++#endif
++
+ 	r = kvm_mmu_module_init();
+ 	if (r)
+ 		goto out_free_percpu;
+-- 
+2.17.1
+

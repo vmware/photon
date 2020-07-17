@@ -13,11 +13,11 @@ skip_inner_mac_validation: if enabled the rx packet is accepted just
 based upon the tunnel id of the device and mac address validation
 for inner header is skipped.
 ---
- drivers/net/geneve.c | 82 ++++++++++++++++++++++++++++++++++++++++++++++++++--
+ drivers/net/geneve.c | 82 ++++++++++++++++++++++++++++++++++++++++++--
  1 file changed, 80 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-index ff83408733d4..335b2e5f6e26 100644
+index 817c290b78cd..e62c9676df26 100644
 --- a/drivers/net/geneve.c
 +++ b/drivers/net/geneve.c
 @@ -52,6 +52,34 @@ struct geneve_dev_node {
@@ -152,7 +152,7 @@ index ff83408733d4..335b2e5f6e26 100644
  }
  
  /* Callback from net/ipv4/udp.c to receive packets */
-@@ -906,7 +984,7 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -908,7 +986,7 @@ static netdev_tx_t geneve_xmit(struct sk_buff *skb, struct net_device *dev)
  	struct ip_tunnel_info *info = NULL;
  	int err;
  
@@ -160,7 +160,7 @@ index ff83408733d4..335b2e5f6e26 100644
 +	if (geneve->collect_md || geneve->config_md_mode) {
  		info = skb_tunnel_info(skb);
  		if (unlikely(!info || !(info->mode & IP_TUNNEL_INFO_TX))) {
- 			err = -EINVAL;
+ 			netdev_dbg(dev, "no tunnel metadata\n");
 -- 
-2.14.2
+2.17.1
 

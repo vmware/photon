@@ -1,0 +1,36 @@
+From fe2b32241ea0797ff22b67eac8d314bc374c854a Mon Sep 17 00:00:00 2001
+Message-Id: <fe2b32241ea0797ff22b67eac8d314bc374c854a.1594742966.git.zanussi@kernel.org>
+In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sun, 26 Jul 2009 02:21:32 +0200
+Subject: [PATCH 052/329] x86: Use generic rwsem_spinlocks on -rt
+
+Simplifies the separation of anon_rw_semaphores and rw_semaphores for
+-rt.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/x86/Kconfig | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index e40ba59efe7f..f22e787329cf 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -264,8 +264,11 @@ config ARCH_MAY_HAVE_PC_FDC
+ 	def_bool y
+ 	depends on ISA_DMA_API
+ 
++config RWSEM_GENERIC_SPINLOCK
++	def_bool PREEMPT_RT_FULL
++
+ config RWSEM_XCHGADD_ALGORITHM
+-	def_bool y
++	def_bool !RWSEM_GENERIC_SPINLOCK && !PREEMPT_RT_FULL
+ 
+ config GENERIC_CALIBRATE_DELAY
+ 	def_bool y
+-- 
+2.17.1
+

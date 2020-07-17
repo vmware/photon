@@ -1,0 +1,37 @@
+From f8c85fb82569dd9308b23d290202f33397e0cc14 Mon Sep 17 00:00:00 2001
+Message-Id: <f8c85fb82569dd9308b23d290202f33397e0cc14.1594742966.git.zanussi@kernel.org>
+In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Mon, 11 Apr 2016 16:55:02 +0200
+Subject: [PATCH 168/329] tty: serial: 8250: don't take the trylock during oops
+
+An oops with irqs off (panic() from irqsafe hrtimer like the watchdog
+timer) will lead to a lockdep warning on each invocation and as such
+never completes.
+Therefore we skip the trylock in the oops case.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/tty/serial/8250/8250_port.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 20b799219826..48c9574362c5 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -3245,10 +3245,8 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+ 
+ 	serial8250_rpm_get(up);
+ 
+-	if (port->sysrq)
++	if (port->sysrq || oops_in_progress)
+ 		locked = 0;
+-	else if (oops_in_progress)
+-		locked = spin_trylock_irqsave(&port->lock, flags);
+ 	else
+ 		spin_lock_irqsave(&port->lock, flags);
+ 
+-- 
+2.17.1
+

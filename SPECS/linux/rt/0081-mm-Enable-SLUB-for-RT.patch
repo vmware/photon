@@ -1,0 +1,44 @@
+From 4873fd9bc55e5233bb796f72f661818ff5750e73 Mon Sep 17 00:00:00 2001
+Message-Id: <4873fd9bc55e5233bb796f72f661818ff5750e73.1594742966.git.zanussi@kernel.org>
+In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 25 Oct 2012 10:32:35 +0100
+Subject: [PATCH 081/329] mm: Enable SLUB for RT
+
+Avoid the memory allocation in IRQ section
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+[bigeasy: factor out everything except the kcalloc() workaorund ]
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ mm/slub.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/mm/slub.c b/mm/slub.c
+index b890fe5f9cd3..d33c04a0e5da 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -3726,6 +3726,11 @@ static void list_slab_objects(struct kmem_cache *s, struct page *page,
+ 							const char *text)
+ {
+ #ifdef CONFIG_SLUB_DEBUG
++#ifdef CONFIG_PREEMPT_RT_BASE
++	/* XXX move out of irq-off section */
++	slab_err(s, page, text, s->name);
++#else
++
+ 	void *addr = page_address(page);
+ 	void *p;
+ 	unsigned long *map = kcalloc(BITS_TO_LONGS(page->objects),
+@@ -3747,6 +3752,7 @@ static void list_slab_objects(struct kmem_cache *s, struct page *page,
+ 	slab_unlock(page);
+ 	kfree(map);
+ #endif
++#endif
+ }
+ 
+ /*
+-- 
+2.17.1
+
