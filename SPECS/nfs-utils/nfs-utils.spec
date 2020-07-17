@@ -1,76 +1,71 @@
-Summary:        NFS client utils
-Name:           nfs-utils
-Version:        2.3.3
-Release:        2%{?dist}
-License:        GPLv2+
-URL:            http://sourceforge.net/projects/nfs
-Group:          Applications/Nfs-utils-client
-Source0:        http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.xz
-%define sha1    nfs-utils=a60aa17b057734c63bf7ce1598898e83f2132644
-Source1:        nfs-client.service
-Source2:        nfs-client.target
-Source3:        rpc-statd.service
-Source4:        rpc-statd-notify.service
-Source5:        nfs-utils.defaults
-Source6:        nfs-server.service
-Source7:        nfs-mountd.service
-Vendor:         VMware, Inc.
-Distribution:   Photon
-BuildRequires:  libtool
-BuildRequires:  krb5-devel
-BuildRequires:  libcap-devel
-BuildRequires:  libtirpc-devel
-BuildRequires:  python3-devel
-BuildRequires:  libevent-devel
-BuildRequires:  device-mapper-devel
-BuildRequires:  systemd-devel
-BuildRequires:  keyutils-devel
-BuildRequires:  sqlite-devel
-BuildRequires:  libgssglue-devel
-BuildRequires:  libnfsidmap-devel
-BuildRequires:  e2fsprogs-devel
-Requires:       libtirpc
-Requires:       rpcbind
-Requires:       shadow
-Requires:       python3-libs
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+Summary:          NFS client utils
+Name:             nfs-utils
+Version:          2.5.1
+Release:          1%{?dist}
+License:          GPLv2+
+URL:              http://sourceforge.net/projects/nfs
+Group:            Applications/Nfs-utils-client
+Source0:          http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.xz
+%define sha1      nfs-utils=c218260521564b540eee4c7aae86d5e34e1b5c3d
+Source1:          nfs-client.service
+Source2:          nfs-client.target
+Source3:          rpc-statd.service
+Source4:          rpc-statd-notify.service
+Source5:          nfs-utils.defaults
+Source6:          nfs-server.service
+Source7:          nfs-mountd.service
+Vendor:           VMware, Inc.
+Distribution:     Photon
+BuildRequires:    libtool
+BuildRequires:    krb5-devel
+BuildRequires:    libcap-devel
+BuildRequires:    libtirpc-devel
+BuildRequires:    python3-devel
+BuildRequires:    libevent-devel
+BuildRequires:    device-mapper-devel
+BuildRequires:    systemd-devel
+BuildRequires:    keyutils-devel
+BuildRequires:    sqlite-devel
+BuildRequires:    libgssglue-devel
+BuildRequires:    libnfsidmap-devel
+BuildRequires:    e2fsprogs-devel
+BuildRequires:    rpcsvc-proto-devel
+Requires:         libtirpc
+Requires:         rpcbind
+Requires:         shadow
+Requires:         python3-libs
+Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
-The nfs-utils package contains simple nfs client service
+The nfs-utils package contains simple nfs client service.
 
 %prep
 %setup -q -n %{name}-%{version}
 #not prevent statd to start
 sed -i "/daemon_init/s:\!::" utils/statd/statd.c
 sed '/unistd.h/a#include <stdint.h>' -i support/nsm/rpc.c
-find . -iname "*.py" | xargs -I file sed -i '1s/python/python3/g' file
 # fix --with-rpcgen=internal
 sed -i 's/RPCGEN_PATH" =/rpcgen_path" =/' configure
 
 %build
-./configure --prefix=%{_prefix}         \
-            --sysconfdir=%{_sysconfdir} \
-            --enable-libmount-mount     \
-            --without-tcp-wrappers      \
-            --enable-gss                \
-            --enable-nfsv4              \
-	    --with-rpcgen=internal	\
-            --disable-static
-
+%configure --enable-libmount-mount     \
+           --without-tcp-wrappers      \
+           --enable-gss                \
+           --enable-nfsv4              \
+           --disable-static
 # fix building against new gcc
 sed -i 's/CFLAGS = -g/CFLAGS = -Wno-error=strict-prototypes/' support/nsm/Makefile
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 install -v -m644 utils/mount/nfsmount.conf /etc/nfsmount.conf
-
 mkdir -p %{buildroot}/lib/systemd/system/
 mkdir -p %{buildroot}/etc/default
 mkdir -p %{buildroot}/etc/export.d
 mkdir -p %{buildroot}/var/lib/nfs/v4recovery
 touch %{buildroot}/etc/exports
-
 install -m644 %{SOURCE1} %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE2} %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE3} %{buildroot}/lib/systemd/system/
@@ -84,7 +79,6 @@ install -m644 systemd/rpc_pipefs.target  %{buildroot}/lib/systemd/system/
 install -m644 systemd/var-lib-nfs-rpc_pipefs.mount  %{buildroot}/lib/systemd/system/
 install -m644 systemd/rpc-svcgssd.service %{buildroot}/lib/systemd/system/
 find %{buildroot}/%{_libdir} -name '*.la' -delete
-
 install -vdm755 %{buildroot}/usr/lib/systemd/system-preset
 echo "disable nfs-server.service" > %{buildroot}/usr/lib/systemd/system-preset/50-nfs-server.preset
 
@@ -123,14 +117,16 @@ fi
 %config(noreplace) /etc/exports
 /lib/systemd/system/*
 %{_libdir}/libnfsidmap.so.*
-%{_libdir}/libnfsidmap/nsswitch.so
-%{_libdir}/libnfsidmap/static.so
+%{_libdir}/libnfsidmap/*.so
 %{_libdir}/systemd/system-preset/50-nfs-server.preset
 
 %{_includedir}/*
 %{_libdir}/libnfsidmap.so
 %{_libdir}/pkgconfig/libnfsidmap.pc
 %changelog
+*   Thu Jul 16 2020 Tapas Kundu <tkundu@vmware.com> 2.5.1-1
+-   Automatic Version Bump
+-   Use system installed rpcgen
 *   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 2.3.3-2
 -   Fix compilation issue against glibc-2.28
 -   Use internal rpcgen, disable librpcsecgss dependency.
