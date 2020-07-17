@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.127
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -605,7 +605,10 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %files docs
 %defattr(-,root,root)
 %{_defaultdocdir}/%{name}-%{uname_r}/*
+# For out-of-tree Intel i40e driver.
+%ifarch x86_64
 %{_mandir}/*
+%endif
 
 %files devel
 %defattr(-,root,root)
@@ -686,6 +689,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Fri Jul 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.127-2
+-   Fix aarch64 build failure due to missing i40e man pages.
 *   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1
 -   Update to version 4.19.127
 *   Tue Jun 16 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.112-14
