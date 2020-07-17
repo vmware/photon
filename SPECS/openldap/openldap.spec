@@ -1,15 +1,15 @@
 %global _default_patch_fuzz 2
 Summary:	OpenLdap-2.4.43
 Name:		openldap
-Version:	2.4.46
-Release:	3%{?dist}
+Version:	2.4.50
+Release:	1%{?dist}
 License:	OpenLDAP
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
-%define sha1 openldap=a9ae2273eb9bdd70090dafe0d018a3132606bef6
+%define sha1 openldap=82f576e0d0d334e9e798d9de8936683546247bb9
 Patch0:         openldap-2.4.40-gssapi-1.patch
 Patch1:		openldap-2.4.44-consolidated-2.patch
 Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
@@ -79,6 +79,8 @@ rm -rf %{buildroot}/*
 /etc/openldap/*
 
 %changelog
+*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.50-1
+-   Automatic Version Bump
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.4.46-3
 -   Cross compilation support
 *   Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 2.4.46-2
