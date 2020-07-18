@@ -1,17 +1,18 @@
-Summary:	A fast malloc tool for threads
-Name:		gperftools
-Version:	2.7
-Release:	1%{?dist}
-License:	BSD
-URL:		https://github.com/gperftools/gperftools
-Source0:	https://github.com/gperftools/gperftools/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1 gperftools=89e3e1df674bc4ba1a9e97246b58a26a4e92d0a3
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:        A fast malloc tool for threads
+Name:           gperftools
+Version:        2.8
+Release:        1%{?dist}
+License:        BSD
+URL:            https://github.com/gperftools/gperftools
+Source0:        https://github.com/gperftools/gperftools/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
+%define sha1    gperftools=2caf94d01a3aa36c338ed52bd5ec508f05593d8d
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
 %description
-gperftools is a collection of a high-performance multi-threaded malloc() implementation, plus some pretty nifty performance analysis tools.
+gperftools is a collection of a high-performance multi-threaded malloc() implementation,
+plus some pretty nifty performance analysis tools.
 
 %package devel
 Summary:        gperftools devel
@@ -29,8 +30,7 @@ The contains gperftools package doc files.
 %setup -q
 
 %build
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--docdir=%{_defaultdocdir}/%{name}-%{version}
 make %{?_smp_mflags}
 
@@ -44,6 +44,7 @@ TCMALLOC_SAMPLE_PARAMETER=128 && make check
 %files
 %defattr(-,root,root)
 %{_bindir}/pprof
+%{_bindir}/pprof-symbolize
 %{_libdir}/libprofiler*.so.*
 %{_libdir}/libtcmalloc*.so.*
 
@@ -61,6 +62,8 @@ TCMALLOC_SAMPLE_PARAMETER=128 && make check
 %{_mandir}/man1/*
 
 %changelog
+*    Fri Jul 17 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8-1
+-    Automatic Version Bump
 *    Tue Sep 11 2018 Anish Swaminathan <anishs@vmware.com> 2.7-1
 -    Update version to 2.7
 *    Mon Jul 31 2017 Vinay Chang Lee <changlee@vmware.com> 2.5-2
