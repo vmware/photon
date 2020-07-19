@@ -3,7 +3,7 @@
 
 Summary: Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:		bazel
-Version:	2.0.0
+Version:	2.2.0
 Release:	1%{?dist}
 License:	Apache License 2.0
 Group:          Development/Tools
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL: 		http://bazel.build/
 Source:         https://github.com/bazelbuild/bazel/releases/download/%{version}/%{name}-%{version}.dist.zip
-%define sha1    bazel=f4e2eca5ff6c1c1cb921ea6637c1ec758ba93128
+%define sha1    bazel=9f901dbd31ad761be412070a0cf13db73288c77c
 Requires: 	openjdk
 BuildRequires:  openjdk zlib-devel which findutils tar gzip zip unzip
 BuildRequires:  gcc
@@ -46,6 +46,8 @@ cp output/bazel %{buildroot}%{_bindir}
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+*	Fri Jul 17 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 2.2.0-1
+-	Update bazel
 *	Fri Apr 10 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 2.0.0-1
 -	Update bazel
 *	Wed Apr 01 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 0.24.1-2
