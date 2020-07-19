@@ -1,0 +1,348 @@
+From 40bd1e550c2317ea9b07dfa791c518722d28f980 Mon Sep 17 00:00:00 2001
+From: Sriramp Patil <sriramp@vmware.com>
+Date: Sun, 9 Aug 2020 05:21:09 -0700
+Subject: [PATCH 5/5] kernels: [VDFS-9P-SHARES] Adding claim tags support in 9P
+ client for exactly once semantics
+
+    Tags are used to identify the 9P requests uniquely. For supporting exactly once
+    semantics for non-idempotent operations 9P server can choose to persist the
+    responses with the tags to identify a replayed request form the client and
+    respond from its duplicate request cache.
+
+    Tags are generally monotonically increasing numbers but the client can reuse the
+    tags after receiving response from the server. Instead of reusing the tags of
+    non-idempotent operations a new 9P method is introduced, TCLAIMTAGS, which will
+    allow client to explicitly notify the server that some of the tags will be
+    reused so that the server can remove them from its duplicate request cache (DRC),
+    if required.
+
+    TCLAIMTAGS simply sends the list of tags to the server which can be considered
+    as completed and removed by server from DRC. Once server responds back with
+    corresponding RCLAIMTAGS client can start reusing the tags that were sent in
+    TCLAIMTAGS request.
+
+    It is important to note that the TCLAIMTAGS mechanism to notify server about
+    tags reuse is only required for non-idempotent operations.
+---
+ include/net/9p/9p.h     |   2 +
+ include/net/9p/client.h |  12 ++++--
+ net/9p/client.c         |  42 ++++++++++++++++++-
+ net/9p/protocol.c       |  15 +++++++
+ net/9p/recovery.c       | 109 ++++++++++++++++++++++++++++++++++++++++++++++++
+ net/9p/recovery.h       |   6 +++
+ net/9p/trans_fd.c       |   5 +++
+ 7 files changed, 185 insertions(+), 6 deletions(-)
+
+diff --git a/include/net/9p/9p.h b/include/net/9p/9p.h
+index 78d9001..79ea8bb 100644
+--- a/include/net/9p/9p.h
++++ b/include/net/9p/9p.h
+@@ -176,6 +176,8 @@ enum p9_msg_t {
+         P9_RWALKX,
+         P9_TLCREATEX = 88,
+         P9_RLCREATEX,
++	P9_TCLAIMTAGS = 92,
++	P9_RCLAIMTAGS,
+ 	P9_TREADX = 96,
+ 	P9_RREADX,
+ 	P9_TWRITEX = 98,
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index 105475d..c3e5b72 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -140,6 +140,8 @@ enum recovery_state {
+  * @testip: Puppet master ip for testing recovery logic
+  * @aname: Used for logging and send mount UUID to puppet master
+  * @name: node name used as client id
++ * @n_unclaimed_tags: Number of unclaimed tags
++ * @claim_tags_in_progess: Indicates if TCLAIMTAGS is already in progress
+  *
+  * The client structure is used to keep track of various per-client
+  * state that has been instantiated.
+@@ -180,10 +182,12 @@ struct p9_client {
+ 	struct task_struct *recovery_thread;
+ 	int rstate;
+ 	struct list_head recovery_list;
+-        void *testconn;
+-        u16 testport;
+-        char *testip;
+-        char *aname;
++	void *testconn;
++	u16 testport;
++	char *testip;
++	char *aname;
++	u16 n_unclaimed_tags;
++	bool claim_tags_in_progress;
+ 
+ 	char name[__NEW_UTS_LEN + 1];
+ };
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 6cdc7a2..02d2ad3 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -42,6 +42,7 @@
+ #include <net/9p/client.h>
+ #include <net/9p/transport.h>
+ #include <linux/delay.h>
++#include <linux/kthread.h>
+ #include "protocol.h"
+ #include "recovery.h"
+ 
+@@ -80,7 +81,6 @@ static const match_table_t tokens = {
+ 	{Opt_err, NULL},
+ };
+ 
+-
+ inline int p9_is_proto_dotl(struct p9_client *clnt)
+ {
+ 	return clnt->proto_version == p9_proto_2000L ||
+@@ -472,12 +472,47 @@ EXPORT_SYMBOL(p9_tag_lookup);
+ int p9_tag_remove(struct p9_client *c, struct p9_req_t *r)
+ {
+ 	unsigned long flags;
++	struct p9_req_t *replaced_req = NULL;
+ 	u16 tag = r->tc.tag;
++	struct task_struct *thr = NULL;
+ 
+ 	p9_debug(P9_DEBUG_MUX, "clnt %p req %p tag: %d\n", c, r, tag);
+ 	spin_lock_irqsave(&c->lock, flags);
+-	idr_remove(&c->reqs, tag);
++
++	if (!p9_req_needs_claimtags(c, r)) {
++		idr_remove(&c->reqs, tag);
++		spin_unlock_irqrestore(&c->lock, flags);
++		goto out;
++	}
++
++	/* We replace p9_req_t object in the radix tree instead of deleting it
++	 * because the tag should not be reused until claim tags is done. Since
++	 * the client uses the idr to get new tags for 9P requests, we have to
++	 * keep the tag around in reqs
++	 */
++	replaced_req = idr_replace(&c->reqs, ERR_PTR(-ENOENT), tag);
++	BUG_ON(replaced_req != r);
++
++	c->n_unclaimed_tags++;
++	if (c->n_unclaimed_tags >= P9_UNCLAIMED_TAGS_THRESHOLD &&
++	    !c->claim_tags_in_progress) {
++		c->claim_tags_in_progress = true;
++		thr = kthread_create(p9_client_claim_tags, c,
++				     "p9_client_claim_tags");
++		if (IS_ERR_OR_NULL(thr)) {
++			pr_err("%s: CLAIMTAGS: failed to create thread",
++			       c->aname);
++			c->claim_tags_in_progress = false;
++		} else {
++			p9_debug(P9_DEBUG_9P,
++				"%s: CLAIMTAGS: starting claim tags thread",
++				c->aname);
++			wake_up_process(thr);
++		}
++	}
+ 	spin_unlock_irqrestore(&c->lock, flags);
++
++out:
+ 	return p9_req_put(r);
+ }
+ 
+@@ -1209,6 +1244,9 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 	idr_init(&clnt->reqs);
+         clnt->rstate = RECOVERY_IDLE;
+ 
++	clnt->n_unclaimed_tags = 0;
++	clnt->claim_tags_in_progress = false;
++
+ 	err = parse_opts(options, clnt);
+ 	if (err < 0)
+ 		goto free_client;
+diff --git a/net/9p/protocol.c b/net/9p/protocol.c
+index 851eee8a..4bcb5421 100644
+--- a/net/9p/protocol.c
++++ b/net/9p/protocol.c
+@@ -540,6 +540,21 @@ p9pdu_vwritef(struct p9_fcall *pdu, int proto_version, const char *fmt,
+ 							p9attr->mtime_nsec);
+ 			}
+ 			break;
++		case 'W':{
++				int j;
++				uint32_t nw = va_arg(ap, uint32_t);
++				const uint16_t *ws =
++					va_arg(ap, const uint16_t *);
++
++				errcode = p9pdu_writef(pdu, proto_version, "d",
++						       nw);
++				for (j = 0; !errcode && j < nw; j++) {
++					errcode =
++					    p9pdu_writef(pdu, proto_version,
++							 "w", ws[j]);
++				}
++			}
++			break;
+ 		case '?':
+ 			if ((proto_version != p9_proto_2000u) &&
+ 				(proto_version != p9_proto_2000L) &&
+diff --git a/net/9p/recovery.c b/net/9p/recovery.c
+index 13fdd8a..4f3b44f 100644
+--- a/net/9p/recovery.c
++++ b/net/9p/recovery.c
+@@ -126,6 +126,16 @@ struct p9_lock_state {
+ 	struct p9_flock         fl;
+ };
+ 
++/*
++ * p9_tclaimtags - claim tags request params
++ * @ntags: number of tags to be claimed
++ * @tags: array of tags
++ */
++
++struct p9_tclaimtags {
++	u32 ntags;
++	u16 *tags;
++};
+ 
+ static void
+ p9_globalid_deserialize(const char *str_globalid,
+@@ -1033,3 +1043,102 @@ void p9_recovery_breakpoint(struct p9_client *clnt, char *bp)
+ 	if (ret <= 0)
+ 		pr_err("read from test socket failed:%d\n", ret);
+ }
++
++/* p9_req_needs_claimtags - check if the request needs to claim tags
++ * @clnt: p9_client structu
++ * @r: p9_req_t sturct
++ */
++
++bool
++p9_req_needs_claimtags(struct p9_client *clnt, struct p9_req_t *r)
++{
++	u8 op = r->tc.id;
++
++	if (!clnt->recovery_enabled)
++		return false;
++
++	/* All the non-idempotent ops will return true.The non-idempotent ops
++	 * are as follows,
++	 * P9_TLCREATE, P9_TSYMLINK, P9_TMKNOD, P9_TRENAME, P9_TXATTRCREATE,
++	 * P9_TLOCK, P9_TLINK, P9_TMKDIR, P9_TRENAMEAT, P9_TUNLINKAT,
++	 * P9_TLCREATEX and P9_TREMOVE
++	 */
++
++	return (op != P9_TWALK && op != P9_TWALKX && op != P9_TCLUNK &&
++		op != P9_TGETATTR && op != P9_TSTATFS && op != P9_TXATTRWALK &&
++		op != P9_TREAD && op != P9_TREADX && op != P9_TWRITE &&
++		op != P9_TWRITEX && op != P9_TLOPEN && op != P9_TREADDIR &&
++		op != P9_TVERSION && op != P9_TATTACH && op != P9_TREADLINK &&
++		op != P9_TFLUSH && op != P9_TFLUSH && op != P9_TGETLOCK &&
++		op != P9_TFSYNC);
++}
++
++/*
++ * prepare_tclaimtags - fill the p9_tclaimtags struct with the unclaimed tags
++ * @id: tag from reqs radix tree form p9_client struct
++ * @p: p9_req_t from the reqs radix tree
++ * @data: p9_tclaimtags struct for filling up the tclaimtags request
++ */
++
++static int
++prepare_tclaimtags(int id, void *p, void *data)
++{
++	struct p9_req_t *req = p;
++	struct p9_tclaimtags *ct = data;
++
++	if (!IS_ERR(req))
++		return 0;
++
++	if (PTR_ERR(req) != -ENOENT)
++		return 0;
++
++	/* A non-zero return value will break the iteration */
++	if (ct->ntags == P9_UNCLAIMED_TAGS_THRESHOLD)
++		return -1;
++
++	ct->tags[ct->ntags] = id;
++	ct->ntags++;
++	return 0;
++}
++
++/*
++ * p9_client_claim_tags - send tclaimtags request to the server
++ * @data: p9_client struct
++ */
++
++int
++p9_client_claim_tags(void *data)
++{
++	unsigned long flags;
++	struct p9_client *clnt = (struct p9_client *) data;
++	u16 tags[P9_UNCLAIMED_TAGS_THRESHOLD];
++	u16 i;
++	struct p9_tclaimtags ct = {0, &tags[0]};
++	struct p9_req_t *req;
++
++	spin_lock_irqsave(&clnt->lock, flags);
++	idr_for_each(&clnt->reqs, prepare_tclaimtags, &ct);
++	spin_unlock_irqrestore(&clnt->lock, flags);
++
++	p9_debug(P9_DEBUG_9P, ">>> TCLAIMTAGS: claiming %u tags", ct.ntags);
++
++	req = p9_client_rpc(clnt, P9_TCLAIMTAGS, "W", ct.ntags, &tags[0]);
++	if (IS_ERR(req)) {
++		pr_err("CLAIMTAGS: failed with error %ld", PTR_ERR(req));
++		return PTR_ERR(req);
++	}
++
++	/* The response header is already read. Since RCLAIMTAGS does not send
++	 * any payload, we don't have to read the anything */
++
++	spin_lock_irqsave(&clnt->lock, flags);
++	for (i = 0; i < ct.ntags; i++)
++		idr_remove(&clnt->reqs, tags[i]);
++
++	clnt->claim_tags_in_progress = false;
++	clnt->n_unclaimed_tags -= ct.ntags;
++	spin_unlock_irqrestore(&clnt->lock, flags);
++
++	p9_debug(P9_DEBUG_9P, "<<< RCLAIMTAGS: claimed %u tags", ct.ntags);
++	return 0;
++}
+diff --git a/net/9p/recovery.h b/net/9p/recovery.h
+index 30fc7a4..ab06862 100644
+--- a/net/9p/recovery.h
++++ b/net/9p/recovery.h
+@@ -28,6 +28,9 @@
+ #define P9_GLOBALID_STRLEN 70
+ #define P9_FILENAME_LEN 256
+ 
++/* Number of unclaimed tags treshold to trigger TCLAIMTAGS */
++#define P9_UNCLAIMED_TAGS_THRESHOLD 128
++
+ int p9_update_tattach_desc(struct p9_client *client,
+                            struct p9_fid *fid,
+                            uint32_t afid,
+@@ -57,4 +60,7 @@ int p9_update_tlock_desc(struct p9_fid *fid,
+ int p9_recovery_test_init(struct p9_client *client);
+ void p9_recovery_test_cleanup(struct p9_client *client);
+ void p9_recovery_breakpoint(struct p9_client *client, char *breakpoint);
++
++bool p9_req_needs_claimtags(struct p9_client *clnt, struct p9_req_t *r);
++int p9_client_claim_tags(void *data);
+ #endif // NET_9P_RECOVERY_H
+diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+index 079bfee..1255eb9 100644
+--- a/net/9p/trans_fd.c
++++ b/net/9p/trans_fd.c
+@@ -283,6 +283,11 @@ static int p9_fd_read(struct p9_client *client, void *v, int len)
+ 	return ret;
+ }
+ 
++/*
++ * p9_recovery_fn - recovery thread function
++ * @data: p9_client object for which recovery should be run
++ */
++
+ static int
+ p9_recovery_fn(void *data)
+ {
+-- 
+2.7.4
+

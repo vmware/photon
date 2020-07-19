@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.132
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -110,6 +110,13 @@ Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 # Patch to perform continuous testing on RNG from Noise Source
 Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
+
+# VDFS 9p recovery changes
+Patch200:	0001-vdfs-9p-Initial-recovery-logic-in-9p.patch
+Patch201:	0002-vdfs-9p-Add-lock-state-for-9P-fid-to-use-it-for-recovery.patch
+Patch202:  	0003-vdfs-9p-Add-test-infra-to-test-9p-recovery-logic.patch
+Patch203:	0004-vdfs-9p-Handle-failure-during-recovery.patch
+Patch204:	0005-vdfs-9p-Adding-claim-tags-support-in-9p.patch
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -221,6 +228,12 @@ This Linux package contains hmac sha generator kernel module.
 %patch98 -p1
 %patch100 -p1
 %patch101 -p1
+%patch200 -p1
+%patch201 -p1
+%patch202 -p1
+%patch203 -p1
+%patch204 -p1
+
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -351,6 +364,12 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Sun Aug 09 2020 Mounesh Badiger <badigerm@vmware.con> 4.19.132-5
+-   VDFS 9p Initial recovery logic in 9p.
+-   VDFS 9p Add lock state for 9P fid to use it for recovery
+-   VDFS 9p Add test infra to test 9p recovery logic
+-   VDFS 9p Handle failure during recover
+-   VDFS 9p Adding claim tags support in 9p
 *   Mon Aug 03 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.132-4
 -   Inherit TSQ limit from root namespace
 *   Tue Jul 28 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-3

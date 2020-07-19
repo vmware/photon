@@ -1,0 +1,1344 @@
+From 7d885ef69b4b5c6202a3ca5ba456b119f765d322 Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com>
+Date: Sat, 8 Aug 2020 00:52:40 -0700
+Subject: [PATCH 1/5] Kernels: VDFS-9p Initial recovery logic in 9p.
+
+           Recovery state is maintained for each 9p request that
+           creates new fid and this list is maintained for each client.
+           Currently the change handles recovery state of
+            - walk, create, attach, xattrwalk.
+
+           Recovery logic, implemented in recovery.c:
+           recovery thread is created when trasport layer receives 0 bytes i.e
+           connection is broken. Recovery thread closes transport layer this
+           will close all inflight requests makes inflight IOs to be retried(TODO).
+           Recovery thread re-establishes connection with retries upto 2Mins and replay shadow state.
+
+           Inflight requests check recovery state before sending 9p requests
+           to transport layer and waits for recovery to complete, recovery
+           thread wakes up IO threads waiting for requests.
+           Another case, inflight request can reach to trans_fd layer but due
+           to broken connection IOs will return with error, after wait returns
+           failure, io thread checks for recovery state and wait for recovery
+           to complete and re-issue the IOs.
+
+           globalID:
+           Introduce globalId in 9p for handling recovery
+           VDFS support globalID for each file/directory object
+           opened, is needed for supporting recovery, incase of
+           one client opens fid and other fids renames file.
+           old name is not any more valid for client which has
+           opened file so recovery is not possible.
+           The change introduces two new 9p cmds TWALKX, TLCREATX
+           where RWALKX and RLCREATEX receives globalID and is
+           stored in recovery descriptor.
+           During recovery fid is recovered with opening
+           /globalid/<global_id value>.
+
+           New protocol:
+           Add new protocol version for 9p side recovery
+           New versio is  9p2000.XR which includes
+           - 9p2000.L which is default 9p protocol
+           - 9p2000.X zerocopy support on top of 9p2000.L
+---
+ include/net/9p/9p.h     |   4 +
+ include/net/9p/client.h |  37 +++-
+ net/9p/Makefile         |   1 +
+ net/9p/client.c         | 225 ++++++++++++++++++--
+ net/9p/protocol.c       |  17 +-
+ net/9p/recovery.c       | 533 ++++++++++++++++++++++++++++++++++++++++++++++++
+ net/9p/recovery.h       |  51 +++++
+ net/9p/trans_fd.c       |  46 ++++-
+ 8 files changed, 889 insertions(+), 25 deletions(-)
+ create mode 100644 net/9p/recovery.c
+ create mode 100644 net/9p/recovery.h
+
+diff --git a/include/net/9p/9p.h b/include/net/9p/9p.h
+index 4851f77..78d9001 100644
+--- a/include/net/9p/9p.h
++++ b/include/net/9p/9p.h
+@@ -172,6 +172,10 @@ enum p9_msg_t {
+ 	P9_RRENAMEAT,
+ 	P9_TUNLINKAT = 76,
+ 	P9_RUNLINKAT,
++        P9_TWALKX = 86,
++        P9_RWALKX,
++        P9_TLCREATEX = 88,
++        P9_RLCREATEX,
+ 	P9_TREADX = 96,
+ 	P9_RREADX,
+ 	P9_TWRITEX = 98,
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index 4465f32..75c3fed 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -37,6 +37,7 @@
+  * @p9_proto_2000u: 9P2000.u extension
+  * @p9_proto_2000L: 9P2000.L extension
+  * @p9_proto_2000X: 9P2000.X extension      // dotx zero copy
++ * @p9_proto_2000XR: 9P2000.XR extension    // zerocopy + recovery enabled
+  */
+ 
+ enum p9_proto_versions{
+@@ -44,6 +45,7 @@ enum p9_proto_versions{
+ 	p9_proto_2000u,
+ 	p9_proto_2000L,
+ 	p9_proto_2000X,
++        p9_proto_2000XR,
+ };
+ 
+ 
+@@ -104,6 +106,14 @@ struct p9_req_t {
+ 	struct list_head req_list;
+ };
+ 
++enum recovery_state {
++   RECOVERY_IDLE = 0,
++   RECOVERY_PENDING,
++   RECOVERY_FAILED,
++   RECOVERY_COMPLETE
++};
++
++
+ /**
+  * struct p9_client - per client instance state
+  * @lock: protect @fids and @reqs
+@@ -116,6 +126,15 @@ struct p9_req_t {
+  * @trans: tranport instance state and API
+  * @fids: All active FID handles
+  * @reqs: All active requests.
++ * @recovery_enabled: Recovery and shadow state is enabled with the flag. It is
++ * only valid for 9P2000.XR protocol.
++ * @dev_name: Device name to connect to server
++ * @options: Mount options for transport layer
++ * @recovery_queue: Wait queue for threads to wait while recovery is in progress
++ * @recovery_lock: Protects recovery state update, wait wakeup on recovery_queue
++ * @recovery_thread: Thread performing recovery.
++ * @rstate: State of the recovery.
++ * @recovery_list: List for maintaining shadow state for 9p operations.
+  * @name: node name used as client id
+  *
+  * The client structure is used to keep track of various per-client
+@@ -147,12 +166,23 @@ struct p9_client {
+ 	struct idr fids;
+ 	struct idr reqs;
+ 
++        // recovery
++        bool recovery_enabled;
++        char *dev_name;
++        char *options;
++        wait_queue_head_t recovery_queue;
++        spinlock_t recovery_lock;
++        struct task_struct *recovery_thread;
++        int rstate;
++        struct list_head recovery_list;
++
+ 	char name[__NEW_UTS_LEN + 1];
+ };
+ 
+ /**
+  * struct p9_fid - file system entity handle
+  * @clnt: back pointer to instantiating &p9_client
++ * @recovery_desc: pointer to recovery descriptor
+  * @fid: numeric identifier for this handle
+  * @mode: current mode of this fid (enum?)
+  * @qid: the &p9_qid server identifier this handle points to
+@@ -166,6 +196,7 @@ struct p9_client {
+ 
+ struct p9_fid {
+ 	struct p9_client *clnt;
++        void *recovery_desc;
+ 	u32 fid;
+ 	int mode;
+ 	struct p9_qid qid;
+@@ -265,8 +296,10 @@ int p9_is_fid_proto_dotx(struct p9_fid *fid);
+ struct p9_fid *p9_client_xattrwalk(struct p9_fid *, const char *, u64 *);
+ int p9_client_xattrcreate(struct p9_fid *, const char *, u64, int);
+ int p9_client_readlink(struct p9_fid *fid, char **target);
+-
++int p9_client_run_recovery(struct p9_client *clnt);
+ int p9_client_init(void);
+ void p9_client_exit(void);
+-
++struct p9_req_t *
++p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...);
++int p9_tag_remove(struct p9_client *c, struct p9_req_t *r);
+ #endif /* NET_9P_CLIENT_H */
+diff --git a/net/9p/Makefile b/net/9p/Makefile
+index c0486cf..50af6e1 100644
+--- a/net/9p/Makefile
++++ b/net/9p/Makefile
+@@ -12,6 +12,7 @@ obj-$(CONFIG_NET_9P_RDMA) += 9pnet_rdma.o
+ 	protocol.o \
+ 	trans_fd.o \
+ 	trans_common.o \
++        recovery.o \
+ 
+ 9pnet_virtio-objs := \
+ 	trans_virtio.o \
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 22c5517..5a28e4d 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -41,7 +41,9 @@
+ #include <linux/seq_file.h>
+ #include <net/9p/client.h>
+ #include <net/9p/transport.h>
++#include <linux/delay.h>
+ #include "protocol.h"
++#include "recovery.h"
+ 
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/9p.h>
+@@ -72,10 +74,12 @@ static const match_table_t tokens = {
+ 	{Opt_err, NULL},
+ };
+ 
++
+ inline int p9_is_proto_dotl(struct p9_client *clnt)
+ {
+ 	return clnt->proto_version == p9_proto_2000L ||
+-	       clnt->proto_version == p9_proto_2000X;
++	       clnt->proto_version == p9_proto_2000X ||
++               clnt->proto_version == p9_proto_2000XR;
+ }
+ EXPORT_SYMBOL(p9_is_proto_dotl);
+ 
+@@ -111,7 +115,8 @@ EXPORT_SYMBOL(p9_show_client_options);
+ 
+ inline int p9_is_proto_dotx(struct p9_client *clnt)
+ {
+-	return clnt->proto_version == p9_proto_2000X;
++	return clnt->proto_version == p9_proto_2000X ||
++               clnt->proto_version == p9_proto_2000XR;
+ }
+ EXPORT_SYMBOL(p9_is_proto_dotx);
+ 
+@@ -152,7 +157,10 @@ static int get_protocol_version(char *s)
+ 	} else if (!strcmp(s, "9p2000.X")) {
+ 		version = p9_proto_2000X;
+ 		p9_debug(P9_DEBUG_9P, "Protocol version: 9P2000.X\n");
+-	} else
++	} else if (!strcmp(s, "9p2000.XR")) {
++                version = p9_proto_2000XR;
++                p9_debug(P9_DEBUG_9P, "Protocol version: 9P2000.XR\n");
++        } else
+ 		pr_info("Unknown protocol version %s\n", s);
+ 
+ 	return version;
+@@ -419,7 +427,7 @@ EXPORT_SYMBOL(p9_tag_lookup);
+  *
+  * Context: Any context.
+  */
+-static int p9_tag_remove(struct p9_client *c, struct p9_req_t *r)
++int p9_tag_remove(struct p9_client *c, struct p9_req_t *r)
+ {
+ 	unsigned long flags;
+ 	u16 tag = r->tc.tag;
+@@ -692,8 +700,6 @@ static int p9_check_zc_errors(struct p9_client *c, struct p9_req_t *req,
+ 	return err;
+ }
+ 
+-static struct p9_req_t *
+-p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...);
+ 
+ /**
+  * p9_client_flush - flush (cancel) a request
+@@ -736,6 +742,40 @@ static int p9_client_flush(struct p9_client *c, struct p9_req_t *oldreq)
+ 	return 0;
+ }
+ 
++
++/**
++ * p9_client_wait_for_recovery -- Checks for recovery status and waits for recovery to complete.
++ * @c: v9fs client
++ *
++ * return recovery status after wait is completed..
++ */
++
++static int
++p9_client_wait_for_recovery(struct p9_client *c)
++{
++      unsigned long flags;
++      int recovery_state;
++
++      spin_lock_irqsave(&c->recovery_lock, flags);
++      recovery_state = c->rstate;
++      if (recovery_state == RECOVERY_PENDING && c->recovery_thread != current) {
++         int err;
++         // wait for recovery to complete
++         p9_debug(P9_DEBUG_MUX, "Wait for recovery state, %d \n", c->rstate);
++again:
++         err = wait_event_interruptible_lock_irq(c->recovery_queue,
++                                                 c->rstate != RECOVERY_PENDING,
++                                                 c->recovery_lock);
++         if (err == -ERESTARTSYS) {
++               goto again;
++         }
++         recovery_state = c->rstate;
++      }
++      spin_unlock_irqrestore(&c->recovery_lock, flags);
++
++      return recovery_state;
++}
++
+ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
+ 					      int8_t type, int req_size,
+ 					      const char *fmt, va_list ap)
+@@ -745,6 +785,13 @@ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
+ 
+ 	p9_debug(P9_DEBUG_MUX, "client %p op %d\n", c, type);
+ 
++        if (unlikely(c->recovery_enabled)) {
++               int recovery_state = p9_client_wait_for_recovery(c);
++               if (recovery_state == RECOVERY_FAILED) {
++                     return ERR_PTR(-EIO);
++               }
++        }
++
+ 	/* we allow for any status other than disconnected */
+ 	if (c->status == Disconnected)
+ 		return ERR_PTR(-EIO);
+@@ -781,7 +828,7 @@ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
+  * Returns request structure (which client must free using p9_tag_remove)
+  */
+ 
+-static struct p9_req_t *
++struct p9_req_t *
+ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
+ {
+ 	va_list ap;
+@@ -801,6 +848,7 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
+ 	} else
+ 		sigpending = 0;
+ 
++retry:
+ 	err = c->trans_mod->request(c, req);
+ 	if (err < 0) {
+ 		/* write won't happen */
+@@ -827,6 +875,16 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
+ 	}
+ 
+ 	if (req->status == REQ_STATUS_ERROR) {
++
++		if (c->recovery_enabled) {
++	                int state;
++		        state = p9_client_wait_for_recovery(c);
++			if (state == RECOVERY_COMPLETE) {
++	                     p9_debug(P9_DEBUG_MUX, "Retrying request after recovery\n");
++		             goto retry;
++			}
++		}
++
+ 		p9_debug(P9_DEBUG_ERROR, "req_status error %d\n", req->t_err);
+ 		err = req->t_err;
+ 	}
+@@ -998,6 +1056,10 @@ static int p9_client_version(struct p9_client *c)
+ 		 c->msize, c->proto_version);
+ 
+ 	switch (c->proto_version) {
++        case p9_proto_2000XR:
++                req = p9_client_rpc(c, P9_TVERSION, "ds",
++                                    c->msize, "9P2000.XR");
++                break;
+ 	case p9_proto_2000X:
+ 		req = p9_client_rpc(c, P9_TVERSION, "ds",
+ 					c->msize, "9P2000.X");
+@@ -1029,7 +1091,10 @@ static int p9_client_version(struct p9_client *c)
+ 	}
+ 
+ 	p9_debug(P9_DEBUG_9P, "<<< RVERSION msize %d %s\n", msize, version);
+-	if (!strncmp(version, "9P2000.X", 8))
++        if (!strncmp(version, "9P2000.XR", 9)) {
++                c->proto_version = p9_proto_2000XR;
++                c->recovery_enabled = true;
++        } else if (!strncmp(version, "9P2000.X", 8))
+ 		c->proto_version = p9_proto_2000X;
+ 	else if (!strncmp(version, "9P2000.L", 8))
+ 		c->proto_version = p9_proto_2000L;
+@@ -1076,13 +1141,18 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 	clnt->fcall_cache = NULL;
+         clnt->is_dotx_ok = 0;
+         clnt->minzcpages = 1;
++	clnt->recovery_enabled = false;
+ 
+ 	client_id = utsname()->nodename;
+ 	memcpy(clnt->name, client_id, strlen(client_id) + 1);
+ 
++        spin_lock_init(&clnt->recovery_lock);
++        init_waitqueue_head(&clnt->recovery_queue);
++        INIT_LIST_HEAD(&clnt->recovery_list);
+ 	spin_lock_init(&clnt->lock);
+ 	idr_init(&clnt->fids);
+ 	idr_init(&clnt->reqs);
++        clnt->rstate = RECOVERY_IDLE;
+ 
+ 	err = parse_opts(options, clnt);
+ 	if (err < 0)
+@@ -1115,10 +1185,17 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 		goto close_trans;
+ 	}
+ 
++        clnt->options = kstrdup(options, GFP_KERNEL);
++        clnt->dev_name = kstrdup(dev_name, GFP_KERNEL);
++        if (clnt->options == NULL || clnt->dev_name == NULL) {
++               err = -ENOMEM;
++               goto close_trans;
++         }
++
+ 	err = p9_client_version(clnt);
+ 	if (err)
+ 		goto close_trans;
+-
++ 
+ 	/* P9_HDRSZ + 4 is the smallest packet header we can have that is
+ 	 * followed by data accessed from userspace by read
+ 	 */
+@@ -1131,6 +1208,8 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 	return clnt;
+ 
+ close_trans:
++        kfree(clnt->options);
++        kfree(clnt->dev_name);
+ 	clnt->trans_mod->close(clnt);
+ put_trans:
+ 	v9fs_put_trans(clnt->trans_mod);
+@@ -1159,11 +1238,66 @@ void p9_client_destroy(struct p9_client *clnt)
+ 
+ 	p9_tag_cleanup(clnt);
+ 
++        kfree(clnt->options);
++        kfree(clnt->dev_name);
++
++        p9_cleanup_recovery_state(clnt);
++ 
+ 	kmem_cache_destroy(clnt->fcall_cache);
+ 	kfree(clnt);
+ }
+ EXPORT_SYMBOL(p9_client_destroy);
+ 
++
++#define NUM_RECONNECT_RETRIES 120
++#define RECONNECT_SLEEP_IN_MS 1000
++
++/**
++ * p9_client_run_recovery:
++ * clnt: recovery process is called for a client.
++ *
++ * Function called in recovery thread context.
++ * Closes the transport module. Tries re-connecting
++ * to server for 2 Mins duration.
++ */
++
++int p9_client_run_recovery(struct p9_client *clnt)
++{
++	int err;
++	int num_retries = 0;
++
++	if (clnt->trans_mod)
++		clnt->trans_mod->close(clnt);
++	clnt->trans = NULL;
++
++	while (num_retries < NUM_RECONNECT_RETRIES) {
++		err = clnt->trans_mod->create(clnt, clnt->dev_name, clnt->options);
++
++		if (err == 0)
++			pr_info("%s: reconnect successful\n", clnt->dev_name);
++			break;
++
++		num_retries++;
++		msleep(RECONNECT_SLEEP_IN_MS);
++	}
++
++	if (err != 0) {
++		pr_err("%s: reconnecting to server failed, bailing out recovery",
++		       clnt->dev_name);
++		return err;
++	}
++
++	err = p9_client_version(clnt);
++	if (err) {
++		printk(KERN_INFO "client version failed\n");
++		return err;
++	}
++
++	// recovery
++	return p9_replay_shadow(clnt);
++}
++
++
+ void p9_client_disconnect(struct p9_client *clnt)
+ {
+ 	p9_debug(P9_DEBUG_9P, "clnt %p\n", clnt);
+@@ -1216,7 +1350,15 @@ struct p9_fid *p9_client_attach(struct p9_client *clnt, struct p9_fid *afid,
+ 	memmove(&fid->qid, &qid, sizeof(struct p9_qid));
+ 
+ 	p9_tag_remove(clnt, req);
+-	return fid;
++
++        if (clnt->recovery_enabled) {
++              err = p9_update_tattach_desc(clnt, fid, afid ? afid->fid : P9_NOFID,
++                                           uname, n_uname, aname);
++              if (err) {
++                     pr_err("Adding attach descriptor to recovery state failed\n");
++               }
++         }
++         return fid;
+ 
+ error:
+ 	if (fid)
+@@ -1234,6 +1376,7 @@ struct p9_fid *p9_client_walk(struct p9_fid *oldfid, uint16_t nwname,
+ 	struct p9_qid *wqids;
+ 	struct p9_req_t *req;
+ 	uint16_t nwqids, count;
++        char globalId[P9_GLOBALID_SIZE];
+ 
+ 	err = 0;
+ 	wqids = NULL;
+@@ -1249,18 +1392,23 @@ struct p9_fid *p9_client_walk(struct p9_fid *oldfid, uint16_t nwname,
+ 	} else
+ 		fid = oldfid;
+ 
+-
+ 	p9_debug(P9_DEBUG_9P, ">>> TWALK fids %d,%d nwname %ud wname[0] %s\n",
+ 		 oldfid->fid, fid->fid, nwname, wnames ? wnames[0] : NULL);
+ 
+-	req = p9_client_rpc(clnt, P9_TWALK, "ddT", oldfid->fid, fid->fid,
+-								nwname, wnames);
++	req = p9_client_rpc(clnt, clnt->recovery_enabled ? P9_TWALKX : P9_TWALK,
++                            "ddT", oldfid->fid, fid->fid,
++                            nwname, wnames);
+ 	if (IS_ERR(req)) {
+ 		err = PTR_ERR(req);
+ 		goto error;
+ 	}
+ 
+-	err = p9pdu_readf(&req->rc, clnt->proto_version, "R", &nwqids, &wqids);
++        if (clnt->recovery_enabled) {
++	        err = p9pdu_readf(&req->rc, clnt->proto_version, "RG", &nwqids, &wqids, globalId);
++        } else {
++                err = p9pdu_readf(&req->rc, clnt->proto_version, "R", &nwqids, &wqids);
++        }
++ 
+ 	if (err) {
+ 		trace_9p_protocol_dump(clnt, &req->rc);
+ 		p9_tag_remove(clnt, req);
+@@ -1287,6 +1435,14 @@ struct p9_fid *p9_client_walk(struct p9_fid *oldfid, uint16_t nwname,
+ 		fid->qid = oldfid->qid;
+ 
+ 	kfree(wqids);
++        if (clnt->recovery_enabled) {
++                err = p9_update_twalk_desc(clnt, fid, oldfid, nwname, wnames, globalId);
++                if (err) {
++                      pr_err("Adding twalk to recovery state (%d, %d, nwname %ud wname %s) failed",
++                             fid->fid, oldfid->fid, nwname, wnames ? wnames[0] : NULL);
++               }
++        }
++
+ 	return fid;
+ 
+ clunk_fid:
+@@ -1354,6 +1510,7 @@ int p9_client_create_dotl(struct p9_fid *ofid, const char *name, u32 flags, u32
+ 	struct p9_client *clnt;
+ 	struct p9_req_t *req;
+ 	int iounit;
++	char globalId[P9_GLOBALID_SIZE];
+ 
+ 	p9_debug(P9_DEBUG_9P,
+ 			">>> TLCREATE fid %d name %s flags %d mode %d gid %d\n",
+@@ -1364,14 +1521,22 @@ int p9_client_create_dotl(struct p9_fid *ofid, const char *name, u32 flags, u32
+ 	if (ofid->mode != -1)
+ 		return -EINVAL;
+ 
+-	req = p9_client_rpc(clnt, P9_TLCREATE, "dsddg", ofid->fid, name, flags,
+-			mode, gid);
++	req = p9_client_rpc(clnt, clnt->recovery_enabled ? P9_TLCREATEX : P9_TLCREATE,
++                           "dsddg", ofid->fid, name, flags,
++		           mode, gid);
+ 	if (IS_ERR(req)) {
+ 		err = PTR_ERR(req);
+ 		goto error;
+ 	}
+ 
+-	err = p9pdu_readf(&req->rc, clnt->proto_version, "Qd", qid, &iounit);
++        if (clnt->recovery_enabled) {
++		err = p9pdu_readf(&req->rc, clnt->proto_version,
++                                 "QdG", qid, &iounit, globalId);
++        } else {
++               err = p9pdu_readf(&req->rc, clnt->proto_version, "Qd",
++                                 qid, &iounit);
++        }
++
+ 	if (err) {
+ 		trace_9p_protocol_dump(clnt, &req->rc);
+ 		goto free_and_error;
+@@ -1384,6 +1549,13 @@ int p9_client_create_dotl(struct p9_fid *ofid, const char *name, u32 flags, u32
+ 
+ 	ofid->mode = mode;
+ 	ofid->iounit = iounit;
++        if (clnt->recovery_enabled) {
++              err = p9_update_tlcreatex_desc(clnt, ofid, name, globalId);
++              if (err) {
++                      pr_err("Adding tlcreatex to recovery state (%d %s) failed\n",
++                             ofid->fid, name);
++              }
++        }
+ 
+ free_and_error:
+ 	p9_tag_remove(clnt, req);
+@@ -1545,6 +1717,7 @@ int p9_client_clunk(struct p9_fid *fid)
+ 	p9_debug(P9_DEBUG_9P, "<<< RCLUNK fid %d\n", fid->fid);
+ 
+ 	p9_tag_remove(clnt, req);
++
+ error:
+ 	/*
+ 	 * Fid is not valid even after a failed clunk
+@@ -1554,8 +1727,12 @@ int p9_client_clunk(struct p9_fid *fid)
+ 	if (err == -ERESTARTSYS) {
+ 		if (retries++ == 0)
+ 			goto again;
+-	} else
++	} else {
++                if (clnt->recovery_enabled)
++                        p9_update_tclunk_desc(clnt, fid);
+ 		p9_fid_destroy(fid);
++        }
++
+ 	return err;
+ }
+ EXPORT_SYMBOL(p9_client_clunk);
+@@ -2112,7 +2289,8 @@ static int p9_client_statsize(struct p9_wstat *wst, int proto_version)
+ 
+ 	if ((proto_version == p9_proto_2000u) ||
+ 		(proto_version == p9_proto_2000L) ||
+-		(proto_version == p9_proto_2000X)) {
++		(proto_version == p9_proto_2000X) ||
++                (proto_version == p9_proto_2000XR)) {
+ 		ret += 2+4+4+4;	/* extension[s] n_uid[4] n_gid[4] n_muid[4] */
+ 		if (wst->extension)
+ 			ret += strlen(wst->extension);
+@@ -2324,6 +2502,15 @@ struct p9_fid *p9_client_xattrwalk(struct p9_fid *file_fid,
+ 	p9_tag_remove(clnt, req);
+ 	p9_debug(P9_DEBUG_9P, "<<<  RXATTRWALK fid %d size %llu\n",
+ 		attr_fid->fid, *attr_size);
++
++        if (clnt->recovery_enabled) {
++              err = p9_update_txattrwalk_desc(clnt, file_fid, attr_fid, attr_name);
++              if (err) {
++                      pr_err("Adding txattrwalk to recovery state (%d %d %s) failed\n",
++                              file_fid->fid, attr_fid->fid, attr_name);
++              }
++        }
++
+ 	return attr_fid;
+ clunk_fid:
+ 	p9_client_clunk(attr_fid);
+diff --git a/net/9p/protocol.c b/net/9p/protocol.c
+index 1d5bd21..5c068f9 100644
+--- a/net/9p/protocol.c
++++ b/net/9p/protocol.c
+@@ -37,6 +37,7 @@
+ #include <net/9p/9p.h>
+ #include <net/9p/client.h>
+ #include "protocol.h"
++#include "recovery.h"
+ 
+ #include <trace/events/9p.h>
+ 
+@@ -345,10 +346,21 @@ p9pdu_vreadf(struct p9_fcall *pdu, int proto_version, const char *fmt,
+ 					&stbuf->st_data_version);
+ 			}
+ 			break;
++                case 'G':
++                        {
++                              // read VDFS globalId
++                              char *global_id = va_arg(ap, char *);
++
++                              if (pdu_read(pdu, global_id, P9_GLOBALID_SIZE)) {
++                                    errcode = -EFAULT;
++                              }
++                        }
++                        break;
+ 		case '?':
+ 			if ((proto_version != p9_proto_2000u) &&
+ 				(proto_version != p9_proto_2000L) &&
+-				(proto_version != p9_proto_2000X))
++				(proto_version != p9_proto_2000X) &&
++                                (proto_version != p9_proto_2000XR))
+ 				return 0;
+ 			break;
+ 		default:
+@@ -533,7 +545,8 @@ p9pdu_vwritef(struct p9_fcall *pdu, int proto_version, const char *fmt,
+ 		case '?':
+ 			if ((proto_version != p9_proto_2000u) &&
+ 				(proto_version != p9_proto_2000L) &&
+-				(proto_version != p9_proto_2000X))
++				(proto_version != p9_proto_2000X) &&
++                                (proto_version != p9_proto_2000XR))
+ 				return 0;
+ 			break;
+ 		default:
+diff --git a/net/9p/recovery.c b/net/9p/recovery.c
+new file mode 100644
+index 00000000..7b2220e
+--- /dev/null
++++ b/net/9p/recovery.c
+@@ -0,0 +1,533 @@
++/*
++ *  net/9p/recovery.c --
++ *
++ *  Copyright (C) 2020 by Mounesh Badiger <mounesh.b@gmail.com>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program; if not, write to:
++ *  Free Software Foundation
++ *  51 Franklin Street, Fifth Floor
++ *  Boston, MA  02111-1301  USA
++ *
++ */
++
++#include <linux/mm.h>
++#include <linux/module.h>
++#include <linux/errno.h>
++#include <linux/fs.h>
++#include <linux/slab.h>
++#include <net/9p/9p.h>
++#include <net/9p/client.h>
++#include "protocol.h"
++#include "recovery.h"
++
++#define GLOBALID_PATH_COMPONENTS 2 // /globalid/$globalid
++#define UUID_BYTES         16
++
++#define VSAN_UUID_FMT \
++	"%02hhx%02hhx%02hhx%02hhx-%02hhx%02hhx-%02hhx%02hhx-" \
++	"%02hhx%02hhx-%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx"
++
++/**
++ * String format argument for uuid byte array.
++ */
++#define BYTE_UUID_ARGS(x)		    \
++	(x)[0],  (x)[1],  (x)[2],  (x)[3],  \
++	(x)[4],  (x)[5],  (x)[6],  (x)[7],  \
++	(x)[8],  (x)[9],  (x)[10], (x)[11], \
++	(x)[12], (x)[13], (x)[14], (x)[15]
++
++struct p9_globalid {
++	uint8_t      uuid[UUID_BYTES];
++	uint64_t     snapid;
++	uint64_t     objid;
++};
++
++struct p9_tattach {
++	uint32_t       fid;
++	uint32_t       afid;
++	char           uname[P9_FILENAME_LEN];
++	char           aname[P9_FILENAME_LEN];
++	uint32_t       n_uname;
++};
++
++struct p9_twalk {
++	uint32_t       fid;
++	uint32_t       nfid;
++	struct p9_globalid globalid;
++};
++
++struct p9_txattrwalk {
++	uint32_t       fid;
++	uint32_t       nfid;
++	char name[P9_FILENAME_LEN];
++};
++
++
++typedef struct p9_recovery_desc {
++	struct list_head recovery_link;
++	struct p9_fid *fid;  // back pointer to p9_fid
++	uint32_t attach_fid;
++
++	bool is_attach;
++	bool is_walk;
++	bool is_xattrwalk;
++
++	struct p9_tattach *attach;
++	struct p9_twalk *walk;
++	struct p9_txattrwalk *xattrwalk;
++} p9_recovery_desc;
++
++
++static void
++p9_globalid_deserialize(const char *str_globalid,
++                        struct p9_globalid *globalid)
++{
++	memcpy(globalid->uuid, str_globalid, sizeof(globalid->uuid));
++	str_globalid += sizeof (globalid->uuid);
++
++	globalid->snapid = *(uint64_t *)str_globalid;
++	str_globalid += sizeof(uint64_t);
++
++	globalid->objid = *(uint64_t *)str_globalid;
++}
++
++
++static void
++p9_globalid_to_twalk_string(struct p9_globalid *globalid,
++                            char *str_globalid,
++                            int str_size)
++{
++	snprintf(str_globalid, str_size, VSAN_UUID_FMT"~%016llx~%016llx",
++		 BYTE_UUID_ARGS(globalid->uuid), globalid->snapid,
++		 globalid->objid);
++}
++
++
++static inline void
++p9_recovery_insert_list(struct p9_client *client,
++                        p9_recovery_desc *desc)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&client->recovery_lock, flags);
++	list_add_tail(&desc->recovery_link, &client->recovery_list);
++	spin_unlock_irqrestore(&client->recovery_lock, flags);
++}
++
++
++static inline void
++p9_recovery_remove_list(struct p9_client *client,
++                        p9_recovery_desc *desc)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&client->recovery_lock, flags);
++	list_del(&desc->recovery_link);
++	spin_unlock_irqrestore(&client->recovery_lock, flags);
++}
++
++
++static inline void
++p9_recovery_free_desc(p9_recovery_desc *desc)
++{
++	kfree(desc->attach);
++	kfree(desc->walk);
++	kfree(desc->xattrwalk);
++
++	kfree(desc);
++}
++
++
++int p9_update_tattach_desc(struct p9_client *client,
++                           struct p9_fid *fid,
++                           uint32_t afid,
++                           const char *uname,
++                           kuid_t n_uname,
++                           const char *aname)
++{
++	p9_recovery_desc *rfid;
++	struct p9_tattach *attach;
++
++	p9_debug(P9_DEBUG_9P, ">>> TATTACH fid %u afid %u uname %s aname %s\n",
++		 fid->fid, afid, uname, aname);
++
++	rfid = kzalloc(sizeof(p9_recovery_desc), GFP_NOFS);
++	if (!rfid) {
++		return -ENOMEM;
++	}
++
++	INIT_LIST_HEAD(&rfid->recovery_link);
++	rfid->fid = fid;
++	rfid->is_attach = true;
++
++	attach = kzalloc(sizeof(struct p9_tattach), GFP_NOFS);
++	if (!attach) {
++		kfree(rfid);
++		return -ENOMEM;
++	}
++	rfid->attach = attach;
++
++	attach->fid = fid->fid;
++	attach->afid = afid;
++	rfid->attach_fid = fid->fid;
++
++	if (uname) {
++		strncpy(attach->uname, uname, sizeof(attach->uname));
++	}
++
++	strncpy(attach->aname, aname, sizeof(attach->aname));
++
++	attach->n_uname = __kuid_val(n_uname);
++	fid->recovery_desc = rfid;
++
++	p9_recovery_insert_list(client, rfid);
++
++	return 0;
++}
++
++static int
++p9_replace_twalk_desc(struct p9_client *client,
++                      struct p9_fid *fid,
++                      struct p9_fid *ofid,
++                      const char *globalid)
++{
++	p9_recovery_desc *desc = (p9_recovery_desc *)ofid->recovery_desc;
++
++	BUG_ON(!desc->is_walk);
++	BUG_ON(fid->fid != ofid->fid);
++
++	p9_recovery_remove_list(client, desc);
++
++	p9_globalid_deserialize(globalid, &desc->walk->globalid);
++	fid->recovery_desc = desc;
++	ofid->recovery_desc = NULL;
++
++	p9_recovery_insert_list(client, desc);
++
++	return 0;
++}
++
++
++int p9_update_twalk_desc(struct p9_client *client,
++                         struct p9_fid *fid,
++                         struct p9_fid *ofid,
++                         uint16_t nwname,
++                         const unsigned char * const *wnames,
++                         const char *globalid)
++{
++	p9_recovery_desc *rfid;
++	struct p9_twalk *twalk;
++
++	if (fid->fid == ofid->fid) {
++		pr_info("old and new fid = %u are same\n", fid->fid);
++		dump_stack(); // TODO understand caller usecase
++		BUG_ON(ofid->recovery_desc == NULL);
++		return p9_replace_twalk_desc(client, fid, ofid, globalid);
++	}
++
++	rfid = kzalloc(sizeof(p9_recovery_desc), GFP_NOFS);
++	if (rfid == NULL) {
++		return -ENOMEM;
++	}
++
++	twalk = kzalloc(sizeof(struct p9_twalk), GFP_NOFS);
++	if (twalk == NULL) {
++		kfree(rfid);
++		return -ENOMEM;
++	}
++
++	INIT_LIST_HEAD(&rfid->recovery_link);
++
++	rfid->fid = fid;
++	rfid->is_walk = true;
++	rfid->walk = twalk;
++	rfid->attach_fid = ((p9_recovery_desc *)(ofid->recovery_desc))->attach_fid;
++
++	twalk->nfid = fid->fid;
++	twalk->fid = ofid->fid;
++
++	p9_globalid_deserialize(globalid, &twalk->globalid);
++
++	fid->recovery_desc = rfid;
++
++	p9_recovery_insert_list(client, rfid);
++
++	return 0;
++}
++
++
++int p9_update_tlcreatex_desc(struct p9_client *client,
++                             struct p9_fid *fid,
++                             const char *name,
++                             const char *globalid)
++{
++	p9_recovery_desc *rfid = fid->recovery_desc;
++	struct p9_twalk *twalk;
++
++	p9_debug(P9_DEBUG_9P, "Recovery: TLCREATE fid %d, name %s\n",
++		 fid->fid, name);
++
++	if (rfid->is_attach) {
++		kfree(rfid->attach);
++		rfid->attach = NULL;
++	}
++
++	rfid->is_attach = false;
++	rfid->is_walk = true;
++
++	twalk = rfid->walk;
++
++	p9_globalid_deserialize(globalid, &twalk->globalid);
++
++	return 0;
++}
++
++
++int p9_update_tclunk_desc(struct p9_client *client,
++                          struct p9_fid *fid)
++{
++	p9_recovery_desc *rfid = (p9_recovery_desc *)fid->recovery_desc;
++
++	BUG_ON(rfid == NULL);
++
++	p9_debug(P9_DEBUG_9P, ">>> TCLUNK fid %d \n", fid->fid);
++
++	fid->recovery_desc = NULL;
++	p9_recovery_remove_list(client, rfid);
++	p9_recovery_free_desc(rfid);
++
++	return 0;
++}
++
++
++int p9_update_txattrwalk_desc(struct p9_client *client,
++                              struct p9_fid *fid,
++                              struct p9_fid *attr_fid,
++                              const char *name)
++{
++	p9_recovery_desc *xrfid;
++	struct p9_txattrwalk *xattrwalk;
++
++	if (fid->fid == attr_fid->fid) {
++		pr_err("fid and attr_fid are same %u\n", attr_fid->fid);
++		return -ENOENT;
++	}
++
++	xrfid = kzalloc(sizeof(p9_recovery_desc), GFP_NOFS);
++	if (xrfid == NULL) {
++		return -ENOMEM;
++	}
++
++	INIT_LIST_HEAD(&xrfid->recovery_link);
++
++	xattrwalk = kzalloc(sizeof(struct p9_txattrwalk), GFP_NOFS);
++	if (xattrwalk == NULL) {
++		kfree(xrfid);
++		return -ENOMEM;
++	}
++
++	xrfid->is_xattrwalk = true;
++	xrfid->fid = attr_fid;
++	attr_fid->recovery_desc = xrfid;
++
++	xattrwalk->fid = fid->fid;
++	xattrwalk->nfid = attr_fid->fid;
++	xrfid->xattrwalk = xattrwalk;
++
++	strncpy(xattrwalk->name, name, sizeof(xattrwalk->name));
++
++	p9_recovery_insert_list(client, xrfid);
++
++	return 0;
++}
++
++
++static int
++p9_recovery_handle_attach(struct p9_client *client,
++                          p9_recovery_desc *desc)
++{
++	struct p9_req_t *req;
++	struct p9_fid *fid;
++	struct p9_qid qid;
++	int err;
++	char *uname;
++	struct p9_tattach *tattach = desc->attach;
++
++	fid = desc->fid;
++	uname = tattach->uname;
++
++	p9_debug(P9_DEBUG_9P, ">>> RECOVERY - TATTACH fid - %d afid %d uname %s aname %s\n",
++		 fid->fid, tattach->afid, uname, tattach->aname);
++
++	req = p9_client_rpc(client, P9_TATTACH, "ddss?u", fid->fid,
++			    tattach->afid, uname,
++			    tattach->aname, tattach->n_uname);
++	if (IS_ERR(req)) {
++		return -1;
++	}
++
++	err = p9pdu_readf(&req->rc, client->proto_version, "Q", &qid);
++	if (err) {
++		p9_tag_remove(client, req);
++		return err;
++	}
++
++	memcpy(&fid->qid, &qid, sizeof(struct p9_qid));
++	p9_tag_remove(client, req);
++	return 0;
++}
++
++
++static int
++p9_recovery_handle_xattrwalk(struct p9_client *client,
++                             p9_recovery_desc *desc)
++{
++	int err;
++	struct p9_req_t *req;
++	struct p9_fid *attr_fid = desc->fid;
++	struct p9_txattrwalk *xattrwalk = desc->xattrwalk;
++	uint64_t attr_size;
++
++	p9_debug(P9_DEBUG_9P,
++		 ">>> RECOVERY - TXATTRWALK file_fid %d, attr_fid %d name %s\n",
++		 xattrwalk->fid, attr_fid->fid, xattrwalk->name);
++
++	req = p9_client_rpc(client, P9_TXATTRWALK, "dds",
++			    xattrwalk->fid, attr_fid->fid, xattrwalk->name);
++	if (IS_ERR(req)) {
++		return -1;
++	}
++
++	err = p9pdu_readf(&req->rc, client->proto_version, "q", &attr_size);
++	p9_tag_remove(client, req);
++
++	if (err) {
++		return err;
++	}
++
++	p9_debug(P9_DEBUG_9P, "<<<  RXATTRWALK fid %d size %llu\n",
++		 attr_fid->fid, attr_size);
++
++	return 0;
++}
++
++static int
++p9_recovery_handle_walk(struct p9_client *client,
++                        p9_recovery_desc *desc)
++{
++	struct p9_fid *fid = desc->fid;
++	struct p9_twalk *twalk = desc->walk;
++	int err;
++	struct p9_qid *wqids;
++	struct p9_req_t *req;
++	uint16_t nwqids, count;
++	char globalId[P9_GLOBALID_SIZE];
++	char globalIdStr[P9_GLOBALID_STRLEN + 1];
++	char *globalDir = "globalid";
++	char* wnames[GLOBALID_PATH_COMPONENTS];
++
++	p9_globalid_to_twalk_string(&twalk->globalid, globalIdStr,
++	                            P9_GLOBALID_STRLEN + 1);
++
++	wnames[0] = globalDir;
++	wnames[1] = globalIdStr;
++
++	p9_debug(P9_DEBUG_9P, "Recovery: globalId %s\n", globalIdStr);
++
++	req = p9_client_rpc(client, P9_TWALKX, "ddT", desc->attach_fid,
++			    twalk->nfid, GLOBALID_PATH_COMPONENTS, wnames);
++
++	if (IS_ERR(req)) {
++		return -1;
++	}
++
++	err = p9pdu_readf(&req->rc, client->proto_version, "RG",
++			  &nwqids, &wqids, &globalId);
++	p9_tag_remove(client, req);
++	if (err) {
++		return err;
++	}
++
++	p9_globalid_deserialize(globalId, &twalk->globalid);
++
++	p9_debug(P9_DEBUG_9P, "<<< RWALK nwqid %d:\n", nwqids);
++
++	if (nwqids != GLOBALID_PATH_COMPONENTS) {
++		pr_err("Server returned %d qids required %d\n", nwqids,
++		       GLOBALID_PATH_COMPONENTS);
++		kfree(wqids);
++		return -ENOENT;
++	}
++
++	for (count = 0; count < nwqids; count++)
++		p9_debug(P9_DEBUG_9P, "<<<     [%d] %x.%llx.%x\n",
++			 count, wqids[count].type,
++			 (unsigned long long)wqids[count].path,
++			 wqids[count].version);
++
++	if (nwqids > 0)
++		memcpy(&fid->qid, &wqids[nwqids - 1], sizeof(struct p9_qid));
++
++	kfree(wqids);
++	return 0;
++}
++
++
++int
++p9_replay_shadow(struct p9_client *client)
++{
++	p9_recovery_desc *desc;
++
++	list_for_each_entry(desc, &client->recovery_list, recovery_link) {
++
++		if (desc->is_attach) {
++			if (p9_recovery_handle_attach(client, desc)) {
++				pr_info("attach request failed \n");
++				return -1;
++			}
++		} else if (desc->is_xattrwalk) {
++			if (p9_recovery_handle_xattrwalk(client, desc)) {
++				pr_info("Failed to handle xattrwalk\n");
++			}
++		} else if (desc->is_walk) {
++			if (p9_recovery_handle_walk(client, desc)) {
++				pr_info("Failed to handle walk\n");
++			}
++		} else {
++			pr_err("Invalid recovery description\n");
++			return -EINVAL;
++		}
++	}
++	return 0;
++}
++
++void
++p9_cleanup_recovery_state(struct p9_client *client)
++{
++	struct list_head *cur, *next;
++
++	BUG_ON(client->status != Disconnected);
++
++	pr_info("Cleaning up recovery state \n");
++
++	list_for_each_safe(cur, next, &client->recovery_list) {
++		p9_recovery_desc *desc = list_entry(cur, p9_recovery_desc,
++						    recovery_link);
++		// It is safe to remove entry from list without lock,
++		// as the client is already disconnected and there will
++		// not be any IOs to race with.
++		list_del(&desc->recovery_link);
++		p9_recovery_free_desc(desc);
++	}
++
++}
+diff --git a/net/9p/recovery.h b/net/9p/recovery.h
+new file mode 100644
+index 00000000..81dadd6d
+--- /dev/null
++++ b/net/9p/recovery.h
+@@ -0,0 +1,51 @@
++/*
++ *  net/9p/recovery.h --
++ *
++ *  Copyright (C) 2020 by Mounesh Badiger <mounesh.b@gmail.com>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program; if not, write to:
++ *  Free Software Foundation
++ *  51 Franklin Street, Fifth Floor
++ *  Boston, MA  02111-1301  USA
++ *
++ */
++#include <net/9p/client.h>
++
++#define P9_GLOBALID_SIZE   32
++#define P9_GLOBALID_STRLEN 70
++#define P9_FILENAME_LEN 256
++
++int p9_update_tattach_desc(struct p9_client *client,
++                           struct p9_fid *fid,
++                           uint32_t afid,
++                           const char *uname,
++                           kuid_t n_uname,
++                           const char *aname);
++int p9_update_twalk_desc(struct p9_client *client,
++                         struct p9_fid *fid,
++                         struct p9_fid *ofid,
++                         uint16_t nwname,
++                         const unsigned char * const *wnames,
++                         const char *globalId);
++int p9_update_tlcreatex_desc(struct p9_client *client,
++                             struct p9_fid *fid,
++                             const char *name,
++                             const char *globalId);
++int p9_update_tclunk_desc(struct p9_client *client,
++                          struct p9_fid *fid);
++int p9_update_txattrwalk_desc(struct p9_client *client,
++                              struct p9_fid *fid,
++                              struct p9_fid *attr_fid,
++                              const char *name);
++int p9_replay_shadow(struct p9_client *client);
++void p9_cleanup_recovery_state(struct p9_client *client);
+diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+index d295c4d..23d8167 100644
+--- a/net/9p/trans_fd.c
++++ b/net/9p/trans_fd.c
+@@ -283,6 +283,29 @@ static int p9_fd_read(struct p9_client *client, void *v, int len)
+ 	return ret;
+ }
+ 
++static int
++p9_recovery_fn(void *data)
++{
++   int err;
++   unsigned long flags;
++   struct p9_client *client = (struct p9_client *)data;
++
++   err = p9_client_run_recovery(client);
++   spin_lock_irqsave(&client->recovery_lock, flags);
++   if (err == 0) {
++      client->rstate = RECOVERY_COMPLETE;
++      pr_info("%s: Recovery successful\n", client->dev_name);
++   } else {
++      client->rstate = RECOVERY_FAILED;
++      client->status = Disconnected;
++   }
++
++   wake_up(&client->recovery_queue);
++   spin_unlock_irqrestore(&client->recovery_lock, flags);
++
++   return 0;
++}
++
+ /**
+  * p9_read_work - called when there is some data to be read from a transport
+  * @work: container of work to be done
+@@ -318,8 +341,27 @@ static void p9_read_work(struct work_struct *work)
+ 	if (err == -EAGAIN)
+ 		goto end_clear;
+ 
+-	if (err <= 0)
+-		goto error;
++	if (err == 0 && m->client->recovery_enabled) { // socket is broken
++           unsigned long flags;
++
++           spin_lock_irqsave(&m->client->recovery_lock, flags);
++           m->client->rstate = RECOVERY_PENDING;
++           spin_unlock_irqrestore(&m->client->recovery_lock, flags);
++           m->client->recovery_thread = kthread_create(p9_recovery_fn, m->client,
++                                                       "p9_recovery_thread");
++           if (!IS_ERR(m->client->recovery_thread)) {
++               wake_up_process(m->client->recovery_thread);
++               p9_debug(P9_DEBUG_TRANS, "starting recovery thread \n");
++            } else {
++               m->client->rstate = RECOVERY_FAILED;
++               pr_err("%s:Failed to create recovery thread\n", m->client->dev_name);
++               goto error;
++            }
++            return;
++         }
++         if (err <= 0) {
++            goto error;
++         }
+ 
+ 	m->rc.offset += err;
+ 
+-- 
+2.7.4
+

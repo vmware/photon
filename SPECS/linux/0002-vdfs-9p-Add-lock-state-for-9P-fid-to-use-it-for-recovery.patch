@@ -1,0 +1,852 @@
+From 58e06ab69325d77d96e19409ffd05c5a7e440a60 Mon Sep 17 00:00:00 2001
+From: Sriram Patil <sriramp@vmware.com>
+Date: Sat, 8 Aug 2020 00:52:40 -0700
+Subject: [PATCH 2/5] Add lock state for 9P fid to use it for recovery
+
+    Adding a new p9_lock_state struct. This struct is used for managing the locks
+    acquired by the 9P client. A list of p9_lock_state is kept in the recovery
+    descriptor to be used when recovering fids. All the locks on a file are replayed
+    during recovery.
+
+    Details of lock state:
+    - A lock state list is maintained in p9_recovery_desc for every fid
+    - The lock state contains a back reference to p9_recovery_desc and p9_flock
+      details
+    - Every lock state object represents a single lock on that fid
+    - The list of locks is maintained in such a way that the overlapping/adjacent
+      locks with same type are merged together in the list
+    - In case of unlock, if the byte ranges do not match exactly the lock states
+      will be split
+    - In case of recovery, after a fid is recovered its lock list is replayed if it
+      exists
+    - The list of lock state is maintained in such a way that all the locks with
+      same process id are grouped together and sorted by the offsets
+---
+ include/net/9p/client.h |  30 ++--
+ net/9p/client.c         |  61 ++++++-
+ net/9p/protocol.c       |  18 +-
+ net/9p/recovery.c       | 470 +++++++++++++++++++++++++++++++++++++++++-------
+ net/9p/recovery.h       |   2 +
+ 5 files changed, 487 insertions(+), 94 deletions(-)
+
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index 75c3fed..49ecf0e20 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -45,7 +45,7 @@ enum p9_proto_versions{
+ 	p9_proto_2000u,
+ 	p9_proto_2000L,
+ 	p9_proto_2000X,
+-        p9_proto_2000XR,
++	p9_proto_2000XR,
+ };
+ 
+ 
+@@ -107,10 +107,10 @@ struct p9_req_t {
+ };
+ 
+ enum recovery_state {
+-   RECOVERY_IDLE = 0,
+-   RECOVERY_PENDING,
+-   RECOVERY_FAILED,
+-   RECOVERY_COMPLETE
++	RECOVERY_IDLE = 0,
++	RECOVERY_PENDING,
++	RECOVERY_FAILED,
++	RECOVERY_COMPLETE
+ };
+ 
+ 
+@@ -166,15 +166,15 @@ struct p9_client {
+ 	struct idr fids;
+ 	struct idr reqs;
+ 
+-        // recovery
+-        bool recovery_enabled;
+-        char *dev_name;
+-        char *options;
+-        wait_queue_head_t recovery_queue;
+-        spinlock_t recovery_lock;
+-        struct task_struct *recovery_thread;
+-        int rstate;
+-        struct list_head recovery_list;
++	// recovery
++	bool recovery_enabled;
++	char *dev_name;
++	char *options;
++	wait_queue_head_t recovery_queue;
++	spinlock_t recovery_lock;
++	struct task_struct *recovery_thread;
++	int rstate;
++	struct list_head recovery_list;
+ 
+ 	char name[__NEW_UTS_LEN + 1];
+ };
+@@ -196,7 +196,7 @@ struct p9_client {
+ 
+ struct p9_fid {
+ 	struct p9_client *clnt;
+-        void *recovery_desc;
++	void *recovery_desc;
+ 	u32 fid;
+ 	int mode;
+ 	struct p9_qid qid;
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 5a28e4d..8da7ba0 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -2677,7 +2677,9 @@ int p9_client_mkdir_dotl(struct p9_fid *fid, const char *name, int mode,
+ }
+ EXPORT_SYMBOL(p9_client_mkdir_dotl);
+ 
+-int p9_client_lock_dotl(struct p9_fid *fid, struct p9_flock *flock, u8 *status)
++
++int do_lock_dotl(struct p9_fid *fid, struct p9_flock *flock, u8 *status,
++		 bool save_state)
+ {
+ 	int err;
+ 	struct p9_client *clnt;
+@@ -2702,14 +2704,71 @@ int p9_client_lock_dotl(struct p9_fid *fid, struct p9_flock *flock, u8 *status)
+ 		trace_9p_protocol_dump(clnt, &req->rc);
+ 		goto error;
+ 	}
++
++	if (save_state) {
++		err = p9_update_tlock_desc(fid, flock);
++		if (err != 0) {
++			pr_info("Failed to update TLOCK state");
++
++			if (flock->type != P9_LOCK_TYPE_UNLCK) {
++				int unlock_err = 0;
++				u8 unlock_status = 0;
++				u8 old_type = flock->type;
++
++				/* Send unlock to the server because we failed
++				 * to save the lock state.
++				 *
++				 * TODO: What if we are not able to send unlock?
++				 * Will the server hold lock forever? (unless
++				 * server restarts). However, there there is not
++				 * reason unlock would fail other than ENOMEM.
++				 * We need to handle this scenario only if there
++				 * are any other scenarios which may result in
++				 * failure.
++				 */
++				flock->type = P9_LOCK_TYPE_UNLCK;
++				unlock_err = do_lock_dotl(fid, flock,
++							  &unlock_status,
++							  false /*save_state*/);
++				flock->type = old_type;
++
++				/* We want unlock to be always successful */
++				BUG_ON(unlock_err != 0);
++				BUG_ON(unlock_status != 0);
++			} else {
++				/* If it was an unlock request and we failed to
++				 * update in memory state we have no way of
++				 * going back from here. There are two reasons
++				 * we can't do much here,
++				 * 1. We cannot resend the lock request because
++				 *    we don't know the lock type and flags for
++				 *    the original acquired lock
++				 * 2. Even if we figure out the original lock by
++				 *    iterating lock list, it is possible that
++				 *    some other client acquired a conflicting
++				 *    lock in the mean time.
++				 */
++			}
++
++			*status = P9_LOCK_ERROR;
++		}
++	}
+ 	p9_debug(P9_DEBUG_9P, "<<< RLOCK status %i\n", *status);
+ error:
+ 	p9_tag_remove(clnt, req);
+ 	return err;
+ 
+ }
++
++int p9_client_lock_dotl(struct p9_fid *fid, struct p9_flock *flock, u8 *status)
++{
++	struct p9_client *clnt = fid->clnt;
++	return do_lock_dotl(fid, flock, status,
++			    clnt->recovery_enabled);
++}
+ EXPORT_SYMBOL(p9_client_lock_dotl);
+ 
++
+ int p9_client_getlock_dotl(struct p9_fid *fid, struct p9_getlock *glock)
+ {
+ 	int err;
+diff --git a/net/9p/protocol.c b/net/9p/protocol.c
+index 5c068f9..851eee8a 100644
+--- a/net/9p/protocol.c
++++ b/net/9p/protocol.c
+@@ -346,16 +346,14 @@ p9pdu_vreadf(struct p9_fcall *pdu, int proto_version, const char *fmt,
+ 					&stbuf->st_data_version);
+ 			}
+ 			break;
+-                case 'G':
+-                        {
+-                              // read VDFS globalId
+-                              char *global_id = va_arg(ap, char *);
+-
+-                              if (pdu_read(pdu, global_id, P9_GLOBALID_SIZE)) {
+-                                    errcode = -EFAULT;
+-                              }
+-                        }
+-                        break;
++		case 'G': {
++				// read VDFS globalId
++				char *global_id = va_arg(ap, char *);
++
++				if (pdu_read(pdu, global_id, P9_GLOBALID_SIZE))
++					errcode = -EFAULT;
++			}
++			break;
+ 		case '?':
+ 			if ((proto_version != p9_proto_2000u) &&
+ 				(proto_version != p9_proto_2000L) &&
+diff --git a/net/9p/recovery.c b/net/9p/recovery.c
+index 7b2220e..f30a285 100644
+--- a/net/9p/recovery.c
++++ b/net/9p/recovery.c
+@@ -1,22 +1,25 @@
+ /*
+- *  net/9p/recovery.c --
++ * net/9p/recovery.c --
+  *
+- *  Copyright (C) 2020 by Mounesh Badiger <mounesh.b@gmail.com>
++ * 9P recovery
+  *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
++ *	Copyright (C) 2020 by Mounesh Badiger <mounesh.b@gmail.com>
++ *	Copyright (C) 2020 by Sriram Patil <spsrirampatil@gmail.com>
+  *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
++ *	This program is free software; you can redistribute it and/or modify
++ *	it under the terms of the GNU General Public License version 2
++ *	as published by the Free Software Foundation.
+  *
+- *  You should have received a copy of the GNU General Public License
+- *  along with this program; if not, write to:
+- *  Free Software Foundation
+- *  51 Franklin Street, Fifth Floor
+- *  Boston, MA  02111-1301  USA
++ *	This program is distributed in the hope that it will be useful,
++ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *	GNU General Public License for more details.
++ *
++ *	You should have received a copy of the GNU General Public License
++ *	along with this program; if not, write to:
++ *	Free Software Foundation
++ *	51 Franklin Street, Fifth Floor
++ *	Boston, MA	02111-1301	USA
+  *
+  */
+ 
+@@ -30,8 +33,9 @@
+ #include "protocol.h"
+ #include "recovery.h"
+ 
+-#define GLOBALID_PATH_COMPONENTS 2 // /globalid/$globalid
+-#define UUID_BYTES         16
++// Number of path components for globalid path in volume "/globalid/$globalid"
++#define GLOBALID_PATH_COMPONENTS   2
++#define UUID_BYTES   16
+ 
+ #define VSAN_UUID_FMT \
+ 	"%02hhx%02hhx%02hhx%02hhx-%02hhx%02hhx-%02hhx%02hhx-" \
+@@ -77,17 +81,30 @@ typedef struct p9_recovery_desc {
+ 	struct list_head recovery_link;
+ 	struct p9_fid *fid;  // back pointer to p9_fid
+ 	uint32_t attach_fid;
+-
+-	bool is_attach;
+-	bool is_walk;
+-	bool is_xattrwalk;
++	uint8_t	op;
+ 
+ 	struct p9_tattach *attach;
+ 	struct p9_twalk *walk;
+ 	struct p9_txattrwalk *xattrwalk;
++
++	spinlock_t              state_lock;
++	struct list_head        lock_list;
+ } p9_recovery_desc;
+ 
+ 
++/* p9_lock_state - stores the acquired lock on a file
++ * @desc: back reference to the recovery descriptor
++ * @lock_link: link for the locks list
++ * @fl: file lock
++ */
++
++struct p9_lock_state {
++	p9_recovery_desc        *desc;
++	struct list_head        lock_link;
++	struct p9_flock         fl;
++};
++
++
+ static void
+ p9_globalid_deserialize(const char *str_globalid,
+                         struct p9_globalid *globalid)
+@@ -147,6 +164,23 @@ p9_recovery_free_desc(p9_recovery_desc *desc)
+ 	kfree(desc);
+ }
+ 
++static inline p9_recovery_desc *
++alloc_recovery_descriptor(struct p9_fid *fid, uint8_t op)
++{
++        p9_recovery_desc *desc;
++
++        desc = kzalloc(sizeof(p9_recovery_desc), GFP_NOFS);
++        if (!desc) {
++                return NULL;
++        }
++
++        desc->fid = fid;
++        desc->op = op;
++        INIT_LIST_HEAD(&desc->recovery_link);
++        spin_lock_init(&desc->state_lock);
++        INIT_LIST_HEAD(&desc->lock_list);
++        return desc;
++}
+ 
+ int p9_update_tattach_desc(struct p9_client *client,
+                            struct p9_fid *fid,
+@@ -161,15 +195,11 @@ int p9_update_tattach_desc(struct p9_client *client,
+ 	p9_debug(P9_DEBUG_9P, ">>> TATTACH fid %u afid %u uname %s aname %s\n",
+ 		 fid->fid, afid, uname, aname);
+ 
+-	rfid = kzalloc(sizeof(p9_recovery_desc), GFP_NOFS);
++	rfid = alloc_recovery_descriptor(fid, P9_TATTACH);
+ 	if (!rfid) {
+ 		return -ENOMEM;
+ 	}
+ 
+-	INIT_LIST_HEAD(&rfid->recovery_link);
+-	rfid->fid = fid;
+-	rfid->is_attach = true;
+-
+ 	attach = kzalloc(sizeof(struct p9_tattach), GFP_NOFS);
+ 	if (!attach) {
+ 		kfree(rfid);
+@@ -203,7 +233,7 @@ p9_replace_twalk_desc(struct p9_client *client,
+ {
+ 	p9_recovery_desc *desc = (p9_recovery_desc *)ofid->recovery_desc;
+ 
+-	BUG_ON(!desc->is_walk);
++	BUG_ON(desc->op != P9_TWALKX);
+ 	BUG_ON(fid->fid != ofid->fid);
+ 
+ 	p9_recovery_remove_list(client, desc);
+@@ -235,7 +265,7 @@ int p9_update_twalk_desc(struct p9_client *client,
+ 		return p9_replace_twalk_desc(client, fid, ofid, globalid);
+ 	}
+ 
+-	rfid = kzalloc(sizeof(p9_recovery_desc), GFP_NOFS);
++	rfid = alloc_recovery_descriptor(fid, P9_TWALKX);
+ 	if (rfid == NULL) {
+ 		return -ENOMEM;
+ 	}
+@@ -246,10 +276,6 @@ int p9_update_twalk_desc(struct p9_client *client,
+ 		return -ENOMEM;
+ 	}
+ 
+-	INIT_LIST_HEAD(&rfid->recovery_link);
+-
+-	rfid->fid = fid;
+-	rfid->is_walk = true;
+ 	rfid->walk = twalk;
+ 	rfid->attach_fid = ((p9_recovery_desc *)(ofid->recovery_desc))->attach_fid;
+ 
+@@ -260,8 +286,12 @@ int p9_update_twalk_desc(struct p9_client *client,
+ 
+ 	fid->recovery_desc = rfid;
+ 
+-	p9_recovery_insert_list(client, rfid);
++	p9_debug(P9_DEBUG_TRANS, ">>> RECOV - adding TWALKX fid=%u,"
++		 "globalid="VSAN_UUID_FMT"~%016llx~%016llx", fid->fid,
++		 BYTE_UUID_ARGS(twalk->globalid.uuid), twalk->globalid.snapid,
++		 twalk->globalid.objid);
+ 
++	p9_recovery_insert_list(client, rfid);
+ 	return 0;
+ }
+ 
+@@ -277,13 +307,12 @@ int p9_update_tlcreatex_desc(struct p9_client *client,
+ 	p9_debug(P9_DEBUG_9P, "Recovery: TLCREATE fid %d, name %s\n",
+ 		 fid->fid, name);
+ 
+-	if (rfid->is_attach) {
++	if (rfid->op == P9_TATTACH) {
+ 		kfree(rfid->attach);
+ 		rfid->attach = NULL;
+ 	}
+ 
+-	rfid->is_attach = false;
+-	rfid->is_walk = true;
++	rfid->op = P9_TWALKX;
+ 
+ 	twalk = rfid->walk;
+ 
+@@ -323,21 +352,17 @@ int p9_update_txattrwalk_desc(struct p9_client *client,
+ 		return -ENOENT;
+ 	}
+ 
+-	xrfid = kzalloc(sizeof(p9_recovery_desc), GFP_NOFS);
++	xrfid = alloc_recovery_descriptor(attr_fid, P9_TXATTRWALK);
+ 	if (xrfid == NULL) {
+ 		return -ENOMEM;
+ 	}
+ 
+-	INIT_LIST_HEAD(&xrfid->recovery_link);
+-
+ 	xattrwalk = kzalloc(sizeof(struct p9_txattrwalk), GFP_NOFS);
+ 	if (xattrwalk == NULL) {
+ 		kfree(xrfid);
+ 		return -ENOMEM;
+ 	}
+ 
+-	xrfid->is_xattrwalk = true;
+-	xrfid->fid = attr_fid;
+ 	attr_fid->recovery_desc = xrfid;
+ 
+ 	xattrwalk->fid = fid->fid;
+@@ -351,6 +376,244 @@ int p9_update_txattrwalk_desc(struct p9_client *client,
+ 	return 0;
+ }
+ 
++static inline int
++lock_has_same_owner(const struct p9_flock *fl1, const struct p9_flock *fl2)
++{
++        return fl1->proc_id == fl2->proc_id;
++}
++
++static struct p9_lock_state *
++alloc_lock_state(struct p9_fid *fid, struct p9_flock *flock)
++{
++        struct p9_lock_state *state;
++
++        state = kmalloc(sizeof(struct p9_lock_state), GFP_NOFS);
++        if (state == NULL) {
++                pr_info("Unable to allocate lock state");
++                return NULL;
++        }
++
++        state->desc = fid->recovery_desc;
++        INIT_LIST_HEAD(&state->lock_link);
++
++        if (flock)
++                state->fl = *flock;
++
++        return state;
++}
++
++static inline void
++free_lock_state(struct p9_lock_state *state)
++{
++        kfree(state);
++}
++
++static void
++delete_lock_state(struct p9_lock_state *state, struct list_head *dispose)
++{
++        struct p9_fid *fid = ((p9_recovery_desc *)state->desc)->fid;
++        struct p9_flock *flock = &state->fl;
++
++        p9_debug(P9_DEBUG_9P, ">>> RECOV - removing TLOCK fid=%u type %i flags %u"
++                 "offset=%llu length=%llu proc_id %u client_id %s",
++                 fid->fid, flock->type, flock->flags, flock->start,
++                 flock->length, flock->proc_id, flock->client_id);
++
++        list_del_init(&state->lock_link);
++        if (dispose)
++                list_add(&state->lock_link, dispose);
++        else
++                free_lock_state(state);
++}
++
++static void
++insert_lock_state(struct p9_lock_state *state,
++                                  struct list_head *before)
++{
++        struct p9_fid *fid = ((p9_recovery_desc *)state->desc)->fid;
++        struct p9_flock *flock = &state->fl;
++
++        p9_debug(P9_DEBUG_9P, ">>> RECOV - adding TLOCK fid=%u type %i flags %u"
++                 "offset=%llu length=%llu proc_id %u client_id %s",
++                 fid->fid, flock->type, flock->flags, flock->start,
++                 flock->length, flock->proc_id, flock->client_id);
++
++        list_add_tail(&state->lock_link, before);
++}
++
++static void
++free_lock_state_list(struct list_head *h)
++{
++        struct p9_lock_state *state, *tmp;
++
++        list_for_each_entry_safe(state, tmp, h, lock_link) {
++                list_del(&state->lock_link);
++                free_lock_state(state);
++        }
++}
++
++static int
++p9_update_tlock_desc_state(struct p9_fid *fid, struct p9_lock_state *req)
++{
++        struct p9_lock_state *state, *tmp;
++        struct p9_lock_state *left = NULL, *right = NULL;
++        struct p9_lock_state *new_state = NULL;
++        struct p9_flock *req_fl = &req->fl;
++        struct p9_flock *fl;
++        struct p9_lock_state *req_in = req;
++        uint64_t fl_end, req_end;
++
++        bool added = false;
++        p9_recovery_desc *desc = fid->recovery_desc;
++        LIST_HEAD(dispose);
++
++        BUG_ON(desc == NULL);
++        BUG_ON(desc->fid != fid);
++
++        new_state = alloc_lock_state(fid, NULL);
++        if (new_state == NULL) {
++                return -ENOMEM;
++        }
++
++        spin_lock(&desc->state_lock);
++
++        /* Find the first entry with same owner */
++        list_for_each_entry(state, &desc->lock_list, lock_link) {
++                if (lock_has_same_owner(req_fl, &state->fl))
++                        break;
++        }
++
++        /* Iterate over all entries with same owner */
++        list_for_each_entry_safe_from(state, tmp, &desc->lock_list, lock_link) {
++                if (!lock_has_same_owner(req_fl, &state->fl))
++                        break;
++
++                fl = &state->fl;
++                fl_end = fl->start + fl->length;
++                req_end = req_fl->start + req_fl->length;
++
++                /* Check if we have any adjacent/overlapping locks */
++                if (req_fl->type == fl->type) {
++                        if (fl_end < req_fl->start - 1)
++                                continue;
++                        if (fl->start - 1 > req_end)
++                                break;
++
++                        /* We have an adjacent/overlapping lock */
++                        if (fl->start > req_fl->start)
++                                fl->start = req_fl->start;
++                        else
++                                req_fl->start = fl->start;
++
++                        if (fl_end < req_end)
++                                fl->length = req_end - fl->start;
++                        else
++                                req_fl->length = fl_end - req_fl->start;
++
++                        if (added) {
++                                delete_lock_state(state, &dispose);
++                                continue;
++                        }
++
++                        /* We change the pointer here, but it is stored in req_in to free
++                         * it up later */
++                        req = state;
++                        req_fl = &state->fl;
++                        added = true;
++                } else {
++                        if (fl_end < req_fl->start)
++                                continue;
++                        if (fl->start > req_end)
++                                break;
++
++                        if (req_fl->type == P9_LOCK_TYPE_UNLCK)
++                                added = true;
++
++                        if (fl->start < req_fl->start)
++                                left = state;
++
++                        if (fl_end > req_end) {
++                                right = state;
++                                break;
++                        }
++
++                        if (fl->start >= req_fl->start) {
++                                /* New lock completely replaces the old one */
++                                if (added) {
++                                        delete_lock_state(state, &dispose);
++                                        continue;
++                                }
++
++                                fl->start = req_fl->start;
++                                fl->length = req_fl->length;
++                                added = true;
++                        }
++                }
++        }
++
++        if (!added) {
++                if (req_fl->type == P9_LOCK_TYPE_UNLCK)
++                        goto out;
++
++                insert_lock_state(req, &desc->lock_list);
++                state = req;
++        }
++
++        if (right) {
++                if (left == right) {
++                        /* New lock breaks the old one in two pieces */
++                        left = new_state;
++                        new_state = NULL;
++                        memcpy(&left->fl, &right->fl, sizeof(struct p9_flock));
++
++                        insert_lock_state(left, &state->lock_link);
++                }
++                right->fl.start = req->fl.start + req->fl.length + 1;
++        }
++
++        if (left) {
++                left->fl.length = req->fl.start - left->fl.start - 1;
++        }
++
++out:
++        spin_unlock(&desc->state_lock);
++
++        /* Free up the input lock state if it was changed in the loop */
++        if (added && req != req_in)
++                free_lock_state(req_in);
++
++        if (new_state)
++                free_lock_state(new_state);
++
++        free_lock_state_list(&dispose);
++        return 0;
++}
++
++
++/**
++ * p9_update_tlock_desc - update recovery descriptor for a file lock
++ * @fid: p9 fid being opened
++ * @fl: p9_flock struct
++ */
++
++int p9_update_tlock_desc(struct p9_fid *fid, struct p9_flock *fl)
++{
++        struct p9_lock_state *req;
++        int error = 0;
++
++        req = alloc_lock_state(fid, fl);
++        if (req == NULL) {
++                return -ENOMEM;
++        }
++
++        error = p9_update_tlock_desc_state(fid, req);
++        if (error != 0) {
++                free_lock_state(req);
++        }
++
++        return error;
++}
++
+ 
+ static int
+ p9_recovery_handle_attach(struct p9_client *client,
+@@ -366,7 +629,7 @@ p9_recovery_handle_attach(struct p9_client *client,
+ 	fid = desc->fid;
+ 	uname = tattach->uname;
+ 
+-	p9_debug(P9_DEBUG_9P, ">>> RECOVERY - TATTACH fid - %d afid %d uname %s aname %s\n",
++	p9_debug(P9_DEBUG_9P, ">>> RECOV - TATTACH fid - %d afid %d uname %s aname %s\n",
+ 		 fid->fid, tattach->afid, uname, tattach->aname);
+ 
+ 	req = p9_client_rpc(client, P9_TATTACH, "ddss?u", fid->fid,
+@@ -377,13 +640,12 @@ p9_recovery_handle_attach(struct p9_client *client,
+ 	}
+ 
+ 	err = p9pdu_readf(&req->rc, client->proto_version, "Q", &qid);
++	p9_tag_remove(client, req);
+ 	if (err) {
+-		p9_tag_remove(client, req);
+ 		return err;
+ 	}
+ 
+ 	memcpy(&fid->qid, &qid, sizeof(struct p9_qid));
+-	p9_tag_remove(client, req);
+ 	return 0;
+ }
+ 
+@@ -399,7 +661,7 @@ p9_recovery_handle_xattrwalk(struct p9_client *client,
+ 	uint64_t attr_size;
+ 
+ 	p9_debug(P9_DEBUG_9P,
+-		 ">>> RECOVERY - TXATTRWALK file_fid %d, attr_fid %d name %s\n",
++		 ">>> RECOV - TXATTRWALK file_fid %d, attr_fid %d name %s\n",
+ 		 xattrwalk->fid, attr_fid->fid, xattrwalk->name);
+ 
+ 	req = p9_client_rpc(client, P9_TXATTRWALK, "dds",
+@@ -442,7 +704,7 @@ p9_recovery_handle_walk(struct p9_client *client,
+ 	wnames[0] = globalDir;
+ 	wnames[1] = globalIdStr;
+ 
+-	p9_debug(P9_DEBUG_9P, "Recovery: globalId %s\n", globalIdStr);
++	p9_debug(P9_DEBUG_9P, "RECOV: globalId %s\n", globalIdStr);
+ 
+ 	req = p9_client_rpc(client, P9_TWALKX, "ddT", desc->attach_fid,
+ 			    twalk->nfid, GLOBALID_PATH_COMPONENTS, wnames);
+@@ -482,33 +744,105 @@ p9_recovery_handle_walk(struct p9_client *client,
+ 	return 0;
+ }
+ 
++/**
++ * p9_recover_file_locks - called only for opened files for recovering locks
++ * @clnt: p9_client object
++ * @desc: recovery descriptor
++ */
++
++static int
++p9_recover_file_locks(struct p9_client *clnt, p9_recovery_desc *desc)
++{
++        int err = 0;
++        struct p9_fid *fid = desc->fid;
++        struct p9_lock_state *state, *tmp;
++        u8 status;
++
++        BUG_ON(fid == NULL);
++
++        list_for_each_entry_safe(state, tmp, &desc->lock_list, lock_link) {
++                struct p9_req_t *req;
++                struct p9_flock *flock = &state->fl;
++
++                BUG_ON(flock== NULL);
++
++                p9_debug(P9_DEBUG_9P,
++                        ">>> RECOV - TLOCK fid %u type %i flags %u "
++                        "start %lld length %lld proc_id %u client_id %s\n",
++                        fid->fid, flock->type, flock->flags, flock->start,
++                        flock->length, flock->proc_id, flock->client_id);
++
++                req = p9_client_rpc(clnt, P9_TLOCK, "dbdqqds", fid->fid,
++                                    flock->type, flock->flags, flock->start,
++                                    flock->length, flock->proc_id,
++                                    flock->client_id);
++                if (IS_ERR(req))
++                        return PTR_ERR(req);
++
++                err = p9pdu_readf(&req->rc, clnt->proto_version, "b", &status);
++                if (err) {
++                        /* TODO: fail the recovery and make sure that the mount is
++                         * invalidated */
++                        pr_info("failed to recover lock\n");
++                        list_del(&state->lock_link);
++                }
++
++                p9_debug(P9_DEBUG_9P, "<<< RLOCK status %i\n", status);
++        }
++
++        return 0;
++}
+ 
+ int
+ p9_replay_shadow(struct p9_client *client)
+ {
+-	p9_recovery_desc *desc;
+-
+-	list_for_each_entry(desc, &client->recovery_list, recovery_link) {
+-
+-		if (desc->is_attach) {
+-			if (p9_recovery_handle_attach(client, desc)) {
+-				pr_info("attach request failed \n");
+-				return -1;
+-			}
+-		} else if (desc->is_xattrwalk) {
+-			if (p9_recovery_handle_xattrwalk(client, desc)) {
+-				pr_info("Failed to handle xattrwalk\n");
+-			}
+-		} else if (desc->is_walk) {
+-			if (p9_recovery_handle_walk(client, desc)) {
+-				pr_info("Failed to handle walk\n");
+-			}
+-		} else {
+-			pr_err("Invalid recovery description\n");
+-			return -EINVAL;
+-		}
+-	}
+-	return 0;
++       p9_recovery_desc *desc;
++
++       list_for_each_entry(desc, &client->recovery_list, recovery_link) {
++
++               switch (desc->op) {
++               case P9_TATTACH:
++                       if (p9_recovery_handle_attach(client, desc)) {
++                               pr_info("attach request failed \n");
++                               /* TODO: Need to invalidate the mount point here */
++                               return -EINVAL;
++                       }
++                       break;
++
++               case P9_TWALKX:
++                       if (p9_recovery_handle_walk(client, desc)) {
++                               pr_info("Failed to handle walk\n");
++                               /*
++                                * TODO: Need to handle the case where we are not able to
++                                * recover the fid and the fid has non-empty state list. The
++                                * fid should be invalidated and all inflight IOs should fail
++                                * with EIO. We can mark the status as RECOVERY_FAILED to fail
++                                * all incoming ops.
++                                */
++                               break;
++                       }
++
++                       if (p9_recover_file_locks(client, desc)) {
++                               pr_info("failed to recover state\n");
++                               /*
++                                * TODO: need to return EIO for all operations on this fid.
++                                */
++                       }
++                       break;
++
++               case P9_TXATTRWALK:
++                       if (p9_recovery_handle_xattrwalk(client, desc)) {
++                               pr_info("Failed to handle xattrwalk\n");
++                       }
++                       break;
++
++               default:
++                       pr_err("Invalid recovery description\n");
++                       return -EINVAL;
++               }
++       }
++
++       return 0;
+ }
+ 
+ void
+diff --git a/net/9p/recovery.h b/net/9p/recovery.h
+index 81dadd6d..02f6f07 100644
+--- a/net/9p/recovery.h
++++ b/net/9p/recovery.h
+@@ -49,3 +49,5 @@ int p9_update_txattrwalk_desc(struct p9_client *client,
+                               const char *name);
+ int p9_replay_shadow(struct p9_client *client);
+ void p9_cleanup_recovery_state(struct p9_client *client);
++int p9_update_tlock_desc(struct p9_fid *fid,
++                         struct p9_flock *pfl);
+-- 
+2.7.4
+

@@ -1,0 +1,413 @@
+From 71b8dde30b26b5633c9003832b03bc2c4ecd792b Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com>
+Date: Sun, 9 Aug 2020 04:34:55 -0700
+Subject: [PATCH 3/5] kernels:Add test infra to test 9p recovery logic
+
+        puppet master runs along with server and listens
+        on tcp port, 9p client connects to puppet master
+        port and sends breakpoints.
+
+        this change introduces breakpoint module and takes ip:port
+        as mount arguments and connects to the puppet master.
+
+        Change introduces function which sends breakpoint to
+        puppet master and waits for puppet master to respond
+        9p will be blocked until puppet master responds.
+---
+ include/net/9p/client.h    |   8 +++
+ include/net/9p/transport.h |   1 +
+ net/9p/client.c            |  62 +++++++++++++++++-
+ net/9p/recovery.c          | 156 +++++++++++++++++++++++++++++++++++++++++++++
+ net/9p/recovery.h          |   7 ++
+ net/9p/trans_fd.c          |   4 +-
+ 6 files changed, 234 insertions(+), 4 deletions(-)
+
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index 49ecf0e20..7749068 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -135,6 +135,10 @@ enum recovery_state {
+  * @recovery_thread: Thread performing recovery.
+  * @rstate: State of the recovery.
+  * @recovery_list: List for maintaining shadow state for 9p operations.
++ * @testconn: Connection information for testing recovery logic
++ * @testport: Puppet master port for testing recovery logic
++ * @testip: Puppet master ip for testing recovery logic
++ * @aname: Used for logging and send mount UUID to puppet master
+  * @name: node name used as client id
+  *
+  * The client structure is used to keep track of various per-client
+@@ -175,6 +179,10 @@ struct p9_client {
+ 	struct task_struct *recovery_thread;
+ 	int rstate;
+ 	struct list_head recovery_list;
++        void *testconn;
++        u16 testport;
++        char *testip;
++        char *aname;
+ 
+ 	char name[__NEW_UTS_LEN + 1];
+ };
+diff --git a/include/net/9p/transport.h b/include/net/9p/transport.h
+index 1625fb8..d4754b5 100644
+--- a/include/net/9p/transport.h
++++ b/include/net/9p/transport.h
+@@ -70,4 +70,5 @@ void v9fs_unregister_trans(struct p9_trans_module *m);
+ struct p9_trans_module *v9fs_get_trans_by_name(char *s);
+ struct p9_trans_module *v9fs_get_default_trans(void);
+ void v9fs_put_trans(struct p9_trans_module *m);
++int p9_is_valid_ipaddr4(const char *buf);
+ #endif /* NET_9P_TRANSPORT_H */
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 8da7ba0..a1c0303 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -62,6 +62,9 @@ enum {
+ 	Opt_legacy,
+ 	Opt_version,
+ 	Opt_minzcpages,
++        Opt_testport,
++        Opt_testip,
++        Opt_aname,
+ 	Opt_err,
+ };
+ 
+@@ -71,6 +74,9 @@ static const match_table_t tokens = {
+ 	{Opt_trans, "trans=%s"},
+ 	{Opt_version, "version=%s"},
+ 	{Opt_minzcpages, "minzcpages=%d"},
++        {Opt_testport, "testport=%d"},
++        {Opt_testip, "testip=%s"},
++        {Opt_aname,  "aname=%s"},
+ 	{Opt_err, NULL},
+ };
+ 
+@@ -126,6 +132,13 @@ inline int p9_is_fid_proto_dotx(struct p9_fid *fid)
+ }
+ EXPORT_SYMBOL(p9_is_fid_proto_dotx);
+ 
++static int p9_is_client_test_enabled(struct p9_client *clnt)
++{
++   return clnt->proto_version == p9_proto_2000XR &&
++          clnt->testport != 0 &&
++          clnt->testip != NULL;
++}
++
+ /*
+  * Some error codes are taken directly from the server replies,
+  * make sure they are valid.
+@@ -250,6 +263,35 @@ static int parse_opts(char *opts, struct p9_client *clnt)
+ 			}
+ 			clnt->minzcpages = option;
+ 			break;
++                case Opt_testport:
++                        r = match_int(&args[0], &option);
++                        if (r < 0 || option < 0) {
++                                 p9_debug(P9_DEBUG_ERROR,
++                                          "integer field, but no/negative integer?\n");
++                                 ret = r;
++                                 continue;
++                        }
++                        clnt->testport = option;
++                        break;
++                case Opt_testip:
++                        s = match_strdup(&args[0]);
++                        if (!s) {
++                               p9_debug(P9_DEBUG_ERROR,
++                                        "problem allocating copy of test ip address\n");
++                               continue;
++                        }
++                        clnt->testip = s;
++                        pr_info("test ip %s \n", s);
++                        break;
++                case Opt_aname:
++                        s = match_strdup(&args[0]);
++                        if (!s) {
++                               p9_debug(P9_DEBUG_ERROR,
++                                        "problem allocating copy of aname\n");
++                               continue;
++                        }
++                        clnt->aname = s;
++                        break;
+ 		case Opt_version:
+ 			s = match_strdup(&args[0]);
+ 			if (!s) {
+@@ -1142,6 +1184,9 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+         clnt->is_dotx_ok = 0;
+         clnt->minzcpages = 1;
+ 	clnt->recovery_enabled = false;
++	clnt->testip = NULL;
++	clnt->testport = 0;
++	clnt->testconn = NULL;
+ 
+ 	client_id = utsname()->nodename;
+ 	memcpy(clnt->name, client_id, strlen(client_id) + 1);
+@@ -1195,7 +1240,12 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 	err = p9_client_version(clnt);
+ 	if (err)
+ 		goto close_trans;
+- 
++
++	if (p9_is_client_test_enabled(clnt)) {
++		err = p9_recovery_test_init(clnt);
++		if (err)
++			goto close_trans;
++	}
+ 	/* P9_HDRSZ + 4 is the smallest packet header we can have that is
+ 	 * followed by data accessed from userspace by read
+ 	 */
+@@ -1208,6 +1258,8 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 	return clnt;
+ 
+ close_trans:
++	kfree(clnt->aname);
++	kfree(clnt->testip);
+         kfree(clnt->options);
+         kfree(clnt->dev_name);
+ 	clnt->trans_mod->close(clnt);
+@@ -1236,13 +1288,19 @@ void p9_client_destroy(struct p9_client *clnt)
+ 		p9_fid_destroy(fid);
+ 	}
+ 
++	if (p9_is_client_test_enabled(clnt))
++		p9_recovery_test_cleanup(clnt);
++
+ 	p9_tag_cleanup(clnt);
+ 
++	kfree(clnt->aname);
++	kfree(clnt->testip);
+         kfree(clnt->options);
+         kfree(clnt->dev_name);
+ 
++
+         p9_cleanup_recovery_state(clnt);
+- 
++
+ 	kmem_cache_destroy(clnt->fcall_cache);
+ 	kfree(clnt);
+ }
+diff --git a/net/9p/recovery.c b/net/9p/recovery.c
+index f30a285..c6eee46 100644
+--- a/net/9p/recovery.c
++++ b/net/9p/recovery.c
+@@ -30,6 +30,16 @@
+ #include <linux/slab.h>
+ #include <net/9p/9p.h>
+ #include <net/9p/client.h>
++#include <net/9p/transport.h>
++#include <linux/file.h>
++#include <linux/inet.h>
++#include <linux/un.h>
++#include <linux/net.h>
++#include <linux/nsproxy.h>
++#include <net/sock.h>
++#include <linux/mm.h>
++#include <linux/uaccess.h>
++
+ #include "protocol.h"
+ #include "recovery.h"
+ 
+@@ -50,6 +60,18 @@
+ 	(x)[8],  (x)[9],  (x)[10], (x)[11], \
+ 	(x)[12], (x)[13], (x)[14], (x)[15]
+ 
++/**
++ * strlen() of a vsan UUID formatted with VSAN_UUID_FMT
++ */
++#define VSAN_UUID_FMT_STRLEN (16 * 2 + 4)
++
++#define BP_MAX_STR_SIZE 32
++
++// breakpoint format defined in puppet master server
++// { "testid" : "uuid", "request" : "trap", "breakpont" : "breakpoint_name"}
++#define BP_REQUEST_FORMAT "{\"test_id\": \"%s\", \"request\": \"trap\",\"breakpoint\": \"%s\"}"
++#define BP_REQUEST_SIZE 120 // VSAN_UUID_FMT_STRLEN + BP_MAX_STR_SIZE + BP_REQUEST_FORMAT size
++
+ struct p9_globalid {
+ 	uint8_t      uuid[UUID_BYTES];
+ 	uint64_t     snapid;
+@@ -865,3 +887,137 @@ p9_cleanup_recovery_state(struct p9_client *client)
+ 	}
+ 
+ }
++
++/**********************************************************************
++ *
++ * Testing recovery logic with break point module.
++ *
++ * Connect to puppet master running at server host and send message to
++ * it when break point is hit and wait for response from puppet master.
++ *
++ **********************************************************************/
++
++struct p9_test_conn_t {
++	struct socket *sock;
++	struct file *file;
++};
++
++
++int p9_recovery_test_init(struct p9_client *client)
++{
++	struct p9_test_conn_t *conn;
++	int err;
++	struct socket *csocket = NULL;
++	struct file *file;
++	struct sockaddr_in sin_server;
++
++	if (!client->testip || p9_is_valid_ipaddr4(client->testip))
++		return -EINVAL;
++
++	pr_info("Connecting to test server %s:%d\n",
++		client->testip, client->testport);
++
++	conn = kzalloc(sizeof(struct p9_test_conn_t), GFP_NOFS);
++	if (!conn)
++		return -ENOMEM;
++
++	sin_server.sin_family = AF_INET;
++	sin_server.sin_addr.s_addr = in_aton(client->testip);
++	sin_server.sin_port = htons(client->testport);
++
++	err = __sock_create(current->nsproxy->net_ns, PF_INET,
++			    SOCK_STREAM, IPPROTO_TCP, &csocket, 1);
++	if (err) {
++		pr_err("%s (%d) : problem creating socket \n",
++		       __func__, task_pid_nr(current));
++		kfree(conn);
++		return err;
++	}
++
++	err = csocket->ops->connect(csocket,
++				    (struct sockaddr *)&sin_server,
++				    sizeof(struct sockaddr_in), 0);
++	if (err < 0) {
++		pr_err("%s (%d): problem connecting socket to %s\n",
++		       __func__, task_pid_nr(current), client->testip);
++		sock_release(csocket);
++		kfree(conn);
++		return err;
++	}
++
++	csocket->sk->sk_allocation = GFP_NOIO;
++	file = sock_alloc_file(csocket, 0, NULL);
++	if (IS_ERR(file)) {
++		pr_err("%s (%d): failed to map socket to fd\n",
++		       __func__, task_pid_nr(current));
++		sock_release(csocket);
++		kfree(conn);
++		return PTR_ERR(file);
++	}
++
++	get_file(file);
++	conn->sock = csocket;
++	conn->file = file;
++	conn->file->f_flags |= O_NONBLOCK;
++	client->testconn = conn;
++
++	return 0;
++}
++
++void p9_recovery_test_cleanup(struct p9_client *client)
++{
++	struct p9_test_conn_t *conn = client->testconn;
++
++	client->testconn = NULL;
++	fput(conn->file);
++	sock_release(conn->sock);
++	kfree(conn);
++}
++
++
++/*
++ * p9_recovery_breakpoint --
++ *
++ *      Send breakpoint message to puppet master and
++ *      wait for reply from puppet master.
++ */
++
++void p9_recovery_breakpoint(struct p9_client *clnt, char *bp)
++{
++	char buffer[BP_REQUEST_SIZE + 1];
++	int len;
++	mm_segment_t oldfs;
++	struct p9_test_conn_t *conn = clnt->testconn;
++	int ret;
++
++	len = snprintf(buffer, sizeof(buffer), BP_REQUEST_FORMAT, clnt->aname, bp);
++	BUG_ON(len < 0);
++	buffer[len] = (char)0xC8;
++
++	do {
++		oldfs = get_fs();
++		set_fs(KERNEL_DS);
++
++		ret = kernel_write(conn->file, (__force void __user *)buffer,
++				   len + 1, &conn->file->f_pos);
++		set_fs(oldfs);
++	} while (ret == -ERESTARTSYS);
++
++	if (ret <= 0) {
++		pr_err("Write to test socket failed:%d\n", ret);
++		return;
++	}
++
++	// wait for return from puppet master
++	do {
++		oldfs = get_fs();
++		set_fs(KERNEL_DS);
++
++		ret = kernel_read(conn->file, (__force void __user *)buffer,
++				  len, &conn->file->f_pos);
++		set_fs(oldfs);
++	} while (ret == -ERESTARTSYS);
++
++	if (ret <= 0)
++		pr_err("read from test socket failed:%d\n", ret);
++}
+diff --git a/net/9p/recovery.h b/net/9p/recovery.h
+index 02f6f07..30fc7a4 100644
+--- a/net/9p/recovery.h
++++ b/net/9p/recovery.h
+@@ -19,6 +19,9 @@
+  *  Boston, MA  02111-1301  USA
+  *
+  */
++#ifndef NET_9P_RECOVERY_H
++#define NET_9P_RECOVERY_H
++
+ #include <net/9p/client.h>
+ 
+ #define P9_GLOBALID_SIZE   32
+@@ -51,3 +54,7 @@ int p9_replay_shadow(struct p9_client *client);
+ void p9_cleanup_recovery_state(struct p9_client *client);
+ int p9_update_tlock_desc(struct p9_fid *fid,
+                          struct p9_flock *pfl);
++int p9_recovery_test_init(struct p9_client *client);
++void p9_recovery_test_cleanup(struct p9_client *client);
++void p9_recovery_breakpoint(struct p9_client *client, char *breakpoint);
++#endif // NET_9P_RECOVERY_H
+diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+index 23d8167..14e02cc 100644
+--- a/net/9p/trans_fd.c
++++ b/net/9p/trans_fd.c
+@@ -967,7 +967,7 @@ static void p9_fd_close(struct p9_client *client)
+ /*
+  * stolen from NFS - maybe should be made a generic function?
+  */
+-static inline int valid_ipaddr4(const char *buf)
++int p9_is_valid_ipaddr4(const char *buf)
+ {
+ 	int rc, count, in[4];
+ 
+@@ -1064,7 +1064,7 @@ p9_fd_create_tcp(struct p9_client *client, const char *addr, char *args)
+ 	if (err < 0)
+ 		return err;
+ 
+-	if (addr == NULL || valid_ipaddr4(addr) < 0)
++	if (addr == NULL || p9_is_valid_ipaddr4(addr) < 0)
+ 		return -EINVAL;
+ 
+ 	csocket = NULL;
+-- 
+2.7.4
+

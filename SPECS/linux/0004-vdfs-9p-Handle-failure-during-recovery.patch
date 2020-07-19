@@ -1,0 +1,367 @@
+From e990c823e3c5d4fe8dd81463b78771370099ff16 Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com>
+Date: Sun, 9 Aug 2020 05:14:42 -0700
+Subject: [PATCH 4/5] kernels: vdfs 9p: Handle failure during recovery
+
+    if the failure is due to closed connection from server
+    i.e server restarted again or network disconnect, then
+    client will retry connect and replay shadow state.
+
+    if the failures is due to some other reason e.g OOM
+    in client side, then connection is marked as RECOVERY_FAILED.
+---
+ include/net/9p/client.h |   2 +
+ net/9p/client.c         |  31 +++++++++-----
+ net/9p/recovery.c       | 106 +++++++++++++++++++++++++++---------------------
+ net/9p/trans_fd.c       | 101 +++++++++++++++++++++++++++++----------------
+ 4 files changed, 148 insertions(+), 92 deletions(-)
+
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index 7749068..105475d 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -172,6 +172,7 @@ struct p9_client {
+ 
+ 	// recovery
+ 	bool recovery_enabled;
++	bool retry_recovery;
+ 	char *dev_name;
+ 	char *options;
+ 	wait_queue_head_t recovery_queue;
+@@ -310,4 +311,5 @@ void p9_client_exit(void);
+ struct p9_req_t *
+ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...);
+ int p9_tag_remove(struct p9_client *c, struct p9_req_t *r);
++int p9_client_version(struct p9_client *c);
+ #endif /* NET_9P_CLIENT_H */
+diff --git a/net/9p/client.c b/net/9p/client.c
+index a1c0303..6cdc7a2 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -920,6 +920,15 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
+ 
+ 		if (c->recovery_enabled) {
+ 	                int state;
++
++			/* recovery failed, retrying */
++			if (c->retry_recovery && c->recovery_thread == current) {
++				pr_info("%s: recovery failed,retrying.\n", c->aname);
++
++				err = -EREMOTEIO;
++				goto reterr;
++			}
++
+ 		        state = p9_client_wait_for_recovery(c);
+ 			if (state == RECOVERY_COMPLETE) {
+ 	                     p9_debug(P9_DEBUG_MUX, "Retrying request after recovery\n");
+@@ -1087,7 +1096,7 @@ static void p9_fid_destroy(struct p9_fid *fid)
+ 	kfree(fid);
+ }
+ 
+-static int p9_client_version(struct p9_client *c)
++int p9_client_version(struct p9_client *c)
+ {
+ 	int err = 0;
+ 	struct p9_req_t *req;
+@@ -1187,6 +1196,7 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 	clnt->testip = NULL;
+ 	clnt->testport = 0;
+ 	clnt->testconn = NULL;
++	clnt->recovery_thread = NULL;
+ 
+ 	client_id = utsname()->nodename;
+ 	memcpy(clnt->name, client_id, strlen(client_id) + 1);
+@@ -1322,8 +1332,10 @@ EXPORT_SYMBOL(p9_client_destroy);
+ int p9_client_run_recovery(struct p9_client *clnt)
+ {
+ 	int err;
+-	int num_retries = 0;
++	int num_retries;
+ 
++retry:
++	num_retries = 0;
+ 	if (clnt->trans_mod)
+ 		clnt->trans_mod->close(clnt);
+ 	clnt->trans = NULL;
+@@ -1332,7 +1344,7 @@ int p9_client_run_recovery(struct p9_client *clnt)
+ 		err = clnt->trans_mod->create(clnt, clnt->dev_name, clnt->options);
+ 
+ 		if (err == 0)
+-			pr_info("%s: reconnect successful\n", clnt->dev_name);
++			pr_info("%s: reconnect successful\n", clnt->aname);
+ 			break;
+ 
+ 		num_retries++;
+@@ -1341,18 +1353,17 @@ int p9_client_run_recovery(struct p9_client *clnt)
+ 
+ 	if (err != 0) {
+ 		pr_err("%s: reconnecting to server failed, bailing out recovery",
+-		       clnt->dev_name);
++		       clnt->aname);
+ 		return err;
+ 	}
+ 
+-	err = p9_client_version(clnt);
+-	if (err) {
+-		printk(KERN_INFO "client version failed\n");
+-		return err;
++	// recovery
++	err = p9_replay_shadow(clnt);
++	if (err && clnt->retry_recovery) {
++		goto retry; // retry recovery.
+ 	}
+ 
+-	// recovery
+-	return p9_replay_shadow(clnt);
++	return err;
+ }
+ 
+ 
+diff --git a/net/9p/recovery.c b/net/9p/recovery.c
+index c6eee46..13fdd8a 100644
+--- a/net/9p/recovery.c
++++ b/net/9p/recovery.c
+@@ -818,53 +818,65 @@ p9_recover_file_locks(struct p9_client *clnt, p9_recovery_desc *desc)
+ int
+ p9_replay_shadow(struct p9_client *client)
+ {
+-       p9_recovery_desc *desc;
+-
+-       list_for_each_entry(desc, &client->recovery_list, recovery_link) {
+-
+-               switch (desc->op) {
+-               case P9_TATTACH:
+-                       if (p9_recovery_handle_attach(client, desc)) {
+-                               pr_info("attach request failed \n");
+-                               /* TODO: Need to invalidate the mount point here */
+-                               return -EINVAL;
+-                       }
+-                       break;
+-
+-               case P9_TWALKX:
+-                       if (p9_recovery_handle_walk(client, desc)) {
+-                               pr_info("Failed to handle walk\n");
+-                               /*
+-                                * TODO: Need to handle the case where we are not able to
+-                                * recover the fid and the fid has non-empty state list. The
+-                                * fid should be invalidated and all inflight IOs should fail
+-                                * with EIO. We can mark the status as RECOVERY_FAILED to fail
+-                                * all incoming ops.
+-                                */
+-                               break;
+-                       }
+-
+-                       if (p9_recover_file_locks(client, desc)) {
+-                               pr_info("failed to recover state\n");
+-                               /*
+-                                * TODO: need to return EIO for all operations on this fid.
+-                                */
+-                       }
+-                       break;
+-
+-               case P9_TXATTRWALK:
+-                       if (p9_recovery_handle_xattrwalk(client, desc)) {
+-                               pr_info("Failed to handle xattrwalk\n");
+-                       }
+-                       break;
+-
+-               default:
+-                       pr_err("Invalid recovery description\n");
+-                       return -EINVAL;
+-               }
+-       }
+-
+-       return 0;
++	p9_recovery_desc *desc;
++	int ret;
++
++	client->recovery_enabled = false;
++	client->retry_recovery = false;
++
++	ret = p9_client_version(client);
++	if (ret) {
++		pr_err("%s: client version failed \n", client->aname);
++		return ret;
++	}
++
++       /* re-check if server has recovery enabled */
++        if (!client->recovery_enabled) {
++                pr_err("%s: Server doesn't support recovery, protocol %d. "
++                        "bail out recovery\n",
++                       client->aname, client->proto_version);
++                return -EINVAL;
++        }
++        list_for_each_entry(desc, &client->recovery_list, recovery_link) {
++
++                switch (desc->op) {
++                case P9_TATTACH:
++                        ret = p9_recovery_handle_attach(client, desc);
++                        if (ret) {
++                                pr_info("attach request failed \n");
++                                return ret;
++                        }
++                        break;
++
++                case P9_TWALKX:
++                        ret = p9_recovery_handle_walk(client, desc);
++                        if (ret) {
++                                pr_info("Failed to handle walk\n");
++                                return ret;
++                        }
++
++                        ret = p9_recover_file_locks(client, desc);
++                        if (ret) {
++                                pr_info("failed to recover state\n");
++                                return ret;
++                        }
++                        break;
++
++                case P9_TXATTRWALK:
++                        ret = p9_recovery_handle_xattrwalk(client, desc);
++                        if (ret) {
++                                pr_info("Failed to handle xattrwalk\n");
++                                return ret;
++                        }
++                        break;
++
++                default:
++                        pr_err("Invalid recovery description\n");
++                        return -EINVAL;
++                }
++        }
++
++	return 0;
+ }
+ 
+ void
+diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+index 14e02cc..079bfee 100644
+--- a/net/9p/trans_fd.c
++++ b/net/9p/trans_fd.c
+@@ -286,26 +286,67 @@ static int p9_fd_read(struct p9_client *client, void *v, int len)
+ static int
+ p9_recovery_fn(void *data)
+ {
+-   int err;
+-   unsigned long flags;
+-   struct p9_client *client = (struct p9_client *)data;
+-
+-   err = p9_client_run_recovery(client);
+-   spin_lock_irqsave(&client->recovery_lock, flags);
+-   if (err == 0) {
+-      client->rstate = RECOVERY_COMPLETE;
+-      pr_info("%s: Recovery successful\n", client->dev_name);
+-   } else {
+-      client->rstate = RECOVERY_FAILED;
+-      client->status = Disconnected;
+-   }
+-
+-   wake_up(&client->recovery_queue);
+-   spin_unlock_irqrestore(&client->recovery_lock, flags);
+-
+-   return 0;
++	int err;
++	unsigned long flags;
++	struct p9_client *client = (struct p9_client *)data;
++
++	err = p9_client_run_recovery(client);
++	spin_lock_irqsave(&client->recovery_lock, flags);
++
++	if (err == 0) {
++		client->rstate = RECOVERY_COMPLETE;
++		pr_info("%s: Recovery successful\n", client->dev_name);
++	} else {
++		client->rstate = RECOVERY_FAILED;
++		client->status = Disconnected;
++	}
++	wake_up(&client->recovery_queue);
++	client->recovery_thread = NULL;
++	spin_unlock_irqrestore(&client->recovery_lock, flags);
++
++	return 0;
+ }
+ 
++static int
++p9_recovery_start(struct p9_client *client)
++{
++	unsigned long flags;
++
++	// BUG_ON(client->recovery_enabled);
++
++	/* check for recursive recovery */
++	spin_lock_irqsave(&client->recovery_lock, flags);
++	if (client->recovery_thread != NULL &&
++	    client->rstate == RECOVERY_PENDING) {
++		client->retry_recovery = true;
++		wake_up_process(client->recovery_thread);
++		spin_unlock_irqrestore(&client->recovery_lock, flags);
++		pr_err("%s: Disconnected during recovery, retry\n",
++		       client->aname);
++		return 0;
++	}
++
++	client->rstate = RECOVERY_PENDING;
++
++	client->recovery_thread = kthread_create(p9_recovery_fn, client,
++						 "p9_recovery_thread");
++	if (IS_ERR(client->recovery_thread)) {
++		client->rstate = RECOVERY_FAILED;
++		wake_up(&client->recovery_queue);
++		spin_unlock_irqrestore(&client->recovery_lock,
++				       flags);
++		pr_err("%s:Failed to create recovery thread\n", client->aname);
++		return -1;
++	}
++
++	wake_up_process(client->recovery_thread);
++	p9_debug(P9_DEBUG_TRANS, "starting recovery thread \n");
++
++	spin_unlock_irqrestore(&client->recovery_lock, flags);
++	return 0;
++}
++
++
+ /**
+  * p9_read_work - called when there is some data to be read from a transport
+  * @work: container of work to be done
+@@ -342,22 +383,8 @@ static void p9_read_work(struct work_struct *work)
+ 		goto end_clear;
+ 
+ 	if (err == 0 && m->client->recovery_enabled) { // socket is broken
+-           unsigned long flags;
+-
+-           spin_lock_irqsave(&m->client->recovery_lock, flags);
+-           m->client->rstate = RECOVERY_PENDING;
+-           spin_unlock_irqrestore(&m->client->recovery_lock, flags);
+-           m->client->recovery_thread = kthread_create(p9_recovery_fn, m->client,
+-                                                       "p9_recovery_thread");
+-           if (!IS_ERR(m->client->recovery_thread)) {
+-               wake_up_process(m->client->recovery_thread);
+-               p9_debug(P9_DEBUG_TRANS, "starting recovery thread \n");
+-            } else {
+-               m->client->rstate = RECOVERY_FAILED;
+-               pr_err("%s:Failed to create recovery thread\n", m->client->dev_name);
+-               goto error;
+-            }
+-            return;
++		p9_recovery_start(m->client);
++		goto error;
+          }
+          if (err <= 0) {
+             goto error;
+@@ -539,7 +566,11 @@ static void p9_write_work(struct work_struct *work)
+ 
+ 	if (err < 0)
+ 		goto error;
+-	else if (err == 0) {
++	else if (err == 0 && m->client->recovery_enabled) {
++		p9_recovery_start(m->client);
++		err = -EREMOTEIO;
++		goto error;
++	} else if (err == 0) {
+ 		err = -EREMOTEIO;
+ 		goto error;
+ 	}
+-- 
+2.7.4
+
