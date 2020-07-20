@@ -1,7 +1,7 @@
 Summary:	Text file viewer
 Name:		less
 Version:	487
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.greenwoodsoftware.com/less
 Group:		Applications/File
@@ -16,9 +16,7 @@ The Less package contains a text file viewer
 %prep
 %setup -q
 %build
-./configure \
-	--prefix=%{_prefix} \
-	--sysconfdir=%{_sysconfdir}
+%configure
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -27,6 +25,8 @@ make DESTDIR=%{buildroot} install
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*   Mon Jul 20 2020 Sharan Turlapati <sturlapati@vmware.com> 487-2
+-   Replace ./configure with %configure
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 487-1
 -   Upgrade version to 487
 *   Tue Oct 18 2016 Anish Swaminathan <anishs@vmware.com>  481-1
