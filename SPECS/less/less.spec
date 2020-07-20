@@ -1,7 +1,7 @@
 Summary:	Text file viewer
 Name:		less
 Version:	481
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.greenwoodsoftware.com/less
 Group:		Applications/File
@@ -16,9 +16,7 @@ The Less package contains a text file viewer
 %prep
 %setup -q
 %build
-./configure \
-	--prefix=%{_prefix} \
-	--sysconfdir=%{_sysconfdir}
+%configure
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -27,6 +25,8 @@ make DESTDIR=%{buildroot} install
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*   Mon Jul 20 2020 Sharan Turlapati <sturlapati@vmware.com> 481-3
+-   Replacing ./configure with %configure
 *   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 481-2
 -   Use specified version of ncurses wich has long chtype and mmask_t
     (see ncurses changelog)
