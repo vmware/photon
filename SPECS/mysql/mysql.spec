@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.20
+Version:        8.0.21
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=c3bf2fe528c4a652c8f72cfa980f7bc50c44d28b
+%define         sha1 mysql-boost=fe39b69fa3ae21801efe8e94749696df01f55ddc
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -35,7 +35,7 @@ Development headers for developing applications linking to maridb
 %build
 cmake . \
       -DCMAKE_INSTALL_PREFIX=/usr   \
-      -DWITH_BOOST=boost/boost_1_70_0 \
+      -DWITH_BOOST=boost/boost_1_72_0 \
       -DINSTALL_MANDIR=share/man \
       -DINSTALL_DOCDIR=share/doc \
       -DINSTALL_DOCREADMEDIR=share/doc \
@@ -78,6 +78,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Mon Jul 20 2020 Tapas Kundu <tkundu@vmware.com> 8.0.21-1
+-   Update to 8.0.21
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 8.0.20-1
 -   Update to 8.0.20
 *   Thu Apr 16 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 8.0.19-1
