@@ -1,0 +1,538 @@
+From 70838c6ecbcfccca9d65c1e7793f76ac1ff5900f Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 24 Jul 2020 14:12:30 +0530
+Subject: [PATCH 1/7] arp_probe_unknown_unicast.patch
+
+This patchset introduces proactive learning of unknown unicast senders.
+whenever an unicast pkt of unknown sender is received this patch helps
+in sending the ARP_REQUEST with the src mac address received from
+"arp_probe_src_mac" proc entry to learn and update the ARP table.
+This feature is enabled using "arp_probe" proc entry. It adds a
+packet statistics helper utility, which consolidates the unicast packets
+received by all CPUs.
+---
+ include/linux/if_bridge.h    |   1 +
+ include/uapi/linux/if_link.h |   1 +
+ net/bridge/br.c              |  12 +++
+ net/bridge/br_device.c       |  10 ++
+ net/bridge/br_input.c        | 231 +++++++++++++++++++++++++++++++++++++++++++
+ net/bridge/br_netlink.c      |   8 ++
+ net/bridge/br_private.h      |   9 ++
+ net/bridge/br_sysfs_br.c     |  24 +++++
+ net/bridge/br_sysfs_if.c     |   2 +
+ net/core/rtnetlink.c         |   2 +
+ 10 files changed, 300 insertions(+)
+
+diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
+index c20c7e1..ab9db1f 100644
+--- a/include/linux/if_bridge.h
++++ b/include/linux/if_bridge.h
+@@ -51,6 +51,7 @@ struct br_ip_list {
+ #define BR_BCAST_FLOOD		BIT(14)
+ #define BR_NEIGH_SUPPRESS	BIT(15)
+ #define BR_ISOLATED		BIT(16)
++#define BR_SINK_CONNECTED	BIT(17)
+ 
+ #define BR_DEFAULT_AGEING_TIME	(300 * HZ)
+ 
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 43391e2..b10e99d 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -337,6 +337,7 @@ enum {
+ 	IFLA_BRPORT_NEIGH_SUPPRESS,
+ 	IFLA_BRPORT_ISOLATED,
+ 	IFLA_BRPORT_BACKUP_PORT,
++	IFLA_BRPORT_SINK_CONNECTED,
+ 	__IFLA_BRPORT_MAX
+ };
+ #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
+diff --git a/net/bridge/br.c b/net/bridge/br.c
+index b0a0b82..e39f162 100644
+--- a/net/bridge/br.c
++++ b/net/bridge/br.c
+@@ -23,6 +23,11 @@
+ 
+ #include "br_private.h"
+ 
++#ifdef CONFIG_SYSCTL
++extern int br_input_sysctl_init(void);
++extern void br_input_sysctl_fini(void);
++#endif
++
+ /*
+  * Handle changes in state of network devices enslaved to a bridge.
+  *
+@@ -246,6 +251,10 @@ static int __init br_init(void)
+ 		"need this.\n");
+ #endif
+ 
++#ifdef CONFIG_SYSCTL
++	br_input_sysctl_init();
++#endif
++
+ 	return 0;
+ 
+ err_out5:
+@@ -279,6 +288,9 @@ static void __exit br_deinit(void)
+ 	br_fdb_test_addr_hook = NULL;
+ #endif
+ 	br_fdb_fini();
++#ifdef CONFIG_SYSCTL
++	br_input_sysctl_fini();
++#endif
+ }
+ 
+ module_init(br_init)
+diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+index 9ce661e..b8396ff 100644
+--- a/net/bridge/br_device.c
++++ b/net/bridge/br_device.c
+@@ -125,15 +125,23 @@ static int br_dev_init(struct net_device *dev)
+ 	if (!br->stats)
+ 		return -ENOMEM;
+ 
++	br->ukn_stats = alloc_percpu_gfp(struct ukn_unicast_stats, GFP_KERNEL);
++	if (!br->ukn_stats) {
++		free_percpu(br->stats);
++		return -ENOMEM;
++	}
++
+ 	err = br_fdb_hash_init(br);
+ 	if (err) {
+ 		free_percpu(br->stats);
++		free_percpu(br->ukn_stats);
+ 		return err;
+ 	}
+ 
+ 	err = br_vlan_init(br);
+ 	if (err) {
+ 		free_percpu(br->stats);
++		free_percpu(br->ukn_stats);
+ 		br_fdb_hash_fini(br);
+ 		return err;
+ 	}
+@@ -141,6 +149,7 @@ static int br_dev_init(struct net_device *dev)
+ 	err = br_multicast_init_stats(br);
+ 	if (err) {
+ 		free_percpu(br->stats);
++		free_percpu(br->ukn_stats);
+ 		br_vlan_flush(br);
+ 		br_fdb_hash_fini(br);
+ 	}
+@@ -158,6 +167,7 @@ static void br_dev_uninit(struct net_device *dev)
+ 	br_vlan_flush(br);
+ 	br_fdb_hash_fini(br);
+ 	free_percpu(br->stats);
++	free_percpu(br->ukn_stats);
+ }
+ 
+ static int br_dev_open(struct net_device *dev)
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index 2532c1a..6d2a951 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -23,6 +23,18 @@
+ #include "br_private.h"
+ #include "br_private_tunnel.h"
+ 
++#ifdef CONFIG_SYSCTL
++#include <linux/sysctl.h>
++static struct ctl_table_header *br_input_sysctl_header;
++int br_arp_probe __read_mostly = 1;
++int br_arp_probe_per_packets __read_mostly = 8192;
++u8 br_arp_probe_src_mac[ETH_ALEN+1] = {0};
++int br_arp_probe_src_mac_set = 0;
++#else
++#define br_arp_probe 1
++#define br_arp_probe_per_packets 8192
++#endif
++
+ /* Hook for brouter */
+ br_should_route_hook_t __rcu *br_should_route_hook __read_mostly;
+ EXPORT_SYMBOL(br_should_route_hook);
+@@ -34,6 +46,124 @@ br_netif_receive_skb(struct net *net, struct sock *sk, struct sk_buff *skb)
+ 	return netif_receive_skb(skb);
+ }
+ 
++#ifdef CONFIG_SYSCTL
++/* addr string should be in format like 00:50:56:A8:EF:F3 */
++static int string_to_mac(char *mac, u8 *macs, int len)
++{
++	int n;
++
++	n = sscanf(macs, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
++           &mac[0], &mac[1], &mac[2], &mac[3], &mac[4], &mac[5]);
++
++	if ( n != 6 ) {
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int proc_arp_probe_src_mac(struct ctl_table *table, int write,
++				void __user *buffer,
++				size_t *lenp, loff_t *ppos)
++{
++	char macz[ETH_ALEN+1] = {0};
++	char mac[ETH_ALEN+1];
++	char macs[18];
++	size_t len;
++
++	if (!*lenp || (*ppos && !write)) {
++		*lenp = 0;
++		return 0;
++	}
++
++	if (write) {
++		len = *lenp > 17 ? 17 : *lenp;
++		if (len != 17) {
++			printk(KERN_ERR "length %lu or format of mac address is invalid, "
++				"should be in format as 00:50:56:A8:EF:F3", len);
++			return -EINVAL;
++		}
++
++		if (copy_from_user(macs, buffer, len))
++			return -EFAULT;
++
++		macs[17] = 0;
++
++		if ( string_to_mac(mac, macs, len) ) {
++			printk(KERN_ERR "invalid format of mac address %s, should be in " \
++				"format as 00:50:56:A8:EF:F3\n", macs);
++			return -EINVAL;
++		}
++
++		memcpy(br_arp_probe_src_mac, mac, ETH_ALEN);
++		br_arp_probe_src_mac[ETH_ALEN] = 0;
++		if (memcmp(mac, macz, ETH_ALEN) == 0) {
++			br_arp_probe_src_mac_set = 0;
++		}else {
++			br_arp_probe_src_mac_set = 1;
++		}
++
++		*ppos += len;
++
++		return 0;
++	}
++
++	len = sysfs_format_mac(macs, br_arp_probe_src_mac,
++			strlen(br_arp_probe_src_mac));
++
++	if (len > *lenp) len = *lenp;
++
++	if (copy_to_user(buffer, macs, len))
++		return -EFAULT;
++
++	*lenp = len;
++	*ppos += len;
++
++	return 0;
++
++}
++
++static struct ctl_table br_input_table[] = {
++	{
++		.procname	= "arp_probe",
++		.data		= &br_arp_probe,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
++	{
++		.procname	= "arp_probe_per_packets",
++		.data		= &br_arp_probe_per_packets,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
++	{
++		.procname	= "arp_probe_src_mac",
++		.data		= &br_arp_probe_src_mac,
++		.maxlen		= 17,
++		.mode		= 0644,
++		.proc_handler	= proc_arp_probe_src_mac,
++	},
++	{}
++};
++
++int br_input_sysctl_init(void)
++{
++	br_input_sysctl_header = register_net_sysctl(&init_net, "net/bridge", br_input_table);
++	if (br_input_sysctl_header == NULL) {
++		printk(KERN_ERR "br: can't register to sysctl.\n");
++		return -ENOMEM;
++	}
++	return 0;
++}
++
++void br_input_sysctl_fini(void)
++{
++	unregister_net_sysctl_table(br_input_sysctl_header);
++}
++#endif
++
+ static int br_pass_frame_up(struct sk_buff *skb)
+ {
+ 	struct net_device *indev, *brdev = BR_INPUT_SKB_CB(skb)->brdev;
+@@ -71,6 +201,104 @@ static int br_pass_frame_up(struct sk_buff *skb)
+ 		       br_netif_receive_skb);
+ }
+ 
++/*
++ * under certain circumstances, emit packet to solicit response
++ * from which bridge can learn.
++ */
++static void br_proactive_learn(
++	struct net_bridge *br, struct net_bridge_port *p, struct sk_buff *skb)
++{
++	const struct ethhdr *ethhdr;
++	struct sk_buff *skb2;
++	const u8 *daddr = NULL, *dest_hw = NULL, *src_hw = NULL;
++	struct ukn_unicast_stats *stats = this_cpu_ptr(br->ukn_stats);
++	u32 vlan, buf;
++
++	if (!br_arp_probe) {
++		return;
++	}
++
++	if (unlikely(!skb->dev)) {
++		printk_ratelimited(KERN_WARNING "%s: dev of skb %p is null, failed " \
++			"to creat arp probe", __FUNCTION__, skb);
++		return;
++	}
++
++	/* Skip unknown unicast coming from gretap dev, which means this packet is
++	 * from remote site. If its destination mac is at remote, remote bridge
++	 * will send out arp probe. If its destincation mac is actually local, the
++	 * reverse packet will create the mac entry in local fdb. So no needs to
++	 * send arp probe back to gretap over l2c tunnel.
++	 */
++	if (!(p->flags & BR_SINK_CONNECTED)) {
++		return;
++	}
++
++	stats->ukn_unicast_total_rcvd++;
++
++	/* do sanity check on skb */
++	if (skb->protocol != cpu_to_be16(ETH_P_IP)) {
++		return;
++	}
++
++	/* check the size of IP header */
++	if (unlikely(skb->len < sizeof(struct iphdr))) {
++		printk_ratelimited(KERN_WARNING "%s: can't parse destination IP, " \
++			"header size is less than %lu", __FUNCTION__, sizeof(struct iphdr));
++		return;
++	}
++
++	/* If skb_headlen is less than 20, get daddr from buffer of skb header */
++	daddr = skb_header_pointer(skb, offsetof(struct iphdr, daddr),
++				sizeof(u32), &buf);
++	if (!daddr) {
++		printk_ratelimited(KERN_WARNING "%s: Failed to get daddr, skb_headlen "
++			"is %d", __FUNCTION__, skb_headlen(skb));
++		return;
++	}
++
++	/* every <br_arp_probe_per_packets> of unknown unicast received, we trigger
++	 * an arp probe per CPU.
++	 */
++	stats->ukn_unicast_ip_rcvd++;
++	if (br_arp_probe_per_packets &&
++		(stats->ukn_unicast_ip_rcvd%br_arp_probe_per_packets)) {
++		return;
++	}
++
++	if (likely(skb_mac_header_was_set(skb))) {
++		ethhdr = eth_hdr(skb);
++		dest_hw = ethhdr->h_dest;
++	}
++
++	if (br_arp_probe_src_mac_set) {
++		src_hw = br_arp_probe_src_mac;
++	}else {
++		src_hw = skb->dev->dev_addr;
++	}
++
++	/* skb->dev is actually dev of bridge port */
++	skb2 = arp_create(ARPOP_REQUEST, ETH_P_ARP, *(__be32*)(daddr), skb->dev,
++				0, dest_hw, src_hw, NULL);
++	if (!skb2) {
++		printk_ratelimited(KERN_ERR "Failed to create proactive learning " \
++			"ARP request");
++		stats->ukn_unicast_arp_create_err++;
++		return;
++	}
++
++	/* copy the input vlan tag to arp probe */
++	vlan = skb_vlan_tag_get(skb);
++	if (vlan != 0) {
++		__vlan_hwaccel_put_tag(skb2, cpu_to_be16(ETH_P_8021Q), vlan);
++	}
++
++	dev_queue_xmit(skb2);
++	stats->ukn_unicast_total_probe_sent++;
++
++	return;
++}
++
+ /* note: already called with rcu_read_lock */
+ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
+ {
+@@ -163,6 +391,9 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 			dst->used = now;
+ 		br_forward(dst->dst, skb, local_rcv, false);
+ 	} else {
++		if (pkt_type == BR_PKT_UNICAST) {
++			br_proactive_learn(br, p, skb);
++		}
+ 		if (!mcast_hit)
+ 			br_flood(br, skb, pkt_type, local_rcv, false);
+ 		else
+diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+index ec2b58a..d58fc73 100644
+--- a/net/bridge/br_netlink.c
++++ b/net/bridge/br_netlink.c
+@@ -140,6 +140,7 @@ static inline size_t br_port_info_size(void)
+ 		+ nla_total_size(1)	/* IFLA_BRPORT_VLAN_TUNNEL */
+ 		+ nla_total_size(1)	/* IFLA_BRPORT_NEIGH_SUPPRESS */
+ 		+ nla_total_size(1)	/* IFLA_BRPORT_ISOLATED */
++		+ nla_total_size(1)     /* IFLA_BRPORT_SINK_CONNECTED */
+ 		+ nla_total_size(sizeof(struct ifla_bridge_id))	/* IFLA_BRPORT_ROOT_ID */
+ 		+ nla_total_size(sizeof(struct ifla_bridge_id))	/* IFLA_BRPORT_BRIDGE_ID */
+ 		+ nla_total_size(sizeof(u16))	/* IFLA_BRPORT_DESIGNATED_PORT */
+@@ -201,6 +202,8 @@ static int br_port_fill_attrs(struct sk_buff *skb,
+ 	    nla_put_u8(skb, IFLA_BRPORT_PROXYARP, !!(p->flags & BR_PROXYARP)) ||
+ 	    nla_put_u8(skb, IFLA_BRPORT_PROXYARP_WIFI,
+ 		       !!(p->flags & BR_PROXYARP_WIFI)) ||
++	    nla_put_u8(skb, IFLA_BRPORT_SINK_CONNECTED,
++		       !!(p->flags & BR_SINK_CONNECTED)) ||
+ 	    nla_put(skb, IFLA_BRPORT_ROOT_ID, sizeof(struct ifla_bridge_id),
+ 		    &p->designated_root) ||
+ 	    nla_put(skb, IFLA_BRPORT_BRIDGE_ID, sizeof(struct ifla_bridge_id),
+@@ -665,6 +668,7 @@ static const struct nla_policy br_port_policy[IFLA_BRPORT_MAX + 1] = {
+ 	[IFLA_BRPORT_UNICAST_FLOOD] = { .type = NLA_U8 },
+ 	[IFLA_BRPORT_PROXYARP]	= { .type = NLA_U8 },
+ 	[IFLA_BRPORT_PROXYARP_WIFI] = { .type = NLA_U8 },
++	[IFLA_BRPORT_SINK_CONNECTED] = { .type = NLA_U8 },
+ 	[IFLA_BRPORT_MULTICAST_ROUTER] = { .type = NLA_U8 },
+ 	[IFLA_BRPORT_MCAST_TO_UCAST] = { .type = NLA_U8 },
+ 	[IFLA_BRPORT_MCAST_FLOOD] = { .type = NLA_U8 },
+@@ -772,6 +776,10 @@ static int br_setport(struct net_bridge_port *p, struct nlattr *tb[])
+ 	if (err)
+ 		return err;
+ 
++	err = br_set_port_flag(p, tb, IFLA_BRPORT_SINK_CONNECTED, BR_SINK_CONNECTED);
++	if (err)
++		return err;
++
+ 	br_vlan_tunnel_old = (p->flags & BR_VLAN_TUNNEL) ? true : false;
+ 	err = br_set_port_flag(p, tb, IFLA_BRPORT_VLAN_TUNNEL, BR_VLAN_TUNNEL);
+ 	if (err)
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 43a29b4..2d6e875 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -303,6 +303,14 @@ static inline struct net_bridge_port *br_port_get_rtnl(const struct net_device *
+ 		rtnl_dereference(dev->rx_handler_data) : NULL;
+ }
+ 
++struct ukn_unicast_stats
++{
++	unsigned long   ukn_unicast_total_rcvd;
++	unsigned long   ukn_unicast_ip_rcvd;
++	unsigned long   ukn_unicast_total_probe_sent;
++	unsigned long   ukn_unicast_arp_create_err;
++};
++
+ static inline struct net_bridge_port *br_port_get_rtnl_rcu(const struct net_device *dev)
+ {
+ 	return br_port_exists(dev) ?
+@@ -416,6 +424,7 @@ struct net_bridge {
+ 	bool				neigh_suppress_enabled;
+ 	bool				mtu_set_by_user;
+ 	struct hlist_head		fdb_list;
++	struct ukn_unicast_stats __percpu *ukn_stats;
+ };
+ 
+ struct br_input_skb_cb {
+diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
+index 0318a69..14bd300 100644
+--- a/net/bridge/br_sysfs_br.c
++++ b/net/bridge/br_sysfs_br.c
+@@ -803,6 +803,29 @@ static ssize_t vlan_stats_enabled_store(struct device *d,
+ static DEVICE_ATTR_RW(vlan_stats_enabled);
+ #endif
+ 
++static ssize_t ukn_unicast_stats_show(struct device *d,
++					 struct device_attribute *attr,
++					 char *buf)
++{
++	struct net_bridge *br = to_bridge(d);
++	struct ukn_unicast_stats sum = {0};
++	int cpu;
++
++	for_each_possible_cpu(cpu) {
++		const struct ukn_unicast_stats *stats = per_cpu_ptr(br->ukn_stats, cpu);
++		sum.ukn_unicast_total_rcvd += stats->ukn_unicast_total_rcvd;
++		sum.ukn_unicast_ip_rcvd += stats->ukn_unicast_ip_rcvd;
++		sum.ukn_unicast_total_probe_sent += stats->ukn_unicast_total_probe_sent;
++		sum.ukn_unicast_arp_create_err += stats->ukn_unicast_arp_create_err;
++	}
++	return sprintf(buf, "total_rcvd: %lu, ip_rcvd: %lu, total_probe_sent: %lu,"
++				" arp_create_err: %lu\n", sum.ukn_unicast_total_rcvd,
++				sum.ukn_unicast_ip_rcvd, sum.ukn_unicast_total_probe_sent,
++				sum.ukn_unicast_arp_create_err);
++}
++
++static DEVICE_ATTR_RO(ukn_unicast_stats);
++
+ static struct attribute *bridge_attrs[] = {
+ 	&dev_attr_forward_delay.attr,
+ 	&dev_attr_hello_time.attr,
+@@ -855,6 +878,7 @@ static struct attribute *bridge_attrs[] = {
+ 	&dev_attr_default_pvid.attr,
+ 	&dev_attr_vlan_stats_enabled.attr,
+ #endif
++	&dev_attr_ukn_unicast_stats.attr,
+ 	NULL
+ };
+ 
+diff --git a/net/bridge/br_sysfs_if.c b/net/bridge/br_sysfs_if.c
+index 7c87a2f..812f309 100644
+--- a/net/bridge/br_sysfs_if.c
++++ b/net/bridge/br_sysfs_if.c
+@@ -234,6 +234,7 @@ BRPORT_ATTR_FLAG(multicast_flood, BR_MCAST_FLOOD);
+ BRPORT_ATTR_FLAG(broadcast_flood, BR_BCAST_FLOOD);
+ BRPORT_ATTR_FLAG(neigh_suppress, BR_NEIGH_SUPPRESS);
+ BRPORT_ATTR_FLAG(isolated, BR_ISOLATED);
++BRPORT_ATTR_FLAG(sink_connected, BR_SINK_CONNECTED);
+ 
+ #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
+ static ssize_t show_multicast_router(struct net_bridge_port *p, char *buf)
+@@ -287,6 +288,7 @@ static const struct brport_attribute *brport_attrs[] = {
+ 	&brport_attr_neigh_suppress,
+ 	&brport_attr_isolated,
+ 	&brport_attr_backup_port,
++	&brport_attr_sink_connected,
+ 	NULL
+ };
+ 
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index f51973f..62db11b 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -3985,6 +3985,8 @@ int ndo_dflt_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
+ 	    brport_nla_put_flag(skb, flags, mask,
+ 				IFLA_BRPORT_UNICAST_FLOOD, BR_FLOOD) ||
+ 	    brport_nla_put_flag(skb, flags, mask,
++				IFLA_BRPORT_SINK_CONNECTED, BR_SINK_CONNECTED) ||
++	    brport_nla_put_flag(skb, flags, mask,
+ 				IFLA_BRPORT_PROXYARP, BR_PROXYARP)) {
+ 		nla_nest_cancel(skb, protinfo);
+ 		goto nla_put_failure;
+-- 
+2.7.4
+

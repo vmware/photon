@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.132
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -84,6 +84,14 @@ Patch99:        LKCM.patch
 Patch100:       0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 # Patch to perform continuous testing on RNG from Noise Source
 Patch101:       0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
+#HCX-Patches
+Patch102:       0001-arp_probe_unknown_unicast.patch
+Patch103:       0002-ip_tunnel_ect_warn.patch
+Patch104:       0003-ipip_ipsec.patch
+Patch105:       0004-fou_key.patch
+Patch106:       0005-fou_unknown.patch
+Patch107:       0006-trunk.patch
+Patch108:       0007-arpfilter.patch
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -183,6 +191,13 @@ pushd ..
 popd
 %patch100 -p1
 %patch101 -p1
+%patch102 -p1
+%patch103 -p1
+%patch104 -p1
+%patch105 -p1
+%patch106 -p1
+%patch107 -p1
+%patch108 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -335,6 +350,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jul 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.132-3
+-   Apply HCX patches
 *   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-2
 -   Fix CVE-2020-14331
 *   Thu Jul 16 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-1

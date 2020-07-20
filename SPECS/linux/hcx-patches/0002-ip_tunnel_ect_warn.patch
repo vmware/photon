@@ -1,0 +1,110 @@
+From e3f0c9e89a47c6598895fe3b3f00adc0f5f5127a Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 24 Jul 2020 14:20:01 +0530
+Subject: [PATCH 2/7] ip_tunnel_ect_warn.patch
+
+This patch fixes bug in encapsulation logic which is exposed by the
+appliance. It doesn't expect there to be a mac layer so the check
+it wants to do here ends up looking at the wrong part of the packet.
+---
+ net/ipv4/ip_tunnel.c | 63 ++++++++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 54 insertions(+), 9 deletions(-)
+
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index 375d0e5..d37d2a7 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -63,6 +63,37 @@
+ #include <net/ip6_route.h>
+ #endif
+ 
++#ifdef CONFIG_SYSCTL
++#include <linux/sysctl.h>
++static struct ctl_table_header *ip_tunnel_sysctl_header;
++int ipip_tunnel_skip_encap_decap __read_mostly = 0;
++EXPORT_SYMBOL(ipip_tunnel_skip_encap_decap);
++static struct ctl_table ip_tunnel_sysctl_table[] = {
++	{
++		.procname	= "ipip_tunnel_skip_encap_decap",
++		.data		= &ipip_tunnel_skip_encap_decap,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
++	{}
++};
++
++static int ip_tunnel_sysctl_init(void)
++{
++	ip_tunnel_sysctl_header = register_net_sysctl(&init_net, "net/ipv4",
++						      ip_tunnel_sysctl_table);
++	if (ip_tunnel_sysctl_header == NULL) {
++		printk(KERN_ERR "ip_tunnel: can't register to sysctl");
++		return -ENOMEM;
++	}
++	return 0;
++}
++#else
++#define ipip_tunnel_skip_encap_decap 0
++#endif
++
++
+ static unsigned int ip_tunnel_hash(__be32 key, __be32 remote)
+ {
+ 	return hash_32((__force u32)key ^ (__force u32)remote,
+@@ -403,15 +434,23 @@ int ip_tunnel_rcv(struct ip_tunnel *tunnel, struct sk_buff *skb,
+ 
+ 	skb_reset_network_header(skb);
+ 
+-	err = IP_ECN_decapsulate(iph, skb);
+-	if (unlikely(err)) {
+-		if (log_ecn_error)
+-			net_info_ratelimited("non-ECT from %pI4 with TOS=%#x\n",
+-					&iph->saddr, iph->tos);
+-		if (err > 1) {
+-			++tunnel->dev->stats.rx_frame_errors;
+-			++tunnel->dev->stats.rx_errors;
+-			goto drop;
++	/* If the device is gretap, or similar, the network header is
++	 * pointing to the encapped ether header now, so the
++	 * IP_ECN_decapsulate check doesn't work right.  It could be
++	 * made to work right, but isn't needed for our use case.  So
++	 * just skip it.
++	 */
++	if (ipip_tunnel_skip_encap_decap && tunnel->dev->type != ARPHRD_ETHER) {
++		err = IP_ECN_decapsulate(iph, skb);
++		if (unlikely(err)) {
++			if (log_ecn_error)
++				net_info_ratelimited("non-ECT from %pI4 with TOS=%#x\n",
++						&iph->saddr, iph->tos);
++			if (err > 1) {
++				++tunnel->dev->stats.rx_frame_errors;
++				++tunnel->dev->stats.rx_errors;
++				goto drop;
++			}
+ 		}
+ 	}
+ 
+@@ -1203,6 +1242,9 @@ int ip_tunnel_init(struct net_device *dev)
+ 
+ 	if (tunnel->collect_md)
+ 		netif_keep_dst(dev);
++#ifdef CONFIG_SYSCTL
++	ip_tunnel_sysctl_init();
++#endif
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(ip_tunnel_init);
+@@ -1219,6 +1261,9 @@ void ip_tunnel_uninit(struct net_device *dev)
+ 		WRITE_ONCE(itn->fb_tunnel_dev, NULL);
+ 
+ 	dst_cache_reset(&tunnel->dst_cache);
++#ifdef CONFIG_SYSCTL
++	unregister_net_sysctl_table(ip_tunnel_sysctl_header);
++#endif
+ }
+ EXPORT_SYMBOL_GPL(ip_tunnel_uninit);
+ 
+-- 
+2.7.4
+

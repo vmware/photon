@@ -1,0 +1,256 @@
+From 3d889e69e2abc9468d9332124a54c134a00ae1e4 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 24 Jul 2020 14:23:44 +0530
+Subject: [PATCH 7/7] arpfilter.patch
+
+This patchset adds a new vlan id rule for arp netfilter.
+---
+ include/linux/skbuff.h                        |  1 +
+ include/uapi/linux/netfilter_arp/arp_tables.h |  6 ++-
+ net/bridge/br_forward.c                       |  9 +++++
+ net/bridge/br_private.h                       | 11 ++++++
+ net/bridge/br_vlan.c                          | 14 ++++++-
+ net/ipv4/netfilter/arp_tables.c               | 53 ++++++++++++++++++++++++++-
+ 6 files changed, 89 insertions(+), 5 deletions(-)
+
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 1f9c1b9..5cdafae 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -786,6 +786,7 @@ struct sk_buff {
+ 
+ 	__u8			inner_protocol_type:1;
+ 	__u8			remcsum_offload:1;
++	__u8                    vlan_clear_needed:1;
+ #ifdef CONFIG_NET_SWITCHDEV
+ 	__u8			offload_fwd_mark:1;
+ 	__u8			offload_mr_fwd_mark:1;
+diff --git a/include/uapi/linux/netfilter_arp/arp_tables.h b/include/uapi/linux/netfilter_arp/arp_tables.h
+index a2a0927..6133ea0 100644
+--- a/include/uapi/linux/netfilter_arp/arp_tables.h
++++ b/include/uapi/linux/netfilter_arp/arp_tables.h
+@@ -59,6 +59,9 @@ struct arpt_arp {
+ 	__be16 arhrd, arhrd_mask;
+ 	__be16 arpro, arpro_mask;
+ 
++	/* Vlan of packet. */
++	__u16 vlan, vlan_mask;
++
+ 	/* The protocol address length is only accepted if it is 4
+ 	 * so there is no use in offering a way to do filtering on it.
+ 	 */
+@@ -88,7 +91,8 @@ struct arpt_arp {
+ #define ARPT_INV_ARPHRD		0x0080	/* Invert the sense of ARP HRD. */
+ #define ARPT_INV_ARPPRO		0x0100	/* Invert the sense of ARP PRO. */
+ #define ARPT_INV_ARPHLN		0x0200	/* Invert the sense of ARP HLN. */
+-#define ARPT_INV_MASK		0x03FF	/* All possible flag bits mask. */
++#define ARPT_INV_VLAN          0x0400  /* Invert the sense of VLAN. */
++#define ARPT_INV_MASK          0x07FF  /* All possible flag bits mask. */
+ 
+ /* This structure defines each of the firewall rules.  Consists of 3
+    parts which are 1) general ARP header stuff 2) match specific
+diff --git a/net/bridge/br_forward.c b/net/bridge/br_forward.c
+index 48ddc60..b74c87f 100644
+--- a/net/bridge/br_forward.c
++++ b/net/bridge/br_forward.c
+@@ -21,6 +21,12 @@
+ #include <linux/netfilter_bridge.h>
+ #include "br_private.h"
+ 
++#ifdef CONFIG_SYSCTL
++extern int arp_vlan_netfilter __read_mostly;
++#else
++#define arp_vlan_netfilter 0
++#endif
++
+ /* Don't forward packets to originating port or forwarding disabled */
+ static inline int should_deliver(const struct net_bridge_port *p,
+ 				 const struct sk_buff *skb)
+@@ -36,6 +42,9 @@ static inline int should_deliver(const struct net_bridge_port *p,
+ 
+ int br_dev_queue_push_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)
+ {
++	if (arp_vlan_netfilter) {
++		br_skb_vlan_clear(skb);
++	}
+ 	skb_push(skb, ETH_HLEN);
+ 	if (!is_skb_forwardable(skb->dev, skb))
+ 		goto drop;
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 2d6e875..59fb869 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -922,6 +922,13 @@ static inline u16 br_get_pvid(const struct net_bridge_vlan_group *vg)
+ 	return vg->pvid;
+ }
+ 
++static inline void br_skb_vlan_clear(struct sk_buff *skb)
++{
++	if (skb->vlan_clear_needed) {
++		skb->vlan_tci = 0;
++		skb->vlan_clear_needed = 0;
++	}
++}
+ #else
+ static inline bool br_allowed_ingress(const struct net_bridge *br,
+ 				      struct net_bridge_vlan_group *vg,
+@@ -1013,6 +1020,10 @@ static inline u16 br_get_pvid(const struct net_bridge_vlan_group *vg)
+ 	return 0;
+ }
+ 
++static inline void br_skb_vlan_clear(struct sk_buff *skb)
++{
++}
++
+ static inline int __br_vlan_filter_toggle(struct net_bridge *br,
+ 					  unsigned long val)
+ {
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index 5f3950f..d22c7b9 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -7,6 +7,12 @@
+ #include "br_private.h"
+ #include "br_private_tunnel.h"
+ 
++#ifdef CONFIG_SYSCTL
++extern int arp_vlan_netfilter __read_mostly;
++#else
++#define arp_vlan_netfilter 0
++#endif
++
+ static inline int br_vlan_cmp(struct rhashtable_compare_arg *arg,
+ 			      const void *ptr)
+ {
+@@ -394,8 +400,12 @@ struct sk_buff *br_handle_vlan(struct net_bridge *br,
+ 		u64_stats_update_end(&stats->syncp);
+ 	}
+ 
+-	if (v->flags & BRIDGE_VLAN_INFO_UNTAGGED)
+-		skb->vlan_tci = 0;
++	if (v->flags & BRIDGE_VLAN_INFO_UNTAGGED) {
++		if (arp_vlan_netfilter)
++			skb->vlan_clear_needed = 1;
++		else
++			skb->vlan_tci = 0;
++	}
+ 
+ 	if (p && (p->flags & BR_VLAN_TUNNEL) &&
+ 	    br_handle_egress_vlan_tunnel(skb, v)) {
+diff --git a/net/ipv4/netfilter/arp_tables.c b/net/ipv4/netfilter/arp_tables.c
+index 10d8f95..7e151b0 100644
+--- a/net/ipv4/netfilter/arp_tables.c
++++ b/net/ipv4/netfilter/arp_tables.c
+@@ -22,6 +22,7 @@
+ #include <linux/init.h>
+ #include <linux/mutex.h>
+ #include <linux/err.h>
++#include <linux/if_vlan.h>
+ #include <net/compat.h>
+ #include <net/sock.h>
+ #include <linux/uaccess.h>
+@@ -30,10 +31,43 @@
+ #include <linux/netfilter_arp/arp_tables.h>
+ #include "../../netfilter/xt_repldata.h"
+ 
++#ifdef CONFIG_SYSCTL
++#include <linux/sysctl.h>
++static struct ctl_table_header *arp_filter_sysctl_header;
++int arp_vlan_netfilter __read_mostly = 0;
++EXPORT_SYMBOL(arp_vlan_netfilter);
++#else
++#define arp_vlan_netfilter 0
++#endif
++
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("David S. Miller <davem@redhat.com>");
+ MODULE_DESCRIPTION("arptables core");
+ 
++#ifdef CONFIG_SYSCTL
++static struct ctl_table arp_vlan_netfilter_table[] = {
++	{
++		.procname	= "arp_vlan_netfilter",
++		.data		= &arp_vlan_netfilter,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
++	{}
++};
++
++static int arp_filter_sysctl_init(void)
++{
++	arp_filter_sysctl_header = register_net_sysctl(&init_net, "net/netfilter",
++						       arp_vlan_netfilter_table);
++	if (arp_filter_sysctl_header == NULL) {
++		printk(KERN_ERR "arp: can't register to sysctl");
++		return -ENOMEM;
++	}
++	return 0;
++}
++#endif
++
+ void *arpt_alloc_initial_table(const struct xt_table *info)
+ {
+ 	return xt_alloc_initial_table(arpt, ARPT);
+@@ -79,11 +113,12 @@ static unsigned long ifname_compare(const char *_a, const char *_b, const char *
+ 
+ /* Returns whether packet matches rule or not. */
+ static inline int arp_packet_match(const struct arphdr *arphdr,
+-				   struct net_device *dev,
++				   struct sk_buff *skb,
+ 				   const char *indev,
+ 				   const char *outdev,
+ 				   const struct arpt_arp *arpinfo)
+ {
++	struct net_device *dev = skb->dev;
+ 	const char *arpptr = (char *)(arphdr + 1);
+ 	const char *src_devaddr, *tgt_devaddr;
+ 	__be32 src_ipaddr, tgt_ipaddr;
+@@ -138,6 +173,14 @@ static inline int arp_packet_match(const struct arphdr *arphdr,
+ 	if (NF_INVF(arpinfo, ARPT_INV_VIA_OUT, ret != 0))
+ 		return 0;
+ 
++	if (arp_vlan_netfilter && NF_INVF(arpinfo, ARPT_INV_VLAN,
++		    (skb_vlan_tag_get_id(skb) & arpinfo->vlan_mask) != arpinfo->vlan)) {
++		printk(KERN_INFO "VLAN mismatch vlan:%04x info->vlan:%04x info->vlan_mask:%04x.%s\n",
++			skb_vlan_tag_get_id(skb), arpinfo->vlan, arpinfo->vlan_mask,
++			arpinfo->invflags & ARPT_INV_VLAN ? " (INV)" : "");
++		return 0;
++	}
++
+ 	return 1;
+ }
+ 
+@@ -220,7 +263,7 @@ unsigned int arpt_do_table(struct sk_buff *skb,
+ 		const struct xt_entry_target *t;
+ 		struct xt_counters *counter;
+ 
+-		if (!arp_packet_match(arp, skb->dev, indev, outdev, &e->arp)) {
++		if (!arp_packet_match(arp, skb, indev, outdev, &e->arp)) {
+ 			e = arpt_next_entry(e);
+ 			continue;
+ 		}
+@@ -1653,6 +1696,9 @@ static int __init arp_tables_init(void)
+ 	ret = nf_register_sockopt(&arpt_sockopts);
+ 	if (ret < 0)
+ 		goto err4;
++#ifdef CONFIG_SYSCTL
++	arp_filter_sysctl_init();
++#endif
+ 
+ 	return 0;
+ 
+@@ -1669,6 +1715,9 @@ static void __exit arp_tables_fini(void)
+ 	nf_unregister_sockopt(&arpt_sockopts);
+ 	xt_unregister_targets(arpt_builtin_tg, ARRAY_SIZE(arpt_builtin_tg));
+ 	unregister_pernet_subsys(&arp_tables_net_ops);
++#ifdef CONFIG_SYSCTL
++	unregister_net_sysctl_table(arp_filter_sysctl_header);
++#endif
+ }
+ 
+ EXPORT_SYMBOL(arpt_register_table);
+-- 
+2.7.4
+

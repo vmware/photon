@@ -1,0 +1,1921 @@
+From 39af4dd101d8932d793719ec89231c0c9be37a2d Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 24 Jul 2020 14:23:05 +0530
+Subject: [PATCH 6/7] trunk.patch
+
+VMware's vxlan trunk implementation.
+---
+ include/linux/netdevice.h      |    7 +
+ include/uapi/linux/rtnetlink.h |    3 +-
+ net/ipv4/Makefile              |    2 +-
+ net/ipv4/vxlan_trunk.c         | 1853 ++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 1863 insertions(+), 2 deletions(-)
+ create mode 100644 net/ipv4/vxlan_trunk.c
+
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 4e14926..9d84a57 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1410,6 +1410,13 @@ struct net_device_ops {
+ 						u32 flags);
+ 	int			(*ndo_xsk_async_xmit)(struct net_device *dev,
+ 						      u32 queue_id);
++	int                     (*ndo_trunk_op)(struct net_device *dev,
++						u32 src_id, u32 dst_id,
++						int flags, int op);
++	int                     (*ndo_trunk_dump)(struct sk_buff *skb,
++						  struct netlink_callback *cb,
++						  struct net_device *dev,
++						  int idx);
+ };
+ 
+ /**
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index 4639936..a8121bc 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -13,7 +13,8 @@
+  */
+ #define RTNL_FAMILY_IPMR		128
+ #define RTNL_FAMILY_IP6MR		129
+-#define RTNL_FAMILY_MAX			129
++#define RTNL_FAMILY_TRUNK		130
++#define RTNL_FAMILY_MAX			130
+ 
+ /****
+  *		Routing/neighbour discovery messages.
+diff --git a/net/ipv4/Makefile b/net/ipv4/Makefile
+index 7446b98..6340974 100644
+--- a/net/ipv4/Makefile
++++ b/net/ipv4/Makefile
+@@ -28,7 +28,7 @@ obj-$(CONFIG_NET_IPIP) += ipip.o
+ gre-y := gre_demux.o
+ obj-$(CONFIG_NET_FOU) += fou.o
+ obj-$(CONFIG_NET_IPGRE_DEMUX) += gre.o
+-obj-$(CONFIG_NET_IPGRE) += ip_gre.o
++obj-$(CONFIG_NET_IPGRE) += ip_gre.o vxlan_trunk.o
+ obj-$(CONFIG_NET_UDP_TUNNEL) += udp_tunnel.o
+ obj-$(CONFIG_NET_IPVTI) += ip_vti.o
+ obj-$(CONFIG_SYN_COOKIES) += syncookies.o
+diff --git a/net/ipv4/vxlan_trunk.c b/net/ipv4/vxlan_trunk.c
+new file mode 100644
+index 0000000..d59f032
+--- /dev/null
++++ b/net/ipv4/vxlan_trunk.c
+@@ -0,0 +1,1853 @@
++/*
++ *	VxLAN/VLAN trunk module.
++ *
++ *	Copyright (c) 2017, VMware, Inc.  All rights reserved.
++ *
++ *      Portions copyright (c):
++ *        Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
++ *
++ *	This program is free software; you can redistribute it and/or
++ *	modify it under the terms of the GNU General Public License
++ *	as published by the Free Software Foundation; either version
++ *	2 of the License, or (at your option) any later version.
++ */
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/module.h>
++#include <linux/types.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/skbuff.h>
++#include <linux/netdevice.h>
++#include <linux/udp.h>
++#include <linux/init.h>
++#include <linux/etherdevice.h>
++#include <linux/if_ether.h>
++#include <linux/if_vlan.h>
++
++#include <net/ip.h>
++#include <net/protocol.h>
++#include <net/checksum.h>
++#include <net/net_namespace.h>
++#include <net/netns/generic.h>
++#include <net/rtnetlink.h>
++#include <net/vxlan.h>
++
++#if IS_ENABLED(CONFIG_IPV6)
++#include <net/ipv6.h>
++#include <net/ip6_fib.h>
++#include <net/ip6_route.h>
++#endif
++
++#undef VXLAN_TRUNK_DBG
++/* #define VXLAN_TRUNK_DBG 1 */
++#ifdef VXLAN_TRUNK_DBG
++#define trunk_dbg(fmt, ...) do { pr_info(fmt, ##__VA_ARGS__); } while(0)
++#else
++#define trunk_dbg(fmt, ...) do { } while(0)
++#endif
++
++/* XXX: move to proper locations.  In here to avoid rebuilding world
++ * on changes
++ */
++
++#define TRF_SRC_VLAN 0x01
++#define TRF_SRC_VNI  0x02
++#define TRF_DST_VLAN 0x04
++#define TRF_DST_VNI  0x08
++#define TRF_ENABLED  0x10
++
++#define TRF_VNI_TO_VLAN (TRF_SRC_VNI | TRF_DST_VLAN)
++#define TRF_VLAN_TO_VLAN (TRF_SRC_VLAN | TRF_DST_VLAN)
++
++#define TRF_SRC_MASK (TRF_SRC_VLAN | TRF_SRC_VNI)
++#define TRF_DST_MASK (TRF_DST_VLAN | TRF_DST_VNI)
++
++enum {
++	TRM_UNSPEC,
++	TRM_ADD,
++	TRM_DEL,
++	TRM_ENABLE,
++	TRM_DISABLE,
++	__TRM_MAX
++};
++
++#define TRM_MAX (__TRM_MAX - 1)
++
++
++struct trmsg {
++	__u8		trm_family;
++	__u8		trm_op;
++	__u8		trm_flags;
++	__u8		trm_pad1;
++	__s32		trm_ifindex;
++};
++
++enum {
++	TRA_UNSPEC,
++	TRA_SRC,
++	TRA_DST,
++	TRA_ENABLED,
++	/* read-only statistics */
++	TRA_RX_PCKTS,
++	TRA_TX_PCKTS,
++	TRA_RX_BYTES,
++	TRA_TX_BYTES,
++	TRA_RX_PCKTS_DISABLED,
++	TRA_TX_PCKTS_DISABLED,
++	TRA_RX_BYTES_DISABLED,
++	TRA_TX_BYTES_DISABLED,
++	TRA_NLA_PAD,
++	__TRA_MAX
++};
++
++#define TRA_MAX (__TRA_MAX - 1)
++
++
++struct full_vxlan_hdr {
++	struct iphdr iph;
++	struct udphdr udph;
++	struct vxlanhdr vxh;
++} __attribute__((packed));
++
++#define VXLAN_OUTER_IP_SIZE (sizeof(struct full_vxlan_hdr))
++#define VXLAN_OUTER_ETH_SIZE (sizeof(struct full_vxlan_hdr) \
++			      + sizeof(struct ethhdr))
++#define VXLAN_UDP_PORT 8472
++
++struct vxlan_trunk_parm {
++	int		link;
++};
++
++struct vxlan_mapping_entry {
++	struct hlist_node ingress_node;
++	struct hlist_node egress_node;
++	unsigned int ingress;
++	unsigned int egress;
++	unsigned int enabled;  /* make into flags? */
++	struct rcu_head rcu;
++	struct pcpu_sw_netstats __percpu *tstats;
++	struct pcpu_sw_netstats __percpu *disabled_tstats;
++};
++
++/* must be power of 2 */
++#define VLAN_TRUNK_HASH_SIZE 1024
++
++/* Naive hash to start */
++#define vxlan_tr_hash(x) ((x) & (VLAN_TRUNK_HASH_SIZE - 1))
++
++struct vxlan_trunk {
++	struct net_device	*dev;
++	struct net		*net;	/* netns for packet i/o */
++
++	spinlock_t		lock;
++	struct hlist_head	ihash[VLAN_TRUNK_HASH_SIZE];
++	struct hlist_head	ehash[VLAN_TRUNK_HASH_SIZE];
++	struct vxlan_trunk_parm parms;	/* parameters */
++	bool			promisc; /* trunk has been set to promisc */
++	bool			sub_promisc; /* sub-device set to promisc */
++	bool			allmulti; /* trunk has been set to allmulti */
++	bool			sub_allmulti; /* sub-device set to allmulti */
++};
++
++struct vxlan_trunk_net {
++	struct net		*net;	/* netns for packet i/o */
++};
++
++enum blarg {
++	IFLA_VXLAN_TRUNK_UNSPEC,
++	IFLA_VXLAN_TRUNK_LINK,
++	IFLA_VXLAN_TRUNK_MAX = IFLA_VXLAN_TRUNK_LINK,
++};
++
++static void trunk_copy_percpu_stats(struct pcpu_sw_netstats __percpu *dst,
++				    struct pcpu_sw_netstats __percpu *src);
++
++
++static struct vxlan_mapping_entry *trunk_find_ingress(struct hlist_head *head,
++						     __u32 id)
++{
++	struct vxlan_mapping_entry *en;
++
++	trunk_dbg("vxlan_trunk: find_mapping ingress for %u\n", id);
++	hlist_for_each_entry(en, head, ingress_node) {
++		if (en->ingress == id)
++			return en;
++	}
++	return NULL;
++}
++
++static struct vxlan_mapping_entry *trunk_find_ingress_rcu(struct hlist_head *head,
++						     __u32 id)
++{
++	struct vxlan_mapping_entry *en;
++
++	trunk_dbg("vxlan_trunk: find_mapping ingress for %u\n", id);
++	hlist_for_each_entry_rcu(en, head, ingress_node) {
++		if (en->ingress == id)
++			return en;
++	}
++	return NULL;
++}
++
++static struct vxlan_mapping_entry *trunk_find_egress(struct hlist_head *head,
++						     __u32 id)
++{
++	struct vxlan_mapping_entry *en;
++
++	trunk_dbg("vxlan_trunk: find_mapping egress for %u\n", id);
++	hlist_for_each_entry(en, head, egress_node) {
++		if (en->egress == id)
++			return en;
++	}
++	return NULL;
++}
++
++static struct vxlan_mapping_entry *trunk_find_egress_rcu(struct hlist_head *head,
++						     __u32 id)
++{
++	struct vxlan_mapping_entry *en;
++
++	trunk_dbg("vxlan_trunk: find_mapping egress for %u\n", id);
++	hlist_for_each_entry_rcu(en, head, egress_node) {
++		if (en->egress == id)
++			return en;
++	}
++	return NULL;
++}
++
++static struct vxlan_mapping_entry *trunk_find_mapping(struct hlist_head *head,
++						     __u32 ingress,
++						     __u32 egress)
++{
++	struct vxlan_mapping_entry *en;
++
++	trunk_dbg("vxlan_trunk: find_mapping %u -> %u\n", ingress, egress);
++	hlist_for_each_entry(en, head, ingress_node) {
++		if (en->ingress == ingress) {
++			if (en->egress == egress) {
++				return en;
++			} else {
++				return NULL;
++			}
++		}
++	}
++	return NULL;
++}
++
++static inline void trunk_rx_tstats(int sz,
++				   struct pcpu_sw_netstats __percpu *stats)
++{
++	if (sz > 0) {
++		struct pcpu_sw_netstats *tstats = get_cpu_ptr(stats);
++
++		u64_stats_update_begin(&tstats->syncp);
++		tstats->rx_bytes += sz;
++		tstats->rx_packets++;
++		u64_stats_update_end(&tstats->syncp);
++		put_cpu_ptr(tstats);
++	}
++}
++
++static inline void trunk_tx_tstats(int sz,
++				   struct pcpu_sw_netstats __percpu *stats)
++{
++	if (sz > 0) {
++		struct pcpu_sw_netstats *tstats = get_cpu_ptr(stats);
++
++		u64_stats_update_begin(&tstats->syncp);
++		tstats->tx_bytes += sz;
++		tstats->tx_packets++;
++		u64_stats_update_end(&tstats->syncp);
++		put_cpu_ptr(tstats);
++	}
++}
++
++
++static struct vxlan_mapping_entry *trunk_new_mapping(
++			     unsigned int ingress,
++			     unsigned int egress,
++			     unsigned int enabled)
++{
++	struct vxlan_mapping_entry *e;
++
++	trunk_dbg("vxlan_trunk: new_mapping from %u to %u\n", ingress, egress);
++
++	e = kzalloc(sizeof *e, GFP_ATOMIC);
++	if (!e) {
++		return NULL;
++	}
++	e->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
++	if (!e->tstats) {
++		kfree(e);
++		return NULL;
++	}
++	e->disabled_tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
++	if (!e->disabled_tstats) {
++		free_percpu(e->tstats);
++		kfree(e);
++		return NULL;
++	}
++	e->ingress = ingress;
++	e->egress = egress;
++	e->enabled = enabled;
++	init_rcu_head(&e->rcu);
++
++	return e;
++}
++
++static int vxlan_trunk_add_mapping(struct net_device *dev,
++				    unsigned int ingress,
++				    unsigned int egress,
++				    unsigned int enabled)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	struct vxlan_mapping_entry *e;
++	struct hlist_head *head;
++
++	trunk_dbg("vxlan_trunk: add_mapping from %u to %u\n", ingress, egress);
++	ASSERT_RTNL();
++
++	/* check for collision */
++	head = &m->ihash[vxlan_tr_hash(ingress)];
++	e = trunk_find_ingress(head, ingress);
++	if (e != NULL) {
++		return -EEXIST;
++	}
++
++	head = &m->ehash[vxlan_tr_hash(egress)];
++	e = trunk_find_egress(head, egress);
++	if (e != NULL) {
++		return -EEXIST;
++	}
++
++	/* putting same node in two different lists */
++	e = trunk_new_mapping(ingress, egress, enabled);
++	if (!e) {
++		return -ENOMEM;
++	}
++
++	head = &m->ihash[vxlan_tr_hash(ingress)];
++	hlist_add_head_rcu(&e->ingress_node, head);
++
++	head = &m->ehash[vxlan_tr_hash(egress)];
++	hlist_add_head_rcu(&e->egress_node, head);
++
++	return 0;
++}
++
++static void trunk_free_mapping_rcu(struct rcu_head *head)
++{
++	struct vxlan_mapping_entry *e;
++	e = container_of(head, struct vxlan_mapping_entry, rcu);
++	free_percpu(e->disabled_tstats);
++	free_percpu(e->tstats);
++	kfree(e);
++}
++
++static void trunk_remove_mapping(struct vxlan_mapping_entry *e)
++{
++	trunk_dbg("trunk_remove_mapping: from %u to %u (%u)\n",
++	          e->ingress, e->egress, e->enabled);
++	hlist_del_rcu(&e->ingress_node);
++	hlist_del_rcu(&e->egress_node);
++	call_rcu(&e->rcu, trunk_free_mapping_rcu);
++}
++
++static int vxlan_trunk_del_mapping(struct net_device *dev,
++				    unsigned int ingress,
++				    unsigned int egress)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	struct vxlan_mapping_entry *e;
++	struct hlist_head *head;
++	u32 vni = ingress;
++
++	trunk_dbg("trunk: del_mapping from %u to %u\n", ingress, egress);
++
++	ASSERT_RTNL();
++	head = &m->ihash[vxlan_tr_hash(vni)];
++	e = trunk_find_ingress(head, vni);
++	if (!e) {
++		return -ENOENT;
++	}
++	if (e->egress != egress) {
++		trunk_dbg("trunk: del_mapping mismatch found %u vs %u\n",
++		        e->egress, egress);
++		return -ENOENT;
++	}
++	if (e->enabled) {
++		trunk_dbg("trunk: del_mapping %u -> %u is enabled...\n",
++		        ingress, egress);
++	}
++	trunk_remove_mapping(e);
++	return 0;
++}
++
++static int vxlan_trunk_set_mapping(struct net_device *dev,
++				    unsigned int ingress,
++				    unsigned int egress,
++				    unsigned int enabled)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	struct vxlan_mapping_entry *e;
++	struct hlist_head *head;
++	u32 vni = ingress;
++
++	trunk_dbg("vxlan_trunk: set_mapping %u -> %u to %s\n",
++	          ingress, egress, enabled ? "enabled" : "disabled");
++
++	ASSERT_RTNL();
++	head = &m->ihash[vxlan_tr_hash(vni)];
++	e = trunk_find_mapping(head, ingress, egress);
++	if (!e) {
++		return -ENOENT;
++	}
++	if (e->enabled == enabled) {
++		trunk_dbg("vxlan_trunk: mapping %u -> %u is already %s\n",
++		          ingress, egress, enabled ? "enabled" : "disabled");
++	} else {
++		struct vxlan_mapping_entry *ne;
++		ne = trunk_new_mapping(ingress, egress, enabled);
++		if (!ne) {
++			return -ENOMEM;
++		}
++
++		hlist_replace_rcu(&e->ingress_node, &ne->ingress_node);
++		hlist_replace_rcu(&e->egress_node, &ne->egress_node);
++		/* copy stats.  could conceivably miss some, but too hard
++		 * to fix right now.
++		 */
++		trunk_copy_percpu_stats(ne->tstats, e->tstats);
++		trunk_copy_percpu_stats(ne->disabled_tstats, e->disabled_tstats);
++		call_rcu(&e->rcu, trunk_free_mapping_rcu);
++	}
++
++	return 0;
++}
++
++void trunk_flush_mappings(struct vxlan_trunk *m)
++{
++	int i;
++
++	ASSERT_RTNL();
++	for (i = 0; i < VLAN_TRUNK_HASH_SIZE; i++) {
++		struct vxlan_mapping_entry *e;
++		struct hlist_node *n;
++		hlist_for_each_entry_safe(e, n, &m->ihash[i], ingress_node) {
++			trunk_remove_mapping(e);
++		}
++	}
++	for (i = 0; i < VLAN_TRUNK_HASH_SIZE; i++) {
++		struct vxlan_mapping_entry *e;
++		struct hlist_node *n;
++		hlist_for_each_entry_safe(e, n, &m->ehash[i], egress_node) {
++			/* should never be anything left here */
++			BUG();
++		}
++	}
++}
++
++/*
++ * Locally generated packets may have vlan in the frame,
++ * so try to pull it out to match rest of data path
++ *
++ * Returns:  an skb, that should be vlan tagged, or
++ *           NULL, having freed skb.  accting is up to caller
++ */
++static struct sk_buff *trunk_try_vlan(struct sk_buff *skb)
++{
++	struct ethhdr saved_eth;
++	struct ethhdr *eth;
++
++	if (unlikely(!pskb_may_pull(skb, ETH_HLEN))) {
++		goto drop;
++	}
++	saved_eth = *(struct ethhdr *)skb_mac_header(skb);
++	if (skb->protocol == cpu_to_be16(0)) {
++		skb->protocol = saved_eth.h_proto;
++	}
++	if (unlikely(skb->protocol == cpu_to_be16(ETH_P_8021Q))) {
++		skb_pull(skb, ETH_HLEN);
++                skb = skb_vlan_untag(skb);
++                if (unlikely(!skb)) {
++                    goto out;
++                }
++                skb_push(skb, ETH_HLEN);
++                /* restore the src/dst macs */
++                eth = (struct ethhdr *)skb_mac_header(skb);
++                memcpy(eth->h_dest, saved_eth.h_dest, sizeof(eth->h_dest));
++                memcpy(eth->h_source, saved_eth.h_source, sizeof(eth->h_source));
++                return skb;
++        }
++  drop:
++        kfree(skb);
++  out:
++        return NULL;
++}
++
++static int vxlan_trunk_net_id __read_mostly;
++
++static netdev_tx_t vxlan_trunk_xmit(struct sk_buff *skb,
++				     struct net_device *dev)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	struct net_device *sub;
++	struct vxlanhdr *vxh;
++	struct udphdr *udph;
++	struct iphdr *iph;
++	struct ethhdr *h;
++	struct hlist_head *head;
++	struct vxlan_mapping_entry *map;
++	u32 vni, vlan_tci;
++	int dbg;
++	int len;
++
++#ifdef VXLAN_TRUNK_DBG
++	dbg = net_ratelimit();
++#else
++	dbg = 0;
++#endif
++ again:
++	if (unlikely(!skb_vlan_tag_present(skb))) {
++		/* This should only happen for locally generated packets
++		 * like RARPs we want to send.
++		 */
++		trunk_dbg("xmit: no vlan tag. skb: %p, skb->protocol: %x\n",
++		        skb, ntohs(skb->protocol));
++		skb = trunk_try_vlan(skb);
++		if (!skb) {
++			dev->stats.tx_dropped++;
++			return NETDEV_TX_OK;
++		}
++		if (skb_vlan_tag_present(skb)) {
++			goto again;
++		}
++		/* XXX: stat */
++		trunk_dbg("xmit: trunk_try_vlan returned non-vlan: skb: %p, skb->protocol: %x\n",
++		          skb, ntohs(skb->protocol));
++		goto drop;
++	}
++
++	/* look up vlan -> vxlan mapping */
++	vlan_tci = skb_vlan_tag_get_id(skb);
++
++	/* lookup vxlan in trunkdev mappings */
++	rcu_read_lock();
++	head = &m->ehash[vxlan_tr_hash(vlan_tci)];
++	map = trunk_find_egress_rcu(head, vlan_tci);
++	if (!map) {
++		/* XXX: stat */
++		rcu_read_unlock();
++		trunk_dbg("xmit: no mapping from vlan: %d\n", vlan_tci);
++		goto drop;
++	}
++	if (!map->enabled) {
++		trunk_tx_tstats(skb->len, map->disabled_tstats);
++		rcu_read_unlock();
++		trunk_dbg("xmit: mapping from vlan %d not enabled\n", vlan_tci);
++		goto out;
++	}
++	vni = map->ingress;
++
++	/* clear vlan tag */
++	skb->vlan_proto = 0;
++	skb->vlan_tci = 0;
++
++	trunk_tx_tstats(skb->len, map->tstats);
++	rcu_read_unlock();
++
++	/* build vxlan stub header */
++	if (skb_headroom(skb) < VXLAN_OUTER_ETH_SIZE) {
++		/* XXX: stat */
++		int err;
++		int verbose = 0;
++
++		if (net_ratelimit()) {
++			verbose = 1;
++			trunk_dbg("xmit: expand headroom: %p, was %d\n",
++			        skb, skb_headroom(skb));
++		}
++		err = skb_cow_head(skb, VXLAN_OUTER_ETH_SIZE);
++		/* nskb = skb_realloc_headroom(skb, VXLAN_OUTER_ETH_SIZE); */
++		if (unlikely(err)) {
++			/* XXX: stat */
++			if (verbose) {
++				trunk_dbg("xmit: cow_head failed for %p, %d\n",
++				          skb, err);
++			}
++			goto drop;
++		}
++
++	}
++	len = skb->len;
++	skb_push(skb, sizeof(struct vxlanhdr));
++	vxh = (struct vxlanhdr *)skb->data;
++	vxh->vx_flags = htonl(VXLAN_HF_VNI);
++	vxh->vx_vni = htonl(vni << 8);
++	len += sizeof(struct vxlanhdr);
++	BUG_ON(len != skb->len);
++
++	skb_push(skb, sizeof(struct udphdr));
++	skb_reset_transport_header(skb);
++	udph = (struct udphdr *)skb->data;
++	udph->dest = htons(VXLAN_UDP_PORT);
++	len += sizeof(struct udphdr);
++	BUG_ON(len != skb->len);
++	udph->len = htons(skb->len);
++	/* XXX: udp csum ?? */
++
++	skb_push(skb, sizeof(struct iphdr));
++	skb_reset_network_header(skb);
++	iph = (struct iphdr *)skb->data;
++	memset(iph, 0, sizeof(*iph));
++	len += sizeof(*iph);
++	BUG_ON(len != skb->len);
++	iph->version = 4;
++	iph->ihl = 5;
++	iph->tot_len = htons(skb->len);
++	iph->protocol = IPPROTO_UDP;
++	iph->frag_off = htons(IP_DF);
++	iph->ttl = 64;
++	iph->check = ip_fast_csum(iph, iph->ihl);
++
++	skb_push(skb, ETH_HLEN);
++	skb_reset_mac_header(skb);
++	h = (struct ethhdr *)skb->data;
++	h->h_proto = htons(ETH_P_IP);
++
++	rcu_read_lock();
++	sub = dev_get_by_index_rcu(m->net, m->parms.link);
++	if (sub == NULL) {
++		/* XXX: stat */
++		trunk_dbg("xmit: no dev for link %d\n", m->parms.link);
++		rcu_read_unlock();
++		goto drop;
++	}
++	skb->dev = sub;
++	dev_queue_xmit(skb);
++	rcu_read_unlock();
++	return NETDEV_TX_OK;
++
++drop:
++	dev->stats.tx_dropped++;
++out:
++	kfree_skb(skb);
++	return NETDEV_TX_OK;
++}
++
++static netdev_tx_t vlan_trunk_xmit(struct sk_buff *skb,
++				   struct net_device *dev)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	struct net_device *sub;
++	struct hlist_head *head;
++	struct vxlan_mapping_entry *map;
++	u32 out_vlan, vlan_tci;
++
++ again:
++	if (unlikely(!skb_vlan_tag_present(skb))) {
++		/* This should only happen for locally generated packets
++		 * like RARPs we want to send.
++		 */
++		trunk_dbg("xmit: no vlan tag. skb: %p, skb->protocol: %x\n",
++		        skb, ntohs(skb->protocol));
++		skb = trunk_try_vlan(skb);
++		if (!skb) {
++			dev->stats.tx_dropped++;
++			return NETDEV_TX_OK;
++		}
++		if (skb_vlan_tag_present(skb)) {
++			goto again;
++		}
++		/* XXX: stat */
++		trunk_dbg("xmit: no vlan tag. skb: %p, skb->protocol: %x\n",
++		        skb, ntohs(skb->protocol));
++		goto drop;
++	}
++
++	/* look up vlan -> vlan mapping */
++	vlan_tci = skb_vlan_tag_get_id(skb);
++
++	/* lookup vlan in trunkdev mappings */
++	rcu_read_lock();
++	head = &m->ehash[vxlan_tr_hash(vlan_tci)];
++	map = trunk_find_egress_rcu(head, vlan_tci);
++	if (!map) {
++		/* XXX: stat */
++		rcu_read_unlock();
++		trunk_dbg("xmit: no mapping from vlan: %d\n", vlan_tci);
++		goto drop;
++	}
++	if (!map->enabled) {
++		trunk_tx_tstats(skb->len, map->disabled_tstats);
++		rcu_read_unlock();
++		trunk_dbg("xmit: mapping from vlan %d not enabled\n", vlan_tci);
++		goto out;
++	}
++	out_vlan = map->ingress;
++
++	trunk_tx_tstats(skb->len, map->tstats);
++	rcu_read_unlock();
++	/* set outgoing vlan tag */
++	/* XXX: overwriting any PCP bits here */
++	__vlan_hwaccel_put_tag(skb, cpu_to_be16(ETH_P_8021Q), out_vlan);
++	if (unlikely(out_vlan == 0)) {
++		/* send without any vlan tag */
++		skb->vlan_proto = 0;
++		skb->vlan_tci = 0;
++	}
++
++	rcu_read_lock();
++	sub = dev_get_by_index_rcu(m->net, m->parms.link);
++	if (sub == NULL) {
++		/* XXX: stat */
++		trunk_dbg("xmit: no dev for link %d\n", m->parms.link);
++		rcu_read_unlock();
++		goto drop;
++	}
++	skb->dev = sub;
++	dev_queue_xmit(skb);
++	rcu_read_unlock();
++	return NETDEV_TX_OK;
++
++drop:
++	dev->stats.tx_dropped++;
++out:
++	kfree_skb(skb);
++	return NETDEV_TX_OK;
++}
++
++/* XXX: from GRE_FEATURES.  correct? */
++#define TRUNK_FEATURES (NETIF_F_SG |		\
++		      NETIF_F_FRAGLIST |	\
++		      NETIF_F_HIGHDMA |	\
++		      NETIF_F_HW_CSUM)
++
++static int vxlan_trunk_validate(struct nlattr *tb[], struct nlattr *data[],
++				struct netlink_ext_ack *extack)
++{
++	trunk_dbg("validate: rtnl_locked: %d\n", rtnl_is_locked());
++	if (tb[IFLA_ADDRESS]) {
++		if (nla_len(tb[IFLA_ADDRESS]) != ETH_ALEN)
++			return -EINVAL;
++		if (!is_valid_ether_addr(nla_data(tb[IFLA_ADDRESS])))
++			return -EADDRNOTAVAIL;
++	}
++
++	return 0;
++}
++
++static void trunk_netlink_parms(struct nlattr *data[], struct nlattr *tb[],
++			       struct vxlan_trunk_parm *parms)
++{
++	memset(parms, 0, sizeof(*parms));
++
++	if (!data)
++		return;
++
++	if (data[IFLA_VXLAN_TRUNK_LINK]) {
++		parms->link = nla_get_u32(data[IFLA_VXLAN_TRUNK_LINK]);
++	}
++}
++
++static void trunk_dev_free(struct net_device *dev)
++{
++	//struct vxlan_trunk *m = netdev_priv(dev);
++
++	trunk_dbg("free: rtnl_locked: %d\n", rtnl_is_locked());
++
++	free_percpu(dev->tstats);
++	free_netdev(dev);
++}
++
++static int vxlan_trunk_dev_init(struct net_device *dev)
++{
++	struct vxlan_trunk *m;
++
++	trunk_dbg("init: rtnl_locked: %d\n", rtnl_is_locked());
++	m = netdev_priv(dev);
++
++	dev->needed_headroom	= LL_MAX_HEADER + 20 + 4;
++	dev->mtu		= ETH_DATA_LEN - 20 - 4;
++
++	dev->features		|= TRUNK_FEATURES;
++	dev->hw_features	|= TRUNK_FEATURES;
++	/*
++	 * this is so packets are passed to device without
++	 * inserting the tag in-frame.
++	 */
++	dev->features		|= NETIF_F_HW_VLAN_CTAG_TX;
++	dev->hw_features	|= NETIF_F_HW_VLAN_CTAG_TX;
++	dev->vlan_features	|= NETIF_F_HW_VLAN_CTAG_TX;
++
++	dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
++	dev->priv_destructor = trunk_dev_free;
++	dev->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
++	if (!dev->tstats)
++		return -ENOMEM;
++
++	m->dev = dev;
++	m->net = dev_net(dev);
++	m->promisc = false;
++	m->sub_promisc = false;
++	m->allmulti = false;
++	m->sub_allmulti = false;
++
++	return 0;
++}
++
++static void vxlan_trunk_dev_uninit(struct net_device *dev)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	struct net *net = m->net;
++
++	trunk_dbg("uninit: rtnl_locked: %d\n", rtnl_is_locked());
++	pr_info("vxlan_trunk uninit: dev: %s, m: %p, net: %p\n",
++	        dev->name, m, net);
++}
++
++static int vxlan_trunk_change_mtu(struct net_device *dev, int new_mtu)
++{
++	/* struct vxlan_trunk *m = netdev_priv(dev); */
++	/* XXX: int t_hlen = tunnel->hlen + sizeof(struct iphdr); */
++	int t_hlen = 40 + sizeof(struct iphdr);
++
++	if (new_mtu < 68 ||
++	    new_mtu > 0xFFF8 - dev->hard_header_len - t_hlen)
++		return -EINVAL;
++	dev->mtu = new_mtu;
++	/* XXX: pass through to children? */
++	return 0;
++}
++
++static void trunk_copy_percpu_stats(struct pcpu_sw_netstats __percpu *dst,
++				    struct pcpu_sw_netstats __percpu *src)
++{
++	int i;
++	struct pcpu_sw_netstats *dst_tstats = get_cpu_ptr(dst);
++
++	for_each_possible_cpu(i) {
++		const struct pcpu_sw_netstats *tstats =
++						   per_cpu_ptr(src, i);
++		u64 rx_packets, rx_bytes, tx_packets, tx_bytes;
++		unsigned int start;
++
++		do {
++			start = u64_stats_fetch_begin_irq(&tstats->syncp);
++			rx_packets = tstats->rx_packets;
++			tx_packets = tstats->tx_packets;
++			rx_bytes = tstats->rx_bytes;
++			tx_bytes = tstats->tx_bytes;
++		} while (u64_stats_fetch_retry_irq(&tstats->syncp, start));
++
++		u64_stats_update_begin(&dst_tstats->syncp);
++		dst_tstats->rx_bytes += rx_bytes;
++		dst_tstats->tx_bytes += tx_bytes;
++		dst_tstats->rx_packets += rx_packets;
++		dst_tstats->tx_packets += tx_packets;
++		u64_stats_update_end(&dst_tstats->syncp);
++	}
++	put_cpu_ptr(dst_tstats);
++}
++
++static void trunk_get_percpu_stats(struct pcpu_sw_netstats __percpu *stats,
++                                   struct rtnl_link_stats64 *tot)
++{
++	int i;
++
++	for_each_possible_cpu(i) {
++		const struct pcpu_sw_netstats *tstats =
++						   per_cpu_ptr(stats, i);
++		u64 rx_packets, rx_bytes, tx_packets, tx_bytes;
++		unsigned int start;
++
++		do {
++			start = u64_stats_fetch_begin_irq(&tstats->syncp);
++			rx_packets = tstats->rx_packets;
++			tx_packets = tstats->tx_packets;
++			rx_bytes = tstats->rx_bytes;
++			tx_bytes = tstats->tx_bytes;
++		} while (u64_stats_fetch_retry_irq(&tstats->syncp, start));
++
++		tot->rx_packets += rx_packets;
++		tot->tx_packets += tx_packets;
++		tot->rx_bytes   += rx_bytes;
++		tot->tx_bytes   += tx_bytes;
++	}
++}
++
++/* Often modified stats are per cpu, other are shared (netdev->stats) */
++void vxlan_trunk_get_stats64(struct net_device *dev,
++						struct rtnl_link_stats64 *tot)
++{
++	netdev_stats_to_stats64(tot, &dev->stats);
++
++	trunk_get_percpu_stats(dev->tstats, tot);
++}
++
++#if 0
++static int vxlan_trunk_get_iflink(const struct net_device *dev)
++{
++	return dev->link;
++}
++#endif
++
++static int trunk_do_op(struct net_device *dev,
++		       u32 src_id, u32 dst_id, int flags, int op)
++{
++	int err;
++
++	err = -EINVAL;
++	switch (op) {
++	case TRM_ADD:
++		err = vxlan_trunk_add_mapping(dev, src_id, dst_id, 0);
++		break;
++	case TRM_DEL:
++		err = vxlan_trunk_del_mapping(dev, src_id, dst_id);
++		break;
++	case TRM_ENABLE:
++		err = vxlan_trunk_set_mapping(dev, src_id, dst_id, 1);
++		break;
++	case TRM_DISABLE:
++		err = vxlan_trunk_set_mapping(dev, src_id, dst_id, 0);
++		break;
++	default:
++		pr_info("%s: illegal op: %d\n", __func__, op);
++		break;
++	}
++	return err;
++}
++
++static int vxlan_trunk_do_op(struct net_device *dev,
++			     u32 src_id, u32 dst_id, int flags, int op)
++{
++	/* validate vxlan -> vlan */
++	if (flags != TRF_VNI_TO_VLAN) {
++		return -EINVAL;
++	}
++	if (src_id >= VXLAN_N_VID) {
++		return -EINVAL;
++	}
++	if (dst_id >= VLAN_N_VID) {
++		return -EINVAL;
++	}
++	return trunk_do_op(dev, src_id, dst_id, flags, op);
++}
++
++static int vlan_trunk_do_op(struct net_device *dev,
++			    u32 src_id, u32 dst_id, int flags, int op)
++{
++	/* validate vlan -> vlan */
++	if (flags != TRF_VLAN_TO_VLAN) {
++		return -EINVAL;
++	}
++	if (src_id >= VLAN_N_VID) {
++		return -EINVAL;
++	}
++	if (dst_id >= VLAN_N_VID) {
++		return -EINVAL;
++	}
++	return trunk_do_op(dev, src_id, dst_id, flags, op);
++}
++
++static int trunk_fill_info(struct sk_buff *skb, const struct net_device *dev,
++			   const struct vxlan_mapping_entry *e,
++			   u32 portid, u32 seq, int type, unsigned int flags)
++{
++	struct nlmsghdr *nlh;
++	struct trmsg *trm;
++	struct rtnl_link_stats64 stats;
++
++	nlh = nlmsg_put(skb, portid, seq, type, sizeof(*trm), flags);
++	if (nlh == NULL)
++		return -EMSGSIZE;
++
++	trm = nlmsg_data(nlh);
++	trm->trm_family	 = RTNL_FAMILY_TRUNK;
++	trm->trm_op      = TRM_UNSPEC;
++	trm->trm_pad1    = 0;
++	trm->trm_flags	 = flags;
++	trm->trm_ifindex = dev->ifindex;
++
++	if (nla_put_u32(skb, TRA_SRC, e->ingress))
++		goto nla_put_failure;
++	if (nla_put_u32(skb, TRA_DST, e->egress))
++		goto nla_put_failure;
++	if (nla_put_u32(skb, TRA_ENABLED, e->enabled))
++		goto nla_put_failure;
++
++	memset(&stats, 0, sizeof(stats));
++	trunk_get_percpu_stats(e->tstats, &stats);
++	if (nla_put_u64_64bit(skb, TRA_RX_PCKTS,
++			      stats.rx_packets, TRA_NLA_PAD))
++		goto nla_put_failure;
++	if (nla_put_u64_64bit(skb, TRA_TX_PCKTS,
++			      stats.tx_packets, TRA_NLA_PAD))
++		goto nla_put_failure;
++	if (nla_put_u64_64bit(skb, TRA_RX_BYTES,
++			      stats.rx_bytes, TRA_NLA_PAD))
++		goto nla_put_failure;
++	if (nla_put_u64_64bit(skb, TRA_TX_BYTES,
++			      stats.tx_bytes, TRA_NLA_PAD))
++		goto nla_put_failure;
++
++	memset(&stats, 0, sizeof(stats));
++	trunk_get_percpu_stats(e->disabled_tstats, &stats);
++	if (nla_put_u64_64bit(skb, TRA_RX_PCKTS_DISABLED,
++			      stats.rx_packets, TRA_NLA_PAD))
++		goto nla_put_failure;
++	if (nla_put_u64_64bit(skb, TRA_TX_PCKTS_DISABLED,
++			      stats.tx_packets, TRA_NLA_PAD))
++		goto nla_put_failure;
++	if (nla_put_u64_64bit(skb, TRA_RX_BYTES_DISABLED,
++			      stats.rx_bytes, TRA_NLA_PAD))
++		goto nla_put_failure;
++	if (nla_put_u64_64bit(skb, TRA_TX_BYTES_DISABLED,
++			      stats.tx_bytes, TRA_NLA_PAD))
++		goto nla_put_failure;
++
++	nlmsg_end(skb, nlh);
++	return 0;
++
++nla_put_failure:
++	nlmsg_cancel(skb, nlh);
++	return -EMSGSIZE;
++}
++
++static int vxlan_trunk_dump(struct sk_buff *skb,
++                            struct netlink_callback *cb,
++                            struct net_device *dev,
++                            int idx)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	int i;
++
++	for (i = 0; i < VLAN_TRUNK_HASH_SIZE; i++) {
++		struct vxlan_mapping_entry *e;
++		hlist_for_each_entry_rcu(e, &m->ihash[i], ingress_node) {
++			if (idx < cb->args[0])
++				goto skip;
++			if (trunk_fill_info(skb, dev, e,
++			                NETLINK_CB(cb->skb).portid,
++			                cb->nlh->nlmsg_seq,
++			                RTM_NEWNEIGH,
++			                NLM_F_MULTI) < 0)
++				goto out;
++skip:
++			idx++;
++		}
++	}
++out:
++	return idx;
++}
++
++static void trunk_set_sub_promisc(struct net_device *dev,
++				  struct net_device *s)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	int err;
++
++	if (!m->sub_promisc) {
++		err = dev_set_promiscuity(s, 1);
++		if (err < 0) {
++			pr_warn("vxlan_trunk %s: failed to put sub into promiscuous!!\n",
++			        dev->name);
++			return;
++		}
++		m->sub_promisc = true;
++	}
++}
++
++static void trunk_clear_sub_promisc(struct net_device *dev,
++				    struct net_device *s)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	int err;
++
++	if (m->sub_promisc) {
++		if (!m->promisc) {
++			pr_warn("vxlan_trunk %s: sub is promisc, but we are not!\n",
++			        dev->name);
++		}
++		err = dev_set_promiscuity(s, -1);
++		if (err < 0) {
++			pr_warn("vxlan_trunk %s: failed to clear sub promiscuous mode!\n",
++			        dev->name);
++			return;
++		}
++		m->sub_promisc = false;
++	}
++}
++
++static void trunk_set_sub_allmulti(struct net_device *dev,
++				  struct net_device *s)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	int err;
++
++	if (!m->sub_allmulti) {
++		err = dev_set_allmulti(s, 1);
++		if (err < 0) {
++			pr_warn("vxlan_trunk %s: failed to put sub into allmulti!!\n",
++			        dev->name);
++			return;
++		}
++		m->sub_allmulti = true;
++	}
++}
++
++static void trunk_clear_sub_allmulti(struct net_device *dev,
++				    struct net_device *s)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	int err;
++
++	if (m->sub_allmulti) {
++		if (!m->allmulti) {
++			pr_warn("vxlan_trunk %s: sub is allmulti, but we are not!\n",
++			        dev->name);
++		}
++		err = dev_set_allmulti(s, -1);
++		if (err < 0) {
++			pr_warn("vxlan_trunk %s: failed to clear sub allmulti!\n",
++			        dev->name);
++			return;
++		}
++		m->sub_allmulti = false;
++	}
++}
++
++static void trunk_change_rx_flags(struct net_device *dev,
++				  int flags)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	struct net_device *s;
++
++	trunk_dbg("change_rx_flags: %s, %x %s%s\n",
++	          dev->name, flags,
++	          (flags & IFF_PROMISC) ? "promisc" : "",
++	          (flags & IFF_ALLMULTI) ? "allmulti" : "");
++	s = __dev_get_by_index(m->net, m->parms.link);
++	if (!s) {
++		pr_warn("vxlan_trunk change_rx_flags %s: no link found: %d\n",
++		        dev->name, m->parms.link);
++		return;
++	}
++	if (flags & IFF_PROMISC) {
++		/* toggle promiscuousness */
++		if (m->promisc) {
++			/* we are already promisc, so clear */
++			trunk_clear_sub_promisc(dev, s);
++		} else {
++			/* we are not promisc, so set */
++			trunk_set_sub_promisc(dev, s);
++		}
++		m->promisc = !m->promisc;
++	}
++	if (flags & IFF_ALLMULTI) {
++		/* toggle allmulti */
++		if (m->allmulti) {
++			/* we are already allmulti, so clear */
++			trunk_clear_sub_allmulti(dev, s);
++		} else {
++			/* we are not allmulti, so set */
++			trunk_set_sub_allmulti(dev, s);
++		}
++		m->allmulti = !m->allmulti;
++	}
++}
++
++
++static const struct net_device_ops vxlan_trunk_netdev_ops = {
++	.ndo_init		= vxlan_trunk_dev_init,
++	.ndo_uninit		= vxlan_trunk_dev_uninit,
++	.ndo_start_xmit		= vxlan_trunk_xmit,
++	.ndo_set_mac_address	= eth_mac_addr,
++	.ndo_validate_addr	= eth_validate_addr,
++	.ndo_change_mtu		= vxlan_trunk_change_mtu,
++	.ndo_get_stats64	= vxlan_trunk_get_stats64,
++#if 0
++	.ndo_get_iflink	= vxlan_trunk_get_iflink,
++#endif
++	.ndo_trunk_op		= vxlan_trunk_do_op,
++	.ndo_trunk_dump		= vxlan_trunk_dump,
++	.ndo_change_rx_flags	= trunk_change_rx_flags,
++};
++
++static const struct net_device_ops vlan_trunk_netdev_ops = {
++	.ndo_init		= vxlan_trunk_dev_init,
++	.ndo_uninit		= vxlan_trunk_dev_uninit,
++	.ndo_start_xmit		= vlan_trunk_xmit,
++	.ndo_set_mac_address	= eth_mac_addr,
++	.ndo_validate_addr	= eth_validate_addr,
++	.ndo_change_mtu		= vxlan_trunk_change_mtu,
++	.ndo_get_stats64	= vxlan_trunk_get_stats64,
++#if 0
++	.ndo_get_iflink	= vxlan_trunk_get_iflink,
++#endif
++	.ndo_trunk_op		= vlan_trunk_do_op,
++	.ndo_trunk_dump		= vxlan_trunk_dump,
++	.ndo_change_rx_flags	= trunk_change_rx_flags,
++};
++
++static void vxlan_trunk_setup(struct net_device *dev)
++{
++	ether_setup(dev);
++	dev->tx_queue_len       = 0;
++	dev->netdev_ops         = &vxlan_trunk_netdev_ops;
++	dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
++}
++
++static void vlan_trunk_setup(struct net_device *dev)
++{
++	ether_setup(dev);
++	dev->tx_queue_len	= 0;
++	dev->netdev_ops		= &vlan_trunk_netdev_ops;
++	dev->priv_flags	|= IFF_LIVE_ADDR_CHANGE;
++}
++
++/*
++ * Return NULL if skb is handled
++ * note: already called with rcu_read_lock
++ */
++static rx_handler_result_t vxlan_trunk_handle_frame(struct sk_buff **pskb)
++{
++	struct sk_buff *skb = *pskb;
++	struct net_device *trunkdev;
++	struct vxlan_trunk *m;
++	struct full_vxlan_hdr fullh;
++	struct full_vxlan_hdr *h;
++	struct hlist_head *head;
++	struct vxlan_mapping_entry *map;
++	u32 vni, vlan_tci;
++
++#ifdef VXLAN_TRUNK_DBG
++	if (net_ratelimit())
++		trunk_dbg("handle_frame: skb: %p, len: %d\n", skb, skb->len);
++#endif
++	/* XXX: needed here?? */
++	if (unlikely(skb->pkt_type == PACKET_LOOPBACK)) {
++		if (net_ratelimit())
++			trunk_dbg("handle_frame: loopback??\n");
++		return RX_HANDLER_PASS;
++	}
++	trunkdev = rcu_dereference(skb->dev->rx_handler_data);
++	m = netdev_priv(trunkdev);
++
++	/* parse and eat vxlan header */
++	if (skb->protocol != cpu_to_be16(ETH_P_IP)) {
++		trunk_dbg("handle_frame: bad protocol: %d\n", skb->protocol);
++		trunkdev->stats.rx_frame_errors++;
++		goto out;
++	}
++
++	if (skb->len < VXLAN_OUTER_IP_SIZE) {
++		trunk_dbg("handle_frame: too short: %d\n", skb->len);
++		trunkdev->stats.rx_frame_errors++;
++		goto out;
++	}
++
++	h = skb_header_pointer(skb, 0, sizeof(*h), &fullh);
++	if (!h) {
++		trunk_dbg("handle_frame: unreadable header\n");
++		trunkdev->stats.rx_frame_errors++;
++		goto out;
++	}
++
++	if ((h->iph.daddr != 0) || (h->iph.protocol != IPPROTO_UDP) ||
++	    (h->iph.ihl != 5) ||
++	    (h->udph.dest != __constant_htons(VXLAN_UDP_PORT))) {
++		trunk_dbg("handle_frame: bad pre-vxlan hdrs udp->dest:%d\n",
++		        ntohs(h->udph.dest));
++		trunkdev->stats.rx_frame_errors++;
++		goto out;
++	}
++
++	/* XXX: store mappings in big-endian? */
++	vni = (((__u32)ntohl(h->vxh.vx_vni)) & VXLAN_VNI_MASK) >> 8;
++	trunk_dbg("handle_frame: vni: %d\n", vni);
++
++	/* lookup vxlan in trunkdev mappings */
++	rcu_read_lock();
++	head = &m->ihash[vxlan_tr_hash(vni)];
++	map = trunk_find_ingress_rcu(head, vni);
++	if (!map) {
++		/* XXX: stat */
++		rcu_read_unlock();
++		trunk_dbg("xmit: no mapping for vxlan: %d\n", vni);
++		goto drop;
++	}
++	if (!map->enabled) {
++		trunk_rx_tstats(skb->len, map->disabled_tstats);
++		rcu_read_unlock();
++		trunk_dbg("xmit: mapping for vxlan %d not enabled\n", vni);
++		goto drop;
++	}
++	vlan_tci = map->egress;
++
++	__skb_pull(skb, sizeof(*h));
++
++	/* XXX: want this? skb_scrub_packet(skb, !net_eq(vxlan->net, dev_net(vxlan->dev))); */
++	skb->protocol = eth_type_trans(skb, trunkdev);
++	/* XXX: skb_postpull_rcsum(skb, eth_hdr(skb), ETH_HLEN);  */
++	/* need this for bridge to identify arp packets */
++	skb_reset_network_header(skb);
++
++	trunk_rx_tstats(skb->len, map->tstats);
++	rcu_read_unlock();
++	/* set appropriate vlan in skb */
++	__vlan_hwaccel_put_tag(skb, cpu_to_be16(ETH_P_8021Q), vlan_tci);
++
++	if (skb_vlan_tagged_multi(skb)) {
++		/* XXX: stat */
++		/* this would allow the rx_handler_another layer to
++		 * overwrite the vlan we set, so can't allow for now.
++		 */
++		if (net_ratelimit()) {
++			pr_info("handle_frame: inner packet is 8021.q/ad\n");
++		}
++		goto drop;
++	}
++
++	return RX_HANDLER_ANOTHER;
++drop:
++	trunkdev->stats.rx_dropped++;
++out:
++	kfree_skb(skb);
++	return RX_HANDLER_CONSUMED;
++}
++
++/*
++ * note: already called with rcu_read_lock
++ */
++static rx_handler_result_t vlan_trunk_handle_frame(struct sk_buff **pskb)
++{
++	struct sk_buff *skb = *pskb;
++	struct net_device *trunkdev;
++	struct vxlan_trunk *m;
++	struct hlist_head *head;
++	struct vxlan_mapping_entry *map;
++	u32 in_vlan, vlan_tci;
++
++#ifdef VXLAN_TRUNK_DBG
++	if (net_ratelimit())
++		trunk_dbg("vlan_handle_frame: skb: %p, len: %d\n", skb, skb->len);
++#endif
++	/* XXX: needed here?? */
++	if (unlikely(skb->pkt_type == PACKET_LOOPBACK)) {
++		if (net_ratelimit())
++			trunk_dbg("handle_frame: loopback??\n");
++		return RX_HANDLER_PASS;
++	}
++	trunkdev = rcu_dereference(skb->dev->rx_handler_data);
++	m = netdev_priv(trunkdev);
++
++	/* verify vlan tagged, if not, mark as vlan 0 */
++	if (unlikely(!skb_vlan_tag_present(skb))) {
++		/* If there is no vlan tag, treat as vlan 0.
++		 * Will still be allowed or dropped per mappings.
++		 */
++		__vlan_hwaccel_put_tag(skb, cpu_to_be16(ETH_P_8021Q), 0);
++	}
++
++	/* XXX: store mappings in big-endian? */
++	in_vlan = skb_vlan_tag_get_id(skb);
++	trunk_dbg("vlan_handle_frame: vlan: %d\n", in_vlan);
++
++	/* lookup vlan in trunkdev mappings */
++	rcu_read_lock();
++	head = &m->ihash[vxlan_tr_hash(in_vlan)];
++	map = trunk_find_ingress_rcu(head, in_vlan);
++	if (!map) {
++		/* XXX: stat */
++		rcu_read_unlock();
++		trunk_dbg("xmit: no mapping for vlan: %d\n", in_vlan);
++		goto drop;
++	}
++	if (!map->enabled) {
++		trunk_rx_tstats(skb->len, map->disabled_tstats);
++		rcu_read_unlock();
++		trunk_dbg("xmit: mapping for vlan %d not enabled\n", in_vlan);
++		goto out;
++	}
++	vlan_tci = map->egress;
++
++	/* skb belongs to trunkdev after this */
++	skb->dev = trunkdev;
++
++	trunk_rx_tstats(skb->len, map->tstats);
++	rcu_read_unlock();
++
++	/* set appropriate vlan in skb */
++	/* XXX: overwriting any PCP bits here */
++	__vlan_hwaccel_put_tag(skb, cpu_to_be16(ETH_P_8021Q), vlan_tci);
++
++	if (skb_vlan_tagged_multi(skb)) {
++		/* this would allow the rx_handler_another layer to
++		 * overwrite the vlan we set, so can't allow for now.
++		 */
++		if (net_ratelimit()) {
++			pr_info("handle_frame: inner packet is 8021.q/ad\n");
++		}
++		goto drop;
++	}
++
++	return RX_HANDLER_ANOTHER;
++drop:
++	trunkdev->stats.rx_dropped++;
++out:
++	kfree_skb(skb);
++	return RX_HANDLER_CONSUMED;
++}
++
++static void vxlan_trunk_clean_one(struct net_device *dev)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	struct net_device *s;
++
++	BUG_ON(m->parms.link == 0);
++	s = __dev_get_by_index(m->net, m->parms.link);
++	if (!s) {
++		pr_warn("vxlan_trunk clean %s: no link found: %d\n",
++		        dev->name, m->parms.link);
++	} else {
++		trunk_clear_sub_promisc(dev, s);
++		trunk_clear_sub_allmulti(dev, s);
++		trunk_dbg("trunk cleanone %s: unregistering handler on %s\n",
++		        dev->name, s->name);
++		netdev_rx_handler_unregister(s);
++	}
++	m->sub_promisc = false;
++	m->sub_allmulti = false;
++	m->parms.link = -1;
++}
++
++static int trunk_apply_parms(struct net_device *dev,
++			     struct vxlan_trunk_parm *p,
++			     rx_handler_func_t *rx_handler)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	struct net *net = m->net;
++
++	trunk_dbg("apply_parms: %s: %p\n", dev->name, p);
++
++	if ((p->link != 0) && (p->link != m->parms.link)) {
++		struct net_device *s;
++		int err;
++
++		if (m->parms.link != 0) {
++			vxlan_trunk_clean_one(dev);
++		}
++		/* register handler and update device */
++		s = __dev_get_by_index(net, p->link);
++		if (!s) {
++			pr_err("trunk apply %s: no link found: %d\n",
++			        dev->name, p->link);
++			return -1;
++		}
++		err = netdev_rx_handler_register(s, rx_handler, dev);
++		if (err) {
++			pr_err("trunk apply %s: unable to register handler for %s: %d\n",
++			        dev->name, s->name, err);
++			return -1;
++		}
++		m->parms.link = p->link;
++		trunk_dbg("trunk apply %s: set link: %s\n",
++		        dev->name, s->name);
++		/* if we're promisc, enable on sub */
++		if (m->promisc) {
++			trunk_set_sub_promisc(dev, s);
++		}
++		/* if we're allmulti, enable on sub */
++		if (m->allmulti) {
++			trunk_set_sub_allmulti(dev, s);
++		}
++	}
++
++	return 0;
++}
++
++typedef int trunk_apply_parms_t(struct net_device *dev,
++				struct vxlan_trunk_parm *p);
++
++static int vxlan_trunk_apply_parms(struct net_device *dev,
++				   struct vxlan_trunk_parm *p)
++{
++	return trunk_apply_parms(dev, p, vxlan_trunk_handle_frame);
++}
++
++static int vlan_trunk_apply_parms(struct net_device *dev,
++				  struct vxlan_trunk_parm *p)
++{
++	return trunk_apply_parms(dev, p, vlan_trunk_handle_frame);
++}
++
++static void vxlan_trunk_clean(struct net_device *dev)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++
++	if (m->parms.link != 0) {
++		vxlan_trunk_clean_one(dev);
++	}
++	trunk_flush_mappings(m);
++}
++
++static int trunk_do_newlink(struct net_device *dev, struct nlattr *tb[],
++			    struct vxlan_trunk_parm *p,
++			    trunk_apply_parms_t *apply_params_func)
++{
++	struct vxlan_trunk *m;
++	struct net *net = dev_net(dev);
++	int mtu;
++	int err;
++
++	m = netdev_priv(dev);
++
++	spin_lock_init(&m->lock);
++	m->net = net;
++	err = apply_params_func(dev, p);
++	if (err)
++		goto out;
++	err = register_netdevice(dev);
++	if (err)
++		goto out;
++
++	if (dev->type == ARPHRD_ETHER && !tb[IFLA_ADDRESS])
++		eth_hw_addr_random(dev);
++
++	/* XXX: calc MTU based on link */
++	mtu = 1500;
++	if (!tb[IFLA_MTU])
++		dev->mtu = mtu;
++
++	return 0;
++out:
++	/* clear any links that were set */
++	vxlan_trunk_clean(dev);
++	return err;
++}
++
++static int vxlan_trunk_newlink(struct net *src_net, struct net_device *dev,
++			 struct nlattr *tb[], struct nlattr *data[],
++			 struct netlink_ext_ack *extack)
++{
++	struct vxlan_trunk_parm p;
++
++	trunk_dbg("newlink: rtnl_locked: %d\n", rtnl_is_locked());
++	trunk_netlink_parms(data, tb, &p);
++	return trunk_do_newlink(dev, tb, &p, vxlan_trunk_apply_parms);
++}
++
++static int vlan_trunk_newlink(struct net *src_net, struct net_device *dev,
++			 struct nlattr *tb[], struct nlattr *data[],
++			 struct netlink_ext_ack *extack)
++{
++	struct vxlan_trunk_parm p;
++
++	trunk_dbg("newlink: rtnl_locked: %d\n", rtnl_is_locked());
++	trunk_netlink_parms(data, tb, &p);
++	return trunk_do_newlink(dev, tb, &p, vlan_trunk_apply_parms);
++}
++
++static int trunk_do_changelink(struct net_device *dev, struct nlattr *tb[],
++			       struct vxlan_trunk_parm *p,
++			       trunk_apply_parms_t *apply_params_func)
++{
++	int err;
++
++	trunk_dbg("do_changelink: rtnl_locked: %d\n", rtnl_is_locked());
++	err = apply_params_func(dev, p);
++	if (err)
++		return err;
++	netdev_state_change(dev);
++	return 0;
++}
++
++static int vxlan_trunk_changelink(struct net_device *dev, struct nlattr *tb[],
++			    struct nlattr *data[],
++			    struct netlink_ext_ack *extack)
++{
++	struct vxlan_trunk_parm p;
++
++	trunk_dbg("changelink: rtnl_locked: %d\n", rtnl_is_locked());
++	trunk_netlink_parms(data, tb, &p);
++	return trunk_do_changelink(dev, tb, &p, vxlan_trunk_apply_parms);
++}
++
++static int vlan_trunk_changelink(struct net_device *dev, struct nlattr *tb[],
++			    struct nlattr *data[],
++			    struct netlink_ext_ack *extack)
++{
++	struct vxlan_trunk_parm p;
++
++	trunk_dbg("changelink: rtnl_locked: %d\n", rtnl_is_locked());
++	trunk_netlink_parms(data, tb, &p);
++	return trunk_do_changelink(dev, tb, &p, vlan_trunk_apply_parms);
++}
++
++static size_t vxlan_trunk_get_size(const struct net_device *dev)
++{
++	trunk_dbg("get_size: rtnl_locked: %d\n", rtnl_is_locked());
++	return
++		/* IFLA_VXLAN_TRUNK_LINK */
++		nla_total_size(4) +
++		0;
++}
++
++static int vxlan_trunk_fill_info(struct sk_buff *skb,
++				 const struct net_device *dev)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	struct vxlan_trunk_parm *p = &m->parms;
++
++	trunk_dbg("fill_info: rtnl_locked: %d\n", rtnl_is_locked());
++	if (nla_put_u32(skb, IFLA_VXLAN_TRUNK_LINK, p->link))
++		goto nla_put_failure;
++
++	return 0;
++
++nla_put_failure:
++	return -EMSGSIZE;
++}
++
++void vxlan_trunk_dellink(struct net_device *dev, struct list_head *head)
++{
++	trunk_dbg("vxlan_trunk dellink: rtnl_locked: %d\n", rtnl_is_locked());
++	trunk_dbg("vxlan_trunk dellink: %s\n", dev->name);
++
++	vxlan_trunk_clean(dev);
++	/* cleanup any references */
++	unregister_netdevice_queue(dev, head);
++}
++
++static struct net *vxlan_trunk_get_link_net(const struct net_device *dev)
++{
++	struct vxlan_trunk *m = netdev_priv(dev);
++	return m->net;
++}
++
++
++static const struct nla_policy vxlan_trunk_policy[IFLA_VXLAN_TRUNK_MAX + 1] = {
++	[IFLA_VXLAN_TRUNK_LINK]	= { .type = NLA_U32 },
++};
++
++static struct rtnl_link_ops vxlan_trunk_ops = {
++	.kind		= "vxlantrunk",
++	.maxtype	= IFLA_VXLAN_TRUNK_MAX,
++	.policy		= vxlan_trunk_policy,
++	.priv_size	= sizeof(struct vxlan_trunk),
++	.setup		= vxlan_trunk_setup,
++	.validate	= vxlan_trunk_validate,
++	.newlink	= vxlan_trunk_newlink,
++	.changelink	= vxlan_trunk_changelink,
++	.dellink	= vxlan_trunk_dellink,
++	.get_size	= vxlan_trunk_get_size,
++	.fill_info	= vxlan_trunk_fill_info,
++	.get_link_net	= vxlan_trunk_get_link_net,
++};
++
++static struct rtnl_link_ops vlan_trunk_ops = {
++	.kind		= "vlantrunk",
++	.maxtype	= IFLA_VXLAN_TRUNK_MAX,
++	.policy		= vxlan_trunk_policy,
++	.priv_size	= sizeof(struct vxlan_trunk),
++	.setup		= vlan_trunk_setup,
++	.validate	= vxlan_trunk_validate,
++	.newlink	= vlan_trunk_newlink,
++	.changelink	= vlan_trunk_changelink,
++	.dellink	= vxlan_trunk_dellink,
++	.get_size	= vxlan_trunk_get_size,
++	.fill_info	= vxlan_trunk_fill_info,
++	.get_link_net	= vxlan_trunk_get_link_net,
++};
++
++static int __net_init vxlan_trunk_init_net(struct net *net)
++{
++	trunk_dbg("vxlan_trunk init_net: WRITEME\n");
++	return 0;
++}
++
++static void __net_exit vxlan_trunk_exit_net(struct net *net)
++{
++	trunk_dbg("vxlan_trunk exit_net: WRITEME\n");
++}
++
++static struct pernet_operations vxlan_trunk_net_ops = {
++	.init = vxlan_trunk_init_net,
++	.exit = vxlan_trunk_exit_net,
++	.id   = &vxlan_trunk_net_id,
++	.size = sizeof(struct vxlan_trunk_net),
++};
++
++
++static int mapping_id_parse(struct nlattr *id_attr, u32 *p_id, int is_vlan)
++{
++	u32 id = 0;
++
++	if (id_attr) {
++		if (nla_len(id_attr) != sizeof(u32)) {
++			trunk_dbg("TRUNK: invalid id\n");
++			return -EINVAL;
++		}
++
++		id = nla_get_u32(id_attr);
++
++		if ((is_vlan && (id >= VLAN_VID_MASK)) ||
++		    (!is_vlan && (id >= VXLAN_N_VID))) {
++			trunk_dbg("TRUNK: invalid id %d (vlan: %d)\n",
++				id, is_vlan);
++			return -EINVAL;
++		}
++	}
++	*p_id = id;
++	return 0;
++}
++
++static int rtnl_trunk_mapping_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
++				   struct netlink_ext_ack *extack)
++{
++	struct net *net = sock_net(skb->sk);
++	struct trmsg *trm;
++	struct nlattr *tb[TRA_MAX+1];
++	struct net_device *dev;
++	u32 src_id;
++	u32 dst_id;
++	int err;
++
++	trunk_dbg("RTNL_TRUNK: RTM_MAPPING top...\n");
++	err = nlmsg_parse(nlh, sizeof(*trm), tb, TRA_MAX, NULL, extack);
++	if (err < 0)
++		return err;
++
++	trm = nlmsg_data(nlh);
++	if (trm->trm_ifindex == 0) {
++		trunk_dbg("RTNL_TRUNK: RTM_MAPPING with invalid ifindex\n");
++		return -EINVAL;
++	}
++
++	dev = __dev_get_by_index(net, trm->trm_ifindex);
++	if (dev == NULL) {
++		trunk_dbg("RTNL_TRUNK: RTM_MAPPING with unknown ifindex\n");
++		return -ENODEV;
++	}
++
++	if ((trm->trm_op <= 0) || (trm->trm_op > TRM_MAX)) {
++		trunk_dbg("RTNL_TRUNK: RTM_MAPPING bad op: %d\n", trm->trm_op);
++		return -EINVAL;
++	}
++
++	if (!(trm->trm_flags & TRF_SRC_MASK) ||
++	    !(trm->trm_flags & TRF_DST_MASK)) {
++		trunk_dbg("RTNL_TRUNK: RTM_MAPPING bad flags: %x\n",
++		        trm->trm_flags);
++		return -EINVAL;
++	}
++	if (((trm->trm_flags & TRF_SRC_MASK) == TRF_SRC_MASK) ||
++	    ((trm->trm_flags & TRF_DST_MASK) == TRF_DST_MASK)) {
++		trunk_dbg("RTNL_TRUNK: RTM_MAPPING bad flags: %x\n",
++		        trm->trm_flags);
++		return -EINVAL;
++	}
++	err = mapping_id_parse(tb[TRA_SRC], &src_id,
++	                       trm->trm_flags & TRF_SRC_VLAN);
++	if (err)
++		return err;
++
++	err = mapping_id_parse(tb[TRA_DST], &dst_id,
++	                       trm->trm_flags & TRF_DST_VLAN);
++	if (err)
++		return err;
++
++	err = -EOPNOTSUPP;
++
++	if (dev->netdev_ops->ndo_trunk_op) {
++		err = dev->netdev_ops->ndo_trunk_op(dev, src_id, dst_id,
++						    trm->trm_flags,
++						    trm->trm_op);
++	} else {
++		trunk_dbg("ndo_trunk_op: device doesn't support\n");
++	}
++
++	return err;
++}
++
++static int rtnl_trunk_dump(struct sk_buff *skb, struct netlink_callback *cb)
++{
++	struct net_device *dev;
++	struct net *net = sock_net(skb->sk);
++	int idx = 0;
++
++	rcu_read_lock();
++	for_each_netdev_rcu(net, dev) {
++		const struct net_device_ops *ops = dev->netdev_ops;
++		if (ops->ndo_trunk_dump) {
++			idx = ops->ndo_trunk_dump(skb, cb, dev, idx);
++		}
++	}
++	rcu_read_unlock();
++
++	cb->args[0] = idx;
++	return skb->len;
++}
++
++
++static int __init vxlan_trunk_init(void)
++{
++	int err;
++
++	pr_info("VXLAN_TRUNK module\n");
++
++	err = register_pernet_device(&vxlan_trunk_net_ops);
++	if (err < 0)
++		return err;
++
++	err = rtnl_link_register(&vxlan_trunk_ops);
++	if (err < 0)
++		goto trunk_ops_failed;
++
++	err = rtnl_link_register(&vlan_trunk_ops);
++	if (err < 0)
++		goto trunk_ops2_failed;
++
++	err = rtnl_register_module(THIS_MODULE, RTNL_FAMILY_TRUNK, RTM_NEWNEIGH,
++	                      rtnl_trunk_mapping_doit, NULL, 0);
++	if (err < 0)
++		goto rtnl_failed;
++
++	err = rtnl_register_module(THIS_MODULE, RTNL_FAMILY_TRUNK, RTM_GETLINK,
++	                      NULL, rtnl_trunk_dump, 0);
++	if (err < 0)
++		goto rtnl_dump_failed;
++
++	return 0;
++
++rtnl_dump_failed:
++	rtnl_unregister(RTNL_FAMILY_TRUNK, RTM_NEWNEIGH);
++rtnl_failed:
++	rtnl_link_unregister(&vlan_trunk_ops);
++trunk_ops2_failed:
++	rtnl_link_unregister(&vxlan_trunk_ops);
++trunk_ops_failed:
++	unregister_pernet_device(&vxlan_trunk_net_ops);
++	return err;
++}
++
++static void __exit vxlan_trunk_fini(void)
++{
++	rtnl_unregister(RTNL_FAMILY_TRUNK, RTM_GETLINK);
++	rtnl_unregister(RTNL_FAMILY_TRUNK, RTM_NEWNEIGH);
++	rtnl_link_unregister(&vlan_trunk_ops);
++	rtnl_link_unregister(&vxlan_trunk_ops);
++	unregister_pernet_device(&vxlan_trunk_net_ops);
++	rcu_barrier();
++}
++
++module_init(vxlan_trunk_init);
++module_exit(vxlan_trunk_fini);
++MODULE_LICENSE("GPL");
++MODULE_ALIAS_RTNL_LINK("vxlantrunk");
++MODULE_ALIAS_RTNL_LINK("vlantrunk");
++MODULE_ALIAS_NETDEV("vxlantrunk0");
++MODULE_ALIAS_NETDEV("vlantrunk0");
+-- 
+2.7.4
+

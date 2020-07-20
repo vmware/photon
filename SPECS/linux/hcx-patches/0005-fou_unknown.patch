@@ -1,0 +1,640 @@
+From 4d7a1518d71c9ff6dbcd72dff47072cc900dd0c6 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 24 Jul 2020 14:22:16 +0530
+Subject: [PATCH 5/7] fou_unknown.patch
+
+Improvements to fou key patch for NAT detection.
+---
+ net/ipv4/ipip.c | 550 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 550 insertions(+)
+
+diff --git a/net/ipv4/ipip.c b/net/ipv4/ipip.c
+index 9696d7d..efc41e5 100644
+--- a/net/ipv4/ipip.c
++++ b/net/ipv4/ipip.c
+@@ -106,6 +106,8 @@
+ #include <linux/init.h>
+ #include <linux/netfilter_ipv4.h>
+ #include <linux/if_ether.h>
++#include <linux/hashtable.h>
++#include <linux/genetlink.h>
+ 
+ #include <net/sock.h>
+ #include <net/ip.h>
+@@ -115,6 +117,7 @@
+ #include <net/xfrm.h>
+ #include <net/net_namespace.h>
+ #include <net/netns/generic.h>
++#include <net/genetlink.h>
+ #include <net/dst_metadata.h>
+ 
+ #ifdef CONFIG_SYSCTL
+@@ -134,6 +137,7 @@ MODULE_PARM_DESC(log_ecn_error, "Log packets received with corrupted ECN");
+ static unsigned int ipip_net_id __read_mostly;
+ 
+ static int ipip_tunnel_init(struct net_device *dev);
++static void ipip_handle_unknown_fou(struct net *net, struct sk_buff *skb);
+ static struct rtnl_link_ops ipip_link_ops __read_mostly;
+ 
+ #ifdef CONFIG_SYSCTL
+@@ -289,6 +293,9 @@ static int ipip_tunnel_rcv(struct sk_buff *skb, u8 ipproto)
+ 		return ip_tunnel_rcv(tunnel, skb, tpi, tun_dst, log_ecn_error);
+ 	}
+ 
++	if (fou_key_multi_port && skb->fou_key != 0) {
++		ipip_handle_unknown_fou(net, skb);
++	}
+ 	return -1;
+ 
+ drop:
+@@ -296,6 +303,527 @@ static int ipip_tunnel_rcv(struct sk_buff *skb, u8 ipproto)
+ 	return 0;
+ }
+ 
++struct unknown_fou {
++	struct hlist_node list;
++	struct rcu_head rcu;
++	spinlock_t lock;
++
++	/* key fields */
++	__be32 saddr;
++	__be32 daddr;
++	__be16 sport;
++	__be16 dport;
++	struct net *net;
++
++	/* data fields */
++	unsigned long created; /* jiffies */
++	unsigned long last_seen; /* jiffies */
++	unsigned long muffle_until; /* jiffies */
++	unsigned long notice_sent; /* jiffies */
++	unsigned long count;
++};
++
++
++/*
++ * declare hashtable and lock for unknown fou.  Using only 256 buckets
++ * since we don't expect a lot of these.
++ */
++static DEFINE_HASHTABLE(ipip_fou_unk_hash, 8);
++static DEFINE_SPINLOCK(ipip_fou_hash_lock);
++
++static u32 ipip_unknown_fou_key(struct unknown_fou *key)
++{
++	return jhash_3words((u32)key->saddr, (u32)key->daddr,
++	                    (u32)((key->sport<<16)|key->dport),
++	                    (u32)net_hash_mix(key->net));
++}
++
++static struct unknown_fou *ipip_alloc_unknown_fou(void)
++{
++	return kmalloc(sizeof(struct unknown_fou), GFP_ATOMIC);
++}
++
++#define VERBOSE 0
++
++static void ipip_free_unknown_fou_rcu(struct rcu_head *head)
++{
++	struct unknown_fou *e;
++	e = container_of(head, struct unknown_fou, rcu);
++#if VERBOSE
++	pr_info("ipip: free entry: (%p) %pI4:%u to %pI4:%u\n", e,
++		&e->saddr, ntohs(e->sport), &e->daddr, ntohs(e->dport));
++#endif
++	kfree(e);
++}
++
++static void ipip_fou_unk_gc(struct timer_list *unused);
++static DEFINE_TIMER(ipip_fou_unk_gc_timer, ipip_fou_unk_gc);
++
++enum fou_unk_cmd {
++	FOU_UNK_CMD_UNSPEC,
++	FOU_UNK_CMD_NEW,
++	FOU_UNK_CMD_DEL,
++	FOU_UNK_CMD_GET,
++	FOU_UNK_CMD_SET,
++	FOU_UNK_CMD_PKT
++};
++
++static struct genl_family fou_unknown_genl_family;
++
++#define FOU_UNK_FAMILY "fou_unknown"
++#define FOU_UNK_MCGROUP "fou_unknown"
++
++enum fou_unk_attr {
++	FOU_UNK_ATTR_UNSPEC,
++	FOU_UNK_ATTR_SRC_IP,
++	FOU_UNK_ATTR_DST_IP,
++	FOU_UNK_ATTR_SRC_PORT,
++	FOU_UNK_ATTR_DST_PORT,
++	FOU_UNK_ATTR_PKT_LEN,
++	FOU_UNK_ATTR_PKT_PAYLOAD,
++	// TODO: reorder a little?
++	FOU_UNK_ATTR_CREATED_USEC,
++	FOU_UNK_ATTR_AGE_USEC,
++	FOU_UNK_ATTR_MUFFLE_USEC,
++	__FOU_UNK_ATTR_MAX
++};
++
++#define FOU_UNK_ATTR_MAX (__FOU_UNK_ATTR_MAX - 1)
++
++/* Arbitrary limit for now */
++#define FOU_UNK_MAX_PAYLOAD 1024
++
++static void ipip_fou_unk_gc(struct timer_list *unused)
++{
++	int bkt;
++	struct hlist_node *tmp;
++	struct unknown_fou *entry;
++
++	unsigned long now = jiffies;
++	unsigned long max_age = msecs_to_jiffies(30000);
++
++	spin_lock_bh(&ipip_fou_hash_lock);
++	hash_for_each_safe(ipip_fou_unk_hash, bkt, tmp, entry, list) {
++		if ((now - entry->last_seen) < max_age) {
++			continue;
++		}
++		hash_del_rcu(&entry->list);
++		call_rcu(&entry->rcu, ipip_free_unknown_fou_rcu);
++	}
++	spin_unlock_bh(&ipip_fou_hash_lock);
++	mod_timer(&ipip_fou_unk_gc_timer, jiffies + msecs_to_jiffies(1000));
++}
++
++/*
++ * purge all entries from hash.  Assumes any needed locks are held.
++ */
++static void ipip_fou_unk_purge(void)
++{
++	int bkt;
++	struct hlist_node *tmp;
++	struct unknown_fou *entry;
++
++	hash_for_each_safe(ipip_fou_unk_hash, bkt, tmp, entry, list) {
++		hash_del_rcu(&entry->list);
++		call_rcu(&entry->rcu, ipip_free_unknown_fou_rcu);
++	}
++}
++
++/*
++ * Tell unknown_fou about a new/updated link.  Unknown_fou layer
++ * checks if it currently has a matching entry, and removes it if it
++ * does.  (The tuple is no longer unknown when a device is created for
++ * it.)
++ */
++static void ipip_fou_unk_notice(struct net *net,
++				struct ip_tunnel_parm *p,
++				struct ip_tunnel_encap *ipencap)
++{
++	struct hlist_node *tmp;
++	struct unknown_fou key;
++	struct unknown_fou *entry, *u = &key;
++	u32 hash_key;
++
++	if ((ipencap->type != TUNNEL_ENCAP_FOU) ||
++	    (ipencap->sport == 0) || (ipencap->dport == 0)) {
++		return;
++	}
++	key.net = net;
++	/* inverted because fou_unk is incoming tuple */
++	key.saddr = p->iph.daddr;
++	key.daddr = p->iph.saddr;
++	key.sport = ipencap->dport;
++	key.dport = ipencap->sport;
++	hash_key = ipip_unknown_fou_key(&key);
++	spin_lock_bh(&ipip_fou_hash_lock);
++	hash_for_each_possible_safe(ipip_fou_unk_hash, entry, tmp, list, hash_key) {
++		if ((entry->net == u->net) &&
++		    (entry->saddr == u->saddr) &&
++		    (entry->daddr == u->daddr) &&
++		    (entry->sport == u->sport) &&
++		    (entry->dport == u->dport)) {
++			hash_del_rcu(&entry->list);
++			call_rcu(&entry->rcu, ipip_free_unknown_fou_rcu);
++		}
++	}
++	spin_unlock_bh(&ipip_fou_hash_lock);
++}
++
++
++static struct sk_buff *fou_unk_build_pkt_report(struct unknown_fou *entry,
++					 struct sk_buff *fou_skb, int len,
++					 u32 portid, u32 seq, u8 cmd);
++
++/*
++ * Find an unknown_fou entry if it exists.  Assumes needed lock(s) are
++ * taken.
++ */
++static struct unknown_fou *ipip_find_unknown_fou(struct unknown_fou *u)
++{
++	u32 hash_key;
++	struct unknown_fou *entry, *found;
++
++	/* lookup unknown_fou */
++	hash_key = ipip_unknown_fou_key(u);
++	found = NULL;
++	hash_for_each_possible_rcu(ipip_fou_unk_hash, entry, list, hash_key) {
++		if ((entry->net == u->net) &&
++		    (entry->saddr == u->saddr) &&
++		    (entry->daddr == u->daddr) &&
++		    (entry->sport == u->sport) &&
++		    (entry->dport == u->dport)) {
++			found = entry;
++			break;
++		}
++	}
++	return found;
++}
++
++#define MIN_NOTICE_INTVL_SECS 1
++
++/*
++ * Do something useful (like track, notify, etc.) with unknown fou
++ * packets.
++ */
++static void ipip_handle_unknown_fou(struct net *net, struct sk_buff *skb)
++{
++	const struct iphdr *iph;
++	u32 hash_key;
++	struct unknown_fou key;
++	struct unknown_fou *entry, *found;
++	__be16 sport, dport;
++	unsigned long now;
++
++	iph = ip_hdr(skb);
++	sport = ((skb->fou_key >> 16)&0xffff);
++	dport = (skb->fou_key&0xffff);
++
++	key.net = net;
++	key.saddr = iph->saddr;
++	key.daddr = iph->daddr;
++	key.sport = sport;
++	key.dport = dport;
++
++	rcu_read_lock();
++	/* lookup unknown_fou */
++	hash_key = ipip_unknown_fou_key(&key);
++	entry = ipip_find_unknown_fou(&key);
++
++	now = jiffies;
++	/* if not found */
++	if (!entry) {
++		/* create */
++		entry = ipip_alloc_unknown_fou();
++		if (!entry) {
++			rcu_read_unlock();
++			if (net_ratelimit()) {
++				pr_info("failed to alloc node fou for tuple: %pI4:%u to %pI4:%u\n",
++					&entry->saddr, ntohs(sport), &entry->daddr, ntohs(dport));
++			}
++			return;
++		}
++		entry->net = net;
++		entry->saddr = iph->saddr;
++		entry->daddr = iph->daddr;
++		entry->sport = sport;
++		entry->dport = dport;
++
++		spin_lock_init(&entry->lock);
++		entry->created = now;
++		entry->muffle_until = now - 1;
++		entry->last_seen = 0; /* will be set below */
++		entry->notice_sent = jiffies - msecs_to_jiffies(1000 * MIN_NOTICE_INTVL_SECS);
++		init_rcu_head(&entry->rcu);
++		spin_lock_bh(&ipip_fou_hash_lock);
++		/* check for dup (could be racing) */
++		found = ipip_find_unknown_fou(&key);
++		if (found) {
++			spin_unlock_bh(&ipip_fou_hash_lock);
++			rcu_read_unlock();
++			pr_info("ipip: found dup unknown_fou while adding.\n");
++			kfree(entry);
++			return;
++		}
++		hash_add_rcu(ipip_fou_unk_hash, &entry->list, hash_key);
++		spin_unlock_bh(&ipip_fou_hash_lock);
++	}
++	spin_lock_bh(&entry->lock);
++	entry->last_seen = now;
++
++	/* send notifs, as needed */
++	if (((signed long)(entry->muffle_until - now)) > 0) {
++		goto out;
++	}
++	/* only send max of 1 per second */
++	if (jiffies_to_msecs(jiffies - entry->notice_sent) < (1000 * MIN_NOTICE_INTVL_SECS)) {
++		goto out;
++	}
++
++	if (skb->len < FOU_UNK_MAX_PAYLOAD) {
++		struct sk_buff *fou_skb;
++
++		fou_skb = fou_unk_build_pkt_report(entry,
++						   skb, skb->len,
++						   0, 0, FOU_UNK_CMD_PKT);
++		if (!fou_skb) {
++			/* XXX: stat/log */
++			if (net_ratelimit()) {
++				pr_info("fou_unk: failed to build pkt report\n");
++			}
++			goto out;
++		}
++		entry->notice_sent = jiffies;
++		genlmsg_multicast_netns(&fou_unknown_genl_family,
++					entry->net, fou_skb,
++					0, 0, GFP_ATOMIC);
++	}
++out:
++	spin_unlock_bh(&entry->lock);
++	rcu_read_unlock();
++}
++
++
++
++static const struct genl_multicast_group fou_unk_multicast_group = {
++	.name = FOU_UNK_MCGROUP,
++};
++
++static const struct nla_policy fou_unk_policy[FOU_UNK_ATTR_MAX + 1] = {
++	[FOU_UNK_ATTR_SRC_IP] = { .type = NLA_U32 },
++	[FOU_UNK_ATTR_DST_IP] = { .type = NLA_U32 },
++	[FOU_UNK_ATTR_SRC_PORT] = { .type = NLA_U16 },
++	[FOU_UNK_ATTR_DST_PORT] = { .type = NLA_U16 },
++	[FOU_UNK_ATTR_PKT_LEN] = { .type = NLA_U16 }, /* skb->len, whether all copied or not */
++	[FOU_UNK_ATTR_PKT_PAYLOAD] = { .len = FOU_UNK_MAX_PAYLOAD }, /* remove?  forces allocation? */
++	[FOU_UNK_ATTR_CREATED_USEC] = { .type = NLA_U32 },
++	[FOU_UNK_ATTR_AGE_USEC] = { .type = NLA_U32 },
++	[FOU_UNK_ATTR_MUFFLE_USEC] = { .type = NLA_U32 },
++};
++
++static struct sk_buff *fou_unk_build_pkt_report(struct unknown_fou *entry,
++						struct sk_buff *fou_skb, int len,
++						u32 portid, u32 seq, u8 cmd)
++{
++	struct sk_buff *skb;
++	void *hdr;
++	struct nlattr *nla;
++	int err;
++
++	/* XXX: probably genlmsg_new(nla_size(attributes), ...);
++	 * this over-allocates.
++	 */
++	skb = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
++	if (!skb)
++		return ERR_PTR(-ENOMEM);
++
++	hdr = genlmsg_put(skb, portid, seq, &fou_unknown_genl_family,
++			  0, cmd);
++	if (!hdr) {
++		err = -EMSGSIZE;
++		goto error;
++	}
++
++	if (nla_put_u32(skb, FOU_UNK_ATTR_SRC_IP, ntohl(entry->saddr)) ||
++	    nla_put_u32(skb, FOU_UNK_ATTR_DST_IP, ntohl(entry->daddr)) ||
++	    nla_put_u16(skb, FOU_UNK_ATTR_SRC_PORT, ntohs(entry->sport)) ||
++	    nla_put_u16(skb, FOU_UNK_ATTR_DST_PORT, ntohs(entry->dport)))
++		goto nla_put_failure;
++
++	if (nla_put_u16(skb, FOU_UNK_ATTR_PKT_LEN, skb->len))
++		goto nla_put_failure;
++
++	if (!(nla = nla_reserve(skb, FOU_UNK_ATTR_PKT_PAYLOAD, len))) {
++		goto nla_put_failure;
++	}
++
++	nla->nla_len = nla_attr_size(len);
++	err = skb_copy_bits(fou_skb, 0, nla_data(nla), len);
++	if (err != 0) {
++		goto nla_put_failure;
++	}
++
++	genlmsg_end(skb, hdr);
++	return skb;
++
++nla_put_failure:
++	err = -EMSGSIZE;
++	genlmsg_cancel(skb, hdr);
++error:
++	kfree_skb(skb);
++	return ERR_PTR(err);
++}
++
++
++
++static int fou_unk_cmd_fill_info(struct unknown_fou *entry, struct sk_buff *skb,
++				 u32 portid, u32 seq, u32 flags, u8 cmd)
++{
++	int err;
++	void *hdr;
++	unsigned long now;
++	unsigned int created, age;
++
++	hdr = genlmsg_put(skb, portid, seq, &fou_unknown_genl_family,
++			  flags, cmd);
++	if (!hdr)
++		return -EMSGSIZE;
++
++	if (nla_put_u32(skb, FOU_UNK_ATTR_SRC_IP, ntohl(entry->saddr)) ||
++	    nla_put_u32(skb, FOU_UNK_ATTR_DST_IP, ntohl(entry->daddr)) ||
++	    nla_put_u16(skb, FOU_UNK_ATTR_SRC_PORT, ntohs(entry->sport)) ||
++	    nla_put_u16(skb, FOU_UNK_ATTR_DST_PORT, ntohs(entry->dport)))
++		goto nla_put_failure;
++
++	created = jiffies_to_usecs(jiffies - entry->created);
++	if (nla_put_u32(skb, FOU_UNK_ATTR_CREATED_USEC, created))
++		goto nla_put_failure;
++
++	age = jiffies_to_usecs(jiffies - entry->last_seen);
++	if (nla_put_u32(skb, FOU_UNK_ATTR_AGE_USEC, age))
++		goto nla_put_failure;
++
++	now = jiffies;
++	if (entry->muffle_until >= now) {
++		unsigned int muffle;
++		muffle = jiffies_to_usecs(entry->muffle_until - now);
++		if (nla_put_u32(skb, FOU_UNK_ATTR_MUFFLE_USEC, muffle))
++			goto nla_put_failure;
++	}
++
++	genlmsg_end(skb, hdr);
++	return 0;
++
++nla_put_failure:
++	err = -EMSGSIZE;
++	genlmsg_cancel(skb, hdr);
++	return err;
++}
++
++static int fou_unk_cmd_dump(struct sk_buff *skb, struct netlink_callback *cb)
++{
++	int bucket = cb->args[0], skip = cb->args[1];
++	int i, j = 0;
++	struct unknown_fou *entry;
++	struct net *net = sock_net(skb->sk);
++
++	rcu_read_lock();
++	for (i = bucket, entry=NULL; entry == NULL && i < HASH_SIZE(ipip_fou_unk_hash); i++) {
++
++		j = 0;
++		hlist_for_each_entry_rcu(entry, &ipip_fou_unk_hash[i], list) {
++			if ((j >= skip) && (net == entry->net) &&
++			    fou_unk_cmd_fill_info(entry, skb,
++						  NETLINK_CB(cb->skb).portid,
++						  cb->nlh->nlmsg_seq,
++						  NLM_F_MULTI,
++						  FOU_UNK_CMD_NEW) < 0)
++				goto out;
++
++			j++;
++		}
++		skip = 0;
++	}
++out:
++	rcu_read_unlock();
++
++	cb->args[0] = i;
++	cb->args[1] = j;
++
++	return skb->len;
++}
++
++static int fou_unk_cmd_set(struct sk_buff *skb, struct genl_info *info)
++{
++	struct nlattr **a = info->attrs;
++	struct unknown_fou key;
++	struct unknown_fou *entry;
++	unsigned int muffle_jiffies;
++
++	/* verify values present */
++	if (!a[FOU_UNK_ATTR_SRC_IP] ||
++	    !a[FOU_UNK_ATTR_DST_IP] ||
++	    !a[FOU_UNK_ATTR_SRC_PORT] ||
++	    !a[FOU_UNK_ATTR_DST_PORT])
++		return -EINVAL;
++
++	/* only thing settable now is muffle time */
++	if (!a[FOU_UNK_ATTR_MUFFLE_USEC]) {
++		return -EINVAL;
++	}
++
++	key.net = sock_net(skb->sk);
++	/* extract values from attributes */
++	key.saddr = htonl(nla_get_u32(a[FOU_UNK_ATTR_SRC_IP]));
++	key.daddr = htonl(nla_get_u32(a[FOU_UNK_ATTR_DST_IP]));
++	key.sport = htons(nla_get_u16(a[FOU_UNK_ATTR_SRC_PORT]));
++	key.dport = htons(nla_get_u16(a[FOU_UNK_ATTR_DST_PORT]));
++
++	rcu_read_lock();
++	/* find relevant entry */
++	entry = ipip_find_unknown_fou(&key);
++	if (!entry) {
++		rcu_read_unlock();
++		return -ENOENT;
++	}
++
++	/* modify entry */
++	spin_lock_bh(&entry->lock);
++	muffle_jiffies = usecs_to_jiffies(nla_get_u32(a[FOU_UNK_ATTR_MUFFLE_USEC]));
++	entry->muffle_until = jiffies + muffle_jiffies;
++	spin_unlock_bh(&entry->lock);
++	rcu_read_unlock();
++
++	return 0;
++}
++
++static const struct genl_ops fou_unk_genl_ops[] = {
++	{ .cmd = FOU_UNK_CMD_GET,
++	  .flags = 0,		    /* OK for unprivileged users. */
++	  .policy = fou_unk_policy,
++	  .dumpit = fou_unk_cmd_dump
++	},
++	{ .cmd = FOU_UNK_CMD_SET,
++	  .flags = GENL_ADMIN_PERM, /* Requires CAP_NET_ADMIN privilege. */
++	  .policy = fou_unk_policy,
++	  .doit = fou_unk_cmd_set,
++	},
++};
++
++static struct genl_family fou_unknown_genl_family = {
++	.hdrsize = 0,
++	.name = FOU_UNK_FAMILY,
++	.version = 1,
++	.maxattr = FOU_UNK_ATTR_MAX,
++	.netnsok = true,
++	.parallel_ops = true,
++	.ops = fou_unk_genl_ops,
++	.n_ops = ARRAY_SIZE(fou_unk_genl_ops),
++	.mcgrps = &fou_unk_multicast_group,
++	.n_mcgrps = 1,
++};
++
++
++
+ static int ipip_rcv(struct sk_buff *skb)
+ {
+ 	return ipip_tunnel_rcv(skb, IPPROTO_IPIP);
+@@ -594,6 +1122,7 @@ static int ipip_newlink(struct net *src_net, struct net_device *dev,
+ 	ipip_netlink_parms(data, &p, &t->collect_md, &fwmark);
+ 	if (fou_key_multi_port) {
+ 		ipip_fou_fixup_key(&p, &ipencap);
++		ipip_fou_unk_notice(src_net, &p, &ipencap);
+ 	}
+ 	return ip_tunnel_newlink(dev, tb, &p, fwmark);
+ }
+@@ -626,6 +1155,10 @@ static int ipip_changelink(struct net_device *dev, struct nlattr *tb[],
+ 	    (!(dev->flags & IFF_POINTOPOINT) && p.iph.daddr))
+ 		return -EINVAL;
+ 
++	if (fou_key_multi_port) {
++		ipip_fou_unk_notice(dev_net(dev), &p, &ipencap);
++	}
++
+ 	return ip_tunnel_changelink(dev, tb, &p, fwmark);
+ }
+ 
+@@ -786,9 +1319,18 @@ static int __init ipip_init(void)
+ 	ipip_sysctl_init();
+ #endif
+ 
++	if (fou_key_multi_port) {
++		err = genl_register_family(&fou_unknown_genl_family);
++		if (err)
++			goto genl_reg_failed;
++		mod_timer(&ipip_fou_unk_gc_timer, jiffies + msecs_to_jiffies(1000));
++	}
++
+ out:
+ 	return err;
+ 
++genl_reg_failed:
++	rtnl_link_unregister(&ipip_link_ops);
+ rtnl_link_failed:
+ #if IS_ENABLED(CONFIG_MPLS)
+ 	xfrm4_tunnel_deregister(&mplsip_handler, AF_MPLS);
+@@ -803,6 +1345,10 @@ static int __init ipip_init(void)
+ 
+ static void __exit ipip_fini(void)
+ {
++	if (fou_key_multi_port) {
++		del_timer_sync(&ipip_fou_unk_gc_timer);
++		genl_unregister_family(&fou_unknown_genl_family);
++	}
+ 	rtnl_link_unregister(&ipip_link_ops);
+ 	if (xfrm4_tunnel_deregister(&ipip_handler, AF_INET))
+ 		pr_info("%s: can't deregister tunnel\n", __func__);
+@@ -811,6 +1357,10 @@ static void __exit ipip_fini(void)
+ 		pr_info("%s: can't deregister tunnel\n", __func__);
+ #endif
+ 	unregister_pernet_device(&ipip_net_ops);
++	if (fou_key_multi_port) {
++		ipip_fou_unk_purge();
++		rcu_barrier();
++	}
+ 
+ #ifdef CONFIG_SYSCTL
+ 	unregister_net_sysctl_table(ipip_sysctl_header);
+-- 
+2.7.4
+
