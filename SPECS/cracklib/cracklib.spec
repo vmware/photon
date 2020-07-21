@@ -1,25 +1,24 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 # Got this spec from http://downloads.sourceforge.net/cracklib/cracklib-2.9.6.tar.gz
 
-Summary:        A password strength-checking library.
-Name:           cracklib
-Version:        2.9.6
-Release:        10%{?dist}
-Group:          System Environment/Libraries
-Source:         cracklib-%{version}.tar.gz
-%define sha1    cracklib-%{version}=9199e7b8830717565a844430653f5a90a04fcd65
-Source1:        cracklib-words-%{version}.gz
-%define sha1    cracklib-words-%{version}=b0739c990431a0971545dff347b50f922604c1cd
-Patch0:         CVE-2016-6318.patch
-URL:            http://sourceforge.net/projects/cracklib/
-License:        GPL
-Vendor:         VMware, Inc.
-Distribution:   Photon
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
+Summary:          A password strength-checking library.
+Name:             cracklib
+Version:          2.9.7
+Release:          1%{?dist}
+Group:            System Environment/Libraries
+Source:           cracklib-%{version}.tar.gz
+%define sha1      cracklib-%{version}=ffe455aba4da8d49fcdbe6964aa35367a7438581
+Source1:          cracklib-words-%{version}.gz
+%define sha1      cracklib-words-%{version}=6491f1cc63233c678e9e5983f32ff98208d0b05a
+URL:              http://sourceforge.net/projects/cracklib/
+License:          GPL
+Vendor:           VMware, Inc.
+Distribution:     Photon
+BuildRequires:    python3
+BuildRequires:    python3-libs
+BuildRequires:    python3-devel
+BuildRequires:    python3-setuptools
+BuildRequires:    python3-xml
 # cross compilation requires native dicts generating tools
 %define BuildRequiresNative cracklib-dicts
 Requires:         /bin/ln
@@ -71,8 +70,8 @@ The cracklib devel package include the needed library link and
 header files for development.
 
 %package -n python3-cracklib
-Summary:        The cracklib python module
-Group:          Development/Languages/Python
+Summary:    The cracklib python module
+Group:      Development/Languages/Python
 Requires:   cracklib
 Requires:   python3
 Requires:   python3-libs
@@ -88,15 +87,12 @@ Group:      System Environment/Libraries
 The CrackLib language pack.
 
 %prep
-
 %setup -q -n cracklib-%{version}
-%patch0 -p1
 chmod -R og+rX .
 mkdir -p dicts
 install %{SOURCE1} dicts/
 
 %build
-
 if [ %{_host} != %{_build} ]; then
 export PYTHONXCPREFIX=/target-%{_arch}/usr
 export CC=%{_host}-gcc
@@ -107,7 +103,6 @@ export CFLAGS="$RPM_OPT_FLAGS"
 %configure \
   --disable-static \
   --without-python
-
 make
 pushd python
 python3 setup.py build
@@ -195,6 +190,8 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %{_datadir}/locale/*
 
 %changelog
+*   Tue Jul 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.7-1
+-   Automatic Version Bump
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 2.9.6-10
 -   Mass removal python2
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-9
