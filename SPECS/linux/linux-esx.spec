@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.228
-Release:       3%{?dist}
+Version:       4.4.230
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=8bdf1393fe9a3b2084b92f0510b00ee2c9c4ec6e
+%define sha1 linux=93ecfd65f75f21d1980939b14e26f3415e6bd3c3
 Source1:       config-esx
 Source2:       update_photon_cfg.postun
 Patch0:        double-tcp_mem-limits.patch
@@ -285,6 +285,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jul 21 2020 Sharan Turlapati <sturlapati@vmware.com> 4.4.230-1
+-   Update to version 4.4.230
 *   Thu Jul 09 2020 Ajay Kaher <akaher@vmware.com> 4.4.228-3
 -   Fix for CVE-2020-12888
 *   Fri Jul 03 2020 Mounesh Badiger <badigerm@vmware.com> 4.4.228-2
