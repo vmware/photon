@@ -1,7 +1,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        3.14.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Source0:        https://github.com/fedora-selinux/%{name}/archive/ad1d35503f55f535401daa0a59913aa559c38d44/%{name}-ad1d3550.tar.gz
@@ -31,6 +31,7 @@ Patch13:        system-systemd.patch
 Patch14:        system-systenwork.patch
 Patch15:        system-udev.patch
 Patch16:        system-userdomain.patch
+Patch17:        admin_usermanage.patch
 BuildArch:      noarch
 BuildRequires:  checkpolicy python3 semodule-utils libselinux-utils
 BuildRequires:  policycoreutils
@@ -70,6 +71,7 @@ cp -r ../container-selinux-2.132.0/container.* policy/modules/contrib/
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 
 %build
 cp %{SOURCE3} .
@@ -115,6 +117,8 @@ fi
 %{_sharedstatedir}/selinux/default
 
 %changelog
+* Tue Jul 21 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-6
+- Fix "avc:denied" errors for passwd and systemd-timesync
 * Wed Jul 20 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-5
 - Add support of cloudform & redis  module in modules.conf
 * Wed Jul 15 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-4

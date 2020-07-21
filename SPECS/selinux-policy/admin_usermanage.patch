@@ -1,0 +1,12 @@
+diff -Naurp selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/admin/usermanage.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/admin/usermanage.te
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/admin/usermanage.te	2020-07-22 09:59:51.028462821 +0530
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/admin/usermanage.te	2020-07-22 10:04:49.200477830 +0530
+@@ -330,6 +330,8 @@ allow passwd_t self:netlink_selinux_sock
+ 
+ allow passwd_t crack_db_t:dir list_dir_perms;
+ read_files_pattern(passwd_t, crack_db_t, crack_db_t)
++# pw_dict.pwd is a symlink to words.pwd
++read_lnk_files_pattern(passwd_t, crack_db_t, crack_db_t)
+ 
+ kernel_read_kernel_sysctls(passwd_t)
+ 

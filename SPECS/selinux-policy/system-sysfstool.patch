@@ -1,0 +1,12 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/fstools.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/fstools.te
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/fstools.te	2020-07-21 15:44:50.445155850 +0530
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/fstools.te	2020-07-21 16:15:20.185247948 +0530
+@@ -180,6 +180,8 @@
+ 
+ userdom_rw_inherited_user_tmp_pipes(fsadm_t)
+ 
++sysnet_manage_config(fsadm_t)
++
+ ifdef(`distro_redhat',`
+ 	optional_policy(`
+ 		unconfined_domain(fsadm_t)

@@ -1,6 +1,16 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/systemd.fc selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/systemd.fc
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/systemd.fc	2020-07-29 02:02:51.561464278 +0530
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/systemd.fc	2020-07-29 02:04:54.593470470 +0530
+@@ -98,4 +98,6 @@
+ 
+ /var/run/initramfs(/.*)?	<<none>>
+ 
++/var/run/systemd/timesync/synchronized	gen_context(system_u:object_r:systemd_timedated_var_run_t,s0)
++
+ /run/systemd/resolve(/.*)?	gen_context(system_u:object_r:systemd_resolved_var_run_t,s0)
 diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/systemd.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/systemd.te
---- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/systemd.te	2020-07-24 08:09:36.108827577 +0530
-+++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/systemd.te	2020-07-24 08:10:52.416831418 +0530
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/systemd.te	2020-07-29 02:02:51.561464278 +0530
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/systemd.te	2020-07-29 02:03:45.613466998 +0530
 @@ -133,7 +133,6 @@
  systemd_domain_template(systemd_timedated)
  init_nnp_daemon_domain(systemd_timedated_t)
