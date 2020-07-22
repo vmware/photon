@@ -1,0 +1,230 @@
+From 1fefeef92fd1881b21e124b83f2adefd3e014087 Mon Sep 17 00:00:00 2001
+From: xiaofengw-vmware <42736879+xiaofengw-vmware@users.noreply.github.com>
+Date: Fri, 27 Mar 2020 00:31:04 +0800
+Subject: [PATCH] VMWware: support to update guest info gc status if enabled
+ (#261)
+
+---
+ cloudinit/sources/DataSourceOVF.py            | 27 +++++++++++++------
+ .../sources/helpers/vmware/imc/config.py      | 11 ++++++++
+ .../helpers/vmware/imc/guestcust_util.py      |  9 +++++++
+ .../test_vmware/test_guestcust_util.py        | 26 ++++++++++++++++++
+ tests/unittests/test_vmware_config_file.py    |  8 ++++++
+ 5 files changed, 73 insertions(+), 8 deletions(-)
+
+diff --git a/cloudinit/sources/DataSourceOVF.py b/cloudinit/sources/DataSourceOVF.py
+index 9f6e6b6c9..7bba283f9 100644
+--- a/cloudinit/sources/DataSourceOVF.py
++++ b/cloudinit/sources/DataSourceOVF.py
+@@ -37,7 +37,8 @@
+     enable_nics,
+     get_nics_to_enable,
+     set_customization_status,
+-    get_tools_config
++    get_tools_config,
++    set_gc_status
+ )
+ 
+ LOG = logging.getLogger(__name__)
+@@ -140,6 +141,8 @@ def _get_data(self):
+             try:
+                 cf = ConfigFile(vmwareImcConfigFilePath)
+                 self._vmware_cust_conf = Config(cf)
++                set_gc_status(self._vmware_cust_conf, "Started")
++
+                 (md, ud, cfg) = read_vmware_imc(self._vmware_cust_conf)
+                 self._vmware_nics_to_enable = get_nics_to_enable(nicspath)
+                 imcdirpath = os.path.dirname(vmwareImcConfigFilePath)
+@@ -171,7 +174,8 @@ def _get_data(self):
+                     "Error parsing the customization Config File",
+                     e,
+                     GuestCustEvent.GUESTCUST_EVENT_CUSTOMIZE_FAILED,
+-                    vmwareImcConfigFilePath)
++                    vmwareImcConfigFilePath,
++                    self._vmware_cust_conf)
+ 
+             if special_customization:
+                 if customscript:
+@@ -183,7 +187,8 @@ def _get_data(self):
+                             "Error executing pre-customization script",
+                             e,
+                             GuestCustEvent.GUESTCUST_EVENT_CUSTOMIZE_FAILED,
+-                            vmwareImcConfigFilePath)
++                            vmwareImcConfigFilePath,
++                            self._vmware_cust_conf)
+ 
+             try:
+                 LOG.debug("Preparing the Network configuration")
+@@ -197,7 +202,8 @@ def _get_data(self):
+                     "Error preparing Network Configuration",
+                     e,
+                     GuestCustEvent.GUESTCUST_EVENT_NETWORK_SETUP_FAILED,
+-                    vmwareImcConfigFilePath)
++                    vmwareImcConfigFilePath,
++                    self._vmware_cust_conf)
+ 
+             if special_customization:
+                 LOG.debug("Applying password customization")
+@@ -215,7 +221,8 @@ def _get_data(self):
+                         "Error applying Password Configuration",
+                         e,
+                         GuestCustEvent.GUESTCUST_EVENT_CUSTOMIZE_FAILED,
+-                        vmwareImcConfigFilePath)
++                        vmwareImcConfigFilePath,
++                        self._vmware_cust_conf)
+ 
+                 if customscript:
+                     try:
+@@ -228,7 +235,8 @@ def _get_data(self):
+                             "Error executing post-customization script",
+                             e,
+                             GuestCustEvent.GUESTCUST_EVENT_CUSTOMIZE_FAILED,
+-                            vmwareImcConfigFilePath)
++                            vmwareImcConfigFilePath,
++                            self._vmware_cust_conf)
+ 
+             if product_marker:
+                 try:
+@@ -240,7 +248,8 @@ def _get_data(self):
+                         "Error creating marker files",
+                         e,
+                         GuestCustEvent.GUESTCUST_EVENT_CUSTOMIZE_FAILED,
+-                        vmwareImcConfigFilePath)
++                        vmwareImcConfigFilePath,
++                        self._vmware_cust_conf)
+ 
+             self._vmware_cust_found = True
+             found.append('vmware-tools')
+@@ -252,6 +261,7 @@ def _get_data(self):
+             set_customization_status(
+                 GuestCustStateEnum.GUESTCUST_STATE_DONE,
+                 GuestCustErrorEnum.GUESTCUST_ERROR_SUCCESS)
++            set_gc_status(self._vmware_cust_conf, "Successful")
+ 
+         else:
+             np = [('com.vmware.guestInfo', transport_vmware_guestinfo),
+@@ -646,7 +656,7 @@ def setup_marker_files(markerid, marker_dir):
+     open(markerfile, 'w').close()
+ 
+ 
+-def _raise_error_status(prefix, error, event, config_file):
++def _raise_error_status(prefix, error, event, config_file, conf):
+     """
+     Raise error and send customization status to the underlying VMware
+     Virtualization Platform. Also, cleanup the imc directory.
+@@ -655,6 +665,7 @@ def _raise_error_status(prefix, error, event, config_file):
+     set_customization_status(
+         GuestCustStateEnum.GUESTCUST_STATE_RUNNING,
+         event)
++    set_gc_status(conf, prefix)
+     util.del_dir(os.path.dirname(config_file))
+     raise error
+ 
+diff --git a/cloudinit/sources/helpers/vmware/imc/config.py b/cloudinit/sources/helpers/vmware/imc/config.py
+index 2eaeff348..f2a814166 100644
+--- a/cloudinit/sources/helpers/vmware/imc/config.py
++++ b/cloudinit/sources/helpers/vmware/imc/config.py
+@@ -25,6 +25,7 @@ class Config(object):
+     SUFFIX = 'DNS|SUFFIX|'
+     TIMEZONE = 'DATETIME|TIMEZONE'
+     UTC = 'DATETIME|UTC'
++    POST_GC_STATUS = 'MISC|POST-GC-STATUS'
+ 
+     def __init__(self, configFile):
+         self._configFile = configFile
+@@ -104,4 +105,14 @@ def marker_id(self):
+     def custom_script_name(self):
+         """Return the name of custom (pre/post) script."""
+         return self._configFile.get(Config.CUSTOM_SCRIPT, None)
++
++    @property
++    def post_gc_status(self):
++        """Return whether to post guestinfo.gc.status VMX property."""
++        postGcStatus = self._configFile.get(Config.POST_GC_STATUS, 'no')
++        postGcStatus = postGcStatus.lower()
++        if postGcStatus not in ('yes', 'no'):
++            raise ValueError('PostGcStatus value should be yes/no')
++        return postGcStatus == 'yes'
++
+ # vi: ts=4 expandtab
+diff --git a/cloudinit/sources/helpers/vmware/imc/guestcust_util.py b/cloudinit/sources/helpers/vmware/imc/guestcust_util.py
+index 3d369d040..c60a38d7d 100644
+--- a/cloudinit/sources/helpers/vmware/imc/guestcust_util.py
++++ b/cloudinit/sources/helpers/vmware/imc/guestcust_util.py
+@@ -154,4 +154,13 @@ def get_tools_config(section, key, defaultVal):
+     return retValue
+ 
+ 
++# Sets message to the VMX guestinfo.gc.status property to the
++# underlying VMware Virtualization Platform.
++def set_gc_status(config, gcMsg):
++    if config and config.post_gc_status:
++        rpc = "info-set guestinfo.gc.status %s" % gcMsg
++        return send_rpc(rpc)
++    return None
++
++
+ # vi: ts=4 expandtab
+diff --git a/tests/unittests/test_vmware/test_guestcust_util.py b/tests/unittests/test_vmware/test_guestcust_util.py
+index b175a9981..394bee9f0 100644
+--- a/tests/unittests/test_vmware/test_guestcust_util.py
++++ b/tests/unittests/test_vmware/test_guestcust_util.py
+@@ -6,8 +6,11 @@
+ # This file is part of cloud-init. See LICENSE file for license information.
+ 
+ from cloudinit import util
++from cloudinit.sources.helpers.vmware.imc.config import Config
++from cloudinit.sources.helpers.vmware.imc.config_file import ConfigFile
+ from cloudinit.sources.helpers.vmware.imc.guestcust_util import (
+     get_tools_config,
++    set_gc_status,
+ )
+ from cloudinit.tests.helpers import CiTestCase, mock
+ 
+@@ -69,4 +72,27 @@ def test_get_tools_config_normal(self):
+                     get_tools_config('section', 'key', 'defaultVal'),
+                     'e-f')
+ 
++    def test_set_gc_status(self):
++        """
++        This test is designed to verify the behavior of set_gc_status
++        """
++        # config is None, return None
++        self.assertEqual(set_gc_status(None, 'Successful'), None)
++
++        # post gc status is NO, return None
++        cf = ConfigFile("tests/data/vmware/cust-dhcp-2nic.cfg")
++        conf = Config(cf)
++        self.assertEqual(set_gc_status(conf, 'Successful'), None)
++
++        # post gc status is YES, subp is called to execute command
++        cf._insertKey("MISC|POST-GC-STATUS", "YES")
++        conf = Config(cf)
++        with mock.patch.object(util, 'subp',
++                               return_value=('ok', b'')) as mockobj:
++            self.assertEqual(
++                set_gc_status(conf, 'Successful'), ('ok', b''))
++            mockobj.assert_called_once_with(
++                ['vmware-rpctool', 'info-set guestinfo.gc.status Successful'],
++                rcs=[0])
++
+ # vi: ts=4 expandtab
+diff --git a/tests/unittests/test_vmware_config_file.py b/tests/unittests/test_vmware_config_file.py
+index 16343ed2f..c823889c0 100644
+--- a/tests/unittests/test_vmware_config_file.py
++++ b/tests/unittests/test_vmware_config_file.py
+@@ -348,6 +348,14 @@ def test_custom_script(self):
+         conf = Config(cf)
+         self.assertEqual("test-script", conf.custom_script_name)
+ 
++    def test_post_gc_status(self):
++        cf = ConfigFile("tests/data/vmware/cust-dhcp-2nic.cfg")
++        conf = Config(cf)
++        self.assertFalse(conf.post_gc_status)
++        cf._insertKey("MISC|POST-GC-STATUS", "YES")
++        conf = Config(cf)
++        self.assertTrue(conf.post_gc_status)
++
+ 
+ class TestVmwareNetConfig(CiTestCase):
+     """Test conversion of vmware config to cloud-init config."""

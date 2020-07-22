@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -26,6 +26,8 @@ Patch7:         ds-guestinfo-photon.patch
 Patch8:         CVE-2020-8632.patch
 Patch9:         CVE-2020-8631.patch
 Patch10:        cloud-cfg.patch
+Patch11:        Support-update-gc-status.patch
+Patch12:        Default-Custom-Script-Support.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -88,6 +90,8 @@ ssh keys and to let the user run various scripts.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
+%patch12 -p1
 
 find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -157,6 +161,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Fri Jul 24 2020 Keerthana K <keerthanak@vmware.com> 19.4-4
+-   Add support for updating gc status and DEFAULT-RUN-POST-CUSTOM-SCRIPT.
 *   Thu Jul 23 2020 Andrew Kutz <akutz@vmware.com> 19.4-3
 -   Support multiple NICs with Networking Config Version 2
 -   Remove unneccesary variable definitions
