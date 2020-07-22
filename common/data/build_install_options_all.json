@@ -21,6 +21,11 @@
         "include" : [],
         "additional-files" : ["ostree-repo.tar.gz"]
     },
+    "realtime" : {
+        "title" : "5. Photon Real Time",
+        "packagelist_file" : "packages_rt.json",
+        "visible" : true
+    },
     "appliance" : {
         "title" : "Minimal packages to support appliances.",
         "packagelist_file" : "packages_appliance.json",
