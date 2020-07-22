@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -157,6 +157,10 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Thu Jul 23 2020 Andrew Kutz <akutz@vmware.com> 19.4-3
+-   Support multiple NICs with Networking Config Version 2
+-   Remove unneccesary variable definitions
+-   Format distro file photon.py with consistent tab widths
 *   Mon Jul 13 2020 Susant Sahani <ssahani@vmware.com> 19.4-2
 -   For Photon implement Networking Config Version 2
 *   Fri Jul 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.4-1
