@@ -1,0 +1,7 @@
+{
+    "realtime" : {
+        "title" : "Photon Real Time",
+        "packagelist_file" : "packages_rt.json",
+        "visible" : false
+    }
+}

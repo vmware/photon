@@ -255,9 +255,8 @@ class IsoConfig(object):
             fd = FileDownloader(maxy, maxx, install_config, title, intro, dest, True)
             items.append((fd.display, True))
 
-        if CommandUtils.is_vmware_virtualization():
-            linux_selector = LinuxSelector(maxy, maxx, install_config)
-            items.append((linux_selector.display, True))
+        linux_selector = LinuxSelector(maxy, maxx, install_config)
+        items.append((linux_selector.display, True))
         items.append((hostname_reader.get_user_string, True))
         items.append((root_password_reader.get_user_string, True))
         items.append((confirm_password_reader.get_user_string, False))

@@ -66,7 +66,8 @@ class Installer(object):
         'setup_grub_script',
         'shadow_password',
         'type',
-        'ui'
+        'ui',
+        'linux_flavor'
     }
 
     default_partitions = [{"mountpoint": "/", "size": 0, "filesystem": "ext4"}]
@@ -232,8 +233,13 @@ class Installer(object):
         if not 'disk' in install_config:
             return "No disk configured"
 
-        if 'install_linux_esx' not in install_config:
-            install_config['install_linux_esx'] = False
+
+        if 'linux_flavor' not in install_config:
+            if install_config.get('install_linux_esx', False) == True:
+                install_config['linux_flavor'] = "linux-esx"
+            else:
+                install_config['linux_flavor'] = "linux"
+        install_config['install_linux_esx'] = False
 
         # Perform following checks here:
         # 1) Only one extensible partition is allowed per disk
@@ -779,9 +785,47 @@ class Installer(object):
                 self.install_config['packages'] = list(filter(regex.match,self.install_config['packages']))
             self.install_config['packages'].append('linux-esx')
         else:
-            regex = re.compile(r'(?!linux-esx-[0-9].*)')
-            self.install_config['packages'] = list(filter(regex.match,self.install_config['packages']))
+            if 'linux-esx' in self.install_config['packages']:
+                self.install_config['packages'].remove('linux-esx')
+            else:
+                regex = re.compile(r'(?!linux-esx-[0-9].*)')
+                self.install_config['packages'] = list(filter(regex.match,self.install_config['packages']))
 
+    def filter_packages(self, package):
+        all_linux_flavors = ["", "esx", "aws", "secure", "rt"]
+        linux_dependencies = ["devel", "drivers", "docs", "oprofile", "dtb", "hmacgen"]
+        redundent_linux_flavors = list(filter(self.filter_flavors, all_linux_flavors))
+        package = package.split('-')
+        if len(package) > 1:
+            flavor = package[1]
+        else:
+            flavor = ""
+        if(package[0] != "linux"):
+            return True
+        elif("" in redundent_linux_flavors and flavor in linux_dependencies):
+            return False
+        elif(flavor in redundent_linux_flavors):
+            return False
+        else:
+            return True
+
+    def filter_flavors(self, linux_flavor):
+        selected_linux_flavor = self.install_config['linux_flavor'].split('-')
+        if len(selected_linux_flavor) > 1:
+            selected_linux_flavor = selected_linux_flavor[1]
+        else:
+            selected_linux_flavor = ""
+        if(linux_flavor == selected_linux_flavor):
+            return False
+        else:
+            return True
+
+    def _adjust_packages_based_on_selected_flavor(self):
+        """
+        Install slected linux flavor only
+        """
+        if 'linux_flavor' in self.install_config:
+            self.install_config['packages'] = list(filter(self.filter_packages,self.install_config['packages']))
 
     def _add_packages_to_install(self, package):
         """
@@ -830,7 +874,7 @@ class Installer(object):
         """
         Install packages using tdnf command
         """
-        self._adjust_packages_for_vmware_virt()
+        self._adjust_packages_based_on_selected_flavor()
         selected_packages = self.install_config['packages']
         state = 0
         packages_to_install = {}

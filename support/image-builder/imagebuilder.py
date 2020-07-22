@@ -34,7 +34,7 @@ def create_pkg_list_to_copy_to_iso(build_install_option, output_data_path):
     packages = []
     for install_option in options_sorted:
         if install_option[0] != "iso":
-            file_path = os.path.join(output_data_path, install_option[1]["packagelist_file"])
+            file_path = os.path.join(output_data_path, os.path.splitext(install_option[1]["packagelist_file"])[0]+"_expanded.json")
             package_list_json = Utils.jsonread(file_path)
             packages = packages + package_list_json["packages"]
     return packages

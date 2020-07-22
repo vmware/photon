@@ -235,4 +235,10 @@ Kickstart config file is a json format with following possible parameters:
 	Default value: false
 	Example: { "ui": true }
 
+"linux_flavor" (optional)
+	Contains the flavor of linux to install, if multiple linux flavors
+	are present in "packages" or "packagelist_file"
+	Acceptable values are: "linux", "linux-esx", "linux-rt", "linux-aws", and "linux-secure"
+	Example: { "linux_flavor": "linux-esx" }
+
 For reference, look at "sample_ks.cfg" file

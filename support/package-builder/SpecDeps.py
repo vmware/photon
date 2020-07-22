@@ -253,8 +253,9 @@ def main():
             for json_file in list_json_files:
                 output_file = None
                 if options.display_option == "json":
-                    output_file = os.path.join(options.output_dir, os.path.basename(json_file))
+                    output_file = os.path.join(options.output_dir, os.path.splitext(os.path.basename(json_file))[0]+"_expanded.json")
                     specDeps.process(options.input_type, json_file, options.display_option, output_file)
+                    shutil.copyfile(json_file, os.path.join(options.output_dir, os.path.basename(json_file)))
     except Exception as e:
         traceback.print_exc()
         sys.stderr.write(str(e))
