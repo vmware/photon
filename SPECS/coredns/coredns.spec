@@ -6,12 +6,12 @@
 
 Summary:        CoreDNS
 Name:           coredns
-Version:        1.2.0
-Release:        3%{?dist}
+Version:        1.7.0
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/coredns/coredns/releases/v%{version}.tar.gz
 Source0:        coredns-%{version}.tar.gz
-%define sha1 coredns=68818ca8981750eba425be9b561c4724948d236d
+%define sha1 coredns=61bf65cfcc29abf941d486bc669a283a71666ee5
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/coredns
 
 %changelog
+*   Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
+-   Automatic Version Bump
 *   Sun Sep 22 2019 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-3
 -   Fix compilation issue (do not compile mholt/caddy).
 *   Sun Sep 23 2018 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-2
