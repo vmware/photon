@@ -1,11 +1,11 @@
 Summary:        Disassembly framework
 Name:           capstone
-Version:        4.0.1
+Version:        4.0.2
 Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/aquynh/capstone
 Source0:        https://github.com/aquynh/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}=a43974eed74d0b98601768a9765fad2122ed382e
+%define sha1    %{name}=c0dfa4f6236a4505916ce67d63b856bf806b0d83
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -48,6 +48,8 @@ make %{?_smp_mflags} test_basic test_detail test_iter test_skipdata test_arm64 t
 %{_libdir}/pkgconfig/capstone.pc
 
 %changelog
+* Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0.2-1
+- Automatic Version Bump
 * Tue Nov 19 2019 Alexey Makhalov <amakhalov@vmware.com> 4.0.1-1
 - Initial build. First version
 
