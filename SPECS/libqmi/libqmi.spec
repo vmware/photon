@@ -1,24 +1,24 @@
 Summary:        Library for talking to WWAN modems and devices
 Name:           libqmi
-Version:        1.20.2
+Version:        1.26.2
 Release:        1%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://www.freedesktop.org/software/libqmi/libqmi-1.20.2.tar.xz
-%define sha1    libqmi=1299e8b6e5a5e867dbc2d17dffbedcf1eb808b07
+Source0:        https://www.freedesktop.org/software/libqmi/libqmi-%{version}.tar.xz
+%define sha1    libqmi=204024f445faad5ad0b3862054aad04bb5d366ec
 BuildRequires:  libmbim-devel
 Requires:       libmbim
 %description
 The libqmi package contains a GLib-based library for talking to WWAN modems
 and devices which speak the Qualcomm MSM Interface (QMI) protocol.
 
-%package    devel
-Summary:    Header and development files for libqmi
-Requires:   %{name} = %{version}
-Requires:   libmbim-devel
+%package        devel
+Summary:        Header and development files for libqmi
+Requires:       %{name} = %{version}
+Requires:       libmbim-devel
 %description    devel
 It contains the libraries and header files for libqmi
 
@@ -56,5 +56,7 @@ make  %{?_smp_mflags} check
 %{_datadir}/gtk-doc/*
 
 %changelog
+*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.26.2-1
+-   Automatic Version Bump
 *   Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.20.2-1
 -   Initial build. First version

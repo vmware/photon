@@ -1,16 +1,17 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
-Version:        1.8.2
+Version:        1.14.0
 Release:        1%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://www.freedesktop.org/software/ModemManager/ModemManager-1.8.2.tar.xz
-%define sha1    ModemManager=9c1377fe879a9a36a9cd937425f501d6bf8fa234
+Source0:        https://www.freedesktop.org/software/ModemManager/ModemManager-%{version}.tar.xz
+%define sha1    ModemManager=2af06f619e716eeb75577f74a3e2c444d84d011d
 BuildRequires:  libqmi-devel
 BuildRequires:  gobject-introspection-devel
+BuildRequires:  libxslt
 Requires:       libqmi
 Requires:       gobject-introspection
 %description
@@ -18,12 +19,12 @@ ModemManager provides a unified high level API for communicating
 with mobile broadband modems, regardless of the protocol used to
 communicate with the actual device.
 
-%package    devel
-Summary:    Header and development files for ModemManager
-Requires:   %{name} = %{version}
-Requires:   libqmi-devel
-Requires:   gobject-introspection-devel
-%description    devel
+%package      devel
+Summary:      Header and development files for ModemManager
+Requires:     %{name} = %{version}
+Requires:     libqmi-devel
+Requires:     gobject-introspection-devel
+%description  devel
 It contains the libraries and header files for ModemManager
 
 %prep
@@ -37,13 +38,14 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 
 %check
-make  %{?_smp_mflags} check
+make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
+/usr/share/ModemManager/*.conf
 %{_sysconfdir}/dbus-1/system.d/org.freedesktop.ModemManager1.conf
 %{_bindir}/mmcli
 %{_sbindir}/ModemManager
@@ -68,5 +70,7 @@ make  %{?_smp_mflags} check
 %{_libdir}/libmm-glib.la
 
 %changelog
+*   Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.0-1
+-   Automatic Version Bump
 *   Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8.2-1
 -   Initial build. First version
