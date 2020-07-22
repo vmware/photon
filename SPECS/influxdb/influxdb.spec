@@ -1,17 +1,17 @@
 Name:           influxdb
-Version:        1.6.0
-Release:        5%{?dist}
+Version:        1.8.1
+Release:        1%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
 Source0:        https://github.com/influxdata/influxdb/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}=364d2fb39fc3a983f96910133a6256932fffd0e3
+%define sha1    %{name}=a03288a5d0e9e742df15489b4a97bab2d6072fab
 Source1:       golang-dep-0.3.0.tar.gz
 %define sha1 golang-dep-0.3.0=e5e9952227930fe1e8632edc03d690bffc3e1132
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Applications/Database
-BuildRequires:  go = 1.9.7
+BuildRequires:  go >= 1.13
 BuildRequires:  git
 BuildRequires:  systemd
 Requires:       systemd
@@ -28,12 +28,11 @@ tar xf %{SOURCE1} --no-same-owner --strip-components 1 -C ${GOPATH}/src/github.c
 
 %build
 pushd ${GOPATH}/src/github.com/golang/dep
-CGO_ENABLED=0 GOOS=linux go build -v -ldflags "-s -w" -o ${GOPATH}/bin/dep ./cmd/dep/
+CGO_ENABLED=0 GOOS=linux go build -ldflags=-linkmode=external -v -ldflags "-s -w" -o ${GOPATH}/bin/dep ./cmd/dep/
 popd
 mkdir -p ${GOPATH}/src/github.com/influxdata/influxdb
 cp -r * ${GOPATH}/src/github.com/influxdata/influxdb/.
 pushd ${GOPATH}/src/github.com/influxdata/influxdb/
-${GOPATH}/bin/dep ensure
 go clean ./...
 go install ./...
 
@@ -103,14 +102,13 @@ fi
 %{_bindir}/influx
 %{_bindir}/influx_inspect
 %{_bindir}/influx_stress
-%{_bindir}/influx-tools
+%{_bindir}/influx_tools
 %{_bindir}/influx_tsm
 %{_mandir}/man1/*
-%exclude %{_bindir}/store
-%exclude %{_bindir}/stress_test_server
-%exclude %{_bindir}/test_client
 
 %changelog
+*   Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.1-1
+-   Automatic Version Bump
 *   Tue Jan 29 2019 Keerthana K <keerthanak@vmware.com> 1.6.0-5
 -   Using golang dep to resolve dependencies.
 *   Fri Jan 25 2019 Keerthana K <keerthanak@vmware.com> 1.6.0-4
