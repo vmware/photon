@@ -1,19 +1,20 @@
-Summary:    A JSON implementation in C++
-Name:       jsoncpp
-Version:    1.7.7
-Release:    1%{?dist}
-License:    MIT
-URL:        https://github.com/open-source-parsers/jsoncpp
-Source0:    https://github.com/open-source-parsers/jsoncpp/archive/%{name}-%{version}.tar.gz
-%define sha1 %{name}=7bbb47e25b3aa7c4c8b579ca46b32d55f32cb46e
+Summary:        A JSON implementation in C++
+Name:           jsoncpp
+Version:        1.9.3
+Release:        1%{?dist}
+License:        MIT
+URL:            https://github.com/open-source-parsers/jsoncpp
+Source0:        https://github.com/open-source-parsers/jsoncpp/archive/%{name}-%{version}.tar.gz
+%define sha1    %{name}=df04d765d24d98e18f70bf8588d3df48697c4ba7
 Group:          System Environment/Base
-Vendor:     VMware, Inc.
+Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  cmake
 BuildRequires:  ninja-build
 BuildRequires:  python3-devel
 %description
-JsonCpp is a C++ library that allows manipulating JSON values, including serialization and deserialization to and from strings. It can also preserve existing comment in unserialization/serialization steps, making it a convenient format to store user input files.
+JsonCpp is a C++ library that allows manipulating JSON values, including serialization and deserialization to and from strings.
+It can also preserve existing comment in unserialization/serialization steps, making it a convenient format to store user input files.
 
 %package devel
 Summary:        Development libraries and header files for jsoncpp
@@ -48,7 +49,6 @@ cmake \
 %ninja_build
 %install
 %ninja_install
-rm %{buildroot}/%{_libdir}/*.a
 
 %check
 make %{?_smp_mflags} check
@@ -59,6 +59,7 @@ make %{?_smp_mflags} check
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
+%{_libdir}/cmake/jsoncpp/*.cmake
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
@@ -66,6 +67,7 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.3-1
+- Automatic Version Bump
 * Fri Nov 15 2019 Alexey Makhalov <amakhalov@vmware.com> 1.7.7-1
 - Initial build. First version
-
