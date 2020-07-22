@@ -1,6 +1,6 @@
 Summary:       Device Tree Compiler
 Name:          dtc
-Version:       1.5.0
+Version:       1.6.0
 Release:       1%{?dist}
 License:       GPLv2+
 URL:           https://devicetree.org/
@@ -8,7 +8,7 @@ Group:         Development/Tools
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       https://www.kernel.org/pub/software/utils/%{name}/%{name}-%{version}.tar.gz
-%define sha1 dtc=3b557ea9e2db096d7939489d76c9add3d73adbb2
+%define sha1 dtc=ef037f4599b7b1e883c9bb588b24d289dc9cd1f2
 BuildRequires: gcc make
 BuildRequires: flex bison swig
 
@@ -54,5 +54,7 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.0-1
+- Automatic Version Bump
 * Wed Jul 24 2019 Ajay Kaher <akaher@vmware.com> 1.5.0-1
 - Initial build. First version
