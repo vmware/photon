@@ -1,17 +1,17 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg59@coreos.com>
-Date: Sun, 9 Aug 2015 16:20:58 -0700
+Date: Fri, 5 Jul 2019 21:12:00 +0200
 Subject: [PATCH] Rework linux16 command
 
 We want a single buffer that contains the entire kernel image in order to
 perform a TPM measurement. Allocate one and copy the entire kernel int it
 before pulling out the individual blocks later on.
 ---
- grub-core/loader/i386/pc/linux.c | 34 +++++++++++++++++++++-------------
- 1 file changed, 21 insertions(+), 13 deletions(-)
+ grub-core/loader/i386/pc/linux.c | 33 +++++++++++++++++++++------------
+ 1 file changed, 21 insertions(+), 12 deletions(-)
 
 diff --git a/grub-core/loader/i386/pc/linux.c b/grub-core/loader/i386/pc/linux.c
-index a3c87cf2fc2..caa76bee8af 100644
+index eea25ea39ca..73fb91e0570 100644
 --- a/grub-core/loader/i386/pc/linux.c
 +++ b/grub-core/loader/i386/pc/linux.c
 @@ -123,13 +123,14 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
@@ -74,12 +74,11 @@ index a3c87cf2fc2..caa76bee8af 100644
  
    if (lh.header != grub_cpu_to_le32_compile_time (GRUB_LINUX_I386_MAGIC_SIGNATURE)
        || grub_le_to_cpu16 (lh.version) < 0x0200)
-@@ -355,10 +363,8 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+@@ -358,9 +366,8 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
    }
  
    len = grub_linux16_prot_size;
--  if (grub_file_read (file, grub_linux_prot_chunk, grub_linux16_prot_size)
--      != (grub_ssize_t) grub_linux16_prot_size && !grub_errno)
+-  if (grub_file_read (file, grub_linux_prot_chunk, len) != len && !grub_errno)
 -    grub_error (GRUB_ERR_BAD_OS, N_("premature end of file %s"),
 -		argv[0]);
 +  grub_memcpy (grub_linux_prot_chunk, kernel + kernel_offset, len);
@@ -87,7 +86,7 @@ index a3c87cf2fc2..caa76bee8af 100644
  
    if (grub_errno == GRUB_ERR_NONE)
      {
-@@ -368,6 +374,8 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+@@ -370,6 +377,8 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
  
   fail:
  

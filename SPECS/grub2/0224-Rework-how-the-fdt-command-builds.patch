@@ -39,12 +39,12 @@ index 715d3a3ec02..203584fb00b 100644
  
 +  fdt = lib/fdt.c;
 +
-   emu = disk/host.c;
-   emu = kern/emu/cache_s.S;
-   emu = kern/emu/hostdisk.c;
+   riscv32 = kern/riscv/cache.c;
+   riscv32 = kern/riscv/cache_flush.S;
+   riscv32 = kern/riscv/dl.c;
 @@ -1714,7 +1715,6 @@ module = {
-   arm_uboot = loader/arm/linux.c;
-   arm64 = loader/arm64/linux.c;
+   riscv32 = loader/riscv/linux.c;
+   riscv64 = loader/riscv/linux.c;
    emu = loader/emu/linux.c;
 -  fdt = lib/fdt.c;
  

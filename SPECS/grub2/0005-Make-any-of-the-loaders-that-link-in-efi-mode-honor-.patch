@@ -38,10 +38,10 @@ Signed-off-by: Peter Jones <pjones@redhat.com>
  create mode 100644 include/grub/sparc64/linux.h
 
 diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
-index 0b4b0c2122d..e92a7ef322f 100644
+index 581d9dfc3b3..eb1088fd654 100644
 --- a/grub-core/Makefile.core.def
 +++ b/grub-core/Makefile.core.def
-@@ -195,6 +195,7 @@ kernel = {
+@@ -207,6 +207,7 @@ kernel = {
    i386_multiboot = kern/i386/pc/acpi.c;
    i386_coreboot = kern/acpi.c;
    i386_multiboot = kern/acpi.c;
@@ -114,7 +114,7 @@ index 98769eadb34..088cbe9e2bc 100644
    grub_unregister_extcmd (cmd_read_word);
    grub_unregister_extcmd (cmd_read_dword);
 diff --git a/grub-core/kern/dl.c b/grub-core/kern/dl.c
-index 04e804d1668..621070918d4 100644
+index 896bebfd57e..d7718d26abc 100644
 --- a/grub-core/kern/dl.c
 +++ b/grub-core/kern/dl.c
 @@ -32,6 +32,7 @@
@@ -126,7 +126,7 @@ index 04e804d1668..621070918d4 100644
  /* Platforms where modules are in a readonly area of memory.  */
  #if defined(GRUB_MACHINE_QEMU)
 diff --git a/grub-core/kern/efi/efi.c b/grub-core/kern/efi/efi.c
-index 91129e33566..708581fcbde 100644
+index 3487b0623a4..6e1ceb90516 100644
 --- a/grub-core/kern/efi/efi.c
 +++ b/grub-core/kern/efi/efi.c
 @@ -273,40 +273,6 @@ grub_efi_get_variable (const char *var, const grub_efi_guid_t *guid,
@@ -272,7 +272,7 @@ index 74888c463ba..69c2a10d351 100644
    grub_unregister_command (cmd);
  }
 diff --git a/grub-core/loader/efi/chainloader.c b/grub-core/loader/efi/chainloader.c
-index af2189619a3..5cd9b6e08a8 100644
+index ef87b06cf70..5aa3a5dc7dd 100644
 --- a/grub-core/loader/efi/chainloader.c
 +++ b/grub-core/loader/efi/chainloader.c
 @@ -34,6 +34,7 @@
@@ -284,10 +284,10 @@ index af2189619a3..5cd9b6e08a8 100644
  #include <grub/i18n.h>
  #include <grub/net.h>
 diff --git a/grub-core/loader/i386/bsd.c b/grub-core/loader/i386/bsd.c
-index 7f96515da65..87709aa23e8 100644
+index 3730ed38247..5b9b92d6ba5 100644
 --- a/grub-core/loader/i386/bsd.c
 +++ b/grub-core/loader/i386/bsd.c
-@@ -38,6 +38,7 @@
+@@ -39,6 +39,7 @@
  #ifdef GRUB_MACHINE_PCBIOS
  #include <grub/machine/int.h>
  #endif
@@ -295,7 +295,7 @@ index 7f96515da65..87709aa23e8 100644
  
  GRUB_MOD_LICENSE ("GPLv3+");
  
-@@ -2124,6 +2125,9 @@ static grub_command_t cmd_netbsd_module_elf, cmd_openbsd_ramdisk;
+@@ -2130,6 +2131,9 @@ static grub_command_t cmd_netbsd_module_elf, cmd_openbsd_ramdisk;
  
  GRUB_MOD_INIT (bsd)
  {
@@ -305,7 +305,7 @@ index 7f96515da65..87709aa23e8 100644
    /* Net and OpenBSD kernels are often compressed.  */
    grub_dl_load ("gzio");
  
-@@ -2163,6 +2167,9 @@ GRUB_MOD_INIT (bsd)
+@@ -2169,6 +2173,9 @@ GRUB_MOD_INIT (bsd)
  
  GRUB_MOD_FINI (bsd)
  {
@@ -316,18 +316,18 @@ index 7f96515da65..87709aa23e8 100644
    grub_unregister_extcmd (cmd_openbsd);
    grub_unregister_extcmd (cmd_netbsd);
 diff --git a/grub-core/loader/i386/linux.c b/grub-core/loader/i386/linux.c
-index f7186be4002..c84747ea857 100644
+index b255c950526..376c726928a 100644
 --- a/grub-core/loader/i386/linux.c
 +++ b/grub-core/loader/i386/linux.c
-@@ -35,6 +35,7 @@
- #include <grub/i18n.h>
- #include <grub/lib/cmdline.h>
+@@ -36,6 +36,7 @@
  #include <grub/linux.h>
+ #include <grub/machine/kernel.h>
+ #include <grub/safemath.h>
 +#include <grub/efi/sb.h>
  
  GRUB_MOD_LICENSE ("GPLv3+");
  
-@@ -1156,6 +1157,9 @@ static grub_command_t cmd_linux, cmd_initrd;
+@@ -1131,6 +1132,9 @@ static grub_command_t cmd_linux, cmd_initrd;
  
  GRUB_MOD_INIT(linux)
  {
@@ -337,7 +337,7 @@ index f7186be4002..c84747ea857 100644
    cmd_linux = grub_register_command ("linux", grub_cmd_linux,
  				     0, N_("Load Linux."));
    cmd_initrd = grub_register_command ("initrd", grub_cmd_initrd,
-@@ -1165,6 +1169,9 @@ GRUB_MOD_INIT(linux)
+@@ -1140,6 +1144,9 @@ GRUB_MOD_INIT(linux)
  
  GRUB_MOD_FINI(linux)
  {
@@ -348,18 +348,18 @@ index f7186be4002..c84747ea857 100644
    grub_unregister_command (cmd_initrd);
  }
 diff --git a/grub-core/loader/i386/pc/linux.c b/grub-core/loader/i386/pc/linux.c
-index caa76bee8af..783a3cd93bc 100644
+index 73fb91e0570..fe3e1d41d09 100644
 --- a/grub-core/loader/i386/pc/linux.c
 +++ b/grub-core/loader/i386/pc/linux.c
 @@ -35,6 +35,7 @@
- #include <grub/i386/floppy.h>
  #include <grub/lib/cmdline.h>
  #include <grub/linux.h>
+ #include <grub/safemath.h>
 +#include <grub/efi/sb.h>
  
  GRUB_MOD_LICENSE ("GPLv3+");
  
-@@ -480,6 +481,9 @@ static grub_command_t cmd_linux, cmd_linux16, cmd_initrd, cmd_initrd16;
+@@ -483,6 +484,9 @@ static grub_command_t cmd_linux, cmd_linux16, cmd_initrd, cmd_initrd16;
  
  GRUB_MOD_INIT(linux16)
  {
@@ -369,7 +369,7 @@ index caa76bee8af..783a3cd93bc 100644
    cmd_linux =
      grub_register_command ("linux", grub_cmd_linux,
  			   0, N_("Load Linux."));
-@@ -497,6 +501,9 @@ GRUB_MOD_INIT(linux16)
+@@ -500,6 +504,9 @@ GRUB_MOD_INIT(linux16)
  
  GRUB_MOD_FINI(linux16)
  {
@@ -380,7 +380,7 @@ index caa76bee8af..783a3cd93bc 100644
    grub_unregister_command (cmd_linux16);
    grub_unregister_command (cmd_initrd);
 diff --git a/grub-core/loader/multiboot.c b/grub-core/loader/multiboot.c
-index 40c67e82489..26df46a4161 100644
+index 4a98d708259..3e6ad166dc9 100644
 --- a/grub-core/loader/multiboot.c
 +++ b/grub-core/loader/multiboot.c
 @@ -50,6 +50,7 @@
@@ -391,7 +391,7 @@ index 40c67e82489..26df46a4161 100644
  
  GRUB_MOD_LICENSE ("GPLv3+");
  
-@@ -446,6 +447,9 @@ static grub_command_t cmd_multiboot, cmd_module;
+@@ -444,6 +445,9 @@ static grub_command_t cmd_multiboot, cmd_module;
  
  GRUB_MOD_INIT(multiboot)
  {
@@ -401,7 +401,7 @@ index 40c67e82489..26df46a4161 100644
    cmd_multiboot =
  #ifdef GRUB_USE_MULTIBOOT2
      grub_register_command ("multiboot2", grub_cmd_multiboot,
-@@ -466,6 +470,9 @@ GRUB_MOD_INIT(multiboot)
+@@ -464,6 +468,9 @@ GRUB_MOD_INIT(multiboot)
  
  GRUB_MOD_FINI(multiboot)
  {
@@ -412,18 +412,18 @@ index 40c67e82489..26df46a4161 100644
    grub_unregister_command (cmd_module);
  }
 diff --git a/grub-core/loader/xnu.c b/grub-core/loader/xnu.c
-index c9885b1bcd7..df8dfdb4ba0 100644
+index 7f74d1d6fc9..e0f47e72b06 100644
 --- a/grub-core/loader/xnu.c
 +++ b/grub-core/loader/xnu.c
-@@ -33,6 +33,7 @@
- #include <grub/extcmd.h>
- #include <grub/env.h>
+@@ -34,6 +34,7 @@
  #include <grub/i18n.h>
+ #include <grub/verify.h>
+ #include <grub/safemath.h>
 +#include <grub/efi/sb.h>
  
  GRUB_MOD_LICENSE ("GPLv3+");
  
-@@ -1469,6 +1470,9 @@ static grub_extcmd_t cmd_splash;
+@@ -1478,6 +1479,9 @@ static grub_extcmd_t cmd_splash;
  
  GRUB_MOD_INIT(xnu)
  {
@@ -433,7 +433,7 @@ index c9885b1bcd7..df8dfdb4ba0 100644
    cmd_kernel = grub_register_command ("xnu_kernel", grub_cmd_xnu_kernel, 0,
  				      N_("Load XNU image."));
    cmd_kernel64 = grub_register_command ("xnu_kernel64", grub_cmd_xnu_kernel64,
-@@ -1509,6 +1513,9 @@ GRUB_MOD_INIT(xnu)
+@@ -1518,6 +1522,9 @@ GRUB_MOD_INIT(xnu)
  
  GRUB_MOD_FINI(xnu)
  {
@@ -444,7 +444,7 @@ index c9885b1bcd7..df8dfdb4ba0 100644
    grub_unregister_command (cmd_resume);
  #endif
 diff --git a/include/grub/efi/efi.h b/include/grub/efi/efi.h
-index 1061aee9726..39480b38674 100644
+index 6840bfee9b7..090c8621066 100644
 --- a/include/grub/efi/efi.h
 +++ b/include/grub/efi/efi.h
 @@ -85,7 +85,6 @@ EXPORT_FUNC (grub_efi_set_variable) (const char *var,
@@ -503,7 +503,7 @@ diff --git a/include/grub/sparc64/linux.h b/include/grub/sparc64/linux.h
 new file mode 100644
 index 00000000000..e69de29bb2d
 diff --git a/grub-core/Makefile.am b/grub-core/Makefile.am
-index f4ff62b769a..9c69aa88626 100644
+index 3ea8e7ff45f..c6ba5b2d763 100644
 --- a/grub-core/Makefile.am
 +++ b/grub-core/Makefile.am
 @@ -71,6 +71,7 @@ KERNEL_HEADER_FILES += $(top_srcdir)/include/grub/command.h
