@@ -1,14 +1,14 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
-Version:        1.3.0
-Release:        3%{?dist}
+Version:        1.4.0
+Release:        1%{?dist}
 License:        BSD and GPLv2+
-URL:            https://www.kernel.org/pub/linux/libs/pam/
+URL:            https://github.com/linux-pam/linux-pam/releases
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://linux-pam.org/library/%{name}-%{version}.tar.bz2
-%define sha1    Linux-PAM=e956252e81d824c35a60c9b50919ca0767f8a8ec
+Source0:        https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
+%define sha1    Linux-PAM=e26c6594c14680da42ea2875b60664ec159670bf
 BuildRequires:  cracklib-devel
 Requires:       cracklib
 BuildRequires:  libselinux-devel
@@ -17,11 +17,11 @@ Requires:       libselinux
 The Linux PAM package contains Pluggable Authentication Modules used to
 enable the local system administrator to choose how applications authenticate users.
 
-%package lang
-Summary: Additional language files for Linux-PAM
-Group: System Environment/Base
+%package        lang
+Summary:        Additional language files for Linux-PAM
+Group:          System Environment/Base
 Requires:       %{name} = %{version}-%{release}
-%description lang
+%description    lang
 These are the additional language files of Linux-PAM.
 
 %package        devel
@@ -83,6 +83,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
+%{_lib}/systemd/system/pam_namespace.service
 
 %files lang -f Linux-PAM.lang
 %defattr(-,root,root)
@@ -94,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+*   Fri Aug 07 2020 Vikash Bansal <bvikas@vmware.com> 1.4.0-1
+-   Version bump up to 1.4.0
 *   Mon Apr 20 2020 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-3
 -   Enable SELinux support
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-2

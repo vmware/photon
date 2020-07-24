@@ -1,14 +1,14 @@
-Summary:	SELinux binary policy manipulation library
-Name:		libsepol
-Version:	3.0
-Release:	1%{?dist}
-License:	LGPLv2+
-Group:		System Environment/Libraries
-Source0:	https://github.com/SELinuxProject/selinux/releases/download/20191204/%{name}-%{version}.tar.gz
-%define sha1 libsepol=87464b9843732883980e8b4feaf8f4e4a4f9017e
-URL:		http://www.selinuxproject.org
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        SELinux binary policy manipulation library
+Name:           libsepol
+Version:        3.1
+Release:        1%{?dist}
+License:        LGPLv2+
+Group:          System Environment/Libraries
+Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
+%define sha1    libsepol=7f209aae19fdb2da3721a1fe0758c5dc9fc0a866
+URL:            http://www.selinuxproject.org
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
 %description
 Security-enhanced Linux is a feature of the Linux® kernel and a number
@@ -92,6 +92,8 @@ rm %{buildroot}%{_mandir}/man8/genpolusers.8
 %{_lib}/libsepol.so.1
 
 %changelog
+* Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1
+- Automatic Version Bump
 * Sat Apr 18 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-1
 - Version update.
 - Added -utils subpackage.

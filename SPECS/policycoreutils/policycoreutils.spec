@@ -1,11 +1,11 @@
 Summary:        SELinux policy core utilities
 Name:           policycoreutils
-Version:        3.0
+Version:        3.1
 Release:        1%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
-Source0:        https://github.com/SELinuxProject/selinux/releases/download/20191204/%{name}-%{version}.tar.gz
-%define sha1    policycoreutils=c963f28a3e206742550e6c97ea7ca5ed9b6c0e81
+Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
+%define sha1    policycoreutils=8fb3bc30cdff1d48dd66e89489a0c59201a7c986
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -45,5 +45,7 @@ rm -rf %{buildroot}%{_mandir}/ru
 
 
 %changelog
+* Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1
+- Automatic Version Bump
 * Sat Apr 18 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-1
 - Initial build.

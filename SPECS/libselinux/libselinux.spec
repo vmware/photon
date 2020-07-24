@@ -1,12 +1,12 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        SELinux library and simple utilities
 Name:           libselinux
-Version:        3.0
-Release:        3%{?dist}
+Version:        3.1
+Release:        1%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
-Source0:        https://github.com/SELinuxProject/selinux/releases/download/20191204/%{name}-%{version}.tar.gz
-%define sha1    libselinux=2b948274ba4cbd9ad9e8d0994961457007d74d48
+Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
+%define sha1    libselinux=f687894176f0b69a4e0e14b936685c72cb41a084
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -22,7 +22,7 @@ Requires:       pcre-libs
 # just because they were dinamically linked against it.
 # Disable libsepol dependency to reduce minimal installation
 # size. And install libsepol when we really need SELinux
-#Requires:       libsepol
+#Requires:      libsepol
 
 %description
 Security-enhanced Linux is a feature of the Linux® kernel and a number
@@ -116,6 +116,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1
+-   Automatic Version Bump
 *   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 3.0-3
 -   Mass removal python2
 *   Fri Apr 24 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-2
