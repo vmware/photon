@@ -1,18 +1,21 @@
 Summary:	Low level cryptographic libraries
 Name:		nettle
-Version:	3.4.1
+Version:	3.6
 Release:	1%{?dist}
 License:	LGPLv3+ or GPLv2+
-URL:            http://www.lysator.liu.se/~nisse/nettle/
+URL:        http://www.lysator.liu.se/~nisse/nettle/
 Source0: 	https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
-%define sha1 nettle=56a81ed4a8d35489d8bddd99d5262fe3958a52b4
+%define sha1 nettle=22e48a4d232ccd26ba8303709f2222b422a8827d
 Group: 		Development/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Provides:	libhogweed.so.4()(64bit)
-Provides:	libhogweed.so.4(HOGWEED_4)(64bit)
-Provides:	libnettle.so.6()(64bit)
-Provides:	libnettle.so.6(NETTLE_6)(64bit)
+
+Provides:	libhogweed.so.6()(64bit)
+Provides:	libhogweed.so.6(HOGWEED_6)(64bit)
+Provides:   libhogweed.so.6(HOGWEED_INTERNAL_6_0)(64bit)
+Provides:	libnettle.so.8()(64bit)
+Provides:	libnettle.so.8(NETTLE_8)(64bit)
+Provides:   libnettle.so.8(NETTLE_INTERNAL_8_0)(64bit)
 Requires:	gmp
 
 %description
@@ -38,7 +41,7 @@ developing applications that use nettle.
 %configure \
 	--prefix=%{_prefix} \
 	--enable-shared \
-        --disable-static
+    --disable-static
 
 make %{?_smp_mflags}
 
@@ -65,6 +68,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Aug 17 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.6-1
+-   Upgrade to version 3.6
 *   Thu Oct 17 2019 Shreenidhi Shedi <sshedi@vmware.com> 3.4.1-1
 -   Upgrade to version 3.4.1
 *   Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 3.4-1
