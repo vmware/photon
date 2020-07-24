@@ -1,17 +1,15 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
-Version:        2.2.35
-Release:        3%{?dist}
+Version:        2.2.49
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         photondistroadd.patch
-Patch1:         CVE-2019-0804.patch
-%define sha1 WALinuxAgent=2cebed7efab54adb634c97519900f7a1de55403a
-Vendor:		VMware, Inc.
-Distribution:	Photon
-
+%define sha1    WALinuxAgent=b12ca070dcb71867716c8613496a94d748e3f0a3
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -30,7 +28,6 @@ Requires:       /bin/grep
 Requires:       sudo
 Requires:       iptables
 Requires:       systemd
-
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 
@@ -42,8 +39,6 @@ images that are built to run in the Windows Azure environment.
 %prep
 %setup -q -n %{name}-%{version}
 %patch0 -p1
-%patch1 -p1
-
 %pre -p /bin/sh
 
 %build
@@ -70,7 +65,6 @@ python3 setup.py check && python3 setup.py test
 %postun
 %systemd_postun_with_restart waagent.service
 
-
 %files
 /usr/lib/systemd/system/*
 %defattr(0644,root,root,0755)
@@ -85,6 +79,8 @@ python3 setup.py check && python3 setup.py test
 /usr/lib/python3.7/site-packages/*
 
 %changelog
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.2.49-1
+- Automatic Version Bump
 * Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 2.2.35-3
 - Use python3
 * Wed Apr 29 2020 Anisha Kumari <kanisha@vmware.com> 2.2.35-2

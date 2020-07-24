@@ -1,24 +1,26 @@
---- a/azurelinuxagent/common/osutil/factory.py	2019-02-12 18:32:02.014403649 +0530
-+++ b/azurelinuxagent/common/osutil/factory.py	2019-02-12 18:33:10.586401816 +0530
-@@ -21,6 +21,7 @@ from azurelinuxagent.common.version impo
- from .default import DefaultOSUtil
+diff --git a/azurelinuxagent/common/osutil/factory.py b/azurelinuxagent/common/osutil/factory.py
+index 69f8430..7002ae9 100644
+--- a/azurelinuxagent/common/osutil/factory.py
++++ b/azurelinuxagent/common/osutil/factory.py
+@@ -24,6 +24,7 @@ from .alpine import AlpineOSUtil
  from .arch import ArchUtil
+ from .bigip import BigIpOSUtil
  from .clearlinux import ClearLinuxUtil
 +from .photonos import PhotonOSUtil
  from .coreos import CoreOSUtil
- from .debian import DebianOSUtil
- from .freebsd import FreeBSDOSUtil
-@@ -49,6 +50,10 @@ def get_osutil(distro_name=DISTRO_NAME,
+ from .debian import DebianOSBaseUtil, DebianOSModernUtil
+ from .default import DefaultOSUtil
+@@ -58,6 +59,9 @@ def _get_osutil(distro_name, distro_code_name, distro_version, distro_full_name)
      if "Clear Linux" in distro_full_name:
          return ClearLinuxUtil()
- 
+
 +    if distro_name == "photonos":
 +        return PhotonOSUtil()
-+
 +
      if distro_name == "ubuntu":
          if Version(distro_version) in [Version("12.04"), Version("12.10")]:
              return Ubuntu12OSUtil()
+
 --- a/azurelinuxagent/common/osutil/photonos.py	2019-02-12 18:42:54.290386210 +0530
 +++ b/azurelinuxagent/common/osutil/photonos.py	2019-02-12 18:34:43.254399338 +0530
 @@ -0,0 +1,88 @@
