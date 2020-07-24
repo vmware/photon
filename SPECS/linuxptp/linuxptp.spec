@@ -1,12 +1,12 @@
 Summary:        The Linux PTP Project
 Name:           linuxptp
-Version:        2.0
+Version:        3.0
 Release:        1%{?dist}
 License:        GPL v2
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
 Source0:        %{name}-%{version}.tgz
-%define sha1    linuxptp=592ca42c6146a79c1fcabed7c19fa7af4803d4f6
+%define sha1    linuxptp=cf56f1ab6c622a569be8c14d2cb121f0183affc9
 Source1:        ptp4l.service
 Source2:        phc2sys.service
 Source3:        phc2sys
@@ -72,14 +72,18 @@ rm -rf %{buildroot}
 %{_sbindir}/pmc
 %{_sbindir}/ptp4l
 %{_sbindir}/timemaster
+%{_sbindir}/ts2phc
 %{_mandir}/man8/hwstamp_ctl.8.gz
 %{_mandir}/man8/phc2sys.8.gz
 %{_mandir}/man8/phc_ctl.8.gz
 %{_mandir}/man8/pmc.8.gz
 %{_mandir}/man8/ptp4l.8.gz
 %{_mandir}/man8/timemaster.8.gz
-
+%{_mandir}/man8/nsm.8.gz
+%{_mandir}/man8/ts2phc.8.gz
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0-1
+-   Automatic Version Bump
 *   Tue May 19 2020 Tapas Kundu <tkundu@vmware.com> 2.0-1
 -   Initial version.
