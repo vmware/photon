@@ -1,6 +1,6 @@
 Summary:    C library implementation of the Apache Kafka protocol
 Name:       librdkafka
-Version:    1.3.0
+Version:    1.5.0
 Release:    1%{?dist}
 License:    BSD
 URL:        https://github.com/edenhill/librdkafka
@@ -8,7 +8,7 @@ Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    %{name}-%{version}.tar.gz
-%define sha1 %{name}=20c4ddb2437fc875ba92777a3906fb3a375d7e7f
+%define sha1 %{name}=56d2c58e95551928d68a08ff88b5a139f4d12772
 
 %description
 librdkafka is a C library implementation of the Apache Kafka protocol, providing Producer, Consumer and Admin clients.
@@ -40,7 +40,12 @@ make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
-%doc README.md CONFIGURATION.md LICENSE
+%doc %{_docdir}/librdkafka/README.md
+%doc %{_docdir}/librdkafka/LICENSE
+%doc %{_docdir}/librdkafka/CONFIGURATION.md
+%doc %{_docdir}/librdkafka/INTRODUCTION.md
+%doc %{_docdir}/librdkafka/STATISTICS.md
+%doc %{_docdir}/librdkafka/LICENSES.txt
 %{_libdir}/*.so.*
 
 %files devel
@@ -50,5 +55,7 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.0-1
+-   Automatic Version Bump
 *   Mon Mar 09 2020 Ankit Jain <ankitja@vmware.com> 1.3.0-1
 -   Initial build.  First version
