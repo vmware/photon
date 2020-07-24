@@ -2,13 +2,13 @@
 
 Summary:        RDMA Core Userspace Libraries and Daemons
 Name:           rdma-core
-Version:        26.0
+Version:        31.0
 Release:        1%{?dist}
 License:        BSD and MIT and GPLv2 and Creative Commons
 Group:          Applications/System
 URL:            https://github.com/linux-rdma/rdma-core
 Source0:        https://github.com/linux-rdma/rdma-core/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1 rdma=5842fbf5833d01a0c3cd0ee8eff7b78436d83024
+%define sha1 rdma=04dddde2ae0899be4d75cc34529fdcf6a035b27f
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  cmake
@@ -152,6 +152,7 @@ easy, object-oriented access to IB verbs.
 
 %prep
 %setup -q
+
 %build
 cmake \
         -DCMAKE_BUILD_TYPE=Release \
@@ -279,6 +280,7 @@ cd build && make %{?_smp_mflags} check
 %dir %{_docdir}/%{name}-%{version}
 %doc %{_docdir}/%{name}-%{version}/README.md
 %doc %{_docdir}/%{name}-%{version}/udev.md
+%doc %{_docdir}/%{name}-%{version}/tests/*
 %license COPYING.*
 
 %files devel
@@ -304,13 +306,11 @@ cd build && make %{?_smp_mflags} check
 %defattr(-,root,root)
 %dir %{_sysconfdir}/libibverbs.d
 %config(noreplace) %{_sysconfdir}/libibverbs.d/*.driver
-%{_bindir}/rxe_cfg
 %{_libdir}/libefa.so.*
 %{_libdir}/libibverbs*.so.*
 %dir %{_libdir}/libibverbs
 %{_libdir}/libibverbs/*.so
 %{_mandir}/man7/rxe*
-%{_mandir}/man8/rxe*
 %doc %{_docdir}/%{name}-%{version}/libibverbs.md
 %doc %{_docdir}/%{name}-%{version}/rxe.md
 %doc %{_docdir}/%{name}-%{version}/tag_matching.md
@@ -345,9 +345,9 @@ cd build && make %{?_smp_mflags} check
 %{_libdir}/ibacm/*
 %{_sbindir}/ibacm
 %{_mandir}/man1/ib_acme.*
-%{_mandir}/man1/ibacm.*
 %{_mandir}/man7/ibacm.*
 %{_mandir}/man7/ibacm_prov.*
+%{_mandir}/man8/ibacm.*
 %doc %{_docdir}/%{name}-%{version}/ibacm.md
 
 %files -n infiniband-diags
@@ -480,10 +480,10 @@ cd build && make %{?_smp_mflags} check
 %{_sbindir}/ibsrpdm
 %{_sbindir}/run_srp_daemon
 %{_sbindir}/srp_daemon
-%{_mandir}/man1/ibsrpdm.1*
-%{_mandir}/man1/srp_daemon.1*
 %{_mandir}/man5/srp_daemon.service.5*
 %{_mandir}/man5/srp_daemon_port@.service.5*
+%{_mandir}/man8/ibsrpdm.8*
+%{_mandir}/man8/srp_daemon.8*
 %doc %{_docdir}/%{name}-%{version}/ibsrpdm.md
 
 %files -n rdma-ndd
@@ -498,5 +498,7 @@ cd build && make %{?_smp_mflags} check
 %{python3_sitearch}/pyverbs
 
 %changelog
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 31.0-1
+- Automatic Version Bump
 * Fri Nov 08 2019 Alexey Makhalov <amakhalov@vmware.com> 26.0-1
 - Initial build.
