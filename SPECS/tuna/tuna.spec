@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           tuna
-Version:        0.14
-Release:        2%{?dist}
+Version:        0.14.1
+Release:        1%{?dist}
 License:        GPLv2
 Summary:        Application tuning command line utility
 Group:          Applications/System
@@ -10,8 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rt.wiki.kernel.org/index.php/Tuna
 Source:         https://www.kernel.org/pub/software/utils/%{name}/%{name}-%{version}.tar.xz
-%define sha1 tuna=62c2a8cb7e8cbc96a2fc2160cedb2118ae207fe4
-
+%define sha1    tuna=cc6e02da4e99be1324b21b5252cd8df76248c0dd
 BuildArch:      noarch
 BuildRequires:  python3-devel, gettext
 Requires:       python3-ethtool
@@ -65,6 +64,8 @@ done
 %{_datadir}/polkit-1/actions/org.tuna.policy
 
 %changelog
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.14.1-1
+- Automatic Version Bump
 * Tue Jun 16 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 0.14-2
 - Remove unnecessary version constraint for runtime package dependency.
 * Thu Mar 19 2020 Shreyas B. <shreyasb@vmware.com> 0.14-1
