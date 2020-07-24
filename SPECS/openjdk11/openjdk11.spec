@@ -1,10 +1,10 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
 %define jdk_major_version 11.0
-%define subversion 7
+%define subversion 8
 Summary:	OpenJDK
 Name:		openjdk11
-Version:	11.0.7
+Version:	11.0.8
 Release:	1%{?dist}
 License:	GNU General Public License V2
 URL:		https://openjdk.java.net
@@ -12,7 +12,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk/jdk11/openjdk-%{version}.tar.gz
-%define sha1 openjdk-11.0=78a9d34c5115e5198ce1143b6f52201011596173
+%define sha1 openjdk-11.0=bd6bf67183a8adefc9251c1b8395dbcbd6b252bf
 BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
@@ -84,7 +84,7 @@ make install
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
 install -vdm755 %{buildroot}%{_bindir}
-mv /usr/local/jvm/openjdk-11.0.7-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
+mv /usr/local/jvm/openjdk-%{version}-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 cp README LICENSE ASSEMBLY_EXCEPTION %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
 %post
@@ -172,6 +172,7 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/rmiregistry
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/unpack200
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/jfr
+%exclude %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/*.debuginfo
 
 %files doc
 %defattr(-,root,root)
@@ -184,6 +185,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+*   Fri Jul 24 2020 Shreyas B <shreyasb@vmware.com> 11.0.8-1
+-   Updating to jdk-11.0.8-ga
 *   Sun Apr 19 2020 Tapas Kundu <tkundu@vmware.com> 11.0.7-1
 -   Updating to jdk-11.0.7-ga
 *   Fri Oct 18 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0.28-1
