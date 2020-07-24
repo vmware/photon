@@ -2,16 +2,15 @@
 
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
-Version:        6.0.1
-Release:        2%{?dist}
+Version:        10.0.1
+Release:        1%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    lldb=907a32c7170067f485121a1e8ff793b16d1ff491
-Patch0:         fix_python3_lldb.patch
+%define sha1    lldb=90b946ff7b850bcded598509a10d0795e7da3f63
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
 BuildRequires:  clang-devel = %{version}
@@ -27,27 +26,26 @@ Requires:       zlib
 Requires:       libxml2
 
 %description
-LLDB is a next generation, high-performance debugger. It is built as a set of reusable components which highly leverage existing libraries in the larger LLVM Project, such as the Clang expression parser and LLVM disassembler.
+LLDB is a next generation, high-performance debugger.
+It is built as a set of reusable components which highly leverage existing libraries in the larger LLVM Project,
+such as the Clang expression parser and LLVM disassembler.
 
-%package devel
+%package        devel
 Summary:        Development headers for lldb
 Requires:       %{name} = %{version}-%{release}
-
-%description devel
+%description    devel
 The lldb-devel package contains libraries, header files and documentation
 for developing applications that use lldb.
 
-%package -n python3-lldb
+%package -n     python3-lldb
 Summary:        Python module for lldb
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3-six
-
 %description -n python3-lldb
 The package contains the LLDB Python3 module.
 
 %prep
 %setup -q -n %{name}-%{version}.src
-%patch0 -p1
 
 %build
 mkdir -p build
@@ -59,7 +57,6 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr           \
       -DLLVM_DIR=/usr/lib/cmake/llvm        \
       -DLLVM_BUILD_LLVM_DYLIB=ON ..         \
       -DLLDB_DISABLE_LIBEDIT:BOOL=ON
-
 make %{?_smp_mflags}
 
 %install
@@ -89,7 +86,6 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_libdir}/liblldb.so
 %{_libdir}/liblldbIntelFeatures.so
-%{_libdir}/*.a
 %{_includedir}/*
 
 %files -n python3-lldb
@@ -97,6 +93,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 10.0.1-1
+-   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 6.0.1-2
 -   Removed python2
 *   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1

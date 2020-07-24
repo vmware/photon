@@ -1,14 +1,14 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
-Version:        6.0.1
-Release:        2%{?dist}
+Version:        10.0.1
+Release:        1%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://releases.llvm.org/%{version}/cfe-%{version}.src.tar.xz
-%define sha1    cfe=d93d8f3e3d7eb549ac58507383f7fcbdd78804d7
+Source0:        https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/%{name}-%{version}.src.tar.xz
+%define sha1    clang=0e61e92b22a620fe7f833fa8b2a56f2db96f7335
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
 BuildRequires:  ncurses-devel
@@ -23,27 +23,26 @@ Requires:       libxml2
 Requires:       python3
 
 %description
-The goal of the Clang project is to create a new C based language front-end: C, C++, Objective C/C++, OpenCL C and others for the LLVM compiler. You can get and build the source today.
+The goal of the Clang project is to create a new C based language front-end:
+C, C++, Objective C/C++, OpenCL C and others for the LLVM compiler. You can get and build the source today.
 
-%package devel
+%package        devel
 Summary:        Development headers for clang
 Requires:       %{name} = %{version}-%{release}
-
-%description devel
-The clang-devel package contains libraries, header files and documentation
-for developing applications that use clang.
+%description    devel
+The clang-devel package contains libraries, header files and documentation for developing applications that use clang.
 
 %prep
-%setup -q -n cfe-%{version}.src
+%setup -q -n %{name}-%{version}.src
 
 %build
 mkdir -p build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr   \
-      -DCMAKE_BUILD_TYPE=Release    \
+cmake -DCMAKE_INSTALL_PREFIX=/usr               \
+      -DCMAKE_BUILD_TYPE=Release                \
+      -DLLVM_MAIN_INCLUDE_DIR=/usr/include \
       -Wno-dev ..
-
-make %{?_smp_mflags}
+make
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -76,6 +75,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 10.0.1-1
+-   Automatic Version Bump
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 6.0.1-2
 -   Build with python3
 -   Mass removal python2

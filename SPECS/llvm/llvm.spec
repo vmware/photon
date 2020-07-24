@@ -1,14 +1,14 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
-Version:        6.0.1
-Release:        4%{?dist}
+Version:        10.0.1
+Release:        1%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    llvm=09a6316c5225cab255ba12391e7abe5ff4d28935
+%define sha1    llvm=25d07260f3b7bf4f647e115c4a663fdeda130fbd
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
 BuildRequires:  libffi-devel
@@ -16,13 +16,14 @@ BuildRequires:  python3
 Requires:       libxml2
 
 %description
-The LLVM Project is a collection of modular and reusable compiler and toolchain technologies. Despite its name, LLVM has little to do with traditional virtual machines, though it does provide helpful libraries that can be used to build them. The name "LLVM" itself is not an acronym; it is the full name of the project.
+The LLVM Project is a collection of modular and reusable compiler and toolchain technologies.
+Despite its name, LLVM has little to do with traditional virtual machines, though it does provide helpful libraries that can be used to build them.
+The name "LLVM" itself is not an acronym; it is the full name of the project.
 
-%package devel
+%package        devel
 Summary:        Development headers for llvm
 Requires:       %{name} = %{version}-%{release}
-
-%description devel
+%description    devel
 The llvm-devel package contains libraries, header files and documentation
 for developing applications that use llvm.
 
@@ -39,7 +40,6 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr           \
       -DLLVM_TARGETS_TO_BUILD="host;AMDGPU;BPF" \
       -DLLVM_INCLUDE_GO_TESTS=No            \
       -Wno-dev ..
-
 make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -71,13 +71,14 @@ rm -rf %{buildroot}/*
 %{_datadir}/opt-viewer/optrecord.py
 %{_datadir}/opt-viewer/style.css
 
-
 %files devel
 %{_libdir}/*.a
 %{_libdir}/cmake/*
 %{_includedir}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 10.0.1-1
+-   Automatic Version Bump
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 6.0.1-4
 -   Build with python3
 -   Mass removal python2
