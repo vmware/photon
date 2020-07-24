@@ -1,14 +1,14 @@
 Summary:        The lm_sensors package provides user-space support for the hardware monitoring drivers in the Linux kernel.
 Name:           lm-sensors
-Version:        3.5.0
+Version:        3.6.0
 Release:        1%{?dist}
 License:        GPLv2
-URL:            https://github.com/lm-sensors/lm-sensors
+URL:            https://github.com/lm-sensors/lm-sensors/releases
 Group:          System Drivers
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://ftp.gwdg.de/pub/linux/misc/lm-sensors/%{name}-%{version}.tar.gz
-%define sha1    lm-sensors=3d1b3b82d62daeec1f151eaf993c61dc3cf21a6b
+Source0:        https://github.com/lm-sensors/lm-sensors/archive/%{name}-%{version}.tar.gz
+%define sha1    lm-sensors=2ef03242b62d70523919d06859503f12feb9f7d4
 BuildRequires:  gcc
 BuildRequires:  bison
 BuildRequires:  flex
@@ -41,10 +41,9 @@ Requires:  lm-sensors = %{version}-%{release}
 Documentation for lm-sensors.
 
 %prep
-%setup -q -n %{name}-3-5-0
+%setup -qn %{name}-3-6-0
 
 %build
-
 make all %{?_smp_mflags}
 
 %install
@@ -87,5 +86,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.6.0-1
+- Automatic Version Bump
 * Thu Jun 20 2019 Tapas Kundu <tkundu@vmware.com> 3.5.0-1
 - Initial packaging with Photon OS.
