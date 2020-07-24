@@ -1,18 +1,18 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
 %define jdk_major_version 1.8.0
-%define subversion 252
+%define subversion 262
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.252
-Release:	2%{?dist}
+Version:	1.8.0.262
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
-%define sha1    openjdk=65021228d2ad4e6e20c4940ac4f2c200542412fa
+%define sha1    openjdk=2f716d3c2a4143b16ec45ba9cdf30a89812ea6d9
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
 Patch2:         remove-cups.patch
@@ -242,6 +242,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+*   Fri Jul 24 2020 Shreyas B <shreyasb@vmware.com> 1.8.0.262-1
+-   Upgrade to version 1.8.0.262 (jdk8u262-ga)
 *   Thu Apr 23 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.252-2
 -   Removed macro from Version.
 *   Fri Apr 17 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.252-1
