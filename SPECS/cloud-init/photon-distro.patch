@@ -1,7 +1,7 @@
-diff -rupN cloud-init-19.1/cloudinit/distros/photon.py cloud-init-19.1-v2-network-config/cloudinit/distros/photon.py
---- cloud-init-19.1/cloudinit/distros/photon.py	1969-12-31 18:00:00.000000000 -0600
-+++ cloud-init-19.1-v2-network-config/cloudinit/distros/photon.py	2020-07-22 15:56:47.000000000 -0500
-@@ -0,0 +1,466 @@
+diff --color -rupN cloud-init-19.4/cloudinit/distros/photon.py cloud-init-19.4-v2-network-config-dhcp-use-domain/cloudinit/distros/photon.py
+--- cloud-init-19.4/cloudinit/distros/photon.py	1970-01-01 00:00:00.000000000 +0000
++++ cloud-init-19.4-v2-network-config-dhcp-use-domain/cloudinit/distros/photon.py	2020-07-24 04:43:42.575278846 +0000
+@@ -0,0 +1,473 @@
 +# vi: ts=4 expandtab
 +#
 +# Copyright (C) 2020 VMware Inc.
@@ -131,6 +131,13 @@ diff -rupN cloud-init-19.1/cloudinit/distros/photon.py cloud-init-19.1-v2-networ
 +                        if ('addresses' in nameservers):
 +                            s = nameservers['addresses']
 +                            conf += "DNS=%s\n" % ' '.join(s)
++
++                    #  Generate [DHCP] section
++                    if ('dhcp4domain' in val):
++                        if val['dhcp4domain'] == True:
++                            conf += "\n[DHCP]\nUseDomains=yes\n\n"
++                        else:
++                            conf += "\n[DHCP]\nUseDomains=no\n\n"
 +
 +                    # Generate [Address] section
 +                    if ('addresses' in val):

@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -161,6 +161,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Fri Jul 24 2020 Susant Sahani <ssahani@vmware.com> 19.4-5
+-   Support [DHCP] section's UseDomains= in Networking Config Version 2
 *   Fri Jul 24 2020 Keerthana K <keerthanak@vmware.com> 19.4-4
 -   Add support for updating gc status and DEFAULT-RUN-POST-CUSTOM-SCRIPT.
 *   Thu Jul 23 2020 Andrew Kutz <akutz@vmware.com> 19.4-3
