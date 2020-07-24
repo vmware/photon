@@ -1,6 +1,6 @@
 Summary:        Tool Command Language - the language and library.
 Name:           tcl
-Version:        8.6.8
+Version:        8.6.10
 %define majorver 8.6
 Release:        1%{?dist}
 URL:            http://tcl.sourceforge.net/
@@ -9,8 +9,7 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://downloads.sourceforge.net/sourceforge/tcl/tcl-core%{version}-src.tar.gz
-%define sha1    tcl-core=e13199c76a7d1eae02f35cc9a20fabded6f815f5
-
+%define sha1    tcl-core=8a51f3cf987e75f859b5e378f27d9182030cc3f7
 BuildRequires:  cmake
 
 %description
@@ -34,9 +33,7 @@ Headers and development libraries for tcl
 
 %build
 cd unix
-./configure \
-       --prefix=%{_prefix}  \
-       --mandir=%{_mandir}  \
+%configure \
        --enable-threads     \
        --enable-shared      \
        --disable-static     \
@@ -95,9 +92,12 @@ make test
 /%{_libdir}/libtclstub8.6.a
 %{_mandir}/mann/*
 %{_mandir}/man3/*
-
+# exclude /usr/share/man/man3/Thread.3.gz conflict with package perl-5.28.0-5.ph3.x86_64
+%exclude %{_mandir}/man3/Thread.3.gz
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 8.6.10-1
+-   Automatic Version Bump
 *   Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 8.6.8-1
 -   Update version to 8.6.8.
 *   Thu Jul 13 2017 Alexey Makhalov <amakhalov@vmware.com>  8.6.6-2
