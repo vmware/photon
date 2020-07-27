@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        20.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -15,17 +15,18 @@ Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{na
 Source1:        99-disable-networking-config.cfg
 Source2:        dscheck_VMwareGuestInfo
 
-Patch0:        photon-distro.patch
-Patch1:        photon-hosts-template.patch
-Patch2:        DataSourceVMwareGuestInfo.patch
-Patch3:        systemd-service-changes.patch
-Patch4:        systemd-resolved-config.patch
-Patch5:        cloud-init-azureds.patch
-Patch6:        ds-identity.patch
-Patch7:        ds-guestinfo-photon.patch
-Patch8:        cloud-cfg.patch
-Patch9:        instance-dir.patch
-Patch10:       fix-make-check.patch
+Patch0:     photon-distro.patch
+Patch1:     photon-hosts-template.patch
+Patch2:     DataSourceVMwareGuestInfo.patch
+Patch3:     systemd-service-changes.patch
+Patch4:     systemd-resolved-config.patch
+Patch5:     cloud-init-azureds.patch
+Patch6:     ds-identity.patch
+Patch7:     ds-guestinfo-photon.patch
+Patch8:     cloud-cfg.patch
+Patch9:     instance-dir.patch
+Patch10:    fix-make-check.patch
+Patch11:    Default-Custom-Script-Support.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -47,6 +48,13 @@ BuildRequires:  python3-jinja2
 
 %if %{with_check}
 BuildRequires:  python3-pip
+BuildRequires:  python3-httpretty
+BuildRequires:  python3-mock
+BuildRequires:  python3-unittest2
+BuildRequires:  python3-deepmerge
+BuildRequires:  python3-configobj
+BuildRequires:  python3-jsonpatch
+BuildRequires:  python3-pytest
 %endif
 
 Requires:       systemd
@@ -76,18 +84,8 @@ need special scripts to run during initialization to retrieve and install
 ssh keys and to let the user run various scripts.
 
 %prep
-%setup -q -n %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
+
+%autosetup -p1
 
 find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -109,7 +107,6 @@ install -m 755 %{SOURCE2} $RPM_BUILD_ROOT/%{_bindir}/
 
 %check
 touch vd ud
-pip3 install httpretty mock unittest2 deepmerge configobj jsonpatch pytest
 make check
 
 %clean
@@ -156,6 +153,10 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Mon Jul 27 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.2-2
+-   1. add support to configure DHCP4 UseDomains= in Networking Config Version 2
+-   2. add support for DEFAULT-RUN-POST-CUSTOM-SCRIPT
+-   3. fix distro patch for multiple NICs
 *   Fri Jul 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.2-1
 -   Upgrade version to 20.2
 -   Support for Networking Config Version 2

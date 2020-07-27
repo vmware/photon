@@ -1,0 +1,231 @@
+From 995f8adf00509e5d2aefc9f0680c3c4894ae6666 Mon Sep 17 00:00:00 2001
+From: xiaofengw-vmware <42736879+xiaofengw-vmware@users.noreply.github.com>
+Date: Tue, 21 Jul 2020 23:52:29 +0800
+Subject: [PATCH] VMware: Support parsing DEFAULT-RUN-POST-CUST-SCRIPT (#441)
+
+Add support for VMware's vCD configuration setting DEFAULT-RUN-POST-CUST-SCRIPT.
+When set True, it will default vms to run post customization scripts if the VM has not been configured in VMTools with "enable-custom-scripts" set False.
+
+Add datasource documentation with a bit more context about this interaction on VMware products.
+
+With this fix, the behavior will be:
+ * If VM administrator doesn't want others to execute a script on this VM,  VMtools can set "enable-custom-scripts" to false from the utility "vmware-toolbox-cmd".
+ * If VM administrator doesn't set value to "enable-custom-scripts", then by default this script is disabled for security purpose.
+ * For VMware's vCD product , the preference is to enable the script if "enable-custom-scripts" is not set. vCD will generate a configuration file with "DEFAULT-RUN-POST-CUST-SCRIPT" set to true. This flag works for both VMware customization engine and cloud-init.
+---
+ cloudinit/sources/DataSourceOVF.py            | 27 ++++--
+ .../sources/helpers/vmware/imc/config.py      | 15 ++++
+ doc/rtd/topics/datasources/ovf.rst            | 13 +++
+ tests/unittests/test_datasource/test_ovf.py   | 82 +++++++++++++++++++
+ tests/unittests/test_vmware_config_file.py    | 14 ++++
+ 5 files changed, 143 insertions(+), 8 deletions(-)
+
+diff --git a/cloudinit/sources/DataSourceOVF.py b/cloudinit/sources/DataSourceOVF.py
+index 4c5eee4f0..e53d2eb14 100644
+--- a/cloudinit/sources/DataSourceOVF.py
++++ b/cloudinit/sources/DataSourceOVF.py
+@@ -152,14 +152,25 @@ def _get_data(self):
+                     product_marker, os.path.join(self.paths.cloud_dir, 'data'))
+                 special_customization = product_marker and not hasmarkerfile
+                 customscript = self._vmware_cust_conf.custom_script_name
+-                custScriptConfig = get_tools_config(
+-                    CONFGROUPNAME_GUESTCUSTOMIZATION,
+-                    GUESTCUSTOMIZATION_ENABLE_CUST_SCRIPTS,
+-                    "false")
+-                if custScriptConfig.lower() != "true":
+-                    # Update the customization status if there is a
+-                    # custom script is disabled
+-                    if special_customization and customscript:
++
++                # In case there is a custom script, check whether VMware
++                # Tools configuration allow the custom script to run.
++                if special_customization and customscript:
++                    defVal = "false"
++                    if self._vmware_cust_conf.default_run_post_script:
++                        LOG.debug(
++                            "Set default value to true due to"
++                            " customization configuration."
++                        )
++                        defVal = "true"
++
++                    custScriptConfig = get_tools_config(
++                        CONFGROUPNAME_GUESTCUSTOMIZATION,
++                        GUESTCUSTOMIZATION_ENABLE_CUST_SCRIPTS,
++                        defVal)
++                    if custScriptConfig.lower() != "true":
++                        # Update the customization status if custom script
++                        # is disabled
+                         msg = "Custom script is disabled by VM Administrator"
+                         LOG.debug(msg)
+                         set_customization_status(
+diff --git a/cloudinit/sources/helpers/vmware/imc/config.py b/cloudinit/sources/helpers/vmware/imc/config.py
+index f2a814166..7109aef38 100644
+--- a/cloudinit/sources/helpers/vmware/imc/config.py
++++ b/cloudinit/sources/helpers/vmware/imc/config.py
+@@ -26,6 +26,7 @@ class Config(object):
+     TIMEZONE = 'DATETIME|TIMEZONE'
+     UTC = 'DATETIME|UTC'
+     POST_GC_STATUS = 'MISC|POST-GC-STATUS'
++    DEFAULT_RUN_POST_SCRIPT = 'MISC|DEFAULT-RUN-POST-CUST-SCRIPT'
+ 
+     def __init__(self, configFile):
+         self._configFile = configFile
+@@ -115,4 +116,18 @@ def post_gc_status(self):
+             raise ValueError('PostGcStatus value should be yes/no')
+         return postGcStatus == 'yes'
+ 
++    @property
++    def default_run_post_script(self):
++        """
++        Return enable-custom-scripts default value if enable-custom-scripts
++        is absent in VM Tools configuration
++        """
++        defaultRunPostScript = self._configFile.get(
++            Config.DEFAULT_RUN_POST_SCRIPT,
++            'no')
++        defaultRunPostScript = defaultRunPostScript.lower()
++        if defaultRunPostScript not in ('yes', 'no'):
++            raise ValueError('defaultRunPostScript value should be yes/no')
++        return defaultRunPostScript == 'yes'
++
+ # vi: ts=4 expandtab
+diff --git a/doc/rtd/topics/datasources/ovf.rst b/doc/rtd/topics/datasources/ovf.rst
+index c312617f4..9a48cda6b 100644
+--- a/doc/rtd/topics/datasources/ovf.rst
++++ b/doc/rtd/topics/datasources/ovf.rst
+@@ -11,4 +11,17 @@ transport.
+ For further information see a full working example in cloud-init's
+ source code tree in doc/sources/ovf
+ 
++Configuration
++-------------
++On VMware platforms, VMTools use is required for OVF datasource configuration settings as well as vCloud and vSphere admin configuration. User could change the VMTools configuration options with command:
++vmware-toolbox-cmd config set <section> <key> <value>
++
++The following VMTools configuration options affect cloud-init's behavior on a booted VM:
++ * a: [deploypkg] enable-custom-scripts 
++      If this option is absent in VMTools configuration, the custom script is disabled by default for security reasons. Some VMware products could change this default behavior (for example: enabled by default) via customization specification settings. 
++
++VMWare admin can refer to (https://github.com/canonical/cloud-init/blob/master/cloudinit/sources/helpers/vmware/imc/config.py) and set the customization specification settings.
++
++For more information, see [VMware vSphere Product Documentation](https://docs.vmware.com/en/VMware-vSphere/7.0/com.vmware.vsphere.vm_admin.doc/GUID-9A5093A5-C54F-4502-941B-3F9C0F573A39.html) and specific VMTools parameters consumed.
++
+ .. vi: textwidth=78
+diff --git a/tests/unittests/test_datasource/test_ovf.py b/tests/unittests/test_datasource/test_ovf.py
+index 3ef7a4b22..1d0885776 100644
+--- a/tests/unittests/test_datasource/test_ovf.py
++++ b/tests/unittests/test_datasource/test_ovf.py
+@@ -220,6 +220,88 @@ def test_get_data_cust_script_disabled(self):
+         self.assertIn('Custom script is disabled by VM Administrator',
+                       str(context.exception))
+ 
++    def test_get_data_cust_script_enabled(self):
++        """If custom script is enabled by VMware tools configuration,
++        execute the script.
++        """
++        paths = Paths({'cloud_dir': self.tdir})
++        ds = self.datasource(
++            sys_cfg={'disable_vmware_customization': False}, distro={},
++            paths=paths)
++        # Prepare the conf file
++        conf_file = self.tmp_path('test-cust', self.tdir)
++        conf_content = dedent("""\
++            [CUSTOM-SCRIPT]
++            SCRIPT-NAME = test-script
++            [MISC]
++            MARKER-ID = 12345346
++            """)
++        util.write_file(conf_file, conf_content)
++
++        # Mock custom script is enabled by return true when calling
++        # get_tools_config
++        with mock.patch(MPATH + 'get_tools_config', return_value="true"):
++            with mock.patch(MPATH + 'set_customization_status',
++                            return_value=('msg', b'')):
++                with self.assertRaises(CustomScriptNotFound) as context:
++                    wrap_and_call(
++                        'cloudinit.sources.DataSourceOVF',
++                        {'util.read_dmi_data': 'vmware',
++                         'util.del_dir': True,
++                         'search_file': self.tdir,
++                         'wait_for_imc_cfg_file': conf_file,
++                         'get_nics_to_enable': ''},
++                        ds.get_data)
++        # Verify custom script is trying to be executed
++        customscript = self.tmp_path('test-script', self.tdir)
++        self.assertIn('Script %s not found!!' % customscript,
++                      str(context.exception))
++
++    def test_get_data_force_run_post_script_is_yes(self):
++        """If DEFAULT-RUN-POST-CUST-SCRIPT is yes, custom script could run if
++        enable-custom-scripts is not defined in VM Tools configuration
++        """
++        paths = Paths({'cloud_dir': self.tdir})
++        ds = self.datasource(
++            sys_cfg={'disable_vmware_customization': False}, distro={},
++            paths=paths)
++        # Prepare the conf file
++        conf_file = self.tmp_path('test-cust', self.tdir)
++        # set DEFAULT-RUN-POST-CUST-SCRIPT = yes so that enable-custom-scripts
++        # default value is TRUE
++        conf_content = dedent("""\
++            [CUSTOM-SCRIPT]
++            SCRIPT-NAME = test-script
++            [MISC]
++            MARKER-ID = 12345346
++            DEFAULT-RUN-POST-CUST-SCRIPT = yes
++            """)
++        util.write_file(conf_file, conf_content)
++
++        # Mock get_tools_config(section, key, defaultVal) to return
++        # defaultVal
++        def my_get_tools_config(*args, **kwargs):
++            return args[2]
++
++        with mock.patch(MPATH + 'get_tools_config',
++                        side_effect=my_get_tools_config):
++            with mock.patch(MPATH + 'set_customization_status',
++                            return_value=('msg', b'')):
++                with self.assertRaises(CustomScriptNotFound) as context:
++                    wrap_and_call(
++                        'cloudinit.sources.DataSourceOVF',
++                        {'util.read_dmi_data': 'vmware',
++                         'util.del_dir': True,
++                         'search_file': self.tdir,
++                         'wait_for_imc_cfg_file': conf_file,
++                         'get_nics_to_enable': ''},
++                        ds.get_data)
++        # Verify custom script still runs although it is
++        # disabled by VMware Tools
++        customscript = self.tmp_path('test-script', self.tdir)
++        self.assertIn('Script %s not found!!' % customscript,
++                      str(context.exception))
++
+     def test_get_data_non_vmware_seed_platform_info(self):
+         """Platform info properly reports when on non-vmware platforms."""
+         paths = Paths({'cloud_dir': self.tdir, 'run_dir': self.tdir})
+diff --git a/tests/unittests/test_vmware_config_file.py b/tests/unittests/test_vmware_config_file.py
+index c823889c0..9c7d25fac 100644
+--- a/tests/unittests/test_vmware_config_file.py
++++ b/tests/unittests/test_vmware_config_file.py
+@@ -356,6 +356,20 @@ def test_post_gc_status(self):
+         conf = Config(cf)
+         self.assertTrue(conf.post_gc_status)
+ 
++    def test_no_default_run_post_script(self):
++        cf = ConfigFile("tests/data/vmware/cust-dhcp-2nic.cfg")
++        conf = Config(cf)
++        self.assertFalse(conf.default_run_post_script)
++        cf._insertKey("MISC|DEFAULT-RUN-POST-CUST-SCRIPT", "NO")
++        conf = Config(cf)
++        self.assertFalse(conf.default_run_post_script)
++
++    def test_yes_default_run_post_script(self):
++        cf = ConfigFile("tests/data/vmware/cust-dhcp-2nic.cfg")
++        cf._insertKey("MISC|DEFAULT-RUN-POST-CUST-SCRIPT", "yes")
++        conf = Config(cf)
++        self.assertTrue(conf.default_run_post_script)
++
+ 
+ class TestVmwareNetConfig(CiTestCase):
+     """Test conversion of vmware config to cloud-init config."""
