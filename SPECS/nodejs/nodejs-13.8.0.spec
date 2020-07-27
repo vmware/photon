@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        13.8.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -9,6 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
 %define         sha1 node=81c3777f1c695f637dad22314fb7acbdd46d761f
+Patch0:         nodejs-CVE-2020-8172.patch
 
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
@@ -32,6 +33,7 @@ for developing applications that use nodejs.
 
 %prep
 %setup -q -n node-v%{version}
+%patch0 -p1
 
 %build
 sh configure --prefix=%{_prefix}
@@ -71,6 +73,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Mon Jul 27 2020 Ankit Jain <ankitja@vmware.com> 13.8.0-4
+-   Fix CVE-2020-8172
 *   Thu May 07 2020 Ankit Jain <ankitja@vmware.com> 13.8.0-3
 -   To fix upgrade from 1.0 to 3.0, obsoletes nodejs10
 *   Fri Feb 21 2020 Tapas Kundu <tkundu@vmware.com> 13.8.0-2
