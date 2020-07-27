@@ -1,11 +1,11 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
-Version:        1.2.17
-Release:        3%{?dist}
+Version:        1.3.3
+Release:        1%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
-%define sha1    openscap=588676a56b6adf389140d6fdbc6a6685ef06e7b3
+%define sha1    openscap=6988d1ea7b86669d410ab5defc1be394cba5b017
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -20,6 +20,7 @@ BuildRequires:  bzip2-devel
 BuildRequires:  curl-devel
 BuildRequires:  popt-devel
 BuildRequires:  python3-devel
+BuildRequires:  cmake
 Requires:       curl
 Requires:       popt
 %description
@@ -52,10 +53,19 @@ Python bindings.
 %prep
 %setup -q
 %build
-%configure  --enable-sce \
-            --enable-perl
+mkdir build && cd build
+cmake \
+-DCMAKE_BUILD_TYPE=Debug \
+-DCMAKE_INSTALL_PREFIX=%{_prefix} \
+-DCMAKE_INSTALL_LIBDIR:PATH=lib \
+--enable-sce \
+--enable-perl \
+..
+
 make
+
 %install
+cd build
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
@@ -70,9 +80,9 @@ find %{buildroot} -name '*.la' -delete
 %exclude /usr/src/debug
 %exclude %{_libdir}/debug
 %{_bindir}/*
-%{_libexecdir}/*
 %{_mandir}/man8/*
 /usr/share/openscap/*
+/usr/share/perl5/*
 %{_libdir}/libopenscap_sce.so.*
 %{_libdir}/libopenscap.so.*
 
@@ -92,6 +102,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/python3.8/*
 
 %changelog
+*   Mon Jul 27 2020 Vikash Bansal <bvikas@vmware.com> 1.3.3-1
+-   Update to 1.3.3
 *   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 1.2.17-3
 -   Build with python 3.8
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.2.17-2
