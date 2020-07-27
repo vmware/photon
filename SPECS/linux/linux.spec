@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.127
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -71,6 +71,9 @@ Patch20:        perf-Make-perf-able-to-build-with-latest-libbfd.patch
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+
+# Fix for CVE-2020-14331
+Patch27:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
@@ -298,6 +301,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch19 -p1
 %patch20 -p1
 %patch26 -p1
+%patch27 -p1
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
@@ -689,6 +693,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Mon Jul 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.127-3
+-   Fix CVE-2020-14331
 *   Fri Jul 17 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.127-2
 -   Fix aarch64 build failure due to missing i40e man pages.
 *   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1

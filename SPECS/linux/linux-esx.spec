@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.127
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -50,6 +50,8 @@ Patch20:        07-vmware-only.patch
 Patch21:        initramfs-support-for-page-aligned-format-newca.patch
 
 Patch22:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Fix for CVE-2020-14331
+Patch23:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
@@ -160,6 +162,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
+%patch23 -p1
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
@@ -308,6 +311,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Jul 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.127-3
+-   Fix CVE-2020-14331
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 4.19.127-2
 -   Mass Removal Python2
 *   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1

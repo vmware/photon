@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.127
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -45,6 +45,8 @@ Patch19:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Fix for CVE-2020-14331
+Patch27:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
@@ -190,6 +192,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch18 -p1
 %patch19 -p1
 %patch26 -p1
+%patch27 -p1
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
@@ -422,6 +425,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Jul 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.127-2
+-   Fix CVE-2020-14331
 *   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1
 -   Update to version 4.19.127
 *   Tue Jun 02 2020 Vikash Bansal <bvikas@vmware.com> 4.19.112-6
