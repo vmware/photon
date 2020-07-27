@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.132
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -80,10 +80,12 @@ Patch43:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 Patch44:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 # Fix CVE-2019-19074
 Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
-#Fix for CVE-2020-12888
+# Fix for CVE-2020-12888
 Patch50:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch51:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch52:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
+# Fix for CVE-2020-14331
+Patch53:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
 
 Patch55:        0001-p9fs_dir_readdir-offset-support.patch
 Patch56:	0002-Add-9p-zero-copy-data-path-using-crossfd.patch
@@ -191,6 +193,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch50 -p1
 %patch51 -p1
 %patch52 -p1
+%patch53 -p1
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
@@ -328,6 +331,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-2
+-   Fix CVE-2020-14331
 *   Thu Jul 16 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-1
 -   Update to version 4.19.132
 *   Sat Jun 27 2020 Keerthana K <keerthanak@vmware.com> 4.19.129-1

@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.132
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -95,10 +95,12 @@ Patch42:	secure-boot-patches/0003-integrity-Load-certs-to-the-platform-keyring.p
 Patch43:	secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
 Patch44:	secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
 Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
-#Fix for CVE-2020-12888
+# Fix for CVE-2020-12888
 Patch48:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch49:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch50:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
+# Fix for CVE-2020-14331
+Patch51:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -329,6 +331,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch48 -p1
 %patch49 -p1
 %patch50 -p1
+%patch51 -p1
 
 %patch98 -p1
 %patch100 -p1
@@ -711,6 +714,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-2
+-   Fix CVE-2020-14331
 *   Thu Jul 16 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-1
 -   Update to version 4.19.132
 *   Thu Jul 16 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.129-3

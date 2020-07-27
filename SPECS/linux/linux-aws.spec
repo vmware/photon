@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.132
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -66,10 +66,13 @@ Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
-#Fix for CVE-2020-12888
+# Fix for CVE-2020-12888
 Patch44:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch45:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch46:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
+# Fix for CVE-2020-14331
+Patch47:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
+
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:        0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 # Patch to call drbg and dh crypto tests from tcrypt
@@ -207,6 +210,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch44 -p1
 %patch45 -p1
 %patch46 -p1
+%patch47 -p1
 
 %patch98 -p1
 %patch99 -p1
@@ -428,6 +432,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-2
+-   Fix CVE-2020-14331
 *   Thu Jul 16 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-1
 -   Update to version 4.19.132
 *   Sat Jun 27 2020 Keerthana K <keerthanak@vmware.com> 4.19.129-1

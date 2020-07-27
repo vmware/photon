@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.132
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -63,10 +63,12 @@ Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
-#Fix for CVE-2020-12888
+# Fix for CVE-2020-12888
 Patch48:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch49:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch50:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
+# Fix for CVE-2020-14331
+Patch51:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
 
 
 # Real-Time kernel (PREEMPT_RT patches)
@@ -474,6 +476,10 @@ The Linux package contains the Linux kernel doc files
 %patch36 -p1
 %patch38 -p1
 %patch39 -p1
+%patch48 -p1
+%patch49 -p1
+%patch50 -p1
+%patch51 -p1
 
 %patch201 -p1
 %patch202 -p1
@@ -964,5 +970,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-2
+-   Fix CVE-2020-14331
 *   Thu Jul 16 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-1
 -   Introduce a new kernel flavor 'linux-rt' supporting real-time (RT) features.
