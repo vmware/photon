@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.230
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -92,6 +92,9 @@ Patch60:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 Patch61:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch62:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch63:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
+# Fix for CVE-2020-14331
+Patch64:        4.4-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
+
 # For Spectre
 Patch70: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 
@@ -193,6 +196,7 @@ The Linux package contains the Linux kernel doc files
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
+%patch64 -p1
 
 %patch70 -p1
 
@@ -285,6 +289,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.230-2
+-   Fix CVE-2020-14331
 *   Tue Jul 21 2020 Sharan Turlapati <sturlapati@vmware.com> 4.4.230-1
 -   Update to version 4.4.230
 *   Thu Jul 09 2020 Ajay Kaher <akaher@vmware.com> 4.4.228-3
