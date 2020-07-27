@@ -2,25 +2,22 @@
 
 Summary:        Library to implement a well-behaved Unix daemon process.
 Name:           python3-daemon
-Version:        2.2.0
-Release:        3%{?dist}
+Version:        2.2.4
+Release:        1%{?dist}
 License:        Apache-2
 Url:            https://pypi.python.org/pypi/python-daemon/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/python-daemon/python-daemon-%{version}.tar.gz
-%define sha1    python-daemon=9135b7edafa5bcd457d88bb2c0dfae024b3d8778
+%define sha1    python-daemon=14a86a2088915edb8f8651629d3ebe94749029eb
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-docutils
 BuildRequires:  python3-lockfile
 BuildRequires:  python3-xml
-%if %{with_check}
 BuildRequires:  curl-devel
-BuildRequires:  openssl-devel
-%endif
 Requires:       python3
 Requires:       python3-lockfile
 
@@ -55,6 +52,8 @@ python3 -m unittest discover
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.2.4-1
+-   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.2.0-3
 -   Mass removal python2
 *   Wed Dec 19 2018 Tapas Kundu <tkundu@vmware.com> 2.2.0-2

@@ -2,18 +2,17 @@
 
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
-Version:        19.10.0
-Release:        5%{?dist}
+Version:        20.3.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://twistedmatrix.com
 Source0:        https://pypi.python.org/packages/source/T/Twisted/Twisted-%{version}.tar.bz2
-%define sha1 Twisted=38a7f1b9c63ba0d2db553e2d210af2fd01b3ed21
+%define sha1 Twisted=915f782b902aca3ea5547ef333089961101e0871
 Patch0:         extra_dependency.patch
 Patch1:         no_packet.patch
-Patch2:         CVE-2020-10108_10109.patch
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-incremental
@@ -48,7 +47,6 @@ Twisted also supports many common network protocols, including SMTP, POP3, IMAP,
 %setup -q -n Twisted-%{version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 
 %build
 python3 setup.py build
@@ -87,6 +85,8 @@ popd
 %{_bindir}/cftp3
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20.3.0-1
+-   Automatic Version Bump
 *   Wed Jul 08 2020 Tapas Kundu <tkundu@vmware.com> 19.10.0-5
 -   Mass removal python2
 *   Sat Jun 27 2020 Tapas Kundu <tkundu@vmware.com> 19.10.0-4

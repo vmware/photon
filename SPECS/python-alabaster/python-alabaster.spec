@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-alabaster
-Version:        0.7.11
-Release:        2%{?dist}
+Version:        0.7.12
+Release:        1%{?dist}
 Summary:        A configurable sidebar-enabled Sphinx theme
 License:        BSD
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Url:            https://github.com/bitprophet/alabaster/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/d0/a5/e3a9ad3ee86aceeff71908ae562580643b955ea1b1d4f08ed6f7e8396bd7/alabaster-%{version}.tar.gz
-%define sha1    alabaster=3596a252d54c70d1214370b1cefdec3df203bb4e
+%define sha1    alabaster=36c11bd5d8e99e2009b643b7f6e91bf2a0fd573b
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -40,6 +40,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.7.12-1
+-   Automatic Version Bump
 *   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 0.7.11-2
 -   Mass removal python2
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.7.11-1

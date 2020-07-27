@@ -2,15 +2,15 @@
 
 Summary:        A collection of ASN.1-based protocols modules.
 Name:           python3-pyasn1-modules
-Version:        0.2.2
-Release:        2%{?dist}
+Version:        0.2.8
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/pyasn1-modules
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        pyasn1-modules-%{version}.tar.gz
-%define sha1    pyasn1-modules=a01ed1546373fd113c1ddf3ad686bbdf07251a00
+%define sha1    pyasn1-modules=43b89feb6864fe359aae89120627165219de313b
 
 BuildArch:      noarch
 
@@ -59,6 +59,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.2.8-1
+-   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 0.2.2-2
 -   Mass removal python2
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.2.2-1

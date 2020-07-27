@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-deepmerge
-Version:        0.0.5
-Release:        3%{?dist}
+Version:        0.1.0
+Release:        1%{?dist}
 Summary:        Python toolset to deeply merge python dictionaries.
 Group:          Development/Libraries
 License:        MIT
@@ -10,7 +10,7 @@ URL:            https://pypi.org/project/deepmerge
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/n/deepmerge/deepmerge-%{version}.tar.gz
-%define sha1    deepmerge=7479145628eb83eed4ccf8d20e19a56b31fb295c
+%define sha1    deepmerge=63f3c5ea82b73170b5c56089264ddb83726326b8
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+*  Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.1.0-1
+-  Automatic Version Bump
 *  Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 0.0.5-3
 -  Mass removal python2
 *  Tue Apr 07 2020 Tapas Kundu <tkundu@vmware.com> 0.0.5-2

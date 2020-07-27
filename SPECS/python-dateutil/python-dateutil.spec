@@ -3,15 +3,15 @@
 
 Summary:        Extensions to the standard Python datetime module
 Name:           python3-dateutil
-Version:        2.7.3
-Release:        2%{?dist}
+Version:        2.8.1
+Release:        1%{?dist}
 License:        Apache Software License, BSD License (Dual License)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/python-dateutil
 Source0:        https://pypi.python.org/packages/54/bb/f1db86504f7a49e1d9b9301531181b00a1c7325dc85a29160ee3eaa73a54/python-dateutil-%{version}.tar.gz
-%define         sha1 python-dateutil=b1aeb913996fc6660ea42a7b31b1331d41a8a13c
+%define         sha1 python-dateutil=bd26127e57f83a10f656b62c46524c15aeb844dd
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -43,6 +43,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8.1-1
+-   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 2.7.3-2
 -   Mass removal python2
 *   Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 2.7.3-1

@@ -2,21 +2,21 @@
 
 Summary:        Pure Python Vi Implementation.
 Name:           python3-pyvim
-Version:        2.0.22
-Release:        6%{?dist}
+Version:        3.0.2
+Release:        1%{?dist}
 License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/service_identity
 Source0:        pyvim-%{version}.tar.gz
-%define sha1    pyvim=b44c9e78755b1f13ee45a2903758386425e9a2ba
+%define sha1    pyvim=2aa4465890b9c6687a7419722949fce20b521766
 # To get tests:
 # git clone https://github.com/jonathanslenders/pyvim.git && cd pyvim
 # git checkout 6860c413 && tar -czvf ../pyvim-tests-0.0.20.tar.gz tests/
-Source1:        pyvim-tests-%{version}.tar.gz
-%define sha1 pyvim-tests=57c48d48d1e20ae997975a99504be26191b2a662
-
+#Source1:        pyvim-tests-%{version}.tar.gz
+#%define sha1 pyvim-tests=2aa4465890b9c6687a7419722949fce20b521766
+#do not see test updated after 2.0.24, hence not packaging tests
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -44,7 +44,7 @@ An implementation of Vim in Python.
 
 %prep
 %setup -q -n pyvim-%{version}
-tar -xf %{SOURCE1} --no-same-owner
+#tar -xf %{SOURCE1} --no-same-owner
 
 %build
 python3 setup.py build
@@ -63,6 +63,8 @@ PYTHONPATH=./ py.test3
 %{_bindir}/pyvim3
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.2-1
+-   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 2.0.22-6
 -   Mass removal python2
 *   Wed Feb 26 2020 Tapas Kundu <tkundu@vmware.com> 2.0.22-5

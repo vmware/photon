@@ -1,16 +1,16 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-prometheus_client
-Version:        0.3.1
-Release:        3%{?dist}
+Version:        0.8.0
+Release:        1%{?dist}
 Summary:        Python client for the Prometheus monitoring system.
 License:        Apache-2.0
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/prometheus_client
 Source0:        prometheus_client-%{version}.tar.gz
-%define sha1    prometheus_client=43aed68fa484883fa53be38f1bf19790ea9a4438
+%define sha1    prometheus_client=5846c9dfad32c2bc335bbeac1011a900e686e974
 Source1:        client_python-tests-%{version}.tar.gz
-%define sha1    client_python-tests=7246482ee8008d75d63e82889d512e3c9034c192
+%define sha1    client_python-tests=3f3be721edfd2ae04d32bbab48d416b9042b8684
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -49,6 +49,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.8.0-1
+-   Automatic Version Bump
 *   Tue Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 0.3.1-3
 -   Mass removal python2
 *   Mon Jan 14 2019 Tapas Kundu <tkundu@vmware.com> 0.3.1-2

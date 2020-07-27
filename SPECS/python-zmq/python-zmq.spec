@@ -3,15 +3,15 @@
 
 Summary:        Software library for fast, message-based applications
 Name:           python3-zmq
-Version:        17.1.2
-Release:        2%{?dist}
+Version:        19.0.1
+Release:        1%{?dist}
 License:        LGPLv3+ and BSD3
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/pyzmq
 Source0:        https://pypi.python.org/packages/af/37/8e0bf3800823bc247c36715a52e924e8f8fd5d1432f04b44b8cd7a5d7e55/pyzmq-%{version}.tar.gz
-%define sha1	pyzmq=d0e5d7dd59f2398345fc4bacf5ee91241d857f0d
+%define sha1	pyzmq=3537257d854dd92c524c182b8356e7b8260f7da9
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -38,6 +38,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/zmq
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 19.0.1-1
+-   Automatic Version Bump
 *   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 17.1.2-2
 -   Mass removal python2
 *   Thu Sep 20 2018 Tapas Kundu <tkundu@vmware.com> 17.1.2-1

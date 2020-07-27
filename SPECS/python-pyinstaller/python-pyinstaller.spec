@@ -2,15 +2,15 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python3-pyinstaller
-Version:        3.4
-Release:        4%{?dist}
+Version:        3.6
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller
 License:        GPLv2+
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/P/PyInstaller/PyInstaller-%{version}.tar.gz
-%define sha1    PyInstaller=218c99be6886c6fddfb10f9892b19df906821652
+%define sha1    PyInstaller=a8c97df46c1d2ea4a09c15458dc00925fe94eb5e
 Patch0:         make-check-fix-pyinstaller.patch
 Patch1:         fix-warnings-in-gcc-8.1.patch
 BuildRequires:  python3
@@ -72,6 +72,8 @@ python3 setup.py install --single-version-externally-managed -O1 --root=%{buildr
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.6-1
+-   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 3.4-4
 -   Mass removal python2
 *   Wed Apr 01 2020 Alexey Makhalov <amakhalov@vmware.com> 3.4-3

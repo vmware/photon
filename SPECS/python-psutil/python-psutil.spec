@@ -2,17 +2,15 @@
 %{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 Summary:        A library for retrieving information onrunning processes and system utilization
 Name:           python3-psutil
-Version:        5.4.7
-Release:        4%{?dist}
+Version:        5.7.2
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/psutil
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/psutil/psutil-%{version}.tar.gz
-%define sha1    psutil=4c7c8cb5a4915eb7148a1080030f9097be87d3e4
-Patch0:         disable-tests-python-psutil.patch
-Patch1:         python-psutil-make-check-fix.patch
+%define sha1    psutil=96b2286d1b06b6093aa0b5cb192bce7eb60c831a
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -37,8 +35,6 @@ psutil (process and system utilities) is a cross-platform library for retrieving
 
 %prep
 %setup -q -n psutil-%{version}
-%patch0 -p1
-%patch1 -p1
 
 %build
 python3 setup.py build
@@ -62,6 +58,8 @@ LANG=en_US.UTF-8 make test PYTHON=python%{python3_version}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 5.7.2-1
+-   Automatic Version Bump
 *   Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 5.4.7-4
 -   Mass removal python2
 *   Mon Sep 09 2019 Tapas Kundu <tkundu@vmware.com> 5.4.7-3

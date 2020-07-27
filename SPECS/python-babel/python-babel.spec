@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-babel
-Version:        2.6.0
-Release:        4%{?dist}
+Version:        2.8.0
+Release:        1%{?dist}
 Summary:        an integrated collection of utilities that assist in internationalizing and localizing Python applications
 License:        BSD3
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Url:            http://babel.pocoo.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/92/22/643f3b75f75e0220c5ef9f5b72b619ccffe9266170143a4821d4885198de/Babel-%{version}.tar.gz
-%define sha1    Babel=6aed99e4fb8a2a75de7815599f610cdcbb81e3c2
+%define sha1    Babel=3b9089a069eb3965711155468e5356bc39fb1a0f
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -59,6 +59,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8.0-1
+-   Automatic Version Bump
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 2.6.0-4
 -   Mass removal python2
 *   Tue Aug 27 2019 Shreyas B. <shreyasb@vmware.com> 2.6.0-3

@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-six
-Version:        1.11.0
-Release:        3%{?dist}
+Version:        1.15.0
+Release:        1%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Vendor:         VMware, Inc.
@@ -10,7 +10,7 @@ Distribution:   Photon
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/source/s/six/six-%{version}.tar.gz
 Source0:        six-%{version}.tar.gz
-%define sha1    six=3647372a0e104e7b53bd477762392024e1083ac0
+%define sha1    six=a785c20658b3676333c749436f088394c12b0c26
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -50,6 +50,8 @@ python3 test_six.py
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.15.0-1
+-   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 1.11.0-3
 -   Mass removal python2
 *   Mon Nov 26 2018 Tapas Kundu <tkundu@vmware.com> 1.11.0-2

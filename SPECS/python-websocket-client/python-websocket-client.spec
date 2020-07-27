@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-websocket-client
-Version:        0.53.0
-Release:        3%{?dist}
+Version:        0.57.0
+Release:        1%{?dist}
 Summary:        WebSocket client for python
 License:        LGPL
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/websocket-client
 Source0:        websocket_client-%{version}.tar.gz
-%define sha1    websocket_client=09bd8914944646fde9d2672392579a982ea0f031
+%define sha1    websocket_client=21ef1198b2d7a3125aac05ec25592099ded4cfb3
 
 %if %{with_check}
 BuildRequires:  openssl-devel
@@ -45,6 +45,8 @@ python3 setup.py test
 /usr/bin/wsdump.py
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.57.0-1
+-   Automatic Version Bump
 *   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 0.53.0-3
 -   Mass removal python2.
 *   Fri Dec 07 2018 Ashwin H <ashwinh@vmware.com> 0.53.0-2

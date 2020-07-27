@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-netaddr
-Version:        0.7.19
-Release:        7%{?dist}
+Version:        0.8.0
+Release:        1%{?dist}
 Summary:        A network address manipulation library for Python
 License:        BSD
 Group:          Development/Languages/Python
@@ -10,8 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://files.pythonhosted.org/packages/source/n/netaddr/netaddr-%{version}.tar.gz
 Source0:        netaddr-%{version}.tar.gz
-%define sha1    netaddr=00e0ce7d7ebc1d6e7943e884aa51ccb7becdc9ea
-Patch0:         0001-fixed-broken-tests-in-issue-149-python-3-regression.patch
+%define sha1    netaddr=16f10a1bfaf95052f368b3786188f9fbdda108c3
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -37,7 +36,6 @@ A network address manipulation library for Python
 
 %prep
 %setup -n netaddr-%{version}
-%patch0 -p1
 
 %build
 python3 setup.py build
@@ -58,6 +56,8 @@ LANG=en_US.UTF-8 PYTHONPATH=./ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.8.0-1
+-   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkudu@vmware.com> 0.7.19-7
 -   Mass removal python2
 *   Mon Dec 03 2018 Tapas Kundu <tkundu@vmware.com> 0.7.19-6

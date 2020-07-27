@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           apparmor
 Version:        2.13
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -161,10 +161,6 @@ This package contains the AppArmor module for perl.
 %patch2 -p1
 
 %build
-export PYTHONPATH=/usr/lib/python3.7/site-packages
-export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=3.7
-export PYTHON_VERSIONS=python3
 #Building libapparmor
 cd ./libraries/libapparmor
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
@@ -200,9 +196,9 @@ make %{?_smp_mflags}
 %check
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 pyflakes
-export PYTHONPATH=/usr/lib/python3.7/site-packages
+export PYTHONPATH=/usr/lib/python3.8/site-packages
 export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=3.7
+export PYTHON_VERSION=3.8
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 cd ./libraries/libapparmor
@@ -213,9 +209,9 @@ cd ../utils
 make check
 
 %install
-export PYTHONPATH=/usr/lib/python3.7/site-packages
+export PYTHONPATH=/usr/lib/python3.8/site-packages
 export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=3.7
+export PYTHON_VERSION=3.8
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 cd libraries/libapparmor
@@ -353,6 +349,8 @@ make DESTDIR=%{buildroot} install
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+*   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 2.13-8
+-   Updated using python 3.8 libs
 *   Tue Mar 05 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.13-7
 -   Excluded conflicting perllocal.pod
 *   Thu Dec 06 2018 Keerthana K <keerthanak@vmware.com> 2.13-6

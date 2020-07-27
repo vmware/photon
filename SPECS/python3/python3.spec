@@ -1,17 +1,15 @@
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.7.5
-Release:        3%{?dist}
+Version:        3.8.5
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=860f88886809ae8bfc86afa462536811c347a2a1
+%define sha1    Python=68d6c7f948801cc755905162f5ee7589595edee4
 Patch0:         cgi3.patch
-Patch1:         python3-support-photon-platform.patch
-Patch2:         CVE-2019-17514.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel
@@ -142,8 +140,6 @@ The test package contains all regression tests for Python as well as the modules
 %prep
 %setup -q -n Python-%{version}
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -165,9 +161,7 @@ make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
-chmod -v 755 %{buildroot}%{_libdir}/libpython3.7m.so.1.0
 %{_fixperms} %{buildroot}/*
-ln -sf libpython3.7m.so %{buildroot}%{_libdir}/libpython3.7.so
 
 # Remove unused stuff
 find %{buildroot}%{_libdir} -name '*.pyc' -delete
@@ -203,62 +197,58 @@ rm -rf %{buildroot}/*
 %defattr(-, root, root)
 %doc LICENSE README.rst
 %{_bindir}/pydoc*
-%{_bindir}/pyvenv*
 %{_bindir}/python3
-%{_bindir}/python3.7
-%{_bindir}/python3.7m
+%{_bindir}/python3.8
 %{_mandir}/*/*
 
-%dir %{_libdir}/python3.7
-%{_libdir}/python3.7/site-packages/README.txt
+%dir %{_libdir}/python3.8
+%{_libdir}/python3.8/site-packages/README.txt
 
 %{_libdir}/libpython3.so
-%{_libdir}/libpython3.7.so
-%{_libdir}/libpython3.7m.so.1.0
+%{_libdir}/libpython3.8.so.1.0
 
-
-%exclude %{_libdir}/python3.7/ctypes/test
-%exclude %{_libdir}/python3.7/distutils/tests
-%exclude %{_libdir}/python3.7/sqlite3/test
-%exclude %{_libdir}/python3.7/idlelib/idle_test
-%exclude %{_libdir}/python3.7/test
-%exclude %{_libdir}/python3.7/lib-dynload/_ctypes_test.*.so
+%exclude %{_libdir}/python3.8/ctypes/test
+%exclude %{_libdir}/python3.8/distutils/tests
+%exclude %{_libdir}/python3.8/sqlite3/test
+%exclude %{_libdir}/python3.8/idlelib/idle_test
+%exclude %{_libdir}/python3.8/test
+%exclude %{_libdir}/python3.8/lib-dynload/_ctypes_test.*.so
 
 %files libs
 %defattr(-,root,root)
 %doc LICENSE README.rst
-%{_libdir}/python3.7
-%exclude %{_libdir}/python3.7/site-packages/
-%exclude %{_libdir}/python3.7/ctypes/test
-%exclude %{_libdir}/python3.7/distutils/tests
-%exclude %{_libdir}/python3.7/sqlite3/test
-%exclude %{_libdir}/python3.7/idlelib/idle_test
-%exclude %{_libdir}/python3.7/test
-%exclude %{_libdir}/python3.7/lib-dynload/_ctypes_test.*.so
-%exclude %{_libdir}/python3.7/xml
-%exclude %{_libdir}/python3.7/lib-dynload/pyexpat*.so
-%exclude %{_libdir}/python3.7/curses
-%exclude %{_libdir}/python3.7/lib-dynload/_curses*.so
-%exclude %{_libdir}/python3.7/distutils/command/wininst-*.exe
+%{_libdir}/python3.8
+%exclude %{_libdir}/python3.8/site-packages/
+%exclude %{_libdir}/python3.8/ctypes/test
+%exclude %{_libdir}/python3.8/distutils/tests
+%exclude %{_libdir}/python3.8/sqlite3/test
+%exclude %{_libdir}/python3.8/idlelib/idle_test
+%exclude %{_libdir}/python3.8/test
+%exclude %{_libdir}/python3.8/lib-dynload/_ctypes_test.*.so
+%exclude %{_libdir}/python3.8/xml
+%exclude %{_libdir}/python3.8/lib-dynload/pyexpat*.so
+%exclude %{_libdir}/python3.8/curses
+%exclude %{_libdir}/python3.8/lib-dynload/_curses*.so
+%exclude %{_libdir}/python3.8/distutils/command/wininst-*.exe
 
 %files  xml
-%{_libdir}/python3.7/xml/*
-%{_libdir}/python3.7/lib-dynload/pyexpat*.so
+%{_libdir}/python3.8/xml/*
+%{_libdir}/python3.8/lib-dynload/pyexpat*.so
 
 %files  curses
-%{_libdir}/python3.7/curses/*
-%{_libdir}/python3.7/lib-dynload/_curses*.so
+%{_libdir}/python3.8/curses/*
+%{_libdir}/python3.8/lib-dynload/_curses*.so
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/pkgconfig/python-3.7.pc
-%{_libdir}/pkgconfig/python-3.7m.pc
+%{_libdir}/libpython3.8.so
+%{_libdir}/pkgconfig/python-3.8.pc
 %{_libdir}/pkgconfig/python3.pc
-%{_libdir}/libpython3.7m.so
 %{_bindir}/python3-config
-%{_bindir}/python3.7-config
-%{_bindir}/python3.7m-config
+%{_bindir}/python3.8-config
+%{_libdir}/pkgconfig/python-3.8-embed.pc
+%{_libdir}/pkgconfig/python3-embed.pc
 
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
 %exclude %{_bindir}/2to3*
@@ -267,27 +257,29 @@ rm -rf %{buildroot}/*
 %files tools
 %defattr(-,root,root,755)
 %doc Tools/README
-%{_libdir}/python3.7/lib2to3
-%{_bindir}/2to3-3.7
+%{_libdir}/python3.8/lib2to3
+%{_bindir}/2to3-3.8
 %exclude %{_bindir}/idle*
 
 %files pip
 %defattr(-,root,root,755)
-%{_libdir}/python3.7/site-packages/pip/*
-%{_libdir}/python3.7/site-packages/pip-19.2.3.dist-info/*
+%{_libdir}/python3.8/site-packages/pip/*
+%{_libdir}/python3.8/site-packages/pip-20.1.1.dist-info/*
 %{_bindir}/pip*
 
 %files setuptools
 %defattr(-,root,root,755)
-%{_libdir}/python3.7/site-packages/pkg_resources/*
-%{_libdir}/python3.7/site-packages/setuptools/*
-%{_libdir}/python3.7/site-packages/setuptools-41.2.0.dist-info/*
-%{_bindir}/easy_install-3.7
+%{_libdir}/python3.8/site-packages/pkg_resources/*
+%{_libdir}/python3.8/site-packages/setuptools/*
+%{_libdir}/python3.8/site-packages/setuptools-47.1.0.dist-info/*
+%{_bindir}/easy_install-3.8
 
 %files test
-%{_libdir}/python3.7/test/*
+%{_libdir}/python3.8/test/*
 
 %changelog
+*   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 3.8.5-1
+-   Updated to 3.8.5 release
 *   Fri Jul 17 2020 Tapas Kundu <tkundu@vmware.com> 3.7.5-3
 -   symlink python to python3
 *   Fri May 01 2020 Alexey Makhalov <amakhalov@vmware.com> 3.7.5-2

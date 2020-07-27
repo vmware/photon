@@ -3,15 +3,15 @@
 
 Summary:        Query Language for JSON
 Name:           python3-jmespath
-Version:        0.9.3
-Release:        3%{?dist}
+Version:        0.10.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/jmespath
 Source0:        https://pypi.python.org/packages/e5/21/795b7549397735e911b032f255cff5fb0de58f96da794274660bca4f58ef/jmespath-%{version}.tar.gz
-%define         sha1 jmespath=eca7ba2e8d4fc50239973b59e07f9f527e0c0839
+%define         sha1 jmespath=356c48dfea2214dd9e7e2b222a99dddfe9c0d05c
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
@@ -52,6 +52,8 @@ python3 setup.py test
 %{_bindir}/jp.py-%{python3_version}
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.10.0-1
+-   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.9.3-3
 -   Mass removal python2
 *   Wed Nov 28 2018 Tapas Kundu <tkundu@vmware.com> 0.9.3-2

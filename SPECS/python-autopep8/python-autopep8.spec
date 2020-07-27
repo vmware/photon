@@ -2,15 +2,15 @@
 
 Summary:        autopep8 automatically formats Python code
 Name:           python3-autopep8
-Version:        1.4.4
-Release:        2%{?dist}
+Version:        1.5.3
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/python-autopep8/
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        python-autopep8-%{version}.tar.gz
-%define sha1    python-autopep8=3622f89aa0993654411b82168fd251324b07f512
+Source0:        autopep8-%{version}.tar.gz
+%define sha1    autopep8=e3f89f6f00119d3c15cb6ced0cba507beb284cbb
 
 BuildArch:      noarch
 
@@ -47,6 +47,8 @@ python3 setup.py test
 %{_bindir}/autopep8
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.3-1
+-   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 1.4.4-2
 -   Mass removal python2
 *   Tue Jun 04 2019 Ankit Jain <ankitja@vmware.com> 1.4.4-1

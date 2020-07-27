@@ -1,7 +1,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.2.17
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
@@ -89,9 +89,11 @@ find %{buildroot} -name '*.la' -delete
 
 %files python3
 %defattr(-,root,root)
-%{_libdir}/python3.7/*
+%{_libdir}/python3.8/*
 
 %changelog
+*   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 1.2.17-3
+-   Build with python 3.8
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.2.17-2
 -   Mass removal python2
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.2.17-1

@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       6%{?dist}
+Release:       7%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -1397,6 +1397,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 1.3.1.34-7
+-   Modify python3 include path
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.3.1.34-6
 -   Build with python3
 -   Mass removal python2

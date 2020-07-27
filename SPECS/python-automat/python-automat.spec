@@ -2,15 +2,15 @@
 
 Summary:        Self-service finite-state machines for the programmer on the go.
 Name:           python3-automat
-Version:        0.7.0
-Release:        2%{?dist}
+Version:        20.2.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Automat
 Source0:        https://files.pythonhosted.org/packages/source/A/Automat/Automat-%{version}.tar.gz
-%define sha1    Automat=b96a67647f5c1650f0e4cc39bed762fdc2ac90b4
+%define sha1    Automat=7e1827bbfed916fd0f754f632af8b06bfabce8c5
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -58,6 +58,8 @@ python3 setup.py test
 %{_bindir}/automat-visualize3
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20.2.0-1
+-   Automatic Version Bump
 *   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 0.7.0-2
 -   Mass removal python2
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.7.0-1

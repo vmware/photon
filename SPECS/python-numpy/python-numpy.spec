@@ -2,15 +2,15 @@
 
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python3-numpy
-Version:        1.15.1
-Release:        3%{?dist}
+Version:        1.19.1
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/numpy
 Source0:        https://pypi.python.org/packages/a5/16/8a678404411842fe02d780b5f0a676ff4d79cd58f0f22acddab1b392e230/numpy-%{version}.zip
-%define sha1    numpy=2e7548d4972e5366dd8b30ca3639e243dae96af9
+%define sha1    numpy=0d6b62fbf723f5d91ab289766a252a30467609f1
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -18,7 +18,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-devel
 BuildRequires:  lapack-devel
 BuildRequires:  unzip
-
+BuildRequires:  cython3
 %if %{with_check}
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
@@ -34,10 +34,6 @@ NumPy is a general-purpose array-processing package designed to efficiently mani
 %setup -q -n numpy-%{version}
 
 %build
-# xlocale.h has been removed from glibc 2.26
-# The above include of locale.h is sufficient
-# Further details: https://sourceware.org/git/?p=glibc.git;a=commit;h=f0be25b6336db7492e47d2e8e72eb8af53b5506d */
-sed -i "/xlocale.h/d" numpy/core/src/multiarray/numpyos.c
 python3 setup.py build
 
 %install
@@ -56,9 +52,13 @@ rm -rf test
 %files
 %defattr(-,root,root,-)
 %{_bindir}/f2py3
+%{_bindir}/f2py
+%{_bindir}/f2py3.8
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.19.1-1
+-   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 1.15.1-3
 -   Mass removal python2
 *   Mon Dec 03 2018 Tapas Kundu <tkundu@vmware.com> 1.15.1-2

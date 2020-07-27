@@ -1,7 +1,7 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.2.49
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
@@ -76,9 +76,11 @@ python3 setup.py check && python3 setup.py test
 %{_localstatedir}/log/waagent.log
 %ghost %{_localstatedir}/opt/waagent/log/waagent.log
 %dir %attr(0700, root, root) %{_sharedstatedir}/waagent
-/usr/lib/python3.7/site-packages/*
+/usr/lib/python3.8/site-packages/*
 
 %changelog
+* Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 2.2.49-2
+- Use python3.8
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.2.49-1
 - Automatic Version Bump
 * Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 2.2.35-3

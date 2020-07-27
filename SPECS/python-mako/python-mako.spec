@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-mako
-Version:        1.0.7
-Release:        2%{?dist}
+Version:        1.1.3
+Release:        1%{?dist}
 Summary:        Python templating language
 License:        MIT
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/packages/56/4b/cb75836863a6382199aefb3d3809937e21fa4cb0db15a4f4ba0ecc2e7e8e/Mako-%{version}.tar.gz
 Source0:        Mako-%{version}.tar.gz
-%define sha1    Mako=bf0c1f4cdfca4dd37bc0c9f83e984a0558268b42
+%define sha1    Mako=098f90baefe938434e426b8682cdfb89fa223eba
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -44,6 +44,8 @@ python3 setup.py test
 %{_bindir}/mako-render3
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.3-1
+-   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 1.0.7-2
 -   Mass removal python2
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.0.7-1

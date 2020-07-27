@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-jsonpatch
-Version:        1.23
-Release:        2%{?dist}
+Version:        1.26
+Release:        1%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:		https://pypi.python.org/pypi/jsonpatch
 Source0:        https://pypi.python.org/packages/be/c1/947048a839120acefc13a614280be3289db404901d1a2d49b6310c6d5757/jsonpatch-%{version}.tar.gz
-%define sha1    jsonpatch=6097861e88b94fd42fcc9713aa81d5f97b4cc350
+%define sha1    jsonpatch=0650a2b986452fe49e346cdad993a6af5d82917a
 
 BuildRequires: python3
 BuildRequires: python3-libs
@@ -43,6 +43,8 @@ python3 ext_tests.py && python3 tests.py
 %{python3_sitelib}/*
 
 %changelog
+*       Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.26-1
+-       Automatic Version Bump
 *       Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 1.23-2
 -       Mass removal python2
 *       Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.23-1

@@ -2,7 +2,7 @@
 Summary:        C extensions for Python3
 Name:           cython3
 Version:        0.29.21
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        Apache License
 URL:            http://cython.org/
@@ -52,6 +52,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/__pycache__/*
 
 %changelog
+*   Mon Jul 27 2020 Tapas Kundu <tkundu@vmware.com> 0.29.21-2
+-   Build with python3
 *   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.29.21-1
 -   Automatic Version Bump
 *   Fri Jan 11 2019 Michelle Wang <michellew@vmware.com> 0.28.5-2

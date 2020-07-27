@@ -1,6 +1,6 @@
 Summary:        A high-level scripting language
 Name:           python2
-Version:        2.7.17
+Version:        2.7.18
 Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
@@ -8,7 +8,7 @@ Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=dc5784d11d09c29fbf3fc155e2f242b3d3309454
+%define sha1    Python=678d4cf483a1c92efd347ee8e1e79326dc82810b
 Patch0:         cgi.patch
 Patch1:         added-pyopenssl-ipaddress-certificate-validation.patch
 Patch2:         python2-support-photon-platform.patch
@@ -270,6 +270,8 @@ LANG=en_US.UTF-8 make %{?_smp_mflags} test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.7.18-1
+-   Automatic Version Bump
 *   Sat Dec 07 2019 Tapas Kundu <tkundu@vmware.com> 2.7.17-1
 -   Update to 2.7.17
 -   Exclude /usr/bin/python

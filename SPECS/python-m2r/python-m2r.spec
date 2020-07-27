@@ -2,15 +2,15 @@
 
 Summary:        Markdown to reStructuredText converter.
 Name:           python3-m2r
-Version:        0.2.0
-Release:        4%{?dist}
+Version:        0.2.1
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/m2r
 Source0:        https://github.com/miyakogi/m2r/archive/v%{version}/m2r-%{version}.tar.gz
-%define sha1    m2r=a8da99cfb8d964fbd1404eff8fe3782dfa2ff3a6
+%define sha1    m2r=85aba7e05a3392df254c52bcc63a80905141854d
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -60,6 +60,8 @@ python3 setup.py test -s tests
 %{_bindir}/m2r3
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.2.1-1
+-   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.2.0-4
 -   Mass removal python2
 *   Thu Feb 27 2020 Tapas Kundu <tkundu@vmware.com> 0.2.0-3

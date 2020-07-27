@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-pyasn1
-Version:        0.4.4
-Release:        2%{?dist}
+Version:        0.4.8
+Release:        1%{?dist}
 Summary:        Implementation of ASN.1 types and codecs in Python programming language
 License:        BSD
 Group:          Development/Languages/Python
@@ -10,19 +10,18 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/packages/source/p/pyasn1/pyasn1-%{version}.tar.gz
 Source0:        pyasn1-%{version}.tar.gz
-%define sha1    pyasn1=10f67e61e30c064301c826c6e5e461ff7bf5827d
-
+%define sha1    pyasn1=e0fa19f8fda46a1fa2253477499b116b33f67175
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
-
 Requires:       python3
 Requires:       python3-libs
-
 BuildArch:      noarch
 
 %description
-This is an implementation of ASN.1 types and codecs in Python programming language. It has been first written to support particular protocol (SNMP) but then generalized to be suitable for a wide range of protocols based on ASN.1 specification.
+This is an implementation of ASN.1 types and codecs in Python programming language.
+It has been first written to support particular protocol (SNMP),
+but then generalized to be suitable for a wide range of protocols based on ASN.1 specification.
 
 %prep
 %setup -n pyasn1-%{version}
@@ -41,6 +40,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.4.8-1
+-   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 0.4.4-2
 -   Mass removal python2
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.4.4-1

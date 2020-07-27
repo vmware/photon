@@ -2,15 +2,15 @@
 
 Summary:        Docutils -- Python Documentation Utilities.
 Name:           python3-docutils
-Version:        0.14
-Release:        2%{?dist}
+Version:        0.16
+Release:        1%{?dist}
 License:        public domain, Python, 2-Clause BSD, GPL 3 (see COPYING.txt)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/docutils
 Source0:        https://files.pythonhosted.org/packages/source/d/docutils/docutils-%{version}.tar.gz
-%define sha1    docutils=32cefb69ac3dab5b04c4d150776f35419cc4c863
+%define sha1    docutils=35f6d15225f8e830ef379cbc9a7ae0b82db97231
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -68,6 +68,8 @@ python3 test3/alltests.py
 %{_bindir}/rst2html3.py
 %{_bindir}/rst2html4.py
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.16-1
+-   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.14-2
 -   Mass removal python2
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.14-1

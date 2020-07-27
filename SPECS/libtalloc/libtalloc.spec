@@ -1,7 +1,7 @@
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
 Version:    2.3.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    LGPLv3+
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
@@ -73,29 +73,31 @@ make check
 
 %files -n python3-talloc
 %defattr(-,root,root)
-%{_libdir}/python3.7/site-packages/*
+%{_libdir}/python3.8/site-packages/*
 %ifarch x86_64
-%{_libdir}/libpytalloc-util.cpython-37m-x86-64-linux-gnu.so.2
-%{_libdir}/libpytalloc-util.cpython-37m-x86-64-linux-gnu.so.2.3.1
+%{_libdir}/libpytalloc-util.cpython-38-x86-64-linux-gnu.so.2
+%{_libdir}/libpytalloc-util.cpython-38-x86-64-linux-gnu.so.2.3.1
 %endif
 %ifarch aarch64
-%{_libdir}/libpytalloc-util.cpython-37m-aarch64-linux-gnu.so.2
-%{_libdir}/libpytalloc-util.cpython-37m-aarch64-linux-gnu.so.2.3.1
+%{_libdir}/libpytalloc-util.cpython-38-aarch64-linux-gnu.so.2
+%{_libdir}/libpytalloc-util.cpython-38-aarch64-linux-gnu.so.2.3.1
 %endif
 
 %files -n python3-talloc-devel
 %defattr(-,root,root)
 %{_includedir}/pytalloc.h
 %ifarch x86_64
-%{_libdir}/libpytalloc-util.cpython-37m-x86-64-linux-gnu.so
-%{_libdir}/pkgconfig/pytalloc-util.cpython-37m-x86_64-linux-gnu.pc
+%{_libdir}/libpytalloc-util.cpython-38-x86-64-linux-gnu.so
+%{_libdir}/pkgconfig/pytalloc-util.cpython-38-x86_64-linux-gnu.pc
 %endif
 %ifarch aarch64
-%{_libdir}/libpytalloc-util.cpython-37m-aarch64-linux-gnu.so
-%{_libdir}/pkgconfig/pytalloc-util.cpython-37m-aarch64-linux-gnu.pc
+%{_libdir}/libpytalloc-util.cpython-38-aarch64-linux-gnu.so
+%{_libdir}/pkgconfig/pytalloc-util.cpython-38-aarch64-linux-gnu.pc
 %endif
 
 %changelog
+*   Wed Jul 29 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-3
+-   Build with python3
 *   Fri Jul 24 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-2
 -   Added pkg files for aarch64 and x86.
 *   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-1

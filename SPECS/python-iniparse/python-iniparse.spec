@@ -1,15 +1,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-iniparse
-Version:        0.4
-Release:        7%{?dist}
+Version:        0.5
+Release:        1%{?dist}
 Summary:        Python Module for Accessing and Modifying Configuration Data in INI files
 Group:          Development/Libraries
 License:        MIT
 URL:            http://code.google.com/p/iniparse/
 Source0:        http://iniparse.googlecode.com/files/iniparse-%{version}.tar.gz
-%define sha1 iniparse=2b2af8a19f3e5c212c27d7c524cd748fa0b38650
-Patch0:         0001-Add-python-3-compatibility.patch
+%define sha1 iniparse=eecb8fc113c4fc5930fea7eebf0eb796229c0ebc
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -20,6 +19,7 @@ BuildRequires:  python3-libs
 BuildRequires:  python3-test
 BuildRequires:  python3-devel
 BuildRequires:  python3-six
+BuildRequires:  python3-setuptools
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-pycparser
@@ -35,7 +35,6 @@ use.
 
 %prep
 %setup -q -n iniparse-%{version}
-%patch0 -p1
 
 %build
 python3 setup.py build
@@ -58,6 +57,8 @@ python3 runtests.py
 
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.5-1
+-   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.4-7
 -   Mass removal python2
 *   Tue Jul 11 2017 Xiaolin Li <xiaolinl@vmware.com> 0.4-6

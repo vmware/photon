@@ -1,14 +1,13 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        XML and HTML with Python
 Name:           python3-lxml
-Version:        4.2.4
-Release:        3%{?dist}
+Version:        4.5.2
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
 Source0:        https://pypi.python.org/packages/39/e8/a8e0b1fa65dd021d48fe21464f71783655f39a41f218293c1c590d54eb82/lxml-%{version}.tar.gz
-%define sha1    lxml=4a77c5471dfea2a32fd16475d130350af7d33f85
-Patch0:         lxml-make-check-fix.patch
+%define sha1    lxml=2e4fc1bd8a60ae4876e2f6e4c9f0daa244abf8bc
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libxslt
@@ -27,7 +26,6 @@ The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxs
 
 %prep
 %setup -q -n lxml-%{version}
-%patch0 -p1
 
 %build
 python3 setup.py build
@@ -48,6 +46,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 4.5.2-1
+-   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 4.2.4-3
 -   Mass removal python2
 *   Wed Nov 28 2018 Tapas Kundu <tkundu@vmware.com> 4.2.4-2

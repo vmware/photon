@@ -2,19 +2,20 @@
 
 Summary:        Python-PostgreSQL Database Adapter
 Name:           python3-psycopg2
-Version:        2.7.5
-Release:        3%{?dist}
+Version:        2.8.5
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/psycopg2
 License:        LGPL with exceptions or ZPL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/psycopg2/psycopg2-%{version}.tar.gz
-%define sha1    psycopg2=4f77e3efcf9a0970be5120352274315f7bd1c754
+%define sha1    psycopg2=0be58e88301f7d17c1415e11ce804815ad8fe284
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
 BuildRequires:  postgresql-devel >= 10.5
 Requires:       python3
 Requires:       python3-libs
@@ -64,6 +65,8 @@ rm -r /home/postgres/data &>/dev/null ||:
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8.5-1
+-   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.7.5-3
 -   Mass removal python2
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 2.7.5-2

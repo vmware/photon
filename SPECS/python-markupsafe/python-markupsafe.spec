@@ -2,15 +2,15 @@
 
 Summary:        A XML/HTML/XHTML Markup safe string for Python.
 Name:           python3-markupsafe
-Version:        1.0
-Release:        4%{?dist}
+Version:        1.1.1
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/MarkupSafe
 Source0:        https://pypi.python.org/packages/4d/de/32d741db316d8fdb7680822dd37001ef7a448255de9699ab4bfcbdf4172b/MarkupSafe-%{version}.tar.gz
-%define sha1    MarkupSafe=9072e80a7faa0f49805737a48f3d871eb1c48728
+%define sha1    MarkupSafe=f70e5fd3c120a1b108d4347ea1115e3962c42026
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -42,6 +42,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 1.1.1-1
+-   Update to 1.1.1
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 1.0-4
 -   Mass removal python2
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0-3

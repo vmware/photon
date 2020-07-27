@@ -3,14 +3,14 @@
 %define debug_package %{nil}
 
 Name:           python3-subprocess32
-Version:        3.5.2
-Release:        3%{?dist}
+Version:        3.5.4
+Release:        1%{?dist}
 Summary:        A backport of the subprocess module from Python 3.2/3.3 for use on 2.x
 License:        PSF
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/subprocess32
 Source0:        subprocess32-%{version}.tar.gz
-%define sha1    subprocess32=d01a5a57c94a655992b6fc0172a6ab19f813bf70
+%define sha1    subprocess32=73b07bcd4ac4acfcae9d3156451066ee7f034006
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -46,6 +46,8 @@ PYTHONPATH=build/lib.linux-%{_arch}-%{python3_ver}/ python3 test_subprocess32.py
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.5.4-1
+-   Automatic Version Bump
 *   Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 3.5.2-3
 -   Mass removal python2
 *   Tue Jan 08 2019 Alexey Makhalov <amakhalov@vmware.com> 3.5.2-2

@@ -1,15 +1,15 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python3-pyOpenSSL
-Version:        18.0.0
-Release:        4%{?dist}
+Version:        19.1.0
+Release:        1%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/pyOpenSSL/pyOpenSSL-%{version}.tar.gz
-%define sha1    pyOpenSSL=a41b82512585dd05a5370fb737f4eb4119030a38
+%define sha1    pyOpenSSL=0b8a66d0f14e641f23ab26e3a49ce9f0e0661bf2
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -66,6 +66,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 19.1.0-1
+-   Automatic Version Bump
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 18.0.0-4
 -   Mass removal python2
 *   Mon Sep 09 2019 Tapas Kundu <tkundu@vmware.com> 18.0.0-3

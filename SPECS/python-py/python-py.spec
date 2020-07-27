@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-py
-Version:        1.6.0
-Release:        2%{?dist}
+Version:        1.9.0
+Release:        1%{?dist}
 Summary:        Python development support library
 License:        MIT
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Url:            https://github.com/pytest-dev/py
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/53/72/6c6f1e787d9cab2cc733cf042f125abec07209a58308831c9f292504e826/py-%{version}.tar.gz
-%define sha1    py=b7196e40ff311d5f44e3bed2e0d3477f4f19559b
+%define sha1    py=8cbe522347596ffc292fd9b1ceaa4564a551ac76
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -50,6 +50,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jul 28 2020 Tapas Kundu <tkundu@vmware.com> 1.9.0-1
+-   Updated to version 1.9.0
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 1.6.0-2
 -   Mass removal python2
 *   Thu Sep 13 2018 Tapas Kundu <tkundu@vmware.com> 1.6.0-1

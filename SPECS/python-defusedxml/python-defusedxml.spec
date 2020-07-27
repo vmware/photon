@@ -2,15 +2,15 @@
 
 Summary:        XML bomb protection for Python stdlib modules
 Name:           python3-defusedxml
-Version:        0.5.0
-Release:        4%{?dist}
+Version:        0.6.0
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/defusedxml
 License:        PSFL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        defusedxml-%{version}.tar.gz
-%define sha1    defusedxml=70ff80a849bbc2e9241daa1debda9f43e7fbdff0
+%define sha1    defusedxml=0bba33cc1e6d59f8fc71ceb8d12ad951072ad122
 
 BuildArch:      noarch
 
@@ -48,6 +48,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.6.0-1
+-   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.5.0-4
 -   Mass removal python2
 *   Tue Aug 01 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-3

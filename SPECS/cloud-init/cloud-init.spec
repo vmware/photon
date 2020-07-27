@@ -1,8 +1,8 @@
-%define python3_sitelib /usr/lib/python3.7/site-packages
+%define python3_sitelib /usr/lib/python3.8/site-packages
 
 Name:           cloud-init
 Version:        20.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -152,6 +152,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Thu Jul 30 2020 Tapas Kundu <tkundu@vmware.com> 20.2-4
+-   Updated using python 3.8 lib
 *   Thu Jul 30 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.2-3
 -   Bring back 'passwd' field in create_user
 *   Mon Jul 27 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.2-2

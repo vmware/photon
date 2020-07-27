@@ -3,7 +3,7 @@
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
 Version:        2.0.29
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://sourceforge.net/projects/openipmi/
 License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
@@ -84,7 +84,7 @@ This package contains a network IPMI listener.
     --docdir=%{_docdir}/%{name}-%{version}  \
     --with-perl=yes                         \
     --with-perlinstall=%{perl_vendorarch}   \
-    --with-python=/usr/bin/python3.7        \
+    --with-python=/usr/bin/python3.8        \
     --with-pythoninstall=%{python3_sitelib}
 make
 
@@ -183,6 +183,8 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
+*   Mon Jul 27 2020 Tapas Kundu <tkundu@vmware.com> 2.0.29-2
+-   Use python 3.8
 *   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2.0.29-1
 -   Build with python3
 -   Mass removal python2

@@ -2,15 +2,15 @@
 
 Summary:        Core utilities for Python packages
 Name:           python3-packaging
-Version:        17.1
-Release:        3%{?dist}
+Version:        20.4
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/packaging
 License:        BSD or ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        pypi.python.org/packages/source/p/packaging/packaging-%{version}.tar.gz
-%define sha1    packaging=8dbd54a645fcc7951fcd6c06e9ac6494a0ada816
+%define sha1    packaging=b99fa7af153646722b2d1817bb09906cc5a94bc6
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -53,6 +53,8 @@ PYTHONPATH=./ pytest
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20.4-1
+-   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 17.1-3
 -   Mass removal python2
 *   Fri Dec 07 2018 Tapas Kundu <tkundu@vmware.com> 17.1-2

@@ -2,16 +2,15 @@
 
 Summary:        Pure Python JavaScript Translator/Interpreter.
 Name:           python3-Js2Py
-Version:        0.66
-Release:        2%{?dist}
+Version:        0.70
+Release:        1%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Js2Py
 Source0:        https://files.pythonhosted.org/packages/source/J/Js2Py/Js2Py-%{version}.tar.gz
-%define         sha1 Js2Py=f6e8d0fc625d28ae196be1db10f800ec56ea68dd
-Patch0:         js2py-python3-print.patch
+%define         sha1 Js2Py=cf6cd95d87d331dec2e99747b926a3340e79e4ba
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
@@ -36,7 +35,6 @@ Everything is done in 100% pure Python so it's extremely easy to install and use
 
 %prep
 %setup -q -n Js2Py-%{version}
-%patch0 -p1
 
 %build
 python3 setup.py build
@@ -52,6 +50,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.70-1
+-   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.66-2
 -   Mass removal python2
 *   Sun Nov 10 2019 Tapas Kundu <tkundu@vmware.com> 0.66-1

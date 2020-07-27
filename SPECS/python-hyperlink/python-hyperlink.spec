@@ -2,15 +2,15 @@
 
 Summary:        provides a pure-Python implementation of immutable URLs
 Name:           python3-hyperlink
-Version:        18.0.0
-Release:        3%{?dist}
+Version:        19.0.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/python-hyper/hyperlink
 Source0:        https://github.com/python-hyper/hyperlink/archive/hyperlink-%{version}.tar.gz
-%define sha1    hyperlink=f51f4495795e51ae9468a13dd79ff26b3f457f40
+%define sha1    hyperlink=7a1541bdf91f678f4581babd5556c9a8cbb7d46e
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -49,6 +49,8 @@ pytest
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 19.0.0-1
+-   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 18.0.0-3
 -   Mass removal python2
 *   Thu Dec 06 2018 Tapas Kundu <tkundu@vmware.com> 18.0.0-2

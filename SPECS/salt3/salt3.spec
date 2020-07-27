@@ -8,7 +8,7 @@
 %define _salttesting_ver 2016.5.11
 
 Name: salt3
-Version: 2019.2.4
+Version: 2019.2.5
 Release: 1%{?dist}
 Summary: A parallel remote execution system with python3
 Group:   System Environment/Daemons
@@ -17,7 +17,7 @@ URL:     http://saltstack.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0: https://github.com/saltstack/salt/releases/download/v%{version}/salt/salt-%{version}.tar.gz
-%define sha1 salt=44c8337105733cfd3cc3bbef734e22330d2e053f
+%define sha1 salt=3ae0ef02183194844a577a910e5ce7f597cf5c8b
 Source1: https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-2016.5.11.tar.gz
 %define sha1 SaltTesting=474dbd7029e3d48cdb468be3c63b2262e47556c8
 Source2: salt-master.service
@@ -25,7 +25,6 @@ Source3: salt-syndic.service
 Source4: salt-minion.service
 Source5: salt-api.service
 Source6: logrotate.salt
-
 
 BuildRoot: %{_tmppath}/salt-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -38,6 +37,7 @@ Requires: pciutils
 Requires: python3-backports_abc
 BuildRequires: python3-devel
 BuildRequires: systemd
+BuildRequires: python3-distro
 Requires: python3-pycrypto
 Requires: python3-jinja2
 Requires: python3-msgpack
@@ -297,6 +297,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Jul 27 2020 Tapas Kundu <tkundu@vmware.com> 2019.2.5-1
+- Fix issue with distro
 * Tue May 12 2020 Keerthana K <keerthanak@vmware.com> 2019.2.4-1
 - Update to version 2019.2.4 to fix CVE-2020-11651 CVE-2020-11652.
 * Fri Dec 13 2019 Vinothkumar D <vinothkumard@vmware.com> 2019.2.0-1

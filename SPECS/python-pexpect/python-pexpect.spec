@@ -2,16 +2,15 @@
 
 Summary:        Pexpect is a Pure Python Expect-like module
 Name:           python3-pexpect
-Version:        4.6.0
-Release:        4%{?dist}
+Version:        4.8.0
+Release:        1%{?dist}
 License:        ISC
 Url:            https://github.com/pexpect/pexpect
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/pexpect/pexpect/archive/pexpect-%{version}.tar.gz
-Patch0:         fix_test_before_across_chunks.patch
-%define sha1    pexpect=3d79bb7de5436cd0a8417a6249c765595a33abcf
+%define sha1    pexpect=ee5dd435ca68dc05daa783e3330eea365a404378
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -39,7 +38,6 @@ were typing commands.
 
 %prep
 %setup -q -n pexpect-%{version}
-%patch0 -p1
 
 %build
 python3 setup.py build
@@ -60,6 +58,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 4.8.0-1
+-   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 4.6.0-4
 -   Mass removal python2
 *   Mon Sep 09 2019 Tapas Kundu <tkundu@vmware.com> 4.6.0-3

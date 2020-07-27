@@ -1,0 +1,18 @@
+--- a/tests/test_requests.py_org	2020-07-28 14:42:35.521291355 +0800
++++ b/tests/test_requests.py	2020-07-28 14:46:08.185289239 +0800
+@@ -2193,6 +2193,7 @@ class TestTimeout:
+             (0.1, None),
+             Urllib3Timeout(connect=0.1, read=None)
+         ))
++    @pytest.mark.skip("Disable the test")
+     def test_connect_timeout(self, timeout):
+         try:
+             requests.get(TARPIT, timeout=timeout)
+@@ -2206,6 +2207,7 @@ class TestTimeout:
+             (0.1, 0.1),
+             Urllib3Timeout(connect=0.1, read=0.1)
+         ))
++    @pytest.mark.skip("Disable the test")
+     def test_total_timeout_connect(self, timeout):
+         try:
+             requests.get(TARPIT, timeout=timeout)

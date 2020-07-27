@@ -2,15 +2,15 @@
 
 Summary:        Measures number of Terminal column cells of wide-character codes.
 Name:           python3-wcwidth
-Version:        0.1.7
-Release:        3%{?dist}
+Version:        0.2.5
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/wcwidth
 Source0:        https://files.pythonhosted.org/packages/source/w/wcwidth/wcwidth-%{version}.tar.gz
-%define         sha1 wcwidth=28df2f5e8cd67ec182d822350252fea9bc3a91c8
+%define         sha1 wcwidth=3822ed26dc70a4055827bc66cdc21126e51efd66
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -42,6 +42,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.2.5-1
+-   Automatic Version Bump
 *   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 0.1.7-3
 -   Mass removal python2
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.7-2

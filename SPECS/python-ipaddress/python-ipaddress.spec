@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-ipaddress
-Version:        1.0.22
-Release:        3%{?dist}
+Version:        1.0.23
+Release:        1%{?dist}
 Summary:        Port of the 3.3+ ipaddress module to 2.6, 2.7, 3.2
 License:        Python Software Foundation License (Python Software Foundation License)
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Url:            https://pypi.python.org/pypi/ipaddress
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:        ipaddress-%{version}.tar.gz
-%define sha1    ipaddress=7b60cef3c7fdb7fa9c991ddff5968754cec6adb0
+%define sha1    ipaddress=43a6bcd73268ca8e3ba4a22b48f6fe821b1a6521
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -41,6 +41,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.23-1
+-   Automatic Version Bump
 *   Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 1.0.22-3
 -   Mass removal python2
 *   Thu Sep 13 2018 Tapas Kundu <tkundu@vmware.com> 1.0.22-2

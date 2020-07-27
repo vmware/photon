@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-imagesize
-Version:        1.1.0
-Release:        2%{?dist}
+Version:        1.2.0
+Release:        1%{?dist}
 Summary:        python module to analyze jpeg/jpeg2000/png/gif image header and return image size.
 License:        MIT
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Url:            https://github.com/shibukawa/imagesize_py
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/53/72/6c6f1e787d9cab2cc733cf042f125abec07209a58308831c9f292504e826/imagesize-%{version}.tar.gz
-%define sha1    imagesize=48b7277a450654db77dc956812020525f5e478c8
+%define sha1    imagesize=b88a92cabe93b5a53faacb1cff4e50f8a2d9427a
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -43,6 +43,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.0-1
+-   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 1.1.0-2
 -   Mass removal python2
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.1.0-1

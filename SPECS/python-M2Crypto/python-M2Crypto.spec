@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-M2Crypto
-Version:        0.30.1
-Release:        4%{?dist}
+Version:        0.36.0
+Release:        1%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 License:        MIT
@@ -10,8 +10,7 @@ URL:            https://pypi.python.org/pypi/M2Crypto/0.26.0
 Source0:        https://pypi.python.org/packages/11/29/0b075f51c38df4649a24ecff9ead1ffc57b164710821048e3d997f1363b9/M2Crypto-%{version}.tar.gz
 Vendor:         VMware, Inc.
 Distribution:   Photon
-%define sha1    M2Crypto=8e2eb23196afbac08ad566ecb3378de9f35c5f12
-Patch0:         fix_test_public_encrypt.patch
+%define sha1    M2Crypto=666735839ad0d9b414cc39937ffad2675297bb02
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  python3-devel
@@ -33,7 +32,6 @@ messenger for Zope.
 
 %prep
 %setup -q -n M2Crypto-%{version}
-%patch0 -p1
 
 %build
 CFLAGS="%{optflags}" python3 setup.py build
@@ -53,6 +51,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.36.0-1
+-   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.30.1-4
 -   Mass removal python2
 *   Mon Oct 07 2019 Shreyas B. <shreyasb@vmware.com> 0.30.1-3

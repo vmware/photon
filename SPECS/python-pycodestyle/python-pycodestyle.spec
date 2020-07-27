@@ -2,15 +2,15 @@
 
 Summary:        A tool to check your Python code
 Name:           python3-pycodestyle
-Version:        2.5.0
-Release:        2%{?dist}
+Version:        2.6.0
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/python-pam/
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        python-pycodestyle-%{version}.tar.gz
-%define sha1    python-pycodestyle=8d25df191e57d6602bc8ccaf6f6d4f84181301d6
+Source0:        pycodestyle-%{version}.tar.gz
+%define sha1    pycodestyle=b6dad24feff7e3eacb3f7f6044883b162836a8aa
 
 BuildArch:      noarch
 
@@ -43,6 +43,8 @@ python3 setup.py test
 %{_bindir}/pycodestyle
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.6.0-1
+-   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.5.0-2
 -   Mass removal python2
 *   Tue Jun 04 2019 Ankit Jain <ankitja@vmware.com> 2.5.0-1

@@ -2,15 +2,15 @@
 
 Summary:        Lightweight in-process concurrent programming
 Name:           python3-greenlet
-Version:        0.4.15
-Release:        3%{?dist}
+Version:        0.4.16
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.python.org/pypi/greenlet
 Source0:        greenlet-%{version}.tar.gz
-%define sha1    greenlet=0da9c069c38bf297923a1da0c601ef71c07ffb6d
+%define sha1    greenlet=28ada3e2cbea1cd2a7031ccd8e8bee3064a21470
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -42,9 +42,13 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
-/usr/include/python3.7m/greenlet/greenlet.h
+/usr/include/python3.8/greenlet/greenlet.h
 
 %changelog
+*   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 0.4.16-2
+-   Use python3.8
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.4.16-1
+-   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.4.15-3
 -   Mass removal python2
 *   Fri Oct 05 2018 Tapas Kundu <tkundu@vmware.com> 0.4.15-2

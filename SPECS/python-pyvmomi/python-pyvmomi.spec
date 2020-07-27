@@ -2,16 +2,15 @@
 
 Summary:        pyVmomi is the Python SDK for the VMware vSphere API that allows you to manage ESX, ESXi, and vCenter.
 Name:           python3-pyvmomi
-Version:        6.7.0.2018.9
-Release:        3%{?dist}
+Version:        7.0
+Release:        1%{?dist}
 License:        OSI Approved :: Apache Software License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/pyvmomi
 Source0:        pyvmomi-%{version}.tar.gz
-%define sha1    pyvmomi=83932e0751c565db9438ee86002b72dd19282fca
-Patch0:         python-pyvmomi-make-check-fix.patch
+%define sha1    pyvmomi=e77d04505735273d406c05068ab80e925d4de5bb
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
@@ -19,11 +18,9 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  curl-devel
-BuildRequires:  openssl-devel
 %endif
 Requires:       python3
 Requires:       python3-libs
-
 BuildArch:      noarch
 
 %description
@@ -31,7 +28,7 @@ pyVmomi is the Python SDK for the VMware vSphere API that allows you to manage E
 
 %prep
 %setup -q -n pyvmomi-%{version}
-%patch0 -p1
+
 %build
 python3 setup.py build
 
@@ -46,6 +43,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 7.0-1
+-   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 6.7.0.2018.9-3
 -   Mass removal python2
 *   Fri Dec 07 2018 Tapas Kundu <tkundu@vmware.com> 6.7.0.2018.9-2

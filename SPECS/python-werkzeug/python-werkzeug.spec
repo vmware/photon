@@ -3,15 +3,15 @@
 
 Summary:        The Swiss Army knife of Python web development
 Name:           python3-werkzeug
-Version:        0.14.1
-Release:        3%{?dist}
+Version:        1.0.1
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Werkzeug
 Source0:        https://pypi.python.org/packages/ab/65/d3f1edd1109cb1beb6b82f4139addad482df5b5ea113bdc98242383bf402/Werkzeug-%{version}.tar.gz
-%define sha1    Werkzeug=4b979fb960c5b5507ccb8a705931fa217013483d
+%define sha1    Werkzeug=07b0f2dcd460076d437d1481c556584db88df199
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -48,6 +48,8 @@ LANG=en_US.UTF-8 PYTHONPATH=./  python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.1-1
+-   Automatic Version Bump
 *   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 0.14.1-3
 -   Mass removal python2
 *   Mon Dec 03 2018 Tapas Kundu <tkundu@vmware.com> 0.14.1-2

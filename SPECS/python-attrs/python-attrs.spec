@@ -1,17 +1,16 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Attributes without boilerplate.
 Name:           python3-attrs
-Version:        18.2.0
-Release:        4%{?dist}
+Version:        19.3.0
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/attrs
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        attrs-%{version}.tar.gz
-%define sha1    attrs=51a52e1afdd9e8c174ac0b65c2905a8360788dd2
+%define sha1    attrs=5cad208b39fe854745c35b75f667eaf6400e2720
 
 BuildArch:      noarch
 
@@ -52,6 +51,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 19.3.0-1
+-   Automatic Version Bump
 *   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 18.2.0-4
 -   Mass removal python2
 *   Thu Feb 27 2020 Tapas Kundu <tkundu@vmware.com> 18.2.0-3
