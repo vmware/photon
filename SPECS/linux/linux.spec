@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.228
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -98,6 +98,8 @@ Patch63: 0001-vhost-vsock-add-weight-support.patch
 # Fix CVE-2019-18885
 Patch65:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch66:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
+# Fix for CVE-2020-14331
+Patch67:        4.9-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -235,6 +237,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch63 -p1
 %patch65 -p1
 %patch66 -p1
+%patch67 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -412,6 +415,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.228-2
+-   Fix CVE-2020-14331
 *   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.9.228-1
 -   Update to version 4.9.228
 *   Mon Jun 08 2020 Vikash Bansal <bvikas@vmware.com> 4.9.226-1

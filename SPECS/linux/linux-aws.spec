@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.228
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -85,6 +85,8 @@ Patch57: 0001-vhost-vsock-add-weight-support.patch
 # Fix CVE-2019-18885
 Patch59:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch60:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
+# Fix for CVE-2020-14331
+Patch61:        4.9-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -253,6 +255,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch57 -p1
 %patch59 -p1
 %patch60 -p1
+%patch61 -p1
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -451,6 +454,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.228-2
+-   Fix CVE-2020-14331
 *   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.9.228-1
 -   Update to version 4.9.228
 *   Mon Jun 08 2020 Vikash Bansal <bvikas@vmware.com> 4.9.226-1
