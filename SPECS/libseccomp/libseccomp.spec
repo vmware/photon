@@ -1,16 +1,16 @@
 Summary:       Enhanced seccomp library
 Name:          libseccomp
-Version:       2.4.3
+Version:       2.5.0
 Release:       1%{?dist}
 License:       LGPLv2
 Group:         System Environment/Libraries
 Source0:       https://github.com/seccomp/libseccomp/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1 libseccomp=477a66a6c5a32e585adaf90961994641de313247
+%define sha1   libseccomp=c0f3d9251b633d0cf6f43d477c609ce4badf4778
 Url:           https://github.com/seccomp/libseccomp/wiki
 Vendor:        VMware, Inc.
 Distribution:  Photon
-
 BuildRequires: which
+BuildRequires: gperf
 
 %description
 The libseccomp library provides an easy to use, platform independent, interface
@@ -19,12 +19,12 @@ is designed to abstract away the underlying BPF based syscall filter language
 and present a more conventional function-call based filtering interface that
 should be familiar to, and easily adopted by application developers.
 
-%package devel
-Summary:  Development files used to build applications with libseccomp support
-Group:    Development/Libraries
-Provides: pkgconfig(libseccomp)
+%package       devel
+Summary:       Development files used to build applications with libseccomp support
+Group:         Development/Libraries
+Provides:      pkgconfig(libseccomp)
 
-%description devel
+%description   devel
 The libseccomp-devel package contains the libraries and header files
 needed for developing secure applications.
 
@@ -32,6 +32,7 @@ needed for developing secure applications.
 %autosetup
 
 %build
+./autogen.sh
 %configure
 make V=1 %{?_smp_mflags}
 
@@ -43,7 +44,6 @@ make V=1 DESTDIR="%{buildroot}" install
 make check
 
 %post -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %files
@@ -64,6 +64,8 @@ make check
 %{_mandir}/man3/*
 
 %changelog
+*  Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.0-1
+-  Automatic Version Bump
 *  Thu May 7 2020 Susant Sahani <ssahani@vmware.com> 2.4.3-1
 -  Updated to version 2.4.3.
 *  Wed Jan 9 2019 Michelle Wang <michellew@vmware.com> 2.3.3-2
