@@ -1,22 +1,19 @@
 Summary:        unbound dns server
 Name:           unbound
-Version:        1.8.0
-Release:        4%{?dist}
+Version:        1.11.0
+Release:        1%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
 Distribution:   Photon
 URL:            http://www.unbound.net
 Source0:        https://www.unbound.net/downloads/%{name}-%{version}.tar.gz
-%define sha1    unbound=52b5b4169b9adaa24cc668976b9dffcc025120d6
+%define sha1    unbound=a6c38b06ceff8ac05297bf2d151f2c6a8e5b6e96
 Source1:        %{name}.service
 Requires:       systemd
 BuildRequires:  systemd
 BuildRequires:  expat-devel
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Patch0:         patch_cve_2019-16866.patch
-Patch1:         patch_cve_2019-18934.patch
-Patch2:         patch_cve_2020-12662_2020-12663.diff
 
 %description
 Unbound is a validating, recursive, and caching DNS resolver.
@@ -38,9 +35,6 @@ unbound dns server docs
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 %configure \
@@ -86,6 +80,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+*  Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 1.11.0-1
+-  Automatic Version Bump
 *  Sun May 24 2020 Shreyas B. <shryasb@vmware.com> 1.8.0-4
 -  Fix for CVE-2020-12662 & CVE-2020-12663
 *  Fri Dec 20 2019 Shreyas B. <shryasb@vmware.com> 1.8.0-3
