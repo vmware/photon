@@ -1,22 +1,23 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
-Version:        3.17.2
-Release:        2%{?dist}
+Version:        3.28.1
+Release:        1%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1    syslog-ng=75d7881d2cf258017c3b98fd37ceb3322c1855ad
+%define sha1    syslog-ng=75068d9e35eeffdd78c5b46e2942c4c8b8385a08
 Source1:        60-syslog-ng-journald.conf
 Source2:        syslog-ng.service
-Patch0:         disable-pylint-test.patch
 Requires:       glib
+Requires:       glibc
 Requires:       json-glib
 Requires:       json-c
 Requires:       systemd
+Requires:       ivykis
 BuildRequires:  eventlog
 BuildRequires:  glib-devel
 BuildRequires:  json-glib-devel
@@ -25,9 +26,9 @@ BuildRequires:  systemd-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-%if %{with_check}
+BuildRequires:  autoconf-archive
 BuildRequires:  curl-devel
-%endif
+BuildRequires:  ivykis-devel
 Obsoletes:	eventlog
 
 %description
@@ -52,24 +53,27 @@ Requires:       %{name} = %{version}-%{release}
  needed to build applications using syslog-ng APIs.
 
 %prep
-%setup -q
-%patch0 -p1
+%setup -q -n %{name}-%{name}-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
 %build
-
+autoreconf -i
 %configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
+    --sysconfdir=/etc/%{name} \
     --disable-silent-rules \
-    --sysconfdir=/etc/syslog-ng \
     --enable-systemd \
     --with-systemdsystemunitdir=%{_libdir}/systemd/system \
     --enable-json=yes \
     --with-jsonc=system \
     --disable-java \
     --disable-redis \
+    --enable-python \
     --with-python=3 \
+    --with-ivykis=system \
+    --disable-static \
+    --enable-dynamic-linking \
     PYTHON=/bin/python3 \
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
 make %{?_smp_mflags}
@@ -98,6 +102,7 @@ $easy_install_3 pep8
 make %{?_smp_mflags} check
 
 %post
+/sbin/ldconfig
 if [ $1 -eq 1 ] ; then
   mkdir -p /usr/var/
 fi
@@ -107,6 +112,7 @@ fi
 %systemd_preun syslog-ng.service
 
 %postun
+/sbin/ldconfig
 %systemd_postun_with_restart syslog-ng.service
 
 %clean
@@ -119,32 +125,35 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/systemd/journald.conf.d/*
 %{_libdir}/systemd/system/syslog-ng.service
 %{_libdir}/systemd/system-preset/50-syslog-ng.preset
-/usr/bin/*
-/usr/sbin/syslog-ng
-/usr/sbin/syslog-ng-ctl
-/usr/sbin/syslog-ng-debun
-%{_libdir}/libsyslog-ng-3.17.so.*
-%{_libdir}/libevtlog-3.17.so.*
+%{_bindir}/*
+%{_sbindir}/syslog-ng
+%{_sbindir}/syslog-ng-ctl
+%{_sbindir}/syslog-ng-debun
+%{_libdir}/libsyslog-ng-3.28.so.*
+%{_libdir}/libevtlog-3.28.so.*
 %{_libdir}/libloggen_helper*
 %{_libdir}/libloggen_plugin*
 %{_libdir}/libsecret-storage*
 %{_libdir}/%{name}/loggen/*
 %{_libdir}/syslog-ng/lib*.so
-/usr/share/syslog-ng/*
+%{_datadir}/syslog-ng/*
 
 %files -n python3-syslog-ng
 %defattr(-,root,root,-)
-%{python3_sitelib}/*
+%{_libdir}/syslog-ng/libmod-python.so
+%{_libdir}/syslog-ng/python
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/syslog-ng/*
 %{_libdir}/libsyslog-ng.so
 %{_libdir}/libevtlog.so
-%{_libdir}/libsyslog-ng-native-connector.a
+%exclude %{_libdir}/libsyslog-ng-native-connector.a
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 3.28.1-1
+-   Automatic Version Bump
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 3.17.2-2
 -   Mass removal python2
 *   Wed Oct 10 2018 Ankit Jain <ankitja@vmware.com> 3.17.2-1
