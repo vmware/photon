@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.0.2v
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -137,6 +137,9 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Wed Jul 29 2020 Srinidhi Rao <srinidhir@vmware.com> 1.0.2v-2
+-   Improve the patch openssl-drbg-default-read-system-fips
+-   Modifies RAND_get_rand_method() to supply default FIPS RNG.
 *   Tue May 26 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2v-1
 -   Update to 1.0.2v.
 -   Included fix for Implement blinding for scalar multiplication.
