@@ -1,7 +1,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.2001.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
@@ -9,6 +9,7 @@ Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf
+Patch0:         fix_segfault_on_imfile_read.patch
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -33,7 +34,7 @@ RSYSLOG is the rocket-fast system for log processing.
 It offers high-performance, great security features and a modular design. While it started as a regular syslogd, rsyslog has evolved into a kind of swiss army knife of logging, being able to accept inputs from a wide variety of sources, transform them, and output to the results to diverse destinations.
 %prep
 %setup -q
-
+%patch0 -p1
 
 autoreconf -fvi
 
@@ -87,6 +88,8 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/systemd/journald.conf.d/*
 %config(noreplace) %{_sysconfdir}/rsyslog.conf
 %changelog
+*   Tue Jul 28 2020 Tapas Kundu <tkundu@vmware.com> 8.2001.0-2
+-   Fix for segfault on imfile read
 *   Mon Jan 27 2020 Tapas Kundu <tkundu@vmware.com> 8.2001.0-1
 -   Update to 8.2001.0
 *   Mon Dec 23 2019 Tapas Kundu <tkundu@vmware.com> 8.1910.0-4
