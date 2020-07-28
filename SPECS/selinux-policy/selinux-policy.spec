@@ -1,7 +1,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        3.14.5
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Source0:        https://github.com/fedora-selinux/%{name}/archive/ad1d35503f55f535401daa0a59913aa559c38d44/%{name}-ad1d3550.tar.gz
@@ -117,6 +117,8 @@ fi
 %{_sharedstatedir}/selinux/default
 
 %changelog
+* Tue Jul 28 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-7
+- Fix motgen "avc:denied" error and removed duplicate rules.
 * Tue Jul 21 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-6
 - Fix "avc:denied" errors for passwd and systemd-timesync
 * Wed Jul 20 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-5
