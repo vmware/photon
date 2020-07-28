@@ -1,7 +1,7 @@
 Summary:	Crypto Libraries
 Name:		libgcrypt
 Version:	1.8.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:        GPLv2+ and LGPLv2+
 URL:            http://www.gnu.org/software/libgcrypt/
 Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
@@ -64,6 +64,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libgcrypt.pc
 
 %changelog
+*   Tue Jul 28 2020 Ankit Jain <ankitja@vmware.com> 1.8.6-2
+-   Release Bump up to fix libgpg-error build issue
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.6-1
 -   Automatic Version Bump
 *   Thu Oct 17 2019 Ankit Jain <ankitja@vmware.com> 1.8.5-1
