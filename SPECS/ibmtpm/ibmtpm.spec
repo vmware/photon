@@ -1,6 +1,6 @@
 Summary:        This project is an implementation of the TCG TPM 2.0 specification.
 Name:           ibmtpm
-Version:        1628
+Version:        1637
 Release:        1%{?dist}
 License:        BSD 2-Clause
 URL:            https://sourceforge.net/projects/ibmswtpm2/files
@@ -8,7 +8,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}%{version}.tar.gz
-%define sha1 ibmtpm=2f054b3e6f447276e6736178d0108850e91f8adf
+%define sha1 ibmtpm=ab4b94079e57a86996991e8a2b749ce063e4ad3e
 BuildRequires:  openssl-devel curl-devel
 Requires:       openssl curl
 %description
@@ -17,7 +17,7 @@ It is based on the TPM specification Parts 3 and 4 source code donated by Micros
 with additional files to complete the implementation.
 
 %prep
-%setup -q
+%setup -cqn %{name}-%{version}
 
 %build
 cd src
@@ -42,5 +42,7 @@ EOF
 /lib/systemd/system/ibmtpm_server.service
 
 %changelog
+*   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 1637-1
+-   Automatic Version Bump
 *   Fri May 29 2020 Michelle Wang <michellew@vmware.com> 1628-1
 -   Initial build. First version

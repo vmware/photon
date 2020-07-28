@@ -1,22 +1,22 @@
-Summary:	TPM2 Access Broker & Resource Management Daemon implementing the TCG spec
-Name:		tpm2-abrmd
-Version:	2.1.0
-Release:	1%{?dist}
-License:	BSD 2-Clause
-URL:		https://github.com/tpm2-software/tpm2-tools
-Group:		System Environment/Security
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	%{name}-%{version}.tar.gz
-%define sha1 tpm2=0a1c72bf0b2d2511191425c62b9258e65c84c4db
+Summary:        TPM2 Access Broker & Resource Management Daemon implementing the TCG spec
+Name:           tpm2-abrmd
+Version:        2.3.2
+Release:        1%{?dist}
+License:        BSD 2-Clause
+URL:            https://github.com/tpm2-software/tpm2-tools
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    tpm2=95b9b90144e490c755d0bcab08e1b47c9c7dfdaa
 BuildRequires:	which dbus-devel glib-devel tpm2-tss-devel
-Requires:	dbus glib tpm2-tss
+Requires:       dbus glib tpm2-tss
 %description
 TPM2 Access Broker & Resource Management Daemon implementing the TCG spec
 
 %package devel
-Summary:    The libraries and header files needed for TSS2 ABRMD development.
-Requires:   %{name} = %{version}-%{release}
+Summary:     The libraries and header files needed for TSS2 ABRMD development.
+Requires:    %{name} = %{version}-%{release}
 %description devel
 The libraries and header files needed for TSS2 ABRMD development.
 
@@ -27,7 +27,6 @@ The libraries and header files needed for TSS2 ABRMD development.
     --disable-static \
     --with-systemdsystemunitdir=/usr/lib/systemd/system \
     --with-dbuspolicydir=/etc/dbus-1/system.d
-
 make %{?_smp_mflags}
 
 %install
@@ -57,5 +56,7 @@ make DESTDIR=%{buildroot} install
 %{_mandir}/man7
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.2-1
+-   Automatic Version Bump
 *   Thu Feb 21 2019 Alexey Makhalov <amakhalov@vmware.com> 2.1.0-1
 -   Initial build. First version

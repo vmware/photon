@@ -1,25 +1,25 @@
-Summary:	OSS implementation of the TCG TPM2 Software Stack (TSS2)
-Name:		tpm2-tss
-Version:	2.2.0
-Release:	1%{?dist}
-License:	BSD 2-Clause
-URL:		https://github.com/tpm2-software/tpm2-tss
-Group:		System Environment/Security
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	%{name}-%{version}.tar.gz
-%define sha1 tpm2=ab9a45f4ebd72326337b7e01ab8305d980ce5575
-BuildRequires:	openssl-devel
-Requires:	openssl
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+Summary:          OSS implementation of the TCG TPM2 Software Stack (TSS2)
+Name:             tpm2-tss
+Version:          2.4.1
+Release:          1%{?dist}
+License:          BSD 2-Clause
+URL:              https://github.com/tpm2-software/tpm2-tss
+Group:            System Environment/Security
+Vendor:           VMware, Inc.
+Distribution:     Photon
+Source0:          %{name}-%{version}.tar.gz
+%define sha1      tpm2=8ae676864c93982d867b27f918a1e6a32caea924
+BuildRequires:    openssl-devel
+Requires:         openssl
+Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 %description
 OSS implementation of the TCG TPM2 Software Stack (TSS2)
 
 %package devel
-Summary:    The libraries and header files needed for TSS2 development.
-Requires:   %{name} = %{version}-%{release}
-%description devel
+Summary:      The libraries and header files needed for TSS2 development.
+Requires:     %{name} = %{version}-%{release}
+%description  devel
 The libraries and header files needed for TSS2 development.
 
 %prep
@@ -28,8 +28,8 @@ The libraries and header files needed for TSS2 development.
 %configure \
     --disable-static \
     --disable-doxygen-doc \
+    --enable-fapi=no \
     --with-udevrulesdir=/etc/udev/rules.d
-
 make %{?_smp_mflags}
 
 %install
@@ -77,5 +77,7 @@ fi
 %{_mandir}/man7
 
 %changelog
+*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.1-1
+-   Automatic Version Bump
 *   Thu Feb 21 2019 Alexey Makhalov <amakhalov@vmware.com> 2.2.0-1
 -   Initial build. First version
