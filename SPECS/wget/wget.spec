@@ -1,6 +1,6 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
-Version:        1.19.5
+Version:        1.20.3
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
@@ -8,7 +8,7 @@ Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.gz
-%define sha1    wget=43b3d09e786df9e8d7aa454095d4ea2d420ae41c
+%define sha1    wget=2b886eab5b97267cc358ab35e42d14d33d6dfc95
 Requires:       openssl
 BuildRequires:  openssl-devel
 %if %{with_check}
@@ -16,7 +16,7 @@ BuildRequires:  perl
 %endif
 
 %description
-The Wget package contains a utility useful for non-interactive 
+The Wget package contains a utility useful for non-interactive
 downloading of files from the Web.
 %prep
 %setup -q
@@ -29,7 +29,7 @@ downloading of files from the Web.
     --bindir=%{_bindir} \
     --libdir=%{_libdir} \
     --sysconfdir=/etc \
-    --with-ssl=openssl 
+    --with-ssl=openssl
 make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -55,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_mandir}/man1/*
 %changelog
+*   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 1.20.3-1
+-   Automatic Version Bump
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 1.19.5-1
 -   Updated to latest version
 *   Tue Dec 19 2017 Xiaolin Li <xiaolinl@vmware.com> 1.19.1-4
