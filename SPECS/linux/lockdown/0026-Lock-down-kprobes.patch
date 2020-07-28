@@ -1,0 +1,29 @@
+From: David Howells <dhowells@redhat.com>
+Date: Wed, 8 Nov 2017 16:14:12 +0000
+Subject: [26/29] Lock down kprobes
+Origin: https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/commit?id=cfacbbe6ef95336d99817fb8063c19bd36dfaa3d
+
+Disallow the creation of kprobes when the kernel is locked down by
+preventing their registration.  This prevents kprobes from being used to
+access kernel memory, either to make modifications or to steal crypto data.
+
+Reported-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+---
+ kernel/kprobes.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/kernel/kprobes.c b/kernel/kprobes.c
+index a1606a4224e1..f06023b0936c 100644
+--- a/kernel/kprobes.c
++++ b/kernel/kprobes.c
+@@ -1530,6 +1530,9 @@ int register_kprobe(struct kprobe *p)
+ 	struct module *probed_mod;
+ 	kprobe_opcode_t *addr;
+ 
++	if (kernel_is_locked_down("Use of kprobes"))
++		return -EPERM;
++
+ 	/* Adjust probe address from symbol */
+ 	addr = kprobe_addr(p);
+ 	if (IS_ERR(addr))

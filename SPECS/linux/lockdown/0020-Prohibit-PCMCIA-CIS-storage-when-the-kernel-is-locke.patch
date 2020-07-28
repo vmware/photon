@@ -1,0 +1,29 @@
+From: David Howells <dhowells@redhat.com>
+Date: Wed, 8 Nov 2017 15:11:35 +0000
+Subject: [20/29] Prohibit PCMCIA CIS storage when the kernel is locked down
+Origin: https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/commit?id=18b2dfc74efeafbdbb8f5d4d28da6334b7e1f1ac
+
+Prohibit replacement of the PCMCIA Card Information Structure when the
+kernel is locked down.
+
+Suggested-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-pcmcia@lists.infradead.org
+---
+ drivers/pcmcia/cistpl.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/pcmcia/cistpl.c b/drivers/pcmcia/cistpl.c
+index 55ef7d1fd8da..b7a0e42eeb25 100644
+--- a/drivers/pcmcia/cistpl.c
++++ b/drivers/pcmcia/cistpl.c
+@@ -1578,6 +1578,9 @@ static ssize_t pccard_store_cis(struct file *filp, struct kobject *kobj,
+ 	struct pcmcia_socket *s;
+ 	int error;
+ 
++	if (kernel_is_locked_down("Direct PCMCIA CIS storage"))
++		return -EPERM;
++
+ 	s = to_socket(container_of(kobj, struct device, kobj));
+ 
+ 	if (off)

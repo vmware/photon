@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.132
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -108,6 +108,39 @@ Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 # Patch to perform continuous testing on RNG from Noise Source
 Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
+
+# Lockdown support
+Patch150:        lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
+Patch151:        lockdown/0003-ima-require-secure_boot-rules-in-lockdown-mode.patch
+Patch152:        lockdown/0004-Enforce-module-signatures-if-the-kernel-is-locked-do.patch
+Patch153:        lockdown/0005-Restrict-dev-mem-kmem-port-when-the-kernel-is-locked.patch
+Patch154:        lockdown/0006-kexec-Disable-at-runtime-if-the-kernel-is-locked-dow.patch
+Patch155:        lockdown/0007-Copy-secure_boot-flag-in-boot-params-across-kexec-re.patch
+Patch156:        lockdown/0008-kexec_file-Restrict-at-runtime-if-the-kernel-is-lock.patch
+Patch157:        lockdown/0009-hibernate-Disable-when-the-kernel-is-locked-down.patch
+Patch158:        lockdown/0010-uswsusp-Disable-when-the-kernel-is-locked-down.patch
+Patch159:        lockdown/0011-PCI-Lock-down-BAR-access-when-the-kernel-is-locked-d.patch
+Patch160:        lockdown/0012-x86-Lock-down-IO-port-access-when-the-kernel-is-lock.patch
+Patch161:        lockdown/0013-x86-msr-Restrict-MSR-access-when-the-kernel-is-locke.patch
+Patch162:        lockdown/0014-asus-wmi-Restrict-debugfs-interface-when-the-kernel-.patch
+Patch163:        lockdown/0015-ACPI-Limit-access-to-custom_method-when-the-kernel-i.patch
+Patch164:        lockdown/0016-acpi-Ignore-acpi_rsdp-kernel-param-when-the-kernel-h.patch
+Patch165:        lockdown/0017-acpi-Disable-ACPI-table-override-if-the-kernel-is-lo.patch
+Patch166:        lockdown/0018-acpi-Disable-APEI-error-injection-if-the-kernel-is-l.patch
+Patch167:        lockdown/0020-Prohibit-PCMCIA-CIS-storage-when-the-kernel-is-locke.patch
+Patch168:        lockdown/0021-Lock-down-TIOCSSERIAL.patch
+Patch169:        lockdown/0022-Lock-down-module-params-that-specify-hardware-parame.patch
+Patch170:        lockdown/0023-x86-mmiotrace-Lock-down-the-testmmiotrace-module.patch
+Patch171:        lockdown/0024-debugfs-Disallow-use-of-debugfs-files-when-the-kerne.patch
+Patch172:        lockdown/0025-Lock-down-proc-kcore.patch
+Patch173:        lockdown/0026-Lock-down-kprobes.patch
+Patch174:        lockdown/0027-bpf-Restrict-kernel-image-access-functions-when-the-.patch
+Patch175:        lockdown/0028-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
+Patch176:        lockdown/0029-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
+Patch177:        lockdown/enable-cold-boot-attack-mitigation.patch
+Patch178:        lockdown/mtd-disable-slram-and-phram-when-locked-down.patch
+Patch179:        lockdown/efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
+Patch180:        lockdown/ACPI-configfs-Disallow-loading-ACPI-tables-when-locked-down.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -336,6 +369,38 @@ This Linux package contains hmac sha generator kernel module.
 %patch98 -p1
 %patch100 -p1
 %patch101 -p1
+
+%patch150 -p1
+%patch151 -p1
+%patch152 -p1
+%patch153 -p1
+%patch154 -p1
+%patch155 -p1
+%patch156 -p1
+%patch157 -p1
+%patch158 -p1
+%patch159 -p1
+%patch160 -p1
+%patch161 -p1
+%patch162 -p1
+%patch163 -p1
+%patch164 -p1
+%patch165 -p1
+%patch166 -p1
+%patch167 -p1
+%patch168 -p1
+%patch169 -p1
+%patch170 -p1
+%patch171 -p1
+%patch172 -p1
+%patch173 -p1
+%patch174 -p1
+%patch175 -p1
+%patch176 -p1
+%patch177 -p1
+%patch178 -p1
+%patch179 -p1
+%patch180 -p1
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -714,6 +779,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Mon Jul 27 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.132-3
+-   Lockdown support
 *   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-2
 -   Fix CVE-2020-14331
 *   Thu Jul 16 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-1

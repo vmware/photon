@@ -1,0 +1,37 @@
+From: David Howells <dhowells@redhat.com>
+Date: Wed, 24 May 2017 14:56:05 +0100
+Subject: [27/29] bpf: Restrict kernel image access functions when the kernel
+ is locked down
+Origin: https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/commit?id=a13e9f58894129d9fd02fdb81b56ac7590704155
+
+There are some bpf functions can be used to read kernel memory:
+bpf_probe_read, bpf_probe_write_user and bpf_trace_printk.  These allow
+private keys in kernel memory (e.g. the hibernation image signing key) to
+be read by an eBPF program and kernel memory to be altered without
+restriction.
+
+Completely prohibit the use of BPF when the kernel is locked down.
+
+Suggested-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: netdev@vger.kernel.org
+cc: Chun-Yi Lee <jlee@suse.com>
+cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+[bwh: Adjust context to apply after commit dcab51f19b29
+ "bpf: Expose check_uarg_tail_zero()"]
+---
+ kernel/bpf/syscall.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2327,6 +2327,9 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf
+ 	if (sysctl_unprivileged_bpf_disabled && !capable(CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
++	if (kernel_is_locked_down("BPF"))
++		return -EPERM;
++
+ 	err = bpf_check_uarg_tail_zero(uattr, sizeof(attr), size);
+ 	if (err)
+ 		return err;

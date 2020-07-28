@@ -1,0 +1,45 @@
+From 75b0cea7bf307f362057cc778efe89af4c615354 Mon Sep 17 00:00:00 2001
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date: Mon, 15 Jun 2020 04:43:32 -0600
+Subject: [PATCH] ACPI: configfs: Disallow loading ACPI tables when locked down
+
+Like other vectors already patched, this one here allows the root
+user to load ACPI tables, which enables arbitrary physical address
+writes, which in turn makes it possible to disable lockdown.
+
+Prevents this by checking the lockdown status before allowing a new
+ACPI table to be installed. The link in the trailer shows a PoC of
+how this might be used.
+
+Link: https://git.zx2c4.com/american-unsigned-language/tree/american-unsigned-language-2.sh
+Cc: 5.4+ <stable@vger.kernel.org> # 5.4+
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+---
+ drivers/acpi/acpi_configfs.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/acpi/acpi_configfs.c b/drivers/acpi/acpi_configfs.c
+index ece8c1a921cc1..88c8af455ea3f 100644
+--- a/drivers/acpi/acpi_configfs.c
++++ b/drivers/acpi/acpi_configfs.c
+@@ -11,6 +11,7 @@
+ #include <linux/module.h>
+ #include <linux/configfs.h>
+ #include <linux/acpi.h>
++#include <linux/security.h>
+ 
+ #include "acpica/accommon.h"
+ #include "acpica/actables.h"
+@@ -28,7 +29,10 @@ static ssize_t acpi_table_aml_write(struct config_item *cfg,
+ {
+ 	const struct acpi_table_header *header = data;
+ 	struct acpi_table *table;
+-	int ret;
++	int ret = security_locked_down(LOCKDOWN_ACPI_TABLES);
++
++	if (ret)
++		return ret;
+ 
+ 	table = container_of(cfg, struct acpi_table, cfg);
+ 

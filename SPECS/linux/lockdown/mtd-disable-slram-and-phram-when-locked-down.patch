@@ -1,0 +1,37 @@
+From: Ben Hutchings <ben@decadent.org.uk>
+Date: Fri, 03 Jun 2016 00:48:39 +0100
+Subject: mtd: Disable slram and phram when locked down
+Forwarded: no
+
+The slram and phram drivers both allow mapping regions of physical
+address space such that they can then be read and written by userland
+through the MTD interface.  This is probably usable to manipulate
+hardware into overwriting kernel code on many systems.  Prevent that
+if locked down.
+
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+---
+--- a/drivers/mtd/devices/phram.c
++++ b/drivers/mtd/devices/phram.c
+@@ -226,6 +226,9 @@ static int phram_setup(const char *val)
+ 	uint64_t len;
+ 	int i, ret;
+ 
++	if (kernel_is_locked_down("Command line-specified device addresses"))
++		return -EPERM;
++
+ 	if (strnlen(val, sizeof(buf)) >= sizeof(buf))
+ 		parse_err("parameter too long\n");
+ 
+--- a/drivers/mtd/devices/slram.c
++++ b/drivers/mtd/devices/slram.c
+@@ -231,6 +231,9 @@ static int parse_cmdline(char *devname,
+ 	unsigned long devstart;
+ 	unsigned long devlength;
+ 
++	if (kernel_is_locked_down("Command line-specified device addresses"))
++		return -EPERM;
++
+ 	if ((!devname) || (!szstart) || (!szlength)) {
+ 		unregister_devices();
+ 		return(-EINVAL);

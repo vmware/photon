@@ -1,0 +1,35 @@
+From: Matthew Garrett <matthew.garrett@nebula.com>
+Date: Wed, 8 Nov 2017 15:11:32 +0000
+Subject: [05/29] Restrict /dev/{mem,kmem,port} when the kernel is locked down
+Origin: https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/commit?id=8214bb0d847928bf08a7d8475f84c06541c5a352
+
+Allowing users to read and write to core kernel memory makes it possible
+for the kernel to be subverted, avoiding module loading restrictions, and
+also to steal cryptographic information.
+
+Disallow /dev/mem and /dev/kmem from being opened this when the kernel has
+been locked down to prevent this.
+
+Also disallow /dev/port from being opened to prevent raw ioport access and
+thus DMA from being used to accomplish the same thing.
+
+Signed-off-by: Matthew Garrett <matthew.garrett@nebula.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: "Lee, Chun-Yi" <jlee@suse.com>
+---
+ drivers/char/mem.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/char/mem.c b/drivers/char/mem.c
+index 593a8818aca9..0ce5ac0a5c6b 100644
+--- a/drivers/char/mem.c
++++ b/drivers/char/mem.c
+@@ -762,6 +762,8 @@ static loff_t memory_lseek(struct file *file, loff_t offset, int orig)
+ 
+ static int open_port(struct inode *inode, struct file *filp)
+ {
++	if (kernel_is_locked_down("/dev/mem,kmem,port"))
++		return -EPERM;
+ 	return capable(CAP_SYS_RAWIO) ? 0 : -EPERM;
+ }
+ 

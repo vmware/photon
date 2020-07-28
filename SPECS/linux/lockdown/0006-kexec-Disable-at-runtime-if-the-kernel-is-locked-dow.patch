@@ -1,0 +1,40 @@
+From: Matthew Garrett <matthew.garrett@nebula.com>
+Date: Wed, 8 Nov 2017 15:11:32 +0000
+Subject: [06/29] kexec: Disable at runtime if the kernel is locked down
+Origin: https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/commit?id=6081db9ba435b757a3a3473d0cd50ee2252ccaeb
+
+kexec permits the loading and execution of arbitrary code in ring 0, which
+is something that lock-down is meant to prevent. It makes sense to disable
+kexec in this situation.
+
+This does not affect kexec_file_load() which can check for a signature on the
+image to be booted.
+
+Signed-off-by: Matthew Garrett <matthew.garrett@nebula.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Acked-by: Dave Young <dyoung@redhat.com>
+Reviewed-by: "Lee, Chun-Yi" <jlee@suse.com>
+Reviewed-by: James Morris <james.l.morris@oracle.com>
+cc: kexec@lists.infradead.org
+[bwh: Adjust context to apply after commit a210fd32a46b
+ "kexec: add call to LSM hook in original kexec_load syscall"]
+---
+ kernel/kexec.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+--- a/kernel/kexec.c
++++ b/kernel/kexec.c
+@@ -208,6 +208,13 @@ static inline int kexec_load_check(unsig
+ 		return result;
+ 
+ 	/*
++	 * kexec can be used to circumvent module loading restrictions, so
++	 * prevent loading in that case
++	 */
++	if (kernel_is_locked_down("kexec of unsigned images"))
++		return -EPERM;
++
++	/*
+ 	 * Verify we have a legal set of flags
+ 	 * This leaves us room for future extensions.
+ 	 */
