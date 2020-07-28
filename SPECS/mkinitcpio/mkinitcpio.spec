@@ -1,14 +1,14 @@
 Summary:    Modular initramfs image creation utility
 Name:       mkinitcpio
-Version:    24
-Release:    3%{?dist}
+Version:    28
+Release:    1%{?dist}
 License:    GPLv2
 URL:        https://projects.archlinux.org/mkinitcpio.git/
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
-%define sha1 mkinitcpio=416789532960f7deecb4d5734a398da2437bbb58
+%define sha1 mkinitcpio=a52d7d20995a08192d8cde8cbb953cf1987bd3c9
 Patch0:     mkinitcpio-shutdown-ramfs.service.patch
 BuildRequires: asciidoc3
 BuildRequires: git
@@ -50,6 +50,8 @@ make DESTDIR=%{buildroot} install
 /usr/share/*
 
 %changelog
+*   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 28-1
+-   Automatic Version Bump
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 24-3
 -   Build with python3
 -   Mass removal python2
