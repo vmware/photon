@@ -1,11 +1,11 @@
 Summary:	Connects C/C++/Objective C to some high-level programming languages
 Name:		swig
-Version:	3.0.12
-Release:	2%{?dist}
+Version:	4.0.2
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://swig.sourceforge.net/
 Source0:	http://downloads.sourceforge.net/project/swig/swig/swig-%{version}/swig-%{version}.tar.gz
-%define sha1 swig=5cc1af41d041e4cc609580b99bb3dcf720effa25
+%define sha1 swig=ced6676c625c49d78d73cbd3b9aaab8c30b9b4ee
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	pcre-devel
@@ -51,6 +51,8 @@ make %{?_smp_mflags} check
 %{_libdir}/ccache
 
 %changelog
+*       Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0.2-1
+-       Automatic Version Bump
 *       Tue May 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.12-2
 -       Correct the license.
 *       Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.12-1
