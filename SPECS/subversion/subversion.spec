@@ -1,17 +1,14 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
-Version:        1.10.2
-Release:        5%{?dist}
+Version:        1.14.0
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    %{name}=bc52ef2e671f821998ac9a5f7ebecbbcaaef83b8
-Patch0:         subversion-CVE-2018-11782.patch
-Patch1:         subversion-CVE-2019-0203.patch
-Patch2:         subversion-CVE-2018-11803.patch
+%define sha1    %{name}=6b22e4115d140c0367a64c3f963ea908af481015
 Requires:       apr
 Requires:       apr-util
 Requires:       serf
@@ -30,25 +27,21 @@ Requires:       utf8proc
 %description
 The Apache version control system.
 
-%package    devel
-Summary:    Header and development files for mesos
-Requires:   %{name} = %{version}
+%package        devel
+Summary:        Header and development files for mesos
+Requires:       %{name} = %{version}
 %description    devel
- subversion-devel package contains header files, libraries.
+subversion-devel package contains header files, libraries.
 
-%package    perl
-Summary:    Allows Perl scripts to directly use Subversion repositories.
-Requires:   perl
-Requires:   %{name} = %{version}
+%package        perl
+Summary:        Allows Perl scripts to directly use Subversion repositories.
+Requires:       perl
+Requires:       %{name} = %{version}
 %description    perl
 Provides Perl (SWIG) support for Subversion version control system.
 
-
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 sh configure --prefix=%{_prefix}         \
@@ -56,7 +49,6 @@ sh configure --prefix=%{_prefix}         \
         --with-apache-libexecdir        \
         --with-serf=%{_prefix}		\
         --with-lz4=internal
-
 make %{?_smp_mflags}
 
 # For Perl bindings
@@ -98,8 +90,9 @@ sudo -u test make check && userdel test -r -f
 %{_mandir}/man3/SVN*
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
-
 %changelog
+*   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.0-1
+-   Automatic Version Bump
 *   Fri Oct 11 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-5
 -   Added patches for CVE-2019-0203 and CVE-2018-11782
 *   Tue Mar 05 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.10.2-4
