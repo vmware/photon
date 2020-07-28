@@ -1,22 +1,20 @@
 # Got the intial spec from Fedora and modified it
-Summary:        An enhanced version of csh, the C shell
-Name:           tcsh
-Version:        6.20.00
-Release:        4%{?dist}
-License:        BSD
-Group:          System Environment/Shells
-Source:         http://www.sfr-fresh.com/unix/misc/%{name}-%{version}.tar.xz
-%define sha1    tcsh=a52deb0181e32583dbe666474c9c2e784357feba
-# patch origin http://pkgs.fedoraproject.org/cgit/rpms/tcsh.git/
-Patch0:         tcsh-6.20.00-009-fix-regexp-for-backlash-quoting-tests.patch
-URL:            http://www.tcsh.org/
-Vendor:         VMware, Inc.
-Distribution:   Photon
-Provides:       csh = %{version}
-Provides:       /bin/tcsh, /bin/csh
-BuildRequires:  ncurses-devel
-Requires:       ncurses
-Requires(post): /bin/grep
+Summary:          An enhanced version of csh, the C shell
+Name:             tcsh
+Version:          6.22.02
+Release:          1%{?dist}
+License:          BSD
+URL:              http://www.tcsh.org/
+Group:            System Environment/Shells
+Source:           http://ftp.funet.fi/pub/mirrors/ftp.astron.com/pub/tcsh/%{name}-%{version}.tar.gz
+%define sha1      tcsh=d3c916c82eec7e20c49dedf660edd51a7971f8ab
+Vendor:           VMware, Inc.
+Distribution:     Photon
+Provides:         csh = %{version}
+Provides:         /bin/tcsh, /bin/csh
+BuildRequires:    ncurses-devel
+Requires:         ncurses
+Requires(post):   /bin/grep
 Requires(postun): (coreutils or toybox) /bin/grep
 
 %description
@@ -29,12 +27,11 @@ like syntax.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 sed -i -e 's|\$\*|#&|' -e 's|fR/g|&m|' tcsh.man2html &&
 
-%configure --prefix=%{_prefix}
+%configure
 make %{?_smp_mflags} all
 
 %install
@@ -115,6 +112,8 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
+*   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 6.22.02-1
+-   Automatic Version Bump
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.20.00-4
 -   Requires coreutils or toybox and /bin/grep
 *   Tue Jun 6 2017 Alexey Makhalov <amakhalov@vmware.com> 6.20.00-3
