@@ -6,8 +6,11 @@ After=network.target
 [Service]
 ExecStartPre=-/sbin/modprobe overlay
 ExecStart=/usr/bin/containerd
+Restart=always
+RestartSec=5
 KillMode=process
 Delegate=yes
+OOMScoreAdjust=-999
 LimitNOFILE=1048576
 # Having non-zero Limit*s causes performance problems due to accounting overhead
 # in the kernel. We recommend using cgroups to do container-local accounting.
