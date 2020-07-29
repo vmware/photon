@@ -1,16 +1,17 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           scons
-Version:        3.0.1
-Release:        3%{?dist}
+Version:        4.0.1
+Release:        1%{?dist}
 Summary:        An Open Source software construction tool
 Group:          Development/Tools
 License:        MIT
 URL:            http://scons.org
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-%define sha1    scons=498691cf8d4f6da971b99fab0c3480ef944c4d1e
+%define sha1    scons=dac73a0fb65e2cc3714ba0ee679e7b4b1e645e28
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3
+BuildRequires:  python3-setuptools
 Requires:       python3
 BuildArch:      noarch
 
@@ -30,7 +31,6 @@ python3 setup.py build
 python3 setup.py install \
     --root=%{buildroot} \
     --prefix=%{_prefix} \
-    --standard-lib \
     --optimize=1 \
     --install-data=%{_datadir}
 
@@ -41,9 +41,10 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 %{_bindir}/*
-%{_datadir}/*
 
 %changelog
+*   Wed Jul 29 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0.1-1
+-   Automatic Version Bump
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 3.0.1-3
 -   Build with python3
 -   Mass removal python2
