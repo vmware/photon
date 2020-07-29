@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.132
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -51,29 +51,38 @@ Patch20:        07-vmware-only.patch
 Patch21:        initramfs-support-for-page-aligned-format-newca.patch
 Patch22:        enabling-configuring-options-for-geneve-device.patch
 
-Patch23:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Upgrade vmxnet3 driver to version 4
+Patch23:        0001-vmxnet3-prepare-for-version-4-changes.patch
+Patch24:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
+Patch25:        0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
+Patch26:        0004-vmxnet3-update-to-version-4.patch
+Patch27:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
+Patch28:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
+Patch29:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
+
+Patch30:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 
 # Fix CVE-2017-1000252
-Patch24:        kvm-dont-accept-wrong-gsi-values.patch
+Patch31:        kvm-dont-accept-wrong-gsi-values.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
-Patch25:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Out-of-tree patches from AppArmor:
-Patch26:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
-Patch27:        4.17-0002-apparmor-af_unix-mediation.patch
-Patch28:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+Patch33:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch34:        4.17-0002-apparmor-af_unix-mediation.patch
+Patch35:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix for CVE-2019-12456
-Patch29:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
+Patch36:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
 # Fix for CVE-2019-12379
-Patch30:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+Patch37:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2019-12380
-Patch31:        0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
+Patch38:        0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
 # Fix for CVE-2019-12381
-Patch32:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
+Patch39:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 # Fix for CVE-2019-12378
-Patch34:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
+Patch40:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
-Patch35:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
-Patch36:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
+Patch41:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
+Patch42:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
 # Fix CVE-2019-19072
 Patch43:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 # Fix CVE-2019-19073
@@ -184,9 +193,16 @@ This Linux package contains hmac sha generator kernel module.
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
+%patch33 -p1
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch37 -p1
+%patch38 -p1
+%patch39 -p1
+%patch40 -p1
+%patch41 -p1
+%patch42 -p1
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
@@ -331,6 +347,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Jul 28 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-3
+-   Upgrade vmxnet3 driver to version 4
 *   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-2
 -   Fix CVE-2020-14331
 *   Thu Jul 16 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-1

@@ -1,0 +1,80 @@
+From a077da4bfca64def6cbde987b5c7998c8cba7fe4 Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Thu, 28 May 2020 19:53:52 -0700
+Subject: [PATCH 5/6] vmxnet3: use correct hdr reference when packet is
+ encapsulated
+
+commit 36432797641ff0013be9252eecf7ad1ba73171a2 upstream.
+
+'Commit dacce2be3312 ("vmxnet3: add geneve and vxlan tunnel offload
+support")' added support for encapsulation offload. However, while
+preparing inner tso packet, it uses reference to outer ip headers.
+
+This patch fixes this issue by using correct reference for inner
+headers.
+
+Fixes: dacce2be3312 ("vmxnet3: add geneve and vxlan tunnel offload support")
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 31 +++++++++++++++++++++++--------
+ 1 file changed, 23 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index f26c9a374289..46ac8895f2f5 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -860,14 +860,29 @@ vmxnet3_parse_hdr(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 			 */
+ 			ctx->l4_offset = skb_checksum_start_offset(skb);
+ 
+-			if (ctx->ipv4) {
+-				const struct iphdr *iph = ip_hdr(skb);
++			if (VMXNET3_VERSION_GE_4(adapter) &&
++			    skb->encapsulation) {
++				struct iphdr *iph = inner_ip_hdr(skb);
++
++				if (iph->version == 4) {
++					protocol = iph->protocol;
++				} else {
++					const struct ipv6hdr *ipv6h;
+ 
+-				protocol = iph->protocol;
+-			} else if (ctx->ipv6) {
+-				const struct ipv6hdr *ipv6h = ipv6_hdr(skb);
++					ipv6h = inner_ipv6_hdr(skb);
++					protocol = ipv6h->nexthdr;
++				}
++			} else {
++				if (ctx->ipv4) {
++					const struct iphdr *iph = ip_hdr(skb);
+ 
+-				protocol = ipv6h->nexthdr;
++					protocol = iph->protocol;
++				} else if (ctx->ipv6) {
++					const struct ipv6hdr *ipv6h;
++
++					ipv6h = ipv6_hdr(skb);
++					protocol = ipv6h->nexthdr;
++				}
+ 			}
+ 
+ 			switch (protocol) {
+@@ -947,11 +962,11 @@ vmxnet3_prepare_inner_tso(struct sk_buff *skb,
+ 	struct tcphdr *tcph = inner_tcp_hdr(skb);
+ 	struct iphdr *iph = inner_ip_hdr(skb);
+ 
+-	if (ctx->ipv4) {
++	if (iph->version == 4) {
+ 		iph->check = 0;
+ 		tcph->check = ~csum_tcpudp_magic(iph->saddr, iph->daddr, 0,
+ 						 IPPROTO_TCP, 0);
+-	} else if (ctx->ipv6) {
++	} else {
+ 		struct ipv6hdr *iph = inner_ipv6_hdr(skb);
+ 
+ 		tcph->check = ~csum_ipv6_magic(&iph->saddr, &iph->daddr, 0,
+-- 
+2.17.1
+
