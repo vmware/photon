@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs10
 Version:        10.19.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,7 +10,7 @@ URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
 %define         sha1 node=85e09e14637b2351e10009e0a6ab82382672ec90
 BuildArch:      x86_64
-
+Patch0:         nodejs10-CVE-2020-8174.patch
 BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
 BuildRequires:  python2
 Requires:       coreutils >= 8.22, openssl >= 1.0.1
@@ -35,6 +35,7 @@ for developing applications that use nodejs.
 
 %prep
 %setup -q -n node-v%{version}
+%patch0 -p1
 
 %build
 ./configure --prefix=%{_prefix}
@@ -76,6 +77,8 @@ make  %{?_smp_mflags} test
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Fri Jul 31 2020 Ankit Jain <ankitja@vmware.com> 10.19.0-3
+-   Fix for CVE-2020-8174
 *   Thu May 07 2020 Ankit Jain <ankitja@vmware.com> 10.19.0-2
 -   Obsoletes specific version of nodejs
 *   Thu Apr 09 2020 Siju Maliakkal <smaliakkal@vmware.com> 10.19.0-1
