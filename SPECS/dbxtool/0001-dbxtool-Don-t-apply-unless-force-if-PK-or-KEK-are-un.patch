@@ -1,0 +1,37 @@
+From 445d132c3c006bd92b31cc544d9d197c885041ed Mon Sep 17 00:00:00 2001
+From: Peter Jones <pjones@redhat.com>
+Date: Wed, 18 Oct 2017 10:59:12 -0400
+Subject: [PATCH 01/13] dbxtool: Don't apply unless --force if PK or KEK are
+ unset.
+
+Some systems have correctly applied the UEFI 2.5 rule that global
+EFI variables that aren't known to the firmware cannot be set, but don't
+have Secure Boot as a feature, and will not let us set DBX.
+
+This adds warnings in those cases, which can be surpressed with --quiet,
+and won't attempt to apply the update, which can be overridden with
+--force.
+
+This also makes the systemd dbxtool.service invokation use both of those
+flags.
+
+Resolves: rhbz#1489942
+
+Signed-off-by: Peter Jones <pjones@redhat.com>
+---
+ src/dbxtool.service | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/dbxtool.service b/src/dbxtool.service
+index fcfb6e6..1a2a829 100644
+--- a/src/dbxtool.service
++++ b/src/dbxtool.service
+@@ -7,4 +7,4 @@ WantedBy=multi-user.target
+ 
+ [Service]
+ RemainAfterExit=yes
+-ExecStart=/usr/bin/dbxtool -a /usr/share/dbxtool/ -q -f
++ExecStart=/usr/bin/dbxtool -a /usr/share/dbxtool/ -q
+-- 
+2.23.1
+
