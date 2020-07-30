@@ -1,0 +1,43 @@
+From 18bcb743df2d39f9dcbe1c95d28f96d9de812816 Mon Sep 17 00:00:00 2001
+From: Peter Jones <pjones@redhat.com>
+Date: Wed, 18 Oct 2017 14:12:00 -0400
+Subject: [PATCH 03/13] Treat "dbxtool -a dir/" with an empty directory
+ correctly.
+
+So "make scan-build" found an error.  Yay.
+
+Signed-off-by: Peter Jones <pjones@redhat.com>
+---
+ src/dbxtool.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/dbxtool.c b/src/dbxtool.c
+index 5d5efc7..717c991 100644
+--- a/src/dbxtool.c
++++ b/src/dbxtool.c
+@@ -320,6 +320,8 @@ static inline void
+ sort_updates(struct db_update_file *updates, size_t num_updates)
+ {
+ 	vprintf("Sorting updates list\n");
++	if (num_updates < 2)
++		return;
+ 	qsort(updates, num_updates, sizeof (struct db_update_file),
+ 		update_cmp);
+ }
+@@ -732,9 +734,12 @@ main(int argc, char *argv[])
+ 						&updates,
+ 						&new_num_updates);
+ 				num_updates = new_num_updates;
++				if (num_updates == 0)
++					warnx("Updates directory \"%s\" contains no updates.",
++					      dirname);
+ 			}
+ 		}
+-		if (updates == NULL) {
++		if (updates == NULL && num_updates > 0) {
+ 			updates = calloc(num_updates,
+ 				sizeof (struct db_update_file));
+ 			if (updates == NULL)
+-- 
+2.23.1
+
