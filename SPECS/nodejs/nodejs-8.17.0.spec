@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        8.17.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -9,6 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v8.17.0/node-v%{version}.tar.xz
 %define         sha1 node=caaea1900792d8fdab8e94448d82c6b5b51c0c93
+Patch0:         nodejs-CVE-2020-8174.patch
 
 BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
 Requires:       (coreutils >= 8.22 or toybox)
@@ -30,6 +31,7 @@ for developing applications that use nodejs.
 
 %prep
 %setup -q -n node-v%{version}
+%patch0 -p1
 
 %build
 ./configure --prefix=%{_prefix} \
@@ -72,6 +74,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Thu Jul 30 2020 Ankit Jain <ankitja@vmware.com> 8.17.0-3
+-   fix for CVE-2020-8174
 *   Thu May 07 2020 Ankit Jain <ankitja@vmware.com> 8.17.0-2
 -   To fix upgrade from 1.0 to 2.0, obsoletes nodejs10
 *   Wed Feb 12 2020 Siju Maliakkal <smaliakkal@vmware.com> 8.17.0-1
