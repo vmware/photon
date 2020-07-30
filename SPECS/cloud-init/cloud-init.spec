@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -15,19 +15,21 @@ Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{na
 Source1:        99-disable-networking-config.cfg
 Source2:        dscheck_VMwareGuestInfo
 
-Patch0:         photon-distro.patch
-Patch1:         photon-hosts-template.patch
-Patch2:         DataSourceVMwareGuestInfo.patch
-Patch3:         systemd-service-changes.patch
-Patch4:         systemd-resolved-config.patch
-Patch5:         cloud-init-azureds.patch
-Patch6:         ds-identity.patch
-Patch7:         ds-guestinfo-photon.patch
-Patch8:         CVE-2020-8632.patch
-Patch9:         CVE-2020-8631.patch
-Patch10:        cloud-cfg.patch
-Patch11:        Support-update-gc-status.patch
-Patch12:        Default-Custom-Script-Support.patch
+Patch0:     photon-distro.patch
+Patch1:     photon-hosts-template.patch
+Patch2:     DataSourceVMwareGuestInfo.patch
+Patch3:     systemd-service-changes.patch
+Patch4:     systemd-resolved-config.patch
+Patch5:     cloud-init-azureds.patch
+Patch6:     ds-identity.patch
+Patch7:     ds-guestinfo-photon.patch
+Patch8:     CVE-2020-8632.patch
+Patch9:     CVE-2020-8631.patch
+Patch10:    cloud-cfg.patch
+Patch11:    Support-update-gc-status.patch
+Patch12:    Default-Custom-Script-Support.patch
+Patch13:    bring-back-passwd-field.patch
+Patch14:    fix-make-check.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -49,6 +51,9 @@ BuildRequires:  python3-jinja2
 
 %if %{with_check}
 BuildRequires:  python3-pip
+BuildRequires:  python3-deepmerge
+BuildRequires:  python3-configobj
+BuildRequires:  python3-jsonpatch
 %endif
 
 Requires:       systemd
@@ -78,20 +83,8 @@ need special scripts to run during initialization to retrieve and install
 ssh keys and to let the user run various scripts.
 
 %prep
-%setup -q -n %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
+
+%autosetup -p1
 
 find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -113,7 +106,7 @@ install -m 755 %{SOURCE2} $RPM_BUILD_ROOT/%{_bindir}/
 
 %check
 touch vd ud
-pip3 install httpretty mock unittest2 deepmerge configobj jsonpatch nose
+pip3 install unittest2 mock httpretty nose
 ln -s /usr/bin/nosetests-3.4 /usr/bin/nosetests3
 make check
 
@@ -161,6 +154,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Thu Jul 30 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.4-6
+-   Bring back 'passwd' field in create_user
 *   Fri Jul 24 2020 Susant Sahani <ssahani@vmware.com> 19.4-5
 -   Support [DHCP] section's UseDomains= in Networking Config Version 2
 *   Fri Jul 24 2020 Keerthana K <keerthanak@vmware.com> 19.4-4
