@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        20.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -27,6 +27,7 @@ Patch8:     cloud-cfg.patch
 Patch9:     instance-dir.patch
 Patch10:    fix-make-check.patch
 Patch11:    Default-Custom-Script-Support.patch
+Patch12:    bring-back-passwd-field.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -48,9 +49,6 @@ BuildRequires:  python3-jinja2
 
 %if %{with_check}
 BuildRequires:  python3-pip
-BuildRequires:  python3-httpretty
-BuildRequires:  python3-mock
-BuildRequires:  python3-unittest2
 BuildRequires:  python3-deepmerge
 BuildRequires:  python3-configobj
 BuildRequires:  python3-jsonpatch
@@ -107,6 +105,7 @@ install -m 755 %{SOURCE2} $RPM_BUILD_ROOT/%{_bindir}/
 
 %check
 touch vd ud
+pip3 install unittest2 mock httpretty
 make check
 
 %clean
@@ -153,6 +152,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Thu Jul 30 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.2-3
+-   Bring back 'passwd' field in create_user
 *   Mon Jul 27 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.2-2
 -   1. add support to configure DHCP4 UseDomains= in Networking Config Version 2
 -   2. add support for DEFAULT-RUN-POST-CUSTOM-SCRIPT
