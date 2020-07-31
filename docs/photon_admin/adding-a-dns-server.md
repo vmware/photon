@@ -26,6 +26,11 @@ To add a DNS server, insert a DNS key into the Network section of the static net
 	Gateway=198.51.0.1
 	DNS=198.51.0.1
 
+**Note**: To apply the changes made to `/etc/systemd/network/*.network` files, perform the following:
+- Restart `systemd-networkd` and `systemd-resolved` services by running the following commands:
+  - `systemctl restart systemd-networkd`
+  - `systemctl restart systemd-resolved`
+
 If your machine is working with DHCP, you can add a DNS server by modifying the `/etc/systemd/resolved.conf--a` method.
 
 For more information, see https://www.freedesktop.org/software/systemd/man/resolved.conf.html.
