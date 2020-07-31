@@ -1,7 +1,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        3.14.5
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Source0:        https://github.com/fedora-selinux/%{name}/archive/ad1d35503f55f535401daa0a59913aa559c38d44/%{name}-ad1d3550.tar.gz
@@ -32,6 +32,7 @@ Patch14:        system-systenwork.patch
 Patch15:        system-udev.patch
 Patch16:        system-userdomain.patch
 Patch17:        admin_usermanage.patch
+Patch18:        system-fstool.patch
 BuildArch:      noarch
 BuildRequires:  checkpolicy python3 semodule-utils libselinux-utils
 BuildRequires:  policycoreutils
@@ -72,6 +73,7 @@ cp -r ../container-selinux-2.132.0/container.* policy/modules/contrib/
 %patch15 -p1
 %patch16 -p1
 %patch17 -p1
+%patch18 -p1
 
 %build
 cp %{SOURCE3} .
@@ -117,6 +119,9 @@ fi
 %{_sharedstatedir}/selinux/default
 
 %changelog
+* Fri Jul 31 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-8
+- Add support of rabbitmq module
+- Fixed issue of accessing "ds-identify.log" by blkid
 * Tue Jul 28 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-7
 - Fix motgen "avc:denied" error and removed duplicate rules.
 * Tue Jul 21 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-6

@@ -1,0 +1,16 @@
+diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/fstools.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/fstools.te
+--- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/fstools.te	2020-07-31 14:06:22.844347051 +0530
++++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/fstools.te	2020-07-31 14:10:42.272360109 +0530
+@@ -186,6 +186,12 @@
+ 	')
+ ')
+ 
++ifdef(`distro_photon',`
++	optional_policy(`
++		unconfined_domain(fsadm_t)
++	')
++')
++
+ optional_policy(`
+ 	amanda_rw_dumpdates_files(fsadm_t)
+ 	amanda_append_log_files(fsadm_t)
