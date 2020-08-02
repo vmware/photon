@@ -11,7 +11,6 @@ Distribution:   Photon
 Url:            https://pypi.python.org/pypi/gevent
 Source0:        gevent-%{version}.tar.gz
 %define sha1    gevent=03389b622ae39715879dbfb6b71624abc8a03017
-Patch0:         python-gevent-makecheck.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -42,7 +41,6 @@ Features include:
 
 %prep
 %setup -q -n gevent-%{version}
-#%patch0 -p1
 
 %build
 python3 setup.py build

@@ -13,11 +13,10 @@ BuildRequires: autoconf
 BuildRequires: ncurses-devel
 BuildRequires: nspr-devel >= 4.7
 BuildRequires: zip
-BuildRequires: python2
 Requires:      ncurses
 Requires:      nspr
 %define sha1 js185=52a01449c48d7a117b35f213d3e4263578d846d6
-
+%define ExtraBuildRequires python2 python2-devel python2-libs
 %description
 Mozilla's JavaScript engine includes a just-in-time compiler (JIT) that compiles
 JavaScript to machine code, for a significant speed increase.

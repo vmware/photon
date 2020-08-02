@@ -14,13 +14,9 @@ Patch0:        emitter.patch
 Distribution:  Photon
 BuildRequires: which
 BuildRequires: autoconf213
-BuildRequires: python2
-BuildRequires: python-xml
-BuildRequires: python2-libs
-BuildRequires: python2-devel
 BuildRequires: zlib-devel
 %define sha1 firefox-%{version}=616f8afdee741f0bea607a671b8515ef13c68b4a
-
+%define ExtraBuildRequires python2 python2-libs python2-devel python-xml
 %description
 Mozilla's JavaScript engine includes a just-in-time compiler (JIT) that compiles
 JavaScript to machine code, for a significant speed increase.

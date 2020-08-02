@@ -1,7 +1,10 @@
 noarch/linux-api-headers-4.2.0-1.ph1.noarch.rpm
 noarch/man-pages-3.59-1.ph1.noarch.rpm
 noarch/apache-maven-3.3.9-4.ph1.noarch.rpm
-x86_64/python2-devel-2.7.11-1.ph1.x86_64.rpm
+x86_64/python2-2.7.18-1.ph3.x86_64.rpm
+x86_64/python2-libs-2.7.18-1.ph3.x86_64.rpm
+x86_64/python2-devel-2.7.18-1.ph3.x86_64.rpm
+x86_64/python-xml-2.7.18-1.ph3.x86_64.rpm
 x86_64/nspr-4.11-1.ph1.x86_64.rpm
 x86_64/rpm-4.13.0.1-5.ph2.x86_64.rpm
 x86_64/rpm-libs-4.13.0.1-5.ph2.x86_64.rpm
@@ -45,7 +48,6 @@ x86_64/ncurses-devel-6.0-1.ph1.x86_64.rpm
 x86_64/gawk-4.1.4-1.ph2.x86_64.rpm
 x86_64/libtool-2.4.6-1.ph1.x86_64.rpm
 x86_64/zlib-1.2.8-2.ph1.x86_64.rpm
-x86_64/python2-libs-2.7.11-1.ph1.x86_64.rpm
 x86_64/libgomp-7.3.0-2.ph2.x86_64.rpm
 x86_64/readline-devel-7.0-1.ph1.x86_64.rpm
 x86_64/sqlite-autoconf-3.11.0-1.ph1.x86_64.rpm
@@ -58,7 +60,6 @@ x86_64/popt-1.16-1.ph1.x86_64.rpm
 x86_64/mpc-1.0.3-1.ph1.x86_64.rpm
 x86_64/bzip2-1.0.6-4.ph1.x86_64.rpm
 x86_64/glibc-2.22-3.ph1.x86_64.rpm
-x86_64/python2-2.7.11-1.ph1.x86_64.rpm
 x86_64/elfutils-devel-0.165-1.ph1.x86_64.rpm
 x86_64/patch-2.7.5-1.ph1.x86_64.rpm
 x86_64/xz-5.2.2-1.ph1.x86_64.rpm

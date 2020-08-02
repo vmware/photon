@@ -72,9 +72,10 @@ aarch64/pkg-config-0.29.2-1.ph2.aarch64.rpm
 aarch64/popt-1.16-4.ph2.aarch64.rpm
 aarch64/popt-devel-1.16-4.ph2.aarch64.rpm
 aarch64/procps-ng-3.3.12-2.ph2.aarch64.rpm
-aarch64/python2-2.7.13-10.ph2.aarch64.rpm
-aarch64/python2-devel-2.7.13-10.ph2.aarch64.rpm
-aarch64/python2-libs-2.7.13-10.ph2.aarch64.rpm
+aarch64/python2-2.7.18-1.ph3.aarch64.rpm
+aarch64/python2-libs-2.7.18-1.ph3.aarch64.rpm
+aarch64/python2-devel-2.7.18-1.ph3.aarch64.rpm
+aarch64/python-xml-2.7.18-1.ph3.aarch64.rpm
 aarch64/readline-7.0-2.ph2.aarch64.rpm
 aarch64/readline-devel-7.0-2.ph2.aarch64.rpm
 aarch64/rpm-4.13.0.1-5.ph2.aarch64.rpm
