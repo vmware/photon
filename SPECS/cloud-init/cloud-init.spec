@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.4
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -28,8 +28,7 @@ Patch9:     CVE-2020-8631.patch
 Patch10:    cloud-cfg.patch
 Patch11:    Support-update-gc-status.patch
 Patch12:    Default-Custom-Script-Support.patch
-Patch13:    bring-back-passwd-field.patch
-Patch14:    fix-make-check.patch
+Patch13:    passwd-field.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -154,6 +153,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Fri Aug 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.4-8
+-   Further fixes to 'passwd' field
 *   Mon Aug 10 2020 Andrew Kutz <akutz@vmware.com> 19.4-7
 -   Support setting the host FQDN
 *   Thu Jul 30 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.4-6
