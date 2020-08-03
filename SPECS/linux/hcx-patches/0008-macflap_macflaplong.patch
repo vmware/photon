@@ -1,0 +1,419 @@
+From: Harinadh D <hdommaraju@vmware.com>
+Date: Fri, 31 Jul 2020 14:20:01 +0530
+Subject: mac-flap.patch,mac-flap-long.patch
+
+Detect if there is a mac address flap happening and add a flap threshold
+mac flap detection for unicast ARP replies with long threshold delay
+---
+diff --git linux-4.19.129/net/bridge/br_device.c linux-4.19.129-patched/net/bridge/br_device.c
+index b8396ff..a7cba79 100644
+--- linux-4.19.129/net/bridge/br_device.c
++++ linux-4.19.129-patched/net/bridge/br_device.c
+@@ -463,5 +463,8 @@ void br_dev_setup(struct net_device *dev)
+ 	br_netfilter_rtable_init(br);
+ 	br_stp_timer_init(br);
+ 	br_multicast_init(br);
++	br->flap_threshold = BR_DEFAULT_FLAP_THRESHOLD;
++	br->flap_clear_threshold = BR_DEFAULT_FLAP_CLEAR_THRESHOLD;
++	br->flap_long_threshold = BR_DEFAULT_FLAP_LONG_THRESHOLD;
+ 	INIT_DELAYED_WORK(&br->gc_work, br_fdb_cleanup);
+ }
+diff --git linux-4.19.129/net/bridge/br_fdb.c linux-4.19.129-patched/net/bridge/br_fdb.c
+index 4d4b9b5..87df1c9 100644
+--- linux-4.19.129/net/bridge/br_fdb.c
++++ linux-4.19.129-patched/net/bridge/br_fdb.c
+@@ -27,6 +27,13 @@
+ #include <net/switchdev.h>
+ #include <trace/events/bridge.h>
+ #include "br_private.h"
++#include <linux/if_arp.h>
++
++#ifdef CONFIG_SYSCTL
++extern int br_mac_flap;
++#else
++#define br_mac_flap 0
++#endif
+ 
+ static const struct rhashtable_params br_fdb_rht_params = {
+ 	.head_offset = offsetof(struct net_bridge_fdb_entry, rhnode),
+@@ -505,6 +512,10 @@ static struct net_bridge_fdb_entry *fdb_create(struct net_bridge *br,
+ 		fdb->added_by_external_learn = 0;
+ 		fdb->offloaded = 0;
+ 		fdb->updated = fdb->used = jiffies;
++		fdb->last_flap = 0;
++		fdb->flap_port = NULL;
++		fdb->flap_drops = 0;
++		fdb->flap_count = 0;
+ 		if (rhashtable_lookup_insert_fast(&br->fdb_hash_tbl,
+ 						  &fdb->rhnode,
+ 						  br_fdb_rht_params)) {
+@@ -558,20 +569,39 @@ int br_fdb_insert(struct net_bridge *br, struct net_bridge_port *source,
+ 	return ret;
+ }
+ 
+-void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+-		   const unsigned char *addr, u16 vid, bool added_by_user)
++/* Decide whether an skb qualifies for a long flap drop */
++/* Currently, that is just for unicast ARP replies */
++static bool br_skb_is_long_flap(struct sk_buff *skb)
++{
++	struct arphdr *parp;
++	if (!skb) {
++		return false;
++	}
++	if (skb->protocol != htons(ETH_P_ARP) ||
++		!is_unicast_ether_addr(eth_hdr(skb)->h_dest) ||
++		!pskb_may_pull(skb, sizeof(struct arphdr))) {
++			return false;
++	}
++	parp = arp_hdr(skb);
++	return parp->ar_op == htons(ARPOP_REPLY);
++}
++
++
++int br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
++		   const unsigned char *addr, u16 vid, bool added_by_user,
++		   struct sk_buff *skb)
+ {
+ 	struct net_bridge_fdb_entry *fdb;
+ 	bool fdb_modified = false;
+ 
+ 	/* some users want to always flood. */
+ 	if (hold_time(br) == 0)
+-		return;
++		return 0;
+ 
+ 	/* ignore packets unless we are using this port */
+ 	if (!(source->state == BR_STATE_LEARNING ||
+ 	      source->state == BR_STATE_FORWARDING))
+-		return;
++		return 0;
+ 
+ 	fdb = fdb_find_rcu(&br->fdb_hash_tbl, addr, vid);
+ 	if (likely(fdb)) {
+@@ -585,11 +615,111 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+ 
+ 			/* fastpath: update of existing entry */
+ 			if (unlikely(source != fdb->dst)) {
++				unsigned long delay;
++				delay = fdb->updated + br->flap_threshold;
++				if (time_before_eq(jiffies, delay)) {
++					/* flap! */
++					if (fdb->flap_port != source) {
++						fdb->last_flap = jiffies;
++						fdb->flap_count++;
++						fdb->flap_port = source;
++						if (net_ratelimit())
++							br_info(br, "flap detected on %s with "
++								"address %02x:%02x:%02x:%02x:%02x:%02x as source\n",
++								source->dev->name,
++								addr[0], addr[1],
++								addr[2], addr[3],
++								addr[4], addr[5]);
++					}
++					fdb->flap_drops++;
++					if (net_ratelimit())
++						br_info(br, "address %02x:%02x:%02x:%02x:%02x:%02x drops: %lu, count:%lu\n",
++							addr[0], addr[1],
++							addr[2], addr[3],
++							addr[4], addr[5],
++							fdb->flap_drops,
++							fdb->flap_count);
++					if (br_mac_flap)
++						return -EINVAL;
++				}
++				delay = fdb->updated + br->flap_long_threshold;
++				if (br_skb_is_long_flap(skb) && time_before(jiffies, delay)) {
++					/* long flap! probably VDR sending arp reply */
++					fdb->flap_count++;
++					fdb->flap_drops++;
++					if (net_ratelimit())
++						br_info(br, "address %02x:%02x:%02x:%02x:%02x:%02x (long) drop: %lu, count:%lu\n",
++							addr[0], addr[1],
++							addr[2], addr[3],
++							addr[4], addr[5],
++							fdb->flap_drops,
++							fdb->flap_count);
++					if (br_mac_flap)
++						return -EINVAL;
++				}
++				if (fdb->last_flap) {
++					if (net_ratelimit())
++						br_info(br, "flap stop change detected on %s with "
++							"address %02x:%02x:%02x:%02x:%02x:%02x as source.  drops: %lu, count: %lu\n",
++							source->dev->name,
++							addr[0], addr[1],
++							addr[2], addr[3],
++							addr[4], addr[5],
++							fdb->flap_drops, fdb->flap_count);
++				} else {
++					if (net_ratelimit())
++						br_info(br, "non-flap change detected on %s with "
++							"address %02x:%02x:%02x:%02x:%02x:%02x as source.\n",
++							source->dev->name,
++							addr[0], addr[1],
++							addr[2], addr[3],
++							addr[4], addr[5]);
++				}
+ 				fdb->dst = source;
+ 				fdb_modified = true;
++				fdb->last_flap = 0;
++				fdb->flap_port = NULL;
++				fdb->flap_drops = 0;
++				fdb->flap_count = 0;
+ 				/* Take over HW learned entry */
+ 				if (unlikely(fdb->added_by_external_learn))
+ 					fdb->added_by_external_learn = 0;
++			} else {
++				/* flap back?  or clear flapping? */
++				if (unlikely(fdb->last_flap)) {
++					unsigned long delta;
++					delta = fdb->last_flap + br->flap_clear_threshold;
++					if (time_before_eq(jiffies, delta)) {
++						/* possible flap back */
++						if (fdb->flap_port != source) {
++							fdb->flap_port = source;
++							fdb->last_flap = jiffies;
++							fdb->flap_count++;
++							fdb->flap_port = source;
++							if (net_ratelimit())
++								br_info(br, "flap back detected on %s with "
++								"address %02x:%02x:%02x:%02x:%02x:%02x as source\n",
++								source->dev->name,
++								addr[0], addr[1],
++								addr[2], addr[3],
++								addr[4], addr[5]);
++						}
++					} else {
++						/* clear thing */
++						if (net_ratelimit())
++						br_info(br, "clearing flap on %s with "
++							"address %02x:%02x:%02x:%02x:%02x:%02x as source, drops: %lu, count: %lu\n",
++							source->dev->name,
++							addr[0], addr[1],
++							addr[2], addr[3],
++							addr[4], addr[5],
++							fdb->flap_drops, fdb->flap_count);
++						fdb->last_flap = 0;
++						fdb->flap_port = NULL;
++						fdb->flap_drops = 0;
++						fdb->flap_count = 0;
++					}
++				}
+ 			}
+ 			if (now != fdb->updated)
+ 				fdb->updated = now;
+@@ -615,6 +745,7 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+ 		 */
+ 		spin_unlock(&br->hash_lock);
+ 	}
++   return 0;
+ }
+ 
+ static int fdb_to_nud(const struct net_bridge *br,
+@@ -857,7 +988,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
+ 		}
+ 		local_bh_disable();
+ 		rcu_read_lock();
+-		br_fdb_update(br, p, addr, vid, true);
++		br_fdb_update(br, p, addr, vid, true,NULL);
+ 		rcu_read_unlock();
+ 		local_bh_enable();
+ 	} else if (ndm->ndm_flags & NTF_EXT_LEARNED) {
+diff --git linux-4.19.129/net/bridge/br_input.c linux-4.19.129-patched/net/bridge/br_input.c
+index 6d2a951..554eba9 100644
+--- linux-4.19.129/net/bridge/br_input.c
++++ linux-4.19.129-patched/net/bridge/br_input.c
+@@ -30,9 +30,11 @@ int br_arp_probe __read_mostly = 1;
+ int br_arp_probe_per_packets __read_mostly = 8192;
+ u8 br_arp_probe_src_mac[ETH_ALEN+1] = {0};
+ int br_arp_probe_src_mac_set = 0;
++int br_mac_flap = 0;
+ #else
+ #define br_arp_probe 1
+ #define br_arp_probe_per_packets 8192
++#define br_mac_flap 0
+ #endif
+ 
+ /* Hook for brouter */
+@@ -145,6 +147,13 @@ static struct ctl_table br_input_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_arp_probe_src_mac,
+ 	},
++	{
++                .procname       = "mac_flap",
++                .data           = &br_mac_flap,
++                .maxlen         = sizeof(int),
++                .mode           = 0644,
++                .proc_handler   = proc_dointvec,
++        },
+ 	{}
+ };
+ 
+@@ -320,8 +329,15 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 
+ 	/* insert into forwarding database after filtering to avoid spoofing */
+ 	br = p->br;
+-	if (p->flags & BR_LEARNING)
+-		br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, false);
++        if (p->flags & BR_LEARNING) {
++		int rc;
++		rc = br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, false,skb);
++		if (br_mac_flap ){
++			if (rc < 0) {
++				goto drop;
++			}
++		}
++	}
+ 
+ 	local_rcv = !!(br->dev->flags & IFF_PROMISC);
+ 	if (is_multicast_ether_addr(eth_hdr(skb)->h_dest)) {
+@@ -418,7 +434,7 @@ static void __br_handle_local_finish(struct sk_buff *skb)
+ 
+ 	/* check if vlan is allowed, to avoid spoofing */
+ 	if (p->flags & BR_LEARNING && br_should_learn(p, skb, &vid))
+-		br_fdb_update(p->br, p, eth_hdr(skb)->h_source, vid, false);
++		br_fdb_update(p->br, p, eth_hdr(skb)->h_source, vid, false,skb);
+ }
+ 
+ /* note: already called with rcu_read_lock */
+diff --git linux-4.19.129/net/bridge/br_private.h linux-4.19.129-patched/net/bridge/br_private.h
+index 59fb869..fd06e69 100644
+--- linux-4.19.129/net/bridge/br_private.h
++++ linux-4.19.129-patched/net/bridge/br_private.h
+@@ -188,6 +188,10 @@ struct net_bridge_fdb_entry {
+ 	/* write-heavy members should not affect lookups */
+ 	unsigned long			updated ____cacheline_aligned_in_smp;
+ 	unsigned long			used;
++	unsigned long                   last_flap;
++	struct net_bridge_port          *flap_port;
++	unsigned long                   flap_drops;
++	unsigned long                   flap_count;
+ 
+ 	struct rcu_head			rcu;
+ };
+@@ -425,6 +429,12 @@ struct net_bridge {
+ 	bool				mtu_set_by_user;
+ 	struct hlist_head		fdb_list;
+ 	struct ukn_unicast_stats __percpu *ukn_stats;
++#define BR_DEFAULT_FLAP_THRESHOLD      0
++#define BR_DEFAULT_FLAP_CLEAR_THRESHOLD (HZ)
++#define BR_DEFAULT_FLAP_LONG_THRESHOLD (10 * (HZ))
++	unsigned long                   flap_threshold;
++	unsigned long                   flap_clear_threshold;
++	unsigned long                   flap_long_threshold;
+ };
+ 
+ struct br_input_skb_cb {
+@@ -555,8 +565,8 @@ int br_fdb_fillbuf(struct net_bridge *br, void *buf, unsigned long count,
+ 		   unsigned long off);
+ int br_fdb_insert(struct net_bridge *br, struct net_bridge_port *source,
+ 		  const unsigned char *addr, u16 vid);
+-void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+-		   const unsigned char *addr, u16 vid, bool added_by_user);
++int br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
++		   const unsigned char *addr, u16 vid, bool added_by_user,struct sk_buff *skb);
+ 
+ int br_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
+ 		  struct net_device *dev, const unsigned char *addr, u16 vid);
+diff --git linux-4.19.129/net/bridge/br_sysfs_br.c linux-4.19.129-patched/net/bridge/br_sysfs_br.c
+index 14bd300..76c3376 100644
+--- linux-4.19.129/net/bridge/br_sysfs_br.c
++++ linux-4.19.129-patched/net/bridge/br_sysfs_br.c
+@@ -786,6 +786,86 @@ static ssize_t default_pvid_store(struct device *d,
+ }
+ static DEVICE_ATTR_RW(default_pvid);
+ 
++static int set_br_flap_threshold(struct net_bridge *br, unsigned long val)
++{
++	/* limit value to 10s */
++	if (val > 10 * MSEC_PER_SEC) {
++		val = 10 * MSEC_PER_SEC;
++	}
++	br->flap_threshold = (val * HZ) / MSEC_PER_SEC;
++	return 0;
++}
++
++static ssize_t flap_threshold_show(struct device *d,
++                                  struct device_attribute *attr,
++                                  char *buf)
++{
++	struct net_bridge *br = to_bridge(d);
++	return sprintf(buf, "%lu\n", (br->flap_threshold * MSEC_PER_SEC) / HZ);
++}
++
++static ssize_t flap_threshold_store(struct device *d,
++                                   struct device_attribute *attr,
++                                   const char *buf, size_t len)
++{
++	return store_bridge_parm(d, buf, len, set_br_flap_threshold);
++}
++static DEVICE_ATTR_RW(flap_threshold);
++
++static int set_br_flap_clear_threshold(struct net_bridge *br, unsigned long val)
++{
++	/* limit value to 10s */
++	if (val > 10 * MSEC_PER_SEC) {
++		val = 10 * MSEC_PER_SEC;
++	}
++	br->flap_clear_threshold = (val * HZ) / MSEC_PER_SEC;
++	return 0;
++}
++
++static ssize_t flap_clear_threshold_show(struct device *d,
++                                        struct device_attribute *attr,
++                                        char *buf)
++{
++	struct net_bridge *br = to_bridge(d);
++	return sprintf(buf, "%lu\n", (br->flap_clear_threshold * MSEC_PER_SEC) / HZ);
++}
++
++static ssize_t flap_clear_threshold_store(struct device *d,
++                                         struct device_attribute *attr,
++                                         const char *buf, size_t len)
++{
++	return store_bridge_parm(d, buf, len, set_br_flap_clear_threshold);
++}
++static DEVICE_ATTR_RW(flap_clear_threshold);
++
++static int set_br_flap_long_threshold(struct net_bridge *br, unsigned long val)
++{
++	/* limit value to 100s */
++	if (val > 100 * MSEC_PER_SEC) {
++		val = 100 * MSEC_PER_SEC;
++	}
++	br->flap_long_threshold = (val * HZ) / MSEC_PER_SEC;
++	return 0;
++}
++
++static ssize_t flap_long_threshold_show(struct device *d,
++                                        struct device_attribute *attr,
++                                        char *buf)
++{
++	struct net_bridge *br = to_bridge(d);
++	return sprintf(buf, "%lu\n", (br->flap_long_threshold * MSEC_PER_SEC) / HZ);
++}
++
++static ssize_t flap_long_threshold_store(struct device *d,
++                                         struct device_attribute *attr,
++                                         const char *buf, size_t len)
++{
++	return store_bridge_parm(d, buf, len, set_br_flap_long_threshold);
++}
++static DEVICE_ATTR_RW(flap_long_threshold);
++
++
++
+ static ssize_t vlan_stats_enabled_show(struct device *d,
+ 				       struct device_attribute *attr,
+ 				       char *buf)
+@@ -879,6 +959,9 @@ static struct attribute *bridge_attrs[] = {
+ 	&dev_attr_vlan_stats_enabled.attr,
+ #endif
+ 	&dev_attr_ukn_unicast_stats.attr,
++	&dev_attr_flap_threshold.attr,
++	&dev_attr_flap_clear_threshold.attr,
++	&dev_attr_flap_long_threshold.attr,
+ 	NULL
+ };
+ 

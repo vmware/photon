@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.132
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -101,6 +101,7 @@ Patch105:       0004-fou_key.patch
 Patch106:       0005-fou_unknown.patch
 Patch107:       0006-trunk.patch
 Patch108:       0007-arpfilter.patch
+Patch109:       0008-macflap_macflaplong.patch
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -215,6 +216,7 @@ popd
 %patch106 -p1
 %patch107 -p1
 %patch108 -p1
+%patch109 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -367,6 +369,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Aug 05 2020 Harinadh D <hdommaraju@vmware.com> 4.19.132-5
+-   Apply HCX mac-flap and mac-flap-long patches
 *   Tue Aug 04 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-4
 -   Upgrade vmxnet3 driver to version 4
 *   Wed Jul 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.132-3
