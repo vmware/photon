@@ -13,9 +13,9 @@ for file in ${SPEC_DIR}/kubernetes/kubernetes-*.spec; do
     K8S_VER=`cat ${file} | grep "^Version:" | cut -d: -f2 | tr -d ' '`
     K8S_VER_REL=${K8S_VER}-`cat ${file} | grep "^Release:" | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
     K8S_RPM=kubernetes-${K8S_VER_REL}${DIST_TAG}.${ARCH}.rpm
-    K8S_RPM_FILE=../../../stage/RPMS/x86_64/${K8S_RPM}
+    K8S_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${K8S_RPM}
     K8S_PAUSE_RPM=kubernetes-pause-${K8S_VER_REL}${DIST_TAG}.${ARCH}.rpm
-    K8S_PAUSE_RPM_FILE=../../../stage/RPMS/x86_64/${K8S_PAUSE_RPM}
+    K8S_PAUSE_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${K8S_PAUSE_RPM}
 
     if [ ! -f ${K8S_RPM_FILE} ]
     then

@@ -1,0 +1,163 @@
+Build config file is a json format with possible parameters:
+
+
+"photon-build-param" :
+
+  "photon-build-type":
+        Default value: "chroot"
+        values: ["chroot", "container"]
+        Example: { "photon-build-param": { "photon-build-type" : "chroot" } }
+
+  "photon-dist-tag":
+        Default value: ".ph3"
+        values: [".ph3"]
+        Example: { "photon-build-param": { "photon-dist-tag" : ".ph3" }
+
+  "photon-build-no":
+	    Default value: "0000000"
+        Example: { "photon-build-param": { "photon-build-no" : "1234567" }
+
+  "photon-release-version":
+        Default value: "3.0"
+        Example: { "photon-build-param": { "photon-release-version" : "3.0" } }
+
+  "photon-repo-tool":
+        Default value: "createrepo"
+        Example: { "photon-build-param": { "photon-repo-tool" : "createrepo" } }
+
+  "threads":
+        Default value: 1
+        values: [1,2,3...]
+        Example: { "photon-build-param": { "threads" : 32 } }
+
+  "loglevel":
+        Default value: "info"
+        values: ["info", "debug"]
+        Example: { "photon-build-param": { "loglevel" : "info" } }
+
+  "full-package-list-file":
+        Default value: "build_install_options_all.json"
+        Example: { "photon-build-param": { "full-package-list-file" : "build_install_options_all.json" } }
+
+  "rpm-check-flag":
+        Default value: false
+        values: [true, false]
+        Example: { "photon-build-param": { "rpm-check-flag" : false } }
+
+  "rpm-check-stop-on-error":
+        Default value: false
+        values: [true, false]
+        Example: { "photon-build-param": { "rpm-check-stop-on-error" : false } }
+
+  "publish-build-dependencies":
+        Default value: false
+        values: [true, false]
+        Example: { "photon-build-param": { "publish-build-dependencies" : false } }
+
+  "generate-pkg-list":
+        Default value: false
+        values: [true, false]
+        Example: { "photon-build-param": { "generate-pkg-list" : false } }
+
+  "kat-build":
+        Default value: null
+        Example: { "photon-build-param": { "kat-build" : null } }
+
+  "pkg-build-options":
+        Default value: "pkg_build_options.json"
+        Example: { "photon-build-param": { "pkg-build-options" : "pkg_build_options.json" } }
+
+  "base-commit":
+        Default value: null
+        Example: { "photon-build-param": { "base-commit" : [commit-id] } }
+
+  "target-arch":
+        Default value: null
+        values: ["aarch64", "x86_64"]
+        Example: { "photon-build-param": { "target-arch" : "aarch64" } }
+
+  "target":
+        Default value: [Makefile targets]
+        Example: { "photon-build-param": { "target" : "iso" } }
+
+"input-rpms-path":
+        Default: [src-root]/inputRPMS
+        Example: { "input-rpms-path": [input RPMS path] }
+
+"photon-path":
+        Default: [takes the config path as cloned repo path]
+        Example: { "photon-path": [cloned repo path containing SPECS dir] }
+
+
+"stage-path":
+        Default: [takes the parent directory of config path as parent for stage directory]
+        Example: { "stage-path": [path where binaries will be created] }
+
+
+"spec-path":
+        Default: [takes the photon path for spec path]
+        Example: { "spec-path": [path uptil parent directory of SPECS directory] }
+
+
+"additional-path":
+
+  "conf-file":
+        Default value: null
+        values: [path of config file for building images like ova, ami, gce, azure]
+        Example: { "additional-path" : { "conf-file" : [conf-file-path] } }
+
+  "pkg-to-be-copied-conf-file":
+        Default value: null
+        value: contains location of the file that contains packages to be copied for the image
+        Example: { "additional-path" : { "pkg-to-be-copied-conf-file" : null } }
+
+  "pkg-json-input":
+        Default value: null
+        Example: { "additional-path" : { "pkg-json-input" : null } }
+
+  "photon-cache-path":
+        Default value: null
+        Example: { "additional-path" : { "photon-cache-path" : null } }
+
+  "photon-sources-path":
+        Default value: null
+        Example: { "additional-path" : { "photon-sources-path" : null } }
+
+  "photon-publish-rpms-path":
+        Default value: null
+        Example: { "additional-path" : { "photon-publish-rpms-path" : null } }
+
+  "photon-publish-x-rpms-path":
+        Default value: null
+        Example: { "additional-path" : { "photon-publish-x-rpms-path" : null } }
+
+  "pkg-black-list-file":
+        Default value: null
+        Example: { "additional-path" : { "pkg-black-list-file" : null } }
+
+
+"utility":
+
+  "pkg":
+        Default value: null
+        Example: { "utility" : { "pkg" : null } }
+
+  "input-type":
+        Default value: "json"
+        values: ["json", "pkg", "remove-upward-deps", "print-upward-deps", "who-needs"]
+        Example: { "utility" : { "input-type" : "json" } }
+
+  "file":
+        Default value: "packages_*.json"
+        values: ["packages_*.json", "packages_$(img).json"]
+        Example: { "utility" : { "file" : "packages_*.json" } }
+
+  "display-option":
+        Default value: "json"
+        values: ["json", "list", "tree"]
+        Example: { "utility" : { "display-option" : "json" } }
+
+  "img":
+        Default value: null
+        values: ["ova", "gce", "ami", "azure"]
+        Example: { "utility" : { "img" : null } }
