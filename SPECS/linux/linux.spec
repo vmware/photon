@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.132
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -111,6 +111,8 @@ Patch85:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
 Patch86:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
 Patch87:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
 
+# inherit tcp_limit_output_bytes
+Patch90:	tcp-inherit-TSQ-limit-from-root-namespace.patch
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 # Patch to call drbg and dh crypto tests from tcrypt
@@ -383,6 +385,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch86 -p1
 %patch87 -p1
 
+%patch90 -p1
 %patch98 -p1
 %patch100 -p1
 %patch101 -p1
@@ -796,6 +799,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Tue Aug 04 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.132-5
+-   Inherit TSQ limit from root namespace
 *   Tue Aug 04 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-4
 -   Upgrade vmxnet3 driver to version 4
 *   Mon Jul 27 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.132-3

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.132
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -100,6 +100,9 @@ Patch55:        0001-p9fs_dir_readdir-offset-support.patch
 Patch56:	0002-Add-9p-zero-copy-data-path-using-crossfd.patch
 Patch57:	0003-Enable-cache-loose-for-vdfs-9p.patch
 Patch58:	0004-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
+
+# inherit tcp_limit_output_bytes
+Patch90:	tcp-inherit-TSQ-limit-from-root-namespace.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -214,6 +217,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch56 -p1
 %patch57 -p1
 %patch58 -p1
+%patch90 -p1
 %patch98 -p1
 %patch100 -p1
 %patch101 -p1
@@ -347,6 +351,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Aug 03 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.132-4
+-   Inherit TSQ limit from root namespace
 *   Tue Jul 28 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-3
 -   Upgrade vmxnet3 driver to version 4
 *   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-2
