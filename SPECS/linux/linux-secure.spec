@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.132
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -75,6 +75,15 @@ Patch48:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch49:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 # Fix for CVE-2020-14331
 Patch50:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
+
+# Upgrade vmxnet3 driver to version 4
+Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
+Patch82:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
+Patch83:        0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
+Patch84:        0004-vmxnet3-update-to-version-4.patch
+Patch85:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
+Patch86:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
+Patch87:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -184,6 +193,14 @@ This Linux package contains hmac sha generator kernel module.
 %patch48 -p1
 %patch49 -p1
 %patch50 -p1
+
+%patch81 -p1
+%patch82 -p1
+%patch83 -p1
+%patch84 -p1
+%patch85 -p1
+%patch86 -p1
+%patch87 -p1
 
 %patch98 -p1
 pushd ..
@@ -350,6 +367,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Aug 04 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-4
+-   Upgrade vmxnet3 driver to version 4
 *   Wed Jul 29 2020 Keerthana K <keerthanak@vmware.com> 4.19.132-3
 -   Apply HCX patches
 *   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-2
