@@ -1,15 +1,14 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
-Version:        2.1.0
-Release:        2%{?dist}
+Version:        2.2.2
+Release:        1%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.haproxy.org/download/2.0/src/%{name}-%{version}.tar.gz
-%define sha1 haproxy=c1c19959d6c472af922243328f9beacede6f47a6
-Patch0:         haproxy-CVE-2020-11100.patch
+Source0:        http://www.haproxy.org/download/2.2/src/%{name}-%{version}.tar.gz
+%define sha1 haproxy=7f2680debd15d4953749c805084c446e83c67d93
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  lua-devel
@@ -31,7 +30,6 @@ Requires:       %{name} = %{version}-%{release}
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 make %{?_smp_mflags} TARGET=linux-glibc USE_PCRE=1 USE_OPENSSL=1 \
@@ -62,6 +60,9 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Wed Aug 05 2020 Andrew Kutz <akutz@vmware.com> 2.2.2-1
+-   Update to version 2.2.2
+-   Removed patch for CVE-2020-11100 as it is now built into the program
 *   Wed Aug 05 2020 Andrew Kutz <akutz@vmware.com> 2.1.0-2
 -   Build with --no-as-needed to fix error dynamically loading pthread_cancel
 *   Tue Apr 14 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.0-1
