@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.127
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -693,6 +693,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed Aug 05 2020 Sharan Turlapati <sturlapati@vmware.com> 4.19.127-5
+-   Enable CONFIG_TCP_CONG_BBR
 *   Wed Jul 29 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.127-4
 -   .config: add zram module
 *   Mon Jul 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.127-3
