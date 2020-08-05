@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        2.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -36,7 +36,8 @@ Requires:       %{name} = %{version}-%{release}
 %build
 make %{?_smp_mflags} TARGET=linux-glibc USE_PCRE=1 USE_OPENSSL=1 \
         USE_GETADDRINFO=1 USE_ZLIB=1 USE_SYSTEMD=1 \
-        EXTRA_OBJS="contrib/prometheus-exporter/service-prometheus.o"
+        EXTRA_OBJS="contrib/prometheus-exporter/service-prometheus.o" \
+        ADDLIB="-Wl,--no-as-needed -lgcc_s -Wl,--as-needed"
 make %{?_smp_mflags} -C contrib/systemd
 sed -i s/"local\/"/""/g contrib/systemd/haproxy.service
 sed -i "s/\/run/\/var\/run/g" contrib/systemd/haproxy.service
@@ -61,6 +62,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Wed Aug 05 2020 Andrew Kutz <akutz@vmware.com> 2.1.0-2
+-   Build with --no-as-needed to fix error dynamically loading pthread_cancel
 *   Tue Apr 14 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.0-1
 -   Update to 2.1.0, add prometheus support
 *   Mon Apr 06 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.10-2
