@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -251,7 +251,6 @@ rm -rf %{buildroot}/*
 %files tools
 %defattr(-,root,root,755)
 %doc Tools/README
-%{_libdir}/python3.7/lib2to3
 %{_bindir}/2to3-3.7
 %exclude %{_bindir}/idle*
 
@@ -272,6 +271,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Thu Aug 06 2020 Tapas Kundu <tkundu@vmware.com> 3.7.5-6
+-   Do not package /usr/lib/python3.7/lib2to3 in tools
 *   Mon Jul 20 2020 Tapas Kundu <tkundu@vmware.com> 3.7.5-5
 -   Fix for CVE-2019-20907
 *   Wed Jul 01 2020 Tapas Kundu <tkundu@vmware.com> 3.7.5-4
