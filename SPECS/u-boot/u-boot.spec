@@ -3,7 +3,7 @@
 Summary:        U-Boot EFI firmware
 Name:		u-boot
 Version:	2020.07
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
@@ -15,8 +15,7 @@ Source2:        fw_env.config
 Patch0:		0001-XXX-openSUSE-XXX-Load-dtb-from-part.patch
 Patch1:		0004-Fix-MMC1-external-SD-slot-on-Samsun.patch
 Patch2:		0005-Fix-no-usb.patch
-Patch3:         add_tcp_wget_support.patch
-Patch4:         add-saveenv-in-bootcmd.patch
+Patch3:         add-saveenv-in-bootcmd.patch
 
 Group:          Development/Tools
 BuildArch:      aarch64
@@ -37,7 +36,6 @@ env variables from linux shell prompt.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 
 %build
 cp %{SOURCE1} configs/
@@ -59,6 +57,8 @@ install -D -m 0644 %{SOURCE2} %{buildroot}/etc/fw_env.config
 /usr/bin/fw_setenv
 
 %changelog
+*   Thu Aug 06 2020 Sujay G <gsujay@vmware.com> 2020.07-3
+-   Removed add_tcp_wget_support.patch, not compatible with 2020.07 version
 *   Tue Jul 28 2020 Sujay G <gsujay@vmware.com> 2020.07-2
 -   Update checksum value
 *   Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 2020.07-1
