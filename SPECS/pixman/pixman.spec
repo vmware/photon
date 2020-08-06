@@ -1,15 +1,15 @@
-Summary:	pixel manipulation library.
-Name:		pixman
-Version:	0.40.0
-Release:	1%{?dist}
-License:	MIT
-URL:		http://cgit.freedesktop.org/pixman/
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	https://xorg.freedesktop.org/archive/individual/lib/%{name}-%{version}.tar.gz
-%define sha1 pixman=d7baa6377b6f48e29db011c669788bb1268d08ad
-BuildRequires:	libtool
+Summary:        pixel manipulation library.
+Name:           pixman
+Version:        0.40.0
+Release:        1%{?dist}
+License:        MIT
+URL:            http://cgit.freedesktop.org/pixman/
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://xorg.freedesktop.org/archive/individual/lib/%{name}-%{version}.tar.gz
+%define sha1    pixman=d7baa6377b6f48e29db011c669788bb1268d08ad
+BuildRequires:  libtool
 
 %description
 Pixman is a pixel manipulation library for X and Cairo.
@@ -25,7 +25,7 @@ It contains the libraries and header files to create applications
 %prep
 %setup -q
 %build
-./configure \
+%configure \
 	--prefix=%{_prefix} \
 	CFLAGS="-O3 -fPIC" \
 	--disable-static

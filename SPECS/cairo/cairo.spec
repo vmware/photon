@@ -1,14 +1,14 @@
 Summary:        A 2D graphics library.
 Name:           cairo
-Version:        1.16.0
+Version:        1.17.2
 Release:        1%{?dist}
 License:        LGPLv2 or MPLv1.1
-URL:            http://cairographics.org
+URL:            http://www.linuxfromscratch.org/blfs/view/svn/x/cairo.html
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://cairographics.org/releases/%{name}-%{version}.tar.xz
-%define sha1    cairo=00e81842ae5e81bb0343108884eb5205be0eac14
+%define sha1    cairo=ce1234bd120bb0c1679a75a5c3c76d0b2edcc88f
 BuildRequires:  pkg-config
 BuildRequires:  libpng-devel
 BuildRequires:  libxml2-devel
@@ -20,7 +20,6 @@ Requires:       pixman
 Requires:       glib
 Requires:       libpng
 Requires:       expat
-
 %description
 Cairo is a 2D graphics library with support for multiple output devices.
 
@@ -29,13 +28,13 @@ Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
 Requires:	freetype2-devel
 Requires:	pixman-devel
-
 %description	devel
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q
+%setup -cqn %{name}-%{version}
 %build
+mv %{name}-%{version}*/* .
 %configure \
     --enable-xlib=no        \
     --enable-xlib-render=no \
@@ -59,7 +58,6 @@ find %{buildroot} -name '*.la' -delete
 %{_bindir}/*
 %{_libdir}/*.so.*
 %{_libdir}/cairo/*.so*
-%{_datadir}/*
 
 %files devel
 %defattr(-,root,root)
@@ -69,6 +67,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Tue Jul 14 2020 Gerrit Photon <photon-checkins@vmware.com> 1.17.2-1
+-       Automatic Version Bump
 *       Thu Mar 14 2019 Michelle Wang <michellew@vmware.com> 1.16.0-1
 -       Upgrade cairo to 1.16.0 for CVE-2018-18064
 -       CVE-2018-18064 is for version up to (including) 1.15.14
