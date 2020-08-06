@@ -1,7 +1,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -18,7 +18,7 @@ Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 
 BuildArch:      x86_64
 BuildRequires:  dotnet-sdk = 3.1.201
-BuildRequires:  dotnet-runtime = 3.1.3
+BuildRequires:  dotnet-runtime = 3.1.6
 BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang
@@ -97,6 +97,8 @@ fi
     %{_docdir}/*
 
 %changelog
+*   Fri Aug 07 2020 Shreyas B <shreyasb@vmware.com> 7.0.0-2
+-   Update dotnet-runtime v3.1.6
 *   Sat Apr 11 2020 Shreyas B <shreyasb@vmware.com> 7.0.0-1
 -   Upgrade powershell to 7.0.0
 *   Thu Dec 19 2019 Shreyas B <shreyasb@vmware.com> 6.2.3-5
