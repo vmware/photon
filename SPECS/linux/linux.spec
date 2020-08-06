@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.132
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -799,6 +799,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Thu Aug 06 2020 Sharan Turlapati <sturlapati@vmware.com> 4.19.132-6
+-   Enable CONFIG_TCP_CONG_BBR
 *   Tue Aug 04 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.132-5
 -   Inherit TSQ limit from root namespace
 *   Tue Aug 04 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-4
