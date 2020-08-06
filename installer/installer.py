@@ -50,6 +50,7 @@ class Installer(object):
         'eject_cdrom',
         'hostname',
         'install_linux_esx',
+        'linux_flavor',
         'live',
         'log_level',
         'ostree',
@@ -66,11 +67,12 @@ class Installer(object):
         'setup_grub_script',
         'shadow_password',
         'type',
-        'ui',
-        'linux_flavor'
+        'ui'
     }
 
     default_partitions = [{"mountpoint": "/", "size": 0, "filesystem": "ext4"}]
+    all_linux_flavors = ["linux", "linux-esx", "linux-aws", "linux-secure", "linux-rt"]
+    linux_dependencies = ["devel", "drivers", "docs", "oprofile", "dtb", "hmacgen"]
 
     def __init__(self, working_directory="/mnt/photon-root",
                  rpm_path=os.path.dirname(__file__)+"/../stage/RPMS", log_path=os.path.dirname(__file__)+"/../stage/LOGS"):
@@ -220,6 +222,20 @@ class Installer(object):
             if dirname not in install_config['search_path']:
                 install_config['search_path'].append(dirname)
 
+        if 'linux_flavor' not in install_config:
+            if install_config.get('install_linux_esx', False) == True:
+                install_config['linux_flavor'] = "linux-esx"
+            else:
+                available_flavors=[]
+                for flavor in self.all_linux_flavors:
+                    if flavor in install_config['packages']:
+                        available_flavors.append(flavor)
+                if len(available_flavors) == 1:
+                    install_config['linux_flavor'] = available_flavors[0]
+
+
+        install_config['install_linux_esx'] = False
+
     def _check_install_config(self, install_config):
         """
         Sanity check of install_config before its execution.
@@ -233,13 +249,10 @@ class Installer(object):
         if not 'disk' in install_config:
             return "No disk configured"
 
-
-        if 'linux_flavor' not in install_config:
-            if install_config.get('install_linux_esx', False) == True:
-                install_config['linux_flavor'] = "linux-esx"
-            else:
-                install_config['linux_flavor'] = "linux"
-        install_config['install_linux_esx'] = False
+        # For Ostree install_config['packages'] will be empty list, because ostree
+        # uses preinstalled tree ostree-repo.tar.gz for installation
+        if 'ostree' not in install_config and 'linux_flavor' not in install_config:
+            return "Attempting to install more than one linux flavor"
 
         # Perform following checks here:
         # 1) Only one extensible partition is allowed per disk
@@ -773,59 +786,35 @@ class Installer(object):
             self.logger.info("Executing: " + module)
             mod.execute(self)
 
-    def _adjust_packages_for_vmware_virt(self):
-        """
-        Install linux_esx on Vmware virtual machine if requested
-        """
-        if self.install_config['install_linux_esx']:
-            if 'linux' in self.install_config['packages']:
-                self.install_config['packages'].remove('linux')
-            else:
-                regex = re.compile(r'(?!linux-[0-9].*)')
-                self.install_config['packages'] = list(filter(regex.match,self.install_config['packages']))
-            self.install_config['packages'].append('linux-esx')
-        else:
-            if 'linux-esx' in self.install_config['packages']:
-                self.install_config['packages'].remove('linux-esx')
-            else:
-                regex = re.compile(r'(?!linux-esx-[0-9].*)')
-                self.install_config['packages'] = list(filter(regex.match,self.install_config['packages']))
-
-    def filter_packages(self, package):
-        all_linux_flavors = ["", "esx", "aws", "secure", "rt"]
-        linux_dependencies = ["devel", "drivers", "docs", "oprofile", "dtb", "hmacgen"]
-        redundent_linux_flavors = list(filter(self.filter_flavors, all_linux_flavors))
-        package = package.split('-')
-        if len(package) > 1:
-            flavor = package[1]
-        else:
-            flavor = ""
-        if(package[0] != "linux"):
-            return True
-        elif("" in redundent_linux_flavors and flavor in linux_dependencies):
-            return False
-        elif(flavor in redundent_linux_flavors):
-            return False
-        else:
-            return True
-
-    def filter_flavors(self, linux_flavor):
-        selected_linux_flavor = self.install_config['linux_flavor'].split('-')
-        if len(selected_linux_flavor) > 1:
-            selected_linux_flavor = selected_linux_flavor[1]
-        else:
-            selected_linux_flavor = ""
-        if(linux_flavor == selected_linux_flavor):
-            return False
-        else:
-            return True
-
     def _adjust_packages_based_on_selected_flavor(self):
         """
         Install slected linux flavor only
         """
-        if 'linux_flavor' in self.install_config:
-            self.install_config['packages'] = list(filter(self.filter_packages,self.install_config['packages']))
+        redundant_linux_flavors = []
+        def filter_packages(package):
+            package = package.split('-')
+            if len(package) > 1:
+                flavor = package[1]
+            else:
+                flavor = ""
+            if(package[0] != "linux"):
+                return True
+            elif("" in redundant_linux_flavors and flavor in self.linux_dependencies):
+                return False
+            elif(flavor in redundant_linux_flavors):
+                return False
+            else:
+                return True
+
+        for flavor in self.all_linux_flavors:
+            if(flavor != self.install_config['linux_flavor']):
+                flavor = flavor.split('-')
+                if len(flavor) > 1:
+                    flavor = flavor[1]
+                else:
+                    flavor = ""
+                redundant_linux_flavors.append(flavor)
+        self.install_config['packages'] = list(filter(filter_packages,self.install_config['packages']))
 
     def _add_packages_to_install(self, package):
         """

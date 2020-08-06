@@ -5,7 +5,8 @@
         "additional_files": [
             {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"}
         ],
-        "packagelist_file": "packages_ami.json"
+        "packagelist_file": "packages_ami.json",
+        "linux_flavor": "linux-aws"
     },
     "image_type": "ami",
     "size": 8192,

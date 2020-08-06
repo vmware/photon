@@ -8,7 +8,8 @@
             "crypted": false,
             "text": "changeme"
         },
-	"public_key": ""
+        "public_key": "",
+        "linux_flavor": "linux-esx"
     },
     "image_type": "ova",
     "size": 16384,

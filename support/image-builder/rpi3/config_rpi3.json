@@ -18,7 +18,8 @@
                             {"resizefs.sh": "/usr/local/bin/resizefs.sh"},
                             {"resizefs.service": "/lib/systemd/system/resizefs.service"}
         ],
-        "postinstallscripts": ["rpi3-custom-patch.sh" ]
+        "postinstallscripts": ["rpi3-custom-patch.sh" ],
+        "linux_flavor": "linux"
     },
     "image_type": "rpi3",
     "size": 512,

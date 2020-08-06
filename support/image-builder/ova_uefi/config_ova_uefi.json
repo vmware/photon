@@ -7,8 +7,9 @@
             "crypted": false,
             "text": "changeme"
         },
-	"public_key": "",
-        "packagelist_file": "packages_ova.json"
+ 	"public_key": "",
+        "packagelist_file": "packages_ova.json",
+        "linux_flavor": "linux-esx"
     },
     "image_type": "ova_uefi",
     "size": 16384,
