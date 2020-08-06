@@ -6,7 +6,8 @@
             {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"},
             {"ntpd.service": "/usr/lib/systemd/system/ntpd.service"}
         ],
-        "packagelist_file": "packages_gce.json"
+        "packagelist_file": "packages_gce.json",
+        "linux_flavor": "linux"
     },
     "image_type": "gce",
     "size": 16384,
