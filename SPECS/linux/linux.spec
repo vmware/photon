@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.228
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -105,6 +105,9 @@ Patch67:        4.9-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.pa
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
 Patch72: 0002-apparmor-Fix-quieting-of-audit-messages-for-network-.patch
 Patch73: 0003-UBUNTU-SAUCE-apparmor-Add-the-ability-to-mediate-mou.patch
+# Fix for CVE-2020-16166
+Patch74: 0001-random32-update-the-net-random-state-on-interrupt-an.patch
+Patch75: 0002-random32-remove-net_rand_state-from-the-latent-entro.patch
 
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 
@@ -242,6 +245,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
+%patch74 -p1
+%patch75 -p1
 
 %patch111 -p1
 
@@ -415,6 +420,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Aug 06 2020 Ashwin H <ashwinh@vmware.com> 4.9.228-3
+-   Fix CVE-2020-16166
 *   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.228-2
 -   Fix CVE-2020-14331
 *   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.9.228-1
