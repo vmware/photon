@@ -1,15 +1,15 @@
 Summary:        SELinux policy
 Name:           selinux-policy
-Version:        3.14.5
-Release:        8%{?dist}
+Version:        3.14.6
+Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
-Source0:        https://github.com/fedora-selinux/%{name}/archive/ad1d35503f55f535401daa0a59913aa559c38d44/%{name}-ad1d3550.tar.gz
-%define sha1 selinux-policy-ad=e7bf6f64722df5ca10b6a6ee83a304e630262608
-Source1:        https://github.com/fedora-selinux/%{name}-contrib/archive/6db7310a3b7385e07359a978a46c52d7ec22bedd/%{name}-contrib-6db7310a.tar.gz
-%define sha1 selinux-policy-contrib=284f99c684043c24b5e8a281cf2d67bf182cd4b8
-Source2:        https://github.com/containers/container-selinux/archive/container-selinux-2.132.0.tar.gz
-%define sha1 container-selinux=72227c05f11c6e9b2bfc24be2ad3d9c5e1ed376c
+Source0:        https://github.com/fedora-selinux/%{name}/archive/217d49334447021da909edf8b07007e319540ae3/%{name}-217d4933.tar.gz
+%define sha1 selinux-policy-21=5435446da52c8e5e0c64ee8485ef6ec601239412
+Source1:        https://github.com/fedora-selinux/%{name}-contrib/archive/72b352431e6cdce2bd6a26ad942d373f42dbba58/%{name}-contrib-72b35243.tar.gz
+%define sha1 selinux-policy-contrib=77b3e80545e54ff23581f92a78391ec762a79f36
+Source2:        https://github.com/containers/container-selinux/archive/container-selinux-2.143.0.tar.gz
+%define sha1 container-selinux=791ac11c64dd8ce0b88f967d3a834180f8fce8c6
 Source3:        build.conf
 Source4:        modules.conf
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -51,11 +51,11 @@ Requires: m4 checkpolicy
 SELinux policy development
 
 %prep
-%setup -q -b 1 -n %{name}-contrib-6db7310a3b7385e07359a978a46c52d7ec22bedd
-%setup -q -b 2 -n container-selinux-2.132.0
-%setup -qn %{name}-ad1d35503f55f535401daa0a59913aa559c38d44
-cp ../%{name}-contrib-6db7310a3b7385e07359a978a46c52d7ec22bedd/* policy/modules/contrib/
-cp -r ../container-selinux-2.132.0/container.* policy/modules/contrib/
+%setup -q -b 1 -n %{name}-contrib-72b352431e6cdce2bd6a26ad942d373f42dbba58
+%setup -q -b 2 -n container-selinux-2.143.0
+%setup -qn %{name}-217d49334447021da909edf8b07007e319540ae3
+cp ../%{name}-contrib-72b352431e6cdce2bd6a26ad942d373f42dbba58/* policy/modules/contrib/
+cp -r ../container-selinux-2.143.0/container.* policy/modules/contrib/
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
@@ -119,6 +119,8 @@ fi
 %{_sharedstatedir}/selinux/default
 
 %changelog
+* Thu Aug 06 2020 Vikash Bansal <bvikas@vmware.com> 3.14.6-1
+- Version Bump up to 3.14.6
 * Fri Jul 31 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-8
 - Add support of rabbitmq module
 - Fixed issue of accessing "ds-identify.log" by blkid

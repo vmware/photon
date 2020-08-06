@@ -1,7 +1,7 @@
-diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/roles/staff.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/roles/staff.te
---- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/roles/staff.te	2020-04-09 16:24:32.000000000 +0000
-+++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/roles/staff.te	2020-04-23 01:41:46.993190575 +0000
-@@ -349,104 +349,6 @@
+diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/roles/staff.te selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/roles/staff.te
+--- selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/roles/staff.te	2020-08-06 21:37:13.731801762 +0530
++++ selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/roles/staff.te	2020-08-06 21:41:02.611813282 +0530
+@@ -351,108 +351,6 @@
  	xserver_run(staff_t, staff_r)
  ')
  
@@ -76,6 +76,10 @@ diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules
 -
 -	optional_policy(`
 -		su_role_template(staff, staff_r, staff_t)
+-	')
+-
+-	optional_policy(`
+-		systemd_systemctl_entrypoint(staff_t)
 -	')
 -
 -	optional_policy(`

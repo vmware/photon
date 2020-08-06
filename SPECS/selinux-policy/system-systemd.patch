@@ -1,6 +1,6 @@
-diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/systemd.fc selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/systemd.fc
---- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/systemd.fc	2020-07-29 02:02:51.561464278 +0530
-+++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/systemd.fc	2020-07-29 02:04:54.593470470 +0530
+diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/system/systemd.fc selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/system/systemd.fc
+--- selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/system/systemd.fc	2020-08-06 22:43:50.604002940 +0530
++++ selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/system/systemd.fc	2020-08-06 22:45:05.820006726 +0530
 @@ -98,4 +98,6 @@
  
  /var/run/initramfs(/.*)?	<<none>>
@@ -8,10 +8,10 @@ diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules
 +/var/run/systemd/timesync/synchronized	gen_context(system_u:object_r:systemd_timedated_var_run_t,s0)
 +
  /run/systemd/resolve(/.*)?	gen_context(system_u:object_r:systemd_resolved_var_run_t,s0)
-diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/systemd.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/systemd.te
---- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/systemd.te	2020-07-29 02:02:51.561464278 +0530
-+++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/systemd.te	2020-07-29 02:03:45.613466998 +0530
-@@ -133,7 +133,6 @@
+diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/system/systemd.te selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/system/systemd.te
+--- selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/system/systemd.te	2020-08-06 22:43:50.604002940 +0530
++++ selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/system/systemd.te	2020-08-07 23:03:22.008410757 +0530
+@@ -136,7 +136,6 @@
  systemd_domain_template(systemd_timedated)
  init_nnp_daemon_domain(systemd_timedated_t)
  typeattribute systemd_timedated_t systemd_domain;
@@ -19,7 +19,7 @@ diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules
  
  type systemd_timedated_unit_file_t;
  systemd_unit_file(systemd_timedated_unit_file_t)
-@@ -874,12 +873,14 @@
+@@ -885,12 +884,14 @@
  
  list_dirs_pattern(systemd_timedated_t, systemd_networkd_var_run_t, systemd_networkd_var_run_t)
  read_files_pattern(systemd_timedated_t, systemd_networkd_var_run_t, systemd_networkd_var_run_t)
@@ -34,7 +34,7 @@ diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules
  
  dev_rw_realtime_clock(systemd_timedated_t)
  dev_write_kmsg(systemd_timedated_t)
-@@ -1040,6 +1041,7 @@
+@@ -1052,6 +1053,7 @@
  read_files_pattern(systemd_resolved_t, systemd_networkd_var_run_t, systemd_networkd_var_run_t)
  
  kernel_dgram_send(systemd_resolved_t)
@@ -42,7 +42,7 @@ diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules
  kernel_read_net_sysctls(systemd_resolved_t)
  kernel_read_network_state(systemd_resolved_t)
  
-@@ -1051,6 +1053,11 @@
+@@ -1063,6 +1065,11 @@
  corenet_udp_bind_dns_port(systemd_resolved_t)
  corenet_tcp_bind_dns_port(systemd_resolved_t)
  corenet_udp_bind_howl_port(systemd_resolved_t)
@@ -54,17 +54,18 @@ diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules
  
  dev_write_kmsg(systemd_resolved_t)
  dev_read_sysfs(systemd_resolved_t)
-@@ -1134,6 +1141,7 @@
- files_read_kernel_modules(systemd_modules_load_t)
+@@ -1152,6 +1159,7 @@
+ modutils_exec_kmod(systemd_modules_load_t)
  modutils_read_module_config(systemd_modules_load_t)
  modutils_read_module_deps_files(systemd_modules_load_t)
 +logging_dgram_send(systemd_modules_load_t)
  
+ systemd_read_efivarfs(systemd_modules_load_t)
  
- #######################################
-@@ -1244,3 +1252,5 @@
+@@ -1265,3 +1273,6 @@
+ logging_send_syslog_msg(systemd_userdbd_t)
  
- init_stream_connectto(systemd_userdbd_t)
- 
+ systemd_read_efivarfs(systemd_userdbd_t)
++
 +logging_send_syslog_msg(systemd_userdbd_t)
 +

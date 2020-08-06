@@ -1,7 +1,7 @@
-diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/roles/unprivuser.te selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/roles/unprivuser.te
---- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/roles/unprivuser.te	2020-04-09 16:24:32.000000000 +0000
-+++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/roles/unprivuser.te	2020-04-23 01:42:20.177385342 +0000
-@@ -151,139 +151,6 @@
+diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/roles/unprivuser.te selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/roles/unprivuser.te
+--- selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/roles/unprivuser.te	2020-08-06 21:37:13.731801762 +0530
++++ selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/roles/unprivuser.te	2020-08-06 22:36:13.955979955 +0530
+@@ -154,144 +154,6 @@
  	vlock_run(user_t, user_r)
  ')
  
@@ -108,6 +108,11 @@ diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules
 -	optional_policy(`
 -		sudo_role_template(user, user_r, user_t)
 -	')
+-
+-	optional_policy(`
+-		systemd_systemctl_entrypoint(user_t)
+-	')
+-
 -
 -	optional_policy(`
 -		thunderbird_role(user_r, user_t)
