@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.132
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.138
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b292a467da38927d948f1b99c53f03ab479363c9
+%define sha1 linux=f2c4d9c4673ce82446a10787481e90ec1545cb6c
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -41,12 +41,6 @@ Patch14:        0002-Added-PAX_RANDKSTACK.patch
 Patch15:        0003-Added-rap_plugin.patch
 # HyperV Patches
 Patch16:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
-# Fix CVE-2019-19072
-Patch19:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
-# Fix CVE-2019-19073
-Patch20:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
-# Fix CVE-2019-19074
-Patch21:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
@@ -175,9 +169,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
-%patch19 -p1
-%patch20 -p1
-%patch21 -p1
 %patch26 -p1
 %patch31 -p1
 %patch32 -p1
@@ -369,6 +360,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Sat Aug 08 2020 ashwin-h <ashwinh@vmware.com> 4.19.138-1
+-   Update to version 4.19.138
 *   Wed Aug 05 2020 Harinadh D <hdommaraju@vmware.com> 4.19.132-5
 -   Apply HCX mac-flap and mac-flap-long patches
 *   Tue Aug 04 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-4

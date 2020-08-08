@@ -54,9 +54,9 @@ index f17f602..010b460 100644
  /* Module parameters */
  #define MAX_QUEUES_DEFAULT 8
  static unsigned int xennet_max_queues;
-@@ -63,6 +70,12 @@ module_param_named(max_queues, xennet_max_queues, uint, 0644);
- MODULE_PARM_DESC(max_queues,
- 		 "Maximum number of queues per virtual interface");
+@@ -65,6 +72,12 @@ MODULE_PARM_DESC(max_queues,
+ 
+ #define XENNET_TIMEOUT  (5 * HZ)
  
 +static unsigned int netfront_freeze_timeout_secs = 10;
 +module_param_named(freeze_timeout_secs,

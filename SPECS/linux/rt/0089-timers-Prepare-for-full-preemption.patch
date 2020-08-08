@@ -65,10 +65,10 @@ diff --git a/kernel/time/timer.c b/kernel/time/timer.c
 index ae64cb819a9a..9019c9caf146 100644
 --- a/kernel/time/timer.c
 +++ b/kernel/time/timer.c
-@@ -44,6 +44,7 @@
- #include <linux/sched/debug.h>
+@@ -45,6 +45,7 @@
  #include <linux/slab.h>
  #include <linux/compat.h>
+ #include <linux/random.h>
 +#include <linux/swait.h>
  
  #include <linux/uaccess.h>

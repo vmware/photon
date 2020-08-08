@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.132
+Version:        4.19.138
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
-Release:        5%{?kat_build:.%kat}%{?dist}
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b292a467da38927d948f1b99c53f03ab479363c9
+%define sha1 linux=f2c4d9c4673ce82446a10787481e90ec1545cb6c
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
@@ -38,12 +38,7 @@ Patch7:         9p-trans_fd-extend-port-variable-to-u32.patch
 Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 # ttyXRUSB support
 Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
-# Fix CVE-2019-19072
-Patch17:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
-# Fix CVE-2019-19073
-Patch18:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
-# Fix CVE-2019-19074
-Patch19:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
+
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Out-of-tree patches from AppArmor:
 Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
@@ -470,9 +465,6 @@ The Linux package contains the Linux kernel doc files
 %patch7 -p1
 %patch9 -p1
 %patch11 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
 %patch26 -p1
 %patch29 -p1
 %patch30 -p1
@@ -986,6 +978,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Aug 13 2020 ashwin-h <ashwinh@vmware.com> 4.19.138-1
+-   Update to version 4.19.138
 *   Wed Aug 12 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-5
 -   Increment release number to enable kernel signing (for secure boot).
 *   Wed Aug 05 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.132-4

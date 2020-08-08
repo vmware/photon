@@ -79,7 +79,7 @@ index 2bfd79026bb3..598398e3c841 100644
  	skb_queue_walk_safe(&sd->input_pkt_queue, skb, tmp) {
  		if (skb->dev->reg_state == NETREG_UNREGISTERING) {
  			__skb_unlink(skb, &sd->input_pkt_queue);
--			kfree_skb(skb);
+-			dev_kfree_skb_irq(skb);
 +			__skb_queue_tail(&sd->tofree_queue, skb);
  			input_queue_head_incr(sd);
  		}

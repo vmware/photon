@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.132
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.138
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b292a467da38927d948f1b99c53f03ab479363c9
+%define sha1 linux=f2c4d9c4673ce82446a10787481e90ec1545cb6c
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -83,12 +83,6 @@ Patch40:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch41:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 Patch42:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
-# Fix CVE-2019-19072
-Patch43:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
-# Fix CVE-2019-19073
-Patch44:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
-# Fix CVE-2019-19074
-Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
 # Fix for CVE-2020-12888
 Patch50:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch51:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
@@ -213,9 +207,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch40 -p1
 %patch41 -p1
 %patch42 -p1
-%patch43 -p1
-%patch44 -p1
-%patch45 -p1
 %patch50 -p1
 %patch51 -p1
 %patch52 -p1
@@ -364,6 +355,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Aug 12 2020 ashwin-h <ashwinh@vmware.com> 4.19.138-1
+-   Update to version 4.19.138
 *   Sun Aug 09 2020 Mounesh Badiger <badigerm@vmware.con> 4.19.132-5
 -   VDFS 9p Initial recovery logic in 9p.
 -   VDFS 9p Add lock state for 9P fid to use it for recovery
