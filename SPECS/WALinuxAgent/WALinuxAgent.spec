@@ -1,14 +1,13 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
-Version:        2.2.35
-Release:        2%{?dist}
+Version:        2.2.40
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         photondistroadd.patch
-Patch1:         CVE-2019-0804.patch
-%define sha1 WALinuxAgent=2cebed7efab54adb634c97519900f7a1de55403a
+%define sha1 WALinuxAgent=39d7286413ea7d2c70db1767b5a61a3e0b89a78c
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -42,7 +41,6 @@ images that are built to run in the Windows Azure environment.
 %prep
 %setup -q -n %{name}-%{version}
 %patch0 -p1
-%patch1 -p1
 
 %pre -p /bin/sh
 
@@ -85,6 +83,8 @@ python2 setup.py check && python2 setup.py test
 /usr/lib/python2.7/site-packages/*
 
 %changelog
+* Mon Aug 10 2020 Anisha Kumari <kanisha@vmware.com> 2.2.40-1
+- updated to version 2.2.40 and removed patch for CVE-2019-0804
 * Wed Apr 29 2020 Anisha Kumari <kanisha@vmware.com> 2.2.35-2
 - Fix - added patch for CVE-2019-0804
 * Tue Feb 12 2019 Tapas Kundu <tkundu@vmware.com> 2.2.35-1
