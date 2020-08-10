@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.4
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -154,6 +154,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Mon Aug 10 2020 Andrew Kutz <akutz@vmware.com> 19.4-7
+-   Support setting the host FQDN
 *   Thu Jul 30 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.4-6
 -   Bring back 'passwd' field in create_user
 *   Fri Jul 24 2020 Susant Sahani <ssahani@vmware.com> 19.4-5

@@ -1,7 +1,7 @@
-diff --color -rupN cloud-init-19.4/cloudinit/distros/photon.py cloud-init-19.4-v2-network-config-dhcp-use-domain/cloudinit/distros/photon.py
---- cloud-init-19.4/cloudinit/distros/photon.py	1970-01-01 00:00:00.000000000 +0000
-+++ cloud-init-19.4-v2-network-config-dhcp-use-domain/cloudinit/distros/photon.py	2020-07-24 04:43:42.575278846 +0000
-@@ -0,0 +1,473 @@
+diff -rupN cloud-init-src/cloudinit/distros/photon.py cloud-init-photon/cloudinit/distros/photon.py
+--- cloud-init-src/cloudinit/distros/photon.py	1969-12-31 18:00:00.000000000 -0600
++++ cloud-init-photon/cloudinit/distros/photon.py	2020-08-10 09:34:46.000000000 -0500
+@@ -0,0 +1,475 @@
 +# vi: ts=4 expandtab
 +#
 +# Copyright (C) 2020 VMware Inc.
@@ -319,9 +319,11 @@ diff --color -rupN cloud-init-19.4/cloudinit/distros/photon.py cloud-init-19.4-v
 +            return False
 +
 +    def _select_hostname(self, hostname, fqdn):
-+        # Prefer the short hostname over the long
-+        # fully qualified domain name
-+        if not hostname:
++        # Prefer the the fully-qualified domain name over the short host name.
++        # Otherwise it is not possible to use cloud-init to set an FQDN for a
++        # host because of the way the host name is configured with cloud-init
++        # and the datasource used by Photon.
++        if fqdn:
 +            return fqdn
 +        return hostname
 +
