@@ -2,7 +2,7 @@
 Summary:        A kernel-based automounter for Linux
 Name:           autofs
 Version:        5.1.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.kernel.org/pub/linux/daemons/autofs
 Group:          System Environment/Daemons
@@ -10,6 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/daemons/%{name}/v5/%{name}-%{version}.tar.xz
 %define sha1    autofs=3b981e6e94103c2f950017d92ff88fc4d79b93ee
+Source1:        %{name}.service
 
 BuildRequires:  systemd
 BuildRequires:  rpcsvc-proto-devel
@@ -34,7 +35,7 @@ mkdir -p -m755 %{buildroot}/etc/auto.master.d
 make install mandir=%{_mandir} INSTALLROOT=%{buildroot}
 mkdir -p -m755 $RPM_BUILD_ROOT/etc/sysconfig
 make -C redhat
-install -m 644 redhat/autofs.service  %{buildroot}/lib/systemd/system/autofs.service
+install -p -D -m 0644 %{SOURCE1} %{buildroot}/lib/systemd/system/autofs.service
 install -m 644 redhat/autofs.conf $RPM_BUILD_ROOT/etc/autofs.conf
 install -m 644 redhat/autofs.sysconfig $RPM_BUILD_ROOT/etc/sysconfig/autofs
 install -m 644 samples/auto.master $RPM_BUILD_ROOT/etc/auto.master
@@ -76,6 +77,8 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/autofs.service
 
 %changelog
+*   Mon Aug 10 2020 Shreyas B <shreyasb@vmware.com> 5.1.6-2
+-   Fix service start issue
 *   Fri Oct 18 2019 Shreyas B <shreyasb@vmware.com> 5.1.6-1
 -   Update version to 5.1.6
 *   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 5.1.4-2
