@@ -1,16 +1,17 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
-Version:        3.3.13
-Release:        3%{?dist}
+Version:        3.3.23
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 etcd=7efecf3a57e2222ffa1fdbd1683f9f0b52770ea0
+%define sha1 etcd=6f541bf9d17d9c42ec78d6be60371335c39dd932
 Source1:        etcd.service
 BuildRequires:  go >= 1.10
+BuildRequires:  git
 
 %description
 A highly-available key value store for shared configuration and service discovery.
@@ -59,6 +60,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 
 %changelog
+*   Tue Aug 11 2020 Ashwin H <ashwinh@vmware.com> 3.3.23-1
+-   Update etcd, fix CVE-2020-15113
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 3.3.13-3
 -   Bump up version to compile with go 1.13.5-2
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 3.3.13-2
