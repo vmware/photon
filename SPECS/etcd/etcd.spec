@@ -1,16 +1,17 @@
 Summary:        Etcd-3.1.5
 Name:           etcd
-Version:        3.1.5
-Release:        5%{?dist}
+Version:        3.3.23
+Release:        1%{?dist}
 License:        Apache License
 URL:            https://github.com/coreos/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 etcd=a020efbd8bc7777e77b960b461886d26b2cedecd
+%define sha1 etcd=6f541bf9d17d9c42ec78d6be60371335c39dd932
 Source1:        etcd.service
 BuildRequires:  go >= 1.7
+BuildRequires:  git
 Requires:       shadow
 
 %description
@@ -56,6 +57,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 
 %changelog
+*   Tue Aug 11 2020 Ashwin H <ashwinh@vmware.com> 3.3.23-1
+-   Update etcd, fix CVE-2020-15113
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 3.1.5-5
 -   Bump up version to compile with new go version
 *   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 3.1.5-4
