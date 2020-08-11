@@ -5,7 +5,7 @@
 Summary:	OpenJDK
 Name:		openjdk11
 Version:	11.0.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU General Public License V2
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -79,7 +79,7 @@ install -vdm755 %{buildroot}%{_bindir}
 mv /usr/local/jvm/openjdk-%{version}-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 cp README LICENSE ASSEMBLY_EXCEPTION %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
-%post
+%posttrans
 alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac 2000 \
   --slave %{_bindir}/appletviewer appletviewer %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/appletviewer \
   --slave %{_bindir}/idlj idlj %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/idlj \
@@ -177,6 +177,9 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+*   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 11.0.8-2
+-   Replaced %post to %posttrans to avoid alternatives --remove
+-   after new version is installed.
 *   Fri Jul 24 2020 Shreyas B <shreyasb@vmware.com> 11.0.8-1
 -   Updating to jdk-11.0.8-ga
 *   Sun Apr 19 2020 Tapas Kundu <tkundu@vmware.com> 11.0.7-1
