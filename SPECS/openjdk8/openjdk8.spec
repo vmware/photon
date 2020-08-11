@@ -5,7 +5,7 @@
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	1.8.0.262
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -114,7 +114,7 @@ install -vdm755 %{buildroot}%{_bindir}
 find /usr/local/jvm/openjdk-1.8.0-internal/jre/lib/amd64 -iname \*.diz -delete
 mv /usr/local/jvm/openjdk-1.8.0-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
-%post
+%posttrans
 alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac 2000 \
   --slave %{_bindir}/appletviewer appletviewer %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/appletviewer \
   --slave %{_bindir}/extcheck extcheck %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/extcheck \
@@ -146,7 +146,7 @@ alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major
   --slave %{_bindir}/xjc xjc %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/xjc
 /sbin/ldconfig
 
-%post -n openjre8
+%posttrans -n openjre8
 alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/java 2000 \
   --slave %{_libdir}/jvm/jre jre %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre \
   --slave %{_bindir}/jjs jjs %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/jjs \
@@ -242,6 +242,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+*   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 1.8.0.262-2
+-   Replaced %post to %posttrans to avoid alternatives --remove
+-   after new version is installed.
 *   Fri Jul 24 2020 Shreyas B <shreyasb@vmware.com> 1.8.0.262-1
 -   Upgrade to version 1.8.0.262 (jdk8u262-ga)
 *   Thu Apr 23 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.252-2

@@ -6,7 +6,7 @@
 Summary:	OpenJDK
 Name:		openjdk9
 Version:	%{jdk_major_version}.%{subversion}
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -102,7 +102,7 @@ mv /usr/local/jvm/openjdk-9-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_
 mv build/linux-x86_64-normal-server-release/images/jre %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 cp README LICENSE ASSEMBLY_EXCEPTION %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}/
 
-%post
+%posttrans
 alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac 2000 \
   --slave %{_bindir}/appletviewer appletviewer %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/appletviewer \
   --slave %{_bindir}/idlj idlj %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/idlj \
@@ -136,7 +136,7 @@ alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major
   --slave %{_bindir}/xjc xjc %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/xjc
 /sbin/ldconfig
 
-%post -n openjre9
+%posttrans -n openjre9
 alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/java 2000 \
   --slave %{_libdir}/jvm/jre jre %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre \
   --slave %{_bindir}/jjs jjs %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/jjs \
@@ -230,6 +230,9 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+*   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 1.9.0.181-3
+-   Replaced %post to %posttrans to avoid alternatives --remove
+-   after new version is installed.
 *   Fri Jul 26 2019 Ankit Jain <ankitja@vmware.com> 1.9.0.181-2
 -   Divided version:majorversion+subversion to remove specific
 -   version java dependency from other packages
