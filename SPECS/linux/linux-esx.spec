@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.230
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -98,6 +98,9 @@ Patch62:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch63:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 # Fix for CVE-2020-14331
 Patch64:        4.4-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
+# Fix for CVE-2020-16166
+Patch65: 0001-random32-update-the-net-random-state-on-interrupt-an.patch
+Patch66: 0002-random32-remove-net_rand_state-from-the-latent-entro.patch
 
 # For Spectre
 Patch70: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -201,6 +204,8 @@ The Linux package contains the Linux kernel doc files
 %patch62 -p1
 %patch63 -p1
 %patch64 -p1
+%patch65 -p1
+%patch66 -p1
 
 %patch70 -p1
 
@@ -293,6 +298,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Aug 13 2020 Ashwin H <ashwinh@vmware.com> 4.4.230-4
+-   Fix CVE-2020-16166
 *   Wed Aug 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.4.230-3
 -   Keep modules of running kernel till next boot
 *   Sun Jul 26 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.230-2
