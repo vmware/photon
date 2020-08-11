@@ -1,15 +1,14 @@
 Summary:	Apache Maven
 Name:		apache-maven
-Version:	3.5.4
-Release:	4%{?dist}
+Version:	3.6.3
+Release:	1%{?dist}
 License:	Apache License 2.0
 URL:		http://maven.apache.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://mirrors.wuchna.com/apachemirror/maven/maven-3/%{version}/source/%{name}-%{version}-src.tar.gz
-%define sha1 %{name}=04aefb9462af8cf7ca93808cd246f4c28b8ae4a1
-Patch0:        Fix_Apache_License.patch
+%define sha1 %{name}=ccf441f3bf7f477301ebc80742cbda1da73c30a2
 BuildRequires: openjre8
 BuildRequires: openjdk8
 BuildRequires: apache-ant
@@ -29,7 +28,6 @@ The Maven package contains binaries for a build system
 
 %setup -q
 #find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
-%patch0 -p1
 
 %clean
 rm -rf %{buildroot}
@@ -69,7 +67,8 @@ done
 %{_bindir}/*
 /bin/*
 %{_datadir}/java/maven/*.jar
-%{_prefix}/boot/plexus-classworlds-2.5.2.jar
+%{_prefix}/boot/plexus-classworlds-2.6.0.jar
+%{_prefix}/boot/plexus-classworlds.license
 %{_prefix}/conf/logging/simplelogger.properties
 %{_prefix}/conf/settings.xml
 %{_prefix}/conf/toolchains.xml
@@ -79,6 +78,8 @@ done
 %exclude %{_libdir}/jansi-native
 
 %changelog
+*   Tue Jun 30 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.6.3-1
+-   Update to 3.6.3
 *   Fri Apr 17 2020 Tapas Kundu <tkundu@vmware.com> 3.5.4-4
 -   Fix apache-maven build failure
 *   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 3.5.4-3
