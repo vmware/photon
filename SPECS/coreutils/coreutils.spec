@@ -1,7 +1,7 @@
 Summary:        Basic system utilities
 Name:           coreutils
 Version:        8.32
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
@@ -15,6 +15,10 @@ Patch0:         http://www.linuxfromscratch.org/patches/downloads/coreutils/core
 %if %{with_check}
 # Commented out one symlink test because device node and '.' are mounted on different folder
 Patch1:         make-check-failure.patch
+%endif
+%ifarch aarch64
+Patch2:         coreutils-8.32-aarch64-build-fix.patch
+Patch3:         0001-ls-improve-removed-directory-test.patch
 %endif
 Requires:       gmp
 Provides:       sh-utils
@@ -35,6 +39,10 @@ These are the additional language files of coreutils.
 %patch0 -p1
 %if %{with_check}
 %patch1 -p1
+%endif
+%ifarch aarch64
+%patch2 -p1
+%patch3 -p1
 %endif
 
 %build
@@ -90,6 +98,8 @@ make NON_ROOT_USERNAME=nobody check
 %defattr(-,root,root)
 
 %changelog
+* Tue Aug 11 2020 Sujay G <gsujay@vmware,.com> 8.32-2
+- Fix aarch64 build
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 8.32-1
 - Automatic Version Bump
 * Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 8.30-4
