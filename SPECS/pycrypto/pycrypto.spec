@@ -3,7 +3,7 @@
 Summary:        The Python Cryptography Toolkit.
 Name:           python3-pycrypto
 Version:        2.6.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Public Domain and Python
 URL:            http://www.pycrypto.org/
 Source0:        https://ftp.dlitz.net/pub/dlitz/crypto/pycrypto/pycrypto-%{version}.tar.gz
@@ -22,6 +22,7 @@ Distribution:   Photon
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-tools
 Requires:       python3
 %description
 This is a collection of both secure hash functions (such as SHA256 and RIPEMD160), and various encryption algorithms (AES, DES, RSA, ElGamal, etc.).
@@ -52,6 +53,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Aug 12 2020 Tapas Kundu <tkundu@vmware.com> 2.6.1-7
+-   Require python3-tools for building.
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 2.6.1-6
 -   Mass removal python2
 *   Fri May 17 2019 Tapas Kundu <tkundu@vmware.com> 2.6.1-5
