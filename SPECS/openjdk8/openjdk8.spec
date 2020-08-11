@@ -5,7 +5,7 @@
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	1.8.0.262
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -164,11 +164,19 @@ alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{jdk_major_v
 /sbin/ldconfig
 
 %postun
-alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac
+# Do alternative remove only in case of uninstall
+if [ $1 -eq 0 ]
+then
+  alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac
+fi
 /sbin/ldconfig
 
 %postun -n openjre8
-alternatives --remove java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/java
+# Do alternative remove only in case of uninstall
+if [ $1 -eq 0 ]
+then
+  alternatives --remove java %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/jre/bin/java
+fi
 /sbin/ldconfig
 
 %clean
@@ -245,6 +253,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+*   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 1.8.0.262-2
+-   Added a check in %postun to avoid alternatives --remove
+-   after new version is installed.
+-   Do alternative remove only in case of uninstall.
 *   Fri Jul 24 2020 Shreyas B <shreyasb@vmware.com> 1.8.0.262-1
 -   Upgrade to version 1.8.0.262 (jdk8u262-ga)
 *   Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 1.8.0.252-2

@@ -5,7 +5,7 @@
 Summary:	OpenJDK
 Name:		openjdk11
 Version:	11.0.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU General Public License V2
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -122,7 +122,11 @@ alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{jdk_major
 /sbin/ldconfig
 
 %postun
-alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac
+# Do alternative remove only in case of uninstall
+if [ $1 -eq 0 ]
+then
+  alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/bin/javac
+fi
 /sbin/ldconfig
 
 %clean
@@ -185,6 +189,10 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+*   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 11.0.8-2
+-   Added a check in %postun to avoid alternatives --remove
+-   after new version is installed.
+-   Do alternative remove only in case of uninstall.
 *   Fri Jul 24 2020 Shreyas B <shreyasb@vmware.com> 11.0.8-1
 -   Updating to jdk-11.0.8-ga
 *   Sun Apr 19 2020 Tapas Kundu <tkundu@vmware.com> 11.0.7-1
