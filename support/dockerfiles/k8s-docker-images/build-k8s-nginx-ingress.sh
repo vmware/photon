@@ -11,8 +11,8 @@ ARCH=x86_64
 #
 # Docker image for kubernetes nginx ingress controller
 #
-NGINX_INC_VER=`cat ${SPEC_DIR}/nginx-ingress/nginx-ingress.spec | grep Version | cut -d: -f2 | tr -d ' '`
-NGINX_INC_VER_REL=${NGINX_INC_VER}-`cat ${SPEC_DIR}/nginx-ingress/nginx-ingress.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
+NGINX_INC_VER=`cat ${SPEC_DIR}/nginx-ingress/nginx-ingress.spec | grep Version: | cut -d: -f2 | tr -d ' '`
+NGINX_INC_VER_REL=${NGINX_INC_VER}-`cat ${SPEC_DIR}/nginx-ingress/nginx-ingress.spec | grep Release: | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 NGINX_INC_RPM=nginx-ingress-${NGINX_INC_VER_REL}${DIST_TAG}.${ARCH}.rpm
 NGINX_INC_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${NGINX_INC_RPM}
 NGINX_INC_TAR=nginx-ingress-v${NGINX_INC_VER_REL}.tar

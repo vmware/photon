@@ -9,8 +9,8 @@ ARCH=x86_64
 #
 # Docker images for kubernetes-metrics-server
 #
-K8S_MET_SERV_VER=`cat ${SPEC_DIR}/kubernetes-metrics-server/kubernetes-metrics-server.spec | grep Version | cut -d: -f2 | tr -d ' '`
-K8S_MET_SERV_VER_REL=${K8S_MET_SERV_VER}-`cat ${SPEC_DIR}/kubernetes-metrics-server/kubernetes-metrics-server.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
+K8S_MET_SERV_VER=`cat ${SPEC_DIR}/kubernetes-metrics-server/kubernetes-metrics-server.spec | grep Version: | cut -d: -f2 | tr -d ' '`
+K8S_MET_SERV_VER_REL=${K8S_MET_SERV_VER}-`cat ${SPEC_DIR}/kubernetes-metrics-server/kubernetes-metrics-server.spec | grep Release: | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 K8S_MET_SERV_RPM=kubernetes-metrics-server-${K8S_MET_SERV_VER_REL}${DIST_TAG}.${ARCH}.rpm
 K8S_MET_SERV_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${K8S_MET_SERV_RPM}
 K8S_MET_SERV_TAR=kubernetes-metrics-server-v${K8S_MET_SERV_VER_REL}.tar

@@ -11,8 +11,8 @@ ARCH=x86_64
 #
 # Docker images for kubernetes-dns artifacts
 #
-K8S_DNS_VER=`cat ${SPEC_DIR}/kubernetes-dns/kubernetes-dns.spec | grep Version | cut -d: -f2 | tr -d ' '`
-K8S_DNS_VER_REL=${K8S_DNS_VER}-`cat ${SPEC_DIR}/kubernetes-dns/kubernetes-dns.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
+K8S_DNS_VER=`cat ${SPEC_DIR}/kubernetes-dns/kubernetes-dns.spec | grep Version: | cut -d: -f2 | tr -d ' '`
+K8S_DNS_VER_REL=${K8S_DNS_VER}-`cat ${SPEC_DIR}/kubernetes-dns/kubernetes-dns.spec | grep Release: | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 K8S_DNS_RPM=kubernetes-dns-${K8S_DNS_VER_REL}${DIST_TAG}.${ARCH}.rpm
 K8S_DNS_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${K8S_DNS_RPM}
 K8S_DNS_BINS=(dnsmasq-nanny kube-dns sidecar)

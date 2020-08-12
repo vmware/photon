@@ -11,8 +11,8 @@ ARCH=x86_64
 #
 # Docker image for flannel
 #
-FLANNEL_VER=`cat ${SPEC_DIR}/flannel/flannel.spec | grep Version | cut -d: -f2 | tr -d ' '`
-FLANNEL_VER_REL=${FLANNEL_VER}-`cat ${SPEC_DIR}/flannel/flannel.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
+FLANNEL_VER=`cat ${SPEC_DIR}/flannel/flannel.spec | grep Version: | cut -d: -f2 | tr -d ' '`
+FLANNEL_VER_REL=${FLANNEL_VER}-`cat ${SPEC_DIR}/flannel/flannel.spec | grep Release: | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 FLANNEL_RPM=flannel-${FLANNEL_VER_REL}${DIST_TAG}.${ARCH}.rpm
 FLANNEL_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${FLANNEL_RPM}
 FLANNEL_TAR=flannel-v${FLANNEL_VER_REL}.tar

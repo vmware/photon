@@ -10,8 +10,8 @@ ARCH=x86_64
 # Docker images for heapster - kubernetes cluster monitoring tool.
 #
 
-K8S_HEAPSTER_VER=`cat ${SPEC_DIR}/heapster/heapster.spec | grep Version | cut -d: -f2 | tr -d ' '`
-K8S_HEAPSTER_VER_REL=${K8S_HEAPSTER_VER}-`cat ${SPEC_DIR}/heapster/heapster.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
+K8S_HEAPSTER_VER=`cat ${SPEC_DIR}/heapster/heapster.spec | grep Version: | cut -d: -f2 | tr -d ' '`
+K8S_HEAPSTER_VER_REL=${K8S_HEAPSTER_VER}-`cat ${SPEC_DIR}/heapster/heapster.spec | grep Release: | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 K8S_HEAPSTER_RPM=heapster-${K8S_HEAPSTER_VER_REL}${DIST_TAG}.${ARCH}.rpm
 K8S_HEAPSTER_RPM_FILE=${STAGE_DIR}/RPMS/${ARCH}/${K8S_HEAPSTER_RPM}
 
