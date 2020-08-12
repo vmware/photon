@@ -8,36 +8,42 @@ import lzma as xz
 import fileinput
 from argparse import ArgumentParser
 import json
+import types
 from utils import Utils
 import ovagenerator
 
 def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
     photon_release_ver = os.environ['PHOTON_RELEASE_VER']
     photon_build_num = os.environ['PHOTON_BUILD_NUM']
-    new_name = ""
     image_name = config.get('image_name', 'photon-' + config['image_type']
                        + '-' + photon_release_ver + '-' + photon_build_num)
-    img_path = os.path.dirname(os.path.realpath(raw_image_path))
+    new_name = []
+    if type(raw_image_path) is not list:
+        raw_image_path = [raw_image_path]
+    img_path = os.path.dirname(os.path.realpath(raw_image_path[0]))
     # Rename gce image to disk.raw
     if config['image_type'] == "gce":
-        new_name = img_path + '/disk.raw'
+        new_name.append(img_path + '/disk.raw')
     else:
-        new_name = (img_path + '/' + image_name + '.raw')
-
-    shutil.move(raw_image_path, new_name)
+        for img_num in range(len(raw_image_path)):
+            new_name.append(img_path + '/' + image_name + '' + str(img_num) + '.raw')
+    for img_num, raw_img in enumerate(raw_image_path):
+        shutil.move(raw_img, new_name[img_num])
     raw_image = new_name
     compressed = True
 
+    # Only for artifactype='ova', multidisk support is applicable
+    # For other artifacttype, only one disk support (i.e. raw_image[0])
     if config['artifacttype'] == 'tgz':
         print("Generating the tar.gz artifact ...")
         outputfile = (img_path + '/' + image_name + '.tar.gz')
-        compressed = generateCompressedFile(raw_image, outputfile, "w:gz")
+        compressed = generateCompressedFile(raw_image[0], outputfile, "w:gz")
     elif config['artifacttype'] == 'xz':
         print("Generating the xz artifact ...")
         outputfile = (img_path + '/' + image_name + '.xz')
-        compressed = generateCompressedFile(raw_image, outputfile, "w:xz")
+        compressed = generateCompressedFile(raw_image[0], outputfile, "w:xz")
     elif 'vhd' in config['artifacttype']:
-        relrawpath = os.path.relpath(raw_image, src_root)
+        relrawpath = os.path.relpath(raw_image[0], src_root)
         vhdname = ('/' + image_name + '.vhd')
         print("Converting raw disk to vhd ...")
         info_output = Utils.runshellcommand(
@@ -60,7 +66,7 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
             outputfile = (img_path + '/' + image_name + '.vhd.tar.gz')
             compressed = generateCompressedFile(img_path + vhdname, outputfile, "w:gz")
             # remove raw image and call the vhd as raw image
-            os.remove(raw_image)
+            os.remove(raw_image[0])
             raw_image = img_path + vhdname
     elif config['artifacttype'] == 'ova':
         ovagenerator.create_ova_image(raw_image, tools_bin_path, config)
@@ -74,7 +80,11 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         # Leave the raw disk around if compression failed
         return
     if not config['keeprawdisk']:
-        os.remove(raw_image)
+        if type(raw_image) is list:
+            for raw_img in raw_image:
+                os.remove(raw_img)
+        else:
+            os.remove(raw_image)
 
 def generateCompressedFile(inputfile, outputfile, formatstring):
     try:

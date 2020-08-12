@@ -184,6 +184,12 @@ def verifyImageTypeAndConfig(config_file, img_name):
     config = Utils.jsonread(config_file)
     return ('image_type' in config, config)
 
+# Detach loop device and remove raw image
+def cleanup(loop_devices, raw_image):
+    for i,loop_dev in enumerate(loop_devices):
+        Utils.runshellcommand("losetup -d {}".format(loop_dev))
+        os.remove(raw_image[i])
+
 def createImage(options):
     (validImage, config) = verifyImageTypeAndConfig(options.config_file, options.img_name)
     if not validImage:
@@ -213,13 +219,6 @@ def createImage(options):
         install_config['packagelist_file'] = plf
 
     os.chdir(workingDir)
-    image_file = workingDir + "/" + image_name + ".raw"
-
-    # Create disk image
-    Utils.runshellcommand(
-        "dd if=/dev/zero of={} bs=1024 seek={} count=0".format(image_file, config['size'] * 1024))
-    Utils.runshellcommand(
-        "chmod 755 {}".format(image_file))
 
     if 'log_level' not in install_config:
         install_config['log_level'] = options.log_level
@@ -229,15 +228,52 @@ def createImage(options):
         os.path.abspath(script_dir),
     ]
 
-    # Associating loopdevice to raw disk and save the name as a target's 'disk'
-    install_config['disk'] = (Utils.runshellcommand(
-        "losetup --show -f {}".format(image_file))).rstrip('\n')
+    if 'size' in config and 'disks' in config:
+        raise Exception("Both 'size' and 'disks' key should not be defined together.Please use 'disks' for defining multidisks only.")
+    elif 'size' in config:
+        # 'BOOTDISK' key name doesn't matter. It is just a name given for better understanding
+        config['disks'] = {"BOOTDISK": config['size']}
+    elif 'disks' not in config:
+        raise Exception("Disk size not defined!!")
+
+    image_file = []
+    loop_device = {}
+    # Create disk image
+    for ndisk, k in enumerate(config['disks']):
+        image_file.append(workingDir + "/" + image_name + "-" + str(ndisk) + ".raw")
+        Utils.runshellcommand(
+            "dd if=/dev/zero of={} bs=1024 seek={} count=0".format(image_file[ndisk], config['disks'].get(k) * 1024))
+        Utils.runshellcommand(
+            "chmod 755 {}".format(image_file[ndisk]))
+        # Associating loopdevice to raw disk and save the name as a target's 'disk'
+        loop_device[k] = (Utils.runshellcommand(
+            "losetup --show -f {}".format(image_file[ndisk]))).rstrip('\n')
+
+    # Assigning first loop device as BOOTDISK
+    install_config['disk'] = loop_device[next(iter(loop_device))]
+
+    # Mapping the given disks to the partition table disk
+    # Assigning the appropriate loop device to the partition 'disk'
+    if 'partitions' in install_config:
+        for partition in install_config['partitions']:
+            if len(loop_device) == 1:
+                partition['disk'] = install_config['disk']
+            elif 'disk' in partition:
+                if partition['disk'] in loop_device.keys():
+                    partition['disk'] = loop_device[partition['disk']]
+                else:
+                    cleanup(loop_device.values(), image_file)
+                    raise Exception("disk name:{} defined in partition table not found in list of 'disks'!!".format(partition['disk']))
+            else:
+                cleanup(loop_device.values(), image_file)
+                raise Exception("disk name must be defined in partition table for multidisks!!")
 
     # No return value, it throws exception on error.
     runInstaller(options, install_config, workingDir)
 
     # Detaching loop device from vmdk
-    Utils.runshellcommand("losetup -d {}".format(install_config['disk']))
+    for loop_dev in loop_device.values():
+        Utils.runshellcommand("losetup -d {}".format(loop_dev))
 
     os.chdir(script_dir)
     imagegenerator.createOutputArtifact(
