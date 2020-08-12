@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.138
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -790,6 +790,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed Aug 12 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.138-2
+-   .config: support for floppy disk and ch341 usb to serial
 *   Sat Aug 08 2020 ashwin-h <ashwinh@vmware.com> 4.19.138-1
 -   Update to version 4.19.138
 *   Thu Aug 06 2020 Sharan Turlapati <sturlapati@vmware.com> 4.19.132-6

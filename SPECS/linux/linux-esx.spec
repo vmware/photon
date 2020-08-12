@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.138
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -355,6 +355,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Aug 12 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.138-2
+-   .config: floppy disk support
 *   Wed Aug 12 2020 ashwin-h <ashwinh@vmware.com> 4.19.138-1
 -   Update to version 4.19.138
 *   Sun Aug 09 2020 Mounesh Badiger <badigerm@vmware.con> 4.19.132-5
