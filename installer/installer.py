@@ -245,7 +245,9 @@ class Installer(object):
         if not 'disk' in install_config:
             return "No disk configured"
 
-        if 'linux_flavor' not in install_config:
+        # For Ostree install_config['packages'] will be empty list, because ostree
+        # uses preinstalled tree ostree-repo.tar.gz for installation
+        if 'ostree' not in install_config and 'linux_flavor' not in install_config:
             return "Attempting to install more than one linux flavor"
 
         # Perform 2 checks here:
