@@ -1,6 +1,6 @@
 Summary:          OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:             tpm2-tss
-Version:          2.4.1
+Version:          3.0.0
 Release:          1%{?dist}
 License:          BSD 2-Clause
 URL:              https://github.com/tpm2-software/tpm2-tss
@@ -8,7 +8,7 @@ Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          %{name}-%{version}.tar.gz
-%define sha1      tpm2=8ae676864c93982d867b27f918a1e6a32caea924
+%define sha1      tpm2=341a8141b161f70f83dedcbf5af88d2875ad5b61
 BuildRequires:    openssl-devel
 Requires:         openssl
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
@@ -65,6 +65,7 @@ fi
 %defattr(-,root,root)
 %{_sysconfdir}/udev/rules.d/tpm-udev.rules
 %{_libdir}/*.so.0.0.0
+%{_libdir}/*.so.1.0.0
 
 %files devel
 %defattr(-,root,root)
@@ -73,10 +74,13 @@ fi
 %{_libdir}/*.la
 %{_libdir}/*.so
 %{_libdir}/*.so.0
+%{_libdir}/*.so.1
 %{_mandir}/man3
 %{_mandir}/man7
 
 %changelog
+*   Wed Aug 12 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.0-1
+-   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.1-1
 -   Automatic Version Bump
 *   Thu Feb 21 2019 Alexey Makhalov <amakhalov@vmware.com> 2.2.0-1
