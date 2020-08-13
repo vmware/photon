@@ -3,7 +3,7 @@
 Summary:        Library to implement a well-behaved Unix daemon process.
 Name:           python3-daemon
 Version:        2.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2
 Url:            https://pypi.python.org/pypi/python-daemon/
 Group:          Development/Languages/Python
@@ -18,6 +18,8 @@ BuildRequires:  python3-docutils
 BuildRequires:  python3-lockfile
 BuildRequires:  python3-xml
 BuildRequires:  curl-devel
+BuildRequires:  libffi-devel
+Requires:       libffi
 Requires:       python3
 Requires:       python3-lockfile
 
@@ -41,7 +43,7 @@ rm -rf %{buildroot}
 python3 setup.py install --root=%{buildroot}
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+easy_install_3=$(ls /usr/bin | grep easy_install | grep 3)
 $easy_install_3 mock
 $easy_install_3 testscenarios
 $easy_install_3 testtools
@@ -52,6 +54,8 @@ python3 -m unittest discover
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Aug 13 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.2.4-2
+-   Added libffi to BuildRequires
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.2.4-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.2.0-3
