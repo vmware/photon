@@ -1,7 +1,7 @@
 Summary:        Basic system utilities (SELinux enabled)
 Name:           coreutils-selinux
 Version:        8.32
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
@@ -16,6 +16,10 @@ Patch0:         http://www.linuxfromscratch.org/patches/downloads/coreutils/core
 # Commented out one symlink test because device node and '.' are mounted on different folder
 Patch1:         make-check-failure.patch
 %endif
+%ifarch aarch64
+Patch2:         coreutils-8.32-aarch64-build-fix.patch
+Patch3:         0001-ls-improve-removed-directory-test.patch
+%endif
 BuildRequires:  libselinux-devel
 Requires:       gmp
 Provides:       sh-utils
@@ -29,6 +33,10 @@ SELinux enabled coreutils package.
 %patch0 -p1
 %if %{with_check}
 %patch1 -p1
+%endif
+%ifarch aarch64
+%patch2 -p1
+%patch3 -p1
 %endif
 
 %build
@@ -81,6 +89,8 @@ make NON_ROOT_USERNAME=nobody check
 %{_mandir}/*/*
 
 %changelog
+* Thu Aug 13 2020 Shreenidhi Shedi <sshedi@vmware.com> 8.32-2
+- Fixed aarch64 build issue
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 8.32-1
 - Automatic Version Bump
 * Sat Apr 18 2020 Alexey Makhalov <amakhalov@vmware.com> 8.30-3
