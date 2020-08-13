@@ -1,5 +1,5 @@
 Name:           consul
-Version:        1.8.0
+Version:        1.8.3
 Release:        1%{?dist}
 Summary:        Consul is a tool for service discovery and configuration.
 License:        Mozilla Public License, version 2.0
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:		    https://github.com/hashicorp/consul/archive/v%{version}.tar.gz
 
 Source0:	    %{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}.tar.gz=e0281002269e34b4421da97b30ae6388d57a06fe
+%define sha1 %{name}-%{version}.tar.gz=cba2d906f88490c6502ab1a9b29d8d447bd73eb4
 Source1:        %{name}.service
 
 BuildRequires:  unzip
@@ -92,6 +92,8 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/%{name}.d
 
 %changelog
+*  Wed Aug 12 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.3-1
+-  Automatic Version Bump
 *  Thu Jul 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0-1
 -  Upgrade to version 1.8.0
 *  Tue Mar 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7.1-1
