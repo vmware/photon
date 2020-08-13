@@ -3,7 +3,7 @@
 
 Summary:        The AWS SDK for Python
 Name:           python3-boto3
-Version:        1.14.28
+Version:        1.14.41
 Release:        1%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/boto/boto3
 Source0:        https://github.com/boto/boto3/archive/boto3-%{version}.tar.gz
-%define sha1    boto3=1339d64a778fdcfc6ecc5d1dd8cfc0b3cc5ceb08
+%define sha1    boto3=cff68268f3303859d96b53f828418c6f3b04e611
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -45,6 +45,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.41-1
+-   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.28-1
 -   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 1.9.0-2

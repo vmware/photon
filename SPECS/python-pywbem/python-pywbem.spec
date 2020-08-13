@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-pywbem
-Version:        0.17.4
+Version:        1.0.1
 Release:        1%{?dist}
 Summary:        Python WBEM Client
 Group:          Development/Libraries
@@ -11,7 +11,7 @@ Source0:        http://downloads.sourceforge.net/pywbem-%{version}.tar.gz
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-%define sha1 pywbem=d7820faffedfa54cb40767ac09dab077b4a49084
+%define sha1 pywbem=3a079c96ee2fd28cc6a8dbd17f8e6c5c71fcaed3
 BuildRequires:  python3-devel
 BuildRequires:  python3-pip
 BuildRequires:  python3-xml
@@ -40,7 +40,7 @@ CFLAGS="%{optflags}" python3 setup.py build
 rm -rf %{buildroot}
 python3 setup.py install -O1 --prefix=%{_prefix} --skip-build --root=%{buildroot}
 mv %{buildroot}%{_bindir}/* %{buildroot}%{python3_sitelib}/pywbem/
-chmod +x %{buildroot}%{python3_sitelib}/pywbem/wbemcli.py
+
 
 %post
 if [ $1 -eq 1 ];then
@@ -64,6 +64,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*    Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.1-1
+-    Automatic Version Bump
 *    Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.17.4-1
 -    Automatic Version Bump
 *    Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 0.15.0-2

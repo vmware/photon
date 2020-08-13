@@ -2,7 +2,7 @@
 
 Summary:       Python documentation generator
 Name:          python3-sphinx
-Version:       3.1.2
+Version:       3.2.0
 Release:       1%{?dist}
 Group:         Development/Tools
 License:       BSD-2-Clause
@@ -10,7 +10,7 @@ URL:           http://www.vmware.com
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       https://pypi.python.org/packages/a7/df/4487783152b14f2b7cd0b0c9afb119b262c584bf972b90ab544b61b74c62/Sphinx-%{version}.tar.gz
-%define sha1    Sphinx=9043e0f324d62a5c47a0773f562d423e66163f63
+%define sha1    Sphinx=b2032281350605ae05a725e7c8f7fc6891d90fb4
 BuildRequires: python3
 BuildRequires: python3-libs
 BuildRequires: python3-devel
@@ -79,6 +79,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1
+-   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1.2-1
 -   Automatic Version Bump
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 1.7.9-2
