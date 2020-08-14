@@ -2,7 +2,7 @@
 Name:            elixir
 Summary:         A modern approach to programming for the Erlang VM
 Version:         1.10.4
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         ASL 2.0
 URL:             http://elixir-lang.org/
 Source0:         https://github.com/elixir-lang/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -13,6 +13,7 @@ Group:           Development/Languages
 BuildRequires:   git
 BuildRequires:   sed
 BuildRequires:   erlang
+BuildRequires:   openldap
 Requires:        erlang
 Conflicts:       toybox < 0.8.2-3
 
@@ -47,6 +48,8 @@ ln -s %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}/%
 %{_datadir}/%{name}
 
 %changelog
+*   Fri Aug 14 2020 Sujay G <gsujay@vmware.com> 1.10.4-2
+-   Added openldap in buildrequires to fix package build issues
 *   Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.10.4-1
 -   Automatic Version Bump
 *   Tue Jun 30 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.8.2-2
