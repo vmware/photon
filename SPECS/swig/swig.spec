@@ -1,15 +1,16 @@
-Summary:	Connects C/C++/Objective C to some high-level programming languages
-Name:		swig
-Version:	4.0.2
-Release:	1%{?dist}
-License:	GPLv3+
-URL:		http://swig.sourceforge.net/
-Source0:	http://downloads.sourceforge.net/project/swig/swig/swig-%{version}/swig-%{version}.tar.gz
-%define sha1 swig=ced6676c625c49d78d73cbd3b9aaab8c30b9b4ee
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildRequires:	pcre-devel
-Requires:	pcre
+Summary:        Connects C/C++/Objective C to some high-level programming languages
+Name:           swig
+Version:        4.0.2
+Release:        1%{?dist}
+License:        GPLv3+
+URL:            http://swig.sourceforge.net/
+Source0:        http://downloads.sourceforge.net/project/swig/swig/swig-%{version}/swig-%{version}.tar.gz
+%define sha1    swig=ced6676c625c49d78d73cbd3b9aaab8c30b9b4ee
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Group:          Development/Languages
+BuildRequires:  pcre-devel
+Requires:       pcre
 
 %description
 Simplified Wrapper and Interface Generator (SWIG) is a software
@@ -25,17 +26,14 @@ tool for building user interfaces
 
 %build
 ./autogen.sh
-
 %configure \
 	--without-ocaml \
  	--without-java \
  	--without-r \
  	--without-go
-
 make %{?_smp_mflags}
 
 %install
-
 make DESTDIR=%{buildroot} install
 
 # Enable ccache-swig by default, if ccache is installed.
