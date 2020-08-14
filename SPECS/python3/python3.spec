@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.8.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
 %define sha1    Python=68d6c7f948801cc755905162f5ee7589595edee4
+Source1:        macros.python
 Patch0:         cgi3.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -85,6 +86,7 @@ Summary: The libraries and header files needed for Python development.
 Group:          Development/Libraries
 Requires:       python3 = %{version}-%{release}
 Requires:       expat-devel >= 2.1.0
+Requires:       python3-macros = %{version}-%{release}
 # Needed here because of the migration of Makefile from -devel to the main
 # package
 Conflicts: python3 < %{version}-%{release}
@@ -137,6 +139,17 @@ Requires: python3 = %{version}-%{release}
 %description test
 The test package contains all regression tests for Python as well as the modules test.support and test.regrtest. test.support is used to enhance your tests while test.regrtest drives the testing suite.
 
+%package        macros
+Summary:        Macros for Python packages.
+Group:          Development/Tools
+BuildArch:      noarch
+
+%description    macros
+This package contains the unversioned Python RPM macros, that most
+implementations should rely on.
+You should not need to install this package manually as the various
+python-devel packages require it. So install a python-devel package instead.
+
 %prep
 %setup -q -n Python-%{version}
 %patch0 -p1
@@ -169,6 +182,8 @@ find %{buildroot}%{_libdir} -name '*.pyo' -delete
 find %{buildroot}%{_libdir} -name '*.o' -delete
 find %{buildroot}%{_libdir} -name '*__pycache__' -delete
 rm %{buildroot}%{_bindir}/2to3
+mkdir -p %{buildroot}/usr/lib/rpm/macros.d
+install -m 644 %{SOURCE1} %{buildroot}/usr/lib/rpm/macros.d
 
 %check
 make  %{?_smp_mflags} test
@@ -277,7 +292,12 @@ rm -rf %{buildroot}/*
 %files test
 %{_libdir}/python3.8/test/*
 
+%files macros
+%{_libdir}/rpm/macros.d/macros.python
+
 %changelog
+*   Thu Aug 13 2020 Tapas Kundu <tkundu@vmware.com> 3.8.5-2
+-   Add macros subpackage
 *   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 3.8.5-1
 -   Updated to 3.8.5 release
 *   Fri Jul 17 2020 Tapas Kundu <tkundu@vmware.com> 3.7.5-3
