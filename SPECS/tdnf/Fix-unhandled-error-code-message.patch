@@ -1,0 +1,49 @@
+From bdbf47cad7f42d768a36c637c61a37d8d607187f Mon Sep 17 00:00:00 2001
+From: Siddharth Chandrasekaran <csiddharth@vmware.com>
+Date: Fri, 7 Aug 2020 18:21:09 +0530
+Subject: [PATCH] Fix unhandled error code message
+
+An RPM error code was being returned as a TDNF error code causing it to
+print a debug message. Fix this by calling the right BAIL_*() macro.
+
+Signed-off-by: Siddharth Chandrasekaran <csiddharth@vmware.com>
+---
+ client/defines.h  | 2 +-
+ client/rpmtrans.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/client/defines.h b/client/defines.h
+index 8646b27..f5878f5 100644
+--- a/client/defines.h
++++ b/client/defines.h
+@@ -163,7 +163,7 @@ typedef enum
+     {ERROR_TDNF_TRANS_INCOMPLETE,    "ERROR_TDNF_TRANS_INCOMPLETE",    "Incomplete rpm transaction"}, \
+     {ERROR_TDNF_TRANS_PKG_NOT_FOUND, "ERROR_TDNF_TRANS_PKG_NOT_FOUND", "Failed to find rpm package"}, \
+     {ERROR_TDNF_NO_SEARCH_RESULTS,   "ERROR_TDNF_NO_SEARCH_RESULTS",   "No matches found"}, \
+-    {ERROR_TDNF_RPMRC_NOTFOUND,      "ERROR_TDNF_RPMRC_NOTFOUND",      "rpm generic error - not found(possible corrupt rpm file"}, \
++    {ERROR_TDNF_RPMRC_NOTFOUND,      "ERROR_TDNF_RPMRC_NOTFOUND",      "rpm generic error - not found (possible corrupt rpm file)"}, \
+     {ERROR_TDNF_RPMRC_FAIL,          "ERROR_TDNF_RPMRC_FAIL",          "rpm generic failure"}, \
+     {ERROR_TDNF_RPMRC_NOTTRUSTED,    "ERROR_TDNF_RPMRC_NOTTRUSTED",    "rpm signature is OK, but key is not trusted"}, \
+     {ERROR_TDNF_RPMRC_NOKEY,         "ERROR_TDNF_RPMRC_NOKEY",         "public key is unavailable. install public key using rpm --import or use --nogpgcheck to ignore."}, \
+diff --git a/client/rpmtrans.c b/client/rpmtrans.c
+index bc75bb7..d858aaf 100644
+--- a/client/rpmtrans.c
++++ b/client/rpmtrans.c
+@@ -311,7 +311,7 @@ TDNFRunTransaction(
+     }
+     rpmtsSetFlags(pTS->pTS, RPMTRANS_FLAG_TEST);
+     dwError = rpmtsRun(pTS->pTS, NULL, pTS->nProbFilterFlags);
+-    BAIL_ON_TDNF_ERROR(dwError);
++    BAIL_ON_TDNF_RPM_ERROR(dwError);
+ 
+     //TODO do callbacks for output
+     if(!nSilent)
+@@ -320,7 +320,7 @@ TDNFRunTransaction(
+     }
+     rpmtsSetFlags(pTS->pTS, RPMTRANS_FLAG_NONE);
+     dwError = rpmtsRun(pTS->pTS, NULL, pTS->nProbFilterFlags);
+-    BAIL_ON_TDNF_ERROR(dwError);
++    BAIL_ON_TDNF_RPM_ERROR(dwError);
+ 
+ cleanup:
+     return dwError;
