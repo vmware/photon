@@ -1,6 +1,6 @@
 Name:           toybox
 Version:        0.8.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox/
@@ -541,6 +541,8 @@ t%riggerpostun -- expect
 /usr/bin/uuencode
 
 %changelog
+*   Fri Aug 14 2020 Alexey Makhalov <amakhalov@vmware.com> 0.8.2-3
+-   Backport config from dev branch to have tar and other toys
 *   Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.2-2
 -   Avoid conflicts with other packages by not packaging (%ghost-ing) symlinks
 *   Wed Oct 30 2019 Alexey Makhalov <amakhalov@vmware.com> 0.8.2-1
