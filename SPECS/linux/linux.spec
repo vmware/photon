@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.230
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.232
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=93ecfd65f75f21d1980939b14e26f3415e6bd3c3
+%define sha1 linux=2c328de00e986562e839f0b1bb9eaa291c6d5314
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -56,8 +56,6 @@ Patch27:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 
 # Fix for CVE-2017-18232
 Patch28:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
-# Fix for CVE-2018-10323
-Patch29:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 # Fix for CVE-2019-19922
 Patch30:        0001-sched-fair-Fix-bandwidth-timer-clock-drift-condition.patch
 Patch31:        0002-sched-fair-Fix-low-cpu-usage-with-high-throttling-by.patch
@@ -210,7 +208,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
-%patch29 -p1
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
@@ -399,6 +396,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri Aug 14 2020 ashwin-h <ashwinh@vmware.com> 4.4.232-1
+-   Update to version 4.4.232
 *   Thu Aug 13 2020 Ashwin H <ashwinh@vmware.com> 4.4.230-4
 -   Fix CVE-2020-16166
 *   Wed Aug 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.4.230-3

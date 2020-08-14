@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.230
-Release:       4%{?dist}
+Version:       4.4.232
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:  Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=93ecfd65f75f21d1980939b14e26f3415e6bd3c3
+%define sha1 linux=2c328de00e986562e839f0b1bb9eaa291c6d5314
 Source1:       config-esx
 Source2:       pre-preun-postun-tasks.inc
 
@@ -56,8 +56,6 @@ Patch33:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
 Patch35:       0001-scsi-libsas-direct-call-probe-and-destruct.patch
-# Fix for CVE-2018-10323
-Patch36:       0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 # Fix for CVE-2019-19922
 Patch37:       0001-sched-fair-Fix-bandwidth-timer-clock-drift-condition.patch
 Patch38:       0002-sched-fair-Fix-low-cpu-usage-with-high-throttling-by.patch
@@ -177,7 +175,6 @@ The Linux package contains the Linux kernel doc files
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
-%patch36 -p1
 %patch37 -p1
 %patch38 -p1
 %patch39 -p1
@@ -298,6 +295,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Aug 14 2020 ashwin-h <ashwinh@vmware.com> 4.4.232-1
+-   Update to version 4.4.232
 *   Thu Aug 13 2020 Ashwin H <ashwinh@vmware.com> 4.4.230-4
 -   Fix CVE-2020-16166
 *   Wed Aug 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.4.230-3
