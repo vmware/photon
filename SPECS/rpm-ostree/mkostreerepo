@@ -72,21 +72,19 @@ cat > $JSONFILE << EOF
 
         "documentation": false,
 
-        "packages": ["glibc", "zlib", "binutils", "gmp", "mpfr", "libgcc", "libstdc++","libgomp",
-                     "pkg-config", "ncurses", "bash", "bzip2", "cracklib", "cracklib-dicts", "shadow",
-                     "procps-ng", "iana-etc", "readline", "coreutils", "bc", "libtool", "net-tools",
-                     "findutils", "xz", "grub2", "grub2-efi", "iproute2", "util-linux", "linux",
-                     "attr", "libcap", "kmod", "expat", "dbus", "file",
-                     "sed", "grep", "cpio", "gzip",
-                     "openssl", "ca-certificates", "curl",
-                     "systemd",
-                     "openssh", "iptables",
-                     "photon-release",
-                     "vim", "photon-repos",
-                     "docker", "bridge-utils",
-                     "dracut", "dracut-tools", "rpm-ostree", "nss-altfiles", "which"],
+        "packages": ["bash", "bc", "bridge-utils", "bzip2","ca-certificates",
+                     "cloud-init", "cpio", "cracklib-dicts", "dbus", "e2fsprogs",
+                     "file", "findutils", "gdbm", "grep", "gzip", "iana-etc",
+                     "iptables", "iproute2", "iputils", "libtool", "linux", "motd",
+                     "net-tools", "pkg-config", "photon-release", "photon-repos",
+                     "procps-ng", "rpm", "sed", "sudo", "tzdata", "util-linux",
+                     "vim", "which", "dracut-tools", "rpm-ostree", "nss-altfiles",
+                     "openssh", "systemd", "openssl", "grub2", "grub2-efi",
+                     "shadow", "ncurses", "grub2-theme-ostree"],
 
-        "packages-x86_64": ["grub2-pc"]
+        "packages-x86_64": ["grub2-pc", "grub2-efi-image", "open-vm-tools"],
+
+        "units": ["sshd-keygen.service", "sshd.service"]
 }
 EOF
   elif [ -f $REPOPATH/photon-base.json ]; then
@@ -112,8 +110,8 @@ function generating-repos()
   if [ "$DEFAULT" == "YES" ] && [ ! -f $REPOPATH/photon.repo ]; then
 cat > $REPOPATH/photon.repo << EOF
 [photon]
-name=VMware Photon Linux 3.0(_arch)
-baseurl=https://dl.bintray.com/vmware/photon_release_3.0_\$basearch
+name=VMware Photon Linux 3.0 (\$basearch)
+baseurl=https://packages.vmware.com/photon/3.0/photon_release_3.0_\$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
@@ -123,8 +121,8 @@ EOF
   if [ ! -f $REPOPATH/photon-updates.repo ]; then
 cat > $REPOPATH/photon-updates.repo << EOF
 [photon-updates]
-name=VMware Photon Linux 3.0(_arch) Updates
-baseurl=https://dl.bintray.com/vmware/photon_updates_3.0_\$basearch
+name=VMware Photon Linux 3.0 (\$basearch) Updates
+baseurl=https://packages.vmware.com/photon/3.0/photon_updates_3.0_\$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
@@ -134,8 +132,8 @@ EOF
   if [ ! -f $REPOPATH/photon-extras.repo ]; then
 cat > $REPOPATH/photon-extras.repo << EOF
 [photon-extras]
-name=VMware Photon Extras 3.0(_arch)
-baseurl=https://dl.bintray.com/vmware/photon_extras_3.0_\$basearch
+name=VMware Photon Extras 3.0 (\$basearch)
+baseurl=https://packages.vmware.com/photon/3.0/photon_extras_3.0_\$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1

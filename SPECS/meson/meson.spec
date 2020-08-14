@@ -4,11 +4,12 @@ Name:           meson
 Summary:        Extremely fast and user friendly build system
 Group:          Development/Tools
 Version:        0.55.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://mesonbuild.com/
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Group:          Applications/System
 Source0:        https://github.com/mesonbuild/meson/archive/%{version}/%{name}-%{version}.tar.gz
 %define sha1    meson=86ad59c6881924bda0064000e902ac09c23e9047
 BuildArch:      noarch
@@ -23,6 +24,7 @@ BuildRequires:  gettext
 Requires:       ninja-build
 Requires:       python3
 Requires:       python3-setuptools
+Requires:       python3-gobject-introspection
 
 %description
 Meson is an open source build system meant to be both extremely fast,
@@ -58,6 +60,8 @@ python3 ./run_tests.py
 %{_datadir}/polkit-1/actions/com.mesonbuild.install.policy
 
 %changelog
+*   Sat Aug 22 2020 Ankit Jain <ankitja@vmware.com> 0.55.1-2
+-   Added python3-gobject-introspection requires
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 0.55.1-1
 -   Automatic Version Bump
 *   Wed Aug 12 2020 Susant Sahani <ssahani@vmware.com> 0.55.0-1

@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
-Version:        2019.2
-Release:        4%{?dist}
+Version:        2020.4
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -10,7 +10,7 @@ Distribution:   Photon
 # Manually created Source tar which is equal to
 # Source0 + .git as it requires git hooks at build time
 Source0:        https://github.com/ostreedev/ostree/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=716f6b626203a188ecf267cc312ca817ef7dc875
+%define sha1    %{name}-%{version}=d4af37dee8b950a5117a1817de7d35fc1c3220d5
 Source1:        91-ostree.preset
 Patch0:         dualboot-support.patch
 Patch1:         0001-ostree-Copying-photon-config-to-boot-directory.patch
@@ -22,7 +22,6 @@ BuildRequires:  gtk-doc
 BuildRequires:  glib-devel
 BuildRequires:  gobject-introspection
 BuildRequires:  gobject-introspection-devel
-BuildRequires:  python3-gobject-introspection
 BuildRequires:  xz-devel
 BuildRequires:  icu-devel
 BuildRequires:  sqlite-devel
@@ -46,6 +45,7 @@ Requires: dracut
 Requires: systemd
 Requires: libassuan
 Requires: gpgme
+Requires: python3-gobject-introspection
 
 %description
 OSTree is a tool for managing bootable, immutable, versioned
@@ -160,6 +160,8 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+*   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2020.4-1
+-   Updated to 2020.4
 *   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2019.2-4
 -   Build with gobject-introspection-python3
 *   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2019.2-3

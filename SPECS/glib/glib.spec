@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.58.0
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
 Group:		Applications/System
@@ -20,6 +20,7 @@ BuildRequires:	python3
 BuildRequires:	python3-libs
 BuildRequires:	util-linux-devel
 BuildRequires:	elfutils-libelf-devel
+BuildRequires:	gtk-doc
 Requires:	elfutils-libelf
 Requires:	pcre-libs
 Requires:	libffi
@@ -55,6 +56,14 @@ Requires:	glib
 %description schemas
 Gsettings schemas compiling tool
 
+%package doc
+Summary: Documentation for Glib
+Requires: %{name} = %{version}-%{release}
+BuildArch: noarch
+
+%description doc
+The glib-doc package includes documentation for the GLib library.
+
 %prep
 %setup -q
 %patch0 -p1
@@ -69,7 +78,8 @@ if [ %{_host} != %{_build} ]; then
 fi
 %configure \
     --with-pcre=system \
-    --with-sysroot=/target-%{_arch}
+    --with-sysroot=/target-%{_arch} \
+    --enable-gtk-doc
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -105,7 +115,13 @@ make DESTDIR=%{buildroot} install
 %{_bindir}/gsettings
 %{_datadir}/glib-2.0/schemas/*
 
+%files doc
+%defattr(-, root, root)
+%doc %{_datadir}/gtk-doc/html/*
+
 %changelog
+*   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2.58.0-7
+-   Enabled gtk-doc
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 2.58.0-6
 -   Build with python3
 -   Mass removal python2

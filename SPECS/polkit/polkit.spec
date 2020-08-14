@@ -1,30 +1,29 @@
 Summary:       A toolkit for defining and handling authorizations.
 Name:          polkit
-Version:       0.116
+Version:       0.117
 Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       LGPLv2+
 URL:           https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
 Source0:       https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
+%define sha1 polkit=0c375fa621bc9f74f2972e00fb517a408f419adf
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: expat-devel
 BuildRequires: glib-devel
 BuildRequires: gobject-introspection
 BuildRequires: intltool >= 0.40.0
-BuildRequires: mozjs60-devel
+BuildRequires: mozjs-devel
 BuildRequires: Linux-PAM-devel
 BuildRequires: systemd-devel
-Requires:      mozjs60
+Requires:      mozjs
 Requires:      expat
 Requires:      glib
-Requires:      js
 Requires:      Linux-PAM
 Requires:      systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):  /usr/sbin/userdel /usr/sbin/groupdel
-%define sha1 polkit=7fafbf4d2b9a308ad4ad3a174b01970b78c09eea
 
 %description
 polkit provides an authorization API intended to be used by privileged programs
@@ -111,6 +110,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 0.117-1
+-   Upgraded to 0.117
 *   Sat Oct 26 2019 Ankit Jain <ankitja@vmware.com> 0.116-1
 -   Upgraded to 0.116
 *   Thu Jan 10 2019 Dweep Advani <dadvani@vmware.com> 0.113-4

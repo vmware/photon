@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
-Version:        1.34.2
-Release:        3%{?dist}
+Version:        1.45.2
+Release:        1%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -10,7 +10,7 @@ Distribution:   Photon
 # Manually created Source tar which is equal to
 # Source0 + .git as it requires git hooks at build time
 Source0:        https://github.com/rust-lang/rust/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=b58d56db5bfba942019c9a83818ab2a1b6dc441c
+%define sha1    %{name}-%{version}=1425c54fb58083dc20ca4798328481099d2f41a4
 BuildRequires:  git
 BuildRequires:  cmake
 BuildRequires:  glibc
@@ -30,6 +30,7 @@ make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
+find %{buildroot}%{_libdir} -maxdepth 1 -type f -name '*.so' -exec chmod -v +x '{}' '+'
 rm %{buildroot}%{_docdir}/%{name}/html/.lock
 rm %{buildroot}%{_docdir}/%{name}/*.old
 
@@ -60,6 +61,8 @@ rm %{buildroot}%{_docdir}/%{name}/*.old
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+*   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 1.45.2-1
+-   Updated to 1.45.2
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.34.2-3
 -   Build with python3
 -   Mass removal python2

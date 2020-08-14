@@ -1,22 +1,23 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
-Version:        2019.3
-Release:        4%{?dist}
+Version:        2020.4
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
-%define sha1    rpm-ostree=982c3b335debe04763c0b0b8769f7e43229beebc
-Source1:        libglnx-470af87.tar.gz
-%define sha1    libglnx=ed1ee84156ff0d9e70b551a7932fda79fb59e8d4
-Source2:        libdnf-d8e481b.tar.gz
-%define sha1    libdnf=dde7dd434d715c46c7e91c179caccb6eaff2bdd5
+%define sha1    rpm-ostree=59e490cba94ac0ddd9fb6d43c06a059bbc48ab16
+Source1:        libglnx-84b981a.tar.gz
+%define sha1    libglnx=3814aae9c0f8997c1846bdd16f80f1d1d72dc959
+Source2:        libdnf-be77400.tar.gz
+%define sha1    libdnf=7e81f4f9d0d4104471cf1d6575a5c4af159d435a
 Source3:        mk-ostree-host.sh
 Source4:        function.inc
 Source5:        mkostreerepo
 Patch0:         rpm-ostree-libdnf-build.patch
-Patch1:         rpm-ostree-disable-selinux.patch
+# This patch is required to build libdnf with old version of libsolv
+Patch1:         libdnf-Remove-POOL_FLAG_WHATPROVIDESWITHDISABLED.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -42,7 +43,6 @@ BuildRequires:  librepo-devel
 BuildRequires:  attr-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3
-BuildRequires:  python3-gobject-introspection
 BuildRequires:  autogen
 BuildRequires:  libsolv-devel
 BuildRequires:  libsolv
@@ -52,7 +52,6 @@ BuildRequires:  gperf
 BuildRequires:  which
 BuildRequires:  popt-devel
 BuildRequires:  createrepo_c
-BuildRequires:  jq
 BuildRequires:  photon-release
 BuildRequires:  photon-repos
 BuildRequires:  bubblewrap
@@ -102,8 +101,8 @@ Includes the scripts for rpm-ostree repo creation to act as server
 
 %prep
 %setup -q
-tar xf /usr/src/photon/SOURCES/libglnx-470af87.tar.gz --no-same-owner
-tar xf /usr/src/photon/SOURCES/libdnf-d8e481b.tar.gz --no-same-owner
+tar -xf %{SOURCE1} --no-same-owner
+tar -xf %{SOURCE2} --no-same-owner
 %patch0 -p0
 %patch1 -p0
 
@@ -126,9 +125,9 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_libdir}/%{name}/
 %{_libdir}/*.so.1*
 %{_libdir}/girepository-1.0/*.typelib
-%{_sysconfdir}/dbus-1/system.d/*
 %{_unitdir}/*.service
 %{_libexecdir}/*
+%{_datadir}/dbus-1/system.d/*.conf
 %{_datadir}/dbus-1/system-services/*
 %config(noreplace) %{_sysconfdir}/rpm-ostreed.conf
 %{_libdir}/systemd/system/rpm-ostreed-automatic.timer
@@ -154,6 +153,8 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+*   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2020.4-1
+-   Updated to 2020.4
 *   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2019.3-4
 -   Build with python3
 -   Mass removal python2

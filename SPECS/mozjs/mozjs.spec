@@ -1,22 +1,36 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
-%global	major 60
+%global	major 68
 Summary:       Mozilla's JavaScript engine.
-Name:          mozjs%{major}
-Version:       60.9.0
+Name:          mozjs
+Version:       68.11.0
 Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
 URL:           https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey
 Source0:       https://ftp.mozilla.org/pub/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
+%define sha1   firefox-%{version}=445acbf7b7b8f75374ee6347bb6f45748511bcf9
 Patch0:        emitter.patch
+Patch1:        emitter_test.patch
+# Build fixes
+Patch2:        init_patch.patch
+Patch3:        spidermonkey_checks_disable.patch
+Patch4:        Remove-unused-LLVM-and-Rust-build-dependencies.patch
 Distribution:  Photon
 BuildRequires: which
 BuildRequires: autoconf213
+BuildRequires: python3
+BuildRequires: python3-xml
+BuildRequires: python3-libs
+BuildRequires: python3-devel
 BuildRequires: zlib-devel
-%define sha1 firefox-%{version}=616f8afdee741f0bea607a671b8515ef13c68b4a
+BuildRequires: clang-devel
+Requires:      python3
+Requires:      python3-libs
+Obsoletes:     mozjs60
 %define ExtraBuildRequires python2 python2-libs python2-devel python-xml
+
 %description
 Mozilla's JavaScript engine includes a just-in-time compiler (JIT) that compiles
 JavaScript to machine code, for a significant speed increase.
@@ -31,6 +45,10 @@ This contains development tools and libraries for SpiderMonkey.
 %prep
 %setup -q -n firefox-%{version}
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
 rm -rf modules/zlib
 rm -rf security
 
@@ -41,8 +59,9 @@ sh configure \
     --without-system-icu \
     --enable-readline \
     --disable-jemalloc \
+    --disable-tests \
     --with-system-zlib
-make
+make %{?_smp_mflags}
 
 %install
 cd js/src
@@ -72,5 +91,5 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/mozjs-%{major}.pc
 
 %changelog
-*   Sat Oct 26 2019 Ankit Jain <ankitja@vmware.com> 60.9.0-1
+*   Sat Oct 26 2019 Ankit Jain <ankitja@vmware.com> 68.11.0-1
 -   initial version
