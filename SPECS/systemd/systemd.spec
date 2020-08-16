@@ -1,13 +1,7 @@
-%global _vpath_srcdir .
-%global _vpath_builddir %{_target_platform}
-%global __global_cflags  %{optflags}
-%global __global_cxxflags  %{optflags}
-%global __global_ldflags -Wl,-z,relro
-
 Name:             systemd
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Version:          245.5
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 Summary:          System and Service Manager
 
@@ -63,6 +57,7 @@ BuildRequires:   libxslt
 BuildRequires:   Linux-PAM-devel
 BuildRequires:   lz4-devel
 BuildRequires:   meson
+BuildRequires:   ninja-build
 BuildRequires:   openssl-devel
 BuildRequires:   pcre-devel
 BuildRequires:   pkg-config
@@ -149,6 +144,7 @@ else
 fi
 
 CONFIGURE_OPTS=(
+       --prefix=%{_prefix}
        -Dkmod=true
        -Dblkid=true
        -Dseccomp=true
@@ -187,13 +183,13 @@ CONFIGURE_OPTS=(
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-%meson "${CONFIGURE_OPTS[@]}"
-%meson_build
+meson build ${CONFIGURE_OPTS[@]}
+ninja -C build
 
 %install
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-%meson_install
+DESTDIR=%{buildroot} ninja -C build install
 
 install -vdm 755 %{buildroot}/sbin
 for tool in runlevel reboot shutdown poweroff halt telinit; do
@@ -201,10 +197,6 @@ for tool in runlevel reboot shutdown poweroff halt telinit; do
 done
 
 ln -sfv ../lib/systemd/systemd %{buildroot}/sbin/init
-sed -i '/srv/d' %{buildroot}/usr/lib/tmpfiles.d/home.conf
-sed -i "s:0775 root lock:0755 root root:g" %{buildroot}/usr/lib/tmpfiles.d/legacy.conf
-sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}/usr/lib/systemd/network/99-default.link
-sed -i "s:#LLMNR=yes:LLMNR=false:g" %{buildroot}/etc/systemd/resolved.conf
 rm -f %{buildroot}%{_var}/log/README
 mkdir -p %{buildroot}%{_localstatedir}/opt/journal/log
 mkdir -p %{buildroot}%{_localstatedir}/log
@@ -332,18 +324,6 @@ rm -rf %{buildroot}/*
 %ghost %dir %attr(0755,-,-) /etc/systemd/system/timers.target.wants
 %ghost %dir %attr(0755,-,-) /etc/systemd/system
 
-# Don't remove the symlink during upgrade from 239 to 245
-%ghost /etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service
-%ghost /etc/systemd/system/sockets.target.wants/systemd-networkd.socket
-%ghost /etc/systemd/system/network-online.target.wants/systemd-networkd-wait-online.service
-%ghost /etc/systemd/system/multi-user.target.wants/systemd-resolved.service
-%ghost /etc/systemd/system/multi-user.target.wants/systemd-networkd.service
-%ghost /etc/systemd/system/multi-user.target.wants/remote-fs.target
-%ghost /etc/systemd/system/multi-user.target.wants/machines.target
-%ghost /etc/systemd/system/getty.target.wants/getty@tty1.service
-%ghost /etc/systemd/system/dbus-org.freedesktop.resolve1.service
-%ghost /etc/systemd/system/dbus-org.freedesktop.network1.service
-
 %files devel
 %dir %{_includedir}/systemd
 %{_libdir}/libudev.so
@@ -358,6 +338,8 @@ rm -rf %{buildroot}/*
 %files lang -f ../%{name}.lang
 
 %changelog
+*    Sun Aug 16 2020 Susant Sahani <ssahani@vmware.com>  245.5-2
+-    Drop meson macro
 *    Tue May 12 2020 Susant Sahani <ssahani@vmware.com>  245.5-1
 -    Update to version 245.4 stable
 *    Mon May 04 2020 Alexey Makhalov <amakhalov@vmware.com> 239-14

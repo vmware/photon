@@ -1,11 +1,5 @@
-%global _vpath_srcdir .
-%global _vpath_builddir %{_target_platform}
-%global __global_cflags  %{optflags}
-%global __global_cxxflags  %{optflags}
-%global __global_ldflags -Wl,-z,relro
-
 Name:           dbus-broker
-Version:        22
+Version:        23
 Release:        1%{?dist}
 Summary:        Linux D-Bus Message Broker
 License:        ASL 2.0
@@ -15,7 +9,7 @@ Group:          System Environment/Security
 
 URL:            https://github.com/bus1/dbus-broker
 Source0:        https://github.com/bus1/dbus-broker/releases/download/v%{version}/dbus-broker-%{version}.tar.xz
-%define sha1    dbus-broker=b0e3b4c33712ee8476faf550939f3a032327fafb
+%define sha1    dbus-broker=4d2acaa81cdb63794b618708514f58f7bd6cf8f4
 
 Provides:       bundled(c-dvar) = 1
 Provides:       bundled(c-ini) = 1
@@ -29,6 +23,7 @@ BuildRequires:  gcc
 BuildRequires:  git
 BuildRequires:  glibc-devel
 BuildRequires:  meson
+BuildRequires:  ninja-build
 BuildRequires:  python3-docutils
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -45,13 +40,18 @@ recent Linux kernel releases.
 
 %build
 CONFIGURE_OPTS=(
+   --prefix=/usr
 )
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 
-%meson "${CONFIGURE_OPTS[@]}"
-%meson_build
+meson build ${CONFIGURE_OPTS[@]}
+ninja -C build
 
 %install
-%meson_install
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+DESTDIR=%{buildroot} ninja -C build install
 
 %check
 %meson_test
@@ -64,7 +64,6 @@ if [ $1 -eq 1 ] ; then
         systemctl --no-reload          enable dbus-broker.service &>/dev/null || :
         systemctl --no-reload --global enable dbus-broker.service &>/dev/null || :
 fi
-
 
 %journal_catalog_update
 
@@ -87,5 +86,7 @@ fi
 %{_userunitdir}/dbus-broker.service
 
 %changelog
-* Wed May 05 2020 Susant Sahani <ssahani@vmware.com> 22-1
+* Fri Aug 14 2020 Susant Sahani <ssahani@vmware.com> 23-1
+- Update to v23
+* Tue May 05 2020 Susant Sahani <ssahani@vmware.com> 22-1
 - Initial RPM release

@@ -1,14 +1,15 @@
-Summary:    	Library providing serialization and deserialization support for the JSON format
-Name:       	json-glib
-Version:    	1.4.4
-Release:    	2%{?dist}
-License:    	LGPLv2+
-Group:      	Development/Libraries
-Source0:    	http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.4/%{name}-%{version}.tar.xz
+Summary:        Library providing serialization and deserialization support for the JSON format
+Name:           json-glib
+Version:        1.4.4
+Release:        3%{?dist}
+License:        LGPLv2+
+Group:          Development/Libraries
+Source0:        http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.4/%{name}-%{version}.tar.xz
 %define sha1 %{name}=d9b6d58c0a5b45aa86fbf0da31c65c19254edf96
-URL:        	http://live.gnome.org/JsonGlib
-Vendor:		VMware, Inc.
-Distribution:	Photon
+URL:            http://live.gnome.org/JsonGlib
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  python3-gobject-introspection
@@ -20,6 +21,7 @@ BuildRequires:	meson
 BuildRequires:	python3
 BuildRequires:	python3-libs
 BuildRequires:  gtk-doc
+
 Requires:	glib
 Provides:	pkgconfig(json-glib-1.4)
 
@@ -33,7 +35,7 @@ Summary:    Header files for the json-glib library
 Group:      Development/Libraries
 Requires:   %{name} = %{version}-%{release}
 Requires:   glib-devel
-Requires:  gobject-introspection-devel
+Requires:   gobject-introspection-devel
 
 %description devel
 Header files for the json-glib library.
@@ -42,23 +44,21 @@ Header files for the json-glib library.
 %setup -q -n %{name}-%{version}
 
 %build
-%configure \
-    --enable-gtk-doc
-
-%{__make}
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+meson build --prefix=/usr
+ninja -C build
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
-%{__make} install \
-    DESTDIR=$RPM_BUILD_ROOT
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+DESTDIR=%{buildroot} ninja -C build install
 
 %find_lang json-glib-1.0
 
 %check
 sed -i 's/mesontest/meson test/g' Makefile
 make  %{?_smp_mflags} check
-
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -81,12 +81,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/json-glib-1.0
 %{_libdir}/pkgconfig/json-glib-1.0.pc
 %{_datadir}/gir-1.0/Json-1.0.gir
-%{_datadir}/gtk-doc
 %{_libdir}/girepository-1.0/Json-1.0.typelib
 %{_libexecdir}/installed-tests/*
 %{_datadir}/installed-tests/*
 
 %changelog
+*   Sun Aug 16 2020 Susant Sahani <ssahani@vmware.com> 1.4.4-3
+-   Use meson and ninja build system
 *   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 1.4.4-2
 -   Build with python3
 -   Mass removal python2

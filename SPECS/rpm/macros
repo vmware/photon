@@ -32,6 +32,15 @@
 
 %__tar              /bin/tar --no-same-owner
 
+
+#############################################################################
+# Perl specific macros, no longer part of rpm >= 4.15
+%perl_vendorarch %(eval "`perl -V:installvendorarch`"; echo $installvendorarch)
+%perl_vendorlib  %(eval "`perl -V:installvendorlib`"; echo $installvendorlib)
+%perl_archlib    %(eval "`perl -V:installarchlib`"; echo $installarchlib)
+%perl_privlib    %(eval "`perl -V:installprivlib`"; echo $installprivlib)
+#############################################################################
+
 %_enable_debug_packages 1
 %_include_minidebuginfo 1
 %_use_internal_dependency_generator 1

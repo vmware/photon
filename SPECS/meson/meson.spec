@@ -2,15 +2,16 @@
 
 Name:           meson
 Summary:        Extremely fast and user friendly build system
-Version:        0.47.2
+Version:        0.55.0
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://mesonbuild.com/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/mesonbuild/meson/archive/%{version}/%{name}-%{version}.tar.gz
-%define sha1    meson=14d6978a17631b550eb6f630f1377d4ea905d106
+%define sha1    meson=266c35ad4ea0b526e3437500b99a0745adf82d92
 BuildArch:      noarch
+
 BuildRequires:  gcc
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -22,21 +23,24 @@ BuildRequires:  gettext
 
 Requires:       ninja-build
 Requires:       python3
+Requires:       python3-setuptools
 
 %description
-Meson is an open source build system meant to be both extremely fast, 
-and, even more importantly, as user friendly as possible.
-The main design point of Meson is that every moment a developer spends 
-writing or debugging build definitions is a second wasted. 
-So is every second spent waiting for the build system to actually start compiling code.
+Meson is an open source build system meant to be both extremely fast,
+and, even more importantly, as user friendly as possible. The main design
+point of Meson is that every moment a developer spends writing or debugging
+build definitions is a second wasted. So is every second spent waiting for
+the build system to actually start compiling code.
 
 %prep
-%setup 
+%autosetup -p1
 
 %build
+python3 setup.py build
 
 %install
-python3 setup.py install --root=%{buildroot}/
+python3 setup.py  install --root=%{buildroot}/
+
 install -Dpm0644 data/macros.%{name} %{buildroot}%{_libdir}/rpm/macros.d/macros.%{name}
 
 %check
@@ -46,23 +50,18 @@ python3 ./run_tests.py
 %files
 %license COPYING
 %{_bindir}/%{name}
-%{_bindir}/%{name}conf
-%{_bindir}/%{name}introspect
-%{_bindir}/%{name}test
-%{_bindir}/wraptool
-%{python3_sitelib}/mesonbuild
-%{python3_sitelib}/%{name}-*.egg-info
+%{python3_sitelib}/mesonbuild/*
+%{python3_sitelib}/%{name}-*.egg-info/
 %{_mandir}/man1/%{name}.1*
-%{_mandir}/man1/%{name}conf.1*
-%{_mandir}/man1/%{name}introspect.1*
-%{_mandir}/man1/%{name}test.1*
-%{_mandir}/man1/wraptool.1*
 %{_libdir}/rpm/macros.d/macros.%{name}
+%dir %{_datadir}/polkit-1
+%dir %{_datadir}/polkit-1/actions
 %{_datadir}/polkit-1/actions/com.mesonbuild.install.policy
 
 %changelog
+*   Wed Aug 12 2020 Susant Sahani <ssahani@vmware.com> 0.55.0-1
+-   Update to version 0.55.0-1
 *   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.47.2-1
 -   Update to version 0.47.2
 *   Wed Dec 27 2017 Anish Swaminathan <anishs@vmware.com> 0.44.0-1
 -   Initial packaging
-

@@ -1,13 +1,7 @@
-%global _vpath_srcdir .
-%global _vpath_builddir %{_target_platform}
-%global __global_cflags  %{optflags}
-%global __global_cxxflags  %{optflags}
-%global __global_ldflags -Wl,-z,relro
-
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
 Version:        3.9.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+
 Url:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
@@ -15,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libfuse/libfuse/archive/%{name}-%{version}.tar.gz
 %define sha1    fuse3=412f063f1aafc4d409271810f40b0f31e07239bb
+
 BuildRequires:  meson >= 0.38.0
 BuildRequires:  systemd-devel
 %if %{with_check}
@@ -49,18 +44,23 @@ It contains the libraries and header files to create fuse applications.
 %setup -qn libfuse-fuse-%{version}
 
 %build
-%meson -D examples=false
-%meson_build
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 
-%check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pluggy more_itertools
-python3 -m pytest test/
+CONFIGURE_OPTS=(
+   --prefix=/usr
+   -D examples=false
+)
+
+meson build ${CONFIGURE_OPTS[@]}
+ninja -C build
+
 
 %install
-export MESON_INSTALL_DESTDIR_PREFIX=%{buildroot}/usr %meson_install
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+DESTDIR=%{buildroot}/ ninja -C build install
 
-find %{buildroot} .
 find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
 
 # change from 4755 to 0755 to allow stripping -- fixed later in files
@@ -71,6 +71,13 @@ rm -f %{buildroot}/%{_libdir}/*.a
 
 # No need to create init-script
 rm -f %{buildroot}%{_sysconfdir}/init.d/fuse3
+
+%check
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pluggy more_itertools
+python3 -m pytest test/
+
+
 
 %files
 %defattr(-, root, root)
@@ -87,6 +94,8 @@ rm -f %{buildroot}%{_sysconfdir}/init.d/fuse3
 %{_libdir}/libfuse3.so*
 
 %changelog
+*   Sun Aug 16 2020 Susant Sahani <ssahani@vmware.com> 3.9.4-2
+-   Use meson and ninja build system
 *   Wed Jul 15 2020 Gerrit Photon <photon-checkins@vmware.com> 3.9.4-1
 -   Automatic Version Bump
 *   Tue Apr 07 2020 Susant Sahani <ssahani@vmware.com> 3.9.1-1
