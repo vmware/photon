@@ -1,22 +1,28 @@
 %global _default_patch_fuzz 2
-Summary:	OpenLdap-2.4.43
-Name:		openldap
-Version:	2.4.50
-Release:	1%{?dist}
-License:	OpenLDAP
-URL:		http://cyrusimap.web.cmu.edu/
-Group:		System Environment/Security
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
-%define sha1 openldap=82f576e0d0d334e9e798d9de8936683546247bb9
-Patch0:         openldap-2.4.40-gssapi-1.patch
-Patch1:		openldap-2.4.44-consolidated-2.patch
+%global debug_package %{nil}
+
+Summary:        OpenLdap-2.4.43
+Name:           openldap
+Version:        2.4.51
+Release:        1%{?dist}
+License:        OpenLDAP
+URL:            http://cyrusimap.web.cmu.edu/
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
+%define sha1 openldap=4fe7f0e5766d0d9a5431871b581938c05b4eb873
+
+Patch0:         openldap-2.4.51-consolidated-2.patch
+
 Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
+
 BuildRequires:  cyrus-sasl >= 2.1
 BuildRequires:  openssl-devel >= 1.0.1
 BuildRequires:	groff
 BuildRequires:	e2fsprogs-devel
+BuildRequires:  libtool
+BuildRequires:  systemd
 
 %description
 OpenLDAP is an open source suite of LDAP (Lightweight Directory Access
@@ -30,9 +36,8 @@ libraries, and documentation for OpenLDAP.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
-%build
 
+%build
 autoconf
 
 sed -i '/6.0.20/ a\\t__db_version_compat' configure
@@ -40,11 +45,26 @@ sed -i '/6.0.20/ a\\t__db_version_compat' configure
 export CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H"
 
 %configure \
-    $(test %{_host} != %{_build} && echo "CC=%{_host}-gcc --with-yielding-select=yes --with-sysroot=/target-%{_arch}") \
-    --disable-static    \
-    --disable-debug     \
-    --disable-slapd     \
-    --with-tls=openssl
+         $(test %{_host} != %{_build} && echo "CC=%{_host}-gcc --with-yielding-select=yes --with-sysroot=/target-%{_arch}") \
+        --disable-static     \
+        --disable-slapd      \
+        --with-tls=openssl   \
+        --enable-debug       \
+        --prefix=/usr        \
+        --enable-dynamic     \
+        --enable-syslog      \
+        --enable-ipv6        \
+        --enable-local       \
+        --enable-crypt       \
+        --enable-spasswd     \
+        --enable-modules     \
+        --enable-backends    \
+        --disable-ndb --enable-overlays=mod \
+        --with-cyrus-sasl    \
+        --with-threads
+
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+
 
 if [ %{_host} != %{_build} ]; then
  sed -i '/#define NEED_MEMCMP_REPLACEMENT 1/d' include/portable.h
@@ -57,12 +77,23 @@ make install DESTDIR=%{buildroot}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
+chmod a+x %{buildroot}%{_libdir}/liblber.so*
+chmod a+x %{buildroot}%{_libdir}/libldap_r.so*
+
+pushd %{buildroot}%{_libdir}
+v=%{version}
+version=$(echo ${v%.[0-9]*})
+for lib in liblber libldap libldap_r libslapi; do
+  rm -f ${lib}.so
+  ln -s ${lib}-${version}.so.2 ${lib}.so
+done
+popd
+
 %check
 make %{?_smp_mflags} test
 
 %post	-p /sbin/ldconfig
-
-%postun	-p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -70,15 +101,18 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.so*
 %{_includedir}/*
+%dir %{_sysconfdir}/openldap
+%{_sysconfdir}/openldap/*
+%{_libdir}/*
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-/etc/openldap/*
 
 %changelog
+*   Fri Aug 14 2020 Susant Sahani <ssahani@vmware.com> 2.4.51-1
+-   Version Bump and fix build
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.50-1
 -   Automatic Version Bump
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.4.46-3
