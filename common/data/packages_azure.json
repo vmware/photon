@@ -4,7 +4,7 @@
                 "linux",
                 "initramfs",
                 "sudo",
-                "python-pyasn1",
+                "python3-pyasn1",
                 "gawk",
                 "cloud-utils",
                 "gptfdisk",
