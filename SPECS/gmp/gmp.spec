@@ -1,7 +1,7 @@
 Summary:         Math libraries
 Name:            gmp
 Version:         6.1.2
-Release:         2%{?dist}
+Release:         3%{?dist}
 License:         LGPLv3+
 URL:             http://www.gnu.org/software/gmp
 Group:           Applications/System
@@ -26,8 +26,14 @@ for handling compiled objects.
 %setup -q
 
 %build
-    ./configure \
-    --prefix=%{_prefix} \
+
+%ifarch x86_64
+# Do not detect host's CPU. Generate generic library (-mtune=k8)
+cp -v configfsf.guess config.guess
+cp -v configfsf.sub config.sub
+%endif
+
+%configure \
     --disable-silent-rules \
     --disable-static \
     --disable-assembly
@@ -60,6 +66,8 @@ make %{?_smp_mflags} check
 %{_docdir}/%{name}-%{version}/isa_abi_headache
 
 %changelog
+*   Tue Aug 18 2020 Prashant S Chauhan <psinghchauha@vmware.com> 6.1.2-3
+-   Use -mtune -march options for generic CPU (x86_64)
 *   Tue Apr 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.1.2-2
 -   Disable cxx (do not build libgmpxx). Disable static.
 *   Mon Apr 17 2017 Danut Moraru <dmoraru@vmware.com> 6.1.2-1

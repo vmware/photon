@@ -1,7 +1,7 @@
 Summary:	Functions for multiple precision math
 Name:		mpfr
 Version:	3.1.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.mpfr.org
 Group:		Applications/System
@@ -17,13 +17,12 @@ Summary:	Header and development files for mpfr
 Requires:	%{name} = %{version}
 
 %description	devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
 %setup -q
 %build
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--enable-thread-safe \
 	--docdir=%{_defaultdocdir}/%{name}-%{version} \
 	--disable-silent-rules
@@ -63,6 +62,8 @@ make %{?_smp_mflags} check
 %{_docdir}/mpfr-3.1.5/COPYING
 
 %changelog
+*       Tue Aug 18 2020 Prashant S Chauhan <psinghchauha@vmware.com> 3.1.5-2
+-       Bump up release number to get generic mtune option from gmp.h
 *       Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 3.1.5-1
 -       Update package version
 *       Mon Oct 03 2016 ChangLee <changlee@vmware.com> 3.1.3-3
