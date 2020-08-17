@@ -1,0 +1,164 @@
+Submitted By:            Douglas R. Reno <renodr at linuxfromscratch.org>
+Date:                    2020-05-04
+Initial Package Version: 2.1.27 
+Origin:                  Self
+Upstream Status:         Submitted
+Description:             Fixes the build of documentation with Sphinx-3.0 and
+                         later. In the optional dependencies of cyrus-sasl
+                         and many other packages, we have Sphinx as an optional
+                         dependency (as well as doctools, which we do have
+                         in the book). This contains primarily deprecation
+                         fixes.
+
+diff -Naurp cyrus-sasl-2.1.27.orig/docsrc/conf.py cyrus-sasl-2.1.27/docsrc/conf.py
+--- cyrus-sasl-2.1.27.orig/docsrc/conf.py	2017-07-24 07:53:03.000000000 -0500
++++ cyrus-sasl-2.1.27/docsrc/conf.py	2020-05-04 16:52:34.428645966 -0500
+@@ -294,7 +294,7 @@ for tuple in pathset:
+     except OSError as e:
+         continue
+     for rstfile in glob.glob("*.rst"):
+-        author = [("The Cyrus Team")]
++        authors = [("The Cyrus Team")]
+         orphan = 'False';
+         with io.open(rstfile,'r',encoding="utf8") as f:
+             for line in f:
+@@ -302,14 +302,14 @@ for tuple in pathset:
+                     orphan = 'True';
+                     break;
+                 if line.startswith('.. author: '):
+-                    author.append(line[11: len(line.strip())])
++                    authors.append(line[11: len(line.strip())])
+             f.close()
+         if orphan == 'False':
+             man_pages.append(
+                 (os.path.splitext(os.path.join(tuple[0],rstfile))[0],
+                 os.path.splitext(rstfile)[0],
+                 u'Cyrus SASL documentation',
+-                author,
++                authors,
+                 tuple[1])
+                 )
+ 
+diff -Naurp cyrus-sasl-2.1.27.orig/docsrc/exts/sphinxlocal/builders/manpage.py cyrus-sasl-2.1.27/docsrc/exts/sphinxlocal/builders/manpage.py
+--- cyrus-sasl-2.1.27.orig/docsrc/exts/sphinxlocal/builders/manpage.py	2016-11-07 07:52:12.000000000 -0600
++++ cyrus-sasl-2.1.27/docsrc/exts/sphinxlocal/builders/manpage.py	2020-05-04 17:00:27.278487663 -0500
+@@ -21,7 +21,7 @@ from docutils.frontend import OptionPars
+ from sphinx import addnodes
+ from sphinx.errors import SphinxError
+ from sphinx.builders import Builder
+-from sphinx.environment import NoUri
++from sphinx.errors import NoUri
+ from sphinx.util.nodes import inline_all_toctrees
+ from sphinx.util.console import bold, darkgreen
+ from sphinx.writers.manpage import ManualPageWriter
+@@ -32,6 +32,12 @@ from sphinx.builders.manpage import Manu
+ # Translater in it.
+ from sphinxlocal.writers.manpage import CyrusManualPageWriter
+ 
++try:
++    from sphinx.util import logging
++    logger = logging.getLogger(__name__)
++except:
++    logger = None
++
+ class CyrusManualPageBuilder(ManualPageBuilder):
+     """
+     Builds groff output in manual page format.
+@@ -44,8 +50,11 @@ class CyrusManualPageBuilder(ManualPageB
+     #settings_defaults = {}
+ 
+     def init(self):
++        global logger
++        if logger is None:
++            logger = self
+         if not self.config.man_pages:
+-            self.warn('no "man_pages" config value found; no manual pages '
++            logger.warn('no "man_pages" config value found; no manual pages '
+                       'will be written')
+ 
+     def write(self, *ignored):
+@@ -56,7 +65,7 @@ class CyrusManualPageBuilder(ManualPageB
+             components=(docwriter,),
+             read_config_files=True).get_default_values()
+ 
+-        self.info(bold('writing... '), nonl=True)
++        logger.info(bold('writing... '), nonl=True)
+ 
+         for info in self.config.man_pages:
+             docname, name, description, authors, section = info
+@@ -67,7 +76,7 @@ class CyrusManualPageBuilder(ManualPageB
+                     authors = []
+ 
+             targetname = '%s.%s' % (name, section)
+-            self.info(darkgreen(targetname) + ' { ', nonl=True)
++            logger.info(darkgreen(targetname) + ' { ', nonl=True)
+             destination = FileOutput(
+                 destination_path=path.join(self.outdir, targetname),
+                 encoding='utf-8')
+@@ -76,7 +85,7 @@ class CyrusManualPageBuilder(ManualPageB
+             docnames = set()
+             largetree = inline_all_toctrees(self, docnames, docname, tree,
+                                             darkgreen, [docname])
+-            self.info('} ', nonl=True)
++            logger.info('} ', nonl=True)
+             self.env.resolve_references(largetree, docname, self)
+             # remove pending_xref nodes
+             for pendingnode in largetree.traverse(addnodes.pending_xref):
+@@ -89,7 +98,7 @@ class CyrusManualPageBuilder(ManualPageB
+             largetree.settings.section = section
+ 
+             docwriter.write(largetree, destination)
+-        self.info()
++        logger.info('')
+ 
+ def setup(app):
+     app.add_builder(CyrusManualPageBuilder)
+diff -Naurp cyrus-sasl-2.1.27.orig/docsrc/exts/sphinxlocal/roles/saslman.py cyrus-sasl-2.1.27/docsrc/exts/sphinxlocal/roles/saslman.py
+--- cyrus-sasl-2.1.27.orig/docsrc/exts/sphinxlocal/roles/saslman.py	2017-07-18 11:21:23.000000000 -0500
++++ cyrus-sasl-2.1.27/docsrc/exts/sphinxlocal/roles/saslman.py	2020-05-04 16:55:11.047213752 -0500
+@@ -18,7 +18,6 @@ from string import Template
+ import re
+ 
+ def setup(app):
+-    app.info('Initializing saslman plugin')
+     app.add_crossref_type('saslman', 'saslman', '%s', nodes.generated)
+     return
+ 
+diff -Naurp cyrus-sasl-2.1.27.orig/docsrc/exts/sphinxlocal/writers/manpage.py cyrus-sasl-2.1.27/docsrc/exts/sphinxlocal/writers/manpage.py
+--- cyrus-sasl-2.1.27.orig/docsrc/exts/sphinxlocal/writers/manpage.py	2016-11-07 07:52:12.000000000 -0600
++++ cyrus-sasl-2.1.27/docsrc/exts/sphinxlocal/writers/manpage.py	2020-05-04 16:56:45.912340882 -0500
+@@ -14,7 +14,6 @@
+ 
+ from docutils import nodes
+ from sphinx.writers.manpage import (
+-    MACRO_DEF,
+     ManualPageWriter,
+     ManualPageTranslator as BaseTranslator
+ )
+@@ -22,8 +21,7 @@ from sphinx.writers.manpage import (
+ 
+ from sphinx import addnodes
+ from sphinx.locale import admonitionlabels, _
+-from sphinx.util.osutil import ustrftime
+-from sphinx.util.compat import docutils_version
++from time import strftime
+ 
+ class CyrusManualPageWriter(ManualPageWriter):
+ 
+@@ -68,15 +66,12 @@ class CyrusManualPageTranslator(BaseTran
+         if builder.config.today:
+             self._docinfo['date'] = builder.config.today
+         else:
+-            self._docinfo['date'] = ustrftime(builder.config.today_fmt
++            self._docinfo['date'] = strftime(builder.config.today_fmt
+                                               or _('%B %d, %Y'))
+         self._docinfo['copyright'] = builder.config.copyright
+         self._docinfo['version'] = builder.config.version
+         self._docinfo['manual_group'] = builder.config.project
+ 
+-        # since self.append_header() is never called, need to do this here
+-        self.body.append(MACRO_DEF)
+-
+         # overwritten -- don't wrap literal_block with font calls
+         self.defs['literal_block'] = ('.sp\n.nf\n', '\n.fi\n')
+ 
