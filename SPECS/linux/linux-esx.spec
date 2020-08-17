@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.138
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -90,6 +90,8 @@ Patch52:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 # Fix for CVE-2020-14331
 Patch53:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
 
+# 9p patches
+Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
 Patch55:        0001-p9fs_dir_readdir-offset-support.patch
 Patch56:	0002-Add-9p-zero-copy-data-path-using-crossfd.patch
 Patch57:	0003-Enable-cache-loose-for-vdfs-9p.patch
@@ -216,6 +218,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch51 -p1
 %patch52 -p1
 %patch53 -p1
+%patch54 -p1
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
@@ -363,6 +366,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Aug 18 2020 Ajay Kaher <akaher@vmware.com> 4.19.138-6
+-   9p: Add opt_metaonly cache option
 *   Tue Aug 18 2020 Kevin Kong <kkong@vmware.com> 4.19.138-5
 -   fix dirty pages writeback in v9fs_evict_inode.
 *   Tue Aug 18 2020 Kevin Kong <kkong@vmware.com> 4.19.138-4

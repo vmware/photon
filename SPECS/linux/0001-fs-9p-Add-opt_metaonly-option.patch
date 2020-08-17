@@ -1,0 +1,98 @@
+From 83ddcde08a315fce301f33faec65c5c542fe4256 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Wed, 26 Aug 2020 17:03:24 +0530
+Subject: [PATCH] fs, 9p: Add opt_metaonly cache option
+
+Read/Write operation of 9p has two executions paths:
+
+metadata: to bypass caching layer:
+v9fs_cached_file_read_iter()->v9fs_file_read_iter()
+v9fs_cached_file_write_iter()->v9fs_file_write_iter()
+
+datapath: to involve generic caching read/write:
+v9fs_cached_file_read_iter()->generic_file_read_iter()
+v9fs_cached_file_write_iter()->generic_file_write_iter()
+
+opt_metaonly helps to choose metadata read/write execution
+path which bypass caching layer.
+
+By-default opt_metaonly will be unset.
+
+Example: cache=loose, metaonly
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ Documentation/filesystems/9p.txt | 2 ++
+ fs/9p/v9fs.c                     | 9 +++++++++
+ fs/9p/v9fs.h                     | 1 +
+ 3 files changed, 12 insertions(+)
+
+diff --git a/Documentation/filesystems/9p.txt b/Documentation/filesystems/9p.txt
+index 31011d0..77a9183 100644
+--- a/Documentation/filesystems/9p.txt
++++ b/Documentation/filesystems/9p.txt
+@@ -137,6 +137,8 @@ OPTIONS
+ 		cache tags for existing cache sessions can be listed at
+ 		/sys/fs/9p/caches. (applies only to cache=fscache)
+ 
++  metaonly      to bypass caching layer, if cache is loose or mmap
++
+   local_lock	Use only local posix locking from the perspective of "this"
+ 		kernel. Do not perform server side locking.
+ 
+diff --git a/fs/9p/v9fs.c b/fs/9p/v9fs.c
+index aaced58..dfaa96c 100644
+--- a/fs/9p/v9fs.c
++++ b/fs/9p/v9fs.c
+@@ -61,6 +61,8 @@ enum {
+ 	Opt_cache_loose, Opt_fscache, Opt_stat, Opt_mmap, Opt_container,
+ 	/* Access options */
+ 	Opt_access, Opt_posixacl,
++	/* Metadata option: to bypass caching layer */
++	Opt_metaonly,
+ 	/* Lock timeout option */
+ 	Opt_locktimeout,
+ 	/* Local lock */
+@@ -82,6 +84,7 @@ static const match_table_t tokens = {
+ 	{Opt_fscache, "fscache"},
+ 	{Opt_stat, "stat"},
+ 	{Opt_mmap, "mmap"},
++	{Opt_metaonly, "metaonly"},
+ 	{Opt_cachetag, "cachetag=%s"},
+ 	{Opt_access, "access=%s"},
+ 	{Opt_posixacl, "posixacl"},
+@@ -152,6 +155,8 @@ int v9fs_show_options(struct seq_file *m, struct dentry *root)
+ 		seq_puts(m, ",nodevmap");
+ 	if (v9ses->cache)
+ 		seq_printf(m, ",%s", v9fs_cache_modes[v9ses->cache]);
++	if (v9ses->metaonly)
++		seq_printf(m, ",metaonly");
+ #ifdef CONFIG_9P_FSCACHE
+ 	if (v9ses->cachetag && v9ses->cache == CACHE_FSCACHE)
+ 		seq_printf(m, ",cachetag=%s", v9ses->cachetag);
+@@ -398,6 +403,10 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
+ 			v9ses->session_lock_timeout = (long)option * HZ;
+ 			break;
+ 
++		case Opt_metaonly:
++			v9ses->metaonly = true;
++			break;
++
+ 		case Opt_local_lock:
+ 			v9ses->flags |= V9FS_LOCAL_LOCK;
+ 			break;
+diff --git a/fs/9p/v9fs.h b/fs/9p/v9fs.h
+index e842137..e07ac70 100644
+--- a/fs/9p/v9fs.h
++++ b/fs/9p/v9fs.h
+@@ -105,6 +105,7 @@ struct v9fs_session_info {
+ 	unsigned short debug;
+ 	unsigned int afid;
+ 	unsigned int cache;
++	bool metaonly;
+ #ifdef CONFIG_9P_FSCACHE
+ 	char *cachetag;
+ 	struct fscache_cookie *fscache;
+-- 
+2.7.4
+

@@ -1,6 +1,6 @@
-From 4d6339c64a829e3b88cdb831dc16f825cd3c1927 Mon Sep 17 00:00:00 2001
-From: Mounesh Badiger <badigerm@vmware.com>
-Date: Mon, 2 Mar 2020 10:43:42 -0800
+From a30d7ebb31dc3e9acccf73c5632e45a936a63ccf Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com> 
+Date: Sun, 23 Aug 2020 17:53:21 +0530
 Subject: [PATCH 3/4] Enable cache=loose for vdfs 9p.
 
 cache=loose, helps metadata performance, but due
@@ -9,23 +9,26 @@ less photon memory datapath performance regressed.
 so only enable loose cache for metadata and datapath
 just go through normal zc path.
 ---
- fs/9p/vfs_file.c        | 24 ++++++++++++++++++++++--
+ fs/9p/vfs_file.c        | 30 ++++++++++++++++++++++++++++--
  include/net/9p/client.h |  1 +
  net/9p/client.c         |  6 ++++++
- 3 files changed, 29 insertions(+), 2 deletions(-)
+ 3 files changed, 35 insertions(+), 2 deletions(-)
 
 diff --git a/fs/9p/vfs_file.c b/fs/9p/vfs_file.c
-index 550d0b1..f231fee 100644
+index ddff999..c685dd0 100644
 --- a/fs/9p/vfs_file.c
 +++ b/fs/9p/vfs_file.c
-@@ -457,6 +457,26 @@ v9fs_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
+@@ -464,6 +464,32 @@ v9fs_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
  	return err;
  }
  
 +static ssize_t
 +v9fs_cached_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
 +{
-+	if (p9_is_fid_proto_dotx(iocb->ki_filp->private_data)) {
++	struct inode *inode = iocb->ki_filp->f_mapping->host;
++	struct v9fs_session_info *v9ses = v9fs_inode2v9ses(inode);
++
++	if (v9ses->metaonly) {
 +		return v9fs_file_read_iter(iocb, to);
 +	}
 +
@@ -35,7 +38,10 @@ index 550d0b1..f231fee 100644
 +static ssize_t
 +v9fs_cached_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 +{
-+        if (p9_is_fid_proto_dotx(iocb->ki_filp->private_data)) {
++	struct inode *inode = iocb->ki_filp->f_mapping->host;
++	struct v9fs_session_info *v9ses = v9fs_inode2v9ses(inode);
++
++        if (v9ses->metaonly) {
 +		return v9fs_file_write_iter(iocb, from);
 +	}
 +
@@ -45,7 +51,7 @@ index 550d0b1..f231fee 100644
  static int v9fs_file_fsync(struct file *filp, loff_t start, loff_t end,
  			   int datasync)
  {
-@@ -672,8 +692,8 @@ const struct file_operations v9fs_cached_file_operations = {
+@@ -679,8 +705,8 @@ const struct file_operations v9fs_cached_file_operations = {
  
  const struct file_operations v9fs_cached_file_operations_dotl = {
  	.llseek = generic_file_llseek,
@@ -57,10 +63,10 @@ index 550d0b1..f231fee 100644
  	.release = v9fs_dir_release,
  	.lock = v9fs_file_lock_dotl,
 diff --git a/include/net/9p/client.h b/include/net/9p/client.h
-index 43a9e50..4465f32 100644
+index 947a570..2ff5fb0 100644
 --- a/include/net/9p/client.h
 +++ b/include/net/9p/client.h
-@@ -261,6 +261,7 @@ void p9stat_free(struct p9_wstat *);
+@@ -255,6 +255,7 @@ void p9stat_free(struct p9_wstat *);
  
  int p9_is_proto_dotu(struct p9_client *clnt);
  int p9_is_proto_dotl(struct p9_client *clnt);
@@ -69,10 +75,10 @@ index 43a9e50..4465f32 100644
  int p9_client_xattrcreate(struct p9_fid *, const char *, u64, int);
  int p9_client_readlink(struct p9_fid *fid, char **target);
 diff --git a/net/9p/client.c b/net/9p/client.c
-index 8d0e063..f9cd58b 100644
+index d62f83f..dd49218 100644
 --- a/net/9p/client.c
 +++ b/net/9p/client.c
-@@ -115,6 +115,12 @@ inline int p9_is_proto_dotx(struct p9_client *clnt)
+@@ -102,6 +102,12 @@ int p9_show_client_options(struct seq_file *m, struct p9_client *clnt)
  }
  EXPORT_SYMBOL(p9_is_proto_dotx);
  
@@ -86,5 +92,5 @@ index 8d0e063..f9cd58b 100644
   * Some error codes are taken directly from the server replies,
   * make sure they are valid.
 -- 
-2.6.2
+2.7.4
 
