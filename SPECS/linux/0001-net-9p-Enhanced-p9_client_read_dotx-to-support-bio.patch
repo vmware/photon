@@ -1,0 +1,128 @@
+From 46542d2573b1fc6a53afac7850b6cf2520b2708d Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Mon, 17 Aug 2020 02:11:55 +0530
+Subject: [PATCH 1/2] net, 9p: Enhanced p9_client_read_dotx() to support bio_vec
+
+iov_iter_get_pages() behaves differently for io_vec and bio_vec,
+so enhanced p9_client_read_dotx() to handle bio_vec properly.
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ include/linux/uio.h |  5 +++++
+ net/9p/client.c     | 48 +++++++++++++++++++++++++++++-------------------
+ 2 files changed, 34 insertions(+), 19 deletions(-)
+
+diff --git a/include/linux/uio.h b/include/linux/uio.h
+index 422b1c0..e958d74 100644
+--- a/include/linux/uio.h
++++ b/include/linux/uio.h
+@@ -207,6 +207,11 @@ static inline bool iter_is_iovec(const struct iov_iter *i)
+ 	return !(i->type & (ITER_BVEC | ITER_KVEC | ITER_PIPE));
+ }
+ 
++static inline bool iter_is_kvec(const struct iov_iter *i)
++{
++	return !(i->type & (ITER_BVEC | ITER_IOVEC | ITER_PIPE));
++}
++
+ /*
+  * Get one of READ or WRITE out of iter->type without any other flags OR'd in
+  * with it.
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 22c5517..b997215 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -34,6 +34,7 @@
+ #include <linux/mutex.h>
+ #include <linux/slab.h>
+ #include <linux/sched/signal.h>
++#include <linux/bvec.h>
+ #include <linux/uaccess.h>
+ #include <linux/uio.h>
+ #include <net/9p/9p.h>
+@@ -1614,7 +1615,7 @@ EXPORT_SYMBOL(p9_client_unlinkat);
+ static int
+ dotx_can_zc(const struct iov_iter *iter, struct p9_client *clnt)
+ {
+-       return iter_is_iovec(iter) &&
++       return !iter_is_kvec(iter) &&
+               clnt->is_dotx_ok &&
+               iov_iter_count(iter) >= clnt->minzcpages * PAGE_SIZE;
+ }
+@@ -1694,6 +1695,7 @@ p9_client_read_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *er
+ {
+        struct p9_client *clnt = fid->clnt;
+        struct p9_req_t *req = NULL;
++       const struct bio_vec *bvec = to->bvec;
+        int total = 0;
+        int count = iov_iter_count(to);
+        int rsize;
+@@ -1707,25 +1709,32 @@ p9_client_read_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *er
+ 
+        maxpages = iov_iter_npages(to, DOTX_ZC_MAXPAGES);
+ 
+-       pages = kmalloc(sizeof(struct page *) * maxpages, GFP_KERNEL);
+-       if (!pages) {
+-               *err = -ENOMEM;
+-               goto error;
+-       }
+        ppns = kmalloc(sizeof(unsigned long) * maxpages, GFP_KERNEL);
+        if (!ppns) {
+                *err = -ENOMEM;
+                goto error;
+        }
+ 
+-       rsize = iov_iter_get_pages(to, pages, count, maxpages, &off);
+-       if (rsize < 0) {
+-               *err = rsize;
+-               goto error;
+-       }
+-
+-       for (i = 0; i < maxpages; i++) {
+-               ppns[i] = page_to_pfn(pages[i]);
++       if(iter_is_iovec(to)) {
++               pages = kmalloc(sizeof(struct page *) * maxpages, GFP_KERNEL);
++               if (!pages) {
++                       *err = -ENOMEM;
++                       goto error;
++               }
++               rsize = iov_iter_get_pages(to, pages, count, maxpages, &off);
++               if (rsize < 0) {
++                       *err = rsize;
++                       goto error;
++               }
++               for (i = 0; i < maxpages; i++)
++                       ppns[i] = page_to_pfn(pages[i]);
++        } else {
++               rsize = 0;
++               off = bvec->bv_offset;
++               for (i = 0; i < maxpages; i++) {
++                       rsize += bvec[i].bv_len;
++                       ppns[i] = page_to_pfn(bvec[i].bv_page);
++               }
+        }
+ 
+        req = p9_client_rpc(clnt, P9_TREADX, "dqddp", fid->fid, offset, rsize,
+@@ -1756,13 +1765,14 @@ p9_client_read_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *er
+ put_pages:
+        if (req && !IS_ERR(req))
+                p9_tag_remove(clnt, req);
+-
+-       for (i = 0; i < maxpages; i++) {
+-               put_page(pages[i]);
++       if(iter_is_iovec(to)) {
++               for (i = 0; i < maxpages; i++) {
++                       put_page(pages[i]);
++               }
+        }
+-
+ error:
+-       kfree(pages);
++       if(iter_is_iovec(to))
++               kfree(pages);
+        kfree(ppns);
+ 
+        return total;
+-- 
+2.7.4
+

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.138
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -96,6 +96,10 @@ Patch55:        0001-p9fs_dir_readdir-offset-support.patch
 Patch56:	0002-Add-9p-zero-copy-data-path-using-crossfd.patch
 Patch57:	0003-Enable-cache-loose-for-vdfs-9p.patch
 Patch58:	0004-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
+
+# 9p improve readpages cache
+Patch61:        0001-net-9p-Enhanced-p9_client_read_dotx-to-support-bio.patch
+Patch62:        0002-fs-9p-Add-read_cache_pages_inchunks.patch
 
 # inherit tcp_limit_output_bytes
 Patch90:	tcp-inherit-TSQ-limit-from-root-namespace.patch
@@ -223,6 +227,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch56 -p1
 %patch57 -p1
 %patch58 -p1
+%patch61 -p1
+%patch62 -p1
 %patch90 -p1
 %patch98 -p1
 %patch100 -p1
@@ -366,6 +372,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Aug 18 2020 Ajay Kaher <akaher@vmware.com> 4.19.138-7
+-   9p: enhance performence of readpages for 9p fs cache
 *   Tue Aug 18 2020 Ajay Kaher <akaher@vmware.com> 4.19.138-6
 -   9p: Add opt_metaonly cache option
 *   Tue Aug 18 2020 Kevin Kong <kkong@vmware.com> 4.19.138-5

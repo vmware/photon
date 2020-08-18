@@ -1,0 +1,228 @@
+From 050d4469d827d963826abd06c567bf98ee20e278 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Wed, 26 Aug 2020 17:48:01 +0530
+Subject: [PATCH 2/2] fs, 9p: Add read_cache_pages_inchunks()
+
+read_cache_pages_inchunks() read multiple pages together if
+pages are consecutive in page cache.
+
+v9fs_fid_readpages() to handle multiple pages.
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ fs/9p/v9fs.h     |   4 ++
+ fs/9p/vfs_addr.c | 124 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ mm/readahead.c   |   8 +++-
+ 3 files changed, 132 insertions(+), 4 deletions(-)
+
+diff --git a/fs/9p/v9fs.h b/fs/9p/v9fs.h
+index e07ac70..bd489c0 100644
+--- a/fs/9p/v9fs.h
++++ b/fs/9p/v9fs.h
+@@ -166,7 +166,11 @@ extern const struct inode_operations v9fs_symlink_inode_operations_dotl;
+ extern struct inode *v9fs_inode_from_fid_dotl(struct v9fs_session_info *v9ses,
+ 					      struct p9_fid *fid,
+ 					      struct super_block *sb, int new);
++extern void read_cache_pages_invalidate_page(struct address_space *mapping,
++					struct page *page);
+ 
++extern void read_cache_pages_invalidate_pages(struct address_space *mapping,
++					struct list_head *pages);
+ /* other default globals */
+ #define V9FS_PORT	564
+ #define V9FS_DEFUSER	"nobody"
+diff --git a/fs/9p/vfs_addr.c b/fs/9p/vfs_addr.c
+index 1970693..d92b9b3 100644
+--- a/fs/9p/vfs_addr.c
++++ b/fs/9p/vfs_addr.c
+@@ -35,6 +35,8 @@
+ #include <linux/sched.h>
+ #include <linux/uio.h>
+ #include <linux/bvec.h>
++#include <linux/mm_inline.h>
++#include <linux/task_io_accounting_ops.h>
+ #include <net/9p/9p.h>
+ #include <net/9p/client.h>
+ 
+@@ -44,6 +46,49 @@
+ #include "fid.h"
+ 
+ /**
++ * v9fs_fid_readpages - read chunk of pages in from 9P
++ *
++ * @fid: fid being read
++ * @page: structure to page
++ *
++ */
++static int v9fs_fid_readpages(void *data, struct iov_iter *to, int count)
++{
++	struct p9_fid *fid = data;
++	const struct bio_vec *bvec = to->bvec;
++	int i, retval, err;
++
++	p9_debug(P9_DEBUG_VFS, "\n");
++
++	for (i = 0; i < count; i++)
++		BUG_ON(!PageLocked(bvec[i].bv_page));
++
++	retval = p9_client_read(fid, page_offset(bvec->bv_page), to, &err);
++	if (err) {
++		for (i = 0; i < count; i++)
++			v9fs_uncache_page(bvec[i].bv_page->mapping->host, bvec[i].bv_page);
++		retval = err;
++		goto done;
++	}
++
++	if(retval & (PAGE_SIZE-1))
++		zero_user(bvec[count-1].bv_page, retval & (PAGE_SIZE-1), PAGE_SIZE - (retval & (PAGE_SIZE-1)));
++
++	for (i = 0; i < count; i++) {
++		flush_dcache_page(bvec[i].bv_page);
++		SetPageUptodate(bvec[i].bv_page);
++		v9fs_readpage_to_fscache(bvec[i].bv_page->mapping->host, bvec[i].bv_page);
++	}
++	retval = 0;
++
++done:
++	for (i = 0; i < count; i++)
++		unlock_page(bvec[i].bv_page);
++	return retval;
++}
++
++
++/**
+  * v9fs_fid_readpage - read an entire page in from 9P
+  *
+  * @fid: fid being read
+@@ -88,6 +133,82 @@ static int v9fs_fid_readpage(void *data, struct page *page)
+ }
+ 
+ /**
++ * read_cache_pages_in_chunks - populate an address space with some pages & start reads against them
++ *
++ * This function enhance the performance of readpages as compare with read_cache_pages(), as
++ * it creates the chunks of consecutive pages from page cache and calls p9_client_read()
++ * once per chunk.
++ *
++ * @mapping: the address_space
++ * @pages: The address of a list_head which contains the target pages.  These
++ *   pages have their ->index populated and are otherwise uninitialised.
++ * @data: private data for the callback routine.
++ *
++ * Hides the details of the LRU cache etc from the filesystems.
++ */
++int read_cache_pages_in_chunks(struct address_space *mapping, struct list_head *pages,
++			void *data)
++{
++	struct bio_vec *bvec, *dup_bvec;
++	struct iov_iter to;
++	struct page *page;
++	struct list_head *tmp;
++	int i,ret = 0;
++	int total_pages = 0;
++	int max_pages = 0;
++	int pages_in_chunk = 0;
++	long int curr_page_index = 0;
++
++	list_for_each(tmp, pages)
++		++max_pages;
++
++	dup_bvec = bvec = kcalloc(max_pages, sizeof(struct bio_vec), GFP_KERNEL);
++	if(!bvec) {
++		p9_debug(P9_DEBUG_VFS, "No Mem\n");
++		return -ENOMEM;
++	}
++	while (!list_empty(pages)) {
++		page = lru_to_page(pages);
++		list_del(&page->lru);
++		if (add_to_page_cache_lru(page, mapping, page->index,
++				readahead_gfp_mask(mapping))) {
++			read_cache_pages_invalidate_page(mapping, page);
++			continue;
++		}
++
++		if (!v9fs_readpage_from_fscache(page->mapping->host, page))
++			continue;
++
++		dup_bvec->bv_page = page;
++		dup_bvec->bv_len = PAGE_SIZE;
++		++dup_bvec;
++		++total_pages;
++	}
++
++	dup_bvec = bvec;
++	pages_in_chunk = 0;
++	for(i=0;i<total_pages;++i)
++	{
++		++pages_in_chunk;
++		put_page(bvec[i].bv_page);
++		curr_page_index = bvec[i].bv_page->index;
++		if((total_pages == (i+1)) || ((curr_page_index+1) != bvec[i+1].bv_page->index)) {
++			iov_iter_bvec(&to, ITER_BVEC | READ, dup_bvec, pages_in_chunk, PAGE_SIZE*pages_in_chunk);
++			ret = v9fs_fid_readpages(data, &to, pages_in_chunk);
++			if (unlikely(ret)) {
++				read_cache_pages_invalidate_pages(mapping, pages);
++				break;
++			}
++			task_io_account_read(PAGE_SIZE*pages_in_chunk);
++			pages_in_chunk = 0;
++			dup_bvec = &bvec[i+1];
++		}
++	}
++	kfree(bvec);
++	return ret;
++}
++
++/**
+  * v9fs_vfs_readpage - read an entire page in from 9P
+  *
+  * @filp: file being read
+@@ -123,8 +244,7 @@ static int v9fs_vfs_readpages(struct file *filp, struct address_space *mapping,
+ 	if (ret == 0)
+ 		return ret;
+ 
+-	ret = read_cache_pages(mapping, pages, v9fs_fid_readpage,
+-			filp->private_data);
++	ret = read_cache_pages_in_chunks(mapping, pages, filp->private_data);
+ 	p9_debug(P9_DEBUG_VFS, "  = %d\n", ret);
+ 	return ret;
+ }
+diff --git a/mm/readahead.c b/mm/readahead.c
+index 4e63014..a93efe3 100644
+--- a/mm/readahead.c
++++ b/mm/readahead.c
+@@ -43,7 +43,7 @@ EXPORT_SYMBOL_GPL(file_ra_state_init);
+  *   on disk, thus we need to give the fs a chance to clean up in the event of
+  *   an error
+  */
+-static void read_cache_pages_invalidate_page(struct address_space *mapping,
++void read_cache_pages_invalidate_page(struct address_space *mapping,
+ 					     struct page *page)
+ {
+ 	if (page_has_private(page)) {
+@@ -57,10 +57,12 @@ static void read_cache_pages_invalidate_page(struct address_space *mapping,
+ 	put_page(page);
+ }
+ 
++EXPORT_SYMBOL(read_cache_pages_invalidate_page);
++
+ /*
+  * release a list of pages, invalidating them first if need be
+  */
+-static void read_cache_pages_invalidate_pages(struct address_space *mapping,
++void read_cache_pages_invalidate_pages(struct address_space *mapping,
+ 					      struct list_head *pages)
+ {
+ 	struct page *victim;
+@@ -72,6 +74,8 @@ static void read_cache_pages_invalidate_pages(struct address_space *mapping,
+ 	}
+ }
+ 
++EXPORT_SYMBOL(read_cache_pages_invalidate_pages);
++
+ /**
+  * read_cache_pages - populate an address space with some pages & start reads against them
+  * @mapping: the address_space
+-- 
+2.7.4
+
