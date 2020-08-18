@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
 Version:        2.13.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -9,6 +9,7 @@ Url:            https://github.com/redhat-performance/tuned
 Source:         tuned-%{version}.tar.gz
 %define         sha1 tuned=d3087cc836c493fb6da69326c36ed5ee25ca67bd
 Patch0:         remove_desktop_utils_dependency.patch
+Patch1:         0001-bootloader-plugin-support-for-photon.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3-devel
@@ -27,6 +28,7 @@ Requires:       python3-ethtool
 Requires:       linux-python3-perf
 Requires:       irqbalance
 Requires:       systemd
+Requires:       virt-what
 %if %{with_check}
 BuildRequires:  curl-devel
 BuildRequires:  python3-pip
@@ -61,6 +63,7 @@ instead of fewer large ones).
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
 #The tuned daemon is written in pure Python. Nothing requires to be built.
 
@@ -106,6 +109,7 @@ make test
 %config(noreplace) %{_sysconfdir}/tuned/tuned-main.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/com.redhat.tuned.conf
 %config(noreplace) %{_sysconfdir}/modprobe.d/tuned.conf
+%config(noreplace) /boot/tuned.cfg
 %{_libdir}/tmpfiles.d
 %{_unitdir}/tuned.service
 %dir %{_localstatedir}/log/tuned
@@ -137,5 +141,7 @@ make test
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Mon Aug 17 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.13.0-2
+-   Bootloader plugin support for Photon
 *   Wed Mar 18 2020 Tapas Kundu <tkundu@vmware.com> 2.13.0-1
 -   Initial release.
