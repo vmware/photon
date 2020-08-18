@@ -15,7 +15,7 @@
 Summary:        Go
 Name:           go
 Version:        1.11.13
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -26,6 +26,7 @@ Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
 Patch0:         CVE-2019-16276.patch
 Patch1:         CVE-2019-17596.patch
 Patch2:         CVE-2020-7919.patch
+Patch3:         CVE-2020-16845.patch
 Requires:       glibc
 
 %description
@@ -36,6 +37,7 @@ Go is an open source programming language that makes it easy to build simple, re
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 
 %build
@@ -118,15 +120,17 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
-*   Thu Apr 23 2020 <hdommaraju@vmware.com> 1.11.13-4
+*   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.11.13-5
+-   Fix CVE-2020-16845
+*   Thu Apr 23 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 1.11.13-4
 -   Add patch for CVE-2020-7919
-*   Mon Jan 06 2020 <ashwinh@vmware.com> 1.11.13-3
+*   Mon Jan 06 2020 Ashwin H <ashwinh@vmware.com> 1.11.13-3
 -   Add patch for CVE-2019-16276 CVE-2019-17596 which was missed
-*   Fri Jan 03 2020 <ashwinh@vmware.com> 1.11.13-2
+*   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 1.11.13-2
 -   Fix CVE-2019-16276 and CVE-2019-17596
-*   Tue Aug 27 2019 <ashwinh@vmware.com> 1.11.13-1
+*   Tue Aug 27 2019 Ashwin H <ashwinh@vmware.com> 1.11.13-1
 -   Update to  1.11.13
-*   Wed Apr 24 2019 <ashwinh@vmware.com> 1.11.9-1
+*   Wed Apr 24 2019 Ashwin H <ashwinh@vmware.com> 1.11.9-1
 -   Upgrade to 1.11.9
 *   Mon Apr 02 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.4-2
 -   Fix for CVE-2018-7187

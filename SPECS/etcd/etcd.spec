@@ -1,7 +1,7 @@
 Summary:        Etcd-3.1.5
 Name:           etcd
 Version:        3.3.23
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License
 URL:            https://github.com/coreos/etcd
 Group:          System Environment/Security
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 
 %changelog
+*   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 3.3.23-2
+-   Bump up version to compile with new go
 *   Tue Aug 11 2020 Ashwin H <ashwinh@vmware.com> 3.3.23-1
 -   Update etcd, fix CVE-2020-15113
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 3.1.5-5
