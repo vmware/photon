@@ -35,7 +35,7 @@ targetList = {
         "tool-checkup": ["check-tools", "check-docker", "check-docker-service", "check-docker-py",
                 "check-bison", "check-texinfo", "check-g++", "check-gawk", "check-repo-tool",
                 "check-kpartx", "check-sanity", "start-docker", "install-photon-docker-image",
-                "check-spec-files", "check-pyopenssl"],
+                "check-spec-files", "check-pyopenssl", "check-photon-installer"],
 
         "utilities": ["generate-dep-lists", "pkgtree", "imgtree", "who-needs", "print-upward-deps"]
         }
@@ -86,7 +86,6 @@ class Build_Config:
     updatedRpmNoArchPath = ""
     dockerEnv = "/.dockerenv"
     updatedRpmArchPath = ""
-    installerPath = ""
     pkgInfoFile = ""
     rpmArchPath = ""
     commonDir = ""
@@ -142,10 +141,6 @@ class Build_Config:
     @staticmethod
     def setStagePath(stagePath):
         Build_Config.stagePath = stagePath
-
-    @staticmethod
-    def setInstallerPath(installerPath):
-        Build_Config.installerPath = installerPath
 
     @staticmethod
     def setPkgInfoFile(pkgInfoFile):
@@ -367,6 +362,8 @@ class BuildEnvironmentSetup:
 
         if not os.path.isfile(Build_Config.stagePath + "/NOTICE-Apachev2"):
             CommandUtils.runCommandInShell("install -m 444 " + curDir + "/NOTICE-Apachev2 " + Build_Config.stagePath + "/NOTICE-Apachev2")
+        if not os.path.isfile(Build_Config.stagePath + "/EULA.txt"):
+            CommandUtils.runCommandInShell("install -m 444 " + curDir + "/EULA.txt " + Build_Config.stagePath + "/EULA.txt")
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # class Cleanup does the job of cleaning up the stage directory...                                              +
@@ -713,6 +710,12 @@ class CheckTools:
         if shutil.which('kpartx') is None:
             raise Exception("Package kpartx not installed. Aborting.")
 
+    def check_photon_installer():
+        try:
+            import photon_installer
+        except:
+            raise Exception("Error: Python3 package photon-installer is not installed.\nPlease use: pip3 install git+https://github.com/vmware/photon-os-installer.git")
+
     def start_docker():
         check_prerequesite["start-docker"]=True
         CheckTools.check_docker()
@@ -737,7 +740,6 @@ class BuildImage:
 
     def __init__(self, imgName):
         self.src_root = configdict["photon-path"]
-        self.installer_path = Build_Config.installerPath
         self.generated_data_path = Build_Config.dataDir
         self.stage_path = Build_Config.stagePath
         self.log_path = constants.logPath
@@ -815,6 +817,8 @@ class BuildImage:
 
         if not check_prerequesite["check-kpartx"]:
             CheckTools.check_kpartx()
+        if not check_prerequesite["check-photon-installer"]:
+            CheckTools.check_photon_installer()
         if not check_prerequesite["photon-stage"]:
             BuildEnvironmentSetup.photon_stage()
         if not check_prerequesite["vixdiskutil"] and constants.buildArch == "x86_64":
@@ -910,7 +914,6 @@ def initialize_constants():
     constants.setSourcePath(os.path.join(Build_Config.stagePath ,"SOURCES"))
     constants.setPrevPublishRPMRepo(os.path.join(Build_Config.stagePath , "PUBLISHRPMS"))
     constants.setPrevPublishXRPMRepo(os.path.join(Build_Config.stagePath , "PUBLISHXRPMS"))
-    Build_Config.setInstallerPath(os.path.join(configdict["photon-path"], "installer"))
     Build_Config.setPkgInfoFile(os.path.join(Build_Config.stagePath ,"pkg_info.json"))
     constants.setBuildRootPath(os.path.join(Build_Config.stagePath ,"photonroot"))
     Build_Config.setGeneratedDataDir(os.path.join(Build_Config.stagePath ,"common/data"))
@@ -985,6 +988,7 @@ def main():
 
     if configdict["photon-path"] == "":
         configdict["photon-path"] = os.path.dirname(options.configPath)
+
 
     if 'INPUT_PHOTON_BUILD_NUMBER' in os.environ:
         configdict["photon-build-param"]["input-photon-build-number"] = os.environ['IMPUT_PHOTON_BUILD_NUMBER']

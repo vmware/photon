@@ -10,10 +10,10 @@ import imagegenerator
 
 def runInstaller(options, install_config, working_directory):
     try:
-        sys.path.insert(0, options.installer_path)
-        from installer import Installer
+        import photon_installer
+        from photon_installer.installer import Installer
     except:
-        raise ImportError('Installer path incorrect!')
+        raise ImportError("Module photon_installer not found!\nPlease use 'pip3 install git+https://github.com/vmware/photon-os-installer.git' before running")
 
     # Run the installer
     installer = Installer(working_directory=working_directory, rpm_path=options.rpm_path,
@@ -124,7 +124,6 @@ def createIso(options):
         initrd_pkgs = " ".join(Utils.jsonread(initrd_pkg_list_file)["packages"])
 
         retval = subprocess.call([script_directory + '/iso/mk-install-iso.sh',
-                                  options.installer_path,
                                   working_directory, options.iso_path,
                                   options.rpm_path, options.package_list_file,
                                   rpm_list, options.stage_path, files_to_copy,
@@ -209,8 +208,9 @@ def createImage(options):
     os.mkdir(workingDir)
     script_dir = os.path.dirname(os.path.realpath(__file__))
 
-    grub_script = replaceScript(script_dir, image_type, "mk-setup-grub.sh", options.installer_path)
-    install_config['setup_grub_script'] = grub_script
+    grub_script = replaceScript(script_dir, image_type, "mk-setup-grub.sh")
+    if os.path.isfile(grub_script):
+        install_config['setup_grub_script'] = grub_script
 
     # Set absolute path for 'packagelist_file'
     if 'packagelist_file' in install_config:
@@ -294,7 +294,6 @@ if __name__ == '__main__':
 
     # Common args
     parser.add_argument("-e", "--src-root", dest="src_root", default="../..")
-    parser.add_argument("-f", "--installer-path", dest="installer_path", default="../../installer")
     parser.add_argument("-g", "--generated-data-path", dest="generated_data_path", default="../../stage/common/data")
     parser.add_argument("-s", "--stage-path", dest="stage_path", default="../../stage")
     parser.add_argument("-l", "--log-path", dest="log_path", default="../../stage/LOGS")

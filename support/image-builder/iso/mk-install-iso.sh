@@ -17,9 +17,8 @@ set -x
 SCRIPT_PATH=$(dirname $(realpath -s $0))
 PRGNAME=${0##*/}    # script name minus the path
 
-INSTALLER_PATH=$1
-WORKINGDIR=$2
-shift 2
+WORKINGDIR=$1
+shift 1
 ISO_OUTPUT_NAME=$1
 RPMS_PATH=$2
 PACKAGE_LIST_FILE=$3
@@ -68,9 +67,6 @@ $TDNF_CMD || docker run -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHO
 
 rm -f ${WORKINGDIR}/photon-local.repo ${WORKINGDIR}/tdnf.conf
 
-# 2. copy installer code to initrd
-cp -r $INSTALLER_PATH $INITRD
-
 # 3. finalize initrd system (mk-finalize-system.sh)
 chroot ${INITRD} /usr/sbin/pwconv
 chroot ${INITRD} /usr/sbin/grpconv
@@ -102,11 +98,13 @@ umount $EFI_FOLDER
 rm -rf $EFI_FOLDER
 #mcopy -s -i ${WORKINGDIR}/${EFI_IMAGE} ./EFI '::/'
 
-cp $INSTALLER_PATH/sample_ks.cfg ${WORKINGDIR}/isolinux/
+mkdir -p $INITRD/installer
+cp $SCRIPT_PATH/sample_ks.cfg ${WORKINGDIR}/isolinux
+cp $SCRIPT_PATH/sample_ui.cfg ${INITRD}/installer
+cp $STAGE_PATH/EULA.txt ${INITRD}/installer
 
 mv ${WORKINGDIR}/boot/vmlinuz* ${WORKINGDIR}/isolinux/vmlinuz
 
-rm -f ${INITRD}/installer/*.pyc
 # Copy package list json files, dereference symlinks
 cp -rf -L $OUTPUT_DATA_PATH/*.json ${INITRD}/installer/
 #ID in the initrd.gz now is PHOTON_VMWARE_CD . This is how we recognize that the cd is actually ours. touch this file there.
@@ -145,7 +143,7 @@ cd /installer
 ACTIVE_CONSOLE="\$(< /sys/devices/virtual/tty/console/active)"
 
 install() {
-  LANG=en_US.UTF-8 ./isoInstaller.py --json-file=$PACKAGE_LIST_FILE_BASE_NAME && shutdown -r now
+  LANG=en_US.UTF-8 photon-installer -i iso -o $PACKAGE_LIST_FILE_BASE_NAME -e EULA.txt && shutdown -r now
 }
 
 try_run_installer() {
