@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.138
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -111,6 +111,9 @@ Patch201:	0002-vdfs-9p-Add-lock-state-for-9P-fid-to-use-it-for-recovery.patch
 Patch202:  	0003-vdfs-9p-Add-test-infra-to-test-9p-recovery-logic.patch
 Patch203:	0004-vdfs-9p-Handle-failure-during-recovery.patch
 Patch204:	0005-vdfs-9p-Adding-claim-tags-support-in-9p.patch
+
+# VKD 9p changes
+Patch250:        0001-fs-9p-support-no_icache-flag-to-disable-dentry-inode.patch
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -224,6 +227,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch202 -p1
 %patch203 -p1
 %patch204 -p1
+%patch250 -p1
 
 
 %if 0%{?kat_build:1}
@@ -355,6 +359,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Aug 18 2020 Kevin Kong <kkong@vmware.com> 4.19.138-3
+-   VKD 9p Add no_icache flag to disable dentry/inode cache
 *   Wed Aug 12 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.138-2
 -   .config: floppy disk support
 *   Wed Aug 12 2020 ashwin-h <ashwinh@vmware.com> 4.19.138-1

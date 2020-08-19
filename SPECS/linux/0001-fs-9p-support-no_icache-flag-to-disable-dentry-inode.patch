@@ -1,0 +1,116 @@
+From f2964b963d500e9c152c2685c5d00b7d6d4d9445 Mon Sep 17 00:00:00 2001
+From: Kevin Kong <kkong@vmware.com>
+Date: Mon, 17 Aug 2020 00:13:25 +0800
+Subject: [PATCH] fs/9p: support no_icache flag to disable dentry/inode cache
+
+This change adds a new flag, no_icache, to solve EMFILE error when mount
+with cache=loose by disabling dentry/inode cache.
+
+In 9P client, when mount with cache=loose, a v9inode->writeback_fid is
+associated to the inode, which is to write/flush data after the file is
+closed.
+
+In 9P server, each fid is associated to at least one file descriptor on
+server. Therefore, even the file in client has already been closed, its
+inode may still be cached, and the writeback_fid associated to the inode
+in cache is still opened, and the corresponding file descriptor on server
+keeps opened too.
+
+If too many inodes are cached in 9P client, the number of file descriptor
+on server can exceed the limitation. Then the server will reply EMFILE to
+client.
+
+With no_icache flag set, 9p client will not use dentry/inode cache.
+---
+ Documentation/filesystems/9p.txt | 2 ++
+ fs/9p/v9fs.c                     | 7 +++++++
+ fs/9p/v9fs.h                     | 3 ++-
+ fs/9p/vfs_super.c                | 6 ++++--
+ 4 files changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/filesystems/9p.txt b/Documentation/filesystems/9p.txt
+index 31011d04bfa4..cdcc11bcfe98 100644
+--- a/Documentation/filesystems/9p.txt
++++ b/Documentation/filesystems/9p.txt
+@@ -140,6 +140,8 @@ OPTIONS
+   local_lock	Use only local posix locking from the perspective of "this"
+ 		kernel. Do not perform server side locking.
+ 
++  no_icache	Do not cache inodes.
++
+ RESOURCES
+ =========
+ 
+diff --git a/fs/9p/v9fs.c b/fs/9p/v9fs.c
+index aaced588399d..8e0fd9039d49 100644
+--- a/fs/9p/v9fs.c
++++ b/fs/9p/v9fs.c
+@@ -65,6 +65,8 @@ enum {
+ 	Opt_locktimeout,
+ 	/* Local lock */
+ 	Opt_local_lock,
++	/* No icache */
++	Opt_no_icache,
+ 	/* Error token */
+ 	Opt_err
+ };
+@@ -87,6 +89,7 @@ static const match_table_t tokens = {
+ 	{Opt_posixacl, "posixacl"},
+ 	{Opt_locktimeout, "locktimeout=%u"},
+ 	{Opt_local_lock, "local_lock"},
++	{Opt_no_icache, "no_icache"},
+ 	{Opt_err, NULL}
+ };
+ 
+@@ -402,6 +405,10 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
+ 			v9ses->flags |= V9FS_LOCAL_LOCK;
+ 			break;
+ 
++		case Opt_no_icache:
++			v9ses->flags |= V9FS_NO_ICACHE;
++			break;
++
+ 		default:
+ 			continue;
+ 		}
+diff --git a/fs/9p/v9fs.h b/fs/9p/v9fs.h
+index e842137ab484..a94cd1da7ca3 100644
+--- a/fs/9p/v9fs.h
++++ b/fs/9p/v9fs.h
+@@ -51,7 +51,8 @@ enum p9_session_flags {
+ 	V9FS_ACCESS_USER	= 0x08,
+ 	V9FS_ACCESS_CLIENT	= 0x10,
+ 	V9FS_POSIX_ACL		= 0x20,
+-	V9FS_LOCAL_LOCK		= 0x40
++	V9FS_LOCAL_LOCK		= 0x40,
++	V9FS_NO_ICACHE		= 0x80
+ };
+ 
+ /* possible values of ->cache */
+diff --git a/fs/9p/vfs_super.c b/fs/9p/vfs_super.c
+index eeab9953af89..febf11f0fc33 100644
+--- a/fs/9p/vfs_super.c
++++ b/fs/9p/vfs_super.c
+@@ -147,7 +147,8 @@ static struct dentry *v9fs_mount(struct file_system_type *fs_type, int flags,
+ 	if (retval)
+ 		goto release_sb;
+ 
+-	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE)
++	if (!(v9ses->flags & V9FS_NO_ICACHE) &&
++	    (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE))
+ 		sb->s_d_op = &v9fs_cached_dentry_operations;
+ 	else
+ 		sb->s_d_op = &v9fs_dentry_operations;
+@@ -285,7 +286,8 @@ static int v9fs_drop_inode(struct inode *inode)
+ {
+ 	struct v9fs_session_info *v9ses;
+ 	v9ses = v9fs_inode2v9ses(inode);
+-	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE)
++	if (!(v9ses->flags & V9FS_NO_ICACHE) &&
++	    (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE))
+ 		return generic_drop_inode(inode);
+ 	/*
+ 	 * in case of non cached mode always drop the
+-- 
+2.20.1
+
