@@ -1,0 +1,172 @@
+From fb00bd0a7dc94b2ff4e734d60181fc5ffcc524c5 Mon Sep 17 00:00:00 2001
+From: Kevin Kong <kkong@vmware.com>
+Date: Tue, 11 Aug 2020 22:57:19 +0800
+Subject: [PATCH] fs/9p: add ext9p alias and implement show_devname for ext9p
+
+Add a new file system type, 'ext9p', which is an alias to '9p', and
+implement super_operations::show_devname callback for ext9p.
+
+The motivation behind this change is to satisfy cAdvisor (Container Advisor).
+cAdvisor provides container users an understanding of the resource usage and
+performance characteristics of their running containers. cAdvisor is used in
+Kubernetes.
+
+One of the most important functions in cAdvisor is fs.GetDirFsDevice().
+To implement fs.GetDirFsDevice(), cAdvisor will parse /proc/self/mountinfo to
+gain information it needs. The current version of cAdvisor does not support 9p,
+and we cannot modify the code of cAdvisor to add 9p support in the near future.
+Even we have modified the code of cAdvisor to support 9p, we still cannot make
+old version of Kubernetes work with VKD.
+
+'9p' is not in the 'supportedFsType' list of fs.processMounts() of cAdvisor.
+From the code logic of fs.processMounts(), all file system names start with
+'ext' are supported. I would like to create a new file system, 'ext9p', alias
+to '9p'. This is really a hack, but I do not have other choice, since we cannot
+modify the code of fs.processMounts() of cAdvisor.
+
+Currently 9p client does not implement struct super_operations::show_devname
+callback. The device name information read from /proc/self/mountinfo is the
+vSocket CID of the server. If we mount multiple shares via 9p, all the device
+name information read from /proc/self/mountinfo are the same.
+
+However, cAdvisor uses the device name of a share as the key of its internal
+map data structure. To make cAdvisor work for 9p, the device name information
+should be unique. The new device name is similar to vshare_0-46, where 0 and 46
+are the major and minor device number.
+---
+ fs/9p/v9fs.c      | 19 +++++++++++++++++++
+ fs/9p/v9fs.h      |  1 +
+ fs/9p/v9fs_vfs.h  |  1 +
+ fs/9p/vfs_super.c | 27 ++++++++++++++++++++++++++-
+ 4 files changed, 47 insertions(+), 1 deletion(-)
+
+diff --git a/fs/9p/v9fs.c b/fs/9p/v9fs.c
+index 8e0fd9039d49..32e941279df4 100644
+--- a/fs/9p/v9fs.c
++++ b/fs/9p/v9fs.c
+@@ -420,6 +420,16 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
+ 	return ret;
+ }
+ 
++/*
++ * Display the mount devname in /proc/mounts.
++ */
++int v9fs_show_devname(struct seq_file *m, struct dentry *root)
++{
++	dev_t s_dev = root->d_sb->s_dev;
++	seq_printf(m, "vshare_%u-%u", MAJOR(s_dev), MINOR(s_dev));
++	return 0;
++}
++
+ /**
+  * v9fs_session_init - initialize session
+  * @v9ses: session information structure
+@@ -752,9 +762,17 @@ static int __init init_v9fs(void)
+ 		pr_err("Failed to register filesystem\n");
+ 		goto out_sysfs_cleanup;
+ 	}
++	err = register_filesystem(&v9fs_fs_type_ext);
++	if (err < 0) {
++		pr_err("Failed to register filesystem\n");
++		goto out_regfs_cleanup;
++	}
+ 
+ 	return 0;
+ 
++out_regfs_cleanup:
++	unregister_filesystem(&v9fs_fs_type);
++
+ out_sysfs_cleanup:
+ 	v9fs_sysfs_cleanup();
+ 
+@@ -773,6 +791,7 @@ static void __exit exit_v9fs(void)
+ {
+ 	v9fs_sysfs_cleanup();
+ 	v9fs_cache_unregister();
++	unregister_filesystem(&v9fs_fs_type_ext);
+ 	unregister_filesystem(&v9fs_fs_type);
+ }
+ 
+diff --git a/fs/9p/v9fs.h b/fs/9p/v9fs.h
+index a94cd1da7ca3..aae6588109fb 100644
+--- a/fs/9p/v9fs.h
++++ b/fs/9p/v9fs.h
+@@ -144,6 +144,7 @@ static inline struct v9fs_inode *V9FS_I(const struct inode *inode)
+ }
+ 
+ extern int v9fs_show_options(struct seq_file *m, struct dentry *root);
++extern int v9fs_show_devname(struct seq_file *m, struct dentry *root);
+ 
+ struct p9_fid *v9fs_session_init(struct v9fs_session_info *, const char *,
+ 									char *);
+diff --git a/fs/9p/v9fs_vfs.h b/fs/9p/v9fs_vfs.h
+index aaee1e6584e6..10c9fdee08fd 100644
+--- a/fs/9p/v9fs_vfs.h
++++ b/fs/9p/v9fs_vfs.h
+@@ -44,6 +44,7 @@
+ #define V9FS_STAT2INODE_KEEP_ISIZE 1
+ 
+ extern struct file_system_type v9fs_fs_type;
++extern struct file_system_type v9fs_fs_type_ext;
+ extern const struct address_space_operations v9fs_addr_operations;
+ extern const struct file_operations v9fs_file_operations;
+ extern const struct file_operations v9fs_file_operations_dotl;
+diff --git a/fs/9p/vfs_super.c b/fs/9p/vfs_super.c
+index febf11f0fc33..ee443fddc513 100644
+--- a/fs/9p/vfs_super.c
++++ b/fs/9p/vfs_super.c
+@@ -49,6 +49,7 @@
+ #include "acl.h"
+ 
+ static const struct super_operations v9fs_super_ops, v9fs_super_ops_dotl;
++static const struct super_operations v9fs_super_ops_dotl_ext;
+ 
+ /**
+  * v9fs_set_super - set the superblock
+@@ -82,7 +83,10 @@ v9fs_fill_super(struct super_block *sb, struct v9fs_session_info *v9ses,
+ 	sb->s_blocksize = 1 << sb->s_blocksize_bits;
+ 	sb->s_magic = V9FS_MAGIC;
+ 	if (v9fs_proto_dotl(v9ses)) {
+-		sb->s_op = &v9fs_super_ops_dotl;
++		if (strcmp(sb->s_type->name, v9fs_fs_type_ext.name) == 0)
++			sb->s_op = &v9fs_super_ops_dotl_ext;
++		else
++			sb->s_op = &v9fs_super_ops_dotl;
+ 		sb->s_xattr = v9fs_xattr_handlers;
+ 	} else
+ 		sb->s_op = &v9fs_super_ops;
+@@ -365,6 +369,18 @@ static const struct super_operations v9fs_super_ops_dotl = {
+ 	.write_inode = v9fs_write_inode_dotl,
+ };
+ 
++static const struct super_operations v9fs_super_ops_dotl_ext = {
++	.alloc_inode = v9fs_alloc_inode,
++	.destroy_inode = v9fs_destroy_inode,
++	.statfs = v9fs_statfs,
++	.drop_inode = v9fs_drop_inode,
++	.evict_inode = v9fs_evict_inode,
++	.show_options = v9fs_show_options,
++	.show_devname = v9fs_show_devname, // ext9p
++	.umount_begin = v9fs_umount_begin,
++	.write_inode = v9fs_write_inode_dotl,
++};
++
+ struct file_system_type v9fs_fs_type = {
+ 	.name = "9p",
+ 	.mount = v9fs_mount,
+@@ -373,3 +389,12 @@ struct file_system_type v9fs_fs_type = {
+ 	.fs_flags = FS_RENAME_DOES_D_MOVE,
+ };
+ MODULE_ALIAS_FS("9p");
++
++struct file_system_type v9fs_fs_type_ext = {
++	.name = "ext9p",
++	.mount = v9fs_mount,
++	.kill_sb = v9fs_kill_super,
++	.owner = THIS_MODULE,
++	.fs_flags = FS_RENAME_DOES_D_MOVE,
++};
++MODULE_ALIAS_FS("ext9p");
+-- 
+2.20.1
+
