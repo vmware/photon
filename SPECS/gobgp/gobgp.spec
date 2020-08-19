@@ -1,18 +1,16 @@
 Summary:       BGP implementation in Go
 Name:          gobgp
-Version:       1.23
-Release:       6%{?dist}
+Version:       2.9.0
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
 URL:           https://github.com/osrg/gobgp
 Source0:       %{name}-%{version}.tar.gz
-%define sha1 gobgp=3df002f61911cf56c33bd4350fe9d2ad39bcfca5
-Source1:       golang-dep-0.3.0.tar.gz
-%define sha1 golang-dep-0.3.0=e5e9952227930fe1e8632edc03d690bffc3e1132
+%define sha1 gobgp=24228859d09fa63492e2d8fb26de9cb93bbd5f3b
 Distribution:  Photon
 BuildRequires: git
-BuildRequires: go = 1.9.4
+BuildRequires: go
 %define debug_package %{nil}
 
 %description
@@ -20,20 +18,20 @@ GoBGP is an open source BGP implementation designed from scratch for modern envi
 
 %prep
 %setup -q
-mkdir -p ${GOPATH}/src/github.com/golang/dep
-tar xf %{SOURCE1} --no-same-owner --strip-components 1 -C ${GOPATH}/src/github.com/golang/dep/
 
 %build
-pushd ${GOPATH}/src/github.com/golang/dep
-CGO_ENABLED=0 GOOS=linux go build -v -ldflags "-s -w" -o ${GOPATH}/bin/dep ./cmd/dep/
-popd
 mkdir -p ${GOPATH}/src/github.com/osrg/gobgp
 cp -r * ${GOPATH}/src/github.com/osrg/gobgp/.
 pushd ${GOPATH}/src/github.com/osrg/gobgp
-${GOPATH}/bin/dep ensure
+go mod download
 mkdir -p dist
-go build -v -o dist/gobgp -ldflags "-X main.VERSION=%{version} -s -w" gobgp/main.go
-go build -v -o dist/gobgpd -ldflags "-X main.VERSION=%{version} -s -w" gobgpd/main.go gobgpd/util.go
+pushd cmd/gobgp
+go build -v -o ../../dist/gobgp -ldflags "-X main.VERSION=%{version} -s -w"
+popd
+pushd cmd/gobgpd
+go build -v -o ../../dist/gobgpd -ldflags "-X main.VERSION=%{version} -s -w"
+popd
+popd
 
 %install
 pushd ${GOPATH}/src/github.com/osrg/gobgp
@@ -48,6 +46,8 @@ install ${GOPATH}/src/github.com/osrg/gobgp/dist/gobgpd %{buildroot}%{_bindir}/
 %doc LICENSE README.md
 
 %changelog
+*   Wed Aug 19 2020 Ashwin H <ashwinh@vmware.com> 2.9.0-1
+-   Update to 2.9.0 to work with go 1.13
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.23-6
 -   Bump up version to compile with go 1.13.5-2
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.23-5

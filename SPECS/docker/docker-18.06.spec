@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -33,7 +33,7 @@ BuildRequires:  libltdl-devel
 BuildRequires:  libgcc-devel
 BuildRequires:  glibc-devel
 BuildRequires:  unzip
-BuildRequires:  go = 1.10.3
+BuildRequires:  go
 BuildRequires:  sed
 BuildRequires:  cmake
 BuildRequires:  findutils
@@ -234,6 +234,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Sat Aug 22 2020 Ashwin H <ashwinh@vmware.com> 18.06.2-11
+-   Remove hardcoded go dependecy
 *   Thu Apr 30 2020 Ankit Jain <ankitja@vmware.com> 18.06.2-10
 -   Fix CVE-2019-16884, updated runc and containerd version
 *   Wed Apr 29 2020 Harinadh D <hdommaraju@vmware.com> 18.06.2-9
