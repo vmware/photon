@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
-Version:        2.12.0
-Release:        3%{?dist}
+Version:        2.14.0
+Release:        1%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -10,8 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha1 openvswitch=3ee6da7f52aeaad78b816ec6d61f7e7f163902fd
-Patch0:         fix_dict_change.patch
+%define sha1 openvswitch=1372162fa94c55a541c01ac95d0015fb4ee62509
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
 BuildRequires:  libcap-ng-devel
@@ -64,45 +63,8 @@ Requires:       %{name} = %{version}-%{release}
 %description    doc
 It contains the documentation and manpages for openvswitch.
 
-%package -n	ovn-common
-Summary:	Common files for OVN
-Requires:	%{name} = %{version}-%{release}
-%description -n ovn-common
-It contains the common userspace components for OVN.
-
-%package -n	ovn-host
-Summary:	Host components of OVN
-Requires:	ovn-common = %{version}-%{release}
-%description -n ovn-host
-It contains the userspace components for OVN to be run on each hypervisor.
-
-%package -n	ovn-central
-Summary:	Central components of OVN
-Requires:	ovn-common = %{version}-%{release}
-%description -n ovn-central
-It contains the user space components for OVN to be run on central host.
-
-%package -n	ovn-controller-vtep
-Summary:	OVN VTEP controller binaries
-Requires:	ovn-common = %{version}-%{release}
-%description -n ovn-controller-vtep
-It contains the user space components for OVN Controller VTEP.
-
-%package -n	ovn-docker
-Summary:	OVN drivers for docker
-Requires:	ovn-common = %{version}-%{release}
-%description -n ovn-docker
-It contains the OVN drivers for docker networking.
-
-%package -n	ovn-doc
-Summary:        Documentation for OVN
-Requires:       ovn-common = %{version}-%{release}
-%description -n ovn-doc
-It contains the documentation and manpages for OVN.
-
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 export PYTHON2=no
@@ -120,7 +82,7 @@ mkdir -p %{buildroot}/%{_libdir}/systemd/system
 install -p -D -m 0644 rhel/usr_share_openvswitch_scripts_systemd_sysconfig.template %{buildroot}/%{_sysconfdir}/sysconfig/openvswitch
 
 /usr/bin/python3 build-aux/dpdkstrip.py --nodpdk < rhel/usr_lib_systemd_system_ovs-vswitchd.service.in > rhel/usr_lib_systemd_system_ovs-vswitchd.service
-for service in openvswitch ovsdb-server ovs-vswitchd ovn-controller ovn-controller-vtep ovn-northd; do
+for service in openvswitch ovsdb-server ovs-vswitchd; do
 	install -p -D -m 0644 rhel/usr_lib_systemd_system_${service}.service %{buildroot}/%{_unitdir}/${service}.service
 done
 
@@ -134,38 +96,11 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %preun
 %systemd_preun %{name}.service
 
-%preun -n ovn-central
-%systemd_preun ovn-northd.service
-
-%preun -n ovn-host
-%systemd_preun ovn-controller.service
-
-%preun -n ovn-controller-vtep
-%systemd_preun ovn-controller-vtep.service
-
 %post
 %systemd_post %{name}.service
 
-%post -n ovn-central
-%systemd_post ovn-northd.service
-
-%post -n ovn-host
-%systemd_post ovn-controller.service
-
-%post -n ovn-controller-vtep
-%systemd_post ovn-controller-vtep.service
-
 %postun
 %systemd_postun %{name}.service
-
-%postun -n ovn-central
-%systemd_postun ovn-northd.service
-
-%postun -n ovn-host
-%systemd_postun ovn-controller.service
-
-%postun -n ovn-controller-vtep
-%systemd_postun ovn-controller-vtep.service
 
 
 %files
@@ -184,13 +119,13 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datadir}/openvswitch/*.ovsschema
 %{_datadir}/openvswitch/python/*
 %{_datadir}/openvswitch/scripts/ovs-*
+%{_datadir}/openvswitch/bugtool-plugins/*
 %config(noreplace) %{_sysconfdir}/sysconfig/openvswitch
 
 %files -n python3-openvswitch
 %{python3_sitelib}/*
 
 %files devel
-%{_includedir}/ovn/*.h
 %{_includedir}/openflow/*.h
 %{_includedir}/openvswitch/*.h
 %{_libdir}/pkgconfig/*.pc
@@ -209,46 +144,10 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man5/ovsdb-server.5.gz
 %{_mandir}/man7/ovs-actions.7.gz
 
-%files -n ovn-common
-%{_bindir}/ovn-nbctl
-%{_bindir}/ovn-sbctl
-%{_bindir}/ovn-trace
-%{_bindir}/ovn-detrace
-%{_datadir}/openvswitch/scripts/ovn-ctl
-%{_datadir}/openvswitch/scripts/ovndb-servers.ocf
-
-%files -n ovn-host
-%{_unitdir}/ovn-controller.service
-%{_bindir}/ovn-controller
-
-%files -n ovn-central
-%{_unitdir}/ovn-northd.service
-%{_bindir}/ovn-northd
-%{_datadir}/openvswitch/ovn-nb.ovsschema
-%{_datadir}/openvswitch/ovn-sb.ovsschema
-
-%files -n ovn-controller-vtep
-%{_unitdir}/ovn-controller-vtep.service
-%{_bindir}/ovn-controller-vtep
-
-%files -n ovn-docker
-%{_bindir}/ovn-docker-overlay-driver
-%{_bindir}/ovn-docker-underlay-driver
-
-%files -n ovn-doc
-%{_mandir}/man1/ovn-detrace.1.gz
-%{_mandir}/man7/ovn-architecture.7.gz
-%{_mandir}/man8/ovn-ctl.8.gz
-%{_mandir}/man8/ovn-nbctl.8.gz
-%{_mandir}/man8/ovn-sbctl.8.gz
-%{_mandir}/man8/ovn-controller-vtep.8.gz
-%{_mandir}/man8/ovn-controller.8.gz
-%{_mandir}/man5/ovn-nb.5.gz
-%{_mandir}/man5/ovn-sb.5.gz
-%{_mandir}/man8/ovn-northd.8.gz
-%{_mandir}/man8/ovn-trace.8.gz
-
 %changelog
+*   Wed Aug 19 2020 Tapas Kundu <tkundu@vmware.com> 2.14.0-1
+-   Updated to 2.14
+-   Removed ovn packages.
 *   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 2.12.0-3
 -   Fix fix_dict_change
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.12.0-2
