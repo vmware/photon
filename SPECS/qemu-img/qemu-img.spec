@@ -1,34 +1,33 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-Summary:    QEMU disk image utility
-Name:       qemu-img
-Version:    4.2.0
-Release:    1%{?dist}
-License:    GNU GPLv2
-URL:        https://www.qemu.org
-Group:      Development/Tools
-Vendor:     VMware, Inc.
+%global debug_package %{nil}
+Summary:        QEMU disk image utility
+Name:           qemu-img
+Version:        5.1.0
+Release:        1%{?dist}
+License:        GNU GPLv2
+URL:            https://www.qemu.org
+Group:          Development/Tools
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:    https://download.qemu.org/qemu-%{version}.tar.xz
-%define sha1 qemu=b27aa828a8457bd8551ae3c81b80cc365e1f6bfe
+Source0:        https://download.qemu.org/qemu-%{version}.tar.xz
+%define sha1    qemu=8c70ce2b65349e9b42bd20c9dec2c90f8e7b960a
 BuildRequires:  python3-devel
 BuildRequires:  glib-devel
 BuildRequires:  pixman-devel
-
-%global debug_package %{nil}
 
 %description
 Qemu-img is the tool used to create, manage, convert shrink etc. the disk images of virtual machines.
 
 %prep
 %setup -q -n qemu-%{version}
-# Do not build QEMU's ivshmem 
-sed -i 's#ivshmem=yes#ivshmem=no#g' configure
-mkdir build
 
 %build
-pushd build
+# Do not build QEMU's ivshmem
+sed -i 's#ivshmem=yes#ivshmem=no#g' configure
+mkdir build
+cd build
 # Disabling everything except tools
-../configure --prefix=%{_prefix} --python=%{_bindir}/python3 \
+../configure \
         --disable-system \
         --disable-linux-user \
         --disable-user \
@@ -91,7 +90,6 @@ pushd build
         --disable-libxml2 \
         --disable-linux-aio \
         --disable-parallels \
-        --disable-pie \
         --disable-pvrdma \
         --disable-qcow1 \
         --disable-qed \
@@ -107,7 +105,6 @@ pushd build
         --disable-sdl \
         --disable-vte \
         --disable-vvfat \
-        --disable-vxhs \
         --disable-whpx \
         --disable-xen \
         --disable-xen-pci-passthrough \
@@ -129,29 +126,30 @@ pushd build
         --without-default-devices \
         --enable-tools
 make %{?_smp_mflags}
-popd
 
 %install
-pushd build
+cd build
 make DESTDIR=%{buildroot} install
 # Removed unnessary files
-find %{buildroot}/%{_datadir} -name '*.png' -delete
-find %{buildroot}/%{_datadir} -name '*.bmp' -delete
-find %{buildroot}/%{_datadir} -name '*.svg' -delete
-rm -rf %{buildroot}/%{_datadir}/applications/qemu.desktop
-popd
+find %{buildroot} -name '*.png' -delete
+find %{buildroot} -name '*.bmp' -delete
+find %{buildroot} -name '*.svg' -delete
+find %{buildroot} -name 'qemu.desktop' -delete
 
 %check
 make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
-%{_bindir}/qemu-edid
-%{_bindir}/qemu-img
-%{_bindir}/qemu-io
-%{_bindir}/qemu-nbd
-%{_datadir}/qemu
+/usr/local/bin/qemu-edid
+/usr/local/bin/qemu-img
+/usr/local/bin/qemu-io
+/usr/local/bin/qemu-nbd
+/usr/local/bin/qemu-storage-daemon
+/usr/local/share/qemu
 
 %changelog
+*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 5.1.0-1
+-   Automatic Version Bump
 *   Mon Mar 09 2020 Ankit Jain <ankitja@vmware.com> 4.2.0-1
 -   Initial build.  First version
