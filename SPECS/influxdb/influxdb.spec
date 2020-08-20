@@ -1,13 +1,13 @@
 Name:           influxdb
-Version:        1.8.1
+Version:        1.8.2
 Release:        1%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
 Source0:        https://github.com/influxdata/influxdb/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}=a03288a5d0e9e742df15489b4a97bab2d6072fab
-Source1:       golang-dep-0.3.0.tar.gz
-%define sha1 golang-dep-0.3.0=e5e9952227930fe1e8632edc03d690bffc3e1132
+%define sha1    %{name}=01865861b3a4865fc5a38c04a38356dbbc7ecd68
+Source1:        golang-dep-0.3.0.tar.gz
+%define sha1    golang-dep-0.3.0=e5e9952227930fe1e8632edc03d690bffc3e1132
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Applications/Database
@@ -107,6 +107,8 @@ fi
 %{_mandir}/man1/*
 
 %changelog
+*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.2-1
+-   Automatic Version Bump
 *   Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.1-1
 -   Automatic Version Bump
 *   Tue Jan 29 2019 Keerthana K <keerthanak@vmware.com> 1.6.0-5
