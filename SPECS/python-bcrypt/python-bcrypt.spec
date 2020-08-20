@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-bcrypt
-Version:        3.1.7
+Version:        3.2.0
 Release:        1%{?dist}
 Summary:        Good password hashing for your software and your servers.
 License:        Apache License, Version 2.0
@@ -10,7 +10,7 @@ Url:            http://pypi.python.org/packages/source/e/bcrypt/bcrypt-%{version
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:        bcrypt-%{version}.tar.gz
-%define sha1    bcrypt=7b8d7ef665bd654f55a206a8951fb63d96b335d8
+%define sha1    bcrypt=3b6246d6e291814441e6ac152b462f8dfc18f5bb
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -47,6 +47,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1
+-   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1.7-1
 -   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 3.1.6-3

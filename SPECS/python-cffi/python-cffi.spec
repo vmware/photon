@@ -2,7 +2,7 @@
 
 Summary:        Interface for Python to call C code
 Name:           python3-cffi
-Version:        1.14.1
+Version:        1.14.2
 Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
@@ -10,7 +10,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-%{version}.tar.gz
-%define sha1    cffi=7b067fdb46d184f6bfdadc11732df6f0340e553d
+%define sha1    cffi=6d2f277d1f1e3d9a09fc5df4bfcea63229e8e8d1
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -50,6 +50,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.2-1
+-   Automatic Version Bump
 *   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.1-1
 -   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.0-1

@@ -3,7 +3,7 @@
 
 Summary:        Amazon Web Services Library.
 Name:           python3-botocore
-Version:        1.17.41
+Version:        1.17.49
 Release:        1%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/boto/botocore
 Source0:        https://github.com/boto/botocore/archive/botocore-%{version}.tar.gz
-%define sha1    botocore=43ae62baa2dcef9ae9bbd28e04181b8595064742
+%define sha1    botocore=16d6d05b5207cadd526a98f4b190b40118a96149
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -49,6 +49,8 @@ nosetests tests/unit
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.17.49-1
+-   Automatic Version Bump
 *   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 1.17.41-1
 -   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.17.28-1
