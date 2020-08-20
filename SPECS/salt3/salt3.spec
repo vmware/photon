@@ -7,44 +7,42 @@
 %define _salttesting SaltTesting
 %define _salttesting_ver 2016.5.11
 
-Name: salt3
-Version: 2019.2.5
-Release: 1%{?dist}
-Summary: A parallel remote execution system with python3
-Group:   System Environment/Daemons
-License: ASL 2.0
-URL:     http://saltstack.org/
+Name:           salt3
+Version:        3001.1
+Release:        1%{?dist}
+Summary:        A parallel remote execution system with python3
+Group:          System Environment/Daemons
+License:        ASL 2.0
+URL:            http://saltstack.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0: https://github.com/saltstack/salt/releases/download/v%{version}/salt/salt-%{version}.tar.gz
-%define sha1 salt=3ae0ef02183194844a577a910e5ce7f597cf5c8b
-Source1: https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-2016.5.11.tar.gz
-%define sha1 SaltTesting=474dbd7029e3d48cdb468be3c63b2262e47556c8
-Source2: salt-master.service
-Source3: salt-syndic.service
-Source4: salt-minion.service
-Source5: salt-api.service
-Source6: logrotate.salt
-
-BuildRoot: %{_tmppath}/salt-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildArch: noarch
+Source0:        https://github.com/saltstack/salt/releases/download/v%{version}/salt/salt-%{version}.tar.gz
+%define sha1    salt=45f6d1a5a493e784b5bcbca17b1faf08c6f93cdc
+Source1:        https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-2016.5.11.tar.gz
+%define         sha1 SaltTesting=474dbd7029e3d48cdb468be3c63b2262e47556c8
+Source2:        salt-master.service
+Source3:        salt-syndic.service
+Source4:        salt-minion.service
+Source5:        salt-api.service
+Source6:        logrotate.salt
+BuildRoot:      %{_tmppath}/salt-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildArch:      noarch
 %ifarch %{ix86} x86_64
-Requires: dmidecode
+Requires:       dmidecode
 %endif
-
-
-Requires: pciutils
-Requires: python3-backports_abc
-BuildRequires: python3-devel
-BuildRequires: systemd
-BuildRequires: python3-distro
-Requires: python3-pycrypto
-Requires: python3-jinja2
-Requires: python3-msgpack
-Requires: python3-PyYAML
-Requires: python3-requests
-Requires: python3-zmq
-Requires: python3-tornado
+Requires:       pciutils
+Requires:       python3-backports_abc
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  systemd
+BuildRequires:  python3-distro
+Requires:       python3-pycrypto
+Requires:       python3-jinja2
+Requires:       python3-msgpack
+Requires:       python3-PyYAML
+Requires:       python3-requests
+Requires:       python3-zmq
+Requires:       python3-tornado
 
 %description
 Salt is a distributed remote execution system used to execute commands and
@@ -54,68 +52,75 @@ malleable. Salt accomplishes this via its ability to handle larger loads of
 information, and not just dozens, but hundreds or even thousands of individual
 servers, handle them quickly and through a simple and manageable interface.
 
-%package master
-Summary: Management component for salt, a parallel remote execution system with python3
-Group:   System Environment/Daemons
-Requires: %{name} = %{version}-%{release}
-%description master
+%package        master
+Summary:        Management component for salt, a parallel remote execution system with python3
+Group:          System Environment/Daemons
+Requires:       %{name} = %{version}-%{release}
+
+%description    master
 The Salt master is the central server to which all minions connect.
 
-%package minion
-Summary: Client component for Salt, a parallel remote execution system
-Group:   System Environment/Daemons
-Requires: %{name} = %{version}-%{release}
-%description minion
+%package        minion
+Summary:        Client component for Salt, a parallel remote execution system
+Group:          System Environment/Daemons
+Requires:       %{name} = %{version}-%{release}
+
+%description    minion
 The Salt minion is the agent component of Salt. It listens for instructions
 from the master, runs jobs, and returns results back to the master.
 
-%package syndic
-Summary: Master-of-master component for Salt, a parallel remote execution system
-Group:   System Environment/Daemons
-Requires: %{name} = %{version}-%{release}
-%description syndic
+%package        syndic
+Summary:        Master-of-master component for Salt, a parallel remote execution system
+Group:          System Environment/Daemons
+Requires:       %{name} = %{version}-%{release}
+
+%description    syndic
 The Salt syndic is a master daemon which can receive instruction from a
 higher-level master, allowing for tiered organization of your Salt
 infrastructure.
 
-%package api
-Summary: REST API for Salt, a parallel remote execution system
-Group:   System administration tools
-Requires: %{name}-master = %{version}-%{release}
-%description api
+%package        api
+Summary:        REST API for Salt, a parallel remote execution system
+Group:          System administration tools
+Requires:       %{name}-master = %{version}-%{release}
+
+%description    api
 salt-api provides a REST interface to the Salt master.
 
-%package cloud
-Summary: Cloud provisioner for Salt, a parallel remote execution system
-Group:   System administration tools
-Requires: %{name}-master = %{version}-%{release}
-%description cloud
+%package        cloud
+Summary:        Cloud provisioner for Salt, a parallel remote execution system
+Group:          System administration tools
+Requires:       %{name}-master = %{version}-%{release}
+
+%description    cloud
 The salt-cloud tool provisions new cloud VMs, installs salt-minion on them, and
 adds them to the master's collection of controllable minions.
 
-%package ssh
-Summary: Agentless SSH-based version of Salt, a parallel remote execution system
-Group:   System administration tools
-Requires: %{name} = %{version}-%{release}
-%description ssh
+%package        ssh
+Summary:        Agentless SSH-based version of Salt, a parallel remote execution system
+Group:          System administration tools
+Requires:       %{name} = %{version}-%{release}
+
+%description    ssh
 The salt-ssh tool can run remote execution functions and states without the use
 of an agent (salt-minion) service.
 
-%package proxy
-Summary: Command Proxy of Salt, a parallel remote execution system
-Group:   System administration tools
-Requires: %{name} = %{version}-%{release}
-%description proxy
+%package        proxy
+Summary:        Command Proxy of Salt, a parallel remote execution system
+Group:          System administration tools
+Requires:       %{name} = %{version}-%{release}
+
+%description    proxy
 Receives commands from a Salt master and proxies these commands to devices
 that are unable to run a full minion.
 
 %package spm
-Summary: Salt Package Manager of Salt, a parallel remote execution system
-Group:   System administration tools
-Requires: %{name} = %{version}-%{release}
-%description spm
-Salt Package Manager
+Summary:        Salt Package Manager of Salt, a parallel remote execution system
+Group:          System administration tools
+Requires:       %{name} = %{version}-%{release}
 
+%description    spm
+Salt Package Manager
 
 %prep
 %setup -c -n salt-%{version}
@@ -297,6 +302,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 3001.1-1
+- Automatic Version Bump
 * Mon Jul 27 2020 Tapas Kundu <tkundu@vmware.com> 2019.2.5-1
 - Fix issue with distro
 * Tue May 12 2020 Keerthana K <keerthanak@vmware.com> 2019.2.4-1
