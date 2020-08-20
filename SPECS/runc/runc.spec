@@ -1,81 +1,73 @@
-Summary:        CLI tool for spawning and running containers per OCI spec.
-Name:           runc
-Version:        1.0.0.rc8
-Release:        2%{?dist}
-License:        ASL 2.0
-URL:            https://runc.io/
-Source0:        https://github.com/opencontainers/runc/archive/%{name}-v1.0.0-rc8.tar.gz
-%define sha1    runc=cdca7ef7683c7db20ef0877338d9d67f156377e2
-Source1:	https://github.com/sirupsen/logrus/archive/logrus-1.0.3.tar.gz
-%define sha1 logrus=9edcef15ac3860d431b162102533911788885b5f
-Source2:	https://github.com/opencontainers/runtime-spec/archive/runtime-spec-1.0.0.tar.gz
-%define sha1 runtime-spec=7cd96a1bebe4cdb55d2b5f5df1e52374b016a0bd
-Source3:	https://github.com/urfave/cli/archive/urfave-cli-1.19.1.tar.gz
-%define sha1 urfave-cli=9044d4e160ebb954c17856785cf8fde02858d9ac
-Source4:	https://github.com/golang/sys/archive/golang-sys-07c182904dbd53199946ba614a412c61d3c548f5.zip
-%define sha1 golang-sys=940b297797b1defc11d67820a92becefeaa88f59
-Source5:	https://github.com/golang/crypto/archive/golang-crypto-eb71ad9bd329b5ac0fd0148dd99bd62e8be8e035.zip
-%define sha1 golang-crypto=775ab62e664ee2c89f624d5be6c55775360653ee
-Group:          Virtualization/Libraries
-Vendor:         VMware, Inc.
-Distribution:   Photon
-BuildRequires:  curl
-BuildRequires:  gawk
-BuildRequires:  go
-BuildRequires:  iptables-devel
-BuildRequires:  pkg-config
-BuildRequires:  libaio-devel
-BuildRequires:  libcap-ng-devel
-BuildRequires:  libseccomp
-BuildRequires:  libseccomp-devel
-BuildRequires:  protobuf-devel
-BuildRequires:  protobuf-c-devel
-BuildRequires:  python3-devel
-BuildRequires:  unzip
-Requires:       glibc
-Requires:       libgcc
-Requires:       libseccomp
+%define debug_package %{nil}
+%define __os_install_post %{nil}
+# use major.minor.patch-rcX
+%define RUNC_VERSION 1.0.0-rc9
+%define RUNC_BRANCH  v%{RUNC_VERSION}
+%define gopath_comp  github.com/opencontainers/runc
+Summary:             CLI tool for spawning and running containers per OCI spec.
+Name:                runc
+Version:             1.0.0.rc9
+Release:             1%{?dist}
+License:             ASL 2.0
+URL:                 https://runc.io/
+Source0:             https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
+%define sha1         runc=83a1cf67e9c400eba7da5bdc37f90f37a3f48eba
+# Must be in sync with package version
+%define RUNC_COMMIT  d736ef14f0288d6993a1845745d6756cfc9ddd5a
+Patch0:              CVE-2019-19921-runc-rc9.patch
+Group:               Virtualization/Libraries
+Vendor:              VMware, Inc.
+Distribution:        Photon
+BuildRequires:       go
+BuildRequires:       which
+BuildRequires:       go-md2man
+BuildRequires:       pkg-config
+BuildRequires:       libseccomp
+BuildRequires:       libseccomp-devel
 
 %description
-runC is a CLI tool for spawning and running containers according to the OCI specification. Containers are started as a child process of runC and can be embedded into various other systems without having to run a daemon.
+runC is a CLI tool for spawning and running containers according to the OCI specification.
+Containers are started as a child process of runC and can be embedded into various other systems without having to run a daemon.
+
+%package             doc
+Summary:             Documentation for runc
+Requires:            %{name} = %{version}-%{release}
+
+%description         doc
+Documentation for runc
 
 %prep
-%setup -q -n %{name}-1.0.0-rc8
+%setup -q -c
+pushd %{name}-%{RUNC_VERSION}
+%patch0 -p1
+popd
+mkdir -p "$(dirname "src/%{gopath_comp}")"
+mv %{name}-%{RUNC_VERSION} src/%{gopath_comp}
 
 %build
-pushd ..
-tar -xvf %{SOURCE1}
-tar -xvf %{SOURCE2}
-tar -xvf %{SOURCE3}
-unzip %{SOURCE4}
-unzip %{SOURCE5}
-mkdir -p $GOPATH/src/github.com/opencontainers/runtime-spec/
-mkdir -p $GOPATH/src/github.com/sirupsen/logrus
-mkdir -p $GOPATH/src/github.com/urfave/cli
-mkdir -p $GOPATH/src/golang.org/x/sys/
-mkdir -p $GOPATH/src/golang.org/x/crypto/
-mkdir -p build/src/github.com/opencontainers/runc
-cp -r runtime-spec-1.0.0/* $GOPATH/src/github.com/opencontainers/runtime-spec/
-cp -r logrus-1.0.3/* $GOPATH/src/github.com/sirupsen/logrus
-cp -r cli-1.19.1/* $GOPATH/src/github.com/urfave/cli
-cp -r sys-master/* $GOPATH/src/golang.org/x/sys
-cp -r crypto-master/* $GOPATH/src/golang.org/x/crypto
-popd
-cp -r . ../build/src/github.com/opencontainers/runc
-cd ../build
-export GOPATH=$GOPATH:`pwd`
-cd src/github.com/opencontainers/runc
-make %{?_smp_mflags}
+export GOPATH="$(pwd)"
+cd src/%{gopath_comp}
+make %{?_smp_mflags} GIT_BRANCH=%{RUNC_BRANCH}COMMIT_NO=%{RUNC_COMMIT} COMMIT=%{RUNC_COMMIT} BUILDTAGS='seccomp apparmor' EXTRA_LDFLAGS=-w runc man
 
 %install
-cd ../build/src/github.com/opencontainers/runc
-make install BINDIR=%{buildroot}%{_sbindir}
+cd src/%{gopath_comp}
+install -v -m644 -D -t %{buildroot}%{_datadir}/licenses/%{name} LICENSE
+make DESTDIR=%{buildroot} PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot}%{_bindir} install install-bash install-man
 
 %files
 %defattr(-,root,root)
-%{_sbindir}/runc
+%{_bindir}/runc
+%{_datadir}/bash-completion/completions/runc
+%{_datadir}/licenses/%{name}
+
+%files doc
+%doc
+%{_mandir}/man8/*
 
 %changelog
+*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.0.rc9-1
+-   Automatic Version Bump
+-   it is manually updated with containerd
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.0.0.rc8-2
 -   Build with python3
 -   Mass removal python2
