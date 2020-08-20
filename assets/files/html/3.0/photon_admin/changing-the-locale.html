@@ -167,7 +167,7 @@
                 <a href="../PhotonOS-versions.html">
             
                     
-                    Versions
+                    Flavours
             
                 </a>
             
@@ -175,20 +175,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.2.3" data-path="../features.html">
-            
-                <a href="../features.html">
-            
-                    
-                    Features
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="1.2.4" data-path="../What-is-New-in-Photon-OS-3.0.html">
+        <li class="chapter " data-level="1.2.3" data-path="../What-is-New-in-Photon-OS-3.0.html">
             
                 <a href="../What-is-New-in-Photon-OS-3.0.html">
             
@@ -3908,7 +3895,29 @@ System Locale: LANG=en_US.UTF-8
 </code></pre><p>To change the locale, choose the languages that you want from <code>/usr/share/locale/locale.alias</code>, add them to <code>/etc/locale-gen.conf</code>, and then regenerate the locale list by running the following command as root: </p>
 <pre><code>locale-gen.sh
 </code></pre><p>Finally, run the following command to set the new locale, replacing the example (<code>en_US.UTF-8</code>) with the locale that you require: </p>
-<pre><code>localectl set-locale LANG=&quot;en_US.UTF-8&quot; LC_CTYPE=&quot;en_US.UTF-8&quot;
+<pre><code>localectl set-locale LANG=&quot;de_CH.UTF-8&quot; LC_CTYPE=&quot;de_CH.UTF-8&quot;
+</code></pre><h1 id="changing-the-keyboard-layout">Changing the keyboard layout</h1>
+<p>See which keymaps are currently available on your system:</p>
+<pre><code>localectl list-keymaps
+</code></pre><p>If the response to that command is the all-too-common <code>Couldn&apos;t find any console keymaps</code>, install the key tables files and utilities:</p>
+<pre><code>tdnf install kbd
+</code></pre><p>You should now be able to find a keymap matching your keyboard. As an example, here I&apos;m searching for the German keyboard layout (so I&apos;m expecting something with <code>de</code> in the name) used in Switzerland:</p>
+<pre><code>localectl list-keymaps | grep de
+</code></pre><pre><code class="lang-console">    ...
+    de-latin1
+    de-latin1-nodeadkeys
+    de-mobii
+    de_CH-latin1
+    de_alt_UTF-8
+    ...
+</code></pre>
+<p><code>de_CH-latin1</code> seems to be what we&apos;re looking for, so change your current layout to that keymap:</p>
+<pre><code>localectl set-keymap de_CH-latin1
+</code></pre><p>and confirm that the change has been made:</p>
+<pre><code>localectl
+System Locale: LANG=de_CH.UTF-8
+   VC Keymap: de_CH-latin1
+  X11 Layout: n/a
 </code></pre>
                                 
                                 </section>
@@ -3952,7 +3961,7 @@ System Locale: LANG=en_US.UTF-8
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Changing the Locale","level":"1.4.9","depth":2,"next":{"title":"Security Policy","level":"1.4.10","depth":2,"path":"photon_admin/default-security-policy-of-photon-os.md","ref":"photon_admin/default-security-policy-of-photon-os.md","articles":[{"title":"Default Firewall Settings","level":"1.4.10.1","depth":3,"path":"photon_admin/default-firewall-settings.md","ref":"photon_admin/default-firewall-settings.md","articles":[]},{"title":"Default Permissions and umask","level":"1.4.10.2","depth":3,"path":"photon_admin/default-permissions-and-umask.md","ref":"photon_admin/default-permissions-and-umask.md","articles":[]},{"title":"Disabling TLS 1.0 to Improve Transport Layer Security","level":"1.4.10.3","depth":3,"path":"photon_admin/disabling-tls-1.0.md","ref":"photon_admin/disabling-tls-1.0.md","articles":[]}]},"previous":{"title":"Kubernetes","level":"1.4.8.2","depth":3,"path":"photon_admin/kubernetes.md","ref":"photon_admin/kubernetes.md","articles":[]},"dir":"ltr"},"config":{"plugins":["insert-logo","chapter-fold","edit-link","noembed"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"noembed":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit this Page","base":"https://github.com/vmware/photon/tree/master/docs"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"insert-logo":{"style":"background: none","url":"photonos-logo-sm.png"}},"theme":"default","pdf":{"pageBreaksBefore":"/","headerTemplate":"_TITLE_","paperSize":"letter","margin":{"right":62,"left":62,"top":56,"bottom":56},"fontSize":12,"fontFamily":"Arial","footerTemplate":"_PAGENUM_","chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"VMware Photon OS 3.0 Documentation","gitbook":"3.x.x"},"file":{"path":"photon_admin/changing-the-locale.md","mtime":"2019-11-14T11:04:16.791Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-11-14T11:31:52.311Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Changing the Locale","level":"1.4.9","depth":2,"next":{"title":"Security Policy","level":"1.4.10","depth":2,"path":"photon_admin/default-security-policy-of-photon-os.md","ref":"photon_admin/default-security-policy-of-photon-os.md","articles":[{"title":"Default Firewall Settings","level":"1.4.10.1","depth":3,"path":"photon_admin/default-firewall-settings.md","ref":"photon_admin/default-firewall-settings.md","articles":[]},{"title":"Default Permissions and umask","level":"1.4.10.2","depth":3,"path":"photon_admin/default-permissions-and-umask.md","ref":"photon_admin/default-permissions-and-umask.md","articles":[]},{"title":"Disabling TLS 1.0 to Improve Transport Layer Security","level":"1.4.10.3","depth":3,"path":"photon_admin/disabling-tls-1.0.md","ref":"photon_admin/disabling-tls-1.0.md","articles":[]}]},"previous":{"title":"Kubernetes","level":"1.4.8.2","depth":3,"path":"photon_admin/kubernetes.md","ref":"photon_admin/kubernetes.md","articles":[]},"dir":"ltr"},"config":{"plugins":["insert-logo","chapter-fold","edit-link","noembed"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"noembed":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit this Page","base":"https://github.com/vmware/photon/tree/master/docs"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"insert-logo":{"style":"background: none","url":"photonos-logo-sm.png"}},"theme":"default","pdf":{"pageBreaksBefore":"/","headerTemplate":"_TITLE_","paperSize":"letter","margin":{"right":62,"left":62,"top":56,"bottom":56},"fontSize":12,"fontFamily":"Arial","footerTemplate":"_PAGENUM_","chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"VMware Photon OS 3.0 Documentation","gitbook":"3.x.x"},"file":{"path":"photon_admin/changing-the-locale.md","mtime":"2020-08-20T10:53:32.110Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-08-20T10:56:00.711Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
