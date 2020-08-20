@@ -1,6 +1,6 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
-Version:        10.5.4
+Version:        10.5.5
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://mariadb.org/
 Source0:        https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define         sha1 mariadb=7956af3b670b9615e3ef07e294e77b5279058d37
+%define         sha1 mariadb=a341232e8f047a4af5969ba2fbee9d9e4b9310a2
 BuildRequires:  cmake
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
@@ -300,6 +300,7 @@ rm -rf %{buildroot}
 %{_datadir}/policy/selinux/mariadb.te
 %{_datadir}/wsrep.cnf
 %{_datadir}/wsrep_notify
+%{_mandir}/man1/aria_s3_copy.1.gz
 %{_mandir}/man1/aria_chk.1.gz
 %{_mandir}/man1/aria_dump_log.1.gz
 %{_mandir}/man1/aria_ftdump.1.gz
@@ -431,6 +432,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 10.5.5-1
+-   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 10.5.4-1
 -   Automatic Version Bump
 *   Wed Jan 23 2019 Ajay Kaher <akaher@vmware.com> 10.3.11-2
