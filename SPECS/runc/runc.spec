@@ -3,10 +3,11 @@
 Summary:        CLI tool for spawning and running containers per OCI spec.
 Name:           runc
 Version:        1.0.0.rc9
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://runc.io/
 Source0:        https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
+Patch0:         CVE-2019-19921.patch
 %define sha1    runc=83a1cf67e9c400eba7da5bdc37f90f37a3f48eba
 # Must be in sync with package version
 %define RUNC_COMMIT d736ef14f0288d6993a1845745d6756cfc9ddd5a
@@ -37,6 +38,9 @@ Documentation for runc
 
 %prep
 %setup -q -c
+pushd %{name}-%{RUNC_VERSION}
+%patch0 -p1
+popd
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 mv %{name}-%{RUNC_VERSION} src/%{gopath_comp}
 
@@ -61,6 +65,8 @@ make DESTDIR=%{buildroot} PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot}%{_bi
 %{_mandir}/man8/*
 
 %changelog
+*   Thu Aug 20 2020 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc9-4
+-   Fix CVE-2019-19921
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.0.0.rc9-3
 -   Bump up version to compile with go 1.13.5-2
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.0.0.rc9-2
