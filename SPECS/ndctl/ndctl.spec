@@ -1,16 +1,15 @@
 %{!?_udevdir: %define _udevdir /usr/lib/udev/}
 Summary:        Manage "libnvdimm" subsystem devices (Non-volatile Memory)
 Name:           ndctl
-Version:        62
-Release:        2%{?dist}
+Version:        69
+Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Base
 Url:            https://github.com/pmem/ndctl
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/pmem/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1    ndctl=0f906e39f1af10fe60748b8862e761fe36abd985
-
+%define sha1    ndctl=d036af4e2fdc134a19404260af449dc9ba707e79
 BuildRequires:  asciidoc3
 BuildRequires:  which
 BuildRequires:  xmlto
@@ -19,26 +18,27 @@ BuildRequires:  pkg-config
 BuildRequires:  kmod-devel
 BuildRequires:  systemd-devel
 BuildRequires:  json-c-devel
+BuildRequires:  keyutils-devel
 
 %description
 Utility library for managing the "libnvdimm" subsystem.  The "libnvdimm"
 subsystem defines a kernel device model and control message interface for
 platform NVDIMM resources.
 
-%package    devel
-Summary:    Development files for ndctl
-License:    LGPLv2
-Group:      Development/Libraries
-Requires:   %{name} = %{version}-%{release}
+%package        devel
+Summary:        Development files for ndctl
+License:        LGPLv2
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
 
 %description    devel
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
-%package -n daxctl
-Summary:    Manage Device-DAX instances
-License:    GPLv2
-Group:      System Environment/Base
+%package -n     daxctl
+Summary:        Manage Device-DAX instances
+License:        GPLv2
+Group:          System Environment/Base
 
 %description -n daxctl
 The daxctl utility provides enumeration and provisioning commands for
@@ -46,11 +46,11 @@ the Linux kernel Device-DAX facility. This facility enables DAX mappings
 of performance / feature differentiated memory without need of a
 filesystem.
 
-%package -n daxctl-devel
-Summary:    Development files for daxctl
-License:    LGPLv2
-Group:      Development/Libraries
-Requires:   daxctl = %{version}-%{release}
+%package -n     daxctl-devel
+Summary:        Development files for daxctl
+License:        LGPLv2
+Group:          Development/Libraries
+Requires:       daxctl = %{version}-%{release}
 
 %description -n daxctl-devel
 The %{name}-devel package contains libraries and header files for
@@ -63,7 +63,7 @@ mappings of performance / feature-differentiated memory.
 
 %build
 ./autogen.sh
-%configure \
+%configure --with-bash=no \
     --disable-static  \
     --enable-local    \
     --disable-docs
@@ -85,11 +85,11 @@ make check
 %license util/COPYING licenses/BSD-MIT licenses/CC0
 %{_bindir}/ndctl
 %{_libdir}/libndctl.so.*
-%{_datadir}/bash-completion/
 %{_sysconfdir}/ndctl/monitor.conf
 %{_unitdir}/ndctl-monitor.service
-%{_udevrulesdir}/80-ndctl.rules
-%{_udevdir}/ndctl-udev
+%{_sysconfdir}/modprobe.d/nvdimm-security.conf
+%{_sysconfdir}/ndctl/keys/keys.readme
+%{_datadir}/daxctl/daxctl.conf
 
 %files devel
 %defattr(-,root,root)
@@ -112,6 +112,8 @@ make check
 %{_libdir}/pkgconfig/libdaxctl.pc
 
 %changelog
+*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 69-1
+-   Automatic Version Bump
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 62-2
 -   Use asciidoc3
 *   Wed Sep 12 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 62-1
