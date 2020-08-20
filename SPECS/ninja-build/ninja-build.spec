@@ -1,6 +1,6 @@
 Name:           ninja-build
 Summary:        Small build system with focus on speed
-Version:        1.10.0
+Version:        1.10.1
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://ninja-build.org
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Group:		      Development/Tools
 Distribution:   Photon
 Source0:        https://github.com/ninja-build/ninja/archive/%{name}-%{version}.tar.gz
-%define sha1    ninja-build=7134bca607e17238d272e281ce1cae05d04be970
+%define sha1    ninja-build=774dd6733067f29061e96e1feaf9aa227f677b2f
 Source1:        macros.ninja
 
 BuildRequires:  gcc
@@ -48,6 +48,8 @@ install -Dpm0644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d/macros.ninja
 %{_libdir}/rpm/macros.d/macros.ninja
 
 %changelog
+*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.10.1-1
+-   Automatic Version Bump
 *   Fri May 08 2020 Susant Sahani<ssahani@vmware.com> 1.10.0-1
 -   Update to 1.10.0
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8.2-2
