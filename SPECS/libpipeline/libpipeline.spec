@@ -1,6 +1,6 @@
 Summary:	Library for manipulating pipelines
 Name:		libpipeline
-Version:	1.5.2
+Version:	1.5.3
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://libpipeline.nongnu.org
@@ -8,7 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://download.savannah.gnu.org/releases/libpipeline/%{name}-%{version}.tar.gz
-%define sha1 libpipeline=fa296e37495d1874c736b7182770baaf390ad9de
+%define sha1 libpipeline=725e1104b864f06835e5620bfe689a5a00cbeb1f
 
 %if %{with_check}
 BuildRequires: check
@@ -56,6 +56,8 @@ make -C tests check
 %{_mandir}/man3/*
 
 %changelog
+* Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.3-1
+- Automatic Version Bump
 * Tue Jul 07 2020 Shreenidhi Shedi <photon-checkins@vmware.com> 1.5.2-1
 - Upgrade version to 1.5.2
 * Mon Aug 19 2019 Shreenidhi Shedi <sshedi@vmware.com> 1.5.0-2
