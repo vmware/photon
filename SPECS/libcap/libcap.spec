@@ -1,11 +1,11 @@
 Summary:		Libcap
 Name:			libcap
-Version:		2.31
+Version:		2.43
 Release:		1%{?dist}
 License:		GPLv2+
 URL:			https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:		https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
-%define sha1 	libcap=1067d867dd58e37d0bcc169059c20ea5143073c1
+%define sha1 	libcap=739f40b05339fbb1055019e8a340300611cb19d3
 Group:			System Environment/Security
 Vendor:			VMware, Inc.
 Distribution:	Photon
@@ -60,6 +60,8 @@ sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 2.43-1
+-   Automatic Version Bump
 *   Wed Jul 29 2020 Tapas Kundu <tkundu@vmware.com> 2.31-1
 -   Update to 2.31
 *   Tue Nov 26 2019 Alexey Makhalov <amakhalov@vmware.com> 2.25-9
