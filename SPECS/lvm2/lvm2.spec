@@ -1,24 +1,21 @@
 Summary:        Userland logical volume management tools
 Name:           lvm2
-Version:        2.03.09
+Version:        2.03.10
 Release:        1%{?dist}
 License:        GPLv2, BSD 2-Clause and LGPLv2.1
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
-%define sha1    LVM2=15a90d5039a2a1e9f67611a2a6c2faa72e8996aa
-
+Source0:        https://www.sourceware.org/pub/lvm2/releases/LVM2.%{version}.tgz
+%define sha1    LVM2=1482faa9c0e93330cd6de134c9a661a888d02f55
 Patch0:         lvm2-set-default-preferred_names.patch
-
 BuildRequires:  libselinux-devel, libsepol-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
 BuildRequires:  systemd-devel
 BuildRequires:  thin-provisioning-tools
 BuildRequires:  libaio-devel
-
 Requires:       device-mapper-libs = %{version}-%{release}
 Requires:       device-mapper-event-libs = %{version}-%{release}
 Requires:       device-mapper-event = %{version}-%{release}
@@ -35,61 +32,61 @@ losetup(8)), creating volume groups (kind of virtual disks) from one
 or more physical volumes and creating one or more logical volumes
 (kind of logical partitions) in volume groups.
 
-%package    devel
-Summary:    Development libraries and headers
-Group:      Development/Libraries
-License:    LGPLv2
-Requires:   %{name} = %{version}-%{release}
-Requires:   device-mapper-devel = %{version}-%{release}
-Requires:   util-linux-devel
+%package        devel
+Summary:        Development libraries and headers
+Group:          Development/Libraries
+License:        LGPLv2
+Requires:       %{name} = %{version}-%{release}
+Requires:       device-mapper-devel = %{version}-%{release}
+Requires:       util-linux-devel
 
 %description    devel
 This package contains files needed to develop applications that use
 the lvm2 libraries.
 
-%package    libs
-Summary:    Shared libraries for lvm2
-License:    LGPLv2
-Group:      System Environment/Libraries
-Requires:   device-mapper-libs = %{version}-%{release}
-Requires:   device-mapper-event-libs = %{version}-%{release}
+%package        libs
+Summary:        Shared libraries for lvm2
+License:        LGPLv2
+Group:          System Environment/Libraries
+Requires:       device-mapper-libs = %{version}-%{release}
+Requires:       device-mapper-event-libs = %{version}-%{release}
 
 %description    libs
 This package contains shared lvm2 libraries for applications.
 
 %post libs -p /sbin/ldconfig
-
 %postun libs -p /sbin/ldconfig
 
-%package -n device-mapper
-Summary:    Device mapper utility
-Group:      System Environment/Base
-URL:        http://sources.redhat.com/dm
-Requires:   device-mapper-libs
-Requires:   systemd
+%package -n     device-mapper
+Summary:        Device mapper utility
+Group:          System Environment/Base
+URL:            http://sources.redhat.com/dm
+Requires:       device-mapper-libs
+Requires:       systemd
+
 %description -n device-mapper
 This package contains the supporting userspace utility, dmsetup,
 for the kernel device-mapper.
 
-%package -n device-mapper-devel
-Summary:    Development libraries and headers for device-mapper
-License:    LGPLv2
-Group:      Development/Libraries
-Requires:   device-mapper = %{version}-%{release}
-Requires:   libselinux-devel
-Provides:   pkgconfig(devmapper)
+%package -n     device-mapper-devel
+Summary:        Development libraries and headers for device-mapper
+License:        LGPLv2
+Group:          Development/Libraries
+Requires:       device-mapper = %{version}-%{release}
+Requires:       libselinux-devel
+Provides:       pkgconfig(devmapper)
 
 %description -n device-mapper-devel
 This package contains files needed to develop applications that use
 the device-mapper libraries.
 
-%package -n device-mapper-libs
-Summary:    Device-mapper shared library
-License:    LGPLv2
-Group:      System Environment/Libraries
-Requires:   libselinux
-Requires:   libsepol
-Requires:   systemd
+%package -n     device-mapper-libs
+Summary:        Device-mapper shared library
+License:        LGPLv2
+Group:          System Environment/Libraries
+Requires:       libselinux
+Requires:       libsepol
+Requires:       systemd
 
 %description -n device-mapper-libs
 This package contains the device-mapper shared library, libdevmapper.
@@ -100,11 +97,11 @@ This package contains the device-mapper shared library, libdevmapper.
 %postun -n device-mapper-libs
 /sbin/ldconfig
 
-%package -n device-mapper-event
-Summary:    Device-mapper event daemon
-Group:      System Environment/Base
-Requires:   device-mapper = %{version}-%{release}
-Requires:   device-mapper-event-libs = %{version}-%{release}
+%package -n     device-mapper-event
+Summary:        Device-mapper event daemon
+Group:          System Environment/Base
+Requires:       device-mapper = %{version}-%{release}
+Requires:       device-mapper-event-libs = %{version}-%{release}
 Requires:       systemd
 
 %description -n device-mapper-event
@@ -127,26 +124,25 @@ fi
 %postun -n device-mapper-event
 %systemd_postun_with_restart dm-event.service dm-event.socket
 
-%package -n device-mapper-event-libs
-Summary:    Device-mapper event daemon shared library
-License:    LGPLv2
-Group:      System Environment/Libraries
-Requires:   device-mapper-libs = %{version}-%{release}
+%package -n     device-mapper-event-libs
+Summary:        Device-mapper event daemon shared library
+License:        LGPLv2
+Group:          System Environment/Libraries
+Requires:       device-mapper-libs = %{version}-%{release}
 
 %description -n device-mapper-event-libs
 This package contains the device-mapper event daemon shared library,
 libdevmapper-event.
 
 %post -n device-mapper-event-libs -p /sbin/ldconfig
-
 %postun -n device-mapper-event-libs -p /sbin/ldconfig
 
-%package -n device-mapper-event-devel
-Summary:    Development libraries and headers for the device-mapper event daemon
-License:    LGPLv2
-Group:      Development/Libraries
-Requires:   device-mapper-event = %{version}-%{release}
-Requires:   device-mapper-devel = %{version}-%{release}
+%package -n     device-mapper-event-devel
+Summary:        Development libraries and headers for the device-mapper event daemon
+License:        LGPLv2
+Group:          Development/Libraries
+Requires:       device-mapper-event = %{version}-%{release}
+Requires:       device-mapper-devel = %{version}-%{release}
 
 %description -n device-mapper-event-devel
 This package contains files needed to develop applications that use
@@ -184,8 +180,6 @@ the device-mapper event library.
     --with-thin=internal \
     --with-cache=internal \
     --with-cluster=internal --with-clvmd=none
-
-
 make %{?_smp_mflags}
 
 %install
@@ -305,6 +299,8 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 %ghost %{_sysconfdir}/lvm/cache/.cache
 
 %changelog
+*   Fri Aug 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.03.10-1
+-   Automatic Version Bump
 *   Sat Apr 04 2020 Susant Sahani <ssahani@vmware.com> 2.03.09-1
 -   Bump version 2.03.09
 -   Remove deprecated python bindings
