@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        12.3
+Version:        12.4
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=2730f6c0c22037646c84b902a13f5aaa56308ab8
+%define sha1    postgresql=5a64e3916a42547227f2afec359d1c9ddc3eba8e
 
 # Common libraries needed
 BuildRequires:  krb5-devel
@@ -161,6 +161,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 12.4-1
+-   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 12.3-1
 -   Automatic Version Bump
 *   Mon Aug 12 2019 Shreenidhi Shedi <sshedi@vmware.com> 11.5-1
