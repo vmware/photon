@@ -1,0 +1,52 @@
+diff --git a/toys/other/blkid.c b/toys/other/blkid.c
+index 40391de..338159c 100644
+--- a/toys/other/blkid.c
++++ b/toys/other/blkid.c
+@@ -5,7 +5,7 @@
+  * See ftp://ftp.kernel.org/pub/linux/utils/util-linux/v2.24/libblkid-docs/api-index-full.html
+  * TODO: -U and -L should require arguments
+ 
+-USE_BLKID(NEWTOY(blkid, "ULs*[!LU]", TOYFLAG_BIN))
++USE_BLKID(NEWTOY(blkid, "ULs*[!LU]", TOYFLAG_SBIN))
+ USE_FSTYPE(NEWTOY(fstype, "<1", TOYFLAG_BIN))
+ 
+ config BLKID
+diff --git a/toys/other/lspci.c b/toys/other/lspci.c
+index c208484..58ad4b6 100644
+--- a/toys/other/lspci.c
++++ b/toys/other/lspci.c
+@@ -1,7 +1,7 @@
+ /*
+  * lspci - written by Isaac Dunham
+ 
+-USE_LSPCI(NEWTOY(lspci, "emkn"USE_LSPCI_TEXT("@i:"), TOYFLAG_USR|TOYFLAG_BIN))
++USE_LSPCI(NEWTOY(lspci, "emkn"USE_LSPCI_TEXT("@i:"), TOYFLAG_USR|TOYFLAG_SBIN))
+ 
+ config LSPCI
+   bool "lspci"
+diff --git a/toys/posix/df.c b/toys/posix/df.c
+index a6beda1..d79a3aa 100644
+--- a/toys/posix/df.c
++++ b/toys/posix/df.c
+@@ -4,7 +4,7 @@
+  *
+  * See http://opengroup.org/onlinepubs/9699919799/utilities/df.html
+ 
+-USE_DF(NEWTOY(df, "HPkhit*a[-HPkh]", TOYFLAG_SBIN))
++USE_DF(NEWTOY(df, "HPkhit*a[-HPkh]", TOYFLAG_BIN))
+ 
+ config DF
+   bool "df"
+diff --git a/toys/posix/ps.c b/toys/posix/ps.c
+index 0c8e8e8..8fc86e1 100644
+--- a/toys/posix/ps.c
++++ b/toys/posix/ps.c
+@@ -49,7 +49,7 @@ USE_PS(NEWTOY(ps, "k(sort)*P(ppid)*aAdeflMno*O*p(pid)*s*t*Tu*U*g*G*wZ[!ol][+Ae][
+ // TOP and IOTOP have a large common option block used for common processing,
+ // the default values are different but the flags are in the same order.
+ USE_TOP(NEWTOY(top, ">0O*" "Hk*o*p*u*s#<1d%<100=3000m#n#<1bq[!oO]", TOYFLAG_USR|TOYFLAG_BIN|TOYFLAG_LOCALE))
+-USE_IOTOP(NEWTOY(iotop, ">0AaKO" "Hk*o*p*u*s#<1=7d%<100=3000m#n#<1bq", TOYFLAG_USR|TOYFLAG_BIN|TOYFLAG_STAYROOT|TOYFLAG_LOCALE))
++USE_IOTOP(NEWTOY(iotop, ">0AaKO" "Hk*o*p*u*s#<1=7d%<100=3000m#n#<1bq", TOYFLAG_USR|TOYFLAG_SBIN|TOYFLAG_STAYROOT|TOYFLAG_LOCALE))
+ USE_PGREP(NEWTOY(pgrep, "?cld:u*U*t*s*P*g*G*fnovxL:[-no]", TOYFLAG_USR|TOYFLAG_BIN))
+ USE_PKILL(NEWTOY(pkill,    "?Vu*U*t*s*P*g*G*fnovxl:[-no]", TOYFLAG_USR|TOYFLAG_BIN))
+ 
