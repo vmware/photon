@@ -1,6 +1,6 @@
 Name:         erlang
 Summary:      erlang
-Version:      23.0
+Version:      23.0.3
 Release:      1%{?dist}
 Group:        Development/Languages
 Vendor:       VMware, Inc.
@@ -8,7 +8,7 @@ Distribution: Photon
 License:      ASL2.0
 URL:          http://erlang.com
 Source0:      OTP-%{version}.tar.gz
-%define sha1  OTP=9c2d4e7a9d7ff0c53431dd89eaa1a4e4a355eb74
+%define sha1  OTP=b8ec65b335d8a98318870fb2250fc4409e34975a
 BuildRequires: unzip
 %description
 erlang programming language
@@ -37,6 +37,8 @@ make install DESTDIR=$RPM_BUILD_ROOT
 %exclude %{_libdir}/debug
 
 %changelog
+* Fri Aug 21 2020 Gerrit Photon <photon-checkins@vmware.com> 23.0.3-1
+- Automatic Version Bump
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 23.0-1
 - Automatic Version Bump
 * Tue Oct 29 2019 Keerthana K <keerthanak@vmware.com> 22.1-1
