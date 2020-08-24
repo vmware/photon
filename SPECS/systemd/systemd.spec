@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          27%{?dist}
+Release:          28%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -58,6 +58,7 @@ Patch38:          systemd-mount-fixes.patch
 Patch39:          systemd-239-bz-2597079.patch
 Patch40:          sd-bus-use-queue-message-references-for-managing-r-w.patch
 Patch41:          network-make-Route.Type-support-local-broadcast-anyc.patch
+Patch42:          ignore-classless-route-gateway.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -168,6 +169,7 @@ EOF
 %patch39 -p1
 %patch40 -p1
 %patch41 -p1
+%patch42 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -354,6 +356,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Mon Aug 24 2020 Susant Sahani <ssahani@vmware.com> 239-28
+-    network - add option to ignore classless routes and GW
 *    Thu Jul 09 2020 Susant Sahani <ssahani@vmware.com> 239-27
 -    sd-bus: use "queue" message references for managing r/w message queus in connection objects
 -    Backport network - Route.Type
