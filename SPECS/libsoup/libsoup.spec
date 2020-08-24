@@ -1,14 +1,14 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
-Version:    2.64.0
-Release:    3%{?dist}
+Version:    2.71.0
+Release:    1%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.57/%{name}-%{version}.tar.xz
-%define sha1 libsoup=3d3b1ad79e05cc59b6698a6f892f59dbeca30f1c
+%define sha1 libsoup=ddf1c21b1308ac0918df772202679b4c784aee19
 Patch0:          libsoup-fix-make-check.patch
 BuildRequires:   glib-devel
 BuildRequires:   gobject-introspection
@@ -25,6 +25,9 @@ BuildRequires:   libpsl-devel
 BuildRequires:   krb5-devel
 BuildRequires:   httpd
 BuildRequires:   icu-devel
+BuildRequires:   meson >= 0.50
+BuildRequires:   ninja-build
+BuildRequires:   gtk-doc
 %if %{with_check}
 BuildRequires:   krb5-devel
 %endif
@@ -65,17 +68,20 @@ These are the additional language files of libsoup.
 %patch0 -p1
 
 %build
-%configure --disable-vala
-make %{?_smp_mflags}
+mkdir build
+cd build
+meson --prefix=/usr -Dvapi=disabled -Dgtk_doc=true ..
+ninja
 
 %install
-rm -rf %{buildroot}%{_infodir}
-make DESTDIR=%{buildroot} install
-
+pushd build
+DESTDIR=%{buildroot} ninja install
+popd
 %find_lang %{name}
 
 %check
-make  check
+cd build
+ninja test
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -88,8 +94,6 @@ make  check
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/*.la
-%exclude %{_libdir}/*.a
 %{_libdir}/pkgconfig/*
 
 %files doc
@@ -100,6 +104,8 @@ make  check
 %defattr(-,root,root)
 
 %changelog
+*   Mon Aug 24 2020 Keerthana K <keerthanak@vmware.com> 2.71.0-1
+-   Update to version 2.71.0
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 2.64.0-3
 -   Build with python3
 -   Mass removal python2
