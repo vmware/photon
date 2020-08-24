@@ -1,11 +1,11 @@
 Summary:	Program to generate documenation
 Name:		gtk-doc
-Version:	1.29
+Version:	1.32
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnome.org/pub/gnome/sources/gtk-doc/1.25/%{name}-%{version}.tar.xz
-%define sha1 gtk-doc=c3dc579d84221c43ce2b0b5f523c46b13525416b
+%define sha1 gtk-doc=36eb741d2f2e7791da37aa34dafea6d0506c9c45
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -21,6 +21,7 @@ BuildRequires:	cmake
 BuildRequires:	check
 BuildRequires:	python3-devel
 BuildRequires:	python3-libs
+Requires:       python3-Pygments
 Requires:	python3
 Provides:	perl(gtkdoc-common.pl)
 BuildArch:      noarch
@@ -43,9 +44,10 @@ cd tests && make check-TESTS
 %defattr(-,root,root)
 %{_bindir}/*
 /usr/share/*
-%{_libdir}/cmake/
 
 %changelog
+*   Wed Aug 26 2020 Keerthana K <keerthanak@vmware.com> 1.32-1
+-   Update to version 1.32.
 *   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com>  1.29-1
 -   Upgrade to 1.29
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.25-2

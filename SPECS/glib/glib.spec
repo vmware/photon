@@ -1,16 +1,14 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
-Version:	2.58.0
-Release:	7%{?dist}
+Version:	2.64.5
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.58/%{name}-%{version}.tar.xz
-%define sha1 glib=c00e433c56e0ba3541abc5222aeca4136de10fb8
-Patch0:         glib-CVE-2019-12450.patch
-Patch1:         glib-CVE-2019-13012.patch
+%define sha1 glib=be12160d2b91a152721279d27b00f8affbf9501b
 BuildRequires:	pcre-devel
 BuildRequires:	libffi-devel
 BuildRequires:	pkg-config
@@ -21,6 +19,7 @@ BuildRequires:	python3-libs
 BuildRequires:	util-linux-devel
 BuildRequires:	elfutils-libelf-devel
 BuildRequires:	gtk-doc
+BuildRequires:  meson
 Requires:	elfutils-libelf
 Requires:	pcre-libs
 Requires:	libffi
@@ -66,23 +65,13 @@ The glib-doc package includes documentation for the GLib library.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 
 %build
-./autogen.sh
-if [ %{_host} != %{_build} ]; then
-  export glib_cv_stack_grows=no
-  export ac_cv_func_posix_getpwuid_r=yes
-  export glib_cv_uscore=yes
-fi
-%configure \
-    --with-pcre=system \
-    --with-sysroot=/target-%{_arch} \
-    --enable-gtk-doc
-make %{?_smp_mflags}
+meson --prefix=%{_prefix} -Dgtk_doc=true _build &&
+ninja -C _build
+
 %install
-make DESTDIR=%{buildroot} install
+DESTDIR=%{buildroot}/ ninja -C _build install
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -99,15 +88,14 @@ make DESTDIR=%{buildroot} install
 %defattr(-, root, root)
 %{_bindir}/*
 %{_libdir}/*.so
-%{_libdir}/*.la
 %{_libdir}/pkgconfig/*
-%{_libdir}/gio/*
 %{_libdir}/glib-*/*
 %{_includedir}/*
 %{_datadir}/*
 %exclude %{_bindir}/glib-compile-schemas
 %exclude %{_bindir}/gsettings
 %exclude %{_datadir}/glib-2.0/schemas/*
+%exclude %{_datadir}/gtk-doc/*
 
 %files schemas
 %defattr(-, root, root)
@@ -120,6 +108,8 @@ make DESTDIR=%{buildroot} install
 %doc %{_datadir}/gtk-doc/html/*
 
 %changelog
+*   Mon Aug 24 2020 Keerthana K <keerthanak@vmware.com> 2.64.5-1
+-   Update to version 2.64.5
 *   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2.58.0-7
 -   Enabled gtk-doc
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 2.58.0-6
