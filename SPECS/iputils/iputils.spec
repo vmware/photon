@@ -1,7 +1,7 @@
 Summary:          Programs for basic networking
 Name:             iputils
-Version:          20190709
-Release:          2%{?dist}
+Version:          20200821
+Release:          1%{?dist}
 License:          BSD-3 and GPLv2+
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
@@ -9,29 +9,27 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 #https://github.com/iputils/iputils/archive/s20180629.tar.gz
 Source0:          %{name}-s%{version}.tar.gz
-Patch0:           avoid-variable-name-collision.patch
+%define sha1      iputils=2fd13a7fb75184f3a0082aa748fb80ec85e12600
 BuildRequires:    libcap-devel libgcrypt-devel
 BuildRequires:    ninja-build
 BuildRequires:    meson
 Requires:         libcap
 Requires:         libgcrypt
 Obsoletes:        inetutils
-%define sha1 iputils=9a2d85a6b2656ed3669f49e737588e3262f02ff8
+
 %description
 The Iputils package contains programs for basic networking.
+
 %prep
 %setup -q -n %{name}-s%{version}
-%patch0 -p1
 
 %build
 meson --prefix /usr --buildtype=plain builddir \
--DUSE_IDN=false \
--DUSE_GCRYPT=true \
--DBUILD_MANS=false \
--DBUILD_TRACEROUTE6=true
-
+      -DUSE_IDN=false \
+      -DUSE_GCRYPT=true \
+      -DBUILD_MANS=false \
+      -DBUILD_TRACEROUTE6=true
 ninja -v -C builddir
-
 #make html
 #make man
 
@@ -44,7 +42,7 @@ mkdir -p %{buildroot}/%{_unitdir}
 cd builddir
 install -c clockdiff %{buildroot}%{_sbindir}/
 install -cp arping %{buildroot}%{_sbindir}/
-install -cp ping %{buildroot}%{_bindir}/
+install -cp ping/ping %{buildroot}%{_bindir}/
 install -cp rdisc %{buildroot}%{_sbindir}/
 install -cp tracepath %{buildroot}%{_bindir}/
 install -cp traceroute6 %{buildroot}%{_bindir}/
@@ -75,6 +73,8 @@ mv -f RELNOTES.tmp RELNOTES.old
 %caps(cap_net_raw=p cap_net_admin=p) %{_bindir}/ping6
 
 %changelog
+*   Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20200821-1
+-   Automatic Version Bump
 *   Wed Aug 12 2020 Tapas Kundu <tkundu@vmware.com> 20190709-2
 -   Fix variable name collision with libcap update
 *   Mon Jul 06 2020 Gerrit Photon <photon-checkins@vmware.com> 20190709-1

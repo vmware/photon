@@ -113,7 +113,7 @@ rm -rf %{buildroot}/*
 - Automatic Version Bump
 * Tue Jan 21 2020 Ankit Jain <ankitja@vmware.com> 4.39-2
 - Upgraded net.openhft chronicle-map version
-* Mon Jul 29 2019 Shreyas B. <shreyasb@vmware.com> 4.39.2
+* Mon Jul 29 2019 Shreyas B. <shreyasb@vmware.com> 4.39-1
 - Updated to 4.39
 * Wed Jul 10 2019 Alexey Makhalov <amakhalov@vmware.com> 4.32-2
 - Skip tests during make install.
@@ -123,15 +123,15 @@ rm -rf %{buildroot}/*
 - Fix for aarch64
 * Wed Oct 24 2018 Ajay Kaher <akaher@vmware.com> 4.28-3
 - Adding BuildArch
-* Wed Oct 24 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.29.2
+* Wed Oct 24 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.28-2
 - Reduce memory needed for service to 1GB.
-* Tue Sep 04 2018 Ankit Jain <ankitja@vmware.com> 4.29.2
+* Tue Sep 04 2018 Ankit Jain <ankitja@vmware.com> 4.28-1
 - Updated to latest version 4.28
 * Mon Oct 09 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-4
 - Add Docker related files to the package
 * Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-3
 - Fix for CVE-2017-9735
-* Tue Sep 19 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-2
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-2
 - Remove shadow from requires and use explicit tools for post actions
-* Wed Jul 19 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-1
+* Tue Jul 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-1
 - first version
