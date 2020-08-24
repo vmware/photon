@@ -2,7 +2,7 @@
 %global __os_install_post %{nil}
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
-Version:        3.11.6
+Version:        3.11.7
 Release:        1%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
@@ -10,7 +10,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
-%define sha1    apache-cassandra=ed81942259d1cb7f054c28b999461df11887de5f
+%define sha1    apache-cassandra=b86252d87cd6dd2a775e876b7c69e956ce99e2f8
 # https://search.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar
 # https://search.maven.org/maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar
 # https://search.maven.org/maven2/org/apache/thrift/libthrift/0.9.3/libthrift-0.9.3.jar
@@ -19,7 +19,6 @@ Source1:        cassandra-libthrift-logback-jars.tar.gz
 Source2:        cassandra-jackson-jars.tar.gz
 %define sha1    cassandra-jackson-jars=71f573e2185c79cd8c619ddae179ed880ca8b762
 Source3:        cassandra.service
-Patch0:         cassandra-bump-jackson-version.patch
 BuildRequires:  apache-ant
 BuildRequires:  unzip zip
 BuildRequires:  openjdk8
@@ -28,7 +27,8 @@ Requires:       openjre8
 Requires:       gawk
 Requires:       shadow
 %description
-Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store. Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
+Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store.
+Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
 
 %prep
 %setup -qn apache-%{name}-%{version}-src
@@ -36,10 +36,9 @@ sed -i 's#\"logback-core\" version=\"1.1.3\"#\"logback-core\" version=\"1.2.0\"#
 sed -i 's#\"logback-classic\" version=\"1.1.3\"#\"logback-classic\" version=\"1.2.0\"#g' build.xml
 sed -i 's#\"libthrift\" version=\"0.9.2\"#\"libthrift\" version=\"0.9.3.1\"#g' build.xml
 
-rm lib/libthrift-*
-rm lib/logback-*
-rm lib/jackson-core-asl-1.9.13.jar
-rm lib/jackson-mapper-asl-1.9.13.jar
+rm lib/libthrift-*.jar
+rm lib/logback-*.jar
+rm lib/jackson-*.jar
 
 mv lib/licenses/logback-core-1.1.3.txt lib/licenses/logback-core-1.2.0.txt
 mv lib/licenses/logback-classic-1.1.3.txt lib/licenses/logback-classic-1.2.0.txt
@@ -50,11 +49,8 @@ cp cassandra-libthrift-logback-jars/* lib/
 tar -xf %{SOURCE2} --no-same-owner
 cp cassandra-jackson-jars/* lib/
 
-%patch0 -p1
-
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
-
 ant jar javadoc -Drelease=true
 
 %install
@@ -146,6 +142,8 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.11.7-1
+-   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.11.6-1
 -   Automatic Version Bump
 *   Wed Feb 05 2020 Ankit Jain <ankitja@vmware.com> 3.11.5-3
