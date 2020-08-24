@@ -15,6 +15,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  ethtool
 BuildRequires:  systemd
+BuildRequires:  libmnl
 Requires:       systemd
 Requires:       ethtool
 Requires:       glibc
