@@ -1,11 +1,11 @@
 Summary:        C debugger
 Name:           gdb
-Version:        8.2
-Release:        2%{?dist}
+Version:        9.2
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
-%define sha1    gdb=ee66294d87a109f88a459d0da5d0bb2da5135f45
+%define sha1    gdb=356ee474a24bfb2f133894730916557dfea9da2e
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -33,12 +33,19 @@ another program was doing at the moment it crashed.
 %patch0 -p1
 
 %build
-%configure --with-python=/usr/bin/python3
+mkdir build && cd build
+../configure \
+  --host=%{_host} --build=%{_build} \
+  --prefix=%{_prefix} \
+  --with-python=/usr/bin/python3
 make %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
+cd build && make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 rm %{buildroot}%{_infodir}/dir
+rm %{buildroot}%{_libdir}/libctf-nobfd.a
+rm %{buildroot}%{_libdir}/libctf.a
 
 # following files conflicts with binutils-2.24-1.x86_64
 rm %{buildroot}%{_includedir}/ansidecl.h
@@ -54,7 +61,7 @@ rm %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/opcodes.mo
 %ifarch aarch64
 rm %{buildroot}%{_libdir}/libaarch64-unknown-linux-gnu-sim.a
 %endif
-%find_lang %{name} --all-name
+%find_lang %{name} --all-name ../%{name}.lang
 
 %check
 # disable security hardening for tests
@@ -78,6 +85,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_mandir}/*/*
 
 %changelog
+*   Mon Aug 24 2020 Keerthana K <keerthanak@vmware.com> 9.2-1
+-   Update to version 9.2
 *   Mon Jul 22 2019 Alexey Makhalov <amakhalov@vmware.com> 8.2-2
 -   Cross compilation support
 *   Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 8.2-1
