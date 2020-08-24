@@ -2,6 +2,7 @@
 
 Name:           meson
 Summary:        Extremely fast and user friendly build system
+Group:          Development/Tools
 Version:        0.55.1
 Release:        1%{?dist}
 License:        ASL 2.0
@@ -11,7 +12,6 @@ Distribution:   Photon
 Source0:        https://github.com/mesonbuild/meson/archive/%{version}/%{name}-%{version}.tar.gz
 %define sha1    meson=86ad59c6881924bda0064000e902ac09c23e9047
 BuildArch:      noarch
-
 BuildRequires:  gcc
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -20,7 +20,6 @@ BuildRequires:  ninja-build
 BuildRequires:  gtest-devel
 BuildRequires:  gmock-devel
 BuildRequires:  gettext
-
 Requires:       ninja-build
 Requires:       python3
 Requires:       python3-setuptools
