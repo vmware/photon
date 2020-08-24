@@ -1,7 +1,7 @@
 Summary:	TCP/IP daemon wrapper package
 Name:		tcp_wrappers
 Version:	7.6
-Release:	6%{?dist}
+Release:	7%{?dist}
 License: 	BSD
 Group: 		System Environment/Networking
 Vendor:		VMware, Inc.
@@ -59,6 +59,9 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/*.h
 
 %changelog
+* Tue Aug 25 2020 Keerthana K <keerthanak@vmware.com> 7.6-7
+- Added HAVE_STRERROR CFLAGS for linux target in Makefile
+- to build with glibc v2.32 since sys_errlist and sys_nerr are deprecated.
 * Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 7.6-6
 - Cross compilation support
 * Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 7.6-5
