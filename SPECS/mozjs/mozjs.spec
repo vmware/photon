@@ -4,7 +4,7 @@
 Summary:       Mozilla's JavaScript engine.
 Name:          mozjs
 Version:       68.11.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
@@ -19,16 +19,16 @@ Patch3:        spidermonkey_checks_disable.patch
 Patch4:        Remove-unused-LLVM-and-Rust-build-dependencies.patch
 Distribution:  Photon
 BuildRequires: which
-BuildRequires: autoconf213
-BuildRequires: python3
 BuildRequires: python3-xml
 BuildRequires: python3-libs
 BuildRequires: python3-devel
 BuildRequires: zlib-devel
 BuildRequires: clang-devel
+BuildRequires: autoconf = 2.13
 Requires:      python3
 Requires:      python3-libs
 Obsoletes:     mozjs60
+Obsoletes:     js
 %define ExtraBuildRequires python2 python2-libs python2-devel python-xml
 
 %description
@@ -91,5 +91,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/mozjs-%{major}.pc
 
 %changelog
+*   Tue Aug 25 2020 Ankit Jain <ankitja@vmware.com> 68.11.0-2
+-   Removed autoconf213 dependency and obsoletes js
 *   Sat Oct 26 2019 Ankit Jain <ankitja@vmware.com> 68.11.0-1
 -   initial version

@@ -1,5 +1,5 @@
 Summary:	The package automatically configure source code
-Name:		autoconf213
+Name:		autoconf
 Version:	2.13
 Release:	1%{?dist}
 License:	GPLv2
@@ -14,6 +14,7 @@ BuildRequires:	m4
 Requires:	m4
 Requires:       perl-Perl4-CoreLibs
 BuildArch:      noarch
+Obsoletes:      autoconf213
 
 %description
 The package contains programs for producing shell scripts that can

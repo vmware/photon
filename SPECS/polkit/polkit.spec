@@ -1,7 +1,7 @@
 Summary:       A toolkit for defining and handling authorizations.
 Name:          polkit
 Version:       0.117
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       LGPLv2+
@@ -14,7 +14,7 @@ BuildRequires: expat-devel
 BuildRequires: glib-devel
 BuildRequires: gobject-introspection
 BuildRequires: intltool >= 0.40.0
-BuildRequires: mozjs-devel
+BuildRequires: mozjs-devel = 68.11.0
 BuildRequires: Linux-PAM-devel
 BuildRequires: systemd-devel
 Requires:      mozjs
@@ -110,6 +110,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Tue Aug 25 2020 Ankit Jain <ankitja@vmware.com> 0.117-2
+-   This version of polkit build requires specific mozjs version
 *   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 0.117-1
 -   Upgraded to 0.117
 *   Sat Oct 26 2019 Ankit Jain <ankitja@vmware.com> 0.116-1
