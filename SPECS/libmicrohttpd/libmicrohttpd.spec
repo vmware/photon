@@ -6,7 +6,9 @@ License:        LGPLv2+
 URL:            http://www.gnu.org/software/libmicrohttpd/
 Source0:        https://ftp.gnu.org/gnu/libmicrohttpd/%{name}-%{version}.tar.gz
 %define sha1    libmicrohttpd=84db6412fb1cb44da69b07494b594b97c2ee80b9
-
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildRequires:  autoconf, automake, libtool
 BuildRequires:  gnutls-devel
 
