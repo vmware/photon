@@ -1,6 +1,6 @@
-From 25e191ed11a902981b47e459aeb5276987c7b2c2 Mon Sep 17 00:00:00 2001
+From 65ef281e9f6c606f84d920b7f7101f95d2c99824 Mon Sep 17 00:00:00 2001
 From: Mounesh Badiger <badigerm@vmware.com>
-Date: Tue, 27 Aug 2019 05:14:38 -0700
+Date: Tue, 25 Aug 2020 12:45:39 +0530
 Subject: [PATCH] Enable cache=loose for vdfs 9p.
 
 cache=loose, helps metadata performance, but due
@@ -9,23 +9,26 @@ less photon memory datapath performance regressed.
 so only enable loose cache for metadata and datapath
 just go through normal zc path.
 ---
- fs/9p/vfs_file.c        | 24 ++++++++++++++++++++++--
+ fs/9p/vfs_file.c        | 30 ++++++++++++++++++++++++++++--
  include/net/9p/client.h |  1 +
  net/9p/client.c         |  6 ++++++
- 3 files changed, 29 insertions(+), 2 deletions(-)
+ 3 files changed, 35 insertions(+), 2 deletions(-)
 
 diff --git a/fs/9p/vfs_file.c b/fs/9p/vfs_file.c
-index 373cc50..3fc3959 100644
+index 9dbf371..5208474 100644
 --- a/fs/9p/vfs_file.c
 +++ b/fs/9p/vfs_file.c
-@@ -457,6 +457,26 @@ v9fs_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
+@@ -457,6 +457,32 @@ v9fs_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
  	return err;
  }
  
 +static ssize_t
 +v9fs_cached_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
 +{
-+	if (p9_is_fid_proto_dotx(iocb->ki_filp->private_data)) {
++	struct inode *inode = iocb->ki_filp->f_mapping->host;
++	struct v9fs_session_info *v9ses = v9fs_inode2v9ses(inode);
++
++	if (v9ses->metaonly) {
 +		return v9fs_file_read_iter(iocb, to);
 +	}
 +
@@ -35,7 +38,10 @@ index 373cc50..3fc3959 100644
 +static ssize_t
 +v9fs_cached_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 +{
-+        if (p9_is_fid_proto_dotx(iocb->ki_filp->private_data)) {
++	struct inode *inode = iocb->ki_filp->f_mapping->host;
++	struct v9fs_session_info *v9ses = v9fs_inode2v9ses(inode);
++
++	if (v9ses->metaonly) {
 +		return v9fs_file_write_iter(iocb, from);
 +	}
 +
@@ -45,7 +51,7 @@ index 373cc50..3fc3959 100644
  static int v9fs_file_fsync(struct file *filp, loff_t start, loff_t end,
  			   int datasync)
  {
-@@ -669,8 +689,8 @@ const struct file_operations v9fs_cached_file_operations = {
+@@ -672,8 +698,8 @@ const struct file_operations v9fs_cached_file_operations = {
  
  const struct file_operations v9fs_cached_file_operations_dotl = {
  	.llseek = generic_file_llseek,
@@ -86,5 +92,5 @@ index b7db691..8ce4d91 100644
   * Some error codes are taken directly from the server replies,
   * make sure they are valid.
 -- 
-2.6.2
+2.7.4
 

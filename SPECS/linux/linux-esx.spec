@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.232
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -42,8 +42,9 @@ Patch23:       Implement-the-f-xattrat-family-of-functions.patch
 Patch24:       init-do_mounts-recreate-dev-root.patch
 
 # 9p patches for VDFS
-Patch26:       p9fs_dir_readdir-offset-support.patch
-Patch27:       net-9p-vdfs-zerocopy.patch
+Patch25:       p9fs_dir_readdir-offset-support.patch
+Patch26:       net-9p-vdfs-zerocopy.patch
+Patch27:       0001-fs-9p-Add-opt_metaonly-option.patch
 Patch28:       0001-Enable-cache-loose-for-vdfs-9p.patch
 Patch29:       0001-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
 Patch30:       0001-9p-Transport-error-uninitialized.patch
@@ -165,6 +166,7 @@ The Linux package contains the Linux kernel doc files
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
+%patch25 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -295,6 +297,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Aug 18 2020 Ajay Kaher <akaher@vmware.com> 4.4.232-2
+-   9p: Add opt_metaonly cache option
 *   Fri Aug 14 2020 ashwin-h <ashwinh@vmware.com> 4.4.232-1
 -   Update to version 4.4.232
 *   Thu Aug 13 2020 Ashwin H <ashwinh@vmware.com> 4.4.230-4

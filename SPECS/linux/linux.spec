@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.232
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -31,17 +31,18 @@ Patch7:	        vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disa
 Patch8:		perf-top-sigsegv-fix.patch
 Patch9:         REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch10:        e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
-Patch12:        vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
-Patch13:        vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
-Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
+Patch11:        vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
+Patch12:        vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
+Patch13:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 #fixes CVE-2016-6187
-Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
-Patch16:        vsock-transport-for-9p.patch
+Patch14:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
+Patch15:        vsock-transport-for-9p.patch
 #allow some algorithms in FIPS mode
-Patch17:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
-Patch18:        0002-allow-also-ecb-cipher_null.patch
+Patch16:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
+Patch17:        0002-allow-also-ecb-cipher_null.patch
 # 9p patches for VDFS
-Patch19:        net-9p-vdfs-zerocopy.patch
+Patch18:        net-9p-vdfs-zerocopy.patch
+Patch19:        0001-fs-9p-Add-opt_metaonly-option.patch
 Patch20:        0001-Enable-cache-loose-for-vdfs-9p.patch
 Patch21:        0001-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
 Patch22:        0001-9p-Transport-error-uninitialized.patch
@@ -191,6 +192,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
@@ -396,6 +398,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Aug 18 2020 Ajay Kaher <akaher@vmware.com> 4.4.232-2
+-   9p: Add opt_metaonly cache option
 *   Fri Aug 14 2020 ashwin-h <ashwinh@vmware.com> 4.4.232-1
 -   Update to version 4.4.232
 *   Thu Aug 13 2020 Ashwin H <ashwinh@vmware.com> 4.4.230-4
