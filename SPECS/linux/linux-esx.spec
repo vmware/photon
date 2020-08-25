@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.138
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -117,6 +117,7 @@ Patch201:	0002-vdfs-9p-Add-lock-state-for-9P-fid-to-use-it-for-recovery.patch
 Patch202:  	0003-vdfs-9p-Add-test-infra-to-test-9p-recovery-logic.patch
 Patch203:	0004-vdfs-9p-Handle-failure-during-recovery.patch
 Patch204:	0005-vdfs-9p-Adding-claim-tags-support-in-9p.patch
+Patch205:	0006-vdfs-9p-xattrcreate-recovery.patch
 
 # VKD 9p changes
 Patch250:        0001-fs-9p-support-no_icache-flag-to-disable-dentry-inode.patch
@@ -238,6 +239,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch202 -p1
 %patch203 -p1
 %patch204 -p1
+%patch205 -p1
 %patch250 -p1
 %patch251 -p1
 %patch252 -p1
@@ -372,6 +374,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Aug 25 2020 Mounesh Badiger <badigerm@vmware.com> 4.19.138-8
+-   VDFS 9p Add xattrcreate to recovery list
 *   Tue Aug 18 2020 Ajay Kaher <akaher@vmware.com> 4.19.138-7
 -   9p: enhance performence of readpages for 9p fs cache
 *   Tue Aug 18 2020 Ajay Kaher <akaher@vmware.com> 4.19.138-6

@@ -1,0 +1,203 @@
+From cde486505b2c3a82bcbb981c87aa5c977f96301d Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com>
+Date: Fri, 21 Aug 2020 20:08:24 -0700
+Subject: [PATCH] linux-esx: VDFS-9p: Support for xattrcreate operation during
+ recovery
+
+xattrcreate opens fid from server and uses the fid
+for write data. if the server failure happens after
+xattrcreate and before data write, for xattr write
+to succeed after recovery, xattr create fid should be
+stored and replayed during recovery.
+
+xattrcreate always followed fid clone() of TWALKX,
+to store fid, we need replace TWALKX with TXATTRCREATE
+
+Change-Id: Ife9a5c9b05b1e743671d3ee7bf8f98e908f36adc
+---
+ net/9p/client.c   | 10 +++++++
+ net/9p/recovery.c | 89 ++++++++++++++++++++++++++++++++++++++++++++++++++++---
+ net/9p/recovery.h |  5 ++++
+ 3 files changed, 100 insertions(+), 4 deletions(-)
+
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 02d2ad3..ecde4b7 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -2648,6 +2648,16 @@ int p9_client_xattrcreate(struct p9_fid *fid, const char *name,
+ 		err = PTR_ERR(req);
+ 		goto error;
+ 	}
++
++	if (clnt->recovery_enabled) {
++		err = p9_update_txattrcreate_desc(clnt, fid, name,
++						  attr_size, flags);
++		if (err) {
++			pr_err("Adding xattrcreate to recovery state (%d %s %llu %d) failed\n",
++			       fid->fid, name, attr_size, flags);
++		}
++	}
++
+ 	p9_debug(P9_DEBUG_9P, "<<< RXATTRCREATE fid %d\n", fid->fid);
+ 	p9_tag_remove(clnt, req);
+ error:
+diff --git a/net/9p/recovery.c b/net/9p/recovery.c
+index 4f3b44f..1986378 100644
+--- a/net/9p/recovery.c
++++ b/net/9p/recovery.c
+@@ -39,6 +39,7 @@
+ #include <net/sock.h>
+ #include <linux/mm.h>
+ #include <linux/uaccess.h>
++#include <uapi/linux/xattr.h>
+ 
+ #include "protocol.h"
+ #include "recovery.h"
+@@ -99,15 +100,23 @@ struct p9_txattrwalk {
+ };
+ 
+ 
++struct p9_txattrcreate {
++	uint32_t	fid;
++	char		name[P9_FILENAME_LEN];
++	uint64_t	attr_size;
++	uint32_t	flags;
++};
++
+ typedef struct p9_recovery_desc {
+ 	struct list_head recovery_link;
+ 	struct p9_fid *fid;  // back pointer to p9_fid
+ 	uint32_t attach_fid;
+ 	uint8_t	op;
+ 
+-	struct p9_tattach *attach;
+-	struct p9_twalk *walk;
+-	struct p9_txattrwalk *xattrwalk;
++	struct p9_tattach	*attach;
++	struct p9_twalk		*walk;
++	struct p9_txattrwalk	*xattrwalk;
++	struct p9_txattrcreate	*xattrcreate;
+ 
+ 	spinlock_t              state_lock;
+ 	struct list_head        lock_list;
+@@ -192,6 +201,7 @@ p9_recovery_free_desc(p9_recovery_desc *desc)
+ 	kfree(desc->attach);
+ 	kfree(desc->walk);
+ 	kfree(desc->xattrwalk);
++	kfree(desc->xattrcreate);
+ 
+ 	kfree(desc);
+ }
+@@ -408,6 +418,47 @@ int p9_update_txattrwalk_desc(struct p9_client *client,
+ 	return 0;
+ }
+ 
++
++/*
++ * p9_update_txattrcreate_desc --
++ *
++ *	update recovery descriptor with xattrcreate arguments.
++ *	xattrcreate is followed by TWALKX or TATTACH with fid
++ *	clone(). Replace TATTACH/TWALKX with XATTRCREATE
++ */
++
++int p9_update_txattrcreate_desc(struct p9_client *clent,
++				struct p9_fid *fid,
++				const char *name,
++				uint64_t attr_size,
++				int flags)
++{
++	p9_recovery_desc *desc = (p9_recovery_desc *)fid->recovery_desc;
++	struct p9_txattrcreate *xattrcreate;
++
++	xattrcreate = kzalloc(sizeof(struct p9_txattrcreate), GFP_NOFS);
++	if (xattrcreate == NULL) {
++		return -ENOMEM;
++	}
++
++	if (desc->op == P9_TWALKX) {
++		kfree(desc->walk);
++	} else if (desc->op == P9_TATTACH) {
++		kfree(desc->attach);
++	}
++
++	strncpy(xattrcreate->name, name, strlen(xattrcreate->name));
++	xattrcreate->attr_size = attr_size;
++	xattrcreate->flags = flags;
++	xattrcreate->fid = fid->fid;
++	desc->op = P9_TXATTRCREATE;
++
++	desc->xattrcreate = xattrcreate;
++
++	return 0;
++}
++
++
+ static inline int
+ lock_has_same_owner(const struct p9_flock *fl1, const struct p9_flock *fl2)
+ {
+@@ -715,6 +766,30 @@ p9_recovery_handle_xattrwalk(struct p9_client *client,
+ 	return 0;
+ }
+ 
++
++static int
++p9_recovery_handle_xattrcreate(struct p9_client *client, p9_recovery_desc *desc)
++{
++	struct p9_req_t *req;
++	struct p9_txattrcreate *xattrcreate = desc->xattrcreate;
++
++	p9_debug(P9_DEBUG_9P,
++		 ">>> RECOV - XATTRCREAT fid %u name %s attr_size %llu\n",
++		 xattrcreate->fid, xattrcreate->name, xattrcreate->attr_size);
++	req = p9_client_rpc(client, P9_TXATTRCREATE, "dsqd",
++			    xattrcreate->fid, xattrcreate->name,
++			    xattrcreate->attr_size,
++			    xattrcreate->flags & ~XATTR_CREATE);
++	if (IS_ERR(req)) {
++		return -1;
++	}
++
++	p9_tag_remove(client, req);
++
++	return 0;
++}
++
++
+ static int
+ p9_recovery_handle_walk(struct p9_client *client,
+                         p9_recovery_desc *desc)
+@@ -879,7 +954,13 @@ p9_replay_shadow(struct p9_client *client)
+                                 return ret;
+                         }
+                         break;
+-
++		case P9_TXATTRCREATE:
++			ret = p9_recovery_handle_xattrcreate(client, desc);
++			if (ret) {
++				pr_info("Failed to handle xattrcreate\n");
++				return ret;
++			}
++			break;
+                 default:
+                         pr_err("Invalid recovery description\n");
+                         return -EINVAL;
+diff --git a/net/9p/recovery.h b/net/9p/recovery.h
+index ab06862..1333af9 100644
+--- a/net/9p/recovery.h
++++ b/net/9p/recovery.h
+@@ -53,6 +53,11 @@ int p9_update_txattrwalk_desc(struct p9_client *client,
+                               struct p9_fid *fid,
+                               struct p9_fid *attr_fid,
+                               const char *name);
++int p9_update_txattrcreate_desc(struct p9_client *client,
++				struct p9_fid *fid,
++				const char *name,
++				uint64_t att_size,
++				int flags);
+ int p9_replay_shadow(struct p9_client *client);
+ void p9_cleanup_recovery_state(struct p9_client *client);
+ int p9_update_tlock_desc(struct p9_fid *fid,
+-- 
+2.7.4
+
