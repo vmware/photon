@@ -1,15 +1,12 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           apparmor
-Version:        2.13
-Release:        8%{?dist}
+Version:        2.13.4
+Release:        1%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
 Source0:        https://launchpad.net/apparmor/2.13/2.13.0/+download/%{name}-%{version}.tar.gz
-%define sha1    apparmor=54202cafce24911c45141d66e2d1e037e8aa5746
-Patch0:         apparmor-set-profiles-complain-mode.patch
-Patch1:         apparmor-service-start-fix.patch
-Patch2:         apparmor-fix-make-check.patch
+%define sha1    apparmor=f716775cc12c429bf2b0ed8d6342be5318ae426e
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
@@ -156,9 +153,6 @@ This package contains the AppArmor module for perl.
 
 %prep
 %setup -q -n %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 #Building libapparmor
@@ -310,6 +304,8 @@ make DESTDIR=%{buildroot} install
 %defattr(644,root,root,755)
 %dir %{_sysconfdir}/apparmor.d/abstractions
 %config(noreplace) %{_sysconfdir}/apparmor.d/abstractions/*
+%config(noreplace) %{_sysconfdir}/apparmor.d/lsb_release
+%config(noreplace) %{_sysconfdir}/apparmor.d/nvidia_modprobe
 %dir %{_sysconfdir}/apparmor.d/disable
 %dir %{_sysconfdir}/apparmor.d/local
 %dir %{_sysconfdir}/apparmor.d/tunables
@@ -322,7 +318,6 @@ make DESTDIR=%{buildroot} install
 %config(noreplace) %{_sysconfdir}/apparmor/logprof.conf
 %config(noreplace) %{_sysconfdir}/apparmor/notify.conf
 %config(noreplace) %{_sysconfdir}/apparmor/severity.db
-/sbin/aa-teardown
 %{_sbindir}/aa-*
 %{_sbindir}/apparmor_status
 %{_bindir}/aa-easyprof
@@ -349,6 +344,8 @@ make DESTDIR=%{buildroot} install
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+*   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 2.13.4-1
+-   Automatic Version Bump
 *   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 2.13-8
 -   Updated using python 3.8 libs
 *   Tue Mar 05 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.13-7
