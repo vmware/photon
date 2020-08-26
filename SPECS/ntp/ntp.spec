@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p14
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -11,9 +11,10 @@ Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%
 %define sha1    ntp=c6f353278cd5b7c8aa11e1189d3ac80985370b8f
 
 #https://github.com/darkhelmet/ntpstat
-Source1: ntpstat-master.zip
+Source1:        ntpstat-master.zip
 %define sha1 ntpstat=729cf2c9f10da43554f26875e91e1973d4498761
-Source2: ntp.sysconfig
+Source2:        ntp.sysconfig
+Patch0:         ntp-CVE-2020-15025.patch
 BuildRequires:  which
 BuildRequires:  libcap-devel
 BuildRequires:  unzip
@@ -48,6 +49,7 @@ state of the NTP daemon running on the local machine.
 
 %prep
 %setup -q -a 1
+%patch0 -p1
 
 %build
 sh configure \
@@ -176,6 +178,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Wed Aug 26 2020 Dweep Advani <dadvani@vmware.com> 4.2.8p14-2
+-   Patched for CVE-2020-15025
 *   Wed Apr 29 2020 Dweep Advani <dadvani@vmware.com> 4.2.8p14-1
 -   Upgrade to version 4.2.8p14, addresses CVE-2020-11868.
 *   Tue Jul 16 2019 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p13-1
