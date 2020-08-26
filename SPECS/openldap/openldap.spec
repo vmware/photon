@@ -4,7 +4,7 @@
 Summary:        OpenLdap-2.4.43
 Name:           openldap
 Version:        2.4.51
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenLDAP
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
@@ -111,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*   Wed Aug 26 2020 Piyush Gupta <gpiyush@vmware.com> 2.4.51-2
+-   Release bump up
 *   Fri Aug 14 2020 Susant Sahani <ssahani@vmware.com> 2.4.51-1
 -   Version Bump and fix build
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.50-1

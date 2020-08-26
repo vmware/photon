@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
@@ -22,6 +22,7 @@ BuildRequires:  serf-devel
 BuildRequires:  lz4
 BuildRequires:  utf8proc-devel
 BuildRequires:  swig
+Requires:       cyrus-sasl
 Requires:       utf8proc
 
 %description
@@ -91,6 +92,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+*   Wed Aug 26 2020 Piyush Gupta <gpiyush@vmware.com> 1.14.0-2
+-   Added Requires cyrus-sasl
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.0-1
 -   Automatic Version Bump
 *   Fri Oct 11 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-5
