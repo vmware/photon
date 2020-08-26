@@ -1,11 +1,11 @@
 Summary:        Container Network Interface (CNI) plugins
 Name:           cni
-Version:        0.8.6
+Version:        0.8.7
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containernetworking/plugins
 Source0:        https://github.com/containernetworking/plugins/archive/%{name}-v%{version}.tar.gz
-%define sha1 cni=90e6339a94b210443a08a3f6ded99e7913cf6a78
+%define sha1 cni=a9250841d8de9b9c00a7a92f000164ec4fafbe6b
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -35,6 +35,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_default_cni_plugins_dir}/*
 
 %changelog
+*   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 0.8.7-1
+-   Automatic Version Bump
 *   Mon Jul 13 2020 Susant Sahani <ssahani@vmware.com> 0.8.6-1
 -   Bump up version
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 0.8.3-2
