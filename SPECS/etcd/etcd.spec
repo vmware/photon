@@ -1,6 +1,6 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
-Version:        3.4.12
+Version:        3.4.13
 Release:        1%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd/
@@ -8,7 +8,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 etcd=35db68cece0e01fe314bdb0a40bd6a0c32e61b89
+%define sha1 etcd=dede0ad144e78af0d06643b99bb58331511665e0
 Source1:        etcd.service
 %ifarch aarch64
 Source2:        etcd.sysconfig
@@ -73,6 +73,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+*   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 3.4.13-1
+-   Automatic Version Bump
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 3.4.12-1
 -   Automatic Version Bump
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 3.4.10-1
