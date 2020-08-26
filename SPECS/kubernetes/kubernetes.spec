@@ -9,20 +9,20 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.14.6
+Version:        1.18.8
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=816fb7d0417d8c1e6fa2017a5cfdf12bc5652881
+%define sha1    kubernetes-%{version}.tar.gz=01e8669db0350176660d7227a5496df156cf592c
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
-Patch0:         CVE-2019-11253-1.patch
-Patch1:         CVE-2019-11253-2.patch
+Source2:        kubelet.service
+Source3:        10-kubeadm.conf 
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  go >= 1.13
+BuildRequires:  go
 BuildRequires:  rsync
 BuildRequires:  which
 Requires:       cni
@@ -36,6 +36,7 @@ Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 Requires:       socat
 Requires:       (util-linux or toybox)
 Requires:       cri-tools
+Requires:       conntrack-tools 
 
 %description
 Kubernetes is an open source implementation of container cluster management.
@@ -64,12 +65,12 @@ A pod setup process that holds a pod's namespace.
 cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
+sed -i '/KUBE_ALLOW_PRIV/d' contrib-0.7.0/init/systemd/kubelet.service
 cd %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
 
 %build
 make
+make WHAT="cmd/cloud-controller-manager"
 pushd build/pause
 mkdir -p bin
 gcc -Os -Wall -Werror -static -o bin/pause-%{archname} pause.c
@@ -90,7 +91,7 @@ install -m 755 -d %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}
 install -m 755 -d %{buildroot}/opt/vmware/kubernetes/windows/%{archname}
 %endif
 
-binaries=(cloud-controller-manager hyperkube kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
+binaries=(cloud-controller-manager kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
   install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/${bin}
@@ -107,8 +108,8 @@ install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/windows/%{archname}/ _ou
 # kubeadm install
 install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
 install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/kubeadm
-install -p -m 755 -t %{buildroot}/etc/systemd/system build/rpms/kubelet.service
-install -p -m 755 -t %{buildroot}/etc/systemd/system/kubelet.service.d build/rpms/10-kubeadm.conf
+install -p -m 755 -t %{buildroot}/etc/systemd/system %{SOURCE2} 
+install -p -m 755 -t %{buildroot}/etc/systemd/system/kubelet.service.d %{SOURCE3} 
 sed -i '/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/d' %{buildroot}/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 cd ..
@@ -183,7 +184,6 @@ fi
 %files
 %defattr(-,root,root)
 %{_bindir}/cloud-controller-manager
-%{_bindir}/hyperkube
 %{_bindir}/kube-apiserver
 %{_bindir}/kube-controller-manager
 %{_bindir}/kubelet
@@ -227,5 +227,5 @@ fi
 %endif
 
 %changelog
-*   Wed Sep 11 2019 Ashwin H <ashwinh@vmware.com> 1.14.6-1
+*   Wed Aug 26 2020 Ashwin H <ashwinh@vmware.com> 1.18.8-1
 -   Initial version
