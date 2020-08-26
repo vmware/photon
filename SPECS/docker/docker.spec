@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -152,9 +152,7 @@ install -v -D -m 0644 %{SOURCE99} %{buildroot}%{_presetdir}/50-docker.preset
 
 %post
 %systemd_post containerd.service
-if [ $1 -eq 1 ] ; then
-    getent group docker >/dev/null || groupadd -r docker
-fi
+getent group docker >/dev/null || groupadd -r docker
 %systemd_post docker.service
 
 %postun
@@ -197,6 +195,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 18.09.9-3
+-   Add docker to group during install and upgrade if not exists
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 18.09.9-2
 -   Bump up version to compile with new go version
 *   Tue Apr 21 2020 Ankit Jain <ankitja@vmware.com> 18.09.9-1
