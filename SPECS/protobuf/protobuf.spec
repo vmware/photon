@@ -2,7 +2,7 @@
 
 Summary:        Google's data interchange format
 Name:           protobuf
-Version:        3.12.3
+Version:        3.13.0
 Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/google/protobuf/
 Source0:        protobuf-%{version}.tar.gz
-%define         sha1 protobuf=552c0ee45bcbf970d789252ba45f7bb0358e6a54
+%define         sha1 protobuf=2160cfb354148da3fb3891b267c2edc7e3eb5c30
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -128,6 +128,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 3.13.0-1
+-   Automatic Version Bump
 *   Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.12.3-1
 -   Automatic Version Bump
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 3.6.1-2
