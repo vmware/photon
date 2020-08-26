@@ -1,6 +1,6 @@
 Summary:             Certificate Authority certificates
 Name:                ca-certificates
-Version:             20200709
+Version:             20200825
 Release:             1%{?dist}
 License:             Custom
 URL:                 http://anduin.linuxfromscratch.org/BLFS/other/
@@ -251,6 +251,8 @@ exit 0
 /etc/pki/tls/certs/ca-bundle.crt
 
 %changelog
+* Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 20200825-1
+- Automatic Version Bump
 * Wed Jul 15 2020 Gerrit Photon <photon-checkins@vmware.com> 20200709-1
 - Automatic Version Bump
 - Fix for OpenSSL CA certs not generated in latest tags move %post to %posttrans
