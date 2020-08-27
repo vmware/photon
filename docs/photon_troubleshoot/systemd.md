@@ -13,6 +13,7 @@ For example, instead of running the /etc/init.d/ssh script to stop and start the
 - [Troubleshooting Services with `systemctl`](troubleshooting-services.md)
 - [Analyzing System Logs with `journalctl`](analyzing-system-logs-with-journalctl.md)
 - [Inspecting Services with `systemd-analyze`](inspecting-services-with-systemd-analyze.md)
+- [General systemd Troubleshooting] (Troubleshooting_systemd.md)
 
 For an overview of systemd, see [systemd System and Service Manager](https://www.freedesktop.org/wiki/Software/systemd/) and the [man page for systemd](https://www.freedesktop.org/software/systemd/man/systemd.html). The systemd man pages are listed at [https://www.freedesktop.org/software/systemd/man/](https://www.freedesktop.org/software/systemd/man/).
 
