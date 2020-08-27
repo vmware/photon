@@ -1,0 +1,13 @@
+diff --git a/unix/Makefile b/unix/Makefile
+index ab32270..138b156 100644
+--- a/unix/Makefile
++++ b/unix/Makefile
+@@ -48,7 +48,7 @@ AS = as
+ LOC = $(D_USE_BZ2) $(LOCAL_UNZIP)
+ AF = $(LOC)
+ CFLAGS = -O
+-CF_NOOPT = -I. -I$(IZ_BZIP2) -DUNIX $(LOC)
++CF_NOOPT = -I. -I$(IZ_BZIP2) -DUNIX $(LOC) -DPASSWD_FROM_STDIN
+ CF = $(CFLAGS) $(CF_NOOPT)
+ LFLAGS1 =
+ LF = -o unzip$E $(LFLAGS1)

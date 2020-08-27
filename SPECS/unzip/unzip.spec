@@ -1,7 +1,7 @@
 Summary:        Unzip-6.0
 Name:           unzip
 Version:        6.0
-Release:        15%{?dist}
+Release:        16%{?dist}
 License:        BSD
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://downloads.sourceforge.net/infozip/unzip60.tar.gz
@@ -21,6 +21,7 @@ Patch8:         CVE-2014-8139.patch
 Patch9:         CVE-2014-8141.patch
 Patch10:        CVE-2014-8140.patch
 Patch11:        unzip-CVE-2018-1000035.patch
+Patch12:        unzip-passwd-as-stdin.patch
 
 %description
 The UnZip package contains ZIP extraction utilities. These are useful
@@ -41,6 +42,7 @@ with PKZIP or Info-ZIP utilities, primarily in a DOS environment.
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 
 %build
     sed -i -e 's/CFLAGS="-O -Wall/& -DNO_LCHMOD -DLARGE_FILE_SUPPORT -DZIP64_SUPPORT/' unix/Makefile
@@ -66,6 +68,8 @@ make %{?_smp_mflags}  check
 %{_bindir}/*
 
 %changelog
+*   Fri Aug 28 2020 Prashant Singh Chauhan <psinghchauha@vmware.com> 6.0-16
+-   Added one compiler flags to give passwd as stdin
 *   Tue Apr 21 2020 Sujay G <gsujay@vmware.com> 6.0-15
 -   Fix for CVE-2018-1000035
 *   Wed Feb 12 2020 Michelle Wang <michellew@vmware.com> 6.0-14
