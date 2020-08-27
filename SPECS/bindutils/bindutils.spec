@@ -1,11 +1,11 @@
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.16.4
+Version:        9.16.6
 Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha1    bind=e6cb05910a6bb9dbc36b3b6d88de7b28fa78c299
+%define sha1    bind=f8a4c1bd074cc0305a4c50971e71da5a3b810d78
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -70,6 +70,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Thu Aug 27 2020 Sujay G <gsujay@vmware.com> 9.16.6-1
+-   Bump version to 9.16.6
 *   Fri Jul 10 2020 Sujay G <gsujay@vmware.com> 9.16.4-1
 -   Bump version to 9.16.4 to fix CVE-2020-8618 & CVE-2020-8619
 *   Thu May 28 2020 Sujay G <gsujay@vmware.com> 9.16.3-1
