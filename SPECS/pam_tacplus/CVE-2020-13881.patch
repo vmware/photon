@@ -1,0 +1,34 @@
+From 4a9852c31c2fd0c0e72fbb689a586aabcfb11cb0 Mon Sep 17 00:00:00 2001
+From: Daniel Gollub <dgollub@att.com>
+Date: Tue, 2 Jun 2020 19:21:56 +0200
+Subject: [PATCH] pam: don't leak TACACS+ secret to journald
+
+If journald for syslog is used, the journal is going to store everything,
+even DEBUG loglevel messages. Pre-journald logging of system-wide DEBUG
+loglevel could be avoided and is not affected in all cases.
+
+With journald presence it's probably safe to no longer log sensitive
+details at DEBUG level.
+
+Fix #149
+
+Signed-off-by: Daniel Gollub <dgollub@att.com>
+---
+ support.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/support.c b/support.c
+index 76a5102..ae19968 100644
+--- a/support.c
++++ b/support.c
+@@ -374,8 +374,8 @@ int _pam_parse(int argc, const char **argv) {
+         _pam_log(LOG_DEBUG, "%d servers defined", tac_srv_no);
+ 
+         for (n = 0; n < tac_srv_no; n++) {
+-            _pam_log(LOG_DEBUG, "server[%lu] { addr=%s, key='%s' }", n, tac_ntop(tac_srv[n].addr->ai_addr),
+-                     tac_srv[n].key);
++            _pam_log(LOG_DEBUG, "server[%lu] { addr=%s, key='********' }", n,
++			    tac_ntop(tac_srv[n].addr->ai_addr));
+         }
+ 
+         _pam_log(LOG_DEBUG, "tac_service='%s'", tac_service);
