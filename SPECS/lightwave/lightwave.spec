@@ -1,32 +1,31 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       7%{?dist}
+Release:       8%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL: 	       https://github.com/vmware/lightwave
 Source0:       lightwave-%{version}.tar.gz
-%define sha1 lightwave=93cc2c0518753a7ec7efd250bb0988de727067ff
+%define        sha1 lightwave=93cc2c0518753a7ec7efd250bb0988de727067ff
 Distribution:  Photon
-Patch0:    lightwave_build_with_python3.patch
-Requires:  apache-tomcat >= 8.5.8
-Requires:  boost = 1.66.0
-Requires:  commons-daemon >= 1.0.15
-Requires:  (coreutils >= 8.22 or toybox)
-Requires:  cyrus-sasl >= 2.1
-Requires:  e2fsprogs
-Requires:  gawk >= 4.1.3
-Requires:  krb5 >= 1.14
-Requires:  likewise-open >= 6.2.11.4
-Requires:  openjre8
-Requires:  openssl >= 1.0.2
-Requires:  lightwave-client = %{version}-%{release}
-Requires:  lightwave-server = %{version}-%{release}
-
+Patch0:        lightwave_build_with_python3.patch
+Requires:      apache-tomcat >= 8.5.8
+Requires:      boost = 1.74.0
+Requires:      commons-daemon >= 1.0.15
+Requires:      (coreutils >= 8.22 or toybox)
+Requires:      cyrus-sasl >= 2.1
+Requires:      e2fsprogs
+Requires:      gawk >= 4.1.3
+Requires:      krb5 >= 1.14
+Requires:      likewise-open >= 6.2.11.4
+Requires:      openjre8
+Requires:      openssl >= 1.0.2
+Requires:      lightwave-client = %{version}-%{release}
+Requires:      lightwave-server = %{version}-%{release}
 BuildRequires: ant-contrib >= 1.0
 BuildRequires: apache-maven >= 3.3.9
-BuildRequires: boost-devel = 1.66.0
+BuildRequires: boost-devel = 1.74.0
 BuildRequires: c-rest-engine-devel >= 1.1
 BuildRequires: commons-daemon >= 1.0.15
 BuildRequires: copenapi-devel
@@ -100,57 +99,56 @@ VMware Lightwave Server
 %define _vecsdir %{_vmafd_dbdir}/vecs
 %define _crlsdir %{_vmafd_dbdir}/crl
 
-%package client-libs
-Summary: Lightwave Client libs
+%package       client-libs
+Summary:       Lightwave Client libs
 
-%description client-libs
+%description   client-libs
 Client libraries to communicate with Lightwave Services
 
-%package client
-Summary: Lightwave Client
-Requires: c-rest-engine >= 1.1
-Requires: copenapi
-Requires: coreutils >= 8.22
-Requires: cyrus-sasl >= 2.1
-Requires: openssl >= 1.0.2
-Requires: jansson
-Requires: krb5 >= 1.14
-Requires: likewise-open >= 6.2.9
-Requires: openjre8
-Requires: boost = 1.66.0
-Requires: lightwave-client-libs = %{version}-%{release}
+%package       client
+Summary:       Lightwave Client
+Requires:      c-rest-engine >= 1.1
+Requires:      copenapi
+Requires:      coreutils >= 8.22
+Requires:      cyrus-sasl >= 2.1
+Requires:      openssl >= 1.0.2
+Requires:      jansson
+Requires:      krb5 >= 1.14
+Requires:      likewise-open >= 6.2.9
+Requires:      openjre8
+Requires:      boost = 1.74.0
+Requires:      lightwave-client-libs = %{version}-%{release}
 
-%description client
+%description   client
 Client utils to communicate with Lightwave Services
 
-%package server
-Summary: Lightwave Server
-Requires: lightwave-client = %{version}-%{release}
+%package       server
+Summary:       Lightwave Server
+Requires:      lightwave-client = %{version}-%{release}
 
-%description server
+%description   server
 Lightwave Services
 
-%package devel
-Summary: Lightwave Client Development Library
-Requires: lightwave-client = %{version}-%{release}
+%package       devel
+Summary:       Lightwave Client Development Library
+Requires:      lightwave-client = %{version}-%{release}
 
-%description devel
+%description   devel
 Development Libraries to communicate with Lightwave Services
 
-%package post
-Summary: Lightwave POST Service
-Requires: lightwave-client = %{version}-%{release}
-%description post
+%package       post
+Summary:       Lightwave POST Service
+Requires:      lightwave-client = %{version}-%{release}
+%description   post
 Lightwave POST service
 
-%package samples
-Summary: Lightwave Samples
-Requires: lightwave-client >= %{version}-%{release}
-%description samples
+%package       samples
+Summary:       Lightwave Samples
+Requires:      lightwave-client >= %{version}-%{release}
+%description   samples
 Lightwave Samples
 
 %prep
-
 %setup -qn lightwave-%{version}
 sed -i 's|/opt/vmware/bin/certool|/usr/bin/certool|' vmidentity/install/src/main/java/com/vmware/identity/configure/LinuxInstallerHelper.java
 sed -i 's|/opt/vmware/sbin/vmware-stsd.sh|/usr/sbin/vmware-stsd.sh|' vmidentity/install/src/main/java/com/vmware/identity/configure/LinuxInstallerHelper.java
@@ -1397,6 +1395,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Sun Aug 30 2020 Michelle Wang <michellew@vmware.com> 1.3.1.34-8
+-   Use boost version 1.74.0
 *   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 1.3.1.34-7
 -   Modify python3 include path
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.3.1.34-6
