@@ -1,0 +1,81 @@
+From f8717d281300d7b70a587aa852a42b4d209d57ca Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Thu, 27 Aug 2020 05:00:45 -0700
+Subject: [PATCH] Revert clockevents: Stop unused clockevent devices
+
+Since d25408756accb ("clockevents: Stop unused clockevent devices"),
+cyclictest average latency regressed in x86 VMs. With the default
+idling behavior (idle=halt), the patch introduced unnecessary shutdown
+and re-initialization of local APIC timer in scenarios including
+coming out of NOHZ idle and within timer interrupt context. Whenever
+the local APIC register is being programmed (written), x86 VM takes VMEXIT
+to the hypervisor. As the hypervisor needs to figure out the intent of
+local APIC timer programming, each of these VMEXITs can take from
+several hundred ns to ~1us on a modern x86 CPU. Thus, average latency
+is increased.
+
+In addition to reverting the above mentioned commit, this patch adds a
+BUG_ON() for the condition 'expires == KTIME_MAX' (which was not
+present in the original code), in order to catch any unexpected bugs.
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ kernel/time/hrtimer.c      |  6 ++++--
+ kernel/time/tick-oneshot.c | 17 +----------------
+ 2 files changed, 5 insertions(+), 18 deletions(-)
+
+diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
+index c3966c09..4f3f876 100644
+--- a/kernel/time/hrtimer.c
++++ b/kernel/time/hrtimer.c
+@@ -671,7 +671,8 @@ hrtimer_force_reprogram(struct hrtimer_cpu_base *cpu_base, int skip_equal)
+ 	if (!__hrtimer_hres_active(cpu_base) || cpu_base->hang_detected)
+ 		return;
+ 
+-	tick_program_event(cpu_base->expires_next, 1);
++	if (cpu_base->expires_next != KTIME_MAX)
++		tick_program_event(cpu_base->expires_next, 1);
+ }
+ 
+ /* High resolution timer related functions */
+@@ -1562,7 +1563,8 @@ void hrtimer_interrupt(struct clock_event_device *dev)
+ 	raw_spin_unlock_irqrestore(&cpu_base->lock, flags);
+ 
+ 	/* Reprogramming necessary ? */
+-	if (!tick_program_event(expires_next, 0)) {
++	if (expires_next == KTIME_MAX ||
++	    !tick_program_event(expires_next, 0)) {
+ 		cpu_base->hang_detected = 0;
+ 		return;
+ 	}
+diff --git a/kernel/time/tick-oneshot.c b/kernel/time/tick-oneshot.c
+index 6fe615d..3fe627c 100644
+--- a/kernel/time/tick-oneshot.c
++++ b/kernel/time/tick-oneshot.c
+@@ -28,22 +28,7 @@ int tick_program_event(ktime_t expires, int force)
+ {
+ 	struct clock_event_device *dev = __this_cpu_read(tick_cpu_device.evtdev);
+ 
+-	if (unlikely(expires == KTIME_MAX)) {
+-		/*
+-		 * We don't need the clock event device any more, stop it.
+-		 */
+-		clockevents_switch_state(dev, CLOCK_EVT_STATE_ONESHOT_STOPPED);
+-		dev->next_event = KTIME_MAX;
+-		return 0;
+-	}
+-
+-	if (unlikely(clockevent_state_oneshot_stopped(dev))) {
+-		/*
+-		 * We need the clock event again, configure it in ONESHOT mode
+-		 * before using it.
+-		 */
+-		clockevents_switch_state(dev, CLOCK_EVT_STATE_ONESHOT);
+-	}
++	BUG_ON(expires == KTIME_MAX);
+ 
+ 	return clockevents_program_event(dev, expires, force);
+ }
+-- 
+2.6.2
+

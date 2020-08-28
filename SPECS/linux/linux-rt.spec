@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.148
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -412,6 +412,7 @@ Patch527:        0327-mm-slub-Always-flush-the-delayed-empty-slubs-in-flus.patch
 Patch528:        0328-tasklet-Fix-UP-case-for-tasklet-CHAINED-state.patch
 # Keep rt_version matched up with this patch.
 Patch529:        0329-Linux-4.19.132-rt59-REBASE.patch
+Patch600:        0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
 
 %if 0%{?kat_build:1}
 Patch1000:       fips-kat-tests.patch
@@ -831,6 +832,8 @@ The Linux package contains the Linux kernel doc files
 %patch527 -p1
 %patch528 -p1
 %patch529 -p1
+%patch600 -p1
+
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
@@ -990,6 +993,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Oct 01 2020 Bo Gan <ganb@vmware.com> 4.19.148-2
+-   Revert d254087 (clockevents: Stop unused clockevent devices)
+-   Solve cyclictest regression introduced in 4.1
 *   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-1
 -   Update to version 4.19.148
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-4
