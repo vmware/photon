@@ -1,14 +1,14 @@
 Summary:        Library providing support for "XML Signature" and "XML Encryption" standards
 Name:           xmlsec1
-Version:        1.2.26
-Release:        3%{?dist}
+Version:        1.2.30
+Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.aleksey.com/xmlsec/
 Source0:        http://www.aleksey.com/xmlsec/download/%{name}-%{version}.tar.gz
-%define sha1 xmlsec1=d55d5be05eac1114e1d9b8655b602ce26f9f4a11
+%define sha1 xmlsec1=c8e34b20eac7a2ed23eb5696dcae793ffd78250b
 BuildRequires: libxml2-devel
 BuildRequires: libltdl-devel
 Requires:      libxml2
@@ -52,13 +52,13 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %defattr(-, root, root)
 
 %{_prefix}/lib/libxmlsec1.so.1
-%{_prefix}/lib/libxmlsec1.so.1.2.26
+%{_prefix}/lib/libxmlsec1.so.%{version}
 %{_prefix}/lib/libxmlsec1.so
 %{_prefix}/lib/libxmlsec1-nss.so.1
-%{_prefix}/lib/libxmlsec1-nss.so.1.2.26
+%{_prefix}/lib/libxmlsec1-nss.so.%{version}
 %{_prefix}/lib/libxmlsec1-nss.so
 %{_prefix}/lib/libxmlsec1-openssl.so.1
-%{_prefix}/lib/libxmlsec1-openssl.so.1.2.26
+%{_prefix}/lib/libxmlsec1-openssl.so.%{version}
 %{_prefix}/lib/libxmlsec1-openssl.so
 %{_prefix}/bin/xmlsec1
 
@@ -67,7 +67,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %{_prefix}/bin/xmlsec1-config
 %{_prefix}/include/xmlsec1/xmlsec/*.h
-%{_prefix}/include/xmlsec1/xmlsec/private/*.h
 %{_prefix}/include/xmlsec1/xmlsec/nss/*.h
 %{_prefix}/include/xmlsec1/xmlsec/openssl/*.h
 %{_prefix}/lib/libxmlsec1.*a
@@ -83,6 +82,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_prefix}/share/man/man1/xmlsec1-config.1.gz
 
 %changelog
+*   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.30-1
+-   Automatic Version Bump
 *   Tue Oct 22 2019 Piyush Gupta <guptapi@vmware.com> 1.2.26-3
 -   Added nss as requires
 *   Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 1.2.26-2
