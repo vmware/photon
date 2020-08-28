@@ -32,6 +32,11 @@ function check-for-correct-version()
   s=`echo ${sub_version//[[:blank:]]/}`
   v=`echo ${version//[[:blank:]]/}`
   full_version=${v}-${s};
+  cat $1 | grep dialogsubversion > /dev/null 2>&1
+  if [ $? -eq 0 ];then
+     dialogsubversion=`cat $1 | grep dialogsubversion | grep %global | cut -d ' ' -f 3 | sed 's/ //g' | tr -d ' '`
+     full_version=${v}-${s}${dialogsubversion}
+  fi
   if [ "${latest_version_in_changelog}" != "${full_version}" ]; then
     echo "ERROR in $1: Top changelog entry version ${latest_version_in_changelog} does NOT MATCH package version ${full_version}"
     echo "Please update %changelog or Version,Release: in $1 to make them match each other"

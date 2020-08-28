@@ -1,22 +1,19 @@
+%global dialogsubversion 20200327
 Summary:       A utility for creating TTY dialog boxes
 Name:          dialog
 Version:       1.3
-%global dialogsubversion 20180621
-Release:       4.%{dialogsubversion}%{?dist}
+Release:       5.%{dialogsubversion}%{?dist}
 License:       LGPLv2
 URL:           http://invisible-island.net/dialog/dialog.html
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
-Source0:       ftp://invisible-island.net/dialog/%{name}-%{version}-20180621.tar.gz
-%define sha1 dialog=cf81d5fbbaf148fdd9f50a5e78d741d3f1601f46
+Source0:       https://invisible-mirror.net/archives/dialog/%{name}-%{version}-%{dialogsubversion}.tar.gz
+%define sha1   dialog=d737f57f91b6fb3cbca0faee35f3c227265fbf46
 BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: findutils
 BuildRequires: libtool
-Patch1:        dialog-incdir.patch
-Patch2:        dialog-multilib.patch
-Patch3:        dialog-libs.patch
 
 %description
 Dialog is a utility that allows you to show dialog boxes (containing
@@ -40,17 +37,13 @@ dialog library.
 
 %prep
 %setup -q -n %{name}-%{version}-%{dialogsubversion}
-%patch1 -p1 -b .incdir
-%patch2 -p1 -b .multilib
-%patch3 -p1 -b .libs
 
 %build
 %configure \
         --enable-nls \
         --with-libtool \
         --with-ncursesw \
-        --includedir=%{_includedir}/dialog
-make %{?_smp_mflags}
+make
 
 %install
 # prepare packaged samples
@@ -78,18 +71,20 @@ chmod +x %{buildroot}%{_libdir}/*
 
 %files devel
 %{_bindir}/dialog-config
-%{_includedir}/dialog
+%{_includedir}/*.h
 %{_libdir}/libdialog.so
 %{_libdir}/libdialog.la
 %exclude %{_libdir}/libdialog.a
 %{_mandir}/man3/dialog.*
 
 %changelog
+*       Fri Aug 28 2020 Michelle Wang <michellew@vmware.com> 1.3-5.20200327
+-       Update to 20200327
 *	Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 1.3-4.20180621
 -	Fix library permission.
 *	Wed Sep 19 2018 Bo Gan <ganb@vmware.com> 1.3-3.20180621
 -	Update to 20180621
 *	Wed Apr 19 2017 Bo Gan <ganb@vmware.com> 1.3-2.20170131
 -	update to 20170131
-*	Fri May 30 2016 Nick Shi <nshi@vmware.com> 1.3-1.20160209
+*	Mon May 30 2016 Nick Shi <nshi@vmware.com> 1.3-1.20160209
 -	Initial version
