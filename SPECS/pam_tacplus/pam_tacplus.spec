@@ -1,21 +1,22 @@
 Summary:        PAM Tacacs+ module
 Name:           pam_tacplus
 Version:        1.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://tacplus.sourceforge.net/
 Group:          System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    pam_tacplus=2138724a9a2e0978ab1fecc1c7b29a3288728dca
+
+Patch0: CVE-2020-13881.patch
+
 BuildRequires:  Linux-PAM-devel
 
 %description
 PAM Tacacs+ module based on code produced by Pawel Krawczyk <pawel.krawczyk@hush.com> and Jeroen Nijhof <jeroen@jeroennijhof.nl>
-
-BuildRequires:pam-devel
-Requires: pam
 
 %package devel
 Summary:    Development files for pam_tacplus
@@ -24,16 +25,11 @@ Requires:   %{name} = %{version}-%{release}
 Development files for pam_tacplus.
 
 %prep
-%setup -q -a 0
+%autosetup -a 0 -p1
 
 %build
 autoreconf -i
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
-    --disable-static \
+%configure --disable-static
 
 make %{?_smp_mflags}
 
@@ -42,8 +38,7 @@ make %{?_smp_mflags}
 mkdir -p %{buildroot}/etc/pam.d
 mkdir -p %{buildroot}/%{_lib}/security
 
-install -m 755 .libs/pam_tacplus.so \
-               %{buildroot}/%{_lib}/security/
+install -m 755 .libs/pam_tacplus.so %{buildroot}/%{_lib}/security/
 install -m 644 sample.pam $RPM_BUILD_ROOT/etc/pam.d/tacacs
 
 chmod 755 $RPM_BUILD_ROOT/%{_lib}/security/*.so*
@@ -59,11 +54,6 @@ make %{?_smp_mflags} check
 
 %clean
 rm -rf %{buildroot}/*
-%files
-%defattr(-,root,root)
-%{_bindir}/*
-%{_libdir}/*.so.*
-%{_mandir}/man1/*
 
 %files
 %defattr(-,root,root)
@@ -80,7 +70,8 @@ rm -rf %{buildroot}/*
 %attr(644,root,root) %{_lib}/pkgconfig/*
 %doc %{_docdir}/*
 
-
 %changelog
-*   Tue Apr 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.4.1-1
--   Initial packaging for Photon.
+* Fri Aug 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.4.1-2
+- Fixed CVE-2020-13881
+* Tue Apr 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.4.1-1
+- Initial packaging for Photon.
