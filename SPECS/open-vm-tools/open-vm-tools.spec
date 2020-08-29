@@ -1,6 +1,6 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        11.1.0
+Version:        11.1.5
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 open-vm-tools=6c0afb297899b47055ebf036ab68657b3bb94264
+%define sha1 open-vm-tools=bbfb8295f16d44c8229efdb9b294ba7290c664ec
 Source1:        gosc-scripts-1.2.tar.gz
 %define sha1 gosc-scripts-1.2=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
@@ -143,6 +143,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 11.1.5-1
+-   Automatic Version Bump
 *   Wed Aug 12 2020 Oliver Kurth <okurth@vmware.com>
 -   remove xerces and xml-security dependencies
 *   Thu Jul 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.0-1
