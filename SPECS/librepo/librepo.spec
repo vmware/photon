@@ -3,7 +3,7 @@
 
 Summary:        Repodata downloading library
 Name:           librepo
-Version:        1.12.0
+Version:        1.12.1
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
@@ -11,7 +11,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=1981d485743337c93d2b098920e5f738bd41fdc9
+%define sha1    %{name}-%{version}=afe3d6902eb0238105e954ab2e99205aba9ea234
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  check
@@ -81,6 +81,8 @@ popd
 %{_python3_sitearch}/%{name}/
 
 %changelog
+*   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 1.12.1-1
+-   Automatic Version Bump
 *   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 1.12.0-1
 -   Updated to 1.12.0
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 1.10.2-3
