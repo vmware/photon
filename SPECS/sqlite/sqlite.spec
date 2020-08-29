@@ -1,7 +1,7 @@
-%define sourcever 3320100
-Summary:    A portable, high level programming interface to various calling conventions
+%define sourcever 3330000
+Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
-Version:        3.32.1
+Version:        3.33.0
 Release:        1%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
@@ -9,8 +9,7 @@ Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sqlite.org/2020/%{name}-autoconf-%{sourcever}.tar.gz
-%define sha1    sqlite=3d34d86ef726b66edeb0b93b2a4c0d036ea8dcf3
-Patch0:         sqlite-CVE-2020-15358.patch
+%define sha1    sqlite=d63f3ce52cb295d62d09fc2ad8f2d29c35e1645f
 Obsoletes:      sqlite-autoconf
 Obsoletes:      sqlite-devel <= 3.27.2-5
 Requires:       sqlite-libs = %{version}-%{release}
@@ -20,26 +19,27 @@ This package contains most of the static files that comprise the
 www.sqlite.org website including all of the SQL Syntax and the
 C/C++ interface specs and other miscellaneous documentation.
 
-%package devel
+%package        devel
 Summary:        sqlite3 link library & header files
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 The sqlite devel package include the needed library link and
 header files for development.
 
-%package libs
+%package        libs
 Summary:        sqlite3 library
 Group:          Libraries
 Provides:       pkgconfig(sqlite3)
 Obsoletes:      libsqlite
 Obsoletes:      sqlite-autoconf
-%description libs
+
+%description    libs
 The sqlite3 library.
 
 %prep
 %setup -q -n %{name}-autoconf-%{sourcever}
-%patch0 -p1
 
 %build
 %configure \
@@ -89,6 +89,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0
 
 %changelog
+*   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 3.33.0-1
+-   Automatic Version Bump
 *   Fri Jul 03 2020 Shreyas B <shreyasb@vmware.com> 3.32.1-1
 -   Upgrade to 3.32.1 & fix CVE-2020-15358
 -   CVE-2020-13630 CVE-2020-13434 CVE-2020-13435 CVE-2020-13631 CVE-2020-13632
