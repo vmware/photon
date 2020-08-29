@@ -3,7 +3,7 @@
 Summary:      Z shell
 Name:         zsh
 Version:      5.8
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      MIT
 URL:          http://zsh.org/
 Group:        System Environment/Shells
@@ -13,6 +13,8 @@ Source0:      http://www.zsh.org/pub/%{name}-%{version}.tar.xz
 %define sha1  zsh=966ea0498fb94140f3caf12af88e98b0e4d02078
 Source1:      zprofile.rhs
 Source2:      zshrc
+
+Patch0:       ncurses-fix.patch
 
 BuildRequires: coreutils
 BuildRequires: tar
@@ -58,6 +60,7 @@ This package contains the Zsh manual in html format.
 %prep
 
 %setup -q
+%patch0 -p1
 
 %build
 # make loading of module's dependencies work again (#1277996)
@@ -145,6 +148,8 @@ fi
 %doc Doc/*.html
 
 %changelog
+*   Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 5.8-2
+-   Fix ncurses compilation failure
 *   Mon May 11 2020 Susant Sahani <ssahani@vmware.com> 5.8-1
 -   Upgrading to 5.8
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 5.6.1-1

@@ -1,16 +1,15 @@
+%global ncursessubversion 20200822
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
 Version:        6.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-%global ncursessubversion 20200711
 Source0:        ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-%{ncursessubversion}.tgz
-%define sha1    ncurses=e4d288a923a5787053c7964ed9af569d59f3a69a
-
+%define sha1    ncurses=29dc11e20ffa9dd034595dfdb1b25ee1fbbf9eb9
 Requires:       ncurses-libs = %{version}-%{release}
 BuildRequires:  gcc
 BuildRequires:  pkg-config
@@ -19,20 +18,20 @@ BuildRequires:  pkg-config
 The Ncurses package contains libraries for terminal-independent
 handling of character screens.
 
-%package libs
-Summary: Ncurses Libraries
-Group: System Environment/Libraries
+%package        libs
+Summary:        Ncurses Libraries
+Group:          System Environment/Libraries
 Provides:       libncurses.so.6()(64bit)
 
-%description libs
+%description    libs
 This package contains ncurses libraries
 
-%package compat
-Summary: Ncurses compatibility libraries
-Group: System Environment/Libraries
-Provides: libncurses.so.5()(64bit)
+%package        compat
+Summary:        Ncurses compatibility libraries
+Group:          System Environment/Libraries
+Provides:       libncurses.so.5()(64bit)
 
-%description compat
+%description    compat
 This package contains the ABI version 5 of the ncurses libraries for
 compatibility.
 
@@ -40,12 +39,14 @@ compatibility.
 Summary:        Header and development files for ncurses
 Requires:       %{name} = %{version}-%{release}
 Provides:       pkgconfig(ncurses)
+
 %description    devel
 It contains the libraries and header files to create applications
 
 %package        terminfo
 Summary:        terminfo files for ncurses
 Requires:       %{name} = %{version}-%{release}
+
 %description    terminfo
 It contains all terminfo files
 
@@ -185,7 +186,9 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
-*   Wed Aug 13 2020 Susant Sahani <ssahani@vmware.com> 6.2-1
+*   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 6.2-2
+-   Automatic Version Bump
+*   Thu Aug 13 2020 Susant Sahani <ssahani@vmware.com> 6.2-1
 -   Update to version 6.2.
 *   Wed Nov 07 2018 Alexey Makhalov <amakhalov@vmware.com> 6.1-2
 -   Cross compilation support
