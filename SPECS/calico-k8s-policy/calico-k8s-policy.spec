@@ -1,21 +1,16 @@
 Summary:        Calico Network Policy for Kubernetes
 Name:           calico-k8s-policy
-Version:        1.0.0
-Release:        5%{?dist}
+Version:        3.16.0
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/k8s-policy
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 calico-k8s-policy=612eafdb2afee6ffbfc432e0110c787823b66ccc
-Source1:        go-27704.patch
-Source2:        go-27842.patch
-Source3:        glide-cache-for-%{name}-%{version}.tar.xz
-%define sha1 glide-cache-for-%{name}=49f87c7fa8c35ca303361733c7cfcea384a61f87
+%define sha1 calico-k8s-policy=e5d0c1c7f3f589cb4c7487c7dc77d0302ac23418
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  git
-BuildRequires:  glide
-BuildRequires:  go >= 1.8
+BuildRequires:  go
 BuildRequires:  libcalico
 BuildRequires:  libffi-devel
 BuildRequires:  openssl-devel
@@ -66,28 +61,10 @@ Calico Network Policy enables Calico to enforce network policy on top of Calico 
 echo "VERSION='`git describe --tags --dirty`'" > version.py
 
 %build
-mkdir -p /root/.glide
-tar -C ~/.glide -xf %{SOURCE3}
-pushd /root/.glide/cache/src
-ln -s https-cloud.google.com-go https-code.googlesource.com-gocloud
-popd
-
-mkdir -p ${GOPATH}/src/github.com/projectcalico/k8s-policy
-cp -r * ${GOPATH}/src/github.com/projectcalico/k8s-policy
-pushd ${GOPATH}/src/github.com/projectcalico/k8s-policy
-
-glide mirror set https://cloud.google.com/go https://code.googlesource.com/gocloud
-glide install -strip-vendor
-
-pushd vendor/golang.org/x/net
-patch -p1 < %{SOURCE1}
-patch -p1 < %{SOURCE2}
-popd
 mkdir -p dist
-CGO_ENABLED=0 go build -v -o dist/controller -ldflags "-X main.VERSION=%{version}" ./main.go
+go build -v -o dist/controller -ldflags "-X main.VERSION=%{version}" ./cmd/kube-controllers/
 
 %install
-pushd ${GOPATH}/src/github.com/projectcalico/k8s-policy
 install -vdm 755 %{buildroot}%{_bindir}
 install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 
@@ -96,6 +73,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 %{_bindir}/controller
 
 %changelog
+*   Tue Jun 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.16.0-1
+-   Automatic Version Bump
 *   Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 1.0.0-5
 -   Build with python3
 -   Mass removal python2
