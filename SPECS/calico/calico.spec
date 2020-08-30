@@ -1,19 +1,16 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
-Version:        3.6.1
-Release:        3%{?dist}
+Version:        3.15.2
+Release:        1%{?dist}
 License:        Apache-2.0
-URL:            https://github.com/projectcalico/calico
+URL:            https://github.com/projectcalico/node 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 calico=43310c3ae20b7806ae030d11ae99c135a35badac
-Source1:        glide-cache-for-%{name}-%{version}.tar.xz
-%define sha1 glide-cache-for-%{name}=0b6f17cb3f30fa4ec21cc859026330c69663b89a
+%define sha1 calico=269368d04748548fcdd22dccbf2bd81d76535ed3
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  git
-BuildRequires:  glide
-BuildRequires:  go >= 1.11
+BuildRequires:  go
 BuildRequires:  make
 
 %description
@@ -23,32 +20,15 @@ Calico node is a container that bundles together various components reqiured for
 %setup -n node-%{version}
 
 %build
-mkdir -p /root/.glide
-tar -C ~/.glide -xf %{SOURCE1}
-pushd /root/.glide/cache/src
-ln -s https-cloud.google.com-go https-code.googlesource.com-gocloud
-popd
-
-mkdir -p ${GOPATH}/src/github.com/projectcalico/node
-cp -r * ${GOPATH}/src/github.com/projectcalico/node
-pushd ${GOPATH}/src/github.com/projectcalico/node
-
-glide mirror set https://cloud.google.com/go https://code.googlesource.com/gocloud
-#glide install checks by default .glide dir before downloading from internet.
-glide install --strip-vendor
-
 mkdir -p dist
-mkdir -p .go-pkg-cache
-GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -v -i -o dist/calico-node cmd/calico-node/main.go
-popd
+go build -v -i -o dist/calico-node cmd/calico-node/main.go
 
 %install
-pushd ${GOPATH}/src/github.com/projectcalico
 install -vdm 755 %{buildroot}%{_bindir}
-install node/dist/calico-node %{buildroot}%{_bindir}/
+install dist/calico-node %{buildroot}%{_bindir}/
 install -vdm 0755 %{buildroot}/usr/share/calico/docker/fs
-cp -r node/filesystem/etc %{buildroot}/usr/share/calico/docker/fs/
-cp -r node/filesystem/sbin %{buildroot}/usr/share/calico/docker/fs/
+cp -r filesystem/etc %{buildroot}/usr/share/calico/docker/fs/
+cp -r filesystem/sbin %{buildroot}/usr/share/calico/docker/fs/
 sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/docker/fs/etc/rc.local
 sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/docker/fs/sbin/start_runit
 
@@ -58,6 +38,8 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
+*   Sat Aug 29 2020 Ashwin H <ashwinh@vmware.com> 3.15.2-1
+-   Update to 3.15.2
 *   Wed Jun 17 2020 Ashwin H <ashwinh@vmware.com> 3.6.1-3
 -   Fix dependency for cloud.google.com-go
 *   Tue Jun 09 2020 Ashwin H <ashwinh@vmware.com> 3.6.1-2
