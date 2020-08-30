@@ -1,15 +1,15 @@
 Summary:       Docker libnetwork plugin for Calico
 Name:          calico-libnetwork
-Version:       1.1.0
-Release:       5%{?dist}
+Version:       1.1.3
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
 URL:           https://github.com/projectcalico/libnetwork-plugin
 Source0:       %{name}-%{version}.tar.gz
-%define sha1 calico-libnetwork=bed540d714a7b2e0d0138556894541109dc7b792
-Source1:        glide-cache-for-%{name}-%{version}.tar.xz
-%define sha1 glide-cache-for-%{name}=d93fe68c4538ed5cf5bd8074d34e79798decca32
+%define sha1 calico-libnetwork=84acf59e8480e5e7fcefa7581fb156b76822ab36
+Source1:        glide-cache-for-calico-libnetwork-%{version}.tar.xz
+%define sha1 glide-cache-for-%{name}=67faf9f5502eb97dd51c2c36d31bbf3fdb465cf7
 Distribution:  Photon
 BuildRequires: git
 BuildRequires: glide
@@ -20,7 +20,7 @@ BuildRequires: go
 Docker libnetwork plugin for Calico.
 
 %prep
-%setup -q -n libnetwork-plugin-1.1.0
+%setup -q -n libnetwork-plugin-%{version}
 
 %build
 mkdir -p /root/.glide
@@ -49,6 +49,8 @@ install -vpm 0755 -t %{buildroot}/usr/share/calico/docker/ dist/libnetwork-plugi
 /usr/share/calico/docker/libnetwork-plugin
 
 %changelog
+*    Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.3-1
+-    Automatic Version Bump
 *    Wed Jun 17 2020 Ashwin H <ashwinh@vmware.com> 1.1.0-5
 -    Fix dependency for cloud.google.com-go
 *    Tue Jun 09 2020 Ashwin H <ashwinh@vmware.com> 1.1.0-4
