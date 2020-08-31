@@ -2,13 +2,13 @@
 
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
-Version:        1.58.0
-Release:        4%{?dist}
+Version:        1.64.1
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/gobject-introspection/1.52/%{name}-%{version}.tar.xz
-%define sha1 gobject-introspection=4edc652656af31127988b125537d4f1994cdf7f2
+%define sha1 gobject-introspection=f5be2ccbf48f5c9b6c32fa8400b6a14d608b4e03
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  gettext
@@ -23,9 +23,9 @@ BuildRequires:  autoconf-archive
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-xml
+BuildRequires:  meson
 Requires:       libffi
 Requires:       glib >= 2.58.0
-Patch0:         disableFaultyTest.patch
 %description
 GObject Introspection can scan C header and source files in order to
 generate introspection "typelib" files.  It also provides an API to examine
@@ -56,26 +56,25 @@ Libraries and headers for gobject-introspection.
 
 %prep
 %setup -q
-%patch0 -p1
-autoreconf -fiv
 
 %build
-%configure --with-python=/usr/bin/python3
-make %{?_smp_mflags}
+meson --prefix=/usr --libdir=lib -Dpython=%{__python3} build
+ninja -C build
+
 
 %install
 rm -rf %{buildroot}/*
 
-make install DESTDIR=%{buildroot}
+DESTDIR=%{buildroot} ninja -C build install
 # Move the python3 modules to the correct location
 mkdir -p %{buildroot}/%{python3_sitelib}
-mv %{buildroot}/%{_libdir}/gobject-introspection/giscanner %{buildroot}/%{python3_sitelib}
+mv %{buildroot}%{_libdir}/gobject-introspection/giscanner %{buildroot}/%{python3_sitelib}
 rm -rf $RPM_BUILD_ROOT/%{_datarootdir}/gtk-doc/html
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
 
 %check
-make  %{?_smp_mflags} check
+meson test
 
 %post -p /sbin/ldconfig
 
@@ -96,7 +95,6 @@ make  %{?_smp_mflags} check
 %files devel
 %defattr(-,root,root,-)
 %{_libdir}/lib*.so
-%{_libdir}/lib*.a
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 %{_bindir}/g-ir-*
@@ -106,6 +104,8 @@ make  %{?_smp_mflags} check
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Sun Aug 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.64.1-1
+-   Automatic Version Bump
 *   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 1.58.0-4
 -   Requires python3-libs
 *   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 1.58.0-3
