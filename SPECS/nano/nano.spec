@@ -1,33 +1,32 @@
-Summary:	Text editor
-Name:		nano
-Version:	5.2
-Release:	1%{?dist}
-License:	GPLv3+
-URL:		http://www.nano-editor.org/
-Group:		Applications/Editors
-Source0:	http://www.nano-editor.org/dist/v3/%{name}-%{version}.tar.xz
-%define sha1 nano=15247b2a329d452f692bcae70fce1cb9886174fe
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildRequires:	ncurses-devel
-Requires:	ncurses
+Summary:        Text editor
+Name:           nano
+Version:        5.2
+Release:        2%{?dist}
+License:        GPLv3+
+URL:            http://www.nano-editor.org/
+Group:          Applications/Editors
+Source0:        http://www.nano-editor.org/dist/v3/%{name}-%{version}.tar.xz
+%define sha1    nano=15247b2a329d452f692bcae70fce1cb9886174fe
+Vendor:         VMware, Inc.
+Distribution:   Photon
+BuildRequires:  ncurses-devel
+Requires:       ncurses
 
 %description
 The Nano package contains a small, simple text editor
 
-%package lang
-Summary:	Lang for nano
-Requires:	%{name} = %{version}
-%description lang
+%package        lang
+Summary:        Lang for nano
+Requires:       %{name} = %{version}
+
+%description    lang
 Lang for nano
 
 %prep
 %setup -q -n %{name}-%{version}
 %build
-./configure --prefix=%{_prefix}      \
-            --sysconfdir=%{_sysconfdir} \
+%configure \
             --enable-utf8     \
-            --infodir=%{_infodir}/%{name}-%{version} \
             --docdir=%{_docdir}/%{name}-%{version}
 make
 
@@ -47,11 +46,15 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/man*/*
-%{_infodir}/%{name}-%{version}/*
+%{_infodir}/*
 %{_datadir}/nano/*
 %{_datadir}/doc/%{name}-%{version}/*
+# conflict with parted-3.2-8.ph3
+%exclude %{_infodir}/dir
 
 %changelog
+*   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 5.2-2
+-   Fix spec configures
 *   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 5.2-1
 -   Automatic Version Bump
 *   Wed Aug 12 2020 Gerrit Photon <photon-checkins@vmware.com> 5.1-1
