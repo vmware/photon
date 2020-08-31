@@ -1,6 +1,8 @@
-diff -rupN cloud-init-src/cloudinit/distros/photon.py cloud-init-photon/cloudinit/distros/photon.py
---- cloud-init-src/cloudinit/distros/photon.py	1969-12-31 18:00:00.000000000 -0600
-+++ cloud-init-photon/cloudinit/distros/photon.py	2020-08-10 09:34:46.000000000 -0500
+diff --git a/cloudinit/distros/photon.py b/cloudinit/distros/photon.py
+new file mode 100644
+index 00000000..ad60505b
+--- /dev/null
++++ b/cloudinit/distros/photon.py
 @@ -0,0 +1,475 @@
 +# vi: ts=4 expandtab
 +#
@@ -323,7 +325,7 @@ diff -rupN cloud-init-src/cloudinit/distros/photon.py cloud-init-photon/cloudini
 +        # Otherwise it is not possible to use cloud-init to set an FQDN for a
 +        # host because of the way the host name is configured with cloud-init
 +        # and the datasource used by Photon.
-+        if fqdn:
++        if not hostname or (isinstance(fqdn, str) and fqdn.find('.') > 0):
 +            return fqdn
 +        return hostname
 +
