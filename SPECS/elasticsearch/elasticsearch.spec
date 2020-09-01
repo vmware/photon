@@ -2,16 +2,16 @@
 
 Summary:          Elastic Search
 Name:             elasticsearch
-Version:          6.8.10
+Version:          6.8.12
 Release:          1%{?dist}
 License:          Apache License Version 2.0
 URL:              https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
 Source0:          %{name}-%{version}.tar.gz
-%define sha1      %{name}-%{version}.tar.gz=063835b80b35d1c97bcbc0f0adc4fa566926c6c2
+%define sha1      %{name}-%{version}.tar.gz=839759ac0d778f5ff21d33e47de34d5c3d1e9829
 Source1:          cacerts
 %define sha1      cacerts=f584c7c1f48c552f39acfb5560a300a657d9f3bb
-Source2:          distribution-for-elasticsearch-%{version}.tar.gz
-%define sha1      distribution-for-elasticsearch=0035e7622d2ab5df36bc91f6302c282718e4294b
+Source2:          distribution-for-%{name}-%{version}.tar.gz
+%define sha1      distribution-for-%{name}=b0abd483947bfd6fb261b1701b90d12afa23363a
 Group:            Development/Daemons
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -122,8 +122,10 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
-*    Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 6.8.10-1
--    Update to release 6.8.10
+*   Mon Aug 31 2020 Piyush Gupta <gpiyush@vmware.com> 6.8.12-1
+-   Update to 6.8.12
+*   Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 6.8.10-1
+-   Update to release 6.8.10
 *   Mon Jun 08 2020 Tapas Kundu <tkundu@vmware.com> 6.8.9-1
 -   Update to release 6.8.9
 *   Fri May 08 2020 Tapas Kundu <tkundu@vmware.com> 6.8.8-2
