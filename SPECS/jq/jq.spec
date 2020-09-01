@@ -1,17 +1,13 @@
 Summary:       jq is a lightweight and flexible command-line JSON processor.
 Name:          jq
-Version:       1.5
-Release:       4%{?dist}
+Version:       1.6
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       MIT
 URL:           https://github.com/stedolan/jq
-Source0:       https://github.com/stedolan/jq/releases/download/jq-1.5/jq-1.5.tar.gz
-%define sha1 jq=6eef3705ac0a322e8aa0521c57ce339671838277
-#https://github.com/stedolan/jq/commit/8eb1367ca44e772963e704a700ef72ae2e12babd
-Patch0:        CVE-2015-8863.patch
-#https://github.com/wmark/jq/commit/e6f32d647b180006a90e080ab61ce6f09c3134d7
-Patch1:        CVE-2016-4074.patch
+Source0:       https://github.com/stedolan/jq/releases/download/jq-%{version}/jq-%{version}.tar.gz
+%define sha1 jq=73bcbdc45be4db907a864e829b06cd869f77f4f7
 Distribution:  Photon
 %if %{with_check}
 BuildRequires: which
@@ -30,13 +26,11 @@ Requires:   %{name} = %{version}-%{release}
 Development files for jq
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%setup -n %{name}-%{version}
 
 %build
-%configure \
-    --disable-static
+autoreconf -fi
+%configure --disable-static
 make %{?_smp_mflags}
 
 %install
@@ -57,12 +51,16 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_datadir}/*
 %{_libdir}/libjq.so.*
+%{_libdir}/libonig*
+%{_libdir}/pkgconfig/oniguruma.pc
 
 %files devel
 %{_libdir}/libjq.so
 %{_includedir}/*
 
 %changelog
+*  Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6-1
+-  Automatic Version Bump
 *  Mon Nov 19 2018 Ashwin H<ashwinh@vmware.com> 1.5-4
 -  Add which for %check
 *  Tue Aug 22 2017 Chang Lee <changlee@vmware.com> 1.5-3
