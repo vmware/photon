@@ -1,7 +1,7 @@
 Summary:       A JSON implementation in C
 Name:          json-c
 Version:       0.15
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       MIT
 URL:           https://github.com/json-c/json-c/wiki
 Source0:       https://s3.amazonaws.com/json-c_releases/releases/%{name}-%{version}.tar.gz
@@ -25,34 +25,43 @@ developing applications that use json-c.
 
 %prep
 %setup -q -n %{name}-%{name}-%{version}-20200726
+mkdir build
 
 %build
-mkdir build
-cd build
-../cmake-configure
-make
+pushd build
+cmake .. \
+      -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+      -DBUILD_STATIC_LIBS=OFF
+make %{?_smp_mflags}
+popd
 
 %install
-cd build
-make all DESTDIR=%{buildroot} install
+pushd build
+make install DESTDIR=%{buildroot}
+popd
 
 %check
+pushd build
 make %{?_smp_mflags} check
+popd
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 
 %files
-/usr/local/lib64/lib%{name}.so.*
-/usr/local/lib64/cmake/json-c/*
+%defattr(-,root,root)
+%{_lib64dir}/lib%{name}.so.*
 
 %files devel
-/usr/local/include/*
-/usr/local/lib64/*.so
-/usr/local/lib64/*.a
-/usr/local/lib64/pkgconfig/*.pc
+%defattr(-,root,root,-)
+%{_includedir}/%{name}/*
+%{_lib64dir}/lib%{name}.so
+%{_lib64dir}/pkgconfig/%{name}.pc
+%{_lib64dir}/cmake/%{name}
 
 %changelog
+*       Tue Sep 01 2020 Ankit Jain <ankitja@vmware.com> 0.15-2
+-       Fix json-c packaging
 *       Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.15-1
 -       Automatic Version Bump
 *       Fri May 15 2020 Ankit Jain <ankitja@vmware.com> 0.13.1-2
