@@ -2,7 +2,7 @@
 
 Summary:        Library for building powerful interactive command lines in Python.
 Name:           python3-prompt_toolkit
-Version:        3.0.6
+Version:        3.0.7
 Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/prompt_toolkit
 Source0:        https://files.pythonhosted.org/packages/source/p/prompt_toolkit/prompt_toolkit-%{version}.tar.gz
-%define sha1    prompt_toolkit=995dfffe65865e0a2adfe1676d7a012b832831fd
+%define sha1    prompt_toolkit=9bfef203f8a9f667675f97e5717f2b48c299edc8
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -54,6 +54,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.7-1
+-   Automatic Version Bump
 *   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.6-1
 -   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.5-1

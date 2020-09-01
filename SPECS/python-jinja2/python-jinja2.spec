@@ -2,8 +2,8 @@
 %{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
 Name:           python3-jinja2
-Version:        2.10
-Release:        2%{?dist}
+Version:        2.11.2
+Release:        1%{?dist}
 Url:            http://jinja.pocoo.org/
 Summary:        A fast and easy to use template engine written in pure Python
 License:        BSD
@@ -11,7 +11,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/71/59/d7423bd5e7ddaf3a1ce299ab4490e9044e8dfd195420fc83a24de9e60726/Jinja2-%{version}.tar.gz
-%define sha1    Jinja2=34b69e5caab12ee37b9df69df9018776c008b7b8
+%define sha1    Jinja2=1017138fd4cb627204d3109b75c107c3d6f3f7fb
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -32,7 +32,6 @@ sandboxed environment.
 
 %build
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-sed -i 's/\r$//' LICENSE # Fix wrong EOL encoding
 
 %install
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
@@ -42,12 +41,12 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS
-%license LICENSE
 %{python3_sitelib}/jinja2
 %{python3_sitelib}/Jinja2-%{version}-py%{python3_version}.egg-info
 
 %changelog
+*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.11.2-1
+-   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 2.10-2
 -   Mass removal python2
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.10-1

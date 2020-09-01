@@ -2,7 +2,7 @@
 
 Summary:        Python Build Reasonableness
 Name:           python3-pbr
-Version:        5.4.5
+Version:        5.5.0
 Release:        1%{?dist}
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://docs.openstack.org/developer/pbr/
 Source0:        https://pypi.io/packages/source/p/pbr/pbr-%{version}.tar.gz
-%define sha1    pbr=bb9ad36804e59cec50a9f68c33a6109497862516
+%define sha1    pbr=083d576a2c20295ed7d0afe07450309a09e1363c
 Patch0:         disable-test-wsgi.patch
 BuildRequires:  python3-docutils
 BuildRequires:  python3-setuptools
@@ -65,6 +65,8 @@ python3 setup.py test
 %{python3_sitelib}/pbr
 
 %changelog
+*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 5.5.0-1
+-   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 5.4.5-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 4.2.0-3

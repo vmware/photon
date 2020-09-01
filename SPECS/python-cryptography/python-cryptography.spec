@@ -2,7 +2,7 @@
 
 Summary:        Python cryptography library
 Name:           python3-cryptography
-Version:        3.0
+Version:        3.1
 Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
@@ -10,7 +10,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
-%define sha1    cryptography=ffb2cbfae2e0a5816c225cd3c4b11f92ba02872d
+%define sha1    cryptography=cf1a47ca0186d3430d3412e6a8aa314f532daac3
 BuildRequires:  openssl-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -66,6 +66,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1
+-   Automatic Version Bump
 *   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0-1
 -   Automatic Version Bump
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 2.8-2
