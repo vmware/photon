@@ -1,14 +1,14 @@
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
-Version:        4.18.0
-Release:        3%{?dist}
+Version:        5.5.0
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.kernel.org/pub/linux/utils/net/iproute2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/utils/net/iproute2/%{name}-%{version}.tar.xz
-%define sha1    iproute2=ff02c7352bae407a76d71b36558700bb489026fc
+%define sha1    iproute2=b13ca4cd9f85c0cd69388d14fd26577668536b45
 Provides:       iproute
 Patch0:         replace_killall_by_pkill.patch
 
@@ -59,7 +59,6 @@ cd ..
 %{_sysconfdir}/%{name}/*
 /sbin/*
 %{_libdir}/tc/*
-%{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
 %{_datadir}/bash-completion/completions/tc
@@ -70,6 +69,8 @@ cd ..
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 5.5.0-1
+-   Automatic Version Bump
 *   Wed Jul 03 2019 Alexey Makhalov <amakhalov@vmware.com> 4.18.0-3
 -   Cross compilation support
 *   Fri Mar 08 2019 Fabio Rapposelli <fabio@vmware.com> 4.18.0-2
