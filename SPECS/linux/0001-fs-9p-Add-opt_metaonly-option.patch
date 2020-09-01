@@ -45,7 +45,7 @@ index aaced58..dfaa96c 100644
 --- a/fs/9p/v9fs.c
 +++ b/fs/9p/v9fs.c
 @@ -61,6 +61,8 @@ enum {
- 	Opt_cache_loose, Opt_fscache, Opt_stat, Opt_mmap, Opt_container,
+ 	Opt_cache_loose, Opt_fscache, Opt_stat, Opt_mmap,
  	/* Access options */
  	Opt_access, Opt_posixacl,
 +	/* Metadata option: to bypass caching layer */

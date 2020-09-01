@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.138
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -36,7 +36,6 @@ Patch7:	        9p-trans_fd-extend-port-variable-to-u32.patch
 Patch8:         init-do_mounts-recreate-dev-root.patch
 Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 Patch10:        9p-file-attributes-caching-support.patch
-Patch11:        fs-9p-cache-container-support.patch
 
 # -esx
 Patch12:        fs-9p-support-for-local-file-lock.patch
@@ -187,7 +186,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
-%patch11 -p1
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
@@ -374,6 +372,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Sep 01 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.138-9
+-   Enable sysrq magic in config
+-   Remove 9p cache container support patch
 *   Tue Aug 25 2020 Mounesh Badiger <badigerm@vmware.com> 4.19.138-8
 -   VDFS 9p Add xattrcreate to recovery list
 *   Tue Aug 18 2020 Ajay Kaher <akaher@vmware.com> 4.19.138-7
