@@ -1,11 +1,11 @@
 Summary:	Google's C++ gtest framework
 Name:		gtest
-Version:	1.8.1
-Release:	2%{?dist}
+Version:	1.10.0
+Release:	1%{?dist}
 License:	ASL 2.0
 URL:		https://github.com/google/googletest
 Source0:	https://github.com/google/googletest/archive/googletest-%{version}.tar.gz
-%define sha1 googletest=152b849610d91a9dfa1401293f43230c2e0c33f8
+%define sha1 googletest=9c89be7df9c5e8cb0bc20b3c4b39bf7e82686770
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -60,10 +60,10 @@ make
 
 %install
 make DESTDIR=%{buildroot} install
-install -p -m 644 -t %{buildroot}/usr/lib64 googlemock/libgmock.a
-install -p -m 644 -t %{buildroot}/usr/lib64 googlemock/libgmock_main.a
-install -p -m 644 -t %{buildroot}/usr/lib64 googlemock/gtest/libgtest.a
-install -p -m 644 -t %{buildroot}/usr/lib64 googlemock/gtest/libgtest_main.a
+install -p -m 644 -t %{buildroot}/usr/lib64 lib/libgmock.a
+install -p -m 644 -t %{buildroot}/usr/lib64 lib/libgmock_main.a
+install -p -m 644 -t %{buildroot}/usr/lib64 lib/libgtest.a
+install -p -m 644 -t %{buildroot}/usr/lib64 lib/libgtest_main.a
 install -vdm 755 %{buildroot}/usr/src/gtest/src/
 install -vdm 755 %{buildroot}/usr/src/gmock/src/
 cp googletest/src/* %{buildroot}/usr/src/gtest/src/
@@ -101,6 +101,8 @@ find %{buildroot} -name '*.la' -delete
 %{_lib64dir}/libgtest_main.a
 
 %changelog
+*    Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.10.0-1
+-    Automatic Version Bump
 *    Sun Sep 23 2018 Sharath George <anishs@vmware.com> 1.8.1-2
 -    Add gmock subpackage
 *    Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 1.8.1-1
