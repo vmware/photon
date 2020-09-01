@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.232
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.234
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=2c328de00e986562e839f0b1bb9eaa291c6d5314
+%define sha1 linux=6cdc35b6bcb1837b83f8ff541c1e51b2841f7abb
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -49,8 +49,6 @@ Patch22:        0001-9p-Transport-error-uninitialized.patch
 Patch23:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
 # Fix for CVE-2018-5995
 Patch24:        0001-percpu-stop-printing-kernel-addresses.patch
-# Fix for CVE-2018-8043
-Patch25:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
 Patch26:        Implement-the-f-xattrat-family-of-functions.patch
 Patch27:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -86,8 +84,6 @@ Patch49:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch50:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch51:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
-#Fix for CVE-2018-13094
-Patch52:        0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 # Fix CVE-2019-18885
 Patch54:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch55:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
@@ -97,11 +93,6 @@ Patch56:        0001-Initialize-fid-iounit-during-creation-of-p9_fid.patch
 Patch57:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch58:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch59:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
-# Fix for CVE-2020-14331
-Patch60:        4.4-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
-# Fix for CVE-2020-16166
-Patch61: 0001-random32-update-the-net-random-state-on-interrupt-an.patch
-Patch62: 0002-random32-remove-net_rand_state-from-the-latent-entro.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -206,7 +197,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
-%patch25 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -229,16 +219,12 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch49 -p1
 %patch50 -p1
 %patch51 -p1
-%patch52 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
 %patch58 -p1
 %patch59 -p1
-%patch60 -p1
-%patch61 -p1
-%patch62 -p1
 %patch67 -p1
 
 %if 0%{?kat_build:1}
@@ -398,6 +384,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Sep 01 2020 Vikash Bansal <bvikas@vmware.com> 4.4.234-1
+-   Update to version 4.4.234
 *   Tue Aug 18 2020 Ajay Kaher <akaher@vmware.com> 4.4.232-2
 -   9p: Add opt_metaonly cache option
 *   Fri Aug 14 2020 ashwin-h <ashwinh@vmware.com> 4.4.232-1

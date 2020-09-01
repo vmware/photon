@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.232
-Release:       2%{?dist}
+Version:       4.4.234
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:  Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=2c328de00e986562e839f0b1bb9eaa291c6d5314
+%define sha1 linux=6cdc35b6bcb1837b83f8ff541c1e51b2841f7abb
 Source1:       config-esx
 Source2:       pre-preun-postun-tasks.inc
 
@@ -51,8 +51,6 @@ Patch30:       0001-9p-Transport-error-uninitialized.patch
 Patch31:       0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
 # Fix for CVE-2018-5995
 Patch32:        0001-percpu-stop-printing-kernel-addresses.patch
-# Fix for CVE-2018-8043
-Patch33:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
 Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
@@ -86,8 +84,6 @@ Patch55:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch56:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch57:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
-#Fix for CVE-2018-13094
-Patch58:        0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 # Fix CVE-2019-18885
 Patch59:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch60:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
@@ -95,11 +91,6 @@ Patch60:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 Patch61:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch62:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch63:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
-# Fix for CVE-2020-14331
-Patch64:        4.4-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
-# Fix for CVE-2020-16166
-Patch65: 0001-random32-update-the-net-random-state-on-interrupt-an.patch
-Patch66: 0002-random32-remove-net_rand_state-from-the-latent-entro.patch
 
 # For Spectre
 Patch70: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -174,7 +165,6 @@ The Linux package contains the Linux kernel doc files
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
-%patch33 -p1
 %patch34 -p1
 %patch35 -p1
 %patch37 -p1
@@ -196,15 +186,11 @@ The Linux package contains the Linux kernel doc files
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
-%patch58 -p1
 %patch59 -p1
 %patch60 -p1
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
-%patch64 -p1
-%patch65 -p1
-%patch66 -p1
 
 %patch70 -p1
 
@@ -297,6 +283,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 01 2020 Vikash Bansal <bvikas@vmware.com> 4.4.234-1
+-   Update to version 4.4.234
 *   Tue Aug 18 2020 Ajay Kaher <akaher@vmware.com> 4.4.232-2
 -   9p: Add opt_metaonly cache option
 *   Fri Aug 14 2020 ashwin-h <ashwinh@vmware.com> 4.4.232-1
