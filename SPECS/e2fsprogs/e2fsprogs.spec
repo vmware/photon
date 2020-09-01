@@ -1,7 +1,7 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
 Version:        1.45.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
@@ -95,7 +95,8 @@ make %{?_smp_mflags} check
 %files libs
 %{_libdir}/libss.so
 %{_libdir}/libss.so.*
-%{_libdir}/libcom_err.*
+%{_libdir}/libcom_err.so
+%{_libdir}/libcom_err.so.*
 
 %files devel
 %{_includedir}/ss/ss_err.h
@@ -128,6 +129,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Tue Sep 01 2020 Tapas Kundu <tkundu@vmware.com> 1.45.5-3
+-   Exclude .a file from libs
 *   Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.45.5-2
 -   Do not conflict with toybox >= 0.8.2-2
 *   Mon Jan 27 2020 Shreyas B. <shreyasb@vmware.com> 1.45.5-1
