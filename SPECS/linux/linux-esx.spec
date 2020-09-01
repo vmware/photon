@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.148
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -96,10 +96,14 @@ Patch56:	0002-Add-9p-zero-copy-data-path-using-crossfd.patch
 Patch57:	0003-Enable-cache-loose-for-vdfs-9p.patch
 Patch58:	0004-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
 
+# 9p new function iov_iter_to_pfns()
+Patch61:        0001-lib-iov_iter-adding-new-function-iov_iter_to_pfns.patch
+# 9p Enhance p9_client_read_dotx() and p9_client_write_dotx()
+Patch62:        0001-net-9p-Enhance-p9_client_read_dotx-and-p9_client_wri.patch
 # 9p improve readpages cache
-Patch60:        0001-lib-iov_iter-adding-new-function-iov_iter_to_pfns.patch
-Patch61:        0001-net-9p-Enhance-p9_client_read_dotx-and-p9_client_wri.patch
-Patch62:        0002-fs-9p-Add-read_cache_pages_inchunks.patch
+Patch63:        0002-fs-9p-Add-read_cache_pages_inchunks.patch
+# 9p improve write pages cache
+Patch64:        0001-fs-9p-write-pages-together-if-pages-are-consecutive-.patch
 
 #Fix for CVE-2019-19813 and CVE-2019-19816
 Patch66:        0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
@@ -239,10 +243,10 @@ This Linux package contains hmac sha generator kernel module.
 %patch56 -p1
 %patch57 -p1
 %patch58 -p1
-%patch60 -p1
 %patch61 -p1
 %patch62 -p1
-
+%patch63 -p1
+%patch64 -p1
 %patch66 -p1
 %patch67 -p1
 %patch68 -p1
@@ -396,6 +400,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-2
+-   9p: enhance performence of writepages for 9p fs cache
 *   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-1
 -   Update to version 4.19.148
 *   Thu Sep 24 2020 Amod Mishra <mamod@vmware.com> 4.19.145-6
