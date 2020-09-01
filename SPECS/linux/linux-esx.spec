@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.138
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -100,7 +100,8 @@ Patch57:	0003-Enable-cache-loose-for-vdfs-9p.patch
 Patch58:	0004-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
 
 # 9p improve readpages cache
-Patch61:        0001-net-9p-Enhanced-p9_client_read_dotx-to-support-bio.patch
+Patch60:        0001-lib-iov_iter-adding-new-function-iov_iter_to_pfns.patch
+Patch61:        0001-net-9p-Enhance-p9_client_read_dotx-and-p9_client_wri.patch
 Patch62:        0002-fs-9p-Add-read_cache_pages_inchunks.patch
 
 # inherit tcp_limit_output_bytes
@@ -234,6 +235,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch56 -p1
 %patch57 -p1
 %patch58 -p1
+%patch60 -p1
 %patch61 -p1
 %patch62 -p1
 %patch90 -p1
@@ -381,6 +383,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Sep 10 2020 Ajay Kaher <akaher@vmware.com> 4.19.138-13
+-   9p: adding new function iov_iter_to_pfns()
 *   Thu Sep 10 2020 Ajay Kaher <akaher@vmware.com> 4.19.138-12
 -   Fix 9p lseek issue
 *   Mon Sep 07 2020 Amod Mishra <mamod@vmware.com> 4.19.138-11

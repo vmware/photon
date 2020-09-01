@@ -1,0 +1,86 @@
+From 64f019c1ac33399fc469aa462e5524c957c2edfd Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Sun, 13 Sep 2020 21:06:46 +0530
+Subject: [PATCH] lib: iov_iter, adding new function iov_iter_to_pfns()
+
+iov_iter_to_pfns: checks for iterator types (i.e. io or bio) and
+accordingly take actions to get all page frame numbers of pages
+included with-in the given iterator.
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ include/linux/uio.h | 10 ++++++++++
+ lib/iov_iter.c      | 34 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 44 insertions(+)
+
+diff --git a/include/linux/uio.h b/include/linux/uio.h
+index 422b1c0..8889055 100644
+--- a/include/linux/uio.h
++++ b/include/linux/uio.h
+@@ -206,6 +206,14 @@ static inline bool iter_is_iovec(const struct iov_iter *i)
+ {
+ 	return !(i->type & (ITER_BVEC | ITER_KVEC | ITER_PIPE));
+ }
++static inline bool iter_is_bvec(const struct iov_iter *i)
++{
++	return !(i->type & (ITER_IOVEC | ITER_KVEC | ITER_PIPE));
++}
++static inline bool iter_is_kvec(const struct iov_iter *i)
++{
++	return !(i->type & (ITER_BVEC | ITER_IOVEC | ITER_PIPE));
++}
+ 
+ /*
+  * Get one of READ or WRITE out of iter->type without any other flags OR'd in
+@@ -263,4 +271,6 @@ int iov_iter_for_each_range(struct iov_iter *i, size_t bytes,
+ 			    int (*f)(struct kvec *vec, void *context),
+ 			    void *context);
+ 
++int iov_iter_to_pfns(struct iov_iter *io, int maxpages,
++		unsigned long *ppns, size_t *off, int *rsize);
+ #endif
+diff --git a/lib/iov_iter.c b/lib/iov_iter.c
+index acd7b97..26dfa12 100644
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -1611,3 +1611,37 @@ int iov_iter_for_each_range(struct iov_iter *i, size_t bytes,
+ 	return err;
+ }
+ EXPORT_SYMBOL(iov_iter_for_each_range);
++
++int iov_iter_to_pfns(struct iov_iter *io, int maxpages, unsigned long *ppns, size_t *off, int *rsize)
++{
++	int i, count = iov_iter_count(io);
++	struct page **pages = NULL;
++	const struct bio_vec *bvec;
++
++	if(iter_is_iovec(io)) {
++		pages = kmalloc(sizeof(struct page *) * maxpages, GFP_KERNEL);
++		if (!pages)
++			return -ENOMEM;
++		*rsize = iov_iter_get_pages(io, pages, count, maxpages, off);
++		if (*rsize < 0) {
++			kfree(pages);
++			return *rsize;
++		}
++		for (i = 0; i < maxpages; i++) {
++			ppns[i] = page_to_pfn(pages[i]);
++		}
++		kfree(pages);
++	} else if (iter_is_bvec(io)) {
++		*rsize = 0;
++		bvec = io->bvec;
++		*off = bvec->bv_offset;
++		for (i = 0; i < maxpages; i++) {
++			*rsize += bvec[i].bv_len;
++			ppns[i] = page_to_pfn(bvec[i].bv_page);
++		}
++	} else {
++		return -EINVAL;
++	}
++	return 0;
++}
++EXPORT_SYMBOL(iov_iter_to_pfns);
+-- 
+2.7.4
+

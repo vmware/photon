@@ -1,0 +1,149 @@
+From 792373114522d09b60099f8dbbfb460291080ed7 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Sun, 13 Sep 2020 21:25:14 +0530
+Subject: [PATCH] net, 9p: Enhance p9_client_read_dotx() and
+ p9_client_write_dotx() to support bio_vec
+
+iov_iter_get_pages() behaves differently for io_vec and bio_vec.
+
+using iov_iter_to_pfns with-in p9_client_read_dotx() and
+p9_client_write_dotx() to handle both io_vec and bio_vec
+properly.
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ net/9p/client.c | 62 +++++++++++++++++++--------------------------------------
+ 1 file changed, 20 insertions(+), 42 deletions(-)
+
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 22c5517..8dee6da 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -1614,7 +1614,7 @@ EXPORT_SYMBOL(p9_client_unlinkat);
+ static int
+ dotx_can_zc(const struct iov_iter *iter, struct p9_client *clnt)
+ {
+-       return iter_is_iovec(iter) &&
++       return !iter_is_kvec(iter) &&
+               clnt->is_dotx_ok &&
+               iov_iter_count(iter) >= clnt->minzcpages * PAGE_SIZE;
+ }
+@@ -1700,33 +1700,21 @@ p9_client_read_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *er
+        size_t off;
+ 
+        int i, maxpages;
+-       struct page **pages = NULL;
+        unsigned long *ppns = NULL;
+ 
+        *err = 0;
+ 
+        maxpages = iov_iter_npages(to, DOTX_ZC_MAXPAGES);
+ 
+-       pages = kmalloc(sizeof(struct page *) * maxpages, GFP_KERNEL);
+-       if (!pages) {
+-               *err = -ENOMEM;
+-               goto error;
+-       }
+        ppns = kmalloc(sizeof(unsigned long) * maxpages, GFP_KERNEL);
+        if (!ppns) {
+                *err = -ENOMEM;
+                goto error;
+        }
+ 
+-       rsize = iov_iter_get_pages(to, pages, count, maxpages, &off);
+-       if (rsize < 0) {
+-               *err = rsize;
+-               goto error;
+-       }
+-
+-       for (i = 0; i < maxpages; i++) {
+-               ppns[i] = page_to_pfn(pages[i]);
+-       }
++       *err = iov_iter_to_pfns(to, maxpages, ppns, &off, &rsize);
++       if (*err)
++                goto error;
+ 
+        req = p9_client_rpc(clnt, P9_TREADX, "dqddp", fid->fid, offset, rsize,
+                            (unsigned int) off, maxpages, ppns);
+@@ -1757,14 +1745,15 @@ p9_client_read_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *er
+        if (req && !IS_ERR(req))
+                p9_tag_remove(clnt, req);
+ 
+-       for (i = 0; i < maxpages; i++) {
+-               put_page(pages[i]);
+-       }
++       if(iter_is_iovec(to)) {
++               for (i = 0; i < maxpages; i++) {
++                       put_page(pfn_to_page(ppns[i]));
++               }
++        }
+ 
+ error:
+-       kfree(pages);
+-       kfree(ppns);
+-
++       if (ppns)
++               kfree(ppns);
+        return total;
+ }
+ 
+@@ -1875,32 +1864,21 @@ p9_client_write_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *from, int
+        size_t off;
+ 
+        int i, maxpages;
+-       struct page **pages = NULL;
+        unsigned long *ppns = NULL;
+ 
+        *err = 0;
+ 
+        maxpages = iov_iter_npages(from, DOTX_ZC_MAXPAGES);
+ 
+-       pages = kmalloc(sizeof(struct page *) * maxpages, GFP_KERNEL);
+-       if (!pages) {
+-               *err = -ENOMEM;
+-               goto error;
+-       }
+        ppns = kmalloc(sizeof(unsigned long) * maxpages, GFP_KERNEL);
+        if (!ppns) {
+                *err = -ENOMEM;
+                goto error;
+        }
+-       rsize = iov_iter_get_pages(from, pages, count, maxpages, &off);
+-       if (rsize < 0) {
+-               *err = rsize;
+-               goto error;
+-       }
+ 
+-       for (i = 0; i < maxpages; i++) {
+-               ppns[i] = page_to_pfn(pages[i]);
+-       }
++       *err = iov_iter_to_pfns(from, maxpages, ppns, &off, &rsize);
++       if (*err)
++               goto error;
+ 
+        req = p9_client_rpc(clnt, P9_TWRITEX, "dqddp", fid->fid, offset, rsize,
+                            (unsigned int) off, maxpages, ppns);
+@@ -1926,14 +1904,14 @@ p9_client_write_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *from, int
+        if (req && !IS_ERR(req))
+                p9_tag_remove(clnt, req);
+ 
+-       for (i = 0; i < maxpages; i++) {
+-               put_page(pages[i]);
++       if(iter_is_iovec(from)) {
++               for (i = 0; i < maxpages; i++) {
++                       put_page(pfn_to_page(ppns[i]));
++               }
+        }
+-
+ error:
+-       kfree(pages);
+-       kfree(ppns);
+-
++       if (ppns)
++               kfree(ppns);
+        return total;
+ }
+ 
+-- 
+2.7.4
+
