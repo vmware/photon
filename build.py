@@ -397,14 +397,24 @@ class CleanUp:
                 raise Exception("Not able to clean chroot")
 
     def clean_stage_for_incremental_build():
-        command = ["cd "+  configdict["photon-path"]+ ";test -z \"$$(git diff --name-only "\
-                + configdict["photon-build-param"].get("base-commit", "") + " @ | grep SPECS)\" || "\
-                + curDir + "/support/package-builder/SpecDeps.py  --spec-path SPECS/ -i remove-upward-deps -p \"$$(echo `git diff --name-only "\
-                + configdict["photon-build-param"].get("base-commit", "")+" @ | grep .spec | xargs -n1 basename 2>/dev/null` | tr ' ' :)\""]
+        #cd /root/photon;test -z "$(git diff --name-only 84562de @ | grep SPECS)" || \
+        #   /root/photon/support/package-builder/SpecDeps.py  --spec-path SPECS/
+        #                                                     -i remove-upward-deps \
+        #                                                     -p "$(echo `git diff --name-only 84562de @ | grep .spec | xargs -n1 basename 2>/dev/null` | tr ' ' :)"
+        command = "cd %s; \
+                   test -z \"$(git diff --name-only %s @ | grep SPECS)\" || \
+                   %s --spec-path SPECS/ \
+                      -i remove-upward-deps \
+                      -p \"$(echo `git diff --name-only %s @ | grep .spec | xargs -n1 basename 2>/dev/null` | tr ' ' :)\"" % (configdict["photon-path"],
+                                                                                                                              configdict["photon-build-param"]["base-commit"],
+                                                                                                                              "%s/support/package-builder/SpecDeps.py" % (curDir),
+                                                                                                                              configdict["photon-build-param"]["base-commit"])
         subprocess.Popen(command, shell=True).wait()
 
-        command = ["test -n \"$$(git diff --name-only @~1 @ | grep '^support/\(make\|package-builder\|pullpublishrpms\)')\" && " \
-                + "{ cd " + configdict["photon-path"] + "; echo 'Remove all staged RPMs'; /bin/rm -rf ./stage/RPMS; } ||:"]
+        #test -n "$(git diff --name-only @~1 @ | grep '^support/\(make\|package-builder\|pullpublishrpms\)')" && \
+        # { echo "Remove all staged RPMs"; $(RM) -rf $(PHOTON_RPMS_DIR); } ||:
+        command = "test -n \"$(git diff --name-only @~1 @ | grep '^support/\(make\|package-builder\|pullpublishrpms\)')\" && \
+                   { cd %s; echo \"Remove all staged RPMs\"; /bin/rm -rf ./stage/RPMS; } ||:" % (configdict["photon-path"])
         if subprocess.Popen(command, shell=True).wait() != 0:
             raise Exception("Not able to run clean_stage_for_incremental_build")
         return
@@ -979,6 +989,9 @@ def main():
     if 'INPUT_PHOTON_BUILD_NUMBER' in os.environ:
         configdict["photon-build-param"]["input-photon-build-number"]=os.environ['IMPUT_PHOTON_BUILD_NUMBER']
 
+    if 'BASE_COMMIT' in os.environ:
+        configdict["photon-build-param"]["base-commit"] = os.environ['BASE_COMMIT']
+
     if 'THREADS' in os.environ:
         configdict["photon-build-param"]["threads"] = int(os.environ['THREADS'])
 
@@ -990,6 +1003,7 @@ def main():
 
     if 'PHOTON_CACHE_PATH' in os.environ:
         configdict.setdefault("additional-path", {}).setdefault("photon-cache-path", os.environ['PHOTON_CACHE_PATH'])
+
     if 'PHOTON_SOURCES_PATH' in os.environ:
         configdict.setdefault('additional-path', {}).setdefault('photon-sources-path', os.environ["PHOTON_SOURCES_PATH"])
 
@@ -1004,6 +1018,7 @@ def main():
 
     if "DISTRIBUTED_BUILD_CONFIG" in os.environ:
         configdict["additional-path"]["distributed-build-option-file"] = os.environ["DISTRIBUTED_BUILD_CONFIG"]
+
     if 'RPMCHECK' in os.environ:
         if os.environ['RPMCHECK']=="enable":
             configdict['photon-build-param']['rpm-check-flag'] = True
