@@ -1,15 +1,15 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Python SSH module
 Name:           python3-paramiko
-Version:        2.7.1
-Release:        2%{?dist}
+Version:        2.7.2
+Release:        1%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.paramiko.org/
 Source0:        https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
-%define         sha1 paramiko=a52fc133b817dc4d8b036bec71173c376e9dc38d
+%define         sha1 paramiko=4375bbb1c07d078484e5cd4176b5bfb3973827af
 
 BuildArch:      noarch
 
@@ -53,6 +53,8 @@ LANG=en_US.UTF-8 python3 test.py
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.7.2-1
+-   Automatic Version Bump
 *   Wed Jul 08 2020 Tapas Kundu <tkundu@vmware.com> 2.7.1-2
 -   Mass removal python2
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.7.1-1
