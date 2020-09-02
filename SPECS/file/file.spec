@@ -1,6 +1,6 @@
 Summary:        Contains a utility for determining file types
 Name:           file
-Version:        5.38
+Version:        5.39
 Release:        1%{?dist}
 License:        BSD
 URL:            http://www.darwinsys.com/file
@@ -8,7 +8,7 @@ Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
-%define sha1    file=57cad9341c3f74f8681c2ef931786c420105f35e
+%define sha1    file=a5a8941a8e4c436fe22933db6a71c5161c3fb10b
 Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox < 0.8.2-2
 %description
@@ -57,8 +57,11 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 %{_includedir}/*
 %{_mandir}/*man3/*
+%{_libdir}/pkgconfig/libmagic.pc
 
 %changelog
+*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 5.39-1
+-   Automatic Version Bump
 *   Tue Jul 07 2020 Gerrit Photon <photon-checkins@vmware.com> 5.38-1
 -   Automatic Version Bump
 *   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 5.34-3
