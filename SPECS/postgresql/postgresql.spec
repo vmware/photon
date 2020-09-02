@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        9.6.16
-Release:        2%{?dist}
+Version:        9.6.19
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -9,8 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=5fff91ee210a475dc41cbc39f5a596ae17a1513f
-Patch0:         CVE-2020-1720.patch
+%define sha1    postgresql=72cde73fffd187bbd2e6c1de6d473cf5578754d2
 # Common libraries needed
 BuildRequires:  krb5
 BuildRequires:  libxml2-devel
@@ -54,7 +53,6 @@ developing applications that use postgresql.
 
 %prep
 %setup -q
-%patch0 -p1
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h &&
 ./configure \
@@ -141,6 +139,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpq*.so
 
 %changelog
+*   Tue Sep 01 2020 Dweep Advani <dadvani@vmware.com> 9.6.19-1
+-   Upgrading to 9.6.19 for addressing multipls CVEs
 *   Thu Apr 02 2020 Anisha kumari <kanisha@vmware.com> 9.6.16-2
 -   fix for CVE-2020-1720
 *   Tue Nov 19 2019 Sujay G <gsujay@vmware.com> 9.6.16-1
