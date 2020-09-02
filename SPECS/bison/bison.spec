@@ -1,6 +1,6 @@
 Summary:	Contains a parser generator
 Name:		bison
-Version:	3.5.2
+Version:	3.7.1
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/bison
@@ -8,7 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/bison/%{name}-%{version}.tar.xz
-%define sha1 bison=0b20fefd825fe240eae07082fb3417a22e49c11f
+%define sha1 bison=534c7ee46331ff1f1fc96a378fd6a9f6b322a242
 BuildRequires:	m4
 Requires:	m4
 BuildRequires:	flex
@@ -42,6 +42,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 %{_docdir}/bison/*
 %changelog
+* Wed Sep 02 2020 Gerrit Photon <photon-checkins@vmware.com> 3.7.1-1
+- Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 3.5.2-1
 - Automatic Version Bump
 * Tue Sep 18 2018 Tapas Kundu <tkundu@vmware.com> 3.1-1
