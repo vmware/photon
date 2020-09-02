@@ -231,6 +231,7 @@ class Utilities:
             if self.display_option == "json":
                 output_file = os.path.join(Build_Config.generatedDataPath, os.path.splitext(os.path.basename(json_file))[0]+"_expanded.json")
                 self.specDepsObject.process(self.input_type, json_file, self.display_option, output_file)
+                shutil.copyfile(json_file, os.path.join(Build_Config.generatedDataPath, os.path.basename(json_file)))
 
     def pkgtree(self):
         self.input_type = "pkg"
