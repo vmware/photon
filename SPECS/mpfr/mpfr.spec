@@ -1,6 +1,6 @@
 Summary:	Functions for multiple precision math
 Name:		mpfr
-Version:	4.0.2
+Version:	4.1.0
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.mpfr.org
@@ -8,7 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.mpfr.org/%{name}-%{version}/%{name}-%{version}.tar.xz
-%define sha1 mpfr=52c1f2a4c9a202f46cf3275a8d46b562aa584208
+%define sha1 mpfr=159c3a58705662bfde4dc93f2617f3660855ead6
 Requires:	gmp
 %description
 The MPFR package contains functions for multiple precision math.
@@ -38,6 +38,7 @@ make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_libdir}/libmpfr.so.*
@@ -56,6 +57,7 @@ make %{?_smp_mflags} check
 %{_docdir}/mpfr-%{version}/examples/sample.c
 %{_docdir}/mpfr-%{version}/examples/divworst.c
 %{_docdir}/mpfr-%{version}/examples/can_round.c
+%{_docdir}/mpfr-%{version}/examples/threads.c
 %{_docdir}/mpfr-%{version}/COPYING.LESSER
 %{_docdir}/mpfr-%{version}/TODO
 %{_docdir}/mpfr-%{version}/BUGS
@@ -63,6 +65,8 @@ make %{?_smp_mflags} check
 %{_docdir}/mpfr-%{version}/COPYING
 
 %changelog
+*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 4.1.0-1
+-   Automatic Version Bump
 *   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0.2-1
 -   Automatic Version Bump
 *   Wed Sep 04 2019 Alexey Makhalov <amakhalov@vmware.com> 4.0.1-2
