@@ -1,6 +1,6 @@
 Summary:	Key table files, console fonts, and keyboard utilities
 Name:		kbd
-Version:	2.2.0
+Version:	2.3.0
 Release:	1%{?dist}
 License:	GPLv2
 URL:		http://ftp.altlinux.org/pub/people/legion/kbd
@@ -8,7 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.altlinux.org/pub/people/legion/kbd/%{name}-%{version}.tar.xz
-%define sha1 kbd=0180f70c7d34452a04d106e0b8cfadebe0e1b2a8
+%define sha1    kbd=1ebd128857e6dd097845a37324ffcb9ede8f457c
 Patch0:		kbd-2.0.4-backspace-1.patch
 BuildRequires:	check >= 0.9.4
 Conflicts:      toybox < 0.8.2-2
@@ -23,8 +23,10 @@ sed -i 's/\(RESIZECONS_PROGS=\)yes/\1no/g' configure
 sed -i 's/resizecons.8 //'  docs/man/man8/Makefile.in
 
 %build
-PKG_CONFIG_PATH=/tools/lib/pkgconfig \
-%configure --disable-vlock --disable-silent-rules
+export PKG_CONFIG_PATH=/tools/lib/pkgconfig
+%configure \
+     --disable-vlock \
+     --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
@@ -39,9 +41,14 @@ make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/*
+%{_libdir}/*.a
+%{_libdir}/*.la
+%{_libdir}/*.so.*
+%{_libdir}/*.so
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_datarootdir}/consolefonts/*
 %{_datarootdir}/consoletrans/*
@@ -50,6 +57,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1
+-   Automatic Version Bump
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 2.2.0-1
 -   Automatic Version Bump
 *   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 2.0.4-4
