@@ -5,19 +5,19 @@
 Summary:        Standalone, extensible Perl module installer
 Name:           perl-Module-Install
 Version:        1.19
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Install/
 Source0:        https://cpan.metacpan.org/authors/id/E/ET/ETHER/Module-Install-%{version}.tar.gz
 %define sha1 Module-Install=6c77b2ec0cd84e07d7c7ae03d1cfa5c21d758f81
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
-BuildRequires:  perl >= 5.28.0
+BuildRequires:  perl
 BuildRequires:  perl-YAML-Tiny
-Requires:  perl-YAML-Tiny
-Requires:	perl >= 5.28.0
+Requires:       perl-YAML-Tiny
+Requires:       perl
 
 %description
 Module::Install is a package for writing installers for CPAN (or CPAN-like)
@@ -49,6 +49,8 @@ make %{?_smp_mflags} test AUTOMATED_TESTING=1
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 1.19-2
+-   Rebuilding for perl 5.30.1
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.19-1
 -   Update to version 1.19
 *   Wed Apr 05 2017 Robert Qi <qij@vmware.com> 1.18-1

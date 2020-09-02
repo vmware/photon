@@ -1,7 +1,7 @@
 Summary:        Minimal try/catch with proper preservation of $@
 Name:           perl-Try-Tiny
 Version:        0.30
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://search.cpan.org/~ether/Try-Tiny-0.28/
 License:        The MIT (X11) License
 Group:          Development/Libraries
@@ -11,8 +11,8 @@ Source:         https://cpan.metacpan.org/authors/id/E/ET/ETHER/Try-Tiny-%{versi
 %define sha1    Try-Tiny=4f0edb634a2b4c032c55ef9ab90dd8bbe7780afd
 
 BuildArch:      noarch
-Requires:       perl >= 5.28.0
-BuildRequires:  perl >= 5.28.0
+Requires:       perl
+BuildRequires:  perl
 
 %description
 This module provides bare bones try/catch/finally statements that are designed to minimize common mistakes with eval blocks, and NOTHING else.
@@ -38,6 +38,8 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*   Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 0.30-2
+-   Rebuilding for perl 5.30.1
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 0.30-1
 -   Update to version 0.30
 *   Wed Apr 26 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.28-2

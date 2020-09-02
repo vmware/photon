@@ -1,7 +1,7 @@
 Summary:        Manages IPv4 and IPv6 addresses and subnets
 Name:           perl-NetAddr-IP
 Version:        4.079
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+ or Artistic
 Group:          Development/Libraries
 URL:            https://metacpan.org/release/NetAddr-IP
@@ -35,5 +35,7 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 4.079-2
+-   Rebuilding for perl version 5.30.1
 *   Thu Sep 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.079-1
 -   Initial version.

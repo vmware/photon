@@ -8,15 +8,15 @@
 
 Summary:        Practical Extraction and Report Language
 Name:           perl
-Version:        5.28.0
-Release:        5%{?dist}
+Version:        5.30.1
+Release:        1%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.gz
-%define sha1    perl=0622f86160e8969633cbd21a2cca9e11ae1f8c5a
+Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.xz
+%define sha1    perl=4bc190b6ac368f573e6a028f91430f831d40d30a
 %if %{with_check}
 Patch0:         make-check-failure.patch
 Patch1:         make-check-failure2.patch
@@ -89,6 +89,8 @@ make test TEST_SKIP_VERSION_CHECK=1
 %{_mandir}/*/*
 
 %changelog
+*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 5.30.1-1
+-   Upgraded to version 5.30.1
 *   Tue Feb 25 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.28.0-5
 -   Added a patch to fix make check
 *   Thu Oct 31 2019 Alexey Makhalov <amakhalov@vmware.com> 5.28.0-4

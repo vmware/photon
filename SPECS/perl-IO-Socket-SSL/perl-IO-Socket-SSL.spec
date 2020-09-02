@@ -1,18 +1,18 @@
 Summary:        SSL sockets with IO::Socket interface
 Name:           perl-IO-Socket-SSL
-Version:        2.060
+Version:        2.068
 Release:        1%{?dist}
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~sullr/IO-Socket-SSL-2.024/lib/IO/Socket/SSL.pod
 Source:         https://cpan.metacpan.org/authors/id/S/SU/SULLR/IO-Socket-SSL-%{version}.tar.gz
-%define sha1 IO-Socket-SSL=d00985ca87425ab5860bc38e59bcb9d39b372508
+%define sha1 IO-Socket-SSL=9d7583f5fb80085795ae55471adbc1840ca749fa
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-Requires:       perl >= 5.28.0
+Requires:       perl
 Requires:       perl-Net-SSLeay
-BuildRequires:  perl >= 5.28.0
+BuildRequires:  perl
 BuildRequires:  perl-Net-SSLeay
 
 %description
@@ -39,6 +39,8 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 2.068-1
+-   Automatic Version Bump
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 2.060-1
 -   Update to version 2.060
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.047-2

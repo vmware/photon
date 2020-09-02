@@ -2,23 +2,23 @@
 Summary:        JSON serializing/deserializing, done correctly and fast
 Name:           perl-JSON-XS
 Epoch:          1
-Version:        3.04
+Version:        4.02
 Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/JSON-XS/
 Source0:        https://cpan.metacpan.org/authors/id/M/ML/MLEHMANN/JSON-XS-%{version}.tar.gz
-%define sha1 JSON-XS=582f874f3c4ad8a0bbf6986f7af2676a92e91b8a
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildRequires:  perl >= 5.28.0
+%define sha1 JSON-XS=bba1939f8f402a110c80e19e068ffb3f980e23df
+Vendor:         VMware, Inc.
+Distribution:   Photon
+BuildRequires:  perl
 BuildRequires:  perl-Canary-Stability
 BuildRequires:  perl-Types-Serialiser
 BuildRequires:  perl-common-sense
-Requires:  perl >= 5.28.0
-Requires:  perl-Canary-Stability
-Requires:  perl-Types-Serialiser
-Requires:  perl-common-sense
+Requires:       perl
+Requires:       perl-Canary-Stability
+Requires:       perl-Types-Serialiser
+Requires:       perl-common-sense
 
 %description
 This module converts Perl data structures to JSON and vice versa. Its
@@ -51,6 +51,8 @@ make test
 %{_mandir}/man[13]/*
 
 %changelog
+*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 4.02-1
+-   Automatic Version Bump
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 3.04-1
 -   Update to version 3.04
 *   Wed Apr 05 2017 Robert Qi <qij@vmware.com> 3.03-1

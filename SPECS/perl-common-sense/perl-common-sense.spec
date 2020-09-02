@@ -2,20 +2,20 @@
 # This arch-specific package has no binaries and generates no debuginfo
 %global debug_package %{nil}
 
-Summary:	"Common sense" Perl defaults
-Name:		perl-common-sense
-Version:	3.74
-Release:	3%{?dist}
-License:	GPL+ or Artistic
-Group:		Development/Libraries
-URL:		http://search.cpan.org/dist/common-sense
-Source0:	http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/common-sense-%{version}.tar.gz
-%define sha1 common-sense=b32990086501a68bdb10bfa85160866d270aa8ae
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildRequires:	perl >= 5.28.0
-Requires:	perl >= 5.28.0
-Patch1:		common-sense-3.71-podenc.patch
+Summary:       "Common sense" Perl defaults
+Name:          perl-common-sense
+Version:       3.75
+Release:       1%{?dist}
+License:       GPL+ or Artistic
+Group:         Development/Libraries
+URL:           http://search.cpan.org/dist/common-sense
+Source0:       http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/common-sense-%{version}.tar.gz
+%define sha1 common-sense=4657dab4ffaae0bdafb9f4ec71f9b73e0c746da0
+Vendor:        VMware, Inc.
+Distribution:  Photon
+BuildRequires: perl
+Requires:      perl
+Patch1:        common-sense-3.71-podenc.patch
 
 %description
 This module implements some sane defaults for Perl programs, as defined
@@ -68,6 +68,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/common::sense.3*
 
 %changelog
+*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 3.75-1
+-   Automatic Version Bump
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 3.74-3
 -   Consuming perl version upgrade of 5.28.0
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.74-2

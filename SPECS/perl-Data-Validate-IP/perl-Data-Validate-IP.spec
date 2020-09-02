@@ -1,7 +1,7 @@
 Summary:        IPv4 and IPv6 validation methods
 Name:           perl-Data-Validate-IP
 Version:        0.27
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            https://metacpan.org/release/Data-Validate-IP
@@ -45,6 +45,8 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 0.27-3
+-   Rebuilding for perl version 5.30.1
 *   Mon Dec 03 2018 Dweep Advani <dadvani@vmware.com> 0.27-2
 -   Fixing the makecheck tests
 *   Thu Sep 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.27-1

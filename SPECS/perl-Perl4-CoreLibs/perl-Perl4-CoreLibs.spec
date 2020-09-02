@@ -2,7 +2,7 @@
 Summary:        Core Perl4 Libs
 Name:           perl-Perl4-CoreLibs
 Version:        0.004
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL-1.0+ or Artistic
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -74,5 +74,7 @@ perl Build.PL installdirs=vendor
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 0.004-2
+-   Rebuilding for perl 5.30.1
 *   Sat Oct 26 2019 Ankit Jain <ankitja@vmware.com> 0.004-1
 -   initial version

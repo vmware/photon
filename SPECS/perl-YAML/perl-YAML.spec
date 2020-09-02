@@ -1,18 +1,18 @@
 # Got the intial spec from Fedora and modified it
 Summary:        YAML Ain't Markup Language (tm)
 Name:           perl-YAML
-Version:        1.26
+Version:        1.30
 Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML/
 Source0:        https://cpan.metacpan.org/authors/id/T/TI/TINITA/YAML-%{version}.tar.gz
-%define sha1 YAML=61ea2e31ed1828fb2acebe97cf5c8231fe64b8eb
-Vendor:		VMware, Inc.
-Distribution:	Photon
+%define sha1 YAML=c26817f95201c98bbd07f497e7ccc0ad9e0cc67d
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
-BuildRequires:	perl >= 5.28.0
-Requires:	perl >= 5.28.0
+BuildRequires:  perl
+Requires:       perl
 
 # Filter private provides:
 # perl(yaml_mapping) perl(yaml_scalar) perl(yaml_sequence)
@@ -83,6 +83,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/YAML::Types.3*
 
 %changelog
+*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.30-1
+-   Automatic Version Bump
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.26-1
 -   Update to version 1.26
 *   Wed Apr 05 2017 Robert Qi <qij@vmware.com> 1.23-1

@@ -7,7 +7,7 @@
 Summary:        Perl extension interface for libcurl
 Name:           perl-WWW-Curl
 Version:        4.17
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MIT
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/WWW-Curl/
@@ -20,11 +20,11 @@ Patch0:         perl-www-curl-curl-7.66.0-compatibility.patch
 Patch1:         Define-CURL-as-void.patch
 Patch2:         Skip-preprocessor-symbol-only-CURL_STRICTER.patch
 Patch3:         Adapt-to-changes-in-cURL.patch
-BuildRequires:  perl >= 5.28.0
+BuildRequires:  perl
 BuildRequires:  perl-Module-Install
 BuildRequires:  perl-YAML-Tiny
 BuildRequires:  curl-devel
-Requires:       perl >= 5.28.0
+Requires:       perl
 Requires:       curl
 %description
 WWW::Curl is a Perl extension interface for libcurl.
@@ -68,6 +68,8 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Sep 21 2020 Dweep Advani <dadvani@vmware.com> 4.17-7
+-   Rebuilding for perl 5.30.1
 *   Wed Sep 02 2020 Ankit Jain <ankitja@vmware.com> 4.17-6
 -   Fix Build issue with curl-7.72.0 version
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 4.17-5

@@ -1,21 +1,21 @@
 Summary:        Perl extension for using OpenSSL
 Name:           perl-Net-SSLeay
-Version:        1.85
-Release:        3%{?dist}
+Version:        1.88
+Release:        1%{?dist}
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~mikem/Net-SSLeay-%{version}/
 Source:         https://cpan.metacpan.org/authors/id/M/MI/MIKEM/Net-SSLeay-%{version}.tar.gz
-%define sha1 Net-SSLeay=5f1c7b6ccac81efd5b78b1e076c694f96ca5c439
+%define sha1 Net-SSLeay=ab4a63502433b91b9a54504475d9df2ae2887714
 %if 0%{?with_fips:1}
 Source100:      openssl-fips-2.0.9-lin64.tar.gz
 %define sha1    openssl-fips=e834d3678fb190f9483f48f037fb17041abba6a1
 %endif
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Requires:       perl >= 5.28.0
+Requires:       perl
 Requires:       openssl
-BuildRequires:  perl >= 5.28.0
+BuildRequires:  perl
 BuildRequires:  openssl-devel
 
 %description
@@ -58,6 +58,8 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.88-1
+-   Automatic Version Bump
 *   Mon Dec 03 2018 Dweep Advani <dadvani@vmware.com> 1.85-3
 -   Fixing makecheck tests
 *   Wed Oct 17 2018 Alexey Makhalov <amakhalov@vmware.com> 1.85-2

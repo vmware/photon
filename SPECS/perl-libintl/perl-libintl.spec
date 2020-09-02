@@ -1,18 +1,18 @@
 # Got the intial spec from Fedora and modified it
-Summary:	Internationalization library for Perl, compatible with gettext
-Name:		perl-libintl
-Version:	1.29
-Release:	1%{?dist}
-License:	LGPLv2+
-Group: 		Development/Libraries
-URL: 		http://search.cpan.org/dist/libintl-perl/
-Source: 	https://cpan.metacpan.org/authors/id/G/GU/GUIDO/libintl-perl-%{version}.tar.gz
-%define sha1 libintl-perl=eb1802d37b5cc58d45213aeea3e1c6ee51d9ca12
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Requires: 	perl >= 5.28.0
-Provides: 	perl-libintl-perl = %{version}-%{release}
-BuildRequires: 	perl >= 5.28.0
+Summary:       Internationalization library for Perl, compatible with gettext
+Name:          perl-libintl
+Version:       1.31
+Release:       1%{?dist}
+License:       LGPLv2+
+Group:         Development/Libraries
+URL:           http://search.cpan.org/dist/libintl-perl/
+Source:        https://cpan.metacpan.org/authors/id/G/GU/GUIDO/libintl-perl-%{version}.tar.gz
+%define sha1 libintl-perl=de7b5c21bd95189769c113d34f5b1a1a72c3a71e
+Vendor:        VMware, Inc.
+Distribution:  Photon
+Requires:      perl
+Provides:      perl-libintl-perl = %{version}-%{release}
+BuildRequires: perl
 
 %description
 The package libintl-perl is an internationalization library for Perl that
@@ -45,6 +45,8 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.31-1
+-   Automatic Version Bump
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.29-1
 -   Update to version 1.29
 *   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 1.26-1

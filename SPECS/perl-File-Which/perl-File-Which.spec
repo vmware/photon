@@ -1,17 +1,17 @@
 Summary:        File-Which
 Name:           perl-File-Which
-Version:        1.22
+Version:        1.23
 Release:        1%{?dist}
 License:        The Perl 5 License (Artistic 1 & GPL 1)
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-Which/
 Source0:        https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/File-Which-%{version}.tar.gz
-%define sha1 File-Which=770ebe5dfa4076abc9923d8c4993d90dd6d2db9a
-Vendor:		VMware, Inc.
-Distribution:	Photon
+%define sha1 File-Which=3a1b54e0a4e470e62958749cffcf87bad027bfb4
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
-BuildRequires:	perl >= 5.28.0
-Requires:	perl >= 5.28.0
+BuildRequires:  perl
+Requires:       perl
 
 %description
 File::Which finds the full or relative paths to executable programs on
@@ -52,6 +52,8 @@ make test
 
 
 %changelog
+*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.23-1
+-   Automatic Version Bump
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.22-1
 -   Update to version 1.22
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-2

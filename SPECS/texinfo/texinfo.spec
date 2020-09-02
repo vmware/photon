@@ -1,7 +1,7 @@
 Summary:        Reading, writing, and converting info pages
 Name:           texinfo
 Version:        6.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            http://ftp.gnu.org/gnu/texinfo/texinfo-%{version}.tar.xz
 Group:          Applications/System
@@ -54,6 +54,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/texinfo/*
 
 %changelog
+*   Mon Sep 21 2020 Dweep Advani <dadvani@vmware.com> 6.5-3
+-   Rebuild for perl upgrade to 5.30.1
 *   Fri Nov 02 2018 Anish Swaminathan <anishs@vmware.com> 6.5-2
 -   Fix texinfo issue with locales
 -   http://lists.gnu.org/archive/html/bug-texinfo/2018-06/msg00029.html

@@ -1,21 +1,21 @@
 # Got the intial spec from Fedora and modified it
 Summary:        A module for reading .ini-style configuration files
 Name:           perl-Config-IniFiles
-Version:        3.000000
-Release:        2%{?dist}
+Version:        3.000003
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        GPL+ or Artistic
 URL:            http://search.cpan.org/dist/Config-IniFiles/
 Source0:        https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/Config-IniFiles-%{version}.tar.gz
-%define sha1 Config-IniFiles=ccc71991bc63043927594b95c0513d397c01650b
-Vendor:		VMware, Inc.
-Distribution:	Photon
+%define sha1 Config-IniFiles=7d355140bcd4cb21ef48a3a6cd861bb60cbbc3b3
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
-BuildRequires:	perl >= 5.28.0
-Requires:	perl >= 5.28.0
-BuildRequires:	perl-List-MoreUtils
-BuildRequires:	perl-Module-Build
-Requires:	perl-List-MoreUtils
+BuildRequires:  perl
+Requires:       perl
+BuildRequires:  perl-List-MoreUtils
+BuildRequires:  perl-Module-Build
+Requires:       perl-List-MoreUtils
 
 %description
 Config::IniFiles provides a way to have readable configuration files
@@ -50,6 +50,8 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 3.000003-1
+-   Automatic Version Bump
 *   Mon Dec 03 2018 Dweep Advani <dadvani@vmware.com> 3.000000-2
 -   Fix makecheck tests
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 3.000000-1

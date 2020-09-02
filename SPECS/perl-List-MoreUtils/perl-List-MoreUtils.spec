@@ -1,20 +1,20 @@
 # Got the intial spec from Fedora and modified it
-Summary:	Provide the stuff missing in List::Util
-Name:		perl-List-MoreUtils
-Version:	0.428
-Release:	2%{?dist}
-License:	GPL+ or Artistic
-Group:          Development/Libraries
-URL:		http://search.cpan.org/dist/List-MoreUtils/
-Source0:	https://cpan.metacpan.org/authors/id/R/RE/REHSACK/List-MoreUtils-%{version}.tar.gz
+Summary:       Provide the stuff missing in List::Util
+Name:          perl-List-MoreUtils
+Version:       0.428
+Release:       3%{?dist}
+License:       GPL+ or Artistic
+Group:         Development/Libraries
+URL:           http://search.cpan.org/dist/List-MoreUtils/
+Source0:       https://cpan.metacpan.org/authors/id/R/RE/REHSACK/List-MoreUtils-%{version}.tar.gz
 %define sha1 List-MoreUtils=fe63dcadb0e2a6ae3ce981d6913a19e96fc56a98
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildArch:      noarch
-BuildRequires:	perl >= 5.28.0
-Requires:	perl >= 5.28.0
-BuildRequires:	perl-Exporter-Tiny
-Requires:	perl-Exporter-Tiny
+Vendor:        VMware, Inc.
+Distribution:  Photon
+BuildArch:     noarch
+BuildRequires: perl
+Requires:      perl
+BuildRequires: perl-Exporter-Tiny
+Requires:      perl-Exporter-Tiny
 
 %description
 List::MoreUtils provides some trivial but commonly needed functionality
@@ -46,6 +46,8 @@ make test
 %{_mandir}/man3/List::MoreUtils::Contributing.3.gz
 
 %changelog
+*   Mon Aug 31 2020 Dweep Advani <dadvani@vmware.com> 0.428-3
+-   Rebuild for perl 5.30.1
 *   Mon Dec 03 2018 Dweep Advani <dadvani@vmware.com> 0.428-2
 -   Fix makecheck tests
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 0.428-1
