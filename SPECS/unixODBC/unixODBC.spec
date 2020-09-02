@@ -1,6 +1,6 @@
 Summary:    ODBC driver manager
 Name:       unixODBC
-Version:    2.3.7
+Version:    2.3.8
 Release:    1%{?dist}
 License:    GPLv2+ and LGPLv2+
 URL:        http://www.unixodbc.org/
@@ -8,12 +8,12 @@ Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:    ftp://ftp.unixodbc.org/pub/unixODBC/%{name}-%{version}.tar.gz
-%define sha1 unixODBC=a066c4f3fcb19befbaf5a5801b830ec41b7318df
+%define sha1 unixODBC=e4c0ee02a87ce0cff4bcf4557ea0712fe0a09b67
 
 BuildRequires: automake autoconf libtool
 
 %description
-The unixODBC package is an Open Source ODBC (Open DataBase Connectivity) sub-system and an ODBC SDK for Linux, Mac OSX, and UNIX. 
+The unixODBC package is an Open Source ODBC (Open DataBase Connectivity) sub-system and an ODBC SDK for Linux, Mac OSX, and UNIX.
 ODBC is an open specification for providing application developers with a predictable API with which to access data sources.
 
 %package devel
@@ -70,6 +70,8 @@ rm -rf %{buildroot}%{_datadir}/libtool
 %{_libdir}/pkgconfig
 
 %changelog
+*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.8-1
+-   Automatic Version Bump
 *   Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 2.3.7-1
 -   Update version to 2.3.7.
 *   Wed Oct 26 2016 Anish Swaminathan <anishs@vmware.com> 2.3.4-1
