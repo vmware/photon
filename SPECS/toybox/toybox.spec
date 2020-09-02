@@ -1,6 +1,6 @@
 Name:           toybox
 Version:        0.8.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox/
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
 %define sha1 toybox=0477740759f5132397fdfdbf8aea88e811869173
+Patch0:         toybox-change-toys-path.patch
 Source1:        config-toybox
 Source2:        toybox-toys
 BuildRequires:  openssl-devel zlib-devel
@@ -21,10 +22,9 @@ environment.
 
 %prep
 %setup -q -n toybox-%{version}
+%patch0 -p1
 
 %build
-# Move sed to /bin
-sed -i 's#TOYFLAG_USR|TOYFLAG_BIN#TOYFLAG_BIN#' toys/posix/sed.c
 cp %{SOURCE1} .config
 NOSTRIP=1 make CFLAGS="-Wall -Wundef -Wno-char-subscripts -Werror=implicit-function-declaration -g"
 
@@ -66,6 +66,7 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %mktoy /bin/cksum
 %mktoy /bin/cp
 %mktoy /bin/date
+%mktoy /bin/df
 %mktoy /bin/echo
 %mktoy /bin/false
 %mktoy /bin/ln
@@ -86,7 +87,6 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %mktoy /bin/touch
 %mktoy /bin/true
 %mktoy /bin/uname
-%mktoy /sbin/df
 %mktoy /usr/bin/base64
 %mktoy /usr/bin/basename
 %mktoy /usr/bin/comm
@@ -148,7 +148,7 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 [ $2 -eq 0 ] || exit 0
 %mktoy /usr/bin/mix
 
-t%riggerpostun -- expect
+%triggerpostun -- expect
 [ $2 -eq 0 ] || exit 0
 %mktoy /usr/bin/mkpasswd
 
@@ -180,7 +180,7 @@ t%riggerpostun -- expect
 
 %triggerpostun -- iotop
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/iotop
+%mktoy /usr/sbin/iotop
 
 %triggerpostun -- iputils
 [ $2 -eq 0 ] || exit 0
@@ -219,7 +219,7 @@ t%riggerpostun -- expect
 
 %triggerpostun -- pciutils
 [ $2 -eq 0 ] || exit 0
-%mktoy /usr/bin/lspci
+%mktoy /usr/sbin/lspci
 
 %triggerpostun -- procps-ng
 [ $2 -eq 0 ] || exit 0
@@ -260,12 +260,12 @@ t%riggerpostun -- expect
 
 %triggerpostun -- util-linux
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/blkid
 %mktoy /bin/dmesg
 %mktoy /bin/kill
 %mktoy /bin/mount
 %mktoy /bin/mountpoint
 %mktoy /bin/umount
+%mktoy /sbin/blkid
 %mktoy /sbin/blockdev
 %mktoy /sbin/hwclock
 %mktoy /sbin/losetup
@@ -312,6 +312,7 @@ t%riggerpostun -- expect
 %ghost /bin/cksum
 %ghost /bin/cp
 %ghost /bin/date
+%ghost /bin/df
 %ghost /bin/echo
 %ghost /bin/false
 %ghost /bin/ln
@@ -332,7 +333,6 @@ t%riggerpostun -- expect
 %ghost /bin/touch
 %ghost /bin/true
 %ghost /bin/uname
-%ghost /sbin/df
 %ghost /usr/bin/base64
 %ghost /usr/bin/basename
 %ghost /usr/bin/comm
@@ -416,7 +416,7 @@ t%riggerpostun -- expect
 %ghost /usr/bin/zcat
 
 # iotop
-%ghost /usr/bin/iotop
+%ghost /usr/sbin/iotop
 
 # iputils
 %ghost /usr/bin/ping
@@ -447,7 +447,7 @@ t%riggerpostun -- expect
 %ghost /usr/bin/patch
 
 # pciutils
-%ghost /usr/bin/lspci
+%ghost /usr/sbin/lspci
 
 # procps-ng
 %ghost /bin/pidof
@@ -481,12 +481,12 @@ t%riggerpostun -- expect
 %ghost /usr/bin/lsusb
 
 # util-linux
-%ghost /bin/blkid
 %ghost /bin/dmesg
 %ghost /bin/kill
 %ghost /bin/mount
 %ghost /bin/mountpoint
 %ghost /bin/umount
+%ghost /sbin/blkid
 %ghost /sbin/blockdev
 %ghost /sbin/hwclock
 %ghost /sbin/losetup
@@ -541,6 +541,8 @@ t%riggerpostun -- expect
 /usr/bin/uuencode
 
 %changelog
+*   Wed Aug 26 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.2-4
+-   Fixed path for the utilities df,iotop,lspci,blkid
 *   Fri Aug 14 2020 Alexey Makhalov <amakhalov@vmware.com> 0.8.2-3
 -   Backport config from dev branch to have tar and other toys
 *   Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.2-2
