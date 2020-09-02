@@ -2,7 +2,7 @@
 %global __os_install_post %{nil}
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
-Version:        3.11.7
+Version:        3.11.8
 Release:        1%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
@@ -10,7 +10,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
-%define sha1    apache-cassandra=b86252d87cd6dd2a775e876b7c69e956ce99e2f8
+%define sha1    apache-cassandra=50c9f5ce5ebe2bd2cc92ca28994448b1c691ba52
 # https://search.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar
 # https://search.maven.org/maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar
 # https://search.maven.org/maven2/org/apache/thrift/libthrift/0.9.3/libthrift-0.9.3.jar
@@ -142,6 +142,8 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.11.8-1
+-   Automatic Version Bump
 *   Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.11.7-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.11.6-1
