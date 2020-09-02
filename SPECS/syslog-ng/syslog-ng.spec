@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
-Version:        3.28.1
+Version:        3.29.1
 Release:        1%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1    syslog-ng=75068d9e35eeffdd78c5b46e2942c4c8b8385a08
+%define sha1    syslog-ng=96165d2acdb5d166ba8fe43531c8927f2053f58d
 Source1:        60-syslog-ng-journald.conf
 Source2:        syslog-ng.service
 Requires:       glib
@@ -32,10 +32,10 @@ BuildRequires:  ivykis-devel
 Obsoletes:	eventlog
 
 %description
- The syslog-ng application is a flexible and highly scalable
- system logging tool. It is often used to manage log messages and implement
- centralized logging, where the aim is to collect the log messages of several
- devices to a single, central log server.
+The syslog-ng application is a flexible and highly scalable
+system logging tool. It is often used to manage log messages and implement
+centralized logging, where the aim is to collect the log messages of several
+devices to a single, central log server.
 
 %package -n     python3-syslog-ng
 Summary:        python3-syslog-ng
@@ -49,13 +49,14 @@ Python 3 version.
 Summary:        Header and development files for syslog-ng
 Requires:       %{name} = %{version}-%{release}
 %description    devel
- syslog-ng-devel package contains header files, pkfconfig files, and libraries
- needed to build applications using syslog-ng APIs.
+syslog-ng-devel package contains header files, pkfconfig files, and libraries
+needed to build applications using syslog-ng APIs.
 
 %prep
-%setup -q -n %{name}-%{name}-%{version}
+%setup -q -n %{name}-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
+
 %build
 autoreconf -i
 %configure \
@@ -129,8 +130,8 @@ rm -rf %{buildroot}/*
 %{_sbindir}/syslog-ng
 %{_sbindir}/syslog-ng-ctl
 %{_sbindir}/syslog-ng-debun
-%{_libdir}/libsyslog-ng-3.28.so.*
-%{_libdir}/libevtlog-3.28.so.*
+%{_libdir}/libsyslog-ng-3.29.so.*
+%{_libdir}/libevtlog-3.29.so.*
 %{_libdir}/libloggen_helper*
 %{_libdir}/libloggen_plugin*
 %{_libdir}/libsecret-storage*
@@ -152,6 +153,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.29.1-1
+-   Automatic Version Bump
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 3.28.1-1
 -   Automatic Version Bump
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 3.17.2-2
