@@ -1,6 +1,6 @@
 Summary:	advanced key-value store
 Name:		redis
-Version:	6.0.6
+Version:	6.0.7
 Release:	1%{?dist}
 License:	BSD
 URL:		http://redis.io/
@@ -8,7 +8,7 @@ Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha1 redis=38fce3bf211cd73af8d9e907c7e138fd8a67a003
+%define sha1 redis=3027d09705511efbb87dae613b3c680824d6e551
 Patch0:         redis-conf.patch
 BuildRequires:  gcc
 BuildRequires:  systemd
@@ -83,6 +83,8 @@ exit 0
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+* Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.7-1
+- Automatic Version Bump
 * Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.6-1
 - Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.5-1
