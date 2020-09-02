@@ -1,40 +1,38 @@
-Summary:    ODBC driver manager
-Name:       unixODBC
-Version:    2.3.8
-Release:    1%{?dist}
-License:    GPLv2+ and LGPLv2+
-URL:        http://www.unixodbc.org/
-Group:      System Environment/Libraries
-Vendor:     VMware, Inc.
-Distribution: Photon
-Source0:    ftp://ftp.unixodbc.org/pub/unixODBC/%{name}-%{version}.tar.gz
-%define sha1 unixODBC=e4c0ee02a87ce0cff4bcf4557ea0712fe0a09b67
-
+Summary:       ODBC driver manager
+Name:          unixODBC
+Version:       2.3.8
+Release:       2%{?dist}
+License:       GPLv2+ and LGPLv2+
+URL:           http://www.unixodbc.org/
+Group:         System Environment/Libraries
+Vendor:        VMware, Inc.
+Distribution:  Photon
+Source0:       ftp://ftp.unixodbc.org/pub/unixODBC/%{name}-%{version}.tar.gz
+%define sha1   unixODBC=e4c0ee02a87ce0cff4bcf4557ea0712fe0a09b67
 BuildRequires: automake autoconf libtool
 
 %description
 The unixODBC package is an Open Source ODBC (Open DataBase Connectivity) sub-system and an ODBC SDK for Linux, Mac OSX, and UNIX.
 ODBC is an open specification for providing application developers with a predictable API with which to access data sources.
 
-%package devel
-Summary: Development files for unixODBC library
-Group: Development/Libraries
-Requires: %{name} = %{version}-%{release}
+%package       devel
+Summary:       Development files for unixODBC library
+Group:         Development/Libraries
+Requires:      %{name} = %{version}-%{release}
 
-%description devel
+%description   devel
 To develop programs that will access data through
 ODBC, you need to install this package.
 
 %prep
-
 %setup -q
 
 %build
-./configure --prefix=/usr               \
-            --sysconfdir=/etc/%{name}   \
-            --enable-threads=yes        \
-            --enable-drivers=yes        \
-            --enable-driverc=yes
+%configure --prefix=/usr               \
+           --sysconfdir=/etc/%{name}   \
+           --enable-threads=yes        \
+           --enable-drivers=yes        \
+           --enable-driverc=yes
 make
 
 %install
@@ -70,6 +68,8 @@ rm -rf %{buildroot}%{_datadir}/libtool
 %{_libdir}/pkgconfig
 
 %changelog
+*   Wed Sep 02 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.8-2
+-   Fix ./configure to %configure
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.8-1
 -   Automatic Version Bump
 *   Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 2.3.7-1
