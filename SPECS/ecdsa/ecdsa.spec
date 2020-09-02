@@ -2,8 +2,8 @@
 
 Summary:        ECDSA cryptographic signature library (pure python)
 Name:           python3-ecdsa
-Version:        0.15
-Release:        2%{?dist}
+Version:        0.16.0
+Release:        1%{?dist}
 License:        MIT
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -11,7 +11,7 @@ Distribution:   Photon
 URL:            https://pypi.python.org/pypi/ecdsa
 
 Source0:        https://pypi.python.org/packages/source/e/ecdsa/ecdsa-%{version}.tar.gz
-%define         sha1 ecdsa=5ac84f3012d807793bcb98a8e9c86c63b9965596
+%define         sha1 ecdsa=52b4b3e423662f90c4bbbbdcf0fd6bcf52fdee01
 
 BuildArch:      noarch
 
@@ -52,6 +52,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 0.16.0-1
+-   Automatic Version Bump
 *   Wed Jul 08 2020 Tapas Kundu <tkundu@vmware.com> 0.15-2
 -   Mass removal python2
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.15-1
