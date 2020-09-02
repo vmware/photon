@@ -2,7 +2,7 @@
 
 Summary:        POSIX capability Library
 Name:           libcap-ng
-Version:        0.7.10
+Version:        0.7.11
 Release:        1%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
@@ -10,7 +10,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 URL:            http://people.redhat.com/sgrubb/libcap-ng
 Source0:        http://people.redhat.com/sgrubb/libcap-ng/%{name}-%{version}.tar.gz
-%define sha1    libcap-ng=cdff16e6d3b2aec6067f4a12e6517879f12b7775
+%define sha1    libcap-ng=0e0fefa86325c7c54ffd096b0aa2de5559c0984b
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  swig
@@ -72,6 +72,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_libdir}/*.a
 
 %changelog
+*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 0.7.11-1
+-   Automatic Version Bump
 *   Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 0.7.10-1
 -   Automatic Version Bump
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 0.7.9-3
