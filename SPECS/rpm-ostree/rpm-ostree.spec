@@ -1,17 +1,17 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
-Version:        2020.4
-Release:        2%{?dist}
+Version:        2020.5
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
-%define sha1    rpm-ostree=59e490cba94ac0ddd9fb6d43c06a059bbc48ab16
-Source1:        libglnx-84b981a.tar.gz
-%define sha1    libglnx=3814aae9c0f8997c1846bdd16f80f1d1d72dc959
-Source2:        libdnf-be77400.tar.gz
-%define sha1    libdnf=7e81f4f9d0d4104471cf1d6575a5c4af159d435a
+%define sha1    rpm-ostree=42f76f192b64adb432abd8b1c2a7897e91fa835b
+Source1:        libglnx-5ef78bb.tar.gz
+%define sha1    libglnx=5acb68bdfe9dd9dc9f6c91a34c22fe5693631a7b
+Source2:        libdnf-c87ff63.tar.gz
+%define sha1    libdnf=58c9ebeeabe84ea6b263b1460e3ecb41e29d04c3
 Source3:        mk-ostree-host.sh
 Source4:        function.inc
 Source5:        mkostreerepo
@@ -153,6 +153,8 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+*   Mon Sep 21 2020 Ankit Jain <ankitja@vmware.com> 2020.5-1
+-   Updated to 2020.5
 *   Tue Sep 08 2020 Ankit Jain <ankitja@vmware.com> 2020.4-2
 -   Updated mkostreerepo as per photon-base.json
 *   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2020.4-1

@@ -1,11 +1,11 @@
 Summary:	Check-0.12.0
 Name:		check
-Version:	0.14.0
+Version:	0.15.2
 Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://check.sourceforge.net/
 Source0:	https://github.com/libcheck/check/archive/%{name}-%{version}.tar.gz
-%define sha1 check=f88dec20faa3ffb81b539242687f2504032fdea4
+%define sha1 check=54e6bae308aedab9a78a0349d839c92fc03bd2db
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: Photon
@@ -40,6 +40,8 @@ make %{?_smp_mflags} check
 /usr/share/doc/%{name}/*
 /usr/share/aclocal/*
 %changelog
+*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 0.15.2-1
+-   Automatic Version Bump
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 0.14.0-1
 -   Automatic Version Bump
 *   Thu Nov 08 2018 Alexey Makhalov <amakhalov@vmware.com> 0.12.0-2
