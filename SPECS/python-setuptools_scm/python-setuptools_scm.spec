@@ -3,7 +3,7 @@
 Summary:        the blessed package to manage your versions by scm tags.
 Name:           python3-setuptools_scm
 Version:        4.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,7 +19,7 @@ BuildRequires:  python3-setuptools
 
 Requires:       python3
 Requires:       python3-libs
-
+Requires:       python3-setuptools
 BuildArch:      noarch
 
 %description
@@ -45,6 +45,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Sep 03 2020 Tapas Kundu <tkundu@vmware.com> 4.1.2-2
+-   Requires python3-setuptools for installation
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 4.1.2-1
 -   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 3.1.0-2

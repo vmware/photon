@@ -2,7 +2,7 @@
 
 Name:           python3-zope.interface
 Version:        5.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/zopefoundation/zope.interface
 Summary:        Interfaces for Python
 License:        ZPL 2.1
@@ -19,6 +19,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-setuptools
 
 %description
 This package is intended to be independently reusable in any Python project. It is maintained by the Zope Toolkit project.
@@ -45,6 +46,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Sep 03 2020 Tapas Kundu <tkundu@vmware.com> 5.1.0-2
+-   Requires python3-setuptools for installation
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 5.1.0-1
 -   Automatic Version Bump
 *   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 4.5.0-2
