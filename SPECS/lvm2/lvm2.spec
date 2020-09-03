@@ -1,7 +1,7 @@
 Summary:        Userland logical volume management tools
 Name:           lvm2
 Version:        2.03.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2, BSD 2-Clause and LGPLv2.1
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
@@ -16,6 +16,7 @@ BuildRequires:  readline-devel
 BuildRequires:  systemd-devel
 BuildRequires:  thin-provisioning-tools
 BuildRequires:  libaio-devel
+BuildRequires:  boost
 Requires:       device-mapper-libs = %{version}-%{release}
 Requires:       device-mapper-event-libs = %{version}-%{release}
 Requires:       device-mapper-event = %{version}-%{release}
@@ -299,6 +300,8 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 %ghost %{_sysconfdir}/lvm/cache/.cache
 
 %changelog
+*   Tue Sep 15 2020 Gerrit Photon <photon-checkins@vmware.com> 2.03.10-2
+-   Add boost as build requires
 *   Fri Aug 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.03.10-1
 -   Automatic Version Bump
 *   Sat Apr 04 2020 Susant Sahani <ssahani@vmware.com> 2.03.09-1

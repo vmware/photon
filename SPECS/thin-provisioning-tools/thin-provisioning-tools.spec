@@ -1,12 +1,12 @@
 Summary:        Thin provisioning tools
 Name:           thin-provisioning-tools
-Version:        0.8.5
+Version:        0.9.0
 Release:        1%{?dist}
 License:        GPLv3+
 Group:          System Environment/Base
 URL:            https://github.com/jthornber/thin-provisioning-tools
 Source0:        thin-provisioning-tools-%{version}.tar.gz
-%define sha1    thin-provisioning-tools=69a716544832f6727db75e8c90938fbfb6a4704f
+%define sha1    thin-provisioning-tools=2015701a5767bae5960c8611673088fa9dcf3b60
 Patch0:         thin-provisioning-tools-fix-for-gcc-6.3.patch
 BuildRequires:  expat-devel, libaio-devel, boost-devel
 Requires:       expat, libaio
@@ -46,6 +46,8 @@ rm -rf %{buildroot}
 %{_sbindir}/*
 
 %changelog
+*   Wed Sep 02 2020 Gerrit Photon <photon-checkins@vmware.com> 0.9.0-1
+-   Automatic Version Bump
 *   Wed Jun 10 2020 Gerrit Photon <photon-checkins@vmware.com> 0.8.5-1
 -   Automatic Version Bump
 *   Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 0.7.0-1
