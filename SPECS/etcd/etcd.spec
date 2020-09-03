@@ -1,7 +1,7 @@
 Summary:        Etcd-3.1.5
 Name:           etcd
 Version:        3.3.23
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License
 URL:            https://github.com/coreos/etcd
 Group:          System Environment/Security
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
 %define sha1 etcd=6f541bf9d17d9c42ec78d6be60371335c39dd932
 Source1:        etcd.service
+Patch0:         fix_int_panic_issue_11992.patch
 BuildRequires:  go >= 1.7
 BuildRequires:  git
 Requires:       shadow
@@ -19,6 +20,7 @@ A highly-available key value store for shared configuration and service discover
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 ./build
@@ -57,6 +59,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 
 %changelog
+*   Thu Sep 03 2020 Ashwin H <ashwinh@vmware.com> 3.3.23-3
+-   Patch to fix issue #11992
 *   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 3.3.23-2
 -   Bump up version to compile with new go
 *   Tue Aug 11 2020 Ashwin H <ashwinh@vmware.com> 3.3.23-1
