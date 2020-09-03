@@ -1,7 +1,7 @@
 Summary:        library for fast, message-based applications
 Name:           zeromq
 Version:        4.1.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.zeromq.org
 License:        LGPLv3+
 Group:          System Environment/Libraries
@@ -9,7 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://archive.org/download/zeromq_4.1.4/%{name}-%{version}.tar.gz
 %define sha1 zeromq=b632a4b6f8a14390dc17824e37ff7b10831ce2b4
-Patch0:		zeromq-CVE-2019-13132.patch
+
+Patch0:         zeromq-CVE-2019-13132.patch
+Patch1:         zeromq-CVE-2020-15166.patch
+
 Requires:       libstdc++
 
 %description
@@ -26,8 +29,8 @@ Requires:   %{name} = %{version}
 It contains the libraries and header files to create applications 
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
+
 %build
 ./configure \
     --prefix=%{_prefix} \
@@ -59,6 +62,8 @@ make check
 %{_mandir}/*
 
 %changelog
+*   Thu Sep 03 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.1.4-5
+-   Fix CVE-2020-15166
 *   Mon Jul 22 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.1.4-4
 -   Apply patch for CVE-2019-13132
 *   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 4.1.4-3
