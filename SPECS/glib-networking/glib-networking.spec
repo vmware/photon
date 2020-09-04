@@ -1,14 +1,14 @@
 Summary:    Glib networking modules
 Name:       glib-networking
-Version:    2.59.1
-Release:    2%{?dist}
+Version:    2.64.3
+Release:    1%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/glib-networking
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://ftp.gnome.org/pub/GNOME/sources/glib-networking/2.50/%{name}-%{version}.tar.xz
-%define sha1 glib-networking=91b9c594712be28e4e3b2d7c60b06c20b62667ee
+%define sha1 glib-networking=0fb4ecad270a1f2a500cc03f32f94d89db1426ab
 BuildRequires:	nettle-devel
 BuildRequires:	autogen-libopts-devel
 BuildRequires:	libtasn1-devel
@@ -70,6 +70,8 @@ ninja test
 %defattr(-,root,root)
 
 %changelog
+*   Fri Sep 04 2020 Gerrit Photon <photon-checkins@vmware.com> 2.64.3-1
+-   Automatic Version Bump
 *   Wed Aug 19 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.59.1-2
 -   Bump version as a part of nettle-3.6 upgrade
 *   Wed Nov 21 2018 Ashwin H <ashwinh@vmware.com> 2.59.1-1
