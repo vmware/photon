@@ -1,7 +1,10 @@
+%global gosc_scripts gosc-scripts
+%define gosc_ver 1.3
+
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        11.1.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -10,20 +13,14 @@ Distribution:   Photon
 
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
 %define sha1 open-vm-tools=bbfb8295f16d44c8229efdb9b294ba7290c664ec
-Source1:        gosc-scripts-1.2.tar.gz
-%define sha1 gosc-scripts-1.2=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
+Source1:        https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
+%define sha1 gosc-scripts-%{gosc_ver}=19296c61f2e24a6b68c90f6f265ad3ad537210b2
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
 
-Patch0:         IPv6Support.patch
-Patch1:         hostnameReCustomizationFix.patch
-Patch2:         PureIPv6-hosts.patch
-Patch3:         GOSC-libDeploy.patch
-Patch4:         timezoneCust.patch
-Patch5:         gosc-post-custom.patch
-Patch6:         gosc-enable-custom-scripts.patch
-Patch7:         gosc-fix-vmtoolsd-binary-path.patch
-Patch8:         gosc-force-run-cust-script.patch
+# If patch is taken from open-vm-tools repo, prefix it with 'ovt-'
+# If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
+Patch0:     ovt-linux-deployment.patch
 
 BuildRequires:  glib-devel
 BuildRequires:  libxml2-devel
@@ -62,20 +59,10 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications.
 
 %prep
-%setup -q -n %{name}-stable-%{version}/%{name}
-%setup -a 1 -n %{name}-stable-%{version}/%{name}
-
-%patch0 -p0
-%patch1 -p0
-%patch2 -p0
-%patch3 -p2
-%patch4 -p0
-%patch5 -p0
-%patch6 -p0
-%patch7 -p0
-%patch8 -p0
+%autosetup -n %{name}-stable-%{version} -a0 -a1 -p1
 
 %build
+cd %{name}
 autoreconf -i
 sh ./configure --prefix=/usr --without-x --without-kernel-modules --without-icu --disable-static --with-tirpc
 make %{?_smp_mflags}
@@ -83,11 +70,12 @@ make %{?_smp_mflags}
 %install
 #collecting hacks to manually drop the vmhgfs module
 install -vdm 755 %{buildroot}/lib/systemd/system
-install -vdm 755 %{buildroot}/usr/share/open-vm-tools/GOSC/
-cp -r gosc-scripts %{buildroot}/usr/share/open-vm-tools/GOSC
+install -vdm 755 %{buildroot}/usr/share/open-vm-tools/
+cp -r %{gosc_scripts} %{buildroot}/usr/share/open-vm-tools/
 install -p -m 644 %{SOURCE2} %{buildroot}/lib/systemd/system
 install -p -m 644 %{SOURCE3} %{buildroot}/lib/systemd/system
 
+cd %{name}
 make DESTDIR=%{buildroot} install
 rm -f %{buildroot}/sbin/mount.vmhgfs
 chmod -x %{buildroot}/etc/pam.d/vmtoolsd
@@ -143,6 +131,11 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Tue Sep 08 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.5-2
+-   Updated gosc-scripts version to 1.3
+-   Do 'cloud-init clean -ls' before calling init
+-   gosc scripts location changed to /usr/share/open-vm-tools/gosc-scripts/
+-   Use 'hashed_passwd' & 'lock_passwd' instead of 'passwd' & 'lock-passwd'
 *   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 11.1.5-1
 -   Automatic Version Bump
 *   Wed Aug 12 2020 Oliver Kurth <okurth@vmware.com>

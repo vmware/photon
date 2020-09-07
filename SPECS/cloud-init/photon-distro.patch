@@ -1,9 +1,9 @@
 diff --git a/cloudinit/distros/photon.py b/cloudinit/distros/photon.py
 new file mode 100644
-index 00000000..68c9f099
+index 00000000..ab0e10df
 --- /dev/null
 +++ b/cloudinit/distros/photon.py
-@@ -0,0 +1,481 @@
+@@ -0,0 +1,483 @@
 +# vi: ts=4 expandtab
 +#
 +# Copyright (C) 2020 VMware Inc.
@@ -329,9 +329,11 @@ index 00000000..68c9f099
 +            return False
 +
 +    def _select_hostname(self, hostname, fqdn):
-+        # Prefer the short hostname over the long
-+        # fully qualified domain name
-+        if not hostname:
++        # Prefer the the fully-qualified domain name over the short host name.
++        # Otherwise it is not possible to use cloud-init to set an FQDN for a
++        # host because of the way the host name is configured with cloud-init
++        # and the datasource used by Photon.
++        if not hostname or (isinstance(fqdn, str) and fqdn.find('.') > 0):
 +            return fqdn
 +        return hostname
 +

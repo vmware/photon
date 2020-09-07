@@ -1,5 +1,5 @@
 diff --git a/open-vm-tools/libDeployPkg/linuxDeployment.c b/open-vm-tools/libDeployPkg/linuxDeployment.c
-index eba1f311..811258af 100644
+index eba1f311..ed54b64a 100644
 --- a/open-vm-tools/libDeployPkg/linuxDeployment.c
 +++ b/open-vm-tools/libDeployPkg/linuxDeployment.c
 @@ -659,13 +659,14 @@ GetPackageInfo(const char* packageName,
@@ -19,28 +19,32 @@ index eba1f311..811258af 100644
     *archiveType = hdr.payloadType;
     *flags = hdr.reserved;
  
-@@ -1375,6 +1376,24 @@ Deploy(const char* packageName)
+@@ -1375,6 +1376,28 @@ Deploy(const char* packageName)
        free(command);
        deployPkgStatus = CloudInitSetup(imcDirPath);
     } else {
-+       if (strstr(command, "scripts/Customize.pl") || strstr(command, "scripts/customize.sh")) {
-+           char PHOTON_OS_LAUNCH_COMMAND[256] = {0};
++       if (strstr(command, "scripts/Customize.pl") ||
++            strstr(command, "scripts/customize.sh")) {
++
++           char photon_gosc[256] = {0};
 +
 +           free(command);
 +           command = NULL;
 +
-+           snprintf(PHOTON_OS_LAUNCH_COMMAND, sizeof(PHOTON_OS_LAUNCH_COMMAND),
-+                   "/bin/bash /usr/share/open-vm-tools/GOSC/gosc-scripts/imc-shell/imgcust-scripts/customize.sh %s/cust.cfg",
++           snprintf(photon_gosc, sizeof(photon_gosc),
++                   "/bin/bash /usr/share/open-vm-tools/gosc-scripts/customize.sh %s/cust.cfg",
 +                   imcDirPath);
 +
 +           // The command will be parsed alter and can be of arbitrary length
-+           command = strdup(PHOTON_OS_LAUNCH_COMMAND);
++           command = strdup(photon_gosc);
 +           if (!command) {
-+               SetDeployError("Error allocating memory.");
++               SetDeployError("Error allocating memory in photon_gosc\n");
 +               return DEPLOYPKG_STATUS_ERROR;
 +           }
++
 +           _DeployPkg_SkipReboot(true);
 +       }
++
        sLog(log_info, "Executing traditional GOSC workflow.\n");
        deploymentResult = ForkExecAndWaitCommand(command, false);
        free(command);

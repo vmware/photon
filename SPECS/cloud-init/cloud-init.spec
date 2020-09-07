@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        20.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -27,7 +27,7 @@ Patch8:     cloud-cfg.patch
 Patch9:     instance-dir.patch
 Patch10:    fix-make-check.patch
 Patch11:    Default-Custom-Script-Support.patch
-Patch12:    bring-back-passwd-field.patch
+Patch12:    passwd-field.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -105,7 +105,8 @@ install -m 755 %{SOURCE2} $RPM_BUILD_ROOT/%{_bindir}/
 
 %check
 touch vd ud
-pip3 install unittest2 mock httpretty
+pip3 install --upgrade pytest-metadata
+pip3 install unittest2 mock httpretty attrs
 make check
 
 %clean
@@ -152,6 +153,9 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Tue Sep 08 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.2-5
+-   Further fixes to 'passwd' field
+-   Fixed an issue with setting fqdn as hostname
 *   Thu Jul 30 2020 Tapas Kundu <tkundu@vmware.com> 20.2-4
 -   Updated using python 3.8 lib
 *   Thu Jul 30 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.2-3
