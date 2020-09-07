@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.138
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -63,6 +63,9 @@ Patch39:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch41:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch42:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
+# Fix for CVE-2020-14386
+Patch43:        0001-net-packet-make-tp_drops-atomic.patch
+Patch44:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 # Fix for CVE-2020-12888
 Patch47:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch48:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
@@ -181,6 +184,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch39 -p1
 %patch41 -p1
 %patch42 -p1
+%patch43 -p1
+%patch44 -p1
 %patch47 -p1
 %patch48 -p1
 %patch49 -p1
@@ -360,6 +365,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.19.138-2
+-   Fix for CVE-2020-14386
 *   Sat Aug 08 2020 ashwin-h <ashwinh@vmware.com> 4.19.138-1
 -   Update to version 4.19.138
 *   Wed Aug 05 2020 Harinadh D <hdommaraju@vmware.com> 4.19.132-5

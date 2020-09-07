@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.138
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -89,6 +89,9 @@ Patch42:	secure-boot-patches/0003-integrity-Load-certs-to-the-platform-keyring.p
 Patch43:	secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
 Patch44:	secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
 Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
+# Fix for CVE-2020-14386
+Patch46:        0001-net-packet-make-tp_drops-atomic.patch
+Patch47:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 # Fix for CVE-2020-12888
 Patch48:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch49:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
@@ -363,6 +366,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
+%patch46 -p1
+%patch47 -p1
 %patch48 -p1
 %patch49 -p1
 %patch50 -p1
@@ -790,6 +795,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.19.138-3
+-   Fix for CVE-2020-14386
 *   Wed Aug 12 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.138-2
 -   .config: support for floppy disk and ch341 usb to serial
 *   Sat Aug 08 2020 ashwin-h <ashwinh@vmware.com> 4.19.138-1

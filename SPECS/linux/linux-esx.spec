@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.138
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -82,6 +82,9 @@ Patch40:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch41:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 Patch42:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
+# Fix for CVE-2020-14386
+Patch43:        0001-net-packet-make-tp_drops-atomic.patch
+Patch44:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 # Fix for CVE-2020-12888
 Patch50:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch51:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
@@ -217,6 +220,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch40 -p1
 %patch41 -p1
 %patch42 -p1
+%patch43 -p1
+%patch44 -p1
 %patch50 -p1
 %patch51 -p1
 %patch52 -p1
@@ -372,6 +377,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.19.138-10
+-   Fix for CVE-2020-14386
 *   Tue Sep 01 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.138-9
 -   Enable sysrq magic in config
 -   Remove 9p cache container support patch
