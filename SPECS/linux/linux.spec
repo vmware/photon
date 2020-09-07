@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.234
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -84,6 +84,9 @@ Patch49:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch50:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch51:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
+# Fix for CVE-2020-14386
+Patch52:        0001-net-packet-make-tp_drops-atomic.patch
+Patch53:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 # Fix CVE-2019-18885
 Patch54:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch55:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
@@ -219,6 +222,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch49 -p1
 %patch50 -p1
 %patch51 -p1
+%patch52 -p1
+%patch53 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -384,6 +389,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.4.234-2
+-   Fix for CVE-2020-14386
 *   Tue Sep 01 2020 Vikash Bansal <bvikas@vmware.com> 4.4.234-1
 -   Update to version 4.4.234
 *   Tue Aug 18 2020 Ajay Kaher <akaher@vmware.com> 4.4.232-2

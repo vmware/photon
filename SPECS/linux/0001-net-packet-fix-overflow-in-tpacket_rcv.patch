@@ -1,0 +1,51 @@
+From 3ad04c9555b93ac6a374b0921ad41849caf22067 Mon Sep 17 00:00:00 2001
+From: Or Cohen <orcohen@paloaltonetworks.com>
+Date: Sun, 30 Aug 2020 20:04:51 +0300
+Subject: [PATCH] net/packet: fix overflow in tpacket_rcv
+
+Using tp_reserve to calculate netoff can overflow as
+tp_reserve is unsigned int and netoff is unsigned short.
+
+This may lead to macoff receving a smaller value then
+sizeof(struct virtio_net_hdr), and if po->has_vnet_hdr
+is set, an out-of-bounds write will occur when
+calling virtio_net_hdr_from_skb.
+
+The bug is fixed by converting netoff to unsigned int
+and checking if it exceeds USHRT_MAX.
+
+Fixes: 8913336a7e8d ("packet: add PACKET_RESERVE sockopt")
+Signed-off-by: Or Cohen <orcohen@paloaltonetworks.com>
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+---
+ net/packet/af_packet.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index eac6f7ee..6b1e39c9 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -2126,7 +2126,8 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	int skb_len = skb->len;
+ 	unsigned int snaplen, res;
+ 	unsigned long status = TP_STATUS_USER;
+-	unsigned short macoff, netoff, hdrlen;
++	unsigned short macoff, hdrlen;
++	unsigned int netoff;
+ 	struct sk_buff *copy_skb = NULL;
+ 	struct timespec ts;
+ 	__u32 ts_status;
+@@ -2182,6 +2183,10 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+ 			po->tp_reserve;
+ 		macoff = netoff - maclen;
+ 	}
++	if (netoff > USHRT_MAX) {
++		atomic_inc(&po->tp_drops);
++		goto drop_n_restore;
++	}
+ 	if (po->tp_version <= TPACKET_V2) {
+ 		if (macoff + snaplen > po->rx_ring.frame_size) {
+ 			if (po->copy_thresh &&
+-- 
+2.17.1
+

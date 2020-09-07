@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.234
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -76,6 +76,9 @@ Patch49:        0001-Initialize-fid-iounit-during-creation-of-p9_fid.patch
 Patch50:        fix_use_after_free_in_sockfs_setattr.patch
 # Fix for CVE-2019-12456
 Patch51:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
+# Fix for CVE-2020-14386
+Patch52:        0001-net-packet-make-tp_drops-atomic.patch
+Patch53:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 # Fix for CVE-2019-12379
 Patch54:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2019-12381
@@ -182,6 +185,8 @@ The Linux package contains the Linux kernel doc files
 %patch49 -p1
 %patch50 -p1
 %patch51 -p1
+%patch52 -p1
+%patch53 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -283,6 +288,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.4.234-2
+-   Fix for CVE-2020-14386
 *   Tue Sep 01 2020 Vikash Bansal <bvikas@vmware.com> 4.4.234-1
 -   Update to version 4.4.234
 *   Tue Aug 18 2020 Ajay Kaher <akaher@vmware.com> 4.4.232-2
