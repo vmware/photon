@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2020.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
@@ -153,6 +153,8 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+*   Tue Sep 08 2020 Ankit Jain <ankitja@vmware.com> 2020.4-2
+-   Updated mkostreerepo as per photon-base.json
 *   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2020.4-1
 -   Updated to 2020.4
 *   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2019.3-4

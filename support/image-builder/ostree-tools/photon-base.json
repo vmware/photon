@@ -3,6 +3,8 @@
 
     "osname": "photon",
 
+    "releasever": "3.0",
+
     "ref": "photon/3.0/x86_64/minimal",
 
     "automatic_version_prefix": "3.0_minimal",
@@ -25,7 +27,7 @@
                  "procps-ng", "rpm", "sed", "sudo", "tzdata", "util-linux",
                  "vim", "which", "dracut-tools", "rpm-ostree", "nss-altfiles",
                  "openssh", "systemd", "openssl", "grub2", "grub2-efi",
-                 "shadow", "ncurses", "grub2-theme-ostree"],
+                 "shadow", "ncurses", "grub2-theme-ostree", "selinux-policy"],
 
     "packages-x86_64": ["grub2-pc", "grub2-efi-image", "open-vm-tools"],
 

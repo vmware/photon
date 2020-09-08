@@ -58,6 +58,8 @@ cat > $JSONFILE << EOF
 
         "osname": "photon",
 
+        "releasever": "3.0",
+
         "ref": "photon/3.0/x86_64/minimal",
 
         "automatic_version_prefix": "3.0_minimal",
@@ -80,7 +82,7 @@ cat > $JSONFILE << EOF
                      "procps-ng", "rpm", "sed", "sudo", "tzdata", "util-linux",
                      "vim", "which", "dracut-tools", "rpm-ostree", "nss-altfiles",
                      "openssh", "systemd", "openssl", "grub2", "grub2-efi",
-                     "shadow", "ncurses", "grub2-theme-ostree"],
+                     "shadow", "ncurses", "grub2-theme-ostree", "selinux-policy"],
 
         "packages-x86_64": ["grub2-pc", "grub2-efi-image", "open-vm-tools"],
 
@@ -110,8 +112,8 @@ function generating-repos()
   if [ "$DEFAULT" == "YES" ] && [ ! -f $REPOPATH/photon.repo ]; then
 cat > $REPOPATH/photon.repo << EOF
 [photon]
-name=VMware Photon Linux 3.0 (\$basearch)
-baseurl=https://packages.vmware.com/photon/3.0/photon_release_3.0_\$basearch
+name=VMware Photon Linux \$releasever (\$basearch)
+baseurl=https://packages.vmware.com/photon/\$releasever/photon_release_\$releasever_\$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
@@ -121,8 +123,8 @@ EOF
   if [ ! -f $REPOPATH/photon-updates.repo ]; then
 cat > $REPOPATH/photon-updates.repo << EOF
 [photon-updates]
-name=VMware Photon Linux 3.0 (\$basearch) Updates
-baseurl=https://packages.vmware.com/photon/3.0/photon_updates_3.0_\$basearch
+name=VMware Photon Linux \$releasever (\$basearch) Updates
+baseurl=https://packages.vmware.com/photon/\$releasever/photon_updates_\$releasever_\$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
@@ -132,8 +134,8 @@ EOF
   if [ ! -f $REPOPATH/photon-extras.repo ]; then
 cat > $REPOPATH/photon-extras.repo << EOF
 [photon-extras]
-name=VMware Photon Extras 3.0 (\$basearch)
-baseurl=https://packages.vmware.com/photon/3.0/photon_extras_3.0_\$basearch
+name=VMware Photon Extras \$releasever (\$basearch)
+baseurl=https://packages.vmware.com/photon/\$releasever/photon_extras_\$releasever_\$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1

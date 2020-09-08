@@ -4,7 +4,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.12.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -12,6 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
 %define sha1    %{name}-%{version}=afe3d6902eb0238105e954ab2e99205aba9ea234
+Patch0:         0001-librepo-Fix-the-key-string-parsing.patch
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  check
@@ -51,6 +52,7 @@ Python 3 bindings for the librepo library.
 
 %prep
 %setup -q
+%patch0 -p1
 mkdir build-py3
 
 %build
@@ -81,6 +83,8 @@ popd
 %{_python3_sitearch}/%{name}/
 
 %changelog
+*   Mon Sep 07 2020 Ankit Jain <ankitja@vmware.com> 1.12.1-2
+-   Fixed string parsing logic
 *   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 1.12.1-1
 -   Automatic Version Bump
 *   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 1.12.0-1

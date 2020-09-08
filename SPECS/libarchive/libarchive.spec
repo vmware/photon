@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.4.3
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
@@ -11,7 +11,9 @@ Source0:    http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
 %define sha1 libarchive=6528f38fa03a44bfcf58435ec8512ffea2851c99
 BuildRequires:  xz-libs
 BuildRequires:  xz-devel
+BuildRequires:  zstd-devel
 Requires:       xz-libs
+Requires:       zstd
 %description
 Multi-format archive and compression library
 
@@ -54,6 +56,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Tue Sep 08 2020 Ankit Jain <ankitja@vmware.com> 3.4.3-2
+-   With system zstd compression and decompression
 *   Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.4.3-1
 -   Automatic Version Bump
 *   Mon Mar 09 2020 Ankit Jain <ankitja@vmware.com> 3.4.2-1

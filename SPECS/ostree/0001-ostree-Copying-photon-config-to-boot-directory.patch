@@ -9,15 +9,14 @@ to get the kernel and systemd command line parameter
 Signed-off-by: Ajay Kaher <akaher@vmware.com>
 Signed-off-by: Ankit Jain <ankitja@vmware.com>
 ---
- src/libostree/ostree-sysroot-deploy.c | 70 +++++++++++++++++++++++++++++++++++
- 1 file changed, 70 insertions(+)
- mode change 100644 => 100755 src/libostree/ostree-sysroot-deploy.c
+ src/libostree/ostree-sysroot-deploy.c | 68 +++++++++++++++++++++++++++
+ 1 file changed, 68 insertions(+)
 
 diff --git a/src/libostree/ostree-sysroot-deploy.c b/src/libostree/ostree-sysroot-deploy.c
-index cb59302..8544d3a 100644
+index 8488111..298302b 100644
 --- a/src/libostree/ostree-sysroot-deploy.c
 +++ b/src/libostree/ostree-sysroot-deploy.c
-@@ -992,6 +992,7 @@ ostree_sysroot_write_origin_file (OstreeSysroot         *sysroot,
+@@ -991,6 +991,7 @@ ostree_sysroot_write_origin_file (OstreeSysroot         *sysroot,
  
  typedef struct {
    int   boot_dfd;
@@ -25,7 +24,7 @@ index cb59302..8544d3a 100644
    char *kernel_srcpath;
    char *kernel_namever;
    char *kernel_hmac_srcpath;
-@@ -999,6 +1000,10 @@ typedef struct {
+@@ -998,6 +999,10 @@ typedef struct {
    char *initramfs_srcpath;
    char *initramfs_namever;
    char *devicetree_srcpath;
@@ -36,7 +35,7 @@ index cb59302..8544d3a 100644
    char *devicetree_namever;
    char *bootcsum;
  } OstreeKernelLayout;
-@@ -1014,6 +1019,10 @@ _ostree_kernel_layout_free (OstreeKernelLayout *layout)
+@@ -1013,6 +1018,10 @@ _ostree_kernel_layout_free (OstreeKernelLayout *layout)
    g_free (layout->initramfs_namever);
    g_free (layout->devicetree_srcpath);
    g_free (layout->devicetree_namever);
@@ -47,7 +46,7 @@ index cb59302..8544d3a 100644
    g_free (layout->bootcsum);
    g_free (layout);
  }
-@@ -1182,6 +1191,26 @@ get_kernel_from_tree_usrlib_modules (int                  deployment_dfd,
+@@ -1181,6 +1190,26 @@ get_kernel_from_tree_usrlib_modules (int                  deployment_dfd,
        ret_layout->kernel_hmac_namever = g_strdup_printf (".%s.hmac", ret_layout->kernel_namever);
      }
  
@@ -74,7 +73,7 @@ index cb59302..8544d3a 100644
    char hexdigest[OSTREE_SHA256_STRING_LEN+1];
    ot_checksum_get_hexdigest (&checksum, hexdigest, sizeof (hexdigest));
    ret_layout->bootcsum = g_strdup (hexdigest);
-@@ -1859,6 +1888,35 @@ install_deployment_kernel (OstreeSysroot   *sysroot,
+@@ -1854,6 +1883,33 @@ install_deployment_kernel (OstreeSysroot   *sysroot,
          }
      }
  
@@ -87,7 +86,6 @@ index cb59302..8544d3a 100644
 +        {
 +          if (!install_into_boot (repo, sepolicy, kernel_layout->ostree_boot_dfd, kernel_layout->kernelcfg_srcpath,
 +                                                         bootcsum_dfd, kernel_layout->kernelcfg_namever,
-+                                                         sysroot->debug_flags,
 +                                                         cancellable, error))
 +            return FALSE;
 +        }
@@ -101,7 +99,6 @@ index cb59302..8544d3a 100644
 +        {
 +          if (!install_into_boot (repo, sepolicy, kernel_layout->ostree_boot_dfd, kernel_layout->systemdcfg_srcpath,
 +                                                         bootcsum_dfd, kernel_layout->systemdcfg_namever,
-+                                                         sysroot->debug_flags,
 +                                                         cancellable, error))
 +           return FALSE;
 +        }
@@ -110,7 +107,7 @@ index cb59302..8544d3a 100644
    g_autofree char *contents = NULL;
    if (!glnx_fstatat_allow_noent (deployment_dfd, "usr/lib/os-release", &stbuf, 0, error))
      return FALSE;
-@@ -1947,6 +2005,18 @@ install_deployment_kernel (OstreeSysroot   *sysroot,
+@@ -1943,6 +1999,18 @@ install_deployment_kernel (OstreeSysroot   *sysroot,
        ostree_kernel_args_replace_take (kargs, g_steal_pointer (&prepare_root_arg));
      }
  
@@ -130,5 +127,5 @@ index cb59302..8544d3a 100644
      {
        g_autofree char * boot_relpath = g_strconcat ("/", bootcsumdir, "/", kernel_layout->devicetree_namever, NULL);
 -- 
-2.23.1
+2.23.3
 

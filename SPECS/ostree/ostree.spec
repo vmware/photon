@@ -1,6 +1,6 @@
 Summary:        Git for operating system binaries
 Name:           ostree
-Version:        2020.4
+Version:        2020.6
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
@@ -10,7 +10,7 @@ Distribution:   Photon
 # Manually created Source tar which is equal to
 # Source0 + .git as it requires git hooks at build time
 Source0:        https://github.com/ostreedev/ostree/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=d4af37dee8b950a5117a1817de7d35fc1c3220d5
+%define sha1    %{name}-%{version}=64d0a49d299342877ed5744e3e80133e7962bb31
 Source1:        91-ostree.preset
 Patch0:         dualboot-support.patch
 Patch1:         0001-ostree-Copying-photon-config-to-boot-directory.patch
@@ -40,12 +40,14 @@ BuildRequires:  gpgme-devel
 BuildRequires:  systemd-devel
 BuildRequires:  dracut
 BuildRequires:  bison
+BuildRequires:  libselinux-devel
 
 Requires: dracut
 Requires: systemd
 Requires: libassuan
 Requires: gpgme
 Requires: python3-gobject-introspection
+Requires: libselinux
 
 %description
 OSTree is a tool for managing bootable, immutable, versioned
@@ -97,7 +99,7 @@ env NOCONFIGURE=1 ./autogen.sh
      --enable-gtk-doc \
      --with-dracut \
      --with-mkinitcpio \
-     --without-selinux \
+     --with-selinux \
      --enable-libsoup-client-certs
 make %{?_smp_mflags}
 
@@ -132,8 +134,8 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %{_libdir}/ostree/ostree-prepare-root
 %{_libdir}/ostree/ostree-remount
 %{_libdir}/tmpfiles.d/ostree-tmpfiles.conf
-%{_sysconfdir}/dracut.conf.d/ostree.conf
-%{_sysconfdir}/ostree-mkinitcpio.conf
+%config(noreplace) %{_sysconfdir}/dracut.conf.d/ostree.conf
+%config(noreplace) %{_sysconfdir}/ostree-mkinitcpio.conf
 %{_mandir}/man1/ostree-admin*
 %{_libexecdir}/libostree/*
 %exclude %{_sysconfdir}/grub.d/*ostree
@@ -160,6 +162,8 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+*   Thu Sep 03 2020 Ankit Jain <ankitja@vmware.com> 2020.6-1
+-   Updated to 2020.6
 *   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2020.4-1
 -   Updated to 2020.4
 *   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2019.2-4
