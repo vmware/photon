@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index bc22d70..4e838b1 100644
+index bc22d70..f3fa4f5 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -387,7 +387,12 @@ if(NOT USE_BUNDLED_LIBYAML)
@@ -76,3 +76,14 @@ index bc22d70..4e838b1 100644
  	endif()
  else()
  	set(PROTOBUF_SRC "${PROJECT_BINARY_DIR}/protobuf-prefix/src/protobuf")
+@@ -559,8 +583,8 @@ endif()
+ option(USE_BUNDLED_GRPC "Enable building of the bundled grpc" ${USE_BUNDLED_DEPS})
+ if(NOT USE_BUNDLED_GRPC)
+ 	find_path(GRPC_INCLUDE grpc++/impl/codegen/rpc_method.h)
+-	find_library(GRPC_LIB NAMES libgrpc_unsecure.a)
+-	find_library(GRPCPP_LIB NAMES libgrpc++_unsecure.a)
++	find_library(GRPC_LIB NAMES libgrpc_unsecure.so)
++	find_library(GRPCPP_LIB NAMES libgrpc++_unsecure.so)
+ 	if(GRPC_INCLUDE AND GRPC_LIB AND GRPCPP_LIB)
+ 		message(STATUS "Found grpc: include: ${GRPC_INCLUDE}, C lib: ${GRPC_LIB}, C++ lib: ${GRPC_PP_LIB}")
+ 	else()

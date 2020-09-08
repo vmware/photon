@@ -2,7 +2,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.15.1
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
@@ -115,6 +115,8 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+*   Mon Sep 14 2020 Ankit Jain <ankitja@vmware.com> 0.15.1-2
+-   Fix build failure with grpc in patch
 *   Wed Jun 26 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 0.15.1-1
 -   Updated to fix CVE-2019-8339
 *   Wed Dec 12 2018 Sujay G <gsujay@vmware.com> 0.12.1-4
