@@ -1,17 +1,18 @@
 Summary:        Kubernetes Metrics Server
 Name:           kubernetes-metrics-server
-Version:        0.2.1
-Release:        2%{?dist}
+Version:        0.3.7
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/kubernetes-incubator/metrics-server/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    kubernetes-metrics-server-%{version}.tar.gz=ac18b1360aede4647c9dbaa72bddf735b228daf3
+%define sha1    kubernetes-metrics-server-%{version}.tar.gz=b1c7cfccbcc203b34c59845c802547e8a83d4847
 Patch0:         go-27704.patch
 Patch1:         go-27842.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  go
+BuildRequires:  which
 
 %description
 In Kubernetes, resource usage metrics, such as container CPU and memory usage, are available through the Metrics API.
@@ -27,6 +28,9 @@ pushd vendor/golang.org/x/net
 popd
 
 %build
+#CGO_ENABLED=0 go build -ldflags -X sigs.k8s.io/metrics-server/pkg/version.gitVersion=v0.3.7 -o dist/metrics-server  cmd/metrics-server
+export GIT_TAG=v0.3.7
+export GIT_COMMIT=ce4a44e5341552d3b0b568cfe06b849a637fea53
 export ARCH=amd64
 export VERSION=%{version}
 export PKG=k8s.io/dns
@@ -40,11 +44,11 @@ export CGO_ENABLED=0
 mkdir -p ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server
 cp -r * ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server/
 pushd ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server
-make build
+make all
 
 %install
 install -m 755 -d %{buildroot}%{_bindir}
-install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server/metrics-server
+install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server/_output/amd64/metrics-server
 
 
 %clean
@@ -55,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/metrics-server
 
 %changelog
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.3.7-1
+-   Automatic Version Bump
 *   Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 0.2.1-2
 -   Fix CVE-2018-17846 and CVE-2018-17143
 *   Tue Jul 10 2018 Dheeraj Shetty <dheerajs@vmware.com> 0.2.1-1

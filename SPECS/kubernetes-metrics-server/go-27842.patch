@@ -13,10 +13,10 @@ Reviewed-by: Nigel Tao <nigeltao@golang.org>
 ---
 
 diff --git a/html/parse.go b/html/parse.go
-index 64a5793..488e8d3 100644
+index c6e6bf3..332c723 100644
 --- a/html/parse.go
 +++ b/html/parse.go
-@@ -1719,8 +1719,12 @@
+@@ -1740,8 +1740,12 @@ func inSelectIM(p *parser) bool {
  			}
  			p.addElement()
  		case a.Select:
@@ -31,7 +31,7 @@ index 64a5793..488e8d3 100644
  		case a.Input, a.Keygen, a.Textarea:
  			if p.elementInScope(selectScope, a.Select) {
  				p.parseImpliedToken(EndTagToken, a.Select, a.Select.String())
-@@ -1750,6 +1754,9 @@
+@@ -1771,6 +1775,9 @@ func inSelectIM(p *parser) bool {
  		case a.Select:
  			if p.popUntil(selectScope, a.Select) {
  				p.resetInsertionMode()
@@ -39,9 +39,9 @@ index 64a5793..488e8d3 100644
 +				// Ignore the token.
 +				return true
  			}
- 		}
- 	case CommentToken:
-@@ -1775,13 +1782,22 @@
+ 		case a.Template:
+ 			return inHeadIM(p)
+@@ -1794,13 +1801,22 @@ func inSelectInTableIM(p *parser) bool {
  	case StartTagToken, EndTagToken:
  		switch p.tok.DataAtom {
  		case a.Caption, a.Table, a.Tbody, a.Tfoot, a.Thead, a.Tr, a.Td, a.Th:
