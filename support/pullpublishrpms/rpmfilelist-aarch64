@@ -98,3 +98,6 @@ noarch/autoconf-2.69-6.ph2.noarch.rpm
 noarch/automake-1.15-4.ph2.noarch.rpm
 noarch/linux-api-headers-4.9.47-1.ph2.noarch.rpm
 noarch/man-pages-4.10-1.ph2.noarch.rpm
+aarch64/zstd-1.4.5-1.ph3.aarch64.rpm
+aarch64/zstd-libs-1.4.5-1.ph3.aarch64.rpm
+aarch64/zstd-devel-1.4.5-1.ph3.aarch64.rpm

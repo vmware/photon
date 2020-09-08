@@ -1,10 +1,11 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
+
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -32,6 +33,7 @@ BuildRequires:  xz-devel
 BuildRequires:  file-devel
 BuildRequires:  python2-devel
 BuildRequires:  python3-devel
+BuildRequires:  zstd-devel
 
 %description
 RPM package manager
@@ -40,6 +42,7 @@ RPM package manager
 Summary:        Libraries and header files for rpm
 Provides:       pkgconfig(rpm)
 Requires:       %{name} = %{version}-%{release}
+Requires:       zstd-devel
 %description devel
 Static libraries and header files for the support library for rpm
 
@@ -53,6 +56,7 @@ Requires:       zlib
 Requires:       bzip2-libs
 Requires:       elfutils-libelf
 Requires:       xz-libs
+Requires:       zstd-libs
 %description    libs
 Shared libraries librpm and librpmio
 
@@ -76,6 +80,7 @@ These are the additional language files of rpm.
 Summary:        Python 2 bindings for rpm.
 Group:          Development/Libraries
 Requires:       python2
+Requires:       zstd-libs
 %description -n python-rpm
 
 %package -n     python3-rpm
@@ -108,7 +113,8 @@ sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
         --with-lua \
         --with-vendor=vmware \
         --disable-silent-rules \
-        --with-external-db
+        --with-external-db \
+	--enable-zstd
 make %{?_smp_mflags}
 
 pushd python
@@ -252,6 +258,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Sep 09 2020 Anisha Kumari <kanisha@vmware.com> 4.14.2-9
+-   Add build conditional and enable zstd support
 *   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 4.14.2-8
 -   Use latest sqlite
 *   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.14.2-7
