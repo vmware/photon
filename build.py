@@ -1024,6 +1024,7 @@ def main():
         if os.environ['RPMCHECK']=="enable":
             configdict['photon-build-param']['rpm-check-flag'] = True
         elif os.environ['RPMCHECK']=="enable_stop_on_error":
+            configdict['photon-build-param']['rpm-check-flag'] = True
             configdict['photon-build-param']["rpm-check-stop-on-error"] = True
 
     if 'KAT_BUILD' in os.environ and os.environ['KAT_BUILD'] == "enable":
