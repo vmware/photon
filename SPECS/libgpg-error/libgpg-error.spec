@@ -1,12 +1,12 @@
 Summary:      	libgpg-error
 Name:         	libgpg-error
-Version:      	1.38
+Version:      	1.39
 Release:      	1%{?dist}
 License:      	GPLv2+
 URL:          	ftp://ftp.gnupg.org/gcrypt/libgpg-error/
 Group:		Development/Libraries
 Source0:	ftp://ftp.gnupg.org/gcrypt/libgpg-error/%{name}-%{version}.tar.bz2
-%define sha1 libgpg-error=cb50ade98f8ba088f8bb9b910ca8f00abaac5d0a
+%define sha1 libgpg-error=991a7a53e778a3de5ba8aad711e0bc9453101f4b
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -72,6 +72,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*       Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 1.39-1
+-       Automatic Version Bump
 *       Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.38-1
 -       Automatic Version Bump
 *       Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 1.32-1
