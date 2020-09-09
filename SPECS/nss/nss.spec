@@ -1,6 +1,6 @@
 Summary:        Security client
 Name:           nss
-Version:        3.55
+Version:        3.56
 Release:        1%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_39_RTM/src/%{name}-%{version}.tar.gz
@@ -8,8 +8,8 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nss=348bb25a1aa6b01319e125afcbcb49c61bdaafb3
-Patch:          http://www.linuxfromscratch.org/patches/blfs/svn/nss-3.55-standalone-1.patch
+%define sha1    nss=5203e66425f51738c723c5db1940fdc20a4c5472
+Patch0:         nss-3.56-standalone-1.patch
 Requires:       nspr
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -44,7 +44,7 @@ This package contains minimal set of shared nss libraries.
 
 %prep
 %setup -q
-%patch -p1
+%patch0 -p1
 
 %build
 cd nss
@@ -102,6 +102,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.56-1
+-   Automatic Version Bump
 *   Tue Jul 14 2020 Gerrit Photon <photon-checkins@vmware.com> 3.55-1
 -   Automatic Version Bump
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.39-1
