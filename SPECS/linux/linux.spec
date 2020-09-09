@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.138
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -277,7 +277,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
 Group:          System/Tools
 Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-aws = %{version} or linux-rt = %{version})
-Requires:       audit elfutils-libelf binutils-libs xz-libs libunwind slang python3
+Requires:       audit elfutils-libelf binutils-libs xz-libs libunwind slang python3 traceevent-plugins
 %ifarch x86_64
 Requires:       pciutils
 %endif
@@ -755,10 +755,10 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 /usr/libexec
 %exclude %{_libdir}/debug
 %ifarch x86_64
-/usr/lib64/traceevent
+%exclude /usr/lib64/traceevent
 %endif
 %ifarch aarch64
-/usr/lib/traceevent
+%exclude /usr/lib/traceevent
 %endif
 %{_bindir}
 /etc/bash_completion.d/*
@@ -795,6 +795,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed Sep 09 2020 Sharan Turlapati <sturlapati@vmware.com> 4.19.138-4
+-   Remove traceevent/plugins from linux-tools
 *   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.19.138-3
 -   Fix for CVE-2020-14386
 *   Wed Aug 12 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.138-2
