@@ -1,13 +1,13 @@
 Summary:       Jansson json parser
 Name:          jansson
-Version:       2.11
+Version:       2.13.1
 Release:       1%{?dist}
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
 License:       MIT
 URL:           http://www.digip.org/jansson
 Source0:       http://www.digip.org/jansson/releases/%{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}=0c99636416499960214ce6c095d26af541d3c244
+%define sha1 %{name}-%{version}=c70e94a9f3daeb16d54fb037b3e115db3ce3372d
 Distribution:  Photon
 
 %description
@@ -57,6 +57,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*  Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.13.1-1
+-  Automatic Version Bump
 *  Mon Sep 10 2018 Ankit Jain <ankitja@vmware.com> 2.11-1
 -  Updated to version 2.11
 *  Thu Mar 30 2017 Divya Thaluru <dthaluru@vmware.com> 2.10-1
