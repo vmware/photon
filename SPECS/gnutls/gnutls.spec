@@ -1,11 +1,11 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.6.13
-Release:        3%{?dist}
+Version:        3.6.15
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
-%define sha1    gnutls=0d3d0d093d6a7cf589612a7c21dbb46cb31c644b
+%define sha1    gnutls=00ef7d93347df586c3d1a00f13c326706c0c59ba
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -94,6 +94,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.6.15-1
+-   Automatic Version Bump
 *   Wed Aug 19 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.6.13-3
 -   Bump version as a part of nettle-3.6 upgrade
 *   Wed Jul 22 2020 Tapas Kundu <tkundu@vmware.com> 3.6.13-2
