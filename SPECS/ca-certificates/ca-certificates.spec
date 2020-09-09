@@ -1,6 +1,6 @@
 Summary:             Certificate Authority certificates
 Name:                ca-certificates
-Version:             20200825
+Version:             20200903
 Release:             1%{?dist}
 License:             Custom
 URL:                 http://anduin.linuxfromscratch.org/BLFS/other/
@@ -23,11 +23,11 @@ version control system and formats it into a form used by
 OpenSSL-1.0.1e. The certificates can also be used by other applications
 either directly of indirectly through openssl.
 
-%package pki
-Summary:  Certificate Authority certificates (pki tls certs)
-Group:    System Environment/Security
+%package             pki
+Summary:             Certificate Authority certificates (pki tls certs)
+Group:               System Environment/Security
 
-%description pki
+%description         pki
 Certificate Authority certificates (pki tls certs)
 
 %prep -p exit
@@ -251,6 +251,8 @@ exit 0
 /etc/pki/tls/certs/ca-bundle.crt
 
 %changelog
+* Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 20200903-1
+- Automatic Version Bump
 * Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 20200825-1
 - Automatic Version Bump
 * Wed Jul 15 2020 Gerrit Photon <photon-checkins@vmware.com> 20200709-1
