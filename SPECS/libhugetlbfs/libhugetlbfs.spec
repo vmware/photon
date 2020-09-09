@@ -1,11 +1,11 @@
 Summary:        Preload library to back text, data, malloc() or shared memory with hugepages
 Name:           libhugetlbfs
-Version:        2.22
+Version:        2.23
 Release:        1%{?dist}
 License:        LGPL-2.1
 URL:            https://github.com/libhugetlbfs/libhugetlbfs
-Source0:        https://github.com/libhugetlbfs/libhugetlbfs/releases/download/2.22/libhugetlbfs-2.22.tar.gz
-%define sha1    libhuge=d03e9ad795f9434c416895dd2d14054e614c5b0e
+Source0:        https://github.com/libhugetlbfs/libhugetlbfs/releases/download/%{version}/libhugetlbfs-%{version}.tar.gz
+%define sha1    libhuge=d84cfd845c2aab84053daec3c2337f5e9d73115b
 Group:          System/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,11 +17,11 @@ BuildRequires:  python3
 %description
 Preload library to back text, data, malloc() or shared memory with hugepages.
 
-%package devel
+%package        devel
 Summary:        libhugetlbfs devel
 Group:          Development/Tools
 Requires:       %{name} = %{version}-%{release}
-%description devel
+%description    devel
 This contains development tools and libraries for libhugetlbfs.
 
 %prep
@@ -52,5 +52,7 @@ make PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib check
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.23-1
+-   Automatic Version Bump
 *   Tue Dec 17 2019 Alexey Makhalov <amakhalov@vmware.com> 2.22-1
 -   Initial version.
