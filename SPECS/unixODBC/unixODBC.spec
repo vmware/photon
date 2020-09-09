@@ -1,14 +1,14 @@
 Summary:       ODBC driver manager
 Name:          unixODBC
-Version:       2.3.8
-Release:       2%{?dist}
+Version:       2.3.9
+Release:       1%{?dist}
 License:       GPLv2+ and LGPLv2+
 URL:           http://www.unixodbc.org/
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       ftp://ftp.unixodbc.org/pub/unixODBC/%{name}-%{version}.tar.gz
-%define sha1   unixODBC=e4c0ee02a87ce0cff4bcf4557ea0712fe0a09b67
+%define sha1   unixODBC=8787833ccfa6b7b6b14a391ae9cbefcff13fb753
 BuildRequires: automake autoconf libtool
 
 %description
@@ -68,6 +68,8 @@ rm -rf %{buildroot}%{_datadir}/libtool
 %{_libdir}/pkgconfig
 
 %changelog
+*   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.9-1
+-   Automatic Version Bump
 *   Wed Sep 02 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.8-2
 -   Fix ./configure to %configure
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.8-1
