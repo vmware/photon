@@ -1,5 +1,5 @@
 Name:           dbus-broker
-Version:        23
+Version:        24
 Release:        1%{?dist}
 Summary:        Linux D-Bus Message Broker
 License:        ASL 2.0
@@ -9,7 +9,7 @@ Group:          System Environment/Security
 
 URL:            https://github.com/bus1/dbus-broker
 Source0:        https://github.com/bus1/dbus-broker/releases/download/v%{version}/dbus-broker-%{version}.tar.xz
-%define sha1    dbus-broker=4d2acaa81cdb63794b618708514f58f7bd6cf8f4
+%define sha1    dbus-broker=8183cb67169c71650cffb09909c4c06fe034ca37
 
 Provides:       bundled(c-dvar) = 1
 Provides:       bundled(c-ini) = 1
@@ -86,6 +86,8 @@ fi
 %{_userunitdir}/dbus-broker.service
 
 %changelog
+* Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 24-1
+- Automatic Version Bump
 * Fri Aug 14 2020 Susant Sahani <ssahani@vmware.com> 23-1
 - Update to v23
 * Tue May 05 2020 Susant Sahani <ssahani@vmware.com> 22-1
