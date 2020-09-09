@@ -1,6 +1,6 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
-Version:    2.71.0
+Version:    2.71.1
 Release:    1%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
@@ -8,7 +8,7 @@ Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.57/%{name}-%{version}.tar.xz
-%define sha1 libsoup=ddf1c21b1308ac0918df772202679b4c784aee19
+%define sha1 libsoup=cdb2656d60977a32f6a91907974a4613f35f1aee
 Patch0:          libsoup-fix-make-check.patch
 BuildRequires:   glib-devel
 BuildRequires:   gobject-introspection
@@ -104,6 +104,8 @@ ninja test
 %defattr(-,root,root)
 
 %changelog
+*   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.71.1-1
+-   Automatic Version Bump
 *   Mon Aug 24 2020 Keerthana K <keerthanak@vmware.com> 2.71.0-1
 -   Update to version 2.71.0
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 2.64.0-3
