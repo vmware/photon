@@ -1,6 +1,6 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.19.0
+Version:        1.19.2
 Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nginx=8b6d9de3fa84124a7b40d60be528427ca583f314
+%define sha1    nginx=063c394c6813bec05783822b56530df240db44ed
 Source1:        nginx.service
 Source2:        nginx-njs-0.4.2.tar.gz
 %define sha1    nginx-njs=1927a613d0e5f3ef6fe3c0a6c8dbb06b39bb9c3c
@@ -77,6 +77,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %{_var}/log/nginx
 
 %changelog
+*   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 1.19.2-1
+-   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.19.0-1
 -   Automatic Version Bump
 *   Mon May 04 2020 Keerthana K <keerthanak@vmware.com> 1.16.1-2
