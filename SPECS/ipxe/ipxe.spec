@@ -4,18 +4,16 @@
 
 Summary:        iPXE open source boot firmware
 Name:           ipxe
-Version:        20180717
-Release:        3%{?dist}
+Version:        1.20.1
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://ipxe.org
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
-#Download URL:  https://git.ipxe.org/ipxe.git/snapshot/%{commit}.tar.bz2
-Source0:        %{name}-%{version}.tar.bz2
-%define sha1 ipxe=66c8cdfa6411702f4e0fd62ed375a043d5b36360
-Patch0:         Fix-s-directive-argument-is-null-error.patch
-Patch1:         zbin-Fix-compiler-warning-with-gcc-9.patch
+#Download URL:  https://github.com/ipxe/ipxe/archive/v%{version}.tar.gz
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    ipxe=7d55f469cd12142f79d8730a0a80c954cd9d50ec
 BuildArch:      x86_64
 BuildRequires:  binutils
 BuildRequires:  binutils-devel
@@ -36,8 +34,6 @@ PXE implementation enhanced with additional features.
 
 %prep
 %setup -q -n %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
 
 %build
 cd src
@@ -67,6 +63,8 @@ install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}/usr/share/ipxe/
 /usr/share/ipxe/rtl8139.rom
 
 %changelog
+*   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 1.20.1-1
+-   Automatic Version Bump
 *   Wed Apr 01 2020 Alexey Makhalov <amakhalov@vmware.com> 20180717-3
 -   Fix compilation issue with gcc-8.4.0
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 20180717-2
