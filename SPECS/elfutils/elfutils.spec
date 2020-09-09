@@ -1,17 +1,17 @@
 # -*- rpm-spec-*-
+%define _gnu %{nil}
+%define _programprefix eu-
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
-Version:	0.180
+Version:	0.181
 Release:	1%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 URL:    	https://sourceware.org/elfutils
 Source0:	https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 elfutils=c1ed871515b0f7fcdf2d94fea23e4b8ba67e8fe3
+%define sha1 elfutils=b8c75d48be1e9c107e8e4d6cacd3781311b1a8b7
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Patch0:         elfutils-adapt-debuginfod-to-API-change.patch
-
 Obsoletes:	libelf libelf-devel
 Requires:	elfutils-libelf = %{version}-%{release}
 Requires:	glibc >= 2.7
@@ -19,7 +19,6 @@ Requires:	bzip2-libs
 Requires:	libmicrohttpd
 Requires:	curl
 # ExcludeArch: xxx
-
 BuildRequires:	gcc >= 4.1.2-33
 BuildRequires:	glibc >= 2.7
 BuildRequires:	bison >= 1.875
@@ -31,9 +30,6 @@ BuildRequires:	libmicrohttpd-devel
 BuildRequires:	curl-devel
 BuildRequires:	libarchive-devel
 BuildRequires:	sqlite-devel
-
-%define _gnu %{nil}
-%define _programprefix eu-
 
 %description
 Elfutils is a collection of utilities, including ld (a linker),
@@ -112,7 +108,6 @@ These are the additional language files of elfutils.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 %configure --program-prefix=%{_programprefix}
@@ -206,6 +201,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root)
 
 %changelog
+* Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.181-1
+- Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 0.180-1
 - Automatic Version Bump
 - Updated to 0.180
