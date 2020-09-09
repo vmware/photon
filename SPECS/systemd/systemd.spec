@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          28%{?dist}
+Release:          29%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -59,6 +59,7 @@ Patch39:          systemd-239-bz-2597079.patch
 Patch40:          sd-bus-use-queue-message-references-for-managing-r-w.patch
 Patch41:          network-make-Route.Type-support-local-broadcast-anyc.patch
 Patch42:          ignore-classless-route-gateway.patch
+Patch43:          increase-watchdog-tmo.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -170,6 +171,7 @@ EOF
 %patch40 -p1
 %patch41 -p1
 %patch42 -p1
+%patch43 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -356,6 +358,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Wed Sep 09 2020 Susant Sahani <ssahani@vmware.com> 239-29
+-    Increase WatchdogSec of systemd-journald, systemd-resolved and systemd-udevd
 *    Mon Aug 24 2020 Susant Sahani <ssahani@vmware.com> 239-28
 -    network - add option to ignore classless routes and GW
 *    Thu Jul 09 2020 Susant Sahani <ssahani@vmware.com> 239-27

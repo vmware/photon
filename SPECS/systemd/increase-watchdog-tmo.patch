@@ -1,0 +1,36 @@
+diff --color -rupN systemd-239/units/systemd-journald.service.in systemd-239-watchdog-tmo/units/systemd-journald.service.in
+--- systemd-239/units/systemd-journald.service.in	2020-09-09 05:10:41.366989344 +0000
++++ systemd-239-watchdog-tmo/units/systemd-journald.service.in	2020-09-09 05:17:01.755954167 +0000
+@@ -22,7 +22,7 @@ ExecStart=@rootlibexecdir@/systemd-journ
+ Restart=always
+ RestartSec=0
+ StandardOutput=null
+-WatchdogSec=10min
++WatchdogSec=30min
+ FileDescriptorStoreMax=4224
+ CapabilityBoundingSet=CAP_SYS_ADMIN CAP_DAC_OVERRIDE CAP_SYS_PTRACE CAP_SYSLOG CAP_AUDIT_CONTROL CAP_AUDIT_READ CAP_CHOWN CAP_DAC_READ_SEARCH CAP_FOWNER CAP_SETUID CAP_SETGID CAP_MAC_OVERRIDE
+ MemoryDenyWriteExecute=yes
+diff --color -rupN systemd-239/units/systemd-resolved.service.in systemd-239-watchdog-tmo/units/systemd-resolved.service.in
+--- systemd-239/units/systemd-resolved.service.in	2018-06-22 11:11:49.000000000 +0000
++++ systemd-239-watchdog-tmo/units/systemd-resolved.service.in	2020-09-09 05:16:53.459923012 +0000
+@@ -24,7 +24,7 @@ Type=notify
+ Restart=always
+ RestartSec=0
+ ExecStart=!!@rootlibexecdir@/systemd-resolved
+-WatchdogSec=3min
++WatchdogSec=30min
+ User=systemd-resolve
+ DynamicUser=yes
+ CapabilityBoundingSet=CAP_SETPCAP CAP_NET_RAW CAP_NET_BIND_SERVICE
+diff --color -rupN systemd-239/units/systemd-udevd.service.in systemd-239-watchdog-tmo/units/systemd-udevd.service.in
+--- systemd-239/units/systemd-udevd.service.in	2020-09-09 05:10:41.366989344 +0000
++++ systemd-239-watchdog-tmo/units/systemd-udevd.service.in	2020-09-09 05:15:41.615746773 +0000
+@@ -23,7 +23,7 @@ Restart=always
+ RestartSec=0
+ ExecStart=@rootlibexecdir@/systemd-udevd
+ KillMode=mixed
+-WatchdogSec=10min
++WatchdogSec=30min
+ TasksMax=infinity
+ PrivateMounts=yes
+ MemoryDenyWriteExecute=yes
