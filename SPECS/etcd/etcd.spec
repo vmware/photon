@@ -1,26 +1,23 @@
 Summary:        Etcd-3.1.5
 Name:           etcd
-Version:        3.3.23
-Release:        3%{?dist}
+Version:        3.4.10
+Release:        1%{?dist}
 License:        Apache License
 URL:            https://github.com/coreos/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 etcd=6f541bf9d17d9c42ec78d6be60371335c39dd932
+%define sha1 etcd=582e5b6410fca84aacd2f3c0307373cffc2461c3
 Source1:        etcd.service
-Patch0:         fix_int_panic_issue_11992.patch
 BuildRequires:  go >= 1.7
 BuildRequires:  git
-Requires:       shadow
 
 %description
 A highly-available key value store for shared configuration and service discovery.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 ./build
@@ -41,6 +38,9 @@ mv %{_builddir}/%{name}-%{version}/README.md %{buildroot}/%{_docdir}/%{name}-%{v
 mv %{_builddir}/%{name}-%{version}/etcdctl/README.md %{buildroot}/%{_docdir}/%{name}-%{version}/README-etcdctl.md
 mv %{_builddir}/%{name}-%{version}/etcdctl/READMEv2.md %{buildroot}/%{_docdir}/%{name}-%{version}/READMEv2-etcdctl.md
 
+install -vdm755 %{buildroot}/lib/systemd/system-preset
+echo "disable etcd.service" > %{buildroot}/lib/systemd/system-preset/50-etcd.preset
+
 cp %{SOURCE1} %{buildroot}/lib/systemd/system
 install -vdm755 %{buildroot}/var/lib/etcd
 
@@ -55,10 +55,13 @@ rm -rf %{buildroot}/*
 %{_bindir}/etcd*
 /%{_docdir}/%{name}-%{version}/*
 /lib/systemd/system/etcd.service
+/lib/systemd/system-preset/50-etcd.preset
 %dir /var/lib/etcd
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 
 %changelog
+*   Fri Sep 11 2020 Ashwin H <ashwinh@vmware.com> 3.4.10-1
+-   Update to 3.4.x
 *   Thu Sep 03 2020 Ashwin H <ashwinh@vmware.com> 3.3.23-3
 -   Patch to fix issue #11992
 *   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 3.3.23-2
