@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.228
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -57,6 +57,9 @@ Patch31:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 Patch32:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 
+# Fix for CVE-2020-14386
+Patch34:        0001-net-packet-make-tp_drops-atomic.patch
+Patch35:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 # Fix for CVE-2018-8043
 Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 
@@ -234,6 +237,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
+%patch34 -p1
+%patch35 -p1
 %patch38 -p1
 %patch42 -p1
 %patch43 -p1
@@ -455,6 +460,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Sep 10 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-5
+-   Fix for CVE-2020-14386
 *   Thu Aug 13 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-4
 -   Fix network stack for use-after-free issue in case timeout happens
 -   on fragment queue and ip_expire is called

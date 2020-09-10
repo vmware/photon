@@ -1,0 +1,57 @@
+From acf69c946233259ab4d64f8869d4037a198c7f06 Mon Sep 17 00:00:00 2001
+From: Or Cohen <orcohen@paloaltonetworks.com>
+Date: Thu, 3 Sep 2020 21:05:28 -0700
+Subject: [PATCH] net/packet: fix overflow in tpacket_rcv
+
+commit acf69c946233259ab4d64f8869d4037a198c7f06 upstream
+
+Using tp_reserve to calculate netoff can overflow as
+tp_reserve is unsigned int and netoff is unsigned short.
+
+This may lead to macoff receving a smaller value then
+sizeof(struct virtio_net_hdr), and if po->has_vnet_hdr
+is set, an out-of-bounds write will occur when
+calling virtio_net_hdr_from_skb.
+
+The bug is fixed by converting netoff to unsigned int
+and checking if it exceeds USHRT_MAX.
+
+This addresses CVE-2020-14386
+
+Fixes: 8913336a7e8d ("packet: add PACKET_RESERVE sockopt")
+Signed-off-by: Or Cohen <orcohen@paloaltonetworks.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+---
+ net/packet/af_packet.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index 0e029aefa..bdf27dd38 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -2160,7 +2160,8 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	int skb_len = skb->len;
+ 	unsigned int snaplen, res;
+ 	unsigned long status = TP_STATUS_USER;
+-	unsigned short macoff, netoff, hdrlen;
++	unsigned short macoff, hdrlen;
++	unsigned int netoff;
+ 	struct sk_buff *copy_skb = NULL;
+ 	struct timespec ts;
+ 	__u32 ts_status;
+@@ -2223,6 +2224,10 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+ 		}
+ 		macoff = netoff - maclen;
+ 	}
++	if (netoff > USHRT_MAX) {
++		atomic_inc(&po->tp_drops);
++		goto drop_n_restore;
++	}
+ 	if (po->tp_version <= TPACKET_V2) {
+ 		if (macoff + snaplen > po->rx_ring.frame_size) {
+ 			if (po->copy_thresh &&
+-- 
+2.17.1
+

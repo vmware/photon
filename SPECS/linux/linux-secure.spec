@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.228
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -62,6 +62,9 @@ Patch35:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 # Fix for CVE-2020-16166
 Patch36: 0001-random32-update-the-net-random-state-on-interrupt-an.patch
 Patch37: 0002-random32-remove-net_rand_state-from-the-latent-entro.patch
+# Fix for CVE-2020-14386
+Patch38:        0001-net-packet-make-tp_drops-atomic.patch
+Patch39:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 # Fix for CVE-2018-8043
 Patch40:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 Patch44:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -235,6 +238,8 @@ EOF
 %patch35 -p1
 %patch36 -p1
 %patch37 -p1
+%patch38 -p1
+%patch39 -p1
 %patch40 -p1
 %patch44 -p1
 %patch45 -p1
@@ -408,6 +413,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Sep 10 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-5
+-   Fix for CVE-2020-14386
 *   Thu Aug 13 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-4
 -   Fix network stack for use-after-free issue in case timeout happens
 -   on fragment queue and ip_expire is called

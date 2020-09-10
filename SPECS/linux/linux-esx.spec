@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.228
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -53,6 +53,9 @@ Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 # Fix for CVE-2020-16166
 Patch34: 0001-random32-update-the-net-random-state-on-interrupt-an.patch
 Patch35: 0002-random32-remove-net_rand_state-from-the-latent-entro.patch
+# Fix for CVE-2020-14386
+Patch36:        0001-net-packet-make-tp_drops-atomic.patch
+Patch37:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 # Fix for CVE-2018-8043
 Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -172,6 +175,8 @@ The Linux package contains the Linux kernel doc files
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
+%patch36 -p1
+%patch37 -p1
 %patch38 -p1
 %patch42 -p1
 %patch43 -p1
@@ -301,6 +306,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Sep 10 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-5
+-   Fix for CVE-2020-14386
 *   Thu Aug 13 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-4
 -   Fix network stack for use-after-free issue in case timeout happens
 -   on fragment queue and ip_expire is called
