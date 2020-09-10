@@ -2,19 +2,19 @@
 %{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
 Name:           pycurl3
-Version:        7.43.0.5
+Version:        7.43.0.6
 Release:        1%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
 URL:            http://pycurl.sourceforge.net/
 Source0:        http://pycurl.sourceforge.net/download/pycurl-%{version}.tar.gz
-%define sha1    pycurl=a19159dd7cdf8b0c9f96d57e23b3717010c51041
+%define sha1    pycurl=b9ba304bb5b6f1cb3a90a264aa31d000ff7065a2
+Patch0:         add_convert_docstring.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
-
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -25,12 +25,12 @@ BuildRequires: python3-xml
 Requires:       curl
 Requires:       python3
 Requires:       python3-libs
+
 %description
 PycURL is a Python interface to libcurl. PycURL can be used to fetch
 objects identified by a URL from a Python program, similar to the
 urllib Python module. PycURL is mature, very fast, and supports a lot
 of features.
-
 
 %package doc
 Summary:    Documentation and examples for pycurl
@@ -40,9 +40,12 @@ Requires:   %{name} = %{version}
 Documentation and examples for pycurl
 
 %prep
-%setup -q -n pycurl-%{version}
+%setup -cqn pycurl-%{version}
+mv pycurl-*/* .
+rm -r pycurl-*
 rm -f doc/*.xml_validity
 #chmod a-x examples/*
+%patch0 -p1
 
 # removing prebuilt-binaries
 rm -f tests/fake-curl/libcurl/*.so
@@ -55,7 +58,6 @@ rm -rf %{buildroot}
 python3 setup.py install -O1 --skip-build --root %{buildroot}
 rm -rf %{buildroot}%{_datadir}/doc/pycurl
 chmod 755 %{buildroot}%{python3_sitelib}/pycurl*.so
-
 
 %check
 export PYCURL_VSFTPD_PATH=vsftpd
@@ -76,6 +78,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+*   Thu Sep 10 2020 Gerrit Photon <photon-checkins@vmware.com> 7.43.0.6-1
+-   Automatic Version Bump
 *   Mon Jul 27 2020 Tapas Kundu <tkundu@vmware.com> 7.43.0.5-1
 -   Update to 7.43.0.5
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 7.43.0-5

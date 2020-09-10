@@ -1,0 +1,10 @@
+--- a/setup.py	2020-09-10 22:57:49.977143335 +0000
++++ b/setup.py	2020-09-10 23:10:37.801129749 +0000
+@@ -980,6 +980,7 @@
+     elif len(sys.argv) > 1 and sys.argv[1] == 'docstrings-sources':
+         gen_docstrings_sources()
+     else:
++        convert_docstrings()
+         setup_args['data_files'] = get_data_files()
+         if 'PYCURL_RELEASE' in os.environ and os.environ['PYCURL_RELEASE'].lower() in ['1', 'yes', 'true']:
+             split_extension_source = False
