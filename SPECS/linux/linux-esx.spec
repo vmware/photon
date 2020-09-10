@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.138
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -120,6 +120,9 @@ Patch202:  	0003-vdfs-9p-Add-test-infra-to-test-9p-recovery-logic.patch
 Patch203:	0004-vdfs-9p-Handle-failure-during-recovery.patch
 Patch204:	0005-vdfs-9p-Adding-claim-tags-support-in-9p.patch
 Patch205:	0006-vdfs-9p-xattrcreate-recovery.patch
+
+# VDFS 9p changes
+Patch225:      0001-9p-fscache-Don-t-use-writeback-fid-for-cache-when-en.patch
 
 # VKD 9p changes
 Patch250:        0001-fs-9p-support-no_icache-flag-to-disable-dentry-inode.patch
@@ -243,6 +246,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch203 -p1
 %patch204 -p1
 %patch205 -p1
+%patch225 -p1
 %patch250 -p1
 %patch251 -p1
 %patch252 -p1
@@ -377,6 +381,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Sep 07 2020 Amod Mishra <mamod@vmware.com> 4.19.138-11
+-   9p: Don't use writeback fid for cache when enabled for VDFS
 *   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.19.138-10
 -   Fix for CVE-2020-14386
 *   Tue Sep 01 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.138-9
