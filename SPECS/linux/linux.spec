@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.154
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -186,8 +186,10 @@ Patch175:        lockdown/0028-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secur
 Patch176:        lockdown/0029-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
 Patch177:        lockdown/enable-cold-boot-attack-mitigation.patch
 Patch178:        lockdown/mtd-disable-slram-and-phram-when-locked-down.patch
-Patch179:        lockdown/efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
-Patch180:        lockdown/ACPI-configfs-Disallow-loading-ACPI-tables-when-locked-down.patch
+Patch179:        lockdown/security-Add-a-locked-down-LSM-hook.patch
+Patch180:        lockdown/ACPI-Limit-access-to-custom_method-when-the-kernel-i.patch
+Patch181:        lockdown/efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
+Patch182:        lockdown/ACPI-configfs-Disallow-loading-ACPI-tables-when-locked-down.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -483,6 +485,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch178 -p1
 %patch179 -p1
 %patch180 -p1
+%patch181 -p1
+%patch182 -p1
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -866,6 +870,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Tue Dec 01 2020 Vikash Bansal <bvikas@vmware.com> 4.19.154-11
+-   Fix issue with lockdown patch
 *   Fri Nov 20 2020 Ajay Kaher <akaher@vmware.com> 4.19.154-10
 -   floppy: lower printk message priority
 *   Mon Nov 16 2020 Vikash Bansal <bvikas@vmware.com> 4.19.154-9

@@ -1,0 +1,59 @@
+From f474e1486b78ac15322f8a1cda48a32a1deff9d3 Mon Sep 17 00:00:00 2001
+From: Matthew Garrett <mjg59@srcf.ucam.org>
+Date: Mon, 19 Aug 2019 17:17:50 -0700
+Subject: [PATCH] ACPI: Limit access to custom_method when the kernel is locked
+  down
+
+custom_method effectively allows arbitrary access to system memory, making
+it possible for an attacker to circumvent restrictions on module loading.
+Disable it if the kernel is locked down.
+
+Signed-off-by: Matthew Garrett <mjg59@google.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+cc: linux-acpi@vger.kernel.org
+Signed-off-by: James Morris <jmorris@namei.org>
+---
+ drivers/acpi/custom_method.c | 6 ++++++
+ include/linux/security.h     | 1 +
+ 2 files changed, 7 insertions(+)
+
+diff --git a/drivers/acpi/custom_method.c b/drivers/acpi/custom_method.c
+index 2a5d98823..4f5da64c9 100644
+--- a/drivers/acpi/custom_method.c
++++ b/drivers/acpi/custom_method.c
+@@ -8,6 +8,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/debugfs.h>
+ #include <linux/acpi.h>
++#include <linux/security.h>
+ 
+ #include "internal.h"
+ 
+@@ -28,6 +29,11 @@ static ssize_t cm_write(struct file *file, const char __user * user_buf,
+ 
+ 	struct acpi_table_header table;
+ 	acpi_status status;
++	int ret;
++
++	ret = security_locked_down(LOCKDOWN_ACPI_TABLES);
++	if (ret)
++		return ret;
+ 
+ 	if (kernel_is_locked_down("ACPI custom methods"))
+ 		return -EPERM;
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 52d313c19..c966ab0ff 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -96,6 +96,7 @@ enum lsm_event {
+  */
+ enum lockdown_reason {
+ 	LOCKDOWN_NONE,
++	LOCKDOWN_ACPI_TABLES,
+ 	LOCKDOWN_INTEGRITY_MAX,
+ 	LOCKDOWN_CONFIDENTIALITY_MAX,
+ };
+-- 
+2.17.1
+
