@@ -1,13 +1,13 @@
 diff --git a/cloudinit/config/cc_resolv_conf.py b/cloudinit/config/cc_resolv_conf.py
-index 69f4768a..db21f11d 100644
+index 519e66eb..b7b7089c 100644
 --- a/cloudinit/config/cc_resolv_conf.py
 +++ b/cloudinit/config/cc_resolv_conf.py
 @@ -55,10 +55,10 @@ LOG = logging.getLogger(__name__)
  
  frequency = PER_INSTANCE
  
--distros = ['fedora', 'opensuse', 'rhel', 'sles']
-+distros = ['fedora', 'opensuse', 'rhel', 'sles', 'photon']
+-distros = ['alpine', 'fedora', 'opensuse', 'rhel', 'sles']
++distros = ['alpine', 'fedora', 'opensuse', 'photon', 'rhel', 'sles']
  
  
 -def generate_resolv_conf(template_fn, params, target_fname="/etc/resolv.conf"):
@@ -23,11 +23,11 @@ index 69f4768a..db21f11d 100644
 +    template_fn = cloud.get_template_filename('systemd.resolved.conf')
      if not template_fn:
 -        log.warning("No template found, not rendering /etc/resolv.conf")
-+        log.warning("No template found, not rendering /etc/systemd/resolved.conf")
++        log.warning("No template found; not rendering /etc/systemd/resolved.conf")
          return
  
      generate_resolv_conf(template_fn=template_fn, params=cfg["resolv_conf"])
-+    util.subp(["systemctl", "restart", "systemd-resolved"])
++    util.subp(['systemctl', 'restart', 'systemd-resolved'])
      return
  
  # vi: ts=4 expandtab

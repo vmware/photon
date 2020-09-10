@@ -1,8 +1,8 @@
 %define python3_sitelib /usr/lib/python3.8/site-packages
 
 Name:           cloud-init
-Version:        20.2
-Release:        5%{?dist}
+Version:        20.3
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc
 Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 cloud-init=d7904420e0db6e496b2a4ec08322e6b56b77889d
+%define sha1 cloud-init=f25d8f4e776948671c40d33840a92532fb0916ff
 Source1:        99-disable-networking-config.cfg
 Source2:        dscheck_VMwareGuestInfo
 
@@ -24,10 +24,8 @@ Patch5:     cloud-init-azureds.patch
 Patch6:     ds-identity.patch
 Patch7:     ds-guestinfo-photon.patch
 Patch8:     cloud-cfg.patch
-Patch9:     instance-dir.patch
+Patch9:     passwd-field.patch
 Patch10:    fix-make-check.patch
-Patch11:    Default-Custom-Script-Support.patch
-Patch12:    passwd-field.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -49,7 +47,6 @@ BuildRequires:  python3-jinja2
 
 %if %{with_check}
 BuildRequires:  python3-pip
-BuildRequires:  python3-deepmerge
 BuildRequires:  python3-configobj
 BuildRequires:  python3-jsonpatch
 BuildRequires:  python3-pytest
@@ -71,7 +68,6 @@ Requires:       python3-six
 Requires:       python3-setuptools
 Requires:       python3-xml
 Requires:       python3-jsonschema
-Requires:       python3-deepmerge
 Requires:       python3-netifaces
 Requires:       dhcp-client
 BuildArch:      noarch
@@ -105,8 +101,15 @@ install -m 755 %{SOURCE2} $RPM_BUILD_ROOT/%{_bindir}/
 
 %check
 touch vd ud
-pip3 install --upgrade pytest-metadata
-pip3 install unittest2 mock httpretty attrs
+
+mkdir -p /usr/share/ca-certificates/
+crt_file='/usr/share/ca-certificates/cloud-init-ca-certs.crt'
+echo -e 'CERT1\nLINE2\nLINE3\nCERT2\nLINE2\nLINE3' > "${crt_file}"
+
+conf_file='/etc/ca-certificates.conf'
+echo -e 'line1\nline2\nline3\ncloud-init-ca-certs.crt\n' > "${conf_file}"
+
+pip3 install --upgrade pytest-metadata unittest2 mock httpretty attrs
 make check
 
 %clean
@@ -153,6 +156,9 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Thu Sep 24 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.3-1
+-   Upgrade cloud-init to 20.3
+-   Updated DataSourceVMwareGuestInfo (till commit abc387c7)
 *   Tue Sep 08 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.2-5
 -   Further fixes to 'passwd' field
 -   Fixed an issue with setting fqdn as hostname

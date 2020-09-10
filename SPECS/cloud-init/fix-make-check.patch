@@ -1,20 +1,12 @@
-From d9286b2afb55b35fbe82fc3f8cd661c40883c2ee Mon Sep 17 00:00:00 2001
-From: Shreenidhi Shedi <sshedi@vmware.com>
-Date: Thu, 30 Jul 2020 15:40:10 +0530
-Subject: [PATCH] fix make check
-
-test_resolv_conf.py takes care of tests after systemd-resolved-config.patch
-test_util.py changes are needed because of instance-dir.patch
-
-Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
-
 diff --git a/cloudinit/config/tests/test_resolv_conf.py b/cloudinit/config/tests/test_resolv_conf.py
-index f3d97b82..68811208 100644
+index 6546a0b5..5a8b877b 100644
 --- a/cloudinit/config/tests/test_resolv_conf.py
 +++ b/cloudinit/config/tests/test_resolv_conf.py
-@@ -16,10 +16,10 @@ EXPECTED_HEADER = """\
+@@ -15,11 +15,12 @@ EXPECTED_HEADER = """\
+ 
  class TestGenerateResolvConf:
      @mock.patch("cloudinit.config.cc_resolv_conf.templater.render_to_file")
++    # Needed because of systemd-resolved-config.patch
      def test_default_target_fname_is_etc_resolvconf(self, m_render_to_file):
 -        generate_resolv_conf("templates/resolv.conf.tmpl", mock.MagicMock())
 +        generate_resolv_conf("templates/systemd.resolved.conf.tmpl", mock.MagicMock())
@@ -25,46 +17,3 @@ index f3d97b82..68811208 100644
          ] == m_render_to_file.call_args_list
  
      @mock.patch("cloudinit.config.cc_resolv_conf.templater.render_to_file")
-diff --git a/tests/unittests/test_util.py b/tests/unittests/test_util.py
-index e45bedc1..7c9a5477 100644
---- a/tests/unittests/test_util.py
-+++ b/tests/unittests/test_util.py
-@@ -117,29 +117,29 @@ class TestWriteFile(helpers.TestCase):
-         file_stat = os.stat(path)
-         self.assertEqual(0o666, stat.S_IMODE(file_stat.st_mode))
- 
--    def test_copy_mode_no_existing(self):
--        """Verify that file is created with mode 0o644 if copy_mode
-+    def test_preserve_mode_no_existing(self):
-+        """Verify that file is created with mode 0o644 if preserve_mode
-         is true and there is no prior existing file."""
-         path = os.path.join(self.tmp, "NewFile.txt")
-         contents = "Hey there"
- 
--        util.write_file(path, contents, copy_mode=True)
-+        util.write_file(path, contents, preserve_mode=True)
- 
-         self.assertTrue(os.path.exists(path))
-         self.assertTrue(os.path.isfile(path))
-         file_stat = os.stat(path)
-         self.assertEqual(0o644, stat.S_IMODE(file_stat.st_mode))
- 
--    def test_copy_mode_with_existing(self):
-+    def test_preserve_mode_with_existing(self):
-         """Verify that file is created using mode of existing file
--        if copy_mode is true."""
-+        if preserve_mode is true."""
-         path = os.path.join(self.tmp, "NewFile.txt")
-         contents = "Hey there"
- 
-         open(path, 'w').close()
-         os.chmod(path, 0o666)
- 
--        util.write_file(path, contents, copy_mode=True)
-+        util.write_file(path, contents, preserve_mode=True)
- 
-         self.assertTrue(os.path.exists(path))
-         self.assertTrue(os.path.isfile(path))
--- 
-2.28.0
-

@@ -1,8 +1,8 @@
 diff --git a/cloudinit/distros/__init__.py b/cloudinit/distros/__init__.py
-index e99529df..faf86e6b 100755
+index 2537608f..7fe04d05 100755
 --- a/cloudinit/distros/__init__.py
 +++ b/cloudinit/distros/__init__.py
-@@ -522,6 +522,22 @@ class Distro(metaclass=abc.ABCMeta):
+@@ -546,6 +546,22 @@ class Distro(metaclass=abc.ABCMeta):
          if 'snapuser' in kwargs:
              return self.add_snap_user(name, **kwargs)
  
