@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.138
-Release:        11%{?kat_build:.kat}%{?dist}
+Release:        12%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -381,6 +381,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Sep 10 2020 Ajay Kaher <akaher@vmware.com> 4.19.138-12
+-   Fix 9p lseek issue
 *   Mon Sep 07 2020 Amod Mishra <mamod@vmware.com> 4.19.138-11
 -   9p: Don't use writeback fid for cache when enabled for VDFS
 *   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.19.138-10

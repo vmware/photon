@@ -1,6 +1,6 @@
-From 050d4469d827d963826abd06c567bf98ee20e278 Mon Sep 17 00:00:00 2001
+From c18aed3304d944033c9637f2549cd101d6438f63 Mon Sep 17 00:00:00 2001
 From: Ajay Kaher <akaher@vmware.com>
-Date: Wed, 26 Aug 2020 17:48:01 +0530
+Date: Fri, 11 Sep 2020 11:27:32 +0530
 Subject: [PATCH 2/2] fs, 9p: Add read_cache_pages_inchunks()
 
 read_cache_pages_inchunks() read multiple pages together if
@@ -11,15 +11,15 @@ v9fs_fid_readpages() to handle multiple pages.
 Signed-off-by: Ajay Kaher <akaher@vmware.com>
 ---
  fs/9p/v9fs.h     |   4 ++
- fs/9p/vfs_addr.c | 124 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ fs/9p/vfs_addr.c | 128 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
  mm/readahead.c   |   8 +++-
- 3 files changed, 132 insertions(+), 4 deletions(-)
+ 3 files changed, 136 insertions(+), 4 deletions(-)
 
 diff --git a/fs/9p/v9fs.h b/fs/9p/v9fs.h
-index e07ac70..bd489c0 100644
+index b5c28ad..2ac484b 100644
 --- a/fs/9p/v9fs.h
 +++ b/fs/9p/v9fs.h
-@@ -166,7 +166,11 @@ extern const struct inode_operations v9fs_symlink_inode_operations_dotl;
+@@ -165,7 +165,11 @@ extern const struct inode_operations v9fs_symlink_inode_operations_dotl;
  extern struct inode *v9fs_inode_from_fid_dotl(struct v9fs_session_info *v9ses,
  					      struct p9_fid *fid,
  					      struct super_block *sb, int new);
@@ -32,7 +32,7 @@ index e07ac70..bd489c0 100644
  #define V9FS_PORT	564
  #define V9FS_DEFUSER	"nobody"
 diff --git a/fs/9p/vfs_addr.c b/fs/9p/vfs_addr.c
-index 1970693..d92b9b3 100644
+index 1970693..2bfb53a 100644
 --- a/fs/9p/vfs_addr.c
 +++ b/fs/9p/vfs_addr.c
 @@ -35,6 +35,8 @@
@@ -44,7 +44,7 @@ index 1970693..d92b9b3 100644
  #include <net/9p/9p.h>
  #include <net/9p/client.h>
  
-@@ -44,6 +46,49 @@
+@@ -44,6 +46,53 @@
  #include "fid.h"
  
  /**
@@ -58,7 +58,7 @@ index 1970693..d92b9b3 100644
 +{
 +	struct p9_fid *fid = data;
 +	const struct bio_vec *bvec = to->bvec;
-+	int i, retval, err;
++	int i, start, retval, err;
 +
 +	p9_debug(P9_DEBUG_VFS, "\n");
 +
@@ -73,8 +73,12 @@ index 1970693..d92b9b3 100644
 +		goto done;
 +	}
 +
-+	if(retval & (PAGE_SIZE-1))
-+		zero_user(bvec[count-1].bv_page, retval & (PAGE_SIZE-1), PAGE_SIZE - (retval & (PAGE_SIZE-1)));
++	/* fill all unread memory with '0' */
++	start = retval & (PAGE_SIZE-1);
++	for(i = retval / PAGE_SIZE; i < count; i++) {
++		zero_user(bvec[i].bv_page, start, PAGE_SIZE - start);
++		start = 0;
++	}
 +
 +	for (i = 0; i < count; i++) {
 +		flush_dcache_page(bvec[i].bv_page);
@@ -94,7 +98,7 @@ index 1970693..d92b9b3 100644
   * v9fs_fid_readpage - read an entire page in from 9P
   *
   * @fid: fid being read
-@@ -88,6 +133,82 @@ static int v9fs_fid_readpage(void *data, struct page *page)
+@@ -88,6 +137,82 @@ static int v9fs_fid_readpage(void *data, struct page *page)
  }
  
  /**
@@ -177,7 +181,7 @@ index 1970693..d92b9b3 100644
   * v9fs_vfs_readpage - read an entire page in from 9P
   *
   * @filp: file being read
-@@ -123,8 +244,7 @@ static int v9fs_vfs_readpages(struct file *filp, struct address_space *mapping,
+@@ -123,8 +248,7 @@ static int v9fs_vfs_readpages(struct file *filp, struct address_space *mapping,
  	if (ret == 0)
  		return ret;
  
