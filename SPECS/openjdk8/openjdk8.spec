@@ -5,7 +5,7 @@
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	1.8.0.262
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -15,7 +15,8 @@ Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{versi
 %define sha1    openjdk=2f716d3c2a4143b16ec45ba9cdf30a89812ea6d9
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
-Patch2:         remove-cups.patch
+Patch2:		remove-cups.patch
+Patch3:		allow_using_system_installed_libjpeg.patch
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -23,6 +24,7 @@ BuildRequires:	unzip
 BuildRequires:  zlib-devel
 BuildRequires:	ca-certificates
 BuildRequires:	chkconfig
+BuildRequires:  libjpeg-turbo-devel
 Requires:       openjre8 = %{version}-%{release}
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
@@ -70,10 +72,14 @@ This package provides the runtime library class sources.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeScaler.c
 sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJDK_TARGET_OS := linux\n&/' jdk/make/lib/Awt2dLibraries.gmk
 
 %build
+pushd common/autoconf
+bash ./autogen.sh
+popd
 chmod a+x ./configure
 unset JAVA_HOME &&
 ./configure \
@@ -87,7 +93,8 @@ unset JAVA_HOME &&
 	--with-freetype-include=/usr/include/freetype2 \
 	--with-freetype-lib=/usr/lib \
 	--with-stdc++lib=dynamic \
-	--disable-zip-debug-info
+	--disable-zip-debug-info \
+        --with-libjpeg=system
 
 make \
     DEBUG_BINARIES=true \
@@ -242,6 +249,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+*   Thu Sep 10 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.262-3
+-   Use libjpeg-turbo
+-   Fix CVE-2020-14153, CVE-2020-14152
 *   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 1.8.0.262-2
 -   Replaced %post to %posttrans to avoid alternatives --remove
 -   after new version is installed.
