@@ -1,6 +1,6 @@
 Summary:        library for fast, message-based applications
 Name:           zeromq
-Version:        4.3.2
+Version:        4.3.3
 Release:        1%{?dist}
 URL:            http://www.zeromq.org
 License:        LGPLv3+
@@ -8,7 +8,7 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://archive.org/download/zeromq_4.1.4/%{name}-%{version}.tar.gz
-%define sha1 zeromq=e5253bff214f77621b3d29443f1aa6e5a106ffe5
+%define sha1    zeromq=d78bc504194d6908df40a2b9e41849b181b02491
 Requires:       libstdc++
 
 %description
@@ -18,14 +18,15 @@ middleware products. 0MQ sockets provide an abstraction of asynchronous message
 queues, multiple messaging patterns, message filtering (subscriptions), seamless
 access to multiple transport protocols and more.
 
-%package    devel
-Summary:    Header and development files for zeromq
-Requires:   %{name} = %{version}
+%package        devel
+Summary:        Header and development files for zeromq
+Requires:       %{name} = %{version}
 %description    devel
 It contains the libraries and header files to create applications
 
 %prep
 %setup -q
+
 %build
 sh configure \
     --prefix=%{_prefix} \
@@ -54,9 +55,10 @@ make check
 %{_libdir}/libzmq.so
 %{_libdir}/pkgconfig/libzmq.pc
 %{_includedir}/
-%{_mandir}/*
 
 %changelog
+*   Thu Sep 10 2020 Gerrit Photon <photon-checkins@vmware.com> 4.3.3-1
+-   Automatic Version Bump
 *   Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 4.3.2-1
 -   Automatic Version Bump
 *   Mon Jul 22 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.2.3-2
