@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.5.15
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.5/%{name}-%{version}.tar.xz
@@ -9,13 +9,17 @@ Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.5/%{name}-%{version}.
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Patch0:         gnutls_3.5.15_default_priority.patch
 Patch1:         gnutls-fix-CVE-2019-3829.patch
+Patch2:         CVE-2020-11501.patch
+
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
+
 Requires:       nettle
 Requires:       autogen-libopts
 Requires:       libtasn1
@@ -37,10 +41,9 @@ The package contains libraries and header files for
 developing applications that use gnutls.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 %build
+
 # check for trust store file presence
 [ -f %{_sysconfdir}/pki/tls/certs/ca-bundle.crt ] || exit 1
 
@@ -66,7 +69,7 @@ EOF
 %check
 make %{?_smp_mflags} check
 
-%post 
+%post
 /sbin/ldconfig
 
 %postun
@@ -89,6 +92,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Sep 11 2020 Shreenidhi Shedi < sshedi@vmware.com> 3.5.15-5
+-   Fix CVE-2020-11501
 *   Mon Apr 15 2019 Keerthana K <keerthanak@vmware.com> 3.5.15-4
 -   Fix CVE-2019-3829
 *   Wed Oct 03 2018 Tapas Kundu <tkundu@vmware.com> 3.5.15-3
