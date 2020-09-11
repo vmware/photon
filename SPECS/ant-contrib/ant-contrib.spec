@@ -1,7 +1,7 @@
 Summary:	Ant contrib
 Name:		ant-contrib
 Version:	1.0b3
-Release:	14%{?dist}
+Release:	15%{?dist}
 License:	Apache
 URL:		http://ant-contrib.sourceforget.net
 Group:		Applications/System
@@ -10,9 +10,11 @@ Distribution: 	Photon
 BuildArch:      noarch
 Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}-src.tar.gz
 %define sha1 ant-contrib=b28d2bf18656b263611187fa9fbb95cec93d47c8
+Patch0:         use-system-provided-commons-httpclient-jar.patch
 BuildRequires: openjre8
 BuildRequires: openjdk8
 BuildRequires: apache-ant
+BuildRequires: commons-httpclient
 Requires: openjre8
 Requires: apache-ant
 %define _prefix /var/opt/ant-contrib
@@ -22,7 +24,10 @@ The Ant Contrib project is a collection of tasks for Apache Ant.
 
 %prep
 %setup -n %{name}
+%patch0 -p1
+# Use system provided commons-httpclient jar instead of bundled one
 find . -name '*.jar' -or -name '*.class' -exec rm -rf {} +
+cp %{_datadir}/java/commons-httpclient/commons-httpclient.jar lib/commons-httpclient/jars/commons-httpclient-3.1.jar
 
 %clean
 rm -rf %{buildroot}
@@ -35,6 +40,7 @@ ant -Ddist.dir="." -Dproject.version=%{version} dist
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
 mkdir -p -m 700 %{buildroot}/var/opt
 cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.tar.gz --wildcards "*.jar"
+
 %files
 %defattr(-,root,root)
 %dir %{_prefix}
@@ -43,6 +49,8 @@ cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.
 %{_prefix}/lib/*.jar
 
 %changelog
+*   Thu Sep 10 2020 Ankit Jain <ankitja@vmware.com> 1.0b3-15
+-   Use systems commons-httpclient
 *   Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 1.0b3-14
 -   Changed openjdk install directory name
 *   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 1.0b3-13
