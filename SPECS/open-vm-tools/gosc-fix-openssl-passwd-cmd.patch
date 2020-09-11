@@ -1,0 +1,66 @@
+From 895e02b1a4dc8cad23b441e19e5bde4443f279bf Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 11 Sep 2020 15:08:22 +0530
+Subject: [PATCH] Use `passwd` command to set the root password directly
+
+`openssl passswd` crashes in FIPS mode since it is using low level
+API calls which is forbidden in FIPS mode. Use passwd command to set
+password directly.
+---
+ gosc-scripts/CustomizationUtils.sh  | 10 +---------
+ gosc-scripts/PhotonCustomization.sh | 12 ++++++++++++
+ 2 files changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/gosc-scripts/CustomizationUtils.sh b/gosc-scripts/CustomizationUtils.sh
+index 85b211f..626a99e 100644
+--- a/gosc-scripts/CustomizationUtils.sh
++++ b/gosc-scripts/CustomizationUtils.sh
+@@ -960,22 +960,14 @@ hostname: ${hostname}
+ EOF
+ )
+ 
+-  local adminPwd=$(ConfigFile_GetAdminPassword)
+-
+-  if [[ -n "$adminPwd" ]]; then
+-    adminPwd=$(echo $adminPwd | /usr/bin/base64 -di)
+-
+-    local adminPwdHash=$(echo $adminPwd | openssl passwd -1 -stdin -salt root)
+-    export formatResult=$formatResult$(${CAT} <<EOF
++  export formatResult=$formatResult$(${CAT} <<EOF
+ 
+ 
+ users:
+     - name: root
+       lock_passwd: false
+-      hashed_passwd: $adminPwdHash
+ EOF
+ )
+-  fi
+ 
+   local ssh_key_cnt=$(ConfigFile_GetSshKeysCnt)
+   if [ "$ssh_key_cnt" -gt 0 ]; then
+diff --git a/gosc-scripts/PhotonCustomization.sh b/gosc-scripts/PhotonCustomization.sh
+index cbf36df..3a92712 100644
+--- a/gosc-scripts/PhotonCustomization.sh
++++ b/gosc-scripts/PhotonCustomization.sh
+@@ -95,6 +95,18 @@ RunCloudConfig()
+ 
+   CustomizeHostsFile
+ 
++  local adminPwd=$(ConfigFile_GetAdminPassword)
++  if [[ -n "$adminPwd" ]]; then
++     adminPwd=$(echo $adminPwd | $(which base64) -di)
++     Info "Updating root password..."
++     echo -e "${adminPwd}\n${adminPwd}" | $(which passwd) root  > /dev/null 2>&1
++     local exitCode=$?
++     if [[ $exitCode -ne 0 ]]; then
++        Die "Password update failed"
++     fi
++     Info "Root password updated successfully..."
++  fi
++
+   if [[ $(ConfigFile_GetResetPassword) -eq 1 ]]; then
+     Info "Resetting the password..."
+     #'chage -d 0 U'/'passwd --expire U' breaks login due to missing PAM,
+-- 
+2.21.1

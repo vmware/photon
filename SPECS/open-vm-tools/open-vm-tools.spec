@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        11.1.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -21,6 +21,7 @@ Source3:        vgauthd.service
 # If patch is taken from open-vm-tools repo, prefix it with 'ovt-'
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
 Patch0:     ovt-linux-deployment.patch
+Patch1:     gosc-fix-openssl-passwd-cmd.patch
 
 BuildRequires:  glib-devel
 BuildRequires:  libxml2-devel
@@ -131,6 +132,9 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Fri Sep 11 2020 Keerthana K <keerthanak@vmware.com> 11.1.0-6
+-   Use `passwd` command to set root password in gosc-scripts
+-   since `openssl passwd` crashes in fips mode.
 *   Fri Aug 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.0-5
 -   Updated gosc-scripts version to 1.3
 -   Do 'cloud-init clean -ls' before calling init
