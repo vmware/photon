@@ -1,0 +1,36 @@
+From 90d42d989d926612f7f2eb7dbd4d6d4d0f1d0808 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Thu, 4 Jun 2020 13:41:02 +0000
+Subject: [PATCH] Use system provided commons-httpclient jar
+
+---
+ build.xml | 2 +-
+ ivy.xml   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/build.xml b/build.xml
+index eb6a80b..e1ada5e 100644
+--- a/build.xml
++++ b/build.xml
+@@ -25,7 +25,7 @@
+             <fileset dir="lib/ivy/jars" includes="ivy-1.3.1.jar"/>
+             <fileset dir="lib/commons-cli/jars" includes="commons-cli-1.0.jar"/>
+             <fileset dir="lib/commons-codec/jars" includes="commons-codec-1.3.jar"/>
+-            <fileset dir="lib/commons-httpclient/jars" includes="commons-httpclient-3.0.1.jar"/>
++            <fileset dir="lib/commons-httpclient/jars" includes="commons-httpclient-3.1.jar"/>
+             <fileset dir="lib/commons-logging/jars" includes="commons-logging-1.0.4.jar"/>
+             <fileset dir="lib/oro/jars" includes="oro-2.0.8.jar"/>
+         </path>
+diff --git a/ivy.xml b/ivy.xml
+index d92c9b6..4ffed92 100644
+--- a/ivy.xml
++++ b/ivy.xml
+@@ -26,7 +26,7 @@
+                     conf="provided->default" />
+         <dependency org="apache"
+                     name="commons-httpclient"
+-                    rev="3.0.1"
++                    rev="3.1"
+                     conf="default->default" />
+         <dependency org="apache"
+                     name="commons-logging"
