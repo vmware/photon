@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.5.15
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        http://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/gnutls/v3.5/%{name}-%{version}.tar.xz
@@ -9,19 +9,24 @@ Source0:        http://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/gnutls/v3.5/%{
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Patch0:         gnutls_3.5.15_default_priority.patch
 Patch1:         gnutls-fix-CVE-2019-3829.patch
+Patch2:         CVE-2020-11501.patch
+
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
+
 Requires:       nettle
 Requires:       autogen-libopts
 Requires:       libtasn1
 Requires:       openssl
 Requires:       ca-certificates
 Requires:       gmp
+
 %description
 GnuTLS is a secure communications library implementing the SSL, TLS and DTLS protocols and technologies around them. It provides a simple C language application programming interface (API) to access the secure communications protocols as well as APIs to parse and write X.509, PKCS #12, OpenPGP and other required structures. It is aimed to be portable and efficient with focus on security and interoperability.
 
@@ -36,9 +41,8 @@ The package contains libraries and header files for
 developing applications that use gnutls.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
+
 %build
 # check for trust store file presence
 [ -f %{_sysconfdir}/pki/tls/certs/ca-bundle.crt ] || exit 1
@@ -64,7 +68,7 @@ EOF
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
-%post 
+%post
 /sbin/ldconfig
 
 %postun
@@ -85,7 +89,10 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_includedir}/%{name}/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
+
 %changelog
+*   Fri Sep 11 2020 Shreenidhi Shedi < sshedi@vmware.com> 3.5.15-5
+-   Fix CVE-2020-11501
 *   Mon Apr 15 2019 Keerthana K <keerthanak@vmware.com> 3.5.15-4
 -   Fix CVE-2019-3829
 *   Wed Oct 03 2018 Tapas Kundu <tkundu@vmware.com> 3.5.15-3
