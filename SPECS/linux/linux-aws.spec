@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.228
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Release:        6%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -61,6 +61,9 @@ Patch36:        0001-net-packet-make-tp_drops-atomic.patch
 Patch37:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 # Fix for CVE-2018-8043
 Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
+# Fix for CVE-2020-14356
+Patch39:        0001-cgroup-fix-cgroup_sk_alloc-for-sk_clone_lock.patch
+Patch40:        0002-cgroup-Fix-sock_cgroup_data-on-big-endian.patch
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
 Patch43:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
@@ -266,6 +269,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch36 -p1
 %patch37 -p1
 %patch38 -p1
+%patch39 -p1
+%patch40 -p1
 %patch42 -p1
 %patch43 -p1
 %patch45 -p1
@@ -499,6 +504,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Thu Sep 10 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-6
+-   Fix for CVE-2020-14356
 *   Thu Sep 10 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-5
 -   Fix for CVE-2020-14386
 *   Thu Aug 13 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-4
