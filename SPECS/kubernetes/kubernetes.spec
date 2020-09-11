@@ -4,30 +4,23 @@
 %ifarch aarch64
 %define archname arm64
 %endif
+%define debug_package %{nil}
+%define __strip /bin/true
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.12.10
-Release:        5%{?dist}
+Version:        1.17.11
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=b58470cb234d312ff158c11d8911986f56943739
+%define sha1    kubernetes-%{version}.tar.gz=f5634a00f087ea6c7d15848de837d6cd0a1b3e3f
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
-Patch0:         go-27704.patch
-Patch1:         go-27842.patch
-Patch2:         CVE-2019-11247-1.patch
-Patch3:         CVE-2019-11247-2.patch
-Patch4:         CVE-2019-11249-1.patch
-Patch5:         CVE-2019-11249-2.patch
-Patch6:         CVE-2020-8552-1.12-1.13.patch
-Patch7:         CVE-2019-11250-1.12.patch
-Patch8:         CVE-2020-8558-1.12.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  go >= 1.10.2
+BuildRequires:  go >= 1.13.5
 BuildRequires:  rsync
 BuildRequires:  which
 Requires:       cni
@@ -39,7 +32,7 @@ Requires:       iproute2
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 Requires:       socat
-Requires:       (util-linux or toybox)
+Requires:       util-linux
 Requires:       cri-tools
 
 %description
@@ -64,27 +57,21 @@ Group:          Development/Tools
 %description    pause
 A pod setup process that holds a pod's namespace.
 
+%global debug_package %{nil}
+
 %prep -p exit
 %setup -qn %{name}-%{version}
 cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
+sed -i '/KUBE_ALLOW_PRIV/d' contrib-0.7.0/init/systemd/kubelet.service
+sed -i 's|KUBELET_ADDRESS|KUBELET_CONFIG|g' contrib-0.7.0/init/systemd/kubelet.service
+sed -i 's|.*KUBELET_ADDRESS.*|KUBELET_CONFIG="--config=/var/lib/kubelet/config.yaml"|g' contrib-0.7.0/init/systemd/environ/kubelet
 cd %{name}-%{version}
-
-pushd vendor/golang.org/x/net
-%patch0 -p1
-%patch1 -p1
-popd
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
 
 %build
 make
+make WHAT="cmd/cloud-controller-manager"
 pushd build/pause
 mkdir -p bin
 gcc -Os -Wall -Werror -static -o bin/pause-%{archname} pause.c
@@ -92,7 +79,7 @@ strip bin/pause-%{archname}
 popd
 
 %ifarch x86_64
-make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/%{archname} windows/%{archname}"
+make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/amd64 windows/amd64"
 %endif
 
 %install
@@ -105,7 +92,7 @@ install -m 755 -d %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}
 install -m 755 -d %{buildroot}/opt/vmware/kubernetes/windows/%{archname}
 %endif
 
-binaries=(cloud-controller-manager hyperkube kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
+binaries=(cloud-controller-manager kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
   install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/${bin}
@@ -118,7 +105,6 @@ install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/linux/%{archname}/ _outp
 install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}/ _output/local/bin/darwin/%{archname}/kubectl
 install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/windows/%{archname}/ _output/local/bin/windows/%{archname}/kubectl.exe
 %endif
-
 # kubeadm install
 install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
 install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/kubeadm
@@ -145,6 +131,11 @@ install -m 0644 -t %{buildroot}/usr/lib/systemd/system contrib-0.7.0/init/system
 # install the place the kubelet defaults to put volumes
 install -dm755 %{buildroot}/var/lib/kubelet
 install -dm755 %{buildroot}/var/run/kubernetes
+cat << EOF >> %{buildroot}/var/lib/kubelet/config.yaml
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+address: 127.0.0.1
+EOF
 
 mkdir -p %{buildroot}/%{_lib}/tmpfiles.d
 cat << EOF >> %{buildroot}/%{_lib}/tmpfiles.d/kubernetes.conf
@@ -198,7 +189,6 @@ fi
 %files
 %defattr(-,root,root)
 %{_bindir}/cloud-controller-manager
-%{_bindir}/hyperkube
 %{_bindir}/kube-apiserver
 %{_bindir}/kube-controller-manager
 %{_bindir}/kubelet
@@ -214,6 +204,7 @@ fi
 %{_lib}/tmpfiles.d/kubernetes.conf
 %dir %{_sysconfdir}/%{name}
 %dir /var/lib/kubelet
+/var/lib/kubelet/config.yaml
 %dir /var/run/kubernetes
 %config(noreplace) %{_sysconfdir}/%{name}/config
 %config(noreplace) %{_sysconfdir}/%{name}/apiserver
@@ -242,24 +233,5 @@ fi
 %endif
 
 %changelog
-*   Mon Aug 03 2020 Ashwin H <ashwinh@vmware.com> 1.12.10-5
--   Fix CVE-2020-8558
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.12.10-4
--   Bump up version to compile with go 1.13.3-2
-*   Thu Apr 09 2020 Shreyas B <shreyasb@vmware.com> 1.12.10-3
--   Fix for CVE-2020-8552.
--   Fix for CVE-2019-11250.
-*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.12.10-2
--   Bump up version to compile with go 1.13.3
-*   Tue Sep 10 2019 Ashwin H <ashwinh@vmware.com> 1.12.10-1
--   Update to 1.12.10 and Fix CVE-2019-11247, CVE-2019-11249
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-3
--   Bump up version to compile with new go
-*   Thu May 23 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-2
--   Fix CVE-2019-11244.patch
-*   Wed May 08 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-1
--   Update to 1.12.7
-*   Thu Feb 28 2019 Ashwin H <ashwinh@vmware.com> 1.12.5-2
--   Fix build error for ARM.
-*   Thu Feb 21 2019 Ashwin H <ashwinh@vmware.com> 1.12.5-1
--   Update to 1.12.5-1
+*   Wed Sep 16 2020 Ashwin H <ashwinh@vmware.com> 1.17.11-1
+-   Initial version 1.17.11
