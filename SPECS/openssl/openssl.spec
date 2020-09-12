@@ -1,14 +1,14 @@
 Summary:    Management tools and libraries relating to cryptography
 Name:       openssl
-Version:    1.0.2v
-Release:    2%{?dist}
+Version:    1.0.2w
+Release:    1%{?dist}
 License:    OpenSSL
 URL:        http://www.openssl.org
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    http://www.openssl.org/source/vmware-OpenSSL_1_0_2v.tar.gz
-%define sha1 vmware-OpenSSL_1_0_2v=8eb5f7b178b9b6824b183e44d9986c5045557031
+Source0:    http://www.openssl.org/source/vmware-OpenSSL_1_0_2w.tar.gz
+%define sha1 vmware-OpenSSL_1_0_2w=7276d32c378b7cf01b729213702b15dc36f03638
 Patch0:     c_rehash.patch
 Patch1:     openssl-ipv6apps.patch
 Patch2:     openssl-init-conslidate.patch
@@ -49,7 +49,7 @@ Requires: openssl = %{version}-%{release}
 Perl scripts that convert certificates and keys to various formats.
 
 %prep
-%setup -q -n vmware-OpenSSL_1_0_2v
+%setup -q -n vmware-OpenSSL_1_0_2w
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -117,6 +117,9 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Sat Sep 12 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2w-1
+-   Update to 1.0.2w
+-   Fix CVE-2020-1968
 *   Wed Jul 29 2020 Srinidhi Rao <srinidhir@vmware.com> 1.0.2v-2
 -   Improve the patch openssl-drbg-default-read-system-fips
 -   Modifies RAND_get_rand_method() to supply default FIPS RNG.
