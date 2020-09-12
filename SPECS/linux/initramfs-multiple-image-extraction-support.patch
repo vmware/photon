@@ -1,0 +1,93 @@
+From 18e451b735a50736fa2a996f6631881f75238aa3 Mon Sep 17 00:00:00 2001
+From: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Date: Tue, 22 Sep 2020 19:22:56 +0000
+Subject: [PATCH] initramfs multiple image extraction support
+
+---
+ init/initramfs.c | 27 +++++++++++++++++++++++----
+ 1 file changed, 23 insertions(+), 4 deletions(-)
+
+diff --git a/init/initramfs.c b/init/initramfs.c
+index 7beaaf9149bd..2b51d5e6efa1 100644
+--- a/init/initramfs.c
++++ b/init/initramfs.c
+@@ -14,6 +14,8 @@
+ 
+ static __initdata bool page_aligned_fmt = false;
+ 
++static int __initdata do_retain_initrd;
++
+ static ssize_t __init xadd_pages(int fd, const char *p, size_t count)
+ {
+ 	ssize_t ret = 0;
+@@ -284,15 +286,22 @@ static int __init do_collect(void)
+ 
+ static int __init do_header(void)
+ {
++	static bool newca_found = 0;
+ 	if (memcmp(collected, "070707", 6)==0) {
+ 		error("incorrect cpio method used: use -H newc option");
+ 		return 1;
+ 	}
+ 	if (memcmp(collected, "0707ca", 6)==0) {
+-		if (!page_aligned_fmt)
++		if (!newca_found) {
+ 			printk(KERN_INFO "Page aligned format detected. Retain initrd.\n");
++			do_retain_initrd = 1;
++			newca_found = 1;
++		}
+ 		page_aligned_fmt = true;
+ 	}
++	else if (memcmp(collected, "070701", 6)==0) {
++		page_aligned_fmt = false;
++	}
+ 	else if (memcmp(collected, "070701", 6)) {
+ 		error("no cpio magic");
+ 		return 1;
+@@ -365,6 +374,16 @@ static int __init maybe_link(void)
+ 	return 0;
+ }
+ 
++static int __init is_overwrite(char *path)
++{
++	struct kstat st;
++
++	if (!vfs_lstat(path, &st) && S_ISREG(st.mode)) {
++		return 1;
++	}
++	return 0;
++}
++
+ static __initdata int wfd;
+ 
+ static int __init do_name(void)
+@@ -378,6 +397,8 @@ static int __init do_name(void)
+ 	clean_path(collected, mode);
+ 	if (S_ISREG(mode)) {
+ 		int ml = maybe_link();
++		if (is_overwrite(collected))
++			error("file overwrite attempted");
+ 		if (ml >= 0) {
+ 			int openflags = O_WRONLY|O_CREAT;
+ 			if (ml != 1)
+@@ -556,8 +577,6 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+ 	return message;
+ }
+ 
+-static int __initdata do_retain_initrd;
+-
+ static int __init retain_initrd_param(char *str)
+ {
+ 	if (*str)
+@@ -578,7 +597,7 @@ static void __init free_initrd(void)
+ 	unsigned long crashk_start = (unsigned long)__va(crashk_res.start);
+ 	unsigned long crashk_end   = (unsigned long)__va(crashk_res.end);
+ #endif
+-	if (do_retain_initrd || !initrd_start || page_aligned_fmt)
++	if (do_retain_initrd || !initrd_start)
+ 		goto skip;
+ 
+ #ifdef CONFIG_KEXEC_CORE
+-- 
+2.23.3
+

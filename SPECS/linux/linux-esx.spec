@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.145
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -38,17 +38,18 @@ Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 Patch10:        9p-file-attributes-caching-support.patch
 
 # -esx
-Patch12:        fs-9p-support-for-local-file-lock.patch
-Patch13:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
-Patch14:        01-clear-linux.patch
-Patch15:        02-pci-probe.patch
-Patch16:        03-poweroff.patch
-Patch17:        04-quiet-boot.patch
-Patch18:        05-pv-ops-clocksource.patch
-Patch19:        06-pv-ops-boot_clock.patch
-Patch20:        07-vmware-only.patch
-Patch21:        initramfs-support-for-page-aligned-format-newca.patch
-Patch22:        enabling-configuring-options-for-geneve-device.patch
+Patch11:        fs-9p-support-for-local-file-lock.patch
+Patch12:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
+Patch13:        01-clear-linux.patch
+Patch14:        02-pci-probe.patch
+Patch15:        03-poweroff.patch
+Patch16:        04-quiet-boot.patch
+Patch17:        05-pv-ops-clocksource.patch
+Patch18:        06-pv-ops-boot_clock.patch
+Patch19:        07-vmware-only.patch
+Patch20:        initramfs-support-for-page-aligned-format-newca.patch
+Patch21:        enabling-configuring-options-for-geneve-device.patch
+Patch22:        initramfs-multiple-image-extraction-support.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch23:        0001-vmxnet3-prepare-for-version-4-changes.patch
@@ -189,6 +190,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
@@ -376,6 +378,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Sep 22 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-3
+-   Add extraction support for multi-image initramfs
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-2
 -   Fix for CVE-2020-25211
 *   Tue Sep 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.145-1
