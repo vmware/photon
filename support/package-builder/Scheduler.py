@@ -124,7 +124,8 @@ class Scheduler(object):
             if package in Scheduler.listOfPackagesCurrentlyBuilding:
                 Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
                 Scheduler.listOfAlreadyBuiltPackages.add(package)
-                Scheduler._markPkgNodeAsBuilt(package)
+                if not constants.rpmCheck:
+                    Scheduler._markPkgNodeAsBuilt(package)
 
     @staticmethod
     def notifyPackageBuildFailed(package):
@@ -642,7 +643,6 @@ class Scheduler(object):
         for pkg in Scheduler.listOfPackagesToBuild:
             if pkg in Scheduler.listOfPackagesCurrentlyBuilding:
                 continue
-            if pkg not in Scheduler.listOfAlreadyBuiltPackages:
-                if Scheduler._checkNextPackageIsReadyToBuild(pkg):
-                    Scheduler.listOfPackagesNextToBuild.put((-Scheduler._getPriority(pkg), pkg))
-                    Scheduler.logger.debug("Adding " + pkg + " to the schedule list")
+            if constants.rpmCheck or Scheduler._checkNextPackageIsReadyToBuild(pkg):
+                Scheduler.listOfPackagesNextToBuild.put((-Scheduler._getPriority(pkg), pkg))
+                Scheduler.logger.debug("Adding " + pkg + " to the schedule list")

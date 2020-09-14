@@ -242,11 +242,11 @@ class constants(object):
     # List of packages that will be installed in addition for each
     # package to make check
     listMakeCheckRPMPkgtoInstall = [
-        "python2",
-        "python2-devel",
-        "python2-libs",
-        "python2-tools",
-        "PyYAML",
+        "python3",
+        "python3-devel",
+        "python3-libs",
+        "python3-tools",
+        "python3-PyYAML",
         "libyaml",
         "libffi",
         "python3-setuptools",
