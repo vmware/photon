@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.228
-Release:        8%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.236
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6634eb065b0e58b89a69517970e07c58fb3a9ab7
+%define sha1 linux=58d3d987f9586a801bbc49e38d63173f9e1731c4
 Source1:        config
 Source2:        initramfs.trigger
 %define ena_version 1.1.3
@@ -58,22 +58,13 @@ Patch31:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 # To fix kernel PANIC in cascade
 Patch32:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
-
 # Fix for CVE-2020-14386
 Patch34:        0001-net-packet-make-tp_drops-atomic.patch
 Patch35:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
-# Fix for CVE-2018-8043
-Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
-
-# Fix for CVE-2020-14356
-Patch39:        0001-cgroup-fix-cgroup_sk_alloc-for-sk_clone_lock.patch
-Patch40:        0002-cgroup-Fix-sock_cgroup_data-on-big-endian.patch
 
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
 Patch43:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
-# Fix for CVE-2018-10323
-Patch45:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 # Fix for CVE-2018-10322
 Patch46:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch47:        0002-xfs-verify-dinode-header-first.patch
@@ -100,23 +91,16 @@ Patch59:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch60:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 # Fix for CVE-2019-12378
 Patch61:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
-#Fix for CVE-2018-13094
-Patch62: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 #Fix for CVE-2019-3900
 Patch63: 0001-vhost-vsock-add-weight-support.patch
 # Fix CVE-2019-18885
 Patch65:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch66:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
-# Fix for CVE-2020-14331
-Patch67:        4.9-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
 Patch72: 0002-apparmor-Fix-quieting-of-audit-messages-for-network-.patch
 Patch73: 0003-UBUNTU-SAUCE-apparmor-Add-the-ability-to-mediate-mou.patch
-# Fix for CVE-2020-16166
-Patch74: 0001-random32-update-the-net-random-state-on-interrupt-an.patch
-Patch75: 0002-random32-remove-net_rand_state-from-the-latent-entro.patch
 
 # Fix use-after-free issue in network stack
 Patch76: 0001-inet-rename-netns_frags-to-fqdir.patch
@@ -256,12 +240,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
-%patch38 -p1
-%patch39 -p1
-%patch40 -p1
 %patch42 -p1
 %patch43 -p1
-%patch45 -p1
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
@@ -278,17 +258,13 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch59 -p1
 %patch60 -p1
 %patch61 -p1
-%patch62 -p1
 %patch63 -p1
 %patch65 -p1
 %patch66 -p1
-%patch67 -p1
 
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
-%patch74 -p1
-%patch75 -p1
 %patch76 -p1
 %patch77 -p1
 %patch78 -p1
@@ -486,6 +462,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed Sep 23 2020 Vikash Bansal <bvikas@vmware.com> 4.9.236-1
+-   Update to version 4.9.236
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.228-8
 -   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.9.228-7

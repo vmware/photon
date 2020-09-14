@@ -21,12 +21,12 @@ CR: https://cr.amazon.com/r/7902188/
  1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index 7e5233e..16b7654 100644
+index 4ab8d6d1..0b492399 100644
 --- a/drivers/net/xen-netfront.c
 +++ b/drivers/net/xen-netfront.c
-@@ -69,6 +69,12 @@ module_param_named(max_queues, xennet_max_queues, uint, 0644);
- MODULE_PARM_DESC(max_queues,
- 		 "Maximum number of queues per virtual interface");
+@@ -71,6 +71,12 @@ MODULE_PARM_DESC(max_queues,
+ 
+ #define XENNET_TIMEOUT  (5 * HZ)
  
 +static unsigned int netfront_freeze_timeout_secs = 10;
 +module_param_named(freeze_timeout_secs,
@@ -37,7 +37,7 @@ index 7e5233e..16b7654 100644
  static const struct ethtool_ops xennet_ethtool_ops;
  
  struct netfront_cb {
-@@ -1845,8 +1851,7 @@ static int xennet_create_queues(struct netfront_info *info,
+@@ -1852,8 +1858,7 @@ static int xennet_create_queues(struct netfront_info *info,
  static int netfront_freeze(struct xenbus_device *dev)
  {
  	struct netfront_info *info = dev_get_drvdata(&dev->dev);
@@ -48,5 +48,5 @@ index 7e5233e..16b7654 100644
  
  	xennet_disable_interrupts(info->netdev);
 -- 
-2.7.5
+2.17.1
 
