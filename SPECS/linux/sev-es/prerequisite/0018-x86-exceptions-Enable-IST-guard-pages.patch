@@ -1,0 +1,48 @@
+From 28a7ac8aa9ada63ceaf1a5d9e4804242c191d700 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:45 +0530
+Subject: [PATCH 18/30] x86-exceptions-Enable-IST-guard-pages
+
+commit 1bdb67e5aa2d5d43c48cb7d93393fcba276c9e71 upstream.
+
+All usage sites which expected that the exception stacks in the CPU entry
+area are mapped linearly are fixed up. Enable guard pages between the
+IST stacks.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160145.349862042@linutronix.de
+---
+ arch/x86/include/asm/cpu_entry_area.h | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/include/asm/cpu_entry_area.h b/arch/x86/include/asm/cpu_entry_area.h
+index 83b68a9..8345038 100644
+--- a/arch/x86/include/asm/cpu_entry_area.h
++++ b/arch/x86/include/asm/cpu_entry_area.h
+@@ -26,13 +26,9 @@ struct exception_stacks {
+ 	ESTACKS_MEMBERS(0)
+ };
+ 
+-/*
+- * The effective cpu entry area mapping with guard pages. Guard size is
+- * zero until the code which makes assumptions about linear mappings is
+- * cleaned up.
+- */
++/* The effective cpu entry area mapping with guard pages. */
+ struct cea_exception_stacks {
+-	ESTACKS_MEMBERS(0)
++	ESTACKS_MEMBERS(PAGE_SIZE)
+ };
+ 
+ /*
+-- 
+2.7.4
+

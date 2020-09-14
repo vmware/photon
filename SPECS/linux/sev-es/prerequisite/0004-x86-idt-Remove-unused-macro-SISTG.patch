@@ -1,0 +1,46 @@
+From 194fef3141635f7ec61f96e1f8d271b7b7fca5b5 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:42 +0530
+Subject: [PATCH 04/30] x86-idt-Remove-unused-macro-SISTG
+
+commit 99d334511b337884cadbdfae28da912a4edb1001 upstream.
+
+Commit
+
+  d8ba61ba58c8 ("x86/entry/64: Don't use IST entry for #BP stack")
+
+removed the last user but left the macro around.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Andy Lutomirski <luto@kernel.org>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Dou Liyang <douly.fnst@cn.fujitsu.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Nicolai Stange <nstange@suse.de>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160144.050689789@linutronix.de
+---
+ arch/x86/kernel/idt.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/arch/x86/kernel/idt.c b/arch/x86/kernel/idt.c
+index a7e0e97..cdf4700 100644
+--- a/arch/x86/kernel/idt.c
++++ b/arch/x86/kernel/idt.c
+@@ -45,10 +45,6 @@ struct idt_data {
+ #define ISTG(_vector, _addr, _ist)			\
+ 	G(_vector, _addr, _ist, GATE_INTERRUPT, DPL0, __KERNEL_CS)
+ 
+-/* System interrupt gate with interrupt stack */
+-#define SISTG(_vector, _addr, _ist)			\
+-	G(_vector, _addr, _ist, GATE_INTERRUPT, DPL3, __KERNEL_CS)
+-
+ /* Task gate */
+ #define TSKG(_vector, _gdt)				\
+ 	G(_vector, NULL, DEFAULT_STACK, GATE_TASK, DPL0, _gdt << 3)
+-- 
+2.7.4
+

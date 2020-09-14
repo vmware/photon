@@ -1,0 +1,248 @@
+From 5dcb03ae1e9280d9fcd816a1227a9c90a0855306 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:43 +0530
+Subject: [PATCH 07/30] x86-exceptions-Make-IST-index-zero-based
+
+commit 8f34c5b5afce91d171bb0802631197484cb69b8b upstream.
+
+The defines for the exception stack (IST) array in the TSS are using the
+SDM convention IST1 - IST7. That causes all sorts of code to subtract 1 for
+array indices related to IST. That's confusing at best and does not provide
+any value.
+
+Make the indices zero based and fixup the usage sites. The only code which
+needs to adjust the 0 based index is the interrupt descriptor setup which
+needs to add 1 now.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Baoquan He <bhe@redhat.com>
+Cc: "Chang S. Bae" <chang.seok.bae@intel.com>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Dou Liyang <douly.fnst@cn.fujitsu.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: linux-doc@vger.kernel.org
+Cc: Nicolai Stange <nstange@suse.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Qian Cai <cai@lca.pw>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160144.331772825@linutronix.de
+---
+ Documentation/x86/kernel-stacks      |  8 ++++----
+ arch/x86/entry/entry_64.S            |  4 ++--
+ arch/x86/include/asm/page_64_types.h | 13 ++++++++-----
+ arch/x86/kernel/cpu/common.c         |  4 ++--
+ arch/x86/kernel/dumpstack_64.c       | 14 +++++++-------
+ arch/x86/kernel/idt.c                | 15 +++++++++------
+ arch/x86/kernel/irq_64.c             |  2 +-
+ arch/x86/mm/fault.c                  |  2 +-
+ 8 files changed, 34 insertions(+), 28 deletions(-)
+
+diff --git a/Documentation/x86/kernel-stacks b/Documentation/x86/kernel-stacks
+index 9a0aa4d..1b04596 100644
+--- a/Documentation/x86/kernel-stacks
++++ b/Documentation/x86/kernel-stacks
+@@ -59,7 +59,7 @@ If that assumption is ever broken then the stacks will become corrupt.
+ 
+ The currently assigned IST stacks are :-
+ 
+-* DOUBLEFAULT_STACK.  EXCEPTION_STKSZ (PAGE_SIZE).
++* ESTACK_DF.  EXCEPTION_STKSZ (PAGE_SIZE).
+ 
+   Used for interrupt 8 - Double Fault Exception (#DF).
+ 
+@@ -68,7 +68,7 @@ The currently assigned IST stacks are :-
+   Using a separate stack allows the kernel to recover from it well enough
+   in many cases to still output an oops.
+ 
+-* NMI_STACK.  EXCEPTION_STKSZ (PAGE_SIZE).
++* ESTACK_NMI.  EXCEPTION_STKSZ (PAGE_SIZE).
+ 
+   Used for non-maskable interrupts (NMI).
+ 
+@@ -76,7 +76,7 @@ The currently assigned IST stacks are :-
+   middle of switching stacks.  Using IST for NMI events avoids making
+   assumptions about the previous state of the kernel stack.
+ 
+-* DEBUG_STACK.  DEBUG_STKSZ
++* ESTACK_DB.  DEBUG_STKSZ
+ 
+   Used for hardware debug interrupts (interrupt 1) and for software
+   debug interrupts (INT3).
+@@ -86,7 +86,7 @@ The currently assigned IST stacks are :-
+   avoids making assumptions about the previous state of the kernel
+   stack.
+ 
+-* MCE_STACK.  EXCEPTION_STKSZ (PAGE_SIZE).
++* ESTACK_MCE.  EXCEPTION_STKSZ (PAGE_SIZE).
+ 
+   Used for interrupt 18 - Machine Check Exception (#MC).
+ 
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index dfe26f3..0cda541 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -928,7 +928,7 @@ apicinterrupt IRQ_WORK_VECTOR			irq_work_interrupt		smp_irq_work_interrupt
+ /*
+  * Exception entry points.
+  */
+-#define CPU_TSS_IST(x) PER_CPU_VAR(cpu_tss_rw) + (TSS_ist + ((x) - 1) * 8)
++#define CPU_TSS_IST(x) PER_CPU_VAR(cpu_tss_rw) + (TSS_ist + (x) * 8)
+ 
+ .macro idtentry sym do_sym has_error_code:req paranoid=0 shift_ist=-1 create_gap=0
+ ENTRY(\sym)
+@@ -1192,7 +1192,7 @@ apicinterrupt3 HYPERV_STIMER0_VECTOR \
+ 	hv_stimer0_callback_vector hv_stimer0_vector_handler
+ #endif /* CONFIG_HYPERV */
+ 
+-idtentry debug			do_debug		has_error_code=0	paranoid=1 shift_ist=DEBUG_STACK
++idtentry debug			do_debug		has_error_code=0	paranoid=1 shift_ist=ESTACK_DB
+ idtentry int3			do_int3			has_error_code=0	create_gap=1
+ idtentry stack_segment		do_stack_segment	has_error_code=1
+ 
+diff --git a/arch/x86/include/asm/page_64_types.h b/arch/x86/include/asm/page_64_types.h
+index c7477ce..2d68eec 100644
+--- a/arch/x86/include/asm/page_64_types.h
++++ b/arch/x86/include/asm/page_64_types.h
+@@ -28,11 +28,14 @@
+ #define IRQ_STACK_ORDER (2 + KASAN_STACK_ORDER)
+ #define IRQ_STACK_SIZE (PAGE_SIZE << IRQ_STACK_ORDER)
+ 
+-#define DOUBLEFAULT_STACK 1
+-#define NMI_STACK 2
+-#define DEBUG_STACK 3
+-#define MCE_STACK 4
+-#define N_EXCEPTION_STACKS 4  /* hw limit: 7 */
++/*
++ * The index for the tss.ist[] array. The hardware limit is 7 entries.
++ */
++#define	ESTACK_DF		0
++#define	ESTACK_NMI		1
++#define	ESTACK_DB		2
++#define	ESTACK_MCE		3
++#define	N_EXCEPTION_STACKS	4
+ 
+ /*
+  * Set __PAGE_OFFSET to the most negative possible address +
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 7f43eba..4b1837e 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -516,7 +516,7 @@ DEFINE_PER_CPU(struct cpu_entry_area *, cpu_entry_area);
+  */
+ static const unsigned int exception_stack_sizes[N_EXCEPTION_STACKS] = {
+ 	  [0 ... N_EXCEPTION_STACKS - 1]	= EXCEPTION_STKSZ,
+-	  [DEBUG_STACK - 1]			= DEBUG_STKSZ
++	  [ESTACK_DB]				= DEBUG_STKSZ
+ };
+ #endif
+ 
+@@ -1803,7 +1803,7 @@ void cpu_init(void)
+ 			estacks += exception_stack_sizes[v];
+ 			oist->ist[v] = t->x86_tss.ist[v] =
+ 					(unsigned long)estacks;
+-			if (v == DEBUG_STACK-1)
++			if (v == ESTACK_DB)
+ 				per_cpu(debug_stack_addr, cpu) = (unsigned long)estacks;
+ 		}
+ 	}
+diff --git a/arch/x86/kernel/dumpstack_64.c b/arch/x86/kernel/dumpstack_64.c
+index 90f0fa8..455b47e 100644
+--- a/arch/x86/kernel/dumpstack_64.c
++++ b/arch/x86/kernel/dumpstack_64.c
+@@ -18,16 +18,16 @@
+ 
+ #include <asm/stacktrace.h>
+ 
+-static char *exception_stack_names[N_EXCEPTION_STACKS] = {
+-		[ DOUBLEFAULT_STACK-1	]	= "#DF",
+-		[ NMI_STACK-1		]	= "NMI",
+-		[ DEBUG_STACK-1		]	= "#DB",
+-		[ MCE_STACK-1		]	= "#MC",
++static const char *exception_stack_names[N_EXCEPTION_STACKS] = {
++		[ ESTACK_DF	]	= "#DF",
++		[ ESTACK_NMI	]	= "NMI",
++		[ ESTACK_DB	]	= "#DB",
++		[ ESTACK_MCE	]	= "#MC",
+ };
+ 
+-static unsigned long exception_stack_sizes[N_EXCEPTION_STACKS] = {
++static const unsigned long exception_stack_sizes[N_EXCEPTION_STACKS] = {
+ 	[0 ... N_EXCEPTION_STACKS - 1]		= EXCEPTION_STKSZ,
+-	[DEBUG_STACK - 1]			= DEBUG_STKSZ
++	[ESTACK_DB]				= DEBUG_STKSZ
+ };
+ 
+ const char *stack_type_name(enum stack_type type)
+diff --git a/arch/x86/kernel/idt.c b/arch/x86/kernel/idt.c
+index cdf4700..5096b53 100644
+--- a/arch/x86/kernel/idt.c
++++ b/arch/x86/kernel/idt.c
+@@ -41,9 +41,12 @@ struct idt_data {
+ #define SYSG(_vector, _addr)				\
+ 	G(_vector, _addr, DEFAULT_STACK, GATE_INTERRUPT, DPL3, __KERNEL_CS)
+ 
+-/* Interrupt gate with interrupt stack */
++/*
++ * Interrupt gate with interrupt stack. The _ist index is the index in
++ * the tss.ist[] array, but for the descriptor it needs to start at 1.
++ */
+ #define ISTG(_vector, _addr, _ist)			\
+-	G(_vector, _addr, _ist, GATE_INTERRUPT, DPL0, __KERNEL_CS)
++	G(_vector, _addr, _ist + 1, GATE_INTERRUPT, DPL0, __KERNEL_CS)
+ 
+ /* Task gate */
+ #define TSKG(_vector, _gdt)				\
+@@ -180,11 +183,11 @@ gate_desc debug_idt_table[IDT_ENTRIES] __page_aligned_bss;
+  * cpu_init() when the TSS has been initialized.
+  */
+ static const __initconst struct idt_data ist_idts[] = {
+-	ISTG(X86_TRAP_DB,	debug,		DEBUG_STACK),
+-	ISTG(X86_TRAP_NMI,	nmi,		NMI_STACK),
+-	ISTG(X86_TRAP_DF,	double_fault,	DOUBLEFAULT_STACK),
++	ISTG(X86_TRAP_DB,	debug,		ESTACK_DB),
++	ISTG(X86_TRAP_NMI,	nmi,		ESTACK_NMI),
++	ISTG(X86_TRAP_DF,	double_fault,	ESTACK_DF),
+ #ifdef CONFIG_X86_MCE
+-	ISTG(X86_TRAP_MC,	&machine_check,	MCE_STACK),
++	ISTG(X86_TRAP_MC,	&machine_check,	ESTACK_MCE),
+ #endif
+ };
+ 
+diff --git a/arch/x86/kernel/irq_64.c b/arch/x86/kernel/irq_64.c
+index cf20046..182e8b2 100644
+--- a/arch/x86/kernel/irq_64.c
++++ b/arch/x86/kernel/irq_64.c
+@@ -61,7 +61,7 @@ static inline void stack_overflow_check(struct pt_regs *regs)
+ 		return;
+ 
+ 	oist = this_cpu_ptr(&orig_ist);
+-	estack_top = (u64)oist->ist[DEBUG_STACK];
++	estack_top = (u64)oist->ist[ESTACK_DB];
+ 	estack_bottom = estack_top - DEBUG_STKSZ + STACK_MARGIN;
+ 	if (regs->sp >= estack_bottom && regs->sp <= estack_top)
+ 		return;
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index c61acf6..77b176a 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -766,7 +766,7 @@ no_context(struct pt_regs *regs, unsigned long error_code,
+ 	if (is_vmalloc_addr((void *)address) &&
+ 	    (((unsigned long)tsk->stack - 1 - address < PAGE_SIZE) ||
+ 	     address - ((unsigned long)tsk->stack + THREAD_SIZE) < PAGE_SIZE)) {
+-		unsigned long stack = this_cpu_read(orig_ist.ist[DOUBLEFAULT_STACK]) - sizeof(void *);
++		unsigned long stack = this_cpu_read(orig_ist.ist[ESTACK_DF]) - sizeof(void *);
+ 		/*
+ 		 * We're likely to be running with very little stack space
+ 		 * left.  It's plausible that we'd hit this condition but
+-- 
+2.7.4
+

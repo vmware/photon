@@ -1,0 +1,111 @@
+From 355a3ebf630eb550d1a78abd5ef20d8e9c42e2ea Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:44 +0530
+Subject: [PATCH 14/30] x86-dumpstack-64-Use-cpu_entry_area-instead-of-orig_
+
+commit afcd21dad88b68d646e91ed36948117d58b4c197 upstream.
+
+The orig_ist[] array is a shadow copy of the IST array in the TSS. The
+reason why it exists is that older kernels used two TSS variants with
+different pointers into the debug stack. orig_ist[] contains the real
+starting points.
+
+There is no point anymore to do so because the same information can be
+retrieved using the base address of the cpu entry area mapping and the
+offsets of the various exception stacks.
+
+No functional change. Preparation for removing orig_ist.
+
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160144.974900463@linutronix.de
+---
+ arch/x86/kernel/dumpstack_64.c | 39 +++++++++++++++++++++++++++------------
+ 1 file changed, 27 insertions(+), 12 deletions(-)
+
+diff --git a/arch/x86/kernel/dumpstack_64.c b/arch/x86/kernel/dumpstack_64.c
+index 455b47e..f6fbd04 100644
+--- a/arch/x86/kernel/dumpstack_64.c
++++ b/arch/x86/kernel/dumpstack_64.c
+@@ -16,6 +16,7 @@
+ #include <linux/bug.h>
+ #include <linux/nmi.h>
+ 
++#include <asm/cpu_entry_area.h>
+ #include <asm/stacktrace.h>
+ 
+ static const char *exception_stack_names[N_EXCEPTION_STACKS] = {
+@@ -25,11 +26,6 @@ static const char *exception_stack_names[N_EXCEPTION_STACKS] = {
+ 		[ ESTACK_MCE	]	= "#MC",
+ };
+ 
+-static const unsigned long exception_stack_sizes[N_EXCEPTION_STACKS] = {
+-	[0 ... N_EXCEPTION_STACKS - 1]		= EXCEPTION_STKSZ,
+-	[ESTACK_DB]				= DEBUG_STKSZ
+-};
+-
+ const char *stack_type_name(enum stack_type type)
+ {
+ 	BUILD_BUG_ON(N_EXCEPTION_STACKS != 4);
+@@ -52,25 +48,44 @@ const char *stack_type_name(enum stack_type type)
+ 	return NULL;
+ }
+ 
++struct estack_layout {
++	unsigned int	begin;
++	unsigned int	end;
++};
++
++#define	ESTACK_ENTRY(x)	{						  \
++	.begin	= offsetof(struct cea_exception_stacks, x## _stack),	  \
++	.end	= offsetof(struct cea_exception_stacks, x## _stack_guard) \
++	}
++
++static const struct estack_layout layout[N_EXCEPTION_STACKS] = {
++	[ ESTACK_DF	]	= ESTACK_ENTRY(DF),
++	[ ESTACK_NMI	]	= ESTACK_ENTRY(NMI),
++	[ ESTACK_DB	]	= ESTACK_ENTRY(DB),
++	[ ESTACK_MCE	]	= ESTACK_ENTRY(MCE),
++};
++
+ static bool in_exception_stack(unsigned long *stack, struct stack_info *info)
+ {
+-	unsigned long *begin, *end;
++	unsigned long estacks, begin, end, stk = (unsigned long)stack;
+ 	struct pt_regs *regs;
+-	unsigned k;
++	unsigned int k;
+ 
+ 	BUILD_BUG_ON(N_EXCEPTION_STACKS != 4);
+ 
++	estacks = (unsigned long)__this_cpu_read(cea_exception_stacks);
++
+ 	for (k = 0; k < N_EXCEPTION_STACKS; k++) {
+-		end   = (unsigned long *)raw_cpu_ptr(&orig_ist)->ist[k];
+-		begin = end - (exception_stack_sizes[k] / sizeof(long));
++		begin = estacks + layout[k].begin;
++		end   = estacks + layout[k].end;
+ 		regs  = (struct pt_regs *)end - 1;
+ 
+-		if (stack < begin || stack >= end)
++		if (stk < begin || stk >= end)
+ 			continue;
+ 
+ 		info->type	= STACK_TYPE_EXCEPTION + k;
+-		info->begin	= begin;
+-		info->end	= end;
++		info->begin	= (unsigned long *)begin;
++		info->end	= (unsigned long *)end;
+ 		info->next_sp	= (unsigned long *)regs->sp;
+ 
+ 		return true;
+-- 
+2.7.4
+

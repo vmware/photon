@@ -1,0 +1,173 @@
+From a065195f4326735ddab94d3610439c3b7f8101e2 Mon Sep 17 00:00:00 2001
+From: Arvind Sankar <nivedita@alum.mit.edu>
+Date: Mon, 15 Jun 2020 14:23:03 +0530
+Subject: [PATCH 3/9] efi/x86: Don't depend on firmware GDT layout
+
+commit 90ff226281e1083988a42cfc51f89d91734cc55e upstream.
+
+When booting in mixed mode, the firmware's GDT is still installed at
+handover entry in efi32_stub_entry. We save the GDTR for later use in
+__efi64_thunk but we are assuming that descriptor 2 (__KERNEL_CS) is a
+valid 32-bit code segment descriptor and that descriptor 3
+(__KERNEL_DS/__BOOT_DS) is a valid data segment descriptor.
+
+This happens to be true for OVMF (it actually uses descriptor 1 for data
+segments, but descriptor 3 is also setup as data), but we shouldn't
+depend on this being the case.
+
+Fix this by saving the code and data selectors in addition to the GDTR
+in efi32_stub_entry, and restoring them in __efi64_thunk before calling
+the firmware. The UEFI specification guarantees that selectors will be
+flat, so using the DS selector for all the segment registers should be
+enough.
+
+We also need to install our own GDT before initializing segment
+registers in startup_32, so move the GDT load up to the beginning of the
+function.
+
+[ardb: mention mixed mode in the commit log]
+
+Signed-off-by: Arvind Sankar <nivedita@alum.mit.edu>
+Link: https://lore.kernel.org/r/20200202171353.3736319-3-nivedita@alum.mit.edu
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ arch/x86/boot/compressed/efi_thunk_64.S | 29 ++++++++++++++++++++++++-----
+ arch/x86/boot/compressed/head_64.S      | 30 ++++++++++++++++++------------
+ 2 files changed, 42 insertions(+), 17 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/efi_thunk_64.S b/arch/x86/boot/compressed/efi_thunk_64.S
+index bff9ab7..35bf393 100644
+--- a/arch/x86/boot/compressed/efi_thunk_64.S
++++ b/arch/x86/boot/compressed/efi_thunk_64.S
+@@ -62,11 +62,16 @@ ENTRY(efi64_thunk)
+ 	 * Switch to gdt with 32-bit segments. This is the firmware GDT
+ 	 * that was installed when the kernel started executing. This
+ 	 * pointer was saved at the EFI stub entry point in head_64.S.
++	 *
++	 * Pass the saved DS selector to the 32-bit code, and use far return to
++	 * restore the saved CS selector.
+ 	 */
+ 	leaq	efi32_boot_gdt(%rip), %rax
+ 	lgdt	(%rax)
+ 
+-	pushq	$__KERNEL_CS
++	movzwl	efi32_boot_ds(%rip), %edx
++	movzwq	efi32_boot_cs(%rip), %rax
++	pushq	%rax
+ 	leaq	efi_enter32(%rip), %rax
+ 	pushq	%rax
+ 	lretq
+@@ -81,6 +86,10 @@ ENTRY(efi64_thunk)
+ 	movl	%ebx, %es
+ 	pop	%rbx
+ 	movl	%ebx, %ds
++	/* Clear out 32-bit selector from FS and GS */
++	xorl	%ebx, %ebx
++	movl	%ebx, %fs
++	movl	%ebx, %gs
+ 
+ 	/*
+ 	 * Convert 32-bit status code into 64-bit.
+@@ -113,10 +122,12 @@ ENDPROC(efi_exit32)
+  * The stack should represent the 32-bit calling convention.
+  */
+ ENTRY(efi_enter32)
+-	movl	$__KERNEL_DS, %eax
+-	movl	%eax, %ds
+-	movl	%eax, %es
+-	movl	%eax, %ss
++	/* Load firmware selector into data and stack segment registers */
++	movl	%edx, %ds
++	movl	%edx, %es
++	movl	%edx, %fs
++	movl	%edx, %gs
++	movl	%edx, %ss
+ 
+ 	/* Reload pgtables */
+ 	movl	%cr3, %eax
+@@ -180,6 +191,14 @@ ENDPROC(efi_enter32)
+ efi32_boot_gdt:	.word	0
+ 		.quad	0
+ 
++SYM_DATA_START(efi32_boot_cs)
++	.word	0
++SYM_DATA_END(efi32_boot_cs)
++
++SYM_DATA_START(efi32_boot_ds)
++	.word	0
++SYM_DATA_END(efi32_boot_ds)
++
+ save_gdt:	.word	0
+ 		.quad	0
+ func_rt_ptr:	.quad	0
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index e1a7807..f5d25aa 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -54,10 +54,6 @@ ENTRY(startup_32)
+ 	 */
+ 	cld
+ 	cli
+-	movl	$(__BOOT_DS), %eax
+-	movl	%eax, %ds
+-	movl	%eax, %es
+-	movl	%eax, %ss
+ 
+ /*
+  * Calculate the delta between where we were compiled to run
+@@ -72,10 +68,20 @@ ENTRY(startup_32)
+ 1:	popl	%ebp
+ 	subl	$1b, %ebp
+ 
++	/* Load new GDT with the 64bit segments using 32bit descriptor */
++	addl	%ebp, gdt+2(%ebp)
++	lgdt	gdt(%ebp)
++
++	/* Load segment registers with our descriptors */
++	movl	$__BOOT_DS, %eax
++	movl	%eax, %ds
++	movl	%eax, %es
++	movl	%eax, %fs
++	movl	%eax, %gs
++	movl	%eax, %ss
++
+ /* setup a stack and make sure cpu supports long mode. */
+-	movl	$boot_stack_end, %eax
+-	addl	%ebp, %eax
+-	movl	%eax, %esp
++	leal	boot_stack_end(%ebp), %esp
+ 
+ 	call	verify_cpu
+ 	testl	%eax, %eax
+@@ -112,10 +118,6 @@ ENTRY(startup_32)
+  * Prepare for entering 64 bit mode
+  */
+ 
+-	/* Load new GDT with the 64bit segments using 32bit descriptor */
+-	addl	%ebp, gdt+2(%ebp)
+-	lgdt	gdt(%ebp)
+-
+ 	/* Enable PAE mode */
+ 	movl	%cr4, %eax
+ 	orl	$X86_CR4_PAE, %eax
+@@ -231,11 +233,15 @@ ENTRY(efi32_stub_entry)
+ 
+ 	movl	%ecx, efi32_config(%ebp)
+ 	movl	%edx, efi32_config+8(%ebp)
+-	sgdtl	efi32_boot_gdt(%ebp)
+ 
+ 	leal	efi32_config(%ebp), %eax
+ 	movl	%eax, efi_config(%ebp)
+ 
++	/* Save firmware GDTR and code/data selectors */
++	sgdtl	efi32_boot_gdt(%ebp)
++	movw	%cs, efi32_boot_cs(%ebp)
++	movw	%ds, efi32_boot_ds(%ebp)
++
+ 	/* Disable paging */
+ 	movl	%cr0, %eax
+ 	btrl	$X86_CR0_PG_BIT, %eax
+-- 
+2.7.4
+

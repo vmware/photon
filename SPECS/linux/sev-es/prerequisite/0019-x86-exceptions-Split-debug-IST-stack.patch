@@ -1,0 +1,387 @@
+From a38dd06a082911fc81b2149f08918fbf55e5f081 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:46 +0530
+Subject: [PATCH 19/30] x86-exceptions-Split-debug-IST-stack
+
+commit 2a594d4ccf3f10f80b77d71bd3dad10813ac0137 upstream.
+
+The debug IST stack is actually two separate debug stacks to handle #DB
+recursion. This is required because the CPU starts always at top of stack
+on exception entry, which means on #DB recursion the second #DB would
+overwrite the stack of the first.
+
+The low level entry code therefore adjusts the top of stack on entry so a
+secondary #DB starts from a different stack page. But the stack pages are
+adjacent without a guard page between them.
+
+Split the debug stack into 3 stacks which are separated by guard pages. The
+3rd stack is never mapped into the cpu_entry_area and is only there to
+catch triple #DB nesting:
+
+      --- top of DB_stack	<- Initial stack
+      --- end of DB_stack
+      	  guard page
+
+      --- top of DB1_stack	<- Top of stack after entering first #DB
+      --- end of DB1_stack
+      	  guard page
+
+      --- top of DB2_stack	<- Top of stack after entering second #DB
+      --- end of DB2_stack
+      	  guard page
+
+If DB2 would not act as the final guard hole, a second #DB would point the
+top of #DB stack to the stack below #DB1 which would be valid and not catch
+the not so desired triple nesting.
+
+The backing store does not allocate any memory for DB2 and its guard page
+as it is not going to be mapped into the cpu_entry_area.
+
+ - Adjust the low level entry code so it adjusts top of #DB with the offset
+   between the stacks instead of exception stack size.
+
+ - Make the dumpstack code aware of the new stacks.
+
+ - Adjust the in_debug_stack() implementation and move it into the NMI code
+   where it belongs. As this is NMI hotpath code, it just checks the full
+   area between top of DB_stack and bottom of DB1_stack without checking
+   for the guard page. That's correct because the NMI cannot hit a
+   stackpointer pointing to the guard page between DB and DB1 stack.  Even
+   if it would, then the NMI operation still is unaffected, but the resume
+   of the debug exception on the topmost DB stack will crash by touching
+   the guard page.
+
+  [ bp: Make exception_stack_names static const char * const ]
+
+Suggested-by: Andy Lutomirski <luto@kernel.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Baoquan He <bhe@redhat.com>
+Cc: "Chang S. Bae" <chang.seok.bae@intel.com>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Joerg Roedel <jroedel@suse.de>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: linux-doc@vger.kernel.org
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Qian Cai <cai@lca.pw>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160145.439944544@linutronix.de
+---
+ Documentation/x86/kernel-stacks       |  7 ++++++-
+ arch/x86/entry/entry_64.S             |  8 ++++----
+ arch/x86/include/asm/cpu_entry_area.h | 14 ++++++++++----
+ arch/x86/include/asm/debugreg.h       |  2 --
+ arch/x86/include/asm/page_64_types.h  |  3 ---
+ arch/x86/kernel/asm-offsets_64.c      |  2 ++
+ arch/x86/kernel/cpu/common.c          | 11 -----------
+ arch/x86/kernel/dumpstack_64.c        | 12 ++++++++----
+ arch/x86/kernel/nmi.c                 | 20 +++++++++++++++++++-
+ arch/x86/mm/cpu_entry_area.c          |  4 +++-
+ 10 files changed, 52 insertions(+), 31 deletions(-)
+
+diff --git a/Documentation/x86/kernel-stacks b/Documentation/x86/kernel-stacks
+index 1b04596..d1bfb0b 100644
+--- a/Documentation/x86/kernel-stacks
++++ b/Documentation/x86/kernel-stacks
+@@ -76,7 +76,7 @@ The currently assigned IST stacks are :-
+   middle of switching stacks.  Using IST for NMI events avoids making
+   assumptions about the previous state of the kernel stack.
+ 
+-* ESTACK_DB.  DEBUG_STKSZ
++* ESTACK_DB.  EXCEPTION_STKSZ (PAGE_SIZE).
+ 
+   Used for hardware debug interrupts (interrupt 1) and for software
+   debug interrupts (INT3).
+@@ -86,6 +86,11 @@ The currently assigned IST stacks are :-
+   avoids making assumptions about the previous state of the kernel
+   stack.
+ 
++  To handle nested #DB correctly there exist two instances of DB stacks. On
++  #DB entry the IST stackpointer for #DB is switched to the second instance
++  so a nested #DB starts from a clean stack. The nested #DB switches
++  the IST stackpointer to a guard hole to catch triple nesting.
++
+ * ESTACK_MCE.  EXCEPTION_STKSZ (PAGE_SIZE).
+ 
+   Used for interrupt 18 - Machine Check Exception (#MC).
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index b812794..0202ccc 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -930,7 +930,7 @@ apicinterrupt IRQ_WORK_VECTOR			irq_work_interrupt		smp_irq_work_interrupt
+  */
+ #define CPU_TSS_IST(x) PER_CPU_VAR(cpu_tss_rw) + (TSS_ist + (x) * 8)
+ 
+-.macro idtentry sym do_sym has_error_code:req paranoid=0 shift_ist=-1 create_gap=0
++.macro idtentry sym do_sym has_error_code:req paranoid=0 shift_ist=-1 create_gap=0 ist_offset=0
+ ENTRY(\sym)
+ 	UNWIND_HINT_IRET_REGS offset=\has_error_code*8
+ 
+@@ -990,13 +990,13 @@ ENTRY(\sym)
+ 	.endif
+ 
+ 	.if \shift_ist != -1
+-	subq	$EXCEPTION_STKSZ, CPU_TSS_IST(\shift_ist)
++	subq	$\ist_offset, CPU_TSS_IST(\shift_ist)
+ 	.endif
+ 
+ 	call	\do_sym
+ 
+ 	.if \shift_ist != -1
+-	addq	$EXCEPTION_STKSZ, CPU_TSS_IST(\shift_ist)
++	addq	$\ist_offset, CPU_TSS_IST(\shift_ist)
+ 	.endif
+ 
+ 	/* these procedures expect "no swapgs" flag in ebx */
+@@ -1192,7 +1192,7 @@ apicinterrupt3 HYPERV_STIMER0_VECTOR \
+ 	hv_stimer0_callback_vector hv_stimer0_vector_handler
+ #endif /* CONFIG_HYPERV */
+ 
+-idtentry debug			do_debug		has_error_code=0	paranoid=1 shift_ist=IST_INDEX_DB
++idtentry debug			do_debug		has_error_code=0	paranoid=1 shift_ist=IST_INDEX_DB ist_offset=DB_STACK_OFFSET
+ idtentry int3			do_int3			has_error_code=0	create_gap=1
+ idtentry stack_segment		do_stack_segment	has_error_code=1
+ 
+diff --git a/arch/x86/include/asm/cpu_entry_area.h b/arch/x86/include/asm/cpu_entry_area.h
+index 8345038..2051d54 100644
+--- a/arch/x86/include/asm/cpu_entry_area.h
++++ b/arch/x86/include/asm/cpu_entry_area.h
+@@ -10,25 +10,29 @@
+ #ifdef CONFIG_X86_64
+ 
+ /* Macro to enforce the same ordering and stack sizes */
+-#define ESTACKS_MEMBERS(guardsize)		\
++#define ESTACKS_MEMBERS(guardsize, db2_holesize)\
+ 	char	DF_stack_guard[guardsize];	\
+ 	char	DF_stack[EXCEPTION_STKSZ];	\
+ 	char	NMI_stack_guard[guardsize];	\
+ 	char	NMI_stack[EXCEPTION_STKSZ];	\
++	char	DB2_stack_guard[guardsize];	\
++	char	DB2_stack[db2_holesize];	\
++	char	DB1_stack_guard[guardsize];	\
++	char	DB1_stack[EXCEPTION_STKSZ];	\
+ 	char	DB_stack_guard[guardsize];	\
+-	char	DB_stack[DEBUG_STKSZ];		\
++	char	DB_stack[EXCEPTION_STKSZ];	\
+ 	char	MCE_stack_guard[guardsize];	\
+ 	char	MCE_stack[EXCEPTION_STKSZ];	\
+ 	char	IST_top_guard[guardsize];	\
+ 
+ /* The exception stacks' physical storage. No guard pages required */
+ struct exception_stacks {
+-	ESTACKS_MEMBERS(0)
++	ESTACKS_MEMBERS(0, 0)
+ };
+ 
+ /* The effective cpu entry area mapping with guard pages. */
+ struct cea_exception_stacks {
+-	ESTACKS_MEMBERS(PAGE_SIZE)
++	ESTACKS_MEMBERS(PAGE_SIZE, EXCEPTION_STKSZ)
+ };
+ 
+ /*
+@@ -37,6 +41,8 @@ struct cea_exception_stacks {
+ enum exception_stack_ordering {
+ 	ESTACK_DF,
+ 	ESTACK_NMI,
++	ESTACK_DB2,
++	ESTACK_DB1,
+ 	ESTACK_DB,
+ 	ESTACK_MCE,
+ 	N_EXCEPTION_STACKS
+diff --git a/arch/x86/include/asm/debugreg.h b/arch/x86/include/asm/debugreg.h
+index 4505ac2..79a8796 100644
+--- a/arch/x86/include/asm/debugreg.h
++++ b/arch/x86/include/asm/debugreg.h
+@@ -104,11 +104,9 @@ static inline void debug_stack_usage_dec(void)
+ {
+ 	__this_cpu_dec(debug_stack_usage);
+ }
+-int is_debug_stack(unsigned long addr);
+ void debug_stack_set_zero(void);
+ void debug_stack_reset(void);
+ #else /* !X86_64 */
+-static inline int is_debug_stack(unsigned long addr) { return 0; }
+ static inline void debug_stack_set_zero(void) { }
+ static inline void debug_stack_reset(void) { }
+ static inline void debug_stack_usage_inc(void) { }
+diff --git a/arch/x86/include/asm/page_64_types.h b/arch/x86/include/asm/page_64_types.h
+index e109652..fdd1fb8 100644
+--- a/arch/x86/include/asm/page_64_types.h
++++ b/arch/x86/include/asm/page_64_types.h
+@@ -22,9 +22,6 @@
+ #define EXCEPTION_STACK_ORDER (0 + KASAN_STACK_ORDER)
+ #define EXCEPTION_STKSZ (PAGE_SIZE << EXCEPTION_STACK_ORDER)
+ 
+-#define DEBUG_STACK_ORDER (EXCEPTION_STACK_ORDER + 1)
+-#define DEBUG_STKSZ (PAGE_SIZE << DEBUG_STACK_ORDER)
+-
+ #define IRQ_STACK_ORDER (2 + KASAN_STACK_ORDER)
+ #define IRQ_STACK_SIZE (PAGE_SIZE << IRQ_STACK_ORDER)
+ 
+diff --git a/arch/x86/kernel/asm-offsets_64.c b/arch/x86/kernel/asm-offsets_64.c
+index 3b9405e..0a70c2a 100644
+--- a/arch/x86/kernel/asm-offsets_64.c
++++ b/arch/x86/kernel/asm-offsets_64.c
+@@ -65,6 +65,8 @@ int main(void)
+ #undef ENTRY
+ 
+ 	OFFSET(TSS_ist, tss_struct, x86_tss.ist);
++	DEFINE(DB_STACK_OFFSET, offsetof(struct cea_exception_stacks, DB_stack) -
++	       offsetof(struct cea_exception_stacks, DB1_stack));
+ 	BLANK();
+ 
+ #ifdef CONFIG_STACKPROTECTOR
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 056e9fb..873aeb2 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1616,17 +1616,7 @@ void syscall_init(void)
+ 	       X86_EFLAGS_IOPL|X86_EFLAGS_AC|X86_EFLAGS_NT);
+ }
+ 
+-static DEFINE_PER_CPU(unsigned long, debug_stack_addr);
+ DEFINE_PER_CPU(int, debug_stack_usage);
+-
+-int is_debug_stack(unsigned long addr)
+-{
+-	return __this_cpu_read(debug_stack_usage) ||
+-		(addr <= __this_cpu_read(debug_stack_addr) &&
+-		 addr > (__this_cpu_read(debug_stack_addr) - DEBUG_STKSZ));
+-}
+-NOKPROBE_SYMBOL(is_debug_stack);
+-
+ DEFINE_PER_CPU(u32, debug_idt_ctr);
+ 
+ void debug_stack_set_zero(void)
+@@ -1778,7 +1768,6 @@ void cpu_init(void)
+ 		t->x86_tss.ist[IST_INDEX_NMI] = __this_cpu_ist_top_va(NMI);
+ 		t->x86_tss.ist[IST_INDEX_DB] = __this_cpu_ist_top_va(DB);
+ 		t->x86_tss.ist[IST_INDEX_MCE] = __this_cpu_ist_top_va(MCE);
+-		per_cpu(debug_stack_addr, cpu) = t->x86_tss.ist[IST_INDEX_DB];
+ 	}
+ 
+ 	t->x86_tss.io_bitmap_base = IO_BITMAP_OFFSET;
+diff --git a/arch/x86/kernel/dumpstack_64.c b/arch/x86/kernel/dumpstack_64.c
+index f6fbd04..fca97bd 100644
+--- a/arch/x86/kernel/dumpstack_64.c
++++ b/arch/x86/kernel/dumpstack_64.c
+@@ -19,16 +19,18 @@
+ #include <asm/cpu_entry_area.h>
+ #include <asm/stacktrace.h>
+ 
+-static const char *exception_stack_names[N_EXCEPTION_STACKS] = {
++static const char * const exception_stack_names[] = {
+ 		[ ESTACK_DF	]	= "#DF",
+ 		[ ESTACK_NMI	]	= "NMI",
++		[ ESTACK_DB2	]	= "#DB2",
++		[ ESTACK_DB1	]	= "#DB1",
+ 		[ ESTACK_DB	]	= "#DB",
+ 		[ ESTACK_MCE	]	= "#MC",
+ };
+ 
+ const char *stack_type_name(enum stack_type type)
+ {
+-	BUILD_BUG_ON(N_EXCEPTION_STACKS != 4);
++	BUILD_BUG_ON(N_EXCEPTION_STACKS != 6);
+ 
+ 	if (type == STACK_TYPE_IRQ)
+ 		return "IRQ";
+@@ -58,9 +60,11 @@ struct estack_layout {
+ 	.end	= offsetof(struct cea_exception_stacks, x## _stack_guard) \
+ 	}
+ 
+-static const struct estack_layout layout[N_EXCEPTION_STACKS] = {
++static const struct estack_layout layout[] = {
+ 	[ ESTACK_DF	]	= ESTACK_ENTRY(DF),
+ 	[ ESTACK_NMI	]	= ESTACK_ENTRY(NMI),
++	[ ESTACK_DB2	]	= { .begin = 0, .end = 0},
++	[ ESTACK_DB1	]	= ESTACK_ENTRY(DB1),
+ 	[ ESTACK_DB	]	= ESTACK_ENTRY(DB),
+ 	[ ESTACK_MCE	]	= ESTACK_ENTRY(MCE),
+ };
+@@ -71,7 +75,7 @@ static bool in_exception_stack(unsigned long *stack, struct stack_info *info)
+ 	struct pt_regs *regs;
+ 	unsigned int k;
+ 
+-	BUILD_BUG_ON(N_EXCEPTION_STACKS != 4);
++	BUILD_BUG_ON(N_EXCEPTION_STACKS != 6);
+ 
+ 	estacks = (unsigned long)__this_cpu_read(cea_exception_stacks);
+ 
+diff --git a/arch/x86/kernel/nmi.c b/arch/x86/kernel/nmi.c
+index 0f8b9b9..51c8d5c 100644
+--- a/arch/x86/kernel/nmi.c
++++ b/arch/x86/kernel/nmi.c
+@@ -21,13 +21,14 @@
+ #include <linux/ratelimit.h>
+ #include <linux/slab.h>
+ #include <linux/export.h>
++#include <linux/atomic.h>
+ #include <linux/sched/clock.h>
+ 
+ #if defined(CONFIG_EDAC)
+ #include <linux/edac.h>
+ #endif
+ 
+-#include <linux/atomic.h>
++#include <asm/cpu_entry_area.h>
+ #include <asm/traps.h>
+ #include <asm/mach_traps.h>
+ #include <asm/nmi.h>
+@@ -486,6 +487,23 @@ static DEFINE_PER_CPU(unsigned long, nmi_cr2);
+  * switch back to the original IDT.
+  */
+ static DEFINE_PER_CPU(int, update_debug_stack);
++
++static bool notrace is_debug_stack(unsigned long addr)
++{
++	struct cea_exception_stacks *cs = __this_cpu_read(cea_exception_stacks);
++	unsigned long top = CEA_ESTACK_TOP(cs, DB);
++	unsigned long bot = CEA_ESTACK_BOT(cs, DB1);
++
++	if (__this_cpu_read(debug_stack_usage))
++		return true;
++	/*
++	 * Note, this covers the guard page between DB and DB1 as well to
++	 * avoid two checks. But by all means @addr can never point into
++	 * the guard page.
++	 */
++	return addr >= bot && addr < top;
++}
++NOKPROBE_SYMBOL(is_debug_stack);
+ #endif
+ 
+ dotraplinkage notrace void
+diff --git a/arch/x86/mm/cpu_entry_area.c b/arch/x86/mm/cpu_entry_area.c
+index f689bf8..ff98f7c 100644
+--- a/arch/x86/mm/cpu_entry_area.c
++++ b/arch/x86/mm/cpu_entry_area.c
+@@ -99,10 +99,12 @@ static void __init percpu_setup_exception_stacks(unsigned int cpu)
+ 
+ 	/*
+ 	 * The exceptions stack mappings in the per cpu area are protected
+-	 * by guard pages so each stack must be mapped separately.
++	 * by guard pages so each stack must be mapped separately. DB2 is
++	 * not mapped; it just exists to catch triple nesting of #DB.
+ 	 */
+ 	cea_map_stack(DF);
+ 	cea_map_stack(NMI);
++	cea_map_stack(DB1);
+ 	cea_map_stack(DB);
+ 	cea_map_stack(MCE);
+ }
+-- 
+2.7.4
+

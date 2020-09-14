@@ -1,0 +1,39 @@
+From a8be0cb3372bee14b4fa918e6a5c78664302d10d Mon Sep 17 00:00:00 2001
+From: Arvind Sankar <nivedita@alum.mit.edu>
+Date: Mon, 15 Jun 2020 14:30:42 +0530
+Subject: [PATCH 7/9] x86/boot: GDT limit value should be size - 1
+
+commit b75e2b076d00751579c73cfbbc8a7eac7d2a0468 upstream.
+
+The limit value for the GDTR should be such that adding it to the base
+address gives the address of the last byte of the GDT, i.e. it should be
+one less than the size, not the size.
+
+Signed-off-by: Arvind Sankar <nivedita@alum.mit.edu>
+Link: https://lore.kernel.org/r/20200202171353.3736319-7-nivedita@alum.mit.edu
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ arch/x86/boot/compressed/head_64.S | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index 3cbc278..2e1db02 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -670,10 +670,10 @@ no_longmode:
+ 
+ 	.data
+ gdt64:
+-	.word	gdt_end - gdt
++	.word	gdt_end - gdt - 1
+ 	.quad   0
+ gdt:
+-	.word	gdt_end - gdt
++	.word	gdt_end - gdt - 1
+ 	.long	gdt
+ 	.word	0
+ 	.quad	0x00cf9a000000ffff	/* __KERNEL32_CS */
+-- 
+2.7.4
+

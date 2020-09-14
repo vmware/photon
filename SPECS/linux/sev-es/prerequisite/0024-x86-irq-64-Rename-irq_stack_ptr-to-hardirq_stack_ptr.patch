@@ -1,0 +1,124 @@
+From 363d1cf10638d30be71183317b3a51daedd34fbe Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:48 +0530
+Subject: [PATCH 24/30] x86-irq-64-Rename-irq_stack_ptr-to-hardirq_stack_ptr
+
+commit 758a2e312228410f2f5092ade558109e93dc3ee8 upstream.
+
+Preparatory patch to share code with 32bit.
+
+No functional changes.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Alexey Dobriyan <adobriyan@gmail.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: "Chang S. Bae" <chang.seok.bae@intel.com>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Kosina <jkosina@suse.cz>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Mike Rapoport <rppt@linux.vnet.ibm.com>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Nicolai Stange <nstange@suse.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Pingfan Liu <kernelfans@gmail.com>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160145.912584074@linutronix.de
+---
+ arch/x86/entry/entry_64.S        | 2 +-
+ arch/x86/include/asm/processor.h | 2 +-
+ arch/x86/kernel/cpu/common.c     | 2 +-
+ arch/x86/kernel/dumpstack_64.c   | 2 +-
+ arch/x86/kernel/irq_64.c         | 2 +-
+ arch/x86/kernel/setup_percpu.c   | 2 +-
+ 6 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index 0202ccc..aa5a281 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -506,7 +506,7 @@ END(spurious_entries_start)
+ 	 */
+ 
+ 	movq	\old_rsp, PER_CPU_VAR(irq_stack_union + IRQ_STACK_SIZE - 8)
+-	movq	PER_CPU_VAR(irq_stack_ptr), %rsp
++	movq	PER_CPU_VAR(hardirq_stack_ptr), %rsp
+ 
+ #ifdef CONFIG_DEBUG_ENTRY
+ 	/*
+diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
+index 876c11b..88cb338 100644
+--- a/arch/x86/include/asm/processor.h
++++ b/arch/x86/include/asm/processor.h
+@@ -401,7 +401,7 @@ static inline unsigned long cpu_kernelmode_gs_base(int cpu)
+ 	return (unsigned long)per_cpu(irq_stack_union.gs_base, cpu);
+ }
+ 
+-DECLARE_PER_CPU(char *, irq_stack_ptr);
++DECLARE_PER_CPU(char *, hardirq_stack_ptr);
+ DECLARE_PER_CPU(unsigned int, irq_count);
+ extern asmlinkage void ignore_sysret(void);
+ 
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 873aeb2..03d29c1 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1567,7 +1567,7 @@ DEFINE_PER_CPU(struct task_struct *, current_task) ____cacheline_aligned =
+ 	&init_task;
+ EXPORT_PER_CPU_SYMBOL(current_task);
+ 
+-DEFINE_PER_CPU(char *, irq_stack_ptr) =
++DEFINE_PER_CPU(char *, hardirq_stack_ptr) =
+ 	init_per_cpu_var(irq_stack_union.irq_stack) + IRQ_STACK_SIZE;
+ 
+ DEFINE_PER_CPU(unsigned int, irq_count) __visible = -1;
+diff --git a/arch/x86/kernel/dumpstack_64.c b/arch/x86/kernel/dumpstack_64.c
+index f356d3e..753b8cf 100644
+--- a/arch/x86/kernel/dumpstack_64.c
++++ b/arch/x86/kernel/dumpstack_64.c
+@@ -120,7 +120,7 @@ static bool in_exception_stack(unsigned long *stack, struct stack_info *info)
+ 
+ static bool in_irq_stack(unsigned long *stack, struct stack_info *info)
+ {
+-	unsigned long *end   = (unsigned long *)this_cpu_read(irq_stack_ptr);
++	unsigned long *end   = (unsigned long *)this_cpu_read(hardirq_stack_ptr);
+ 	unsigned long *begin = end - (IRQ_STACK_SIZE / sizeof(long));
+ 
+ 	/*
+diff --git a/arch/x86/kernel/irq_64.c b/arch/x86/kernel/irq_64.c
+index 7eb6f8d..f0c7356 100644
+--- a/arch/x86/kernel/irq_64.c
++++ b/arch/x86/kernel/irq_64.c
+@@ -56,7 +56,7 @@ static inline void stack_overflow_check(struct pt_regs *regs)
+ 	    regs->sp <= curbase + THREAD_SIZE)
+ 		return;
+ 
+-	irq_stack_top = (u64)__this_cpu_read(irq_stack_ptr);
++	irq_stack_top = (u64)__this_cpu_read(hardirq_stack_ptr);
+ 	irq_stack_bottom = irq_stack_top - IRQ_STACK_SIZE + STACK_MARGIN;
+ 	if (regs->sp >= irq_stack_bottom && regs->sp <= irq_stack_top)
+ 		return;
+diff --git a/arch/x86/kernel/setup_percpu.c b/arch/x86/kernel/setup_percpu.c
+index ea554f8..688827b 100644
+--- a/arch/x86/kernel/setup_percpu.c
++++ b/arch/x86/kernel/setup_percpu.c
+@@ -243,7 +243,7 @@ void __init setup_per_cpu_areas(void)
+ 			early_per_cpu_map(x86_cpu_to_logical_apicid, cpu);
+ #endif
+ #ifdef CONFIG_X86_64
+-		per_cpu(irq_stack_ptr, cpu) =
++		per_cpu(hardirq_stack_ptr, cpu) =
+ 			per_cpu(irq_stack_union.irq_stack, cpu) +
+ 			IRQ_STACK_SIZE;
+ #endif
+-- 
+2.7.4
+

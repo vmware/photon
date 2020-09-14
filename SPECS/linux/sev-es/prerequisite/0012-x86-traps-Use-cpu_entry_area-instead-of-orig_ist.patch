@@ -1,0 +1,57 @@
+From 078aaa3ccf4784cdf875639553bf01b6e2ee7d15 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:44 +0530
+Subject: [PATCH 12/30] x86-traps-Use-cpu_entry_area-instead-of-orig_ist
+
+commit d876b67343a648f3613506c7dbfed088fa0c875b upstream.
+
+The orig_ist[] array is a shadow copy of the IST array in the TSS. The
+reason why it exists is that older kernels used two TSS variants with
+different pointers into the debug stack. orig_ist[] contains the real
+starting points.
+
+There is no point anymore to do so because the same information can be
+retrieved using the base address of the cpu entry area mapping and the
+offsets of the various exception stacks.
+
+No functional change. Preparation for removing orig_ist.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160144.784487230@linutronix.de
+---
+ arch/x86/mm/fault.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index 77b176a..cd5200c 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -25,6 +25,7 @@
+ #include <asm/vsyscall.h>		/* emulate_vsyscall		*/
+ #include <asm/vm86.h>			/* struct vm86			*/
+ #include <asm/mmu_context.h>		/* vma_pkey()			*/
++#include <asm/cpu_entry_area.h>		/* exception stack		*/
+ 
+ #define CREATE_TRACE_POINTS
+ #include <asm/trace/exceptions.h>
+@@ -766,7 +767,7 @@ no_context(struct pt_regs *regs, unsigned long error_code,
+ 	if (is_vmalloc_addr((void *)address) &&
+ 	    (((unsigned long)tsk->stack - 1 - address < PAGE_SIZE) ||
+ 	     address - ((unsigned long)tsk->stack + THREAD_SIZE) < PAGE_SIZE)) {
+-		unsigned long stack = this_cpu_read(orig_ist.ist[ESTACK_DF]) - sizeof(void *);
++		unsigned long stack = __this_cpu_ist_top_va(DF) - sizeof(void *);
+ 		/*
+ 		 * We're likely to be running with very little stack space
+ 		 * left.  It's plausible that we'd hit this condition but
+-- 
+2.7.4
+

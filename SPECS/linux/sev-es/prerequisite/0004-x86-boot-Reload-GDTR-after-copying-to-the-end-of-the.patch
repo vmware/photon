@@ -1,0 +1,45 @@
+From 590b4c847eb709369c05f95dcb12696abc154391 Mon Sep 17 00:00:00 2001
+From: Arvind Sankar <nivedita@alum.mit.edu>
+Date: Mon, 15 Jun 2020 14:26:33 +0530
+Subject: [PATCH 4/9] x86/boot: Reload GDTR after copying to the end of the
+ buffer
+
+commit 32d009137a5646947d450da6fa641a1f4dc1e42c upstream.
+
+The GDT may get overwritten during the copy or during extract_kernel,
+which will cause problems if any segment register is touched before the
+GDTR is reloaded by the decompressed kernel. For safety update the GDTR
+to point to the GDT within the copied kernel.
+
+Signed-off-by: Arvind Sankar <nivedita@alum.mit.edu>
+Link: https://lore.kernel.org/r/20200202171353.3736319-4-nivedita@alum.mit.edu
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ arch/x86/boot/compressed/head_64.S | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index f5d25aa..c6f714d 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -437,6 +437,16 @@ trampoline_return:
+ 	cld
+ 	popq	%rsi
+ 
++	/*
++	 * The GDT may get overwritten either during the copy we just did or
++	 * during extract_kernel below. To avoid any issues, repoint the GDTR
++	 * to the new copy of the GDT.
++	 */
++	leaq	gdt64(%rbx), %rax
++	subq	%rbp, 2(%rax)
++	addq	%rbx, 2(%rax)
++	lgdt	(%rax)
++
+ /*
+  * Jump to the relocated address.
+  */
+-- 
+2.7.4
+

@@ -1,0 +1,48 @@
+From 7e1b8c4c5274cc96869c3112b3ca8728a12b225b Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:47 +0530
+Subject: [PATCH 22/30] x86-irq-32-Make-irq-stack-a-character-array
+
+commit 231c4846b106d526fa212b02b37447d3f2fcc99d upstream.
+
+There is no reason to have an u32 array in struct irq_stack. The only
+purpose of the array is to size the struct properly.
+
+Preparatory change for sharing struct irq_stack with 64-bit.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Alexey Dobriyan <adobriyan@gmail.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Kosina <jkosina@suse.cz>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Pingfan Liu <kernelfans@gmail.com>
+Cc: Pu Wen <puwen@hygon.cn>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160145.736241969@linutronix.de
+---
+ arch/x86/include/asm/processor.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
+index db21ad0..38627f4 100644
+--- a/arch/x86/include/asm/processor.h
++++ b/arch/x86/include/asm/processor.h
+@@ -427,7 +427,7 @@ DECLARE_PER_CPU_ALIGNED(struct stack_canary, stack_canary);
+  * per-CPU IRQ handling stacks
+  */
+ struct irq_stack {
+-	u32			stack[IRQ_STACK_SIZE / sizeof(u32)];
++	char			stack[IRQ_STACK_SIZE];
+ } __aligned(IRQ_STACK_SIZE);
+ 
+ DECLARE_PER_CPU(struct irq_stack *, hardirq_stack);
+-- 
+2.7.4
+

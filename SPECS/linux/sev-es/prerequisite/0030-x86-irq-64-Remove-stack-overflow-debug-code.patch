@@ -1,0 +1,119 @@
+From 3523a01edb838600c9904692832f33d06a00c32b Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:50 +0530
+Subject: [PATCH 30/30] x86-irq-64-Remove-stack-overflow-debug-code
+
+commit 117ed45485413b1977bfc638c32bf5b01d53c62b upstream.
+
+All stack types on x86 64-bit have guard pages now.
+
+So there is no point in executing probabilistic overflow checks as the
+guard pages are a accurate and reliable overflow prevention.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Nicolai Stange <nstange@suse.de>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160146.466354762@linutronix.de
+---
+ arch/x86/Kconfig         |  2 +-
+ arch/x86/kernel/irq_64.c | 56 ------------------------------------------------
+ 2 files changed, 1 insertion(+), 57 deletions(-)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index af35f5c..2b1d2eb 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -14,6 +14,7 @@ config X86_32
+ 	select ARCH_WANT_IPC_PARSE_VERSION
+ 	select CLKSRC_I8253
+ 	select CLONE_BACKWARDS
++	select HAVE_DEBUG_STACKOVERFLOW
+ 	select HAVE_AOUT
+ 	select HAVE_GENERIC_DMA_COHERENT
+ 	select MODULES_USE_ELF_REL
+@@ -138,7 +139,6 @@ config X86
+ 	select HAVE_COPY_THREAD_TLS
+ 	select HAVE_C_RECORDMCOUNT
+ 	select HAVE_DEBUG_KMEMLEAK
+-	select HAVE_DEBUG_STACKOVERFLOW
+ 	select HAVE_DMA_CONTIGUOUS
+ 	select HAVE_DYNAMIC_FTRACE
+ 	select HAVE_DYNAMIC_FTRACE_WITH_REGS
+diff --git a/arch/x86/kernel/irq_64.c b/arch/x86/kernel/irq_64.c
+index f107eb2..6bf6517 100644
+--- a/arch/x86/kernel/irq_64.c
++++ b/arch/x86/kernel/irq_64.c
+@@ -26,64 +26,8 @@
+ DEFINE_PER_CPU_PAGE_ALIGNED(struct irq_stack, irq_stack_backing_store) __visible;
+ DECLARE_INIT_PER_CPU(irq_stack_backing_store);
+ 
+-int sysctl_panic_on_stackoverflow;
+-
+-/*
+- * Probabilistic stack overflow check:
+- *
+- * Regular device interrupts can enter on the following stacks:
+- *
+- * - User stack
+- *
+- * - Kernel task stack
+- *
+- * - Interrupt stack if a device driver reenables interrupts
+- *   which should only happen in really old drivers.
+- *
+- * - Debug IST stack
+- *
+- * All other contexts are invalid.
+- */
+-static inline void stack_overflow_check(struct pt_regs *regs)
+-{
+-#ifdef CONFIG_DEBUG_STACKOVERFLOW
+-#define STACK_MARGIN	128
+-	u64 irq_stack_top, irq_stack_bottom, estack_top, estack_bottom;
+-	u64 curbase = (u64)task_stack_page(current);
+-	struct cea_exception_stacks *estacks;
+-
+-	if (user_mode(regs))
+-		return;
+-
+-	if (regs->sp >= curbase + sizeof(struct pt_regs) + STACK_MARGIN &&
+-	    regs->sp <= curbase + THREAD_SIZE)
+-		return;
+-
+-	irq_stack_top = (u64)__this_cpu_read(hardirq_stack_ptr);
+-	irq_stack_bottom = irq_stack_top - IRQ_STACK_SIZE + STACK_MARGIN;
+-	if (regs->sp >= irq_stack_bottom && regs->sp <= irq_stack_top)
+-		return;
+-
+-	estacks = __this_cpu_read(cea_exception_stacks);
+-	estack_top = CEA_ESTACK_TOP(estacks, DB);
+-	estack_bottom = CEA_ESTACK_BOT(estacks, DB) + STACK_MARGIN;
+-	if (regs->sp >= estack_bottom && regs->sp <= estack_top)
+-		return;
+-
+-	WARN_ONCE(1, "do_IRQ(): %s has overflown the kernel stack (cur:%Lx,sp:%lx, irq stack:%Lx-%Lx, exception stack: %Lx-%Lx, ip:%pF)\n",
+-		current->comm, curbase, regs->sp,
+-		irq_stack_bottom, irq_stack_top,
+-		estack_bottom, estack_top, (void *)regs->ip);
+-
+-	if (sysctl_panic_on_stackoverflow)
+-		panic("low stack detected by irq handler - check messages\n");
+-#endif
+-}
+-
+ bool handle_irq(struct irq_desc *desc, struct pt_regs *regs)
+ {
+-	stack_overflow_check(regs);
+-
+ 	if (IS_ERR_OR_NULL(desc))
+ 		return false;
+ 
+-- 
+2.7.4
+

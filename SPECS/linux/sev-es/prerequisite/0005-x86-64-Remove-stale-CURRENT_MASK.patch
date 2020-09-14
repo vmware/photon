@@ -1,0 +1,40 @@
+From e4897dde0fd5cc279f17ddb7bce3912a752d6ab2 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:42 +0530
+Subject: [PATCH 05/30] x86-64-Remove-stale-CURRENT_MASK
+
+commit 6f36bd8d2e8c221eaaf4ce5b0ebbb11c00b0ac98 upstream.
+
+Nothing uses that and before people get the wrong ideas, get rid of it.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Baoquan He <bhe@redhat.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Qian Cai <cai@lca.pw>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160144.139284839@linutronix.de
+---
+ arch/x86/include/asm/page_64_types.h | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/page_64_types.h b/arch/x86/include/asm/page_64_types.h
+index 0b6352a..c7477ce 100644
+--- a/arch/x86/include/asm/page_64_types.h
++++ b/arch/x86/include/asm/page_64_types.h
+@@ -18,7 +18,6 @@
+ 
+ #define THREAD_SIZE_ORDER	(2 + KASAN_STACK_ORDER)
+ #define THREAD_SIZE  (PAGE_SIZE << THREAD_SIZE_ORDER)
+-#define CURRENT_MASK (~(THREAD_SIZE - 1))
+ 
+ #define EXCEPTION_STACK_ORDER (0 + KASAN_STACK_ORDER)
+ #define EXCEPTION_STKSZ (PAGE_SIZE << EXCEPTION_STACK_ORDER)
+-- 
+2.7.4
+

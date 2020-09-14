@@ -1,0 +1,74 @@
+From fc720085aeec35c237a56f7abee2c819cef797d7 Mon Sep 17 00:00:00 2001
+From: Andy Lutomirski <luto@kernel.org>
+Date: Wed, 10 Jun 2020 13:28:41 +0530
+Subject: [PATCH 01/30] x86-dumpstack-Fix-off-by-one-errors-in-stack-identif
+
+commit fa33215422fd415a07ec2a00e9f1acdaf0fa8e94 upstream.
+
+The get_stack_info() function is off-by-one when checking whether an
+address is on a IRQ stack or a IST stack. This prevents an overflowed
+IRQ or IST stack from being dumped properly.
+
+[ tglx: Do the same for 32-bit ]
+
+Signed-off-by: Andy Lutomirski <luto@kernel.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160143.785651055@linutronix.de
+---
+ arch/x86/kernel/dumpstack_32.c | 4 ++--
+ arch/x86/kernel/dumpstack_64.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/kernel/dumpstack_32.c b/arch/x86/kernel/dumpstack_32.c
+index cd53f30..d305440 100644
+--- a/arch/x86/kernel/dumpstack_32.c
++++ b/arch/x86/kernel/dumpstack_32.c
+@@ -41,7 +41,7 @@ static bool in_hardirq_stack(unsigned long *stack, struct stack_info *info)
+ 	 * This is a software stack, so 'end' can be a valid stack pointer.
+ 	 * It just means the stack is empty.
+ 	 */
+-	if (stack <= begin || stack > end)
++	if (stack < begin || stack > end)
+ 		return false;
+ 
+ 	info->type	= STACK_TYPE_IRQ;
+@@ -66,7 +66,7 @@ static bool in_softirq_stack(unsigned long *stack, struct stack_info *info)
+ 	 * This is a software stack, so 'end' can be a valid stack pointer.
+ 	 * It just means the stack is empty.
+ 	 */
+-	if (stack <= begin || stack > end)
++	if (stack < begin || stack > end)
+ 		return false;
+ 
+ 	info->type	= STACK_TYPE_SOFTIRQ;
+diff --git a/arch/x86/kernel/dumpstack_64.c b/arch/x86/kernel/dumpstack_64.c
+index 5cdb9e8..90f0fa8 100644
+--- a/arch/x86/kernel/dumpstack_64.c
++++ b/arch/x86/kernel/dumpstack_64.c
+@@ -65,7 +65,7 @@ static bool in_exception_stack(unsigned long *stack, struct stack_info *info)
+ 		begin = end - (exception_stack_sizes[k] / sizeof(long));
+ 		regs  = (struct pt_regs *)end - 1;
+ 
+-		if (stack <= begin || stack >= end)
++		if (stack < begin || stack >= end)
+ 			continue;
+ 
+ 		info->type	= STACK_TYPE_EXCEPTION + k;
+@@ -88,7 +88,7 @@ static bool in_irq_stack(unsigned long *stack, struct stack_info *info)
+ 	 * This is a software stack, so 'end' can be a valid stack pointer.
+ 	 * It just means the stack is empty.
+ 	 */
+-	if (stack <= begin || stack > end)
++	if (stack < begin || stack >= end)
+ 		return false;
+ 
+ 	info->type	= STACK_TYPE_IRQ;
+-- 
+2.7.4
+

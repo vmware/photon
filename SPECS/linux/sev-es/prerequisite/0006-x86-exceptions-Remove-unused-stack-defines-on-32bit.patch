@@ -1,0 +1,44 @@
+From 7d1d480d57f3b54c15a48904f3f398baa1b214ad Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:42 +0530
+Subject: [PATCH 06/30] x86-exceptions-Remove-unused-stack-defines-on-32bit
+
+commit 30842211506e376b76394a9cb4e6d0c9d258b8d4 upstream.
+
+Nothing requires those for 32bit builds.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Dave Hansen <dave.hansen@intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160144.227822695@linutronix.de
+---
+ arch/x86/include/asm/page_32_types.h | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/arch/x86/include/asm/page_32_types.h b/arch/x86/include/asm/page_32_types.h
+index 0d5c739..57b5dc1 100644
+--- a/arch/x86/include/asm/page_32_types.h
++++ b/arch/x86/include/asm/page_32_types.h
+@@ -22,11 +22,7 @@
+ #define THREAD_SIZE_ORDER	1
+ #define THREAD_SIZE		(PAGE_SIZE << THREAD_SIZE_ORDER)
+ 
+-#define DOUBLEFAULT_STACK 1
+-#define NMI_STACK 0
+-#define DEBUG_STACK 0
+-#define MCE_STACK 0
+-#define N_EXCEPTION_STACKS 1
++#define N_EXCEPTION_STACKS	1
+ 
+ #ifdef CONFIG_X86_PAE
+ /*
+-- 
+2.7.4
+

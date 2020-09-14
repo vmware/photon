@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.154
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -149,6 +149,59 @@ Patch307:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
 Patch308:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
 Patch309:        0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
 
+%ifarch x86_64
+# SEV-ES prerequisite: x86/efi,boot: GDT handling cleanup/fixes
+Patch311:        0001-x86-boot-Save-several-bytes-in-decompressor.patch
+Patch312:        0002-x86-boot-Remove-KEEP_SEGMENTS-support.patch
+Patch313:        0003-efi-x86-Don-t-depend-on-firmware-GDT-layout.patch
+Patch314:        0004-x86-boot-Reload-GDTR-after-copying-to-the-end-of-the.patch
+Patch315:        0005-x86-boot-Clear-direction-and-interrupt-flags-in-star.patch
+Patch316:        0006-efi-x86-Remove-GDT-setup-from-efi_main.patch
+Patch317:        0007-x86-boot-GDT-limit-value-should-be-size-1.patch
+Patch318:        0008-x86-boot-Micro-optimize-GDT-loading-instructions.patch
+Patch319:        0009-x86-boot-compressed-Fix-reloading-of-GDTR-post-relocation.patch
+
+# vmwgfx patches for sev-es
+Patch321:        0001-drm-vmwgfx-Don-t-use-the-HB-port-if-memory-encryptio.patch
+Patch322:        0002-drm-vmwgfx-Fix-the-refuse_dma-mode-when-using-guest-.patch
+Patch323:        0003-drm-vmwgfx-Refuse-DMA-operation-when-SEV-encryption-.patch
+
+# SEV-ES prerequisite: x86: Add guard pages to exception and interrupt stacks
+Patch331:        0001-x86-dumpstack-Fix-off-by-one-errors-in-stack-identif.patch
+Patch332:        0002-x86-irq-64-Remove-a-hardcoded-irq_stack_union-access.patch
+Patch333:        0003-x86-irq-64-Sanitize-the-top-bottom-confusion.patch
+Patch334:        0004-x86-idt-Remove-unused-macro-SISTG.patch
+Patch335:        0005-x86-64-Remove-stale-CURRENT_MASK.patch
+Patch336:        0006-x86-exceptions-Remove-unused-stack-defines-on-32bit.patch
+Patch337:        0007-x86-exceptions-Make-IST-index-zero-based.patch
+Patch338:        0008-x86-cpu_entry_area-Cleanup-setup-functions.patch
+Patch339:        0009-x86-exceptions-Add-structs-for-exception-stacks.patch
+Patch340:        0010-x86-cpu_entry_area-Prepare-for-IST-guard-pages.patch
+Patch341:        0011-x86-cpu_entry_area-Provide-exception-stack-accessor.patch
+Patch342:        0012-x86-traps-Use-cpu_entry_area-instead-of-orig_ist.patch
+Patch343:        0013-x86-irq-64-Use-cpu-entry-area-instead-of-orig_ist.patch
+Patch344:        0014-x86-dumpstack-64-Use-cpu_entry_area-instead-of-orig_.patch
+Patch345:        0015-x86-cpu-Prepare-TSS.IST-setup-for-guard-pages.patch
+Patch346:        0016-x86-cpu-Remove-orig_ist-array.patch
+Patch347:        0017-x86-exceptions-Disconnect-IST-index-and-stack-order.patch
+Patch348:        0018-x86-exceptions-Enable-IST-guard-pages.patch
+Patch349:        0019-x86-exceptions-Split-debug-IST-stack.patch
+Patch350:        0020-x86-dumpstack-64-Speedup-in_exception_stack.patch
+Patch351:        0021-x86-irq-32-Define-IRQ_STACK_SIZE.patch
+Patch352:        0022-x86-irq-32-Make-irq-stack-a-character-array.patch
+Patch353:        0023-x86-irq-32-Rename-hard-softirq_stack-to-hard-softirq.patch
+Patch354:        0024-x86-irq-64-Rename-irq_stack_ptr-to-hardirq_stack_ptr.patch
+Patch355:        0025-x86-irq-32-Invoke-irq_ctx_init-from-init_IRQ.patch
+Patch356:        0026-x86-irq-32-Handle-irq-stack-allocation-failure-prope.patch
+Patch357:        0027-x86-irq-64-Init-hardirq_stack_ptr-during-CPU-hotplug.patch
+Patch358:        0028-x86-irq-64-Split-the-IRQ-stack-into-its-own-pages.patch
+Patch359:        0029-x86-irq-64-Remap-the-IRQ-stack-with-guard-pages.patch
+Patch360:        0030-x86-irq-64-Remove-stack-overflow-debug-code.patch
+
+Patch371:        0001-x86-ioremap-Add-an-ioremap_encrypted-helper.patch
+Patch372:        0001-linkage-Introduce-new-macros-for-assembler-symbols.patch
+%endif
+
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
 %endif
@@ -288,6 +341,54 @@ This Linux package contains hmac sha generator kernel module.
 %patch307 -p1
 %patch308 -p1
 %patch309 -p1
+%ifarch x86_64
+%patch311 -p1
+%patch312 -p1
+%patch313 -p1
+%patch314 -p1
+%patch315 -p1
+%patch316 -p1
+%patch317 -p1
+%patch318 -p1
+%patch319 -p1
+%patch321 -p1
+%patch322 -p1
+%patch323 -p1
+
+%patch331 -p1
+%patch332 -p1
+%patch333 -p1
+%patch334 -p1
+%patch335 -p1
+%patch336 -p1
+%patch337 -p1
+%patch338 -p1
+%patch339 -p1
+%patch340 -p1
+%patch341 -p1
+%patch342 -p1
+%patch343 -p1
+%patch344 -p1
+%patch345 -p1
+%patch346 -p1
+%patch347 -p1
+%patch348 -p1
+%patch349 -p1
+%patch350 -p1
+%patch351 -p1
+%patch352 -p1
+%patch353 -p1
+%patch354 -p1
+%patch355 -p1
+%patch356 -p1
+%patch357 -p1
+%patch358 -p1
+%patch359 -p1
+%patch360 -p1
+
+%patch371 -p1
+%patch372 -p1
+%endif
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -418,6 +519,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Nov 03 2020 Ajay Kaher <akaher@vmware.com> 4.19.154-2
+-   Adding following patch series required for sev-es:
+-   x86/efi,boot: GDT handling cleanup/fixes
+-   x86: Add guard pages to exception and interrupt stacks
+-   vmwgfx patches
 *   Mon Nov 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-1
 -   Update to version 4.19.154
 *   Mon Oct 26 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.150-4

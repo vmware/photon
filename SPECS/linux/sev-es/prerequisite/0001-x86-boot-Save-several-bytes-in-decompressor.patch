@@ -1,0 +1,38 @@
+From b694c8af6cf1627035a121deb60105208b558b7b Mon Sep 17 00:00:00 2001
+From: Cao jin <caoj.fnst@cn.fujitsu.com>
+Date: Mon, 15 Jun 2020 14:20:19 +0530
+Subject: [PATCH 1/9] x86/boot: Save several bytes in decompressor
+
+commit 0a278662f53159354a0391a17741a20db736256a upstream.
+
+gdt64 represents the content of GDTR under x86-64, which actually needs
+10 bytes only, ".long" & ".word" is superfluous.
+
+Signed-off-by: Cao jin <caoj.fnst@cn.fujitsu.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Cc: <bp@alien8.de>
+Cc: <hpa@zytor.com>
+Link: https://lkml.kernel.org/r/20190123100014.23721-1-caoj.fnst@cn.fujitsu.com
+[Ajay: Regenerated the patch for v4.19]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ arch/x86/boot/compressed/head_64.S | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index 9fa644c..5cc3bb2 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -660,8 +660,6 @@ no_longmode:
+ 	.data
+ gdt64:
+ 	.word	gdt_end - gdt
+-	.long	0
+-	.word	0
+ 	.quad   0
+ gdt:
+ 	.word	gdt_end - gdt
+-- 
+2.7.4
+

@@ -1,0 +1,74 @@
+From c63ffb1a4c2db957b2090a4d09f1649f7dcc6a71 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:44 +0530
+Subject: [PATCH 11/30] x86-cpu_entry_area-Provide-exception-stack-accessor
+
+commit 7623f37e411156e6e09b95cf5c76e509c5fda640 upstream.
+
+Store a pointer to the per cpu entry area exception stack mappings to allow
+fast retrieval.
+
+Required for converting various places from using the shadow IST array to
+directly doing address calculations on the actual mapping address.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160144.680960459@linutronix.de
+---
+ arch/x86/include/asm/cpu_entry_area.h | 4 ++++
+ arch/x86/mm/cpu_entry_area.c          | 4 ++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/arch/x86/include/asm/cpu_entry_area.h b/arch/x86/include/asm/cpu_entry_area.h
+index 9f8df44..2c16f68 100644
+--- a/arch/x86/include/asm/cpu_entry_area.h
++++ b/arch/x86/include/asm/cpu_entry_area.h
+@@ -101,6 +101,7 @@ struct cpu_entry_area {
+ #define CPU_ENTRY_AREA_TOT_SIZE	(CPU_ENTRY_AREA_SIZE * NR_CPUS)
+ 
+ DECLARE_PER_CPU(struct cpu_entry_area *, cpu_entry_area);
++DECLARE_PER_CPU(struct cea_exception_stacks *, cea_exception_stacks);
+ 
+ extern void setup_cpu_entry_areas(void);
+ extern void cea_set_pte(void *cea_vaddr, phys_addr_t pa, pgprot_t flags);
+@@ -120,4 +121,7 @@ static inline struct entry_stack *cpu_entry_stack(int cpu)
+ 	return &get_cpu_entry_area(cpu)->entry_stack_page.stack;
+ }
+ 
++#define __this_cpu_ist_top_va(name)					\
++	CEA_ESTACK_TOP(__this_cpu_read(cea_exception_stacks), name)
++
+ #endif
+diff --git a/arch/x86/mm/cpu_entry_area.c b/arch/x86/mm/cpu_entry_area.c
+index d381b1f..f689bf8 100644
+--- a/arch/x86/mm/cpu_entry_area.c
++++ b/arch/x86/mm/cpu_entry_area.c
+@@ -14,6 +14,7 @@ static DEFINE_PER_CPU_PAGE_ALIGNED(struct entry_stack_page, entry_stack_storage)
+ 
+ #ifdef CONFIG_X86_64
+ static DEFINE_PER_CPU_PAGE_ALIGNED(struct exception_stacks, exception_stacks);
++DEFINE_PER_CPU(struct cea_exception_stacks*, cea_exception_stacks);
+ static DEFINE_PER_CPU(struct kcore_list, kcore_entry_trampoline);
+ #endif
+ 
+@@ -93,6 +94,9 @@ static void __init percpu_setup_exception_stacks(unsigned int cpu)
+ 	unsigned int npages;
+ 
+ 	BUILD_BUG_ON(sizeof(exception_stacks) % PAGE_SIZE != 0);
++
++	per_cpu(cea_exception_stacks, cpu) = &cea->estacks;
++
+ 	/*
+ 	 * The exceptions stack mappings in the per cpu area are protected
+ 	 * by guard pages so each stack must be mapped separately.
+-- 
+2.7.4
+

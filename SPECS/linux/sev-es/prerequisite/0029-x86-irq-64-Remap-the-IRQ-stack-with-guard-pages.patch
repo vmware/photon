@@ -1,0 +1,85 @@
+From 512c66455c455fceb4fb59b33ce0a6b7ea169d14 Mon Sep 17 00:00:00 2001
+From: Andy Lutomirski <luto@kernel.org>
+Date: Wed, 10 Jun 2020 13:28:50 +0530
+Subject: [PATCH 29/30] x86-irq-64-Remap-the-IRQ-stack-with-guard-pages
+
+commit 18b7a6bef62de1d598fbff23b52114b7775ecf00 upstream.
+
+The IRQ stack lives in percpu space, so an IRQ handler that overflows it
+will overwrite other data structures.
+
+Use vmap() to remap the IRQ stack so that it will have the usual guard
+pages that vmap()/vmalloc() allocations have. With this, the kernel will
+panic immediately on an IRQ stack overflow.
+
+[ tglx: Move the map code to a proper place and invoke it only when a CPU
+        is about to be brought online. No point in installing the map at
+        early boot for all possible CPUs. Fail the CPU bringup if the vmap()
+        fails as done for all other preparatory stages in CPU hotplug. ]
+
+Signed-off-by: Andy Lutomirski <luto@kernel.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Nicolai Stange <nstange@suse.de>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160146.363733568@linutronix.de
+---
+ arch/x86/kernel/irq_64.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+diff --git a/arch/x86/kernel/irq_64.c b/arch/x86/kernel/irq_64.c
+index c0f89d1..f107eb2 100644
+--- a/arch/x86/kernel/irq_64.c
++++ b/arch/x86/kernel/irq_64.c
+@@ -91,6 +91,35 @@ bool handle_irq(struct irq_desc *desc, struct pt_regs *regs)
+ 	return true;
+ }
+ 
++#ifdef CONFIG_VMAP_STACK
++/*
++ * VMAP the backing store with guard pages
++ */
++static int map_irq_stack(unsigned int cpu)
++{
++	char *stack = (char *)per_cpu_ptr(&irq_stack_backing_store, cpu);
++	struct page *pages[IRQ_STACK_SIZE / PAGE_SIZE];
++	void *va;
++	int i;
++
++	for (i = 0; i < IRQ_STACK_SIZE / PAGE_SIZE; i++) {
++		phys_addr_t pa = per_cpu_ptr_to_phys(stack + (i << PAGE_SHIFT));
++
++		pages[i] = pfn_to_page(pa >> PAGE_SHIFT);
++	}
++
++	va = vmap(pages, IRQ_STACK_SIZE / PAGE_SIZE, GFP_KERNEL, PAGE_KERNEL);
++	if (!va)
++		return -ENOMEM;
++
++	per_cpu(hardirq_stack_ptr, cpu) = va + IRQ_STACK_SIZE;
++	return 0;
++}
++#else
++/*
++ * If VMAP stacks are disabled due to KASAN, just use the per cpu
++ * backing store without guard pages.
++ */
+ static int map_irq_stack(unsigned int cpu)
+ {
+ 	void *va = per_cpu_ptr(&irq_stack_backing_store, cpu);
+@@ -98,6 +127,7 @@ static int map_irq_stack(unsigned int cpu)
+ 	per_cpu(hardirq_stack_ptr, cpu) = va + IRQ_STACK_SIZE;
+ 	return 0;
+ }
++#endif
+ 
+ int irq_init_percpu_irqstack(unsigned int cpu)
+ {
+-- 
+2.7.4
+

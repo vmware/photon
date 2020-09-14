@@ -1,0 +1,63 @@
+From 5dcac3c76d3336355cb9b0336d3517e426a8e1bc Mon Sep 17 00:00:00 2001
+From: Arvind Sankar <nivedita@alum.mit.edu> 
+Date: Mon, 15 Jun 2020 14:33:31 +0530
+Subject: [PATCH 8/9] x86/boot: Micro-optimize GDT loading instructions
+
+commit 8a3abe30de9fffec8b44adeb78f93ecb0f09b0c5 upstream.
+
+Rearrange the instructions a bit to use a 32-bit displacement once
+instead of 2/3 times. This saves 8 bytes of machine code.
+
+Signed-off-by: Arvind Sankar <nivedita@alum.mit.edu>
+Link: https://lore.kernel.org/r/20200202171353.3736319-8-nivedita@alum.mit.edu
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ arch/x86/boot/compressed/head_64.S | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index 2e1db02..e0c5fb5 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -69,8 +69,9 @@ ENTRY(startup_32)
+ 	subl	$1b, %ebp
+ 
+ 	/* Load new GDT with the 64bit segments using 32bit descriptor */
+-	addl	%ebp, gdt+2(%ebp)
+-	lgdt	gdt(%ebp)
++	leal	gdt(%ebp), %eax
++	movl	%eax, 2(%eax)
++	lgdt	(%eax)
+ 
+ 	/* Load segment registers with our descriptors */
+ 	movl	$__BOOT_DS, %eax
+@@ -356,9 +357,9 @@ ENTRY(startup_64)
+ 	 */
+ 
+ 	/* Make sure we have GDT with 32-bit code segment */
+-	leaq	gdt(%rip), %rax
+-	movq	%rax, gdt64+2(%rip)
+-	lgdt	gdt64(%rip)
++	leaq	gdt64(%rip), %rax
++	addq	%rax, 2(%rax)
++	lgdt	(%rax)
+ 
+ 	/*
+ 	 * paging_prepare() sets up the trampoline and checks if we need to
+@@ -671,10 +672,10 @@ no_longmode:
+ 	.data
+ gdt64:
+ 	.word	gdt_end - gdt - 1
+-	.quad   0
++	.quad   gdt - gdt64
+ gdt:
+ 	.word	gdt_end - gdt - 1
+-	.long	gdt
++	.long	0
+ 	.word	0
+ 	.quad	0x00cf9a000000ffff	/* __KERNEL32_CS */
+ 	.quad	0x00af9a000000ffff	/* __KERNEL_CS */
+-- 
+2.7.4
+

@@ -1,0 +1,45 @@
+From 855986aae053f961c0dcae31eabcff15951a358f Mon Sep 17 00:00:00 2001
+From: Andy Lutomirski <luto@kernel.org>
+Date: Wed, 10 Jun 2020 13:28:41 +0530
+Subject: [PATCH 02/30] x86-irq-64-Remove-a-hardcoded-irq_stack_union-access
+
+commit 4f44b8f0b33b7111216f0fad353315f796b81617 upstream.
+
+stack_overflow_check() is using both irq_stack_ptr and irq_stack_union
+to find the IRQ stack. That's going to break when vmapped irq stacks are
+introduced.
+
+Change it to just use irq_stack_ptr.
+
+Signed-off-by: Andy Lutomirski <luto@kernel.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Nicolai Stange <nstange@suse.de>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160143.872549191@linutronix.de
+---
+ arch/x86/kernel/irq_64.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/arch/x86/kernel/irq_64.c b/arch/x86/kernel/irq_64.c
+index b50ac9c..f6dcc8f 100644
+--- a/arch/x86/kernel/irq_64.c
++++ b/arch/x86/kernel/irq_64.c
+@@ -55,9 +55,8 @@ static inline void stack_overflow_check(struct pt_regs *regs)
+ 	    regs->sp <= curbase + THREAD_SIZE)
+ 		return;
+ 
+-	irq_stack_top = (u64)this_cpu_ptr(irq_stack_union.irq_stack) +
+-			STACK_TOP_MARGIN;
+ 	irq_stack_bottom = (u64)__this_cpu_read(irq_stack_ptr);
++	irq_stack_top = irq_stack_bottom - IRQ_STACK_SIZE + STACK_TOP_MARGIN;
+ 	if (regs->sp >= irq_stack_top && regs->sp <= irq_stack_bottom)
+ 		return;
+ 
+-- 
+2.7.4
+

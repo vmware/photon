@@ -1,0 +1,67 @@
+From ff82faac81f965d3f4907ad7e275723b685377ad Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:47 +0530
+Subject: [PATCH 21/30] x86-irq-32-Define-IRQ_STACK_SIZE
+
+commit aa641c287b2f7676f6f0064a8351daf08eca6b0a upstream.
+
+On 32-bit IRQ_STACK_SIZE is the same as THREAD_SIZE.
+
+To allow sharing struct irq_stack with 32-bit, define IRQ_STACK_SIZE for
+32-bit and use it for struct irq_stack.
+
+No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Dave Hansen <dave.hansen@intel.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Kosina <jkosina@suse.cz>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160145.632513987@linutronix.de
+---
+ arch/x86/include/asm/page_32_types.h | 2 ++
+ arch/x86/include/asm/processor.h     | 4 ++--
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/page_32_types.h b/arch/x86/include/asm/page_32_types.h
+index 57b5dc1..565ad75 100644
+--- a/arch/x86/include/asm/page_32_types.h
++++ b/arch/x86/include/asm/page_32_types.h
+@@ -22,6 +22,8 @@
+ #define THREAD_SIZE_ORDER	1
+ #define THREAD_SIZE		(PAGE_SIZE << THREAD_SIZE_ORDER)
+ 
++#define IRQ_STACK_SIZE		THREAD_SIZE
++
+ #define N_EXCEPTION_STACKS	1
+ 
+ #ifdef CONFIG_X86_PAE
+diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
+index b143acd..db21ad0 100644
+--- a/arch/x86/include/asm/processor.h
++++ b/arch/x86/include/asm/processor.h
+@@ -427,8 +427,8 @@ DECLARE_PER_CPU_ALIGNED(struct stack_canary, stack_canary);
+  * per-CPU IRQ handling stacks
+  */
+ struct irq_stack {
+-	u32                     stack[THREAD_SIZE/sizeof(u32)];
+-} __aligned(THREAD_SIZE);
++	u32			stack[IRQ_STACK_SIZE / sizeof(u32)];
++} __aligned(IRQ_STACK_SIZE);
+ 
+ DECLARE_PER_CPU(struct irq_stack *, hardirq_stack);
+ DECLARE_PER_CPU(struct irq_stack *, softirq_stack);
+-- 
+2.7.4
+

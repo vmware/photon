@@ -1,0 +1,82 @@
+From e32a3d9965b56ea38a979c77d251bec785c31524 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:43 +0530
+Subject: [PATCH 10/30] x86-cpu_entry_area-Prepare-for-IST-guard-pages
+
+commit a4af767ae59cc579569bbfe49513a0037d5989ee upstream.
+
+To allow guard pages between the IST stacks each stack needs to be
+mapped individually.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160144.592691557@linutronix.de
+---
+ arch/x86/mm/cpu_entry_area.c | 35 +++++++++++++++++++++++++++++------
+ 1 file changed, 29 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/mm/cpu_entry_area.c b/arch/x86/mm/cpu_entry_area.c
+index 9f3008b..d381b1f 100644
+--- a/arch/x86/mm/cpu_entry_area.c
++++ b/arch/x86/mm/cpu_entry_area.c
+@@ -78,6 +78,34 @@ static void percpu_setup_debug_store(unsigned int cpu)
+ #endif
+ }
+ 
++#ifdef CONFIG_X86_64
++
++#define cea_map_stack(name) do {					\
++	npages = sizeof(estacks->name## _stack) / PAGE_SIZE;		\
++	cea_map_percpu_pages(cea->estacks.name## _stack,		\
++			estacks->name## _stack, npages, PAGE_KERNEL);	\
++	} while (0)
++
++static void __init percpu_setup_exception_stacks(unsigned int cpu)
++{
++	struct exception_stacks *estacks = per_cpu_ptr(&exception_stacks, cpu);
++	struct cpu_entry_area *cea = get_cpu_entry_area(cpu);
++	unsigned int npages;
++
++	BUILD_BUG_ON(sizeof(exception_stacks) % PAGE_SIZE != 0);
++	/*
++	 * The exceptions stack mappings in the per cpu area are protected
++	 * by guard pages so each stack must be mapped separately.
++	 */
++	cea_map_stack(DF);
++	cea_map_stack(NMI);
++	cea_map_stack(DB);
++	cea_map_stack(MCE);
++}
++#else
++static inline void percpu_setup_exception_stacks(unsigned int cpu) {}
++#endif
++
+ /* Setup the fixmap mappings only once per-processor */
+ static void __init setup_cpu_entry_area(unsigned int cpu)
+ {
+@@ -137,13 +165,8 @@ static void __init setup_cpu_entry_area(unsigned int cpu)
+ 	per_cpu(cpu_entry_area, cpu) = cea;
+ #endif
+ 
++	percpu_setup_exception_stacks(cpu);
+ #ifdef CONFIG_X86_64
+-	BUILD_BUG_ON(sizeof(exception_stacks) % PAGE_SIZE != 0);
+-	BUILD_BUG_ON(sizeof(exception_stacks) !=
+-		     sizeof(((struct cpu_entry_area *)0)->estacks));
+-	cea_map_percpu_pages(&cea->estacks, &per_cpu(exception_stacks, cpu),
+-			     sizeof(exception_stacks) / PAGE_SIZE, PAGE_KERNEL);
+-
+ 	cea_set_pte(&get_cpu_entry_area(cpu)->entry_trampoline,
+ 		     __pa_symbol(_entry_trampoline), PAGE_KERNEL_RX);
+ 	/*
+-- 
+2.7.4
+

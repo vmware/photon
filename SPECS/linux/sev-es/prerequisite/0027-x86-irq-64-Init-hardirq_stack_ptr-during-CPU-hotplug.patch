@@ -1,0 +1,89 @@
+From 5d492274d2e5346d35e1a6e512bc1382db33644b Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:49 +0530
+Subject: [PATCH 27/30] x86-irq-64-Init-hardirq_stack_ptr-during-CPU-hotplug
+
+commit 0ac26104208450d35c4e68754ce0c67b3a4d7802 upstream.
+
+Preparatory change for disentangling the irq stack union as a
+prerequisite for irq stacks with guard pages.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: "Chang S. Bae" <chang.seok.bae@intel.com>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Nicolai Stange <nstange@suse.de>
+Cc: Pavel Tatashin <pasha.tatashin@oracle.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: x86-ml <x86@kernel.org>
+Cc: Yi Wang <wang.yi59@zte.com.cn>
+Link: https://lkml.kernel.org/r/20190414160146.177558566@linutronix.de
+---
+ arch/x86/include/asm/irq.h   |  4 ----
+ arch/x86/kernel/cpu/common.c |  4 +---
+ arch/x86/kernel/irq_64.c     | 15 +++++++++++++++
+ 3 files changed, 16 insertions(+), 7 deletions(-)
+
+diff --git a/arch/x86/include/asm/irq.h b/arch/x86/include/asm/irq.h
+index dc73e6c..4486d1d 100644
+--- a/arch/x86/include/asm/irq.h
++++ b/arch/x86/include/asm/irq.h
+@@ -16,11 +16,7 @@ static inline int irq_canonicalize(int irq)
+ 	return ((irq == 2) ? 9 : irq);
+ }
+ 
+-#ifdef CONFIG_X86_32
+ extern int irq_init_percpu_irqstack(unsigned int cpu);
+-#else
+-static inline int irq_init_percpu_irqstack(unsigned int cpu) { return 0; }
+-#endif
+ 
+ #define __ARCH_HAS_DO_SOFTIRQ
+ 
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 03d29c1..4d2f7b1 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1567,9 +1567,7 @@ DEFINE_PER_CPU(struct task_struct *, current_task) ____cacheline_aligned =
+ 	&init_task;
+ EXPORT_PER_CPU_SYMBOL(current_task);
+ 
+-DEFINE_PER_CPU(char *, hardirq_stack_ptr) =
+-	init_per_cpu_var(irq_stack_union.irq_stack) + IRQ_STACK_SIZE;
+-
++DEFINE_PER_CPU(char *, hardirq_stack_ptr);
+ DEFINE_PER_CPU(unsigned int, irq_count) __visible = -1;
+ 
+ DEFINE_PER_CPU(int, __preempt_count) = INIT_PREEMPT_COUNT;
+diff --git a/arch/x86/kernel/irq_64.c b/arch/x86/kernel/irq_64.c
+index f0c7356..c0bea0d 100644
+--- a/arch/x86/kernel/irq_64.c
++++ b/arch/x86/kernel/irq_64.c
+@@ -87,3 +87,18 @@ bool handle_irq(struct irq_desc *desc, struct pt_regs *regs)
+ 	generic_handle_irq_desc(desc);
+ 	return true;
+ }
++
++static int map_irq_stack(unsigned int cpu)
++{
++	void *va = per_cpu_ptr(irq_stack_union.irq_stack, cpu);
++
++	per_cpu(hardirq_stack_ptr, cpu) = va + IRQ_STACK_SIZE;
++	return 0;
++}
++
++int irq_init_percpu_irqstack(unsigned int cpu)
++{
++	if (per_cpu(hardirq_stack_ptr, cpu))
++		return 0;
++	return map_irq_stack(cpu);
++}
+-- 
+2.7.4
+

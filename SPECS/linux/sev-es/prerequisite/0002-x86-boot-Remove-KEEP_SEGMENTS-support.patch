@@ -1,0 +1,104 @@
+From d6ad31c951510837d66615c11ba314e9efdcafef Mon Sep 17 00:00:00 2001
+From: Arvind Sankar <nivedita@alum.mit.edu>
+Date: Mon, 15 Jun 2020 14:22:02 +0530
+Subject: [PATCH 2/9] x86/boot: Remove KEEP_SEGMENTS support
+
+commit 67a6af7ad1d161dbc9c139e868d5549e632923f7 upstream.
+
+Commit a24e785111a3 ("i386: paravirt boot sequence") added this flag for
+use by paravirtualized environments such as Xen. However, Xen never made
+use of this flag [1], and it was only ever used by lguest [2].
+
+Commit ecda85e70277 ("x86/lguest: Remove lguest support") removed
+lguest, so KEEP_SEGMENTS has lost its last user.
+
+[1] https://lore.kernel.org/lkml/4D4B097C.5050405@goop.org
+[2] https://www.mail-archive.com/lguest@lists.ozlabs.org/msg00469.html
+
+Signed-off-by: Arvind Sankar <nivedita@alum.mit.edu>
+Link: https://lore.kernel.org/r/20200202171353.3736319-2-nivedita@alum.mit.edu
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ arch/x86/boot/compressed/head_32.S | 8 --------
+ arch/x86/boot/compressed/head_64.S | 8 --------
+ arch/x86/kernel/head_32.S          | 6 ------
+ 3 files changed, 22 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/head_32.S b/arch/x86/boot/compressed/head_32.S
+index 01d628e..611562d 100644
+--- a/arch/x86/boot/compressed/head_32.S
++++ b/arch/x86/boot/compressed/head_32.S
+@@ -63,13 +63,6 @@
+ 	__HEAD
+ ENTRY(startup_32)
+ 	cld
+-	/*
+-	 * Test KEEP_SEGMENTS flag to see if the bootloader is asking
+-	 * us to not reload segments
+-	 */
+-	testb	$KEEP_SEGMENTS, BP_loadflags(%esi)
+-	jnz	1f
+-
+ 	cli
+ 	movl	$__BOOT_DS, %eax
+ 	movl	%eax, %ds
+@@ -77,7 +70,6 @@ ENTRY(startup_32)
+ 	movl	%eax, %fs
+ 	movl	%eax, %gs
+ 	movl	%eax, %ss
+-1:
+ 
+ /*
+  * Calculate the delta between where we were compiled to run
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index 5cc3bb2..e1a7807 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -53,19 +53,11 @@ ENTRY(startup_32)
+ 	 * all need to be under the 4G limit.
+ 	 */
+ 	cld
+-	/*
+-	 * Test KEEP_SEGMENTS flag to see if the bootloader is asking
+-	 * us to not reload segments
+-	 */
+-	testb $KEEP_SEGMENTS, BP_loadflags(%esi)
+-	jnz 1f
+-
+ 	cli
+ 	movl	$(__BOOT_DS), %eax
+ 	movl	%eax, %ds
+ 	movl	%eax, %es
+ 	movl	%eax, %ss
+-1:
+ 
+ /*
+  * Calculate the delta between where we were compiled to run
+diff --git a/arch/x86/kernel/head_32.S b/arch/x86/kernel/head_32.S
+index 30f9cb2..cc881e1 100644
+--- a/arch/x86/kernel/head_32.S
++++ b/arch/x86/kernel/head_32.S
+@@ -67,11 +67,6 @@ __HEAD
+ ENTRY(startup_32)
+ 	movl pa(initial_stack),%ecx
+ 	
+-	/* test KEEP_SEGMENTS flag to see if the bootloader is asking
+-		us to not reload segments */
+-	testb $KEEP_SEGMENTS, BP_loadflags(%esi)
+-	jnz 2f
+-
+ /*
+  * Set segments to known values.
+  */
+@@ -82,7 +77,6 @@ ENTRY(startup_32)
+ 	movl %eax,%fs
+ 	movl %eax,%gs
+ 	movl %eax,%ss
+-2:
+ 	leal -__PAGE_OFFSET(%ecx),%esp
+ 
+ /*
+-- 
+2.7.4
+

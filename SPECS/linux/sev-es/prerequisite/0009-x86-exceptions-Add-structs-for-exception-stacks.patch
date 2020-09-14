@@ -1,0 +1,156 @@
+From dee2eebcbfd4036b0bfca7a3be904c10688016f6 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:43 +0530
+Subject: [PATCH 09/30] x86-exceptions-Add-structs-for-exception-stacks
+
+commit 019b17b3ffe48100e52f609ca1c6ed6e5a40cba1 upstream.
+
+At the moment everything assumes a full linear mapping of the various
+exception stacks. Adding guard pages to the cpu entry area mapping of the
+exception stacks will break that assumption.
+
+As a preparatory step convert both the real storage and the effective
+mapping in the cpu entry area from character arrays to structures.
+
+To ensure that both arrays have the same ordering and the same size of the
+individual stacks fill the members with a macro. The guard size is the only
+difference between the two resulting structures. For now both have guard
+size 0 until the preparation of all usage sites is done.
+
+Provide a couple of helper macros which are used in the following
+conversions.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: "Chang S. Bae" <chang.seok.bae@intel.com>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160144.506807893@linutronix.de
+
+---
+ arch/x86/include/asm/cpu_entry_area.h | 52 +++++++++++++++++++++++++++++++----
+ arch/x86/kernel/cpu/common.c          |  2 +-
+ arch/x86/mm/cpu_entry_area.c          |  8 ++----
+ 3 files changed, 51 insertions(+), 11 deletions(-)
+
+diff --git a/arch/x86/include/asm/cpu_entry_area.h b/arch/x86/include/asm/cpu_entry_area.h
+index 4a7884b..9f8df44 100644
+--- a/arch/x86/include/asm/cpu_entry_area.h
++++ b/arch/x86/include/asm/cpu_entry_area.h
+@@ -7,6 +7,51 @@
+ #include <asm/processor.h>
+ #include <asm/intel_ds.h>
+ 
++#ifdef CONFIG_X86_64
++
++/* Macro to enforce the same ordering and stack sizes */
++#define ESTACKS_MEMBERS(guardsize)		\
++	char	DF_stack_guard[guardsize];	\
++	char	DF_stack[EXCEPTION_STKSZ];	\
++	char	NMI_stack_guard[guardsize];	\
++	char	NMI_stack[EXCEPTION_STKSZ];	\
++	char	DB_stack_guard[guardsize];	\
++	char	DB_stack[DEBUG_STKSZ];		\
++	char	MCE_stack_guard[guardsize];	\
++	char	MCE_stack[EXCEPTION_STKSZ];	\
++	char	IST_top_guard[guardsize];	\
++
++/* The exception stacks' physical storage. No guard pages required */
++struct exception_stacks {
++	ESTACKS_MEMBERS(0)
++};
++
++/*
++ * The effective cpu entry area mapping with guard pages. Guard size is
++ * zero until the code which makes assumptions about linear mappings is
++ * cleaned up.
++ */
++struct cea_exception_stacks {
++	ESTACKS_MEMBERS(0)
++};
++
++#define CEA_ESTACK_SIZE(st)					\
++	sizeof(((struct cea_exception_stacks *)0)->st## _stack)
++
++#define CEA_ESTACK_BOT(ceastp, st)				\
++	((unsigned long)&(ceastp)->st## _stack)
++
++#define CEA_ESTACK_TOP(ceastp, st)				\
++	(CEA_ESTACK_BOT(ceastp, st) + CEA_ESTACK_SIZE(st))
++
++#define CEA_ESTACK_OFFS(st)					\
++	offsetof(struct cea_exception_stacks, st## _stack)
++
++#define CEA_ESTACK_PAGES					\
++	(sizeof(struct cea_exception_stacks) / PAGE_SIZE)
++
++#endif
++
+ /*
+  * cpu_entry_area is a percpu region that contains things needed by the CPU
+  * and early entry/exit code.  Real types aren't used for all fields here
+@@ -34,12 +79,9 @@ struct cpu_entry_area {
+ 
+ #ifdef CONFIG_X86_64
+ 	/*
+-	 * Exception stacks used for IST entries.
+-	 *
+-	 * In the future, this should have a separate slot for each stack
+-	 * with guard pages between them.
++	 * Exception stacks used for IST entries with guard pages.
+ 	 */
+-	char exception_stacks[(N_EXCEPTION_STACKS - 1) * EXCEPTION_STKSZ + DEBUG_STKSZ];
++	struct cea_exception_stacks estacks;
+ #endif
+ #ifdef CONFIG_CPU_SUP_INTEL
+ 	/*
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 4b1837e..b6a5955 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1797,7 +1797,7 @@ void cpu_init(void)
+ 	 * set up and load the per-CPU TSS
+ 	 */
+ 	if (!oist->ist[0]) {
+-		char *estacks = get_cpu_entry_area(cpu)->exception_stacks;
++		char *estacks = (char *)&get_cpu_entry_area(cpu)->estacks;
+ 
+ 		for (v = 0; v < N_EXCEPTION_STACKS; v++) {
+ 			estacks += exception_stack_sizes[v];
+diff --git a/arch/x86/mm/cpu_entry_area.c b/arch/x86/mm/cpu_entry_area.c
+index 9aa58c1..9f3008b 100644
+--- a/arch/x86/mm/cpu_entry_area.c
++++ b/arch/x86/mm/cpu_entry_area.c
+@@ -13,8 +13,7 @@
+ static DEFINE_PER_CPU_PAGE_ALIGNED(struct entry_stack_page, entry_stack_storage);
+ 
+ #ifdef CONFIG_X86_64
+-static DEFINE_PER_CPU_PAGE_ALIGNED(char, exception_stacks
+-	[(N_EXCEPTION_STACKS - 1) * EXCEPTION_STKSZ + DEBUG_STKSZ]);
++static DEFINE_PER_CPU_PAGE_ALIGNED(struct exception_stacks, exception_stacks);
+ static DEFINE_PER_CPU(struct kcore_list, kcore_entry_trampoline);
+ #endif
+ 
+@@ -141,9 +140,8 @@ static void __init setup_cpu_entry_area(unsigned int cpu)
+ #ifdef CONFIG_X86_64
+ 	BUILD_BUG_ON(sizeof(exception_stacks) % PAGE_SIZE != 0);
+ 	BUILD_BUG_ON(sizeof(exception_stacks) !=
+-		     sizeof(((struct cpu_entry_area *)0)->exception_stacks));
+-	cea_map_percpu_pages(&cea->exception_stacks,
+-			     &per_cpu(exception_stacks, cpu),
++		     sizeof(((struct cpu_entry_area *)0)->estacks));
++	cea_map_percpu_pages(&cea->estacks, &per_cpu(exception_stacks, cpu),
+ 			     sizeof(exception_stacks) / PAGE_SIZE, PAGE_KERNEL);
+ 
+ 	cea_set_pte(&get_cpu_entry_area(cpu)->entry_trampoline,
+-- 
+2.7.4
+

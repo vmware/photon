@@ -1,0 +1,84 @@
+From c98a76eabbb6e7755f3d4a4c33f8fe869dda6383 Mon Sep 17 00:00:00 2001
+From: Arvind Sankar <nivedita@alum.mit.edu>
+Date: Wed, 26 Feb 2020 18:00:31 -0500
+Subject: [PATCH 9/9] x86/boot/compressed: Fix reloading of GDTR post-relocation
+
+commit c98a76eabbb6e7755f3d4a4c33f8fe869dda6383 upstream.
+
+The following commit:
+
+  ef5a7b5eb13e ("efi/x86: Remove GDT setup from efi_main")
+
+introduced GDT setup into the 32-bit kernel's startup_32, and reloads
+the GDTR after relocating the kernel for paranoia's sake.
+
+A followup commit:
+
+   32d009137a56 ("x86/boot: Reload GDTR after copying to the end of the buffer")
+
+introduced a similar GDTR reload in the 64-bit kernel as well.
+
+The GDTR is adjusted by (init_size-_end), however this may not be the
+correct offset to apply if the kernel was loaded at a misaligned address
+or below LOAD_PHYSICAL_ADDR, as in that case the decompression buffer
+has an additional offset from the original load address.
+
+This should never happen for a conformant bootloader, but we're being
+paranoid anyway, so just store the new GDT address in there instead of
+adding any offsets, which is simpler as well.
+
+Fixes: ef5a7b5eb13e ("efi/x86: Remove GDT setup from efi_main")
+Fixes: 32d009137a56 ("x86/boot: Reload GDTR after copying to the end of the buffer")
+Signed-off-by: Arvind Sankar <nivedita@alum.mit.edu>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: linux-efi@vger.kernel.org
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: x86@kernel.org
+Link: https://lore.kernel.org/r/20200226230031.3011645-2-nivedita@alum.mit.edu
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ arch/x86/boot/compressed/head_32.S | 9 ++++-----
+ arch/x86/boot/compressed/head_64.S | 4 ++--
+ 2 files changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/head_32.S b/arch/x86/boot/compressed/head_32.S
+index 356060c5332cc..2f8138b71ea96 100644
+--- a/arch/x86/boot/compressed/head_32.S
++++ b/arch/x86/boot/compressed/head_32.S
+@@ -139,12 +139,11 @@ SYM_FUNC_START(startup_32)
+ 	/*
+ 	 * The GDT may get overwritten either during the copy we just did or
+ 	 * during extract_kernel below. To avoid any issues, repoint the GDTR
+-	 * to the new copy of the GDT. EAX still contains the previously
+-	 * calculated relocation offset of init_size - _end.
++	 * to the new copy of the GDT.
+ 	 */
+-	leal	gdt(%ebx), %edx
+-	addl	%eax, 2(%edx)
+-	lgdt	(%edx)
++	leal	gdt(%ebx), %eax
++	movl	%eax, 2(%eax)
++	lgdt	(%eax)
+ 
+ /*
+  * Jump to the relocated address.
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index f7bacc4c1494d..fcf8feaa57ea7 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -456,8 +456,8 @@ trampoline_return:
+ 	 * to the new copy of the GDT.
+ 	 */
+ 	leaq	gdt64(%rbx), %rax
+-	subq	%rbp, 2(%rax)
+-	addq	%rbx, 2(%rax)
++	leaq	gdt(%rbx), %rdx
++	movq	%rdx, 2(%rax)
+ 	lgdt	(%rax)
+ 
+ /*
+-- 
+cgit 1.2.3-1.el7
+

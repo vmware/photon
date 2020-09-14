@@ -1,0 +1,72 @@
+From 52132cb990f6f2b7486564375bb9a92b4d7c2ec9 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 10 Jun 2020 13:28:48 +0530
+Subject: [PATCH 25/30] x86-irq-32-Invoke-irq_ctx_init-from-init_IRQ
+
+commit 451f743a64e1cf979f5fe21a1b2a015feb559f72 upstream.
+
+irq_ctx_init() is invoked from native_init_IRQ() or from xen_init_IRQ()
+code. There is no reason to have this split. The interrupt stacks must be
+allocated no matter what.
+
+Invoke it from init_IRQ() before invoking the native or XEN init
+implementation.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Abraham <j.abraham1776@gmail.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: Mike Rapoport <rppt@linux.vnet.ibm.com>
+Cc: Nicolai Stange <nstange@suse.de>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: Stefano Stabellini <sstabellini@kernel.org>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: x86-ml <x86@kernel.org>
+Cc: xen-devel@lists.xenproject.org
+Link: https://lkml.kernel.org/r/20190414160146.001162606@linutronix.de
+---
+ arch/x86/kernel/irqinit.c        | 4 ++--
+ drivers/xen/events/events_base.c | 1 -
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/kernel/irqinit.c b/arch/x86/kernel/irqinit.c
+index a0693b71c..26b5cb5 100644
+--- a/arch/x86/kernel/irqinit.c
++++ b/arch/x86/kernel/irqinit.c
+@@ -91,6 +91,8 @@ void __init init_IRQ(void)
+ 	for (i = 0; i < nr_legacy_irqs(); i++)
+ 		per_cpu(vector_irq, 0)[ISA_IRQ_VECTOR(i)] = irq_to_desc(i);
+ 
++	irq_ctx_init(smp_processor_id());
++
+ 	x86_init.irqs.intr_init();
+ }
+ 
+@@ -104,6 +106,4 @@ void __init native_init_IRQ(void)
+ 
+ 	if (!acpi_ioapic && !of_ioapic && nr_legacy_irqs())
+ 		setup_irq(2, &irq2);
+-
+-	irq_ctx_init(smp_processor_id());
+ }
+diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
+index 8d49b91..d46953b 100644
+--- a/drivers/xen/events/events_base.c
++++ b/drivers/xen/events/events_base.c
+@@ -1695,7 +1695,6 @@ void __init xen_init_IRQ(void)
+ 
+ #ifdef CONFIG_X86
+ 	if (xen_pv_domain()) {
+-		irq_ctx_init(smp_processor_id());
+ 		if (xen_initial_domain())
+ 			pci_xen_initial_domain();
+ 	}
+-- 
+2.7.4
+

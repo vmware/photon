@@ -1,0 +1,40 @@
+From ddfee6b656ae169ab9bc9622d943e88b0373f72c Mon Sep 17 00:00:00 2001
+From: Arvind Sankar <nivedita@alum.mit.edu>
+Date: Mon, 15 Jun 2020 14:27:26 +0530
+Subject: [PATCH 5/9] x86/boot: Clear direction and interrupt flags in
+ startup_64
+
+commit cae0e431a02cd63fecaf677ae166f184644125a7 upstream.
+
+startup_32 already clears these flags on entry, do it in startup_64 as
+well for consistency.
+
+The direction flag in particular is not specified to be cleared in the
+boot protocol documentation, and we currently call into C code
+(paging_prepare) without explicitly clearing it.
+
+Signed-off-by: Arvind Sankar <nivedita@alum.mit.edu>
+Link: https://lore.kernel.org/r/20200202171353.3736319-5-nivedita@alum.mit.edu
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ arch/x86/boot/compressed/head_64.S | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index c6f714d..3cbc278 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -265,6 +265,9 @@ ENTRY(startup_64)
+ 	 * and command line.
+ 	 */
+ 
++	cld
++	cli
++
+ 	/* Setup data segments. */
+ 	xorl	%eax, %eax
+ 	movl	%eax, %ds
+-- 
+2.7.4
+
