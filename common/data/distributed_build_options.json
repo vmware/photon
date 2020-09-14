@@ -1,8 +1,5 @@
 {
     "command": "make packages SCHEDULER_SERVER=enable",
-    "kubernetesAuthorizationToken": "",
-    "kubernetes-master-ip": "",
-    "kubernetes-master-port": "6443",
     "nfs-server-ip": "",
     "nfs-server-path": "",
     "pods": 1

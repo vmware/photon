@@ -575,19 +575,14 @@ class RpmBuildTarget:
         Builder.buildPackagesForAllSpecs(Build_Config.buildThreads, Build_Config.pkgBuildType, Build_Config.pkgInfoFile, self.logger)
 
     def distributed_build():
-        from DistributedBuilder import DistributedBuilder
-        print("Building RPMS through kubernetes ...")
-        os.chdir(str(PurePath(curDir, "support", "package-builder")))
+        import DistributedBuilder
+        if not check_prerequesite["vixdiskutil"]:
+            vixdiskutil()
+        print("Distributed Building using kubernetes ...")
         with open(Build_Config.distributedBuildFile, 'r') as configFile:
             distributedBuildConfig = json.load(configFile)
 
-        distributedBuilder = DistributedBuilder(distributedBuildConfig)
-        distributedBuilder.create()
-        distributedBuilder.getLogs()
-        distributedBuilder.monitorJob()
-        distributedBuilder.copyFromNfs()
-        distributedBuilder.deleteBuild()
-        distributedBuilder.clean()
+        DistributedBuilder.main(distributedBuildConfig)
 
     def tool_chain_stage1(self):
         from PackageManager import PackageManager
@@ -822,13 +817,15 @@ class BuildImage:
             CheckTools.check_photon_installer()
         if not check_prerequesite["photon-stage"]:
             BuildEnvironmentSetup.photon_stage()
-        if not check_prerequesite["vixdiskutil"] and constants.buildArch == "x86_64":
+
+        local_build = not configdict['photon-build-param']['start-scheduler-server']
+        if not check_prerequesite["vixdiskutil"] and constants.buildArch == "x86_64" and local_build:
             vixdiskutil()
         rpmBuildTarget = None
         if not check_prerequesite["packages"]:
             rpmBuildTarget = RpmBuildTarget()
             rpmBuildTarget.packages()
-        if not check_prerequesite["ostree-repo"]:
+        if not check_prerequesite["ostree-repo"] and local_build:
             RpmBuildTarget.ostree_repo()
         print("Building " + self.img_name + " image")
         imagebuilder.createImage(self)
@@ -928,7 +925,7 @@ def initialize_constants():
     constants.setKatBuild(configdict["photon-build-param"].get("kat-build", False))
     Build_Config.setConfFile(configdict["additional-path"]["conf-file"])
     Build_Config.setPkgToBeCopiedConfFile(configdict.get("additional-path", {}).get("pkg-to-be-copied-conf-file"))
-    Build_Config.setDistributedBuildFile(configdict.get("additional-path", {}).get("distributed-build-option-file", PurePath(curDir, "common", "data", "distributed_build_options.json")))
+    Build_Config.setDistributedBuildFile(os.path.join(Build_Config.dataDir, "distributed_build_options.json"))
     Builder.get_packages_with_build_options(configdict['photon-build-param']['pkg-build-options'])
     Build_Config.setCommonDir(PurePath(curDir, "common", "data"))
     constants.setStartSchedulerServer(configdict["photon-build-param"]['start-scheduler-server'])

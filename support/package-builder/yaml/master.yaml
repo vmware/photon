@@ -22,11 +22,19 @@ spec:
         - name: sys
           mountPath: /sys
           readOnly: false
+        - name: dev
+          mountPath: /dev
+          readOnly: false
         workingDir: /root/photon
         command: ["/bin/bash"]
-        args: ["-c","tdnf remove -y toybox && \
-                     tdnf install -y build-essential createrepo texinfo wget sudo \
-                     findutils python3-pip git && \
+        args: ["-c","tdnf install -y build-essential createrepo texinfo wget sudo \
+                     fuse gdbm gptfdisk grub2 grub2-efi grub2-lang grub2-pc \
+                     qemu-img kmod kpartx dosfstools efibootmgr ncurses e2fsprogs \
+                     python3 python3-asn1crypto python3-certifi python3-cffi \
+                     python3-chardet python3-cryptography python3-curses \
+                     python3-idna python3-packaging python3-pyasn1 python3-pycparser \
+                     python3-pyOpenSSL python3-pyparsing python3-requests python3-six \
+                     util-linux rpm glibc-iconv findutils python3-pip git && \
                      pip3 install flask requests pyOpenSSL docker==2.3.0 && \
                      chmod 755 /sys "]
       volumes:
@@ -36,4 +44,7 @@ spec:
       - name: sys
         hostPath:
           path: /sys
+      - name: dev
+        hostPath:
+          path: /dev
   backoffLimit: 1

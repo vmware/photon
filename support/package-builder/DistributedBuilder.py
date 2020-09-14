@@ -7,13 +7,12 @@ import json
 import subprocess
 import uuid
 import sys
+import signal
 from argparse import ArgumentParser
 from Logger import Logger
 from constants import constants
 from kubernetes import client, config, watch
 from kubernetes import stream
-import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class DistributedBuilder:
 
@@ -28,20 +27,10 @@ class DistributedBuilder:
         self.distributedBuildConfig = distributedBuildConfig
         self.buildGuid = self.getBuildGuid()
 
-        self.aApiClient = self.getClusterAuthorization()
+        self.aApiClient = config.load_kube_config()
         self.coreV1ApiInstance = client.CoreV1Api(self.aApiClient)
         self.batchV1ApiInstance = client.BatchV1Api(self.aApiClient)
         self.AppsV1ApiInstance = client.AppsV1Api(self.aApiClient)
-
-
-    def getClusterAuthorization(self):
-        aToken = self.distributedBuildConfig["kubernetesAuthorizationToken"]
-        aConfiguration = client.Configuration()
-        aConfiguration.host = "https://" + self.distributedBuildConfig["kubernetes-master-ip"] + ":" + self.distributedBuildConfig["kubernetes-master-port"]
-        aConfiguration.verify_ssl = False
-        aConfiguration.ssl_ca_cert = None
-        aConfiguration.api_key = {"authorization": "Bearer " + aToken}
-        return client.ApiClient(aConfiguration)
 
     def getBuildGuid(self):
          guid = str(uuid.uuid4()).split("-")[1]
@@ -171,15 +160,16 @@ class DistributedBuilder:
            self.logger.error("Exception when calling BatchV1Api->delete_namespaced_job: %s\n" % e.reason)
 
     def deleteBuild(self):
-        count = 2
-        while count:
-            pod = "nfspod" + "-" + self.buildGuid
-            cmd = ['/bin/sh', '-c', 'cd /root; ls; rm -rf ' + 'build-' + self.buildGuid]
-            resp = stream.stream(self.coreV1ApiInstance.connect_get_namespaced_pod_exec, pod, 'default', command=cmd, stderr=True, stdin=False, stdout=True, tty=False)
-            self.logger.info("%s"%resp)
-            count -= 1
-
-        self.logger.info("Deleted Build Successfully")
+        self.logger.info("Removing Build folder ...")
+        pod = "nfspod" + "-" + self.buildGuid
+        cmd = ['/bin/sh', '-c', 'rm -rf ' + '/root/build-' + self.buildGuid]
+        try:
+            resp = stream.stream(self.coreV1ApiInstance.connect_get_namespaced_pod_exec, pod, 'default', command=cmd, \
+                   stderr=True, stdin=False, stdout=True, tty=False, _preload_content=False)
+            resp.run_forever(timeout=10)
+            self.logger.info("Deleted Build folder Successfully...")
+        except client.rest.ApiException as e:
+            self.logger.error("Exception when calling CoreV1Api->connect_namespaced_pod_exec: %s\n" % e.reason)
 
     def deleteNfsPod(self):
         try:
@@ -206,7 +196,6 @@ class DistributedBuilder:
             self.logger.error("Exception when calling AppsV1Api->delete_namespaced_deployment: %s\n" % e.reason)
 
     def copyToNfs(self):
-        self.createNfsPod()
         podName = "nfspod" + "-" + self.buildGuid
         while True:
             resp = self.coreV1ApiInstance.read_namespaced_pod(name=podName, namespace='default')
@@ -214,21 +203,19 @@ class DistributedBuilder:
             if status == 'Running':
                 break
 
-        cmd = "kubectl cp " +str( os.path.join(os.path.dirname(__file__)).replace('support/package-builder', '')) \
+        cmd = "kubectl cp " + str( os.path.join(os.path.dirname(__file__)).replace('support/package-builder', '')) \
                + " " + podName + ":/root/" + "build-" + self.buildGuid + "/photon"
         self.logger.info("%s"%cmd)
         process = subprocess.Popen("%s" %cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         retval = process.wait()
         if retval == 0:
             self.logger.info("kubectl cp successfull.")
-            self.deleteNfsPod()
         else:
             self.logger.error("kubectl cp failed.")
             self.clean()
             sys.exit(1)
 
     def copyFromNfs(self):
-        self.createNfsPod()
         podName = "nfspod" + "-" + self.buildGuid
         while True:
             resp = self.coreV1ApiInstance.read_namespaced_pod(name=podName, namespace='default')
@@ -244,7 +231,6 @@ class DistributedBuilder:
             self.logger.info("kubectl cp successfull.")
         else:
             self.logger.error("kubectl cp failed.")
-            self.deleteBuild()
             self.clean()
             sys.exit(1)
 
@@ -279,12 +265,19 @@ class DistributedBuilder:
             self.logger.error(e)
         self.logger.info("pod terminated")
 
+    def signal_handler(self, signal, frame):
+        self.logger.info("SIGINT received")
+        self.logger.info("Stopping Build ...")
+        self.clean()
+        sys.exit(0)
+
     def clean(self):
         self.logger.info("-"*45)
         self.logger.info("")
         self.logger.info("Cleaning up ...")
-        self.deleteMasterJob()
+        self.deleteBuild()
         self.deleteNfsPod()
+        self.deleteMasterJob()
         self.deleteMasterService()
         self.deleteDeployment()
         self.deletePersistentVolumeClaim()
@@ -295,10 +288,20 @@ class DistributedBuilder:
         self.logger.info("")
         self.createPersistentVolume()
         self.createPersistentVolumeClaim()
+        self.createNfsPod()
         self.copyToNfs()
         self.createMasterService()
         self.createMasterJob()
         self.createDeployment()
+
+def main(distributedBuildConfig):
+    distributedBuilder = DistributedBuilder(distributedBuildConfig)
+    signal.signal(signal.SIGINT, distributedBuilder.signal_handler)
+    distributedBuilder.create()
+    distributedBuilder.getLogs()
+    distributedBuilder.monitorJob()
+    distributedBuilder.copyFromNfs()
+    distributedBuilder.clean()
 
 if __name__ == "__main__":
 
@@ -310,14 +313,6 @@ if __name__ == "__main__":
     options = parser.parse_args()
     constants.setLogPath(options.logPath)
     constants.setLogLevel(options.logLevel)
-
-    with open(os.path.join(os.path.dirname(__file__), options.distributedBuildOptionFile), 'r') as configFile:
+    with open(os.path.join(os.path.dirname(__file__), options.distributedBuildFile), 'r') as configFile:
         distributedBuildConfig = json.load(configFile)
-
-    distributedBuilder = DistributedBuilder(distributedBuildConfig)
-    distributedBuilder.create()
-    distributedBuilder.getLogs()
-    distributedBuilder.monitorJob()
-    distributedBuilder.copyFromNfs()
-    distributedBuilder.deleteBuild()
-    distributedBuilder.clean()
+    main(distributedBuildConfig)
