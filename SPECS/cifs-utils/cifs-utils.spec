@@ -1,7 +1,7 @@
 Summary:	cifs client utils
 Name:		cifs-utils
 Version:	6.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 URL:		http://wiki.samba.org/index.php/LinuxCIFS_utils
 Group:		Applications/Nfs-utils-client
@@ -9,6 +9,9 @@ Source0:        https://ftp.samba.org/pub/linux-cifs/cifs-utils/cifs-utils-%{ver
 %define sha1 cifs-utils=9ba5091d7c2418a90773c861f04a3f4a36854c14
 Vendor:		VMware, Inc.
 Distribution:	Photon
+
+Patch0:         0001-CVE-2020-14342-mount.cifs-fix-shell-command-injectio.patch
+
 BuildRequires:  libcap-ng-devel
 BuildRequires:  libtalloc-devel
 Requires:       libcap-ng
@@ -26,7 +29,8 @@ Requires:   cifs-utils = %{version}-%{release}
 Provides header files needed for Cifs-Utils development.
 
 %prep
-%setup -q 
+%setup -q
+%patch0 -p1
 
 %build
 autoreconf -fiv &&./configure --prefix=%{_prefix}
@@ -48,6 +52,8 @@ make %{?_smp_mflags} check
 %{_includedir}/cifsidmap.h
 
 %changelog
+*       Tue Sep 15 2020 Ajay Kaher <akaher@vmware.com> 6.7-2
+-       Fix for CVE-2020-14342
 *       Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 6.7-1
 -       Upgraded to version 6.7
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.4-2
