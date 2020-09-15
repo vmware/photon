@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.56
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_39_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
@@ -47,6 +47,11 @@ This package contains minimal set of shared nss libraries.
 %patch0 -p1
 
 %build
+%ifarch aarch64
+# Fix build failure on arm64 - https://bugs.gentoo.org/738924
+export NS_USE_GCC=1
+%endif
+
 cd nss
 # -j is not supported by nss
 make VERBOSE=1 BUILD_OPT=1 \
@@ -70,6 +75,17 @@ chmod 644 %{buildroot}%{_includedir}/nss/*
 install -v -m755 Linux*/bin/{certutil,nss-config,pk12util} %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_libdir}/pkgconfig
 install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
+
+# Fix to enable nss in fips mode
+%define __spec_install_post \
+  %{?__debug_package:%{__debug_install_post}} \
+  %{__arch_install_post} \
+  %{__os_install_post} \
+  LD_LIBRARY_PATH=%{buildroot}%{_libdir} Linux*/bin/shlibsign -i %{buildroot}%{_libdir}/libsoftokn3.so \
+  LD_LIBRARY_PATH=%{buildroot}%{_libdir} Linux*/bin/shlibsign -i %{buildroot}%{_libdir}/libnssdbm3.so \
+  LD_LIBRARY_PATH=%{buildroot}%{_libdir} Linux*/bin/shlibsign -i %{buildroot}%{_libdir}/libfreebl3.so \
+  LD_LIBRARY_PATH=%{buildroot}%{_libdir} Linux*/bin/shlibsign -i %{buildroot}%{_libdir}/libfreeblpriv3.so \
+%{nil}
 
 %check
 cd nss/tests
@@ -102,6 +118,9 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Tue Sep 15 2020 Michelle Wang <michellew@vmware.com> 3.56-2
+-   Fix nss build in aarch64 platform with adding NS_USE_GCC=1
+-   Fix to enable nss in fips mode
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.56-1
 -   Automatic Version Bump
 *   Tue Jul 14 2020 Gerrit Photon <photon-checkins@vmware.com> 3.55-1
