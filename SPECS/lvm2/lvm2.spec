@@ -2,15 +2,15 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Userland logical volume management tools
 Name:           lvm2
-Version:        2.02.181
-Release:        3%{?dist}
+Version:        2.02.187
+Release:        1%{?dist}
 License:        GPLv2, BSD 2-Clause and LGPLv2.1
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
-%define sha1    LVM2=2802799c60ef4f61534df1e40bcc29e4e043b29b
+%define sha1    LVM2=2a846b1a766aad5e04e2835a510c84ecc7ceb28d
 Source1:        lvm2-activate.service
 Patch0:         lvm2-set-default-preferred_names.patch
 BuildRequires:  libselinux-devel, libsepol-devel
@@ -346,6 +346,8 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 
 
 %changelog
+*   Tue Sep 15 2020 Ankit Jain <ankitja@vmware.com> 2.02.187-1
+-   Update to version 2.02.187
 *   Mon Oct 28 2019 Piyush Gupta <guptapi@vmware.com> 2.02.181-3
 -   Fixed install time dependency
 *   Thu Oct 03 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 2.02.181-2
