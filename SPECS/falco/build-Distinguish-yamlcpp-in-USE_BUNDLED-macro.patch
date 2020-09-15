@@ -1,0 +1,42 @@
+From 0d7ce28afc3532544e2763b1727623dd2072db18 Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Thu, 17 Sep 2020 04:09:56 -0700
+Subject: [PATCH] build: Distinguish yamlcpp in USE_BUNDLED macro
+
+This patch allows linking with bundled yamlcpp with USE_BUNDLED_DEPS=OFF.
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ cmake/modules/yaml-cpp.cmake   | 2 +-
+ userspace/falco/CMakeLists.txt | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/cmake/modules/yaml-cpp.cmake b/cmake/modules/yaml-cpp.cmake
+index d1077d8..7f5ce4e 100644
+--- a/cmake/modules/yaml-cpp.cmake
++++ b/cmake/modules/yaml-cpp.cmake
+@@ -10,7 +10,7 @@
+ # "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ # specific language governing permissions and limitations under the License.
+ #
+-if(NOT USE_BUNDLED_DEPS)
++if(NOT USE_BUNDLED_YAMLCPP)
+   find_path(YAMLCPP_INCLUDE_DIR NAMES yaml-cpp/yaml.h)
+   find_library(YAMLCPP_LIB NAMES yaml-cpp)
+   if(YAMLCPP_INCLUDE_DIR AND YAMLCPP_LIB)
+diff --git a/userspace/falco/CMakeLists.txt b/userspace/falco/CMakeLists.txt
+index 7704840..ce72da6 100644
+--- a/userspace/falco/CMakeLists.txt
++++ b/userspace/falco/CMakeLists.txt
+@@ -61,7 +61,7 @@ add_executable(
+ 
+ add_dependencies(falco civetweb string-view-lite)
+ 
+-if(USE_BUNDLED_DEPS)
++if(USE_BUNDLED_YAMLCPP)
+   add_dependencies(falco yamlcpp)
+ endif()
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,37 @@
+From fd97f0f45ae85eddc1a1ec36849be0a9d80fd235 Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Fri, 20 Mar 2020 17:54:18 -0700
+Subject: [PATCH 10/23] usb-acm-exclude-exar-usb-serial-ports
+
+---
+ drivers/usb/class/cdc-acm.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
+index 62f4fb9..3459843 100644
+--- a/drivers/usb/class/cdc-acm.c
++++ b/drivers/usb/class/cdc-acm.c
+@@ -1873,6 +1873,20 @@ static const struct usb_device_id acm_ids[] = {
+ 	.driver_info = SEND_ZERO_PACKET,
+ 	},
+ 
++	/* Exclude Exar USB serial ports */
++	{ USB_DEVICE(0x04e2, 0x1400), .driver_info = IGNORE_DEVICE, },
++	{ USB_DEVICE(0x04e2, 0x1401), .driver_info = IGNORE_DEVICE, },
++	{ USB_DEVICE(0x04e2, 0x1402), .driver_info = IGNORE_DEVICE, },
++	{ USB_DEVICE(0x04e2, 0x1403), .driver_info = IGNORE_DEVICE, },
++	{ USB_DEVICE(0x04e2, 0x1410), .driver_info = IGNORE_DEVICE, },
++	{ USB_DEVICE(0x04e2, 0x1411), .driver_info = IGNORE_DEVICE, },
++	{ USB_DEVICE(0x04e2, 0x1412), .driver_info = IGNORE_DEVICE, },
++	{ USB_DEVICE(0x04e2, 0x1414), .driver_info = IGNORE_DEVICE, },
++	{ USB_DEVICE(0x04e2, 0x1420), .driver_info = IGNORE_DEVICE, },
++	{ USB_DEVICE(0x04e2, 0x1421), .driver_info = IGNORE_DEVICE, },
++	{ USB_DEVICE(0x04e2, 0x1422), .driver_info = IGNORE_DEVICE, },
++	{ USB_DEVICE(0x04e2, 0x1424), .driver_info = IGNORE_DEVICE, },
++
+ 	/* control interfaces without any protocol set */
+ 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_ACM,
+ 		USB_CDC_PROTO_NONE) },
+-- 
+2.7.4
+

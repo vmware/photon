@@ -1,7 +1,7 @@
 Summary: A New Scripting Dynamic Tracing Tool For Linux
 Name:    ktap
 Version: 0.4
-Release: 8%{?kernelsubrelease}%{?dist}
+Release: rc1%{?kernelsubrelease}%{?dist}
 License: GPLv2
 URL: https://github.com/ktap/ktap
 Source: %{name}-master.zip
@@ -31,11 +31,12 @@ make ktap
 # ugly hack: disable security hardening to build kernel module
 # we need to remove sec hard specs file for that.
 rm -f `dirname $(gcc --print-libgcc-file-name)`/../specs
-make KVERSION=%{KERNEL_VERSION}-%{KERNEL_RELEASE} mod
+#make KVERSION=%{KERNEL_VERSION}-%{KERNEL_RELEASE} mod
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-make install DESTDIR=%{buildroot} KVERSION=%{KERNEL_VERSION}-%{KERNEL_RELEASE}
+#make install DESTDIR=%{buildroot} KVERSION=%{KERNEL_VERSION}-%{KERNEL_RELEASE}
+install -vm 755 ktap %{buildroot}%{_bindir}/
 
 %post
 /sbin/depmod -a
@@ -47,9 +48,11 @@ make install DESTDIR=%{buildroot} KVERSION=%{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %defattr(-, root, root, 0755)
 %doc README.md
 %{_bindir}/ktap
-/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/ktapvm.ko
+#/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/ktapvm.ko
 
 %changelog
+*   Fri Sep 11 2020 Bo Gan <ganb@vmware.com> 0.4-rc1
+-   Temporarily disable kernel module build in preparation for kernel update
 *   Tue Dec 26 2017 Alexey Makhalov <amakhalov@vmware.com> 0.4-8
 -   Update to linux-4.14.y. Added support patch
 *   Fri Jun 09 2017 Chang Lee <changlee@vmware.com> 0.4-7

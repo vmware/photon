@@ -1,0 +1,201 @@
+From 7389c55b409f159e7c963b33a19aa4503f81c749 Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Tue, 2 Jun 2020 19:35:47 -0700
+Subject: [PATCH 04/89] x86/vmware: Log kmsg dump on panic
+
+In case of panic kmsg will be dumped to vmware.log file
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ arch/x86/kernel/cpu/vmware.c | 142 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 142 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 258d2ab..532165d 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -27,6 +27,8 @@
+ #include <linux/clocksource.h>
+ #include <linux/cpu.h>
+ #include <linux/reboot.h>
++#include <linux/kmsg_dump.h>
++#include <linux/frame.h>
+ #include <asm/div64.h>
+ #include <asm/x86_init.h>
+ #include <asm/hypervisor.h>
+@@ -43,6 +45,7 @@
+ #define VMWARE_CMD_GETHZ         45
+ #define VMWARE_CMD_GETVCPU_INFO  68
+ #define VMWARE_CMD_LEGACY_X2APIC  3
++#define VMWARE_CMD_MESSAGE       30
+ #define VMWARE_CMD_VCPU_RESERVED 31
+ #define VMWARE_CMD_STEALCLOCK    91
+ 
+@@ -50,6 +53,8 @@
+ #define STEALCLOCK_DISABLED        0
+ #define STEALCLOCK_ENABLED         1
+ 
++#define VMWARE_HB_CMD_MESSAGE      0
++
+ #define VMWARE_CMD(cmd, eax, ebx, ecx, edx)				\
+ 	__asm__(VMWARE_HYPERCALL :					\
+ 		"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :		\
+@@ -115,6 +120,13 @@ static unsigned long vmware_get_tsc_khz(void)
+ 	return vmware_tsc_khz;
+ }
+ 
++static void kmsg_dumper_vmware_log(struct kmsg_dumper *dumper,
++				enum kmsg_dump_reason reason);
++
++static struct kmsg_dumper kmsg_dumper = {
++	.dump = kmsg_dumper_vmware_log
++};
++
+ #ifdef CONFIG_PARAVIRT
+ static struct cyc2ns_data vmware_cyc2ns __ro_after_init;
+ static bool vmw_sched_clock __initdata = true;
+@@ -420,6 +432,8 @@ static void __init vmware_platform_setup(void)
+ #endif
+ 
+ 	vmware_set_capabilities();
++
++	kmsg_dump_register(&kmsg_dumper);
+ }
+ 
+ static u8 __init vmware_select_hypercall(void)
+@@ -479,3 +493,131 @@ const __initconst struct hypervisor_x86 x86_hyper_vmware = {
+ 	.init.init_platform	= vmware_platform_setup,
+ 	.init.x2apic_available	= vmware_legacy_x2apic_available,
+ };
++
++#define MESSAGE_STATUS_SUCCESS  (0x01 << 16)
++#define MESSAGE_STATUS_CPT      (0x10 << 16)
++#define MESSAGE_STATUS_HB       (0x80 << 16)
++#define  VMWARE_HB_CMD_MSGST_SUCCESS \
++	(VMWARE_HB_CMD_MESSAGE | MESSAGE_STATUS_SUCCESS)
++#define  VMWARE_HB_CMD_MSGST_CPT \
++	(VMWARE_HB_CMD_MESSAGE | MESSAGE_STATUS_CPT)
++#define  VMWARE_HB_CMD_MSGST_HB \
++	(VMWARE_HB_CMD_MESSAGE | MESSAGE_STATUS_HB)
++
++#define RPCI_PROTOCOL_NUM       0x49435052 /* 'RPCI' */
++#define GUESTMSG_FLAG_COOKIE    0x80000000
++
++#define MESSAGE_TYPE_OPEN	(0 << 16)
++#define MESSAGE_TYPE_SENDSIZE	(1 << 16)
++#define MESSAGE_TYPE_SEND	(2 << 16)
++#define MESSAGE_TYPE_CLOSE	(6 << 16)
++#define  VMWARE_CMD_MSG_OPEN \
++	(VMWARE_CMD_MESSAGE | MESSAGE_TYPE_OPEN)
++#define  VMWARE_CMD_MSG_SENDSIZE \
++	(VMWARE_CMD_MESSAGE | MESSAGE_TYPE_SENDSIZE)
++#define  VMWARE_CMD_MSG_SEND \
++	(VMWARE_CMD_MESSAGE | MESSAGE_TYPE_SEND)
++#define  VMWARE_CMD_MSG_CLOSE \
++	(VMWARE_CMD_MESSAGE | MESSAGE_TYPE_CLOSE)
++
++typedef struct {
++	uint32_t id;
++	uint32_t cookieHigh;
++	uint32_t cookieLow;
++} vmw_msg;
++
++static int
++vmware_log_open(vmw_msg *msg)
++{
++	uint32_t result, info, ebx = RPCI_PROTOCOL_NUM | GUESTMSG_FLAG_COOKIE;
++
++	VMWARE_CMD_6(MSG_OPEN, result, ebx,
++		info, msg->id, msg->cookieHigh, msg->cookieLow);
++
++	if ((info & MESSAGE_STATUS_SUCCESS) == 0)
++		return 1;
++
++	msg->id &= 0xffff0000UL;
++	return 0;
++}
++
++static int
++vmware_log_close(vmw_msg *msg)
++{
++	uint32_t result, info, ebx = 0, edx = msg->id;
++
++	VMWARE_CMD_6(MSG_CLOSE, result, ebx, info, edx,
++		msg->cookieHigh, msg->cookieLow);
++
++	if ((info & MESSAGE_STATUS_SUCCESS) == 0)
++		return 1;
++	return 0;
++}
++
++static int
++vmware_log_send(vmw_msg *msg, const char *string)
++{
++	uint32_t result, info;
++	uint32_t len = strlen(string);
++	uint32_t ecx, edx, ebx;
++
++retry:
++	ebx = len;
++	edx = msg->id;
++	VMWARE_CMD_6(MSG_SENDSIZE, result, ebx, info, edx,
++		msg->cookieHigh, msg->cookieLow);
++
++	if (!(info & MESSAGE_STATUS_SUCCESS))
++		return 1;
++
++	edx = msg->id;
++	if (!sev_active() && (info & MESSAGE_STATUS_HB)) {
++		ecx = len;
++		VMWARE_HB_OUT(MSGST_SUCCESS, result, info, ecx, edx,
++			string, msg->cookieLow, msg->cookieHigh);
++	} else {
++		do {
++			size_t s = len > sizeof(ebx) ? sizeof(ebx) : len;
++
++			memcpy(&ebx, string, s);
++
++			len -= s;
++			string += s;
++
++			VMWARE_CMD_6(MSG_SEND, result, ebx, info, edx,
++					msg->cookieHigh, msg->cookieLow);
++		} while(len && (info & MESSAGE_STATUS_SUCCESS));
++	}
++
++	if ((info & MESSAGE_STATUS_SUCCESS) == 0) {
++		if (info & MESSAGE_STATUS_CPT)
++			/* A checkpoint occurred. Retry. */
++			goto retry;
++		return 1;
++	}
++	return 0;
++}
++STACK_FRAME_NON_STANDARD(vmware_log_send);
++
++static void kmsg_dumper_vmware_log(struct kmsg_dumper *dumper,
++				enum kmsg_dump_reason reason)
++{
++	vmw_msg msg;
++	static char line[1024];
++	size_t len = 0;
++	bool fail = false;
++
++	line[0] = 'l';
++	line[1] = 'o';
++	line[2] = 'g';
++	line[3] = ' ';
++
++	while (!fail && kmsg_dump_get_line(dumper, true,
++		line + 4, sizeof(line) - 4, &len)) {
++		line[len + 4] = '\0';
++		if (vmware_log_open(&msg))
++			return;
++		fail = vmware_log_send(&msg, line);
++		vmware_log_close(&msg);
++	}
++}
+-- 
+2.7.4
+

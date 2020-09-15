@@ -1,0 +1,73 @@
+From 7d80ae3e4f1dd73fb61010e5a84135d3e92ba47e Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 9 May 2017 12:26:58 -0700
+Subject: [PATCH] Patch from Clear Linux
+
+---
+ drivers/video/console/fbcon.c | 2 +-
+ include/linux/blkdev.h        | 2 +-
+ init/do_mounts.c              | 4 +++-
+ mm/vmstat.c                   | 2 +-
+ 4 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+index c910e74..59e1c7c 100644
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -148,7 +148,7 @@ static const struct consw fb_con;
+ 
+ static int fbcon_set_origin(struct vc_data *);
+ 
+-static int fbcon_cursor_noblink;
++static int fbcon_cursor_noblink = 1;
+ 
+ #define divides(a, b)	((!(a) || (b)%(a)) ? 0 : 1)
+ 
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 79226ca..9ae142f 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -43,7 +43,7 @@ struct blk_stat_callback;
+ struct blk_keyslot_manager;
+ 
+ #define BLKDEV_MIN_RQ	4
+-#define BLKDEV_MAX_RQ	128	/* Default maximum */
++#define BLKDEV_MAX_RQ	4096	/* Default maximum */
+ 
+ /* Must be consistent with blk_mq_poll_stats_bkt() */
+ #define BLK_MQ_POLL_STATS_BKTS 16
+diff --git a/init/do_mounts.c b/init/do_mounts.c
+index 2c71dab..7f01625 100644
+--- a/init/do_mounts.c
++++ b/init/do_mounts.c
+@@ -28,6 +28,7 @@
+ #include <linux/slab.h>
+ #include <linux/ramfs.h>
+ #include <linux/shmem_fs.h>
++#include <linux/async.h>
+ 
+ #include <linux/nfs_fs.h>
+ #include <linux/nfs_fs_sb.h>
+@@ -562,7 +563,8 @@ void __init prepare_namespace(void)
+ 	 * For example, it is not atypical to wait 5 seconds here
+ 	 * for the touchpad of a laptop to initialize.
+ 	 */
+-	wait_for_device_probe();
++	//wait_for_device_probe();
++	async_synchronize_full();
+ 
+ 	md_run_setup();
+ 
+diff --git a/mm/vmstat.c b/mm/vmstat.c
+index 8ba0870..0c32523 100644
+--- a/mm/vmstat.c
++++ b/mm/vmstat.c
+@@ -1730,7 +1730,7 @@ static const struct seq_operations vmstat_op = {
+ 
+ #ifdef CONFIG_SMP
+ static DEFINE_PER_CPU(struct delayed_work, vmstat_work);
+-int sysctl_stat_interval __read_mostly = HZ;
++int sysctl_stat_interval __read_mostly = 8 * HZ;
+ 
+ #ifdef CONFIG_PROC_FS
+ static void refresh_vm_stats(struct work_struct *work)

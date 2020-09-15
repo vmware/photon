@@ -1,0 +1,82 @@
+From 49cee59d0938af41d45b1846a21391f041579ebe Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Wed, 29 Jan 2020 17:32:33 +0530
+Subject: [PATCH] crypto: testmgr - Add drbg_pr_ctr_aes256 test vectors
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ crypto/testmgr.c |  5 ++++-
+ crypto/testmgr.h | 41 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 45 insertions(+), 1 deletion(-)
+
+diff --git a/crypto/testmgr.c b/crypto/testmgr.c
+index a6867f9..e44edbe 100644
+--- a/crypto/testmgr.c
++++ b/crypto/testmgr.c
+@@ -4385,7 +4385,10 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "drbg_pr_ctr_aes256",
+ 		.fips_allowed = 1,
+-		.test = alg_test_null,
++		.test = alg_test_drbg,
++		.suite = {
++			.drbg = __VECS(drbg_pr_ctr_aes256_tv_template)
++		}
+ 	}, {
+ 		.alg = "drbg_pr_hmac_sha1",
+ 		.fips_allowed = 1,
+diff --git a/crypto/testmgr.h b/crypto/testmgr.h
+index a78939f..218e31e 100644
+--- a/crypto/testmgr.h
++++ b/crypto/testmgr.h
+@@ -20060,6 +20060,47 @@ static const struct drbg_testvec drbg_pr_ctr_aes128_tv_template[] = {
+ 	},
+ };
+ 
++static const struct drbg_testvec drbg_pr_ctr_aes256_tv_template[] = {
++	{
++		.entropy = (unsigned char *)
++			"\x53\x43\x46\xa3\xe0\xba\xa6\x5d\x7a\x51\x87\x1b\x6d"
++			"\x63\x3a\x6f\x1e\xfa\x9f\xf5\x5d\xfd\xe3\x21\x2c\x95"
++			"\x02\x9a\xdf\x23\x87\xd9\x0c\xbe\x99\x82\x15\x09\x97"
++			"\x5d\x82\x4f\xd8\x26\xc4\x7d\x2a\xbc",
++		.entropylen = 48,
++		.entpra = (unsigned char *)
++			"\x28\x60\x91\x70\x9d\x2e\x91\xbf\xef\x66\x54\xb8\x44"
++			"\x9d\x5e\x55\x64\xb6\xc2\xfe\x1f\x3e\x4e\x6e\x59\xfe"
++			"\x77\x64\x61\xbf\xb0\xdc",
++		.entprb = (unsigned char *)
++			"\xe6\x8e\x12\x7b\x2e\x5b\x9d\x65\x39\xc2\x6f\x7e\x78"
++			"\xbe\xc1\x33\x14\xe3\x7f\xeb\xdb\x71\x05\xd1\xd6\x5f"
++			"\x0b\xde\x23\xc8\x7d\x38",
++		.entprlen = 32,
++		.expected = (unsigned char *)
++			"\xda\x63\x89\xd1\x51\xe3\xb2\xb3\x32\xfb\xcc\x02\xb2"
++			"\xcc\x5a\xf4\xf6\x98\x35\xe9\xfb\xbe\x19\x13\x0f\x91"
++			"\xcb\xf3\x0a\x3c\x24\x58\x0e\xbf\xb4\x31\x1b\x34\x87"
++			"\xe9\xd6\xa6\x1d\xe9\xdc\x28\x42\xc1\x07\x15\x21\x58"
++			"\xb0\xe7\x5a\x93\x2c\x38\xe5\xb8\xdd\xff\x10\xe6",
++		.expectedlen = 64,
++		.addtla = (unsigned char *)
++			"\xf4\x10\x40\xef\xf2\xa7\x01\x02\x87\xc2\xa7\x6d\x78"
++			"\x67\xa6\x6e\x61\x29\x9b\xe1\xe1\x24\x7a\x6b\x22\xa6"
++			"\x4b\x82\x9a\xda\x86\x24",
++		.addtlb = (unsigned char *)
++			"\x94\xef\xe6\x8e\x21\x85\x64\x6a\x17\xbb\x8a\x83\x26"
++			"\x81\x42\xa7\xb7\xa0\x27\x86\xc1\xee\x90\xab\x8f\x73"
++			"\x99\xcc\xf5\x43\xde\x26",
++		.addtllen = 32,
++		.pers = (unsigned char *)
++			"\x02\x0d\x73\x40\x56\x9e\x68\xd9\x92\xe6\xe8\xdd\xfb"
++			"\xea\xd9\xf9\x93\xc7\x4d\x97\x1e\x43\x39\xfe\x91\x07"
++			"\x4f\x87\xe9\xd7\xd7\x77",
++		.perslen = 32,
++	},
++};
++
+ /*
+  * SP800-90A DRBG Test vectors from
+  * http://csrc.nist.gov/groups/STM/cavp/documents/drbg/drbgtestvectors.zip
+-- 
+2.7.4
+

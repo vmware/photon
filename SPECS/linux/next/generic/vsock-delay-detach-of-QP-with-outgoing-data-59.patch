@@ -1,0 +1,168 @@
+From 028ec946534a0b2c3c401aae66ec4d34b9bbaa62 Mon Sep 17 00:00:00 2001
+From: Jorgen Hansen <jhansen@vmware.com>
+Date: Thu, 22 Aug 2019 04:43:38 -0700
+Subject: [PATCH] VSOCK: Delay detach of QP with outgoing data
+
+This patch is intended for WCP, and will be applied to Photon OS 3.0 as a
+patch. We will consider upstreaming this at a later point in time.
+
+When detaching from a QP, the content of the QP may become inaccessible to
+the peer. To handle that, we keep the QP around for a maximum of 2 minutes
+while waiting for the data of the QP to be consumed by the peer. In the
+following cases, the QP will be freed even if outgoing data is still
+present:
+- the peer detaches
+- the vmci vsock transport is unloaded
+- the data has not been consumed within 2 minutes
+
+Signed-off-by: Jorgen Hansen <jhansen@vmware.com>
+Reviewed-by: Adit Ranadive <aditr@vmware.com>
+Reviewed-by: Vishnu Dasa <vdasa@vmware.com>
+---
+ net/vmw_vsock/vmci_transport.c | 46 ++++++++++++++++++++++++++++++++++++++----
+ net/vmw_vsock/vmci_transport.h |  1 +
+ 2 files changed, 43 insertions(+), 4 deletions(-)
+
+diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
+index 8b65323..cdc3884 100644
+--- a/net/vmw_vsock/vmci_transport.c
++++ b/net/vmw_vsock/vmci_transport.c
+@@ -10,6 +10,7 @@
+ #include <linux/cred.h>
+ #include <linux/init.h>
+ #include <linux/io.h>
++#include <linux/jiffies.h>
+ #include <linux/kernel.h>
+ #include <linux/kmod.h>
+ #include <linux/list.h>
+@@ -68,6 +69,8 @@ struct vmci_transport_recv_pkt_info {
+ static LIST_HEAD(vmci_transport_cleanup_list);
+ static DEFINE_SPINLOCK(vmci_transport_cleanup_lock);
+ static DECLARE_WORK(vmci_transport_cleanup_work, vmci_transport_cleanup);
++static DECLARE_DELAYED_WORK(vmci_qp_delayed_detach_work,
++			    vmci_transport_cleanup);
+ 
+ static struct vmci_handle vmci_transport_stream_handle = { VMCI_INVALID_ID,
+ 							   VMCI_INVALID_ID };
+@@ -75,6 +78,18 @@ static u32 vmci_transport_qp_resumed_sub_id = VMCI_INVALID_ID;
+ 
+ static int PROTOCOL_OVERRIDE = -1;
+ 
++/* The default peer timeout indicates how long we will wait for a peer response
++ * to a control message.
++ */
++#define VSOCK_DEFAULT_CONNECT_TIMEOUT    (2 * HZ)
++
++/* The close wait timeout indicates how long we'll keep a queue pair around
++ * after a detach - in the case where there is still data left in the queue
++ * pair.
++ */
++#define VSOCK_CLOSE_WAIT_TIMEOUT_JIF     (120 * HZ)
++#define VSOCK_CLOSE_WAIT_RETRY_TIMEOUT   (10 * HZ)
++
+ /* Helper function to convert from a VMCI error code to a VSock error code. */
+ 
+ static s32 vmci_transport_error_to_vsock_error(s32 vmci_error)
+@@ -847,6 +862,7 @@ static void vmci_transport_peer_detach_cb(u32 sub_id,
+ {
+ 	struct vmci_transport *trans = client_data;
+ 	const struct vmci_event_payload_qp *e_payload;
++	bool schedule_cleanup = false;
+ 
+ 	e_payload = vmci_event_data_const_payload(e_data);
+ 
+@@ -864,8 +880,11 @@ static void vmci_transport_peer_detach_cb(u32 sub_id,
+ 	 * need to account for all possible contexts here.
+ 	 */
+ 	spin_lock_bh(&trans->lock);
+-	if (!trans->sk)
++	if (!trans->sk) {
++		schedule_cleanup = true;
++		trans->close_wait_timeout_jif = jiffies - 1;
+ 		goto out;
++	}
+ 
+ 	/* Apart from here, trans->lock is only grabbed as part of sk destruct,
+ 	 * where trans->sk isn't locked.
+@@ -877,6 +896,8 @@ static void vmci_transport_peer_detach_cb(u32 sub_id,
+ 	bh_unlock_sock(trans->sk);
+  out:
+ 	spin_unlock_bh(&trans->lock);
++	if (schedule_cleanup)
++		schedule_work(&vmci_transport_cleanup_work);
+ }
+ 
+ static void vmci_transport_qp_resumed_cb(u32 sub_id,
+@@ -1592,7 +1613,8 @@ static int vmci_transport_socket_init(struct vsock_sock *vsk,
+ 	return 0;
+ }
+ 
+-static void vmci_transport_free_resources(struct list_head *transport_list)
++static void vmci_transport_free_resources(struct list_head *transport_list,
++					  bool force)
+ {
+ 	while (!list_empty(transport_list)) {
+ 		struct vmci_transport *transport =
+@@ -1600,6 +1622,19 @@ static void vmci_transport_free_resources(struct list_head *transport_list)
+ 				     elem);
+ 		list_del(&transport->elem);
+ 
++		if (!vmci_handle_is_invalid(transport->qp_handle) && !force &&
++		    time_is_after_jiffies(transport->close_wait_timeout_jif) &&
++		    vmci_qpair_produce_buf_ready(transport->qpair) > 0) {
++			/* Peer hasn't read the data yet - delay detach. */
++			spin_lock_bh(&vmci_transport_cleanup_lock);
++			list_add(&transport->elem,
++				 &vmci_transport_cleanup_list);
++			spin_unlock_bh(&vmci_transport_cleanup_lock);
++			schedule_delayed_work(&vmci_qp_delayed_detach_work,
++					      VSOCK_CLOSE_WAIT_RETRY_TIMEOUT);
++			continue;
++		}
++
+ 		if (transport->detach_sub_id != VMCI_INVALID_ID) {
+ 			vmci_event_unsubscribe(transport->detach_sub_id);
+ 			transport->detach_sub_id = VMCI_INVALID_ID;
+@@ -1623,7 +1658,7 @@ static void vmci_transport_cleanup(struct work_struct *work)
+ 	spin_lock_bh(&vmci_transport_cleanup_lock);
+ 	list_replace_init(&vmci_transport_cleanup_list, &pending);
+ 	spin_unlock_bh(&vmci_transport_cleanup_lock);
+-	vmci_transport_free_resources(&pending);
++	vmci_transport_free_resources(&pending, false);
+ }
+ 
+ static void vmci_transport_destruct(struct vsock_sock *vsk)
+@@ -1637,6 +1672,8 @@ static void vmci_transport_destruct(struct vsock_sock *vsk)
+ 	 */
+ 	spin_lock_bh(&vmci_trans(vsk)->lock);
+ 	vmci_trans(vsk)->sk = NULL;
++	vmci_trans(vsk)->close_wait_timeout_jif = jiffies +
++						  VSOCK_CLOSE_WAIT_TIMEOUT_JIF;
+ 	spin_unlock_bh(&vmci_trans(vsk)->lock);
+ 
+ 	if (vmci_trans(vsk)->notify_ops)
+@@ -2119,7 +2156,8 @@ module_init(vmci_transport_init);
+ static void __exit vmci_transport_exit(void)
+ {
+ 	cancel_work_sync(&vmci_transport_cleanup_work);
+-	vmci_transport_free_resources(&vmci_transport_cleanup_list);
++	cancel_delayed_work_sync(&vmci_qp_delayed_detach_work);
++	vmci_transport_free_resources(&vmci_transport_cleanup_list, true);
+ 
+ 	if (!vmci_handle_is_invalid(vmci_transport_stream_handle)) {
+ 		if (vmci_datagram_destroy_handle(
+diff --git a/net/vmw_vsock/vmci_transport.h b/net/vmw_vsock/vmci_transport.h
+index b7b0721..b3d6618 100644
+--- a/net/vmw_vsock/vmci_transport.h
++++ b/net/vmw_vsock/vmci_transport.h
+@@ -108,6 +108,7 @@ struct vmci_transport {
+ 	struct vmci_qp *qpair;
+ 	u64 produce_size;
+ 	u64 consume_size;
++	unsigned long close_wait_timeout_jif;
+ 	u32 detach_sub_id;
+ 	union vmci_transport_notify notify;
+ 	const struct vmci_transport_notify_ops *notify_ops;
+-- 
+2.17.1
+

@@ -342,7 +342,7 @@ class SPECS(object):
         a, b, c = kernelversion.split(".")
         kernelsubrelease = ('%02d%02d%03d%03d' % (int(a),
                                                   int(b), int(c),
-                                                  int(kernelrelease.split('.')[0])))
+                                                  int(kernelrelease.split('.')[-2])))
         if kernelsubrelease:
             kernelsubrelease = "." + kernelsubrelease
             constants.addMacro("kernelsubrelease", kernelsubrelease)

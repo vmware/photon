@@ -1,0 +1,114 @@
+From e528e68d438e9e1ef899ae92edfc2092513b6a75 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Fri, 24 Jul 2020 18:02:44 +0200
+Subject: [PATCH 24/82] x86/boot/compressed/64: Unmap GHCB page before booting
+ the kernel
+
+Force a page-fault on any further accesses to the GHCB page when they
+shouldn't happen anymore. This will catch the bugs where a #VC exception
+is raised when no one is expected anymore.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Link: https://lore.kernel.org/r/20200724160336.5435-24-joro@8bytes.org
+---
+ arch/x86/boot/compressed/ident_map_64.c | 17 +++++++++++++++--
+ arch/x86/boot/compressed/misc.h         |  6 ++++++
+ arch/x86/boot/compressed/sev-es.c       | 14 ++++++++++++++
+ 3 files changed, 35 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/ident_map_64.c b/arch/x86/boot/compressed/ident_map_64.c
+index 05742f6..063a60e 100644
+--- a/arch/x86/boot/compressed/ident_map_64.c
++++ b/arch/x86/boot/compressed/ident_map_64.c
+@@ -298,6 +298,11 @@ int set_page_encrypted(unsigned long address)
+ 	return set_clr_page_flags(&mapping_info, address, _PAGE_ENC, 0);
+ }
+ 
++int set_page_non_present(unsigned long address)
++{
++	return set_clr_page_flags(&mapping_info, address, 0, _PAGE_PRESENT);
++}
++
+ static void do_pf_error(const char *msg, unsigned long error_code,
+ 			unsigned long address, unsigned long ip)
+ {
+@@ -316,8 +321,14 @@ static void do_pf_error(const char *msg, unsigned long error_code,
+ 
+ void do_boot_page_fault(struct pt_regs *regs, unsigned long error_code)
+ {
+-	unsigned long address = native_read_cr2() & PMD_MASK;
+-	unsigned long end = address + PMD_SIZE;
++	unsigned long address = native_read_cr2();
++	unsigned long end;
++	bool ghcb_fault;
++
++	ghcb_fault = sev_es_check_ghcb_fault(address);
++
++	address   &= PMD_MASK;
++	end        = address + PMD_SIZE;
+ 
+ 	/*
+ 	 * Check for unexpected error codes. Unexpected are:
+@@ -327,6 +338,8 @@ void do_boot_page_fault(struct pt_regs *regs, unsigned long error_code)
+ 	 */
+ 	if (error_code & (X86_PF_PROT | X86_PF_USER | X86_PF_RSVD))
+ 		do_pf_error("Unexpected page-fault:", error_code, address, regs->ip);
++	else if (ghcb_fault)
++		do_pf_error("Page-fault on GHCB page:", error_code, address, regs->ip);
+ 
+ 	/*
+ 	 * Error code is sane - now identity map the 2M region around
+diff --git a/arch/x86/boot/compressed/misc.h b/arch/x86/boot/compressed/misc.h
+index 4d37a28..2e5f82a 100644
+--- a/arch/x86/boot/compressed/misc.h
++++ b/arch/x86/boot/compressed/misc.h
+@@ -100,6 +100,7 @@ static inline void choose_random_location(unsigned long input,
+ #ifdef CONFIG_X86_64
+ extern int set_page_decrypted(unsigned long address);
+ extern int set_page_encrypted(unsigned long address);
++extern int set_page_non_present(unsigned long address);
+ extern unsigned char _pgtable[];
+ #endif
+ 
+@@ -117,8 +118,13 @@ void set_sev_encryption_mask(void);
+ 
+ #ifdef CONFIG_AMD_MEM_ENCRYPT
+ void sev_es_shutdown_ghcb(void);
++extern bool sev_es_check_ghcb_fault(unsigned long address);
+ #else
+ static inline void sev_es_shutdown_ghcb(void) { }
++static inline bool sev_es_check_ghcb_fault(unsigned long address)
++{
++	return false;
++}
+ #endif
+ 
+ /* acpi.c */
+diff --git a/arch/x86/boot/compressed/sev-es.c b/arch/x86/boot/compressed/sev-es.c
+index 7e2cec1..e3abf87 100644
+--- a/arch/x86/boot/compressed/sev-es.c
++++ b/arch/x86/boot/compressed/sev-es.c
+@@ -121,6 +121,20 @@ void sev_es_shutdown_ghcb(void)
+ 	 */
+ 	if (set_page_encrypted((unsigned long)&boot_ghcb_page))
+ 		error("Can't map GHCB page encrypted");
++
++	/*
++	 * GHCB page is mapped encrypted again and flushed from the cache.
++	 * Mark it non-present now to catch bugs when #VC exceptions trigger
++	 * after this point.
++	 */
++	if (set_page_non_present((unsigned long)&boot_ghcb_page))
++		error("Can't unmap GHCB page");
++}
++
++bool sev_es_check_ghcb_fault(unsigned long address)
++{
++	/* Check whether the fault was on the GHCB page */
++	return ((address & PAGE_MASK) == (unsigned long)&boot_ghcb_page);
+ }
+ 
+ void do_boot_stage2_vc(struct pt_regs *regs, unsigned long exit_code)
+-- 
+2.7.4
+

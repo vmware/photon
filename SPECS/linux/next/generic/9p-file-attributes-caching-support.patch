@@ -1,0 +1,164 @@
+From 3e049c6058278ac80a21a370e0d5e06b68b20aa7 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Mon, 2 Mar 2020 21:12:50 +0000
+Subject: [PATCH] 9p: file attributes caching support
+
+The motivation behind this change is to support
+open-unlink-fstat sequence.
+
+The idea of the implementation is to avoid sending GETATTR
+command to the server if file attributes can be fetched
+from the inode struct of dentry.
+
+In other words, this is a minimalistic cache implementation
+to store GETATTR/STAT metadata.
+
+To enable this caching mechanism, use "cache=stat" mount
+option.
+
+Consider:
+  fd = open("file", O_RDONLY);
+  remove("file);
+  fstat(fd, &stat);
+
+Translated to 9P2000.L with cache=none
+  TWALK tag 0 fid 1 newfid 26 nwname 1 'file'
+  TGETATTR tag 0 fid 26 request_mask 0x17ff
+  TWALK tag 0 fid 26 newfid 27 nwname 0
+  TLOPEN tag 0 fid 27 flags 0100000
+  TUNLINKAT tag 0 dirfid 1 name 'file' flags 0
+  TWALK tag 0 fid 26 newfid 28 nwname 0
+  TREMOVE tag 0 fid 28
+  TGETATTR tag 0 fid 26 request_mask 0x3fff
+  RLERROR tag 0 ecode 2				<-- ENOENT error code
+  TCLUNK tag 0 fid 27
+  TCLUNK tag 0 fid 26
+
+With cache=stat
+  TWALK tag 0 fid 1 newfid 26 nwname 1 'file'
+  TGETATTR tag 0 fid 26 request_mask 0x17ff	<-- save fid 26 stat here
+  TWALK tag 0 fid 26 newfid 27 nwname 0
+  TLOPEN tag 0 fid 27 flags 0100000
+  TUNLINKAT tag 0 dirfid 1 name 'file' flags 0
+  TWALK tag 0 fid 26 newfid 28 nwname 0
+  TREMOVE tag 0 fid 28
+  						<-- use saved fid 26 stat
+  TCLUNK tag 0 fid 27
+  TCLUNK tag 0 fid 26
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+---
+ Documentation/filesystems/9p.rst |  4 ++++
+ fs/9p/v9fs.c                     | 10 +++++++++-
+ fs/9p/v9fs.h                     |  1 +
+ fs/9p/vfs_inode.c                |  3 ++-
+ fs/9p/vfs_inode_dotl.c           |  3 ++-
+ 5 files changed, 18 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/filesystems/9p.rst b/Documentation/filesystems/9p.rst
+index 7b5964b..b2fe1d1 100644
+--- a/Documentation/filesystems/9p.rst
++++ b/Documentation/filesystems/9p.rst
+@@ -92,6 +92,10 @@ Options
+ 				minimal cache that is only used for read-write
+                                 mmap.  Northing else is cached, like cache=none
+ 
++                        stat
++                                minimal cache that is only used for file
++                                attributes. Northing else is cached.
++
+   debug=n	specifies debug level.  The debug level is a bitmask.
+ 
+ 			=====   ================================
+diff --git a/fs/9p/v9fs.c b/fs/9p/v9fs.c
+index 39def02..7a8d963 100644
+--- a/fs/9p/v9fs.c
++++ b/fs/9p/v9fs.c
+@@ -43,7 +43,7 @@ enum {
+ 	/* Options that take no arguments */
+ 	Opt_nodevmap,
+ 	/* Cache options */
+-	Opt_cache_loose, Opt_fscache, Opt_mmap,
++	Opt_cache_loose, Opt_fscache, Opt_stat, Opt_mmap,
+ 	/* Access options */
+ 	Opt_access, Opt_posixacl,
+ 	/* Lock timeout option */
+@@ -63,6 +63,7 @@ static const match_table_t tokens = {
+ 	{Opt_cache, "cache=%s"},
+ 	{Opt_cache_loose, "loose"},
+ 	{Opt_fscache, "fscache"},
++	{Opt_stat, "stat"},
+ 	{Opt_mmap, "mmap"},
+ 	{Opt_cachetag, "cachetag=%s"},
+ 	{Opt_access, "access=%s"},
+@@ -73,6 +74,7 @@ static const match_table_t tokens = {
+ 
+ static const char *const v9fs_cache_modes[nr__p9_cache_modes] = {
+ 	[CACHE_NONE]	= "none",
++	[CACHE_STAT]	= "stat",
+ 	[CACHE_MMAP]	= "mmap",
+ 	[CACHE_LOOSE]	= "loose",
+ 	[CACHE_FSCACHE]	= "fscache",
+@@ -92,6 +94,9 @@ static int get_cache_mode(char *s)
+ 	} else if (!strcmp(s, "mmap")) {
+ 		version = CACHE_MMAP;
+ 		p9_debug(P9_DEBUG_9P, "Cache mode: mmap\n");
++	} else if (!strcmp(s, "stat")) {
++		version = CACHE_STAT;
++		p9_debug(P9_DEBUG_9P, "Cache mode: stat\n");
+ 	} else if (!strcmp(s, "none")) {
+ 		version = CACHE_NONE;
+ 		p9_debug(P9_DEBUG_9P, "Cache mode: none\n");
+@@ -272,6 +277,9 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
+ 		case Opt_fscache:
+ 			v9ses->cache = CACHE_FSCACHE;
+ 			break;
++		case Opt_stat:
++			v9ses->cache = CACHE_STAT;
++			break;
+ 		case Opt_mmap:
+ 			v9ses->cache = CACHE_MMAP;
+ 			break;
+diff --git a/fs/9p/v9fs.h b/fs/9p/v9fs.h
+index 7b76377..afa7a68 100644
+--- a/fs/9p/v9fs.h
++++ b/fs/9p/v9fs.h
+@@ -49,6 +49,7 @@ enum p9_session_flags {
+ 
+ enum p9_cache_modes {
+ 	CACHE_NONE,
++	CACHE_STAT,
+ 	CACHE_MMAP,
+ 	CACHE_LOOSE,
+ 	CACHE_FSCACHE,
+diff --git a/fs/9p/vfs_inode.c b/fs/9p/vfs_inode.c
+index ae0c38a..d76685f 100644
+--- a/fs/9p/vfs_inode.c
++++ b/fs/9p/vfs_inode.c
+@@ -1005,7 +1005,8 @@ v9fs_vfs_getattr(const struct path *path, struct kstat *stat,
+ 
+ 	p9_debug(P9_DEBUG_VFS, "dentry: %p\n", dentry);
+ 	v9ses = v9fs_dentry2v9ses(dentry);
+-	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE) {
++	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE ||
++	    (v9ses->cache == CACHE_STAT && d_really_is_positive(dentry))) {
+ 		generic_fillattr(d_inode(dentry), stat);
+ 		return 0;
+ 	}
+diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
+index 0028ecc..09d9638 100644
+--- a/fs/9p/vfs_inode_dotl.c
++++ b/fs/9p/vfs_inode_dotl.c
+@@ -465,7 +465,8 @@ v9fs_vfs_getattr_dotl(const struct path *path, struct kstat *stat,
+ 
+ 	p9_debug(P9_DEBUG_VFS, "dentry: %p\n", dentry);
+ 	v9ses = v9fs_dentry2v9ses(dentry);
+-	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE) {
++	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE ||
++	    (v9ses->cache == CACHE_STAT && d_really_is_positive(dentry))) {
+ 		generic_fillattr(d_inode(dentry), stat);
+ 		return 0;
+ 	}
+-- 
+2.7.4
+

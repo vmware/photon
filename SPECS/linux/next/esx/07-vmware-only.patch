@@ -1,0 +1,77 @@
+From ffb4b625e8b2f0ce0f31433564973eb2c80a7ef5 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 9 May 2017 12:41:17 -0700
+Subject: [PATCH] vmware only
+
+---
+ arch/x86/kernel/cpu/common.c | 2 ++
+ arch/x86/kernel/cpu/rdrand.c | 2 ++
+ arch/x86/kernel/cpu/vmware.c | 5 +++++
+ arch/x86/kernel/smpboot.c    | 2 +-
+ 4 files changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index c5d6f17..7114f7b 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1542,7 +1542,6 @@ static void identify_cpu(struct cpuinfo_x86 *c)
+ 	detect_ht(c);
+ #endif
+ 
+-	x86_init_rdrand(c);
+ 	setup_pku(c);
+ 
+ 	/*
+diff --git a/arch/x86/kernel/cpu/rdrand.c b/arch/x86/kernel/cpu/rdrand.c
+index c4be620..d48ef86 100644
+--- a/arch/x86/kernel/cpu/rdrand.c
++++ b/arch/x86/kernel/cpu/rdrand.c
+@@ -19,6 +19,7 @@ static int __init x86_rdrand_setup(char *s)
+ }
+ __setup("nordrand", x86_rdrand_setup);
+ 
++#if 0
+ /*
+  * RDRAND has Built-In-Self-Test (BIST) that runs on every invocation.
+  * Run the instruction a few times as a sanity check.
+@@ -64,3 +65,4 @@ void x86_init_rdrand(struct cpuinfo_x86 *c)
+ 
+ }
+ #endif
++#endif
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index b45ea4b..8a64d5f 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -27,6 +27,7 @@
+ #include <linux/clocksource.h>
+ #include <linux/cpu.h>
+ #include <linux/reboot.h>
++#include <asm/pci_x86.h>
+ #include <linux/kmsg_dump.h>
+ #include <linux/frame.h>
+ #include <asm/div64.h>
+@@ -471,6 +472,10 @@ static void __init vmware_platform_setup(void)
+ 	vmware_set_capabilities();
+ 
+ 	kmsg_dump_register(&kmsg_dumper);
++#ifdef CONFIG_PCI
++	/* PCI BIOS service won't work from a PV guest. */
++	pci_probe &= ~PCI_PROBE_BIOS;
++#endif
+ }
+ 
+ static u8 __init vmware_select_hypercall(void)
+diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
+index 27aa04a..6c53e6e 100644
+--- a/arch/x86/kernel/smpboot.c
++++ b/arch/x86/kernel/smpboot.c
+@@ -761,7 +761,7 @@ wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
+ 	/*
+ 	 * Give the other CPU some time to accept the IPI.
+ 	 */
+-	udelay(200);
++//	udelay(200);
+ 	if (APIC_INTEGRATED(boot_cpu_apic_version)) {
+ 		maxlvt = lapic_get_maxlvt();
+ 		if (maxlvt > 3)			/* Due to the Pentium erratum 3AP.  */

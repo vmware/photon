@@ -1,0 +1,46 @@
+From 898a9ca39f95a71dfb41af38ade7c12896fe2cce Mon Sep 17 00:00:00 2001
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Date: Fri, 24 Jul 2020 18:03:16 +0200
+Subject: [PATCH 56/82] x86/sev-es: Handle WBINVD Events
+
+Implement a handler for #VC exceptions caused by WBINVD instructions.
+
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+[ jroedel@suse.de: Adapt to #VC handling framework ]
+Co-developed-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Link: https://lore.kernel.org/r/20200724160336.5435-56-joro@8bytes.org
+---
+ arch/x86/kernel/sev-es.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/arch/x86/kernel/sev-es.c b/arch/x86/kernel/sev-es.c
+index 1a7bfcb..2e83bbc 100644
+--- a/arch/x86/kernel/sev-es.c
++++ b/arch/x86/kernel/sev-es.c
+@@ -847,6 +847,12 @@ static enum es_result vc_handle_dr7_read(struct ghcb *ghcb,
+ 	return ES_OK;
+ }
+ 
++static enum es_result vc_handle_wbinvd(struct ghcb *ghcb,
++				       struct es_em_ctxt *ctxt)
++{
++	return sev_es_ghcb_hv_call(ghcb, ctxt, SVM_EXIT_WBINVD, 0, 0);
++}
++
+ static enum es_result vc_handle_exitcode(struct es_em_ctxt *ctxt,
+ 					 struct ghcb *ghcb,
+ 					 unsigned long exit_code)
+@@ -869,6 +875,9 @@ static enum es_result vc_handle_exitcode(struct es_em_ctxt *ctxt,
+ 	case SVM_EXIT_MSR:
+ 		result = vc_handle_msr(ghcb, ctxt);
+ 		break;
++	case SVM_EXIT_WBINVD:
++		result = vc_handle_wbinvd(ghcb, ctxt);
++		break;
+ 	case SVM_EXIT_NPF:
+ 		result = vc_handle_mmio(ghcb, ctxt);
+ 		break;
+-- 
+2.7.4
+

@@ -1,0 +1,125 @@
+From d3cff911bf187e1432cbf3f403158bfbc5a1f4e0 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Fri, 22 Dec 2017 15:13:17 -0800
+Subject: [PATCH 04/12] 9p: vsock transport for 9p
+
+This second and correct implementation of 9p support over vsock.
+Second implementation addresses the issue, described in PR 2007859.
+
+Author: Adrian Drzewiecki <adriand@vmware.com>
+
+Here's a patch which adds a new transport type instead, following the
+methods that are used for others. That is, instead of doing
+
+$ mount -t9p -ovsock=1234 fubar /mnt
+
+One would do:
+
+$ mount -t9p -otrans=vsock 1234 /mnt
+---
+ net/9p/trans_fd.c | 68 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 68 insertions(+)
+
+diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+index c0762a3..e7ec72e 100644
+--- a/net/9p/trans_fd.c
++++ b/net/9p/trans_fd.c
+@@ -22,6 +22,8 @@
+ #include <linux/un.h>
+ #include <linux/uaccess.h>
+ #include <linux/inet.h>
++#include <linux/vmw_vmci_defs.h>
++#include <uapi/linux/vm_sockets.h>
+ #include <linux/idr.h>
+ #include <linux/file.h>
+ #include <linux/parser.h>
+@@ -960,6 +962,59 @@ static int p9_bind_privport(struct socket *sock)
+ 	return err;
+ }
+ 
++static int
++p9_fd_create_vsock(struct p9_client *client, const char *addr, char *args)
++{
++	int err;
++	struct socket *csocket;
++	struct sockaddr_vm vsock_server;
++	struct p9_fd_opts opts;
++
++	err = parse_opts(args, &opts);
++	if (err < 0)
++		return err;
++
++	csocket = NULL;
++
++	memset(&vsock_server, 0, sizeof(struct sockaddr_vm));
++	vsock_server.svm_family = AF_VSOCK;
++	vsock_server.svm_port = opts.port;
++
++	err = kstrtou32(addr, 0, &vsock_server.svm_cid);
++	if (err < 0)
++		return err;
++
++	err = __sock_create(current->nsproxy->net_ns, PF_VSOCK,
++			    SOCK_STREAM, 0, &csocket, 1);
++	if (err) {
++		pr_err("%s (%d): problem creating socket\n",
++		       __func__, task_pid_nr(current));
++		return err;
++	}
++
++	/* XXX: applicable? */
++	if (opts.privport) {
++		err = p9_bind_privport(csocket);
++		if (err < 0) {
++			pr_err("%s (%d): problem binding to privport\n",
++			       __func__, task_pid_nr(current));
++			sock_release(csocket);
++			return err;
++		}
++	}
++
++	err = csocket->ops->connect(csocket,
++				    (struct sockaddr *)&vsock_server,
++				    sizeof(struct sockaddr_vm), 0);
++	if (err < 0) {
++		pr_err("%s (%d): problem connecting vmware vsock addr %s\n",
++		       __func__, task_pid_nr(current), addr);
++		sock_release(csocket);
++		return err;
++	}
++
++	return p9_socket_open(client, csocket);
++}
+ 
+ static int
+ p9_fd_create_tcp(struct p9_client *client, const char *addr, char *args)
+@@ -1078,6 +1133,18 @@ p9_fd_create(struct p9_client *client, const char *addr, char *args)
+ 	return 0;
+ }
+ 
++static struct p9_trans_module p9_vsock_trans = {
++	.name = "vsock",
++	.maxsize = MAX_SOCK_BUF,
++	.def = 0,
++	.create = p9_fd_create_vsock,
++	.close = p9_fd_close,
++	.request = p9_fd_request,
++	.cancel = p9_fd_cancel,
++	.cancelled = p9_fd_cancelled,
++	.owner = THIS_MODULE,
++};
++
+ static struct p9_trans_module p9_tcp_trans = {
+ 	.name = "tcp",
+ 	.maxsize = MAX_SOCK_BUF,
+@@ -1151,6 +1218,7 @@ static void p9_poll_workfn(struct work_struct *work)
+ 
+ int p9_trans_fd_init(void)
+ {
++	v9fs_register_trans(&p9_vsock_trans);
+ 	v9fs_register_trans(&p9_tcp_trans);
+ 	v9fs_register_trans(&p9_unix_trans);
+ 	v9fs_register_trans(&p9_fd_trans);
+-- 
+2.7.4
+

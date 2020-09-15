@@ -1,0 +1,26 @@
+From 52d96820fcb65cc7ba73c07acea00ba49cade506 Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Fri, 25 Sep 2020 15:25:41 -0700
+Subject: [PATCH] Fix Makefile dependency for parallel make
+
+all_examples should depend on all_src.
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index db40356..aa48c76 100644
+--- a/Makefile
++++ b/Makefile
+@@ -4,7 +4,7 @@ all_src:
+ 	$(MAKE) -C src
+ all_base64: all_src
+ 	$(MAKE) -C base64
+-all_examples:
++all_examples: all_src
+ 	$(MAKE) -C examples
+ 	
+ clean: clean_src clean_base64 clean_include clean_examples
+-- 
+2.7.4
+

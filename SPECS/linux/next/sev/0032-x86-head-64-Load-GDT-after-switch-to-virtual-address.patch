@@ -1,0 +1,52 @@
+From 67c9d19c95155d72f50d9c9467d8309130e11e96 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Fri, 24 Jul 2020 18:02:52 +0200
+Subject: [PATCH 32/82] x86/head/64: Load GDT after switch to virtual addresses
+
+Load the GDT right after switching to virtual addresses to make sure
+there is a defined GDT for exception handling.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20200724160336.5435-32-joro@8bytes.org
+---
+ arch/x86/kernel/head_64.S | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index 8000532..f958d4e 100644
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -166,6 +166,14 @@ SYM_CODE_START(secondary_startup_64)
+ 1:
+ 	UNWIND_HINT_EMPTY
+ 
++	/*
++	 * We must switch to a new descriptor in kernel space for the GDT
++	 * because soon the kernel won't have access anymore to the userspace
++	 * addresses where we're currently running on. We have to do that here
++	 * because in 32bit we couldn't load a 64bit linear address.
++	 */
++	lgdt	early_gdt_descr(%rip)
++
+ 	/* Check if nx is implemented */
+ 	movl	$0x80000001, %eax
+ 	cpuid
+@@ -193,14 +201,6 @@ SYM_CODE_START(secondary_startup_64)
+ 	pushq $0
+ 	popfq
+ 
+-	/*
+-	 * We must switch to a new descriptor in kernel space for the GDT
+-	 * because soon the kernel won't have access anymore to the userspace
+-	 * addresses where we're currently running on. We have to do that here
+-	 * because in 32bit we couldn't load a 64bit linear address.
+-	 */
+-	lgdt	early_gdt_descr(%rip)
+-
+ 	/* set up data segments */
+ 	xorl %eax,%eax
+ 	movl %eax,%ds
+-- 
+2.7.4
+

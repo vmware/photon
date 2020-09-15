@@ -1,0 +1,27 @@
+From f71fdecf58768d1e6d9270d119bb0efef3c8e067 Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Fri, 25 Sep 2020 15:33:05 -0700
+Subject: [PATCH] build: fix libb64 make errors during parallel make
+
+This patch patches libb64 to fix dependency issues during parallel make
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ CMakeLists.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 29d73cd..7a98d91 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -117,6 +117,7 @@ ExternalProject_Add(
+   URL_HASH "SHA256=665134c2b600098a7ebd3d00b6a866cb34909a6d48e0e37a0eda226a4ad2638a"
+   CONFIGURE_COMMAND ""
+   BUILD_COMMAND ${CMD_MAKE}
++  PATCH_COMMAND patch -p1 -i ${CMAKE_CURRENT_SOURCE_DIR}/patch/libb64-Fix-Makefile-dependency-for-parallel-make.patch
+   BUILD_IN_SOURCE 1
+   INSTALL_COMMAND "")
+ 
+-- 
+2.7.4
+

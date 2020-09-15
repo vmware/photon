@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.127
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        5.9.0
+Release:        rc4.1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,8 +12,12 @@ Distribution:   Photon
 
 %define uname_r %{version}-%{release}-esx
 
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=5da7a67e59fcc7133fa26515f85ef325d20b5d2d
+#TODO: remove rcN after 5.9 goes out of rc
+%define lnx_rc_ver 5.9.0-rc4
+%define lnx_rc_local_ver .1%{?kat_build:.kat}%{?dist}
+
+Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{lnx_rc_ver}.tar.xz
+%define sha1 linux=19af0c05c8e16c7148dbcb3201880370f7405a4e
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -24,72 +28,138 @@ Source5:        https://github.com/vmware/photon-checksum-generator/releases/pho
 Source6:        genhmac.inc
 
 # common
-Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
-Patch1:         double-tcp_mem-limits.patch
+Patch0:         net-Double-tcp_mem-limits.patch
 # TODO: disable this patch, check for regressions
-#Patch2:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch5:         vsock-transport-for-9p.patch
-Patch6:         4.18-x86-vmware-STA-support.patch
-Patch7:	        9p-trans_fd-extend-port-variable-to-u32.patch
-Patch8:         init-do_mounts-recreate-dev-root.patch
-Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
-Patch10:        9p-file-attributes-caching-support.patch
+#Patchx:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch1:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch2:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch3:         9p-transport-for-9p.patch
+Patch4:	        9p-trans_fd-extend-port-variable-to-u32.patch
+Patch5:         vsock-delay-detach-of-QP-with-outgoing-data-59.patch
+Patch6:         hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch7:         9p-file-attributes-caching-support.patch
+Patch8:         9p-support-for-local-file-lock.patch
+Patch9:         fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
+Patch10:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch11:        apparmor-af_unix-mediation.patch
+
+# VMW:
+Patch30:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
+Patch31:        x86-vmware-Log-kmsg-dump-on-panic.patch
+Patch32:        x86-vmware-Fix-steal-time-clock-under-SEV.patch
 
 # -esx
-Patch12:        fs-9p-support-for-local-file-lock.patch
-Patch13:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
-Patch14:        01-clear-linux.patch
-Patch15:        02-pci-probe.patch
-Patch16:        03-poweroff.patch
-Patch17:        04-quiet-boot.patch
-Patch18:        05-pv-ops-clocksource.patch
-Patch19:        06-pv-ops-boot_clock.patch
-Patch20:        07-vmware-only.patch
-Patch21:        initramfs-support-for-page-aligned-format-newca.patch
+Patch50:        init-do_mounts-recreate-dev-root.patch
+Patch51:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
+Patch52:        01-clear-linux.patch
+Patch53:        02-pci-probe.patch
+Patch54:        03-poweroff.patch
+Patch55:        04-quiet-boot.patch
+Patch56:        05-pv-ops-clocksource.patch
+# TODO: make it working for v5.9+
+#Patch57:        06-pv-ops-boot_clock.patch
+Patch58:        07-vmware-only.patch
+Patch59:        initramfs-support-for-page-aligned-format-newca.patch
+Patch60:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
 
-Patch22:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix for CVE-2020-14331
-Patch23:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
+# CVE:
+Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix CVE-2017-1000252
-Patch24:        kvm-dont-accept-wrong-gsi-values.patch
-# RDRAND-based RNG driver to enhance the kernel's entropy pool:
-Patch25:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
-# Out-of-tree patches from AppArmor:
-Patch26:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
-Patch27:        4.17-0002-apparmor-af_unix-mediation.patch
-Patch28:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
-# Fix for CVE-2019-12456
-Patch29:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
+Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
-Patch30:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2019-12380
-Patch31:        0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
-# Fix for CVE-2019-12381
-Patch32:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
-# Fix for CVE-2019-12378
-Patch34:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
-# Fix for CVE-2019-12455
-Patch35:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
-Patch36:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
-# Fix CVE-2019-19072
-Patch43:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
-# Fix CVE-2019-19073
-Patch44:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
-# Fix CVE-2019-19074
-Patch45:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
+Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 
+# Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
-Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
+Patch500:       crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
-# Patch to perform continuous testing on RNG from Noise Source
-Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
+Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 
 %if 0%{?kat_build:1}
-Patch1000:      fips-kat-tests.patch
+Patch510:       crypto-testmgr-break-KAT-fips-intentionally.patch
 %endif
+
+# SEV:
+Patch600:       0001-KVM-SVM-nested-Don-t-allocate-VMCB-structures-on-sta.patch
+Patch601:       0002-KVM-SVM-Add-GHCB-definitions.patch
+Patch602:       0003-KVM-SVM-Add-GHCB-Accessor-functions.patch
+Patch603:       0004-KVM-SVM-Use-__packed-shorthand.patch
+Patch604:       0005-x86-cpufeatures-Add-SEV-ES-CPU-feature.patch
+Patch605:       0006-x86-traps-Move-pf-error-codes-to-asm-trap_pf.h.patch
+Patch606:       0007-x86-insn-Make-inat-tables.c-suitable-for-pre-decompr.patch
+Patch607:       0008-x86-umip-Factor-out-instruction-fetch.patch
+Patch608:       0009-x86-umip-Factor-out-instruction-decoding.patch
+Patch609:       0010-x86-insn-Add-insn_get_modrm_reg_off.patch
+Patch610:       0011-x86-insn-Add-insn_has_rep_prefix-helper.patch
+Patch611:       0012-x86-boot-compressed-64-Disable-red-zone-usage.patch
+Patch612:       0013-x86-boot-compressed-64-Add-IDT-Infrastructure.patch
+Patch613:       0014-x86-boot-compressed-64-Rename-kaslr_64.c-to-ident_ma.patch
+Patch614:       0015-x86-boot-compressed-64-Add-page-fault-handler.patch
+Patch615:       0016-x86-boot-compressed-64-Always-switch-to-own-page-tab.patch
+Patch616:       0017-x86-boot-compressed-64-Don-t-pre-map-memory-in-KASLR.patch
+Patch617:       0018-x86-boot-compressed-64-Change-add_identity_map-to-ta.patch
+Patch618:       0019-x86-boot-compressed-64-Add-stage1-VC-handler.patch
+Patch619:       0020-x86-boot-compressed-64-Call-set_sev_encryption_mask-.patch
+Patch620:       0021-x86-boot-compressed-64-Check-return-value-of-kernel_.patch
+Patch621:       0022-x86-boot-compressed-64-Add-set_page_en-decrypted-hel.patch
+Patch622:       0023-x86-boot-compressed-64-Setup-GHCB-Based-VC-Exception.patch
+Patch623:       0024-x86-boot-compressed-64-Unmap-GHCB-page-before-bootin.patch
+Patch624:       0025-x86-sev-es-Add-support-for-handling-IOIO-exceptions.patch
+Patch625:       0026-x86-fpu-Move-xgetbv-xsetbv-into-separate-header.patch
+Patch626:       0027-x86-sev-es-Add-CPUID-handling-to-VC-handler.patch
+Patch627:       0028-x86-idt-Move-IDT-to-data-segment.patch
+Patch628:       0029-x86-idt-Split-idt_data-setup-out-of-set_intr_gate.patch
+Patch629:       0030-x86-head-64-Install-startup-GDT.patch
+Patch630:       0031-x86-head-64-Setup-MSR_GS_BASE-before-calling-into-C-.patch
+Patch631:       0032-x86-head-64-Load-GDT-after-switch-to-virtual-address.patch
+Patch632:       0033-x86-head-64-Load-segment-registers-earlier.patch
+Patch633:       0034-x86-head-64-Switch-to-initial-stack-earlier.patch
+Patch634:       0035-x86-head-64-Make-fixup_pointer-static-inline.patch
+Patch635:       0036-x86-head-64-Load-IDT-earlier.patch
+Patch636:       0037-x86-head-64-Move-early-exception-dispatch-to-C-code.patch
+Patch637:       0038-x86-head-64-Set-CR4.FSGSBASE-early.patch
+Patch638:       0039-x86-sev-es-Add-SEV-ES-Feature-Detection.patch
+Patch639:       0040-x86-sev-es-Print-SEV-ES-info-into-kernel-log.patch
+Patch640:       0041-x86-sev-es-Compile-early-handler-code-into-kernel-im.patch
+Patch641:       0042-x86-sev-es-Setup-early-VC-handler.patch
+Patch642:       0043-x86-sev-es-Setup-GHCB-based-boot-VC-handler.patch
+Patch643:       0044-x86-sev-es-Setup-per-cpu-GHCBs-for-the-runtime-handl.patch
+Patch644:       0045-x86-sev-es-Allocate-and-Map-IST-stack-for-VC-handler.patch
+Patch645:       0046-x86-sev-es-Adjust-VC-IST-Stack-on-entering-NMI-handl.patch
+Patch646:       0047-x86-dumpstack-64-Add-noinstr-version-of-get_stack_in.patch
+Patch647:       0048-x86-entry-64-Add-entry-code-for-VC-handler.patch
+Patch648:       0049-x86-sev-es-Add-Runtime-VC-Exception-Handler.patch
+Patch649:       0050-x86-sev-es-Wire-up-existing-VC-exit-code-handlers.patch
+Patch650:       0051-x86-sev-es-Handle-instruction-fetches-from-user-spac.patch
+Patch651:       0052-x86-sev-es-Handle-MMIO-events.patch
+Patch652:       0053-x86-sev-es-Handle-MMIO-String-Instructions.patch
+Patch653:       0054-x86-sev-es-Handle-MSR-events.patch
+Patch654:       0055-x86-sev-es-Handle-DR7-read-write-events.patch
+Patch655:       0056-x86-sev-es-Handle-WBINVD-Events.patch
+Patch656:       0057-x86-sev-es-Handle-RDTSC-P-Events.patch
+Patch657:       0058-x86-sev-es-Handle-RDPMC-Events.patch
+Patch658:       0059-x86-sev-es-Handle-INVD-Events.patch
+Patch659:       0060-x86-sev-es-Handle-MONITOR-MONITORX-Events.patch
+Patch660:       0061-x86-sev-es-Handle-MWAIT-MWAITX-Events.patch
+Patch661:       0062-x86-sev-es-Handle-VMMCALL-Events.patch
+Patch662:       0063-x86-sev-es-Handle-AC-Events.patch
+Patch663:       0064-x86-sev-es-Handle-DB-Events.patch
+Patch664:       0065-x86-paravirt-Allow-hypervisor-specific-VMMCALL-handl.patch
+Patch665:       0066-x86-kvm-Add-KVM-specific-VMMCALL-handling-under-SEV-.patch
+Patch666:       0067-x86-vmware-Add-VMware-specific-handling-for-VMMCALL-.patch
+Patch667:       0068-x86-realmode-Add-SEV-ES-specific-trampoline-entry-po.patch
+Patch668:       0069-x86-realmode-Setup-AP-jump-table.patch
+Patch669:       0070-x86-smpboot-Setup-TSS-for-starting-AP.patch
+Patch670:       0071-x86-head-64-Don-t-call-verify_cpu-on-starting-APs.patch
+Patch671:       0072-x86-head-64-Rename-start_cpu0.patch
+Patch672:       0073-x86-sev-es-Support-CPU-offline-online.patch
+Patch673:       0074-x86-sev-es-Handle-NMI-State.patch
+Patch674:       0075-x86-efi-Add-GHCB-mappings-when-SEV-ES-is-active.patch
+Patch675:       0076-x86-sev-es-Check-required-CPU-features-for-SEV-ES.patch
+Patch676:       0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
+Patch677:       0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
+Patch678:       0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
+Patch679:       0082-x86-sev-es-load-idt-before-entering-long-mode-to-han.patch
 
 BuildArch:     x86_64
 BuildRequires: bc
@@ -138,11 +208,12 @@ Enhances:       %{name}
 This Linux package contains hmac sha generator kernel module.
 
 %prep
-%setup -q -n linux-%{version}
-%setup -D -b 5 -n linux-%{version}
+%setup -q -n linux-%{lnx_rc_ver}
+%setup -D -b 5 -n linux-%{lnx_rc_ver}
 
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
@@ -151,48 +222,125 @@ This Linux package contains hmac sha generator kernel module.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
-%patch21 -p1
-%patch22 -p1
-%patch23 -p1
-%patch24 -p1
-%patch25 -p1
-%patch26 -p1
-%patch27 -p1
-%patch28 -p1
-%patch29 -p1
+%patch11 -p1
+
+# VMW
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
-%patch34 -p1
-%patch35 -p1
-%patch36 -p1
-%patch43 -p1
-%patch44 -p1
-%patch45 -p1
-%patch98 -p1
+
+# -esx
+%patch50 -p1
+%patch51 -p1
+%patch52 -p1
+%patch53 -p1
+%patch54 -p1
+%patch55 -p1
+%patch56 -p1
+#%patch57 -p1
+%patch58 -p1
+%patch59 -p1
+%patch60 -p1
+
+# CVE
 %patch100 -p1
 %patch101 -p1
+%patch102 -p1
+
+# crypto
+%patch500 -p1
+%patch501 -p1
 
 %if 0%{?kat_build:1}
-%patch1000 -p1
+%patch510 -p1
 %endif
 
-%build
-# patch vmw_balloon driver
-sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
+# SEV
+%patch600 -p1
+%patch601 -p1
+%patch602 -p1
+%patch603 -p1
+%patch604 -p1
+%patch605 -p1
+%patch606 -p1
+%patch607 -p1
+%patch608 -p1
+%patch609 -p1
+%patch610 -p1
+%patch611 -p1
+%patch612 -p1
+%patch613 -p1
+%patch614 -p1
+%patch615 -p1
+%patch616 -p1
+%patch617 -p1
+%patch618 -p1
+%patch619 -p1
+%patch620 -p1
+%patch621 -p1
+%patch622 -p1
+%patch623 -p1
+%patch624 -p1
+%patch625 -p1
+%patch626 -p1
+%patch627 -p1
+%patch628 -p1
+%patch629 -p1
+%patch630 -p1
+%patch631 -p1
+%patch632 -p1
+%patch633 -p1
+%patch634 -p1
+%patch635 -p1
+%patch636 -p1
+%patch637 -p1
+%patch638 -p1
+%patch639 -p1
+%patch640 -p1
+%patch641 -p1
+%patch642 -p1
+%patch643 -p1
+%patch644 -p1
+%patch645 -p1
+%patch646 -p1
+%patch647 -p1
+%patch648 -p1
+%patch649 -p1
+%patch650 -p1
+%patch651 -p1
+%patch652 -p1
+%patch653 -p1
+%patch654 -p1
+%patch655 -p1
+%patch656 -p1
+%patch657 -p1
+%patch658 -p1
+%patch659 -p1
+%patch660 -p1
+%patch661 -p1
+%patch662 -p1
+%patch663 -p1
+%patch664 -p1
+%patch665 -p1
+%patch666 -p1
+%patch667 -p1
+%patch668 -p1
+%patch669 -p1
+%patch670 -p1
+%patch671 -p1
+%patch672 -p1
+%patch673 -p1
+%patch674 -p1
+%patch675 -p1
+%patch676 -p1
+%patch677 -p1
+%patch678 -p1
+%patch679 -p1
 
+%build
 make mrproper
 cp %{SOURCE1} .config
-sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
+sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="%{lnx_rc_local_ver}-esx"/' .config
 
 %include %{SOURCE4}
 
@@ -223,18 +371,18 @@ popd
 %{nil}
 
 %install
-install -vdm 755 %{buildroot}/etc
+install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
-install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
-install -vdm 755 %{buildroot}/etc/modprobe.d
-install -vdm 755 %{buildroot}/usr/src/linux-headers-%{uname_r}
+install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
+install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
-cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{uname_r}
-cp -v System.map        %{buildroot}/boot/System.map-%{uname_r}
-cp -v .config            %{buildroot}/boot/config-%{uname_r}
-cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
+
+install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
+install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
+install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
+cp -r Documentation/*        %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
-cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
+install -vm 644 vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
 
 #install photon-checksum-generator module
 bldroot=`pwd`
@@ -261,15 +409,15 @@ rm -f %{buildroot}/lib/modules/%{uname_r}/source
 rm -f %{buildroot}/lib/modules/%{uname_r}/build
 
 # create /use/src/linux-headers-*/ content
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
-find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
-find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
-find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 
 # copy .config manually to be where it's expected to be
-cp .config %{buildroot}/usr/src/linux-headers-%{uname_r}
+cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 # symling to the build folder
-ln -sf /usr/src/linux-headers-%{uname_r} %{buildroot}/lib/modules/%{uname_r}/build
+ln -sf "%{_usrsrc}/linux-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %include %{SOURCE2}
@@ -292,7 +440,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 /lib/modules/*
 %exclude /lib/modules/%{uname_r}/build
-%exclude /usr/src
 %exclude /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 %exclude /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
@@ -303,7 +450,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %files devel
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/build
-/usr/src/linux-headers-%{uname_r}
+%{_usrsrc}/linux-headers-%{uname_r}
 
 %files hmacgen
 %defattr(-,root,root)
@@ -311,6 +458,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Sep 21 2020 Bo Gan <ganb@vmware.com> 5.9.0-rc4.1
+-   Update to 5.9.0-rc4
+-   AMD SEV-ES Support
 *   Tue Sep 8 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.127-4
 -   Enable sysrq magic in config
 *   Mon Jul 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.127-3

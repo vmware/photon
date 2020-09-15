@@ -13,8 +13,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        4.19.127
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        5.9.0
+Release:        rc4.1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -23,138 +23,161 @@ Distribution: 	Photon
 
 %define uname_r %{version}-%{release}
 
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=5da7a67e59fcc7133fa26515f85ef325d20b5d2d
+#TODO: remove rcN after 5.9 goes out of rc
+%define lnx_rc_ver 5.9.0-rc4
+%define lnx_rc_local_ver .1%{?kat_build:.kat}%{?dist}
+
+Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{lnx_rc_ver}.tar.xz
+%define sha1 linux=19af0c05c8e16c7148dbcb3201880370f7405a4e
 Source1:	config_%{_arch}
 Source2:	initramfs.trigger
-%define ena_version 1.6.0
+%define ena_version 2.2.11
 Source3:	https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
-%define sha1 ena_linux=c8ec9094f9db8d324d68a13b0b3dcd2c5271cbc0
+%define sha1 ena_linux=48a9812d05805a7eefd3f87cc48a95d668b26719
 Source4:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
 %define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
-Source5:	https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_1.6.tar.gz
-%define sha1 DCAP=84df31e729c4594f25f4fcb335940e06a2408ffc
+%define sgx_version 1.8
+Source5:	https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_%{sgx_version}.tar.gz
+%define sha1 DCAP=6161846c2ba03099a2307f28a91e9d45627614d7
 Source6:        pre-preun-postun-tasks.inc
 Source7:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source8:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
 %define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
 Source9:        genhmac.inc
-%define i40e_version 2.11.29
+%define i40e_version 2.12.6
 Source10:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha1 i40e=9dcd03653430d15154572c64b7a92c6d2521cf2a
+%define sha1 i40e=e1a28cdf7c122f177ed75b7615a0a0e221d21ff4
+Source12:       ena-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
+Source13:       i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
+Source14:       i40e-Remove-read_barrier_depends-in-favor-of-READ_ON.patch
+Source15:       i40e-Fix-minor-compilation-error.patch
+
 # common
-Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
-Patch1:         double-tcp_mem-limits.patch
-# TODO: disable this patch, check for regressions
-#Patch2:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch5:         vsock-transport-for-9p.patch
-Patch6:         4.18-x86-vmware-STA-support.patch
-Patch7:	        9p-trans_fd-extend-port-variable-to-u32.patch
-Patch8:         perf-scripts-python-Convert-python2-scripts-to-python3.patch
-Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
-# ttyXRUSB support
-Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
-#HyperV patches
-Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
-
-# Fix CVE-2019-19072
-Patch17:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
-# Fix CVE-2019-19073
-Patch18:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
-# Fix CVE-2019-19074
-Patch19:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
-
-Patch20:        perf-Make-perf-able-to-build-with-latest-libbfd.patch
-# TODO: Is CONFIG_HYPERV_VSOCKETS the same?
-#Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
-Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-
-# Fix for CVE-2020-14331
-Patch27:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
-# Fix CVE-2017-1000252
-Patch28:        kvm-dont-accept-wrong-gsi-values.patch
-# Out-of-tree patches from AppArmor:
-Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
-Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
-Patch31:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+Patch0:         net-Double-tcp_mem-limits.patch
+Patch1:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch2:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch3:         9p-transport-for-9p.patch
+Patch4:	        9p-trans_fd-extend-port-variable-to-u32.patch
+Patch5:         vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
-Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
-# Fix for CVE-2019-12456
-Patch33:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
+Patch6:         hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+
+# ttyXRUSB support
+Patch10:	usb-acm-exclude-exar-usb-serial-ports-nxt.patch
+#HyperV patches
+Patch11:        vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+
+# TODO: Is CONFIG_HYPERV_VSOCKETS the same?
+#Patchx:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
+Patch12:        fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
+# Out-of-tree patches from AppArmor:
+Patch13:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch14:        apparmor-af_unix-mediation.patch
+
+# VMW:
+Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
+Patch56:        x86-vmware-Log-kmsg-dump-on-panic.patch
+Patch57:        x86-vmware-Fix-steal-time-clock-under-SEV.patch
+
+# CVE:
+Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
+# Fix CVE-2017-1000252
+Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
-Patch34:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2019-12380
-Patch35:        0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
-# Fix for CVE-2019-12381
-Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
-# Fix for CVE-2019-12378
-Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
-# Fix for CVE-2019-12455
-Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
-# Secure boot uefi certificate import patches
-Patch40:        secure-boot-patches/0001-security-integrity-remove-unnecessary-init_keyring-v.patch
-Patch41:	secure-boot-patches/0002-integrity-Define-a-trusted-platform-keyring.patch
-Patch42:	secure-boot-patches/0003-integrity-Load-certs-to-the-platform-keyring.patch
-Patch43:	secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
-Patch44:	secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
-Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
-# Patch to fix linux build failure with binutils updated to 2.35, addressing a known issue
-Patch46:        fix-linux-build-failure-with-updated-binutils.patch
+Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+
+# Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
-Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
+Patch500:       crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
-# Patch to perform continuous testing on RNG from Noise Source
-Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
-
-%ifarch aarch64
-# Rpi of_configfs patches
-Patch200:        0001-OF-DT-Overlay-configfs-interface.patch
-Patch201:        0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
-Patch202:        0003-arm64-dts-broadcom-Add-symbols-to-dtb.patch
-# Rpi add 'spidev' to spidev_dt_ids compatible list
-Patch203:        0001-spidev-Add-spidev-compatible-string-to-silence-warni.patch
-# Rpi device tree patch
-Patch204:        0001-Add-SPI-and-Sound-to-rpi3-device-trees.patch
-# Rpi Overlays
-Patch205:        0001-Infrastructure-to-compile-Overlays.patch
-Patch206:        0002-spi0-overlays-files.patch
-Patch207:        0003-audio-overlays-files.patch
-
-# NXP LS10XXa FRWY patches
-Patch211:        0001-staging-fsl_ppfe-eth-header-files-for-pfe-driver.patch
-Patch212:        0002-staging-fsl_ppfe-eth-introduce-pfe-driver.patch
-Patch213:        0003-staging-fsl_ppfe-eth-fix-RGMII-tx-delay-issue.patch
-Patch214:        0004-staging-fsl_ppfe-eth-remove-unused-functions.patch
-Patch215:        0005-staging-fsl_ppfe-eth-fix-read-write-ack-idx-issue.patch
-Patch216:        0006-staging-fsl_ppfe-eth-Make-phy_ethtool_ksettings_get-.patch
-Patch217:        0007-staging-fsl_ppfe-eth-add-function-to-update-tmu-cred.patch
-Patch218:        0008-staging-fsl_ppfe-eth-Avoid-packet-drop-at-TMU-queues.patch
-Patch219:        0009-staging-fsl_ppfe-eth-Enable-PFE-in-clause-45-mode.patch
-Patch220:        0010-staging-fsl_ppfe-eth-Disable-autonegotiation-for-2.5.patch
-Patch221:        0011-staging-fsl_ppfe-eth-add-missing-included-header-fil.patch
-Patch222:        0012-staging-fsl_ppfe-eth-clean-up-iounmap-pfe-ddr_basead.patch
-Patch223:        0013-staging-fsl_ppfe-eth-calculate-PFE_PKT_SIZE-with-SKB.patch
-Patch224:        0014-staging-fsl_ppfe-eth-support-for-userspace-networkin.patch
-Patch225:        0015-staging-fsl_ppfe-eth-unregister-netdev-after-pfe_phy.patch
-Patch226:        0016-staging-fsl_ppfe-eth-HW-parse-results-for-DPDK.patch
-Patch227:        0017-staging-fsl_ppfe-eth-reorganize-pfe_netdev_ops.patch
-Patch228:        0018-staging-fsl_ppfe-eth-use-mask-for-rx-max-frame-len.patch
-Patch229:        0019-staging-fsl_ppfe-eth-define-pfe-ndo_change_mtu-funct.patch
-Patch230:        0020-staging-fsl_ppfe-eth-remove-jumbo-frame-enable-from-.patch
-Patch231:        0021-staging-fsl_ppfe-eth-disable-CRC-removal.patch
-Patch232:        0022-staging-fsl_ppfe-eth-handle-ls1012a-errata_a010897.patch
-Patch233:        0023-staging-fsl_ppfe-eth-Modify-Kconfig-to-enable-pfe-dr.patch
-
-Patch234:        0001-fsl_dpaa_mac-wait-for-phy-probe-to-complete.patch
-%endif
+Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 
 %if 0%{?kat_build:1}
-Patch1000:	fips-kat-tests.patch
+Patch510:       crypto-testmgr-break-KAT-fips-intentionally.patch
 %endif
+
+# SEV:
+Patch600:       0001-KVM-SVM-nested-Don-t-allocate-VMCB-structures-on-sta.patch
+Patch601:       0002-KVM-SVM-Add-GHCB-definitions.patch
+Patch602:       0003-KVM-SVM-Add-GHCB-Accessor-functions.patch
+Patch603:       0004-KVM-SVM-Use-__packed-shorthand.patch
+Patch604:       0005-x86-cpufeatures-Add-SEV-ES-CPU-feature.patch
+Patch605:       0006-x86-traps-Move-pf-error-codes-to-asm-trap_pf.h.patch
+Patch606:       0007-x86-insn-Make-inat-tables.c-suitable-for-pre-decompr.patch
+Patch607:       0008-x86-umip-Factor-out-instruction-fetch.patch
+Patch608:       0009-x86-umip-Factor-out-instruction-decoding.patch
+Patch609:       0010-x86-insn-Add-insn_get_modrm_reg_off.patch
+Patch610:       0011-x86-insn-Add-insn_has_rep_prefix-helper.patch
+Patch611:       0012-x86-boot-compressed-64-Disable-red-zone-usage.patch
+Patch612:       0013-x86-boot-compressed-64-Add-IDT-Infrastructure.patch
+Patch613:       0014-x86-boot-compressed-64-Rename-kaslr_64.c-to-ident_ma.patch
+Patch614:       0015-x86-boot-compressed-64-Add-page-fault-handler.patch
+Patch615:       0016-x86-boot-compressed-64-Always-switch-to-own-page-tab.patch
+Patch616:       0017-x86-boot-compressed-64-Don-t-pre-map-memory-in-KASLR.patch
+Patch617:       0018-x86-boot-compressed-64-Change-add_identity_map-to-ta.patch
+Patch618:       0019-x86-boot-compressed-64-Add-stage1-VC-handler.patch
+Patch619:       0020-x86-boot-compressed-64-Call-set_sev_encryption_mask-.patch
+Patch620:       0021-x86-boot-compressed-64-Check-return-value-of-kernel_.patch
+Patch621:       0022-x86-boot-compressed-64-Add-set_page_en-decrypted-hel.patch
+Patch622:       0023-x86-boot-compressed-64-Setup-GHCB-Based-VC-Exception.patch
+Patch623:       0024-x86-boot-compressed-64-Unmap-GHCB-page-before-bootin.patch
+Patch624:       0025-x86-sev-es-Add-support-for-handling-IOIO-exceptions.patch
+Patch625:       0026-x86-fpu-Move-xgetbv-xsetbv-into-separate-header.patch
+Patch626:       0027-x86-sev-es-Add-CPUID-handling-to-VC-handler.patch
+Patch627:       0028-x86-idt-Move-IDT-to-data-segment.patch
+Patch628:       0029-x86-idt-Split-idt_data-setup-out-of-set_intr_gate.patch
+Patch629:       0030-x86-head-64-Install-startup-GDT.patch
+Patch630:       0031-x86-head-64-Setup-MSR_GS_BASE-before-calling-into-C-.patch
+Patch631:       0032-x86-head-64-Load-GDT-after-switch-to-virtual-address.patch
+Patch632:       0033-x86-head-64-Load-segment-registers-earlier.patch
+Patch633:       0034-x86-head-64-Switch-to-initial-stack-earlier.patch
+Patch634:       0035-x86-head-64-Make-fixup_pointer-static-inline.patch
+Patch635:       0036-x86-head-64-Load-IDT-earlier.patch
+Patch636:       0037-x86-head-64-Move-early-exception-dispatch-to-C-code.patch
+Patch637:       0038-x86-head-64-Set-CR4.FSGSBASE-early.patch
+Patch638:       0039-x86-sev-es-Add-SEV-ES-Feature-Detection.patch
+Patch639:       0040-x86-sev-es-Print-SEV-ES-info-into-kernel-log.patch
+Patch640:       0041-x86-sev-es-Compile-early-handler-code-into-kernel-im.patch
+Patch641:       0042-x86-sev-es-Setup-early-VC-handler.patch
+Patch642:       0043-x86-sev-es-Setup-GHCB-based-boot-VC-handler.patch
+Patch643:       0044-x86-sev-es-Setup-per-cpu-GHCBs-for-the-runtime-handl.patch
+Patch644:       0045-x86-sev-es-Allocate-and-Map-IST-stack-for-VC-handler.patch
+Patch645:       0046-x86-sev-es-Adjust-VC-IST-Stack-on-entering-NMI-handl.patch
+Patch646:       0047-x86-dumpstack-64-Add-noinstr-version-of-get_stack_in.patch
+Patch647:       0048-x86-entry-64-Add-entry-code-for-VC-handler.patch
+Patch648:       0049-x86-sev-es-Add-Runtime-VC-Exception-Handler.patch
+Patch649:       0050-x86-sev-es-Wire-up-existing-VC-exit-code-handlers.patch
+Patch650:       0051-x86-sev-es-Handle-instruction-fetches-from-user-spac.patch
+Patch651:       0052-x86-sev-es-Handle-MMIO-events.patch
+Patch652:       0053-x86-sev-es-Handle-MMIO-String-Instructions.patch
+Patch653:       0054-x86-sev-es-Handle-MSR-events.patch
+Patch654:       0055-x86-sev-es-Handle-DR7-read-write-events.patch
+Patch655:       0056-x86-sev-es-Handle-WBINVD-Events.patch
+Patch656:       0057-x86-sev-es-Handle-RDTSC-P-Events.patch
+Patch657:       0058-x86-sev-es-Handle-RDPMC-Events.patch
+Patch658:       0059-x86-sev-es-Handle-INVD-Events.patch
+Patch659:       0060-x86-sev-es-Handle-MONITOR-MONITORX-Events.patch
+Patch660:       0061-x86-sev-es-Handle-MWAIT-MWAITX-Events.patch
+Patch661:       0062-x86-sev-es-Handle-VMMCALL-Events.patch
+Patch662:       0063-x86-sev-es-Handle-AC-Events.patch
+Patch663:       0064-x86-sev-es-Handle-DB-Events.patch
+Patch664:       0065-x86-paravirt-Allow-hypervisor-specific-VMMCALL-handl.patch
+Patch665:       0066-x86-kvm-Add-KVM-specific-VMMCALL-handling-under-SEV-.patch
+Patch666:       0067-x86-vmware-Add-VMware-specific-handling-for-VMMCALL-.patch
+Patch667:       0068-x86-realmode-Add-SEV-ES-specific-trampoline-entry-po.patch
+Patch668:       0069-x86-realmode-Setup-AP-jump-table.patch
+Patch669:       0070-x86-smpboot-Setup-TSS-for-starting-AP.patch
+Patch670:       0071-x86-head-64-Don-t-call-verify_cpu-on-starting-APs.patch
+Patch671:       0072-x86-head-64-Rename-start_cpu0.patch
+Patch672:       0073-x86-sev-es-Support-CPU-offline-online.patch
+Patch673:       0074-x86-sev-es-Handle-NMI-State.patch
+Patch674:       0075-x86-efi-Add-GHCB-mappings-when-SEV-ES-is-active.patch
+Patch675:       0076-x86-sev-es-Check-required-CPU-features-for-SEV-ES.patch
+Patch676:       0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
+Patch677:       0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
+Patch678:       0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
+Patch679:       0082-x86-sev-es-load-idt-before-entering-long-mode-to-han.patch
 
 BuildRequires:  bc
 BuildRequires:  kmod-devel
@@ -172,6 +195,7 @@ BuildRequires:  slang-devel
 BuildRequires:  python3-devel
 %ifarch x86_64
 BuildRequires:  pciutils-devel
+BuildRequires:  libcap-devel
 %endif
 Requires:       filesystem kmod
 Requires(pre): (coreutils or toybox)
@@ -252,23 +276,6 @@ Requires:       python3
 This package provides a module that permits applications written in the
 Python programming language to use the interface to manipulate perf events.
 
-%ifarch aarch64
-%package dtb-rpi3
-Summary:        Kernel Device Tree Blob files for Raspberry Pi3
-Group:          System Environment/Kernel
-Requires:       %{name} = %{version}-%{release}
-%description dtb-rpi3
-Kernel Device Tree Blob files for Raspberry Pi3
-
-%package dtb-ls1012afrwy
-Summary:        Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
-Group:          System Environment/Kernel
-Requires:       %{name} = %{version}-%{release}
-%description dtb-ls1012afrwy
-Kernel Device Tree Blob files for NXP FRWY ls1012a and ls1046a boards
-
-%endif
-
 %package hmacgen
 Summary:	HMAC SHA256/HMAC SHA512 generator
 Group:		System Environment/Kernel
@@ -278,101 +285,139 @@ Enhances:       %{name}
 This Linux package contains hmac sha generator kernel module.
 
 %prep
-%setup -q -n linux-%{version}
+#TODO: remove rcN after 5.9 goes out of rc
+%setup -q -n linux-%{lnx_rc_ver}
 %ifarch x86_64
-%setup -D -b 3 -n linux-%{version}
-%setup -D -b 4 -n linux-%{version}
-%setup -D -b 5 -n linux-%{version}
-%setup -D -b 10 -n linux-%{version}
+%setup -D -b 3 -n linux-%{lnx_rc_ver}
+%setup -D -b 4 -n linux-%{lnx_rc_ver}
+%setup -D -b 5 -n linux-%{lnx_rc_ver}
+%setup -D -b 10 -n linux-%{lnx_rc_ver}
 %endif
-%setup -D -b 8 -n linux-%{version}
+%setup -D -b 8 -n linux-%{lnx_rc_ver}
 
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch11 -p1
-%patch13 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
-%patch26 -p1
-%patch27 -p1
-%patch28 -p1
-%patch29 -p1
-%patch30 -p1
-%patch31 -p1
-%patch32 -p1
-%patch33 -p1
-%patch34 -p1
-%patch35 -p1
-%patch36 -p1
-%patch38 -p1
-%patch39 -p1
-%patch40 -p1
-%patch41 -p1
-%patch42 -p1
-%patch43 -p1
-%patch44 -p1
-%patch45 -p1
-%patch46 -p1
 
-%patch98 -p1
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+
+%ifarch x86_64
+# VMW x86
+%patch55 -p1
+%patch56 -p1
+%patch57 -p1
+%endif
+
+# CVE
 %patch100 -p1
 %patch101 -p1
+%patch102 -p1
 
-%ifarch aarch64
-# Rpi of_configfs patches
-%patch200 -p1
-%patch201 -p1
-%patch202 -p1
-%patch203 -p1
-%patch204 -p1
-%patch205 -p1
-%patch206 -p1
-%patch207 -p1
+# crypto
+%patch500 -p1
+%patch501 -p1
 
-# NXP FSL_PPFE Driver patches
-%patch211 -p1
-%patch212 -p1
-%patch213 -p1
-%patch214 -p1
-%patch215 -p1
-%patch216 -p1
-%patch217 -p1
-%patch218 -p1
-%patch219 -p1
-%patch220 -p1
-%patch221 -p1
-%patch222 -p1
-%patch223 -p1
-%patch224 -p1
-%patch225 -p1
-%patch226 -p1
-%patch227 -p1
-%patch228 -p1
-%patch229 -p1
-%patch230 -p1
-%patch231 -p1
-%patch232 -p1
-%patch233 -p1
-%patch234 -p1
-%endif
 %if 0%{?kat_build:1}
-%patch1000 -p1
+%patch510 -p1
+%endif
+
+%ifarch x86_64
+# SEV
+%patch600 -p1
+%patch601 -p1
+%patch602 -p1
+%patch603 -p1
+%patch604 -p1
+%patch605 -p1
+%patch606 -p1
+%patch607 -p1
+%patch608 -p1
+%patch609 -p1
+%patch610 -p1
+%patch611 -p1
+%patch612 -p1
+%patch613 -p1
+%patch614 -p1
+%patch615 -p1
+%patch616 -p1
+%patch617 -p1
+%patch618 -p1
+%patch619 -p1
+%patch620 -p1
+%patch621 -p1
+%patch622 -p1
+%patch623 -p1
+%patch624 -p1
+%patch625 -p1
+%patch626 -p1
+%patch627 -p1
+%patch628 -p1
+%patch629 -p1
+%patch630 -p1
+%patch631 -p1
+%patch632 -p1
+%patch633 -p1
+%patch634 -p1
+%patch635 -p1
+%patch636 -p1
+%patch637 -p1
+%patch638 -p1
+%patch639 -p1
+%patch640 -p1
+%patch641 -p1
+%patch642 -p1
+%patch643 -p1
+%patch644 -p1
+%patch645 -p1
+%patch646 -p1
+%patch647 -p1
+%patch648 -p1
+%patch649 -p1
+%patch650 -p1
+%patch651 -p1
+%patch652 -p1
+%patch653 -p1
+%patch654 -p1
+%patch655 -p1
+%patch656 -p1
+%patch657 -p1
+%patch658 -p1
+%patch659 -p1
+%patch660 -p1
+%patch661 -p1
+%patch662 -p1
+%patch663 -p1
+%patch664 -p1
+%patch665 -p1
+%patch666 -p1
+%patch667 -p1
+%patch668 -p1
+%patch669 -p1
+%patch670 -p1
+%patch671 -p1
+%patch672 -p1
+%patch673 -p1
+%patch674 -p1
+%patch675 -p1
+%patch676 -p1
+%patch677 -p1
+%patch678 -p1
+%patch679 -p1
 %endif
 
 %build
 make mrproper
 cp %{SOURCE1} .config
 
-sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
+sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="%{lnx_rc_local_ver}"/' .config
 
 %include %{SOURCE7}
 
@@ -387,11 +432,12 @@ make ARCH=%{arch} -C tools perf PYTHON=python3
 
 %ifarch x86_64
 #build turbostat and cpupower
-make ARCH=${arch} -C tools turbostat cpupower PYTHON=python3
+make ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
 
 # build ENA module
 bldroot=`pwd`
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
+patch -p4 < %{SOURCE12}
 make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
 popd
 
@@ -403,13 +449,16 @@ popd
 
 # build Intel SGX module
 bldroot=`pwd`
-pushd ../SGXDataCenterAttestationPrimitives-DCAP_1.6/driver/linux
+pushd ../SGXDataCenterAttestationPrimitives-DCAP_%{sgx_version}/driver/linux
 make KDIR=$bldroot ARCH=%{arch} %{?_smp_mflags}
 popd
 
 # build i40e module
 bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
+patch -p1 < %{SOURCE13}
+patch -p1 < %{SOURCE14}
+patch -p1 < %{SOURCE15}
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
@@ -442,10 +491,10 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
 %{nil}
 
 %install
-install -vdm 755 %{buildroot}/etc
+install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
-install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
-install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
+install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{uname_r}
+install -vdm 755 %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
 
@@ -464,9 +513,10 @@ popd
 
 # install Intel SGX module
 bldroot=`pwd`
-pushd ../SGXDataCenterAttestationPrimitives-DCAP_1.6/driver/linux
-mkdir -p %{buildroot}/%{_sysconfdir}/udev/rules.d
+pushd ../SGXDataCenterAttestationPrimitives-DCAP_%{sgx_version}/driver/linux
+mkdir -p %{buildroot}%{_sysconfdir}/udev/rules.d
 install -vm 644 10-sgx.rules %{buildroot}/%{_sysconfdir}/udev/rules.d
+mkdir -p %{buildroot}/lib/modules/%{uname_r}/extra
 install -vm 644 intel_sgx.ko %{buildroot}/lib/modules/%{uname_r}/extra/
 popd
 
@@ -499,20 +549,12 @@ popd
 
 %ifarch aarch64
 install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
-# Install DTB and Overlays files
-install -vdm 755 %{buildroot}/boot/broadcom
-install -vdm 755 %{buildroot}/boot/broadcom/overlays
-install -vdm 755 %{buildroot}/boot/dtb
-install -vm 640 arch/arm64/boot/dts/broadcom/*.dtb %{buildroot}/boot/broadcom/
-install -vm 640 arch/arm64/boot/dts/overlays/*.dtbo %{buildroot}/boot/broadcom/overlays/
-install -vm 640 arch/arm64/boot/dts/freescale/fsl-ls1012a-frwy.dtb %{buildroot}/boot/dtb/
-install -vm 640 arch/arm64/boot/dts/freescale/fsl-ls1046a-rdb.dtb %{buildroot}/boot/dtb/
 %endif
 
 # Restrict the permission on System.map-X file
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
-cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
+cp -r Documentation/*        %{buildroot}%{_docdir}/%{name}-%{uname_r}
 install -vm 644 vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
 # `perf test vmlinux` needs it
 ln -s vmlinux-%{uname_r} %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux
@@ -534,31 +576,28 @@ EOF
 rm -rf %{buildroot}/lib/modules/%{uname_r}/source
 rm -rf %{buildroot}/lib/modules/%{uname_r}/build
 
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find arch/%{archdir}/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find arch/%{archdir}/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find arch/%{archdir}/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find arch/%{archdir}/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
 %ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
-install -vsm 755 tools/objtool/objtool %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
-install -vsm 755 tools/objtool/fixdep %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/objtool %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/fixdep %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/tools/objtool/
 %endif
 
-cp .config %{buildroot}/usr/src/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
-ln -sf "/usr/src/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
+cp .config %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
+ln -sf "%{_usrsrc}/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %ifarch aarch64
-cp arch/arm64/kernel/module.lds %{buildroot}/usr/src/%{name}-headers-%{uname_r}/arch/arm64/kernel/
+cp arch/arm64/kernel/module.lds %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/arch/arm64/kernel/
 %endif
 
-# disable (JOBS=1) parallel build to fix this issue:
-# fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
-# Linux version that was affected is 4.4.26
-make -C tools ARCH=%{arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3
-make -C tools/perf ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} PYTHON=python3 install-python_ext
+make -C tools ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3
+make -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} PYTHON=python3 install-python_ext
 %ifarch x86_64
-make -C tools ARCH=${arch} JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
+make -C tools ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
 %endif
 
 %include %{SOURCE2}
@@ -611,7 +650,7 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 
 %files docs
 %defattr(-,root,root)
-%{_defaultdocdir}/%{name}-%{uname_r}/*
+%{_docdir}/%{name}-%{uname_r}/*
 # For out-of-tree Intel i40e driver.
 %ifarch x86_64
 %{_mandir}/*
@@ -620,7 +659,7 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %files devel
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/build
-/usr/src/%{name}-headers-%{uname_r}
+%{_usrsrc}/%{name}-headers-%{uname_r}
 
 %files drivers-gpu
 %defattr(-,root,root)
@@ -652,8 +691,6 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 
 %files tools
 %defattr(-,root,root)
-/usr/libexec
-%exclude %{_libdir}/debug
 %ifarch x86_64
 /usr/lib64/traceevent
 %endif
@@ -661,41 +698,36 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 /usr/lib/traceevent
 %endif
 %{_bindir}
-/etc/bash_completion.d/*
-/usr/share/perf-core/strace/groups/file
-/usr/share/doc/*
+%{_sysconfdir}/bash_completion.d/perf
+%{_libexecdir}/perf-core
+%{_datadir}/perf-core
+%{_docdir}/perf-tip
 %{_libdir}/perf/examples/bpf/*
 %{_libdir}/perf/include/bpf/*
 %ifarch x86_64
 %{_includedir}/cpufreq.h
 %{_includedir}/cpuidle.h
-%{_lib64dir}/libcpupower.so
-%{_lib64dir}/libcpupower.so.*
+%{_lib64dir}/libcpupower.so*
+%{_docdir}/packages/cpupower
+%{_datadir}/bash-completion/completions/cpupower
 %config(noreplace) %{_sysconfdir}/cpufreq-bench.conf
 %{_sbindir}/cpufreq-bench
 %{_mandir}/man1/cpupower*.gz
 %{_mandir}/man8/turbostat*.gz
-%{_datadir}/locale/*
+%{_datadir}/locale/*/LC_MESSAGES/cpupower.mo
 %endif
-
 
 %files python3-perf
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
-%ifarch aarch64
-%files dtb-rpi3
-%defattr(-,root,root)
-/boot/broadcom/*
-
-%files dtb-ls1012afrwy
-%defattr(-,root,root)
-/boot/dtb/fsl-ls1012a-frwy.dtb
-/boot/dtb/fsl-ls1046a-rdb.dtb
-
-%endif
-
 %changelog
+*   Mon Sep 21 2020 Bo Gan <ganb@vmware.com> 5.9.0-rc4.1
+-   Update to 5.9.0-rc4
+-   AMD SEV-ES Support
+-   RPI4 Support
+-   config_common: Reduce linked-in modules
+-   Drop NXP LS10XXa board support
 *   Tue Sep 08 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.19.127-6
 -   Fix build failure with binutils updated to 2.35
 *   Wed Aug 05 2020 Sharan Turlapati <sturlapati@vmware.com> 4.19.127-5
