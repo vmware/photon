@@ -39,7 +39,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/watchdog/watchdog_dev.c b/drivers/watchdog/watchdog_dev.c
-index 10b2090f3e5e..c04384aa94a5 100644
+index 1c322caec..822a0a20d 100644
 --- a/drivers/watchdog/watchdog_dev.c
 +++ b/drivers/watchdog/watchdog_dev.c
 @@ -145,7 +145,7 @@ static inline void watchdog_update_worker(struct watchdog_device *wdd)
@@ -60,8 +60,8 @@ index 10b2090f3e5e..c04384aa94a5 100644
  		return 0;
  	}
  
-@@ -948,7 +948,7 @@ static int watchdog_cdev_register(struct watchdog_device *wdd)
- 		return -ENODEV;
+@@ -957,7 +957,7 @@ static int watchdog_cdev_register(struct watchdog_device *wdd)
+ 	dev_set_name(&wd_data->dev, "watchdog%d", wdd->id);
  
  	kthread_init_work(&wd_data->work, watchdog_ping_work);
 -	hrtimer_init(&wd_data->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);

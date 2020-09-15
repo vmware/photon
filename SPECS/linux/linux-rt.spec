@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.138
+Version:        4.19.145
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f2c4d9c4673ce82446a10787481e90ec1545cb6c
+%define sha1 linux=b8fb594a0c3a771551ba192d2ef97d070d9f9c9c
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
@@ -61,12 +61,6 @@ Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 # Fix for CVE-2020-14386
 Patch40:        0001-net-packet-make-tp_drops-atomic.patch
 Patch41:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
-# Fix for CVE-2020-12888
-Patch48:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
-Patch49:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
-Patch50:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
-# Fix for CVE-2020-14331
-Patch51:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
@@ -481,10 +475,6 @@ The Linux package contains the Linux kernel doc files
 %patch39 -p1
 %patch40 -p1
 %patch41 -p1
-%patch48 -p1
-%patch49 -p1
-%patch50 -p1
-%patch51 -p1
 
 %patch81 -p1
 %patch82 -p1
@@ -823,7 +813,6 @@ The Linux package contains the Linux kernel doc files
 %patch527 -p1
 %patch528 -p1
 %patch529 -p1
-
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
@@ -983,6 +972,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.145-1
+-   Update to version 4.19.145
 *   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.19.138-2
 -   Fix for CVE-2020-14386
 *   Thu Aug 13 2020 ashwin-h <ashwinh@vmware.com> 4.19.138-1

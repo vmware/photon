@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.138
-Release:        13%{?kat_build:.kat}%{?dist}
+Version:        4.19.145
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f2c4d9c4673ce82446a10787481e90ec1545cb6c
+%define sha1 linux=b8fb594a0c3a771551ba192d2ef97d070d9f9c9c
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -85,12 +85,6 @@ Patch42:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
 # Fix for CVE-2020-14386
 Patch43:        0001-net-packet-make-tp_drops-atomic.patch
 Patch44:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
-# Fix for CVE-2020-12888
-Patch50:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
-Patch51:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
-Patch52:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
-# Fix for CVE-2020-14331
-Patch53:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
 
 # 9p patches
 Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
@@ -226,10 +220,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch42 -p1
 %patch43 -p1
 %patch44 -p1
-%patch50 -p1
-%patch51 -p1
-%patch52 -p1
-%patch53 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -383,6 +373,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Sep 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.145-1
+-   Update to version 4.19.145
 *   Thu Sep 10 2020 Ajay Kaher <akaher@vmware.com> 4.19.138-13
 -   9p: adding new function iov_iter_to_pfns()
 *   Thu Sep 10 2020 Ajay Kaher <akaher@vmware.com> 4.19.138-12

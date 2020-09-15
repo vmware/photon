@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux
-Version:        4.19.138
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.145
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f2c4d9c4673ce82446a10787481e90ec1545cb6c
+%define sha1 linux=b8fb594a0c3a771551ba192d2ef97d070d9f9c9c
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -92,12 +92,6 @@ Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.
 # Fix for CVE-2020-14386
 Patch46:        0001-net-packet-make-tp_drops-atomic.patch
 Patch47:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
-# Fix for CVE-2020-12888
-Patch48:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
-Patch49:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
-Patch50:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
-# Fix for CVE-2020-14331
-Patch51:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
@@ -368,10 +362,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch45 -p1
 %patch46 -p1
 %patch47 -p1
-%patch48 -p1
-%patch49 -p1
-%patch50 -p1
-%patch51 -p1
 
 %patch81 -p1
 %patch82 -p1
@@ -795,6 +785,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Tue Sep 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.145-1
+-   Update to version 4.19.145
 *   Wed Sep 09 2020 Sharan Turlapati <sturlapati@vmware.com> 4.19.138-4
 -   Remove traceevent/plugins from linux-tools
 *   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.19.138-3

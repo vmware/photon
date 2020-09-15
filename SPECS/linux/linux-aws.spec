@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.138
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.145
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f2c4d9c4673ce82446a10787481e90ec1545cb6c
+%define sha1 linux=b8fb594a0c3a771551ba192d2ef97d070d9f9c9c
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -62,12 +62,6 @@ Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 # Fix for CVE-2020-14386
 Patch40:        0001-net-packet-make-tp_drops-atomic.patch
 Patch41:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
-# Fix for CVE-2020-12888
-Patch44:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
-Patch45:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
-Patch46:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
-# Fix for CVE-2020-14331
-Patch47:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
@@ -211,10 +205,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch39 -p1
 %patch40 -p1
 %patch41 -p1
-%patch44 -p1
-%patch45 -p1
-%patch46 -p1
-%patch47 -p1
 
 %patch81 -p1
 %patch82 -p1
@@ -444,6 +434,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Sep 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.145-1
+-   Update to version 4.19.145
 *   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.19.138-2
 -   Fix for CVE-2020-14386
 *   Sat Aug 08 2020 ashwin-h <ashwinh@vmware.com> 4.19.138-1

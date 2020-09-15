@@ -20,7 +20,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 52 insertions(+), 30 deletions(-)
 
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 7181dfe76440..bab65ef53eda 100644
+index 5717ee66c..47732cad4 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
 @@ -1095,7 +1095,7 @@ static inline void prefetch_buddy(struct page *page)
@@ -76,9 +76,9 @@ index 7181dfe76440..bab65ef53eda 100644
 -	LIST_HEAD(head);
 +	struct page *page;
  
- 	while (count) {
- 		struct list_head *list;
-@@ -1145,7 +1172,7 @@ static void free_pcppages_bulk(struct zone *zone, int count,
+ 	/*
+ 	 * Ensure proper count is passed which otherwise would stuck in the
+@@ -1150,7 +1177,7 @@ static void free_pcppages_bulk(struct zone *zone, int count,
  			if (bulkfree_pcp_prepare(page))
  				continue;
  
@@ -87,7 +87,7 @@ index 7181dfe76440..bab65ef53eda 100644
  
  			/*
  			 * We are going to put the page back to the global
-@@ -1160,26 +1187,6 @@ static void free_pcppages_bulk(struct zone *zone, int count,
+@@ -1165,26 +1192,6 @@ static void free_pcppages_bulk(struct zone *zone, int count,
  				prefetch_buddy(page);
  		} while (--count && --batch_free && !list_empty(list));
  	}
@@ -114,7 +114,7 @@ index 7181dfe76440..bab65ef53eda 100644
  }
  
  static void free_one_page(struct zone *zone,
-@@ -2540,13 +2547,18 @@ void drain_zone_pages(struct zone *zone, struct per_cpu_pages *pcp)
+@@ -2545,13 +2552,18 @@ void drain_zone_pages(struct zone *zone, struct per_cpu_pages *pcp)
  {
  	unsigned long flags;
  	int to_drain, batch;
@@ -134,7 +134,7 @@ index 7181dfe76440..bab65ef53eda 100644
  }
  #endif
  
-@@ -2562,14 +2574,21 @@ static void drain_pages_zone(unsigned int cpu, struct zone *zone)
+@@ -2567,14 +2579,21 @@ static void drain_pages_zone(unsigned int cpu, struct zone *zone)
  	unsigned long flags;
  	struct per_cpu_pageset *pset;
  	struct per_cpu_pages *pcp;
@@ -158,7 +158,7 @@ index 7181dfe76440..bab65ef53eda 100644
  }
  
  /*
-@@ -2791,7 +2810,10 @@ static void free_unref_page_commit(struct page *page, unsigned long pfn)
+@@ -2796,7 +2815,10 @@ static void free_unref_page_commit(struct page *page, unsigned long pfn)
  	pcp->count++;
  	if (pcp->count >= pcp->high) {
  		unsigned long batch = READ_ONCE(pcp->batch);
