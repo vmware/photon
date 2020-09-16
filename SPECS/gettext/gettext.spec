@@ -1,7 +1,7 @@
 Summary:	Utilities for internationalization and localization
 Name:		gettext
 Version:	0.19.5.1
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/gettext
 Group:		Applications/System
@@ -12,7 +12,7 @@ Source0:		http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
 Source1:        libxml2-2.9.8.tar.gz
 %define         sha1 libxml2=66bcefd98a6b7573427cf66f9d3841b59eb5b8c3
 Patch0:		gettext-CVE-2018-18751.patch
-
+Patch1:		libcroco-CVE-2020-12825.patch
 %description
 These allow programs to be compiled with NLS
 (Native Language Support), enabling them to output
@@ -21,6 +21,7 @@ messages in the user's native language.
 %setup -q
 %setup -D -a 1
 %patch0 -p1
+%patch1 -p1
 
 rm -rf gnulib-local/lib/libxml
 mv libxml2-2.9.8 gnulib-local/lib/libxml
@@ -55,6 +56,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datarootdir}/%{name}/*
 %{_mandir}/*/*
 %changelog
+*	Wed Sep 16 2020 Siju Maliakkal <smaliakkal@vmware.com> 0.19.5.1-7
+-	Fix CVE-2020-12825 in blundled libcroco source
 * 	Thu Jul 18 2019 Ankit Jain <ankitja@vmware.com> 0.19.5.1-6
 - 	Reverted m4 removal changes
 * 	Fri May 24 2019 Ankit Jain <ankitja@vmware.com> 0.19.5.1-5
