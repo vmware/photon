@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.234
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -98,6 +98,12 @@ Patch56:        0001-Initialize-fid-iounit-during-creation-of-p9_fid.patch
 Patch57:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch58:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch59:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
+
+# Fix for CVE-2020-14390
+Patch60:        0001-fbcon-remove-soft-scrollback-code.patch
+Patch61:        0002-fbcon-remove-now-unusued-softback_lines-cursor-argum.patch
+Patch62:        0003-vgacon-remove-software-scrollback-support.patch
+Patch63:        0001-tty-vt-consw-con_scrolldelta-cleanup.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -243,6 +249,10 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch57 -p1
 %patch58 -p1
 %patch59 -p1
+%patch60 -p1
+%patch61 -p1
+%patch62 -p1
+%patch63 -p1
 %patch67 -p1
 %patch68 -p1
 %patch69 -p1
@@ -410,6 +420,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.4.234-5
+-   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.234-4
 -   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.4.234-3
