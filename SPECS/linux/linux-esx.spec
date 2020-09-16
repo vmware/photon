@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.145
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -88,6 +88,10 @@ Patch43:        0001-net-packet-make-tp_drops-atomic.patch
 Patch44:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 # Fix for CVE-2020-25211
 Patch45:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
+# Fix for CVE-2020-14390
+Patch46:        0001-fbcon-remove-soft-scrollback-code.patch
+Patch47:        0002-fbcon-remove-now-unusued-softback_lines-cursor-argum.patch
+Patch48:        0003-vgacon-remove-software-scrollback-support.patch
 
 # 9p patches
 Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
@@ -234,6 +238,9 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
+%patch46 -p1
+%patch47 -p1
+%patch48 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -396,6 +403,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-5
+-   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-4
 -   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Thu Sep 22 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-3

@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.145
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -59,6 +59,11 @@ Patch15:        0002-drm-vmwgfx-Fix-the-refuse_dma-mode-when-using-guest-.patch
 Patch16:        0003-drm-vmwgfx-Refuse-DMA-operation-when-SEV-encryption-.patch
 %endif
 
+# Fix for CVE-2020-14390
+Patch17:        0001-fbcon-remove-soft-scrollback-code.patch
+Patch18:        0002-fbcon-remove-now-unusued-softback_lines-cursor-argum.patch
+Patch19:        0003-vgacon-remove-software-scrollback-support.patch
+
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
@@ -94,7 +99,6 @@ Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.
 # Fix for CVE-2020-14386
 Patch46:        0001-net-packet-make-tp_drops-atomic.patch
 Patch47:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
-
 #Fix for CVE-2019-19813 and CVE-2019-19816
 Patch51:        0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
 Patch52:        0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
@@ -354,6 +358,10 @@ This Linux package contains hmac sha generator kernel module.
 %patch16 -p1
 %endif
 
+%patch17 -p1
+%patch18 -p1
+%patch19 -p1
+
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -375,7 +383,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch45 -p1
 %patch46 -p1
 %patch47 -p1
-
 %patch51 -p1
 %patch52 -p1
 %patch53 -p1
@@ -806,6 +813,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-4
+-   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-3
 -   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-2

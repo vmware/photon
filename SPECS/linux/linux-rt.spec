@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.145
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -71,6 +71,10 @@ Patch54:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
 Patch55:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch56:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch57:        0007-btrfs-tree-checker-Verify-inode-item.patch
+# Fix for CVE-2020-14390
+Patch58:        0001-fbcon-remove-soft-scrollback-code.patch
+Patch59:        0002-fbcon-remove-now-unusued-softback_lines-cursor-argum.patch
+Patch60:        0003-vgacon-remove-software-scrollback-support.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
@@ -493,6 +497,9 @@ The Linux package contains the Linux kernel doc files
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
+%patch58 -p1
+%patch59 -p1
+%patch60 -p1
 
 %patch81 -p1
 %patch82 -p1
@@ -990,6 +997,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-4
+-   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-3
 -   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-2

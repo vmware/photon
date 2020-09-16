@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.145
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -64,6 +64,10 @@ Patch40:        0001-net-packet-make-tp_drops-atomic.patch
 Patch41:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 # Fix for CVE-2020-25211
 Patch42:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
+# Fix for CVE-2020-14390
+Patch43:        0001-fbcon-remove-soft-scrollback-code.patch
+Patch44:        0002-fbcon-remove-now-unusued-softback_lines-cursor-argum.patch
+Patch45:        0003-vgacon-remove-software-scrollback-support.patch
 #Fix for CVE-2019-19813 and CVE-2019-19816
 Patch47:        0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
 Patch48:        0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
@@ -216,7 +220,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch40 -p1
 %patch41 -p1
 %patch42 -p1
-
+%patch43 -p1
+%patch44 -p1
+%patch45 -p1
 %patch47 -p1
 %patch48 -p1
 %patch49 -p1
@@ -453,6 +459,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-4
+-   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-3
 -   Fix for CVE-2019-19813 and CVE-2019-19816
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-2
