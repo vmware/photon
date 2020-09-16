@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.236
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -96,6 +96,10 @@ Patch63: 0001-vhost-vsock-add-weight-support.patch
 # Fix CVE-2019-18885
 Patch65:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch66:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
+# Fix for CVE-2020-14390
+Patch67:        0001-fbcon-remove-soft-scrollback-code.patch
+Patch68:        0002-fbcon-remove-now-unusued-softback_lines-cursor-argum.patch
+Patch69:        0003-vgacon-remove-software-scrollback-support.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -261,7 +265,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch63 -p1
 %patch65 -p1
 %patch66 -p1
-
+%patch67 -p1
+%patch68 -p1
+%patch69 -p1
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -462,6 +468,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.9.236-2
+-   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Vikash Bansal <bvikas@vmware.com> 4.9.236-1
 -   Update to version 4.9.236
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.228-8

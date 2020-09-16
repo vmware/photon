@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.236
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -89,6 +89,11 @@ Patch65: 0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch66: 0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch67: 0007-btrfs-tree-checker-Verify-inode-item.patch
 Patch68: 0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
+
+# Fix for CVE-2020-14390
+Patch69:        0001-fbcon-remove-soft-scrollback-code.patch
+Patch70:        0002-fbcon-remove-now-unusued-softback_lines-cursor-argum.patch
+Patch71:        0003-vgacon-remove-software-scrollback-support.patch
 
 # Fix use-after-free issue in network stack
 Patch74: 0001-inet-rename-netns_frags-to-fqdir.patch
@@ -199,6 +204,10 @@ The Linux package contains the Linux kernel doc files
 %patch66 -p1
 %patch67 -p1
 %patch68 -p1
+%patch69 -p1
+%patch70 -p1
+%patch71 -p1
+
 %patch74 -p1
 %patch75 -p1
 %patch76 -p1
@@ -309,6 +318,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.9.236-2
+-   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Vikash Bansal <bvikas@vmware.com> 4.9.236-1
 -   Update to version 4.9.236
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.228-8
