@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.9.0
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -58,6 +58,7 @@ Patch58:        07-vmware-only.patch
 Patch59:        initramfs-support-for-page-aligned-format-newca.patch
 Patch60:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
 Patch61:        0001-fs-VTAR-archive-to-TPMFS-extractor.patch
+Patch62:        0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -239,6 +240,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch59 -p1
 %patch60 -p1
 %patch61 -p1
+%patch62 -p1
 
 # CVE
 %patch100 -p1
@@ -456,6 +458,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Oct 27 2020 Srinidhi Rao <srinidhir@vmware.com> 5.9.0-2
+-   Enable vtarfs support as module
 *   Mon Oct 19 2020 Bo Gan <ganb@vmware.com> 5.9.0-1
 -   Update to 5.9.0
 *   Thu Oct 08 2020 Ankit Jain <ankitja@vmware.com> 5.9.0-rc7.2
