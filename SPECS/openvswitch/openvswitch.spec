@@ -2,7 +2,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.14.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -76,7 +76,7 @@ make %{_smp_mflags}
 make DESTDIR=%{buildroot} install
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 mkdir -p %{buildroot}/%{python3_sitelib}
-cp -a %{buildroot}/%{_datadir}/openvswitch/python/ovs/* %{buildroot}/%{python3_sitelib}
+cp -a %{buildroot}/%{_datadir}/openvswitch/python/ovs %{buildroot}/%{python3_sitelib}
 
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
 install -p -D -m 0644 rhel/usr_share_openvswitch_scripts_systemd_sysconfig.template %{buildroot}/%{_sysconfdir}/sysconfig/openvswitch
@@ -145,6 +145,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man7/ovs-actions.7.gz
 
 %changelog
+*   Fri Sep 18 2020 Tapas Kundu <tkundu@vmware.com> 2.14.0-2
+-   Packged python bindings in right path
 *   Wed Aug 19 2020 Tapas Kundu <tkundu@vmware.com> 2.14.0-1
 -   Updated to 2.14
 -   Removed ovn packages.
