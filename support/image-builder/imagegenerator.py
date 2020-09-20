@@ -45,23 +45,41 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
     elif 'vhd' in config['artifacttype']:
         relrawpath = os.path.relpath(raw_image[0], src_root)
         vhdname = ('/' + image_name + '.vhd')
+        dockerenv = False
+        print("check if inside docker env")
+        if Utils.runshellcommand("grep -c docker /proc/self/cgroup || :").rstrip() != '0':
+            dockerenv = True
         print("Converting raw disk to vhd ...")
-        info_output = Utils.runshellcommand(
-            "docker run -v {}:/mnt:rw photon:{} /bin/bash -c "
-            "'tdnf install -y qemu-img > /dev/null 2>&1; qemu-img info -f raw --output json {}'"
-            .format(src_root, photon_release_ver, '/mnt/' + relrawpath))
+
+        cmd  = "tdnf install -y qemu-img > /dev/null 2>&1; qemu-img info -f raw --output json {}"
+        if not dockerenv:
+            cmd = "docker run -v {}:/mnt:rw photon:{} /bin/bash -c '" + cmd + "'"
+            cmd = cmd.format(src_root, photon_release_ver, '/mnt/' + relrawpath)
+        else:
+            cmd = cmd.format(raw_image[0])
+        info_output = Utils.runshellcommand(cmd)
+
         mbsize = 1024 * 1024
         mbroundedsize = ((int(json.loads(info_output)["virtual-size"])/mbsize + 1) * mbsize)
-        Utils.runshellcommand(
-            "docker run -v {}:/mnt:rw photon:{} /bin/bash -c "
-            "'tdnf install -y qemu-img > /dev/null 2>&1; qemu-img resize -f raw {} {}'"
-            .format(src_root, photon_release_ver, '/mnt/' + relrawpath, mbroundedsize))
-        Utils.runshellcommand(
-            "docker run -v {}:/mnt:rw photon:{} /bin/bash -c "
-            "'tdnf install -y qemu-img > /dev/null 2>&1; qemu-img convert {} -O "
-            "vpc -o subformat=fixed,force_size {}'"
-            .format(src_root, photon_release_ver, '/mnt/' + relrawpath, '/mnt/'
-                + os.path.dirname(relrawpath) + vhdname))
+
+        cmd = "tdnf install -y qemu-img > /dev/null 2>&1; qemu-img resize -f raw {} {}"
+        if not dockerenv:
+            cmd = "docker run -v {}:/mnt:rw photon:{} /bin/bash -c '" + cmd + "'"
+            cmd = cmd.format(src_root, photon_release_ver, '/mnt/' + relrawpath, mbroundedsize)
+        else:
+            cmd = cmd.format(raw_image[0], mbroundedsize)
+        Utils.runshellcommand(cmd)
+
+        cmd = "tdnf install -y qemu-img > /dev/null 2>&1; qemu-img convert {} -O " + \
+               "vpc -o subformat=fixed,force_size {}"
+        if not dockerenv:
+            cmd = "docker run -v {}:/mnt:rw photon:{} /bin/bash -c '" + cmd + "'"
+            cmd = cmd.format(src_root, photon_release_ver, '/mnt/' + relrawpath, '/mnt/'
+                            + os.path.dirname(relrawpath) + vhdname)
+        else:
+            cmd = cmd.format(raw_image[0], os.path.dirname(raw_image[0]) + vhdname)
+        Utils.runshellcommand(cmd)
+
         if config['artifacttype'] == 'vhd.gz':
             outputfile = (img_path + '/' + image_name + '.vhd.tar.gz')
             compressed = generateCompressedFile(img_path + vhdname, outputfile, "w:gz")
