@@ -13,11 +13,7 @@ patch by Lerh Chuan Low; reviewed by jasobrown for CASSANDRA-14427
  lib/licenses/jackson-mapper-asl-1.9.13.txt         | 202 ---------------------
  src/java/org/apache/cassandra/cql3/Json.java       |   6 +-
  .../cassandra/db/compaction/CompactionLogger.java  |  28 +--
- .../compaction/DateTieredCompactionStrategy.java   |   6 +-
- .../db/compaction/LeveledCompactionStrategy.java   |   6 +-
  .../apache/cassandra/tools/JsonTransformer.java    |  16 +-
- .../org/apache/cassandra/utils/FBUtilities.java    |   4 +-
- .../cassandra/db/marshal/JsonConversionTest.java   |   2 +-
  13 files changed, 641 insertions(+), 438 deletions(-)
  create mode 100644 lib/licenses/jackson-annotations-2.9.5.txt
  create mode 100644 lib/licenses/jackson-core-2.9.5.txt
@@ -25,16 +21,6 @@ patch by Lerh Chuan Low; reviewed by jasobrown for CASSANDRA-14427
  create mode 100644 lib/licenses/jackson-databind-2.9.5.txt
  delete mode 100644 lib/licenses/jackson-mapper-asl-1.9.13.txt
 
-diff --git a/CHANGES.txt b/CHANGES.txt
-index c0c02ad..698b223 100644
---- a/CHANGES.txt
-+++ b/CHANGES.txt
-@@ -1,4 +1,5 @@
- 3.11.5
-+ * Bump jackson version to >= 2.9.5 (CASSANDRA-14427)
-  * Fix SASI non-literal string comparisons (range operators) (CASSANDRA-15169)
-  * Make sure user defined compaction transactions are always closed (CASSANDRA-15123)
-  * Fix cassandra-env.sh to use $CASSANDRA_CONF to find cassandra-jaas.config (CASSANDRA-14305)
 diff --git a/lib/licenses/jackson-annotations-2.9.5.txt b/lib/licenses/jackson-annotations-2.9.5.txt
 new file mode 100644
 index 0000000..d645695
@@ -1075,29 +1061,18 @@ index d645695..0000000
 -   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -   See the License for the specific language governing permissions and
 -   limitations under the License.
-diff --git a/src/java/org/apache/cassandra/cql3/Json.java b/src/java/org/apache/cassandra/cql3/Json.java
-index 2e67a1e..371c152 100644
---- a/src/java/org/apache/cassandra/cql3/Json.java
-+++ b/src/java/org/apache/cassandra/cql3/Json.java
-@@ -20,6 +20,8 @@ package org.apache.cassandra.cql3;
+--- a/src/java/org/apache/cassandra/cql3/Json.java	2020-09-21 21:36:51.547722904 +0000
++++ b/src/java/org/apache/cassandra/cql3/Json.java	2020-09-21 21:41:36.127717868 +0000
+@@ -20,6 +20,8 @@
  import java.io.IOException;
  import java.util.*;
  
 +import com.fasterxml.jackson.core.util.BufferRecyclers;
 +import com.fasterxml.jackson.databind.ObjectMapper;
+ import com.fasterxml.jackson.core.io.JsonStringEncoder;
+ import com.fasterxml.jackson.databind.ObjectMapper;
  import org.apache.cassandra.config.CFMetaData;
- import org.apache.cassandra.config.ColumnDefinition;
- import org.apache.cassandra.cql3.functions.Function;
-@@ -27,8 +29,6 @@ import org.apache.cassandra.db.marshal.AbstractType;
- import org.apache.cassandra.db.marshal.UTF8Type;
- import org.apache.cassandra.exceptions.InvalidRequestException;
- import org.apache.cassandra.serializers.MarshalException;
--import org.codehaus.jackson.io.JsonStringEncoder;
--import org.codehaus.jackson.map.ObjectMapper;
- 
- /** Term-related classes for INSERT JSON support. */
- public class Json
-@@ -42,7 +42,7 @@ public class Json
+@@ -42,7 +44,7 @@
       */
      public static String quoteAsJsonString(String s)
      {
@@ -1106,29 +1081,9 @@ index 2e67a1e..371c152 100644
      }
  
      public static Object decodeJson(String json)
-diff --git a/src/java/org/apache/cassandra/db/compaction/CompactionLogger.java b/src/java/org/apache/cassandra/db/compaction/CompactionLogger.java
-index c8def3d..f473be7 100644
---- a/src/java/org/apache/cassandra/db/compaction/CompactionLogger.java
-+++ b/src/java/org/apache/cassandra/db/compaction/CompactionLogger.java
-@@ -37,13 +37,13 @@ import com.google.common.collect.MapMaker;
- import org.slf4j.Logger;
- import org.slf4j.LoggerFactory;
- 
-+import com.fasterxml.jackson.databind.JsonNode;
-+import com.fasterxml.jackson.databind.node.ArrayNode;
-+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-+import com.fasterxml.jackson.databind.node.ObjectNode;
- import org.apache.cassandra.db.ColumnFamilyStore;
- import org.apache.cassandra.io.sstable.format.SSTableReader;
- import org.apache.cassandra.utils.NoSpamLogger;
--import org.codehaus.jackson.JsonNode;
--import org.codehaus.jackson.node.ArrayNode;
--import org.codehaus.jackson.node.JsonNodeFactory;
--import org.codehaus.jackson.node.ObjectNode;
- 
- public class CompactionLogger
- {
-@@ -170,7 +170,7 @@ public class CompactionLogger
+--- a/src/java/org/apache/cassandra/db/compaction/CompactionLogger.java	2020-09-21 21:44:57.235714310 +0000
++++ b/src/java/org/apache/cassandra/db/compaction/CompactionLogger.java	2020-09-21 21:48:03.527711013 +0000
+@@ -170,7 +170,7 @@
          node.put("size", sstable.onDiskLength());
          JsonNode logResult = strategy.strategyLogger().sstable(sstable);
          if (logResult != null)
@@ -1137,7 +1092,7 @@ index c8def3d..f473be7 100644
          return node;
      }
  
-@@ -182,7 +182,7 @@ public class CompactionLogger
+@@ -182,7 +182,7 @@
              return node;
          node.put("strategyId", getId(strategy));
          node.put("type", strategy.getName());
@@ -1146,7 +1101,7 @@ index c8def3d..f473be7 100644
          node.put("repaired", csm.isRepaired(strategy));
          List<String> folders = csm.getStrategyFolders(strategy);
          ArrayNode folderNode = json.arrayNode();
-@@ -190,11 +190,11 @@ public class CompactionLogger
+@@ -190,11 +190,11 @@
          {
              folderNode.add(folder);
          }
@@ -1160,7 +1115,7 @@ index c8def3d..f473be7 100644
          return node;
      }
  
-@@ -209,7 +209,7 @@ public class CompactionLogger
+@@ -209,7 +209,7 @@
      {
          ObjectNode node = json.objectNode();
          node.put("strategyId", getId(strategy));
@@ -1169,7 +1124,7 @@ index c8def3d..f473be7 100644
          return node;
      }
  
-@@ -228,7 +228,7 @@ public class CompactionLogger
+@@ -228,7 +228,7 @@
          ObjectNode node = json.objectNode();
          node.put("type", "enable");
          describeStrategy(node);
@@ -1178,7 +1133,7 @@ index c8def3d..f473be7 100644
          return node;
      }
  
-@@ -247,7 +247,7 @@ public class CompactionLogger
+@@ -247,7 +247,7 @@
              ObjectNode node = json.objectNode();
              node.put("type", "disable");
              describeStrategy(node);
@@ -1187,7 +1142,7 @@ index c8def3d..f473be7 100644
              serializer.write(node, this::startStrategies, this);
          }
      }
-@@ -259,7 +259,7 @@ public class CompactionLogger
+@@ -259,7 +259,7 @@
              ObjectNode node = json.objectNode();
              node.put("type", "flush");
              describeStrategy(node);
@@ -1196,7 +1151,7 @@ index c8def3d..f473be7 100644
              serializer.write(node, this::startStrategies, this);
          }
      }
-@@ -273,8 +273,8 @@ public class CompactionLogger
+@@ -273,8 +273,8 @@
              describeStrategy(node);
              node.put("start", String.valueOf(startTime));
              node.put("end", String.valueOf(endTime));
@@ -1207,76 +1162,18 @@ index c8def3d..f473be7 100644
              serializer.write(node, this::startStrategies, this);
          }
      }
-diff --git a/src/java/org/apache/cassandra/db/compaction/DateTieredCompactionStrategy.java b/src/java/org/apache/cassandra/db/compaction/DateTieredCompactionStrategy.java
-index 83d77a9..ee9e3d5 100644
---- a/src/java/org/apache/cassandra/db/compaction/DateTieredCompactionStrategy.java
-+++ b/src/java/org/apache/cassandra/db/compaction/DateTieredCompactionStrategy.java
-@@ -26,6 +26,9 @@ import com.google.common.collect.*;
- import org.slf4j.Logger;
- import org.slf4j.LoggerFactory;
- 
-+import com.fasterxml.jackson.databind.JsonNode;
-+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-+import com.fasterxml.jackson.databind.node.ObjectNode;
- import org.apache.cassandra.db.ColumnFamilyStore;
- import org.apache.cassandra.db.lifecycle.LifecycleTransaction;
- import org.apache.cassandra.db.lifecycle.SSTableSet;
-@@ -33,9 +36,6 @@ import org.apache.cassandra.exceptions.ConfigurationException;
- import org.apache.cassandra.io.sstable.format.SSTableReader;
- import org.apache.cassandra.schema.CompactionParams;
- import org.apache.cassandra.utils.Pair;
--import org.codehaus.jackson.JsonNode;
--import org.codehaus.jackson.node.JsonNodeFactory;
--import org.codehaus.jackson.node.ObjectNode;
- 
- import static com.google.common.collect.Iterables.filter;
- 
-diff --git a/src/java/org/apache/cassandra/db/compaction/LeveledCompactionStrategy.java b/src/java/org/apache/cassandra/db/compaction/LeveledCompactionStrategy.java
-index 43c81a4..5dabfdc 100644
---- a/src/java/org/apache/cassandra/db/compaction/LeveledCompactionStrategy.java
-+++ b/src/java/org/apache/cassandra/db/compaction/LeveledCompactionStrategy.java
-@@ -28,6 +28,9 @@ import com.google.common.primitives.Doubles;
- import org.slf4j.Logger;
- import org.slf4j.LoggerFactory;
- 
-+import com.fasterxml.jackson.databind.JsonNode;
-+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-+import com.fasterxml.jackson.databind.node.ObjectNode;
- import org.apache.cassandra.config.CFMetaData;
- import org.apache.cassandra.config.Config;
- import org.apache.cassandra.db.ColumnFamilyStore;
-@@ -38,9 +41,6 @@ import org.apache.cassandra.dht.Token;
- import org.apache.cassandra.exceptions.ConfigurationException;
- import org.apache.cassandra.io.sstable.ISSTableScanner;
- import org.apache.cassandra.io.sstable.format.SSTableReader;
--import org.codehaus.jackson.JsonNode;
--import org.codehaus.jackson.node.JsonNodeFactory;
--import org.codehaus.jackson.node.ObjectNode;
- 
- public class LeveledCompactionStrategy extends AbstractCompactionStrategy
- {
-diff --git a/src/java/org/apache/cassandra/tools/JsonTransformer.java b/src/java/org/apache/cassandra/tools/JsonTransformer.java
-index 23ea3a6..597b04a 100644
---- a/src/java/org/apache/cassandra/tools/JsonTransformer.java
-+++ b/src/java/org/apache/cassandra/tools/JsonTransformer.java
-@@ -49,11 +49,11 @@ import org.apache.cassandra.db.rows.UnfilteredRowIterator;
- import org.apache.cassandra.io.sstable.ISSTableScanner;
- import org.apache.cassandra.transport.ProtocolVersion;
- import org.apache.cassandra.utils.ByteBufferUtil;
--import org.codehaus.jackson.JsonFactory;
--import org.codehaus.jackson.JsonGenerator;
--import org.codehaus.jackson.impl.Indenter;
--import org.codehaus.jackson.util.DefaultPrettyPrinter;
--import org.codehaus.jackson.util.DefaultPrettyPrinter.NopIndenter;
-+import com.fasterxml.jackson.core.JsonFactory;
-+import com.fasterxml.jackson.core.JsonGenerator;
-+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+--- a/src/java/org/apache/cassandra/tools/JsonTransformer.java	2020-09-21 21:56:37.351701922 +0000
++++ b/src/java/org/apache/cassandra/tools/JsonTransformer.java	2020-09-21 21:59:08.299699251 +0000
+@@ -33,6 +33,8 @@
+ import com.fasterxml.jackson.core.JsonFactory;
+ import com.fasterxml.jackson.core.JsonGenerator;
+ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 +import com.fasterxml.jackson.core.util.DefaultPrettyPrinter.Indenter;
 +import com.fasterxml.jackson.core.util.MinimalPrettyPrinter;
- import org.slf4j.Logger;
- import org.slf4j.LoggerFactory;
- 
-@@ -94,7 +94,7 @@ public final class JsonTransformer
+ import org.apache.cassandra.config.CFMetaData;
+ import org.apache.cassandra.config.ColumnDefinition;
+ import org.apache.cassandra.db.*;
+@@ -92,7 +94,7 @@
      public static void toJson(ISSTableScanner currentScanner, Stream<UnfilteredRowIterator> partitions, boolean rawTime, CFMetaData metadata, OutputStream out)
              throws IOException
      {
@@ -1285,7 +1182,7 @@ index 23ea3a6..597b04a 100644
          {
              JsonTransformer transformer = new JsonTransformer(json, currentScanner, rawTime, metadata);
              json.writeStartArray();
-@@ -105,7 +105,7 @@ public final class JsonTransformer
+@@ -103,7 +105,7 @@
  
      public static void keysToJson(ISSTableScanner currentScanner, Stream<DecoratedKey> keys, boolean rawTime, CFMetaData metadata, OutputStream out) throws IOException
      {
@@ -1294,54 +1191,3 @@ index 23ea3a6..597b04a 100644
          {
              JsonTransformer transformer = new JsonTransformer(json, currentScanner, rawTime, metadata);
              json.writeStartArray();
-@@ -501,7 +501,7 @@ public final class JsonTransformer
-      * A specialized {@link Indenter} that enables a 'compact' mode which puts all subsequent json values on the same
-      * line. This is manipulated via {@link CompactIndenter#setCompact(boolean)}
-      */
--    private static final class CompactIndenter extends NopIndenter
-+    private static final class CompactIndenter extends DefaultPrettyPrinter.NopIndenter
-     {
- 
-         private static final int INDENT_LEVELS = 16;
-diff --git a/src/java/org/apache/cassandra/utils/FBUtilities.java b/src/java/org/apache/cassandra/utils/FBUtilities.java
-index 266d428..3227ee2 100644
---- a/src/java/org/apache/cassandra/utils/FBUtilities.java
-+++ b/src/java/org/apache/cassandra/utils/FBUtilities.java
-@@ -41,6 +41,8 @@ import org.apache.commons.lang3.StringUtils;
- import org.slf4j.Logger;
- import org.slf4j.LoggerFactory;
- 
-+import com.fasterxml.jackson.core.JsonFactory;
-+import com.fasterxml.jackson.databind.ObjectMapper;
- import io.netty.util.concurrent.FastThreadLocal;
- import org.apache.cassandra.auth.IAuthenticator;
- import org.apache.cassandra.auth.IAuthorizer;
-@@ -65,8 +67,6 @@ import org.apache.cassandra.io.util.FileUtils;
- import org.apache.cassandra.locator.InetAddressAndPort;
- import org.apache.cassandra.net.AsyncOneResponse;
- 
--import org.codehaus.jackson.JsonFactory;
--import org.codehaus.jackson.map.ObjectMapper;
- 
- public class FBUtilities
- {
-diff --git a/test/unit/org/apache/cassandra/db/marshal/JsonConversionTest.java b/test/unit/org/apache/cassandra/db/marshal/JsonConversionTest.java
-index 0cebd9e..3e58a1a 100644
---- a/test/unit/org/apache/cassandra/db/marshal/JsonConversionTest.java
-+++ b/test/unit/org/apache/cassandra/db/marshal/JsonConversionTest.java
-@@ -20,11 +20,11 @@ package org.apache.cassandra.db.marshal;
- 
- import static org.junit.Assert.assertEquals;
- 
-+import com.fasterxml.jackson.databind.ObjectMapper;
- import java.nio.ByteBuffer;
- import org.apache.cassandra.cql3.QueryOptions;
- import org.apache.cassandra.transport.ProtocolVersion;
- import org.apache.cassandra.utils.UUIDGen;
--import org.codehaus.jackson.map.ObjectMapper;
- import org.junit.Test;
- 
- public class JsonConversionTest
--- 
-2.7.4
-

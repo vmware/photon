@@ -2,15 +2,15 @@
 %global __os_install_post %{nil}
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
-Version:        3.11.5
-Release:        4%{?dist}
+Version:        3.11.8
+Release:        1%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
-%define sha1    apache-cassandra=5e443e229819d70fcad963f3221109ab55a2c3a2
+%define sha1    apache-cassandra=50c9f5ce5ebe2bd2cc92ca28994448b1c691ba52
 # https://search.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar
 # https://search.maven.org/maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar
 # https://search.maven.org/maven2/org/apache/thrift/libthrift/0.9.3/libthrift-0.9.3.jar
@@ -28,7 +28,8 @@ Requires:       openjre8
 Requires:       gawk
 Requires:       shadow
 %description
-Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store. Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
+Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store.
+Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
 
 %prep
 %setup -qn apache-%{name}-%{version}-src
@@ -38,8 +39,7 @@ sed -i 's#\"libthrift\" version=\"0.9.2\"#\"libthrift\" version=\"0.9.3.1\"#g' b
 
 rm lib/libthrift-*
 rm lib/logback-*
-rm lib/jackson-core-asl-1.9.13.jar
-rm lib/jackson-mapper-asl-1.9.13.jar
+rm lib/jackson-*
 
 mv lib/licenses/logback-core-1.1.3.txt lib/licenses/logback-core-1.2.0.txt
 mv lib/licenses/logback-classic-1.1.3.txt lib/licenses/logback-classic-1.2.0.txt
@@ -146,6 +146,8 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Mon Sep 21 2020 Michelle Wang <michellew@vmware.com> 3.11.8-1
+-   Fix CVE-2020-13946
 *   Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 3.11.5-4
 -   Changed openjdk install directory name
 *   Wed Feb 05 2020 Ankit Jain <ankitja@vmware.com> 3.11.5-3
