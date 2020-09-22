@@ -1,7 +1,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        10.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -27,6 +27,13 @@ Requires:       %{name} = %{version}-%{release}
 %description    devel
 The llvm-devel package contains libraries, header files and documentation
 for developing applications that use llvm.
+
+%package -n     libllvm
+Summary:        llvm shared library
+Requires:       %{name} = %{version}-%{release}
+Group:          System Environment/Libraries
+%description -n libllvm
+The libllvm package contains shared libraries for llvm
 
 %prep
 %setup -q -n %{name}-%{version}.src
@@ -78,7 +85,13 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/*
 %{_includedir}/*
 
+%files -n libllvm
+%defattr(-,root,root)
+%{_libdir}/libLLVM*.so
+
 %changelog
+*   Tue Sep 22 2020 Harinadh D <hdommaraju@vmware.com> 10.0.1-3
+-   add libLLVM.so to libllvm
 *   Thu Sep 10 2020 Susant Sahani Sahani <ssahani@vmware.com> 10.0.1-2
 -   Enable LLVM_ENABLE_RTTI
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 10.0.1-1
