@@ -1,11 +1,11 @@
 Summary:        Calico Network Policy for Kubernetes
 Name:           calico-k8s-policy
-Version:        3.16.0
+Version:        3.16.1
 Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/k8s-policy
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 calico-k8s-policy=e5d0c1c7f3f589cb4c7487c7dc77d0302ac23418
+%define sha1 calico-k8s-policy=653e6e7b1d583ab5e1770e614b442bfc31f3d111
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -73,6 +73,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 %{_bindir}/controller
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 3.16.1-1
+-   Automatic Version Bump
 *   Tue Jun 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.16.0-1
 -   Automatic Version Bump
 *   Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 1.0.0-5
