@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.145
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -85,6 +85,8 @@ Patch42:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
 # Fix for CVE-2020-14386
 Patch43:        0001-net-packet-make-tp_drops-atomic.patch
 Patch44:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
+# Fix for CVE-2020-25211
+Patch45:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 
 # 9p patches
 Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
@@ -220,6 +222,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch42 -p1
 %patch43 -p1
 %patch44 -p1
+%patch45 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -373,6 +376,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-2
+-   Fix for CVE-2020-25211
 *   Tue Sep 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.145-1
 -   Update to version 4.19.145
 *   Thu Sep 10 2020 Ajay Kaher <akaher@vmware.com> 4.19.138-13

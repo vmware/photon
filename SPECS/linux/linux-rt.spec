@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.145
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -61,7 +61,8 @@ Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 # Fix for CVE-2020-14386
 Patch40:        0001-net-packet-make-tp_drops-atomic.patch
 Patch41:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
-
+# Fix for CVE-2020-25211
+Patch42:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 # Upgrade vmxnet3 driver to version 4
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
 Patch82:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
@@ -475,6 +476,7 @@ The Linux package contains the Linux kernel doc files
 %patch39 -p1
 %patch40 -p1
 %patch41 -p1
+%patch42 -p1
 
 %patch81 -p1
 %patch82 -p1
@@ -972,6 +974,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-2
+-   Fix for CVE-2020-25211
 *   Tue Sep 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.145-1
 -   Update to version 4.19.145
 *   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.19.138-2

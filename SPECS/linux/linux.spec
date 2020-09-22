@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.145
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -62,6 +62,8 @@ Patch16:        0003-drm-vmwgfx-Refuse-DMA-operation-when-SEV-encryption-.patch
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Fix for CVE-2020-25211
+Patch27:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
@@ -343,6 +345,7 @@ This Linux package contains hmac sha generator kernel module.
 %endif
 
 %patch26 -p1
+%patch27 -p1
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
@@ -785,6 +788,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-2
+-   Fix for CVE-2020-25211
 *   Tue Sep 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.145-1
 -   Update to version 4.19.145
 *   Wed Sep 09 2020 Sharan Turlapati <sturlapati@vmware.com> 4.19.138-4
