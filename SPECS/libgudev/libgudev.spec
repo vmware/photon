@@ -1,11 +1,11 @@
 Summary:        A library providing GObject bindings for libudev
 Name:           libgudev
-Version:        233
+Version:        234
 Release:        1%{?dist}
 License:        LGPL2.1
 URL:            https://git.gnome.org/browse/libgudev/
 Source0:        https://git.gnome.org/browse/%{name}/snapshot/%{name}-%{version}.tar.xz
-%define sha1 libgudev=fa8591ea85b65da58f418ce2fb30a146541a7ca2
+%define sha1 libgudev=003253c2e75f4602193432c45f234c54694e0057
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 BuildRequires:  glib >= 2.22.0
@@ -59,6 +59,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/gudev-1.0.pc
 
 %changelog
+*       Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 234-1
+-       Automatic Version Bump
 *       Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 233-1
 -       Automatic Version Bump
 *       Sun Sep 30 2018 Bo Gan <ganb@vmware.com> 232-1
