@@ -3,7 +3,7 @@
 
 Summary:        OpenLdap-2.4.43
 Name:           openldap
-Version:        2.4.52
+Version:        2.4.53
 Release:        1%{?dist}
 License:        OpenLDAP
 URL:            http://cyrusimap.web.cmu.edu/
@@ -11,7 +11,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
-%define sha1 openldap=c65ebaf9f3f874295b72f19a5de9b74ff0ade4ec
+%define sha1 openldap=9a03db5cc02fd8b0afc5bf11fb10f7cd5260bcf0
 
 Patch0:         openldap-2.4.51-consolidated-2.patch
 
@@ -111,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.53-1
+-   Automatic Version Bump
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.52-1
 -   Automatic Version Bump
 *   Wed Aug 26 2020 Piyush Gupta <gpiyush@vmware.com> 2.4.51-2
