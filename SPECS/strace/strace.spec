@@ -1,7 +1,7 @@
 Summary:	Tracks system calls that are made by a running process
 Name:		strace
 Version:	4.21
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		https://strace.io/
 Group:		Development/Debuggers
@@ -15,6 +15,13 @@ BuildRequires:	libacl-devel, libaio-devel
 %description
 The strace program intercepts and displays the system calls made by a running process. strace also records
 all the arugments and return values from the system calls. This is useful in debugging a process.
+
+%package graph
+Summary:  strace graph
+Group:    System Environment/Security
+Requires: %{name} = %{version}-%{release}
+%description graph
+The strace graph is perl script , It displays a graph of invoked subprocesses, and is useful for finding out what complex commands do
 
 %prep
 %setup -q
@@ -49,8 +56,14 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/man1/*
+%exclude %{_bindir}/strace-graph
+
+%files graph
+%{_bindir}/strace-graph
 
 %changelog
+*   Tue Sep 22 2020 Harinadh D <hdommaraju@vmware.com> 4.21-2
+-   Seperate strace-graph to remove perl dependency
 *   Wed Jul 01 2020 Gerrit Photon <photon-checkins@vmware.com> 4.21-1
 -   Automatic Version Bump
 *   Tue Nov 13 2018 Srinidhi Rao <srinidhir@vmware.com> 4.25-1
