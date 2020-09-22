@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.127
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        5.9.0
+Release:        rc7.1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -11,9 +11,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 %define uname_r %{version}-%{release}-secure
+#TODO: remove rcN after 5.9 goes out of rc
+%define lnx_rc_ver 5.9.0-rc7
+%define lnx_rc_local_ver .1%{?kat_build:.kat}%{?dist}
 
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=5da7a67e59fcc7133fa26515f85ef325d20b5d2d
+Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{lnx_rc_ver}.tar.xz
+%define sha1 linux=b8809bb16a9591303ac2bb84e19a597e26b69c4c
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -22,66 +25,53 @@ Source4:        check_for_config_applicability.inc
 Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
 %define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
 Source6:        genhmac.inc
-# common
-Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
-Patch1:         double-tcp_mem-limits.patch
-# TODO: disable this patch, check for regressions
-#Patch2:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch5:         vsock-transport-for-9p.patch
-Patch6:         4.18-x86-vmware-STA-support.patch
-Patch7:	        9p-trans_fd-extend-port-variable-to-u32.patch
-Patch8:         vsock-delay-detach-of-QP-with-outgoing-data.patch
-# secure
-Patch12:        0001-bpf-ext4-bonding-Fix-compilation-errors.patch
-Patch13:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
-Patch14:        0002-Added-PAX_RANDKSTACK.patch
-Patch15:        0003-Added-rap_plugin.patch
-# HyperV Patches
-Patch16:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
-# Fix CVE-2019-19072
-Patch19:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
-# Fix CVE-2019-19073
-Patch20:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
-# Fix CVE-2019-19074
-Patch21:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
-Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix for CVE-2020-14331
-Patch30:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
-# Fix CVE-2017-1000252
-Patch31:        kvm-dont-accept-wrong-gsi-values.patch
-# Out-of-tree patches from AppArmor:
-Patch32:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
-Patch33:        4.17-0002-apparmor-af_unix-mediation.patch
-Patch34:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
-# RDRAND-based RNG driver to enhance the kernel's entropy pool:
-Patch35:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
-# Fix for CVE-2019-12456
-Patch36:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
-# Fix for CVE-2019-12379
-Patch37:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2019-12380
-Patch38:        0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
-# Fix for CVE-2019-12381
-Patch39:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
-# Fix for CVE-2019-12378
-Patch41:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
-# Fix for CVE-2019-12455
-Patch42:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 
+# common
+Patch0:         net-Double-tcp_mem-limits.patch
+Patch1:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch2:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch3:         9p-transport-for-9p.patch
+Patch4:	        9p-trans_fd-extend-port-variable-to-u32.patch
+Patch5:         vsock-delay-detach-of-QP-with-outgoing-data-59.patch
+
+# RDRAND-based RNG driver to enhance the kernel's entropy pool:
+Patch6:         hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+
+#HyperV patches
+Patch11:        vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+Patch12:        fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
+
+# Out-of-tree patches from AppArmor:
+Patch13:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch14:        apparmor-af_unix-mediation.patch
+
+# VMW:
+Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
+Patch56:        x86-vmware-Log-kmsg-dump-on-panic.patch
+
+#Secure:
+Patch90:        0001-bpf-ext4-bonding-Fix-compilation-errors.patch
+Patch91:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
+Patch92:        0002-Added-PAX_RANDKSTACK.patch
+Patch93:        0003-Added-rap_plugin.patch
+
+# CVE:
+Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
+# Fix CVE-2017-1000252
+Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
+# Fix for CVE-2019-12379
+Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+
+# Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
-Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
-# NSX requirements (should be removed)
-Patch99:        LKCM.patch
+Patch500:       crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch100:       0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
-# Patch to perform continuous testing on RNG from Noise Source
-Patch101:       0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
+Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 
 %if 0%{?kat_build:1}
-Patch1000:      fips-kat-tests.patch
+Patch510:       crypto-testmgr-break-KAT-fips-intentionally.patch
 %endif
+
 BuildArch:      x86_64
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -102,13 +92,6 @@ Requires(postun):(coreutils or toybox)
 
 %description
 Security hardened Linux kernel.
-
-%package lkcm
-Summary:       LKCM module
-Group:         System Environment/Kernel
-Requires:      %{name} = %{version}-%{release}
-%description lkcm
-The Linux package contains the LKCM driver module
 
 %package devel
 Summary:       Kernel Dev
@@ -135,68 +118,55 @@ Enhances:       %{name}
 This Linux package contains hmac sha generator kernel module.
 
 %prep
-%setup -q -n linux-%{version}
-%setup -D -b 5 -n linux-%{version}
+%setup -q -n linux-%{lnx_rc_ver}
+%setup -D -b 5 -n linux-%{lnx_rc_ver}
 
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch7 -p1
-%patch8 -p1
+
+%patch11 -p1
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch19 -p1
-%patch20 -p1
-%patch21 -p1
-%patch26 -p1
-%patch30 -p1
-%patch31 -p1
-%patch32 -p1
-%patch33 -p1
-%patch34 -p1
-%patch35 -p1
-%patch36 -p1
-%patch37 -p1
-%patch38 -p1
-%patch39 -p1
-%patch41 -p1
-%patch42 -p1
 
-%patch98 -p1
-pushd ..
-%patch99 -p0
-popd
+%ifarch x86_64
+# VMW x86
+%patch55 -p1
+%patch56 -p1
+%endif
+
+#Secure
+%patch90 -p1
+%patch91 -p1
+%patch92 -p1
+%patch93 -p1
+
+# CVE
 %patch100 -p1
 %patch101 -p1
+%patch102 -p1
+
+# crypto
+%patch500 -p1
+%patch501 -p1
 
 %if 0%{?kat_build:1}
-%patch1000 -p1
+%patch510 -p1
 %endif
 
 %build
-# patch vmw_balloon driver
-sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
-
 make mrproper
 cp %{SOURCE1} .config
-sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
+sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="%{lnx_rc_local_ver}-secure"/' .config
 
 %include %{SOURCE4}
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
-# build LKCM module
-bldroot=`pwd`
-pushd ../LKCM
-sed -i '/#include <asm\/uaccess.h>/d' drv_fips_test.c
-sed -i '/#include <asm\/uaccess.h>/d' fips_test.c
-make -C $bldroot M=`pwd` modules
-popd
 
 #build photon-checksum-generator module
 bldroot=`pwd`
@@ -225,16 +195,11 @@ done \
 %{nil}
 
 %install
-install -vdm 755 %{buildroot}/etc
+install -vdm 755 %{buildroot}/%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
-install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
-install -vdm 755 %{buildroot}/usr/src/linux-headers-%{uname_r}
+install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
+install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
-# install LKCM module
-bldroot=`pwd`
-pushd ../LKCM
-make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
-popd
 
 #install photon-checksum-generator module
 bldroot=`pwd`
@@ -242,12 +207,12 @@ pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
 make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
-cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{uname_r}
-cp -v System.map        %{buildroot}/boot/System.map-%{uname_r}
-cp -v .config            %{buildroot}/boot/config-%{uname_r}
-cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
-install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
-cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
+install -vm 644 arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{uname_r}
+install -vm 400 System.map               %{buildroot}/boot/System.map-%{uname_r}
+install -vm 644 .config                  %{buildroot}/boot/config-%{uname_r}
+cp -r           Documentation/*          %{buildroot}%{_docdir}/linux-%{uname_r}
+install -vdm 755                         %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
+install -vm 644 vmlinux                  %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
 
 # Since we use compressed modules we cann't use load pinning,
 # because .ko files will be loaded from the memory (LoadPin: obj=<unknown>)
@@ -287,9 +252,6 @@ ln -sf /usr/src/linux-headers-%{uname_r} %{buildroot}/lib/modules/%{uname_r}/bui
 /sbin/depmod -a %{uname_r}
 ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
-%post lkcm
-/sbin/depmod -a %{uname_r}
-
 %post hmacgen
 /sbin/depmod -a %{uname_r}
 
@@ -304,13 +266,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/*
 %exclude /lib/modules/%{uname_r}/build
 %exclude /usr/src
-%exclude /lib/modules/%{uname_r}/extra/fips_lkcm.ko.xz
 %exclude /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 %exclude /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
-
-%files lkcm
-%defattr(-,root,root)
-/lib/modules/%{uname_r}/extra/fips_lkcm.ko.xz
 
 %files hmacgen
 %defattr(-,root,root)
@@ -327,6 +284,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Oct 14 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-rc7.1
+-   Update to 5.9.0-rc7
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.19.127-4
 -   openssl 1.1.1
 *   Mon Jul 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.127-3

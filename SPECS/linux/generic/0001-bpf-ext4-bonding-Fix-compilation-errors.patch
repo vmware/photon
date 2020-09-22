@@ -27,6 +27,7 @@ fs/ext4/sysfs.c:349:30: error: cast from function type ‘void (*)(const void *)
                               ^~~~~~~
 
 Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
  drivers/gpu/drm/nouveau/Kbuild          | 2 ++
  drivers/gpu/drm/nouveau/dispnv50/wndw.h | 4 ++--
@@ -61,12 +62,12 @@ index b0b6428..0770683 100644
  void nv50_wndw_fini(struct nv50_wndw *);
  void nv50_wndw_flush_set(struct nv50_wndw *, u32 *interlock,
 diff --git a/fs/ext4/sysfs.c b/fs/ext4/sysfs.c
-index b970a20..6255fe4 100644
+index bfabb79..2085ffb 100644
 --- a/fs/ext4/sysfs.c
 +++ b/fs/ext4/sysfs.c
-@@ -346,7 +346,7 @@ static struct kobj_type ext4_sb_ktype = {
+@@ -492,7 +492,7 @@ static struct kobj_type ext4_sb_ktype = {
  static struct kobj_type ext4_feat_ktype = {
- 	.default_attrs	= ext4_feat_attrs,
+ 	.default_groups = ext4_feat_groups,
  	.sysfs_ops	= &ext4_attr_ops,
 -	.release	= (void (*)(struct kobject *))kfree,
 +	.release	= (void (*)(struct kobject *))((void *)kfree),
@@ -87,10 +88,10 @@ index c73dd73..4a4a7ff 100644
  struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog);
  void bpf_jit_compile(struct bpf_prog *prog);
 diff --git a/include/net/bond_alb.h b/include/net/bond_alb.h
-index 313a8d3..092e434 100644
+index f6af76c..67d6876 100644
 --- a/include/net/bond_alb.h
 +++ b/include/net/bond_alb.h
-@@ -172,8 +172,8 @@ int bond_alb_init_slave(struct bonding *bond, struct slave *slave);
+@@ -156,8 +156,8 @@ int bond_alb_init_slave(struct bonding *bond, struct slave *slave);
  void bond_alb_deinit_slave(struct bonding *bond, struct slave *slave);
  void bond_alb_handle_link_change(struct bonding *bond, struct slave *slave, char link);
  void bond_alb_handle_active_change(struct bonding *bond, struct slave *new_slave);
@@ -98,9 +99,9 @@ index 313a8d3..092e434 100644
 -int bond_tlb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
 +netdev_tx_t bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
 +netdev_tx_t bond_tlb_xmit(struct sk_buff *skb, struct net_device *bond_dev);
- void bond_alb_monitor(struct work_struct *);
- int bond_alb_set_mac_address(struct net_device *bond_dev, void *addr);
- void bond_alb_clear_vlan(struct bonding *bond, unsigned short vlan_id);
+ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
+ 				      struct sk_buff *skb);
+ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
 -- 
 2.7.4
 

@@ -81,6 +81,7 @@ Subject: [PATCH 2/3] Added PAX_RANDKSTACK
    selectively to specific tasks only.
 
 Signed-off-by: Him Kalyan Bordoloi<bordoloih@vmware.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
 
 ---
  arch/x86/entry/entry_64.S    | 37 +++++++++++++++++++++++++++++++++++++
@@ -89,27 +90,27 @@ Signed-off-by: Him Kalyan Bordoloi<bordoloih@vmware.com>
  3 files changed, 68 insertions(+)
 
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 8ae7ffd..f7c721d 100644
+index 70dea93..e600cd4 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -53,6 +53,15 @@ ENTRY(native_usergs_sysret64)
- END(native_usergs_sysret64)
+@@ -54,6 +54,15 @@ SYM_CODE_START(native_usergs_sysret64)
+ SYM_CODE_END(native_usergs_sysret64)
  #endif /* CONFIG_PARAVIRT */
  
 +#ifdef CONFIG_PAX_RANDKSTACK
 +.macro PAX_RAND_KSTACK
-+	movq	%rsp, %rdi
-+	call	pax_randomize_kstack
++	movq    %rsp, %rdi
++	call    pax_randomize_kstack
 +	movq    %rsp, %rdi
 +	movq    %rax, %rsp
 +.endm
 +#endif
 +
- .macro TRACE_IRQS_FLAGS flags:req
- #ifdef CONFIG_TRACE_IRQFLAGS
- 	btl	$9, \flags		/* interrupts off? */
-@@ -233,9 +242,28 @@ GLOBAL(entry_SYSCALL_64_after_hwframe)
- 	TRACE_IRQS_OFF
+ /*
+  * 64-bit SYSCALL instruction entry. Up to 6 arguments in registers.
+  *
+@@ -113,9 +122,28 @@ SYM_INNER_LABEL(entry_SYSCALL_64_after_hwframe, SYM_L_GLOBAL)
+ 	PUSH_AND_CLEAR_REGS rax=$-ENOSYS
  
  	/* IRQs are off. */
 +
@@ -118,50 +119,49 @@ index 8ae7ffd..f7c721d 100644
 +	 * argument (%rdi) and pointer to pt_regs as the second argument (%rsi).
 +	 */
 +#ifdef CONFIG_PAX_RANDKSTACK
-+	pushq	%rax
-+	movq	%rsp, %rdi
-+	call	pax_randomize_kstack
-+	popq	%rdi
++	pushq   %rax
++	movq    %rsp, %rdi
++	call    pax_randomize_kstack
++	popq    %rdi
 +	movq    %rsp, %rsi
 +	movq    %rax, %rsp
 +
-+	pushq	%rsi
++	pushq   %rsi
 +#else
  	movq	%rax, %rdi
  	movq	%rsp, %rsi
 +#endif
  	call	do_syscall_64		/* returns with IRQs disabled */
 +#ifdef CONFIG_PAX_RANDKSTACK
-+	popq	%rsp
++	popq    %rsp
 +#endif
  
- 	TRACE_IRQS_IRETQ		/* we're about to change IF */
- 
-@@ -401,8 +429,17 @@ ENTRY(ret_from_fork)
+ 	/*
+ 	 * Try to use SYSRET instead of IRET if we're returning to
+@@ -283,8 +311,16 @@ SYM_CODE_START(ret_from_fork)
  
  2:
  	UNWIND_HINT_REGS
 +#ifdef CONFIG_PAX_RANDKSTACK
 +	PAX_RAND_KSTACK
-+	pushq	%rdi
++	pushq   %rdi
 +#else
  	movq	%rsp, %rdi
 +#endif
- 	call	syscall_return_slowpath	/* returns with IRQs disabled */
+ 	call	syscall_exit_to_user_mode	/* returns with IRQs disabled */
 +#ifdef CONFIG_PAX_RANDKSTACK
-+	popq	%rsp
++	popq    %rsp
 +#endif
-+
- 	TRACE_IRQS_ON			/* user mode is traced as IRQS on */
  	jmp	swapgs_restore_regs_and_return_to_usermode
  
+ 1:
 diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
-index 0091a73..31b697c 100644
+index 9afefe3..c8f2f23 100644
 --- a/arch/x86/kernel/process_64.c
 +++ b/arch/x86/kernel/process_64.c
 @@ -61,6 +61,21 @@
  
- __visible DEFINE_PER_CPU(unsigned long, rsp_scratch);
+ #include "process.h"
  
 +#ifdef CONFIG_PAX_RANDKSTACK
 +unsigned long pax_randomize_kstack(struct pt_regs *regs)
@@ -179,8 +179,8 @@ index 0091a73..31b697c 100644
 +#endif
 +
  /* Prints also some state that isn't saved in the pt_regs */
- void __show_regs(struct pt_regs *regs, enum show_regs_mode mode)
- {
+ void __show_regs(struct pt_regs *regs, enum show_regs_mode mode,
+ 		 const char *log_lvl)
 diff --git a/security/Kconfig b/security/Kconfig
 index 564e975..7ef4ec8 100644
 --- a/security/Kconfig
@@ -207,6 +207,6 @@ index 564e975..7ef4ec8 100644
 +
  endif
  
- source security/keys/Kconfig
+ source "security/keys/Kconfig"
 -- 
 2.7.4
