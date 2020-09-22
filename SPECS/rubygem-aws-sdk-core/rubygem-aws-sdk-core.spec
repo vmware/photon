@@ -3,14 +3,14 @@
 %global gem_name aws-sdk-core
 
 Name: rubygem-aws-sdk-core
-Version:        3.105.0
+Version:        3.107.0
 Release:        1%{?dist}
 Summary:        Provides API clients for AWS.
 Group:          Development/Languages
 License:        Apache 2.0
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/aws-sdk-core-%{version}.gem
-%define sha1    aws-sdk-core=7baa17700596912dc3fb5fc771283cb7a69b3341
+%define sha1    aws-sdk-core=dfd3ddbe178492259ec736f269095a532c2c59be
 BuildRequires:  ruby
 
 Requires: rubygem-aws-eventstream >= 1.0
@@ -34,6 +34,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 3.107.0-1
+-   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 3.105.0-1
 -   Automatic Version Bump
 *   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 3.27.0-1

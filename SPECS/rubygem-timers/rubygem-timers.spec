@@ -3,8 +3,8 @@
 %global gem_name timers
 
 Name: rubygem-timers
-Version:        4.3.0
-Release:        2%{?dist}
+Version:        4.3.2
+Release:        1%{?dist}
 Summary:        Schedule procs to run after a certain time, or at periodic intervals, using any API that accepts a timeout.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    timers=950a7007118d21093c01ff91f427d134408544a8
+%define sha1    timers=10ac6c7525d5f44a124a19657a7afe0dfdf6a618
 BuildRequires:  ruby >= 2.2.1
 
 BuildArch: noarch
@@ -33,6 +33,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 4.3.2-1
+-   Automatic Version Bump
 *   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 4.3.0-2
 -   Rebuilt using ruby-2.7.1
 *   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 4.3.0-1

@@ -3,14 +3,14 @@
 %global gem_name aws-sdk-s3
 
 Name: rubygem-aws-sdk-s3
-Version:        1.79.1
+Version:        1.81.0
 Release:        1%{?dist}
 Summary:        Official AWS Ruby gem for Amazon Simple Storage Service (Amazon S3).
 Group:          Development/Languages
 License:        Apache 2.0
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://github.com/aws/aws-sdk-ruby/tree/master/gems/aws-sdk-s3-%{version}.gem
-%define sha1    aws-sdk-s3=7a8df7be2059e72b1d5deaa1d57da81979d9bfab
+%define sha1    aws-sdk-s3=ed7ee5572ac0e161368f74b6999f62c9ae897e37
 BuildRequires:  ruby
 
 Requires: rubygem-aws-sdk-core >= 3.21.2
@@ -34,6 +34,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.81.0-1
+-   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.79.1-1
 -   Automatic Version Bump
 *   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 1.19.0-1

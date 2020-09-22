@@ -3,8 +3,8 @@
 %global gem_name protocol-http1
 
 Name: rubygem-protocol-http1
-Version:        0.9.0
-Release:        2%{?dist}
+Version:        0.13.1
+Release:        1%{?dist}
 Summary:        A low level implementation of the HTTP/1 protocol.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    protocol-http1=ff0fc0e51e1fe4d42e535c234202fa567cd08c4d
+%define sha1    protocol-http1=63c3b770e4f1f1a2c15a02fe1c1b859b7c5410e9
 BuildRequires:  ruby
 
 Requires: rubygem-protocol-http >= 0.5.0, rubygem-protocol-http < 1.0.0
@@ -35,6 +35,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.13.1-1
+-   Automatic Version Bump
 *   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 0.9.0-2
 -   Rebuilt with ruby-2.7.1
 *   Wed Aug 21 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 0.9.0-1

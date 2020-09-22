@@ -3,14 +3,14 @@
 %global gem_name aws-partitions
 
 Name: rubygem-aws-partitions
-Version:        1.363.0
+Version:        1.375.0
 Release:        1%{?dist}
 Summary:        Provides interfaces to enumerate AWS partitions, regions & services.
 Group:          Development/Languages
 License:        Apache 2.0
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/aws-partitions-%{version}.gem
-%define sha1    aws-partitions=c415942fd504d284a03c162db590a97838737625
+%define sha1    aws-partitions=210fbcfd5495470b54513293d7f18ef03dca0d8a
 BuildRequires:  ruby
 
 %description
@@ -29,6 +29,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.375.0-1
+-   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.363.0-1
 -   Automatic Version Bump
 *   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 1.104.0-1
