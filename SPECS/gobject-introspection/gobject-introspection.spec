@@ -2,13 +2,13 @@
 
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
-Version:        1.64.1
+Version:        1.66.0
 Release:        1%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/gobject-introspection/1.52/%{name}-%{version}.tar.xz
-%define sha1 gobject-introspection=f5be2ccbf48f5c9b6c32fa8400b6a14d608b4e03
+%define sha1 gobject-introspection=dc806ee27935d86e55e8e5d3313684fd01b7ecf8
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  gettext
@@ -104,6 +104,8 @@ meson test
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.66.0-1
+-   Automatic Version Bump
 *   Sun Aug 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.64.1-1
 -   Automatic Version Bump
 *   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 1.58.0-4
