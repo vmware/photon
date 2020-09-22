@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-pygobject
-Version:        3.36.1
+Version:        3.38.0
 Release:        1%{?dist}
 Summary:        Python Bindings for GObject
 Group:          Development/Languages
@@ -11,10 +11,11 @@ Distribution:   Photon
 URL:            https://pypi.org/project/PyGObject
 Source0:        https://pypi.org/project/PyGObject/#files/PyGObject-%{version}.tar.gz
 Patch0:         pygobject-makecheck-fixes.patch
-%define sha1    PyGObject=efe1f4b589c4cc98162fe7f706b7651506fc4386
+%define sha1    PyGObject=9d87678c9b8e8771280f074d107e1e0cd612f307
 Requires:       python3
 Requires:       gobject-introspection
 Requires:       glib
+BuildRequires:  python3-setuptools
 BuildRequires:  glib-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -72,6 +73,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 3.38.0-1
+-   Automatic Version Bump
 *   Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.36.1-1
 -   Automatic Version Bump
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 3.30.1-3
