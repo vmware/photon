@@ -30,6 +30,9 @@ Requires:       python3-six
 
 BuildArch:      noarch
 
+Provides:       python3dist(packaging) = %{version}
+Provides:       python3.8dist(packaging) = %{version}
+
 %description
 Cryptography is a Python library which exposes cryptographic recipes and primitives.
 

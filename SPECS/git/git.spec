@@ -84,9 +84,6 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/bash-completion/
 #excluding git svn files
 %exclude %{_libexecdir}/git-core/*svn*
-%exclude %{perl_sitelib}/Git/SVN
-%exclude %{perl_sitelib}/Git/SVN.pm
-%exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)

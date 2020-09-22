@@ -15,12 +15,26 @@ Source0:        https://pypi.python.org/packages/00/e9/f77dcd80bdb2e52760f38dbd9
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-py
-BuildRequires:  python3-hypothesis
-BuildRequires:  python3-Twisted
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 BuildRequires:  python3-setuptools_scm
+
+BuildRequires:  python3-attrs
+BuildRequires:  python3-iniconfig
+BuildRequires:  python3-more-itertools
+BuildRequires:  python3-packaging
+BuildRequires:  python3-pluggy >= 0.12
+BuildRequires:  python3-py >= 1.5.0
+BuildRequires:  python3-toml
+BuildRequires:  python3-wcwidth
+
+Requires:       python3-attrs
+Requires:       python3-iniconfig
+Requires:       python3-more-itertools
+Requires:       python3-packaging
+Requires:       python3-pluggy >= 0.12
+Requires:       python3-py >= 1.5.0
+Requires:       python3-toml
+Requires:       python3-wcwidth
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-py

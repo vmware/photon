@@ -13,12 +13,14 @@ Source0:        https://pypi.python.org/packages/source/T/Twisted/Twisted-%{vers
 %define sha1 Twisted=915f782b902aca3ea5547ef333089961101e0871
 Patch0:         extra_dependency.patch
 Patch1:         no_packet.patch
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-incremental
 BuildRequires:  python3-zope.interface
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-automat
 
 %if %{with_check}
 BuildRequires:  net-tools
@@ -36,6 +38,7 @@ Requires:       python3-hyperlink
 Requires:       python3-attrs
 Requires:       python3-PyHamcrest
 Requires:       python3-service_identity >= 18.1.0
+Requires:       python3-setuptools
 
 %description
 Twisted is an event-driven networking engine written in Python and licensed under the open source ​MIT license. Twisted runs on Python 2 and an ever growing subset also works with Python 3.

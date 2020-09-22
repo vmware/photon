@@ -1,16 +1,21 @@
-Summary:	software font engine.
-Name:		freetype2
-Version:	2.10.2
-Release:	1%{?dist}
-License:	BSD/GPL
-URL:		http://www.freetype.org/
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
+Summary:        software font engine.
+Name:           freetype2
+Version:        2.10.2
+Release:        1%{?dist}
+License:        BSD/GPL
+URL:            http://www.freetype.org/
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
 %define sha1 freetype=2c53944cd7eaefb9cb207672d8a4368c31aa97c4
+
 BuildRequires:	libtool
 BuildRequires:	zlib-devel
+BuildRequires:	glibc
+BuildRequires:	pkg-config
+BuildRequires:	bash
+
 
 %description
 FreeType is a software font engine that is designed to be small, efficient, highly customizable, and portable while capable of producing high-quality output (glyph images). It can be used in graphics libraries, display servers, font conversion tools, text image generation tools, and many other products as well.

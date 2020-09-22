@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.8.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -28,11 +28,13 @@ Requires:       openssl
 Requires:       python3-libs = %{version}-%{release}
 Requires:       readline
 Requires:       xz
+
 Provides:       python-sqlite
 Provides:       python(abi)
 Provides:       /usr/bin/python
 Provides:       /bin/python
 Provides:       /bin/python3
+Provides:       python = %{version}-%{release}
 
 %if %{with_check}
 BuildRequires:  iana-etc
@@ -57,11 +59,13 @@ Requires:       sqlite-libs
 Requires:       bzip2-libs
 Requires:       util-linux-libs
 
-
 %description    libs
 The python interpreter can be embedded into applications wanting to
 use python as an embedded scripting language.  The python-libs package
 provides the libraries needed for python 3 applications.
+
+Provides: bundled(python3dist(pip)) = %{version}
+Provides: bundled(python3dist(setuptools)) = 50.3.0
 
 %package        xml
 Summary:        XML libraries for python3 runtime
@@ -121,16 +125,6 @@ Requires:       python3-xml = %{version}-%{release}
 %description    pip
 The PyPA recommended tool for installing Python packages.
 
-%package        setuptools
-Summary:        Download, build, install, upgrade, and uninstall Python packages.
-Group:          Development/Tools
-BuildArch:      noarch
-Requires:       python3 = %{version}-%{release}
-Requires:       python3-xml = %{version}-%{release}
-
-%description    setuptools
-setuptools is a collection of enhancements to the Python distutils that allow you to more easily build and distribute Python packages, especially ones that have dependencies on other packages.
-
 %package test
 Summary: Regression tests package for Python.
 Group: Development/Tools
@@ -182,6 +176,8 @@ find %{buildroot}%{_libdir} -name '*.pyo' -delete
 find %{buildroot}%{_libdir} -name '*.o' -delete
 find %{buildroot}%{_libdir} -name '*__pycache__' -delete
 rm %{buildroot}%{_bindir}/2to3
+rm %{buildroot}%{_bindir}/easy_install-3.8
+
 mkdir -p %{buildroot}/usr/lib/rpm/macros.d
 install -m 644 %{SOURCE1} %{buildroot}/usr/lib/rpm/macros.d
 
@@ -283,13 +279,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.8/site-packages/pip-20.1.1.dist-info/*
 %{_bindir}/pip*
 
-%files setuptools
-%defattr(-,root,root,755)
-%{_libdir}/python3.8/site-packages/pkg_resources/*
-%{_libdir}/python3.8/site-packages/setuptools/*
-%{_libdir}/python3.8/site-packages/setuptools-47.1.0.dist-info/*
-%{_bindir}/easy_install-3.8
-
 %files test
 %{_libdir}/python3.8/test/*
 
@@ -297,6 +286,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+*   Sun Oct 04 2020 Susant Sahani <tkundu@vmware.com> 3.8.5-5
+-   Drop setup tools
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.8.5-4
 -   openssl 1.1.1
 *   Sun Aug 16 2020 Tapas Kundu <tkundu@vmware.com> 3.8.5-3

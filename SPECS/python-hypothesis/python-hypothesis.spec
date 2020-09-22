@@ -11,13 +11,18 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/cf/d5/b3d491e4b5094be0ef69b910d637096c8e23f84a9bdc4eba0b869220d1f0/hypothesis-%{version}.tar.gz
 %define sha1    hypothesis=257d56fd045881cd8155ddb434c189aa3780c449
+
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-attrs
+BuildRequires:  python-sortedcontainers
 
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-attrs
+Requires:       python-sortedcontainers
 
 BuildArch:      noarch
 

@@ -11,6 +11,9 @@ Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.
 %define sha1    e2fsprogs=4f2eb83d9fd96d61355c10f1223e47cc8df71229
 Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox < 0.8.2-2
+
+BuildRequires:  glibc
+BuildRequires:  glibc-devel
 BuildRequires:  util-linux-devel
 Requires:       util-linux-libs
 

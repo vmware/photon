@@ -1,21 +1,27 @@
 Summary:	An XML parser library
-Name:		expat
+Name:     expat
 Version:	2.2.9
 Release:	1%{?dist}
 License:	MIT
-URL:		http://expat.sourceforge.net/
+URL:      http://expat.sourceforge.net/
 Group:		System Environment/GeneralLibraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.xz
 %define sha1 expat=90a361e4c97f8c469479ffadc0de0b121a911fb5
-Requires:       expat-libs = %{version}-%{release}
+
+BuildRequires: glibc
+BuildRequires: pkg-config
+
+Requires:  expat-libs = %{version}-%{release}
+
 %description
 The Expat package contains a stream oriented C library for parsing XML.
 
 %package    devel
 Summary:    Header and development files for expat
 Requires:   %{name} = %{version}-%{release}
+Requires:   pkg-config
 %description    devel
 It contains the libraries and header files to create applications
 
@@ -29,12 +35,12 @@ This package contains minimal set of shared expat libraries.
 %setup -q
 %build
 
-%configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags}" \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--disable-static
+%configure                 \
+    CFLAGS="%{optflags}"   \
+    CXXFLAGS="%{optflags}" \
+    --bindir=%{_bindir}    \
+    --libdir=%{_libdir}    \
+    --disable-static
 make %{?_smp_mflags}
 
 %install

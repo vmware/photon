@@ -16,6 +16,9 @@ Patch1:         CVE-2020-24977.patch
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
+BuildRequires:  zlib
+BuildRequires:  pkg-config
+
 Provides:       pkgconfig(libxml-2.0)
 
 %description

@@ -2,26 +2,39 @@
 
 Summary:        Package manager
 Name:           rpm
-Version:        4.14.2
-Release:        10%{?dist}
+Version:        4.16.0
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
-%define sha1    rpm=8cd4fb1df88c3c73ac506f8ac92be8c39fa610eb
+%define sha1    rpm=6e0567dcefc4c21cf56a3817728c71c7dc76485f
 Source1:        macros
-Source2:        brp-strip-debug-symbols
-Source3:        brp-strip-unneeded
+Source2:        macros.ldconfig
+Source3:        macros.perl
+Source4:        macros.vpath
+Source5:        brp-strip-debug-symbols
+Source6:        brp-strip-unneeded
+
 Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
+
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
 Requires:       libarchive
 Requires:       lua
 Requires:       openssl >= 1.1.1
+Requires:       findutils sed grep gawk diffutils file patch
+Requires:       tar unzip gzip bzip2 cpio xz
+Requires:       elfutils
+Requires:       coreutils
+Requires:       python3-setuptools
+
 BuildRequires:  lua-devel
+BuildRequires:  bzip2-devel
+BuildRequires:  ncurses-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  libdb-devel
 BuildRequires:  popt-devel
@@ -30,8 +43,11 @@ BuildRequires:  elfutils-devel
 BuildRequires:  libcap-devel
 BuildRequires:  xz-devel
 BuildRequires:  file-devel
+BuildRequires:  readline-devel zlib-devel
 BuildRequires:  python3-devel
 BuildRequires:  openssl >= 1.1.1
+BuildRequires:  python3-setuptools
+BuildRequires:  gcc make
 
 %description
 RPM package manager
@@ -53,6 +69,7 @@ Requires:       zlib
 Requires:       bzip2-libs
 Requires:       elfutils-libelf
 Requires:       xz-libs
+Requires:       python3-setuptools
 %description    libs
 Shared libraries librpm and librpmio
 
@@ -61,7 +78,9 @@ Requires:       perl
 Requires:       lua
 Requires:       %{name}-devel = %{version}-%{release}
 Requires:       elfutils-libelf
-Requires:       cpio
+Requires:       tar unzip gzip bzip2 cpio xz
+Requires:       findutils sed grep gawk diffutils file patch
+Requires:       python3-setuptools
 Summary: Binaries, scripts and libraries needed to build rpms.
 %description build
 Binaries, libraries and scripts to build rpms.
@@ -82,7 +101,7 @@ Requires:       python3
 Python3 rpm.
 
 %prep
-%setup -n rpm-%{name}-%{version}-release
+%setup -q -n rpm-%{name}-%{version}-release
 %patch0 -p1
 
 %build
@@ -95,15 +114,18 @@ sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 ./autogen.sh --noconfigure
 %configure \
     CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
-        --program-prefix= \
-        --disable-dependency-tracking \
-        --disable-static \
-        --enable-python \
-        --with-cap \
-        --with-lua \
-        --with-vendor=vmware \
-        --disable-silent-rules \
-        --with-external-db
+    --prefix=/usr                 \
+    --program-prefix=             \
+    --disable-dependency-tracking \
+    --disable-static              \
+    --enable-python               \
+    --with-cap                    \
+    --with-lua                    \
+    --with-vendor=vmware          \
+    --disable-silent-rules        \
+    --with-external-db            \
+    --build=%{_target_platform}   \
+    --host=%{_target_platform}
 make %{?_smp_mflags}
 
 pushd python
@@ -117,11 +139,17 @@ make check
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
+
 # System macros and prefix
-install -dm 755 %{buildroot}%{_sysconfdir}/rpm
+mkdir -p %{buildroot}%{_sysconfdir}/rpm
 install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/
-install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm/
-install -vm755 %{SOURCE3} %{buildroot}%{_libdir}/rpm/
+
+mkdir -p %{buildroot}%{_rpmconfigdir}/macros.d
+install -vm755 %{SOURCE2} %{buildroot}/%{_rpmconfigdir}/macros.d
+install -vm755 %{SOURCE3} %{buildroot}/%{_rpmconfigdir}/macros.d
+install -vm755 %{SOURCE4} %{buildroot}/%{_rpmconfigdir}/macros.d
+install -vm755 %{SOURCE5} %{buildroot}%{_libdir}/rpm/
+install -vm755 %{SOURCE6} %{buildroot}%{_libdir}/rpm/
 
 pushd python
 python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
@@ -144,7 +172,6 @@ rm -rf %{buildroot}
 %{_bindir}/rpmkeys
 %{_bindir}/rpmquery
 %{_bindir}/rpmverify
-
 %{_libdir}/rpm/rpmpopt-*
 %{_libdir}/rpm/rpmdb_*
 %{_libdir}/rpm/rpm.daily
@@ -154,15 +181,15 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/tgpg
 %{_libdir}/rpm/platform
 %{_libdir}/rpm-plugins/*
-%{_libdir}/rpm/python-macro-helper
 %{_libdir}/rpm/pythondistdeps.py
+
 %{_mandir}/man8/rpm.8.gz
 %{_mandir}/man8/rpm2cpio.8.gz
 %{_mandir}/man8/rpmdb.8.gz
 %{_mandir}/man8/rpmgraph.8.gz
 %{_mandir}/man8/rpmkeys.8.gz
 %{_mandir}/man8/rpm-misc.8.gz
-%{_mandir}/man8/rpm-plugin-systemd-inhibit.8.gz
+
 %exclude %{_mandir}/fr/man8/*.gz
 %exclude %{_mandir}/ja/man8/*.gz
 %exclude %{_mandir}/ko/man8/*.gz
@@ -173,10 +200,10 @@ rm -rf %{buildroot}
 
 %files libs
 %defattr(-,root,root)
-%config(noreplace) %{_sysconfdir}/rpm/macros
+%config(noreplace) %{_libdir}/rpm/macros
+%{_libdir}/rpm/macros.d/*
 %{_libdir}/librpmio.so.*
 %{_libdir}/librpm.so.*
-%{_libdir}/rpm/macros
 %{_libdir}/rpm/rpmrc
 %{_libdir}/rpm/platform/*
 
@@ -190,13 +217,7 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/perl.req
 %{_libdir}/rpm/find-debuginfo.sh
 %{_libdir}/rpm/find-lang.sh
-%{_libdir}/rpm/find-provides
-%{_libdir}/rpm/find-requires
 %{_libdir}/rpm/brp-*
-%{_libdir}/rpm/mono-find-provides
-%{_libdir}/rpm/mono-find-requires
-%{_libdir}/rpm/ocaml-find-provides.sh
-%{_libdir}/rpm/ocaml-find-requires.sh
 %{_libdir}/rpm/fileattrs/*
 %{_libdir}/rpm/script.req
 %{_libdir}/rpm/check-buildroot
@@ -204,8 +225,6 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/check-prereqs
 %{_libdir}/rpm/check-rpaths
 %{_libdir}/rpm/check-rpaths-worker
-%{_libdir}/rpm/config.guess
-%{_libdir}/rpm/config.sub
 %{_libdir}/rpm/debugedit
 %{_libdir}/rpm/elfdeps
 %{_libdir}/rpm/libtooldeps.sh
@@ -213,16 +232,23 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/pkgconfigdeps.sh
 %{_libdir}/rpm/*.prov
 %{_libdir}/rpm/sepdebugcrcfix
-
-
-%{_libdir}/rpm/pythondeps.sh
+%{_libdir}/rpm/find-provides
+%{_libdir}/rpm/find-requires
 %{_libdir}/rpm/rpmdeps
+%{_libdir}/rpm/ocamldeps.sh
+
+%{_sysconfdir}/rpm/macros
 
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
 %{_mandir}/man8/rpmdeps.8*
 %{_mandir}/man8/rpmspec.8*
 %{_mandir}/man8/rpmsign.8.gz
+%{_mandir}/man8/rpm-plugin-ima.8.gz
+%{_mandir}/man8/rpm-plugin-prioreset.8.gz
+%{_mandir}/man8/rpm-plugin-syslog.8.gz
+%{_mandir}/man8/rpm-plugins.8.gz
+%{_mandir}/man8/rpm2archive.8.gz
 
 %files devel
 %defattr(-,root,root)
@@ -241,6 +267,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Oct 13 2020 Susant Sahani<ssahani@vmware.com> 4.16.0-1
+-   Update to 4.16.0
 *   Tue Sep 08 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.14.2-10
 -   Openssl 1.1.1 compatibility
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 4.14.2-9

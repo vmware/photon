@@ -20,6 +20,7 @@ BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-setuptools
 
 BuildArch:      noarch
 

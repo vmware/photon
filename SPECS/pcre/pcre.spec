@@ -11,6 +11,8 @@ Source0:        ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%{name}-%{
 %define sha1    pcre=8179b083053fce9b4a766513fa1f14807aabee42
 BuildRequires:  bzip2-devel
 BuildRequires:  readline-devel
+BuildRequires:  glibc
+
 Requires:       libgcc
 Requires:       readline
 Requires:       libstdc++

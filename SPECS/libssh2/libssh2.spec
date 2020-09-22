@@ -12,6 +12,7 @@ Source0:        https://www.libssh2.org/download/libssh2-%{version}.tar.gz
 Patch0:         CVE-2019-17498.patch
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
+BuildRequires:  pkg-config
 
 Requires:       openssl
 Requires:       zlib
@@ -68,5 +69,3 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 -   Fix for CVE-2019-3855
 *   Wed Nov 30 2016 Xiaolin Li <xiaolinl@vmware.com> 1.8.0-1
 -   Add libssh2 1.8.0 package.
-
-

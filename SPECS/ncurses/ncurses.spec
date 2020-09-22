@@ -12,7 +12,9 @@ Source0:        ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version
 %define sha1    ncurses=e4d288a923a5787053c7964ed9af569d59f3a69a
 
 Requires:       ncurses-libs = %{version}-%{release}
-BuildRequires:  gcc
+Requires:       glibc
+
+BuildRequires:  gcc glibc
 BuildRequires:  pkg-config
 
 %description

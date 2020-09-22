@@ -23,7 +23,6 @@ BuildRequires:  python3-xml
 BuildRequires:  python3-docutils
 BuildRequires:  python3-mistune
 BuildRequires:  python3-graphviz
-BuildRequires:  python3-Twisted
 
 Requires:       python3
 Requires:       python3-libs
@@ -34,10 +33,12 @@ Requires:       python3-Twisted
 
 BuildArch:      noarch
 
-%description
-Self-service finite-state machines for the programmer on the go.
+Provides:       python3dist(automat) = %{version}
+Provides:       python3.8dist(automat) = %{version}
 
-Automat is a library for concise, idiomatic Python expression of finite-state automata (particularly deterministic finite-state transducers).
+%description
+Self-service finite-state machines for the programmer on the go. Automat is a library for concise,
+idiomatic Python expression of finite-state automata (particularly deterministic finite-state transducers).
 
 %prep
 %setup -q -n Automat-%{version}

@@ -29,6 +29,9 @@ BuildRequires:  python3-pip
 Requires:       python3
 Requires:       python3-libs
 
+Provides:       python3dist(attrs) = %{version}
+Provides:       python3.8dist(attrs) = %{version}
+
 %description
 Attributes without boilerplate.
 

@@ -9,8 +9,13 @@ URL:           https://launchpad.net/%{name}
 Source0:       %{url}/trunk/%{name}-%{version}/+download/%{name}-%{version}.tar.bz2
 %define sha1 %{name}-%{version}=20ccbea4b495d60ab6d9dd3e40b3a429cfa2584b
 Distribution:  Photon
+
 Requires:      expat
+Requires:      glibc
+
 BuildRequires: expat-devel
+BuildRequires: glibc
+BuildRequires: glibc-devel
 
 %description
 A Metalink library written in C language.
