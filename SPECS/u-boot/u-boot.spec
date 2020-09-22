@@ -3,7 +3,7 @@
 Summary:        U-Boot EFI firmware
 Name:		u-boot
 Version:	2020.07
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
@@ -11,9 +11,10 @@ Distribution:	Photon
 Source0:        ftp://ftp.denx.de/pub/u-boot/u-boot-%{version}.tar.bz2
 %define sha1 u-boot=1b59dd6875b0ceeb5202ef027f26bf3c99a8d91b
 Source1:        rpi_3_photon_defconfig
-Source2:        fw_env.config
+Source2:        rpi_4_photon_defconfig
+Source3:        rpi_photon_defconfig
+Source4:        fw_env.config
 Patch0:		0001-XXX-openSUSE-XXX-Load-dtb-from-part.patch
-Patch1:		0004-Fix-MMC1-external-SD-slot-on-Samsun.patch
 Patch2:		0005-Fix-no-usb.patch
 Patch3:         add-saveenv-in-bootcmd.patch
 
@@ -23,40 +24,74 @@ BuildArch:      aarch64
 %description
 U-Boot is Open Source Firmware.
 
-%package -n     u-boot-utils
-Summary:        U Boot Utilitiy for rpi3
+%package        utils
+Summary:        U Boot Utilitiy
+Requires:       %{name} = %{version}-%{release}
 
-%description -n u-boot-utils
+%description    utils
 This utility will provide the binary to modify the u boot
 env variables from linux shell prompt.
+
+%package        rpi3
+Summary:        U-Boot bootloader for Raspberry Pi 3
+Requires:       %{name} = %{version}-%{release}
+Requires:       raspberrypi-firmware-pi3
+
+%description    rpi3
+Bootloader file (u-boot.bin) for Raspberry Pi 3
+
+%package        rpi4
+Summary:        U-Boot bootloader for Raspberry Pi 4
+Requires:       %{name} = %{version}-%{release}
+Requires:       raspberrypi-firmware-pi4
+
+%description    rpi4
+Bootloader file (u-boot.bin) for Raspberry Pi 4
 
 %prep
 %setup -q -n u-boot-%{version}
 %patch0 -p1
-%patch1 -p1
 %patch2 -p1
 %patch3 -p1
 
 %build
-cp %{SOURCE1} configs/
-make %{?_smp_mflags} CROSS_COMPILE= rpi_3_photon_defconfig
-make %{?_smp_mflags} CROSS_COMPILE= USE_PRIVATE_LIBGG=yes
-make %{?_smp_mflags} CROSS_COMPILE= USE_PRIVATE_LIBGG=yes envtools
+cp -t configs/ %{SOURCE1} %{SOURCE2} %{SOURCE3}
+mkdir -p build-rpi3 build-rpi4 build-rpi-common
+
+make %{?_smp_mflags} CROSS_COMPILE= O=build-rpi3 rpi_3_photon_defconfig
+make %{?_smp_mflags} CROSS_COMPILE= O=build-rpi3 u-boot.bin
+
+make %{?_smp_mflags} CROSS_COMPILE= O=build-rpi4 rpi_4_photon_defconfig
+make %{?_smp_mflags} CROSS_COMPILE= O=build-rpi4 u-boot.bin
+
+make %{?_smp_mflags} CROSS_COMPILE= O=build-rpi-common rpi_photon_defconfig
+make %{?_smp_mflags} CROSS_COMPILE= O=build-rpi-common envtools
 
 %install
-install -D -m 0644 u-boot.bin %{buildroot}/boot/efi/u-boot.bin
-install -D -m 0744 tools/env/fw_printenv %{buildroot}/usr/bin/fw_setenv
-install -D -m 0644 %{SOURCE2} %{buildroot}/etc/fw_env.config
+install -D -m 0755 build-rpi3/u-boot.bin %{buildroot}/boot/efi/u-boot-rpi3.bin
+install -D -m 0755 build-rpi4/u-boot.bin %{buildroot}/boot/efi/u-boot-rpi4.bin
+
+install -D -m 0755 build-rpi-common/tools/env/fw_printenv %{buildroot}%{_bindir}/fw_setenv
+install -D -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/fw_env.config
 
 %files
 %defattr(-,root,root)
-/boot/efi/*
+%license Licenses/gpl-2.0.txt
 
-%files -n u-boot-utils
-/etc/fw_env.config
-/usr/bin/fw_setenv
+%files utils
+%config %{_sysconfdir}/fw_env.config
+%{_bindir}/fw_setenv
+
+%files rpi3
+/boot/efi/u-boot-rpi3.bin
+
+%files rpi4
+/boot/efi/u-boot-rpi4.bin
 
 %changelog
+*   Mon Sep 21 2020 Bo Gan <ganb@vmware.com> 2020.07-4
+-   Add Raspberry Pi 4 support
+-   Move bootloader files into sub-packages
 *   Thu Aug 06 2020 Sujay G <gsujay@vmware.com> 2020.07-3
 -   Removed add_tcp_wget_support.patch, not compatible with 2020.07 version
 *   Tue Jul 28 2020 Sujay G <gsujay@vmware.com> 2020.07-2
