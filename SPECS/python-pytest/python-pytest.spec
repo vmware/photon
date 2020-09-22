@@ -2,7 +2,7 @@
 %{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
 Name:           python3-pytest
-Version:        6.0.1
+Version:        6.0.2
 Release:        1%{?dist}
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
 License:        MIT
@@ -11,7 +11,7 @@ URL:            https://docs.pytest.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/00/e9/f77dcd80bdb2e52760f38dbd904016da018ab4373898945da744e5e892e9/pytest-%{version}.tar.gz
-%define sha1    pytest=8a1ed060b297682c9aa41b371386a925cc92a814
+%define sha1    pytest=bc14d7c0f9c0a8299ffdc5a7c0bec1563b4052ac
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -55,6 +55,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.2-1
+-   Automatic Version Bump
 *   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 6.0.1-1
 -   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 5.4.3-1

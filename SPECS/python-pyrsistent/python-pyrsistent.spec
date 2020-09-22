@@ -2,7 +2,7 @@
 
 Summary:        Persistent/Functional/Immutable data structures
 Name:           python3-pyrsistent
-Version:        0.16.0
+Version:        0.17.3
 Release:        1%{?dist}
 License:        MIT License (MIT)
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.org/project/pyrsistent
 Source0:        https://files.pythonhosted.org/packages/9f/0d/cbca4d0bbc5671822a59f270e4ce3f2195f8a899c97d0d5abb81b191efb5/pyrsistent-%{version}.tar.gz
-%define sha1    pyrsistent=48762e23b0c926b8bb5d5bf9c233b6beb2b76a41
+%define sha1    pyrsistent=d762223188b86093fa89ddb239a24bdf972a1259
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-six
@@ -52,5 +52,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.17.3-1
+-   Automatic Version Bump
 *   Thu Jul 30 2020 Tapas Kundu <tkundu@vmware.com> 0.16.0-1
 -   Initial packaging for Photon

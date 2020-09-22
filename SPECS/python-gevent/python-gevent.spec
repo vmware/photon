@@ -2,7 +2,7 @@
 
 Summary:        Coroutine-based network library
 Name:           python3-gevent
-Version:        20.6.2
+Version:        20.9.0
 Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/gevent
 Source0:        gevent-%{version}.tar.gz
-%define sha1    gevent=03389b622ae39715879dbfb6b71624abc8a03017
+%define sha1    gevent=1529da346fcc86b3462d559d0f09440504e0b1d9
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -60,6 +60,8 @@ nosetests
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 22 2020 Gerrit Photon <photon-checkins@vmware.com> 20.9.0-1
+-   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20.6.2-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 1.3.6-3
