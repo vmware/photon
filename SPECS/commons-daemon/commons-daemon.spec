@@ -1,6 +1,6 @@
 Summary:        Apache Commons Daemon
 Name:           commons-daemon
-Version:        1.2.2
+Version:        1.2.3
 Release:        1%{?dist}
 License:        Apache
 URL:            https://commons.apache.org/proper/commons-daemon/download_daemon.cgi
@@ -8,9 +8,9 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://mirrors.ocf.berkeley.edu/apache//commons/daemon/source/%{name}-%{version}-src.tar.gz
-%define sha1    commons-daemon-%{version}-src=67b092544b3ff42099161ec8d30ff9b455806944
+%define sha1    commons-daemon-%{version}-src=55bf25a379b30f103f2c200acb1c7e64144fcce2
 Source1:        https://mirrors.ocf.berkeley.edu/apache//commons/daemon/binaries/%{name}-%{version}-bin.tar.gz
-%define sha1    commons-daemon-%{version}-bin=beb17d7d8123999bed3466126fa117566fe2e608
+%define sha1    commons-daemon-%{version}-bin=be7848a5c64fddb184e8a03e2e6e7b4075e70425
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
 BuildRequires:  apache-ant
@@ -59,6 +59,8 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.3-1
+-   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.2-1
 -   Automatic Version Bump
 *   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
