@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.234
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -49,6 +49,8 @@ Patch22:        0001-9p-Transport-error-uninitialized.patch
 Patch23:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
 # Fix for CVE-2018-5995
 Patch24:        0001-percpu-stop-printing-kernel-addresses.patch
+# Fix for CVE-2020-25211
+Patch25:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 
 Patch26:        Implement-the-f-xattrat-family-of-functions.patch
 Patch27:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -200,6 +202,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
+%patch25 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -389,6 +392,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.4.234-3
+-   Fix for CVE-2020-25211
 *   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.4.234-2
 -   Fix for CVE-2020-14386
 *   Tue Sep 01 2020 Vikash Bansal <bvikas@vmware.com> 4.4.234-1

@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.234
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -51,6 +51,8 @@ Patch30:       0001-9p-Transport-error-uninitialized.patch
 Patch31:       0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
 # Fix for CVE-2018-5995
 Patch32:        0001-percpu-stop-printing-kernel-addresses.patch
+# Fix for CVE-2020-25211
+Patch33:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 
 Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
@@ -168,6 +170,7 @@ The Linux package contains the Linux kernel doc files
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
+%patch33 -p1
 %patch34 -p1
 %patch35 -p1
 %patch37 -p1
@@ -288,6 +291,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.4.234-3
+-   Fix for CVE-2020-25211
 *   Mon Sep 07 2020 Vikash Bansal <bvikas@vmware.com> 4.4.234-2
 -   Fix for CVE-2020-14386
 *   Tue Sep 01 2020 Vikash Bansal <bvikas@vmware.com> 4.4.234-1
