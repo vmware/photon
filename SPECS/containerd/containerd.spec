@@ -3,7 +3,7 @@
 %define gopath_comp github.com/containerd/containerd
 Summary:        Containerd
 Name:           containerd
-Version:        1.4.0
+Version:        1.4.1
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
@@ -11,7 +11,7 @@ Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha1    containerd=fef39c287f2b97cbe9fd02d02292fb0439b965c4
+%define sha1    containerd=f56c62018ceba96b38d4c3b86e61eefc12ab516f
 Source1:        containerd.service
 Source2:        containerd-config.toml
 Source3:        disable-containerd-by-default.preset
@@ -105,6 +105,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.1-1
+-   Automatic Version Bump
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.0-1
 -   Automatic Version Bump
 *   Tue Aug 27 2019 Shreyas B. <shreyasb@vmware.com> 1.2.8-1
