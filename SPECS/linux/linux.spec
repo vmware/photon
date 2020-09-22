@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.228
-Release:        6%{?kat_build:.%kat_build}%{?dist}
+Release:        7%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -49,6 +49,8 @@ Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch24:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch25:        0002-allow-also-ecb-cipher_null.patch
 Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Fix for CVE-2020-25211
+Patch27:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 Patch30:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
@@ -236,6 +238,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
+%patch27 -p1
 %patch28 -p1
 %patch30 -p1
 %patch31 -p1
@@ -466,6 +469,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.9.228-7
+-   Fix for CVE-2020-25211
 *   Thu Sep 10 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-6
 -   Fix for CVE-2020-14356
 *   Thu Sep 10 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-5

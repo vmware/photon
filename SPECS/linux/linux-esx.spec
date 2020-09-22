@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.228
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -61,7 +61,9 @@ Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 # Fix for CVE-2020-14356
 Patch39:        0001-cgroup-fix-cgroup_sk_alloc-for-sk_clone_lock.patch
 Patch40:        0002-cgroup-Fix-sock_cgroup_data-on-big-endian.patch
-Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch41:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+# Fix for CVE-2020-25211
+Patch42:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 # Fix for CVE-2017-18232
 Patch43:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
 # Fix for CVE-2018-10323
@@ -183,6 +185,7 @@ The Linux package contains the Linux kernel doc files
 %patch38 -p1
 %patch39 -p1
 %patch40 -p1
+%patch41 -p1
 %patch42 -p1
 %patch43 -p1
 %patch45 -p1
@@ -311,6 +314,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.9.228-7
+-   Fix for CVE-2020-25211
 *   Thu Sep 10 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-6
 -   Fix for CVE-2020-14356
 *   Thu Sep 10 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-5

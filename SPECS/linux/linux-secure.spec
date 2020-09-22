@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.228
-Release:        6%{?kat_build:.%kat_build}%{?dist}
+Release:        7%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -97,6 +97,8 @@ Patch57:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 Patch58: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 #Fix for CVE-2019-3900
 Patch59: 0001-vhost-vsock-add-weight-support.patch
+# Fix for CVE-2020-25211
+Patch60:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 # Fix CVE-2019-18885
 Patch61:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch62:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
@@ -261,6 +263,7 @@ EOF
 %patch57 -p1
 %patch58 -p1
 %patch59 -p1
+%patch60 -p1
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
@@ -418,6 +421,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.9.228-7
+-   Fix for CVE-2020-25211
 *   Thu Sep 10 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-6
 -   Fix for CVE-2020-14356
 *   Thu Sep 10 2020 Vikash Bansal <bvikas@vmware.com> 4.9.228-5
