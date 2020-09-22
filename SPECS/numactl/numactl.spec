@@ -1,11 +1,11 @@
 Summary:        NUMA support for Linux
 Name:           numactl
-Version:        2.0.13
+Version:        2.0.14
 Release:        1%{?dist}
 License:        GPLv2
 URL:            https://github.com/numactl/numactl
 Source0:        https://github.com/numactl/numactl/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1    %{name}=81c9fa6ab9d41e1cb37103ca4f76ef2b0d37b6e0
+%define sha1    %{name}=1325d20027bbfc9ec5b840a599f6773d38b54a00
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -62,6 +62,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.14-1
+- Automatic Version Bump
 * Mon Nov 18 2019 Alexey Makhalov <amakhalov@vmware.com> 2.0.13-1
 - Initial build. First version
 
