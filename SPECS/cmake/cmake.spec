@@ -1,11 +1,11 @@
 Summary:	Cmake
 Name:		cmake
-Version:	3.18.2
+Version:	3.18.3
 Release:	1%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.16/%{name}-%{version}.tar.gz
-%define sha1    cmake=23092c6a5ae9ecde368abbfda7bae0d01edb7387
+%define sha1    cmake=94c15d9a3bf3f1842f4eec97276441083013d30c
 Source1:	macros.cmake
 Group:		Development/Tools
 Vendor:		VMware, Inc.
@@ -59,6 +59,8 @@ make  %{?_smp_mflags} test
 %{_libdir}/rpm/macros.d/macros.cmake
 
 %changelog
+*       Tue Sep 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.18.3-1
+-       Automatic Version Bump
 *       Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 3.18.2-1
 -       Automatic Version Bump
 *       Wed Aug 12 2020 Gerrit Photon <photon-checkins@vmware.com> 3.18.1-1
