@@ -1,15 +1,15 @@
 Summary:        Security client
 Name:           nss
-Version:        3.56
-Release:        2%{?dist}
+Version:        3.57
+Release:        1%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_39_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nss=5203e66425f51738c723c5db1940fdc20a4c5472
-Patch0:         nss-3.56-standalone-1.patch
+%define sha1    nss=ee150322d22ca2b449b31a9a4188eab156e0a13d
+Patch0:         nss-%{version}-standalone-1.patch
 Requires:       nspr
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -118,6 +118,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Tue Sep 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.57-1
+-   Automatic Version Bump
 *   Tue Sep 15 2020 Michelle Wang <michellew@vmware.com> 3.56-2
 -   Fix nss build in aarch64 platform with adding NS_USE_GCC=1
 -   Fix to enable nss in fips mode
