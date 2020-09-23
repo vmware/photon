@@ -1,7 +1,7 @@
 Summary:        Unzip-6.0
 Name:           unzip
 Version:        6.0
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        BSD
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://downloads.sourceforge.net/infozip/unzip60.tar.gz
@@ -9,7 +9,6 @@ Source0:        http://downloads.sourceforge.net/infozip/unzip60.tar.gz
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Patch0:         cve-2014-9636.patch
 Patch1:         cve-2015-1315.patch
 Patch2:         CVE-2015-7696-CVE-2015-7697.patch
@@ -22,6 +21,7 @@ Patch8:         CVE-2014-8139.patch
 Patch9:         CVE-2014-8141.patch
 Patch10:        CVE-2014-8140.patch
 Patch11:        unzip-CVE-2018-1000035.patch
+Patch12:        unzip-passwd-as-stdin.patch
 
 %description
 The UnZip package contains ZIP extraction utilities. These are useful
@@ -42,6 +42,7 @@ with PKZIP or Info-ZIP utilities, primarily in a DOS environment.
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 
 %build
     sed -i -e 's/CFLAGS="-O -Wall/& -DNO_LCHMOD -DLARGE_FILE_SUPPORT -DZIP64_SUPPORT/' unix/Makefile
@@ -60,13 +61,15 @@ cp %{_builddir}/unzip60/unix/zipgrep %{buildroot}%{_bindir}
 ln -sf unzip %{buildroot}%{_bindir}/zipinfo
 
 %check
-make %{?_smp_mflags}  check
+make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 
 %changelog
+*   Tue Apr 21 2020 Sujay G <gsujay@vmware.com> 6.0-14
+-   Added unzip-passwd-as-stdin.patch
 *   Tue Apr 21 2020 Sujay G <gsujay@vmware.com> 6.0-13
 -   Added CVE fixes from patch6 to patch11
 *   Wed Jul 03 2019 Alexey Makhalov <amakhalov@vmware.com> 6.0-12
