@@ -1,17 +1,18 @@
-Summary:    Photon release files
-Name:       photon-release
-Version:    3.0
-Release:    3%{?dist}
-License:    Apache License
-Group:      System Environment/Base
-URL:        https://vmware.github.io/photon/
-Vendor:     VMware, Inc.
+Summary:        Photon release files
+Name:           photon-release
+Version:        3.0
+Release:        4%{?dist}
+License:        Apache License
+Group:          System Environment/Base
+URL:            https://vmware.github.io/photon/
+Source0:        photon-release-3.0.tar.gz
+%define sha1    photon-release=ced639518d32f9ac8ff00a71853812057db3ab3c
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Provides:   system-release
-Provides:   system-release(%{version})
-Provides:   system-release(releasever) = %{version}
-BuildArch:  noarch
-
+Provides:       system-release
+Provides:       system-release(%{version})
+Provides:       system-release(releasever) = %{version}
+BuildArch:      noarch
 
 %description
 Photon release files such as yum configs and other /etc/ release related files
@@ -68,6 +69,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/issue.net
 
 %changelog
+*       Wed Sep 23 2020 Michelle Wang <michellew@vmware.com> 3.0-4
+-       Add sources0 for OSSTP tickets
 *       Sat Jan 04 2020 Neal Gompa <ngompa13@gmail.com> 3.0-3
 -       Fix issue files to not require arch mangling
 -       Add system-release Provides for generic distroverpkg identifying name

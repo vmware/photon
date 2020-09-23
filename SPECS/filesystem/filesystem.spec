@@ -1,11 +1,13 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 URL:		http://www.linuxfromscratch.org
+Source0:        filesystem-1.1.tar.gz
+%define sha1    filesystem=049c5d858f2cab6298ebdb83571cedd47741433a
 Distribution:	Photon
 
 %description
@@ -13,8 +15,10 @@ The filesystem package is one of the basic packages that is installed
 on a Linux system. Filesystem contains the basic directory
 layout for a Linux operating system, including the correct permissions
 for the directories. This version is for a system configured with systemd.
+
 %prep
 %build
+
 %install
 #
 #	6.5.  Creating Directories
@@ -534,7 +538,10 @@ EOF
 /usr/local/lib64
 /usr/lib/debug/lib64
 /usr/lib/debug/usr/lib64
+
 %changelog
+*   Wed Sep 23 2020 Michelle Wang <michellew@vmware.com> 1.1-4
+-   Add sources0 for OSSTP tickets
 *   Wed May 8 2019 Alexey Makhalov <amakhalov@vmware.com> 1.1-3
 -   Set 'x' as a root password placeholder
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1-2
