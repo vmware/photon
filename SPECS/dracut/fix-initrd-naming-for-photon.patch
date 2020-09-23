@@ -1,6 +1,6 @@
-diff -rupN dracut-050/lsinitrd.sh fix-initrd-naming-for-photon/lsinitrd.sh
---- dracut-050/lsinitrd.sh	2020-03-04 11:43:22.000000000 +0100
-+++ fix-initrd-naming-for-photon/lsinitrd.sh	2020-04-24 05:14:21.024296506 +0200
+diff --color -rupN dracut-050/lsinitrd.sh dracut-050-fix-initrd/lsinitrd.sh
+--- dracut-050/lsinitrd.sh	2020-03-04 10:43:22.000000000 +0000
++++ dracut-050-fix-initrd/lsinitrd.sh	2020-09-23 04:44:37.249016558 +0000
 @@ -95,15 +95,7 @@ if [[ $1 ]]; then
          exit 1
      fi
@@ -14,14 +14,21 @@ diff -rupN dracut-050/lsinitrd.sh fix-initrd-naming-for-photon/lsinitrd.sh
 -    else
 -        image="/boot/initramfs-${KERNEL_VERSION}.img"
 -    fi
-+    image="/boot/initrd.img-${KERNEL_VERSION}
++    image="/boot/initrd.img-${KERNEL_VERSION}"
  fi
  
  shift
-diff -rupN dracut-050/mkinitrd-dracut.sh fix-initrd-naming-for-photon/mkinitrd-dracut.sh
---- dracut-050/mkinitrd-dracut.sh	2020-03-04 11:43:22.000000000 +0100
-+++ fix-initrd-naming-for-photon/mkinitrd-dracut.sh	2020-04-24 05:38:01.486664940 +0200
-@@ -48,64 +48,18 @@ read_arg() {
+diff --color -rupN dracut-050/mkinitrd-dracut.sh dracut-050-fix-initrd/mkinitrd-dracut.sh
+--- dracut-050/mkinitrd-dracut.sh	2020-03-04 10:43:22.000000000 +0000
++++ dracut-050-fix-initrd/mkinitrd-dracut.sh	2020-10-05 07:22:49.590693891 +0000
+@@ -1,5 +1,6 @@
+ #!/bin/bash --norc
+ kver=$(uname -r)
++kernel_ver_dir='/var/lib/initramfs/kernel'
+ 
+ boot_dir="/boot"
+ quiet=0
+@@ -48,64 +49,18 @@ read_arg() {
      fi
  }
  
@@ -93,7 +100,7 @@ diff -rupN dracut-050/mkinitrd-dracut.sh fix-initrd-naming-for-photon/mkinitrd-d
      host_only=1
      force=1
  }
-@@ -187,7 +141,7 @@ while (($# > 0)); do
+@@ -187,7 +142,7 @@ while (($# > 0)); do
  done
  
  [[ $targets && $kernels ]] || default_kernel_images
@@ -102,7 +109,7 @@ diff -rupN dracut-050/mkinitrd-dracut.sh fix-initrd-naming-for-photon/mkinitrd-d
  
  # We can have several targets/kernels, transform the list to an array
  targets=( $targets )
-@@ -196,7 +150,6 @@ targets=( $targets )
+@@ -196,7 +151,6 @@ targets=( $targets )
  [[ $host_only == 1 ]] && dracut_args="${dracut_args} -H"
  [[ $force == 1 ]]     && dracut_args="${dracut_args} -f"
  
@@ -110,7 +117,7 @@ diff -rupN dracut-050/mkinitrd-dracut.sh fix-initrd-naming-for-photon/mkinitrd-d
  for ((i=0 ; $i<${#targets[@]} ; i++)); do
  
      if [[ $img_vers ]];then
-@@ -206,21 +159,27 @@ for ((i=0 ; $i<${#targets[@]} ; i++)); d
+@@ -206,21 +160,27 @@ for ((i=0 ; $i<${#targets[@]} ; i++)); d
      fi
      kernel="${kernels[$i]}"
  

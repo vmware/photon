@@ -3,29 +3,31 @@
 %define dracutlibdir %{_prefix}/lib/dracut
 %define _unitdir /usr/lib/systemd/system
 
+Summary:        dracut to create initramfs
 Name:           dracut
 Version:        050
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
 URL:            https://dracut.wiki.kernel.org/
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/utils/boot/dracut/dracut-%{version}.tar.xz
 %define sha1    dracut=44f5b7304976b57ac4fca4dd94e99d1a131e6f62
 Source1:        https://www.gnu.org/licenses/lgpl-2.1.txt
+
 Patch1:         disable-xattr.patch
 Patch2:         fix-initrd-naming-for-photon.patch
 Patch3:         lvm-no-read-only-locking.patch
 Patch4:         fips-changes.patch
 
-Summary:        dracut to create initramfs
-Vendor:         VMware, Inc.
-Distribution:   Photon
 BuildRequires:  bash git
 BuildRequires:  pkg-config
 BuildRequires:  kmod-devel
 BuildRequires:  asciidoc3
+
 Requires:       bash >= 4
 Requires:       (coreutils or toybox)
 Requires:       kmod
@@ -159,6 +161,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*   Mon Oct 05 2020 Susant Sahani <ssahani@vmware.com> 050-3
+-   Fix mkitnird and lsinitrd
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 050-2
 -   Use asciidoc3
 *   Fri Apr 24 2020 Susant Sahani <ssahani@vmware.com> 050-1
@@ -192,7 +196,7 @@ rm -rf -- $RPM_BUILD_ROOT
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 044-3
 -   GA - Bump release of all rpms
-*   Thu Apr 25 2016 Gengsheng Liu <gengshengl@vmware.com> 044-2
+*   Mon Apr 25 2016 Gengsheng Liu <gengshengl@vmware.com> 044-2
 -   Fix incorrect systemd directory.
 *   Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 044-1
 -   Updating Version.
