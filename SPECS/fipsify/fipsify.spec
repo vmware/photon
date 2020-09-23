@@ -1,9 +1,9 @@
 Summary:        fipsify - Enable fips, add fips module to initrd and generate hmac files.
 Name:           fipsify
 Version:        1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
-URL:            http://dl.bintray.com/vmware/photon_sources/1.0/
+URL:            http://dl.bintray.com/vmware/photon_sources/1.0/fipsify-1.0.tar.gz
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -36,5 +36,7 @@ rm -rf %{buildroot}
 /lib/modules/modules.fips
 
 %changelog
+*   Wed Sep 23 2020 Michelle Wang <michellew@vmware.com> 1.0-2
+-   Add sources fipsify-1.0.tar.gz to file OSSTP ticket
 *   Tue Jan 28 2020 Vikash Bansal <bvikas@vmware.com> 1.0-1
 -   Added fipsify package to photon-3.0
