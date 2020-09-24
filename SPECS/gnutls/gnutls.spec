@@ -1,15 +1,17 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.6.14
+Version:        3.6.15
 Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
-%define sha1    gnutls=bea1b5abcb691acf014e592f41d0a9580a41216a
+%define sha1    gnutls=00ef7d93347df586c3d1a00f13c326706c0c59ba
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Patch0:         gnutls-3.6.9-default-priority.patch
+
+Patch0:         default-priority.patch
+
 BuildRequires:  nettle-devel >= 3.4.1
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
@@ -17,6 +19,8 @@ BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  guile-devel
 BuildRequires:  gc-devel
+BuildRequires:  git
+
 Requires:       nettle >= 3.4.1
 Requires:       autogen-libopts
 Requires:       libtasn1
@@ -40,8 +44,8 @@ The package contains libraries and header files for
 developing applications that use gnutls.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -S git -p1
+
 %build
 # check for trust store file presence
 [ -f %{_sysconfdir}/pki/tls/certs/ca-bundle.crt ] || exit 1
@@ -94,6 +98,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Sep 24 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.6.15-1
+-   Upgrade to version 3.6.15, fixes CVE-2020-24659
 *   Tue Jun 09 2020 Tapas Kundu <tkundu@vmware.com> 3.6.14-1
 -   Update to 3.6.14
 -   Fix CVE-2020-13777
