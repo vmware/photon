@@ -1,6 +1,6 @@
 Name:          crash
 Version:       7.2.8
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:	       VMware, Inc.
@@ -14,6 +14,7 @@ Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-
 Source2:       https://ftp.gnu.org/gnu/gdb/gdb-7.6.tar.gz
 %define sha1 gdb=026f4c9e1c8152a2773354551c523acd32d7f00e
 Source3:       gcore_defs.patch
+Patch0:        vmware_guestdump-new-input-format.patch
 License:       GPL
 BuildRequires: binutils
 BuildRequires: glibc-devel
@@ -38,6 +39,7 @@ This package contains libraries and header files need for development.
 %prep
 %setup -q -n %{name}-%{version}
 %setup -a 1
+%patch0 -p1
 
 %build
 sed -i "s/tar --exclude-from/tar --no-same-owner --exclude-from/" Makefile
@@ -80,6 +82,8 @@ install -pm 755 crash-gcore-command-%{GCORE_VERSION}/gcore.so %{buildroot}%{_lib
 %{_includedir}/crash/*.h
 
 %changelog
+*   Thu Sep 24 2020 Alexey Makhalov <amakhalov@vmware.com> 7.2.8-2
+-   debug.guest (debug.vmem) support
 *   Mon May 04 2020 Alexey Makhalov <amakhalov@vmware.com> 7.2.8-1
 -   Version update
 *   Fri Sep 07 2018 Ajay Kaher <akaher@vmware.com> 7.2.3-1
