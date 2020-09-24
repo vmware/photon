@@ -1,31 +1,34 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.5.15
-Release:        5%{?dist}
+Version:        3.6.15
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
-Source0:        http://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/gnutls/v3.5/%{name}-%{version}.tar.xz
-%define sha1    gnutls=9b7466434332b92dc3ca704b9211370370814fac
+Source0:        http://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
+%define sha1    gnutls=00ef7d93347df586c3d1a00f13c326706c0c59ba
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Patch0:         gnutls_3.5.15_default_priority.patch
-Patch1:         gnutls-fix-CVE-2019-3829.patch
-Patch2:         CVE-2020-11501.patch
+Patch0:         default-priority.patch
 
-BuildRequires:  nettle-devel
+BuildRequires:  nettle-devel >= 3.4.1
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
+BuildRequires:  guile-devel
+BuildRequires:  gc-devel
+BuildRequires:  git
 
-Requires:       nettle
+Requires:       nettle >= 3.4.1
 Requires:       autogen-libopts
 Requires:       libtasn1
 Requires:       openssl
 Requires:       ca-certificates
 Requires:       gmp
+Requires:       guile
+Requires:       gc
 
 %description
 GnuTLS is a secure communications library implementing the SSL, TLS and DTLS protocols and technologies around them. It provides a simple C language application programming interface (API) to access the secure communications protocols as well as APIs to parse and write X.509, PKCS #12, OpenPGP and other required structures. It is aimed to be portable and efficient with focus on security and interoperability.
@@ -34,14 +37,14 @@ GnuTLS is a secure communications library implementing the SSL, TLS and DTLS pro
 Summary:        Development libraries and header files for gnutls
 Requires:       gnutls
 Requires:       libtasn1-devel
-Requires:       nettle-devel
+Requires:       nettle-devel >= 3.4.1
 
 %description devel
 The package contains libraries and header files for
 developing applications that use gnutls.
 
 %prep
-%autosetup -p1
+%autosetup -S git -p1
 
 %build
 # check for trust store file presence
@@ -54,7 +57,9 @@ developing applications that use gnutls.
     --with-included-unistring \
     --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities \
     --with-default-trust-store-file=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
+
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 rm %{buildroot}%{_infodir}/*
@@ -79,9 +84,11 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/*.so.*
 %{_bindir}/*
 %{_mandir}/man1/*
-%{_mandir}/man3/*
 %{_datadir}/locale/*
 %{_docdir}/gnutls/*.png
+%{_libdir}/guile/2.0/extensions/*.so*
+%{_libdir}/guile/2.0/site-ccache/gnutls*
+%{_datadir}/guile/site/2.0/gnutls*
 %config(noreplace) %{_sysconfdir}/gnutls/default-priorities
 
 %files devel
@@ -89,8 +96,11 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_includedir}/%{name}/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
+%{_mandir}/man3/*
 
 %changelog
+*   Mon Sep 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.6.15-1
+-   Upgrade to version 3.6.15, fixes CVE-2020-24659
 *   Fri Sep 11 2020 Shreenidhi Shedi < sshedi@vmware.com> 3.5.15-5
 -   Fix CVE-2020-11501
 *   Mon Apr 15 2019 Keerthana K <keerthanak@vmware.com> 3.5.15-4
