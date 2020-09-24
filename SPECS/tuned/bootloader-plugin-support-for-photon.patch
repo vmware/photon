@@ -1,0 +1,141 @@
+From fda29cd05052c25c48722fb3e20f864eb0a0b6ec Mon Sep 17 00:00:00 2001
+From: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Date: Thu, 24 Sep 2020 16:45:22 -0700
+Subject: [PATCH] bootloader plugin support for photon
+
+---
+ Makefile                           |  1 +
+ tuned.cfg                          |  3 +++
+ tuned/consts.py                    |  3 ++-
+ tuned/plugins/plugin_bootloader.py | 11 +++++++++--
+ tuned/utils/commands.py            | 16 ++++++++++++++++
+ 5 files changed, 31 insertions(+), 3 deletions(-)
+ create mode 100644 tuned.cfg
+
+diff --git a/Makefile b/Makefile
+index 8361682..7c6981d 100644
+--- a/Makefile
++++ b/Makefile
+@@ -165,6 +165,7 @@ install: install-dirs
+ 	echo -n > $(DESTDIR)$(SYSCONFDIR)/tuned/post_loaded_profile
+ 	install -Dpm 0644 bootcmdline $(DESTDIR)$(SYSCONFDIR)/tuned/bootcmdline
+ 	install -Dpm 0644 modules.conf $(DESTDIR)$(SYSCONFDIR)/modprobe.d/tuned.conf
++	install -Dpm 0644 tuned.cfg $(DESTDIR)/boot/tuned.cfg
+ 
+ 	# profiles & system config
+ 	cp -a profiles/* $(DESTDIR)$(TUNED_PROFILESDIR)/
+diff --git a/tuned.cfg b/tuned.cfg
+new file mode 100644
+index 0000000..5ea7c08
+--- /dev/null
++++ b/tuned.cfg
+@@ -0,0 +1,3 @@
++# GRUB Environment Block
++tuned_params=
++tuned_initrd=
+diff --git a/tuned/consts.py b/tuned/consts.py
+index 733ad51..f803d60 100644
+--- a/tuned/consts.py
++++ b/tuned/consts.py
+@@ -24,7 +24,7 @@ ERROR_THRESHOLD = 3
+ 
+ # bootloader plugin configuration
+ BOOT_DIR = "/boot"
+-GRUB2_CFG_FILES = ["/etc/grub2.cfg", "/etc/grub2-efi.cfg"]
++GRUB2_CFG_FILES = ["/etc/grub2.cfg", "/etc/grub2-efi.cfg", "/boot/grub2/grub.cfg"]
+ GRUB2_CFG_DIR = "/etc/grub.d"
+ GRUB2_TUNED_TEMPLATE_NAME = "00_tuned"
+ GRUB2_TUNED_TEMPLATE_PATH = GRUB2_CFG_DIR + "/" + GRUB2_TUNED_TEMPLATE_NAME
+@@ -41,6 +41,7 @@ PETITBOOT_DETECT_DIR = "/sys/firmware/opal"
+ MACHINE_ID_FILE = "/etc/machine-id"
+ KERNEL_UPDATE_HOOK_FILE = "/usr/lib/kernel/install.d/92-tuned.install"
+ BLS_ENTRIES_PATH = "/boot/loader/entries"
++PHOTON_TUNED_CFG_FILE = "/boot/tuned.cfg"
+ 
+ # scheduler plugin configuration
+ # how many times retry to move tasks to parent cgroup on cgroup cleanup
+diff --git a/tuned/plugins/plugin_bootloader.py b/tuned/plugins/plugin_bootloader.py
+index 8ca5b8a..6b4dd85 100644
+--- a/tuned/plugins/plugin_bootloader.py
++++ b/tuned/plugins/plugin_bootloader.py
+@@ -20,8 +20,8 @@ class BootloaderPlugin(base.Plugin):
+ 	"""
+ 
+ 	def __init__(self, *args, **kwargs):
+-		if not os.path.isfile(consts.GRUB2_TUNED_TEMPLATE_PATH):
+-			raise exceptions.NotSupportedPluginException("Required GRUB2 template not found, disabling plugin.")
++		if not os.path.isfile(consts.PHOTON_TUNED_CFG_FILE):
++			raise exceptions.NotSupportedPluginException("Required GRUB2 tuned config not found, disabling plugin.")
+ 		super(BootloaderPlugin, self).__init__(*args, **kwargs)
+ 		self._cmd = commands()
+ 
+@@ -88,11 +88,15 @@ class BootloaderPlugin(base.Plugin):
+ 				cfg_files.append(f)
+ 		return cfg_files
+ 
++	def _patch_photon_tuned_cfg(self, d):
++		return self._cmd.add_modify_option_woquotes_in_file(consts.PHOTON_TUNED_CFG_FILE, d)
++
+ 	def _patch_bootcmdline(self, d):
+ 		return self._cmd.add_modify_option_in_file(consts.BOOT_CMDLINE_FILE, d)
+ 
+ 	def _remove_grub2_tuning(self):
+ 		self._patch_bootcmdline({consts.BOOT_CMDLINE_TUNED_VAR : "", consts.BOOT_CMDLINE_INITRD_ADD_VAR : ""})
++		self._patch_photon_tuned_cfg({consts.GRUB2_TUNED_VAR : "", consts.GRUB2_TUNED_INITRD_VAR : ""})
+ 		if not self._grub2_cfg_file_names:
+ 			log.info("cannot find grub.cfg to patch")
+ 			return
+@@ -114,6 +118,7 @@ class BootloaderPlugin(base.Plugin):
+ 		grub2_cfg = re.sub(r" *\$" + consts.GRUB2_TUNED_VAR, "", cfg, flags = re.MULTILINE)
+ 		cfg = re.sub(r"^\s*set\s+" + consts.GRUB2_TUNED_INITRD_VAR + "\s*=.*\n", "", grub2_cfg, flags = re.MULTILINE)
+ 		grub2_cfg = re.sub(r" *\$" + consts.GRUB2_TUNED_INITRD_VAR, "", cfg, flags = re.MULTILINE)
++		grub2_cfg = re.sub(r'(?m).*tuned.cfg\n?', '', grub2_cfg)
+ 		cfg = re.sub(consts.GRUB2_TEMPLATE_HEADER_BEGIN + r"\n", "", grub2_cfg, flags = re.MULTILINE)
+ 		return re.sub(consts.GRUB2_TEMPLATE_HEADER_END + r"\n+", "", cfg, flags = re.MULTILINE)
+ 
+@@ -125,6 +130,7 @@ class BootloaderPlugin(base.Plugin):
+ 		s += consts.GRUB2_TEMPLATE_HEADER_END + r"\n"
+ 		grub2_cfg = re.sub(r"^(\s*###\s+END\s+[^#]+/00_header\s+### *)\n", s, grub2_cfg, flags = re.MULTILINE)
+ 
++		grub2_cfg = re.sub(r"(load_env -f /boot/photon.cfg)" , r"\1\nload_env -f /boot/tuned.cfg\n", grub2_cfg)
+ 		d2 = {"linux" : consts.GRUB2_TUNED_VAR, "initrd" : consts.GRUB2_TUNED_INITRD_VAR}
+ 		for i in d2:
+ 			# add tuned parameters to all kernels
+@@ -185,6 +191,7 @@ class BootloaderPlugin(base.Plugin):
+ 
+ 	def _grub2_update(self):
+ 		self._grub2_cfg_patch({consts.GRUB2_TUNED_VAR : self._cmdline_val, consts.GRUB2_TUNED_INITRD_VAR : self._initrd_val})
++		self._patch_photon_tuned_cfg({consts.GRUB2_TUNED_VAR : self._cmdline_val, consts.GRUB2_TUNED_INITRD_VAR : self._initrd_val})
+ 		self._patch_bootcmdline({consts.BOOT_CMDLINE_TUNED_VAR : self._cmdline_val, consts.BOOT_CMDLINE_INITRD_ADD_VAR : self._initrd_val})
+ 
+ 	def _has_bls(self):
+diff --git a/tuned/utils/commands.py b/tuned/utils/commands.py
+index 3799fee..b04e710 100644
+--- a/tuned/utils/commands.py
++++ b/tuned/utils/commands.py
+@@ -195,6 +195,22 @@ class commands:
+ 
+ 		return self.write_to_file(f, data)
+ 
++	def add_modify_option_woquotes_in_file(self, f, d, add = True):
++		data = self.read_file(f)
++		for opt in d:
++			o = str(opt)
++			v = str(d[opt])
++			if re.search(r"\b" + o + r"\s*=.*$", data, flags = re.MULTILINE) is None:
++				if add:
++					if len(data) > 0 and data[-1] != "\n":
++						data += "\n"
++					data += "%s=%s\n" % (o, v)
++			else:
++				data = re.sub(r"\b(" + o + r"\s*=).*$", r"\1" +  v, data, flags = re.MULTILINE)
++
++		return self.write_to_file(f, data)
++
++
+ 	# returns machine ID or empty string "" in case of error
+ 	def get_machine_id(self, no_error = True):
+ 		return self.read_file(consts.MACHINE_ID_FILE, no_error).strip()
+-- 
+2.17.1
+
