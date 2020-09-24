@@ -1,0 +1,89 @@
+From: Ronak Doshi <doshir@vmware.com>
+Date: Thu, 24 Sep 2020 22:52:30 +0100
+Subject: Fix for IPIP Encapsulation
+
+Fixes dropped packets when using IPIP encapsulation with hardware offload
+---
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 2818015324b8..336504b7531d 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1032,7 +1032,6 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 	/* Use temporary descriptor to avoid touching bits multiple times */
+ 	union Vmxnet3_GenericDesc tempTxDesc;
+ #endif
+-	struct udphdr *udph;
+ 
+ 	count = txd_estimate(skb);
+ 
+@@ -1135,8 +1134,7 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 			gdesc->txd.om = VMXNET3_OM_ENCAP;
+ 			gdesc->txd.msscof = ctx.mss;
+ 
+-			udph = udp_hdr(skb);
+-			if (udph->check)
++			if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_TUNNEL_CSUM)
+ 				gdesc->txd.oco = 1;
+ 		} else {
+ 			gdesc->txd.hlen = ctx.l4_offset + ctx.l4_hdr_size;
+@@ -3371,6 +3369,7 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 		.ndo_change_mtu = vmxnet3_change_mtu,
+ 		.ndo_fix_features = vmxnet3_fix_features,
+ 		.ndo_set_features = vmxnet3_set_features,
++		.ndo_features_check = vmxnet3_features_check,
+ 		.ndo_get_stats64 = vmxnet3_get_stats64,
+ 		.ndo_tx_timeout = vmxnet3_tx_timeout,
+ 		.ndo_set_rx_mode = vmxnet3_set_mc,
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index 1014693a5ceb..234534dd1071 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -267,6 +267,33 @@ netdev_features_t vmxnet3_fix_features(struct net_device *netdev,
+ 	return features;
+ }
+ 
++netdev_features_t vmxnet3_features_check(struct sk_buff *skb,
++					 struct net_device *netdev,
++					 netdev_features_t features)
++{
++	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
++
++	/* Validate if the tunneled packet is being offloaded by the device */
++	if (VMXNET3_VERSION_GE_4(adapter) &&
++	    skb->encapsulation && (skb->ip_summed == CHECKSUM_PARTIAL)) {
++		u8 l4_proto = 0;
++		switch (vlan_get_protocol(skb)) {
++		case htons(ETH_P_IP):
++			l4_proto = ip_hdr(skb)->protocol;
++			break;
++		case htons(ETH_P_IPV6):
++			l4_proto = ipv6_hdr(skb)->nexthdr;
++			break;
++		default:
++			return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
++		}
++
++		if (l4_proto != IPPROTO_UDP)
++			return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
++	}
++	return features;
++}
++
+ static void vmxnet3_enable_encap_offloads(struct net_device *netdev)
+ {
+ 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index 5d2b062215a2..d958b92c9429 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -470,6 +470,10 @@ vmxnet3_rq_destroy_all(struct vmxnet3_adapter *adapter);
+ netdev_features_t
+ vmxnet3_fix_features(struct net_device *netdev, netdev_features_t features);
+ 
++netdev_features_t
++vmxnet3_features_check(struct sk_buff *skb,
++		       struct net_device *netdev, netdev_features_t features);
++
+ int
+ vmxnet3_set_features(struct net_device *netdev, netdev_features_t features);
+ 

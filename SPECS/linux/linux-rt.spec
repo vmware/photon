@@ -73,13 +73,8 @@ Patch56:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch57:        0007-btrfs-tree-checker-Verify-inode-item.patch
 
 # Upgrade vmxnet3 driver to version 4
-Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
-Patch82:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
-Patch83:        0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
-Patch84:        0004-vmxnet3-update-to-version-4.patch
-Patch85:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
-Patch86:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
-Patch87:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
+Patch81:        0001-vmxnet3-version-4-driver.patch
+Patch82:        0002-vmxnet3-fix-for-ipip-encapsulation.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 Patch201:        0001-ARM-at91-add-TCB-registers-definitions.patch
@@ -496,11 +491,6 @@ The Linux package contains the Linux kernel doc files
 
 %patch81 -p1
 %patch82 -p1
-%patch83 -p1
-%patch84 -p1
-%patch85 -p1
-%patch86 -p1
-%patch87 -p1
 
 %patch201 -p1
 %patch202 -p1

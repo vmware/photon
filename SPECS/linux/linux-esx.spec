@@ -51,15 +51,6 @@ Patch20:        initramfs-support-for-page-aligned-format-newca.patch
 Patch21:        enabling-configuring-options-for-geneve-device.patch
 Patch22:        initramfs-multiple-image-extraction-support.patch
 
-# Upgrade vmxnet3 driver to version 4
-Patch23:        0001-vmxnet3-prepare-for-version-4-changes.patch
-Patch24:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
-Patch25:        0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
-Patch26:        0004-vmxnet3-update-to-version-4.patch
-Patch27:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
-Patch28:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
-Patch29:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
-
 Patch30:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 
 # Fix CVE-2017-1000252
@@ -92,9 +83,9 @@ Patch45:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 # 9p patches
 Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
 Patch55:        0001-p9fs_dir_readdir-offset-support.patch
-Patch56:	0002-Add-9p-zero-copy-data-path-using-crossfd.patch
-Patch57:	0003-Enable-cache-loose-for-vdfs-9p.patch
-Patch58:	0004-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
+Patch56:        0002-Add-9p-zero-copy-data-path-using-crossfd.patch
+Patch57:        0003-Enable-cache-loose-for-vdfs-9p.patch
+Patch58:        0004-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
 
 # 9p improve readpages cache
 Patch60:        0001-lib-iov_iter-adding-new-function-iov_iter_to_pfns.patch
@@ -109,6 +100,9 @@ Patch69:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
 Patch70:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch71:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch72:        0007-btrfs-tree-checker-Verify-inode-item.patch
+# Upgrade vmxnet3 driver to version 4
+Patch81:        0001-vmxnet3-version-4-driver.patch
+Patch82:        0002-vmxnet3-fix-for-ipip-encapsulation.patch
 
 # inherit tcp_limit_output_bytes
 Patch90:	tcp-inherit-TSQ-limit-from-root-namespace.patch
@@ -121,15 +115,15 @@ Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
 
 # VDFS 9p recovery changes
-Patch200:	0001-vdfs-9p-Initial-recovery-logic-in-9p.patch
-Patch201:	0002-vdfs-9p-Add-lock-state-for-9P-fid-to-use-it-for-recovery.patch
-Patch202:  	0003-vdfs-9p-Add-test-infra-to-test-9p-recovery-logic.patch
-Patch203:	0004-vdfs-9p-Handle-failure-during-recovery.patch
-Patch204:	0005-vdfs-9p-Adding-claim-tags-support-in-9p.patch
-Patch205:	0006-vdfs-9p-xattrcreate-recovery.patch
+Patch200:        0001-vdfs-9p-Initial-recovery-logic-in-9p.patch
+Patch201:        0002-vdfs-9p-Add-lock-state-for-9P-fid-to-use-it-for-recovery.patch
+Patch202:        0003-vdfs-9p-Add-test-infra-to-test-9p-recovery-logic.patch
+Patch203:        0004-vdfs-9p-Handle-failure-during-recovery.patch
+Patch204:        0005-vdfs-9p-Adding-claim-tags-support-in-9p.patch
+Patch205:        0006-vdfs-9p-xattrcreate-recovery.patch
 
 # VDFS 9p changes
-Patch225:      0001-9p-fscache-Don-t-use-writeback-fid-for-cache-when-en.patch
+Patch225:        0001-9p-fscache-Don-t-use-writeback-fid-for-cache-when-en.patch
 
 # VKD 9p changes
 Patch250:        0001-fs-9p-support-no_icache-flag-to-disable-dentry-inode.patch
@@ -211,13 +205,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
-%patch23 -p1
-%patch24 -p1
-%patch25 -p1
-%patch26 -p1
-%patch27 -p1
-%patch28 -p1
-%patch29 -p1
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
@@ -251,6 +238,9 @@ This Linux package contains hmac sha generator kernel module.
 %patch71 -p1
 %patch72 -p1
 
+%patch81 -p1
+%patch82 -p1
+
 %patch90 -p1
 %patch98 -p1
 %patch100 -p1
@@ -265,7 +255,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch250 -p1
 %patch251 -p1
 %patch252 -p1
-
 
 %if 0%{?kat_build:1}
 %patch1000 -p1

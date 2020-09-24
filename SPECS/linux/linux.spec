@@ -86,11 +86,11 @@ Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 # Secure boot uefi certificate import patches
 Patch40:        secure-boot-patches/0001-security-integrity-remove-unnecessary-init_keyring-v.patch
-Patch41:	secure-boot-patches/0002-integrity-Define-a-trusted-platform-keyring.patch
-Patch42:	secure-boot-patches/0003-integrity-Load-certs-to-the-platform-keyring.patch
-Patch43:	secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
-Patch44:	secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
-Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
+Patch41:        secure-boot-patches/0002-integrity-Define-a-trusted-platform-keyring.patch
+Patch42:        secure-boot-patches/0003-integrity-Load-certs-to-the-platform-keyring.patch
+Patch43:        secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
+Patch44:        secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
+Patch45:        secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
 # Fix for CVE-2020-14386
 Patch46:        0001-net-packet-make-tp_drops-atomic.patch
 Patch47:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
@@ -105,13 +105,8 @@ Patch56:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch57:        0007-btrfs-tree-checker-Verify-inode-item.patch
 
 # Upgrade vmxnet3 driver to version 4
-Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
-Patch82:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
-Patch83:        0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
-Patch84:        0004-vmxnet3-update-to-version-4.patch
-Patch85:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
-Patch86:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
-Patch87:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
+Patch81:        0001-vmxnet3-version-4-driver.patch
+Patch82:        0002-vmxnet3-fix-for-ipip-encapsulation.patch
 
 # inherit tcp_limit_output_bytes
 Patch90:	tcp-inherit-TSQ-limit-from-root-namespace.patch
@@ -220,6 +215,14 @@ BuildRequires:  xz-devel
 BuildRequires:  libunwind-devel
 BuildRequires:  slang-devel
 BuildRequires:  python3-devel
+BuildRequires:  patch
+BuildRequires:  make
+BuildRequires:  gcc
+BuildRequires:  glibc-devel
+BuildRequires:  bison
+BuildRequires:  diffutils
+BuildRequires:  gettext
+
 %ifarch x86_64
 BuildRequires:  pciutils-devel
 %endif
@@ -386,11 +389,6 @@ This Linux package contains hmac sha generator kernel module.
 
 %patch81 -p1
 %patch82 -p1
-%patch83 -p1
-%patch84 -p1
-%patch85 -p1
-%patch86 -p1
-%patch87 -p1
 
 %patch90 -p1
 %patch98 -p1
