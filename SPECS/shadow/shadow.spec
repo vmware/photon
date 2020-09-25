@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.8.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/shadow-maint/
 License:        BSD
 Group:          Applications/System
@@ -25,6 +25,7 @@ BuildRequires:  cracklib-devel
 Requires:       cracklib
 BuildRequires:  Linux-PAM-devel
 Requires:       Linux-PAM
+Requires:       libpwquality
 Requires:       (%{name}-tools = %{version}-%{release} or toybox)
 
 %description
@@ -167,6 +168,9 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 4.8.1-2
+-   pam_cracklib has been deprecated.
+-   Replaced it with pam_pwquality
 *   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 4.8.1-1
 -   Fix for Automatic Version Bump
 *   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 4.6-5

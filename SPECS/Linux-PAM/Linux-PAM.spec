@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam/releases
 Group:          System Environment/Security
@@ -9,10 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
 %define sha1    Linux-PAM=e26c6594c14680da42ea2875b60664ec159670bf
-BuildRequires:  cracklib-devel
-Requires:       cracklib
 BuildRequires:  libselinux-devel
 Requires:       libselinux
+
 %description
 The Linux PAM package contains Pluggable Authentication Modules used to
 enable the local system administrator to choose how applications authenticate users.
@@ -35,8 +34,8 @@ for developing applications that use Linux-PAM.
 
 %prep
 %setup -q
-%build
 
+%build
 %configure \
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --includedir=/usr/include/security \
@@ -95,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+*   Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 1.4.0-2
+-   pam_cracklib has been deprecated.
 *   Fri Aug 07 2020 Vikash Bansal <bvikas@vmware.com> 1.4.0-1
 -   Version bump up to 1.4.0
 *   Mon Apr 20 2020 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-3
