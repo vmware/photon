@@ -1,7 +1,7 @@
 Summary:	Man pages
 Name:		man-pages
 Version:	5.08
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+ and BSD
 URL:		http://www.kernel.org/doc/man-pages
 Group:		System Environment/Base
@@ -23,6 +23,8 @@ make DESTDIR=%{buildroot} install
 #	The following man pages conflict with other packages
 rm -vf %{buildroot}%{_mandir}/man3/getspnam.3
 rm -vf %{buildroot}%{_mandir}/man5/passwd.5
+# /usr/share/man/man2/move_pages.2.gz conflict with libnuma-devel-2.0.13-1.ph3.x86_64
+rm -vf %{buildroot}%{_mandir}/man2/move_pages.2.gz
 
 %files
 %defattr(-,root,root)
@@ -36,6 +38,8 @@ rm -vf %{buildroot}%{_mandir}/man5/passwd.5
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Sep 25 2020 Michelle Wang <michellew@vmware.com> 5.08-2
+-   Remove conflict with libnuma-devel
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 5.08-1
 -   Automatic Version Bump
 *   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 5.05-1
