@@ -1,5 +1,5 @@
 Name:           bpftrace
-Version:        0.11.0
+Version:        0.11.1
 Release:        1%{?dist}
 Summary:        High-level tracing language for Linux eBPF
 License:        ASL 2.0
@@ -9,7 +9,7 @@ Group:          System Environment/Security
 
 URL:            https://github.com/iovisor/bpftrace
 Source0:        https://github.com/iovisor/bpftrace/archive/%{name}-%{version}.tar.gz
-%define sha1    bpftrace=828bbe71f7eedf593581a7c9bd56a67afa258fe4
+%define sha1    bpftrace=6bb8d682de04ffd47d565eb2542bc7c7d7b5da84
 
 BuildRequires:  bison
 BuildRequires:  flex
@@ -63,5 +63,7 @@ make %{?_smp_mflags}
 %attr(0755,-,-) %{_datadir}/%{name}/tools/*
 
 %changelog
+* Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 0.11.1-1
+- Automatic Version Bump
 * Wed Sep 09 2020 Susant Sahani <ssahani@vmware.com>  0.11.0-1
 - Initial RPM release
