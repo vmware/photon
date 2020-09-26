@@ -6,6 +6,7 @@ License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
 Distribution:   Photon
+BuildArch:      aarch64
 Source0:        https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
 %define sha1    rpm-ostree=42f76f192b64adb432abd8b1c2a7897e91fa835b
 Source1:        libglnx-5ef78bb.tar.gz

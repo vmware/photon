@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.28.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
@@ -12,8 +12,8 @@ Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.t
 BuildRequires:  curl-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  openssl-devel
-Requires:       openssl
+BuildRequires:  openssl-devel >= 1.1.1
+Requires:       openssl >= 1.1.1
 Requires:       curl
 Requires:       expat
 Requires:       perl
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Tue Sep 01 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.28.0-2
+-   Compatibility for openssl 1.1.1
 *   Sun Aug 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.28.0-1
 -   Automatic Version Bump
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 2.26.2-2

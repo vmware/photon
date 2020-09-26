@@ -1,0 +1,11 @@
+diff -rupN vsftpd-3.0.3_old/vsf_findlibs.sh vsftpd-3.0.3_new/vsf_findlibs.sh
+--- vsftpd-3.0.3_old/vsf_findlibs.sh	2012-03-28 02:17:41.000000000 +0000
++++ vsftpd-3.0.3_new/vsf_findlibs.sh	2019-04-04 11:09:38.557114962 +0000
+@@ -69,7 +69,7 @@ locate_library /usr/shlib/librt.so && ec
+ locate_library /usr/lib/libsendfile.so && echo "-lsendfile";
+ 
+ # OpenSSL
+-if find_func SSL_library_init ssl.o; then
++if find_func SSL_CTX_new ssl.o; then
+   echo "-lssl -lcrypto";
+ fi

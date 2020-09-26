@@ -7,6 +7,7 @@ URL:            https://github.com/tpm2-software/tpm2-tools
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+BuildArch:      aarch64
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    tpm2=bdf84d825119e4022ac2aa5f860b199cd7af2990
 BuildRequires:  openssl-devel curl-devel tpm2-tss-devel

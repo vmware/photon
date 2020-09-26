@@ -2,7 +2,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        3.29.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -12,21 +12,28 @@ Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{v
 %define sha1    syslog-ng=96165d2acdb5d166ba8fe43531c8927f2053f58d
 Source1:        60-syslog-ng-journald.conf
 Source2:        syslog-ng.service
+Patch0:         fix_autogen_issue.patch
 Requires:       glib
+Requires:       openssl
 Requires:       glibc
 Requires:       json-glib
 Requires:       json-c
 Requires:       systemd
 Requires:       ivykis
+BuildRequires:  which
+BuildRequires:  git
+BuildRequires:  autoconf
+BuildRequires:  autoconf-archive
+BuildRequires:  automake
 BuildRequires:  eventlog
 BuildRequires:  glib-devel
 BuildRequires:  json-glib-devel
 BuildRequires:  json-c-devel
+BuildRequires:  openssl-devel
 BuildRequires:  systemd-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-BuildRequires:  autoconf-archive
 BuildRequires:  curl-devel
 BuildRequires:  ivykis-devel
 Obsoletes:	eventlog
@@ -54,6 +61,7 @@ needed to build applications using syslog-ng APIs.
 
 %prep
 %setup -q -n %{name}-%{version}
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -77,6 +85,8 @@ autoreconf -i
     --enable-dynamic-linking \
     PYTHON=/bin/python3 \
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
+GCCVERSION=$(gcc --version | grep ^gcc | sed 's/^.* //g')
+/usr/libexec/gcc/x86_64-unknown-linux-gnu/$GCCVERSION/install-tools/mkheaders
 make %{?_smp_mflags}
 
 %install
@@ -153,6 +163,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Wed Sep 09 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.29.1-2
+-   Openssl 1.1.1 Compatibility
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.29.1-1
 -   Automatic Version Bump
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 3.28.1-1

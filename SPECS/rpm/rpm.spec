@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -20,6 +20,7 @@ Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
 Requires:       libarchive
 Requires:       lua
+Requires:       openssl >= 1.1.1
 BuildRequires:  lua-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  libdb-devel
@@ -30,6 +31,7 @@ BuildRequires:  libcap-devel
 BuildRequires:  xz-devel
 BuildRequires:  file-devel
 BuildRequires:  python3-devel
+BuildRequires:  openssl >= 1.1.1
 
 %description
 RPM package manager
@@ -239,6 +241,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 08 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.14.2-10
+-   Openssl 1.1.1 compatibility
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 4.14.2-9
 -   Mass removal python2
 *   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 4.14.2-8

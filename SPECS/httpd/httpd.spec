@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.46
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -12,8 +12,8 @@ Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.
 #Patch0:        http://www.linuxfromscratch.org/patches/blfs/svn/%{name}-%{version}-blfs_layout-1.patch
 Patch0:         httpd-2.4.46-blfs_layout-1.patch
 Patch1:         httpd-uncomment-ServerName.patch
-BuildRequires:  openssl
-BuildRequires:  openssl-devel
+BuildRequires:  openssl >= 1.1.1
+BuildRequires:  openssl-devel >= 1.1.1
 BuildRequires:  pcre-devel
 BuildRequires:  apr
 BuildRequires:  apr-util
@@ -23,7 +23,7 @@ BuildRequires:  expat-devel
 BuildRequires:  lua-devel
 Requires:       pcre
 Requires:       apr-util
-Requires:       openssl
+Requires:       openssl >= 1.1.1
 Requires:       openldap
 Requires:       lua
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
@@ -73,6 +73,10 @@ The httpd-tools of httpd.
             --with-apr=%{_prefix}                  \
             --with-apr-util=%{_prefix}             \
             --enable-layout=RPM
+
+GCCVERSION=$(gcc --version | grep ^gcc | sed 's/^.* //g')
+/usr/libexec/gcc/x86_64-unknown-linux-gnu/$GCCVERSION/install-tools/mkheaders
+
 make %{?_smp_mflags}
 
 %install
@@ -181,6 +185,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Tue Sep 01 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.46-2
+-   Make openssl 1.1.1 compatible
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.46-1
 -   Automatic Version Bump
 *   Mon Sep 30 2019 Shreyas B. <shreyasb@vmware.com> 2.4.41-1

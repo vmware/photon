@@ -9,6 +9,7 @@ URL:           https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.
 Source0:       https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
 %define sha1 polkit=0c375fa621bc9f74f2972e00fb517a408f419adf
 Distribution:  Photon
+BuildArch:      aarch64
 BuildRequires: autoconf
 BuildRequires: expat-devel
 BuildRequires: glib-devel

@@ -1,0 +1,300 @@
+diff -rupN socat-2.0.0-b9_old/config.h.in socat-2.0.0-b9_new/config.h.in
+--- socat-2.0.0-b9_old/config.h.in	2015-04-06 09:52:38.000000000 +0000
++++ socat-2.0.0-b9_new/config.h.in	2019-03-11 08:00:16.961778435 +0000
+@@ -447,6 +447,14 @@
+ #undef HAVE_DTLSv1_client_method
+ #undef HAVE_DTLSv1_server_method
+ 
++/* Define if you have the OpenSSL RAND_egd function */
++#undef HAVE_RAND_egd
++
++/* Define if you have the OpenSSL DH_set0_pqg function */
++#define HAVE_DH_set0_pqg
++
++/* Define if you have the OpenSSL ASN1_STRING_get0_data function */
++#undef HAVE_ASN1_STRING_get0_data
+ 
+ /* Define if you have the flock function */
+ #undef HAVE_FLOCK
+diff -rupN socat-2.0.0-b9_old/configure.in socat-2.0.0-b9_new/configure.in
+--- socat-2.0.0-b9_old/configure.in	2015-04-06 09:52:38.000000000 +0000
++++ socat-2.0.0-b9_new/configure.in	2019-03-11 05:16:16.866277391 +0000
+@@ -1467,6 +1467,10 @@ AC_CHECK_FUNC(TLSv1_2_client_method, AC_
+ AC_CHECK_FUNC(TLSv1_2_server_method, AC_DEFINE(HAVE_TLSv1_2_server_method), AC_CHECK_LIB(crypt, TLSv1_2_server_method, [LIBS=-lcrypt $LIBS]))
+ AC_CHECK_FUNC(DTLSv1_client_method, AC_DEFINE(HAVE_DTLSv1_client_method), AC_CHECK_LIB(crypt, DTLSv1_client_method, [LIBS=-lcrypt $LIBS]))
+ AC_CHECK_FUNC(DTLSv1_server_method, AC_DEFINE(HAVE_DTLSv1_server_method), AC_CHECK_LIB(crypt, DTLSv1_server_method, [LIBS=-lcrypt $LIBS]))
++AC_CHECK_FUNC(RAND_egd, AC_DEFINE(HAVE_RAND_egd), AC_CHECK_LIB(crypt, RAND_egd, [LIBS=-lcrypt $LIBS]))
++AC_CHECK_FUNC(DH_set0_pqg, AC_DEFINE(HAVE_DH_set0_pqg), AC_CHECK_LIB(crypt, DH_set0_pqg, [LIBS=-lcrypt $LIBS]))
++AC_CHECK_FUNC(ASN1_STRING_get0_data, AC_DEFINE(HAVE_ASN1_STRING_get0_data), AC_CHECK_LIB(crypt, ASN1_STRING_get0_data, [LIBS=-lcrypt $LIBS]))
++
+ 
+ dnl Run time checks
+ 
+diff -rupN socat-2.0.0-b9_old/Makefile.in socat-2.0.0-b9_new/Makefile.in
+--- socat-2.0.0-b9_old/Makefile.in	2015-04-06 09:52:38.000000000 +0000
++++ socat-2.0.0-b9_new/Makefile.in	2019-03-11 05:30:00.112889979 +0000
+@@ -38,7 +38,7 @@ INSTALL = @INSTALL@
+ 
+ 
+ #0 CFLAGS = @CFLAGS@ $(CCOPTS) $(DEFS) $(INCLS)
+-CFLAGS = @CFLAGS@ $(CCOPTS) $(DEFS) $(CPPFLAGS)
++CFLAGS = @CFLAGS@ -Wno-deprecated $(CCOPTS) $(DEFS) $(CPPFLAGS)
+ CLIBS = $(LIBS) -lpthread
+ #CLIBS = $(LIBS) -lm -lefence
+ XIOSRCS = xioinitialize.c xiohelp.c xioparam.c xiodiag.c xioopen.c xioopts.c \
+diff -rupN socat-2.0.0-b9_old/sslcls.c socat-2.0.0-b9_new/sslcls.c
+--- socat-2.0.0-b9_old/sslcls.c	2015-04-06 09:52:38.000000000 +0000
++++ socat-2.0.0-b9_new/sslcls.c	2019-03-11 07:59:37.265635247 +0000
+@@ -55,6 +55,7 @@ const SSL_METHOD *sycSSLv2_server_method
+ }
+ #endif
+ 
++#if HAVE_SSLv3_client_method
+ const SSL_METHOD *sycSSLv3_client_method(void) {
+    const SSL_METHOD *result;
+    Debug("SSLv3_client_method()");
+@@ -62,7 +63,9 @@ const SSL_METHOD *sycSSLv3_client_method
+    Debug1("SSLv3_client_method() -> %p", result);
+    return result;
+ }
++#endif
+ 
++#if HAVE_SSLv3_server_method
+ const SSL_METHOD *sycSSLv3_server_method(void) {
+    const SSL_METHOD *result;
+    Debug("SSLv3_server_method()");
+@@ -70,7 +73,9 @@ const SSL_METHOD *sycSSLv3_server_method
+    Debug1("SSLv3_server_method() -> %p", result);
+    return result;
+ }
++#endif
+ 
++#if HAVE_SSLv23_client_method
+ const SSL_METHOD *sycSSLv23_client_method(void) {
+    const SSL_METHOD *result;
+    Debug("SSLv23_client_method()");
+@@ -78,7 +83,9 @@ const SSL_METHOD *sycSSLv23_client_metho
+    Debug1("SSLv23_client_method() -> %p", result);
+    return result;
+ }
++#endif
+ 
++#if HAVE_SSLv23_server_method
+ const SSL_METHOD *sycSSLv23_server_method(void) {
+    const SSL_METHOD *result;
+    Debug("SSLv23_server_method()");
+@@ -86,7 +93,9 @@ const SSL_METHOD *sycSSLv23_server_metho
+    Debug1("SSLv23_server_method() -> %p", result);
+    return result;
+ }
++#endif
+ 
++#if HAVE_TLSv1_client_method
+ const SSL_METHOD *sycTLSv1_client_method(void) {
+    const SSL_METHOD *result;
+    Debug("TLSv1_client_method()");
+@@ -94,7 +103,9 @@ const SSL_METHOD *sycTLSv1_client_method
+    Debug1("TLSv1_client_method() -> %p", result);
+    return result;
+ }
++#endif
+ 
++#if HAVE_TLSv1_server_method
+ const SSL_METHOD *sycTLSv1_server_method(void) {
+    const SSL_METHOD *result;
+    Debug("TLSv1_server_method()");
+@@ -102,7 +113,8 @@ const SSL_METHOD *sycTLSv1_server_method
+    Debug1("TLSv1_server_method() -> %p", result);
+    return result;
+ }
+- 
++#endif
++
+ #if HAVE_TLSv1_1_client_method
+ const SSL_METHOD *sycTLSv1_1_client_method(void) {
+    const SSL_METHOD *result;
+@@ -143,6 +155,7 @@ const SSL_METHOD *sycTLSv1_2_server_meth
+ }
+ #endif
+ 
++#if HAVE_DTLSv1_client_method
+ const SSL_METHOD *sycDTLSv1_client_method(void) {
+    const SSL_METHOD *result;
+    Debug("DTLSv1_client_method()");
+@@ -150,7 +163,9 @@ const SSL_METHOD *sycDTLSv1_client_metho
+    Debug1("DTLSv1_client_method() -> %p", result);
+    return result;
+ }
++#endif
+ 
++#if HAVE_DTLSv1_server_method
+ const SSL_METHOD *sycDTLSv1_server_method(void) {
+    const SSL_METHOD *result;
+    Debug("DTLSv1_server_method()");
+@@ -158,6 +173,7 @@ const SSL_METHOD *sycDTLSv1_server_metho
+    Debug1("DTLSv1_server_method() -> %p", result);
+    return result;
+ }
++#endif
+ 
+ SSL_CTX *sycSSL_CTX_new(const SSL_METHOD *method) {
+    SSL_CTX *result;
+@@ -347,6 +363,7 @@ void sycSSL_free(SSL *ssl) {
+    return;
+ }
+ 
++#ifndef OPENSSL_NO_EGD
+ int sycRAND_egd(const char *path) {
+    int result;
+    Debug1("RAND_egd(\"%s\")", path);
+@@ -354,6 +371,7 @@ int sycRAND_egd(const char *path) {
+    Debug1("RAND_egd() -> %d", result);
+    return result;
+ }
++#endif
+ 
+ DH *sycPEM_read_bio_DHparams(BIO *bp, DH **x, pem_password_cb *cb, void *u) {
+    DH *result;
+diff -rupN socat-2.0.0-b9_old/xio-openssl.c socat-2.0.0-b9_new/xio-openssl.c
+--- socat-2.0.0-b9_old/xio-openssl.c	2016-01-29 10:31:22.000000000 +0000
++++ socat-2.0.0-b9_new/xio-openssl.c	2019-03-11 05:28:55.764671812 +0000
+@@ -1011,7 +1011,11 @@ int
+    }
+ 
+    if (opt_egd) {
++#ifndef OPENSSL_NO_EGD
+       sycRAND_egd(opt_egd);
++#else
++      Debug("RAND_egd() is not available by OpenSSL");
++#endif
+    }
+ 
+    if (opt_pseudo) {
+@@ -1069,35 +1073,48 @@ int
+ 	 0x02,
+       };
+       DH *dh;
++      BIGNUM *p = NULL, *g = NULL;
+       unsigned long err;
+ 
+-      if ((dh = DH_new()) == NULL) {
+-	 while (err = ERR_get_error()) {
+-	    Warn1("DH_new(): %s",
+-		  ERR_error_string(err, NULL));
+-	 }
+-	 Error("DH_new() failed");
+-      } else {
+-	 dh->p = BN_bin2bn(dh2048_p, sizeof(dh2048_p), NULL);
+-	 dh->g = BN_bin2bn(dh2048_g, sizeof(dh2048_g), NULL);
+-	 if ((dh->p == NULL) || (dh->g == NULL)) {
+-	    while (err = ERR_get_error()) {
+-	       Warn1("BN_bin2bn(): %s",
+-		     ERR_error_string(err, NULL));
+-	    }
+-	    Error("BN_bin2bn() failed");
+-	 } else {
+-	    if (sycSSL_CTX_set_tmp_dh(*ctx, dh) <= 0) {
+-	       while (err = ERR_get_error()) {
+-		  Warn3("SSL_CTX_set_tmp_dh(%p, %p): %s", *ctx, dh,
+-			ERR_error_string(err, NULL));
+-	       }
+-	       Error2("SSL_CTX_set_tmp_dh(%p, %p) failed", *ctx, dh);
+-	    }
+-	    /*! OPENSSL_free(dh->p,g)? doc does not tell so */
+-	 }
+-	 DH_free(dh);
+-      }
++      dh = DH_new();
++      p = BN_bin2bn(dh2048_p, sizeof(dh2048_p), NULL);
++      g = BN_bin2bn(dh2048_g, sizeof(dh2048_g), NULL);
++      if (!dh || !p || !g) {
++         if (dh)
++            DH_free(dh);
++         if (p)
++            BN_free(p);
++         if (g)
++            BN_free(g);
++         while (err = ERR_get_error()) {
++            Warn1("dh2048 setup(): %s",
++                  ERR_error_string(err, NULL));
++         }
++         Error("dh2048 setup failed");
++         goto cont_out;
++      }
++#if !defined(HAVE_DH_set0_pqg)
++      dh->p = p;
++      dh->g = g;
++#else
++      if (!DH_set0_pqg(dh, p, NULL, g)) {
++	      DH_free(dh);
++	      BN_free(p);
++	      BN_free(g);
++	      goto cont_out;
++      }
++#endif /* HAVE_DH_set0_pqg */
++      if (sycSSL_CTX_set_tmp_dh(*ctx, dh) <= 0) {
++         while (err = ERR_get_error()) {
++            Warn3("SSL_CTX_set_tmp_dh(%p, %p): %s", *ctx, dh,
++                  ERR_error_string(err, NULL));
++         }
++         Error2("SSL_CTX_set_tmp_dh(%p, %p) failed", *ctx, dh);
++      }
++      /* p & g are freed by DH_free() once attached */
++      DH_free(dh);
++cont_out:
++      ;
+    }
+ 
+ #if defined(EC_KEY)  /* not on Openindiana 5.11 */
+@@ -1236,7 +1253,11 @@ static int openssl_SSL_ERROR_SSL(int lev
+    while (e = ERR_get_error()) {
+       Debug1("ERR_get_error(): %lx", e);
+       if (e == ((ERR_LIB_RAND<<24)|
++#if !defined(RAND_F_RAND_BYTES)
+ 		(RAND_F_SSLEAY_RAND_BYTES<<12)|
++#else
++	        (RAND_F_RAND_BYTES<<12)|
++#endif
+ 		(RAND_R_PRNG_NOT_SEEDED)) /*0x24064064*/) {
+ 	 Error("too few entropy; use options \"egd\" or \"pseudo\"");
+ 	 stat = STAT_NORETRY;
+@@ -1388,7 +1409,7 @@ static bool openssl_check_peername(X509_
+    int ind = -1;
+    X509_NAME_ENTRY *entry;
+    ASN1_STRING *data;
+-   unsigned char *text;
++   const unsigned char *text;
+    ind = X509_NAME_get_index_by_NID(name, NID_commonName, -1);
+    if (ind < 0) {
+       Info("no COMMONNAME field in peer certificate"); 
+@@ -1396,7 +1417,11 @@ static bool openssl_check_peername(X509_
+    }
+    entry = X509_NAME_get_entry(name, ind);
+    data = X509_NAME_ENTRY_get_data(entry);
++#if !defined(HAVE_ASN1_STRING_get0_data)
+    text = ASN1_STRING_data(data);
++#else
++   text = ASN1_STRING_get0_data(data);
++#endif
+    return openssl_check_name((const char *)text, peername);
+ }
+ 
+@@ -1442,13 +1467,17 @@ static int openssl_setenv_cert_fields(co
+       X509_NAME_ENTRY *entry;
+       ASN1_OBJECT *obj;
+       ASN1_STRING *data;
+-      unsigned char *text;
++      const unsigned char *text;
+       int nid;
+       entry = X509_NAME_get_entry(name, i);
+       obj  = X509_NAME_ENTRY_get_object(entry);
+       data = X509_NAME_ENTRY_get_data(entry);
+       nid  = OBJ_obj2nid(obj);
++#if !defined(HAVE_ASN1_STRING_get0_data)
+       text = ASN1_STRING_data(data);
++#else
++      text = ASN1_STRING_get0_data(data);
++#endif
+       Debug3("SSL peer cert %s entry: %s=\"%s\"", (field[0]?field:"subject"), OBJ_nid2ln(nid), text);
+       if (field != NULL && field[0] != '\0') {
+ 	 xiosetenv3("OPENSSL_X509", field, OBJ_nid2ln(nid), (const char *)text, 2, " // ");

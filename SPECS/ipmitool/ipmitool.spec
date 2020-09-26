@@ -2,14 +2,26 @@
 Summary:        ipmitool - Utility for IPMI control
 Name:           ipmitool
 Version:        1.8.18
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 
 Group:          System Environment/Utilities
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        %{name}-%{version}.tar.bz2
-%define sha1    ipmitool=ff4781bb78f264d44fa4bf1767f268d4079d87ba
+Source0:        %{name}-1.8.18.2.tar.bz2
+%define sha1    ipmitool=3f1b4b670e95945b028581ffe578dd774447c0ad
+BuildRequires:	autoconf
+BuildRequires:	autoconf-archive
+BuildRequires:	automake
+BuildRequires:	libtool
+BuildRequires:	glib
+BuildRequires:	glibc
+BuildRequires:	cmake
+BuildRequires:	openssl-devel
+BuildRequires:	curl-devel
+Requires:	openssl
+Requires:	curl
+
 Patch0:         CVE-2020-5208.patch
 
 %description
@@ -28,10 +40,11 @@ Log (SEL), printing Field Replaceable Unit (FRU) information, reading and
 setting LAN configuration, and chassis power control.
 
 %prep
-%setup -q
+%setup -q -n %{name}-%{version}
 %patch0 -p1
 
 %build
+./bootstrap
 %configure --with-kerneldir \
     --with-rpm-distro=
 make
@@ -55,6 +68,8 @@ make %{?_smp_mflags} check
 %doc %{_datadir}/doc/ipmitool
 
 %changelog
+*   Fri Jul 24 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.8.18-4
+-   Make ipmitool compatible for openssl-1.1.x
 *   Thu Mar 05 2020 Keerthana K <keerthanak@vmware.com> 1.8.18-3
 -   Fix %configure.
 *   Thu Feb 13 2020 Keerthana K <keerthanak@vmware.com> 1.8.18-2

@@ -18,6 +18,7 @@ Patch2:        init_patch.patch
 Patch3:        spidermonkey_checks_disable.patch
 Patch4:        Remove-unused-LLVM-and-Rust-build-dependencies.patch
 Distribution:  Photon
+BuildArch:     aarch64
 BuildRequires: which
 BuildRequires: python3-xml
 BuildRequires: python3-libs

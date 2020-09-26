@@ -1,13 +1,14 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
 Version: 	6.2.11.13
-Release: 	2%{?dist}
+Release: 	3%{?dist}
 Group:   	Development/Libraries
 Vendor: 	VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
 URL: 		https://github.com/vmware/likewise-open
 Source0: 	%{name}-%{version}.tar.gz
 %define sha1 likewise-open=7012d73820c8cbdb8f0fa3b38f7478bce74f59a6
+Patch0:         likewise-open-openssl-1.1.1.patch
 Distribution:   Photon
 Requires:       Linux-PAM
 Requires:       (coreutils >= 8.22 or toybox)
@@ -16,7 +17,7 @@ Requires:       krb5 >= 1.12
 Requires:       libxml2
 Requires:       haveged >= 1.9
 Requires:       openldap >= 2.4
-Requires:       openssl >= 1.0.1
+Requires:       openssl >= 1.1.1
 Requires:       (procps-ng or toybox)
 Requires:       /bin/sed
 Requires:       sqlite-libs
@@ -25,7 +26,7 @@ BuildRequires:  e2fsprogs-devel
 BuildRequires:  krb5-devel >= 1.12
 BuildRequires:  libxml2-devel
 BuildRequires:  openldap >= 2.4
-BuildRequires:  openssl-devel >= 1.0.1
+BuildRequires:  openssl-devel >= 1.1.1
 BuildRequires:  sqlite-devel
 
 %define _likewise_prefix /opt/likewise
@@ -45,6 +46,7 @@ This package provides files for developing against the Likewise APIs
 
 %prep
 %setup -q
+%patch0 -p0
 
 %build
 # hack against glibc-2.26 to avoid getopt declaration mismatch
@@ -299,6 +301,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Mon Aug 17 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.2.11.13-3
+-   Apply patches to use openssl-1.1.1
 *   Thu Apr 02 2020 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.13-2
 -   Fix compilation issue with gcc-8.4.0
 *   Fri Aug 23 2019 Tapas Kundu <tkundu@vmware.com> 6.2.11.13-1

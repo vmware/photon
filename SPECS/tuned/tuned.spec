@@ -11,6 +11,7 @@ Source:         tuned-%{version}.tar.gz
 Patch0:         remove_desktop_utils_dependency.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
+BuildArch:      aarch64
 BuildRequires:  python3-devel
 BuildRequires:  systemd-devel
 Requires:       dbus-python3
@@ -36,7 +37,6 @@ BuildRequires:  python3-decorator
 BuildRequires:  dbus-python3
 BuildRequires:  python3-pygobject
 %endif
-BuildArch:      noarch
 
 %description
 The tuned package contains a daemon that tunes system settings dynamically.

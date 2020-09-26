@@ -1,7 +1,7 @@
 Summary:        Cyrus Simple Authentication Service Layer (SASL) library
 Name:           cyrus-sasl
 Version:        2.1.27
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Custom
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
 %define sha1    cyrus-sasl=fbfe6f298b0d2efcdab6a40bf47e16d003ae5dc6
-Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.27-doc_fixes-1.patch
+Patch0:         cyrus-sasl-2.1.26-fix-cross-compiling.patch
 Patch1:         avoid-to-call-AC_TRY_RUN.patch
 BuildRequires:  systemd
 BuildRequires:  openssl-devel
@@ -31,13 +31,14 @@ protocol and the connection.
 
 %prep
 %setup -q
-%patch0 -p1
 if [ %{_host} != %{_build} ]; then
+%patch0 -p1
 %patch1 -p1
 fi
 
 %build
-autoreconf -fi
+pushd saslauthd
+popd
 %configure \
     CFLAGS="%{optflags} -fPIC" \
     CXXFLAGS="%{optflags}" \
@@ -131,6 +132,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/saslauthd.8.gz
 
 %changelog
+*   Tue Sep 01 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com>  2.1.27-2
+-   Make openssl 1.1.1 compatible
 *   Mon Aug 17 2020 Gerrit Photon <photon-checkins@vmware.com> 2.1.27-1
 -   Automatic Version Bump
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.1.26-15

@@ -1,0 +1,15 @@
+--- a/native/include/ssl_private.h	2020-09-10 11:28:36.955167151 +0530
++++ b/native/include/ssl_private.h	2020-09-10 11:14:32.155146168 +0530
+@@ -243,6 +243,12 @@
+ 
+ #if OPENSSL_VERSION_NUMBER >= 0x10101000L
+ #define HAVE_KEYLOG_CALLBACK
++#define BN_get_rfc2409_prime_1024        get_rfc2409_prime_1024
++#define BN_get_rfc3526_prime_2048        get_rfc3526_prime_2048
++#define BN_get_rfc3526_prime_3072        get_rfc3526_prime_3072
++#define BN_get_rfc3526_prime_4096        get_rfc3526_prime_4096
++#define BN_get_rfc3526_prime_6144        get_rfc3526_prime_6144
++#define BN_get_rfc3526_prime_8192        get_rfc3526_prime_8192
+ #endif
+ 
+ #define MAX_ALPN_NPN_PROTO_SIZE 65535

@@ -5,7 +5,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        2.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -17,7 +17,7 @@ Requires:       tdnf-cli-libs = %{version}-%{release}
 Requires:       libsolv
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
-BuildRequires:  openssl-devel
+BuildRequires:  openssl-devel >= 1.1.1
 BuildRequires:  libsolv-devel
 BuildRequires:  curl-devel
 BuildRequires:  libmetalink-devel
@@ -220,6 +220,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 06 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.1-3
+-   Rebuild with openssl 1.1.1
 *   Sat Aug 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.1.1-2
 -   Cherry-pick some critical fixes from vmware/tdnf:dev
 *   Thu Jun 04 2020 Tapas Kundu <tkundu@vmware.com> 2.1.1-1

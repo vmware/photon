@@ -1,0 +1,39 @@
+--- a/configure.ac	2019-03-06 14:53:06.982425682 +0000
++++ b/configure.ac	2019-03-06 14:50:52.046421874 +0000
+@@ -27,7 +27,7 @@ CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_GNU_
+ CFLAGS=""
+ 
+ AM_CPPFLAGS="$AM_CPPFLAGS -I${top_srcdir}/include"
+-AM_CFLAGS="$AM_CFLAGS -Wall -Werror -fno-strict-aliasing"
++AM_CFLAGS="$AM_CFLAGS -Wall -Werror -fno-strict-aliasing -Wno-unused-function"
+ 
+ AC_SUBST(AM_CPPFLAGS)
+ AC_SUBST(AM_CFLAGS)
+diff -rupN c-rest-engine-1.2_old/server/vmrestd/ssl-context.c c-rest-engine-1.2_new/server/vmrestd/ssl-context.c
+--- c-rest-engine-1.2_old/server/vmrestd/ssl-context.c	2018-02-14 06:06:52.000000000 +0000
++++ c-rest-engine-1.2_new/server/vmrestd/ssl-context.c	2019-03-14 15:06:38.522823315 +0000
+@@ -109,8 +109,9 @@ VmTESTSSLThreadLockInit(
+     {
+         pthread_mutex_init(&(gTESTSSLThreadLock[i]), NULL);
+     }
+-
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
+     CRYPTO_set_id_callback((unsigned long (*)())VmTESTSSLThreadId);
++#endif
+     CRYPTO_set_locking_callback((void (*)())VmTESTSSLThreadLockCallback);
+ 
+ cleanup:
+diff -rupN c-rest-engine-1.2_old/transport/posix/secureSocket.c c-rest-engine-1.2_new/transport/posix/secureSocket.c
+--- c-rest-engine-1.2_old/transport/posix/secureSocket.c	2018-02-14 06:06:52.000000000 +0000
++++ c-rest-engine-1.2_new/transport/posix/secureSocket.c	2019-03-14 15:09:14.831201634 +0000
+@@ -82,8 +82,9 @@ VmRESTSSLThreadLockInit(
+     {
+         pthread_mutex_init(&(gSSLThreadLock[i]), NULL);
+     }
+-
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
+     CRYPTO_set_id_callback((unsigned long (*)())VmRESTSSLThreadId);
++#endif
+     CRYPTO_set_locking_callback((void (*)())VmRESTSSLThreadLockCallback);
+ 
+ cleanup:

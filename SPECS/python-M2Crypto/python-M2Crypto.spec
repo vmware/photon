@@ -2,7 +2,7 @@
 
 Name:           python3-M2Crypto
 Version:        0.36.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 License:        MIT
@@ -16,9 +16,11 @@ BuildRequires:  openssl-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-typing
+BuildRequires:  swig
 BuildRequires:  python3-xml
 Requires:       python3-typing
 Requires:       python3
+Requires:       openssl
 
 %description
 M2Crypto is a crypto and SSL toolkit for Python featuring the following:
@@ -34,7 +36,7 @@ messenger for Zope.
 %setup -q -n M2Crypto-%{version}
 
 %build
-CFLAGS="%{optflags}" python3 setup.py build
+CFLAGS="%{optflags}" python3 setup.py build --openssl=/usr/include --bundledlls
 
 %install
 rm -rf %{buildroot}
@@ -51,6 +53,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jul 27 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.36.0-2
+-   Openssl 1.1.1 compatibility
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.36.0-1
 -   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.30.1-4

@@ -1,31 +1,29 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        7.8p1
-Release:        7%{?dist}
+Version:        7.9p1
+Release:        1%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha1    openssh=27e267e370315561de96577fccae563bc2c37a60
+%define sha1    openssh=993aceedea8ecabb1d0dd7293508a361891c4eaa
 Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1    blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Source2:        sshd.service
 Source3:        sshd-keygen.service
 Patch0:         blfs_systemd_fixes.patch
-Patch1:         openssh-7.8p1-fips.patch
-Patch2:         openssh-7.8p1-configure-fips.patch
-Patch3:         openssh-CVE-2018-20685.patch
-Patch4:         openssh-CVE-2019-6109.patch
-Patch5:         openssh-CVE-2019-6109-progressmeter.patch
-Patch6:         openssh-CVE-2019-6111.patch
-Patch7:         openssh-CVE-2019-6111-filenames.patch
-Patch8:         scp-name-validator-CVE-2019-6110.patch
-Patch9:         openssh-CVE-2019-16905.patch
+Patch1:         openssh-CVE-2018-20685.patch
+Patch2:         openssh-CVE-2019-6109.patch
+Patch3:         openssh-CVE-2019-6109-progressmeter.patch
+Patch4:         openssh-CVE-2019-6111.patch
+Patch5:         openssh-CVE-2019-6111-filenames.patch
+Patch6:         scp-name-validator-CVE-2019-6110.patch
+Patch7:         openssh-CVE-2019-16905.patch
 # Add couple more syscalls to seccomp filter to support glibc-2.31
-Patch10:        seccomp-Allow-clock_nanosleep-in-sandbox.patch
-Patch11:        seccomp-Allow-clock_nanosleep_time64-in-sandbox.patch
+Patch8:        seccomp-Allow-clock_nanosleep-in-sandbox.patch
+Patch9:        seccomp-Allow-clock_nanosleep_time64-in-sandbox.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
@@ -70,8 +68,6 @@ tar xf %{SOURCE1} --no-same-owner
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
-%patch10 -p1
-%patch11 -p1
 %build
 %configure \
     --sysconfdir=/etc/ssh \
@@ -192,6 +188,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Mon Aug 03 2020 Satya Naga Vasamsetty<svasamsetty@vmware.com> 7.9p1-1
+-   Update the version to 7.9p1
 *   Mon Apr 06 2020 Anish Swaminathan <anishs@vmware.com> 7.8p1-7
 -   Remove the MaxAuthTries restriction and default to 6
 *   Fri Mar 27 2020 Alexey Makhalov <amakhalov@vmware.com> 7.8p1-6

@@ -1,7 +1,7 @@
 Summary:        Very secure and very small FTP daemon.
 Name:           vsftpd
 Version:        3.0.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2 with exceptions
 URL:            https://security.appspot.com/vsftpd.html
 Group:          System Environment/Daemons
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        https://security.appspot.com/downloads/%{name}-%{version}.tar.gz
 %define sha1    vsftpd=d5f5a180dbecd0fbcdc92bf0ba2fc001c962b55a
 Patch0:         vsftpd-gen-debuginfo.patch
+Patch1:         fix_libssl_link.patch
 BuildRequires:  libcap-devel Linux-PAM-devel openssl-devel libnsl-devel
 Requires:       libcap Linux-PAM openssl libnsl
 %description
@@ -17,6 +18,7 @@ Very secure and very small FTP daemon.
 %prep
 %setup -q
 %patch0
+%patch1 -p1
 
 %build
 sed -i 's/#undef VSF_BUILD_SSL/#define VSF_BUILD_SSL/g' builddefs.h
@@ -40,7 +42,7 @@ pasv_min_port=40000
 pasv_max_port=40100
 #allow_writeable_chroot=YES
 #write_enable=YES
-#local_umask=022 
+#local_umask=022
 #anon_upload_enable=YES
 #anon_mkdir_write_enable=YES
 EOF
@@ -83,6 +85,8 @@ fi
 %{_datadir}/*
 
 %changelog
+*   Tue Aug 04 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.3-6
+-   Fix openssl-1.1.1 compatibility issue
 *   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 3.0.3-5
 -   Use libnsl instead of obsoleted nsl from glibc
 *   Thu Mar 15 2018 Xiaolin Li <xiaolinl@vmware.com> 3.0.3-4

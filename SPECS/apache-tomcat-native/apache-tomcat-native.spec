@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat Native
 Name:           apache-tomcat-native
 Version:        1.2.24
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 URL:            https://tomcat.apache.org/native-doc/
 Group:          Applications/System
@@ -10,8 +10,9 @@ Distribution:   Photon
 BuildArch:      x86_64
 Source0:        http://apachemirror.wuchna.com/tomcat/tomcat-connectors/native/%{version}/source/tomcat-native-%{version}-src.tar.gz
 %define sha1    tomcat-native=eb278be30134136204a9d417a25b2536c0160666
+Patch0:         openssl_1_1_1_compatibility.patch
 BuildRequires:  openjdk8
-BuildRequires:  openssl-devel
+BuildRequires:  openssl-devel >= 1.1.1
 BuildRequires:  apr-devel
 Requires:       apr
 Requires:       openssl
@@ -22,6 +23,7 @@ that allows Tomcat to use certain native resources for performance, compatibilit
 
 %prep
 %setup -q -n tomcat-native-%{version}-src
+%patch0 -p1
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
@@ -52,5 +54,7 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/libtcnative-1.la
 
 %changelog
+*   Thu Sep 10 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2.24-2
+-   Openssl 1.1.1 compatibility
 *   Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 1.2.24-1
 -   Initial build.  First version

@@ -1,0 +1,302 @@
+--- lsass/server/ntlm/verifysign.c	2018-12-13 01:37:25.000000000 +0000
++++ lsass/server/ntlm/verifysign.c.1	2019-04-03 00:11:44.273241416 +0000
+@@ -113,7 +113,7 @@
+     if (pContext->NegotiatedFlags & NTLM_FLAG_NTLM2)
+     {
+         unsigned char tempHmac[EVP_MAX_MD_SIZE];
+-        HMAC_CTX c;
++        HMAC_CTX *c = NULL;
+ 
+         if (!(pContext->NegotiatedFlags & NTLM_FLAG_SIGN))
+         {
+@@ -121,15 +121,18 @@
+             BAIL_ON_LSA_ERROR(dwError);
+         }
+ 
+-        HMAC_CTX_init(&c);
+-        HMAC_Init(
+-                &c,
++        c = HMAC_CTX_new();
++        HMAC_CTX_reset(c);
++
++        HMAC_Init_ex(
++                c,
+                 pContext->VerifyKey,
+                 sizeof(pContext->VerifyKey),
+-                EVP_md5());
++                EVP_md5(),
++                NULL);
+ 
+         HMAC_Update(
+-                &c,
++                c,
+                 (PBYTE)&signature.v2.dwMsgSeqNum,
+                 sizeof(signature.v2.dwMsgSeqNum));
+ 
+@@ -141,7 +144,7 @@
+             {
+                 if (!pData->pvBuffer)
+                 {
+-                    HMAC_CTX_cleanup(&c);
++                    HMAC_CTX_free(c);
+                     dwError = LW_ERROR_INVALID_PARAMETER;
+                     BAIL_ON_LSA_ERROR(dwError);
+                 }
+@@ -149,7 +152,7 @@
+                 bFoundData = TRUE;
+ 
+                 HMAC_Update(
+-                        &c,
++                        c,
+                         pData->pvBuffer,
+                         pData->cbBuffer);
+             }
+@@ -157,17 +160,17 @@
+ 
+         if (!bFoundData)
+         {
+-            HMAC_CTX_cleanup(&c);
++            HMAC_CTX_free(c);
+             dwError = LW_ERROR_INVALID_PARAMETER;
+             BAIL_ON_LSA_ERROR(dwError);
+         }
+ 
+         HMAC_Final(
+-                &c,
++                c,
+                 tempHmac,
+                 NULL);
+ 
+-        HMAC_CTX_cleanup(&c);
++        HMAC_CTX_free(c);
+ 
+         // The davenport doc says that the hmac is sealed after being generated
+         // with the signing key. In reality that only happens if the key
+--- lsass/server/ntlm/makesign.c	2018-12-13 01:37:25.000000000 +0000
++++ lsass/server/ntlm/makesign.c.1	2019-04-03 00:10:10.291597042 +0000
+@@ -133,17 +133,18 @@
+     if (pContext->NegotiatedFlags & NTLM_FLAG_NTLM2)
+     {
+         unsigned char tempHmac[EVP_MAX_MD_SIZE];
+-        HMAC_CTX c;
++        HMAC_CTX *c = NULL;
+ 
+-        HMAC_CTX_init(&c);
+-        HMAC_Init(
+-                &c,
++        c = HMAC_CTX_new();
++        HMAC_Init_ex(
++                c,
+                 pContext->SignKey,
+                 sizeof(pContext->SignKey),
+-                EVP_md5());
++                EVP_md5(),
++                NULL);
+ 
+         HMAC_Update(
+-                &c,
++                c,
+                 (PBYTE)&pSignature->v2.dwMsgSeqNum,
+                 sizeof(pSignature->v2.dwMsgSeqNum));
+ 
+@@ -155,7 +156,7 @@
+             {
+                 if (!pData->pvBuffer)
+                 {
+-                    HMAC_CTX_cleanup(&c);
++                    HMAC_CTX_free(c);
+                     dwError = LW_ERROR_INVALID_PARAMETER;
+                     BAIL_ON_LSA_ERROR(dwError);
+                 }
+@@ -163,7 +164,7 @@
+                 bFoundData = TRUE;
+ 
+                 HMAC_Update(
+-                        &c,
++                        c,
+                         pData->pvBuffer,
+                         pData->cbBuffer);
+             }
+@@ -171,17 +172,17 @@
+ 
+         if (!bFoundData)
+         {
+-            HMAC_CTX_cleanup(&c);
++            HMAC_CTX_free(c);
+             dwError = LW_ERROR_INVALID_PARAMETER;
+             BAIL_ON_LSA_ERROR(dwError);
+         }
+ 
+         HMAC_Final(
+-                &c,
++                c,
+                 tempHmac,
+                 NULL);
+ 
+-        HMAC_CTX_cleanup(&c);
++        HMAC_CTX_free(c);
+ 
+         // Copy only the first part of the hmac
+         memcpy(pSignature->v2.encrypted.hmac,
+--- lsass/client/rpc/netlogon/netr_credentials.c	2018-12-13 01:37:25.000000000 +0000
++++ lsass/client/rpc/netlogon/netr_credentials.c.1	2019-04-03 00:12:09.817688258 +0000
+@@ -92,12 +92,13 @@
+     )
+ {
+     NTSTATUS ntStatus = STATUS_SUCCESS;
+-    HMAC_CTX HmacCtx;
++    HMAC_CTX *HmacCtx = NULL;
+     MD5_CTX MD5Ctx;
+ 
+     if (pCreds == NULL) return;
+ 
+-    memset(&HmacCtx, 0, sizeof(HmacCtx));
++    HmacCtx = HMAC_CTX_new();
++    HMAC_CTX_reset(HmacCtx);
+     memset(&MD5Ctx, 0, sizeof(MD5Ctx));
+ 
+     pCreds->negotiate_flags = NegFlags;
+@@ -113,8 +114,7 @@
+         BYTE Digest[16] = {0};
+         DWORD dwSessionKeyLen = sizeof(pCreds->session_key);
+ 
+-        HMAC_CTX_init(&HmacCtx);
+-        HMAC_Init_ex(&HmacCtx,
++        HMAC_Init_ex(HmacCtx,
+                      pCreds->pass_hash, sizeof(pCreds->pass_hash),
+                      EVP_md5(), NULL);
+ 
+@@ -124,10 +124,10 @@
+         MD5_Update(&MD5Ctx, SrvChal, 8);
+         MD5_Final(Digest, &MD5Ctx);
+ 
+-        HMAC_Update(&HmacCtx, Digest, sizeof(Digest));
+-        HMAC_Final(&HmacCtx, pCreds->session_key, &dwSessionKeyLen);
++        HMAC_Update(HmacCtx, Digest, sizeof(Digest));
++        HMAC_Final(HmacCtx, pCreds->session_key, &dwSessionKeyLen);
+ 
+-        HMAC_CTX_cleanup(&HmacCtx);
++        HMAC_CTX_free(HmacCtx);
+ 
+         ntStatus = NetrEncryptChallenge(pCreds->cli_chal.data,
+                                         CliChal,
+--- libschannel/src/schn_wrap.c	2018-12-13 01:37:21.000000000 +0000
++++ libschannel/src/schn_wrap.c.1	2019-04-03 00:12:35.294133873 +0000
+@@ -70,7 +70,7 @@
+ 
+     /* Nonce ("pseudo_bytes" call is to be replaced with "bytes"
+        once we're ready to properly reseed the generator) */
+-    RAND_pseudo_bytes((unsigned char*)nonce, sizeof(nonce));
++    RAND_bytes((unsigned char*)nonce, sizeof(nonce));
+ 
+     memcpy(sess_key, schn_ctx->session_key, 16);
+ 
+--- libschannel/src/schn_util.c	2018-12-13 01:37:21.000000000 +0000
++++ libschannel/src/schn_util.c.1	2019-04-03 00:12:53.222447443 +0000
+@@ -48,12 +48,11 @@
+     unsigned char init_buffer[4];
+     unsigned char dig[16];
+     MD5_CTX ctx;
+-    HMAC_CTX hmac_ctx;
++    HMAC_CTX *hmac_ctx = NULL;
+     unsigned int digest_len;
+ 
+     memset(init_buffer, 0, sizeof(init_buffer));
+     memset(&ctx, 0, sizeof(ctx));
+-    memset(&hmac_ctx, 0, sizeof(hmac_ctx));
+ 
+     MD5_Init(&ctx);
+     MD5_Update(&ctx, init_buffer, 4);
+@@ -65,11 +64,12 @@
+     MD5_Update(&ctx, blob->base, blob->len);
+     MD5_Final(dig, &ctx);
+ 
+-    HMAC_Init(&hmac_ctx, (void*)sess_key, 16, EVP_md5());
+-    HMAC_Update(&hmac_ctx, (unsigned char*)dig, sizeof(dig));
+-    HMAC_Final(&hmac_ctx, (unsigned char*)digest, &digest_len);
++    hmac_ctx = HMAC_CTX_new();
++    HMAC_Init_ex(hmac_ctx, (void*)sess_key, 16, EVP_md5(), NULL);
++    HMAC_Update(hmac_ctx, (unsigned char*)dig, sizeof(dig));
++    HMAC_Final(hmac_ctx, (unsigned char*)digest, &digest_len);
+ 
+-    HMAC_CTX_cleanup(&hmac_ctx);
++    HMAC_CTX_free(hmac_ctx);
+ }
+ 
+ 
+@@ -103,7 +103,7 @@
+     unsigned char init_buffer[4];
+     unsigned char dig[16];
+     unsigned char seq_key[16];
+-    HMAC_CTX hmac_ctx;
++    HMAC_CTX *hmac_ctx = NULL;
+     unsigned int dig_len, seq_key_len;
+     RC4_KEY rc4_key;
+ 
+@@ -111,15 +111,20 @@
+     memset(&hmac_ctx, 0, sizeof(hmac_ctx));
+     memset(&rc4_key, 0, sizeof(rc4_key));
+ 
+-    HMAC_Init(&hmac_ctx, (unsigned char*)sess_key, 16, EVP_md5());
+-    HMAC_Update(&hmac_ctx, (unsigned char*)init_buffer, 4);
+-    HMAC_Final(&hmac_ctx, (unsigned char*)dig, &dig_len);
+-    HMAC_CTX_cleanup(&hmac_ctx);
+-
+-    HMAC_Init(&hmac_ctx, (unsigned char*)dig, 16, EVP_md5());
+-    HMAC_Update(&hmac_ctx, (unsigned char*)digest, 8);
+-    HMAC_Final(&hmac_ctx, (unsigned char*)seq_key, &seq_key_len);
+-    HMAC_CTX_cleanup(&hmac_ctx);
++    hmac_ctx = HMAC_CTX_new();
++    HMAC_CTX_reset(hmac_ctx);
++
++    HMAC_Init_ex(hmac_ctx, (unsigned char*)sess_key, 16, EVP_md5(), NULL);
++    HMAC_Update(hmac_ctx, (unsigned char*)init_buffer, 4);
++    HMAC_Final(hmac_ctx, (unsigned char*)dig, &dig_len);
++
++    HMAC_CTX_reset(hmac_ctx);
++
++    HMAC_Init_ex(hmac_ctx, (unsigned char*)dig, 16, EVP_md5(), NULL);
++    HMAC_Update(hmac_ctx, (unsigned char*)digest, 8);
++    HMAC_Final(hmac_ctx, (unsigned char*)seq_key, &seq_key_len);
++
++    HMAC_CTX_free(hmac_ctx);
+ 
+     RC4_set_key(&rc4_key, sizeof(seq_key), (unsigned char*)seq_key);
+     RC4(&rc4_key, 8, (unsigned char*)sequence,(unsigned char*)sequence);
+@@ -133,7 +138,7 @@
+                             unsigned char seal_key[16])
+ {
+     unsigned char init_buffer[4] = {0, 0, 0, 0};
+-    HMAC_CTX hmac_ctx;
++    HMAC_CTX *hmac_ctx = NULL;
+     unsigned int digest_len, seal_key_len;
+     unsigned char key[16];
+     unsigned char digest[16];
+@@ -147,17 +152,20 @@
+         key[i] = sess_key[i] ^ 0xf0;
+     }
+ 
+-    HMAC_Init(&hmac_ctx, (unsigned char*)key, 16, EVP_md5());
+-    HMAC_Update(&hmac_ctx, (unsigned char*)init_buffer, 4);
+-    HMAC_Final(&hmac_ctx, digest, &digest_len);
+-    HMAC_CTX_cleanup(&hmac_ctx);
++    hmac_ctx = HMAC_CTX_new();
++    HMAC_CTX_reset(hmac_ctx);
+ 
+-    memset(&hmac_ctx, 0, sizeof(hmac_ctx));
++    HMAC_Init_ex(hmac_ctx, (unsigned char*)key, 16, EVP_md5(), NULL);
++    HMAC_Update(hmac_ctx, (unsigned char*)init_buffer, 4);
++    HMAC_Final(hmac_ctx, digest, &digest_len);
++
++    HMAC_CTX_reset(hmac_ctx);
++
++    HMAC_Init_ex(hmac_ctx, (unsigned char*)digest, 16, EVP_md5(), NULL);
++    HMAC_Update(hmac_ctx, (unsigned char*)seq_number, 8);
++    HMAC_Final(hmac_ctx, seal_key, &seal_key_len);
+ 
+-    HMAC_Init(&hmac_ctx, (unsigned char*)digest, 16, EVP_md5());
+-    HMAC_Update(&hmac_ctx, (unsigned char*)seq_number, 8);
+-    HMAC_Final(&hmac_ctx, seal_key, &seal_key_len);
+-    HMAC_CTX_cleanup(&hmac_ctx);
++    HMAC_CTX_free(hmac_ctx);
+ }

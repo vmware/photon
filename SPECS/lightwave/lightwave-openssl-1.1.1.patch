@@ -1,0 +1,2496 @@
+--- lightwave/lwraft/client/client.c	2019-04-04 22:53:50.850295822 +0000
++++ /root/lightwave-1.3.1.34/lwraft/client/client.c	2019-04-04 21:37:27.927130675 +0000
+@@ -669,7 +669,7 @@
+ 
+     // Generate an initial DC account password and store it in the registry.
+ 
+-    err = RAND_pseudo_bytes(pszDCAccountPassword, VMDIR_KDC_RANDOM_PWD_LEN);
++    err = RAND_bytes(pszDCAccountPassword, VMDIR_KDC_RANDOM_PWD_LEN);
+     for (i=0; i<VMDIR_KDC_RANDOM_PWD_LEN; i++)
+     {
+         pszDCAccountPassword[i] &= 0x7f;
+--- lightwave/lwraft/common/opensslclient.c	2019-04-04 22:53:50.854295892 +0000
++++ /root/lightwave-1.3.1.34/lwraft/common/opensslclient.c	2019-04-04 21:37:27.983131636 +0000
+@@ -82,7 +82,7 @@
+                        "cert (%s) used in ssl server cert verification",
+                        VDIR_SAFE_STRING(pszTrustCertFile) );
+ 
+-    pSslCtx = SSL_CTX_new(TLSv1_method());
++    pSslCtx = SSL_CTX_new(TLS_method());
+     if (!pSslCtx)
+     {
+         dwError = VMDIR_ERROR_NO_SSL_CTX;
+@@ -157,12 +157,12 @@
+ 
+     // Since we override default verify callback, pStore is fresh and has not yet been accessed.
+     // pStore->cert is the target certificate we want to verify.
+-    if ( pArg && pStore && pStore->cert)
++    if ( pArg && pStore && X509_STORE_CTX_get_current_cert(pStore))
+     {
+         dwError = _VmDirReadCertFromFile( (PSTR)pArg, &pLocalX509);
+         BAIL_ON_VMDIR_ERROR(dwError);
+ 
+-        dwError = _VmDirGetCertThumbPrint( pStore->cert, &pByteCertRemote, &pRemoteSize);
++        dwError = _VmDirGetCertThumbPrint( X509_STORE_CTX_get_current_cert(pStore), &pByteCertRemote, &pRemoteSize);
+         BAIL_ON_VMDIR_ERROR(dwError);
+ 
+         dwError = _VmDirGetCertThumbPrint( pLocalX509, &pByteCertLocal, &pLocalSize);
+--- lightwave/lwraft/common/opensslutil.c	2019-04-04 22:53:50.854295892 +0000
++++ /root/lightwave-1.3.1.34/lwraft/common/opensslutil.c	2019-04-04 21:37:27.983131636 +0000
+@@ -24,7 +24,7 @@
+     )
+ {
+     DWORD   dwError = 0;
+-    EVP_MD_CTX  mdCtx = {0};
++    EVP_MD_CTX      *pMDCtx = NULL;
+     unsigned char   md[EVP_MAX_MD_SIZE] = {0};
+     unsigned int    mdSize = 0;
+     unsigned char*  pMD = NULL;
+@@ -34,21 +34,22 @@
+         BAIL_WITH_VMDIR_ERROR(dwError, VMDIR_ERROR_INVALID_PARAMETER);
+     }
+ 
+-    EVP_MD_CTX_init(&mdCtx);
++    pMDCtx = EVP_MD_CTX_new();
++    EVP_MD_CTX_init(pMDCtx);
+ 
+-    if (EVP_DigestInit_ex(&mdCtx, digestMethod, NULL) == 0)
++    if (EVP_DigestInit_ex(pMDCtx, digestMethod, NULL) == 0)
+     {
+         VMDIR_LOG_ERROR(VMDIR_LOG_MASK_ALL, "%s: EVP_DigestInit_ex returned 0", __FUNCTION__);
+         BAIL_WITH_VMDIR_ERROR(dwError, VMDIR_ERROR_SSL);
+     }
+ 
+-    if (EVP_DigestUpdate(&mdCtx, pData, dataSize) == 0)
++    if (EVP_DigestUpdate(pMDCtx, pData, dataSize) == 0)
+     {
+         VMDIR_LOG_ERROR(VMDIR_LOG_MASK_ALL, "%s: EVP_DigestUpdate returned 0", __FUNCTION__);
+         BAIL_WITH_VMDIR_ERROR(dwError, VMDIR_ERROR_SSL);
+     }
+ 
+-    if (EVP_DigestFinal_ex(&mdCtx, md, &mdSize) == 0)
++    if (EVP_DigestFinal_ex(pMDCtx, md, &mdSize) == 0)
+     {
+         VMDIR_LOG_ERROR(VMDIR_LOG_MASK_ALL, "%s: EVP_DigestFinal_ex returned 0", __FUNCTION__);
+         BAIL_WITH_VMDIR_ERROR(dwError, VMDIR_ERROR_SSL);
+@@ -61,7 +62,11 @@
+     *pMDSize = mdSize;
+ 
+ cleanup:
+-    EVP_MD_CTX_cleanup(&mdCtx);
++    if (pMDCtx)
++    {
++        EVP_MD_CTX_reset(pMDCtx);
++        EVP_MD_CTX_free(pMDCtx);
++    }
+     return dwError;
+ 
+ error:
+--- lightwave/lwraft/server/common/srp.c	2019-04-04 22:53:50.906296793 +0000
++++ /root/lightwave-1.3.1.34/lwraft/server/common/srp.c	2019-04-04 21:37:27.979131567 +0000
+@@ -69,7 +69,7 @@
+     PCSTR           pszUser,
+     PVDIR_BERVALUE  pBervPass,
+     PVDIR_BERVALUE  pBervSalt,
+-    BIGNUM*         pX
++    BIGNUM**        ppX
+     );
+ 
+ static
+@@ -80,7 +80,7 @@
+     PCSTR           pszUPN,
+     PVDIR_BERVALUE  pBervPass,
+     PVDIR_BERVALUE  pBervSalt,
+-    BIGNUM*         pv
++    BIGNUM**        ppv
+     );
+ 
+ 
+@@ -314,7 +314,7 @@
+     PCSTR           pszUser,
+     PVDIR_BERVALUE  pBervPass,
+     PVDIR_BERVALUE  pBervSalt,
+-    BIGNUM*         pX
++    BIGNUM**        ppX
+     )
+ {
+     DWORD       dwError = SASL_OK;
+@@ -322,47 +322,60 @@
+     int	        iHashBufOneLen;
+     char        hashBufTwo[EVP_MAX_MD_SIZE]={0};
+     int	        iHashBufTwoLen;
++    BIGNUM*     pX = NULL;
+ 
+-    EVP_MD_CTX  EVPMDCtxOne = {0};
+-    EVP_MD_CTX  EVPMDCtxTwo = {0};
++    EVP_MD_CTX  *pEVPMDCtxOne = NULL;
++    EVP_MD_CTX  *pEVPMDCtxTwo = NULL;
+ 
+-    if ( pMD == NULL || pszUser == NULL || pBervPass == NULL || pBervSalt == NULL || pX == NULL )
++    if ( pMD == NULL || pszUser == NULL || pBervPass == NULL || pBervSalt == NULL || ppX == NULL )
+     {
+         dwError = VMDIR_ERROR_INVALID_PARAMETER;
+         BAIL_ON_VMDIR_ERROR(dwError);
+     }
+ 
++    pEVPMDCtxOne = EVP_MD_CTX_create();
++    if (!pEVPMDCtxOne)
++    {
++        dwError = VMDIR_ERROR_SRP;
++        BAIL_ON_VMDIR_ERROR(dwError);
++    }
+     //  H(user | ':' | pass)
+-    if ( (EVP_DigestInit  ( &EVPMDCtxOne, pMD) != 1)
++    if ( (EVP_DigestInit  ( pEVPMDCtxOne, pMD) != 1)
+          ||
+-         (EVP_DigestUpdate( &EVPMDCtxOne, pszUser, strlen(pszUser)) != 1)
++         (EVP_DigestUpdate( pEVPMDCtxOne, pszUser, strlen(pszUser)) != 1)
+          ||
+-         (EVP_DigestUpdate( &EVPMDCtxOne, ":", 1) != 1)
++         (EVP_DigestUpdate( pEVPMDCtxOne, ":", 1) != 1)
+          ||
+-         (EVP_DigestUpdate( &EVPMDCtxOne, pBervPass->lberbv_val, pBervPass->lberbv_len ) != 1)
++         (EVP_DigestUpdate( pEVPMDCtxOne, pBervPass->lberbv_val, pBervPass->lberbv_len ) != 1)
+          ||
+-         (EVP_DigestFinal ( &EVPMDCtxOne, &(hashBufOne[0]), &iHashBufOneLen) != 1)
++         (EVP_DigestFinal ( pEVPMDCtxOne, &(hashBufOne[0]), &iHashBufOneLen) != 1)
+        )
+     {
+         dwError = VMDIR_ERROR_SRP;
+         BAIL_ON_VMDIR_ERROR(dwError);
+     }
+ 
++    pEVPMDCtxTwo = EVP_MD_CTX_create();
++    if (!pEVPMDCtxTwo)
++    {
++        dwError = VMDIR_ERROR_SRP;
++        BAIL_ON_VMDIR_ERROR(dwError);
++    }
+     // x = H(salt | H(user | ':' | pass))
+-    if ( (EVP_DigestInit  ( &EVPMDCtxTwo, pMD) != 1)
++    if ( (EVP_DigestInit  ( pEVPMDCtxTwo, pMD) != 1)
+          ||
+-         (EVP_DigestUpdate( &EVPMDCtxTwo, pBervSalt->lberbv_val, pBervSalt->lberbv_len ) != 1)
++         (EVP_DigestUpdate( pEVPMDCtxTwo, pBervSalt->lberbv_val, pBervSalt->lberbv_len ) != 1)
+          ||
+-         (EVP_DigestUpdate( &EVPMDCtxTwo, &(hashBufOne[0]), iHashBufOneLen ) != 1)
++         (EVP_DigestUpdate( pEVPMDCtxTwo, &(hashBufOne[0]), iHashBufOneLen ) != 1)
+          ||
+-         (EVP_DigestFinal ( &EVPMDCtxTwo, &(hashBufTwo[0]), &iHashBufTwoLen) != 1)
++         (EVP_DigestFinal ( pEVPMDCtxTwo, &(hashBufTwo[0]), &iHashBufTwoLen) != 1)
+        )
+     {
+         dwError = VMDIR_ERROR_SRP;
+         BAIL_ON_VMDIR_ERROR(dwError);
+     }
+ 
+-    BN_init(pX);
++    pX = BN_new();
+ 
+     if (BN_bin2bn(hashBufTwo, iHashBufTwoLen, pX) == NULL)
+     {
+@@ -370,12 +383,27 @@
+         BAIL_ON_VMDIR_ERROR(dwError);
+     }
+ 
+-error:
++    *ppX = pX;
+ 
+-    EVP_MD_CTX_cleanup( &EVPMDCtxOne);
+-    EVP_MD_CTX_cleanup( &EVPMDCtxTwo);
++cleanup:
++
++    if (pEVPMDCtxOne)
++    {
++        EVP_MD_CTX_destroy( pEVPMDCtxOne);
++    }
++    if (pEVPMDCtxTwo)
++    {
++        EVP_MD_CTX_destroy( pEVPMDCtxTwo);
++    }
+ 
+     return dwError;
++
++error:
++    if (pX)
++    {
++        BN_clear_free(pX);
++    }
++    goto cleanup;
+ }
+ 
+ //////////////////////////////////////////////////
+@@ -389,14 +417,15 @@
+     PCSTR           pszUPN,
+     PVDIR_BERVALUE  pBervPass,
+     PVDIR_BERVALUE  pBervSalt,
+-    BIGNUM*         pv)
++    BIGNUM**        ppv)
+ {
+     DWORD           dwError = 0;
+-    BIGNUM          x = {0};
++    BIGNUM          *x = NULL;
++    BIGNUM          *pv = NULL;
+     BN_CTX*         pCtx = BN_CTX_new();
+     const EVP_MD*   pSHA1Hash = EVP_get_digestbyname( gSASLMDAName[1] );
+ 
+-    if ( pN == NULL || pg == NULL || pszUPN == NULL || pBervPass == NULL || pBervSalt == NULL || pv == NULL )
++    if ( pN == NULL || pg == NULL || pszUPN == NULL || pBervPass == NULL || pBervSalt == NULL || ppv == NULL )
+     {
+         dwError = VMDIR_ERROR_INVALID_PARAMETER;
+         BAIL_ON_VMDIR_ERROR(dwError);
+@@ -412,14 +441,16 @@
+     BAIL_ON_VMDIR_ERROR(dwError);
+ 
+     // v = g^x % N
+-    BN_init(pv);
++    pv = BN_new();
+ 
+-    if ( BN_mod_exp(pv, pg, &x, pN, pCtx) != 1)
++    if ( BN_mod_exp(pv, pg, x, pN, pCtx) != 1)
+     {
+         dwError = VMDIR_ERROR_SRP;
+         BAIL_ON_VMDIR_ERROR(dwError);
+     }
+ 
++    *ppv = pv;
++
+ cleanup:
+ 
+     if ( pCtx)
+@@ -427,11 +458,18 @@
+         BN_CTX_free( pCtx );
+     }
+ 
+-    BN_free( &x );
++    if (x)
++    {
++        BN_free( x );
++    }
+ 
+     return dwError;
+ 
+ error:
++    if (pv)
++    {
++        BN_clear_free(pv);
++    }
+     goto cleanup;
+ }
+ 
+@@ -451,7 +489,7 @@
+     DWORD           dwLocalSaltLen = 16;  // to match SASL implementation
+     BIGNUM*         psrp_N = NULL;
+     BIGNUM*         psrp_g = NULL;
+-    BIGNUM          srp_v = {0};
++    BIGNUM*         psrp_v = {0};
+ 
+     if ( pszUPN == NULL || pBervPass == NULL || pBervV == NULL || pBervSalt == NULL )
+     {
+@@ -475,7 +513,7 @@
+     dwError = VmDirAllocateMemory( dwLocalSaltLen, (PVOID)&pLocalSalt);
+     BAIL_ON_VMDIR_ERROR(dwError);
+ 
+-    if (RAND_pseudo_bytes(pLocalSalt, dwLocalSaltLen) != 1)
++    if (RAND_bytes(pLocalSalt, dwLocalSaltLen) != 1)
+     {
+         dwError = VMDIR_ERROR_SRP;
+         BAIL_ON_VMDIR_ERROR(dwError);
+@@ -486,13 +524,13 @@
+     pBervSalt->bOwnBvVal  = TRUE;
+     pLocalSalt = NULL;
+ 
+-    dwError = _VmDirSRPCalculateV( psrp_N, psrp_g, pszUPN, pBervPass, pBervSalt, &srp_v);
++    dwError = _VmDirSRPCalculateV( psrp_N, psrp_g, pszUPN, pBervPass, pBervSalt, &psrp_v);
+     BAIL_ON_VMDIR_ERROR(dwError);
+ 
+-    dwLocalVLen = BN_num_bytes( &srp_v );
++    dwLocalVLen = BN_num_bytes( psrp_v );
+     dwError = VmDirAllocateMemory( dwLocalVLen, (PVOID)&pLocalV);
+     BAIL_ON_VMDIR_ERROR(dwError);
+-    BN_bn2bin( &srp_v, pLocalV);
++    BN_bn2bin( psrp_v, pLocalV);
+ 
+     pBervV->lberbv_val = pLocalV;
+     pBervV->lberbv_len = (ber_len_t)dwLocalVLen;
+@@ -511,7 +549,10 @@
+         BN_free(psrp_g);
+     }
+ 
+-    BN_free(&srp_v);
++    if (psrp_v)
++    {
++        BN_free(psrp_v);
++    }
+ 
+     return dwError;
+ 
+--- lightwave/lwraft/server/ldap-head/openssl.c	2019-04-04 22:53:50.914296931 +0000
++++ /root/lightwave-1.3.1.34/lwraft/server/ldap-head/openssl.c	2019-04-04 21:37:27.979131567 +0000
+@@ -85,21 +85,6 @@
+     );
+ 
+ static
+-VOID
+-_VmDirOpensslLockingFunc(
+-    int         mode,
+-    int         lockNum,
+-    const char *file,
+-    int         line
+-    );
+-
+-static
+-unsigned long
+-_VmDirOpensslIdFunc(
+-    VOID
+-    );
+-
+-static
+ DWORD
+ _VmDirCtxSetCipherSuite(
+     SSL_CTX*    pSslCtx
+@@ -369,13 +354,6 @@
+         pthread_mutex_init( &(gVmdirOpensslGlobals.pMutexBuf[dwSize]), NULL);
+     }
+ 
+-    ////////////////////////////////////////////////////////////////////////////////////////////////
+-    // http://www.openssl.org/docs/crypto/threads.html
+-    // To make openssl functions thread safe, we need to register at least following two functions.
+-    ///////////////////////////////////////////////////////////////////////////////////////////////
+-    CRYPTO_set_locking_callback( _VmDirOpensslLockingFunc );
+-    CRYPTO_set_id_callback( _VmDirOpensslIdFunc );
+-
+     // always return 1
+     iSslRet = SSL_library_init();
+     if ( iSslRet != 1 )
+@@ -475,7 +453,6 @@
+         SSL_CTX_free(gVmdirGlobals.gpVdirSslCtx);
+     }
+ 
+-    ERR_remove_state(0);
+     ERR_free_strings();
+     EVP_cleanup();
+     CRYPTO_cleanup_all_ex_data();
+@@ -762,50 +739,6 @@
+     return;
+ }
+ 
+-/**
+- * OpenSSL locking function.
+- *
+- * @param    mode    lock mode
+- * @param    lockNum lock number
+- * @param    file    source file name
+- * @param    line    source file line number
+- * @return   none
+- */
+-static
+-VOID
+-_VmDirOpensslLockingFunc(
+-    int         mode,
+-    int         lockNum,
+-    const char *file,
+-    int         line
+-    )
+-{
+-    if (mode & CRYPTO_LOCK) {
+-        pthread_mutex_lock( &(gVmdirOpensslGlobals.pMutexBuf[lockNum]) );
+-    } else {
+-        pthread_mutex_unlock( &(gVmdirOpensslGlobals.pMutexBuf[lockNum]) );
+-    }
+-}
+-
+-/**
+- * OpenSSL uniq id function.
+- *
+- * @return    thread id
+- */
+-static
+-unsigned long
+-_VmDirOpensslIdFunc(
+-    VOID
+-    )
+-{
+-#ifdef _WIN32
+-    return ((unsigned long) (pthread_self().p));
+-#else
+-    return ((unsigned long) pthread_self());
+-#endif
+-}
+-
+-static
+ VOID
+ _VmDirCtxSetOptions(
+     SSL_CTX*    pSslCtx
+--- lightwave/lwraft/server/middle-layer/password.c	2019-04-04 22:53:50.922297071 +0000
++++ /root/lightwave-1.3.1.34/lwraft/server/middle-layer/password.c	2019-04-04 21:37:27.967131361 +0000
+@@ -419,7 +419,7 @@
+         strong, 0 otherwise. It return -1 if they are not supported by
+         the current RAND method.
+         */
+-        if (RAND_pseudo_bytes(pSalt, pScheme->uSaltSizeInByte) != 1)
++        if (RAND_bytes(pSalt, pScheme->uSaltSizeInByte) != 1)
+         {
+             dwError = VMDIR_ERROR_PASSWORD_HASH;
+             BAIL_ON_VMDIR_ERROR(dwError);
+--- lightwave/lwraft/thirdparty/heimdal/krb5-crypto/crypto-aes.c	2019-04-04 22:53:50.970297902 +0000
++++ /root/lightwave-1.3.1.34/lwraft/thirdparty/heimdal/krb5-crypto/crypto-aes.c	2019-04-04 23:26:00.883648449 +0000
+@@ -124,13 +124,13 @@
+ 
+     {
+ 	const EVP_CIPHER *c = (*crypto->et->keytype->evp)();
+-	EVP_CIPHER_CTX ctx;
++	EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+ 
+-	EVP_CIPHER_CTX_init(&ctx); /* ivec all zero */
+-	EVP_CipherInit_ex(&ctx, c, NULL, derived->keyvalue.data, NULL, 1);
+-	EVP_Cipher(&ctx, out->data, result.checksum.data,
++	EVP_CIPHER_CTX_reset(ctx); /* ivec all zero */
++	EVP_CipherInit_ex(ctx, c, NULL, derived->keyvalue.data, NULL, 1);
++	EVP_Cipher(ctx, out->data, result.checksum.data,
+ 		   (int) crypto->et->blocksize);
+-	EVP_CIPHER_CTX_cleanup(&ctx);
++	EVP_CIPHER_CTX_free(ctx);
+     }
+ 
+     krb5_heim_data_free(&result.checksum);
+--- lightwave/lwraft/thirdparty/heimdal/krb5-crypto/crypto-arcfour.c	2019-04-04 22:53:50.970297902 +0000
++++ /root/lightwave-1.3.1.34/lwraft/thirdparty/heimdal/krb5-crypto/crypto-arcfour.c	2019-04-04 21:37:28.015132184 +0000
+@@ -129,7 +129,7 @@
+ 		   unsigned usage,
+ 		   void *ivec)
+ {
+-    EVP_CIPHER_CTX ctx;
++    EVP_CIPHER_CTX *ctx = NULL;
+     struct _krb5_checksum_type *c = _krb5_find_checksum (CKSUMTYPE_RSA_MD5);
+     Checksum k1_c, k2_c, k3_c, cksum;
+     struct _krb5_key_data ke;
+@@ -176,11 +176,13 @@
+     if (ret)
+ 	krb5_abortx(context, "hmac failed");
+ 
+-    EVP_CIPHER_CTX_init(&ctx);
++    ctx = EVP_CIPHER_CTX_new();
++    EVP_CIPHER_CTX_init(ctx);
+ 
+-    EVP_CipherInit_ex(&ctx, EVP_rc4(), NULL, k3_c.checksum.data, NULL, 1);
+-    EVP_Cipher(&ctx, cdata + 16, cdata + 16, (int)(len - 16));
+-    EVP_CIPHER_CTX_cleanup(&ctx);
++    EVP_CipherInit_ex(ctx, EVP_rc4(), NULL, k3_c.checksum.data, NULL, 1);
++    EVP_Cipher(ctx, cdata + 16, cdata + 16, (int)(len - 16));
++    EVP_CIPHER_CTX_cleanup(ctx);
++    EVP_CIPHER_CTX_free(ctx);
+ 
+     memset (k1_c_data, 0, sizeof(k1_c_data));
+     memset (k2_c_data, 0, sizeof(k2_c_data));
+@@ -196,7 +198,7 @@
+ 		   unsigned usage,
+ 		   void *ivec)
+ {
+-    EVP_CIPHER_CTX ctx;
++    EVP_CIPHER_CTX *ctx = NULL;
+     struct _krb5_checksum_type *c = _krb5_find_checksum (CKSUMTYPE_RSA_MD5);
+     Checksum k1_c, k2_c, k3_c, cksum;
+     struct _krb5_key_data ke;
+@@ -234,10 +236,13 @@
+     if (ret)
+ 	krb5_abortx(context, "hmac failed");
+ 
+-    EVP_CIPHER_CTX_init(&ctx);
+-    EVP_CipherInit_ex(&ctx, EVP_rc4(), NULL, k3_c.checksum.data, NULL, 0);
+-    EVP_Cipher(&ctx, cdata + 16, cdata + 16, (int)(len - 16));
+-    EVP_CIPHER_CTX_cleanup(&ctx);
++    ctx = EVP_CIPHER_CTX_new();
++
++    EVP_CIPHER_CTX_init(ctx);
++    EVP_CipherInit_ex(ctx, EVP_rc4(), NULL, k3_c.checksum.data, NULL, 0);
++    EVP_Cipher(ctx, cdata + 16, cdata + 16, (int)(len - 16));
++    EVP_CIPHER_CTX_cleanup(ctx);
++    EVP_CIPHER_CTX_free(ctx);
+ 
+     ke.key = &kb;
+     kb.keyvalue = k2_c.checksum;
+--- lightwave/lwraft/thirdparty/heimdal/krb5-crypto/crypto-des.c	2019-04-04 22:53:50.970297902 +0000
++++ /root/lightwave-1.3.1.34/lwraft/thirdparty/heimdal/krb5-crypto/crypto-des.c	2019-04-04 21:37:28.019132253 +0000
+@@ -225,7 +225,7 @@
+     EVP_CIPHER_CTX *c;
+     DES_cblock ivec;
+     memset(&ivec, 0, sizeof(ivec));
+-    c = encryptp ? &ctx->ectx : &ctx->dctx;
++    c = encryptp ? ctx->ectx : ctx->dctx;
+     EVP_CipherInit_ex(c, NULL, NULL, NULL, (void *)&ivec, -1);
+     EVP_Cipher(c, data, data, (int) len);
+     return 0;
+@@ -244,7 +244,7 @@
+     EVP_CIPHER_CTX *c;
+     DES_cblock ivec;
+     memcpy(&ivec, key->key->keyvalue.data, sizeof(ivec));
+-    c = encryptp ? &ctx->ectx : &ctx->dctx;
++    c = encryptp ? ctx->ectx : ctx->dctx;
+     EVP_CipherInit_ex(c, NULL, NULL, NULL, (void *)&ivec, -1);
+     EVP_Cipher(c, data, data, (int) len);
+     return 0;
+--- lightwave/lwraft/thirdparty/heimdal/krb5-crypto/crypto-des-common.c	2019-04-04 22:53:50.970297902 +0000
++++ /root/lightwave-1.3.1.34/lwraft/thirdparty/heimdal/krb5-crypto/crypto-des-common.c	2019-04-04 21:37:28.015132184 +0000
+@@ -81,8 +81,8 @@
+     EVP_DigestFinal_ex (m, p + 8, NULL);
+     EVP_MD_CTX_destroy(m);
+     memset (&ivec, 0, sizeof(ivec));
+-    EVP_CipherInit_ex(&ctx->ectx, NULL, NULL, NULL, (void *)&ivec, -1);
+-    EVP_Cipher(&ctx->ectx, p, p, 24);
++    EVP_CipherInit_ex(ctx->ectx, NULL, NULL, NULL, (void *)&ivec, -1);
++    EVP_Cipher(ctx->ectx, p, p, 24);
+ 
+     return 0;
+ }
+@@ -109,8 +109,8 @@
+     }
+ 
+     memset(&ivec, 0, sizeof(ivec));
+-    EVP_CipherInit_ex(&ctx->dctx, NULL, NULL, NULL, (void *)&ivec, -1);
+-    EVP_Cipher(&ctx->dctx, tmp, C->checksum.data, 24);
++    EVP_CipherInit_ex(ctx->dctx, NULL, NULL, NULL, (void *)&ivec, -1);
++    EVP_Cipher(ctx->dctx, tmp, C->checksum.data, 24);
+ 
+     EVP_DigestInit_ex(m, evp_md, NULL);
+     EVP_DigestUpdate(m, tmp, 8); /* confounder */
+--- lightwave/lwraft/thirdparty/heimdal/krb5-crypto/crypto-evp.c	2019-04-04 22:53:50.970297902 +0000
++++ /root/lightwave-1.3.1.34/lwraft/thirdparty/heimdal/krb5-crypto/crypto-evp.c	2019-04-04 21:37:28.015132184 +0000
+@@ -41,19 +41,23 @@
+     struct _krb5_evp_schedule *key = kd->schedule->data;
+     const EVP_CIPHER *c = (*kt->evp)();
+ 
+-    EVP_CIPHER_CTX_init(&key->ectx);
+-    EVP_CIPHER_CTX_init(&key->dctx);
++    key->ectx = EVP_CIPHER_CTX_new();
++    EVP_CIPHER_CTX_init(key->ectx);
++    key->dctx = EVP_CIPHER_CTX_new();
++    EVP_CIPHER_CTX_init(key->dctx);
+ 
+-    EVP_CipherInit_ex(&key->ectx, c, NULL, kd->key->keyvalue.data, NULL, 1);
+-    EVP_CipherInit_ex(&key->dctx, c, NULL, kd->key->keyvalue.data, NULL, 0);
++    EVP_CipherInit_ex(key->ectx, c, NULL, kd->key->keyvalue.data, NULL, 1);
++    EVP_CipherInit_ex(key->dctx, c, NULL, kd->key->keyvalue.data, NULL, 0);
+ }
+ 
+ void
+ _krb5_evp_cleanup(krb5_context context, struct _krb5_key_data *kd)
+ {
+     struct _krb5_evp_schedule *key = kd->schedule->data;
+-    EVP_CIPHER_CTX_cleanup(&key->ectx);
+-    EVP_CIPHER_CTX_cleanup(&key->dctx);
++    EVP_CIPHER_CTX_cleanup(key->ectx);
++    EVP_CIPHER_CTX_free(key->ectx);
++    EVP_CIPHER_CTX_cleanup(key->dctx);
++    EVP_CIPHER_CTX_free(key->dctx);
+ }
+ 
+ krb5_error_code
+@@ -67,7 +71,7 @@
+ {
+     struct _krb5_evp_schedule *ctx = key->schedule->data;
+     EVP_CIPHER_CTX *c;
+-    c = encryptp ? &ctx->ectx : &ctx->dctx;
++    c = encryptp ? ctx->ectx : ctx->dctx;
+     if (ivec == NULL) {
+ 	/* alloca ? */
+ 	size_t len2 = EVP_CIPHER_CTX_iv_length(c);
+@@ -102,7 +106,7 @@
+     EVP_CIPHER_CTX *c;
+     unsigned char *p;
+ 
+-    c = encryptp ? &ctx->ectx : &ctx->dctx;
++    c = encryptp ? ctx->ectx : ctx->dctx;
+ 
+     blocksize = EVP_CIPHER_CTX_block_size(c);
+ 
+--- lightwave/lwraft/thirdparty/heimdal/krb5-crypto/crypto.h	2019-04-04 22:53:50.970297902 +0000
++++ /root/lightwave-1.3.1.34/lwraft/thirdparty/heimdal/krb5-crypto/crypto.h	2019-04-04 21:37:28.015132184 +0000
+@@ -174,6 +174,6 @@
+ 
+ /* Interface to the EVP crypto layer provided by hcrypto */
+ struct _krb5_evp_schedule {
+-    EVP_CIPHER_CTX ectx;
+-    EVP_CIPHER_CTX dctx;
++    EVP_CIPHER_CTX *ectx;
++    EVP_CIPHER_CTX *dctx;
+ };
+--- lightwave/lwraft/thirdparty/heimdal/ntlm/ntlm.c	2019-04-04 22:53:50.974297972 +0000
++++ /root/lightwave-1.3.1.34/lwraft/thirdparty/heimdal/ntlm/ntlm.c	2019-04-04 21:37:28.019132253 +0000
+@@ -1016,7 +1016,7 @@
+ 	    unsigned char *challenge,
+ 	    unsigned char *answer)
+ {
+-    EVP_CIPHER_CTX ctx;
++    EVP_CIPHER_CTX *ctx = NULL;
+     unsigned char key[8];
+ 
+     key[0] =  hash[0];
+@@ -1028,11 +1028,13 @@
+     key[6] = (hash[5] << 2) | (hash[6] >> 6);
+     key[7] = (hash[6] << 1);
+ 
+-    EVP_CIPHER_CTX_init(&ctx);
++    ctx = EVP_CIPHER_CTX_new();
++    EVP_CIPHER_CTX_init(ctx);
+ 
+-    EVP_CipherInit_ex(&ctx, EVP_des_cbc(), NULL, key, NULL, 1);
+-    EVP_Cipher(&ctx, answer, challenge, 8);
+-    EVP_CIPHER_CTX_cleanup(&ctx);
++    EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL, key, NULL, 1);
++    EVP_Cipher(ctx, answer, challenge, 8);
++    EVP_CIPHER_CTX_cleanup(ctx);
++    EVP_CIPHER_CTX_free(ctx);
+     memset(key, 0, sizeof(key));
+ }
+ 
+@@ -1153,7 +1155,7 @@
+ 			  struct ntlm_buf *session)
+ {
+     unsigned int hmaclen;
+-    HMAC_CTX c;
++    HMAC_CTX *c = NULL;
+ 
+     if (ntlmResponse->length <= 16)
+         return HNTLM_ERR_INVALID_LENGTH;
+@@ -1163,12 +1165,14 @@
+ 	return ENOMEM;
+     session->length = 16;
+ 
++    c = HMAC_CTX_new();
+     /* Note: key is the NTLMv2 key */
+-    HMAC_CTX_init(&c);
+-    HMAC_Init_ex(&c, key, len, EVP_md5(), NULL);
+-    HMAC_Update(&c, ntlmResponse->data, 16);
+-    HMAC_Final(&c, session->data, &hmaclen);
+-    HMAC_CTX_cleanup(&c);
++    HMAC_CTX_reset(c);
++    HMAC_Init_ex(c, key, len, EVP_md5(), NULL);
++    HMAC_Update(c, ntlmResponse->data, 16);
++    HMAC_Final(c, session->data, &hmaclen);
++    HMAC_CTX_reset(c);
++    HMAC_CTX_free(c);
+ 
+     return 0;
+ }
+@@ -1179,7 +1183,7 @@
+ 		     struct ntlm_buf *session,
+ 		     struct ntlm_buf *encryptedSession)
+ {
+-    EVP_CIPHER_CTX c;
++    EVP_CIPHER_CTX *c = NULL;
+     int ret;
+ 
+     session->length = MD4_DIGEST_LENGTH;
+@@ -1196,25 +1200,29 @@
+ 	return ENOMEM;
+     }
+ 
+-    EVP_CIPHER_CTX_init(&c);
++    c = EVP_CIPHER_CTX_new();
++    EVP_CIPHER_CTX_init(c);
+ 
+-    ret = EVP_CipherInit_ex(&c, EVP_rc4(), NULL, base_session->data, NULL, 1);
++    ret = EVP_CipherInit_ex(c, EVP_rc4(), NULL, base_session->data, NULL, 1);
+     if (ret != 1) {
+-	EVP_CIPHER_CTX_cleanup(&c);
++	EVP_CIPHER_CTX_cleanup(c);
++	EVP_CIPHER_CTX_free(c);
+ 	heim_ntlm_free_buf(encryptedSession);
+ 	heim_ntlm_free_buf(session);
+ 	return HNTLM_ERR_CRYPTO;
+     }
+ 
+     if (RAND_bytes(session->data, session->length) != 1) {
+-	EVP_CIPHER_CTX_cleanup(&c);
++	EVP_CIPHER_CTX_cleanup(c);
++	EVP_CIPHER_CTX_free(c);
+ 	heim_ntlm_free_buf(encryptedSession);
+ 	heim_ntlm_free_buf(session);
+ 	return HNTLM_ERR_RAND;
+     }
+ 
+-    EVP_Cipher(&c, encryptedSession->data, session->data, encryptedSession->length);
+-    EVP_CIPHER_CTX_cleanup(&c);
++    EVP_Cipher(c, encryptedSession->data, session->data, encryptedSession->length);
++    EVP_CIPHER_CTX_cleanup(c);
++    EVP_CIPHER_CTX_free(c);
+ 
+     return 0;
+ 
+@@ -1309,7 +1317,7 @@
+ 		       struct ntlm_buf *encryptedSession,
+ 		       struct ntlm_buf *session)
+ {
+-    EVP_CIPHER_CTX c;
++    EVP_CIPHER_CTX *c = NULL;
+ 
+     memset(session, 0, sizeof(*session));
+ 
+@@ -1322,16 +1330,18 @@
+ 	session->length = 0;
+ 	return ENOMEM;
+     }
+-    EVP_CIPHER_CTX_init(&c);
++    c = EVP_CIPHER_CTX_new();
++    EVP_CIPHER_CTX_init(c);
+ 
+-    if (EVP_CipherInit_ex(&c, EVP_rc4(), NULL, baseKey->data, NULL, 0) != 1) {
+-	EVP_CIPHER_CTX_cleanup(&c);
++    if (EVP_CipherInit_ex(c, EVP_rc4(), NULL, baseKey->data, NULL, 0) != 1) {
++	EVP_CIPHER_CTX_cleanup(c);
++	EVP_CIPHER_CTX_free(c);
+ 	heim_ntlm_free_buf(session);
+ 	return HNTLM_ERR_CRYPTO;
+     }
+ 
+-    EVP_Cipher(&c, session->data, encryptedSession->data, session->length);
+-    EVP_CIPHER_CTX_cleanup(&c);
++    EVP_Cipher(c, session->data, encryptedSession->data, session->length);
++    EVP_CIPHER_CTX_cleanup(c);
+ 
+     return 0;
+ }
+@@ -1359,28 +1369,30 @@
+ {
+     int ret;
+     unsigned int hmaclen;
+-    HMAC_CTX c;
++    HMAC_CTX *c = NULL;
+ 
+-    HMAC_CTX_init(&c);
+-    HMAC_Init_ex(&c, key, len, EVP_md5(), NULL);
++    c = HMAC_CTX_new();
++    HMAC_CTX_reset(c);
++    HMAC_Init_ex(c, key, len, EVP_md5(), NULL);
+     {
+ 	struct ntlm_buf buf;
+ 	/* uppercase username and turn it into ucs2-le */
+ 	ret = ascii2ucs2le(username, 1, &buf);
+ 	if (ret)
+ 	    goto out;
+-	HMAC_Update(&c, buf.data, buf.length);
++	HMAC_Update(c, buf.data, buf.length);
+ 	free(buf.data);
+ 	/* uppercase target and turn into ucs2-le */
+ 	ret = ascii2ucs2le(target, 1, &buf);
+ 	if (ret)
+ 	    goto out;
+-	HMAC_Update(&c, buf.data, buf.length);
++	HMAC_Update(c, buf.data, buf.length);
+ 	free(buf.data);
+     }
+-    HMAC_Final(&c, ntlmv2, &hmaclen);
++    HMAC_Final(c, ntlmv2, &hmaclen);
+  out:
+-    HMAC_CTX_cleanup(&c);
++    HMAC_CTX_reset(c);
++    HMAC_CTX_free(c);
+ 
+     return ret;
+ }
+@@ -1790,14 +1802,15 @@
+ 			    unsigned char derivedkey[16])
+ {
+     unsigned int hmaclen;
+-    HMAC_CTX c;
++    HMAC_CTX *c = HMAC_CTX_new();
+ 
+     /* HMAC(Ksession, serverchallenge || clientchallenge) */
+-    HMAC_CTX_init(&c);
+-    HMAC_Init_ex(&c, sessionkey, 16, EVP_md5(), NULL);
+-    HMAC_Update(&c, svr_chal, 8);
+-    HMAC_Update(&c, clnt_nonce, clnt_nonce_length);
+-    HMAC_Final(&c, derivedkey, &hmaclen);
+-    HMAC_CTX_cleanup(&c);
++    HMAC_CTX_reset(c);
++    HMAC_Init_ex(c, sessionkey, 16, EVP_md5(), NULL);
++    HMAC_Update(c, svr_chal, 8);
++    HMAC_Update(c, clnt_nonce, clnt_nonce_length);
++    HMAC_Final(c, derivedkey, &hmaclen);
++    HMAC_CTX_reset(c);
++    HMAC_CTX_free(c);
+ }
+ 
+--- lightwave/vmafd/common/ssl.c	2019-04-04 22:53:51.346304420 +0000
++++ /root/lightwave-1.3.1.34/vmafd/common/ssl.c	2019-04-04 21:37:29.127151249 +0000
+@@ -19,15 +19,6 @@
+ static VMAFD_SSL_GLOBALS gVmAfdSSLGlobals = {0};
+ 
+ static
+-VOID
+-VmAfdOpenSSLLockingCallback(
+-    int mode,
+-    int index,
+-    const char* file,
+-    int line
+-    );
+-
+-static
+ DWORD
+ VecsAllocateStringAFromFile(
+     PCSTR pszPath,
+@@ -83,8 +74,6 @@
+         gVmAfdSSLGlobals.pMutexes = pMutexes;
+         pMutexes = NULL;
+         gVmAfdSSLGlobals.dwNumMutexes = dwNumLocks;
+-        CRYPTO_set_locking_callback (VmAfdOpenSSLLockingCallback);
+-
+     }
+ 
+     ERR_load_crypto_strings();
+@@ -1914,28 +1903,6 @@
+ }
+ 
+ static
+-VOID
+-VmAfdOpenSSLLockingCallback(
+-    int mode,
+-    int index,
+-    const char* file,
+-    int line
+-    )
+-{
+-    if (gVmAfdSSLGlobals.pMutexes && gVmAfdSSLGlobals.dwNumMutexes > index)
+-    {
+-        if (mode & CRYPTO_LOCK)
+-        {
+-            pthread_mutex_lock(&(gVmAfdSSLGlobals.pMutexes[index]));
+-        }
+-        else
+-        {
+-            pthread_mutex_unlock(&(gVmAfdSSLGlobals.pMutexes[index]));
+-        }
+-    }
+-}
+-
+-static
+ DWORD
+ VecsAllocateStringAFromFile(
+     PCSTR pszPath,
+--- lightwave/vmca/common/pkcs_crl.c	2019-04-04 22:53:51.394305251 +0000
++++ /root/lightwave-1.3.1.34/vmca/common/pkcs_crl.c	2019-04-04 21:37:27.919130537 +0000
+@@ -281,38 +281,29 @@
+ DWORD
+ VMCAAddCertToCRL(
+                 X509_CRL *pCrl,
+-                X509 *pCerts,
+-                DWORD dwCertCount
++                X509 *pCert
+                 )
+ {
+     DWORD dwError = 0;
+-    UINT ndx = 0;
+-    X509 *pTempCert = NULL;
+-    if(pCerts == NULL) {
++    if(pCert == NULL) {
+         dwError = ERROR_INVALID_PARAMETER;
+         BAIL_ON_ERROR(dwError);
+     }
+ 
+-    for(ndx = 0; ndx < dwCertCount; ndx ++)
+-    {
+-        X509_REVOKED *pRevoked = NULL;
+-        pTempCert = pCerts + ndx;
+-        if (pTempCert != NULL) {
+-
+-            dwError = VMCACheckNotAlreadyRevoked(pTempCert, pCrl);
+-            BAIL_ON_ERROR(dwError);
+-
+-            dwError = VMCACreateRevokedFromCert(pTempCert, &pRevoked);
+-            BAIL_ON_ERROR(dwError);
+-
+-            // Please Note : 0 functions in Open SSL means
+-            // when we free parent , children will be freed
+-            // Automatically.
++    X509_REVOKED *pRevoked = NULL;
+ 
+-            dwError = X509_CRL_add0_revoked(pCrl, pRevoked);
+-            BAIL_ON_SSL_ERROR(dwError, VMCA_CRL_ERROR);
+-        }
+-    }
++    dwError = VMCACheckNotAlreadyRevoked(pCert, pCrl);
++    BAIL_ON_ERROR(dwError);
++
++    dwError = VMCACreateRevokedFromCert(pCert, &pRevoked);
++    BAIL_ON_ERROR(dwError);
++
++    // Please Note : 0 functions in Open SSL means
++    // when we free parent , children will be freed
++    // Automatically.
++
++    dwError = X509_CRL_add0_revoked(pCrl, pRevoked);
++    BAIL_ON_SSL_ERROR(dwError, VMCA_CRL_ERROR);
+ error :
+     return dwError;
+ 
+@@ -501,7 +492,7 @@
+ 
+ DWORD
+ VMCAASN1ToTimeT(
+-        ASN1_TIME *pTime,
++        const ASN1_TIME *pTime,
+         time_t *ptmTime
+ )
+ {
+@@ -565,8 +556,8 @@
+ )
+ {
+     DWORD dwError = 0;
+-    ASN1_TIME *pLastUpdate = NULL;
+-    ASN1_TIME *pNextUpdate = NULL;
++    const ASN1_TIME *pLastUpdate = NULL;
++    const ASN1_TIME *pNextUpdate = NULL;
+ 
+     time_t tmLast = 0;
+     time_t tmNext = 0;
+@@ -580,8 +571,8 @@
+         BAIL_ON_ERROR(dwError);
+     }
+ 
+-    pLastUpdate = X509_CRL_get_lastUpdate(pCrl);
+-    pNextUpdate = X509_CRL_get_nextUpdate(pCrl);
++    pLastUpdate = X509_CRL_get0_lastUpdate(pCrl);
++    pNextUpdate = X509_CRL_get0_nextUpdate(pCrl);
+ 
+     dwError = VMCAASN1ToTimeT(pLastUpdate, &tmLast);
+     BAIL_ON_ERROR(dwError);
+@@ -680,8 +671,8 @@
+ {
+     DWORD dwError = 0;
+     X509_CRL *pCrl = NULL;
+-    ASN1_TIME *pLastUpdate = NULL;
+-    ASN1_TIME *pNextUpdate = NULL;
++    const ASN1_TIME *pLastUpdate = NULL;
++    const ASN1_TIME *pNextUpdate = NULL;
+     ASN1_INTEGER *pCrlNumber = NULL;
+     long nCrlNum = 0;
+ 
+@@ -697,8 +688,8 @@
+     dwError = VMCAFileToCRL(pszFileName, &pCrl);
+     BAIL_ON_ERROR(dwError);
+ 
+-    pLastUpdate = X509_CRL_get_lastUpdate(pCrl);
+-    pNextUpdate = X509_CRL_get_nextUpdate(pCrl);
++    pLastUpdate = X509_CRL_get0_lastUpdate(pCrl);
++    pNextUpdate = X509_CRL_get0_nextUpdate(pCrl);
+ 
+     pCrlNumber = ASN1_INTEGER_new();
+     if(pCrlNumber == NULL) {
+--- lightwave/vmca/common/pkcs_openssl.c	2019-04-04 22:53:51.394305251 +0000
++++ /root/lightwave-1.3.1.34/vmca/common/pkcs_openssl.c	2019-04-04 21:37:27.919130537 +0000
+@@ -72,7 +72,7 @@
+     }
+ }
+ 
+-static void
++void
+ VMCAOpenSSLLockingCallback(
+     int mode,
+     int index,
+@@ -188,7 +188,7 @@
+         BAIL_ON_ERROR(dwError);
+     }
+ 
+-	pPkcs8FormatKey = EVP_PKEY2PKCS8_broken(pPrivateKey,PKCS8_OK);
++	pPkcs8FormatKey = EVP_PKEY2PKCS8(pPrivateKey);
+ 	if ( pPkcs8FormatKey == NULL) {
+ 		dwError = VMCA_KEY_IO_FAILURE;
+ 		BAIL_ON_ERROR(dwError);
+@@ -3688,7 +3688,7 @@
+     )
+ {
+     DWORD   dwError = 0;
+-    EVP_MD_CTX  mdCtx = {0};
++    EVP_MD_CTX  *mdCtx = NULL;
+     unsigned char   md[EVP_MAX_MD_SIZE] = {0};
+     unsigned int    mdSize = 0;
+     unsigned char*  pMD = NULL;
+@@ -3698,21 +3698,22 @@
+         BAIL_WITH_ERROR(dwError, VMCA_ARGUMENT_ERROR);
+     }
+ 
+-    EVP_MD_CTX_init(&mdCtx);
++    mdCtx = EVP_MD_CTX_new();
++    EVP_MD_CTX_reset(mdCtx);
+ 
+-    if (EVP_DigestInit_ex(&mdCtx, digestMethod, NULL) == 0)
++    if (EVP_DigestInit_ex(mdCtx, digestMethod, NULL) == 0)
+     {
+         VMCA_LOG_ERROR("%s: EVP_DigestInit_ex returned 0", __FUNCTION__);
+         BAIL_WITH_ERROR(dwError, VMCA_ERROR_EVP_DIGEST);
+     }
+ 
+-    if (EVP_DigestUpdate(&mdCtx, pData, dataSize) == 0)
++    if (EVP_DigestUpdate(mdCtx, pData, dataSize) == 0)
+     {
+         VMCA_LOG_ERROR("%s: EVP_DigestUpdate returned 0", __FUNCTION__);
+         BAIL_WITH_ERROR(dwError, VMCA_ERROR_EVP_DIGEST);
+     }
+ 
+-    if (EVP_DigestFinal_ex(&mdCtx, md, &mdSize) == 0)
++    if (EVP_DigestFinal_ex(mdCtx, md, &mdSize) == 0)
+     {
+         VMCA_LOG_ERROR("%s: EVP_DigestFinal_ex returned 0", __FUNCTION__);
+         BAIL_WITH_ERROR(dwError, VMCA_ERROR_EVP_DIGEST);
+@@ -3728,7 +3729,8 @@
+     *pMDSize = mdSize;
+ 
+ cleanup:
+-    EVP_MD_CTX_cleanup(&mdCtx);
++    EVP_MD_CTX_reset(mdCtx);
++    EVP_MD_CTX_free(mdCtx);
+     return dwError;
+ 
+ error:
+--- lightwave/vmca/include/vmcacommon.h	2019-04-04 22:53:51.394305251 +0000
++++ /root/lightwave-1.3.1.34/vmca/include/vmcacommon.h	2019-04-04 21:37:27.915130469 +0000
+@@ -1150,8 +1150,7 @@
+ DWORD
+ VMCAAddCertToCRL(
+                 X509_CRL *pCrl,
+-                X509 *pCerts,
+-                DWORD dwCertCount
++                X509 *pCert
+ );
+ 
+ DWORD
+@@ -1195,7 +1194,7 @@
+ 
+ DWORD
+ VMCAASN1ToTimeT(
+-        ASN1_TIME *pTime,
++        const ASN1_TIME *pTime,
+         time_t *ptmTime
+ );
+ 
+--- lightwave/vmca/service/common/opensslutil.c	2019-04-04 22:53:51.398305321 +0000
++++ /root/lightwave-1.3.1.34/vmca/service/common/opensslutil.c	2019-04-04 21:37:27.915130469 +0000
+@@ -330,7 +330,7 @@
+     }
+     if (pExts)
+     {
+-        sk_GENERAL_NAME_pop_free(pExts, X509_EXTENSION_free);
++        sk_X509_EXTENSION_pop_free(pExts, X509_EXTENSION_free);
+         pExts = NULL;
+     }
+     if (pCSR)
+--- lightwave/vmca/service/entrypoints.c	2019-04-04 22:53:51.402305389 +0000
++++ /root/lightwave-1.3.1.34/vmca/service/entrypoints.c	2019-04-04 21:37:27.915130469 +0000
+@@ -1128,7 +1128,7 @@
+     dwError = VMCAPEMToX509(pszCertificate, &pCert);
+     BAIL_ON_VMCA_ERROR(dwError);
+ 
+-    dwError = VMCAAddCertToCRL(pCrl, pCert, 1);
++    dwError = VMCAAddCertToCRL(pCrl, pCert);
+     BAIL_ON_VMCA_ERROR(dwError);
+ 
+     dwError = VMCASortCRL(pCrl);
+@@ -1346,7 +1346,7 @@
+             &pCert);
+         BAIL_ON_VMCA_ERROR(dwError);
+ 
+-        dwError = VMCAAddCertToCRL(pCrl, pCert , 1);
++        dwError = VMCAAddCertToCRL(pCrl, pCert);
+         BAIL_ON_VMCA_ERROR(dwError);
+ 
+         X509_free(pCert);
+--- lightwave/vmca/service/init.c	2019-04-04 22:53:51.402305389 +0000
++++ /root/lightwave-1.3.1.34/vmca/service/init.c	2019-04-04 21:37:27.915130469 +0000
+@@ -235,7 +235,7 @@
+     dwError = VMCACreateCA( pRootCACert, pPrivateKey, NULL, &pCA);
+     BAIL_ON_VMCA_ERROR(dwError);
+ 
+-    if (BN_num_bits(pCA->pKey->pkey.rsa->n) < VMCA_MIN_CA_CERT_PRIV_KEY_LENGTH)
++    if (EVP_PKEY_bits(pCA->pKey) < VMCA_MIN_CA_CERT_PRIV_KEY_LENGTH)
+     {
+         dwError = VMCA_ERROR_INVALID_KEY_LENGTH;
+         BAIL_ON_VMCA_ERROR(dwError);
+--- lightwave/vmca/service/utils.c	2019-04-04 22:53:51.402305389 +0000
++++ /root/lightwave-1.3.1.34/vmca/service/utils.c	2019-04-04 21:37:27.911130400 +0000
+@@ -270,8 +270,8 @@
+     // Verify the Public Key is good and the signature is
+     // indeed for that key.
+     //
+-    if (pPublicKey->type != EVP_PKEY_RSA ||
+-        BN_num_bits(pPublicKey->pkey.rsa->n) < VMCA_MIN_CA_CERT_PRIV_KEY_LENGTH)
++    if (EVP_PKEY_id(pPublicKey) != EVP_PKEY_RSA ||
++        EVP_PKEY_bits(pPublicKey) < VMCA_MIN_CA_CERT_PRIV_KEY_LENGTH)
+     {
+         VMCA_LOG_INFO("VMCASignedRequestPrivate: Key length not supported");
+         dwError = VMCA_ERROR_INVALID_KEY_LENGTH;
+@@ -401,24 +401,24 @@
+         BAIL_ON_VMCA_ERROR(dwError);
+     }
+ 
+-    if (((pCertificate->ex_flags & EXFLAG_KUSAGE) &&
+-         (pCertificate->ex_kusage & KU_KEY_CERT_SIGN)))
++    if (((X509_get_extension_flags(pCertificate) & EXFLAG_KUSAGE) &&
++         (X509_get_key_usage(pCertificate) & KU_KEY_CERT_SIGN)))
+     {
+         VMCA_LOG_INFO("Request for a certificate signing cert is not allowed");
+         dwError = VMCA_INVALID_CSR_FIELD;
+         BAIL_ON_VMCA_ERROR(dwError);
+     }
+ 
+-    if (((pCertificate->ex_flags & EXFLAG_KUSAGE) &&
+-         (pCertificate->ex_kusage & KU_CRL_SIGN)))
++    if (((X509_get_extension_flags(pCertificate) & EXFLAG_KUSAGE) &&
++         (X509_get_key_usage(pCertificate) & KU_CRL_SIGN)))
+     {
+         VMCA_LOG_INFO("Request for a CRL signing cert is not allowed");
+         dwError = VMCA_INVALID_CSR_FIELD;
+         BAIL_ON_VMCA_ERROR(dwError);
+     }
+ 
+-    if (((pCertificate->ex_flags & EXFLAG_KUSAGE) &&
+-         (pCertificate->ex_kusage & KU_DATA_ENCIPHERMENT)))
++    if (((X509_get_extension_flags(pCertificate) & EXFLAG_KUSAGE) &&
++         (X509_get_key_usage(pCertificate) & KU_DATA_ENCIPHERMENT)))
+     {
+         VMCA_LOG_INFO("Request for a cert with data encryption key usage is not allowed");
+         dwError = VMCA_INVALID_CSR_FIELD;
+--- lightwave/vmcommon/vmsignature.c	2019-04-04 22:53:51.410305529 +0000
++++ /root/lightwave-1.3.1.34/vmcommon/vmsignature.c	2019-04-04 21:37:27.903130263 +0000
+@@ -39,7 +39,7 @@
+ {
+     DWORD           dwError = 0;
+     unsigned char   *pMD = NULL;
+-    EVP_MD_CTX      mdctx = {0};
++    EVP_MD_CTX      *mdctx = NULL;
+     unsigned char   md[EVP_MAX_MD_SIZE] = {0};
+     unsigned int    mdSize = 0;
+     const EVP_MD    *pDigestMethod = NULL;
+@@ -50,24 +50,25 @@
+         BAIL_ON_VM_COMMON_ERROR(dwError);
+     }
+ 
+-    EVP_MD_CTX_init(&mdctx);
++    mdctx = EVP_MD_CTX_create();
++    EVP_MD_CTX_init(mdctx);
+ 
+     dwError = _VmSignatureGetEvpMethod(digestMethod, &pDigestMethod);
+     BAIL_ON_VM_COMMON_ERROR(dwError);
+ 
+-    if (!EVP_DigestInit_ex(&mdctx, pDigestMethod, NULL))
++    if (!EVP_DigestInit_ex(mdctx, pDigestMethod, NULL))
+     {
+         dwError = VM_COMMON_ERROR_OPENSSL_FAILURE;
+         BAIL_ON_VM_COMMON_ERROR(dwError);
+     }
+ 
+-    if (!EVP_DigestUpdate(&mdctx, pData, dataSize))
++    if (!EVP_DigestUpdate(mdctx, pData, dataSize))
+     {
+         dwError = VM_COMMON_ERROR_OPENSSL_FAILURE;
+         BAIL_ON_VM_COMMON_ERROR(dwError);
+     }
+ 
+-    if (!EVP_DigestFinal_ex(&mdctx, md, &mdSize))
++    if (!EVP_DigestFinal_ex(mdctx, md, &mdSize))
+     {
+         dwError = VM_COMMON_ERROR_OPENSSL_FAILURE;
+         BAIL_ON_VM_COMMON_ERROR(dwError);
+@@ -83,7 +84,8 @@
+     *pMDSize = mdSize;
+ 
+ cleanup:
+-    EVP_MD_CTX_cleanup(&mdctx);
++    EVP_MD_CTX_reset(mdctx);
++    EVP_MD_CTX_free(mdctx);
+     return dwError;
+ 
+ error:
+@@ -326,4 +328,4 @@
+     }
+ 
+     goto cleanup;
+-}
+\ No newline at end of file
++}
+--- lightwave/vmdir/client/client.c	2019-04-04 22:53:51.414305597 +0000
++++ /root/lightwave-1.3.1.34/vmdir/client/client.c	2019-04-04 21:37:29.687160852 +0000
+@@ -727,7 +727,7 @@
+ 
+     // Generate an initial DC account password and store it in the registry.
+ 
+-    err = RAND_pseudo_bytes(pszDCAccountPassword, VMDIR_KDC_RANDOM_PWD_LEN);
++    err = RAND_bytes(pszDCAccountPassword, VMDIR_KDC_RANDOM_PWD_LEN);
+     for (i=0; i<VMDIR_KDC_RANDOM_PWD_LEN; i++)
+     {
+         pszDCAccountPassword[i] &= 0x7f;
+--- lightwave/vmdir/common/opensslclient.c	2019-04-04 22:53:51.418305667 +0000
++++ /root/lightwave-1.3.1.34/vmdir/common/opensslclient.c	2019-04-04 21:37:29.895164408 +0000
+@@ -82,7 +82,7 @@
+                        "cert (%s) used in ssl server cert verification",
+                        VDIR_SAFE_STRING(pszTrustCertFile) );
+ 
+-    pSslCtx = SSL_CTX_new(TLSv1_method());
++    pSslCtx = SSL_CTX_new(TLS_method());
+     if (!pSslCtx)
+     {
+         dwError = VMDIR_ERROR_NO_SSL_CTX;
+@@ -157,12 +157,12 @@
+ 
+     // Since we override default verify callback, pStore is fresh and has not yet been accessed.
+     // pStore->cert is the target certificate we want to verify.
+-    if ( pArg && pStore && pStore->cert)
++    if ( pArg && pStore && X509_STORE_CTX_get_current_cert(pStore))
+     {
+         dwError = _VmDirReadCertFromFile( (PSTR)pArg, &pLocalX509);
+         BAIL_ON_VMDIR_ERROR(dwError);
+ 
+-        dwError = _VmDirGetCertThumbPrint( pStore->cert, &pByteCertRemote, &pRemoteSize);
++        dwError = _VmDirGetCertThumbPrint( X509_STORE_CTX_get_current_cert(pStore), &pByteCertRemote, &pRemoteSize);
+         BAIL_ON_VMDIR_ERROR(dwError);
+ 
+         dwError = _VmDirGetCertThumbPrint( pLocalX509, &pByteCertLocal, &pLocalSize);
+--- lightwave/vmdir/common/opensslutil.c	2019-04-04 22:53:51.418305667 +0000
++++ /root/lightwave-1.3.1.34/vmdir/common/opensslutil.c	2019-04-04 21:37:29.895164408 +0000
+@@ -24,7 +24,7 @@
+     )
+ {
+     DWORD   dwError = 0;
+-    EVP_MD_CTX  mdCtx = {0};
++    EVP_MD_CTX      *pMDCtx = NULL;
+     unsigned char   md[EVP_MAX_MD_SIZE] = {0};
+     unsigned int    mdSize = 0;
+     unsigned char*  pMD = NULL;
+@@ -34,21 +34,22 @@
+         BAIL_WITH_VMDIR_ERROR(dwError, VMDIR_ERROR_INVALID_PARAMETER);
+     }
+ 
+-    EVP_MD_CTX_init(&mdCtx);
++    pMDCtx = EVP_MD_CTX_new();
++    EVP_MD_CTX_init(pMDCtx);
+ 
+-    if (EVP_DigestInit_ex(&mdCtx, digestMethod, NULL) == 0)
++    if (EVP_DigestInit_ex(pMDCtx, digestMethod, NULL) == 0)
+     {
+         VMDIR_LOG_ERROR(VMDIR_LOG_MASK_ALL, "%s: EVP_DigestInit_ex returned 0", __FUNCTION__);
+         BAIL_WITH_VMDIR_ERROR(dwError, VMDIR_ERROR_SSL);
+     }
+ 
+-    if (EVP_DigestUpdate(&mdCtx, pData, dataSize) == 0)
++    if (EVP_DigestUpdate(pMDCtx, pData, dataSize) == 0)
+     {
+         VMDIR_LOG_ERROR(VMDIR_LOG_MASK_ALL, "%s: EVP_DigestUpdate returned 0", __FUNCTION__);
+         BAIL_WITH_VMDIR_ERROR(dwError, VMDIR_ERROR_SSL);
+     }
+ 
+-    if (EVP_DigestFinal_ex(&mdCtx, md, &mdSize) == 0)
++    if (EVP_DigestFinal_ex(pMDCtx, md, &mdSize) == 0)
+     {
+         VMDIR_LOG_ERROR(VMDIR_LOG_MASK_ALL, "%s: EVP_DigestFinal_ex returned 0", __FUNCTION__);
+         BAIL_WITH_VMDIR_ERROR(dwError, VMDIR_ERROR_SSL);
+@@ -61,7 +62,11 @@
+     *pMDSize = mdSize;
+ 
+ cleanup:
+-    EVP_MD_CTX_cleanup(&mdCtx);
++    if (pMDCtx)
++    {
++        EVP_MD_CTX_reset(pMDCtx);
++        EVP_MD_CTX_free(pMDCtx);
++    }
+     return dwError;
+ 
+ error:
+--- lightwave/vmdir/gssapi-plugins/srp/gssapiP_srp.h	2019-04-04 22:53:51.434305944 +0000
++++ /root/lightwave-1.3.1.34/vmdir/gssapi-plugins/srp/gssapiP_srp.h	2019-04-04 21:37:29.895164408 +0000
+@@ -154,7 +154,7 @@
+         AES_KEY           aes_decrypt_key;
+         unsigned char     aes_encrypt_iv[AES_BLOCK_SIZE];
+         unsigned char     aes_decrypt_iv[AES_BLOCK_SIZE];
+-        HMAC_CTX          hmac_ctx;
++        HMAC_CTX          *hmac_ctx;
+         char              *upn_name;     /* Kerberos UPN Name */
+         gss_name_t        gss_upn_name;  /* GSS UPN Name */
+         unsigned char     *srp_session_key;
+--- lightwave/vmdir/gssapi-plugins/srp/srp_encrypt.c	2019-04-04 22:53:51.434305944 +0000
++++ /root/lightwave-1.3.1.34/vmdir/gssapi-plugins/srp/srp_encrypt.c	2019-04-04 21:37:29.895164408 +0000
+@@ -101,24 +101,24 @@
+ 
+ static int
+ srp_init_hmac(
+-    HMAC_CTX *phctx,
++    HMAC_CTX **phctx,
+     unsigned char *key,
+     int key_len)
+ {
+     int sts = 0;
+-    HMAC_CTX hctx;
++    HMAC_CTX *hctx = NULL;
+     unsigned char md[40] = {0};
+     unsigned int mdlen = 0;
+ 
+-    memset(&hctx, 0, sizeof(hctx));
+-    HMAC_CTX_init(&hctx);
+-    sts = HMAC_Init_ex(&hctx, key, key_len, EVP_sha1(), NULL);
++    hctx = HMAC_CTX_new();
++    HMAC_CTX_reset(hctx);
++    sts = HMAC_Init_ex(hctx, key, key_len, EVP_sha1(), NULL);
+     if (sts == 0)
+     {
+         return sts;
+     }
+-    HMAC_Update(&hctx, "", 0);
+-    HMAC_Final(&hctx, md, &mdlen);
++    HMAC_Update(hctx, "", 0);
++    HMAC_Final(hctx, md, &mdlen);
+ 
+     *phctx = hctx;
+     return 0;
+@@ -126,7 +126,7 @@
+ 
+ static int
+ srp_compute_hmac(
+-    HMAC_CTX hctx,
++    HMAC_CTX *hctx,
+     unsigned char *data,
+     int data_len,
+     unsigned char *md,
+@@ -135,17 +135,17 @@
+     int sts = 0;
+ 
+     /* These functions return 0 on error, 1 for success */
+-    sts = HMAC_Init_ex(&hctx, NULL, 0, EVP_sha1(), NULL);
++    sts = HMAC_Init_ex(hctx, NULL, 0, EVP_sha1(), NULL);
+     if (sts == 0)
+     {
+         return sts;
+     }
+-    sts = HMAC_Update(&hctx, data, data_len);
++    sts = HMAC_Update(hctx, data, data_len);
+     if (sts == 0)
+     {
+         return sts;
+     }
+-    sts = HMAC_Final(&hctx, md, md_len);
++    sts = HMAC_Final(hctx, md, md_len);
+     if (sts == 0)
+     {
+         return sts;
+--- lightwave/vmdir/gssapi-plugins/unix/gssapiP_unix.h	2019-04-04 22:53:51.434305944 +0000
++++ /root/lightwave-1.3.1.34/vmdir/gssapi-plugins/unix/gssapiP_unix.h	2019-04-04 21:37:29.895164408 +0000
+@@ -163,7 +163,7 @@
+         unsigned char     aes_encrypt_iv[AES_BLOCK_SIZE];
+         unsigned char     aes_decrypt_iv[AES_BLOCK_SIZE];
+ #endif
+-        HMAC_CTX          hmac_ctx;
++        HMAC_CTX          *hmac_ctx;
+         char              *unix_username; /* UNIX username */
+         char              *upn_name;     /* Kerberos UPN Name */
+         unsigned char     *srp_session_key;
+--- lightwave/vmdir/gssapi-plugins/unix/unix_encrypt.c	2019-04-04 22:53:51.438306014 +0000
++++ /root/lightwave-1.3.1.34/vmdir/gssapi-plugins/unix/unix_encrypt.c	2019-04-04 21:37:29.895164408 +0000
+@@ -108,24 +108,24 @@
+ 
+ static int
+ srp_init_hmac(
+-    HMAC_CTX *phctx,
++    HMAC_CTX **phctx,
+     unsigned char *key,
+     int key_len)
+ {
+     int sts = 0;
+-    HMAC_CTX hctx;
++    HMAC_CTX *hctx;
+     unsigned char md[40] = {0};
+     unsigned int mdlen = 0;
+ 
+-    memset(&hctx, 0, sizeof(hctx));
+-    HMAC_CTX_init(&hctx);
+-    sts = HMAC_Init_ex(&hctx, key, key_len, EVP_sha1(), NULL);
++    hctx = HMAC_CTX_new();
++    HMAC_CTX_reset(hctx);
++    sts = HMAC_Init_ex(hctx, key, key_len, EVP_sha1(), NULL);
+     if (sts == 0)
+     {
+         return sts;
+     }
+-    HMAC_Update(&hctx, "", 0);
+-    HMAC_Final(&hctx, md, &mdlen);
++    HMAC_Update(hctx, "", 0);
++    HMAC_Final(hctx, md, &mdlen);
+ 
+     *phctx = hctx;
+     return 0;
+@@ -133,7 +133,7 @@
+ 
+ static int
+ srp_compute_hmac(
+-    HMAC_CTX hctx,
++    HMAC_CTX *hctx,
+     unsigned char *data,
+     int data_len,
+     unsigned char *md,
+@@ -142,17 +142,17 @@
+     int sts = 0;
+ 
+     /* These functions return 0 on error, 1 for success */
+-    sts = HMAC_Init_ex(&hctx, NULL, 0, EVP_sha1(), NULL);
++    sts = HMAC_Init_ex(hctx, NULL, 0, EVP_sha1(), NULL);
+     if (sts == 0)
+     {
+         return sts;
+     }
+-    sts = HMAC_Update(&hctx, data, data_len);
++    sts = HMAC_Update(hctx, data, data_len);
+     if (sts == 0)
+     {
+         return sts;
+     }
+-    sts = HMAC_Final(&hctx, md, md_len);
++    sts = HMAC_Final(hctx, md, md_len);
+     if (sts == 0)
+     {
+         return sts;
+--- lightwave/vmdir/server/common/srp.c	2019-04-04 22:53:51.482306776 +0000
++++ /root/lightwave-1.3.1.34/vmdir/server/common/srp.c	2019-04-04 21:37:29.895164408 +0000
+@@ -69,7 +69,7 @@
+     PCSTR           pszUser,
+     PVDIR_BERVALUE  pBervPass,
+     PVDIR_BERVALUE  pBervSalt,
+-    BIGNUM*         pX
++    BIGNUM**        ppX
+     );
+ 
+ static
+@@ -80,7 +80,7 @@
+     PCSTR           pszUPN,
+     PVDIR_BERVALUE  pBervPass,
+     PVDIR_BERVALUE  pBervSalt,
+-    BIGNUM*         pv
++    BIGNUM**        ppv
+     );
+ 
+ 
+@@ -297,6 +297,7 @@
+     return dwError;
+ 
+ error:
++    VMDIR_LOG_ERROR(VMDIR_LOG_MASK_ALL, "%s failed, error %d", __FUNCTION__, dwError);
+ 
+     VMDIR_SAFE_FREE_MEMORY( pLocalEncodedByte );
+     pBervSecretBlob->bOwnBvVal = FALSE;
+@@ -314,7 +315,7 @@
+     PCSTR           pszUser,
+     PVDIR_BERVALUE  pBervPass,
+     PVDIR_BERVALUE  pBervSalt,
+-    BIGNUM*         pX
++    BIGNUM**        ppX
+     )
+ {
+     DWORD       dwError = SASL_OK;
+@@ -322,47 +323,60 @@
+     int	        iHashBufOneLen;
+     char        hashBufTwo[EVP_MAX_MD_SIZE]={0};
+     int	        iHashBufTwoLen;
++    BIGNUM*     pX = NULL;
+ 
+-    EVP_MD_CTX  EVPMDCtxOne = {0};
+-    EVP_MD_CTX  EVPMDCtxTwo = {0};
++    EVP_MD_CTX  *pEVPMDCtxOne = NULL;
++    EVP_MD_CTX  *pEVPMDCtxTwo = NULL;
+ 
+-    if ( pMD == NULL || pszUser == NULL || pBervPass == NULL || pBervSalt == NULL || pX == NULL )
++    if ( pMD == NULL || pszUser == NULL || pBervPass == NULL || pBervSalt == NULL || ppX == NULL )
+     {
+         dwError = VMDIR_ERROR_INVALID_PARAMETER;
+         BAIL_ON_VMDIR_ERROR(dwError);
+     }
+ 
++    pEVPMDCtxOne = EVP_MD_CTX_create();
++    if (!pEVPMDCtxOne)
++    {
++        dwError = VMDIR_ERROR_SRP;
++        BAIL_ON_VMDIR_ERROR(dwError);
++    }
+     //  H(user | ':' | pass)
+-    if ( (EVP_DigestInit  ( &EVPMDCtxOne, pMD) != 1)
++    if ( (EVP_DigestInit  ( pEVPMDCtxOne, pMD) != 1)
+          ||
+-         (EVP_DigestUpdate( &EVPMDCtxOne, pszUser, strlen(pszUser)) != 1)
++         (EVP_DigestUpdate( pEVPMDCtxOne, pszUser, strlen(pszUser)) != 1)
+          ||
+-         (EVP_DigestUpdate( &EVPMDCtxOne, ":", 1) != 1)
++         (EVP_DigestUpdate( pEVPMDCtxOne, ":", 1) != 1)
+          ||
+-         (EVP_DigestUpdate( &EVPMDCtxOne, pBervPass->lberbv_val, pBervPass->lberbv_len ) != 1)
++         (EVP_DigestUpdate( pEVPMDCtxOne, pBervPass->lberbv_val, pBervPass->lberbv_len ) != 1)
+          ||
+-         (EVP_DigestFinal ( &EVPMDCtxOne, &(hashBufOne[0]), &iHashBufOneLen) != 1)
++         (EVP_DigestFinal ( pEVPMDCtxOne, &(hashBufOne[0]), &iHashBufOneLen) != 1)
+        )
+     {
+         dwError = VMDIR_ERROR_SRP;
+         BAIL_ON_VMDIR_ERROR(dwError);
+     }
+ 
++    pEVPMDCtxTwo = EVP_MD_CTX_create();
++    if (!pEVPMDCtxTwo)
++    {
++        dwError = VMDIR_ERROR_SRP;
++        BAIL_ON_VMDIR_ERROR(dwError);
++    }
+     // x = H(salt | H(user | ':' | pass))
+-    if ( (EVP_DigestInit  ( &EVPMDCtxTwo, pMD) != 1)
++    if ( (EVP_DigestInit  ( pEVPMDCtxTwo, pMD) != 1)
+          ||
+-         (EVP_DigestUpdate( &EVPMDCtxTwo, pBervSalt->lberbv_val, pBervSalt->lberbv_len ) != 1)
++         (EVP_DigestUpdate( pEVPMDCtxTwo, pBervSalt->lberbv_val, pBervSalt->lberbv_len ) != 1)
+          ||
+-         (EVP_DigestUpdate( &EVPMDCtxTwo, &(hashBufOne[0]), iHashBufOneLen ) != 1)
++         (EVP_DigestUpdate( pEVPMDCtxTwo, &(hashBufOne[0]), iHashBufOneLen ) != 1)
+          ||
+-         (EVP_DigestFinal ( &EVPMDCtxTwo, &(hashBufTwo[0]), &iHashBufTwoLen) != 1)
++         (EVP_DigestFinal ( pEVPMDCtxTwo, &(hashBufTwo[0]), &iHashBufTwoLen) != 1)
+        )
+     {
+         dwError = VMDIR_ERROR_SRP;
+         BAIL_ON_VMDIR_ERROR(dwError);
+     }
+ 
+-    BN_init(pX);
++    pX = BN_new();
+ 
+     if (BN_bin2bn(hashBufTwo, iHashBufTwoLen, pX) == NULL)
+     {
+@@ -370,12 +384,28 @@
+         BAIL_ON_VMDIR_ERROR(dwError);
+     }
+ 
+-error:
++    *ppX = pX;
++
++cleanup:
+ 
+-    EVP_MD_CTX_cleanup( &EVPMDCtxOne);
+-    EVP_MD_CTX_cleanup( &EVPMDCtxTwo);
++    if (pEVPMDCtxOne)
++    {
++        EVP_MD_CTX_destroy( pEVPMDCtxOne);
++    }
++    if (pEVPMDCtxTwo)
++    {
++        EVP_MD_CTX_destroy( pEVPMDCtxTwo);
++    }
+ 
+     return dwError;
++
++error:
++    VMDIR_LOG_ERROR(VMDIR_LOG_MASK_ALL, "%s failed, error %d", __FUNCTION__, dwError);
++    if (pX)
++    {
++        BN_clear_free(pX);
++    }
++    goto cleanup;
+ }
+ 
+ //////////////////////////////////////////////////
+@@ -389,14 +419,15 @@
+     PCSTR           pszUPN,
+     PVDIR_BERVALUE  pBervPass,
+     PVDIR_BERVALUE  pBervSalt,
+-    BIGNUM*         pv)
++    BIGNUM**        ppv)
+ {
+     DWORD           dwError = 0;
+-    BIGNUM          x = {0};
++    BIGNUM          *x = NULL;
++    BIGNUM          *pv = NULL;
+     BN_CTX*         pCtx = BN_CTX_new();
+     const EVP_MD*   pSHA1Hash = EVP_get_digestbyname( gSASLMDAName[1] );
+ 
+-    if ( pN == NULL || pg == NULL || pszUPN == NULL || pBervPass == NULL || pBervSalt == NULL || pv == NULL )
++    if ( pN == NULL || pg == NULL || pszUPN == NULL || pBervPass == NULL || pBervSalt == NULL || ppv == NULL )
+     {
+         dwError = VMDIR_ERROR_INVALID_PARAMETER;
+         BAIL_ON_VMDIR_ERROR(dwError);
+@@ -412,14 +443,16 @@
+     BAIL_ON_VMDIR_ERROR(dwError);
+ 
+     // v = g^x % N
+-    BN_init(pv);
++    pv = BN_new();
+ 
+-    if ( BN_mod_exp(pv, pg, &x, pN, pCtx) != 1)
++    if ( BN_mod_exp(pv, pg, x, pN, pCtx) != 1)
+     {
+         dwError = VMDIR_ERROR_SRP;
+         BAIL_ON_VMDIR_ERROR(dwError);
+     }
+ 
++    *ppv = pv;
++
+ cleanup:
+ 
+     if ( pCtx)
+@@ -427,11 +460,19 @@
+         BN_CTX_free( pCtx );
+     }
+ 
+-    BN_free( &x );
++    if (x)
++    {
++        BN_free( x );
++    }
+ 
+     return dwError;
+ 
+ error:
++    VMDIR_LOG_ERROR(VMDIR_LOG_MASK_ALL, "%s failed, error %d", __FUNCTION__, dwError);
++    if (pv)
++    {
++        BN_clear_free(pv);
++    }
+     goto cleanup;
+ }
+ 
+@@ -451,7 +492,7 @@
+     DWORD           dwLocalSaltLen = 16;  // to match SASL implementation
+     BIGNUM*         psrp_N = NULL;
+     BIGNUM*         psrp_g = NULL;
+-    BIGNUM          srp_v = {0};
++    BIGNUM*         psrp_v = {0};
+ 
+     if ( pszUPN == NULL || pBervPass == NULL || pBervV == NULL || pBervSalt == NULL )
+     {
+@@ -475,7 +516,7 @@
+     dwError = VmDirAllocateMemory( dwLocalSaltLen, (PVOID)&pLocalSalt);
+     BAIL_ON_VMDIR_ERROR(dwError);
+ 
+-    if (RAND_pseudo_bytes(pLocalSalt, dwLocalSaltLen) != 1)
++    if (RAND_bytes(pLocalSalt, dwLocalSaltLen) != 1)
+     {
+         dwError = VMDIR_ERROR_SRP;
+         BAIL_ON_VMDIR_ERROR(dwError);
+@@ -486,13 +527,13 @@
+     pBervSalt->bOwnBvVal  = TRUE;
+     pLocalSalt = NULL;
+ 
+-    dwError = _VmDirSRPCalculateV( psrp_N, psrp_g, pszUPN, pBervPass, pBervSalt, &srp_v);
++    dwError = _VmDirSRPCalculateV( psrp_N, psrp_g, pszUPN, pBervPass, pBervSalt, &psrp_v);
+     BAIL_ON_VMDIR_ERROR(dwError);
+ 
+-    dwLocalVLen = BN_num_bytes( &srp_v );
++    dwLocalVLen = BN_num_bytes( psrp_v );
+     dwError = VmDirAllocateMemory( dwLocalVLen, (PVOID)&pLocalV);
+     BAIL_ON_VMDIR_ERROR(dwError);
+-    BN_bn2bin( &srp_v, pLocalV);
++    BN_bn2bin( psrp_v, pLocalV);
+ 
+     pBervV->lberbv_val = pLocalV;
+     pBervV->lberbv_len = (ber_len_t)dwLocalVLen;
+@@ -511,12 +552,15 @@
+         BN_free(psrp_g);
+     }
+ 
+-    BN_free(&srp_v);
++    if (psrp_v)
++    {
++        BN_free(psrp_v);
++    }
+ 
+     return dwError;
+ 
+ error:
+-
++    VMDIR_LOG_ERROR(VMDIR_LOG_MASK_ALL, "%s failed, error %d", __FUNCTION__, dwError);
+     pBervSalt->bOwnBvVal  = FALSE;
+     pBervV->bOwnBvVal     = FALSE;
+     VMDIR_SAFE_FREE_MEMORY( pLocalV );
+@@ -645,8 +689,11 @@
+         BAIL_ON_VMDIR_ERROR(dwError);
+     }
+ 
+-error:
++cleanup:
+     srp_verifier_delete(ver);
+     srp_user_delete(usr);
+     return dwError;
++error:
++    VMDIR_LOG_ERROR(VMDIR_LOG_MASK_ALL, "%s failed, error %d", __FUNCTION__, dwError);
++    goto cleanup;
+ }
+--- lightwave/vmdir/server/ldap-head/openssl.c	2019-04-04 22:53:51.494306984 +0000
++++ /root/lightwave-1.3.1.34/vmdir/server/ldap-head/openssl.c	2019-04-04 21:37:29.895164408 +0000
+@@ -85,21 +85,6 @@
+     );
+ 
+ static
+-VOID
+-_VmDirOpensslLockingFunc(
+-    int         mode,
+-    int         lockNum,
+-    const char *file,
+-    int         line
+-    );
+-
+-static
+-unsigned long
+-_VmDirOpensslIdFunc(
+-    VOID
+-    );
+-
+-static
+ DWORD
+ _VmDirCtxSetCipherSuite(
+     SSL_CTX*    pSslCtx
+@@ -369,13 +354,6 @@
+         pthread_mutex_init( &(gVmdirOpensslGlobals.pMutexBuf[dwSize]), NULL);
+     }
+ 
+-    ////////////////////////////////////////////////////////////////////////////////////////////////
+-    // http://www.openssl.org/docs/crypto/threads.html
+-    // To make openssl functions thread safe, we need to register at least following two functions.
+-    ///////////////////////////////////////////////////////////////////////////////////////////////
+-    CRYPTO_set_locking_callback( _VmDirOpensslLockingFunc );
+-    CRYPTO_set_id_callback( _VmDirOpensslIdFunc );
+-
+     // always return 1
+     iSslRet = SSL_library_init();
+     if ( iSslRet != 1 )
+@@ -475,7 +453,6 @@
+         SSL_CTX_free(gVmdirGlobals.gpVdirSslCtx);
+     }
+ 
+-    ERR_remove_state(0);
+     ERR_free_strings();
+     EVP_cleanup();
+     CRYPTO_cleanup_all_ex_data();
+@@ -762,49 +739,6 @@
+     return;
+ }
+ 
+-/**
+- * OpenSSL locking function.
+- *
+- * @param    mode    lock mode
+- * @param    lockNum lock number
+- * @param    file    source file name
+- * @param    line    source file line number
+- * @return   none
+- */
+-static
+-VOID
+-_VmDirOpensslLockingFunc(
+-    int         mode,
+-    int         lockNum,
+-    const char *file,
+-    int         line
+-    )
+-{
+-    if (mode & CRYPTO_LOCK) {
+-        pthread_mutex_lock( &(gVmdirOpensslGlobals.pMutexBuf[lockNum]) );
+-    } else {
+-        pthread_mutex_unlock( &(gVmdirOpensslGlobals.pMutexBuf[lockNum]) );
+-    }
+-}
+-
+-/**
+- * OpenSSL uniq id function.
+- *
+- * @return    thread id
+- */
+-static
+-unsigned long
+-_VmDirOpensslIdFunc(
+-    VOID
+-    )
+-{
+-#ifdef _WIN32
+-    return ((unsigned long) (pthread_self().p));
+-#else
+-    return ((unsigned long) pthread_self());
+-#endif
+-}
+-
+ static
+ VOID
+ _VmDirCtxSetOptions(
+--- lightwave/vmdir/server/middle-layer/password.c	2019-04-04 22:53:51.502307124 +0000
++++ /root/lightwave-1.3.1.34/vmdir/server/middle-layer/password.c	2019-04-04 21:37:29.891164339 +0000
+@@ -427,8 +427,9 @@
+         RAND_pseudo_bytes() returns 1 if the bytes generated are cryptographically
+         strong, 0 otherwise. It return -1 if they are not supported by
+         the current RAND method.
++        RAND_pseudo_bytes is deprecated in 1.1.0
+         */
+-        if (RAND_pseudo_bytes(pSalt, pScheme->uSaltSizeInByte) != 1)
++        if (RAND_bytes(pSalt, pScheme->uSaltSizeInByte) != 1)
+         {
+             dwError = VMDIR_ERROR_PASSWORD_HASH;
+             BAIL_ON_VMDIR_ERROR(dwError);
+--- lightwave/vmdir/thirdparty/csrp/srp.c	2019-04-04 22:53:51.558308094 +0000
++++ /root/lightwave-1.3.1.34/vmdir/thirdparty/csrp/srp.c	2019-04-04 21:37:29.895164408 +0000
+@@ -232,7 +232,7 @@
+ 
+ typedef struct _HashCTX
+ {
+-    EVP_MD_CTX mdctx;
++    EVP_MD_CTX *mdctx;
+     const EVP_MD *md;
+ } HashCTX;
+ 
+@@ -297,9 +297,9 @@
+         return -1;
+     }
+ 
+-    /* This can't fail; void function */
+-    EVP_MD_CTX_init(&c->mdctx);
+-    sts = EVP_DigestInit_ex(&c->mdctx, c->md, NULL);
++    c->mdctx = EVP_MD_CTX_new();
++    EVP_MD_CTX_reset(c->mdctx);
++    sts = EVP_DigestInit_ex(c->mdctx, c->md, NULL);
+     if (!sts)
+     {
+         sts = -1;
+@@ -322,7 +322,7 @@
+       case SRP_SHA256:
+       case SRP_SHA384:
+       case SRP_SHA512:
+-          sts = EVP_DigestUpdate( &c->mdctx, data, len );
++          sts = EVP_DigestUpdate( c->mdctx, data, len );
+           return sts ? 0 : -1; /* EVP_xxx returns 1 for success */
+           break;
+       default:
+@@ -340,7 +340,7 @@
+       case SRP_SHA256:
+       case SRP_SHA384:
+       case SRP_SHA512:
+-          sts =  EVP_DigestFinal_ex( &c->mdctx, md, len );
++          sts =  EVP_DigestFinal_ex( c->mdctx, md, len );
+           return sts ? 0 : -1; /* EVP_xxx returns 1 for success */
+           break;
+       default:
+@@ -382,7 +382,8 @@
+     {
+         return NULL;
+     }
+-    EVP_MD_CTX_cleanup(&ctx.mdctx);
++    EVP_MD_CTX_reset(ctx.mdctx);
++    EVP_MD_CTX_free(ctx.mdctx);
+     return md;
+ }
+ static int hash_length( SRP_HashAlgorithm alg )
+@@ -444,7 +445,8 @@
+     hash_update( alg, &ctx, password, password_len );
+     
+     hash_final( alg, &ctx, ucp_hash, &len );
+-    EVP_MD_CTX_cleanup(&ctx.mdctx);
++    EVP_MD_CTX_reset(ctx.mdctx);
++    EVP_MD_CTX_free(ctx.mdctx);
+         
+     return H_ns( alg, salt, ucp_hash, len );
+ }
+@@ -502,7 +504,8 @@
+     hash_update( alg, &ctx, K, hash_len );
+     
+     hash_final( alg, &ctx, dest, &len );
+-    EVP_MD_CTX_cleanup(&ctx.mdctx);
++    EVP_MD_CTX_reset(ctx.mdctx);
++    EVP_MD_CTX_free(ctx.mdctx);
+ }
+ 
+ static void calculate_H_AMK( SRP_HashAlgorithm alg, unsigned char *dest, const BIGNUM * A, const unsigned char * M, const unsigned char * K )
+@@ -517,7 +520,8 @@
+     hash_update( alg, &ctx, K, len );
+     
+     hash_final( alg, &ctx, dest, &len );
+-    EVP_MD_CTX_cleanup(&ctx.mdctx);
++    EVP_MD_CTX_reset(ctx.mdctx);
++    EVP_MD_CTX_free(ctx.mdctx);
+ }
+ 
+ 
+@@ -1043,7 +1047,8 @@
+         hash_update( SRP_SHA1, &hctx, argv[i], strlen(argv[i]));
+     }
+     hash_final( SRP_SHA1, &hctx, md_value, &md_len);
+-    EVP_MD_CTX_cleanup(&hctx.mdctx);
++    EVP_MD_CTX_reset(hctx.mdctx);
++    EVP_MD_CTX_free(hctx.mdctx);
+ 
+     printf("Digest is: ");
+     for(i = 0; i < md_len; i++) printf("%02x", md_value[i]);
+--- lightwave/vmdir/thirdparty/heimdal/krb5-crypto/crypto-aes.c	2019-04-04 22:53:51.566308232 +0000
++++ /root/lightwave-1.3.1.34/vmdir/thirdparty/heimdal/krb5-crypto/crypto-aes.c	2019-04-04 21:37:29.895164408 +0000
+@@ -124,13 +124,13 @@
+ 
+     {
+ 	const EVP_CIPHER *c = (*crypto->et->keytype->evp)();
+-	EVP_CIPHER_CTX ctx;
++	EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+ 
+-	EVP_CIPHER_CTX_init(&ctx); /* ivec all zero */
+-	EVP_CipherInit_ex(&ctx, c, NULL, derived->keyvalue.data, NULL, 1);
+-	EVP_Cipher(&ctx, out->data, result.checksum.data,
++	EVP_CIPHER_CTX_reset(ctx); /* ivec all zero */
++	EVP_CipherInit_ex(ctx, c, NULL, derived->keyvalue.data, NULL, 1);
++	EVP_Cipher(ctx, out->data, result.checksum.data,
+ 		   (int) crypto->et->blocksize);
+-	EVP_CIPHER_CTX_cleanup(&ctx);
++	EVP_CIPHER_CTX_free(ctx);
+     }
+ 
+     krb5_heim_data_free(&result.checksum);
+--- lightwave/vmdir/thirdparty/heimdal/krb5-crypto/crypto-arcfour.c	2019-04-04 22:53:51.566308232 +0000
++++ /root/lightwave-1.3.1.34/vmdir/thirdparty/heimdal/krb5-crypto/crypto-arcfour.c	2019-04-04 23:29:13.126977671 +0000
+@@ -129,7 +129,7 @@
+ 		   unsigned usage,
+ 		   void *ivec)
+ {
+-    EVP_CIPHER_CTX ctx;
++    EVP_CIPHER_CTX *ctx = NULL;
+     struct _krb5_checksum_type *c = _krb5_find_checksum (CKSUMTYPE_RSA_MD5);
+     Checksum k1_c, k2_c, k3_c, cksum;
+     struct _krb5_key_data ke;
+@@ -176,11 +176,13 @@
+     if (ret)
+ 	krb5_abortx(context, "hmac failed");
+ 
+-    EVP_CIPHER_CTX_init(&ctx);
++    ctx = EVP_CIPHER_CTX_new();
++    EVP_CIPHER_CTX_init(ctx);
+ 
+-    EVP_CipherInit_ex(&ctx, EVP_rc4(), NULL, k3_c.checksum.data, NULL, 1);
+-    EVP_Cipher(&ctx, cdata + 16, cdata + 16, (int)(len - 16));
+-    EVP_CIPHER_CTX_cleanup(&ctx);
++    EVP_CipherInit_ex(ctx, EVP_rc4(), NULL, k3_c.checksum.data, NULL, 1);
++    EVP_Cipher(ctx, cdata + 16, cdata + 16, (int)(len - 16));
++    EVP_CIPHER_CTX_cleanup(ctx);
++    EVP_CIPHER_CTX_free(ctx);
+ 
+     memset (k1_c_data, 0, sizeof(k1_c_data));
+     memset (k2_c_data, 0, sizeof(k2_c_data));
+@@ -196,7 +198,7 @@
+ 		   unsigned usage,
+ 		   void *ivec)
+ {
+-    EVP_CIPHER_CTX ctx;
++    EVP_CIPHER_CTX *ctx = NULL;
+     struct _krb5_checksum_type *c = _krb5_find_checksum (CKSUMTYPE_RSA_MD5);
+     Checksum k1_c, k2_c, k3_c, cksum;
+     struct _krb5_key_data ke;
+@@ -234,10 +236,13 @@
+     if (ret)
+ 	krb5_abortx(context, "hmac failed");
+ 
+-    EVP_CIPHER_CTX_init(&ctx);
+-    EVP_CipherInit_ex(&ctx, EVP_rc4(), NULL, k3_c.checksum.data, NULL, 0);
+-    EVP_Cipher(&ctx, cdata + 16, cdata + 16, (int)(len - 16));
+-    EVP_CIPHER_CTX_cleanup(&ctx);
++    ctx = EVP_CIPHER_CTX_new();
++
++    EVP_CIPHER_CTX_init(ctx);
++    EVP_CipherInit_ex(ctx, EVP_rc4(), NULL, k3_c.checksum.data, NULL, 0);
++    EVP_Cipher(ctx, cdata + 16, cdata + 16, (int)(len - 16));
++    EVP_CIPHER_CTX_cleanup(ctx);
++    EVP_CIPHER_CTX_free(ctx);
+ 
+     ke.key = &kb;
+     kb.keyvalue = k2_c.checksum;
+--- lightwave/vmdir/thirdparty/heimdal/krb5-crypto/crypto-des.c	2019-04-04 22:53:51.566308232 +0000
++++ /root/lightwave-1.3.1.34/vmdir/thirdparty/heimdal/krb5-crypto/crypto-des.c	2019-04-04 21:37:29.895164408 +0000
+@@ -225,7 +225,7 @@
+     EVP_CIPHER_CTX *c;
+     DES_cblock ivec;
+     memset(&ivec, 0, sizeof(ivec));
+-    c = encryptp ? &ctx->ectx : &ctx->dctx;
++    c = encryptp ? ctx->ectx : ctx->dctx;
+     EVP_CipherInit_ex(c, NULL, NULL, NULL, (void *)&ivec, -1);
+     EVP_Cipher(c, data, data, (int) len);
+     return 0;
+@@ -244,7 +244,7 @@
+     EVP_CIPHER_CTX *c;
+     DES_cblock ivec;
+     memcpy(&ivec, key->key->keyvalue.data, sizeof(ivec));
+-    c = encryptp ? &ctx->ectx : &ctx->dctx;
++    c = encryptp ? ctx->ectx : ctx->dctx;
+     EVP_CipherInit_ex(c, NULL, NULL, NULL, (void *)&ivec, -1);
+     EVP_Cipher(c, data, data, (int) len);
+     return 0;
+--- lightwave/vmdir/thirdparty/heimdal/krb5-crypto/crypto-des-common.c	2019-04-04 22:53:51.566308232 +0000
++++ /root/lightwave-1.3.1.34/vmdir/thirdparty/heimdal/krb5-crypto/crypto-des-common.c	2019-04-04 21:37:29.895164408 +0000
+@@ -81,8 +81,8 @@
+     EVP_DigestFinal_ex (m, p + 8, NULL);
+     EVP_MD_CTX_destroy(m);
+     memset (&ivec, 0, sizeof(ivec));
+-    EVP_CipherInit_ex(&ctx->ectx, NULL, NULL, NULL, (void *)&ivec, -1);
+-    EVP_Cipher(&ctx->ectx, p, p, 24);
++    EVP_CipherInit_ex(ctx->ectx, NULL, NULL, NULL, (void *)&ivec, -1);
++    EVP_Cipher(ctx->ectx, p, p, 24);
+ 
+     return 0;
+ }
+@@ -109,8 +109,8 @@
+     }
+ 
+     memset(&ivec, 0, sizeof(ivec));
+-    EVP_CipherInit_ex(&ctx->dctx, NULL, NULL, NULL, (void *)&ivec, -1);
+-    EVP_Cipher(&ctx->dctx, tmp, C->checksum.data, 24);
++    EVP_CipherInit_ex(ctx->dctx, NULL, NULL, NULL, (void *)&ivec, -1);
++    EVP_Cipher(ctx->dctx, tmp, C->checksum.data, 24);
+ 
+     EVP_DigestInit_ex(m, evp_md, NULL);
+     EVP_DigestUpdate(m, tmp, 8); /* confounder */
+--- lightwave/vmdir/thirdparty/heimdal/krb5-crypto/crypto-evp.c	2019-04-04 22:53:51.566308232 +0000
++++ /root/lightwave-1.3.1.34/vmdir/thirdparty/heimdal/krb5-crypto/crypto-evp.c	2019-04-04 23:21:31.494983750 +0000
+@@ -41,19 +41,23 @@
+     struct _krb5_evp_schedule *key = kd->schedule->data;
+     const EVP_CIPHER *c = (*kt->evp)();
+ 
+-    EVP_CIPHER_CTX_init(&key->ectx);
+-    EVP_CIPHER_CTX_init(&key->dctx);
++    key->ectx = EVP_CIPHER_CTX_new();
++    EVP_CIPHER_CTX_init(key->ectx);
++    key->dctx = EVP_CIPHER_CTX_new();
++    EVP_CIPHER_CTX_init(key->dctx);
+ 
+-    EVP_CipherInit_ex(&key->ectx, c, NULL, kd->key->keyvalue.data, NULL, 1);
+-    EVP_CipherInit_ex(&key->dctx, c, NULL, kd->key->keyvalue.data, NULL, 0);
++    EVP_CipherInit_ex(key->ectx, c, NULL, kd->key->keyvalue.data, NULL, 1);
++    EVP_CipherInit_ex(key->dctx, c, NULL, kd->key->keyvalue.data, NULL, 0);
+ }
+ 
+ void
+ _krb5_evp_cleanup(krb5_context context, struct _krb5_key_data *kd)
+ {
+     struct _krb5_evp_schedule *key = kd->schedule->data;
+-    EVP_CIPHER_CTX_cleanup(&key->ectx);
+-    EVP_CIPHER_CTX_cleanup(&key->dctx);
++    EVP_CIPHER_CTX_cleanup(key->ectx);
++    EVP_CIPHER_CTX_free(key->ectx);
++    EVP_CIPHER_CTX_cleanup(key->dctx);
++    EVP_CIPHER_CTX_free(key->dctx);
+ }
+ 
+ krb5_error_code
+@@ -67,7 +71,7 @@
+ {
+     struct _krb5_evp_schedule *ctx = key->schedule->data;
+     EVP_CIPHER_CTX *c;
+-    c = encryptp ? &ctx->ectx : &ctx->dctx;
++    c = encryptp ? ctx->ectx : ctx->dctx;
+     if (ivec == NULL) {
+ 	/* alloca ? */
+ 	size_t len2 = EVP_CIPHER_CTX_iv_length(c);
+@@ -102,7 +106,7 @@
+     EVP_CIPHER_CTX *c;
+     unsigned char *p;
+ 
+-    c = encryptp ? &ctx->ectx : &ctx->dctx;
++    c = encryptp ? ctx->ectx : ctx->dctx;
+ 
+     blocksize = EVP_CIPHER_CTX_block_size(c);
+ 
+--- lightwave/vmdir/thirdparty/heimdal/krb5-crypto/crypto.h	2019-04-04 22:53:51.566308232 +0000
++++ /root/lightwave-1.3.1.34/vmdir/thirdparty/heimdal/krb5-crypto/crypto.h	2019-04-04 21:37:29.895164408 +0000
+@@ -174,6 +174,6 @@
+ 
+ /* Interface to the EVP crypto layer provided by hcrypto */
+ struct _krb5_evp_schedule {
+-    EVP_CIPHER_CTX ectx;
+-    EVP_CIPHER_CTX dctx;
++    EVP_CIPHER_CTX *ectx;
++    EVP_CIPHER_CTX *dctx;
+ };
+--- lightwave/vmdir/thirdparty/heimdal/ntlm/ntlm.c	2019-04-04 22:53:51.574308370 +0000
++++ /root/lightwave-1.3.1.34/vmdir/thirdparty/heimdal/ntlm/ntlm.c	2019-04-04 21:37:29.895164408 +0000
+@@ -1016,7 +1016,7 @@
+ 	    unsigned char *challenge,
+ 	    unsigned char *answer)
+ {
+-    EVP_CIPHER_CTX ctx;
++    EVP_CIPHER_CTX *ctx = NULL;
+     unsigned char key[8];
+ 
+     key[0] =  hash[0];
+@@ -1028,11 +1028,13 @@
+     key[6] = (hash[5] << 2) | (hash[6] >> 6);
+     key[7] = (hash[6] << 1);
+ 
+-    EVP_CIPHER_CTX_init(&ctx);
++    ctx = EVP_CIPHER_CTX_new();
++    EVP_CIPHER_CTX_init(ctx);
+ 
+-    EVP_CipherInit_ex(&ctx, EVP_des_cbc(), NULL, key, NULL, 1);
+-    EVP_Cipher(&ctx, answer, challenge, 8);
+-    EVP_CIPHER_CTX_cleanup(&ctx);
++    EVP_CipherInit_ex(ctx, EVP_des_cbc(), NULL, key, NULL, 1);
++    EVP_Cipher(ctx, answer, challenge, 8);
++    EVP_CIPHER_CTX_cleanup(ctx);
++    EVP_CIPHER_CTX_free(ctx);
+     memset(key, 0, sizeof(key));
+ }
+ 
+@@ -1153,7 +1155,7 @@
+ 			  struct ntlm_buf *session)
+ {
+     unsigned int hmaclen;
+-    HMAC_CTX c;
++    HMAC_CTX *c = NULL;
+ 
+     if (ntlmResponse->length <= 16)
+         return HNTLM_ERR_INVALID_LENGTH;
+@@ -1163,12 +1165,14 @@
+ 	return ENOMEM;
+     session->length = 16;
+ 
++    c = HMAC_CTX_new();
+     /* Note: key is the NTLMv2 key */
+-    HMAC_CTX_init(&c);
+-    HMAC_Init_ex(&c, key, len, EVP_md5(), NULL);
+-    HMAC_Update(&c, ntlmResponse->data, 16);
+-    HMAC_Final(&c, session->data, &hmaclen);
+-    HMAC_CTX_cleanup(&c);
++    HMAC_CTX_reset(c);
++    HMAC_Init_ex(c, key, len, EVP_md5(), NULL);
++    HMAC_Update(c, ntlmResponse->data, 16);
++    HMAC_Final(c, session->data, &hmaclen);
++    HMAC_CTX_reset(c);
++    HMAC_CTX_free(c);
+ 
+     return 0;
+ }
+@@ -1179,7 +1183,7 @@
+ 		     struct ntlm_buf *session,
+ 		     struct ntlm_buf *encryptedSession)
+ {
+-    EVP_CIPHER_CTX c;
++    EVP_CIPHER_CTX *c = NULL;
+     int ret;
+ 
+     session->length = MD4_DIGEST_LENGTH;
+@@ -1196,25 +1200,29 @@
+ 	return ENOMEM;
+     }
+ 
+-    EVP_CIPHER_CTX_init(&c);
++    c = EVP_CIPHER_CTX_new();
++    EVP_CIPHER_CTX_init(c);
+ 
+-    ret = EVP_CipherInit_ex(&c, EVP_rc4(), NULL, base_session->data, NULL, 1);
++    ret = EVP_CipherInit_ex(c, EVP_rc4(), NULL, base_session->data, NULL, 1);
+     if (ret != 1) {
+-	EVP_CIPHER_CTX_cleanup(&c);
++	EVP_CIPHER_CTX_cleanup(c);
++	EVP_CIPHER_CTX_free(c);
+ 	heim_ntlm_free_buf(encryptedSession);
+ 	heim_ntlm_free_buf(session);
+ 	return HNTLM_ERR_CRYPTO;
+     }
+ 
+     if (RAND_bytes(session->data, session->length) != 1) {
+-	EVP_CIPHER_CTX_cleanup(&c);
++	EVP_CIPHER_CTX_cleanup(c);
++	EVP_CIPHER_CTX_free(c);
+ 	heim_ntlm_free_buf(encryptedSession);
+ 	heim_ntlm_free_buf(session);
+ 	return HNTLM_ERR_RAND;
+     }
+ 
+-    EVP_Cipher(&c, encryptedSession->data, session->data, encryptedSession->length);
+-    EVP_CIPHER_CTX_cleanup(&c);
++    EVP_Cipher(c, encryptedSession->data, session->data, encryptedSession->length);
++    EVP_CIPHER_CTX_cleanup(c);
++    EVP_CIPHER_CTX_free(c);
+ 
+     return 0;
+ 
+@@ -1309,7 +1317,7 @@
+ 		       struct ntlm_buf *encryptedSession,
+ 		       struct ntlm_buf *session)
+ {
+-    EVP_CIPHER_CTX c;
++    EVP_CIPHER_CTX *c = NULL;
+ 
+     memset(session, 0, sizeof(*session));
+ 
+@@ -1322,16 +1330,18 @@
+ 	session->length = 0;
+ 	return ENOMEM;
+     }
+-    EVP_CIPHER_CTX_init(&c);
++    c = EVP_CIPHER_CTX_new();
++    EVP_CIPHER_CTX_init(c);
+ 
+-    if (EVP_CipherInit_ex(&c, EVP_rc4(), NULL, baseKey->data, NULL, 0) != 1) {
+-	EVP_CIPHER_CTX_cleanup(&c);
++    if (EVP_CipherInit_ex(c, EVP_rc4(), NULL, baseKey->data, NULL, 0) != 1) {
++	EVP_CIPHER_CTX_cleanup(c);
++	EVP_CIPHER_CTX_free(c);
+ 	heim_ntlm_free_buf(session);
+ 	return HNTLM_ERR_CRYPTO;
+     }
+ 
+-    EVP_Cipher(&c, session->data, encryptedSession->data, session->length);
+-    EVP_CIPHER_CTX_cleanup(&c);
++    EVP_Cipher(c, session->data, encryptedSession->data, session->length);
++    EVP_CIPHER_CTX_cleanup(c);
+ 
+     return 0;
+ }
+@@ -1359,28 +1369,30 @@
+ {
+     int ret;
+     unsigned int hmaclen;
+-    HMAC_CTX c;
++    HMAC_CTX *c = NULL;
+ 
+-    HMAC_CTX_init(&c);
+-    HMAC_Init_ex(&c, key, len, EVP_md5(), NULL);
++    c = HMAC_CTX_new();
++    HMAC_CTX_reset(c);
++    HMAC_Init_ex(c, key, len, EVP_md5(), NULL);
+     {
+ 	struct ntlm_buf buf;
+ 	/* uppercase username and turn it into ucs2-le */
+ 	ret = ascii2ucs2le(username, 1, &buf);
+ 	if (ret)
+ 	    goto out;
+-	HMAC_Update(&c, buf.data, buf.length);
++	HMAC_Update(c, buf.data, buf.length);
+ 	free(buf.data);
+ 	/* uppercase target and turn into ucs2-le */
+ 	ret = ascii2ucs2le(target, 1, &buf);
+ 	if (ret)
+ 	    goto out;
+-	HMAC_Update(&c, buf.data, buf.length);
++	HMAC_Update(c, buf.data, buf.length);
+ 	free(buf.data);
+     }
+-    HMAC_Final(&c, ntlmv2, &hmaclen);
++    HMAC_Final(c, ntlmv2, &hmaclen);
+  out:
+-    HMAC_CTX_cleanup(&c);
++    HMAC_CTX_reset(c);
++    HMAC_CTX_free(c);
+ 
+     return ret;
+ }
+@@ -1790,14 +1802,15 @@
+ 			    unsigned char derivedkey[16])
+ {
+     unsigned int hmaclen;
+-    HMAC_CTX c;
++    HMAC_CTX *c = HMAC_CTX_new();
+ 
+     /* HMAC(Ksession, serverchallenge || clientchallenge) */
+-    HMAC_CTX_init(&c);
+-    HMAC_Init_ex(&c, sessionkey, 16, EVP_md5(), NULL);
+-    HMAC_Update(&c, svr_chal, 8);
+-    HMAC_Update(&c, clnt_nonce, clnt_nonce_length);
+-    HMAC_Final(&c, derivedkey, &hmaclen);
+-    HMAC_CTX_cleanup(&c);
++    HMAC_CTX_reset(c);
++    HMAC_Init_ex(c, sessionkey, 16, EVP_md5(), NULL);
++    HMAC_Update(c, svr_chal, 8);
++    HMAC_Update(c, clnt_nonce, clnt_nonce_length);
++    HMAC_Final(c, derivedkey, &hmaclen);
++    HMAC_CTX_reset(c);
++    HMAC_CTX_free(c);
+ }
+ 
+--- lightwave/vmidentity/ssoclients/common/src/http_client.c	2019-04-04 22:53:51.834312878 +0000
++++ /root/lightwave-1.3.1.34/vmidentity/ssoclients/common/src/http_client.c	2019-04-04 21:37:29.339154885 +0000
+@@ -111,17 +111,6 @@
+ }
+ 
+ static
+-unsigned long
+-SSOClientSSLIdCallback()
+-{
+-#ifdef _WIN32
+-    return ((unsigned long) (pthread_self().p));
+-#else
+-    return ((unsigned long) pthread_self());
+-#endif
+-}
+-
+-static
+ SSOERROR
+ SSOHttpClientSSLLocksInit(
+     pthread_mutex_t** ppMutexBuffer,
+@@ -242,7 +231,6 @@
+ 
+ 
+     CRYPTO_set_locking_callback(pLockCallBack);
+-    CRYPTO_set_id_callback(SSOClientSSLIdCallback);
+ 
+     *ppCurlInitCtx = pCurlInitCtx;
+ 
+--- lightwave/vmidentity/ssoclients/common/src/jwk.c	2019-04-04 22:53:51.834312878 +0000
++++ /root/lightwave-1.3.1.34/vmidentity/ssoclients/common/src/jwk.c	2019-04-04 21:37:29.339154885 +0000
+@@ -215,8 +215,12 @@
+         e = SSOERROR_OPENSSL_FAILURE;
+         BAIL_ON_ERROR(e);
+     }
+-    pRsa->n = pModulusBigNum;
+-    pRsa->e = pExponentBigNum;
++
++    if(!RSA_set0_key(pRsa, pModulusBigNum, pExponentBigNum, NULL))
++    {
++        e = SSOERROR_OPENSSL_FAILURE;
++        BAIL_ON_ERROR(e);
++    }
+ 
+     pKey = EVP_PKEY_new();
+     if (NULL == pKey)
+--- lightwave/vmidentity/ssoclients/common/src/signature.c	2019-04-04 22:53:51.834312878 +0000
++++ /root/lightwave-1.3.1.34/vmidentity/ssoclients/common/src/signature.c	2019-04-04 21:37:29.339154885 +0000
+@@ -131,7 +131,7 @@
+ {
+     SSOERROR e = SSOERROR_NONE;
+     unsigned char* pMD = NULL;
+-    EVP_MD_CTX mdctx = { 0 };
++    EVP_MD_CTX *pMDCtx = NULL;
+     unsigned char md[EVP_MAX_MD_SIZE] = { 0 };
+     unsigned int mdSize = 0;
+ 
+@@ -141,21 +141,26 @@
+         BAIL_ON_ERROR(e);
+     }
+ 
+-    EVP_MD_CTX_init(&mdctx);
++    pMDCtx = EVP_MD_CTX_new();
++    if (!pMDCtx)
++    {
++        e = SSOERROR_OPENSSL_FAILURE;
++        BAIL_ON_ERROR(e);
++    }
+ 
+-    if (EVP_DigestInit_ex(&mdctx, SSOGetEvpMethod(digestMethod), NULL) == 0)
++    if (EVP_DigestInit_ex(pMDCtx, SSOGetEvpMethod(digestMethod), NULL) == 0)
+     {
+         e = SSOERROR_OPENSSL_FAILURE;
+         BAIL_ON_ERROR(e);
+     }
+ 
+-    if (EVP_DigestUpdate(&mdctx, pData, dataSize) == 0)
++    if (EVP_DigestUpdate(pMDCtx, pData, dataSize) == 0)
+     {
+         e = SSOERROR_OPENSSL_FAILURE;
+         BAIL_ON_ERROR(e);
+     }
+ 
+-    if (EVP_DigestFinal_ex(&mdctx, md, &mdSize) == 0)
++    if (EVP_DigestFinal_ex(pMDCtx, md, &mdSize) == 0)
+     {
+         e = SSOERROR_OPENSSL_FAILURE;
+         BAIL_ON_ERROR(e);
+@@ -177,7 +182,10 @@
+     }
+ 
+     // cleanup
+-    EVP_MD_CTX_cleanup(&mdctx);
++    if (pMDCtx)
++    {
++        EVP_MD_CTX_free(pMDCtx);
++    }
+ 
+     return e;
+ }
+--- lightwave-1.3.1.34/vmafd/server/vmafd/dns.c	2019-04-04 21:37:29.115151044 +0000
++++ lightwave-1.3.1.34/vmafd/server/vmafd/dns1.c	2019-04-09 23:54:17.654678806 +0000
+@@ -173,6 +173,14 @@
+         szDomainFQDN[dwStrLen + 1] = 0;
+     }
+ 
++    VmAfdLog(
++        VMAFD_DEBUG_ERROR,
++        "Target: %s, User: %s, domain: %s, pass: %s\n",
++        pszTargetName,
++        pszUserName,
++        szDomainFQDN,
++        pszPassword);
++
+     dwError = VmDnsOpenServerA(
+                 IsNullOrEmptyString(pszTargetName)
+                     ? "localhost"
+@@ -183,6 +191,7 @@
+                 0,
+                 NULL,
+                 &pServerContext);
++    VmAfdLog(VMAFD_DEBUG_ERROR, "VmDnsOpenServerA: %d\n", dwError);
+     BAIL_ON_VMAFD_ERROR(dwError);
+ 
+     initSiteInfo.IpV4Addrs = IpV4Addresses;
+@@ -193,6 +202,7 @@
+     initSiteInfo.pszSiteName = (PSTR) pszSiteName;
+ 
+     dwError = VmDnsInitializeWithSiteA(pServerContext, &initSiteInfo);
++    VmAfdLog(VMAFD_DEBUG_ERROR, "VmDnsInitializeWithSiteA: %d\n", dwError);
+     BAIL_ON_VMAFD_ERROR(dwError);
+ 
+     dwError = VmAfdReverseZoneInitialize(
+@@ -200,6 +210,7 @@
+                 pszCanonicalServerName,
+                 IpV4Addresses,
+                 IpV6Addresses);
++    VmAfdLog(VMAFD_DEBUG_ERROR, "VmAfdReverseZoneInitialize: %d\n", dwError);
+     BAIL_ON_VMAFD_ERROR(dwError);
+ 
+ cleanup:
+--- lightwave-1.3.1.34/vmdir/gssapi-plugins/srp/srp_del_sec_ctx.c.1	2019-04-12 23:23:30.973611262 +0000
++++ lightwave-1.3.1.34/vmdir/gssapi-plugins/srp/srp_del_sec_ctx.c	2019-04-12 23:22:33.576613347 +0000
+@@ -83,7 +83,7 @@
+         srp_ctx->krb5_ctx = NULL;
+     }
+ 
+-    HMAC_CTX_cleanup(&srp_ctx->hmac_ctx);
++    HMAC_CTX_reset(srp_ctx->hmac_ctx);
+ #ifdef SRP_FIPS_ENABLED
+     if (srp_ctx->evp_encrypt_ctx)
+     {
+--- lightwave/vmidentity/platform/src/main/java/com/vmware/identity/interop/ldap/OpenLdapClientLibrary.java	2019-04-04 21:37:29.535158246 +0000
++++ lightwave/vmidentity/platform/src/main/java/com/vmware/identity/interop/ldap/OpenLdapClientLibrary.java.1	2019-04-15 22:14:50.944236114 +0000
+@@ -59,18 +59,14 @@
+ 
+    private interface SSLLibrary extends Library
+    {
+-      ///lib64/libssl.so.1.0.2 on Linux, or ssleay32.dll on Windows
++      ///lib64/libssl.so.1.1 on Linux, or ssleay32.dll on Windows
+         SSLLibrary INSTANCE = Platform.isWindows() ?
+                 (SSLLibrary) Native.loadLibrary("ssleay32.dll", SSLLibrary.class) :
+-                (SSLLibrary) Native.loadLibrary("libssl.so.1.0.2", SSLLibrary.class);
++                (SSLLibrary) Native.loadLibrary("libssl.so.1.1", SSLLibrary.class);
+ 
+       //#include <openssl/ssl.h>
+-      //int SSL_library_init(void);
+-      void SSL_library_init();
+-
+-      //#include <openssl/ssl.h>
+-      //void SSL_load_error_strings(void);
+-      void SSL_load_error_strings();
++      //int OPENSSL_init_ssl(uint64_t opts, const OPENSSL_INIT_SETTINGS *settings);
++      int OPENSSL_init_ssl(long opts, Pointer settings);
+ 
+       Pointer TLSv1_method();
+ 
+@@ -249,8 +245,9 @@
+ 
+    static
+    {
+-      SSLLibrary.INSTANCE.SSL_library_init();
+-      SSLLibrary.INSTANCE.SSL_load_error_strings();
++      long INIT_LOAD_SSL_STRING     = 0x00200000L;
++      long INIT_LOAD_CRYPTO_STRINGS = 0x00000002L;
++      SSLLibrary.INSTANCE.OPENSSL_init_ssl(INIT_LOAD_SSL_STRING|INIT_LOAD_CRYPTO_STRINGS, null);
+       logger.info("SSL library initialized successfully");
+    }
+ 
+--- lightwave/vmidentity/config/sts.policy.in	2019-04-15 17:34:04.459586097 +0000
++++ lightwave/vmidentity/config/sts.policy.in.1	2019-04-15 17:33:51.035353803 +0000
+@@ -119,7 +119,7 @@
+     permission java.lang.RuntimePermission "loadLibrary.@VMDIR_LIB_DIR@/libvmafdclient.so";
+     permission java.lang.RuntimePermission "loadLibrary.@VMDIR_LIB_DIR@/liblwadvapi_nothr.so";
+     permission java.lang.RuntimePermission "loadLibrary.@VMDIR_LIB_DIR@/liblsaclient.so";
+-    permission java.lang.RuntimePermission "loadLibrary./usr/lib64/libssl.so.1.0.2";
++    permission java.lang.RuntimePermission "loadLibrary./usr/lib64/libssl.so.1.1.1";
+     permission java.lang.RuntimePermission "loadLibrary./usr/lib64/libldap_r.so";
+     permission java.lang.RuntimePermission "loadLibrary./usr/lib64/liblber.so";
+     permission java.lang.RuntimePermission "loadLibrary.@VMDIR_LIB_DIR@/libvmdirclient.so";
+

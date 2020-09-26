@@ -1,0 +1,47 @@
+From 91b353364c63ef14777010bf44bb2195acf46b03 Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh Vasamsetty <svasamsetty@vmware.com>
+Date: Fri, 24 Jul 2020 15:48:23 +0530
+Subject: [PATCH] Disable pylint
+
+---
+ modules/python/pylib/Makefile.am | 13 ++-----------
+ 1 file changed, 2 insertions(+), 11 deletions(-)
+
+diff --git a/modules/python/pylib/Makefile.am b/modules/python/pylib/Makefile.am
+index 65e11ec..4a2375f 100644
+--- a/modules/python/pylib/Makefile.am
++++ b/modules/python/pylib/Makefile.am
+@@ -64,7 +64,7 @@ clean-pylib:
+ 	rm -rf "$(PYLIB_BUILDDIR)/build"
+ 	rm -rf "$(SETUPPY_MANIFEST)"
+ 
+-python-checks: python-unit python-pep8 python-pylint
++python-checks: python-unit python-pep8
+ 
+ if NOSETESTS
+ python-unit:
+@@ -77,15 +77,6 @@ endif
+ python-pep8:
+ 	pep8 --ignore=E501 $(PYLIB_SRCDIR)/syslogng
+ 
+-if PYLINT
+-python-pylint:
+-	@PYLINT@ -r n --rcfile=$(PYLIB_SRCDIR)/pylintrc $(PYLIB_SRCDIR)/syslogng
+-else
+-python-pylint:
+-	$(error "missing pylint")
+-endif
+-
+-
+ modules_python_pylib_tests_TESTS = modules/python/pylib/test_pylib.sh
+ check_SCRIPTS += $(modules_python_pylib_tests_TESTS)
+ 
+@@ -94,4 +85,4 @@ endif
+ .PHONY: install-pylib
+ .PHONY: uninstall-pylib
+ .PHONY: clean-pylib
+-.PHONY: python-checks python-unit python-pep8 python-pylint
++.PHONY: python-checks python-unit python-pep8
+-- 
+2.7.4
+

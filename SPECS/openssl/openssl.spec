@@ -1,26 +1,15 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2v
+Version:        1.1.1g
 Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.openssl.org/source/vmware-OpenSSL_1_0_2v.tar.gz
-%define sha1    vmware-OpenSSL_1_0_2v=8eb5f7b178b9b6824b183e44d9986c5045557031
+Source0:        http://www.openssl.org/source/openssl-1.1.1g.tar.gz
+%define sha1    openssl=18012543aface209ea2579cb628a49e22ea4ec29
 Source1:        rehash_ca_certificates.sh
-%if 0%{?with_fips:1}
-Source100:      openssl-fips-2.0.20-vmw.tar.gz
-%define sha1    openssl-fips=973ac82a77285f573296ffe94809da8c019aab33
-%endif
-Patch0:         c_rehash.patch
-Patch1:         openssl-ipv6apps.patch
-Patch2:         openssl-init-conslidate.patch
-Patch3:         openssl-drbg-default-read-system-fips.patch
-%if 0%{?with_fips:1}
-Patch4:         fips-2.20-vmw.patch
-%endif
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -59,21 +48,9 @@ Requires: openssl = %{version}-%{release}
 Perl scripts that convert certificates and keys to various formats.
 
 %prep
-%setup -q -n vmware-OpenSSL_1_0_2v
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%if 0%{?with_fips:1}
-%patch4 -p1
-%endif
+%setup -q
 
 %build
-%if 0%{?with_fips:1}
-tar xf %{SOURCE100} --no-same-owner -C ..
-# Do not package it to src.rpm
-:> %{SOURCE100}
-%endif
 if [ %{_host} != %{_build} ]; then
 #  export CROSS_COMPILE=%{_host}-
   export CC=%{_host}-gcc
@@ -84,24 +61,23 @@ fi
 export CFLAGS="%{optflags}"
 export MACHINE=%{_arch}
 ./config \
-    --prefix=/usr \
-    --libdir=lib \
+    --prefix=%{_prefix} \
+    --libdir=%{_libdir} \
     --openssldir=/%{_sysconfdir}/ssl \
-    shared \
-    zlib-dynamic \
-%if 0%{?with_fips:1}
-    fips --with-fipsdir=%{_builddir}/openssl-2.0.20 \
-%endif
-    -Wl,-z,noexecstack \
-    -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
+    --shared \
+    --with-rand-seed=os,egd \
+    enable-egd \
+    -Wl,-z,noexecstack
+
 # does not support -j yet
 make
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-make INSTALL_PREFIX=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
+make DESTDIR=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
-ln -sf libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
-ln -sf libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
+
+ln -sf libssl.so.1.1 %{buildroot}%{_libdir}/libssl.so.1.1.0
+ln -sf libssl.so.1.1 %{buildroot}%{_libdir}/libssl.so.1.1.1
 
 %check
 make tests
@@ -114,19 +90,20 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/ssl/certs
-%{_sysconfdir}/ssl/misc/CA.sh
-%{_sysconfdir}/ssl/misc/c_hash
-%{_sysconfdir}/ssl/misc/c_info
-%{_sysconfdir}/ssl/misc/c_issuer
-%{_sysconfdir}/ssl/misc/c_name
+%{_sysconfdir}/ssl/misc/CA.pl
+%{_sysconfdir}/ssl/ct_log_list.cnf
+%{_sysconfdir}/ssl/ct_log_list.cnf.dist
+%{_sysconfdir}/ssl/misc/tsget.pl
+%{_sysconfdir}/ssl/openssl.cnf.dist
 %{_sysconfdir}/ssl/openssl.cnf
 %{_sysconfdir}/ssl/private
 %{_bindir}/openssl
 %{_libdir}/*.so.*
-%{_libdir}/engines/*
+%{_libdir}/engines*/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man7/*
+%{_docdir}/*
 
 %files devel
 %{_includedir}/*
@@ -144,6 +121,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Wed Jul 22 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1g-1
+-   Update to 1.1.1g
 *   Tue May 26 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2v-1
 -   Update to 1.0.2v.
 -   Included fix for Implement blinding for scalar multiplication.

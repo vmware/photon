@@ -1,7 +1,7 @@
 Summary:	An Event notification library.
 Name:		libevent
 Version:	2.1.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://libevent.org
 Source0:	https://github.com/%{name}/%{name}/releases/download/release-%{version}-stable/%{name}-%{version}-stable.tar.gz
@@ -10,8 +10,8 @@ Group:		System/Library
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  pkg-config
-BuildRequires:  openssl-devel
-Requires:       openssl
+BuildRequires:  openssl-devel >= 1.1.1
+Requires:       openssl >= 1.1.1
 
 %description
 The libevent API provides a mechanism to execute a callback function when a specific event 
@@ -58,6 +58,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/libevent_extra.pc
 
 %changelog
+*       Thu Sep 10 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.8-2
+-       Openssl 1.1.1 compatibility
 *	Mon Apr 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.1.8-1
 -	Upgraded to version 2.1.8. (fixes CVE-2016-10195)
 *	Tue Jul 26 2016 Divya Thaluru <dthaluru@vmware.com> 2.0.22-4

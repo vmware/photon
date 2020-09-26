@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.2
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -15,6 +15,8 @@ Patch0:        c-rest-engine-aarch64.patch
 Patch1:        c-rest-engine-fix-log-file-len.patch
 Patch2:        preprocess-timeout.patch
 Patch3:        fd_leak.patch
+Patch4:        include_time_header.patch
+Patch5:        openssl-1.1.1-compatibility.patch
 %define sha1   c-rest-engine=25aa9d1f2680e26114dee18365c510692552f8e4
 
 %description
@@ -36,6 +38,8 @@ development libs and header files for c-rest-engine
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 %build
 cd build
@@ -72,6 +76,8 @@ make check
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Wed Jul 22 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2-5
+-  Fix openssl-1.1.1g compatibility
 *  Fri Jan 11 2019 Ankit Jain <ankitja@vmware.com> 1.2-4
 -  Added Makecheck
 *  Tue May 08 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-3
