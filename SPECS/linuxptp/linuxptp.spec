@@ -1,12 +1,12 @@
 Summary:        The Linux PTP Project
 Name:           linuxptp
-Version:        3.0
+Version:        3.1
 Release:        1%{?dist}
 License:        GPL v2
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
 Source0:        %{name}-%{version}.tgz
-%define sha1    linuxptp=cf56f1ab6c622a569be8c14d2cb121f0183affc9
+%define sha1    linuxptp=9a3869dbd322252c9a6bc0dbdfe8941586810a7f
 Source1:        ptp4l.service
 Source2:        phc2sys.service
 Source3:        phc2sys
@@ -84,6 +84,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/ts2phc.8.gz
 
 %changelog
+*   Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1
+-   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0-1
 -   Automatic Version Bump
 *   Tue May 19 2020 Tapas Kundu <tkundu@vmware.com> 2.0-1
