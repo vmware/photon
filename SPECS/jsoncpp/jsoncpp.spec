@@ -1,11 +1,11 @@
 Summary:        A JSON implementation in C++
 Name:           jsoncpp
-Version:        1.9.3
+Version:        1.9.4
 Release:        1%{?dist}
 License:        MIT
 URL:            https://github.com/open-source-parsers/jsoncpp
 Source0:        https://github.com/open-source-parsers/jsoncpp/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}=df04d765d24d98e18f70bf8588d3df48697c4ba7
+%define sha1    %{name}=aed798e3d3214e4d3f996054e6c8a0a529afda69
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -60,13 +60,18 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 %{_libdir}/cmake/jsoncpp/*.cmake
+
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
+%{_libdir}/*.a
 %{_libdir}/*.so
+%{_libdir}/objects-Release/jsoncpp_object/*.o
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.4-1
+- Automatic Version Bump
 * Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.3-1
 - Automatic Version Bump
 * Fri Nov 15 2019 Alexey Makhalov <amakhalov@vmware.com> 1.7.7-1
