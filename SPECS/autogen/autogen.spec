@@ -2,7 +2,7 @@ Summary:	The Automated Text and Program Generation Tool
 Name:		autogen
 Version:	5.18.16
 # TODO: try to remove CFLAGS on next version update
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/autogen/
 Source0:        ftp://ftp.gnu.org/gnu/autogen/rel%{version}/%{name}-%{version}.tar.xz
@@ -50,7 +50,7 @@ make %{?_smp_mflags} CFLAGS="-g -O2 -Wno-format-contains-nul -fno-strict-aliasin
 make DESTDIR=%{buildroot} install
 
 %check
-make %{?_smp_mflags} check
+make check
 
 %post	libopts -p /sbin/ldconfig
 %postun	libopts -p /sbin/ldconfig
@@ -81,6 +81,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.la
 
 %changelog
+*       Mon Sep 28 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.18.16-3
+-       Remove %{?_smp_mflags} from check
 *       Wed Apr 01 2020 Alexey Makhalov <amakhalov@vmware.com>  5.18.16-2
 -       Fix compilation issue with gcc-8.4.0
 *       Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com>  5.18.16-1
