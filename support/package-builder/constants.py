@@ -303,7 +303,8 @@ class constants(object):
     listMakeCheckPkgToSkip = [
         "gtk-doc",
         "libmspack",
-        "socat"]
+        "socat",
+        "bash"]
 
     # .spec file might contain lines such as
     # Requires(post):/sbin/useradd
