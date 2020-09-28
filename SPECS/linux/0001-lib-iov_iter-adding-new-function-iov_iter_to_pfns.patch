@@ -1,20 +1,20 @@
-From 64f019c1ac33399fc469aa462e5524c957c2edfd Mon Sep 17 00:00:00 2001
-From: Ajay Kaher <akaher@vmware.com>
-Date: Sun, 13 Sep 2020 21:06:46 +0530
+From 940d2e28969b3a2d02f66705cedd4b4ca670e452 Mon Sep 17 00:00:00 2001
+From: Amod Mishra <mamod@vmware.com>
+Date: Thu, 24 Sep 2020 03:40:26 -0700
 Subject: [PATCH] lib: iov_iter, adding new function iov_iter_to_pfns()
 
 iov_iter_to_pfns: checks for iterator types (i.e. io or bio) and
 accordingly take actions to get all page frame numbers of pages
 included with-in the given iterator.
 
-Signed-off-by: Ajay Kaher <akaher@vmware.com>
+Signed-off-by: Amod Mishra <mamod@vmware.com>
 ---
  include/linux/uio.h | 10 ++++++++++
  lib/iov_iter.c      | 34 ++++++++++++++++++++++++++++++++++
  2 files changed, 44 insertions(+)
 
 diff --git a/include/linux/uio.h b/include/linux/uio.h
-index 422b1c0..8889055 100644
+index 422b1c0..d0bc098 100644
 --- a/include/linux/uio.h
 +++ b/include/linux/uio.h
 @@ -206,6 +206,14 @@ static inline bool iter_is_iovec(const struct iov_iter *i)
@@ -23,11 +23,11 @@ index 422b1c0..8889055 100644
  }
 +static inline bool iter_is_bvec(const struct iov_iter *i)
 +{
-+	return !(i->type & (ITER_IOVEC | ITER_KVEC | ITER_PIPE));
++	return (i->type & ITER_BVEC);
 +}
 +static inline bool iter_is_kvec(const struct iov_iter *i)
 +{
-+	return !(i->type & (ITER_BVEC | ITER_IOVEC | ITER_PIPE));
++	return (i->type & ITER_KVEC);
 +}
  
  /*
@@ -82,5 +82,5 @@ index acd7b97..26dfa12 100644
 +}
 +EXPORT_SYMBOL(iov_iter_to_pfns);
 -- 
-2.7.4
+2.6.2
 

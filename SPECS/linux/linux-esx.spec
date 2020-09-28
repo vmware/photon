@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.145
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -403,6 +403,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Sep 24 2020 Amod Mishra <mamod@vmware.com> 4.19.145-6
+-   9p: Corrections have been added inside function
+-   "iter_is_bvec" and "iter_is_kvec".
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-5
 -   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-4
