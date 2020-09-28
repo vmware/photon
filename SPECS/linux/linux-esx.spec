@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.234
-Release:       5%{?dist}
+Version:       4.4.237
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:  Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6cdc35b6bcb1837b83f8ff541c1e51b2841f7abb
+%define sha1 linux=9ee097efa36c9f54db9adbe0837f1635daa2fb0e
 Source1:       config-esx
 Source2:       pre-preun-postun-tasks.inc
 
@@ -97,9 +97,6 @@ Patch61:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch62:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch63:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 # Fix for CVE-2020-14390
-Patch64:        0001-fbcon-remove-soft-scrollback-code.patch
-Patch65:        0002-fbcon-remove-now-unusued-softback_lines-cursor-argum.patch
-Patch66:        0003-vgacon-remove-software-scrollback-support.patch
 Patch67:        0001-tty-vt-consw-con_scrolldelta-cleanup.patch
 
 # For Spectre
@@ -214,9 +211,6 @@ The Linux package contains the Linux kernel doc files
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
-%patch64 -p1
-%patch65 -p1
-%patch66 -p1
 %patch67 -p1
 
 %patch70 -p1
@@ -318,6 +312,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.4.237-1
+-   Update to version 4.4.237
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.4.234-5
 -   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.234-4
