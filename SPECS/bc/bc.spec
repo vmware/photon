@@ -1,7 +1,7 @@
 Summary:	precision numeric processing language
 Name:		bc
 Version:	1.07.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		https://ftp.gnu.org/gnu/bc/
 Group:		System Environment/base
@@ -16,6 +16,7 @@ Patch1:		pregenerated-libmath-h.patch
 
 %description
 The Bc package contains an arbitrary precision numeric processing language.
+
 %prep
 %setup -q
 if [ %{_host} != %{_build} ]; then
@@ -29,6 +30,7 @@ else
 # put pregenerated libmath.h to the src root
 %patch1 -p2
 fi
+
 %build
 autoreconf -fiv
 %configure \
@@ -45,7 +47,8 @@ install -vdm 755 %{buildroot}/%{_mandir}
 rm -rf %{buildroot}%{_infodir}
 
 %check
-make %{?_smp_mflags}  timetest
+cd Test
+./timetest
 
 %post
 /sbin/ldconfig
@@ -57,7 +60,10 @@ make %{?_smp_mflags}  timetest
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/*/*
+
 %changelog
+*   Mon Sep 28 2020 Sujay G <gsujay@vmware.com> 1.07.1-4
+-   Fix %check
 *   Fri Nov 01 2019 Alexey Makhalov <amakhalov@vmware.com> 1.07.1-3
 -   Cross compilation support
 *   Mon Oct 14 2019 Piyush Gupta <guptapi@vmware.com> 1.07.1-2
