@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.145
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        4.19.148
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b8fb594a0c3a771551ba192d2ef97d070d9f9c9c
+%define sha1 linux=aff6c306fcf2cf42d93070ec96da17b4e84e4065
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -88,10 +88,6 @@ Patch43:        0001-net-packet-make-tp_drops-atomic.patch
 Patch44:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 # Fix for CVE-2020-25211
 Patch45:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
-# Fix for CVE-2020-14390
-Patch46:        0001-fbcon-remove-soft-scrollback-code.patch
-Patch47:        0002-fbcon-remove-now-unusued-softback_lines-cursor-argum.patch
-Patch48:        0003-vgacon-remove-software-scrollback-support.patch
 
 # 9p patches
 Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
@@ -238,9 +234,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
-%patch46 -p1
-%patch47 -p1
-%patch48 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -403,6 +396,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-1
+-   Update to version 4.19.148
 *   Thu Sep 24 2020 Amod Mishra <mamod@vmware.com> 4.19.145-6
 -   9p: Corrections have been added inside function
 -   "iter_is_bvec" and "iter_is_kvec".
@@ -410,7 +405,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-4
 -   Fix for CVE-2019-19813 and CVE-2019-19816
-*   Thu Sep 22 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-3
+*   Tue Sep 22 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-3
 -   Add extraction support for multi-image initramfs
 *   Tue Sep 22 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-2
 -   Fix for CVE-2020-25211

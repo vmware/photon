@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.145
+Version:        4.19.148
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b8fb594a0c3a771551ba192d2ef97d070d9f9c9c
+%define sha1 linux=aff6c306fcf2cf42d93070ec96da17b4e84e4065
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
@@ -71,10 +71,6 @@ Patch54:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
 Patch55:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch56:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch57:        0007-btrfs-tree-checker-Verify-inode-item.patch
-# Fix for CVE-2020-14390
-Patch58:        0001-fbcon-remove-soft-scrollback-code.patch
-Patch59:        0002-fbcon-remove-now-unusued-softback_lines-cursor-argum.patch
-Patch60:        0003-vgacon-remove-software-scrollback-support.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
@@ -497,9 +493,6 @@ The Linux package contains the Linux kernel doc files
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
-%patch58 -p1
-%patch59 -p1
-%patch60 -p1
 
 %patch81 -p1
 %patch82 -p1
@@ -997,6 +990,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-1
+-   Update to version 4.19.148
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-4
 -   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-3

@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux
-Version:        4.19.145
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.148
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b8fb594a0c3a771551ba192d2ef97d070d9f9c9c
+%define sha1 linux=aff6c306fcf2cf42d93070ec96da17b4e84e4065
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -58,11 +58,6 @@ Patch14:        0001-drm-vmwgfx-Don-t-use-the-HB-port-if-memory-encryptio.patch
 Patch15:        0002-drm-vmwgfx-Fix-the-refuse_dma-mode-when-using-guest-.patch
 Patch16:        0003-drm-vmwgfx-Refuse-DMA-operation-when-SEV-encryption-.patch
 %endif
-
-# Fix for CVE-2020-14390
-Patch17:        0001-fbcon-remove-soft-scrollback-code.patch
-Patch18:        0002-fbcon-remove-now-unusued-softback_lines-cursor-argum.patch
-Patch19:        0003-vgacon-remove-software-scrollback-support.patch
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
@@ -357,10 +352,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch15 -p1
 %patch16 -p1
 %endif
-
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
 
 %patch26 -p1
 %patch27 -p1
@@ -813,6 +804,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-1
+-   Update to version 4.19.148
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-4
 -   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-3

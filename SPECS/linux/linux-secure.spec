@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.145
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.148
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b8fb594a0c3a771551ba192d2ef97d070d9f9c9c
+%define sha1 linux=aff6c306fcf2cf42d93070ec96da17b4e84e4065
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -76,10 +76,6 @@ Patch53:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
 Patch54:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch55:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch56:        0007-btrfs-tree-checker-Verify-inode-item.patch
-# Fix for CVE-2020-14390
-Patch57:        0001-fbcon-remove-soft-scrollback-code.patch
-Patch58:        0002-fbcon-remove-now-unusued-softback_lines-cursor-argum.patch
-Patch59:        0003-vgacon-remove-software-scrollback-support.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
@@ -204,9 +200,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
-%patch57 -p1
-%patch58 -p1
-%patch59 -p1
 
 %patch81 -p1
 %patch82 -p1
@@ -382,6 +375,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-1
+-   Update to version 4.19.148
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-4
 -   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.145-3
