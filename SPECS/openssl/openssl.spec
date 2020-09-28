@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.1.1g
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -78,6 +78,8 @@ install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
 
 ln -sf libssl.so.1.1 %{buildroot}%{_libdir}/libssl.so.1.1.0
 ln -sf libssl.so.1.1 %{buildroot}%{_libdir}/libssl.so.1.1.1
+ln -sf libcrypto.so.1.1 %{buildroot}%{_libdir}/libcrypto.so.1.1.0
+ln -sf libcrypto.so.1.1 %{buildroot}%{_libdir}/libcrypto.so.1.1.1
 
 %check
 make tests
@@ -121,6 +123,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Mon Sep 28 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1g-2
+-   Add libcrypto symlinks
 *   Wed Jul 22 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1g-1
 -   Update to 1.1.1g
 *   Tue May 26 2020 Tapas Kundu <tkundu@vmware.com> 1.0.2v-1
