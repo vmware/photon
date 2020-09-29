@@ -1,0 +1,33 @@
+From: =?UTF-8?q?=E6=B1=AA=E5=8B=8710269566?= <wang.yong12@zte.com.cn>
+Date: Thu, 21 May 2020 09:37:44 +0800
+Subject: [PATCH] printk: Force a line break on pr_cont("\n")
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Since the printk rework, pr_cont("\n") will not lead to a line break.
+A new line will only be created if
+- cpu != c->cpu_owner || !(flags & LOG_CONT)
+- c->len + len > sizeof(c->buf)
+
+Flush the buffer to enforce a new line on pr_cont().
+
+[bigeasy: reword commit message ]
+
+Signed-off-by: 汪勇10269566 <wang.yong12@zte.com.cn>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Acked-by: John Ogness <john.ogness@linutronix.de>
+---
+ kernel/printk/printk.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -1876,6 +1876,7 @@ static void cont_add(int ctx, int cpu, u
+ 	// but later continuations can add a newline.
+ 	if (flags & LOG_NEWLINE) {
+ 		c->flags |= LOG_NEWLINE;
++		cont_flush(ctx);
+ 	}
+ }
+ 

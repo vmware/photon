@@ -1,0 +1,51 @@
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 12 Jun 2020 16:51:50 +0200
+Subject: [PATCH] rwsem: Provide down_read_non_owner() and up_read_non_owner()
+ for -RT
+
+The rwsem implementation on -RT allows multiple reader and there is no
+owner tracking anymore.
+We can provide down_read_non_owner() and up_read_non_owner() by skipping
+the owner check bits which are only available in the !RT implementation.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/locking/rwsem.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+--- a/kernel/locking/rwsem.c
++++ b/kernel/locking/rwsem.c
+@@ -1616,15 +1616,15 @@ void _down_write_nest_lock(struct rw_sem
+ }
+ EXPORT_SYMBOL(_down_write_nest_lock);
+ 
+-#ifndef CONFIG_PREEMPT_RT
+ void down_read_non_owner(struct rw_semaphore *sem)
+ {
+ 	might_sleep();
+ 	__down_read(sem);
++#ifndef CONFIG_PREEMPT_RT
+ 	__rwsem_set_reader_owned(sem, NULL);
++#endif
+ }
+ EXPORT_SYMBOL(down_read_non_owner);
+-#endif
+ 
+ void down_write_nested(struct rw_semaphore *sem, int subclass)
+ {
+@@ -1649,13 +1649,13 @@ int __sched down_write_killable_nested(s
+ }
+ EXPORT_SYMBOL(down_write_killable_nested);
+ 
+-#ifndef CONFIG_PREEMPT_RT
+ void up_read_non_owner(struct rw_semaphore *sem)
+ {
++#ifndef CONFIG_PREEMPT_RT
+ 	DEBUG_RWSEMS_WARN_ON(!is_rwsem_reader_owned(sem), sem);
++#endif
+ 	__up_read(sem);
+ }
+ EXPORT_SYMBOL(up_read_non_owner);
+-#endif
+ 
+ #endif

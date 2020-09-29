@@ -1,0 +1,26 @@
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Mon, 7 Sep 2020 22:57:32 +0200
+Subject: [PATCH] tasklets: Use static line for functions
+
+Inlines exist for a reason.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ include/linux/interrupt.h |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -667,9 +667,9 @@ static inline void tasklet_unlock(struct
+ }
+ void tasklet_unlock_wait(struct tasklet_struct *t);
+ #else
+-#define tasklet_trylock(t) 1
+-#define tasklet_unlock_wait(t) do { } while (0)
+-#define tasklet_unlock(t) do { } while (0)
++static inline int tasklet_trylock(struct tasklet_struct *t) { return 1; }
++static inline void tasklet_unlock(struct tasklet_struct *t) { }
++static inline void tasklet_unlock_wait(struct tasklet_struct *t) { }
+ #endif
+ 
+ extern void __tasklet_schedule(struct tasklet_struct *t);

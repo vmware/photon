@@ -1,0 +1,181 @@
+From: "Ahmed S. Darwish" <a.darwish@linutronix.de>
+Date: Fri, 4 Sep 2020 17:32:29 +0200
+Subject: [PATCH 11/13] seqlock: seqcount_t: Implement all read APIs as
+ statement expressions
+
+The sequence counters read APIs are implemented as CPP macros, so they
+can take either seqcount_t or any of the seqcount_LOCKNAME_t variants.
+Such macros then get *directly* transformed to internal C functions that
+only take plain seqcount_t.
+
+Further commits need access to seqcount_LOCKNAME_t inside of the actual
+read APIs code. Thus transform all of the seqcount read APIs to pure GCC
+statement expressions instead.
+
+This will not break type-safety: all of the transformed APIs resolve to
+a _Generic() selection that does not have a "default" case.
+
+This will also not affect the transformed APIs readability: previously
+added kernel-doc above all of seqlock.h functions makes the expectations
+quite clear for call-site developers.
+
+Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20200904153231.11994-4-a.darwish@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/seqlock.h |   94 ++++++++++++++++++++++--------------------------
+ 1 file changed, 45 insertions(+), 49 deletions(-)
+
+--- a/include/linux/seqlock.h
++++ b/include/linux/seqlock.h
+@@ -184,6 +184,12 @@ static __always_inline seqcount_t *
+ 	return &s->seqcount;						\
+ }									\
+ 									\
++static __always_inline unsigned						\
++__seqprop_##lockname##_sequence(const seqcount_##lockname##_t *s)	\
++{									\
++	return READ_ONCE(s->seqcount.sequence);				\
++}									\
++									\
+ static __always_inline bool						\
+ __seqprop_##lockname##_preemptible(const seqcount_##lockname##_t *s)	\
+ {									\
+@@ -205,6 +211,11 @@ static inline seqcount_t *__seqprop_ptr(
+ 	return s;
+ }
+ 
++static inline unsigned __seqprop_sequence(const seqcount_t *s)
++{
++	return READ_ONCE(s->sequence);
++}
++
+ static inline bool __seqprop_preemptible(const seqcount_t *s)
+ {
+ 	return false;
+@@ -250,6 +261,7 @@ SEQCOUNT_LOCKNAME(ww_mutex,	struct ww_mu
+ 	__seqprop_case((s),	ww_mutex,	prop))
+ 
+ #define __seqcount_ptr(s)		__seqprop(s, ptr)
++#define __seqcount_sequence(s)		__seqprop(s, sequence)
+ #define __seqcount_lock_preemptible(s)	__seqprop(s, preemptible)
+ #define __seqcount_assert_lock_held(s)	__seqprop(s, assert)
+ 
+@@ -268,21 +280,15 @@ SEQCOUNT_LOCKNAME(ww_mutex,	struct ww_mu
+  * Return: count to be passed to read_seqcount_retry()
+  */
+ #define __read_seqcount_begin(s)					\
+-	__read_seqcount_t_begin(__seqcount_ptr(s))
+-
+-static inline unsigned __read_seqcount_t_begin(const seqcount_t *s)
+-{
+-	unsigned ret;
+-
+-repeat:
+-	ret = READ_ONCE(s->sequence);
+-	if (unlikely(ret & 1)) {
+-		cpu_relax();
+-		goto repeat;
+-	}
+-	kcsan_atomic_next(KCSAN_SEQLOCK_REGION_MAX);
+-	return ret;
+-}
++({									\
++	unsigned seq;							\
++									\
++	while ((seq = __seqcount_sequence(s)) & 1)			\
++		cpu_relax();						\
++									\
++	kcsan_atomic_next(KCSAN_SEQLOCK_REGION_MAX);			\
++	seq;								\
++})
+ 
+ /**
+  * raw_read_seqcount_begin() - begin a seqcount_t read section w/o lockdep
+@@ -291,14 +297,12 @@ static inline unsigned __read_seqcount_t
+  * Return: count to be passed to read_seqcount_retry()
+  */
+ #define raw_read_seqcount_begin(s)					\
+-	raw_read_seqcount_t_begin(__seqcount_ptr(s))
+-
+-static inline unsigned raw_read_seqcount_t_begin(const seqcount_t *s)
+-{
+-	unsigned ret = __read_seqcount_t_begin(s);
+-	smp_rmb();
+-	return ret;
+-}
++({									\
++	unsigned seq = __read_seqcount_begin(s);			\
++									\
++	smp_rmb();							\
++	seq;								\
++})
+ 
+ /**
+  * read_seqcount_begin() - begin a seqcount_t read critical section
+@@ -307,13 +311,10 @@ static inline unsigned raw_read_seqcount
+  * Return: count to be passed to read_seqcount_retry()
+  */
+ #define read_seqcount_begin(s)						\
+-	read_seqcount_t_begin(__seqcount_ptr(s))
+-
+-static inline unsigned read_seqcount_t_begin(const seqcount_t *s)
+-{
+-	seqcount_lockdep_reader_access(s);
+-	return raw_read_seqcount_t_begin(s);
+-}
++({									\
++	seqcount_lockdep_reader_access(__seqcount_ptr(s));		\
++	raw_read_seqcount_begin(s);					\
++})
+ 
+ /**
+  * raw_read_seqcount() - read the raw seqcount_t counter value
+@@ -327,15 +328,13 @@ static inline unsigned read_seqcount_t_b
+  * Return: count to be passed to read_seqcount_retry()
+  */
+ #define raw_read_seqcount(s)						\
+-	raw_read_seqcount_t(__seqcount_ptr(s))
+-
+-static inline unsigned raw_read_seqcount_t(const seqcount_t *s)
+-{
+-	unsigned ret = READ_ONCE(s->sequence);
+-	smp_rmb();
+-	kcsan_atomic_next(KCSAN_SEQLOCK_REGION_MAX);
+-	return ret;
+-}
++({									\
++	unsigned seq = __seqcount_sequence(s);				\
++									\
++	smp_rmb();							\
++	kcsan_atomic_next(KCSAN_SEQLOCK_REGION_MAX);			\
++	seq;								\
++})
+ 
+ /**
+  * raw_seqcount_begin() - begin a seqcount_t read critical section w/o
+@@ -355,16 +354,13 @@ static inline unsigned raw_read_seqcount
+  * Return: count to be passed to read_seqcount_retry()
+  */
+ #define raw_seqcount_begin(s)						\
+-	raw_seqcount_t_begin(__seqcount_ptr(s))
+-
+-static inline unsigned raw_seqcount_t_begin(const seqcount_t *s)
+-{
+-	/*
+-	 * If the counter is odd, let read_seqcount_retry() fail
+-	 * by decrementing the counter.
+-	 */
+-	return raw_read_seqcount_t(s) & ~1;
+-}
++({									\
++	/*								\
++	 * If the counter is odd, let read_seqcount_retry() fail	\
++	 * by decrementing the counter.					\
++	 */								\
++	raw_read_seqcount(s) & ~1;					\
++})
+ 
+ /**
+  * __read_seqcount_retry() - end a seqcount_t read section w/o barrier

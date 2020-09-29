@@ -1,0 +1,41 @@
+From: "Ahmed S. Darwish" <a.darwish@linutronix.de>
+Date: Thu, 27 Aug 2020 13:40:43 +0200
+Subject: [PATCH 07/13] rbtree_latch: Use seqcount_latch_t
+
+Latch sequence counters have unique read and write APIs, and thus
+seqcount_latch_t was recently introduced at seqlock.h.
+
+Use that new data type instead of plain seqcount_t. This adds the
+necessary type-safety and ensures that only latching-safe seqcount APIs
+are to be used.
+
+Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20200827114044.11173-8-a.darwish@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/rbtree_latch.h |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+--- a/include/linux/rbtree_latch.h
++++ b/include/linux/rbtree_latch.h
+@@ -42,8 +42,8 @@ struct latch_tree_node {
+ };
+ 
+ struct latch_tree_root {
+-	seqcount_t	seq;
+-	struct rb_root	tree[2];
++	seqcount_latch_t	seq;
++	struct rb_root		tree[2];
+ };
+ 
+ /**
+@@ -206,7 +206,7 @@ latch_tree_find(void *key, struct latch_
+ 	do {
+ 		seq = raw_read_seqcount_latch(&root->seq);
+ 		node = __lt_find(key, root, seq & 1, ops->comp);
+-	} while (read_seqcount_retry(&root->seq, seq));
++	} while (read_seqcount_latch_retry(&root->seq, seq));
+ 
+ 	return node;
+ }

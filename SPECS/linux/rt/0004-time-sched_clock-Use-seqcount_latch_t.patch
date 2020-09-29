@@ -1,0 +1,39 @@
+From: "Ahmed S. Darwish" <a.darwish@linutronix.de>
+Date: Thu, 27 Aug 2020 13:40:40 +0200
+Subject: [PATCH 04/13] time/sched_clock: Use seqcount_latch_t
+
+Latch sequence counters have unique read and write APIs, and thus
+seqcount_latch_t was recently introduced at seqlock.h.
+
+Use that new data type instead of plain seqcount_t. This adds the
+necessary type-safety and ensures only latching-safe seqcount APIs are
+to be used.
+
+Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20200827114044.11173-5-a.darwish@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/time/sched_clock.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/kernel/time/sched_clock.c
++++ b/kernel/time/sched_clock.c
+@@ -35,7 +35,7 @@
+  * into a single 64-byte cache line.
+  */
+ struct clock_data {
+-	seqcount_t		seq;
++	seqcount_latch_t	seq;
+ 	struct clock_read_data	read_data[2];
+ 	ktime_t			wrap_kt;
+ 	unsigned long		rate;
+@@ -76,7 +76,7 @@ struct clock_read_data *sched_clock_read
+ 
+ int sched_clock_read_retry(unsigned int seq)
+ {
+-	return read_seqcount_retry(&cd.seq, seq);
++	return read_seqcount_latch_retry(&cd.seq, seq);
+ }
+ 
+ unsigned long long notrace sched_clock(void)

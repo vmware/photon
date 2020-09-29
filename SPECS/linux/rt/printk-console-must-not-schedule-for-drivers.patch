@@ -1,0 +1,44 @@
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 6 Apr 2020 23:22:17 +0200
+Subject: [PATCH] printk: console must not schedule for drivers
+
+Even though the printk kthread is always preemptible, it is still not
+allowed to call cond_resched() from within console drivers. The
+task may become non-preemptible in the console driver call chain. For
+example, vt_console_print() takes a spinlock and then can call into
+fbcon_redraw(), which can conditionally invoke cond_resched():
+
+|BUG: sleeping function called from invalid context at kernel/printk/printk.c:2322
+|in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 177, name: printk
+|CPU: 0 PID: 177 Comm: printk Not tainted 5.6.2-00011-ga536059557f1d9 #1
+|Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
+|Call Trace:
+| dump_stack+0x66/0x8b
+| ___might_sleep+0x102/0x120
+| console_conditional_schedule+0x24/0x30
+| fbcon_redraw+0x96/0x1c0
+| fbcon_scroll+0x556/0xd70
+| con_scroll+0x147/0x1e0
+| lf+0x9e/0xb0
+| vt_console_print+0x253/0x3d0
+| printk_kthread_func+0x1d5/0x3b0
+
+Disable cond_resched() for the call into the console drivers.
+
+Reported-by: kernel test robot <rong.a.chen@intel.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3101,6 +3101,7 @@ static int printk_kthread_func(void *dat
+ 			    &len, printk_time);
+ 
+ 		console_lock();
++		console_may_schedule = 0;
+ 		if (len > 0 || ext_len > 0) {
+ 			call_console_drivers(ext_text, ext_len, text, len);
+ 			boot_delay_msec(msg->level);
