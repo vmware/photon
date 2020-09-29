@@ -1,0 +1,73 @@
+From 74428b3cbb04f5c4a9500fb8c55bc44c42c385d3 Mon Sep 17 00:00:00 2001
+From: Amod Mishra <mamod@vmware.com>
+Date: Tue, 29 Sep 2020 09:16:10 -0700
+Subject: [PATCH] [9p-fscache] Don't use writeback fid for cache when enabled
+
+Writeback fid is used for data caching. It is utilized to write dirty
+pages back to the server.Writeback fid is associated with an inode. An
+inode may still be cached even in case file is closed,the writeback_fid
+associated to the inode in cache is still opened, and the file
+descriptor on host of the writeback_fid is also kept opened.This can
+cuase too many files opened at the host.VDFS does not use caching for
+data and to avoid above issue, usage of writeback fid for VDFS has been
+prohibited.
+---
+ fs/9p/vfs_file.c       | 4 ++++
+ fs/9p/vfs_inode.c      | 1 +
+ fs/9p/vfs_inode_dotl.c | 1 +
+ 3 files changed, 6 insertions(+)
+
+diff --git a/fs/9p/vfs_file.c b/fs/9p/vfs_file.c
+index 5208474f4981..ae188dd9ddbf 100644
+--- a/fs/9p/vfs_file.c
++++ b/fs/9p/vfs_file.c
+@@ -91,6 +91,7 @@ int v9fs_file_open(struct inode *inode, struct file *file)
+ 	file->private_data = fid;
+ 	mutex_lock(&v9inode->v_mutex);
+ 	if ((v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE) &&
++	    !v9ses->metaonly &&
+ 	    !v9inode->writeback_fid &&
+ 	    ((file->f_flags & O_ACCMODE) != O_RDONLY)) {
+ 		/*
+@@ -549,11 +550,14 @@ v9fs_mmap_file_mmap(struct file *filp, struct vm_area_struct *vma)
+ 	struct inode *inode;
+ 	struct v9fs_inode *v9inode;
+ 	struct p9_fid *fid;
++	struct v9fs_session_info *v9ses;
+ 
+ 	inode = file_inode(filp);
+ 	v9inode = V9FS_I(inode);
++	v9ses = v9fs_inode2v9ses(inode);
+ 	mutex_lock(&v9inode->v_mutex);
+ 	if (!v9inode->writeback_fid &&
++	    !v9ses->metaonly &&
+ 	    (vma->vm_flags & VM_SHARED) &&
+ 	    (vma->vm_flags & VM_WRITE)) {
+ 		/*
+diff --git a/fs/9p/vfs_inode.c b/fs/9p/vfs_inode.c
+index 2de1505aedfd..a3077629a8d5 100644
+--- a/fs/9p/vfs_inode.c
++++ b/fs/9p/vfs_inode.c
+@@ -886,6 +886,7 @@ v9fs_vfs_atomic_open(struct inode *dir, struct dentry *dentry,
+ 	v9inode = V9FS_I(d_inode(dentry));
+ 	mutex_lock(&v9inode->v_mutex);
+ 	if ((v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE) &&
++	    !v9ses->metaonly &&
+ 	    !v9inode->writeback_fid &&
+ 	    ((flags & O_ACCMODE) != O_RDONLY)) {
+ 		/*
+diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
+index 7ae67fcca031..62fcfc9c42b5 100644
+--- a/fs/9p/vfs_inode_dotl.c
++++ b/fs/9p/vfs_inode_dotl.c
+@@ -333,6 +333,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct dentry *dentry,
+ 	v9inode = V9FS_I(inode);
+ 	mutex_lock(&v9inode->v_mutex);
+ 	if ((v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE) &&
++	    !v9ses->metaonly &&
+ 	    !v9inode->writeback_fid &&
+ 	    ((flags & O_ACCMODE) != O_RDONLY)) {
+ 		/*
+-- 
+2.25.1
+

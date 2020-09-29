@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.237
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -49,14 +49,15 @@ Patch28:       0001-Enable-cache-loose-for-vdfs-9p.patch
 Patch29:       0001-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
 Patch30:       0001-9p-Transport-error-uninitialized.patch
 Patch31:       0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
+Patch32:       0001-9p-fscache-Don-t-use-writeback-fid-for-cache-when-en.patch
 # Fix for CVE-2018-5995
-Patch32:        0001-percpu-stop-printing-kernel-addresses.patch
+Patch33:        0001-percpu-stop-printing-kernel-addresses.patch
 # Fix for CVE-2020-25211
-Patch33:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
+Patch34:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 
-Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch35:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
-Patch35:       0001-scsi-libsas-direct-call-probe-and-destruct.patch
+Patch36:       0001-scsi-libsas-direct-call-probe-and-destruct.patch
 # Fix for CVE-2019-19922
 Patch37:       0001-sched-fair-Fix-bandwidth-timer-clock-drift-condition.patch
 Patch38:       0002-sched-fair-Fix-low-cpu-usage-with-high-throttling-by.patch
@@ -185,6 +186,7 @@ The Linux package contains the Linux kernel doc files
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
+%patch36 -p1
 %patch37 -p1
 %patch38 -p1
 %patch39 -p1
@@ -312,6 +314,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 29 2020 Amod Mishra <mamod@vmware.com> 4.4.237-2
+-   9p: Don't use writeback fid for cache when enabled for VDFS
 *   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.4.237-1
 -   Update to version 4.4.237
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.4.234-5
