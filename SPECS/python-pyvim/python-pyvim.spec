@@ -3,7 +3,7 @@
 Summary:        Pure Python Vi Implementation.
 Name:           python3-pyvim
 Version:        3.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -63,6 +63,8 @@ PYTHONPATH=./ py.test3
 %{_bindir}/pyvim3
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.2-2
+-   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.2-1
 -   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 2.0.22-6

@@ -1,7 +1,7 @@
 Summary:        Compressed file format
 Name:           zchunk
 Version:        1.1.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause AND MIT
 URL:            https://github.com/zchunk/zchunk
 Group:          Applications/System
@@ -83,6 +83,8 @@ DESTDIR=%{buildroot}/ ninja install
 %{_includedir}/zck.h
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.6-2
+-   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.6-1
 -   Automatic Version Bump
 *   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 1.1.1-2

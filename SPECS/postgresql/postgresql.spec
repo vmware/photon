@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        13.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -162,6 +162,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 13.0-2
+-   openssl 1.1.1
 *   Thu Sep 24 2020 Gerrit Photon <photon-checkins@vmware.com> 13.0-1
 -   Automatic Version Bump
 *   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 12.4-1

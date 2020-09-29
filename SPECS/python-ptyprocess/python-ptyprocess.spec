@@ -3,7 +3,7 @@
 Summary:        Run a subprocess in a pseudo terminal.
 Name:           python3-ptyprocess
 Version:        0.6.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ISC
 Url:            https://github.com/pexpect/ptyprocess
 Group:          Development/Languages/Python
@@ -53,6 +53,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.6.0-6
+-   openssl 1.1.1
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.6.0-5
 -   Mass removal python2
 *   Wed Feb 26 2020 Tapas Kundu <tkundu@vmware.com> 0.6.0-4

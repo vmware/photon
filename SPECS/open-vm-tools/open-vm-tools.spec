@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        11.1.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -131,6 +131,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 11.1.5-3
+-   openssl 1.1.1
 *   Tue Sep 08 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.5-2
 -   Updated gosc-scripts version to 1.3
 -   Do 'cloud-init clean -ls' before calling init

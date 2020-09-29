@@ -3,7 +3,7 @@
 Summary:        Library for interacting with Calico data model.
 Name:           libcalico
 Version:        0.19.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/libcalico
 Source0:        %{name}-%{version}.tar.gz
@@ -71,6 +71,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.19.0-3
+-   openssl 1.1.1
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 0.19.0-2
 -   Mass removal python2
 *   Wed Aug 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.19.0-1

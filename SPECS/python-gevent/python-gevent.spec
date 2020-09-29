@@ -3,7 +3,7 @@
 Summary:        Coroutine-based network library
 Name:           python3-gevent
 Version:        20.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -60,6 +60,8 @@ nosetests
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 20.9.0-2
+-   openssl 1.1.1
 *   Tue Sep 22 2020 Gerrit Photon <photon-checkins@vmware.com> 20.9.0-1
 -   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20.6.2-1

@@ -1,7 +1,7 @@
 Summary:          OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:             tpm2-tss
 Version:          3.0.1
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          BSD 2-Clause
 URL:              https://github.com/tpm2-software/tpm2-tss
 Group:            System Environment/Security
@@ -79,6 +79,8 @@ fi
 %{_mandir}/man7
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.1-2
+-   openssl 1.1.1
 *   Wed Sep 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.1-1
 -   Automatic Version Bump
 *   Wed Aug 12 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.0-1

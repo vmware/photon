@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.9p1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -188,6 +188,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.9p1-2
+-   openssl 1.1.1
 *   Mon Aug 03 2020 Satya Naga Vasamsetty<svasamsetty@vmware.com> 7.9p1-1
 -   Update the version to 7.9p1
 *   Mon Apr 06 2020 Anish Swaminathan <anishs@vmware.com> 7.8p1-7

@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -68,6 +68,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.7.1-2
+-   openssl 1.1.1
 *   Tue Sep 01 2020 Sujay G <gsujay@vmware.com> 2.7.1-1
 -   Bump version to 2.7.1
 *   Fri Jul 17 2020 Ankit Jain <ankitja@vmware.com> 2.5.8-2

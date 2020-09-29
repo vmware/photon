@@ -3,7 +3,7 @@
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
 Version:        2.0.29
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://sourceforge.net/projects/openipmi/
 License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
@@ -183,6 +183,8 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.29-3
+-   openssl 1.1.1
 *   Mon Jul 27 2020 Tapas Kundu <tkundu@vmware.com> 2.0.29-2
 -   Use python 3.8
 *   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2.0.29-1

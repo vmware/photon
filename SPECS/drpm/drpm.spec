@@ -1,7 +1,7 @@
 Name:            drpm
 Summary:         A library for making, reading and applying deltarpm packages
 Version:         0.5.0
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         LGPLv2+ and BSD
 URL:             https://github.com/rpm-software-management/%{name}
 Source0:         https://github.com/rpm-software-management/drpm/releases/download/0.5.0/drpm-%{version}.tar.bz2
@@ -64,5 +64,7 @@ popd
 %{_lib64dir}/pkgconfig/%{name}.pc
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.5.0-2
+-   openssl 1.1.1
 *   Fri Jun 26 2020 Keerthana K <keerthanak@vmware.com> 0.5.0-1
 -   Initial package for PhotonOS.

@@ -3,7 +3,7 @@
 Summary:	The gcovr command provides a utility for managing the use of the GNU gcov utility
 Name:		gcovr
 Version:	4.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD Clause-3
 URL:		http://gcovr.com/
 Source0:	https://github.com/gcovr/gcovr/archive/%{name}-%{version}.tar.gz
@@ -53,6 +53,8 @@ python3 setup.py test
 %{python3_sitelib}*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.2-2
+-   openssl 1.1.1
 *   Tue Jul 29 2020 Gerrit Photon <photon-checkins@vmware.com> 4.2-1
 -   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 4.1-4

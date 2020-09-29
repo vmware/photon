@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.127
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt55
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -963,6 +963,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.19.127-2
+-   openssl 1.1.1
 *   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1
 -   Update to version 4.19.127
 *   Tue Jun 16 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.115-10

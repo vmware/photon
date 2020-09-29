@@ -3,7 +3,7 @@
 Summary:        Interface for Python to call C code
 Name:           python3-cffi
 Version:        1.14.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
@@ -50,6 +50,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.3-2
+-   openssl 1.1.1
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.3-1
 -   Automatic Version Bump
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.2-1

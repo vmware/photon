@@ -3,7 +3,7 @@
 Summary:        Pexpect is a Pure Python Expect-like module
 Name:           python3-pexpect
 Version:        4.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 Url:            https://github.com/pexpect/pexpect
 Group:          Development/Languages/Python
@@ -58,6 +58,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.8.0-2
+-   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 4.8.0-1
 -   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 4.6.0-4

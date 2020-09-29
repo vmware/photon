@@ -2,7 +2,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.27.0
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/
 Group:          Applications/System
@@ -89,6 +89,8 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/sysdig-probe.ko
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.27.0-2
+-   openssl 1.1.1
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.27.0-1
 -   Automatic Version Bump
 *   Fri Sep 27 2019 Ajay Kaher <akaher@vmware.com> 0.26.4-1

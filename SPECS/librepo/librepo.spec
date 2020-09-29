@@ -4,7 +4,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.12.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -83,6 +83,8 @@ popd
 %{_python3_sitearch}/%{name}/
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.12.1-3
+-   openssl 1.1.1
 *   Mon Sep 07 2020 Ankit Jain <ankitja@vmware.com> 1.12.1-2
 -   Fixed string parsing logic
 *   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 1.12.1-1

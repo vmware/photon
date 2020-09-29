@@ -3,7 +3,7 @@
 Summary:        Attributes without boilerplate.
 Name:           python3-attrs
 Version:        20.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/attrs
 License:        MIT
 Group:          Development/Languages/Python
@@ -51,6 +51,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 20.2.0-2
+-   openssl 1.1.1
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 20.2.0-1
 -   Automatic Version Bump
 *   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 20.1.0-1

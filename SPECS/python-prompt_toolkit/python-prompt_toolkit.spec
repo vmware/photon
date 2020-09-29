@@ -3,7 +3,7 @@
 Summary:        Library for building powerful interactive command lines in Python.
 Name:           python3-prompt_toolkit
 Version:        3.0.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -54,6 +54,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.7-2
+-   openssl 1.1.1
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.7-1
 -   Automatic Version Bump
 *   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.6-1

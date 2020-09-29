@@ -1,6 +1,6 @@
 Name:           toybox
 Version:        0.8.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox/
@@ -542,6 +542,8 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 /usr/bin/uuencode
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.2-5
+-   openssl 1.1.1
 *   Fri Aug 21 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.2-4
 -   Fixed path for the utilities df,iotop,lspci,blkid
 *   Tue Jun 30 2020 Prashant S Chauhan <psinghchauhan@vmware.com> 0.8.2-3

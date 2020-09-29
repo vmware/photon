@@ -1,7 +1,7 @@
 Summary:	A full-featured and high-performance event loop
 Name:		libev
 Version:	4.33
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD-2-Clause
 URL:		http://software.schmorp.de/pkg/libev.html
 Source0:	http://dist.schmorp.de/libev/%{name}-%{version}.tar.gz
@@ -51,6 +51,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/*.so
 
 %changelog
+*       Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.33-2
+-       openssl 1.1.1
 *       Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 4.33-1
 -       Automatic Version Bump
 *	Mon Apr 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.24-1

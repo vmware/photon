@@ -1,7 +1,7 @@
 Summary:        Perl extension for using OpenSSL
 Name:           perl-Net-SSLeay
 Version:        1.88
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~mikem/Net-SSLeay-%{version}/
@@ -58,6 +58,8 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.88-2
+-   openssl 1.1.1
 *   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.88-1
 -   Automatic Version Bump
 *   Mon Dec 03 2018 Dweep Advani <dadvani@vmware.com> 1.85-3

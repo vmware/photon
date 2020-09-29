@@ -1,7 +1,7 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
 Version:        1.20.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
@@ -55,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_mandir}/man1/*
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.20.3-2
+-   openssl 1.1.1
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 1.20.3-1
 -   Automatic Version Bump
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 1.19.5-1

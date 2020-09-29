@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.8.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -297,6 +297,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.8.5-4
+-   openssl 1.1.1
 *   Sun Aug 16 2020 Tapas Kundu <tkundu@vmware.com> 3.8.5-3
 -   Package %{_libdir}/python3.8/lib2to3 in tools
 *   Thu Aug 13 2020 Tapas Kundu <tkundu@vmware.com> 3.8.5-2

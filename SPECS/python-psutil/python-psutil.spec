@@ -3,7 +3,7 @@
 Summary:        A library for retrieving information onrunning processes and system utilization
 Name:           python3-psutil
 Version:        5.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/psutil
 License:        BSD
 Group:          Development/Languages/Python
@@ -58,6 +58,8 @@ LANG=en_US.UTF-8 make test PYTHON=python%{python3_version}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.7.2-2
+-   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 5.7.2-1
 -   Automatic Version Bump
 *   Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 5.4.7-4

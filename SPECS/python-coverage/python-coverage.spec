@@ -4,7 +4,7 @@
 Summary:        Code coverage measurement for Python.
 Name:           python3-coverage
 Version:        5.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -55,6 +55,8 @@ LANG=en_US.UTF-8 tox -e py36
 %{_bindir}/coverage-%{python3_version}
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.3-2
+-   openssl 1.1.1
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 5.3-1
 -   Automatic Version Bump
 *   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 5.2.1-1

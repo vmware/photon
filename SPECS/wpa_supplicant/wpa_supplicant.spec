@@ -1,7 +1,7 @@
 Summary:          WPA client
 Name:             wpa_supplicant
 Version:          2.9
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
@@ -97,6 +97,8 @@ EOF
 %{_sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.9-2
+-   openssl 1.1.1
 *   Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9-1
 -   Automatic Version Bump
 *   Wed Oct 23 2019 Shreyas B. <shreyasb@vmware.com> 2.7-2

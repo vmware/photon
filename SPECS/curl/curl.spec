@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.72.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.72.0-2
+-   openssl 1.1.1
 *   Tue Jul 14 2020 Gerrit Photon <photon-checkins@vmware.com> 7.72.0-1
 -   Automatic Version Bump
 *   Wed Jun 17 2020 Ankit Jain <ankitja@vmware.com> 7.61.1-5

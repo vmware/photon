@@ -1,7 +1,7 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
 Version:        3.9.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL+
 Url:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
@@ -94,6 +94,8 @@ python3 -m pytest test/
 %{_libdir}/libfuse3.so*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9.4-3
+-   openssl 1.1.1
 *   Sun Aug 16 2020 Susant Sahani <ssahani@vmware.com> 3.9.4-2
 -   Use meson and ninja build system
 *   Wed Jul 15 2020 Gerrit Photon <photon-checkins@vmware.com> 3.9.4-1

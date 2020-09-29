@@ -1,7 +1,7 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.16.1
-Release:          1%{?dist}
+Release:          2%{?dist}
 URL:              http://www.sendmail.org/
 License:          BSD and CDDL1.1 and MIT
 Group:            Email/Server/Library
@@ -192,6 +192,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.16.1-2
+-   openssl 1.1.1
 *   Wed Jul 29 2020 Gerrit Photon <photon-checkins@vmware.com> 8.16.1-1
 -   Automatic Version Bump
 *   Thu Mar 26 2020 Alexey Makhalov <amakhalov@vmware.com> 8.15.2-17

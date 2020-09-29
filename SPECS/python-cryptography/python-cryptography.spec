@@ -3,7 +3,7 @@
 Summary:        Python cryptography library
 Name:           python3-cryptography
 Version:        3.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -66,6 +66,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.1.1-2
+-   openssl 1.1.1
 *   Tue Sep 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1.1-1
 -   Automatic Version Bump
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1

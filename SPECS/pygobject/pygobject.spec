@@ -2,7 +2,7 @@
 
 Name:           python3-pygobject
 Version:        3.38.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python Bindings for GObject
 Group:          Development/Languages
 License:        LGPLv2+
@@ -73,6 +73,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.38.0-2
+-   openssl 1.1.1
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 3.38.0-1
 -   Automatic Version Bump
 *   Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.36.1-1

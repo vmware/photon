@@ -2,7 +2,7 @@
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
@@ -95,6 +95,8 @@ rm -rf %{buildroot}/*
 %exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.8-4
+-   openssl 1.1.1
 *   Tue Jul 07 2020 Shreyas B. <shreyasb@vmware.com> 5.8-3
 -   Fix for CVE-2019-20892
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 5.8-2

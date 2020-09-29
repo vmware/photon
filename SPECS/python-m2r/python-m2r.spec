@@ -3,7 +3,7 @@
 Summary:        Markdown to reStructuredText converter.
 Name:           python3-m2r
 Version:        0.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -60,6 +60,8 @@ python3 setup.py test -s tests
 %{_bindir}/m2r3
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.2.1-2
+-   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.2.1-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.2.0-4

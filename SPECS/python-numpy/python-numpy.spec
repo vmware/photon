@@ -3,7 +3,7 @@
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python3-numpy
 Version:        1.19.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -57,6 +57,8 @@ rm -rf test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.19.2-2
+-   openssl 1.1.1
 *   Thu Sep 10 2020 Gerrit Photon <photon-checkins@vmware.com> 1.19.2-1
 -   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.19.1-1

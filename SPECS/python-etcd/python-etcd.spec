@@ -2,7 +2,7 @@
 
 Name:           python3-etcd
 Version:        0.4.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python API for etcd
 License:        MIT
 Group:          Development/Languages/Python
@@ -56,6 +56,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.4.5-4
+-   openssl 1.1.1
 *   Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 0.4.5-3
 -   Mass removal python2
 *   Tue Dec 04 2018 Ashwin H<ashwinh@vmware.com> 0.4.5-2

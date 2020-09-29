@@ -4,7 +4,7 @@
 Summary:        Query Language for JSON
 Name:           python3-jmespath
 Version:        0.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -52,6 +52,8 @@ python3 setup.py test
 %{_bindir}/jp.py-%{python3_version}
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.10.0-2
+-   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.10.0-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.9.3-3

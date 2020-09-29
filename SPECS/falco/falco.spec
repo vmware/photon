@@ -2,7 +2,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.25.0
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
@@ -105,6 +105,8 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.25.0-2
+-   openssl 1.1.1
 *   Wed Sep 16 2020 Bo Gan <ganb@vmware.com> 0.25.0-1
 -   Updated to 0.25.0
 *   Mon Sep 14 2020 Ankit Jain <ankitja@vmware.com> 0.15.1-2

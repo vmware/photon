@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        2.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -59,6 +59,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.2.2-2
+-   openssl 1.1.1
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.2.2-1
 -   Automatic Version Bump
 *   Thu Mar 05 2020 Ashwin H <ashwinh@vmware.com> 2.0.10-1

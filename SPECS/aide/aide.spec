@@ -1,7 +1,7 @@
 Summary:        Intrusion detection environment
 Name:           aide
 Version:        0.16.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://sourceforge.net/projects/aide
 License:        GPLv2+
 Source0:        https://github.com/aide/aide/releases/download/v0.16.2/%{name}-%{version}.tar.gz
@@ -64,5 +64,7 @@ rm -rf %{buildroot}/*
 %{_var}/opt/%{name}/log/%{name}.log
 
 %changelog
+*    Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.16.2-2
+-    openssl 1.1.1
 *    Wed Aug 14 2019 Tapas Kundu <tkundu@vmware.com> 0.16.2-1
 -    Initial build for Photon
