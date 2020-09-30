@@ -11,14 +11,14 @@ stack frame.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- arch/x86/kvm/svm/nested.c | 47 +++++++++++++++++++++++++++++++++--------------
+ arch/x86/kvm/svm/nested.c | 47 +++++++++++++++++++++++++++------------
  1 file changed, 33 insertions(+), 14 deletions(-)
 
 diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index fb68467..2803662 100644
+index e90bc436f584..598a769f1961 100644
 --- a/arch/x86/kvm/svm/nested.c
 +++ b/arch/x86/kvm/svm/nested.c
-@@ -1060,10 +1060,14 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
+@@ -1062,10 +1062,14 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
  	struct vmcb *hsave = svm->nested.hsave;
  	struct vmcb __user *user_vmcb = (struct vmcb __user *)
  		&user_kvm_nested_state->data.svm[0];
@@ -35,7 +35,7 @@ index fb68467..2803662 100644
  	if (kvm_state->format != KVM_STATE_NESTED_FORMAT_SVM)
  		return -EINVAL;
  
-@@ -1095,13 +1099,22 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
+@@ -1097,13 +1101,22 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
  		return -EINVAL;
  	if (kvm_state->size < sizeof(*kvm_state) + KVM_STATE_NESTED_SVM_VMCB_SIZE)
  		return -EINVAL;
@@ -64,7 +64,7 @@ index fb68467..2803662 100644
  
  	/*
  	 * Processor state contains L2 state.  Check that it is
-@@ -1109,15 +1122,15 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
+@@ -1111,15 +1124,15 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
  	 */
  	cr0 = kvm_read_cr0(vcpu);
          if (((cr0 & X86_CR0_CD) == 0) && (cr0 & X86_CR0_NW))
@@ -83,7 +83,7 @@ index fb68467..2803662 100644
  
  	/*
  	 * All checks done, we can enter guest mode.  L1 control fields
-@@ -1126,15 +1139,21 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
+@@ -1128,10 +1141,10 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
  	 * contains saved L1 state.
  	 */
  	copy_vmcb_control_area(&hsave->control, &svm->vmcb->control);
@@ -94,6 +94,9 @@ index fb68467..2803662 100644
 -	load_nested_vmcb_control(svm, &ctl);
 +	load_nested_vmcb_control(svm, ctl);
  	nested_prepare_vmcb_control(svm);
+ 
+ 	if (!nested_svm_vmrun_msrpm(svm))
+@@ -1139,7 +1152,13 @@ static int svm_set_nested_state(struct kvm_vcpu *vcpu,
  
  out_set_gif:
  	svm_set_gif(svm, !!(kvm_state->flags & KVM_STATE_NESTED_GIF_SET));
@@ -109,5 +112,5 @@ index fb68467..2803662 100644
  
  struct kvm_x86_nested_ops svm_nested_ops = {
 -- 
-2.7.4
+2.17.1
 

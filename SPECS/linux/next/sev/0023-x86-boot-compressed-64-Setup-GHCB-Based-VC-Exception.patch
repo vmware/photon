@@ -36,12 +36,12 @@ index 7101ac6..8289dd4 100644
  	  Say yes to enable support for the encryption of system memory.
  	  This requires an AMD processor that supports Secure Memory
 diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
-index 38f4a52..2120eed 100644
+index e72f0cadf52c..c284193b7b8e 100644
 --- a/arch/x86/boot/compressed/Makefile
 +++ b/arch/x86/boot/compressed/Makefile
-@@ -44,6 +44,9 @@ KBUILD_CFLAGS += $(call cc-option,-fmacro-prefix-map=$(srctree)/=)
- KBUILD_CFLAGS += -fno-asynchronous-unwind-tables
- KBUILD_CFLAGS += -D__DISABLE_EXPORTS
+@@ -46,6 +46,9 @@ KBUILD_CFLAGS += -D__DISABLE_EXPORTS
+ # Disable relocation relaxation in case the link is not PIE.
+ KBUILD_CFLAGS += $(call as-option,-Wa$(comma)-mrelax-relocations=no)
  
 +# sev-es.c inludes generated $(objtree)/arch/x86/lib/inat-tables.c
 +CFLAGS_sev-es.o += -I$(objtree)/arch/x86/lib/

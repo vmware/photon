@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.9.0
-Release:        rc4.1%{?kat_build:.kat}%{?dist}
+Release:        rc7.1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -24,11 +24,11 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 #TODO: remove rcN after 5.9 goes out of rc
-%define lnx_rc_ver 5.9.0-rc4
+%define lnx_rc_ver 5.9.0-rc7
 %define lnx_rc_local_ver .1%{?kat_build:.kat}%{?dist}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{lnx_rc_ver}.tar.xz
-%define sha1 linux=19af0c05c8e16c7148dbcb3201880370f7405a4e
+%define sha1 linux=b8809bb16a9591303ac2bb84e19a597e26b69c4c
 Source1:	config_%{_arch}
 Source2:	initramfs.trigger
 %define ena_version 2.2.11
@@ -722,6 +722,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Sep 30 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-rc7.1
+-   Update to version 5.9.0-rc7
 *   Mon Sep 21 2020 Bo Gan <ganb@vmware.com> 5.9.0-rc4.1
 -   Update to 5.9.0-rc4
 -   AMD SEV-ES Support
