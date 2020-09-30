@@ -1,14 +1,14 @@
 Summary:        Compressed file format
 Name:           zchunk
-Version:        1.1.6
-Release:        2%{?dist}
+Version:        1.1.7
+Release:        1%{?dist}
 License:        BSD-2-Clause AND MIT
 URL:            https://github.com/zchunk/zchunk
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/zchunk/zchunk/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=e4ded39ea15a00b0bfd2f0fe2d8701a06799a21e
+%define sha1    %{name}-%{version}=92a940280b2e9981f5d8547158a6c80aa3bfa6be
 BuildRequires:  meson
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
@@ -81,8 +81,11 @@ DESTDIR=%{buildroot}/ ninja install
 %{_libdir}/libzck.so
 %{_libdir}/pkgconfig/zck.pc
 %{_includedir}/zck.h
+%{_mandir}/man1/*.gz
 
 %changelog
+*   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.7-1
+-   Automatic Version Bump
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.6-2
 -   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.6-1
