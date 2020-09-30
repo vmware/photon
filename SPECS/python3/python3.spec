@@ -1,14 +1,14 @@
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.8.5
-Release:        4%{?dist}
+Version:        3.8.6
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=68d6c7f948801cc755905162f5ee7589595edee4
+%define sha1    Python=6ee446eaacf901a3305565bd6569e2de135168e3
 Source1:        macros.python
 Patch0:         cgi3.patch
 BuildRequires:  pkg-config >= 0.28
@@ -168,6 +168,7 @@ fi
     --enable-shared \
     --with-system-expat \
     --with-system-ffi \
+    --enable-optimizations \
     --with-dbmliborder=gdbm:ndbm
 make %{?_smp_mflags}
 
@@ -280,14 +281,14 @@ rm -rf %{buildroot}/*
 %files pip
 %defattr(-,root,root,755)
 %{_libdir}/python3.8/site-packages/pip/*
-%{_libdir}/python3.8/site-packages/pip-20.1.1.dist-info/*
+%{_libdir}/python3.8/site-packages/pip-20.2.1.dist-info/*
 %{_bindir}/pip*
 
 %files setuptools
 %defattr(-,root,root,755)
 %{_libdir}/python3.8/site-packages/pkg_resources/*
 %{_libdir}/python3.8/site-packages/setuptools/*
-%{_libdir}/python3.8/site-packages/setuptools-47.1.0.dist-info/*
+%{_libdir}/python3.8/site-packages/setuptools-49.2.1.dist-info/*
 %{_bindir}/easy_install-3.8
 
 %files test
@@ -297,6 +298,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+*   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.6-1
+-   Automatic Version Bump
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.8.5-4
 -   openssl 1.1.1
 *   Sun Aug 16 2020 Tapas Kundu <tkundu@vmware.com> 3.8.5-3

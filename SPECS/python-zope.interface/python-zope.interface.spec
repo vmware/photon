@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-zope.interface
-Version:        5.1.0
-Release:        2%{?dist}
+Version:        5.1.2
+Release:        1%{?dist}
 Url:            https://github.com/zopefoundation/zope.interface
 Summary:        Interfaces for Python
 License:        ZPL 2.1
@@ -10,7 +10,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/z/zope.interface/zope.interface-%{version}.tar.gz
-%define sha1    zope.interface=0b8c7f3a489cc02b303de60f6abf94cf509e7aae
+%define sha1    zope.interface=0f66adff13ac9c378a9cc0812808a045ca380c97
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -46,6 +46,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 5.1.2-1
+-   Automatic Version Bump
 *   Thu Sep 03 2020 Tapas Kundu <tkundu@vmware.com> 5.1.0-2
 -   Requires python3-setuptools for installation
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 5.1.0-1

@@ -1,14 +1,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python3-virtualenv
-Version:        20.0.31
+Version:        20.0.32
 Release:        1%{?dist}
 Summary:        Virtual Python Environment builder
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/virtualenv
 Source0:        virtualenv-%{version}.tar.gz
-%define sha1    virtualenv=e645d4d1395b712b38fb4ec742e748ab3a47b88d
+%define sha1    virtualenv=7a3a38ecaa62818f7ab1708726c937debaf8195b
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -44,6 +44,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 20.0.32-1
+-   Automatic Version Bump
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 20.0.31-1
 -   Automatic Version Bump
 *   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 20.0.30-1

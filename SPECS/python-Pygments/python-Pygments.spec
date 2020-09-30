@@ -10,8 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Pygments
 Source0:        https://files.pythonhosted.org/packages/source/P/Pygments/Pygments-%{version}.tar.gz
-%define         sha1 Pygments=664ea7ce520e32ff07d3f40567f0c913996619b9
-
+%define sha1    Pygments=664ea7ce520e32ff07d3f40567f0c913996619b9
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -22,20 +21,16 @@ BuildRequires:  openssl-devel
 %endif
 Requires:       python3
 Requires:       python3-libs
-
 BuildArch:      noarch
 
 %description
 Pygments is a syntax highlighting package written in Python.
-
 It is a generic syntax highlighter suitable for use in code hosting, forums, wikis or other applications that need to prettify source code. Highlights are:
-
 a wide range of over 300 languages and other text formats is supported
 special attention is paid to details, increasing quality by a fair amount
 support for new languages and formats are added easily
 a number of output formats, presently HTML, LaTeX, RTF, SVG, all image formats that PIL supports and ANSI sequences
 it is usable as a command-line tool and as a library.
-
 
 %prep
 %setup -q -n Pygments-%{version}
@@ -45,7 +40,6 @@ python3 setup.py build
 
 %install
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-
 
 %check
 #pushd ../p3dir
