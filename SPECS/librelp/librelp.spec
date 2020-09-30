@@ -1,11 +1,11 @@
 Summary:	RELP Library
 Name:		librelp
-Version:	1.7.0
+Version:	1.8.0
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.librelp.com
 Source0:	http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
-%define sha1 librelp=20e3407483e9732e0738436f033b9e4ecfe4b7b5
+%define sha1 librelp=0eeebe2ab7be63d57f5183856cc5804a6a30ccc4
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -75,6 +75,8 @@ make check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Sep 29 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.0-1
+- Automatic Version Bump
 * Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
 - Automatic Version Bump
 * Mon Jun 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.6.0-1
