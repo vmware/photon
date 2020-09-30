@@ -1,36 +1,39 @@
 Summary:        Portable Hardware Locality
 Name:           hwloc
-Version:        2.2.0
+Version:        2.3.0
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        BSD
-Url:            http://www.open-mpi.org/projects/hwloc/
+Url:            http://www.open-mpi.org/projects/hwloc
 Group:          Applications/Utilities
-Source0:        %{name}-%{version}.tar.bz2
-%define sha1    hwloc=1b87ff3820b28e718dfdca626a1d27521ea613f6
+Source0:        https://github.com/open-mpi/hwloc/archive/%{name}-%{version}.tar.gz
+%define sha1    hwloc=a194d13f272f49230b71a66595f742436925ab01
 
 %description
-The Portable Hardware Locality (hwloc) software package provides a portable abstraction (across OS, versions, architectures, ...) of the hierarchical topology of modern architectures, including NUMA memory nodes, sockets, shared caches, cores and simultaneous multithreading. It also gathers various system attributes such as cache and memory information as well as the locality of I/O devices such as network interfaces, InfiniBand HCAs or GPUs.
+The Portable Hardware Locality (hwloc) software package provides a portable abstraction (across OS, versions, architectures, ...)
+of the hierarchical topology of modern architectures, including NUMA memory nodes, sockets, shared caches, cores and simultaneous multithreading.
+It also gathers various system attributes such as cache and memory information as well as the locality of I/O devices such as network interfaces, InfiniBand HCAs or GPUs.
 
-%package devel
-Summary:  Development libraries for hwloc
-Requires: %{name} = %{version}-%{release}
+%package        devel
+Summary:        Development libraries for hwloc
+Requires:       %{name} = %{version}-%{release}
 
-%description devel
+%description    devel
 Development libraries for hwloc
 
-%package docs
-Summary: Documentation for hwloc
-Requires: %{name} = %{version}-%{release}
+%package        docs
+Summary:        Documentation for hwloc
+Requires:       %{name} = %{version}-%{release}
 
-%description docs
+%description    docs
 Documentation for hwloc
 
 %prep
-%setup -q
+%setup -q -n hwloc-hwloc-%{version}
 
 %build
+sh autogen.sh
 %configure
 make %{?_smp_mflags}
 
@@ -70,27 +73,29 @@ find %{buildroot} -name '*.la' -delete
 rm -rf %{buildroot}/*
 
 %files
-    %defattr(-,root,root)
-    %{_bindir}/*
-    %ifarch x86_64
-    %{_sbindir}/*
-    %endif
-    %{_libdir}/*.so.*
-    %{_sysconfdir}/bash_completion.d/hwloc-completion.bash
+%defattr(-,root,root)
+%{_bindir}/*
+%ifarch x86_64
+%{_sbindir}/*
+%endif
+%{_libdir}/*.so.*
 
 %files devel
-    %defattr(-,root,root)
-    %{_includedir}/*
-    %{_libdir}/*.so
-    %{_libdir}/pkgconfig/*.pc
+%defattr(-,root,root)
+%{_includedir}/*
+%{_libdir}/*.so
+%{_libdir}/pkgconfig/*.pc
 
 %files docs
-    %defattr(-,root,root)
-    %{_mandir}/*
-    %{_docdir}/*
-    %{_datadir}/%{name}/*
+%defattr(-,root,root)
+%{_mandir}/*
+%{_docdir}/*
+%{_datadir}/%{name}/*
+%{_datadir}/bash-completion/completions/hwloc
 
 %changelog
+* Tue Sep 29 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1
+- Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.2.0-1
 - Automatic Version Bump
 * Tue Jul 14 2020 Michelle Wang <michellew@vmware.com> 2.1.0-2
