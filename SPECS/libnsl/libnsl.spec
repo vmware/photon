@@ -1,9 +1,9 @@
 Summary:        Libraries for the public client interface for NIS(YP) and NIS+.
 Name:           libnsl
-Version:        1.2.0
-Release:        2%{?dist}
-Source0:        https://github.com/thkukuk/libnsl/archive/v1.2.0/libnsl-1.2.0.tar.gz
-%define sha1    libnsl=f141c7cf0ff96d96e369dda36af8ed19af0fc3ca
+Version:        1.3.0
+Release:        1%{?dist}
+Source0:        https://github.com/thkukuk/libnsl/archive/v%{version}/libnsl-%{version}.tar.gz
+%define sha1    libnsl=abc8ec64585499fc5b291de2df30838b4f5e123a
 License:        GPLv2+
 Group:          System Environment/Libraries
 URL:            https://github.com/thkukuk/libnsl
@@ -56,6 +56,8 @@ make install DESTDIR=%{buildroot}
 %{_libdir}/*.la
 
 %changelog
+* Tue Sep 29 2020 Gerrit Photon <photon-checkins@vmware.com> 1.3.0-1
+- Automatic Version Bump
 * Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-2
 - Cross compilation support
 * Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-1
