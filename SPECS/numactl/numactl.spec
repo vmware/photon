@@ -1,7 +1,7 @@
 Summary:        NUMA support for Linux
 Name:           numactl
 Version:        2.0.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            https://github.com/numactl/numactl
 Source0:        https://github.com/numactl/numactl/releases/download/v%{version}/%{name}-%{version}.tar.gz
@@ -21,6 +21,7 @@ libnuma shared library ("NUMA API") to set NUMA policy in applications.
 
 %package -n libnuma-devel
 Summary:        Development libraries and header files for jsoncpp
+Requires:       libnuma
 Requires:       %{name} = %{version}-%{release}
 %description -n libnuma-devel
 The package contains libraries and header files for
@@ -62,6 +63,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+* Tue Sep 29 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.0.13-2
+- Fix libnuma-devel dependency
 * Mon Nov 18 2019 Alexey Makhalov <amakhalov@vmware.com> 2.0.13-1
 - Initial build. First version
 
