@@ -2,6 +2,7 @@ import os
 import queue
 import json
 import operator
+import re
 from distutils.version import StrictVersion
 from Logger import Logger
 from constants import constants
@@ -336,13 +337,16 @@ class SPECS(object):
 
         # adding kernelrelease rpm macro
         kernelrelease = defPkg.release
+        kernelrelease_comp  = kernelrelease.split('.')
+        if re.fullmatch('rc\d+', kernelrelease_comp[0]):
+            kernelrelease_comp.pop(0)
         constants.addMacro("KERNEL_RELEASE", kernelrelease)
 
         # adding kernelsubrelease rpm macro
         a, b, c = kernelversion.split(".")
         kernelsubrelease = ('%02d%02d%03d%03d' % (int(a),
                                                   int(b), int(c),
-                                                  int(kernelrelease.split('.')[-2])))
+                                                  int(kernelrelease_comp[0])))
         if kernelsubrelease:
             kernelsubrelease = "." + kernelsubrelease
             constants.addMacro("kernelsubrelease", kernelsubrelease)
