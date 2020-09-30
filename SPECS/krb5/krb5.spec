@@ -1,14 +1,14 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
-Version:        1.17
-Release:        3%{?dist}
+Version:        1.18.2
+Release:        1%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/1.17/%{name}-%{version}.tar.gz
-%define sha1    %{name}=0c404b081db9c996c581f636ce450ee28778f338
+Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/1.18/%{name}-%{version}.tar.gz
+%define sha1    %{name}=547c4e4afa06dd39c888a9ee89397ec3c3425c90
 Requires:       openssl
 Requires:       e2fsprogs-libs
 BuildRequires:  openssl-devel
@@ -50,6 +50,7 @@ if [ %{_host} != %{_build} ]; then
   export ac_cv_file__etc_TIMEZONE=no
 fi
 %configure \
+	--localstatedir=/var/lib \
         --with-system-et         \
         --with-system-ss         \
         --with-system-verto=no   \
@@ -119,6 +120,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+*   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.18.2-1
+-   Automatic Version Bump
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17-3
 -   openssl 1.1.1
 *   Fri Nov 01 2019 Alexey Makhalov <amakhalov@vmware.com> 1.17-2
