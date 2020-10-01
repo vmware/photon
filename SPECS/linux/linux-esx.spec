@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.236
-Release:        2%{?dist}
+Version:        4.9.237
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=58d3d987f9586a801bbc49e38d63173f9e1731c4
+%define sha1 linux=24ac65c871a62940d710c4769a3fa454955cae87
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -89,11 +89,6 @@ Patch65: 0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch66: 0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch67: 0007-btrfs-tree-checker-Verify-inode-item.patch
 Patch68: 0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
-
-# Fix for CVE-2020-14390
-Patch69:        0001-fbcon-remove-soft-scrollback-code.patch
-Patch70:        0002-fbcon-remove-now-unusued-softback_lines-cursor-argum.patch
-Patch71:        0003-vgacon-remove-software-scrollback-support.patch
 
 # Fix use-after-free issue in network stack
 Patch74: 0001-inet-rename-netns_frags-to-fqdir.patch
@@ -204,9 +199,6 @@ The Linux package contains the Linux kernel doc files
 %patch66 -p1
 %patch67 -p1
 %patch68 -p1
-%patch69 -p1
-%patch70 -p1
-%patch71 -p1
 
 %patch74 -p1
 %patch75 -p1
@@ -318,6 +310,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Oct 01 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-1
+-   Update to version 4.9.237
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.9.236-2
 -   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Vikash Bansal <bvikas@vmware.com> 4.9.236-1

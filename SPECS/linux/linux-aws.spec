@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.236
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.237
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=58d3d987f9586a801bbc49e38d63173f9e1731c4
+%define sha1 linux=24ac65c871a62940d710c4769a3fa454955cae87
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -84,10 +84,6 @@ Patch57: 0001-vhost-vsock-add-weight-support.patch
 # Fix CVE-2019-18885
 Patch59:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch60:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
-# Fix for CVE-2020-14390
-Patch61:        0001-fbcon-remove-soft-scrollback-code.patch
-Patch62:        0002-fbcon-remove-now-unusued-softback_lines-cursor-argum.patch
-Patch63:        0003-vgacon-remove-software-scrollback-support.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -284,9 +280,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch57 -p1
 %patch59 -p1
 %patch60 -p1
-%patch61 -p1
-%patch62 -p1
-%patch63 -p1
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -510,6 +503,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Thu Oct 01 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-1
+-   Update to version 4.9.237
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.9.236-2
 -   Fix for CVE-2020-14390
 *   Wed Sep 23 2020 Vikash Bansal <bvikas@vmware.com> 4.9.236-1
