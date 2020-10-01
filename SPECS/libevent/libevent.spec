@@ -14,8 +14,8 @@ BuildRequires:  openssl-devel >= 1.1.1
 Requires:       openssl >= 1.1.1
 
 %description
-The libevent API provides a mechanism to execute a callback function when a specific event 
-occurs on a file descriptor or after a timeout has been reached. Furthermore, libevent also 
+The libevent API provides a mechanism to execute a callback function when a specific event
+occurs on a file descriptor or after a timeout has been reached. Furthermore, libevent also
 support callbacks due to signals or regular timeouts.
 
 %package        devel
