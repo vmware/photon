@@ -3,14 +3,14 @@
 %global gem_name aws-sdk-sqs
 
 Name: rubygem-aws-sdk-sqs
-Version:        1.33.0
+Version:        1.34.0
 Release:        1%{?dist}
 Summary:        Official AWS Ruby gem for Amazon Simple Queue Service (Amazon SQS).
 Group:          Development/Languages
 License:        Apache 2.0
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/aws-sdk-sqs-%{version}.gem
-%define sha1    aws-sdk-sqs=fb9eb13f32f720c179703bf8030bc429c8df80d2
+%define sha1    aws-sdk-sqs=0f64f73bd6e17c349fd98286d6ccaa0dcbc1eabb
 BuildRequires:  ruby
 
 Requires: rubygem-aws-sdk-core >= 3
@@ -33,6 +33,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.34.0-1
+-   Automatic Version Bump
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.33.0-1
 -   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.32.0-1
