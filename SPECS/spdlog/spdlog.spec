@@ -1,11 +1,11 @@
 Summary:	Very fast, header only, C++ logging library.
 Name:		spdlog
-Version:	1.8.0
+Version:	1.8.1
 Release:	1%{?dist}
 License:	MIT
 URL:		https://github.com/gabime/spdlog
 Source0:	%{name}-%{version}.tar.gz
-%define sha1    spdlog=9b4302c3d77d7f84ab1a6547d9bcc2f849672e11
+%define sha1    spdlog=a0fe45cfb77cb4201e9a0e40325c1792dd434a28
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -43,6 +43,8 @@ make test
 %{_lib64dir}/libspdlog.a
 
 %changelog
+*    Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.1-1
+-    Automatic Version Bump
 *    Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.0-1
 -    Automatic Version Bump
 *    Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
