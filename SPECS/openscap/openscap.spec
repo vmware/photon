@@ -1,11 +1,11 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
-Version:        1.3.3
+Version:        1.3.4
 Release:        1%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
-%define sha1    openscap=6988d1ea7b86669d410ab5defc1be394cba5b017
+%define sha1    openscap=3e303f06aa00e5c2616db606b980389ee0b73883
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -102,6 +102,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/python3.8/*
 
 %changelog
+*   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.3.4-1
+-   Automatic Version Bump
 *   Mon Jul 27 2020 Vikash Bansal <bvikas@vmware.com> 1.3.3-1
 -   Update to 1.3.3
 *   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 1.2.17-3
