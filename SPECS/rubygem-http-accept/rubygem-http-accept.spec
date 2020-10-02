@@ -3,8 +3,8 @@
 %global gem_name http-accept
 
 Name: rubygem-http-accept
-Version:        2.1.1
-Release:        1%{?dist}
+Version:        1.7.0
+Release:        3%{?dist}
 Summary:        Parse Accept and Accept-Language HTTP headers.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
-%define sha1    http-accept=c0f1c4c89aa01e17d2d0f0f9077a7d5c21eb04a3
+%define sha1    http-accept=0f8c31dacdd69d0398844101af792103dc600e1f
 BuildRequires:  ruby
 
 BuildArch: noarch
@@ -33,6 +33,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-3
+-   Downgrade to 1.7.0 for rubygem-rest-client 2.1.0
 *   Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 2.1.1-1
 -   Automatic Version Bump
 *   Wed Sep 02 2020 Sujay G <gsujay@vmware.com> 1.7.0-2
