@@ -411,6 +411,8 @@ class CleanUp:
                                                                                                                               "%s/support/package-builder/SpecDeps.py" % (curDir),
                                                                                                                               configdict["photon-build-param"]["base-commit"])
         subprocess.Popen(command, shell=True).wait()
+        if subprocess.Popen(command, shell=True).wait() != 0:
+            raise Exception("Not able to run clean_stage_for_incremental_build")
 
         #test -n "$(git diff --name-only @~1 @ | grep '^support/\(make\|package-builder\|pullpublishrpms\)')" && \
         # { echo "Remove all staged RPMs"; $(RM) -rf $(PHOTON_RPMS_DIR); } ||:
@@ -418,7 +420,6 @@ class CleanUp:
                    { cd %s; echo \"Remove all staged RPMs\"; /bin/rm -rf ./stage/RPMS; } ||:" % (configdict["photon-path"])
         if subprocess.Popen(command, shell=True).wait() != 0:
             raise Exception("Not able to run clean_stage_for_incremental_build")
-        return
 
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
