@@ -1,12 +1,12 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           apparmor
-Version:        2.13.4
-Release:        2%{?dist}
+Version:        3.0.0
+Release:        1%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
-Source0:        https://launchpad.net/apparmor/2.13/2.13.0/+download/%{name}-%{version}.tar.gz
-%define sha1    apparmor=f716775cc12c429bf2b0ed8d6342be5318ae426e
+Source0:        https://launchpad.net/apparmor/3.0/3.0/+download/%{name}-%{version}.tar.gz
+%define sha1    apparmor=4e8c7f289fca33d905d204d66b8d37fa464a7c13
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
@@ -280,11 +280,9 @@ make DESTDIR=%{buildroot} install
 %dir %{_sysconfdir}/apparmor
 %dir %{_sysconfdir}/apparmor.d
 %config(noreplace) %{_sysconfdir}/apparmor/parser.conf
-%config(noreplace) %{_sysconfdir}/apparmor/subdomain.conf
 %{_localstatedir}/lib/apparmor
 %doc %{_mandir}/man5/apparmor.d.5.gz
 %doc %{_mandir}/man5/apparmor.vim.5.gz
-%doc %{_mandir}/man5/subdomain.conf.5.gz
 %doc %{_mandir}/man7/apparmor.7.gz
 %doc %{_mandir}/man8/apparmor_parser.8.gz
 %doc %{_mandir}/man1/aa-enabled.1.gz
@@ -309,7 +307,10 @@ make DESTDIR=%{buildroot} install
 %dir %{_sysconfdir}/apparmor.d/disable
 %dir %{_sysconfdir}/apparmor.d/local
 %dir %{_sysconfdir}/apparmor.d/tunables
+%dir %{_sysconfdir}/apparmor.d/abi
+%config(noreplace) %{_sysconfdir}/apparmor.d/php-fpm
 %config(noreplace) %{_sysconfdir}/apparmor.d/tunables/*
+%config(noreplace) %{_sysconfdir}/apparmor.d/abi/*
 %exclude %{_datadir}/locale
 
 %files utils
@@ -321,13 +322,16 @@ make DESTDIR=%{buildroot} install
 %{_sbindir}/aa-*
 %{_sbindir}/apparmor_status
 %{_bindir}/aa-easyprof
+%{_bindir}/aa-features-abi
 %{_datadir}/apparmor/easyprof/
 %dir %{_datadir}/apparmor
 %{_datadir}/apparmor/apparmor.vim
+%doc %{_mandir}/man1/aa-features-abi.1.gz
 %doc %{_mandir}/man2/aa_change_profile.2.gz
 %doc %{_mandir}/man5/logprof.conf.5.gz
 %doc %{_mandir}/man8/aa-*.gz
 %doc %{_mandir}/man8/apparmor_status.8.gz
+%doc %{_mandir}/man7/apparmor_xattrs.7.gz
 
 %files -n pam_apparmor
 %defattr(-,root,root,755)
@@ -344,6 +348,8 @@ make DESTDIR=%{buildroot} install
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+*   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.0-1
+-   Automatic Version Bump
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.13.4-2
 -   openssl 1.1.1
 *   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 2.13.4-1
