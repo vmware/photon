@@ -1,7 +1,7 @@
 Summary:	An XML parser library
 Name:		expat
 Version:	2.2.9
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://expat.sourceforge.net/
 Group:		System Environment/GeneralLibraries
@@ -50,6 +50,16 @@ make %{?_smp_mflags} check
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 
+%post libs
+    # First argument is 1 => New Installation
+    # First argument is 2 => Upgrade
+    /sbin/ldconfig
+
+%postun libs
+    /sbin/ldconfig
+    # First argument is 0 => Uninstall
+    # First argument is 1 => Upgrade
+
 %clean
 rm -rf %{buildroot}/*
 
@@ -72,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libexpat.so.*
 
 %changelog
+*   Mon Oct 05 2020 Tapas Kundu <tkundu@vmware.com> 2.2.9-2
+-   Use ldconfig to resolve dependencies for lib
 *   Tue Oct 29 2019 Tapas Kundu <tkundu@vmware.com> 2.2.9-1
 -   Fix for CVE-2019-15903
 *   Thu Oct 17 2019 Shreenidhi Shedi <sshedi@vmware.com> 2.2.7-1
