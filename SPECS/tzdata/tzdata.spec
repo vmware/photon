@@ -1,7 +1,7 @@
 Summary:        Time zone data
 Name:           tzdata
 Version:        2019c
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.iana.org/time-zones
 License:        Public Domain
 Group:          Applications/System
@@ -34,27 +34,16 @@ done
 cp -v zone.tab iso3166.tab $ZONEINFO
 zic -d $ZONEINFO -p America/New_York
 install -vdm 755 %{buildroot}%{_sysconfdir}
-
-%pretrans
-if [ -f %{_sysconfdir}/localtime ]; then
-    mv %{_sysconfdir}/localtime %{_sysconfdir}/localtime.bak
-fi
-
-%posttrans
-# Install
-if [ $1 -eq 1 ]; then
-    ln -svf %{_datarootdir}/zoneinfo/UTC %{_sysconfdir}/localtime
-# Upgrade
-else
-    mv %{_sysconfdir}/localtime.bak %{_sysconfdir}/localtime
-fi
+ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 
 %files
 %defattr(-,root,root)
-%ghost %{_sysconfdir}/localtime
+%config(noreplace) %{_sysconfdir}/localtime
 %{_datadir}/*
 
 %changelog
+*   Mon Oct 05 2020 Tapas Kundu <tkundu@vmware.com> 2019c-2
+-   Remove (pre/post)trans, config file as noreplace
 *   Fri Oct 18 2019 Gerrit Photon <photon-checkins@vmware.com> 2019c-1
 -   Automatic Version Bump
 *   Thu Aug 08 2019 Gerrit Photon <photon-checkins@vmware.com> 2019b-1
