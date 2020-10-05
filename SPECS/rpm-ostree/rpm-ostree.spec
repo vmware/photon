@@ -1,12 +1,11 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2020.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildArch:      aarch64
 Source0:        https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
 %define sha1    rpm-ostree=42f76f192b64adb432abd8b1c2a7897e91fa835b
 Source1:        libglnx-5ef78bb.tar.gz
@@ -34,7 +33,6 @@ BuildRequires:  sqlite-devel
 BuildRequires:  cppunit-devel
 BuildRequires:  polkit-devel
 BuildRequires:  ostree-devel
-BuildRequires:  libgsystem-devel
 BuildRequires:  docbook-xsl
 BuildRequires:  libxslt
 BuildRequires:  gobject-introspection-devel
@@ -67,7 +65,6 @@ Requires:       openssl
 Requires:       ostree
 Requires:       ostree-libs
 Requires:       ostree-grub2
-Requires:       libgsystem
 Requires:       json-glib
 Requires:       libsolv
 Requires:       bubblewrap
@@ -154,6 +151,8 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+*   Mon Oct 05 2020 Ankit Jain <ankitja@vmware.com> 2020.5-2
+-   Re-enabling ostree
 *   Mon Sep 21 2020 Ankit Jain <ankitja@vmware.com> 2020.5-1
 -   Updated to 2020.5
 *   Tue Sep 08 2020 Ankit Jain <ankitja@vmware.com> 2020.4-2

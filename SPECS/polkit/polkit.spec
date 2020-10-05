@@ -1,21 +1,20 @@
 Summary:       A toolkit for defining and handling authorizations.
 Name:          polkit
-Version:       0.117
-Release:       2%{?dist}
+Version:       0.118
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       LGPLv2+
 URL:           https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
 Source0:       https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
-%define sha1 polkit=0c375fa621bc9f74f2972e00fb517a408f419adf
+%define sha1 polkit=1c53d0ccacc6e6afd49ba14cb39d2514b943933d
 Distribution:  Photon
-BuildArch:      aarch64
 BuildRequires: autoconf
 BuildRequires: expat-devel
 BuildRequires: glib-devel
 BuildRequires: gobject-introspection
 BuildRequires: intltool >= 0.40.0
-BuildRequires: mozjs-devel = 68.11.0
+BuildRequires: mozjs-devel = 78.3.1
 BuildRequires: Linux-PAM-devel
 BuildRequires: systemd-devel
 Requires:      mozjs
@@ -111,6 +110,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.118-1
+-   Automatic Version Bump
 *   Tue Aug 25 2020 Ankit Jain <ankitja@vmware.com> 0.117-2
 -   This version of polkit build requires specific mozjs version
 *   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 0.117-1
