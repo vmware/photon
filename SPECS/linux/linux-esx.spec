@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.148
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -400,6 +400,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-3
+-   9p: writepages: corrected tofind size
 *   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-2
 -   9p: enhance performence of writepages for 9p fs cache
 *   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-1

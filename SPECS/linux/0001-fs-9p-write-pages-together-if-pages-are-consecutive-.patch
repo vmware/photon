@@ -228,7 +228,7 @@ index 2bfb53a..2409ecd 100644
 +		unsigned int i, nr_pages, found_pages;
 +		pgoff_t next = 0, tofind, saved_index = index;
 +
-+		tofind = min((msize / PAGE_SIZE) - 1, end - index) + 1;
++		tofind = min(((msize - P9_IOHDRSZ)/ PAGE_SIZE) - 1, end - index) + 1;
 +		wpages = v9fs_alloc_and_fillpages(tofind, mapping, end, &index,
 +						  &found_pages);
 +		if (!wpages) {
