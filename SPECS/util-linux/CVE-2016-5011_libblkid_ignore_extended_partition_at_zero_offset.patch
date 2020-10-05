@@ -1,0 +1,54 @@
+From 7164a1c34d18831ac61c6744ad14ce916d389b3f Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Thu, 7 Jul 2016 14:22:41 +0200
+Subject: libblkid: ignore extended partition at zero offset
+
+If the extended partition starts at zero LBA then MBR is interpreted
+as EBR and all is recursively parsed... result is out-of-memory.
+
+ MBR --extended-partition--> EBR --> MBR --> ENB --> MBR ...
+
+Note that such PT is not possible to create by standard partitioning
+tools.
+
+Addresses: https://bugzilla.redhat.com/show_bug.cgi?id=1349536
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ libblkid/src/partitions/dos.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/libblkid/src/partitions/dos.c b/libblkid/src/partitions/dos.c
+index 9bba32f3b..e79f124f8 100644
+--- a/libblkid/src/partitions/dos.c
++++ b/libblkid/src/partitions/dos.c
+@@ -47,6 +47,12 @@ static int parse_dos_extended(blkid_probe pr, blkid_parttable tab,
+ 	int ct_nodata = 0;	/* count ext.partitions without data partitions */
+ 	int i;
+ 
++	DBG(LOWPROBE, ul_debug("parse EBR [start=%d, size=%d]", ex_start/ssf, ex_size/ssf));
++	if (ex_start == 0) {
++		DBG(LOWPROBE, ul_debug("Bad offset in primary extended partition -- ignore"));
++		return 0;
++	}
++
+ 	while (1) {
+ 		struct dos_partition *p, *p0;
+ 		uint32_t start, size;
+@@ -116,8 +122,12 @@ static int parse_dos_extended(blkid_probe pr, blkid_parttable tab,
+ 			start = dos_partition_get_start(p) * ssf;
+ 			size = dos_partition_get_size(p) * ssf;
+ 
+-			if (size && is_extended(p))
+-				break;
++			if (size && is_extended(p)) {
++				if (start == 0)
++					DBG(LOWPROBE, ul_debug("#%d: EBR link offset is zero -- ignore", i + 1));
++				else
++					break;
++			}
+ 		}
+ 		if (i == 4)
+ 			goto leave;
+-- 
+cgit 1.2.3-1.el7
+
