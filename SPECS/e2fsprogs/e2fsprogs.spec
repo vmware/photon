@@ -1,7 +1,7 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
 Version:        1.45.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
@@ -97,7 +97,8 @@ make %{?_smp_mflags} check
 %files libs
 %{_libdir}/libss.so
 %{_libdir}/libss.so.*
-%{_libdir}/libcom_err.*
+%{_libdir}/libcom_err.so
+%{_libdir}/libcom_err.so.*
 
 %files devel
 %{_includedir}/ss/ss_err.h
@@ -130,6 +131,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Mon Oct 05 2020 Tapas Kundu <tkundu@vmware.com> 1.45.6-2
+-   Exclude .a file from libs
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.45.6-1
 -   Automatic Version Bump
 *   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 1.45.5-2
