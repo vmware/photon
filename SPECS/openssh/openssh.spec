@@ -1,29 +1,20 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        7.9p1
-Release:        2%{?dist}
+Version:        8.4p1
+Release:        1%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha1    openssh=993aceedea8ecabb1d0dd7293508a361891c4eaa
+%define sha1    openssh=69305059e10a60693ebe6f17731f962c9577535c
 Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1    blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Source2:        sshd.service
 Source3:        sshd-keygen.service
 Patch0:         blfs_systemd_fixes.patch
-Patch1:         openssh-CVE-2018-20685.patch
-Patch2:         openssh-CVE-2019-6109.patch
-Patch3:         openssh-CVE-2019-6109-progressmeter.patch
-Patch4:         openssh-CVE-2019-6111.patch
-Patch5:         openssh-CVE-2019-6111-filenames.patch
-Patch6:         scp-name-validator-CVE-2019-6110.patch
-Patch7:         openssh-CVE-2019-16905.patch
 # Add couple more syscalls to seccomp filter to support glibc-2.31
-Patch8:        seccomp-Allow-clock_nanosleep-in-sandbox.patch
-Patch9:        seccomp-Allow-clock_nanosleep_time64-in-sandbox.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
@@ -59,15 +50,6 @@ This provides the ssh server daemons, utilities, configuration and service files
 %setup -q
 tar xf %{SOURCE1} --no-same-owner
 %patch0 -p0
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
 %build
 %configure \
     --sysconfdir=/etc/ssh \
@@ -175,6 +157,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/ssh-copy-id
 %{_libexecdir}/ssh-keysign
 %{_libexecdir}/ssh-pkcs11-helper
+%{_libexecdir}/ssh-sk-helper
 %{_mandir}/man1/scp.1.gz
 %{_mandir}/man1/ssh-agent.1.gz
 %{_mandir}/man1/ssh-keygen.1.gz
@@ -186,8 +169,11 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/sftp.1.gz
 %{_mandir}/man8/ssh-keysign.8.gz
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
+%{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+*   Mon Oct 05 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.4p1-1
+-   Update to 8.4p1
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.9p1-2
 -   openssl 1.1.1
 *   Mon Aug 03 2020 Satya Naga Vasamsetty<svasamsetty@vmware.com> 7.9p1-1
