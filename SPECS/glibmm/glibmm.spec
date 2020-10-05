@@ -1,21 +1,20 @@
 Summary:	C++ interface to the glib
 Name:		glibmm
-Version:	2.56.0
-Release:	2%{?dist}
+Version:	2.65.3
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://ftp.gnome.org/pub/GNOME/sources/glibmm
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.53/%{name}-%{version}.tar.xz
-%define sha1 glibmm=d733d9206d706d53058749f92dfb319bb189c289
+%define sha1    glibmm=3b92fd1c54abdaee38e5d19b006e197365ea7c40
 BuildRequires:	python3 >= 2.7
 BuildRequires:	libsigc++ >= 2.10.0
 BuildRequires:	glib-devel glib-schemas
 %if %{with_check}
-BuildRequires: glib-networking
+BuildRequires:  glib-networking
 %endif
-
 Requires:	libsigc++ >= 2.10.0
 Requires:	glib >= 2.50.0
 Requires:	gobject-introspection >= 1.50.0
@@ -26,19 +25,22 @@ gtkmm provides a C++ interface to the GTK+ GUI library. gtkmm2 wraps GTK+ 2.
 Highlights include typesafe callbacks, widgets extensible via inheritance and
 a comprehensive set of widget classes that can be freely combined to quickly create complex user interfaces.
 
-%package devel
-Summary: Header files for glibmm
-Group: Applications/System
-Requires: %{name} = %{version}
+%package        devel
+Summary:        Header files for glibmm
+Group:          Applications/System
+Requires:       %{name} = %{version}
 Requires:	glib-devel libsigc++
-%description devel
+
+%description    devel
 These are the header files of glibmm.
 
 %prep
 %setup -q
+
 %build
 %configure
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 
@@ -49,21 +51,25 @@ export GIO_EXTRA_MODULES=/usr/lib/gio/modules; make check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 %{_libdir}/pkgconfig/*.pc
-%{_libdir}/glibmm-2.4/proc/*
+%{_libdir}/glibmm-2.66/proc/*
+
 %files devel
 %defattr(-,root,root)
 %{_libdir}/*.so
 %{_libdir}/*.la
-%{_libdir}/glibmm-2.4/include/*
-%{_libdir}/giomm-2.4/include/*
+%{_libdir}/glibmm-2.66/include/*
+%{_libdir}/giomm-2.66/include/*
 %{_includedir}/*
 %{_datadir}/*
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.65.3-1
+-   Automatic Version Bump
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 2.56.0-2
 -   Build with python3
 -   Mass removal python2
@@ -71,7 +77,7 @@ export GIO_EXTRA_MODULES=/usr/lib/gio/modules; make check
 -   Update to version 2.56.0
 *   Thu Aug 24 2017 Rongrong Qiu <rqiu@vmware.com> 2.50.1-2
 -   add buildrequires for make check for bug 1900286
-*   Thu May 26 2017 Harish Udaiya Kumar <hudaiykumar@vmware.com> 2.50.1-1
+*   Fri May 26 2017 Harish Udaiya Kumar <hudaiykumar@vmware.com> 2.50.1-1
 -   Downgrade to stable version 2.50.1
 *   Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.53.1-1
 -   Update to version 2.53.1
@@ -89,5 +95,5 @@ export GIO_EXTRA_MODULES=/usr/lib/gio/modules; make check
 -   Created devel subpackage. Added Summary.
 *   Tue Jun 23 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-2
 -   Added glib-schemas to build requirements.
-*   Fri Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.42.0-1
+*   Wed Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.42.0-1
 -   Initial version

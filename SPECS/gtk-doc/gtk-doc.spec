@@ -1,11 +1,11 @@
 Summary:	Program to generate documenation
 Name:		gtk-doc
-Version:	1.32
+Version:	1.33.0
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
-Source0:	http://ftp.gnome.org/pub/gnome/sources/gtk-doc/1.25/%{name}-%{version}.tar.xz
-%define sha1 gtk-doc=36eb741d2f2e7791da37aa34dafea6d0506c9c45
+Source0:	http://ftp.acc.umu.se/pub/gnome/sources/gtk-doc/1.33/gtk-doc-%{version}.tar.xz
+%define sha1    gtk-doc=b9cb7b9b5ec1650b018ca49c2d984cb56de97135
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -17,6 +17,7 @@ BuildRequires:	docbook-xsl >= 1.78.1
 BuildRequires:	itstool >= 2.0.2
 BuildRequires:	libxslt >= 1.1.28
 BuildRequires:	itstool
+BuildRequires:  which
 BuildRequires:	cmake
 BuildRequires:	check
 BuildRequires:	python3-devel
@@ -29,11 +30,15 @@ BuildArch:      noarch
 %description
 The GTK-Doc package contains a code documenter. This is useful for extracting
 specially formatted comments from the code to create API documentation.
+
 %prep
 %setup -q
+
 %build
+./autogen.sh
 %configure
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} sysconfdir=%{_sysconfdir} datadir=%{_datadir} install
 
@@ -46,6 +51,8 @@ cd tests && make check-TESTS
 /usr/share/*
 
 %changelog
+*   Mon Oct 5 2020 Michelle Wang <michellew@vmware.com> 1.33.0-1
+-   Update to version 1.33.0
 *   Wed Aug 26 2020 Keerthana K <keerthanak@vmware.com> 1.32-1
 -   Update to version 1.32.
 *   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com>  1.29-1

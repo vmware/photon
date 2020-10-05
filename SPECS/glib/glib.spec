@@ -1,14 +1,14 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
-Version:	2.64.5
+Version:	2.66.1
 Release:	1%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.58/%{name}-%{version}.tar.xz
-%define sha1 glib=be12160d2b91a152721279d27b00f8affbf9501b
+Source0:	http://ftp.acc.umu.se/pub/gnome/sources/glib/2.66/glib-%{version}.tar.xz
+%define sha1    glib=aaaeb5079ef6afa027e28aecd5bb84c6aad14198
 BuildRequires:	pcre-devel
 BuildRequires:	libffi-devel
 BuildRequires:	pkg-config
@@ -30,10 +30,13 @@ Provides:	pkgconfig(gobject-2.0)
 Provides:	pkgconfig(gio-2.0)
 Provides:	pkgconfig(gio-unix-2.0)
 Provides:	pkgconfig(gthread-2.0)
-%description
-The GLib package contains a low-level libraries useful for providing data structure handling for C, portability wrappers and interfaces for such runtime functionality as an event loop, threads, dynamic loading and an object system. Development libs and headers are in glib-devel.
 
-%package devel
+%description
+The GLib package contains a low-level libraries useful for providing data structure handling for C,
+portability wrappers and interfaces for such runtime functionality as an event loop, threads,
+dynamic loading and an object system. Development libs and headers are in glib-devel.
+
+%package        devel
 Summary:	Header files for the glib library
 Group:		Development/Libraries
 Requires:	glib = %{version}-%{release}
@@ -44,23 +47,23 @@ Requires:	python3
 Requires:	libffi-devel
 Requires:	elfutils-libelf-devel
 
-%description devel
+%description    devel
 Static libraries and header files for the support library for the glib library
 
-%package schemas
+%package        schemas
 Summary:	gsettings schemas compiling tool
 Group:		Development/Libraries
 Requires:	glib
 
-%description schemas
+%description    schemas
 Gsettings schemas compiling tool
 
-%package doc
-Summary: Documentation for Glib
-Requires: %{name} = %{version}-%{release}
-BuildArch: noarch
+%package        doc
+Summary:        Documentation for Glib
+Requires:       %{name} = %{version}-%{release}
+BuildArch:      noarch
 
-%description doc
+%description    doc
 The glib-doc package includes documentation for the GLib library.
 
 %prep
@@ -108,6 +111,8 @@ DESTDIR=%{buildroot}/ ninja -C _build install
 %doc %{_datadir}/gtk-doc/html/*
 
 %changelog
+*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.66.1-1
+-   Automatic Version Bump
 *   Mon Aug 24 2020 Keerthana K <keerthanak@vmware.com> 2.64.5-1
 -   Update to version 2.64.5
 *   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2.58.0-7
