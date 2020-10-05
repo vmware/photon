@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.46
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -107,6 +107,11 @@ echo "disable httpd.service" > %{buildroot}/usr/lib/systemd/system-preset/50-htt
 ln -s /usr/sbin/httpd %{buildroot}/usr/sbin/apache2
 ln -s /etc/httpd/conf/httpd.conf %{buildroot}/etc/httpd/httpd.conf
 
+mkdir -p %{buildroot}%{_libdir}/tmpfiles.d
+cat >> %{buildroot}%{_libdir}/tmpfiles.d/httpd.conf << EOF
+d /var/run/httpd 0755 root root -
+EOF
+
 %post
 /sbin/ldconfig
 if [ $1 -eq 1 ]; then
@@ -125,7 +130,7 @@ if [ $1 -eq 1 ]; then
 fi
 
 ln -sf /etc/httpd/conf/mime.types /etc/mime.types
-mkdir -p /var/run/httpd
+systemd-tmpfiles --create httpd.conf
 %systemd_post httpd.service
 
 %preun
@@ -164,10 +169,10 @@ fi
 %exclude %{_bindir}/dbmmanage
 %{_sbindir}/*
 %{_datadir}/*
+%{_sysconfdir}/httpd/html/index.html
 %{_sysconfdir}/httpd/cgi-bin/*
 %{_sysconfdir}/httpd/conf/extra
 %{_sysconfdir}/httpd/conf/original
-%{_sysconfdir}/httpd/html/index.html
 %config(noreplace) %{_sysconfdir}/httpd/conf/magic
 %{_sysconfdir}/httpd/conf/envvars
 %config(noreplace) %{_sysconfdir}/httpd/conf/httpd.conf
@@ -175,9 +180,10 @@ fi
 %{_sysconfdir}/httpd/error/*
 %{_sysconfdir}/httpd/icons/*
 %{_sysconfdir}/httpd/httpd.conf
-%dir %{_sysconfdir}/httpd/logs
 %{_libdir}/systemd/system/httpd.service
 %{_libdir}/systemd/system-preset/50-httpd.preset
+%{_libdir}/tmpfiles.d/httpd.conf
+%{_localstatedir}/log/httpd
 
 %files tools
 %defattr(-,root,root)
@@ -185,6 +191,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Mon Oct 05 2020 Dweep Advani <dadvani@vmware.com> 2.4.46-3
+-   Create /var/run/httpd temp folder through systemd-tmpfiles
 *   Tue Sep 01 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.46-2
 -   Make openssl 1.1.1 compatible
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.46-1
