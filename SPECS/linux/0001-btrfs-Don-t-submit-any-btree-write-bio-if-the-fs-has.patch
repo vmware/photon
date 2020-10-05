@@ -1,0 +1,225 @@
+From cd887a06a447b3cec336173bae10f22a52ac1149 Mon Sep 17 00:00:00 2001
+From: Qu Wenruo <wqu@suse.com>
+Date: Tue, 22 Sep 2020 16:13:32 +0000
+Subject: [PATCH] btrfs: Don't submit any btree write bio if the fs has errors
+
+commit b3ff8f1d380e65dddd772542aa9bff6c86bf715a upstream.
+
+[BUG]
+There is a fuzzed image which could cause KASAN report at unmount time.
+
+  BUG: KASAN: use-after-free in btrfs_queue_work+0x2c1/0x390
+  Read of size 8 at addr ffff888067cf6848 by task umount/1922
+
+  CPU: 0 PID: 1922 Comm: umount Tainted: G        W         5.0.21 #1
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+  Call Trace:
+   dump_stack+0x5b/0x8b
+   print_address_description+0x70/0x280
+   kasan_report+0x13a/0x19b
+   btrfs_queue_work+0x2c1/0x390
+   btrfs_wq_submit_bio+0x1cd/0x240
+   btree_submit_bio_hook+0x18c/0x2a0
+   submit_one_bio+0x1be/0x320
+   flush_write_bio.isra.41+0x2c/0x70
+   btree_write_cache_pages+0x3bb/0x7f0
+   do_writepages+0x5c/0x130
+   __writeback_single_inode+0xa3/0x9a0
+   writeback_single_inode+0x23d/0x390
+   write_inode_now+0x1b5/0x280
+   iput+0x2ef/0x600
+   close_ctree+0x341/0x750
+   generic_shutdown_super+0x126/0x370
+   kill_anon_super+0x31/0x50
+   btrfs_kill_super+0x36/0x2b0
+   deactivate_locked_super+0x80/0xc0
+   deactivate_super+0x13c/0x150
+   cleanup_mnt+0x9a/0x130
+   task_work_run+0x11a/0x1b0
+   exit_to_usermode_loop+0x107/0x130
+   do_syscall_64+0x1e5/0x280
+   entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+[CAUSE]
+The fuzzed image has a completely screwd up extent tree:
+
+  leaf 29421568 gen 8 total ptrs 6 free space 3587 owner EXTENT_TREE
+  refs 2 lock (w:0 r:0 bw:0 br:0 sw:0 sr:0) lock_owner 0 current 5938
+          item 0 key (12587008 168 4096) itemoff 3942 itemsize 53
+                  extent refs 1 gen 9 flags 1
+                  ref#0: extent data backref root 5 objectid 259 offset 0 count 1
+          item 1 key (12591104 168 8192) itemoff 3889 itemsize 53
+                  extent refs 1 gen 9 flags 1
+                  ref#0: extent data backref root 5 objectid 271 offset 0 count 1
+          item 2 key (12599296 168 4096) itemoff 3836 itemsize 53
+                  extent refs 1 gen 9 flags 1
+                  ref#0: extent data backref root 5 objectid 259 offset 4096 count 1
+          item 3 key (29360128 169 0) itemoff 3803 itemsize 33
+                  extent refs 1 gen 9 flags 2
+                  ref#0: tree block backref root 5
+          item 4 key (29368320 169 1) itemoff 3770 itemsize 33
+                  extent refs 1 gen 9 flags 2
+                  ref#0: tree block backref root 5
+          item 5 key (29372416 169 0) itemoff 3737 itemsize 33
+                  extent refs 1 gen 9 flags 2
+                  ref#0: tree block backref root 5
+
+Note that leaf 29421568 doesn't have its backref in the extent tree.
+Thus extent allocator can re-allocate leaf 29421568 for other trees.
+
+In short, the bug is caused by:
+
+- Existing tree block gets allocated to log tree
+  This got its generation bumped.
+
+- Log tree balance cleaned dirty bit of offending tree block
+  It will not be written back to disk, thus no WRITTEN flag.
+
+- Original owner of the tree block gets COWed
+  Since the tree block has higher transid, no WRITTEN flag, it's reused,
+  and not traced by transaction::dirty_pages.
+
+- Transaction aborted
+  Tree blocks get cleaned according to transaction::dirty_pages. But the
+  offending tree block is not recorded at all.
+
+- Filesystem unmount
+  All pages are assumed to be are clean, destroying all workqueue, then
+  call iput(btree_inode).
+  But offending tree block is still dirty, which triggers writeback, and
+  causes use-after-free bug.
+
+The detailed sequence looks like this:
+
+- Initial status
+  eb: 29421568, header=WRITTEN bflags_dirty=0, page_dirty=0, gen=8,
+      not traced by any dirty extent_iot_tree.
+
+- New tree block is allocated
+  Since there is no backref for 29421568, it's re-allocated as new tree
+  block.
+  Keep in mind that tree block 29421568 is still referred by extent
+  tree.
+
+- Tree block 29421568 is filled for log tree
+  eb: 29421568, header=0 bflags_dirty=1, page_dirty=1, gen=9 << (gen bumped)
+      traced by btrfs_root::dirty_log_pages
+
+- Some log tree operations
+  Since the fs is using node size 4096, the log tree can easily go a
+  level higher.
+
+- Log tree needs balance
+  Tree block 29421568 gets all its content pushed to right, thus now
+  it is empty, and we don't need it.
+  btrfs_clean_tree_block() from __push_leaf_right() get called.
+
+  eb: 29421568, header=0 bflags_dirty=0, page_dirty=0, gen=9
+      traced by btrfs_root::dirty_log_pages
+
+- Log tree write back
+  btree_write_cache_pages() goes through dirty pages ranges, but since
+  page of tree block 29421568 gets cleaned already, it's not written
+  back to disk. Thus it doesn't have WRITTEN bit set.
+  But ranges in dirty_log_pages are cleared.
+
+  eb: 29421568, header=0 bflags_dirty=0, page_dirty=0, gen=9
+      not traced by any dirty extent_iot_tree.
+
+- Extent tree update when committing transaction
+  Since tree block 29421568 has transid equal to running trans, and has
+  no WRITTEN bit, should_cow_block() will use it directly without adding
+  it to btrfs_transaction::dirty_pages.
+
+  eb: 29421568, header=0 bflags_dirty=1, page_dirty=1, gen=9
+      not traced by any dirty extent_iot_tree.
+
+  At this stage, we're doomed. We have a dirty eb not tracked by any
+  extent io tree.
+
+- Transaction gets aborted due to corrupted extent tree
+  Btrfs cleans up dirty pages according to transaction::dirty_pages and
+  btrfs_root::dirty_log_pages.
+  But since tree block 29421568 is not tracked by neither of them, it's
+  still dirty.
+
+  eb: 29421568, header=0 bflags_dirty=1, page_dirty=1, gen=9
+      not traced by any dirty extent_iot_tree.
+
+- Filesystem unmount
+  Since all cleanup is assumed to be done, all workqueus are destroyed.
+  Then iput(btree_inode) is called, expecting no dirty pages.
+  But tree 29421568 is still dirty, thus triggering writeback.
+  Since all workqueues are already freed, we cause use-after-free.
+
+This shows us that, log tree blocks + bad extent tree can cause wild
+dirty pages.
+
+[FIX]
+To fix the problem, don't submit any btree write bio if the filesytem
+has any error.  This is the last safe net, just in case other cleanup
+haven't caught catch it.
+
+Link: https://github.com/bobfuzzer/CVE/tree/master/CVE-2019-19377
+CC: stable@vger.kernel.org # 5.4+
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+
+[Srinidhi Rao: Backproted the fix from 5.4 stable branch to stable-4.4 kernel]
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+---
+ fs/btrfs/extent_io.c | 36 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 35 insertions(+), 1 deletion(-)
+
+diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+index 2f9f738ecf84..a5acb3779579 100644
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -4029,7 +4029,41 @@ retry:
+ 		index = 0;
+ 		goto retry;
+ 	}
+-	flush_write_bio(&epd);
++	/*
++	 * If something went wrong, don't allow any metadata write bio to be
++	 * submitted.
++	 *
++	 * This would prevent use-after-free if we had dirty pages not
++	 * cleaned up, which can still happen by fuzzed images.
++	 *
++	 * - Bad extent tree
++	 *   Allowing existing tree block to be allocated for other trees.
++	 *
++	 * - Log tree operations
++	 *   Exiting tree blocks get allocated to log tree, bumps its
++	 *   generation, then get cleaned in tree re-balance.
++	 *   Such tree block will not be written back, since it's clean,
++	 *   thus no WRITTEN flag set.
++	 *   And after log writes back, this tree block is not traced by
++	 *   any dirty extent_io_tree.
++	 *
++	 * - Offending tree block gets re-dirtied from its original owner
++	 *   Since it has bumped generation, no WRITTEN flag, it can be
++	 *   reused without COWing. This tree block will not be traced
++	 *   by btrfs_transaction::dirty_pages.
++	 *
++	 *   Now such dirty tree block will not be cleaned by any dirty
++	 *   extent io tree. Thus we don't want to submit such wild eb
++	 *   if the fs already has error.
++	 */
++	if (ret < 0)
++		return ret;
++
++	if (!test_bit(BTRFS_FS_STATE_ERROR, &fs_info->fs_state)) {
++		flush_write_bio(&epd);
++	} else {
++		ret = -EUCLEAN;
++	}
+ 	return ret;
+ }
+ 
+-- 
+2.19.0
+

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.237
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -103,6 +103,9 @@ Patch59:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 Patch63:        0001-tty-vt-consw-con_scrolldelta-cleanup.patch
 
 Patch64:        0001-xen-events-don-t-use-chip_data-for-legacy-IRQs.patch
+
+#Fix for CVE-2019-19377
+Patch65:        0001-btrfs-Don-t-submit-any-btree-write-bio-if-the-fs-has.patch
 
 # For Spectre
 Patch67:        0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -260,6 +263,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch59 -p1
 %patch63 -p1
 %patch64 -p1
+%patch65 -p1
 %patch67 -p1
 %patch68 -p1
 %patch69 -p1
@@ -434,6 +438,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Oct 15 2020 Srinidhi Rao <srinidhir@vmware.com> 4.4.237-5
+-   Fix for CVE-2019-19377
 *   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.4.237-4
 -   Fix for CVE-2020-16120
 *   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.4.237-3

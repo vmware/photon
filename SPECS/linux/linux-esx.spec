@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.237
-Release:       4%{?dist}
+Release:       5%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -99,6 +99,8 @@ Patch62:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch63:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 # Fix for CVE-2020-14390
 Patch67:        0001-tty-vt-consw-con_scrolldelta-cleanup.patch
+# Fix for CVE-2019-19377
+Patch68:        0001-btrfs-Don-t-submit-any-btree-write-bio-if-the-fs-has.patch
 
 # For Spectre
 Patch70:        0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -225,6 +227,7 @@ The Linux package contains the Linux kernel doc files
 %patch62 -p1
 %patch63 -p1
 %patch67 -p1
+%patch68 -p1
 
 %patch70 -p1
 %patch71 -p1
@@ -332,6 +335,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Oct 15 2020 Srinidhi Rao <srinidhir@vmware.com> 4.4.237-5
+-   Fix for CVE-2019-19377
 *   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.4.237-4
 -   Fix for CVE-2020-16120
 *   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.4.237-3
