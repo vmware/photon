@@ -1,0 +1,24 @@
+commit a2f3976f17c9883abe559e2ccd778edafefcc9b8
+Author: Jakub Jelen <jjelen@redhat.com>
+Date:   Tue Jul 2 12:42:49 2019 +0200
+
+    ssh-keyscan: Do not skip RSA keys if SHA1 (ssh-rsa signature algorithm) is not enabled in server
+
+diff --git a/ssh-keyscan.c b/ssh-keyscan.c
+index 7b7c0f32..71e40bf5 100644
+--- a/ssh-keyscan.c
++++ b/ssh-keyscan.c
+@@ -233,7 +233,12 @@ keygrab_ssh2(con *c)
+ 		break;
+ 	case KT_RSA:
+ 		myproposal[PROPOSAL_SERVER_HOST_KEY_ALGS] = get_cert ?
+-		    "ssh-rsa-cert-v01@openssh.com" : "ssh-rsa";
++		    "rsa-sha2-512-cert-v01@openssh.com,"
++		    "rsa-sha2-256-cert-v01@openssh.com,"
++		    "ssh-rsa-cert-v01@openssh.com" :
++		    "rsa-sha2-512,"
++		    "rsa-sha2-256,"
++		    "ssh-rsa";
+ 		break;
+ 	case KT_ED25519:
+ 		myproposal[PROPOSAL_SERVER_HOST_KEY_ALGS] = get_cert ?
