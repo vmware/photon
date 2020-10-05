@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.6.15
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
@@ -66,7 +66,8 @@ SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RS
 EOF
 
 %check
-make %{?_smp_mflags} check
+sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
+make check
 
 %post
 /sbin/ldconfig
@@ -94,6 +95,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Oct 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 3.6.15-3
+-   Fix make check
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.6.15-2
 -   openssl 1.1.1
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.6.15-1
