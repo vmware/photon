@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        9.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
@@ -10,6 +10,7 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Patch0:         gdb-7.12-pstack.patch
+Patch1:         0001-skip-inaccessible.patch
 Requires:       expat
 Requires:       ncurses
 Requires:       python3
@@ -31,6 +32,7 @@ another program was doing at the moment it crashed.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 mkdir build && cd build
@@ -85,6 +87,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_mandir}/*/*
 
 %changelog
+*   Mon Oct 05 2020 Vikash Bansal <bvikas@vmware.com> 9.2-2
+-   Stop inaccessible region from getting dumped into coredump
 *   Mon Aug 24 2020 Keerthana K <keerthanak@vmware.com> 9.2-1
 -   Update to version 9.2
 *   Mon Jul 22 2019 Alexey Makhalov <amakhalov@vmware.com> 8.2-2
