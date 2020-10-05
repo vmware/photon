@@ -1,7 +1,7 @@
 Summary:        Cyrus Simple Authentication Service Layer (SASL) library
 Name:           cyrus-sasl
 Version:        2.1.27
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Custom
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
@@ -50,7 +50,8 @@ popd
     --disable-sample \
     --disable-digest \
     --disable-otp \
-    --disable-plain \
+    --enable-plain \
+    --enable-login \
     --disable-anon \
     --enable-srp \
     --enable-gss_mutexes \
@@ -132,6 +133,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/saslauthd.8.gz
 
 %changelog
+*   Mon Oct 05 2020 Tapas Kundu <tkundu@vmware.com> 2.1.27-3
+-   Enable login and plain
 *   Tue Sep 01 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com>  2.1.27-2
 -   Make openssl 1.1.1 compatible
 *   Mon Aug 17 2020 Gerrit Photon <photon-checkins@vmware.com> 2.1.27-1
