@@ -1,7 +1,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.2008.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
@@ -54,6 +54,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 install -vd %{buildroot}%{_libdir}/systemd/system/
 install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
+install -vd %{buildroot}%{_sysconfdir}/rsyslog.d
 rm -f %{buildroot}/lib/systemd/system/rsyslog.service
 install -p -m 644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/
 install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
@@ -81,9 +82,12 @@ make %{?_smp_mflags} check
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_libdir}/systemd/system/rsyslog.service
+%dir %{_sysconfdir}/rsyslog.d
 %{_sysconfdir}/systemd/journald.conf.d/*
 %config(noreplace) %{_sysconfdir}/rsyslog.conf
 %changelog
+*   Mon Oct 05 2020 Keerthana K <keerthanak@vmware.com> 8.2008.0-2
+-   Adding rsyslog.d directory
 *   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 8.2008.0-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 8.2006.0-1
