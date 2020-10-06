@@ -1,11 +1,11 @@
-diff -aur selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/authlogin.fc selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/authlogin.fc
---- selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44/policy/modules/system/authlogin.fc	2020-07-28 21:10:01.064579885 +0530
-+++ selinux-policy-ad1d35503f55f535401daa0a59913aa559c38d44_2/policy/modules/system/authlogin.fc	2020-07-28 21:19:50.716609564 +0530
-@@ -76,6 +76,7 @@
+diff -aur selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff/policy/modules/system/authlogin.fc selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff_2/policy/modules/system/authlogin.fc
+--- selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff/policy/modules/system/authlogin.fc	2020-10-06 10:38:22.972488795 +0530
++++ selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff_2/policy/modules/system/authlogin.fc	2020-10-06 10:54:23.784534925 +0530
+@@ -78,6 +78,7 @@
  /var/run/faillock(/.*)?		gen_context(system_u:object_r:faillog_t,s0)
- /var/run/motd		--	gen_context(system_u:object_r:pam_var_run_t,s0)
- /var/run/motd\.d(/.*)?		gen_context(system_u:object_r:pam_var_run_t,s0)
-+/var/run/motdgen(/.*)?		gen_context(system_u:object_r:pam_var_run_t,s0)
+ /var/run/motd		--	gen_context(system_u:object_r:motd_var_run_t,s0)
+ /var/run/motd\.d(/.*)?		gen_context(system_u:object_r:motd_var_run_t,s0)
++/var/run/motdgen(/.*)?		gen_context(system_u:object_r:motd_var_run_t,s0)
  /var/run/pam_mount(/.*)?	gen_context(system_u:object_r:pam_var_run_t,s0)
  /var/run/pam_ssh(/.*)?		gen_context(system_u:object_r:pam_var_run_t,s0)
  /var/run/pam_timestamp(/.*)?	gen_context(system_u:object_r:pam_var_run_t,s0)

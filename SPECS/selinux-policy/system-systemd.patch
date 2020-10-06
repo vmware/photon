@@ -1,17 +1,123 @@
-diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/system/systemd.fc selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/system/systemd.fc
---- selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/system/systemd.fc	2020-08-06 22:43:50.604002940 +0530
-+++ selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/system/systemd.fc	2020-08-06 22:45:05.820006726 +0530
-@@ -98,4 +98,6 @@
+diff -Naurp selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff/policy/modules/system/systemd.fc selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff_2/policy/modules/system/systemd.fc
+--- selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff/policy/modules/system/systemd.fc	2020-10-06 10:38:22.976488795 +0530
++++ selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff_2/policy/modules/system/systemd.fc	2020-10-06 11:00:18.468551954 +0530
+@@ -99,4 +99,6 @@ HOME_DIR/\.config/systemd/user(/.*)?		ge
  
  /var/run/initramfs(/.*)?	<<none>>
  
 +/var/run/systemd/timesync/synchronized	gen_context(system_u:object_r:systemd_timedated_var_run_t,s0)
 +
  /run/systemd/resolve(/.*)?	gen_context(system_u:object_r:systemd_resolved_var_run_t,s0)
-diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/system/systemd.te selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/system/systemd.te
---- selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/system/systemd.te	2020-08-06 22:43:50.604002940 +0530
-+++ selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/system/systemd.te	2020-08-07 23:03:22.008410757 +0530
-@@ -136,7 +136,6 @@
+diff -Naurp selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff/policy/modules/system/systemd.fc.orig selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff_2/policy/modules/system/systemd.fc.orig
+--- selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff/policy/modules/system/systemd.fc.orig	1970-01-01 05:30:00.000000000 +0530
++++ selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff_2/policy/modules/system/systemd.fc.orig	2020-10-06 10:59:53.468550754 +0530
+@@ -0,0 +1,102 @@
++HOME_DIR/\.local/share/systemd(/.*)?		gen_context(system_u:object_r:systemd_home_t,s0)
++HOME_DIR/\.config/systemd/user(/.*)?		gen_context(system_u:object_r:systemd_unit_file_t,s0)
++/root/\.local/share/systemd(/.*)?		gen_context(system_u:object_r:systemd_home_t,s0)
++
++/etc/.*hostname.*			--		gen_context(system_u:object_r:hostname_etc_t,s0)
++/etc/machine-info		--		gen_context(system_u:object_r:hostname_etc_t,s0)
++/etc/udev/.*hwdb.*	--	gen_context(system_u:object_r:systemd_hwdb_etc_t,s0)
++
++/bin/systemd-notify				--		gen_context(system_u:object_r:systemd_notify_exec_t,s0)
++/bin/systemctl					--	gen_context(system_u:object_r:systemd_systemctl_exec_t,s0)
++/bin/systemd-tty-ask-password-agent		--		gen_context(system_u:object_r:systemd_passwd_agent_exec_t,s0)
++/bin/systemd-tmpfiles				--		gen_context(system_u:object_r:systemd_tmpfiles_exec_t,s0)
++/bin/systemd-coredump		--	gen_context(system_u:object_r:systemd_coredump_exec_t,s0)
++
++/usr/bin/systemctl				--	gen_context(system_u:object_r:systemd_systemctl_exec_t,s0)
++/usr/bin/systemd-gnome-ask-password-agent	--		gen_context(system_u:object_r:systemd_passwd_agent_exec_t,s0)
++/usr/bin/systemd-notify				--		gen_context(system_u:object_r:systemd_notify_exec_t,s0)
++/usr/bin/systemd-tmpfiles			--		gen_context(system_u:object_r:systemd_tmpfiles_exec_t,s0)
++/usr/bin/systemd-tty-ask-password-agent		--		gen_context(system_u:object_r:systemd_passwd_agent_exec_t,s0)
++/usr/bin/systemd-hwdb		--	gen_context(system_u:object_r:systemd_hwdb_exec_t,s0)
++
++/usr/lib/systemd/systemd-bootchart	--	gen_context(system_u:object_r:systemd_bootchart_exec_t,s0)
++
++/usr/lib/systemd/systemd-initctl	--	gen_context(system_u:object_r:systemd_initctl_exec_t,s0)
++
++/usr/lib/systemd/systemd-pull		--	gen_context(system_u:object_r:systemd_importd_exec_t,s0)
++/usr/lib/systemd/systemd-userdbd	--	gen_context(system_u:object_r:systemd_userdbd_exec_t,s0)
++/usr/lib/systemd/systemd-userwork	--	gen_context(system_u:object_r:systemd_userdbd_exec_t,s0)
++
++/etc/systemd/system\.control(/.*)?		gen_context(system_u:object_r:systemd_unit_file_t,s0)
++/usr/lib/dracut/modules.d/.*\.service	gen_context(system_u:object_r:systemd_unit_file_t,s0)
++/usr/lib/systemd/system(/.*)?		gen_context(system_u:object_r:systemd_unit_file_t,s0)
++/usr/lib/systemd/user(/.*)?		gen_context(system_u:object_r:systemd_unit_file_t,s0)
++/run/systemd/transient(/.*)?		gen_context(system_u:object_r:systemd_unit_file_t,s0)
++/run/systemd/units(/.*)?		gen_context(system_u:object_r:systemd_unit_file_t,s0)
++/usr/lib/systemd/system/systemd-machined\.service	--	gen_context(system_u:object_r:systemd_machined_unit_file_t,s0)
++/usr/lib/systemd/system/systemd-networkd\.service     gen_context(system_u:object_r:systemd_networkd_unit_file_t,s0)
++/usr/lib/systemd/system/systemd-resolved\.service     gen_context(system_u:object_r:systemd_resolved_unit_file_t,s0)
++/usr/lib/systemd/system/systemd-modules-load\.service     gen_context(system_u:object_r:systemd_modules_load_unit_file_t,s0)
++/usr/lib/systemd/system/systemd-vconsole-setup\.service		gen_context(system_u:object_r:systemd_vconsole_unit_file_t,s0)
++/usr/lib/systemd/system/systemd-rfkill\.service	--	gen_context(system_u:object_r:systemd_rfkill_unit_file_t,s0)
++/usr/lib/systemd/system/systemd-time.*\.service	--	gen_context(system_u:object_r:systemd_timedated_unit_file_t,s0)
++/usr/lib/systemd/system/systemd-hwdb.*\.service	--	gen_context(system_u:object_r:systemd_hwdb_unit_file_t,s0)
++/usr/lib/systemd/system/systemd-bootchart.*\.service 	--	gen_context(system_u:object_r:systemd_bootchart_unit_file_t,s0)
++
++/usr/lib/systemd/system/.*halt.(service|target)	--	gen_context(system_u:object_r:power_unit_file_t,s0)
++/usr/lib/systemd/system/.*hibernate.*\.(service|target)		--	gen_context(system_u:object_r:power_unit_file_t,s0)
++/usr/lib/systemd/system/.*power.*\.(service|target)		--	gen_context(system_u:object_r:power_unit_file_t,s0)
++/usr/lib/systemd/system/.*reboot.*\.(service|target)		--	gen_context(system_u:object_r:power_unit_file_t,s0)
++/usr/lib/systemd/system/.*sleep.*\.(service|target)		--	gen_context(system_u:object_r:power_unit_file_t,s0)
++/usr/lib/systemd/system/.*shutdown.*\.(service|target)		--	gen_context(system_u:object_r:power_unit_file_t,s0)
++/usr/lib/systemd/system/.*suspend.*\.(service|target)		--	gen_context(system_u:object_r:power_unit_file_t,s0)
++/usr/lib/systemd/system/systemd-userdbd\.(service|socket)		--	gen_context(system_u:object_r:systemd_userdbd_unit_file_t,s0)
++/usr/lib/systemd/systemd-hostnamed	--	gen_context(system_u:object_r:systemd_hostnamed_exec_t,s0)
++/usr/lib/systemd/systemd-machined	--	gen_context(system_u:object_r:systemd_machined_exec_t,s0)
++/usr/lib/systemd/systemd-rfkill     --  gen_context(system_u:object_r:systemd_rfkill_exec_t,s0)
++/usr/lib/systemd/systemd-sysctl		--	gen_context(system_u:object_r:systemd_sysctl_exec_t,s0)
++/usr/lib/systemd/systemd-timedated	--	gen_context(system_u:object_r:systemd_timedated_exec_t,s0)
++/usr/lib/systemd/systemd-timesyncd	--	gen_context(system_u:object_r:systemd_timedated_exec_t,s0)
++/usr/lib/systemd/systemd-logind		--	gen_context(system_u:object_r:systemd_logind_exec_t,s0)
++/usr/lib/systemd/systemd-user-runtime-dir		--	gen_context(system_u:object_r:systemd_logind_exec_t,s0)
++/usr/lib/systemd/systemd-localed	--	gen_context(system_u:object_r:systemd_localed_exec_t,s0)
++/usr/lib/systemd/systemd-logger	--	gen_context(system_u:object_r:systemd_logger_exec_t,s0)
++/usr/lib/systemd/systemd-networkd   --  gen_context(system_u:object_r:systemd_networkd_exec_t,s0)
++/usr/lib/systemd/systemd-tmpfiles --	gen_context(system_u:object_r:systemd_tmpfiles_exec_t,s0)
++/usr/lib/systemd/systemd-coredump	--	gen_context(system_u:object_r:systemd_coredump_exec_t,s0)
++/usr/lib/systemd/systemd-modules-load	--	gen_context(system_u:object_r:systemd_modules_load_exec_t,s0)
++/usr/lib/systemd/system-generators/systemd-gpt-auto-generator	--	gen_context(system_u:object_r:systemd_gpt_generator_exec_t,s0)
++/usr/lib/systemd/systemd-resolve(d|-host)			gen_context(system_u:object_r:systemd_resolved_exec_t,s0)
++/usr/lib/systemd/systemd-importd		--	gen_context(system_u:object_r:systemd_importd_exec_t,s0)
++/usr/lib/systemd/systemd-sleep		--	gen_context(system_u:object_r:systemd_sleep_exec_t,s0)
++
++/var/lib/machines(/.*)?			gen_context(system_u:object_r:systemd_machined_var_lib_t,s0)
++/var/lib/systemd/rfkill(/.*)?         gen_context(system_u:object_r:systemd_rfkill_var_lib_t,s0)
++/var/lib/systemd/linger(/.*)?  		gen_context(system_u:object_r:systemd_logind_var_lib_t,mls_systemhigh)
++/var/lib/systemd/timesync(/.*)? 		gen_context(system_u:object_r:systemd_timedated_var_lib_t,s0)
++/var/lib/private/systemd/timesync(/.*)?		gen_context(system_u:object_r:systemd_timedated_var_lib_t,s0)
++/var/lib/random-seed 		gen_context(system_u:object_r:random_seed_t,mls_systemhigh)
++/usr/lib/systemd/resolv.*   --   gen_context(system_u:object_r:lib_t,s0)
++/usr/var/lib/random-seed 	gen_context(system_u:object_r:random_seed_t,mls_systemhigh)
++
++/var/run/.*nologin.*		gen_context(system_u:object_r:systemd_logind_var_run_t,s0)
++/var/run/systemd/seats(/.*)?	gen_context(system_u:object_r:systemd_logind_var_run_t,s0)
++/var/run/systemd/sessions(/.*)?	gen_context(system_u:object_r:systemd_logind_sessions_t,s0)
++/var/run/systemd/shutdown(/.*)?	gen_context(system_u:object_r:systemd_logind_var_run_t,s0)
++/var/run/systemd/userdb(/.*)?	gen_context(system_u:object_r:systemd_userdbd_runtime_t,s0)
++/var/run/systemd/users(/.*)?	gen_context(system_u:object_r:systemd_logind_var_run_t,s0)
++/var/run/systemd/inhibit(/.*)?	gen_context(system_u:object_r:systemd_logind_inhibit_var_run_t,s0)
++/var/run/systemd/ask-password-block(/.*)?	gen_context(system_u:object_r:systemd_passwd_var_run_t,s0)
++/var/run/systemd/ask-password(/.*)?	gen_context(system_u:object_r:systemd_passwd_var_run_t,s0)
++/var/run/systemd/machines(/.*)?	gen_context(system_u:object_r:systemd_machined_var_run_t,s0)
++/var/run/systemd/resolve(/.*)?	gen_context(system_u:object_r:systemd_resolved_var_run_t,s0)
++/var/run/systemd/netif(/.*)?	gen_context(system_u:object_r:systemd_networkd_var_run_t,s0)
++/var/run/systemd/import(/.*)?		gen_context(system_u:object_r:systemd_importd_var_run_t,s0)
++
++/var/run/log/bootchart.*	--	gen_context(system_u:object_r:systemd_bootchart_var_run_t,s0)
++
++/var/run/systemd/units(/.*)?		gen_context(system_u:object_r:systemd_unit_file_t,s0)
++
++/var/run/initramfs(/.*)?	<<none>>
++
++/run/systemd/resolve(/.*)?	gen_context(system_u:object_r:systemd_resolved_var_run_t,s0)
+diff -Naurp selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff/policy/modules/system/systemd.te selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff_2/policy/modules/system/systemd.te
+--- selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff/policy/modules/system/systemd.te	2020-10-06 10:38:22.976488795 +0530
++++ selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff_2/policy/modules/system/systemd.te	2020-10-06 11:00:18.468551954 +0530
+@@ -136,7 +136,6 @@ files_type(systemd_rfkill_var_lib_t)
  systemd_domain_template(systemd_timedated)
  init_nnp_daemon_domain(systemd_timedated_t)
  typeattribute systemd_timedated_t systemd_domain;
@@ -19,7 +125,7 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
  
  type systemd_timedated_unit_file_t;
  systemd_unit_file(systemd_timedated_unit_file_t)
-@@ -885,12 +884,14 @@
+@@ -888,12 +887,14 @@ init_var_lib_filetrans(systemd_timedated
  
  list_dirs_pattern(systemd_timedated_t, systemd_networkd_var_run_t, systemd_networkd_var_run_t)
  read_files_pattern(systemd_timedated_t, systemd_networkd_var_run_t, systemd_networkd_var_run_t)
@@ -34,7 +140,7 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
  
  dev_rw_realtime_clock(systemd_timedated_t)
  dev_write_kmsg(systemd_timedated_t)
-@@ -1052,6 +1053,7 @@
+@@ -1055,6 +1056,7 @@ list_dirs_pattern(systemd_resolved_t, sy
  read_files_pattern(systemd_resolved_t, systemd_networkd_var_run_t, systemd_networkd_var_run_t)
  
  kernel_dgram_send(systemd_resolved_t)
@@ -42,7 +148,7 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
  kernel_read_net_sysctls(systemd_resolved_t)
  kernel_read_network_state(systemd_resolved_t)
  
-@@ -1063,6 +1065,11 @@
+@@ -1066,6 +1068,11 @@ corenet_tcp_connect_llmnr_port(systemd_r
  corenet_udp_bind_dns_port(systemd_resolved_t)
  corenet_tcp_bind_dns_port(systemd_resolved_t)
  corenet_udp_bind_howl_port(systemd_resolved_t)
@@ -54,7 +160,7 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
  
  dev_write_kmsg(systemd_resolved_t)
  dev_read_sysfs(systemd_resolved_t)
-@@ -1152,6 +1159,7 @@
+@@ -1155,6 +1162,7 @@ files_read_kernel_modules(systemd_module
  modutils_exec_kmod(systemd_modules_load_t)
  modutils_read_module_config(systemd_modules_load_t)
  modutils_read_module_deps_files(systemd_modules_load_t)
@@ -62,10 +168,3 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
  
  systemd_read_efivarfs(systemd_modules_load_t)
  
-@@ -1265,3 +1273,6 @@
- logging_send_syslog_msg(systemd_userdbd_t)
- 
- systemd_read_efivarfs(systemd_userdbd_t)
-+
-+logging_send_syslog_msg(systemd_userdbd_t)
-+

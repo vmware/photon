@@ -1,15 +1,15 @@
 Summary:        SELinux policy
 Name:           selinux-policy
-Version:        3.14.6
+Version:        3.14.7
 Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
-Source0:        https://github.com/fedora-selinux/%{name}/archive/217d49334447021da909edf8b07007e319540ae3/%{name}-217d4933.tar.gz
-%define sha1 selinux-policy-21=5435446da52c8e5e0c64ee8485ef6ec601239412
-Source1:        https://github.com/fedora-selinux/%{name}-contrib/archive/72b352431e6cdce2bd6a26ad942d373f42dbba58/%{name}-contrib-72b35243.tar.gz
-%define sha1 selinux-policy-contrib=77b3e80545e54ff23581f92a78391ec762a79f36
-Source2:        https://github.com/containers/container-selinux/archive/container-selinux-2.143.0.tar.gz
-%define sha1 container-selinux=791ac11c64dd8ce0b88f967d3a834180f8fce8c6
+Source0:        https://github.com/fedora-selinux/%{name}/archive/3bdcea7565f55fb338b3c1f936f38b75a62192ff/%{name}-3bdcea75.tar.gz
+%define sha1 selinux-policy-3b=69996348fb2dbc030d739e71c2279dc499ed6d93
+Source1:        https://github.com/fedora-selinux/%{name}-contrib/archive/b1dcbc59a940c762dfe4e07117cd5615f8b5c99a/%{name}-contrib-b1dcbc59.tar.gz
+%define sha1 selinux-policy-contrib=44f22cfb26974cc79c7ad69d54d811f616ea5363
+Source2:        https://github.com/containers/container-selinux/archive/container-selinux-2.145.0.tar.gz
+%define sha1 container-selinux=93676d051407d4e57ae517dd4dc45239d1369e3d
 Source3:        build.conf
 Source4:        modules.conf
 Url:            https://github.com/SELinuxProject/selinux/wiki
@@ -51,11 +51,11 @@ Requires: m4 checkpolicy
 SELinux policy development
 
 %prep
-%setup -q -b 1 -n %{name}-contrib-72b352431e6cdce2bd6a26ad942d373f42dbba58
-%setup -q -b 2 -n container-selinux-2.143.0
-%setup -qn %{name}-217d49334447021da909edf8b07007e319540ae3
-cp ../%{name}-contrib-72b352431e6cdce2bd6a26ad942d373f42dbba58/* policy/modules/contrib/
-cp -r ../container-selinux-2.143.0/container.* policy/modules/contrib/
+%setup -q -b 1 -n %{name}-contrib-b1dcbc59a940c762dfe4e07117cd5615f8b5c99a
+%setup -q -b 2 -n container-selinux-2.145.0
+%setup -qn %{name}-3bdcea7565f55fb338b3c1f936f38b75a62192ff
+cp ../%{name}-contrib-b1dcbc59a940c762dfe4e07117cd5615f8b5c99a/* policy/modules/contrib/
+cp -r ../container-selinux-2.145.0/container.* policy/modules/contrib/
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
@@ -119,6 +119,8 @@ fi
 %{_sharedstatedir}/selinux/default
 
 %changelog
+* Thu Aug 06 2020 Vikash Bansal <bvikas@vmware.com> 3.14.7-1
+- Version Bump up to 3.14.7
 * Thu Aug 06 2020 Vikash Bansal <bvikas@vmware.com> 3.14.6-1
 - Version Bump up to 3.14.6
 * Fri Jul 31 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-8
