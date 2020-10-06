@@ -1,6 +1,6 @@
 Summary:        Libbpf library
 Name:           libbpf
-Version:        0.1.0
+Version:        0.1.1
 Release:        1%{?dist}
 Group:          Development/System
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:   Photon
 License:        GPL-2.1 OR BSD-2-Clause
 URL:            https://github.com/libbpf/libbpf
 Source:         libbpf-%{version}.tar.gz
-%define sha1    libbpf=cd1b5690a1d1c00cddce7118b02355fc1c634a2a
+%define sha1    libbpf=ec8115a190fb3bc53a0f81d0b67228de166b7c45
 
 BuildRequires:  elfutils-libelf-devel
 BuildRequires:  elfutils-devel
@@ -41,7 +41,7 @@ developing applications that use libbpf.
 rm -rf %{buildroot}
 
 %files
-%attr(0755,-,-) %{_lib64dir}/libbpf.so.%{version}
+%attr(0755,-,-) %{_lib64dir}/libbpf.so.0.1.0
 %{_lib64dir}/libbpf.so.0
 %{_lib64dir}/libbpf.so
 
@@ -51,5 +51,7 @@ rm -rf %{buildroot}
 %attr(0644,-,-) %{_lib64dir}/pkgconfig/libbpf.pc
 
 %changelog
+* Mon Oct 05 2020 Gerrit Photon <photon-checkins@vmware.com> 0.1.1-1
+- Automatic Version Bump
 * Wed Sep 09 2020 Susant Sahani <ssahani@vmware.com>  0.1.0-1
 - Initial release
