@@ -10,7 +10,7 @@
 
 Summary:        Go
 Name:           go
-Version:        1.14
+Version:        1.14.8
 Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
@@ -18,7 +18,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
-%define sha1    go=b46ef8d3ede13a8e890cfab8a9f269190a0a8618
+%define sha1    go=7b0c9fb5fe4c10c606048509148d37644622de07
 Requires:       glibc
 %define ExtraBuildRequires go
 
@@ -107,5 +107,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Tue Oct 06 2020 Ashwin H <ashwinh@vmware.com> 1.14.8-1
+-   Update to 1.14.8
 *   Thu Mar 05 2020 <ashwinh@vmware.com> 1.14-1
 -   Initial build for 1.14
