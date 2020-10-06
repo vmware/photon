@@ -4,7 +4,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
@@ -26,7 +26,7 @@ Requires:       libseccomp
 Requires:       systemd
 # containerd works only with a specific runc version
 # Refer to containerd/RUNC.md
-Requires:       runc = 1.0.0.rc9
+Requires:       runc = 1.0.0.rc92
 
 %description
 Containerd is an open source project. It is available as a daemon for Linux,
@@ -105,6 +105,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Wed Oct 07 2020 Tapas Kundu <tkundu@vmware.com> 1.4.1-2
+-   Use latest runc
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.1-1
 -   Automatic Version Bump
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.0-1
