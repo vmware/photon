@@ -1,0 +1,13 @@
+diff --git a/unix/Makefile b/unix/Makefile
+index abd0c44..0e9e431 100644
+--- a/unix/Makefile
++++ b/unix/Makefile
+@@ -57,7 +57,7 @@ IZ_OUR_BZIP2_DIR = bzip2
+ #   CFLAGS    flags for C compile
+ #   LFLAGS1   flags after output file spec, before obj file list
+ #   LFLAGS2   flags after obj file list (libraries, etc)
+-CFLAGS_NOOPT = -I. -DUNIX $(LOCAL_ZIP)
++CFLAGS_NOOPT = -I. -DUNIX $(LOCAL_ZIP) -DPASSWD_FROM_STDIN
+ CFLAGS = -O2 $(CFLAGS_NOOPT)
+ LFLAGS1 =
+ LFLAGS2 = -s
