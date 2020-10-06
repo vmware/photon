@@ -1,18 +1,18 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
 %define jdk_major_version 1.8.0
-%define subversion 262
+%define subversion 265
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.262
-Release:	3%{?dist}
+Version:	1.8.0.265
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
-%define sha1 openjdk=2f716d3c2a4143b16ec45ba9cdf30a89812ea6d9
+%define sha1 openjdk=d8dbb4e60a54e4099c27f558babed68b8ef06c65
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs-212-b04.patch
 Patch2:		allow_using_system_installed_libjpeg.patch
@@ -261,6 +261,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/src.zip
 
 %changelog
+*   Tue Oct 06 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.265-1
+-   Upgrade to version 1.8.0.265 (jdk8u265-ga)
 *   Mon Oct 05 2020 Tapas Kundu <tkundu@vmware.com> 1.8.0.262-3
 -   Use libjpeg-turbo
 -   Fix CVE-2020-14153, CVE-2020-14152
