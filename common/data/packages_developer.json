@@ -2,6 +2,7 @@
     "packages": [
                  "minimal",
                  "linux",
+                 "linux-esx",
                  "initramfs",
                  "build-essential",
                  "go",
