@@ -1,0 +1,87 @@
+From 3dd7400b419409b1551f7f01764b1f3160feda90 Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Mon, 3 Jun 2019 23:58:38 -0700
+Subject: [PATCH] vmxnet3: turn off lro when rxcsum is disabled
+
+commit 3dd7400b419409b1551f7f01764b1f3160feda90 upstream.
+
+Currently, when rx csum is disabled, vmxnet3 driver does not turn
+off lro, which can cause performance issues if user does not turn off
+lro explicitly. This patch adds fix_features support which is used to
+turn off LRO whenever RXCSUM is disabled.
+
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Rishi Mehta <rmehta@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c     |  1 +
+ drivers/net/vmxnet3/vmxnet3_ethtool.c | 10 ++++++++++
+ drivers/net/vmxnet3/vmxnet3_int.h     |  7 +++++--
+ 3 files changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 1b2a18ea855c..3f48f05dd2a6 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -3247,6 +3247,7 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 		.ndo_start_xmit = vmxnet3_xmit_frame,
+ 		.ndo_set_mac_address = vmxnet3_set_mac_addr,
+ 		.ndo_change_mtu = vmxnet3_change_mtu,
++		.ndo_fix_features = vmxnet3_fix_features,
+ 		.ndo_set_features = vmxnet3_set_features,
+ 		.ndo_get_stats64 = vmxnet3_get_stats64,
+ 		.ndo_tx_timeout = vmxnet3_tx_timeout,
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index 559db051a500..0a38c76688ab 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -257,6 +257,16 @@ vmxnet3_get_strings(struct net_device *netdev, u32 stringset, u8 *buf)
+ 	}
+ }
+ 
++netdev_features_t vmxnet3_fix_features(struct net_device *netdev,
++				       netdev_features_t features)
++{
++	/* If Rx checksum is disabled, then LRO should also be disabled */
++	if (!(features & NETIF_F_RXCSUM))
++		features &= ~NETIF_F_LRO;
++
++	return features;
++}
++
+ int vmxnet3_set_features(struct net_device *netdev, netdev_features_t features)
+ {
+ 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index a2c554f8a61b..1cc1cd4aaa59 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -69,12 +69,12 @@
+ /*
+  * Version numbers
+  */
+-#define VMXNET3_DRIVER_VERSION_STRING   "1.4.16.0-k"
++#define VMXNET3_DRIVER_VERSION_STRING   "1.4.17.0-k"
+ 
+ /* Each byte of this 32-bit integer encodes a version number in
+  * VMXNET3_DRIVER_VERSION_STRING.
+  */
+-#define VMXNET3_DRIVER_VERSION_NUM      0x01041000
++#define VMXNET3_DRIVER_VERSION_NUM      0x01041100
+ 
+ #if defined(CONFIG_PCI_MSI)
+ 	/* RSS only makes sense if MSI-X is supported. */
+@@ -454,6 +454,9 @@ vmxnet3_tq_destroy_all(struct vmxnet3_adapter *adapter);
+ void
+ vmxnet3_rq_destroy_all(struct vmxnet3_adapter *adapter);
+ 
++netdev_features_t
++vmxnet3_fix_features(struct net_device *netdev, netdev_features_t features);
++
+ int
+ vmxnet3_set_features(struct net_device *netdev, netdev_features_t features);
+ 
+-- 
+2.17.1
+

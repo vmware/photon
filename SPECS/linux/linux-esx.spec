@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.148
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -50,15 +50,6 @@ Patch19:        07-vmware-only.patch
 Patch20:        initramfs-support-for-page-aligned-format-newca.patch
 Patch21:        enabling-configuring-options-for-geneve-device.patch
 Patch22:        initramfs-multiple-image-extraction-support.patch
-
-# Upgrade vmxnet3 driver to version 4
-Patch23:        0001-vmxnet3-prepare-for-version-4-changes.patch
-Patch24:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
-Patch25:        0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
-Patch26:        0004-vmxnet3-update-to-version-4.patch
-Patch27:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
-Patch28:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
-Patch29:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
 
 Patch30:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 
@@ -140,6 +131,17 @@ Patch250:        0001-fs-9p-support-no_icache-flag-to-disable-dentry-inode.patch
 Patch251:        0001-fs-9p-add-ext9p-alias-and-implement-show_devname-for.patch
 Patch252:        0001-fs-9p-fix-dirty-pages-writeback-in-v9fs_evict_inode.patch
 
+# Upgrade vmxnet3 driver to version 4
+Patch301:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
+Patch302:        0001-vmxnet3-prepare-for-version-4-changes.patch
+Patch303:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
+Patch304:        0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
+Patch305:        0004-vmxnet3-update-to-version-4.patch
+Patch306:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
+Patch307:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
+Patch308:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
+Patch309:        0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
+
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
 %endif
@@ -215,13 +217,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
-%patch23 -p1
-%patch24 -p1
-%patch25 -p1
-%patch26 -p1
-%patch27 -p1
-%patch28 -p1
-%patch29 -p1
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
@@ -270,6 +265,15 @@ This Linux package contains hmac sha generator kernel module.
 %patch251 -p1
 %patch252 -p1
 
+%patch301 -p1
+%patch302 -p1
+%patch303 -p1
+%patch304 -p1
+%patch305 -p1
+%patch306 -p1
+%patch307 -p1
+%patch308 -p1
+%patch309 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -400,6 +404,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Oct 06 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.148-4
+-   Fix IPIP encapsulation issue in vmxnet3 driver.
 *   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-3
 -   9p: writepages: corrected tofind size
 *   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-2

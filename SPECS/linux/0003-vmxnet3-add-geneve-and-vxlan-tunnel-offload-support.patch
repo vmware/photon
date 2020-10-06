@@ -1,7 +1,7 @@
-From 2128e5189745d04027fe6eac88ae49a84a53ebf5 Mon Sep 17 00:00:00 2001
+From dacce2be33124df3c71f979ac47e3d6354a41125 Mon Sep 17 00:00:00 2001
 From: Ronak Doshi <doshir@vmware.com>
 Date: Thu, 28 May 2020 14:53:21 -0700
-Subject: [PATCH 3/6] vmxnet3: add geneve and vxlan tunnel offload support
+Subject: [PATCH] vmxnet3: add geneve and vxlan tunnel offload support
 
 commit dacce2be33124df3c71f979ac47e3d6354a41125 upstream.
 
@@ -102,10 +102,10 @@ index aac97fac1186..a8d5ebd47c71 100644
  #ifdef __BIG_ENDIAN_BITFIELD
  	u32		ext2:1;
 diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 53c258b34521..dc1671649662 100644
+index 4ea7a40ada88..171d4b1d1d04 100644
 --- a/drivers/net/vmxnet3/vmxnet3_drv.c
 +++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -843,12 +843,22 @@ vmxnet3_parse_hdr(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+@@ -842,12 +842,22 @@ vmxnet3_parse_hdr(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
  	u8 protocol = 0;
  
  	if (ctx->mss) {	/* TSO */
@@ -132,7 +132,7 @@ index 53c258b34521..dc1671649662 100644
  
  			if (ctx->ipv4) {
  				const struct iphdr *iph = ip_hdr(skb);
-@@ -872,10 +882,10 @@ vmxnet3_parse_hdr(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+@@ -871,10 +881,10 @@ vmxnet3_parse_hdr(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
  				break;
  			}
  
@@ -145,7 +145,7 @@ index 53c258b34521..dc1671649662 100644
  			ctx->l4_hdr_size = 0;
  			/* copy as much as allowed */
  			ctx->copy_size = min_t(unsigned int,
-@@ -930,6 +940,25 @@ vmxnet3_copy_hdr(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+@@ -929,6 +939,25 @@ vmxnet3_copy_hdr(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
  }
  
  
@@ -171,7 +171,7 @@ index 53c258b34521..dc1671649662 100644
  static void
  vmxnet3_prepare_tso(struct sk_buff *skb,
  		    struct vmxnet3_tx_ctx *ctx)
-@@ -991,6 +1020,7 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+@@ -987,6 +1016,7 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
  	/* Use temporary descriptor to avoid touching bits multiple times */
  	union Vmxnet3_GenericDesc tempTxDesc;
  #endif
@@ -179,7 +179,7 @@ index 53c258b34521..dc1671649662 100644
  
  	count = txd_estimate(skb);
  
-@@ -1007,7 +1037,11 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+@@ -1003,7 +1033,11 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
  			}
  			tq->stats.copy_skb_header++;
  		}
@@ -192,7 +192,7 @@ index 53c258b34521..dc1671649662 100644
  	} else {
  		if (unlikely(count > VMXNET3_MAX_TXD_PER_PKT)) {
  
-@@ -1030,14 +1064,14 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+@@ -1026,14 +1060,14 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
  		BUG_ON(ret <= 0 && ctx.copy_size != 0);
  		/* hdrs parsed, check against other limits */
  		if (ctx.mss) {
@@ -209,7 +209,7 @@ index 53c258b34521..dc1671649662 100644
  					     skb->csum_offset >
  					     VMXNET3_MAX_CSUM_OFFSET)) {
  					tq->stats.drop_oversized_hdr++;
-@@ -1084,16 +1118,34 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+@@ -1080,16 +1114,34 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
  #endif
  	tx_num_deferred = le32_to_cpu(tq->shared->txNumDeferred);
  	if (ctx.mss) {
@@ -251,7 +251,7 @@ index 53c258b34521..dc1671649662 100644
  		} else {
  			gdesc->txd.om = 0;
  			gdesc->txd.msscof = 0;
-@@ -1172,13 +1224,21 @@ vmxnet3_rx_csum(struct vmxnet3_adapter *adapter,
+@@ -1168,13 +1220,21 @@ vmxnet3_rx_csum(struct vmxnet3_adapter *adapter,
  		    (le32_to_cpu(gdesc->dword[3]) &
  		     VMXNET3_RCD_CSUM_OK) == VMXNET3_RCD_CSUM_OK) {
  			skb->ip_summed = CHECKSUM_UNNECESSARY;
@@ -277,7 +277,7 @@ index 53c258b34521..dc1671649662 100644
  		} else {
  			if (gdesc->rcd.csum) {
  				skb->csum = htons(gdesc->rcd.csum);
-@@ -2433,6 +2493,10 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
+@@ -2429,6 +2489,10 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
  	if (adapter->netdev->features & NETIF_F_HW_VLAN_CTAG_RX)
  		devRead->misc.uptFeatures |= UPT1_F_RXVLAN;
  
@@ -288,7 +288,7 @@ index 53c258b34521..dc1671649662 100644
  	devRead->misc.mtu = cpu_to_le32(adapter->netdev->mtu);
  	devRead->misc.queueDescPA = cpu_to_le64(adapter->queue_desc_pa);
  	devRead->misc.queueDescLen = cpu_to_le32(
-@@ -2565,8 +2629,8 @@ vmxnet3_init_rssfields(struct vmxnet3_adapter *adapter)
+@@ -2561,8 +2625,8 @@ vmxnet3_init_rssfields(struct vmxnet3_adapter *adapter)
  	union Vmxnet3_CmdInfo *cmdInfo = &shared->cu.cmdInfo;
  	unsigned long flags;
  
@@ -299,7 +299,7 @@ index 53c258b34521..dc1671649662 100644
  
  	spin_lock_irqsave(&adapter->cmd_lock, flags);
  
-@@ -3077,6 +3141,18 @@ vmxnet3_declare_features(struct vmxnet3_adapter *adapter, bool dma64)
+@@ -3073,6 +3137,18 @@ vmxnet3_declare_features(struct vmxnet3_adapter *adapter, bool dma64)
  		NETIF_F_HW_CSUM | NETIF_F_HW_VLAN_CTAG_TX |
  		NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_TSO | NETIF_F_TSO6 |
  		NETIF_F_LRO;
@@ -319,11 +319,11 @@ index 53c258b34521..dc1671649662 100644
  		netdev->hw_features |= NETIF_F_HIGHDMA;
  	netdev->vlan_features = netdev->hw_features &
 diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-index 9fe9143bb6d2..eb4b09310db2 100644
+index 57460cf1967f..bfdda0f34b97 100644
 --- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
 +++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-@@ -257,14 +257,43 @@ vmxnet3_get_strings(struct net_device *netdev, u32 stringset, u8 *buf)
- 	}
+@@ -267,14 +267,43 @@ netdev_features_t vmxnet3_fix_features(struct net_device *netdev,
+ 	return features;
  }
  
 +static void vmxnet3_enable_encap_offloads(struct net_device *netdev)
@@ -367,7 +367,7 @@ index 9fe9143bb6d2..eb4b09310db2 100644
  		if (features & NETIF_F_RXCSUM)
  			adapter->shared->devRead.misc.uptFeatures |=
  			UPT1_F_RXCSUM;
-@@ -287,6 +316,17 @@ int vmxnet3_set_features(struct net_device *netdev, netdev_features_t features)
+@@ -297,6 +326,17 @@ int vmxnet3_set_features(struct net_device *netdev, netdev_features_t features)
  			adapter->shared->devRead.misc.uptFeatures &=
  			~UPT1_F_RXVLAN;
  
@@ -386,7 +386,7 @@ index 9fe9143bb6d2..eb4b09310db2 100644
  		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
  				       VMXNET3_CMD_UPDATE_FEATURE);
 diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index db0f5232ae3e..758ff7194f16 100644
+index d52ccc3eeba2..86db809c7592 100644
 --- a/drivers/net/vmxnet3/vmxnet3_int.h
 +++ b/drivers/net/vmxnet3/vmxnet3_int.h
 @@ -219,10 +219,16 @@ struct vmxnet3_tx_ctx {

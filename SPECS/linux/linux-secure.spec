@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.148
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -78,6 +78,7 @@ Patch55:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch56:        0007-btrfs-tree-checker-Verify-inode-item.patch
 
 # Upgrade vmxnet3 driver to version 4
+Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
 Patch82:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
 Patch83:        0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
@@ -85,6 +86,7 @@ Patch84:        0004-vmxnet3-update-to-version-4.patch
 Patch85:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
 Patch86:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
 Patch87:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
+Patch88:        0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -201,6 +203,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch55 -p1
 %patch56 -p1
 
+%patch80 -p1
 %patch81 -p1
 %patch82 -p1
 %patch83 -p1
@@ -208,6 +211,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch85 -p1
 %patch86 -p1
 %patch87 -p1
+%patch88 -p1
 
 %patch98 -p1
 pushd ..
@@ -375,6 +379,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Oct 06 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.148-2
+-   Fix IPIP encapsulation issue in vmxnet3 driver.
 *   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-1
 -   Update to version 4.19.148
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.19.145-4

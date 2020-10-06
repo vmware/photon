@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.148
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -73,6 +73,7 @@ Patch56:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch57:        0007-btrfs-tree-checker-Verify-inode-item.patch
 
 # Upgrade vmxnet3 driver to version 4
+Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
 Patch82:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
 Patch83:        0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
@@ -80,6 +81,7 @@ Patch84:        0004-vmxnet3-update-to-version-4.patch
 Patch85:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
 Patch86:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
 Patch87:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
+Patch88:        0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 Patch201:        0001-ARM-at91-add-TCB-registers-definitions.patch
@@ -495,6 +497,7 @@ The Linux package contains the Linux kernel doc files
 %patch56 -p1
 %patch57 -p1
 
+%patch80 -p1
 %patch81 -p1
 %patch82 -p1
 %patch83 -p1
@@ -502,6 +505,7 @@ The Linux package contains the Linux kernel doc files
 %patch85 -p1
 %patch86 -p1
 %patch87 -p1
+%patch88 -p1
 
 %patch201 -p1
 %patch202 -p1
@@ -993,6 +997,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Oct 06 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.148-3
+-   Fix IPIP encapsulation issue in vmxnet3 driver.
 *   Thu Oct 01 2020 Bo Gan <ganb@vmware.com> 4.19.148-2
 -   Revert d254087 (clockevents: Stop unused clockevent devices)
 -   Solve cyclictest regression introduced in 4.1
