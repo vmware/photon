@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.237
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -101,6 +101,8 @@ Patch59:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 
 # Fix for CVE-2020-14390
 Patch63:        0001-tty-vt-consw-con_scrolldelta-cleanup.patch
+
+Patch64:        0001-xen-events-don-t-use-chip_data-for-legacy-IRQs.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -247,6 +249,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch58 -p1
 %patch59 -p1
 %patch63 -p1
+%patch64 -p1
 %patch67 -p1
 %patch68 -p1
 %patch69 -p1
@@ -414,6 +417,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 4.4.237-2
+-   Fix mp_irqdomain_activate crash
 *   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.4.237-1
 -   Update to version 4.4.237
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.4.234-5
