@@ -1,6 +1,6 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.57
+Version:        8.5.58
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -9,11 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1    apache-tomcat=84f55448b0e2a770434709d076bf2e45cfcb8f14
+%define sha1    apache-tomcat=2fe475a144c72446c3355dbc2dda738214de1c47
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=17d48822f348f45a04a8a9ef349fa5dd6aca4e2e
+%define sha1    base=211ee3dde29adfc30c5f0a93fcbc14c40142ede4
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
+Patch1:         apache-tomcat-8.5.58-fix-build.patch
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
 BuildRequires:  apache-ant
@@ -38,6 +39,7 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 %setup -D -b 1 -n %{name}-%{version}-src
 %patch0 -p1
+%patch1 -p1
 
 %build
 ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
@@ -101,6 +103,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Wed Oct 07 2020 Dweep Advani <dadvani@vmware.com> 8.5.58-1
+-   Version Bump to 8.5.58
 *   Wed Aug 05 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.57-1
 -   Version Bump to 8.5.57
 *   Wed Jul 08 2020 Dweep Advani <dadvani@vmware.com> 8.5.51-3
