@@ -1,9 +1,9 @@
-%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.8.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -23,18 +23,19 @@ Patch6:         CVE-2020-10684.patch
 
 BuildArch:      noarch
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-pip
 
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-jinja2
-Requires:       PyYAML
-Requires:       python-xml
-Requires:       paramiko
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-jinja2
+Requires:       python3-PyYAML
+Requires:       python3-xml
+Requires:       python3-paramiko
 %if %{with_check}
-Requires:       python2-devel
+Requires:       python3-devel
 %endif
 
 %description
@@ -52,12 +53,11 @@ Ansible is a radically simple IT automation system. It handles configuration-man
 %patch6 -p1
 
 %build
-python2 setup.py build
+python3 setup.py build
 
 %install
 %{__rm} -rf %{buildroot}
-python2 setup.py install -O1 --skip-build \
-    --root "%{buildroot}"
+python3 setup.py install -O1 --skip-build --root "%{buildroot}"
 
 %check
 python3 setup.py test
@@ -65,9 +65,11 @@ python3 setup.py test
 %files
 %defattr(-, root, root)
 %{_bindir}/*
-%{python2_sitelib}/*
+%{python3_sitelib}/*
 
 %changelog
+*   Wed Oct 07 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.10-3
+-   Removed python2 dependency
 *   Mon Apr 20 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.10-2
 -   Fix CVE-2020-1733, CVE-2020-1739
 *   Fri Apr 03 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.10-1
