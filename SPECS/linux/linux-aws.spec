@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.148
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -72,7 +72,8 @@ Patch50:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
 Patch51:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch52:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch53:        0007-btrfs-tree-checker-Verify-inode-item.patch
-
+# Fix mp_irqdomain_activate crash
+Patch54:        0001-xen-events-don-t-use-chip_data-for-legacy-IRQs.patch
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
@@ -225,6 +226,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch51 -p1
 %patch52 -p1
 %patch53 -p1
+%patch54 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -456,6 +458,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-3
+-   Fix mp_irqdomain_activate crash
 *   Tue Oct 06 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.148-2
 -   Fix IPIP encapsulation issue in vmxnet3 driver.
 *   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-1
