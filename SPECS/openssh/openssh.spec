@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.4p1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -59,7 +59,8 @@ tar xf %{SOURCE1} --no-same-owner
     --with-pam \
     --with-maintype=man \
     --enable-strip=no \
-    --with-kerberos5=/usr
+    --with-kerberos5=/usr \
+    --with-sandbox=rlimit
 make
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -172,6 +173,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+*   Wed Oct 07 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.4p1-2
+-   Fix ssh issue
 *   Mon Oct 05 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.4p1-1
 -   Update to 8.4p1
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.9p1-2
