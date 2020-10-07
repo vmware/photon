@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.9.0
-Release:        rc7.1%{?kat_build:.kat}%{?dist}
+Release:        rc7.2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution:   Photon
 
 #TODO: remove rcN after 5.9 goes out of rc
 %define lnx_rc_ver 5.9.0-rc7
-%define lnx_rc_local_ver .1%{?kat_build:.kat}%{?dist}
+%define lnx_rc_local_ver .2%{?kat_build:.kat}%{?dist}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{lnx_rc_ver}.tar.xz
 %define sha1 linux=b8809bb16a9591303ac2bb84e19a597e26b69c4c
@@ -61,6 +61,7 @@ Patch56:        05-pv-ops-clocksource.patch
 Patch58:        07-vmware-only.patch
 Patch59:        initramfs-support-for-page-aligned-format-newca.patch
 Patch60:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
+Patch61:        0001-fs-VTAR-archive-to-TPMFS-extractor.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -241,6 +242,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch58 -p1
 %patch59 -p1
 %patch60 -p1
+%patch61 -p1
 
 # CVE
 %patch100 -p1
@@ -458,6 +460,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Oct 08 2020 Ankit Jain <ankitja@vmware.com> 5.9.0-rc7.2
+-   Added vtar Support.
+-   Disabled by default, Enable CONFIG_VTAR as builtin only
 *   Wed Sep 30 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-rc7.1
 -   Update to version 5.9.0-rc7
 *   Mon Sep 21 2020 Bo Gan <ganb@vmware.com> 5.9.0-rc4.1
