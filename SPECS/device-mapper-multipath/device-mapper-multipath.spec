@@ -1,15 +1,20 @@
 Summary:        Provide tools to manage multipath devices
 Name:           device-mapper-multipath
-Version:        0.8.3
-Release:        2%{?dist}
+Version:        0.8.4
+Release:        1%{?dist}
 License:        GPL+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:            http://christophe.varoqui.free.fr/
-Source0:        multipath-tools-6c3bd36.tar.gz
-%define         git_commit_short 6c3bd36
-%define         sha1 multipath-tools=474b8f09f96ae7d96bbfbaf60bb2f2864ef14517
+URL:            https://github.com/bmarzins/rh-multipath-tools
+
+Source0:        rh-multipath-tools-0.8.4.tar.gz
+%define         sha1 rh-multipath-tools=15e4c2f78b401a15784969878b1a3cc3ac8e9e90
+
+Patch0:    0001-fix-boolean-value-with-json-c-0.14.patch
+Patch1:    0002-make.patch
+Patch2:    fix-uninit-warning.patch
+
 BuildRequires:  userspace-rcu-devel
 BuildRequires:  libaio-devel
 BuildRequires:  device-mapper-devel
@@ -17,6 +22,7 @@ BuildRequires:  readline-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  systemd-devel
 BuildRequires:  json-c-devel
+
 Requires:       userspace-rcu
 Requires:       libaio
 Requires:       device-mapper
@@ -43,11 +49,9 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications
 
 %prep
-%setup -qn multipath-tools-%{git_commit_short}
+%autosetup -n rh-multipath-tools-%{version} -p1
 
 %build
-# json_object_object_get_ex return value is changed in json-c upgrade to 0.15
-sed -i 's/(json_object_object_get_ex(j_obj, key, \&j_obj_tmp) != TRUE)/(!json_object_object_get_ex(j_obj, key, \&j_obj_tmp))/g' ./libdmmp/libdmmp_private.h
 make %{?_smp_mflags}
 
 %install
@@ -97,10 +101,12 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
-*   Tue Aug 18 2020 Michelle Wang<michellew@vmware.com> 0.8.3-2
+*   Wed Oct 07 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.8.4-1
+-   Upgrade to version 0.8.4
+*   Tue Aug 18 2020 Michelle Wang <michellew@vmware.com> 0.8.3-2
 -   Fix how to call json_object_object_get_ex in ./libdmmp/libdmmp_private.h
 -   due to json-c 0.15 update json_object_object_get_ex return value
-*   Wed Apr 08 2020 Susant Sahani<ssahani@vmware.com> 0.8.3-1
+*   Wed Apr 08 2020 Susant Sahani <ssahani@vmware.com> 0.8.3-1
 -   Update to 0.8.3
 *   Thu Dec 06 2018 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 0.7.3-3
 -   Make device-mapper a runtime dependency of kpartx.
@@ -116,4 +122,3 @@ rm -rf %{buildroot}
 -   GA - Bump release of all rpms
 *   Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 0.5.0-1
 -   Initial build. First version
-
