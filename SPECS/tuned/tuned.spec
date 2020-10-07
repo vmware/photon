@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
 Version:        2.14.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -13,7 +13,6 @@ Patch1:         bootloader-plugin-support-for-photon.patch
 Patch2:         tuned-fix-bug-in-sysctl-verify.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildArch:      aarch64
 BuildRequires:  python3-devel
 BuildRequires:  systemd-devel
 Requires:       dbus-python3
@@ -40,6 +39,7 @@ BuildRequires:  python3-decorator
 BuildRequires:  dbus-python3
 BuildRequires:  python3-pygobject
 %endif
+BuildArch:      noarch
 
 %description
 The tuned package contains a daemon that tunes system settings dynamically.
@@ -143,6 +143,8 @@ make test
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Fri Oct 09 2020 svasamsetty <svasamsetty@vmware.com> 2.14.0-3
+-   Re-enable tuned as it was disabled due to openssl 1.1.1
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.14.0-2
 -   Bootloader plugin support for Photon
 -   sysctl plugin verify bug fix
