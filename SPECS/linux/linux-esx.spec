@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.148
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -122,6 +122,7 @@ Patch202:  	0003-vdfs-9p-Add-test-infra-to-test-9p-recovery-logic.patch
 Patch203:	0004-vdfs-9p-Handle-failure-during-recovery.patch
 Patch204:	0005-vdfs-9p-Adding-claim-tags-support-in-9p.patch
 Patch205:	0006-vdfs-9p-xattrcreate-recovery.patch
+Patch206:	0007-vdfs-9p-Fix-recovery-logic-and-cleanup-tags.patch
 
 # VDFS 9p changes
 Patch225:      0001-9p-fscache-Don-t-use-writeback-fid-for-cache-when-en.patch
@@ -260,6 +261,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch203 -p1
 %patch204 -p1
 %patch205 -p1
+%patch206 -p1
+
 %patch225 -p1
 %patch250 -p1
 %patch251 -p1
@@ -404,6 +407,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Oct 07 2020 Sriram Patil <sriramp@vmware.com> 4.19.148-5
+-   linux-esx: 9p: Fix recovery logic and cleanup tags when unmounting
 *   Tue Oct 06 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.148-4
 -   Fix IPIP encapsulation issue in vmxnet3 driver.
 *   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-3

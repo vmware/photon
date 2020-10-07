@@ -1,0 +1,569 @@
+From 1e93f70b919ef4ea66e752ab118e9223f6d14a6c Mon Sep 17 00:00:00 2001
+From: Sriram Patil <sriramp@vmware.com>
+Date: Fri, 25 Sep 2020 15:24:08 -0700
+Subject: [PATCH] linux-esx: 9p: Fix recovery logic and cleanup tags when
+ unmounting
+
+We maintain a list of recovery descriptors to track the operations that need to
+recover fids or locks in case of server crash. However, there is a gap between
+when the op completes and when it is added to the recovery list. If server
+restarts during this time, then the recovery thread will immediately start.
+
+Because some of the operations have completed but not yet added the descriptor
+in the recovery list, we may miss some recovery ops which will result in
+disruptions when those fid or locks are used by next set of file system
+operations.
+
+Adding a new reference count for the recoverable inflight requests to keep track
+of the requests which are inflight but not yet added to recovery list. The
+recovery thread will always wait for the refcount to be zero before starting
+
+For the claimtags request we keep a dummy request in the tag tree which should
+be ignored when cleaning up the tags before unmount. Removing all the dummy tags
+as part of tag cleanup before processing the valid in-use tags.
+---
+ include/net/9p/client.h |  25 +++++++++
+ net/9p/client.c         | 141 ++++++++++++++++++++++++++++++++--------------
+ net/9p/recovery.c       | 145 ++++++++++++++++++++++++++++++++++--------------
+ net/9p/recovery.h       |   4 +-
+ 4 files changed, 229 insertions(+), 86 deletions(-)
+
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index c3e5b72..19a1f66 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -135,6 +135,7 @@ enum recovery_state {
+  * @recovery_thread: Thread performing recovery.
+  * @rstate: State of the recovery.
+  * @recovery_list: List for maintaining shadow state for 9p operations.
++ * @recov_inflight_ref: refcount for recoverable inflight requests
+  * @testconn: Connection information for testing recovery logic
+  * @testport: Puppet master port for testing recovery logic
+  * @testip: Puppet master ip for testing recovery logic
+@@ -182,6 +183,8 @@ struct p9_client {
+ 	struct task_struct *recovery_thread;
+ 	int rstate;
+ 	struct list_head recovery_list;
++	int recov_inflight_ref;
++
+ 	void *testconn;
+ 	u16 testport;
+ 	char *testip;
+@@ -316,4 +319,26 @@ struct p9_req_t *
+ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...);
+ int p9_tag_remove(struct p9_client *c, struct p9_req_t *r);
+ int p9_client_version(struct p9_client *c);
++
++static inline void p9_recov_ops_inflight_get(struct p9_client *clnt)
++{
++	WARN_ON(!spin_is_locked(&clnt->recovery_lock));
++	WARN_ON(clnt->recovery_thread == current);
++	p9_debug(P9_DEBUG_9P, "INFLIGHT REF GET: %u", clnt->recov_inflight_ref);
++	clnt->recov_inflight_ref++;
++}
++
++static inline void p9_recov_ops_inflight_put(struct p9_client *clnt)
++{
++	WARN_ON(!spin_is_locked(&clnt->recovery_lock));
++	WARN_ON(clnt->recovery_thread == current);
++	p9_debug(P9_DEBUG_9P, "INFLIGHT REF PUT: %u", clnt->recov_inflight_ref);
++	clnt->recov_inflight_ref--;
++	WARN_ON(clnt->recov_inflight_ref < 0);
++
++	if (clnt->recov_inflight_ref == 0) {
++		wake_up(&clnt->recovery_queue);
++	}
++}
++
+ #endif /* NET_9P_CLIENT_H */
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 02d2ad3..04a630e 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -542,6 +542,23 @@ static void p9_tag_cleanup(struct p9_client *c)
+ 	struct p9_req_t *req;
+ 	int id;
+ 
++	/* We need to cleanup the dummy requests kept for claimtags before
++	 * calling p9_tag_remove
++	 */
++	if (c->recovery_enabled) {
++		unsigned long flags;
++
++		rcu_read_lock();
++		idr_for_each_entry(&c->reqs, req, id) {
++			if(PTR_ERR(req) == -ENOENT) {
++				spin_lock_irqsave(&c->recovery_lock, flags);
++				idr_remove(&c->reqs, id);
++				spin_unlock_irqrestore(&c->recovery_lock, flags);
++			}
++		}
++		rcu_read_unlock();
++	}
++
+ 	rcu_read_lock();
+ 	idr_for_each_entry(&c->reqs, req, id) {
+ 		pr_info("Tag %d still in use\n", id);
+@@ -823,34 +840,57 @@ static int p9_client_flush(struct p9_client *c, struct p9_req_t *oldreq)
+ /**
+  * p9_client_wait_for_recovery -- Checks for recovery status and waits for recovery to complete.
+  * @c: v9fs client
++ * @op: 9P request op
++ * @is_retry: is this retry of same operation
+  *
+  * return recovery status after wait is completed..
+  */
+ 
+ static int
+-p9_client_wait_for_recovery(struct p9_client *c)
++p9_client_wait_for_recovery(struct p9_client *c, int8_t op, bool is_retry)
+ {
+-      unsigned long flags;
+-      int recovery_state;
++	unsigned long flags;
++	int recovery_state;
++
++	spin_lock_irqsave(&c->recovery_lock, flags);
++
++	/* If this is a retry then the refcount for this request was already
++	 * incremented, so we need to decrement it before waiting for recovery
++	 * otherwise refcount will not reach zero and recovery thread will wait
++	 * forever.
++	 */
++	if (is_retry) {
++		p9_recov_ops_inflight_put(c);
++	}
+ 
+-      spin_lock_irqsave(&c->recovery_lock, flags);
+-      recovery_state = c->rstate;
+-      if (recovery_state == RECOVERY_PENDING && c->recovery_thread != current) {
+-         int err;
+-         // wait for recovery to complete
+-         p9_debug(P9_DEBUG_MUX, "Wait for recovery state, %d \n", c->rstate);
++	recovery_state = c->rstate;
++	if (recovery_state == RECOVERY_PENDING &&
++	    c->recovery_thread != current) {
++		int err;
++		// wait for recovery to complete
++		p9_debug(P9_DEBUG_MUX, "Wait for recovery state, %d \n", c->rstate);
+ again:
+-         err = wait_event_interruptible_lock_irq(c->recovery_queue,
+-                                                 c->rstate != RECOVERY_PENDING,
+-                                                 c->recovery_lock);
+-         if (err == -ERESTARTSYS) {
+-               goto again;
+-         }
+-         recovery_state = c->rstate;
+-      }
+-      spin_unlock_irqrestore(&c->recovery_lock, flags);
++		err = wait_event_interruptible_lock_irq(c->recovery_queue,
++							c->rstate != RECOVERY_PENDING,
++							c->recovery_lock);
++		if (err == -ERESTARTSYS)
++			goto again;
++		recovery_state = c->rstate;
++	}
+ 
+-      return recovery_state;
++	/* We need to increment the refcount even if recovery fails because it
++	 * is decremented later in p9_client_rpc in the error handling code.
++	 * There is no way to deterministically figure out whether the error was
++	 * encountered because recovery failed or p9_client_prepare_req failed.
++	 * So, we increment the refcount even if recovery fails so that we can
++	 * decrement the refcount without worrying about the cause of the error.
++	 */
++	if (c->recovery_thread != current && p9_op_needs_refcounting(op)) {
++		p9_recov_ops_inflight_get(c);
++	}
++
++	spin_unlock_irqrestore(&c->recovery_lock, flags);
++	return recovery_state;
+ }
+ 
+ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
+@@ -863,11 +903,12 @@ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
+ 	p9_debug(P9_DEBUG_MUX, "client %p op %d\n", c, type);
+ 
+         if (unlikely(c->recovery_enabled)) {
+-               int recovery_state = p9_client_wait_for_recovery(c);
+-               if (recovery_state == RECOVERY_FAILED) {
+-                     return ERR_PTR(-EIO);
+-               }
+-        }
++		int recovery_state = p9_client_wait_for_recovery(c, type,
++					false /*is_retry*/);
++		if (recovery_state == RECOVERY_FAILED) {
++			return ERR_PTR(-EIO);
++		}
++	}
+ 
+ 	/* we allow for any status other than disconnected */
+ 	if (c->status == Disconnected)
+@@ -916,8 +957,10 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
+ 	va_start(ap, fmt);
+ 	req = p9_client_prepare_req(c, type, c->msize, fmt, ap);
+ 	va_end(ap);
+-	if (IS_ERR(req))
+-		return req;
++	if (IS_ERR(req)) {
++		err = (int) PTR_ERR(req);
++		goto reterr;
++	}
+ 
+ 	if (signal_pending(current)) {
+ 		sigpending = 1;
+@@ -952,22 +995,20 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
+ 	}
+ 
+ 	if (req->status == REQ_STATUS_ERROR) {
+-
+ 		if (c->recovery_enabled) {
+ 	                int state;
+ 
+ 			/* recovery failed, retrying */
+ 			if (c->retry_recovery && c->recovery_thread == current) {
+ 				pr_info("%s: recovery failed,retrying.\n", c->aname);
+-
+ 				err = -EREMOTEIO;
+ 				goto reterr;
+ 			}
+ 
+-		        state = p9_client_wait_for_recovery(c);
++			state = p9_client_wait_for_recovery(c, type, true /*is_retry*/);
+ 			if (state == RECOVERY_COMPLETE) {
+-	                     p9_debug(P9_DEBUG_MUX, "Retrying request after recovery\n");
+-		             goto retry;
++				p9_debug(P9_DEBUG_MUX, "Retrying request after recovery");
++				goto retry;
+ 			}
+ 		}
+ 
+@@ -1000,7 +1041,20 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
+ 	if (!err)
+ 		return req;
+ reterr:
+-	p9_tag_remove(c, req);
++	/* We reach here only if there was some error while sending request or
++	 * we received RLERROR from the server. So, just decrement the refcount
++	 * of inflight requests
++	 */
++	if (c->recovery_enabled && p9_op_needs_refcounting(type) &&
++	    c->recovery_thread != current) {
++		spin_lock_irqsave(&c->recovery_lock, flags);
++		p9_recov_ops_inflight_put(c);
++		spin_unlock_irqrestore(&c->recovery_lock, flags);
++	}
++
++	if (!IS_ERR(req)) {
++		p9_tag_remove(c, req);
++	}
+ 	return ERR_PTR(safe_errno(err));
+ }
+ 
+@@ -1236,9 +1290,10 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 	client_id = utsname()->nodename;
+ 	memcpy(clnt->name, client_id, strlen(client_id) + 1);
+ 
+-        spin_lock_init(&clnt->recovery_lock);
+-        init_waitqueue_head(&clnt->recovery_queue);
+-        INIT_LIST_HEAD(&clnt->recovery_list);
++	spin_lock_init(&clnt->recovery_lock);
++	init_waitqueue_head(&clnt->recovery_queue);
++	INIT_LIST_HEAD(&clnt->recovery_list);
++	clnt->recov_inflight_ref = 0;
+ 	spin_lock_init(&clnt->lock);
+ 	idr_init(&clnt->fids);
+ 	idr_init(&clnt->reqs);
+@@ -1343,11 +1398,10 @@ void p9_client_destroy(struct p9_client *clnt)
+ 
+ 	kfree(clnt->aname);
+ 	kfree(clnt->testip);
+-        kfree(clnt->options);
+-        kfree(clnt->dev_name);
+-
++	kfree(clnt->options);
++	kfree(clnt->dev_name);
+ 
+-        p9_cleanup_recovery_state(clnt);
++	p9_cleanup_recovery_state(clnt);
+ 
+ 	kmem_cache_destroy(clnt->fcall_cache);
+ 	kfree(clnt);
+@@ -1381,9 +1435,10 @@ int p9_client_run_recovery(struct p9_client *clnt)
+ 	while (num_retries < NUM_RECONNECT_RETRIES) {
+ 		err = clnt->trans_mod->create(clnt, clnt->dev_name, clnt->options);
+ 
+-		if (err == 0)
++		if (err == 0) {
+ 			pr_info("%s: reconnect successful\n", clnt->aname);
+ 			break;
++		}
+ 
+ 		num_retries++;
+ 		msleep(RECONNECT_SLEEP_IN_MS);
+@@ -1835,8 +1890,10 @@ int p9_client_clunk(struct p9_fid *fid)
+ 		if (retries++ == 0)
+ 			goto again;
+ 	} else {
+-                if (clnt->recovery_enabled)
+-                        p9_update_tclunk_desc(clnt, fid);
++		if (clnt->recovery_enabled) {
++			p9_update_tclunk_desc(clnt, fid,
++				(err == 0) /*clunk_succeeded*/);
++		}
+ 		p9_fid_destroy(fid);
+         }
+ 
+diff --git a/net/9p/recovery.c b/net/9p/recovery.c
+index 4f3b44f..e6982ba 100644
+--- a/net/9p/recovery.c
++++ b/net/9p/recovery.c
+@@ -170,18 +170,22 @@ p9_recovery_insert_list(struct p9_client *client,
+ 
+ 	spin_lock_irqsave(&client->recovery_lock, flags);
+ 	list_add_tail(&desc->recovery_link, &client->recovery_list);
++	p9_recov_ops_inflight_put(client);
+ 	spin_unlock_irqrestore(&client->recovery_lock, flags);
+ }
+ 
+ 
+ static inline void
+-p9_recovery_remove_list(struct p9_client *client,
+-                        p9_recovery_desc *desc)
++p9_recovery_remove_list(struct p9_client *client, p9_recovery_desc *desc,
++			bool unref)
+ {
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&client->recovery_lock, flags);
+ 	list_del(&desc->recovery_link);
++	if (unref) {
++		p9_recov_ops_inflight_put(client);
++	}
+ 	spin_unlock_irqrestore(&client->recovery_lock, flags);
+ }
+ 
+@@ -268,7 +272,7 @@ p9_replace_twalk_desc(struct p9_client *client,
+ 	BUG_ON(desc->op != P9_TWALKX);
+ 	BUG_ON(fid->fid != ofid->fid);
+ 
+-	p9_recovery_remove_list(client, desc);
++	p9_recovery_remove_list(client, desc, false /*unref*/);
+ 
+ 	p9_globalid_deserialize(globalid, &desc->walk->globalid);
+ 	fid->recovery_desc = desc;
+@@ -354,19 +358,18 @@ int p9_update_tlcreatex_desc(struct p9_client *client,
+ }
+ 
+ 
+-int p9_update_tclunk_desc(struct p9_client *client,
+-                          struct p9_fid *fid)
++int p9_update_tclunk_desc(struct p9_client *client, struct p9_fid *fid,
++                          bool clunk_succeeded)
+ {
+ 	p9_recovery_desc *rfid = (p9_recovery_desc *)fid->recovery_desc;
+ 
+ 	BUG_ON(rfid == NULL);
+ 
+-	p9_debug(P9_DEBUG_9P, ">>> TCLUNK fid %d \n", fid->fid);
++	p9_debug(P9_DEBUG_9P, ">>> TCLUNK recov fid %u \n", fid->fid);
+ 
+ 	fid->recovery_desc = NULL;
+-	p9_recovery_remove_list(client, rfid);
++	p9_recovery_remove_list(client, rfid, clunk_succeeded /*unref*/);
+ 	p9_recovery_free_desc(rfid);
+-
+ 	return 0;
+ }
+ 
+@@ -825,6 +828,36 @@ p9_recover_file_locks(struct p9_client *clnt, p9_recovery_desc *desc)
+         return 0;
+ }
+ 
++/**
++ * p9_recovery_wait_for_inflight - waits for inflight ops that need recovery
++ * @c: v9fs client
++ */
++
++static void
++p9_recovery_wait_for_inflight(struct p9_client *c)
++{
++	unsigned long flags;
++	int recovery_state;
++
++	spin_lock_irqsave(&c->recovery_lock, flags);
++	recovery_state = c->rstate;
++	if (recovery_state == RECOVERY_PENDING) {
++		int err;
++
++		p9_debug(P9_DEBUG_9P, "Wait for inflight ops, %u \n",
++			 c->recov_inflight_ref);
++again:
++		/* Wait until c->recov_inflight_ref == 0 */
++		err = wait_event_interruptible_lock_irq(c->recovery_queue,
++			c->recov_inflight_ref == 0, c->recovery_lock);
++		if (err == -ERESTARTSYS) {
++			goto again;
++		}
++	}
++
++	spin_unlock_irqrestore(&c->recovery_lock, flags);
++}
++
+ int
+ p9_replay_shadow(struct p9_client *client)
+ {
+@@ -840,38 +873,40 @@ p9_replay_shadow(struct p9_client *client)
+ 		return ret;
+ 	}
+ 
+-       /* re-check if server has recovery enabled */
+-        if (!client->recovery_enabled) {
+-                pr_err("%s: Server doesn't support recovery, protocol %d. "
+-                        "bail out recovery\n",
+-                       client->aname, client->proto_version);
+-                return -EINVAL;
+-        }
+-        list_for_each_entry(desc, &client->recovery_list, recovery_link) {
+-
+-                switch (desc->op) {
+-                case P9_TATTACH:
+-                        ret = p9_recovery_handle_attach(client, desc);
+-                        if (ret) {
+-                                pr_info("attach request failed \n");
+-                                return ret;
+-                        }
+-                        break;
+-
+-                case P9_TWALKX:
+-                        ret = p9_recovery_handle_walk(client, desc);
+-                        if (ret) {
+-                                pr_info("Failed to handle walk\n");
+-                                return ret;
+-                        }
+-
+-                        ret = p9_recover_file_locks(client, desc);
+-                        if (ret) {
+-                                pr_info("failed to recover state\n");
+-                                return ret;
+-                        }
+-                        break;
++	/* re-check if server has recovery enabled */
++	if (!client->recovery_enabled) {
++		pr_err("%s: Server doesn't support recovery, protocol %d. "
++			"bail out recovery\n",
++		       client->aname, client->proto_version);
++		return -EINVAL;
++	}
+ 
++	p9_recovery_wait_for_inflight(client);
++
++	list_for_each_entry(desc, &client->recovery_list, recovery_link) {
++
++		switch (desc->op) {
++		case P9_TATTACH:
++			ret = p9_recovery_handle_attach(client, desc);
++			if (ret) {
++				pr_info("attach request failed \n");
++				return ret;
++			}
++			break;
++
++		case P9_TWALKX:
++			ret = p9_recovery_handle_walk(client, desc);
++			if (ret) {
++				pr_info("Failed to handle walk\n");
++				return ret;
++			}
++
++			ret = p9_recover_file_locks(client, desc);
++			if (ret) {
++				pr_info("failed to recover state\n");
++				return ret;
++			}
++			break;
+                 case P9_TXATTRWALK:
+                         ret = p9_recovery_handle_xattrwalk(client, desc);
+                         if (ret) {
+@@ -1115,30 +1150,54 @@ p9_client_claim_tags(void *data)
+ 	u16 i;
+ 	struct p9_tclaimtags ct = {0, &tags[0]};
+ 	struct p9_req_t *req;
++	int err = 0;
+ 
+-	spin_lock_irqsave(&clnt->lock, flags);
++	rcu_read_lock();
+ 	idr_for_each(&clnt->reqs, prepare_tclaimtags, &ct);
+-	spin_unlock_irqrestore(&clnt->lock, flags);
++	rcu_read_unlock();
+ 
+ 	p9_debug(P9_DEBUG_9P, ">>> TCLAIMTAGS: claiming %u tags", ct.ntags);
+ 
+ 	req = p9_client_rpc(clnt, P9_TCLAIMTAGS, "W", ct.ntags, &tags[0]);
+ 	if (IS_ERR(req)) {
+ 		pr_err("CLAIMTAGS: failed with error %ld", PTR_ERR(req));
+-		return PTR_ERR(req);
++		err = PTR_ERR(req);
++		goto out;
+ 	}
+ 
+ 	/* The response header is already read. Since RCLAIMTAGS does not send
+ 	 * any payload, we don't have to read the anything */
+ 
+ 	spin_lock_irqsave(&clnt->lock, flags);
++
+ 	for (i = 0; i < ct.ntags; i++)
+ 		idr_remove(&clnt->reqs, tags[i]);
+ 
+ 	clnt->claim_tags_in_progress = false;
+ 	clnt->n_unclaimed_tags -= ct.ntags;
++
+ 	spin_unlock_irqrestore(&clnt->lock, flags);
+ 
++out:
++	if (err != 0) {
++		spin_lock_irqsave(&clnt->lock, flags);
++		clnt->claim_tags_in_progress = false;
++		spin_unlock_irqrestore(&clnt->lock, flags);
++	}
++
+ 	p9_debug(P9_DEBUG_9P, "<<< RCLAIMTAGS: claimed %u tags", ct.ntags);
+-	return 0;
++	return err;
++}
++
++/**
++ * p9_op_needs_refcounting - check if this op needs refcounting
++ * @op: 9P op
++ */
++
++bool
++p9_op_needs_refcounting(int8_t op)
++{
++	return (op == P9_TWALK || op == P9_TWALKX || op == P9_TCLUNK ||
++		op == P9_TXATTRWALK || op == P9_TLCREATE || op == P9_TLCREATEX ||
++		op == P9_TXATTRCREATE || op == P9_TLOCK || op == P9_TATTACH);
+ }
+diff --git a/net/9p/recovery.h b/net/9p/recovery.h
+index ab06862..e10ccbe 100644
+--- a/net/9p/recovery.h
++++ b/net/9p/recovery.h
+@@ -48,7 +48,8 @@ int p9_update_tlcreatex_desc(struct p9_client *client,
+                              const char *name,
+                              const char *globalId);
+ int p9_update_tclunk_desc(struct p9_client *client,
+-                          struct p9_fid *fid);
++                          struct p9_fid *fid,
++			  bool clunk_succeeded);
+ int p9_update_txattrwalk_desc(struct p9_client *client,
+                               struct p9_fid *fid,
+                               struct p9_fid *attr_fid,
+@@ -63,4 +64,5 @@ void p9_recovery_breakpoint(struct p9_client *client, char *breakpoint);
+ 
+ bool p9_req_needs_claimtags(struct p9_client *clnt, struct p9_req_t *r);
+ int p9_client_claim_tags(void *data);
++bool p9_op_needs_refcounting(int8_t op);
+ #endif // NET_9P_RECOVERY_H
+-- 
+2.6.2
+
