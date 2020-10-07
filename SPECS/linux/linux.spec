@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.237
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -97,6 +97,8 @@ Patch63: 0001-vhost-vsock-add-weight-support.patch
 Patch65:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch66:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
+# Fix mp_irqdomain_activate crash
+Patch67:        0001-xen-events-don-t-use-chip_data-for-legacy-IRQs.patch
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
 Patch72: 0002-apparmor-Fix-quieting-of-audit-messages-for-network-.patch
@@ -261,6 +263,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch63 -p1
 %patch65 -p1
 %patch66 -p1
+%patch67 -p1
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -461,6 +464,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 4.9.237-2
+-   Fix mp_irqdomain_activate crash
 *   Thu Oct 01 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-1
 -   Update to version 4.9.237
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.9.236-2

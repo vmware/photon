@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.237
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -84,6 +84,9 @@ Patch57: 0001-vhost-vsock-add-weight-support.patch
 # Fix CVE-2019-18885
 Patch59:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch60:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
+
+# Fix: mp_irqdomain_activate crash
+Patch61:        0001-xen-events-don-t-use-chip_data-for-legacy-IRQs.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -280,6 +283,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch57 -p1
 %patch59 -p1
 %patch60 -p1
+%patch61 -p1
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -503,6 +507,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 4.9.237-2
+-   Fix mp_irqdomain_activate crash
 *   Thu Oct 01 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-1
 -   Update to version 4.9.237
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.9.236-2
