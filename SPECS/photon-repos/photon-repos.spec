@@ -1,11 +1,11 @@
 Summary:	Photon repo files, gpg keys
 Name:		photon-repos
-Version:	3.0
-Release:	5%{?dist}
+Version:	4.0
+Release:	1%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://vmware.github.io/photon/
-Source0:        photon-repos-3.0.tar.gz
+Source0:        photon-repos-4.0.tar.gz
 %define sha1    photon-repos=6dcaac0748e7fba12c4f5f01f05f6aeae5ec7fa3
 Source1:        VMWARE-RPM-GPG-KEY
 Source2:        photon.repo
@@ -50,6 +50,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
+*   Wed Oct 07 2020 Anish Swaminathan <anishs@vmware.com> 4.0-1
+-   Update to 4.0
 *   Wed Sep 23 2020 Michelle Wang <michellew@vmware.com> 3.0-5
 -   Add sources0 for OSSTP tickets
 *   Thu Mar 26 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-4

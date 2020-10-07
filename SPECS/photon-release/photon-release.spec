@@ -1,11 +1,11 @@
 Summary:        Photon release files
 Name:           photon-release
-Version:        3.0
-Release:        4%{?dist}
+Version:        4.0
+Release:        1%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
-Source0:        photon-release-3.0.tar.gz
+Source0:        photon-release-4.0.tar.gz
 %define sha1    photon-release=ced639518d32f9ac8ff00a71853812057db3ab3c
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -69,6 +69,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/issue.net
 
 %changelog
+*       Wed Oct 07 2020 Anish Swaminathan <anishs@vmware.com> 4.0-1
+-       Update to 4.0
 *       Wed Sep 23 2020 Michelle Wang <michellew@vmware.com> 3.0-4
 -       Add sources0 for OSSTP tickets
 *       Sat Jan 04 2020 Neal Gompa <ngompa13@gmail.com> 3.0-3

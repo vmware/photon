@@ -23,7 +23,7 @@ rm -rf /etc/yum.repos.d/*
 cat > /etc/yum.repos.d/photon-local.repo <<- EOF
 
 [photon-local]
-name=VMware Photon Linux 3.0($DOCK_ARCH)
+name=VMware Photon Linux 4.0($DOCK_ARCH)
 baseurl=file://$(pwd)/stage/RPMS
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY
 gpgcheck=0

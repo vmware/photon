@@ -1,8 +1,8 @@
 {
     "photon-build-param" : {
             "photon-build-type" : "chroot",
-            "photon-dist-tag" : ".ph3",
-            "photon-release-version" : "3.0",
+            "photon-dist-tag" : ".ph4",
+            "photon-release-version" : "4.0",
             "threads" : 1,
             "loglevel" : "info",
             "full-package-list-file" : "build_install_options_all.json",

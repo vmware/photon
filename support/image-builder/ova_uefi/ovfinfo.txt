@@ -4,8 +4,8 @@
  		<Info>Information about the installed software</Info> 
  		<Product>Photon OS</Product> 
  		<Vendor>VMware Inc.</Vendor> 
- 		<Version>3.0</Version> 
- 		<FullVersion>3.0</FullVersion> 
+ 		<Version>4.0</Version> 
+ 		<FullVersion>4.0</FullVersion> 
  	</ProductSection>
 	<EulaSection>
         <Info>End User License Agreement</Info>

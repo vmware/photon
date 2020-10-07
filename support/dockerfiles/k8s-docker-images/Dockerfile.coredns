@@ -1,4 +1,4 @@
-FROM k8s-base-image:3.0
+FROM k8s-base-image:4.0
 
 MAINTAINER dheerajs@vmware.com
 

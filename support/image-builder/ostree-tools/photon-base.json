@@ -3,11 +3,11 @@
 
     "osname": "photon",
 
-    "releasever": "3.0",
+    "releasever": "4.0",
 
-    "ref": "photon/3.0/x86_64/minimal",
+    "ref": "photon/4.0/x86_64/minimal",
 
-    "automatic_version_prefix": "3.0_minimal",
+    "automatic_version_prefix": "4.0_minimal",
 
     "repos": ["photon"],
 
