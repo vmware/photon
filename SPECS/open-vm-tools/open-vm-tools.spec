@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        11.1.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -42,11 +42,18 @@ Requires:       libdnet
 Requires:       libmspack
 Requires:       glib
 Requires:       openssl
-Requires:       systemd
 Requires:       libstdc++
 Requires:       libtirpc
 Requires:       xmlsec1
 Requires:       which
+
+%if "%{_arch}" == "x86_64"
+Requires:  systemd
+%endif
+
+%if "%{_arch}" == "aarch64"
+Requires: systemd >= 239-23
+%endif
 
 %description
 VmWare virtualization user mode tools
@@ -131,6 +138,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Mon Sep 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.0-8
+-   Fixed systemd in `Requires` section
 *   Mon Sep 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.0-7
 -   Updated gosc to 1.3.1 & following are new changes in gosc
 -   Explicitly make fqdn empty to change hostname
