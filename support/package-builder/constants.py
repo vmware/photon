@@ -304,7 +304,8 @@ class constants(object):
         "gtk-doc",
         "libmspack",
         "socat",
-        "bash"]
+        "bash",
+        "python3-dnspython"]
 
     # .spec file might contain lines such as
     # Requires(post):/sbin/useradd
