@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.9.0
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -32,6 +32,9 @@ Patch8:         9p-support-for-local-file-lock.patch
 Patch9:         fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 Patch10:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch11:        apparmor-af_unix-mediation.patch
+
+# floppy:
+Patch17:        0001-floppy-lower-printk-message-priority.patch
 
 # VMW:
 Patch30:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -210,6 +213,7 @@ The Linux package contains the Linux kernel doc files
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch17 -p1
 
 # VMW
 %patch30 -p1
@@ -423,6 +427,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Nov 12 2020 Ajay Kaher <akaher@vmware.com> 5.9.0-6
+-   .config: support for floppy disk and ch341 usb to serial
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-5
 -   Fix CVE-2020-8694
 *   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-4

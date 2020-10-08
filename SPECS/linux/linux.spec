@@ -13,7 +13,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.9.0
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -67,7 +67,8 @@ Patch12:        fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 # Out-of-tree patches from AppArmor:
 Patch13:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch14:        apparmor-af_unix-mediation.patch
-
+# floppy:
+Patch17:        0001-floppy-lower-printk-message-priority.patch
 # VMW:
 Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch56:        x86-vmware-Log-kmsg-dump-on-panic.patch
@@ -297,6 +298,7 @@ Python programming language to use the interface to manipulate perf events.
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+%patch17 -p1
 
 %ifarch x86_64
 # VMW x86
@@ -687,6 +689,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Nov 12 2020 Ajay Kaher <akaher@vmware.com> 5.9.0-7
+-   .config: support for floppy disk and ch341 usb to serial
 *   Wed Nov 11 2020 Tapas Kundu <tkundu@vmware.com> 5.9.0-6
 -   Fix perf python script for compatibility with python 3.9
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-5
