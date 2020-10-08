@@ -1,6 +1,6 @@
 Name:           consul
-Version:        1.7.1
-Release:        3%{?dist}
+Version:        1.7.8
+Release:        1%{?dist}
 Summary:        Consul is a tool for service discovery and configuration.
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:		    https://github.com/hashicorp/consul/archive/v%{version}.tar.gz
 
 Source0:	    %{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}.tar.gz=9efd96b44feb477703374ff9b5d21090ce3218f0
+%define sha1 %{name}-%{version}.tar.gz=8f42a88318f9545426a84702d56c6636a8ad4c7d
 Source1:        %{name}.service
 
 BuildRequires:  unzip
@@ -92,10 +92,12 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/%{name}.d
 
 %changelog
-*   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.7.1-3
--   Bump up version to compile with new go
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.7.1-2
--   Bump up version to compile with go 1.13.3-2
+*  Thu Oct 08 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7.8-1
+-  Upgrade to v1.7.8, fixes bunch of CVEs
+*  Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.7.1-3
+-  Bump up version to compile with new go
+*  Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.7.1-2
+-  Bump up version to compile with go 1.13.3-2
 *  Tue Mar 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.7.1-1
 -  Version upgrade to 1.7.1; fixes CVE-2020-7219 & CVE-2020-7955
 *  Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.2.3-4
