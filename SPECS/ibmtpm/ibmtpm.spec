@@ -1,7 +1,7 @@
 Summary:        This project is an implementation of the TCG TPM 2.0 specification.
 Name:           ibmtpm
 Version:        1637
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD 2-Clause
 URL:            https://sourceforge.net/projects/ibmswtpm2/files
 Group:          System Environment/Security
@@ -22,7 +22,7 @@ with additional files to complete the implementation.
 %build
 cd src
 GCCVERSION=$(gcc --version | grep ^gcc | sed 's/^.* //g')
-/usr/libexec/gcc/x86_64-unknown-linux-gnu/$GCCVERSION/install-tools/mkheaders
+$(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
 make %{?_smp_mflags}
 
 %install
@@ -44,6 +44,8 @@ EOF
 /lib/systemd/system/ibmtpm_server.service
 
 %changelog
+*   Thu Oct 08 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1637-3
+-   Fix GCC path issue
 *   Thu Sep 10 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1637-2
 -   Compatibility with openssl 1.1.1
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 1637-1
