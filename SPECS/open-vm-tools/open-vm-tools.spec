@@ -1,10 +1,10 @@
 %global gosc_scripts gosc-scripts
-%define gosc_ver 1.3
+%define gosc_ver 1.3.1
 
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        11.1.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -14,14 +14,13 @@ Distribution:   Photon
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
 %define sha1 open-vm-tools=6c0afb297899b47055ebf036ab68657b3bb94264
 Source1:        https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
-%define sha1 gosc-scripts-%{gosc_ver}=19296c61f2e24a6b68c90f6f265ad3ad537210b2
+%define sha1 gosc-scripts-%{gosc_ver}=d29400a32bc4c0dad41f7e2183b9870fdf640f03
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
 
 # If patch is taken from open-vm-tools repo, prefix it with 'ovt-'
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
 Patch0:     ovt-linux-deployment.patch
-Patch1:     gosc-fix-openssl-passwd-cmd.patch
 
 BuildRequires:  glib-devel
 BuildRequires:  libxml2-devel
@@ -132,6 +131,11 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Mon Sep 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.0-7
+-   Updated gosc to 1.3.1 & following are new changes in gosc
+-   Explicitly make fqdn empty to change hostname
+-   Fixed DHCP setting logic while creating network file
+-   Enclose permission within single quotes
 *   Fri Sep 11 2020 Keerthana K <keerthanak@vmware.com> 11.1.0-6
 -   Use `passwd` command to set root password in gosc-scripts
 -   since `openssl passwd` crashes in fips mode.
