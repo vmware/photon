@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        10.21.0
+Version:        10.22.1
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
-%define         sha1 node=0c2e544d330e82b01952e9a17d79d48f8f106c50
+%define         sha1 node=7a684e402412ab8f9b40f936ca5665bdc9c21978
 BuildRequires:  coreutils >= 8.22, zlib
 Requires:       (coreutils >= 8.22 or toybox)
 # To fix upgrade from photon-1.0 to photon-2.0
@@ -68,6 +68,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Wed Oct 07 2020 Piyush Gupta <gpiyush@vmware.com> 10.22.1-1
+-   Update to 10.22.1 for CVE-2020-8252
 *   Mon Aug 31 2020 Piyush Gupta <gpiyush@vmware.com> 10.21.0-1
 -   Update to 10.21.0
 *   Fri Jul 31 2020 Ankit Jain <ankitja@vmware.com> 10.19.0-2
