@@ -208,6 +208,8 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, dist_tag, logger, singleFile
         for ossversion in SPECS.getData().getVersions(package):
             ossrelease = SPECS.getData().getRelease(package, ossversion)
             srpm_file_name = "%s-%s-%s%s.src.rpm" % (ossname, ossversion, ossrelease, dist_tag)
+            if ossrelease.endswith(dist_tag):
+                srpm_file_name = "%s-%s-%s.src.rpm" % (ossname, ossversion, ossrelease)
             logger.info("srpm name is %s" % (srpm_file_name))
             listFoundSRPMFiles = cmdUtils.findFile(srpm_file_name, srpmPath)
 
