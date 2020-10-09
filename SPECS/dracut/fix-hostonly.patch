@@ -1,0 +1,20 @@
+diff --color -Naurp -rupN dracut-050/mkinitrd-dracut.sh dracut-050-new/mkinitrd-dracut.sh
+--- dracut-050/mkinitrd-dracut.sh	2020-10-09 12:23:19.108347969 +0530
++++ dracut-050-new/mkinitrd-dracut.sh	2020-10-09 12:23:40.832349012 +0530
+@@ -61,7 +61,15 @@ default_kernel_images() {
+         targets="$targets $boot_dir/initrd.img-$kernel_version"
+     done
+ 
+-    host_only=1
++    # don't set hostonly flag if running in docker env
++    # if set initrd will be incomplete
++    # https://fedoraproject.org/wiki/Features/DracutHostOnly#Detailed_Description
++    # https://man7.org/linux/man-pages/man5/dracut.conf.5.html
++    if grep -qc docker /proc/self/cgroup; then
++      host_only=0
++    else
++      host_only=1
++    fi
+     force=1
+ }
+ 

@@ -1,12 +1,10 @@
-# Copied this spec file from inside of dracut-041.tar.xz and edited later.
-
 %define dracutlibdir %{_prefix}/lib/dracut
 %define _unitdir /usr/lib/systemd/system
 
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        050
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -18,10 +16,11 @@ Source0:        http://www.kernel.org/pub/linux/utils/boot/dracut/dracut-%{versi
 %define sha1    dracut=44f5b7304976b57ac4fca4dd94e99d1a131e6f62
 Source1:        https://www.gnu.org/licenses/lgpl-2.1.txt
 
-Patch1:         disable-xattr.patch
-Patch2:         fix-initrd-naming-for-photon.patch
-Patch3:         lvm-no-read-only-locking.patch
-Patch4:         fips-changes.patch
+Patch0:         disable-xattr.patch
+Patch1:         fix-initrd-naming-for-photon.patch
+Patch2:         lvm-no-read-only-locking.patch
+Patch3:         fips-changes.patch
+Patch4:         fix-hostonly.patch
 
 BuildRequires:  bash git
 BuildRequires:  pkg-config
@@ -53,12 +52,8 @@ Requires: %{name} = %{version}-%{release}
 This package contains tools to assemble the local initrd and host configuration.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version} -p1
 cp %{SOURCE1} .
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
 
 %build
 %configure --systemdsystemunitdir=%{_unitdir} --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
@@ -161,6 +156,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*   Fri Oct 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-4
+-   Fixed hostonly setting logic to generate initrd properly
 *   Mon Oct 05 2020 Susant Sahani <ssahani@vmware.com> 050-3
 -   Fix mkitnird and lsinitrd
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 050-2
