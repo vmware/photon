@@ -7,7 +7,7 @@
 %global pypi_name ethtool
 Name:           python3-ethtool
 Version:        0.14
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python module to interface with ethtool
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -71,6 +71,8 @@ LANG=en_US.UTF-8 python3 -m unittest discover -v
 %{python3_sitearch}/%{pypi_name}-%{version}-py*.egg-info
 
 %changelog
+*   Sun Oct 11 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.14-3
+-   Build with updated ethtool release
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 0.14-2
 -   Use asciidoc3
 *   Thu Mar 19 2020 Shreyas B. <shreyasb@vmware.com> 0.14-1
