@@ -1,18 +1,18 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.0.0
-Release:        2%{?dist}
+Version:        7.0.3
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
 Url:            https://microsoft.com/powershell
 Group:          shells
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    powershell=b56eac631c7d3085d93ccc5e2c517422be0e26d4
-Source1:        %{name}-native-%{version}.tar.gz
+%define sha1    powershell=00003c2e21524406ad35d33468e9f5571cb255e7
+Source1:        %{name}-native-7.0.0.tar.gz
 %define sha1    powershell-native=7606e94dc5691d6d9297b5c4452a08728c93d526
 Source2:        %{name}-linux-%{version}-x64.tar.gz
-%define sha1    powershell-linux=d4d4f9e998e41cb57c52421fe20103d32dbf8af0
+%define sha1    powershell-linux=7e1829cb038519e0b54fd8bd3611089d3bcdc67a
 Source3:        build.sh
 Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 
@@ -44,7 +44,7 @@ cp %{SOURCE3} .
 cp %{SOURCE4} src
 chmod +x ./build.sh
 ./build.sh
-cd %{_builddir}/PowerShell-Native/powershell-native-%{version}
+cd %{_builddir}/PowerShell-Native/powershell-native-7.0.0
 pushd src/libpsl-native
 cmake -DCMAKE_BUILD_TYPE=Debug .
 make -j
@@ -58,7 +58,7 @@ mv bin/ThirdPartyNotices.txt %{buildroot}%{_docdir}/powershell
 mv bin/LICENSE.txt %{buildroot}%{_docdir}/powershell
 cp -r bin/* %{buildroot}/%{_libdir}/powershell
 rm -f %{buildroot}/%{_libdir}/powershell/libpsl-native.so
-cp -rf %{_builddir}/PowerShell-Native/powershell-native-%{version}/src/powershell-unix/libpsl-native.so %{buildroot}/%{_libdir}/powershell
+cp -rf %{_builddir}/PowerShell-Native/powershell-native-7.0.0/src/powershell-unix/libpsl-native.so %{buildroot}/%{_libdir}/powershell
 mkdir -p %{buildroot}%{_bindir}
 chmod 0755 %{buildroot}/%{_libdir}/powershell/pwsh
 ln -sf %{_libdir}/powershell/pwsh %{buildroot}%{_bindir}/pwsh
@@ -71,7 +71,7 @@ cp -r %{_builddir}/powershell-linux-%{version}-x64/Modules/{PSReadLine,PowerShel
 cd %{_builddir}/PowerShell-%{version}/test/xUnit
 dotnet test
 export LANG=en_US.UTF-8
-cd %{_builddir}/PowerShell-Native/powershell-native-%{version}/src/libpsl-native
+cd %{_builddir}/PowerShell-Native/powershell-native-7.0.0/src/libpsl-native
 make test
 
 %post
@@ -97,6 +97,8 @@ fi
     %{_docdir}/*
 
 %changelog
+*   Sun Oct 11 2020 Shreyas B <shreyasb@vmware.com> 7.0.3-1
+-   Upgrade powershell & powershell-linux to 7.0.3 to address CVE-2020-1108
 *   Fri Aug 07 2020 Shreyas B <shreyasb@vmware.com> 7.0.0-2
 -   Update dotnet-runtime v3.1.6
 *   Sat Apr 11 2020 Shreyas B <shreyasb@vmware.com> 7.0.0-1
