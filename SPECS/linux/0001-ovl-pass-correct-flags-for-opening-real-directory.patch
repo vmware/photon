@@ -1,0 +1,98 @@
+From 3f6d4752ab29f077a180f47d34af6b28abf4c4d8 Mon Sep 17 00:00:00 2001
+From: Miklos Szeredi <mszeredi@redhat.com>
+Date: Sun, 11 Oct 2020 19:51:15 +0530
+Subject: [PATCH 1/5] ovl: pass correct flags for opening real directory
+
+commit 130fdbc3d1f9966dd4230709c30f3768bccd3065 upstream
+
+The three instances of ovl_path_open() in overlayfs/readdir.c do three
+different things:
+
+ - pass f_flags from overlay file
+ - pass O_RDONLY | O_DIRECTORY
+ - pass just O_RDONLY
+
+The value of f_flags can be (other than O_RDONLY):
+
+O_WRONLY        - not possible for a directory
+O_RDWR          - not possible for a directory
+O_CREAT         - masked out by dentry_open()
+O_EXCL          - masked out by dentry_open()
+O_NOCTTY        - masked out by dentry_open()
+O_TRUNC         - masked out by dentry_open()
+O_APPEND        - no effect on directory ops
+O_NDELAY        - no effect on directory ops
+O_NONBLOCK      - no effect on directory ops
+__O_SYNC        - no effect on directory ops
+O_DSYNC         - no effect on directory ops
+FASYNC          - no effect on directory ops
+O_DIRECT        - no effect on directory ops
+O_LARGEFILE     - ?
+O_DIRECTORY     - only affects lookup
+O_NOFOLLOW      - only affects lookup
+O_NOATIME       - overlay sets this unconditionally in ovl_path_open()
+O_CLOEXEC       - only affects fd allocation
+O_PATH          - no effect on directory ops
+__O_TMPFILE     - not possible for a directory
+
+Fon non-merge directories we use the underlying filesystem's iterate; in
+this case honor O_LARGEFILE from the original file to make sure that open
+doesn't get rejected.
+
+For merge directories it's safe to pass O_LARGEFILE unconditionally since
+userspace will only see the artificial offsets created by overlayfs.
+
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+[Ajay: Regenerated the patch for v4.19]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ fs/overlayfs/readdir.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/fs/overlayfs/readdir.c b/fs/overlayfs/readdir.c
+index 11b7941..45a6da8 100644
+--- a/fs/overlayfs/readdir.c
++++ b/fs/overlayfs/readdir.c
+@@ -300,7 +300,7 @@ static inline int ovl_dir_read(struct path *realpath,
+ 	struct file *realfile;
+ 	int err;
+ 
+-	realfile = ovl_path_open(realpath, O_RDONLY | O_DIRECTORY);
++	realfile = ovl_path_open(realpath, O_RDONLY | O_LARGEFILE);
+ 	if (IS_ERR(realfile))
+ 		return PTR_ERR(realfile);
+ 
+@@ -823,6 +823,12 @@ static loff_t ovl_dir_llseek(struct file *file, loff_t offset, int origin)
+ 	return res;
+ }
+ 
++static struct file *ovl_dir_open_realfile(struct file *file,
++					  struct path *realpath)
++{
++	return ovl_path_open(realpath, O_RDONLY | (file->f_flags & O_LARGEFILE));
++}
++
+ static int ovl_dir_fsync(struct file *file, loff_t start, loff_t end,
+ 			 int datasync)
+ {
+@@ -845,7 +851,7 @@ static int ovl_dir_fsync(struct file *file, loff_t start, loff_t end,
+ 			struct path upperpath;
+ 
+ 			ovl_path_upper(dentry, &upperpath);
+-			realfile = ovl_path_open(&upperpath, O_RDONLY);
++			realfile = ovl_dir_open_realfile(file, &upperpath);
+ 
+ 			inode_lock(inode);
+ 			if (!od->upperfile) {
+@@ -896,7 +902,7 @@ static int ovl_dir_open(struct inode *inode, struct file *file)
+ 		return -ENOMEM;
+ 
+ 	type = ovl_path_real(file->f_path.dentry, &realpath);
+-	realfile = ovl_path_open(&realpath, file->f_flags);
++	realfile = ovl_dir_open_realfile(file, &realpath);
+ 	if (IS_ERR(realfile)) {
+ 		kfree(od);
+ 		return PTR_ERR(realfile);
+-- 
+2.7.4
+

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.148
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -107,6 +107,13 @@ Patch72:        0007-btrfs-tree-checker-Verify-inode-item.patch
 # Fix for CVE-2020-16119
 Patch73:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
 Patch74:        0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
+
+#Fix for CVE-2020-16120
+Patch75:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
+Patch76:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
+Patch77:        0003-ovl-verify-permissions-in-ovl_path_open.patch
+Patch78:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
+Patch79:        0005-ovl-check-permission-to-open-real-file.patch
 
 # inherit tcp_limit_output_bytes
 Patch90:	tcp-inherit-TSQ-limit-from-root-namespace.patch
@@ -255,6 +262,11 @@ This Linux package contains hmac sha generator kernel module.
 %patch72 -p1
 %patch73 -p1
 %patch74 -p1
+%patch75 -p1
+%patch76 -p1
+%patch77 -p1
+%patch78 -p1
+%patch79 -p1
 
 %patch90 -p1
 %patch98 -p1
@@ -412,6 +424,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-7
+-   Fix for CVE-2020-16120
 *   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.19.148-6
 -   Fix for CVE-2020-16119
 *   Wed Oct 07 2020 Sriram Patil <sriramp@vmware.com> 4.19.148-5

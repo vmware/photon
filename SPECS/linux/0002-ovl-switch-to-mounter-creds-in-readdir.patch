@@ -1,0 +1,96 @@
+From 3936de7fb233636d1f955dc4663ebc0d346d3fac Mon Sep 17 00:00:00 2001
+From: Miklos Szeredi <mszeredi@redhat.com>
+Date: Sun, 11 Oct 2020 19:52:35 +0530
+Subject: [PATCH 2/5] ovl: switch to mounter creds in readdir
+
+commit 48bd024b8a40d73ad6b086de2615738da0c7004f upstream
+
+In preparation for more permission checking, override credentials for
+directory operations on the underlying filesystems.
+
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+[Ajay: Regenerated the patch for v4.19]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ fs/overlayfs/readdir.c | 27 +++++++++++++++++++++------
+ 1 file changed, 21 insertions(+), 6 deletions(-)
+
+diff --git a/fs/overlayfs/readdir.c b/fs/overlayfs/readdir.c
+index 45a6da8..eda2d41 100644
+--- a/fs/overlayfs/readdir.c
++++ b/fs/overlayfs/readdir.c
+@@ -735,8 +735,10 @@ static int ovl_iterate(struct file *file, struct dir_context *ctx)
+ 	struct ovl_dir_file *od = file->private_data;
+ 	struct dentry *dentry = file->f_path.dentry;
+ 	struct ovl_cache_entry *p;
++	const struct cred *old_cred;
+ 	int err;
+ 
++	old_cred = ovl_override_creds(dentry->d_sb);
+ 	if (!ctx->pos)
+ 		ovl_dir_reset(file);
+ 
+@@ -750,17 +752,20 @@ static int ovl_iterate(struct file *file, struct dir_context *ctx)
+ 		    (ovl_same_sb(dentry->d_sb) &&
+ 		     (ovl_is_impure_dir(file) ||
+ 		      OVL_TYPE_MERGE(ovl_path_type(dentry->d_parent))))) {
+-			return ovl_iterate_real(file, ctx);
++			err = ovl_iterate_real(file, ctx);
++		} else {
++			err = iterate_dir(od->realfile, ctx);
+ 		}
+-		return iterate_dir(od->realfile, ctx);
++		goto out;
+ 	}
+ 
+ 	if (!od->cache) {
+ 		struct ovl_dir_cache *cache;
+ 
+ 		cache = ovl_cache_get(dentry);
++		err = PTR_ERR(cache);
+ 		if (IS_ERR(cache))
+-			return PTR_ERR(cache);
++			goto out;
+ 
+ 		od->cache = cache;
+ 		ovl_seek_cursor(od, ctx->pos);
+@@ -772,7 +777,7 @@ static int ovl_iterate(struct file *file, struct dir_context *ctx)
+ 			if (!p->ino) {
+ 				err = ovl_cache_update_ino(&file->f_path, p);
+ 				if (err)
+-					return err;
++					goto out;
+ 			}
+ 			if (!dir_emit(ctx, p->name, p->len, p->ino, p->type))
+ 				break;
+@@ -780,7 +785,10 @@ static int ovl_iterate(struct file *file, struct dir_context *ctx)
+ 		od->cursor = p->l_node.next;
+ 		ctx->pos++;
+ 	}
+-	return 0;
++	err = 0;
++out:
++	revert_creds(old_cred);
++	return err;
+ }
+ 
+ static loff_t ovl_dir_llseek(struct file *file, loff_t offset, int origin)
+@@ -826,7 +834,14 @@ static loff_t ovl_dir_llseek(struct file *file, loff_t offset, int origin)
+ static struct file *ovl_dir_open_realfile(struct file *file,
+ 					  struct path *realpath)
+ {
+-	return ovl_path_open(realpath, O_RDONLY | (file->f_flags & O_LARGEFILE));
++	struct file *res;
++	const struct cred *old_cred;
++
++	old_cred = ovl_override_creds(file_inode(file)->i_sb);
++	res = ovl_path_open(realpath, O_RDONLY | (file->f_flags & O_LARGEFILE));
++	revert_creds(old_cred);
++
++	return res;
+ }
+ 
+ static int ovl_dir_fsync(struct file *file, loff_t start, loff_t end,
+-- 
+2.7.4
+

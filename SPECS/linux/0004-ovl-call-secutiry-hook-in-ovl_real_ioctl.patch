@@ -1,0 +1,58 @@
+From 727feaa3bc0eed31fb7f0f55359ec61d0f79293e Mon Sep 17 00:00:00 2001
+From: Miklos Szeredi <mszeredi@redhat.com>
+Date: Sun, 11 Oct 2020 19:55:08 +0530
+Subject: [PATCH 4/5] ovl: call secutiry hook in ovl_real_ioctl()
+
+commit 292f902a40c11f043a5ca1305a114da0e523eaa3 upstream
+
+Verify LSM permissions for underlying file, since vfs_ioctl() doesn't do
+it.
+
+[Stephen Rothwell] export security_file_ioctl
+
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+[Ajay: Regenerated the patch for v4.19]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ fs/overlayfs/file.c | 5 ++++-
+ security/security.c | 1 +
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/fs/overlayfs/file.c b/fs/overlayfs/file.c
+index 73c3e2c..b4ab06c 100644
+--- a/fs/overlayfs/file.c
++++ b/fs/overlayfs/file.c
+@@ -12,6 +12,7 @@
+ #include <linux/xattr.h>
+ #include <linux/uio.h>
+ #include <linux/uaccess.h>
++#include <linux/security.h>
+ #include "overlayfs.h"
+ 
+ static char ovl_whatisit(struct inode *inode, struct inode *realinode)
+@@ -403,7 +404,9 @@ static long ovl_real_ioctl(struct file *file, unsigned int cmd,
+ 		return ret;
+ 
+ 	old_cred = ovl_override_creds(file_inode(file)->i_sb);
+-	ret = vfs_ioctl(real.file, cmd, arg);
++	ret = security_file_ioctl(real.file, cmd, arg);
++	if (!ret)
++		ret = vfs_ioctl(real.file, cmd, arg);
+ 	revert_creds(old_cred);
+ 
+ 	fdput(real);
+diff --git a/security/security.c b/security/security.c
+index 9478444..c9e7bbc 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -889,6 +889,7 @@ int security_file_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ {
+ 	return call_int_hook(file_ioctl, 0, file, cmd, arg);
+ }
++EXPORT_SYMBOL_GPL(security_file_ioctl);
+ 
+ static inline unsigned long mmap_prot(struct file *file, unsigned long prot)
+ {
+-- 
+2.7.4
+

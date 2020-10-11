@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.148
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -108,6 +108,13 @@ Patch58:        0001-xen-events-don-t-use-chip_data-for-legacy-IRQs.patch
 # Fix for CVE-2020-16119
 Patch59:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
 Patch60:        0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
+
+#Fix for CVE-2020-16120
+Patch61:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
+Patch62:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
+Patch63:        0003-ovl-verify-permissions-in-ovl_path_open.patch
+Patch64:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
+Patch65:        0005-ovl-check-permission-to-open-real-file.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -392,6 +399,11 @@ This Linux package contains hmac sha generator kernel module.
 %patch58 -p1
 %patch59 -p1
 %patch60 -p1
+%patch61 -p1
+%patch62 -p1
+%patch63 -p1
+%patch64 -p1
+%patch65 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -817,6 +829,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-5
+-   Fix for CVE-2020-16120
 *   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.19.148-4
 -   Fix for CVE-2020-16119
 *   Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-3

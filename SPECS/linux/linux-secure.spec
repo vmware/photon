@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.148
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -79,6 +79,13 @@ Patch56:        0007-btrfs-tree-checker-Verify-inode-item.patch
 # Fix for CVE-2020-16119
 Patch57:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
 Patch58:        0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
+
+#Fix for CVE-2020-16120
+Patch59:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
+Patch60:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
+Patch61:        0003-ovl-verify-permissions-in-ovl_path_open.patch
+Patch62:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
+Patch63:        0005-ovl-check-permission-to-open-real-file.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -207,6 +214,11 @@ This Linux package contains hmac sha generator kernel module.
 %patch56 -p1
 %patch57 -p1
 %patch58 -p1
+%patch59 -p1
+%patch60 -p1
+%patch61 -p1
+%patch62 -p1
+%patch63 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -384,6 +396,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-4
+-   Fix for CVE-2020-16120
 *   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.19.148-3
 -   Fix for CVE-2020-16119
 *   Tue Oct 06 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.148-2
