@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.237
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -113,6 +113,11 @@ Patch86: 0013-inet-frags-rework-rhashtable-dismantle.patch
 Patch87: 0014-inet-frags-fix-use-after-free-read-in-inet_frag_dest.patch
 Patch88: 0015-inet-fix-various-use-after-free-in-defrags-units.patch
 Patch89: 0016-netns-restore-ops-before-calling-ops_exit_list.patch
+
+#Fix for CVE-2020-16120
+Patch90:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
+Patch91:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
+Patch92:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -226,6 +231,10 @@ The Linux package contains the Linux kernel doc files
 %patch87 -p1
 %patch88 -p1
 %patch89 -p1
+%patch90 -p1
+%patch91 -p1
+%patch92 -p1
+
 %build
 
 make mrproper
@@ -320,6 +329,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.9.237-3
+-   Fix for CVE-2020-16120
 *   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-2
 -   Fix for CVE-2020-16119
 *   Thu Oct 01 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-1

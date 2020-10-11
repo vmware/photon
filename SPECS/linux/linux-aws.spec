@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.237
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -94,38 +94,43 @@ Patch63:        0002-net-dccp-Convert-timers-to-use-timer_setup.patch
 Patch64:        0003-dccp-ccid-move-timers-to-struct-dccp_sock.patch
 Patch65:        0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 
+#Fix for CVE-2020-16120
+Patch66:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
+Patch67:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
+Patch68:        0003-ovl-verify-permissions-in-ovl_path_open.patch
+
 # Out-of-tree patches from AppArmor:
-Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
-Patch72: 0002-apparmor-Fix-quieting-of-audit-messages-for-network-.patch
-Patch73: 0003-UBUNTU-SAUCE-apparmor-Add-the-ability-to-mediate-mou.patch
+Patch71:        0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
+Patch72:        0002-apparmor-Fix-quieting-of-audit-messages-for-network-.patch
+Patch73:        0003-UBUNTU-SAUCE-apparmor-Add-the-ability-to-mediate-mou.patch
 
 # Fix use-after-free issue in network stack
-Patch74: 0001-inet-rename-netns_frags-to-fqdir.patch
-Patch75: 0002-net-rename-inet_frags_exit_net-to-fqdir_exit.patch
-Patch76: 0003-net-rename-struct-fqdir-fields.patch
-Patch77: 0004-ipv4-no-longer-reference-init_net-in.patch
-Patch78: 0005-ipv6-no-longer-reference-init_net-in.patch
-Patch79: 0006-netfilter-ipv6-nf_defrag-no-longer-reference-init_ne.patch
-Patch80: 0007-ieee820154-6lowpan-no-longer-reference-init_net-in.patch
-Patch81: 0008-net-rename-inet_frags_init_net-to-fdir_init.patch
-Patch82: 0009-net-add-a-net-pointer-to-struct-fqdir.patch
-Patch83: 0010-net-dynamically-allocate-fqdir-structures.patch
-Patch84: 0011-netns-add-pre_exit-method-to-struct-pernet_operation.patch
-Patch85: 0012-inet-frags-uninline-fqdir_init.patch
-Patch86: 0013-inet-frags-rework-rhashtable-dismantle.patch
-Patch87: 0014-inet-frags-fix-use-after-free-read-in-inet_frag_dest.patch
-Patch88: 0015-inet-fix-various-use-after-free-in-defrags-units.patch
-Patch89: 0016-netns-restore-ops-before-calling-ops_exit_list.patch
+Patch74:        0001-inet-rename-netns_frags-to-fqdir.patch
+Patch75:        0002-net-rename-inet_frags_exit_net-to-fqdir_exit.patch
+Patch76:        0003-net-rename-struct-fqdir-fields.patch
+Patch77:        0004-ipv4-no-longer-reference-init_net-in.patch
+Patch78:        0005-ipv6-no-longer-reference-init_net-in.patch
+Patch79:        0006-netfilter-ipv6-nf_defrag-no-longer-reference-init_ne.patch
+Patch80:        0007-ieee820154-6lowpan-no-longer-reference-init_net-in.patch
+Patch81:        0008-net-rename-inet_frags_init_net-to-fdir_init.patch
+Patch82:        0009-net-add-a-net-pointer-to-struct-fqdir.patch
+Patch83:        0010-net-dynamically-allocate-fqdir-structures.patch
+Patch84:        0011-netns-add-pre_exit-method-to-struct-pernet_operation.patch
+Patch85:        0012-inet-frags-uninline-fqdir_init.patch
+Patch86:        0013-inet-frags-rework-rhashtable-dismantle.patch
+Patch87:        0014-inet-frags-fix-use-after-free-read-in-inet_frag_dest.patch
+Patch88:        0015-inet-fix-various-use-after-free-in-defrags-units.patch
+Patch89:        0016-netns-restore-ops-before-calling-ops_exit_list.patch
 
 #Fix CVE-2019-19813 and CVE-2019-19816
-Patch90: 0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
-Patch91: 0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
-Patch92: 0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
-Patch93: 0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
-Patch94: 0005-btrfs-tree-checker-Verify-dev-item.patch
-Patch95: 0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
-Patch96: 0007-btrfs-tree-checker-Verify-inode-item.patch
-Patch97: 0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
+Patch90:        0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
+Patch91:        0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
+Patch92:        0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
+Patch93:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
+Patch94:        0005-btrfs-tree-checker-Verify-dev-item.patch
+Patch95:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
+Patch96:        0007-btrfs-tree-checker-Verify-inode-item.patch
+Patch97:        0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
 
 # Amazon AWS
 Patch101: 0002-lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
@@ -294,6 +299,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch63 -p1
 %patch64 -p1
 %patch65 -p1
+%patch66 -p1
+%patch67 -p1
+%patch68 -p1
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -517,6 +525,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.9.237-4
+-   Fix for CVE-2020-16120
 *   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-3
 -   Fix for CVE-2020-16119
 *   Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 4.9.237-2

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.237
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -97,6 +97,11 @@ Patch64:        0002-net-dccp-Convert-timers-to-use-timer_setup.patch
 Patch65:        0003-dccp-ccid-move-timers-to-struct-dccp_sock.patch
 Patch66:        0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 Patch67:        0001-dccp-ccid-use-setup_timer-instead-of-timer_setup.patch
+
+#Fix for CVE-2020-16120
+Patch68:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
+Patch69:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
+Patch70:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -267,6 +272,9 @@ EOF
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
+%patch68 -p1
+%patch69 -p1
+%patch70 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -430,6 +438,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.9.237-3
+-   Fix for CVE-2020-16120
 *   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-2
 -   Fix for CVE-2020-16119
 *   Thu Oct 01 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-1

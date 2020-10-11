@@ -2,12 +2,12 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.237
-Release:        3%{?kat_build:.%kat_build}%{?dist}
-License:    	GPLv2
-URL:        	http://www.kernel.org/
-Group:        	System Environment/Kernel
+Release:        4%{?kat_build:.%kat_build}%{?dist}
+License:        GPLv2
+URL:            http://www.kernel.org/
+Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
-Distribution: 	Photon
+Distribution:   Photon
 
 %define uname_r %{version}-%{release}
 
@@ -137,6 +137,11 @@ Patch100:       0001-timer-Prepare-to-change-timer-callback-argument-type.patch
 Patch101:       0002-net-dccp-Convert-timers-to-use-timer_setup.patch
 Patch102:       0003-dccp-ccid-move-timers-to-struct-dccp_sock.patch
 Patch103:       0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
+
+#Fix for CVE-2020-16120
+Patch104:       0001-ovl-pass-correct-flags-for-opening-real-directory.patch
+Patch105:       0002-ovl-switch-to-mounter-creds-in-readdir.patch
+Patch106:       0003-ovl-verify-permissions-in-ovl_path_open.patch
 
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 
@@ -301,6 +306,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch101 -p1
 %patch102 -p1
 %patch103 -p1
+%patch104 -p1
+%patch105 -p1
+%patch106 -p1
 
 %patch111 -p1
 
@@ -474,6 +482,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.9.237-4
+-   Fix for CVE-2020-16120
 *   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-3
 -   Fix for CVE-2020-16119
 *   Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 4.9.237-2

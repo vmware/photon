@@ -1,0 +1,71 @@
+From 0dcf9a41940dd261b37d202a24715f4e99add72a Mon Sep 17 00:00:00 2001
+From: Miklos Szeredi <mszeredi@redhat.com>
+Date: Sun, 11 Oct 2020 22:14:14 +0530
+Subject: [PATCH 3/3] ovl: verify permissions in ovl_path_open()
+
+commit 56230d956739b9cb1cbde439d76227d77979a04d upstream
+
+Check permission before opening a real file.
+
+ovl_path_open() is used by readdir and copy-up routines.
+
+ovl_permission() theoretically already checked copy up permissions, but it
+doesn't hurt to re-do these checks during the actual copy-up.
+
+For directory reading ovl_permission() only checks access to topmost
+underlying layer.  Readdir on a merged directory accesses layers below the
+topmost one as well.  Permission wasn't checked for these layers.
+
+Note: modifying ovl_permission() to perform this check would be far more
+complex and hence more bug prone.  The result is less precise permissions
+returned in access(2).  If this turns out to be an issue, we can revisit
+this bug.
+
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+[Ajay: Regenerated the patch for v4.9]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ fs/overlayfs/super.c | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/fs/overlayfs/super.c b/fs/overlayfs/super.c
+index e7c8ac4..c795ad3 100644
+--- a/fs/overlayfs/super.c
++++ b/fs/overlayfs/super.c
+@@ -609,7 +609,32 @@ struct dentry *ovl_lookup(struct inode *dir, struct dentry *dentry,
+ 
+ struct file *ovl_path_open(struct path *path, int flags)
+ {
+-	return dentry_open(path, flags | O_NOATIME, current_cred());
++	struct inode *inode = d_inode(path->dentry);
++	int err, acc_mode;
++
++	if (flags & ~(O_ACCMODE | O_LARGEFILE))
++		BUG();
++
++	switch (flags & O_ACCMODE) {
++	case O_RDONLY:
++		acc_mode = MAY_READ;
++		break;
++	case O_WRONLY:
++		acc_mode = MAY_WRITE;
++		break;
++	default:
++		BUG();
++	}
++
++	err = inode_permission(inode, acc_mode | MAY_OPEN);
++	if (err)
++		return ERR_PTR(err);
++
++	/* O_NOATIME is an optimization, don't fail if not permitted */
++	if (inode_owner_or_capable(inode))
++		flags |= O_NOATIME;
++
++	return dentry_open(path, flags, current_cred());
+ }
+ 
+ static void ovl_put_super(struct super_block *sb)
+-- 
+2.7.4
+
