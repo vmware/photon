@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.237
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -105,22 +105,27 @@ Patch63:        0001-tty-vt-consw-con_scrolldelta-cleanup.patch
 Patch64:        0001-xen-events-don-t-use-chip_data-for-legacy-IRQs.patch
 
 # For Spectre
-Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
+Patch67:        0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 
 #Fix CVE-2019-19813 and CVE-2019-19816
-Patch68: 0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
-Patch69: 0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
-Patch70: 0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
-Patch71: 0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
-Patch72: 0005-btrfs-tree-checker-Verify-dev-item.patch
-Patch73: 0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
-Patch74: 0007-btrfs-tree-checker-Verify-inode-item.patch
-Patch75: 0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
+Patch68:        0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
+Patch69:        0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
+Patch70:        0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
+Patch71:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
+Patch72:        0005-btrfs-tree-checker-Verify-dev-item.patch
+Patch73:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
+Patch74:        0007-btrfs-tree-checker-Verify-inode-item.patch
+Patch75:        0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
 # Fix for CVE-2020-16119
-Patch76: 0001-timer-Prepare-to-change-timer-callback-argument-type.patch
-Patch77: 0002-net-dccp-Convert-timers-to-use-timer_setup.patch
-Patch78: 0003-dccp-ccid-move-timers-to-struct-dccp_sock.patch
-Patch79: 0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
+Patch76:        0001-timer-Prepare-to-change-timer-callback-argument-type.patch
+Patch77:        0002-net-dccp-Convert-timers-to-use-timer_setup.patch
+Patch78:        0003-dccp-ccid-move-timers-to-struct-dccp_sock.patch
+Patch79:        0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
+
+#Fix for CVE-2020-16120
+Patch80:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
+Patch81:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
+Patch82:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -268,6 +273,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch77 -p1
 %patch78 -p1
 %patch79 -p1
+%patch80 -p1
+%patch81 -p1
+%patch82 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -426,6 +434,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.4.237-4
+-   Fix for CVE-2020-16120
 *   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.4.237-3
 -   Fix for CVE-2020-16119
 *   Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 4.4.237-2
