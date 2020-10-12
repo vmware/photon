@@ -1,6 +1,6 @@
 Summary:        Hyper-V tools
 Name:           hyper-v
-Version:        4.9
+Version:        5.9
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://elixir.bootlin.com/linux/v4.9/source/tools/hv
@@ -8,7 +8,7 @@ Group:          System/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    hyper-v=f7801636573dbdc679dba8eadce86cf408b6ffc1
+%define sha1    hyper-v=0771a48f2af4390c34a1dd964459f383d2561835
 Source1:        bondvf.sh
 Source2:        hv_get_dns_info.sh
 Source3:        hv_get_dhcp_info.sh
@@ -112,5 +112,7 @@ EOF
 
 
 %changelog
+*   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 5.9-1
+-   Upgrade to v5.9
 *   Tue Mar 13 2018 Xiaolin Li <xiaolinl@vmware.com> 4.9-1
 -   Initial version.
