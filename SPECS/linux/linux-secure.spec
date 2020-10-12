@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.148
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -76,6 +76,9 @@ Patch53:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
 Patch54:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch55:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch56:        0007-btrfs-tree-checker-Verify-inode-item.patch
+# Fix for CVE-2020-16119
+Patch57:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
+Patch58:        0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -202,6 +205,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
+%patch57 -p1
+%patch58 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -379,6 +384,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.19.148-3
+-   Fix for CVE-2020-16119
 *   Tue Oct 06 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.148-2
 -   Fix IPIP encapsulation issue in vmxnet3 driver.
 *   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-1

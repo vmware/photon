@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.148
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -74,6 +74,10 @@ Patch52:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch53:        0007-btrfs-tree-checker-Verify-inode-item.patch
 # Fix mp_irqdomain_activate crash
 Patch54:        0001-xen-events-don-t-use-chip_data-for-legacy-IRQs.patch
+# Fix for CVE-2020-16119
+Patch55:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
+Patch56:        0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
+
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
@@ -227,6 +231,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch52 -p1
 %patch53 -p1
 %patch54 -p1
+%patch55 -p1
+%patch56 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -458,6 +464,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.19.148-4
+-   Fix for CVE-2020-16119
 *   Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-3
 -   Fix mp_irqdomain_activate crash
 *   Tue Oct 06 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.148-2

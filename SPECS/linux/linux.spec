@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.148
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -105,6 +105,9 @@ Patch57:        0007-btrfs-tree-checker-Verify-inode-item.patch
 
 # Fix mp_irqdomain_activate crash
 Patch58:        0001-xen-events-don-t-use-chip_data-for-legacy-IRQs.patch
+# Fix for CVE-2020-16119
+Patch59:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
+Patch60:        0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -387,6 +390,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch56 -p1
 %patch57 -p1
 %patch58 -p1
+%patch59 -p1
+%patch60 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -812,6 +817,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.19.148-4
+-   Fix for CVE-2020-16119
 *   Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-3
 -   Fix mp_irqdomain_activate crash
 *   Mon Oct 05 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.148-2

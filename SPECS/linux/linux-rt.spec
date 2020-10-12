@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.148
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -71,6 +71,9 @@ Patch54:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
 Patch55:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch56:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch57:        0007-btrfs-tree-checker-Verify-inode-item.patch
+# Fix for CVE-2020-16119
+Patch58:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
+Patch59:        0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -496,6 +499,8 @@ The Linux package contains the Linux kernel doc files
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
+%patch58 -p1
+%patch59 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -997,6 +1002,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.19.148-4
+-   Fix for CVE-2020-16119
 *   Tue Oct 06 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.148-3
 -   Fix IPIP encapsulation issue in vmxnet3 driver.
 *   Thu Oct 01 2020 Bo Gan <ganb@vmware.com> 4.19.148-2

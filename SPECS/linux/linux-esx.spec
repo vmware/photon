@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.148
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -104,6 +104,9 @@ Patch69:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
 Patch70:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch71:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch72:        0007-btrfs-tree-checker-Verify-inode-item.patch
+# Fix for CVE-2020-16119
+Patch73:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
+Patch74:        0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 
 # inherit tcp_limit_output_bytes
 Patch90:	tcp-inherit-TSQ-limit-from-root-namespace.patch
@@ -250,6 +253,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch70 -p1
 %patch71 -p1
 %patch72 -p1
+%patch73 -p1
+%patch74 -p1
 
 %patch90 -p1
 %patch98 -p1
@@ -407,6 +412,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.19.148-6
+-   Fix for CVE-2020-16119
 *   Wed Oct 07 2020 Sriram Patil <sriramp@vmware.com> 4.19.148-5
 -   linux-esx: 9p: Fix recovery logic and cleanup tags when unmounting
 *   Tue Oct 06 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.148-4
