@@ -1,10 +1,10 @@
 %global gosc_scripts gosc-scripts
-%define gosc_ver 1.3
+%define gosc_ver 1.3.1
 
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        11.1.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -14,7 +14,7 @@ Distribution:   Photon
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
 %define sha1 open-vm-tools=bbfb8295f16d44c8229efdb9b294ba7290c664ec
 Source1:        https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
-%define sha1 gosc-scripts-%{gosc_ver}=19296c61f2e24a6b68c90f6f265ad3ad537210b2
+%define sha1 gosc-scripts-%{gosc_ver}=d29400a32bc4c0dad41f7e2183b9870fdf640f03
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
 
@@ -42,11 +42,18 @@ Requires:       libdnet
 Requires:       libmspack
 Requires:       glib
 Requires:       openssl
-Requires:       systemd
 Requires:       libstdc++
 Requires:       libtirpc
 Requires:       xmlsec1
 Requires:       which
+
+%if "%{_arch}" == "x86_64"
+Requires:  systemd
+%endif
+
+%if "%{_arch}" == "aarch64"
+Requires: systemd >= 239-23
+%endif
 
 %description
 VmWare virtualization user mode tools
@@ -131,6 +138,13 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Mon Oct 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.5-4
+-   Fixed systemd in `Requires` section
+-   Updated gosc to 1.3.1 & following are new changes in gosc
+-   Explicitly make fqdn empty to change hostname
+-   Fixed DHCP setting logic while creating network file
+-   Enclose permission within single quotes
+-   Use `passwd` command to set root password in gosc-scripts as `openssl passwd` crashes in fips mode.
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 11.1.5-3
 -   openssl 1.1.1
 *   Tue Sep 08 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.5-2
