@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.237
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -116,6 +116,11 @@ Patch72: 0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch73: 0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch74: 0007-btrfs-tree-checker-Verify-inode-item.patch
 Patch75: 0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
+# Fix for CVE-2020-16119
+Patch76: 0001-timer-Prepare-to-change-timer-callback-argument-type.patch
+Patch77: 0002-net-dccp-Convert-timers-to-use-timer_setup.patch
+Patch78: 0003-dccp-ccid-move-timers-to-struct-dccp_sock.patch
+Patch79: 0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -259,6 +264,10 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch73 -p1
 %patch74 -p1
 %patch75 -p1
+%patch76 -p1
+%patch77 -p1
+%patch78 -p1
+%patch79 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -417,6 +426,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.4.237-3
+-   Fix for CVE-2020-16119
 *   Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 4.4.237-2
 -   Fix mp_irqdomain_activate crash
 *   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.4.237-1

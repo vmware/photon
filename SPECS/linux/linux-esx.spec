@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.237
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -112,6 +112,12 @@ Patch75: 0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch76: 0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch77: 0007-btrfs-tree-checker-Verify-inode-item.patch
 Patch78: 0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
+
+# Fix for CVE-2020-16119
+Patch79: 0001-timer-Prepare-to-change-timer-callback-argument-type.patch
+Patch80: 0002-net-dccp-Convert-timers-to-use-timer_setup.patch
+Patch81: 0003-dccp-ccid-move-timers-to-struct-dccp_sock.patch
+Patch82: 0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -224,6 +230,10 @@ The Linux package contains the Linux kernel doc files
 %patch76 -p1
 %patch77 -p1
 %patch78 -p1
+%patch79 -p1
+%patch80 -p1
+%patch81 -p1
+%patch82 -p1
 
 %build
 # patch vmw_balloon driver
@@ -314,6 +324,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.4.237-3
+-   Fix for CVE-2020-16119
 *   Tue Sep 29 2020 Amod Mishra <mamod@vmware.com> 4.4.237-2
 -   9p: Don't use writeback fid for cache when enabled for VDFS
 *   Mon Sep 28 2020 Ajay Kaher <akaher@vmware.com> 4.4.237-1

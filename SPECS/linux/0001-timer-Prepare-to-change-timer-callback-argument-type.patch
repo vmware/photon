@@ -1,0 +1,100 @@
+From b8467f3ebe673928774366bfeb80c7a91db4c6fc Mon Sep 17 00:00:00 2001
+From: Kees Cook <keescook@chromium.org>
+Date: Thu, 28 Sep 2017 06:38:17 -0700
+Subject: [PATCH 1/4] timer: Prepare to change timer callback argument type
+
+commit 686fef928bba6be13cabe639f154af7d72b63120 upstream.
+
+Modern kernel callback systems pass the structure associated with a
+given callback to the callback function. The timer callback remains one
+of the legacy cases where an arbitrary unsigned long argument continues
+to be passed as the callback argument. This has several problems:
+
+- This bloats the timer_list structure with a normally redundant
+  .data field.
+
+- No type checking is being performed, forcing callbacks to do
+  explicit type casts of the unsigned long argument into the object
+  that was passed, rather than using container_of(), as done in most
+  of the other callback infrastructure.
+
+- Neighboring buffer overflows can overwrite both the .function and
+  the .data field, providing attackers with a way to elevate from a buffer
+  overflow into a simplistic ROP-like mechanism that allows calling
+  arbitrary functions with a controlled first argument.
+
+- For future Control Flow Integrity work, this creates a unique function
+  prototype for timer callbacks, instead of allowing them to continue to
+  be clustered with other void functions that take a single unsigned long
+  argument.
+
+This adds a new timer initialization API, which will ultimately replace
+the existing setup_timer(), setup_{deferrable,pinned,etc}_timer() family,
+named timer_setup() (to mirror hrtimer_setup(), making instances of its
+use much easier to grep for).
+
+In order to support the migration of existing timers into the new
+callback arguments, timer_setup() casts its arguments to the existing
+legacy types, and explicitly passes the timer pointer as the legacy
+data argument. Once all setup_*timer() callers have been replaced with
+timer_setup(), the casts can be removed, and the data argument can be
+dropped with the timer expiration code changed to just pass the timer
+to the callback directly.
+
+Since the regular pattern of using container_of() during local variable
+declaration repeats the need for the variable type declaration
+to be included, this adds a helper modeled after other from_*()
+helpers that wrap container_of(), named from_timer(). This helper uses
+typeof(*variable), removing the type redundancy and minimizing the need
+for line wraps in forthcoming conversions from "unsigned data long" to
+"struct timer_list *" in the timer callbacks:
+
+-void callback(unsigned long data)
++void callback(struct timer_list *t)
+{
+-   struct some_data_structure *local = (struct some_data_structure *)data;
++   struct some_data_structure *local = from_timer(local, t, timer);
+
+Finally, in order to support the handful of timer users that perform
+open-coded assignments of the .function (and .data) fields, provide
+cast macros (TIMER_FUNC_TYPE and TIMER_DATA_TYPE) that can be used
+temporarily. Once conversion has been completed, these can be globally
+trivially removed.
+
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lkml.kernel.org/r/20170928133817.GA113410@beast
+[Ankit: Regenerated the patch for v4.4]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ include/linux/timer.h | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/include/linux/timer.h b/include/linux/timer.h
+index 61aa61dc410c..8d9259548444 100644
+--- a/include/linux/timer.h
++++ b/include/linux/timer.h
+@@ -150,6 +150,20 @@ static inline void init_timer_on_stack_key(struct timer_list *timer,
+ #define setup_deferrable_timer_on_stack(timer, fn, data)		\
+ 	__setup_timer_on_stack((timer), (fn), (data), TIMER_DEFERRABLE)
+ 
++#define TIMER_DATA_TYPE                unsigned long
++#define TIMER_FUNC_TYPE                void (*)(TIMER_DATA_TYPE)
++
++static inline void timer_setup(struct timer_list *timer,
++                              void (*callback)(struct timer_list *),
++                              unsigned int flags)
++{
++       __setup_timer(timer, (TIMER_FUNC_TYPE)callback,
++                     (TIMER_DATA_TYPE)timer, flags);
++}
++
++#define from_timer(var, callback_timer, timer_fieldname) \
++       container_of(callback_timer, typeof(*var), timer_fieldname)
++
+ /**
+  * timer_pending - is a timer pending?
+  * @timer: the timer in question
+-- 
+2.23.1
+
