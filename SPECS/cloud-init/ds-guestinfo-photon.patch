@@ -1,8 +1,8 @@
 diff --git a/cloudinit/sources/DataSourceVMwareGuestInfo.py b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-index 73b9219a..168f0ae6 100644
+index 19d20a2d..407adbd9 100644
 --- a/cloudinit/sources/DataSourceVMwareGuestInfo.py
 +++ b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-@@ -134,11 +134,117 @@ class DataSourceVMwareGuestInfo(sources.DataSource):
+@@ -140,10 +140,113 @@ class DataSourceVMwareGuestInfo(sources.DataSource):
          if data_access_method == VMWARE_RPCTOOL and CLEANUP_GUESTINFO in self.metadata:
              clear_guestinfo_keys(self.metadata[CLEANUP_GUESTINFO])
  
@@ -11,102 +11,100 @@ index 73b9219a..168f0ae6 100644
 +        if hostname:
 +            self.distro.set_hostname(hostname)
 +
-+        found = True
 +        dev_index = 0
 +        network_settings = ''
 +
-+        while found:
++        while True:
 +            key_begin = 'interface.' + str(dev_index)
 +            key_iname = key_begin + '.name'
 +            interface_name = get_guestinfo_value(key_iname)
 +
-+            if interface_name:
-+                network_settings += 'auto ' + interface_name + '\n'
-+                network_settings += 'iface ' + interface_name
-+                key_proto = key_begin + '.dhcp'
-+                dhcp_enabled = get_guestinfo_value(key_proto)
-+                key_address = key_begin + '.address'
-+                address = get_guestinfo_value(key_address)
-+                bootproto = 'dhcp'
++            if not interface_name:
++                break
 +
-+                if dhcp_enabled:
-+                    if dhcp_enabled in {'yes', 'ipv4', 'ipv6'}:
-+                        network_settings += ' dhcp\n'
-+                    elif dhcp_enabled == 'no':
-+                        network_settings += ' static\n'
-+                        bootproto = 'static'
-+                    else:
-+                        LOG.warning("Invalid value for yes/no parameter for %s, setting to dhcp", key_proto)
-+                elif address:
-+                    bootproto = 'static'
-+                    dhcp_enabled == 'no'
-+                    network_settings += ' static\n'
-+                else:
-+                    dhcp_enabled == 'yes'
++            network_settings += 'auto ' + interface_name + '\n'
++            network_settings += 'iface ' + interface_name
++            key_proto = key_begin + '.dhcp'
++            dhcp_enabled = get_guestinfo_value(key_proto)
++            key_address = key_begin + '.address'
++            address = get_guestinfo_value(key_address)
++            bootproto = 'dhcp'
++
++            if dhcp_enabled:
++                if dhcp_enabled in {'yes', 'ipv4', 'ipv6'}:
 +                    network_settings += ' dhcp\n'
-+                    LOG.debug("Setting network bootproto to dhcp by default")
-+
-+                key_mac = key_begin + '.mac'
-+                mac = get_guestinfo_value(key_mac)
-+
-+                if address:
-+                    network_settings += 'address ' + address + '\n'
-+
-+                if mac:
-+                    network_settings += 'hwaddress ' + mac + '\n'
-+
-+                key_netmask = key_begin + '.netmask'
-+
-+                netmask = get_guestinfo_value(key_netmask)
-+                if netmask:
-+                     network_settings += 'netmask ' + netmask + '\n'
-+
-+                key_dnsserver = 'dns.servers'
-+
-+                dnsserver = get_guestinfo_value(key_dnsserver)
-+                if dnsserver:
-+                    network_settings += 'dns-nameservers '
-+                    dnsserver = dnsserver.split(',')
-+
-+                    for d in dnsserver:
-+                        network_settings += d + ' '
-+                    network_settings += '\n'
-+
-+                key_dnsdomain = 'dns.domains'
-+
-+                dnsdomain = get_guestinfo_value(key_dnsdomain)
-+                if dnsdomain:
-+                    network_settings += 'dns-search '
-+                    dnsdomain = dnsdomain.split(',')
-+                    for d in dnsdomain:
-+                        network_settings += d + ' '
-+                    network_settings += '\n'
-+
-+                route_index = 0
-+                default_destination_set = False
-+                while True:
-+                    key_route = key_begin + '.route.' + str(route_index)
-+                    route = get_guestinfo_value(key_route)
-+                    if route:
-+                        network_settings += "routes.%s " % (route_index)
-+                        route = route.split(',')
-+                        if len(route) > 2:
-+                            LOG.debug("Route information for %s route in %s device incorrect - ",
-+                                                "expected 2 values", route_index, dev_index)
-+                            continue
-+                        elif len(route) == 2:
-+                            network_settings += route[0] + ' ' + route[1] + '\n'# Gateway Destination
-+                        else: #length = 1
-+                            if not default_destination_set:
-+                                network_settings += route[0] + ' 0.0.0.0/0' + '\n'
-+                                default_destination_set = True
-+                            else:
-+                                LOG.debug("Default destination set previously, not setting route %s", route_index)
-+                    else:
-+                        break
-+                    route_index += 1
++                elif dhcp_enabled == 'no':
++                    network_settings += ' static\n'
++                    bootproto = 'static'
++                else:
++                    LOG.warning("Invalid value for yes/no parameter for %s, setting to dhcp", key_proto)
++            elif address:
++                bootproto = 'static'
++                dhcp_enabled == 'no'
++                network_settings += ' static\n'
 +            else:
-+                found = False
++                dhcp_enabled == 'yes'
++                network_settings += ' dhcp\n'
++                LOG.debug("Setting network bootproto to dhcp by default")
++
++            key_mac = key_begin + '.mac'
++            mac = get_guestinfo_value(key_mac)
++
++            if address:
++                network_settings += 'address ' + address + '\n'
++
++            if mac:
++                network_settings += 'hwaddress ' + mac + '\n'
++
++            key_netmask = key_begin + '.netmask'
++
++            netmask = get_guestinfo_value(key_netmask)
++            if netmask:
++                 network_settings += 'netmask ' + netmask + '\n'
++
++            key_dnsserver = 'dns.servers'
++
++            dnsserver = get_guestinfo_value(key_dnsserver)
++            if dnsserver:
++                network_settings += 'dns-nameservers '
++                dnsserver = dnsserver.split(',')
++
++                for d in dnsserver:
++                    network_settings += d + ' '
++                network_settings += '\n'
++
++            key_dnsdomain = 'dns.domains'
++
++            dnsdomain = get_guestinfo_value(key_dnsdomain)
++            if dnsdomain:
++                network_settings += 'dns-search '
++                dnsdomain = dnsdomain.split(',')
++                for d in dnsdomain:
++                    network_settings += d + ' '
++                network_settings += '\n'
++
++            route_index = 0
++            default_destination_set = False
++            while True:
++                key_route = key_begin + '.route.' + str(route_index)
++                route = get_guestinfo_value(key_route)
++                if not route:
++                    break
++                network_settings += "routes.%s " % (route_index)
++                route = route.split(',')
++                if len(route) > 2:
++                    LOG.debug("Route information for %s route in %s device incorrect - ",
++                                        "expected 2 values", route_index, dev_index)
++                    continue
++                elif len(route) == 2:
++                    network_settings += route[0] + ' ' + route[1] + '\n'# Gateway Destination
++                else: #length = 1
++                    if not default_destination_set:
++                        network_settings += route[0] + ' 0.0.0.0/0' + '\n'
++                        default_destination_set = True
++                    else:
++                        LOG.debug("Default destination set previously, not setting route %s", route_index)
++                route_index += 1
 +            dev_index += 1
 +
 +        if network_settings:
@@ -114,10 +112,10 @@ index 73b9219a..168f0ae6 100644
 +
 +        if self.metadata or self.userdata_raw or self.vendordata_raw or hostname or network_settings:
              return True
-         else:
-             return False
- 
+-        else:
+-            return False
++        return False
 +
+ 
      def setup(self, is_new_instance):
          """setup(is_new_instance)
- 

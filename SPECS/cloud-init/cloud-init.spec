@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        20.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -156,6 +156,9 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Mon Oct 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.3-2
+-   Fixed subp import in photon.py
+-   Fixed creating `[Route]` entries while creating network files
 *   Thu Sep 24 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.3-1
 -   Upgrade cloud-init to 20.3
 -   Updated DataSourceVMwareGuestInfo (till commit abc387c7)
