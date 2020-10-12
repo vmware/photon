@@ -1,8 +1,9 @@
 diff --git a/cloudinit/sources/DataSourceVMwareGuestInfo.py b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-index e69de29b..73b9219a 100644
---- a/cloudinit/sources/DataSourceVMwareGuestInfo.py
+new file mode 100644
+index 00000000..19d20a2d
+--- /dev/null
 +++ b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-@@ -0,0 +1,738 @@
+@@ -0,0 +1,781 @@
 +# Cloud-Init Datasource for VMware Guestinfo
 +#
 +# Copyright (c) 2018 VMware, Inc. All Rights Reserved.
@@ -41,8 +42,14 @@ index e69de29b..73b9219a 100644
 +from cloudinit import util
 +from cloudinit import safeyaml
 +
-+from deepmerge import always_merger
 +import netifaces
++
++# from cloud-init >= 20.3 subp is in its own module
++try:
++    from cloudinit.subp import subp, ProcessExecutionError
++except ImportError:
++    from cloudinit.util import subp, ProcessExecutionError
++
 +
 +LOG = logging.getLogger(__name__)
 +NOVAL = "No value found"
@@ -164,7 +171,7 @@ index e69de29b..73b9219a 100644
 +        # Ensure the metadata gets updated with information about the
 +        # host, including the network interfaces, default IP addresses,
 +        # etc.
-+        self.metadata = always_merger.merge(self.metadata, host_info)
++        self.metadata = merge_dicts(self.metadata, host_info)
 +
 +        # Persist the instance data for versions of cloud-init that support
 +        # doing so. This occurs here rather than in the get_data call in
@@ -321,7 +328,7 @@ index e69de29b..73b9219a 100644
 +
 +    if data_access_method == VMWARE_RPCTOOL:
 +        try:
-+            (stdout, stderr) = util.subp(
++            (stdout, stderr) = subp(
 +                [VMWARE_RPCTOOL, "info-get guestinfo." + key])
 +            if stderr == NOVAL:
 +                LOG.debug("No value found for key %s", key)
@@ -329,7 +336,7 @@ index e69de29b..73b9219a 100644
 +                LOG.error("Failed to get guestinfo value for key %s", key)
 +            else:
 +                return handle_returned_guestinfo_val(key, stdout)
-+        except util.ProcessExecutionError as error:
++        except ProcessExecutionError as error:
 +            if error.stderr == NOVAL:
 +                LOG.debug("No value found for key %s", key)
 +            else:
@@ -364,10 +371,9 @@ index e69de29b..73b9219a 100644
 +
 +    if data_access_method == VMWARE_RPCTOOL:
 +        try:
-+            util.subp(
-+                [VMWARE_RPCTOOL, ("info-set guestinfo.%s %s" % (key, value))])
++            subp([VMWARE_RPCTOOL, ("info-set guestinfo.%s %s" % (key, value))])
 +            return True
-+        except util.ProcessExecutionError as error:
++        except ProcessExecutionError as error:
 +            util.logexc(
 +                LOG, "Failed to set guestinfo key=%s to value=%s: %s", key, value, error)
 +        except Exception:
@@ -530,7 +536,7 @@ index e69de29b..73b9219a 100644
 +    # single IPv4 address associated with the same device associated with the
 +    # default IPv6 address.
 +    if not ipv4 and ipv6:
-+        af_inet4 = addr6_fams.get(netifaces.AF_INET4)
++        af_inet4 = addr6_fams.get(netifaces.AF_INET)
 +        if af_inet4:
 +            if len(af_inet4) > 1:
 +                LOG.warn(
@@ -570,7 +576,10 @@ index e69de29b..73b9219a 100644
 +    """
 +    addr = None
 +    try:
-+        addr = ipaddress.ip_address(val)
++        try:
++            addr = ipaddress.ip_address(val)
++        except ipaddress.AddressValueError:
++            addr = ipaddress.ip_address(unicode(val))
 +    except:
 +        return False
 +    if addr.is_link_local or addr.is_loopback or addr.is_unspecified:
@@ -726,14 +735,49 @@ index e69de29b..73b9219a 100644
 +    return None
 +
 +
++_MERGE_STRATEGY_ENV_VAR = 'CLOUD_INIT_VMWARE_GUEST_INFO_MERGE_STRATEGY'
++_MERGE_STRATEGY_DEEPMERGE = 'deepmerge'
++
++
++def merge_dicts(a, b):
++    merge_strategy = os.getenv(_MERGE_STRATEGY_ENV_VAR)
++    if merge_strategy == _MERGE_STRATEGY_DEEPMERGE:
++        try:
++            LOG.info('merging dictionaries with deepmerge strategy')
++            return merge_dicts_with_deep_merge(a, b)
++        except Exception as err:
++            LOG.error("deep merge failed: %s" % err)
++    LOG.info('merging dictionaries with stdlib strategy')
++    return merge_dicts_with_stdlib(a, b)
++
++
++def merge_dicts_with_deep_merge(a, b):
++    from deepmerge import always_merger
++    return always_merger.merge(a, b)
++
++
++def merge_dicts_with_stdlib(a, b):
++    for key, value in a.items():
++        if isinstance(value, dict):
++            node = b.setdefault(key, {})
++            merge_dicts_with_stdlib(value, node)
++        else:
++            b[key] = value
++    return b
++
++
 +def main():
 +    '''
 +    Executed when this file is used as a program.
 +    '''
++    try:
++        logging.setupBasicLogging()
++    except Exception:
++        pass
 +    metadata = {'wait-on-network': {'ipv4': True, 'ipv6': "false"},
 +                'network': {'config': {'dhcp': True}}}
 +    host_info = wait_on_network(metadata)
-+    metadata = always_merger.merge(metadata, host_info)
++    metadata = merge_dicts(metadata, host_info)
 +    print(util.json_dumps(metadata))
 +
 +

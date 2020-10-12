@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.4
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -52,7 +52,6 @@ BuildRequires:  python3-jinja2
 
 %if %{with_check}
 BuildRequires:  python3-pip
-BuildRequires:  python3-deepmerge
 BuildRequires:  python3-configobj
 BuildRequires:  python3-jsonpatch
 %endif
@@ -73,7 +72,6 @@ Requires:       python3-six
 Requires:       python3-setuptools
 Requires:       python3-xml
 Requires:       python3-jsonschema
-Requires:       python3-deepmerge
 Requires:       python3-netifaces
 Requires:       dhcp-client
 BuildArch:      noarch
@@ -155,6 +153,9 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Mon Oct 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.4-10
+-   Fixed creating `[Route]` entries while creating network files
+-   Updated DataSourceVMwareGuestInfo (till commit abc387c7)
 *   Mon Aug 31 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.4-9
 -   Added instance-dir.patch to cloud-init
 -   Fixed an issue with setting fqdn as hostname
