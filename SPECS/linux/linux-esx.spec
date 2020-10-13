@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.237
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -89,6 +89,12 @@ Patch65: 0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch66: 0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch67: 0007-btrfs-tree-checker-Verify-inode-item.patch
 Patch68: 0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
+
+# Fix for CVE-2020-16119
+Patch69:        0001-timer-Prepare-to-change-timer-callback-argument-type.patch
+Patch70:        0002-net-dccp-Convert-timers-to-use-timer_setup.patch
+Patch71:        0003-dccp-ccid-move-timers-to-struct-dccp_sock.patch
+Patch72:        0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 
 # Fix use-after-free issue in network stack
 Patch74: 0001-inet-rename-netns_frags-to-fqdir.patch
@@ -199,6 +205,10 @@ The Linux package contains the Linux kernel doc files
 %patch66 -p1
 %patch67 -p1
 %patch68 -p1
+%patch69 -p1
+%patch70 -p1
+%patch71 -p1
+%patch72 -p1
 
 %patch74 -p1
 %patch75 -p1
@@ -310,6 +320,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-2
+-   Fix for CVE-2020-16119
 *   Thu Oct 01 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-1
 -   Update to version 4.9.237
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.9.236-2

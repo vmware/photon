@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.237
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -87,6 +87,12 @@ Patch60:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
 # Fix: mp_irqdomain_activate crash
 Patch61:        0001-xen-events-don-t-use-chip_data-for-legacy-IRQs.patch
+
+# Fix for CVE-2020-16119
+Patch62:        0001-timer-Prepare-to-change-timer-callback-argument-type.patch
+Patch63:        0002-net-dccp-Convert-timers-to-use-timer_setup.patch
+Patch64:        0003-dccp-ccid-move-timers-to-struct-dccp_sock.patch
+Patch65:        0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -284,6 +290,10 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch59 -p1
 %patch60 -p1
 %patch61 -p1
+%patch62 -p1
+%patch63 -p1
+%patch64 -p1
+%patch65 -p1
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -507,6 +517,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-3
+-   Fix for CVE-2020-16119
 *   Wed Oct 07 2020 Ajay Kaher <akaher@vmware.com> 4.9.237-2
 -   Fix mp_irqdomain_activate crash
 *   Thu Oct 01 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-1

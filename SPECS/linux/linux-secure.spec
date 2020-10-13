@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.237
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -91,6 +91,12 @@ Patch60:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 # Fix CVE-2019-18885
 Patch61:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch62:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
+# Fix for CVE-2020-16119
+Patch63:        0001-timer-Prepare-to-change-timer-callback-argument-type.patch
+Patch64:        0002-net-dccp-Convert-timers-to-use-timer_setup.patch
+Patch65:        0003-dccp-ccid-move-timers-to-struct-dccp_sock.patch
+Patch66:        0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
+Patch67:        0001-dccp-ccid-use-setup_timer-instead-of-timer_setup.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -256,6 +262,11 @@ EOF
 %patch60 -p1
 %patch61 -p1
 %patch62 -p1
+%patch63 -p1
+%patch64 -p1
+%patch65 -p1
+%patch66 -p1
+%patch67 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -419,6 +430,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-2
+-   Fix for CVE-2020-16119
 *   Thu Oct 01 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-1
 -   Update to version 4.9.237
 *   Wed Sep 23 2020 Ajay Kaher <akaher@vmware.com> 4.9.236-2

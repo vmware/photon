@@ -1,0 +1,145 @@
+From a07d117b4dfbd4b0425d96ffd6d8d4539f6bb587 Mon Sep 17 00:00:00 2001
+From: Kees Cook <keescook@chromium.org>
+Date: Tue, 24 Oct 2017 01:46:09 -0700
+Subject: [PATCH 2/4] net: dccp: Convert timers to use timer_setup()
+
+commit 839a6094140ade97ccc548fcd63179506c5d7fe4 upstream.
+
+In preparation for unconditionally passing the struct timer_list pointer to
+all timer callbacks, switch to using the new timer_setup() and from_timer()
+to pass the timer pointer explicitly. Adds a pointer back to the sock.
+
+Cc: Gerrit Renker <gerrit@erg.abdn.ac.uk>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Soheil Hassas Yeganeh <soheil@google.com>
+Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: dccp@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[Ankit: Backported from v4.19]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ net/dccp/ccids/ccid2.c | 10 +++++-----
+ net/dccp/ccids/ccid2.h |  1 +
+ net/dccp/ccids/ccid3.c | 11 ++++++-----
+ net/dccp/ccids/ccid3.h |  1 +
+ net/dccp/timer.c       | 10 ++++++----
+ 5 files changed, 19 insertions(+), 14 deletions(-)
+
+diff --git a/net/dccp/ccids/ccid2.c b/net/dccp/ccids/ccid2.c
+index 161dfcf86126..298e4f41421c 100644
+--- a/net/dccp/ccids/ccid2.c
++++ b/net/dccp/ccids/ccid2.c
+@@ -136,10 +136,10 @@ static void dccp_tasklet_schedule(struct sock *sk)
+ 	}
+ }
+ 
+-static void ccid2_hc_tx_rto_expire(unsigned long data)
++static void ccid2_hc_tx_rto_expire(struct timer_list *t)
+ {
+-	struct sock *sk = (struct sock *)data;
+-	struct ccid2_hc_tx_sock *hc = ccid2_hc_tx_sk(sk);
++	struct ccid2_hc_tx_sock *hc = from_timer(hc, t, tx_rtotimer);
++	struct sock *sk = hc->sk;
+ 	const bool sender_was_blocked = ccid2_cwnd_network_limited(hc);
+ 
+ 	bh_lock_sock(sk);
+@@ -748,8 +748,8 @@ static int ccid2_hc_tx_init(struct ccid *ccid, struct sock *sk)
+ 	hc->tx_rpdupack  = -1;
+ 	hc->tx_last_cong = hc->tx_lsndtime = hc->tx_cwnd_stamp = ccid2_time_stamp;
+ 	hc->tx_cwnd_used = 0;
+-	setup_timer(&hc->tx_rtotimer, ccid2_hc_tx_rto_expire,
+-			(unsigned long)sk);
++	hc->sk		 = sk;
++	timer_setup(&hc->tx_rtotimer, ccid2_hc_tx_rto_expire, 0);
+ 	INIT_LIST_HEAD(&hc->tx_av_chunks);
+ 	return 0;
+ }
+diff --git a/net/dccp/ccids/ccid2.h b/net/dccp/ccids/ccid2.h
+index 18c97543e522..a54b1707522f 100644
+--- a/net/dccp/ccids/ccid2.h
++++ b/net/dccp/ccids/ccid2.h
+@@ -85,6 +85,7 @@ struct ccid2_hc_tx_sock {
+ 				tx_rto;
+ 	u64			tx_rtt_seq:48;
+ 	struct timer_list	tx_rtotimer;
++	struct sock		*sk;
+ 
+ 	/* Congestion Window validation (optional, RFC 2861) */
+ 	u32			tx_cwnd_used,
+diff --git a/net/dccp/ccids/ccid3.c b/net/dccp/ccids/ccid3.c
+index 03fcf3ee1534..12877a1514e7 100644
+--- a/net/dccp/ccids/ccid3.c
++++ b/net/dccp/ccids/ccid3.c
+@@ -195,10 +195,10 @@ static inline void ccid3_hc_tx_update_win_count(struct ccid3_hc_tx_sock *hc,
+ 	}
+ }
+ 
+-static void ccid3_hc_tx_no_feedback_timer(unsigned long data)
++static void ccid3_hc_tx_no_feedback_timer(struct timer_list *t)
+ {
+-	struct sock *sk = (struct sock *)data;
+-	struct ccid3_hc_tx_sock *hc = ccid3_hc_tx_sk(sk);
++	struct ccid3_hc_tx_sock *hc = from_timer(hc, t, tx_no_feedback_timer);
++	struct sock *sk = hc->sk;
+ 	unsigned long t_nfb = USEC_PER_SEC / 5;
+ 
+ 	bh_lock_sock(sk);
+@@ -505,8 +505,9 @@ static int ccid3_hc_tx_init(struct ccid *ccid, struct sock *sk)
+ 
+ 	hc->tx_state = TFRC_SSTATE_NO_SENT;
+ 	hc->tx_hist  = NULL;
+-	setup_timer(&hc->tx_no_feedback_timer,
+-			ccid3_hc_tx_no_feedback_timer, (unsigned long)sk);
++	hc->sk	     = sk;
++	timer_setup(&hc->tx_no_feedback_timer,
++		    ccid3_hc_tx_no_feedback_timer, 0);
+ 	return 0;
+ }
+ 
+diff --git a/net/dccp/ccids/ccid3.h b/net/dccp/ccids/ccid3.h
+index 1a9933c29672..813d91c6e1e2 100644
+--- a/net/dccp/ccids/ccid3.h
++++ b/net/dccp/ccids/ccid3.h
+@@ -106,6 +106,7 @@ struct ccid3_hc_tx_sock {
+ 	u8				tx_last_win_count;
+ 	ktime_t				tx_t_last_win_count;
+ 	struct timer_list		tx_no_feedback_timer;
++	struct sock			*sk;
+ 	ktime_t				tx_t_ld;
+ 	ktime_t				tx_t_nom;
+ 	struct tfrc_tx_hist_entry	*tx_hist;
+diff --git a/net/dccp/timer.c b/net/dccp/timer.c
+index 2a952cbd6efa..dec33cae9b00 100644
+--- a/net/dccp/timer.c
++++ b/net/dccp/timer.c
+@@ -233,9 +233,12 @@ static void dccp_write_xmitlet(unsigned long data)
+ 	sock_put(sk);
+ }
+ 
+-static void dccp_write_xmit_timer(unsigned long data)
++static void dccp_write_xmit_timer(struct timer_list *t)
+ {
+-	dccp_write_xmitlet(data);
++	struct dccp_sock *dp = from_timer(dp, t, dccps_xmit_timer);
++	struct sock *sk = &dp->dccps_inet_connection.icsk_inet.sk;
++
++	dccp_write_xmitlet((unsigned long)sk);
+ }
+ 
+ void dccp_init_xmit_timers(struct sock *sk)
+@@ -243,8 +246,7 @@ void dccp_init_xmit_timers(struct sock *sk)
+ 	struct dccp_sock *dp = dccp_sk(sk);
+ 
+ 	tasklet_init(&dp->dccps_xmitlet, dccp_write_xmitlet, (unsigned long)sk);
+-	setup_timer(&dp->dccps_xmit_timer, dccp_write_xmit_timer,
+-							     (unsigned long)sk);
++	timer_setup(&dp->dccps_xmit_timer, dccp_write_xmit_timer, 0);
+ 	inet_csk_init_xmit_timers(sk, &dccp_write_timer, &dccp_delack_timer,
+ 				  &dccp_keepalive_timer);
+ }
+-- 
+2.23.1
+

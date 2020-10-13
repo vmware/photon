@@ -1,0 +1,117 @@
+From 97aaeb0369d802aeb0d6cc86f6dc9fb263688014 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Tue, 13 Oct 2020 18:45:06 +0000
+Subject: [PATCH] dccp: ccid: use setup_timer instead of timer_setup
+
+- To fix type cast to non matching type
+  used setup_timer and passed data after typecasting
+- timer_setup in timer.h cause compile time issue
+  due to rap_plugin
+
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ include/linux/timer.h  | 11 -----------
+ net/dccp/ccids/ccid2.c |  5 +++--
+ net/dccp/ccids/ccid3.c |  7 ++++---
+ net/dccp/timer.c       |  5 +++--
+ 4 files changed, 10 insertions(+), 18 deletions(-)
+
+diff --git a/include/linux/timer.h b/include/linux/timer.h
+index e3a6739be4a7..aa45c7a1c51e 100644
+--- a/include/linux/timer.h
++++ b/include/linux/timer.h
+@@ -171,17 +171,6 @@ static inline void init_timer_on_stack_key(struct timer_list *timer,
+ #define setup_pinned_deferrable_timer_on_stack(timer, fn, data)		\
+ 	__setup_timer_on_stack((timer), (fn), (data), TIMER_DEFERRABLE | TIMER_PINNED)
+ 
+-#define TIMER_DATA_TYPE		unsigned long
+-#define TIMER_FUNC_TYPE		void (*)(TIMER_DATA_TYPE)
+-
+-static inline void timer_setup(struct timer_list *timer,
+-			       void (*callback)(struct timer_list *),
+-			       unsigned int flags)
+-{
+-	__setup_timer(timer, (TIMER_FUNC_TYPE)callback,
+-		      (TIMER_DATA_TYPE)timer, flags);
+-}
+-
+ #define from_timer(var, callback_timer, timer_fieldname) \
+ 	container_of(callback_timer, typeof(*var), timer_fieldname)
+ 
+diff --git a/net/dccp/ccids/ccid2.c b/net/dccp/ccids/ccid2.c
+index 501488f75417..124dde0e5f4b 100644
+--- a/net/dccp/ccids/ccid2.c
++++ b/net/dccp/ccids/ccid2.c
+@@ -136,8 +136,9 @@ static void dccp_tasklet_schedule(struct sock *sk)
+ 	}
+ }
+ 
+-static void ccid2_hc_tx_rto_expire(struct timer_list *t)
++static void ccid2_hc_tx_rto_expire(unsigned long data)
+ {
++	struct timer_list *t = (struct timer_list *) data;
+ 	struct dccp_sock *dp = from_timer(dp, t, dccps_ccid_timer);
+ 	struct sock *sk = (struct sock *) dp;
+ 	struct ccid2_hc_tx_sock *hc;
+@@ -754,7 +755,7 @@ static int ccid2_hc_tx_init(struct ccid *ccid, struct sock *sk)
+ 	hc->tx_last_cong = hc->tx_lsndtime = hc->tx_cwnd_stamp = ccid2_time_stamp;
+ 	hc->tx_cwnd_used = 0;
+ 	hc->sk		 = sk;
+-	timer_setup(&dp->dccps_ccid_timer, ccid2_hc_tx_rto_expire, 0);
++	setup_timer(&dp->dccps_ccid_timer, ccid2_hc_tx_rto_expire, (unsigned long)&dp->dccps_ccid_timer);
+ 	INIT_LIST_HEAD(&hc->tx_av_chunks);
+ 	return 0;
+ }
+diff --git a/net/dccp/ccids/ccid3.c b/net/dccp/ccids/ccid3.c
+index 0017f5bff895..559a60a8b2e6 100644
+--- a/net/dccp/ccids/ccid3.c
++++ b/net/dccp/ccids/ccid3.c
+@@ -195,8 +195,9 @@ static inline void ccid3_hc_tx_update_win_count(struct ccid3_hc_tx_sock *hc,
+ 	}
+ }
+ 
+-static void ccid3_hc_tx_no_feedback_timer(struct timer_list *t)
++static void ccid3_hc_tx_no_feedback_timer(unsigned long data)
+ {
++	struct timer_list *t = (struct timer_list *) data;
+ 	struct dccp_sock *dp = from_timer(dp, t, dccps_ccid_timer);
+ 	struct ccid3_hc_tx_sock *hc;
+ 	struct sock *sk = (struct sock *) dp;
+@@ -515,8 +516,8 @@ static int ccid3_hc_tx_init(struct ccid *ccid, struct sock *sk)
+ 	hc->tx_state = TFRC_SSTATE_NO_SENT;
+ 	hc->tx_hist  = NULL;
+ 	hc->sk	     = sk;
+-	timer_setup(&dp->dccps_ccid_timer,
+-		    ccid3_hc_tx_no_feedback_timer, 0);
++	setup_timer(&dp->dccps_ccid_timer,
++		    ccid3_hc_tx_no_feedback_timer, (unsigned long)&dp->dccps_ccid_timer);
+ 	return 0;
+ }
+ 
+diff --git a/net/dccp/timer.c b/net/dccp/timer.c
+index dec33cae9b00..fbbb52c98b88 100644
+--- a/net/dccp/timer.c
++++ b/net/dccp/timer.c
+@@ -233,8 +233,9 @@ static void dccp_write_xmitlet(unsigned long data)
+ 	sock_put(sk);
+ }
+ 
+-static void dccp_write_xmit_timer(struct timer_list *t)
++static void dccp_write_xmit_timer(unsigned long data)
+ {
++	struct timer_list *t = (struct timer_list *) data;
+ 	struct dccp_sock *dp = from_timer(dp, t, dccps_xmit_timer);
+ 	struct sock *sk = &dp->dccps_inet_connection.icsk_inet.sk;
+ 
+@@ -246,7 +247,7 @@ void dccp_init_xmit_timers(struct sock *sk)
+ 	struct dccp_sock *dp = dccp_sk(sk);
+ 
+ 	tasklet_init(&dp->dccps_xmitlet, dccp_write_xmitlet, (unsigned long)sk);
+-	timer_setup(&dp->dccps_xmit_timer, dccp_write_xmit_timer, 0);
++	setup_timer(&dp->dccps_xmit_timer, dccp_write_xmit_timer, (unsigned long)&dp->dccps_xmit_timer);
+ 	inet_csk_init_xmit_timers(sk, &dccp_write_timer, &dccp_delack_timer,
+ 				  &dccp_keepalive_timer);
+ }
+-- 
+2.23.1
+
