@@ -1,6 +1,6 @@
 Name:           toybox
-Version:        0.8.2
-Release:        5%{?dist}
+Version:        0.8.3
+Release:        1%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox/
@@ -8,8 +8,8 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
-%define sha1 toybox=0477740759f5132397fdfdbf8aea88e811869173
-Patch0:         toybox.patch
+%define sha1 toybox=4b1959908c017fa75a6915711fc077cff135431f
+Patch0:         toybox-change-toys-path.patch
 Source1:        config-toybox
 Source2:        toybox-toys
 BuildRequires:  openssl-devel zlib-devel
@@ -24,8 +24,6 @@ environment.
 %setup -q -n toybox-%{version}
 %patch0 -p1
 %build
-# Move sed to /bin
-sed -i 's#TOYFLAG_USR|TOYFLAG_BIN#TOYFLAG_BIN#' toys/posix/sed.c
 cp %{SOURCE1} .config
 NOSTRIP=1 make CFLAGS="-Wall -Wundef -Wno-char-subscripts -Werror=implicit-function-declaration -g"
 
@@ -542,6 +540,8 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 /usr/bin/uuencode
 
 %changelog
+*   Wed Oct 14 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.3-1
+-   Version update to 0.8.3
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.2-5
 -   openssl 1.1.1
 *   Fri Aug 21 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.2-4
