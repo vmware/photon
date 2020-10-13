@@ -1416,28 +1416,6 @@ index 7deb81b6dbac..bb22bc27a9be 100644
  	.read = shadow_fw_read,
  	.rw = false,
  };
-diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowpci.c b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowpci.c
-index 9b91da09dc5f..b3fa90d37fd1 100644
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowpci.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowpci.c
-@@ -111,11 +111,16 @@ platform_init(struct nvkm_bios *bios, const char *name)
- 	return ERR_PTR(ret);
- }
- 
-+static void platform_fini(void *data)
-+{
-+	kfree(data);
-+}
-+
- const struct nvbios_source
- nvbios_platform = {
- 	.name = "PLATFORM",
- 	.init = platform_init,
--	.fini = (void(*)(void *))kfree,
-+	.fini = platform_fini,
- 	.read = pcirom_read,
- 	.rw = true,
- };
 diff --git a/drivers/gpu/drm/radeon/radeon_kms.c b/drivers/gpu/drm/radeon/radeon_kms.c
 index dec1e081f529..631f91c883c5 100644
 --- a/drivers/gpu/drm/radeon/radeon_kms.c

@@ -1,0 +1,47 @@
+From 18e7cc5d57f1353377c9cd8350ffd3c122f01900 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Tue, 13 Oct 2020 10:08:33 +0530
+Subject: [PATCH] tools: perf: fix compilation error
+
+https://lkml.org/lkml/2020/9/30/1024
+
+This patch is to resolve following compilation error:
+
+In file included from /usr/src/photon/BUILD/linux-4.19.150/tools/perf/util/evlist.h:15:0,
+                 from /usr/src/photon/BUILD/linux-4.19.150/tools/perf/util/evsel.c:30:
+/usr/src/photon/BUILD/linux-4.19.150/tools/perf/util/evsel.c: In function ‘perf_evsel__exit’:
+/usr/src/photon/BUILD/linux-4.19.150/tools/perf/util/util.h:25:28: error: passing argument 1 of ‘free’ discards ‘const’ qualifier from pointer target type [-Werror=discarded-qualifiers]
+ #define zfree(ptr) ({ free(*ptr); *ptr = NULL; })
+                            ^
+/usr/src/photon/BUILD/linux-4.19.150/tools/perf/util/evsel.c:1293:2: note: in expansion of macro ‘zfree’
+  zfree(&evsel->pmu_name);
+  ^~~~~
+In file included from /usr/src/photon/BUILD/linux-4.19.150/tools/perf/arch/x86/include/perf_regs.h:5:0,
+                 from /usr/src/photon/BUILD/linux-4.19.150/tools/perf/util/perf_regs.h:27,
+                 from /usr/src/photon/BUILD/linux-4.19.150/tools/perf/util/event.h:11,
+                 from /usr/src/photon/BUILD/linux-4.19.150/tools/perf/util/callchain.h:8,
+                 from /usr/src/photon/BUILD/linux-4.19.150/tools/perf/util/evsel.c:26:
+/usr/include/stdlib.h:563:13: note: expected ‘void *’ but argument is of type ‘const char *’
+ extern void free (void *__ptr) __THROW;
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ tools/perf/util/evsel.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/perf/util/evsel.h b/tools/perf/util/evsel.h
+index 163c960..961278e 100644
+--- a/tools/perf/util/evsel.h
++++ b/tools/perf/util/evsel.h
+@@ -145,7 +145,7 @@ struct perf_evsel {
+ 	struct perf_evsel	**metric_events;
+ 	bool			collect_stat;
+ 	bool			weak_group;
+-	const char		*pmu_name;
++	char			*pmu_name;
+ };
+ 
+ union u64_swap {
+-- 
+2.7.4
+

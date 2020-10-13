@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux
-Version:        4.19.148
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.150
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=aff6c306fcf2cf42d93070ec96da17b4e84e4065
+%define sha1 linux=bad0a44a158ae6e230ad47f02edfdfe8f3568b8f
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -61,9 +61,9 @@ Patch16:        0003-drm-vmwgfx-Refuse-DMA-operation-when-SEV-encryption-.patch
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
+
+Patch25:        0001-tools-perf-fix-compilation-error.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix for CVE-2020-25211
-Patch27:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
@@ -91,9 +91,6 @@ Patch42:	secure-boot-patches/0003-integrity-Load-certs-to-the-platform-keyring.p
 Patch43:	secure-boot-patches/0004-efi-Add-EFI-signature-data-types.patch
 Patch44:	secure-boot-patches/0005-efi-Add-an-EFI-signature-blob-parser.patch
 Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.patch
-# Fix for CVE-2020-14386
-Patch46:        0001-net-packet-make-tp_drops-atomic.patch
-Patch47:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 #Fix for CVE-2019-19813 and CVE-2019-19816
 Patch51:        0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
 Patch52:        0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
@@ -368,8 +365,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch16 -p1
 %endif
 
+%patch25 -p1
 %patch26 -p1
-%patch27 -p1
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
@@ -387,8 +384,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
-%patch46 -p1
-%patch47 -p1
 %patch51 -p1
 %patch52 -p1
 %patch53 -p1
@@ -829,6 +824,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Tue Oct 13 2020 Ajay Kaher <akaher@vmware.com> 4.19.150-1
+-   Update to version 4.19.150
 *   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-5
 -   Fix for CVE-2020-16120
 *   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.19.148-4

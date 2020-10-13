@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.148
+Version:        4.19.150
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
-Release:        5%{?kat_build:.%kat}%{?dist}
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=aff6c306fcf2cf42d93070ec96da17b4e84e4065
+%define sha1 linux=bad0a44a158ae6e230ad47f02edfdfe8f3568b8f
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
@@ -58,11 +58,6 @@ Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
-# Fix for CVE-2020-14386
-Patch40:        0001-net-packet-make-tp_drops-atomic.patch
-Patch41:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
-# Fix for CVE-2020-25211
-Patch42:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 #Fix for CVE-2019-19813 and CVE-2019-19816
 Patch51:        0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
 Patch52:        0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
@@ -496,9 +491,6 @@ The Linux package contains the Linux kernel doc files
 %patch36 -p1
 %patch38 -p1
 %patch39 -p1
-%patch40 -p1
-%patch41 -p1
-%patch42 -p1
 %patch51 -p1
 %patch52 -p1
 %patch53 -p1
@@ -1014,6 +1006,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Oct 13 2020 Ajay Kaher <akaher@vmware.com> 4.19.150-1
+-   Update to version 4.19.150
 *   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-5
 -   Fix for CVE-2020-16120
 *   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.19.148-4
