@@ -90,3 +90,6 @@ x86_64/libdb-5.3.28-1.ph2dev.x86_64.rpm
 x86_64/libdb-devel-5.3.28-1.ph2dev.x86_64.rpm
 x86_64/python3-3.5.6-9.ph1.x86_64.rpm
 x86_64/python3-libs-3.5.6-9.ph1.x86_64.rpm
+x86_64/zstd-1.4.5-1.ph3.x86_64.rpm
+x86_64/zstd-libs-1.4.5-1.ph3.x86_64.rpm
+x86_64/zstd-devel-1.4.5-1.ph3.x86_64.rpm

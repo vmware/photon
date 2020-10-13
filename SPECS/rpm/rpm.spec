@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -32,7 +32,7 @@ BuildRequires:  xz-devel
 BuildRequires:  file-devel
 BuildRequires:  python3-devel
 BuildRequires:  openssl >= 1.1.1
-
+BuildRequires:  zstd-devel
 %description
 RPM package manager
 
@@ -40,6 +40,7 @@ RPM package manager
 Summary:        Libraries and header files for rpm
 Provides:       pkgconfig(rpm)
 Requires:       %{name} = %{version}-%{release}
+Requires:       zstd-devel
 %description devel
 Static libraries and header files for the support library for rpm
 
@@ -53,6 +54,7 @@ Requires:       zlib
 Requires:       bzip2-libs
 Requires:       elfutils-libelf
 Requires:       xz-libs
+Requires:       zstd-libs
 %description    libs
 Shared libraries librpm and librpmio
 
@@ -103,7 +105,8 @@ sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
         --with-lua \
         --with-vendor=vmware \
         --disable-silent-rules \
-        --with-external-db
+        --with-external-db \
+        --enable-zstd
 make %{?_smp_mflags}
 
 pushd python
@@ -241,6 +244,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Oct 13 2020 Anisha Kumari <kanisha@vmware.com> 4.14.2-11
+-   Add build conditional and enable zstd support
 *   Tue Sep 08 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.14.2-10
 -   Openssl 1.1.1 compatibility
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 4.14.2-9

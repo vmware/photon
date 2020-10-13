@@ -119,6 +119,7 @@ class constants(object):
         "automake",
         "openssl",
         "openssl-devel",
+        "zstd",
         "libdb",
         "rpm"]
 
@@ -212,6 +213,9 @@ class constants(object):
         "libcap",
         "libdb",
         "libdb-devel",
+        "zstd",
+        "zstd-libs",
+        "zstd-devel",
         "lua",
         "lua-devel",
         "rpm",
