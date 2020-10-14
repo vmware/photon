@@ -2,7 +2,7 @@
 
 Name:           python3-ply
 Version:        3.11
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python Lex & Yacc
 License:        BSD-3-Clause
 Group:          Development/Languages/Python
@@ -13,7 +13,7 @@ Source0:        https://github.com/dabeaz/ply/archive/ply-%{version}.tar.gz
 %define sha1    ply=10a555a32095991fbc7f7ed10c677a14e21fad1d
 BuildRequires:  python3-devel
 %if %{with_check}
-BuildRequires:  pytho3-six
+BuildRequires:  python3-six
 %endif
 Requires:       python3
 BuildArch:      noarch
@@ -56,6 +56,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Oct 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 3.11-4
+-   Fix makecheck
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 3.11-3
 -   Mass removal python2
 *   Thu Dec 06 2018 Ashwin H <ashwinh@vmware.com> 3.11-2
