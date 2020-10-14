@@ -1,14 +1,14 @@
 Summary:	Man pages
 Name:		man-pages
 Version:	4.16
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+ and BSD
 URL:		http://www.kernel.org/doc/man-pages
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.kernel.org/pub/linux/docs/man-pages/%{name}-%{version}.tar.gz
-%define sha1 man-pages=354b253235052e398fa9677fd29aacfa87b1117f
+%define sha1    man-pages=354b253235052e398fa9677fd29aacfa87b1117f
 BuildArch:	noarch
 
 %description
@@ -20,12 +20,13 @@ The Man-pages package contains over 1,900 man pages.
 
 %install
 make DESTDIR=%{buildroot} install
-#	The following man pages conflict with other packages
+# The following man pages conflict with other packages
 rm -vf %{buildroot}%{_mandir}/man3/getspnam.3
 rm -vf %{buildroot}%{_mandir}/man5/passwd.5
+# /usr/share/man/man2/move_pages.2.gz conflict with libnuma-devel-2.0.13-1.ph3.x86_64
+rm -vf %{buildroot}%{_mandir}/man2/move_pages.2.gz
 
 %files
-
 %defattr(-,root,root)
 %{_mandir}/man1/*
 %{_mandir}/man2/*
@@ -37,6 +38,8 @@ rm -vf %{buildroot}%{_mandir}/man5/passwd.5
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Sep 25 2020 Michelle Wang <michellew@vmware.com> 4.16-2
+-   Remove conflict with libnuma-devel
 *   Thu Sep 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.16-1
 -   Update to version 4.16
 *   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 4.10-1
