@@ -1,0 +1,29 @@
+From ded9070c3f48bf3db48ea122e1eba15af5aefd08 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Fri, 10 Jul 2020 14:04:49 +0530
+Subject: [PATCH] x86/sev-es: Fix: attempt to move .org backwards error
+
+used .org 0x490 instead of .org 0x390 to fix following:
+
+arch/x86/boot/compressed/head_64.S: Assembler messages:
+arch/x86/boot/compressed/head_64.S:527: Error: attempt to move .org backwards
+---
+ arch/x86/boot/compressed/head_64.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index cdc1f2e..030b2c6 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -524,7 +524,7 @@ fail:
+ 	jmp	*%rax
+ ENDPROC(efi_pe_entry)
+ 
+-	.org 0x390
++	.org 0x490
+ ENTRY(efi64_stub_entry)
+ 	movq	%rdi, efi64_config(%rip)	/* Handle */
+ 	movq	%rsi, efi64_config+8(%rip) /* EFI System table pointer */
+-- 
+2.7.4
+

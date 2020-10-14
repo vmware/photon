@@ -1,0 +1,89 @@
+From b4d392214a1c891deced5c403ca25fb5da39433d Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:49 +0530
+Subject: [PATCH 33/75] x86-head-64-Load-segment-registers-earlier
+
+x86/head/64: Load segment registers earlier
+
+Make sure segments are properly set up before setting up an IDT and
+doing anything that might cause a #VC exception. This is later needed
+for early exception handling.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/kernel/head_64.S | 52 +++++++++++++++++++++++------------------------
+ 1 file changed, 26 insertions(+), 26 deletions(-)
+
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index 418031b..0a71c59 100755
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -169,6 +169,32 @@ ENTRY(secondary_startup_64)
+ 	movq	%rax, boot_gdt_base(%rip)
+ 	lgdt	boot_gdt_descr(%rip)
+ 
++	/* set up data segments */
++	xorl %eax,%eax
++	movl %eax,%ds
++	movl %eax,%ss
++	movl %eax,%es
++
++	/*
++	 * We don't really need to load %fs or %gs, but load them anyway
++	 * to kill any stale realmode selectors.  This allows execution
++	 * under VT hardware.
++	 */
++	movl %eax,%fs
++	movl %eax,%gs
++
++	/* Set up %gs.
++	 *
++	 * The base of %gs always points to fixed_percpu_data. If the
++	 * stack protector canary is enabled, it is located at %gs:40.
++	 * Note that, on SMP, the boot cpu uses init data section until
++	 * the per cpu areas are set up.
++	 */
++	movl	$MSR_GS_BASE,%ecx
++	movl	initial_gs(%rip),%eax
++	movl	initial_gs+4(%rip),%edx
++	wrmsr
++
+ 	/* Check if nx is implemented */
+ 	movl	$0x80000001, %eax
+ 	cpuid
+@@ -204,32 +230,6 @@ ENTRY(secondary_startup_64)
+ 	 */
+ 	lgdt	early_gdt_descr(%rip)
+ 
+-	/* set up data segments */
+-	xorl %eax,%eax
+-	movl %eax,%ds
+-	movl %eax,%ss
+-	movl %eax,%es
+-
+-	/*
+-	 * We don't really need to load %fs or %gs, but load them anyway
+-	 * to kill any stale realmode selectors.  This allows execution
+-	 * under VT hardware.
+-	 */
+-	movl %eax,%fs
+-	movl %eax,%gs
+-
+-	/* Set up %gs.
+-	 *
+-	 * The base of %gs always points to the bottom of the irqstack
+-	 * union.  If the stack protector canary is enabled, it is
+-	 * located at %gs:40.  Note that, on SMP, the boot cpu uses
+-	 * init data section till per cpu areas are set up.
+-	 */
+-	movl	$MSR_GS_BASE,%ecx
+-	movl	initial_gs(%rip),%eax
+-	movl	initial_gs+4(%rip),%edx
+-	wrmsr
+-
+ 	/* rsi is pointer to real mode structure with interesting info.
+ 	   pass it to C */
+ 	movq	%rsi, %rdi
+-- 
+2.7.4
+

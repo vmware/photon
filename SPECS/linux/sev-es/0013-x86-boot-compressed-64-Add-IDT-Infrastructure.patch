@@ -1,0 +1,255 @@
+From db844657b7208696b51483a8a7d5746ecc2802e8 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Mon, 15 Jun 2020 15:48:20 +0530
+Subject: [PATCH 13/75] x86/boot/compressed/64: Add IDT Infrastructure
+
+Add code needed to setup an IDT in the early pre-decompression
+boot-code. The IDT is loaded first in startup_64, which is after
+EfiExitBootServices() has been called, and later reloaded when the
+kernel image has been relocated to the end of the decompression area.
+
+This allows to setup different IDT handlers before and after the
+relocation.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/boot/compressed/Makefile          |  1 +
+ arch/x86/boot/compressed/head_64.S         | 24 +++++++++++
+ arch/x86/boot/compressed/idt_64.c          | 43 +++++++++++++++++++
+ arch/x86/boot/compressed/idt_handlers_64.S | 69 ++++++++++++++++++++++++++++++
+ arch/x86/boot/compressed/misc.h            |  5 +++
+ arch/x86/include/asm/desc_defs.h           |  3 ++
+ 6 files changed, 145 insertions(+)
+ create mode 100644 arch/x86/boot/compressed/idt_64.c
+ create mode 100644 arch/x86/boot/compressed/idt_handlers_64.S
+
+diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
+index 9cc498c..263e628 100644
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -80,6 +80,7 @@ vmlinux-objs-$(CONFIG_EARLY_PRINTK) += $(obj)/early_serial_console.o
+ vmlinux-objs-$(CONFIG_RANDOMIZE_BASE) += $(obj)/kaslr.o
+ ifdef CONFIG_X86_64
+ 	vmlinux-objs-$(CONFIG_RANDOMIZE_BASE) += $(obj)/kaslr_64.o
++	vmlinux-objs-y += $(obj)/idt_64.o $(obj)/idt_handlers_64.o
+ 	vmlinux-objs-y += $(obj)/mem_encrypt.o
+ 	vmlinux-objs-y += $(obj)/pgtable_64.o
+ endif
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index 2dc24a1..4fb87fb 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -33,6 +33,7 @@
+ #include <asm/processor-flags.h>
+ #include <asm/asm-offsets.h>
+ #include <asm/bootparam.h>
++#include <asm/desc_defs.h>
+ #include "pgtable.h"
+ 
+ /*
+@@ -369,6 +370,10 @@ ENTRY(startup_64)
+ 
+ .Lon_kernel_cs:
+ 
++	pushq	%rsi
++	call	load_stage1_idt
++	popq	%rsi
++
+ 	/*
+ 	 * paging_prepare() sets up the trampoline and checks if we need to
+ 	 * enable 5-level paging.
+@@ -546,6 +551,13 @@ relocated:
+ 	rep	stosq
+ 
+ /*
++ * Load stage2 IDT
++ */
++	pushq	%rsi
++	call	load_stage2_idt
++	popq	%rsi
++
++/*
+  * Do the extraction, and jump to the new kernel..
+  */
+ 	pushq	%rsi			/* Save the real mode argument */
+@@ -692,6 +704,18 @@ gdt:
+ 	.quad   0x0000000000000000	/* TS continued */
+ gdt_end:
+ 
++SYM_DATA_START(boot_idt_desc)
++	.word	boot_idt_end - boot_idt
++	.quad	0
++SYM_DATA_END(boot_idt_desc)
++	.balign 8
++SYM_DATA_START(boot_idt)
++	.rept	BOOT_IDT_ENTRIES
++	.quad	0
++	.quad	0
++	.endr
++SYM_DATA_END_LABEL(boot_idt, SYM_L_GLOBAL, boot_idt_end)
++
+ #ifdef CONFIG_EFI_STUB
+ efi_config:
+ 	.quad	0
+diff --git a/arch/x86/boot/compressed/idt_64.c b/arch/x86/boot/compressed/idt_64.c
+new file mode 100644
+index 0000000..46ecea6
+--- /dev/null
++++ b/arch/x86/boot/compressed/idt_64.c
+@@ -0,0 +1,43 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#include <asm/trap_defs.h>
++#include <asm/segment.h>
++#include "misc.h"
++
++static void set_idt_entry(int vector, void (*handler)(void))
++{
++	unsigned long address = (unsigned long)handler;
++	gate_desc entry;
++
++	memset(&entry, 0, sizeof(entry));
++
++	entry.offset_low    = (u16)(address & 0xffff);
++	entry.segment       = __KERNEL_CS;
++	entry.bits.type     = GATE_TRAP;
++	entry.bits.p        = 1;
++	entry.offset_middle = (u16)((address >> 16) & 0xffff);
++	entry.offset_high   = (u32)(address >> 32);
++
++	memcpy(&boot_idt[vector], &entry, sizeof(entry));
++}
++
++/* Have this here so we don't need to include <asm/desc.h> */
++static void load_boot_idt(const struct desc_ptr *dtr)
++{
++	asm volatile("lidt %0"::"m" (*dtr));
++}
++
++/* Setup IDT before kernel jumping to  .Lrelocated */
++void load_stage1_idt(void)
++{
++	boot_idt_desc.address = (unsigned long)boot_idt;
++
++	load_boot_idt(&boot_idt_desc);
++}
++
++/* Setup IDT after kernel jumping to  .Lrelocated */
++void load_stage2_idt(void)
++{
++	boot_idt_desc.address = (unsigned long)boot_idt;
++
++	load_boot_idt(&boot_idt_desc);
++}
+diff --git a/arch/x86/boot/compressed/idt_handlers_64.S b/arch/x86/boot/compressed/idt_handlers_64.S
+new file mode 100644
+index 0000000..f86ea87
+--- /dev/null
++++ b/arch/x86/boot/compressed/idt_handlers_64.S
+@@ -0,0 +1,69 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Early IDT handler entry points
++ *
++ * Copyright (C) 2019 SUSE
++ *
++ * Author: Joerg Roedel <jroedel@suse.de>
++ */
++
++#include <asm/segment.h>
++
++#include "../../entry/calling.h"
++
++.macro EXCEPTION_HANDLER name function error_code=0
++SYM_FUNC_START(\name)
++
++	/* Build pt_regs */
++	.if \error_code == 0
++	pushq   $0
++	.endif
++
++	pushq   %rdi
++	pushq   %rsi
++	pushq   %rdx
++	pushq   %rcx
++	pushq   %rax
++	pushq   %r8
++	pushq   %r9
++	pushq   %r10
++	pushq   %r11
++	pushq   %rbx
++	pushq   %rbp
++	pushq   %r12
++	pushq   %r13
++	pushq   %r14
++	pushq   %r15
++
++	/* Call handler with pt_regs */
++	movq    %rsp, %rdi
++	/* Error code is second parameter */
++	movq	ORIG_RAX(%rsp), %rsi
++	call    \function
++
++	/* Restore regs */
++	popq    %r15
++	popq    %r14
++	popq    %r13
++	popq    %r12
++	popq    %rbp
++	popq    %rbx
++	popq    %r11
++	popq    %r10
++	popq    %r9
++	popq    %r8
++	popq    %rax
++	popq    %rcx
++	popq    %rdx
++	popq    %rsi
++	popq    %rdi
++
++	/* Remove error code and return */
++	addq    $8, %rsp
++
++	iretq
++SYM_FUNC_END(\name)
++	.endm
++
++	.text
++	.code64
+diff --git a/arch/x86/boot/compressed/misc.h b/arch/x86/boot/compressed/misc.h
+index 47fd18d..c2e0279 100644
+--- a/arch/x86/boot/compressed/misc.h
++++ b/arch/x86/boot/compressed/misc.h
+@@ -22,6 +22,7 @@
+ #include <asm/page.h>
+ #include <asm/boot.h>
+ #include <asm/bootparam.h>
++#include <asm/desc_defs.h>
+ 
+ #define BOOT_BOOT_H
+ #include "../ctype.h"
+@@ -113,4 +114,8 @@ static inline void console_init(void)
+ 
+ void set_sev_encryption_mask(void);
+ 
++/* idt_64.c */
++extern gate_desc boot_idt[BOOT_IDT_ENTRIES];
++extern struct desc_ptr boot_idt_desc;
++
+ #endif
+diff --git a/arch/x86/include/asm/desc_defs.h b/arch/x86/include/asm/desc_defs.h
+index a91f3b6..5621fb3 100644
+--- a/arch/x86/include/asm/desc_defs.h
++++ b/arch/x86/include/asm/desc_defs.h
+@@ -109,6 +109,9 @@ struct desc_ptr {
+ 
+ #endif /* !__ASSEMBLY__ */
+ 
++/* Boot IDT definitions */
++#define	BOOT_IDT_ENTRIES	32
++
+ /* Access rights as returned by LAR */
+ #define AR_TYPE_RODATA		(0 * (1 << 9))
+ #define AR_TYPE_RWDATA		(1 * (1 << 9))
+-- 
+2.7.4
+

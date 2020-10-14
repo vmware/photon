@@ -1,0 +1,88 @@
+From d0d9402586ea6afca80bf29ceb104de12fb1f133 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:40 +0530
+Subject: [PATCH 02/75] KVM-SVM-Add-GHCB-Accessor-functions
+
+Building a correct GHCB for the hypervisor requires setting valid bits
+in the GHCB. Simplify that process by providing accessor functions to
+set values and to update the valid bitmap.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+
+---
+ arch/x86/include/asm/svm.h | 61 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 61 insertions(+)
+
+diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
+index b7d0455..accfd96 100755
+--- a/arch/x86/include/asm/svm.h
++++ b/arch/x86/include/asm/svm.h
+@@ -339,4 +339,65 @@ struct __attribute__ ((__packed__)) vmcb {
+ #define SVM_STGI   ".byte 0x0f, 0x01, 0xdc"
+ #define SVM_INVLPGA ".byte 0x0f, 0x01, 0xdf"
+ 
++/* GHCB Accessor functions */
++
++#define DEFINE_GHCB_INDICES(field)					\
++	u16 idx = offsetof(struct vmcb_save_area, field) / 8;		\
++	u16 byte_idx  = idx / 8;					\
++	u16 bit_idx   = idx % 8;					\
++	BUILD_BUG_ON(byte_idx > ARRAY_SIZE(ghcb->save.valid_bitmap));
++
++#define GHCB_SET_VALID(ghcb, field)					\
++	{								\
++		DEFINE_GHCB_INDICES(field)				\
++		(ghcb)->save.valid_bitmap[byte_idx] |= BIT(bit_idx);	\
++	}
++
++#define DEFINE_GHCB_SETTER(field)					\
++	static inline void						\
++	ghcb_set_##field(struct ghcb *ghcb, u64 value)			\
++	{								\
++		GHCB_SET_VALID(ghcb, field)				\
++		(ghcb)->save.field = value;				\
++	}
++
++#define DEFINE_GHCB_ACCESSORS(field)					\
++	static inline bool ghcb_is_valid_##field(const struct ghcb *ghcb)	\
++	{								\
++		DEFINE_GHCB_INDICES(field)				\
++		return !!((ghcb)->save.valid_bitmap[byte_idx]		\
++						& BIT(bit_idx));	\
++	}								\
++									\
++	static inline void						\
++	ghcb_set_##field(struct ghcb *ghcb, u64 value)			\
++	{								\
++		GHCB_SET_VALID(ghcb, field)				\
++		(ghcb)->save.field = value;				\
++	}
++
++DEFINE_GHCB_ACCESSORS(cpl)
++DEFINE_GHCB_ACCESSORS(rip)
++DEFINE_GHCB_ACCESSORS(rsp)
++DEFINE_GHCB_ACCESSORS(rax)
++DEFINE_GHCB_ACCESSORS(rcx)
++DEFINE_GHCB_ACCESSORS(rdx)
++DEFINE_GHCB_ACCESSORS(rbx)
++DEFINE_GHCB_ACCESSORS(rbp)
++DEFINE_GHCB_ACCESSORS(rsi)
++DEFINE_GHCB_ACCESSORS(rdi)
++DEFINE_GHCB_ACCESSORS(r8)
++DEFINE_GHCB_ACCESSORS(r9)
++DEFINE_GHCB_ACCESSORS(r10)
++DEFINE_GHCB_ACCESSORS(r11)
++DEFINE_GHCB_ACCESSORS(r12)
++DEFINE_GHCB_ACCESSORS(r13)
++DEFINE_GHCB_ACCESSORS(r14)
++DEFINE_GHCB_ACCESSORS(r15)
++DEFINE_GHCB_ACCESSORS(sw_exit_code)
++DEFINE_GHCB_ACCESSORS(sw_exit_info_1)
++DEFINE_GHCB_ACCESSORS(sw_exit_info_2)
++DEFINE_GHCB_ACCESSORS(sw_scratch)
++DEFINE_GHCB_ACCESSORS(xcr0)
++
+ #endif
+-- 
+2.7.4
+

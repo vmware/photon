@@ -1,19 +1,18 @@
-From b2ce2307e8547e420fcce9fbad46119814f7f810 Mon Sep 17 00:00:00 2001
+From f391c4e989c2cf76dccb9b20d1f8d31b12997a20 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Tue, 9 May 2017 12:39:57 -0700
+Date: Wed, 23 Sep 2020 21:56:27 +0530
 Subject: [PATCH] x86/vmware: pv-ops boot_clock
 
 ---
  arch/x86/include/asm/paravirt.h       |  5 +++++
  arch/x86/include/asm/paravirt_types.h |  2 ++
- arch/x86/kernel/cpu/vmware.c          | 24 +++++++++++++++++++++++-
- arch/x86/kernel/head_64.S             |  8 ++++++++
+ arch/x86/kernel/cpu/vmware.c          | 21 +++++++++++++++++++++
  arch/x86/kernel/paravirt.c            |  7 +++++++
  arch/x86/kernel/setup.c               | 10 ++++++++++
- 6 files changed, 55 insertions(+), 1 deletion(-)
+ 5 files changed, 45 insertions(+)
 
 diff --git a/arch/x86/include/asm/paravirt.h b/arch/x86/include/asm/paravirt.h
-index e375d4266..e5c64e1 100644
+index a046770..10a3b0d 100644
 --- a/arch/x86/include/asm/paravirt.h
 +++ b/arch/x86/include/asm/paravirt.h
 @@ -184,6 +184,11 @@ static inline u64 paravirt_steal_clock(int cpu)
@@ -49,18 +48,10 @@ index 4b75acc..156cfa3 100644
  
  struct pv_cpu_ops {
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index d4a8c9a..45c78ec 100644
+index b41e35a..d173f76 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -101,6 +101,7 @@ static struct cyc2ns_data vmware_cyc2ns __ro_after_init;
- static int vmw_sched_clock __initdata = 1;
- static DEFINE_PER_CPU_DECRYPTED(struct vmware_steal_time, steal_time) __aligned(64);
- static int has_steal_clock = 0;
-+uint64_t __initdata tsc_at_head;
- 
- static u64 vmware_clock_get_cycles(struct clocksource *cs)
- {
-@@ -123,6 +124,26 @@ struct clocksource * __init clocksource_default_clock(void)
+@@ -154,6 +154,26 @@ struct clocksource * __init clocksource_default_clock(void)
  	return &clocksource_vmware;
  }
  
@@ -87,16 +78,7 @@ index d4a8c9a..45c78ec 100644
  static __init int setup_vmw_sched_clock(char *s)
  {
  	vmw_sched_clock = 0;
-@@ -143,7 +164,7 @@ static unsigned long long notrace vmware_sched_clock(void)
- static void __init vmware_cyc2ns_setup(void)
- {
- 	struct cyc2ns_data *d = &vmware_cyc2ns;
--	unsigned long long tsc_now = rdtsc();
-+	unsigned long long tsc_now = tsc_at_head;
- 
- 	clocks_calc_mult_shift(&d->cyc2ns_mul, &d->cyc2ns_shift,
- 			       vmware_tsc_khz, NSEC_PER_MSEC, 0);
-@@ -347,6 +368,7 @@ static void __init vmware_paravirt_ops_setup(void)
+@@ -393,6 +413,7 @@ static void __init vmware_paravirt_ops_setup(void)
  #endif
  	}
  	clocksource_register_khz(&clocksource_vmware, vmware_tsc_khz);
@@ -104,25 +86,6 @@ index d4a8c9a..45c78ec 100644
  }
  #else
  #define vmware_paravirt_ops_setup() do {} while (0)
-diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-index a3618cf..93b5e83 100644
---- a/arch/x86/kernel/head_64.S
-+++ b/arch/x86/kernel/head_64.S
-@@ -72,6 +72,14 @@ startup_64:
- 	 * tables and then reload them.
- 	 */
- 
-+	/*
-+	 * Read a TSC value first
-+	 */
-+	rdtsc
-+	shl	$0x20, %rdx
-+	or	%rax, %rdx
-+	mov	%rdx, tsc_at_head(%rip)
-+
- 	/* Set up the stack for verify_cpu(), similar to initial_stack below */
- 	leaq	(__end_init_task - SIZEOF_PTREGS)(%rip), %rsp
- 
 diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
 index 8dc69d8..3cf11e7 100644
 --- a/arch/x86/kernel/paravirt.c
@@ -149,7 +112,7 @@ index 8dc69d8..3cf11e7 100644
  
  __visible struct pv_irq_ops pv_irq_ops = {
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index b4866ba..ecec1e1 100644
+index 90ecc10..53a91b8 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -1309,3 +1309,13 @@ static int __init register_kernel_offset_dumper(void)
@@ -166,3 +129,6 @@ index b4866ba..ecec1e1 100644
 +	paravirt_read_boot_clock64(ts);
 +}
 +#endif
+-- 
+2.7.4
+

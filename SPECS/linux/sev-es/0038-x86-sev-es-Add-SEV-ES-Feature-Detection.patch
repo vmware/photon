@@ -1,0 +1,107 @@
+From 3ee20509362bfa24aebeb7499bca24cd1452adc9 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:50 +0530
+Subject: [PATCH 38/75] x86-sev-es-Add-SEV-ES-Feature-Detection
+
+x86/sev-es: Add SEV-ES Feature Detection
+Add the sev_es_active function for checking whether SEV-ES is enabled.
+Also cache the value of MSR_AMD64_SEV at boot to speed up the feature
+checking in the running code.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/include/asm/mem_encrypt.h | 3 +++
+ arch/x86/include/asm/msr-index.h   | 2 ++
+ arch/x86/mm/mem_encrypt.c          | 9 ++++++++-
+ arch/x86/mm/mem_encrypt_identity.c | 3 +++
+ 4 files changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
+index 616f8e6..07ef4c2 100755
+--- a/arch/x86/include/asm/mem_encrypt.h
++++ b/arch/x86/include/asm/mem_encrypt.h
+@@ -22,6 +22,7 @@
+ #ifdef CONFIG_AMD_MEM_ENCRYPT
+ 
+ extern u64 sme_me_mask;
++extern u64 sev_status;
+ extern bool sev_enabled;
+ 
+ void sme_encrypt_execute(unsigned long encrypted_kernel_vaddr,
+@@ -52,6 +53,7 @@ void __init mem_encrypt_free_decrypted_mem(void);
+ 
+ bool sme_active(void);
+ bool sev_active(void);
++bool sev_es_active(void);
+ 
+ #define __bss_decrypted __attribute__((__section__(".bss..decrypted")))
+ 
+@@ -74,6 +76,7 @@ static inline void __init sme_enable(struct boot_params *bp) { }
+ 
+ static inline bool sme_active(void) { return false; }
+ static inline bool sev_active(void) { return false; }
++static inline bool sev_es_active(void) { return false; }
+ 
+ static inline int __init
+ early_set_memory_decrypted(unsigned long vaddr, unsigned long size) { return 0; }
+diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
+index 30c1ebb..bf86a4e 100755
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -378,7 +378,9 @@
+ #define MSR_AMD64_SEV_ES_GHCB		0xc0010130
+ #define MSR_AMD64_SEV			0xc0010131
+ #define MSR_AMD64_SEV_ENABLED_BIT	0
++#define MSR_AMD64_SEV_ES_ENABLED_BIT	1
+ #define MSR_AMD64_SEV_ENABLED		BIT_ULL(MSR_AMD64_SEV_ENABLED_BIT)
++#define MSR_AMD64_SEV_ES_ENABLED	BIT_ULL(MSR_AMD64_SEV_ES_ENABLED_BIT)
+ 
+ #define MSR_AMD64_VIRT_SPEC_CTRL	0xc001011f
+ 
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index 006f373..3a81c94 100755
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -37,6 +37,7 @@
+  * section is later cleared.
+  */
+ u64 sme_me_mask __section(.data) = 0;
++u64 sev_status __section(.data) = 0;
+ EXPORT_SYMBOL(sme_me_mask);
+ DEFINE_STATIC_KEY_FALSE(sev_enable_key);
+ EXPORT_SYMBOL_GPL(sev_enable_key);
+@@ -343,10 +344,16 @@ EXPORT_SYMBOL(sme_active);
+ 
+ bool sev_active(void)
+ {
+-	return sme_me_mask && sev_enabled;
++	return !!(sev_status & MSR_AMD64_SEV_ENABLED);
+ }
+ EXPORT_SYMBOL(sev_active);
+ 
++bool sev_es_active(void)
++{
++	return !!(sev_status & MSR_AMD64_SEV_ES_ENABLED);
++}
++EXPORT_SYMBOL_GPL(sev_es_active);
++
+ /* Architecture __weak replacement functions */
+ void __init mem_encrypt_free_decrypted_mem(void)
+ {
+diff --git a/arch/x86/mm/mem_encrypt_identity.c b/arch/x86/mm/mem_encrypt_identity.c
+index c9faf34..87288aa 100755
+--- a/arch/x86/mm/mem_encrypt_identity.c
++++ b/arch/x86/mm/mem_encrypt_identity.c
+@@ -524,6 +524,9 @@ void __init sme_enable(struct boot_params *bp)
+ 		if (!(msr & MSR_AMD64_SEV_ENABLED))
+ 			return;
+ 
++		/* Save SEV_STATUS to avoid reading MSR again */
++		sev_status = msr;
++
+ 		/* SEV state cannot be controlled by a command line option */
+ 		sme_me_mask = me_mask;
+ 		sev_enabled = true;
+-- 
+2.7.4
+

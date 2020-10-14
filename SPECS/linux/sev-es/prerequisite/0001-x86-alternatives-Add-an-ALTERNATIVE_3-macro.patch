@@ -1,0 +1,67 @@
+From 71a93c26930471e976dd184ef91931b2a5393afc Mon Sep 17 00:00:00 2001
+From: Borislav Petkov <bp@suse.de>
+Date: Mon, 10 Dec 2018 16:17:23 +0100
+Subject: [PATCH] x86/alternatives: Add an ALTERNATIVE_3() macro
+
+commit 71a93c26930471e976dd184ef91931b2a5393afc upstream.
+
+Similar to ALTERNATIVE_2(), ALTERNATIVE_3() selects between 3 possible
+variants. Will be used for adding RDTSCP to the rdtsc_ordered()
+alternatives.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: X86 ML <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20181211222326.14581-4-bp@alien8.de
+---
+ arch/x86/include/asm/alternative.h | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/arch/x86/include/asm/alternative.h b/arch/x86/include/asm/alternative.h
+index 373e2ba..4c74073 100644
+--- a/arch/x86/include/asm/alternative.h
++++ b/arch/x86/include/asm/alternative.h
+@@ -122,6 +122,16 @@ static inline int alternatives_text_reserved(void *start, void *end)
+ 		"(" alt_max_short(alt_rlen(num1), alt_rlen(num2)) " - (" alt_slen ")), 0x90\n"	\
+ 	alt_end_marker ":\n"
+ 
++#define OLDINSTR_3(oldinsn, n1, n2, n3)								\
++	"# ALT: oldinstr3\n"									\
++	"661:\n\t" oldinsn "\n662:\n"								\
++	"# ALT: padding3\n"									\
++	".skip -((" alt_max_short(alt_max_short(alt_rlen(n1), alt_rlen(n2)), alt_rlen(n3))	\
++		" - (" alt_slen ")) > 0) * "							\
++		"(" alt_max_short(alt_max_short(alt_rlen(n1), alt_rlen(n2)), alt_rlen(n3))	\
++		" - (" alt_slen ")), 0x90\n"							\
++	alt_end_marker ":\n"
++
+ #define ALTINSTR_ENTRY(feature, num)					      \
+ 	" .long 661b - .\n"				/* label           */ \
+ 	" .long " b_replacement(num)"f - .\n"		/* new instruction */ \
+@@ -155,6 +165,19 @@ static inline int alternatives_text_reserved(void *start, void *end)
+ 	ALTINSTR_REPLACEMENT(newinstr2, feature2, 2)			\
+ 	".popsection\n"
+ 
++#define ALTERNATIVE_3(oldinsn, newinsn1, feat1, newinsn2, feat2, newinsn3, feat3) \
++	OLDINSTR_3(oldinsn, 1, 2, 3)						\
++	".pushsection .altinstructions,\"a\"\n"					\
++	ALTINSTR_ENTRY(feat1, 1)						\
++	ALTINSTR_ENTRY(feat2, 2)						\
++	ALTINSTR_ENTRY(feat3, 3)						\
++	".popsection\n"								\
++	".pushsection .altinstr_replacement, \"ax\"\n"				\
++	ALTINSTR_REPLACEMENT(newinsn1, feat1, 1)				\
++	ALTINSTR_REPLACEMENT(newinsn2, feat2, 2)				\
++	ALTINSTR_REPLACEMENT(newinsn3, feat3, 3)				\
++	".popsection\n"
++
+ /*
+  * Alternative instructions for different CPU types or capabilities.
+  *
+-- 
+2.7.4
+

@@ -1,0 +1,124 @@
+From 449bc73e5fa633e32964f0d6f756a517a12e7a77 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:54 +0530
+Subject: [PATCH 46/75] x86-sev-es-Shift-VC-IST-Stack-in-nmi_enter-nmi_exit
+
+x86/sev-es: Shift #VC IST Stack in nmi_enter()/nmi_exit()
+When an NMI hits in the #VC handler entry code before it shifted its IST
+entry, then any subsequent #VC exception in the NMI code-path will
+overwrite the interrupted #VC handlers stack.
+
+Make sure this doesn't happen by  explicitly shifting the #VC IST entry
+in the NMI handler for the time in can cause #VC exceptions.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/include/asm/hardirq.h   | 14 ++++++++++++++
+ arch/x86/include/asm/sev-es.h    |  2 ++
+ arch/x86/kernel/asm-offsets_64.c |  1 +
+ arch/x86/kernel/nmi.c            |  1 +
+ arch/x86/kernel/sev-es.c         | 21 +++++++++++++++++++++
+ 5 files changed, 39 insertions(+)
+
+diff --git a/arch/x86/include/asm/hardirq.h b/arch/x86/include/asm/hardirq.h
+index d9069bb..67c1a6f 100755
+--- a/arch/x86/include/asm/hardirq.h
++++ b/arch/x86/include/asm/hardirq.h
+@@ -80,4 +80,18 @@ static inline bool kvm_get_cpu_l1tf_flush_l1d(void)
+ static inline void kvm_set_cpu_l1tf_flush_l1d(void) { }
+ #endif /* IS_ENABLED(CONFIG_KVM_INTEL) */
+ 
++#ifdef CONFIG_AMD_MEM_ENCRYPT
++
++#define arch_nmi_enter()		\
++	do {				\
++		sev_es_nmi_enter();	\
++	} while (0)
++
++#define arch_nmi_exit()			\
++	do {				\
++		sev_es_nmi_exit();	\
++	} while (0)
++
++#endif
++
+ #endif /* _ASM_X86_HARDIRQ_H */
+diff --git a/arch/x86/include/asm/sev-es.h b/arch/x86/include/asm/sev-es.h
+index 265da83..ca0e12c 100644
+--- a/arch/x86/include/asm/sev-es.h
++++ b/arch/x86/include/asm/sev-es.h
+@@ -82,6 +82,8 @@ enum stack_type;
+ 
+ #ifdef CONFIG_AMD_MEM_ENCRYPT
+ const char *vc_stack_name(enum stack_type type);
++void sev_es_nmi_enter(void);
++void sev_es_nmi_exit(void);
+ #else /* CONFIG_AMD_MEM_ENCRYPT */
+ static inline const char *vc_stack_name(enum stack_type type)
+ {
+diff --git a/arch/x86/kernel/asm-offsets_64.c b/arch/x86/kernel/asm-offsets_64.c
+index a46b4c3..68d94ad 100755
+--- a/arch/x86/kernel/asm-offsets_64.c
++++ b/arch/x86/kernel/asm-offsets_64.c
+@@ -67,6 +67,7 @@ int main(void)
+ 	OFFSET(TSS_ist, tss_struct, x86_tss.ist);
+ 	DEFINE(DB_STACK_OFFSET, offsetof(struct cea_exception_stacks, DB_stack) -
+ 	       offsetof(struct cea_exception_stacks, DB1_stack));
++	DEFINE(VC_STACK_OFFSET, sizeof(((struct cea_vmm_exception_stacks *)0)->stacks[0]));
+ 	BLANK();
+ 
+ #ifdef CONFIG_STACKPROTECTOR
+diff --git a/arch/x86/kernel/nmi.c b/arch/x86/kernel/nmi.c
+index 51c8d5c..01e461d 100755
+--- a/arch/x86/kernel/nmi.c
++++ b/arch/x86/kernel/nmi.c
+@@ -36,6 +36,7 @@
+ #include <asm/reboot.h>
+ #include <asm/cache.h>
+ #include <asm/nospec-branch.h>
++#include <asm/sev-es.h>
+ 
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/nmi.h>
+diff --git a/arch/x86/kernel/sev-es.c b/arch/x86/kernel/sev-es.c
+index dd60d24..a4fa7f3 100644
+--- a/arch/x86/kernel/sev-es.c
++++ b/arch/x86/kernel/sev-es.c
+@@ -17,6 +17,7 @@
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
+ 
++#include <generated/asm-offsets.h>
+ #include <asm/cpu_entry_area.h>
+ #include <asm/stacktrace.h>
+ #include <asm/trap_defs.h>
+@@ -49,6 +50,26 @@ struct sev_es_runtime_data {
+ 
+ static DEFINE_PER_CPU(struct sev_es_runtime_data*, runtime_data);
+ 
++/*
++ * Shift/Unshift the IST entry for the #VC handler during
++ * nmi_enter()/nmi_exit().  This is needed when an NMI hits in the #VC handlers
++ * entry code before it has shifted its IST entry. This way #VC exceptions
++ * caused by the NMI handler are guaranteed to use a new stack.
++ */
++void sev_es_nmi_enter(void)
++{
++	struct tss_struct *tss = this_cpu_ptr(&cpu_tss_rw);
++
++	tss->x86_tss.ist[IST_INDEX_VC] -= VC_STACK_OFFSET;
++}
++
++void sev_es_nmi_exit(void)
++{
++	struct tss_struct *tss = this_cpu_ptr(&cpu_tss_rw);
++
++	tss->x86_tss.ist[IST_INDEX_VC] += VC_STACK_OFFSET;
++}
++
+ /* Needed in vc_early_vc_forward_exception */
+ void do_early_exception(struct pt_regs *regs, int trapnr);
+ 
+-- 
+2.7.4
+

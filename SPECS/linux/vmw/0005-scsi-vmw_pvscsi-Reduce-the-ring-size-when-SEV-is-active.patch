@@ -1,0 +1,74 @@
+From: Thomas Hellstrom <thellstrom@vmware.com>
+
+Reduce the ring size when SEV is active
+
+A large number of outstanding scsi commands can completely fill up the
+allowable DMA size. Typically this happens with SWIOTLB and SEV encryption
+active. While this is harmless for the scsi middle layer, it floods the
+kernel log with error messages and can cause other device drivers to error.
+Reduce the number of ring pages to 1 if we detect DMA size restrictions.
+
+Cc: Jim Gill <jgill at vmware.com>
+Cc: Vishal Bhakta <vbhakta at vmware.com>
+Signed-off-by: Thomas Hellstrom <thellstrom at vmware.com>
+---
+ drivers/scsi/vmw_pvscsi.c | 30 ++++++++++++++++++++++--------
+ 1 file changed, 22 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/scsi/vmw_pvscsi.c b/drivers/scsi/vmw_pvscsi.c
+index 3c5546cf4e67..6381b3f97497 100644
+--- a/drivers/scsi/vmw_pvscsi.c
++++ b/drivers/scsi/vmw_pvscsi.c
+@@ -28,6 +28,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/pci.h>
+ #include <linux/dmapool.h>
++#include <linux/mem_encrypt.h>
+ 
+ #include <scsi/scsi.h>
+ #include <scsi/scsi_host.h>
+@@ -45,6 +46,7 @@ MODULE_LICENSE("GPL");
+ MODULE_VERSION(PVSCSI_DRIVER_VERSION_STRING);
+ 
+ #define PVSCSI_DEFAULT_NUM_PAGES_PER_RING	8
++#define PVSCSI_RESTRICT_NUM_PAGES_PER_RING      1
+ #define PVSCSI_DEFAULT_NUM_PAGES_MSG_RING	1
+ #define PVSCSI_DEFAULT_QUEUE_DEPTH		254
+ #define SGL_SIZE				PAGE_SIZE
+@@ -1416,14 +1418,26 @@ static int pvscsi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	max_id = pvscsi_get_max_targets(adapter);
+ 	printk(KERN_INFO "vmw_pvscsi: max_id: %u\n", max_id);
+ 
+-	if (pvscsi_ring_pages == 0)
+-		/*
+-		 * Set the right default value. Up to 16 it is 8, above it is
+-		 * max.
+-		 */
+-		pvscsi_ring_pages = (max_id > 16) ?
+-			PVSCSI_SETUP_RINGS_MAX_NUM_PAGES :
+-			PVSCSI_DEFAULT_NUM_PAGES_PER_RING;
++	if (pvscsi_ring_pages == 0) {
++		struct sysinfo si;
++
++		si_meminfo(&si);
++		if (mem_encrypt_active())
++			/*
++			 * There are DMA size restrictions. Reduce the queue
++			 * depth to try to avoid exhausting DMA size and trigger
++			 * dma mapping errors.
++			 */
++			pvscsi_ring_pages = PVSCSI_RESTRICT_NUM_PAGES_PER_RING;
++		else
++			/*
++			 * Set the right default value. Up to 16 it is 8,
++			 * above it is max.
++			 */
++			pvscsi_ring_pages = (max_id > 16) ?
++				PVSCSI_SETUP_RINGS_MAX_NUM_PAGES :
++				PVSCSI_DEFAULT_NUM_PAGES_PER_RING;
++	}
+ 	printk(KERN_INFO
+ 	       "vmw_pvscsi: setting ring_pages to %d\n",
+ 	       pvscsi_ring_pages);
+-- 
+2.21.0

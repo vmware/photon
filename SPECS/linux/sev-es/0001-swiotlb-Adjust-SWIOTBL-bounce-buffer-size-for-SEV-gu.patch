@@ -1,0 +1,167 @@
+From 68b64338e3bae9cd50e8a8b5d04e46ddcd0f931a Mon Sep 17 00:00:00 2001
+From: Ashish Kalra <ashish.kalra@amd.com>
+Date: Thu, 24 Sep 2020 17:42:47 +0530
+Subject: [PATCH] swiotlb: Adjust SWIOTBL bounce buffer size for SEV guests
+
+From: Ashish Kalra <ashish.kalra@amd.com>
+
+For SEV, all DMA to and from guest has to use shared
+(un-encrypted) pages. SEV uses SWIOTLB to make this happen
+without requiring changes to device drivers. However,
+depending on workload being run, the default 64MB of SWIOTLB
+might not be enough and SWIOTLB may run out of buffers to
+use for DMA, resulting in I/O errors.
+
+Increase the default size of SWIOTLB for SEV guests using
+a minimum value of 128MB and a maximum value of 512MB,
+determining on amount of provisioned guest memory.
+
+The SWIOTLB default size adjustment is added as an
+architecture specific interface/callback to allow
+architectures such as those supporting memory encryption
+to adjust/expand SWIOTLB size for their use.
+
+Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
+[Ajay: Re-generated the patch for v4.19]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ arch/x86/Kconfig           |  1 +
+ arch/x86/mm/mem_encrypt.c  | 36 ++++++++++++++++++++++++++++++++++++
+ include/linux/dma-direct.h | 10 ++++++++++
+ kernel/dma/Kconfig         |  3 +++
+ kernel/dma/swiotlb.c       | 14 ++++++++++++--
+ 5 files changed, 62 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 3b25d0f..bf7797a 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1489,6 +1489,7 @@ config AMD_MEM_ENCRYPT
+ 	depends on X86_64 && CPU_SUP_AMD
+ 	select DYNAMIC_PHYSICAL_MASK
+ 	select INSTRUCTION_DECODER
++	select ARCH_HAS_ADJUST_SWIOTLB_DEFAULT
+ 	---help---
+ 	  Say yes to enable support for the encryption of system memory.
+ 	  This requires an AMD processor that supports Secure Memory
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index 587c00f..c1f95cb 100644
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -354,6 +354,42 @@ bool sev_es_active(void)
+ }
+ EXPORT_SYMBOL_GPL(sev_es_active);
+ 
++#define TOTAL_MEM_1G	0x40000000U
++#define TOTAL_MEM_4G	0x100000000U
++
++/*
++ * Override for SWIOTLB default size adjustment -
++ * ARCH_HAS_ADJUST_SWIOTLB_DEFAULT
++ */
++unsigned long adjust_swiotlb_default_size(unsigned long default_size)
++{
++	/*
++	 * For SEV, all DMA has to occur via shared/unencrypted pages.
++	 * SEV uses SWOTLB to make this happen without changing device
++	 * drivers. However, depending on the workload being run, the
++	 * default 64MB of SWIOTLB may not be enough & SWIOTLB may
++	 * run out of buffers for using DMA, resulting in I/O errors.
++	 * Increase the default size of SWIOTLB for SEV guests using
++	 * a minimum value of 128MB and a maximum value of 512GB,
++	 * depending on amount of provisioned guest memory.
++	 */
++	if (sev_active()) {
++		unsigned long total_mem = get_num_physpages() << PAGE_SHIFT;
++
++		if (total_mem <= TOTAL_MEM_1G)
++			default_size = default_size * 2;
++		else if (total_mem <= TOTAL_MEM_4G)
++			default_size = default_size * 4;
++		else
++			default_size = default_size * 8;
++
++		pr_info_once("SEV is active, SWIOTLB default size set to %luMB\n",
++			     default_size >> 20);
++	}
++
++	return default_size;
++}
++
+ /* Architecture __weak replacement functions */
+ void __init mem_encrypt_free_decrypted_mem(void)
+ {
+diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+index 8d9f33f..1c66d7b 100644
+--- a/include/linux/dma-direct.h
++++ b/include/linux/dma-direct.h
+@@ -31,6 +31,16 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
+ }
+ #endif /* !CONFIG_ARCH_HAS_PHYS_TO_DMA */
+ 
++#ifdef CONFIG_ARCH_HAS_ADJUST_SWIOTLB_DEFAULT
++unsigned long adjust_swiotlb_default_size(unsigned long default_size);
++#else
++static inline unsigned long adjust_swiotlb_default_size
++		(unsigned long default_size);
++{
++	return default_size;
++}
++#endif	/* CONFIG_ARCH_HAS_ADJUST_SWIOTLB_DEFAULT */
++
+ /*
+  * If memory encryption is supported, phys_to_dma will set the memory encryption
+  * bit in the DMA address, and dma_to_phys will clear it.  The raw __phys_to_dma
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 1b1d63b..a1a7251 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -39,6 +39,9 @@ config DMA_NONCOHERENT_MMAP
+ 	bool
+ 	depends on DMA_NONCOHERENT_OPS
+ 
++config ARCH_HAS_ADJUST_SWIOTLB_DEFAULT
++	bool
++
+ config DMA_NONCOHERENT_CACHE_SYNC
+ 	bool
+ 	depends on DMA_NONCOHERENT_OPS
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 2a8c41f..fd82279 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -152,11 +152,21 @@ void swiotlb_set_max_segment(unsigned int val)
+ #define IO_TLB_DEFAULT_SIZE (64UL<<20)
+ unsigned long swiotlb_size_or_default(void)
+ {
++	unsigned long default_size = IO_TLB_DEFAULT_SIZE;
+ 	unsigned long size;
+ 
++	/*
++	 * If swiotlb size/amount of slabs are not defined on kernel command
++	 * line, then give a chance to architectures to adjust swiotlb
++	 * size, this may be required by some architectures such as those
++	 * supporting memory encryption.
++	 */
++	if (!io_tlb_nslabs)
++		default_size = adjust_swiotlb_default_size(default_size);
++
+ 	size = io_tlb_nslabs << IO_TLB_SHIFT;
+ 
+-	return size ? size : (IO_TLB_DEFAULT_SIZE);
++	return size ? size : default_size;
+ }
+ 
+ static bool no_iotlb_memory;
+@@ -254,7 +264,7 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
+ void  __init
+ swiotlb_init(int verbose)
+ {
+-	size_t default_size = IO_TLB_DEFAULT_SIZE;
++	unsigned long default_size = swiotlb_size_or_default();
+ 	unsigned char *vstart;
+ 	unsigned long bytes;
+ 
+-- 
+2.7.4
+

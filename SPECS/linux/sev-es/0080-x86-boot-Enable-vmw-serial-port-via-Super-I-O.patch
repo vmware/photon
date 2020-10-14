@@ -1,0 +1,85 @@
+From a19564ab4baead7c8ad673a611a94b178278d906 Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Wed, 2 Sep 2020 05:42:08 -0700
+Subject: [PATCH 80/82] x86/boot: Enable vmw serial port via Super I/O
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ arch/x86/boot/early_serial_console.c | 51 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
+
+diff --git a/arch/x86/boot/early_serial_console.c b/arch/x86/boot/early_serial_console.c
+index 023bf1c..9efbc1f 100644
+--- a/arch/x86/boot/early_serial_console.c
++++ b/arch/x86/boot/early_serial_console.c
+@@ -4,6 +4,8 @@
+  * included from both the compressed kernel and the regular kernel.
+  */
+ #include "boot.h"
++#include "string.h"
++#include <asm/vmware.h>
+ 
+ #define DEFAULT_SERIAL_PORT 0x3f8 /* ttyS0 */
+ 
+@@ -145,8 +147,57 @@ static void parse_console_uart8250(void)
+ 		early_serial_init(port, baud);
+ }
+ 
++/* Registers for the NS PC97338/PC87338 SuperI/O chip. */
++#define SIO_IDX_REG   0x2e
++#define SIO_DATA_REG  0x2f
++
++#define FER_IDX       0x00
++#define PNP1_IDX      0x1C
++#define S1BAL_IDX     0x44
++#define S1BAH_IDX     0x45
++
++static void vmw_sio_write(u8 addr, u8 data)
++{
++	outb(addr, SIO_IDX_REG);
++	outb(data, SIO_DATA_REG);
++}
++
++static u8 vmw_sio_read(u8 addr)
++{
++	outb(addr, SIO_IDX_REG);
++	return inb(SIO_DATA_REG);
++}
++
++static void vmw_sio_serial_init(void)
++{
++	u8 fer = vmw_sio_read(FER_IDX);
++
++	if (fer & 2)
++		return;
++
++	vmw_sio_write(S1BAL_IDX, 0xfe);
++	vmw_sio_write(S1BAH_IDX, 0);
++	vmw_sio_write(PNP1_IDX, 4);
++	vmw_sio_write(FER_IDX, fer | 2);
++}
++
+ void console_init(void)
+ {
++	unsigned int hyper_vendor_id[3], ecx_f1;
++	unsigned int eax_f1 = 1, eax_f2 = CPUID_VMWARE_INFO_LEAF;
++
++	asm("cpuid" : "+a" (eax_f1), "=c" (ecx_f1) :: "ebx", "edx");
++
++	if (ecx_f1 & (1UL << 31)) {
++		asm("cpuid" : "+a" (eax_f2),
++			"=b"(hyper_vendor_id[0]),
++			"=c"(hyper_vendor_id[1]),
++			"=d"(hyper_vendor_id[2]));
++
++		if (!memcmp(hyper_vendor_id, "VMwareVMware", 12))
++			vmw_sio_serial_init();
++	}
++
+ 	parse_earlyprintk();
+ 
+ 	if (!early_serial_base)
+-- 
+2.7.4
+
+

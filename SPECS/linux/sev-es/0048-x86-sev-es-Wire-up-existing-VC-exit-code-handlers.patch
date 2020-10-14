@@ -1,0 +1,61 @@
+From 65864e5901d759b5e0b7490e9dd66a327cdb5390 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:54 +0530
+Subject: [PATCH 48/75] x86-sev-es-Wire-up-existing-VC-exit-code-handlers
+
+x86/sev-es: Wire up existing #VC exit-code handlers
+
+Re-use the handlers for CPUID and IOIO caused #VC exceptions in the
+early boot handler.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/kernel/sev-es-shared.c | 7 +++----
+ arch/x86/kernel/sev-es.c        | 6 ++++++
+ 2 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/kernel/sev-es-shared.c b/arch/x86/kernel/sev-es-shared.c
+index 3d2299f..3d64566 100644
+--- a/arch/x86/kernel/sev-es-shared.c
++++ b/arch/x86/kernel/sev-es-shared.c
+@@ -324,8 +324,7 @@ static enum es_result vc_ioio_exitinfo(struct es_em_ctxt *ctxt, u64 *exitinfo)
+ 	return ES_OK;
+ }
+ 
+-static enum es_result __maybe_unused
+-vc_handle_ioio(struct ghcb *ghcb, struct es_em_ctxt *ctxt)
++static enum es_result vc_handle_ioio(struct ghcb *ghcb, struct es_em_ctxt *ctxt)
+ {
+ 	struct pt_regs *regs = ctxt->regs;
+ 	u64 exit_info_1, exit_info_2;
+@@ -421,8 +420,8 @@ vc_handle_ioio(struct ghcb *ghcb, struct es_em_ctxt *ctxt)
+ 	return ret;
+ }
+ 
+-static enum es_result __maybe_unused vc_handle_cpuid(struct ghcb *ghcb,
+-						     struct es_em_ctxt *ctxt)
++static enum es_result vc_handle_cpuid(struct ghcb *ghcb,
++				      struct es_em_ctxt *ctxt)
+ {
+ 	struct pt_regs *regs = ctxt->regs;
+ 	u32 cr4 = native_read_cr4();
+diff --git a/arch/x86/kernel/sev-es.c b/arch/x86/kernel/sev-es.c
+index bc3a584..85027fb 100644
+--- a/arch/x86/kernel/sev-es.c
++++ b/arch/x86/kernel/sev-es.c
+@@ -424,6 +424,12 @@ static enum es_result vc_handle_exitcode(struct es_em_ctxt *ctxt,
+ 	enum es_result result;
+ 
+ 	switch (exit_code) {
++	case SVM_EXIT_CPUID:
++		result = vc_handle_cpuid(ghcb, ctxt);
++		break;
++	case SVM_EXIT_IOIO:
++		result = vc_handle_ioio(ghcb, ctxt);
++		break;
+ 	default:
+ 		/*
+ 		 * Unexpected #VC exception
+-- 
+2.7.4
+

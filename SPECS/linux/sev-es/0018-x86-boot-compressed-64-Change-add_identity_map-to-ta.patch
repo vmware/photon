@@ -1,0 +1,69 @@
+From 103e680532f74359e6764c4dc9328ef078bb6103 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:45 +0530
+Subject: [PATCH 18/75] x86-boot-compressed-64-Change-add_identity_map-to-ta
+
+x86/boot/compressed/64: Change add_identity_map() to take start and end
+Changing the function to take start and end as parameters instead of
+start and size simplifies the callers, which don't need to calculate
+the size if they already have start and end.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/boot/compressed/ident_map_64.c | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/ident_map_64.c b/arch/x86/boot/compressed/ident_map_64.c
+index 9f66061..83385a5 100644
+--- a/arch/x86/boot/compressed/ident_map_64.c
++++ b/arch/x86/boot/compressed/ident_map_64.c
+@@ -91,10 +91,8 @@ static struct x86_mapping_info mapping_info;
+ /*
+  * Adds the specified range to the identity mappings.
+  */
+-static void add_identity_map(unsigned long start, unsigned long size)
++static void add_identity_map(unsigned long start, unsigned long end)
+ {
+-	unsigned long end = start + size;
+-
+ 	/* Align boundary to 2M. */
+ 	start = round_down(start, PMD_SIZE);
+ 	end = round_up(end, PMD_SIZE);
+@@ -109,8 +107,6 @@ static void add_identity_map(unsigned long start, unsigned long size)
+ /* Locates and clears a region for a new top level page table. */
+ void initialize_identity_maps(void)
+ {
+-	unsigned long start, size;
+-
+ 	/* If running as an SEV guest, the encryption mask is required. */
+ 	set_sev_encryption_mask();
+ 
+@@ -157,15 +153,14 @@ void initialize_identity_maps(void)
+ 	 * New page-table is set up - map the kernel image and load it
+ 	 * into cr3.
+ 	 */
+-	start = (unsigned long)_head;
+-	size  = _end - _head;
+-	add_identity_map(start, size);
++	add_identity_map((unsigned long)_head, (unsigned long)_end);
+ 	write_cr3(top_level_pgt);
+ }
+ 
+ void do_boot_page_fault(struct pt_regs *regs, unsigned long error_code)
+ {
+-	unsigned long address = native_read_cr2();
++	unsigned long address = native_read_cr2() & PMD_MASK;
++	unsigned long end = address + PMD_SIZE;
+ 
+ 	/*
+ 	 * Check for unexpected error codes. Unexpected are:
+@@ -191,5 +186,5 @@ void do_boot_page_fault(struct pt_regs *regs, unsigned long error_code)
+ 	 * Error code is sane - now identity map the 2M region around
+ 	 * the faulting address.
+ 	 */
+-	add_identity_map(address & PMD_MASK, PMD_SIZE);
++	add_identity_map(address, end);
+ }
+-- 
+2.7.4
+

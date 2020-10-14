@@ -1,0 +1,158 @@
+From 3fa630fea25313bcd9296b6476dce6da63aced6a Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Sat, 19 Sep 2020 22:36:01 +0530
+Subject: x86/sev-es: load idt before entering long mode
+ to handle #VC
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ arch/x86/boot/compressed/head_64.S | 81 ++++++++++++++++++++++++++++++++++++++
+ arch/x86/include/asm/sev-es.h      |  4 ++
+ 2 files changed, 85 insertions(+)
+
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index 7cd896d..c4ffcb6 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -34,6 +34,9 @@
+ #include <asm/asm-offsets.h>
+ #include <asm/bootparam.h>
+ #include <asm/desc_defs.h>
++#include <asm/trapnr.h>
++#include <asm/sev-es.h>
++#include <uapi/asm/svm.h>
+ #include "pgtable.h"
+ 
+ /*
+@@ -85,6 +88,7 @@ ENTRY(startup_32)
+ 
+ /* setup a stack and make sure cpu supports long mode. */
+ 	leal	boot_stack_end(%ebp), %esp
++	call	load_early_idt32
+ 
+ 	call	verify_cpu
+ 	testl	%eax, %eax
+@@ -697,6 +701,64 @@ no_longmode:
+ 
+ #include "../../kernel/verify_cpu.S"
+ 
++.macro CPUID_VIA_GHCB_PA reg
++	movl	%ebx, %edx
++	movl	$(GHCB_SEV_CPUID_REQ | (\reg << 30)), %eax
++	wrmsr
++	rep
++	vmmcall
++	rdmsr
++	cmpl	$(GHCB_SEV_CPUID_RESP | (\reg << 30)), %eax
++	jne	.Lsev_fatal
++.endm
++
++SYM_FUNC_START_LOCAL(boot_stage0_vc)
++	cmpl	$SVM_EXIT_CPUID, (%esp)
++	je	.Ldo_stage0_vc_cpuid
++.Lsev_fatal:
++	movl	$MSR_AMD64_SEV_ES_GHCB, %ecx
++	xorl	%edx, %edx
++	movl	$GHCB_SEV_TERMINATE, %eax
++	wrmsr
++	cli
++	hlt
++.Lsev_hlt:
++	jmp	.Lsev_hlt
++.Ldo_stage0_vc_cpuid:
++	addl	$4, %esp
++	addl	$2, (%esp)
++	movl	%eax, %ebx
++	movl	$MSR_AMD64_SEV_ES_GHCB, %ecx
++	CPUID_VIA_GHCB_PA GHCB_CPUID_REQ_EAX
++	pushl	%edx
++	CPUID_VIA_GHCB_PA GHCB_CPUID_REQ_EBX
++	pushl	%edx
++	CPUID_VIA_GHCB_PA GHCB_CPUID_REQ_ECX
++	pushl	%edx
++	CPUID_VIA_GHCB_PA GHCB_CPUID_REQ_EDX
++	popl	%ecx
++	popl	%ebx
++	popl	%eax
++	iret
++SYM_FUNC_END(boot_stage0_vc)
++
++SYM_FUNC_START(load_early_idt32)
++	call	1f
++1:	pop	%edx
++	subl	$1b, %edx
++	leal	boot_idt32(%edx), %ecx
++	leal	boot_stage0_vc(%edx), %eax
++	movw	%ax, (X86_TRAP_VC*8)(%ecx)
++	shrl	$16, %eax
++	movw	%ax, (X86_TRAP_VC*8+6)(%ecx)
++
++	leal	boot_idt32_desc(%edx), %eax
++	movl	%ecx, 2(%eax)
++	lidt	(%eax)
++
++	ret
++SYM_FUNC_END(load_early_idt32)
++
+ 	.data
+ gdt64:
+ 	.word	gdt_end - gdt - 1
+@@ -712,6 +774,25 @@ gdt:
+ 	.quad   0x0000000000000000	/* TS continued */
+ gdt_end:
+ 
++SYM_DATA_START_LOCAL(boot_idt32_desc)
++	.word	boot_idt32_end - boot_idt32 - 1
++	.long   0
++SYM_DATA_END(boot_idt32_desc)
++	.balign	8
++SYM_DATA_START_LOCAL(boot_idt32)
++	.rept	X86_TRAP_VC
++	.quad	0
++	.endr
++	.short	0			/* Offset 15..0 */
++	.short	__KERNEL32_CS           /* Segment Selector */
++	.byte   0
++	.byte   0x8f			/* GATE_TRAP | PRESENT */
++	.short  0			/* Offset 31..16 */
++	.rept	(BOOT_IDT_ENTRIES - X86_TRAP_VC - 1)
++	.quad	0
++	.endr
++SYM_DATA_END_LABEL(boot_idt32, SYM_L_LOCAL, boot_idt32_end)
++
+ SYM_DATA_START(boot_idt_desc)
+ 	.word	boot_idt_end - boot_idt
+ 	.quad	0
+diff --git a/arch/x86/include/asm/sev-es.h b/arch/x86/include/asm/sev-es.h
+index ce9a197..e600577 100644
+--- a/arch/x86/include/asm/sev-es.h
++++ b/arch/x86/include/asm/sev-es.h
+@@ -8,10 +8,12 @@
+ #ifndef __ASM_ENCRYPTED_STATE_H
+ #define __ASM_ENCRYPTED_STATE_H
+ 
++#ifndef __ASSEMBLY__
+ #include <linux/types.h>
+ 
+ #include <asm/stacktrace.h>
+ #include <asm/insn.h>
++#endif
+ 
+ #define GHCB_SEV_INFO		0x001UL
+ #define GHCB_SEV_INFO_REQ	0x002UL
+@@ -42,6 +44,7 @@
+ #define	GHCB_SEV_GHCB_RESP_CODE(v)	((v) & 0xfff)
+ #define	VMGEXIT()			{ asm volatile("rep; vmmcall\n\r"); }
+ 
++#ifndef __ASSEMBLY__
+ enum es_result {
+ 	ES_OK,			/* All good */
+ 	ES_UNSUPPORTED,		/* Requested operation not supported */
+@@ -105,3 +108,4 @@ static inline int sev_es_efi_map_ghcbs(pgd_t *pgd)
+ #endif /* CONFIG_AMD_MEM_ENCRYPT*/
+ 
+ #endif
++#endif
+-- 
+2.7.4
+

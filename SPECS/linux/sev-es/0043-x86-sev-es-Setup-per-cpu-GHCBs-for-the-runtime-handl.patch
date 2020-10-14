@@ -1,0 +1,137 @@
+From 70db52dc01bfe81ebef7236b7f4c3aff44501658 Mon Sep 17 00:00:00 2001
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Date: Wed, 10 Jun 2020 18:21:52 +0530
+Subject: [PATCH 43/75] x86-sev-es-Setup-per-cpu-GHCBs-for-the-runtime-handl
+
+x86/sev-es: Setup per-cpu GHCBs for the runtime handler
+
+The runtime handler needs a GHCB per CPU. Set them up and map them
+unencrypted.
+
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/include/asm/mem_encrypt.h |  2 ++
+ arch/x86/kernel/sev-es.c           | 56 +++++++++++++++++++++++++++++++++++++-
+ arch/x86/kernel/traps.c            |  3 ++
+ 3 files changed, 60 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
+index 07ef4c2..6a1646b 100755
+--- a/arch/x86/include/asm/mem_encrypt.h
++++ b/arch/x86/include/asm/mem_encrypt.h
+@@ -51,6 +51,7 @@ int __init early_set_memory_encrypted(unsigned long vaddr, unsigned long size);
+ void __init mem_encrypt_init(void);
+ void __init mem_encrypt_free_decrypted_mem(void);
+ 
++void __init sev_es_init_vc_handling(void);
+ bool sme_active(void);
+ bool sev_active(void);
+ bool sev_es_active(void);
+@@ -74,6 +75,7 @@ static inline void __init sme_early_init(void) { }
+ static inline void __init sme_encrypt_kernel(struct boot_params *bp) { }
+ static inline void __init sme_enable(struct boot_params *bp) { }
+ 
++static inline void sev_es_init_vc_handling(void) { }
+ static inline bool sme_active(void) { return false; }
+ static inline bool sev_active(void) { return false; }
+ static inline bool sev_es_active(void) { return false; }
+diff --git a/arch/x86/kernel/sev-es.c b/arch/x86/kernel/sev-es.c
+index 9de5bb2..a43d80d 100644
+--- a/arch/x86/kernel/sev-es.c
++++ b/arch/x86/kernel/sev-es.c
+@@ -8,8 +8,13 @@
+  */
+ 
+ #include <linux/sched/debug.h>	/* For show_regs() */
+-#include <linux/kernel.h>
++#include <linux/percpu-defs.h>
++#include <linux/mem_encrypt.h>
+ #include <linux/printk.h>
++#include <linux/mm_types.h>
++#include <linux/set_memory.h>
++#include <linux/memblock.h>
++#include <linux/kernel.h>
+ #include <linux/mm.h>
+ 
+ #include <asm/trap_defs.h>
+@@ -29,6 +34,13 @@ static struct ghcb boot_ghcb_page __bss_decrypted __aligned(PAGE_SIZE);
+  */
+ static struct ghcb __initdata *boot_ghcb;
+ 
++/* #VC handler runtime per-cpu data */
++struct sev_es_runtime_data {
++	struct ghcb ghcb_page;
++};
++
++static DEFINE_PER_CPU(struct sev_es_runtime_data*, runtime_data);
++
+ /* Needed in vc_early_vc_forward_exception */
+ void do_early_exception(struct pt_regs *regs, int trapnr);
+ 
+@@ -198,6 +210,48 @@ static bool __init sev_es_setup_ghcb(void)
+ 	return true;
+ }
+ 
++static void __init sev_es_alloc_runtime_data(int cpu)
++{
++	struct sev_es_runtime_data *data;
++
++	data = memblock_alloc(sizeof(*data), PAGE_SIZE);
++	if (!data)
++		panic("Can't allocate SEV-ES runtime data");
++
++	per_cpu(runtime_data, cpu) = data;
++}
++
++static void __init sev_es_init_ghcb(int cpu)
++{
++	struct sev_es_runtime_data *data;
++	int err;
++
++	data = per_cpu(runtime_data, cpu);
++
++	err = early_set_memory_decrypted((unsigned long)&data->ghcb_page,
++					 sizeof(data->ghcb_page));
++	if (err)
++		panic("Can not map GHCBs unencrypted");
++
++	memset(&data->ghcb_page, 0, sizeof(data->ghcb_page));
++}
++
++void __init sev_es_init_vc_handling(void)
++{
++	int cpu;
++
++	BUILD_BUG_ON((offsetof(struct sev_es_runtime_data, ghcb_page) % PAGE_SIZE) != 0);
++
++	if (!sev_es_active())
++		return;
++
++	/* Initialize per-cpu GHCB pages */
++	for_each_possible_cpu(cpu) {
++		sev_es_alloc_runtime_data(cpu);
++		sev_es_init_ghcb(cpu);
++	}
++}
++
+ static void __init vc_early_vc_forward_exception(struct es_em_ctxt *ctxt)
+ {
+ 	int trapnr = ctxt->fi.vector;
+diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+index e6db475..755ebf7 100755
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -951,6 +951,9 @@ void __init trap_init(void)
+ 	/* Init cpu_entry_area before IST entries are set up */
+ 	setup_cpu_entry_areas();
+ 
++	/* Init GHCB memory pages when running as an SEV-ES guest */
++	sev_es_init_vc_handling();
++
+ 	idt_setup_traps();
+ 
+ 	/*
+-- 
+2.7.4
+

@@ -1,0 +1,86 @@
+From 6fee2a0be0ecae939d4b6cd8297d88b5cbb61654 Mon Sep 17 00:00:00 2001
+From: Thomas Hellstrom <thellstrom@vmware.com>
+Date: Mon, 21 Oct 2019 19:24:03 +0200
+Subject: [PATCH] x86/cpu/vmware: Fix platform detection VMWARE_PORT macro
+
+commit 6fee2a0be0ecae939d4b6cd8297d88b5cbb61654 upstream.
+
+The platform detection VMWARE_PORT macro uses the VMWARE_HYPERVISOR_PORT
+definition, but expects it to be an integer. However, when it was moved
+to the new vmware.h include file, it was changed to be a string to better
+fit into the VMWARE_HYPERCALL set of macros. This obviously breaks the
+platform detection VMWARE_PORT functionality.
+
+Change the VMWARE_HYPERVISOR_PORT and VMWARE_HYPERVISOR_PORT_HB
+definitions to be integers, and use __stringify() for their stringified
+form when needed.
+
+Signed-off-by: Thomas Hellstrom <thellstrom@vmware.com>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Fixes: b4dd4f6e3648 ("Add a header file for hypercall definitions")
+Link: https://lkml.kernel.org/r/20191021172403.3085-3-thomas_os@shipmail.org
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+---
+ arch/x86/include/asm/vmware.h | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/include/asm/vmware.h b/arch/x86/include/asm/vmware.h
+index 3caac90..ac9fc51 100644
+--- a/arch/x86/include/asm/vmware.h
++++ b/arch/x86/include/asm/vmware.h
+@@ -4,6 +4,7 @@
+ 
+ #include <asm/cpufeatures.h>
+ #include <asm/alternative.h>
++#include <linux/stringify.h>
+ 
+ /*
+  * The hypercall definitions differ in the low word of the %edx argument
+@@ -20,8 +21,8 @@
+  */
+ 
+ /* Old port-based version */
+-#define VMWARE_HYPERVISOR_PORT    "0x5658"
+-#define VMWARE_HYPERVISOR_PORT_HB "0x5659"
++#define VMWARE_HYPERVISOR_PORT    0x5658
++#define VMWARE_HYPERVISOR_PORT_HB 0x5659
+ 
+ /* Current vmcall / vmmcall version */
+ #define VMWARE_HYPERVISOR_HB   BIT(0)
+@@ -29,7 +30,7 @@
+ 
+ /* The low bandwidth call. The low word of edx is presumed clear. */
+ #define VMWARE_HYPERCALL						\
+-	ALTERNATIVE_2("movw $" VMWARE_HYPERVISOR_PORT ", %%dx; "	\
++	ALTERNATIVE_2("movw $" __stringify(VMWARE_HYPERVISOR_PORT) ", %%dx; " \
+ 		      "inl (%%dx), %%eax",				\
+ 		      "vmcall", X86_FEATURE_VMCALL,			\
+ 		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
+@@ -39,7 +40,8 @@
+  * HB and OUT bits set.
+  */
+ #define VMWARE_HYPERCALL_HB_OUT						\
+-	ALTERNATIVE_2("movw $" VMWARE_HYPERVISOR_PORT_HB ", %%dx; rep outsb", \
++	ALTERNATIVE_2("movw $" __stringify(VMWARE_HYPERVISOR_PORT_HB) ", %%dx; " \
++		      "rep outsb",					\
+ 		      "vmcall", X86_FEATURE_VMCALL,			\
+ 		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
+ 
+@@ -48,7 +50,8 @@
+  * HB bit set.
+  */
+ #define VMWARE_HYPERCALL_HB_IN						\
+-	ALTERNATIVE_2("movw $" VMWARE_HYPERVISOR_PORT_HB ", %%dx; rep insb", \
++	ALTERNATIVE_2("movw $" __stringify(VMWARE_HYPERVISOR_PORT_HB) ", %%dx; " \
++		      "rep insb",					\
+ 		      "vmcall", X86_FEATURE_VMCALL,			\
+ 		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
+ #endif
+-- 
+2.7.4
+

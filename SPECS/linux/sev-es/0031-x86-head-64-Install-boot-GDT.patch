@@ -1,0 +1,71 @@
+From 687b1f7785899e3647b1c8984c646ba8f4d80eed Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:49 +0530
+Subject: [PATCH 31/75] x86-head-64-Install-boot-GDT
+
+x86/head/64: Install boot GDT
+Handling exceptions during boot requires a working GDT. The kernel GDT
+is not yet ready for use, so install a temporary boot GDT.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/kernel/head_64.S | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index 71d0e0d..2264ae5 100755
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -75,6 +75,26 @@ startup_64:
+ 	/* Set up the stack for verify_cpu(), similar to initial_stack below */
+ 	leaq	(__end_init_task - SIZEOF_PTREGS)(%rip), %rsp
+ 
++	/* Setup boot GDT descriptor and load boot GDT */
++	leaq	boot_gdt(%rip), %rax
++	movq	%rax, boot_gdt_base(%rip)
++	lgdt	boot_gdt_descr(%rip)
++
++	/* New GDT is live - reload data segment registers */
++	movl	$__KERNEL_DS, %eax
++	movl	%eax, %ds
++	movl	%eax, %ss
++	movl	%eax, %es
++
++	/* Now switch to __KERNEL_CS so IRET works reliably */
++	pushq	$__KERNEL_CS
++	leaq	.Lon_kernel_cs(%rip), %rax
++	pushq	%rax
++	lretq
++
++.Lon_kernel_cs:
++	UNWIND_HINT_EMPTY
++
+ 	/* Sanitize CPU configuration */
+ 	call verify_cpu
+ 
+@@ -476,6 +496,22 @@ ENTRY(phys_base)
+ 	.quad   0x0000000000000000
+ EXPORT_SYMBOL(phys_base)
+ 
++/* Boot GDT used when kernel addresses are not mapped yet */
++SYM_DATA_LOCAL(boot_gdt_descr,		.word boot_gdt_end - boot_gdt)
++SYM_DATA_LOCAL(boot_gdt_base,		.quad 0)
++SYM_DATA_START(boot_gdt)
++	.quad	0
++	.quad   0x00cf9a000000ffff	/* __KERNEL32_CS */
++	.quad   0x00af9a000000ffff	/* __KERNEL_CS */
++	.quad   0x00cf92000000ffff	/* __KERNEL_DS */
++	.quad	0			/* __USER32_CS - unused */
++	.quad	0			/* __USER_DS   - unused */
++	.quad	0			/* __USER_CS   - unused */
++	.quad	0			/* unused */
++	.quad   0x0080890000000000	/* TSS descriptor */
++	.quad   0x0000000000000000	/* TSS continued */
++SYM_DATA_END_LABEL(boot_gdt, SYM_L_LOCAL, boot_gdt_end)
++
+ #include "../../x86/xen/xen-head.S"
+ 
+ 	__PAGE_ALIGNED_BSS
+-- 
+2.7.4
+

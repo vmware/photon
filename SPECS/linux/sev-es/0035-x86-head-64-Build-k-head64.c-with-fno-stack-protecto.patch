@@ -1,0 +1,35 @@
+From f5244b2fdf006cfc384d11b09515b38edc812716 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:49 +0530
+Subject: [PATCH 35/75] x86-head-64-Build-k-head64.c-with-fno-stack-protecto
+
+x86/head/64: Build k/head64.c with -fno-stack-protector
+
+The code inserted by the stack protector does not work in the early
+boot environment because it uses the GS segment, at least with memory
+encryption enabled. Make sure the early code is compiled without this
+feature enabled.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/kernel/Makefile | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+index da0b6bc..e92a140 100755
+--- a/arch/x86/kernel/Makefile
++++ b/arch/x86/kernel/Makefile
+@@ -36,6 +36,10 @@ ifdef CONFIG_FRAME_POINTER
+ OBJECT_FILES_NON_STANDARD_ftrace_$(BITS).o		:= y
+ endif
+ 
++# make sure head64.c is built without stack protector
++nostackp := $(call cc-option, -fno-stack-protector)
++CFLAGS_head64.o		:= $(nostackp)
++
+ # If instrumentation of this dir is enabled, boot hangs during first second.
+ # Probably could be more selective here, but note that files related to irqs,
+ # boot, dumpstack/stacktrace, etc are either non-interesting or can lead to
+-- 
+2.7.4
+

@@ -1,0 +1,59 @@
+From 10877a994e54e59e3e30a3ef11195c942c1c1845 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:48 +0530
+Subject: [PATCH 29/75] x86-idt-Split-idt_data-setup-out-of-set_intr_gate
+
+x86/idt: Split idt_data setup out of set_intr_gate()
+
+The code to setup idt_data is needed for early exception handling, but
+set_intr_gate() can't be used that early because it has pv-ops in its
+code path, which don't work that early.
+
+Split out the idt_data initialization part from set_intr_gate() so
+that it can be used separatly.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/kernel/idt.c | 22 ++++++++++++++--------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
+
+diff --git a/arch/x86/kernel/idt.c b/arch/x86/kernel/idt.c
+index 0636393..bb48715 100755
+--- a/arch/x86/kernel/idt.c
++++ b/arch/x86/kernel/idt.c
+@@ -232,18 +232,24 @@ idt_setup_from_table(gate_desc *idt, const struct idt_data *t, int size, bool sy
+ 	}
+ }
+ 
++static void init_idt_data(struct idt_data *data, unsigned int n,
++			  const void *addr)
++{
++	BUG_ON(n > 0xFF);
++
++	memset(data, 0, sizeof(*data));
++	data->vector	= n;
++	data->addr	= addr;
++	data->segment	= __KERNEL_CS;
++	data->bits.type	= GATE_INTERRUPT;
++	data->bits.p	= 1;
++}
++
+ static void set_intr_gate(unsigned int n, const void *addr)
+ {
+ 	struct idt_data data;
+ 
+-	BUG_ON(n > 0xFF);
+-
+-	memset(&data, 0, sizeof(data));
+-	data.vector	= n;
+-	data.addr	= addr;
+-	data.segment	= __KERNEL_CS;
+-	data.bits.type	= GATE_INTERRUPT;
+-	data.bits.p	= 1;
++	init_idt_data(&data, n, addr);
+ 
+ 	idt_setup_from_table(idt_table, &data, 1, false);
+ }
+-- 
+2.7.4
+

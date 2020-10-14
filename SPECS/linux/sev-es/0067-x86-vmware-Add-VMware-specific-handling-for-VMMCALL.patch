@@ -1,0 +1,91 @@
+From 3738ad7e8b6412f75f212053816b33ea62ae54e8 Mon Sep 17 00:00:00 2001
+From: Doug Covelli <dcovelli@vmware.com>
+Date: Thu, 17 Sep 2020 18:42:52 +0530
+Subject: [PATCH 67/75] x86-vmware-Add-VMware-specific-handling-for-VMMCALL
+
+x86/vmware: Add VMware specific handling for VMMCALL under SEV-ES
+
+This change adds VMware specific handling for #VC faults caused by
+VMMCALL instructions.
+
+Signed-off-by: Doug Covelli <dcovelli@vmware.com>
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+[ jroedel@suse.de: - Adapt to different paravirt interface ]
+Co-developed-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/kernel/cpu/vmware.c | 50 +++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 45 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index bd63553..937b50e 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -35,6 +35,7 @@
+ #include <asm/timer.h>
+ #include <asm/apic.h>
+ #include <asm/vmware.h>
++#include <asm/svm.h>
+ 
+ #undef pr_fmt
+ #define pr_fmt(fmt)	"vmware: " fmt
+@@ -493,12 +494,51 @@ static bool __init vmware_legacy_x2apic_available(void)
+ 	       (eax & (1 << VMWARE_CMD_LEGACY_X2APIC)) != 0;
+ }
+ 
++#ifdef CONFIG_AMD_MEM_ENCRYPT
++static void vmware_sev_es_hcall_prepare(struct ghcb *ghcb,
++					struct pt_regs *regs)
++{
++	/* Copy VMWARE specific Hypercall parameters to the GHCB */
++	ghcb_set_rip(ghcb, regs->ip);
++	ghcb_set_rbx(ghcb, regs->bx);
++	ghcb_set_rcx(ghcb, regs->cx);
++	ghcb_set_rdx(ghcb, regs->dx);
++	ghcb_set_rsi(ghcb, regs->si);
++	ghcb_set_rdi(ghcb, regs->di);
++	ghcb_set_rbp(ghcb, regs->bp);
++}
++
++static bool vmware_sev_es_hcall_finish(struct ghcb *ghcb, struct pt_regs *regs)
++{
++	if (!(ghcb_is_valid_rbx(ghcb) &&
++	      ghcb_is_valid_rcx(ghcb) &&
++	      ghcb_is_valid_rdx(ghcb) &&
++	      ghcb_is_valid_rsi(ghcb) &&
++	      ghcb_is_valid_rdi(ghcb) &&
++	      ghcb_is_valid_rbp(ghcb)))
++		return false;
++
++	regs->bx = ghcb->save.rbx;
++	regs->cx = ghcb->save.rcx;
++	regs->dx = ghcb->save.rdx;
++	regs->si = ghcb->save.rsi;
++	regs->di = ghcb->save.rdi;
++	regs->bp = ghcb->save.rbp;
++
++	return true;
++}
++#endif
++
+ const __initconst struct hypervisor_x86 x86_hyper_vmware = {
+-	.name			= "VMware",
+-	.detect			= vmware_platform,
+-	.type			= X86_HYPER_VMWARE,
+-	.init.init_platform	= vmware_platform_setup,
+-	.init.x2apic_available	= vmware_legacy_x2apic_available,
++	.name				= "VMware",
++	.detect				= vmware_platform,
++	.type				= X86_HYPER_VMWARE,
++	.init.init_platform		= vmware_platform_setup,
++	.init.x2apic_available		= vmware_legacy_x2apic_available,
++#ifdef CONFIG_AMD_MEM_ENCRYPT
++	.runtime.sev_es_hcall_prepare	= vmware_sev_es_hcall_prepare,
++	.runtime.sev_es_hcall_finish	= vmware_sev_es_hcall_finish,
++#endif
+ };
+ 
+ #define MESSAGE_STATUS_SUCCESS  (0x01 << 16)
+-- 
+2.7.4
+

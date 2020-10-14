@@ -1,6 +1,6 @@
-From ffb4b625e8b2f0ce0f31433564973eb2c80a7ef5 Mon Sep 17 00:00:00 2001
+From 65e3092a1b93daa6cd524ed03975a76aa7a145c3 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Tue, 9 May 2017 12:41:17 -0700
+Date: Thu, 17 Sep 2020 23:23:10 +0530
 Subject: [PATCH] vmware only
 
 ---
@@ -11,10 +11,10 @@ Subject: [PATCH] vmware only
  4 files changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 1ee8ea36..d72e63f 100644
+index 091b59f..ba6b968 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1370,7 +1370,9 @@ static void identify_cpu(struct cpuinfo_x86 *c)
+@@ -1452,7 +1452,9 @@ static void identify_cpu(struct cpuinfo_x86 *c)
  	detect_ht(c);
  #endif
  
@@ -42,18 +42,18 @@ index cfa97ff..e31cfe6 100644
  #endif
 +#endif
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index e299357..38c14f5 100644
+index fe0eadb..a853647 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -32,6 +32,7 @@
+@@ -34,6 +34,7 @@
  #include <asm/hypervisor.h>
  #include <asm/timer.h>
  #include <asm/apic.h>
 +#include <asm/pci_x86.h>
- #include <linux/kmsg_dump.h>
- #include <linux/frame.h>
+ #include <asm/vmware.h>
+ #include <asm/svm.h>
  
-@@ -435,6 +436,10 @@ static void __init vmware_platform_setup(void)
+@@ -486,6 +487,10 @@ static void __init vmware_platform_setup(void)
  	vmware_set_capabilities();
  
  	kmsg_dump_register(&kmsg_dumper);
@@ -63,12 +63,12 @@ index e299357..38c14f5 100644
 +#endif
  }
  
- /*
+ static u8 vmware_select_hypercall(void)
 diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
-index f02ecaf..98dc183 100644
+index 496b4a3..ae6329a 100644
 --- a/arch/x86/kernel/smpboot.c
 +++ b/arch/x86/kernel/smpboot.c
-@@ -706,7 +706,7 @@ wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
+@@ -714,7 +714,7 @@ wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
  	/*
  	 * Give the other CPU some time to accept the IPI.
  	 */
@@ -77,3 +77,6 @@ index f02ecaf..98dc183 100644
  	if (APIC_INTEGRATED(boot_cpu_apic_version)) {
  		maxlvt = lapic_get_maxlvt();
  		if (maxlvt > 3)			/* Due to the Pentium erratum 3AP.  */
+-- 
+2.7.4
+

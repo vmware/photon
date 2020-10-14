@@ -1,0 +1,54 @@
+From 7534e297719808e24b9db8d110025d0b933debdd Mon Sep 17 00:00:00 2001
+From: Thomas Hellstrom <thellstrom@vmware.com>
+Date: Thu, 9 Jul 2020 21:50:36 +0530
+Subject: [PATCH] Fix uninitialized sense buffer with swiotlb
+
+It seems like the device sometimes leaves part of the sense buffer
+uninitialized. This causes massive problems with swiotlb where any
+previous initialization of the sense buffer by the scsi middle-layer
+is not propagated to the device since we use DMA_FROM_DEVICE when
+dma-mapping the sense buffer.
+Fix this by specifying DMA_BIDIRECTIONAL instead. Makes the scsi errors
+go away.
+
+Tested using a bonnie++ run on an swiotlb=force booted kernel.
+
+Signed-off-by: Thomas Hellstrom <thellstrom@vmware.com>
+---
+ drivers/scsi/vmw_pvscsi.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/scsi/vmw_pvscsi.c b/drivers/scsi/vmw_pvscsi.c
+index abc953c..3c6b82b 100644
+--- a/drivers/scsi/vmw_pvscsi.c
++++ b/drivers/scsi/vmw_pvscsi.c
+@@ -429,7 +429,7 @@ static void pvscsi_unmap_buffers(const struct pvscsi_adapter *adapter,
+ 	}
+ 	if (cmd->sense_buffer)
+ 		dma_unmap_single(&adapter->dev->dev, ctx->sensePA,
+-				 SCSI_SENSE_BUFFERSIZE, DMA_FROM_DEVICE);
++				 SCSI_SENSE_BUFFERSIZE, DMA_BIDIRECTIONAL);
+ }
+ 
+ static int pvscsi_allocate_rings(struct pvscsi_adapter *adapter)
+@@ -714,7 +714,7 @@ static int pvscsi_queue_ring(struct pvscsi_adapter *adapter,
+ 	if (cmd->sense_buffer) {
+ 		ctx->sensePA = dma_map_single(&adapter->dev->dev,
+ 				cmd->sense_buffer, SCSI_SENSE_BUFFERSIZE,
+-				DMA_FROM_DEVICE);
++				DMA_BIDIRECTIONAL);
+ 		if (dma_mapping_error(&adapter->dev->dev, ctx->sensePA)) {
+ 			scmd_printk(KERN_DEBUG, cmd,
+ 				    "vmw_pvscsi: Failed to map sense buffer for DMA.\n");
+@@ -746,7 +746,7 @@ static int pvscsi_queue_ring(struct pvscsi_adapter *adapter,
+ 		if (cmd->sense_buffer) {
+ 			dma_unmap_single(&adapter->dev->dev, ctx->sensePA,
+ 					 SCSI_SENSE_BUFFERSIZE,
+-					 DMA_FROM_DEVICE);
++					 DMA_BIDIRECTIONAL);
+ 			ctx->sensePA = 0;
+ 		}
+ 		return -ENOMEM;
+-- 
+2.7.4
+

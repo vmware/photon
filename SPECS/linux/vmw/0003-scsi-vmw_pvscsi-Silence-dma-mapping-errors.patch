@@ -1,0 +1,55 @@
+From d8dd7d768131010cb6e064036bf525db68ce78b8 Mon Sep 17 00:00:00 2001
+From: Thomas Hellstrom <thellstrom@vmware.com>
+Date: Tue, 3 Dec 2019 20:30:52 +0100
+Subject: [PATCH] scsi: vmw_pvscsi: Silence dma mapping errors
+
+commit d8dd7d768131010cb6e064036bf525db68ce78b8 upstream.
+
+These errors typically occur with swiotlb when the swiotlb buffer is full.
+But they are transient and would typically unnecessarily worry a user.
+Instead of errors, print debug messages.
+
+Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
+Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
+Link: https://lore.kernel.org/r/20191203193052.7583-2-thomas_os@shipmail.org
+Acked-by: Jim Gill <jgill@vmware.com>
+Signed-off-by: Thomas Hellstrom <thellstrom@vmware.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+---
+ drivers/scsi/vmw_pvscsi.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/scsi/vmw_pvscsi.c b/drivers/scsi/vmw_pvscsi.c
+index 8a09d18..c3f010d 100644
+--- a/drivers/scsi/vmw_pvscsi.c
++++ b/drivers/scsi/vmw_pvscsi.c
+@@ -365,7 +365,7 @@ static int pvscsi_map_buffers(struct pvscsi_adapter *adapter,
+ 		int segs = scsi_dma_map(cmd);
+ 
+ 		if (segs == -ENOMEM) {
+-			scmd_printk(KERN_ERR, cmd,
++			scmd_printk(KERN_DEBUG, cmd,
+ 				    "vmw_pvscsi: Failed to map cmd sglist for DMA.\n");
+ 			return -ENOMEM;
+ 		} else if (segs > 1) {
+@@ -392,7 +392,7 @@ static int pvscsi_map_buffers(struct pvscsi_adapter *adapter,
+ 		ctx->dataPA = dma_map_single(&adapter->dev->dev, sg, bufflen,
+ 					     cmd->sc_data_direction);
+ 		if (dma_mapping_error(&adapter->dev->dev, ctx->dataPA)) {
+-			scmd_printk(KERN_ERR, cmd,
++			scmd_printk(KERN_DEBUG, cmd,
+ 				    "vmw_pvscsi: Failed to map direct data buffer for DMA.\n");
+ 			return -ENOMEM;
+ 		}
+@@ -725,7 +725,7 @@ static int pvscsi_queue_ring(struct pvscsi_adapter *adapter,
+ 				cmd->sense_buffer, SCSI_SENSE_BUFFERSIZE,
+ 				DMA_FROM_DEVICE);
+ 		if (dma_mapping_error(&adapter->dev->dev, ctx->sensePA)) {
+-			scmd_printk(KERN_ERR, cmd,
++			scmd_printk(KERN_DEBUG, cmd,
+ 				    "vmw_pvscsi: Failed to map sense buffer for DMA.\n");
+ 			ctx->sensePA = 0;
+ 			return -ENOMEM;
+-- 
+2.7.4
+

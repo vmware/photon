@@ -1,0 +1,298 @@
+From 0a61aea8bc31e82cfe0e18e2397230d02f1b7fd2 Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Tue, 15 Sep 2020 17:24:12 +0530
+Subject: [PATCH] x86/vmware: Use Efficient and Corrent ALTERNATIVEs for
+ hypercall
+
+Before ALTERNATIVEs are applied, vmware_hypercall_mode will be used
+to select hypercall methods (IO/VMCALL/VMMCALL). Hypercall goes
+through vmw_hypercall(hb)_slowpath. After ALTERNATIVEs are applied,
+the call instruction will be replaced with IO/VMCALL/VMMCALL
+instructions.
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ MAINTAINERS                   |  1 +
+ arch/x86/include/asm/vmware.h | 40 +++++++++++++++++++-------
+ arch/x86/kernel/cpu/Makefile  |  2 +-
+ arch/x86/kernel/cpu/vmw_hc.S  | 60 +++++++++++++++++++++++++++++++++++++++
+ arch/x86/kernel/cpu/vmware.c  | 66 ++++++++++++++++++++-----------------------
+ 5 files changed, 123 insertions(+), 46 deletions(-)
+ create mode 100644 arch/x86/kernel/cpu/vmw_hc.S
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1f08f86..daf304e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15669,6 +15669,7 @@ L:	virtualization@lists.linux-foundation.org
+ S:	Supported
+ F:	arch/x86/kernel/cpu/vmware.c
+ F:	arch/x86/include/asm/vmware.h
++F:	arch/x86/kernel/cpu/vmw_hc.S
+ 
+ VMWARE PVRDMA DRIVER
+ M:	Adit Ranadive <aditr@vmware.com>
+diff --git a/arch/x86/include/asm/vmware.h b/arch/x86/include/asm/vmware.h
+index ac9fc51..e88c504 100644
+--- a/arch/x86/include/asm/vmware.h
++++ b/arch/x86/include/asm/vmware.h
+@@ -2,10 +2,16 @@
+ #ifndef _ASM_X86_VMWARE_H
+ #define _ASM_X86_VMWARE_H
+ 
++#include <linux/bits.h>
+ #include <asm/cpufeatures.h>
+ #include <asm/alternative.h>
+ #include <linux/stringify.h>
+ 
++#define CPUID_VMWARE_INFO_LEAF               0x40000000
++#define CPUID_VMWARE_FEATURES_LEAF           0x40000010
++#define CPUID_VMWARE_FEATURES_ECX_VMMCALL    BIT(0)
++#define CPUID_VMWARE_FEATURES_ECX_VMCALL     BIT(1)
++
+ /*
+  * The hypercall definitions differ in the low word of the %edx argument
+  * in the following way: the old port base interface uses the port
+@@ -30,28 +36,42 @@
+ 
+ /* The low bandwidth call. The low word of edx is presumed clear. */
+ #define VMWARE_HYPERCALL						\
+-	ALTERNATIVE_2("movw $" __stringify(VMWARE_HYPERVISOR_PORT) ", %%dx; " \
+-		      "inl (%%dx), %%eax",				\
++	ALTERNATIVE_3("callq vmw_hypercall_slowpath",			\
++		      "movw $" __stringify(VMWARE_HYPERVISOR_PORT)	\
++							", %%dx; "	\
++		      "inl (%%dx), %%eax", X86_FEATURE_HYPERVISOR,	\
+ 		      "vmcall", X86_FEATURE_VMCALL,			\
+ 		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
+ 
+ /*
+- * The high bandwidth out call. The low word of edx is presumed to have the
+- * HB and OUT bits set.
++ * The high bandwidth out call.
+  */
+ #define VMWARE_HYPERCALL_HB_OUT						\
+-	ALTERNATIVE_2("movw $" __stringify(VMWARE_HYPERVISOR_PORT_HB) ", %%dx; " \
+-		      "rep outsb",					\
++	ALTERNATIVE_3("callq vmw_hypercall_hb_out_slowpath",		\
++		      "movw $" __stringify(VMWARE_HYPERVISOR_PORT_HB)	\
++							", %%dx; "	\
++		      "cld; rep outsb", X86_FEATURE_HYPERVISOR,		\
++		      "movw $" __stringify(VMWARE_HYPERVISOR_HB |	\
++					   VMWARE_HYPERVISOR_OUT)	\
++							", %%dx; "	\
+ 		      "vmcall", X86_FEATURE_VMCALL,			\
++		      "movw $" __stringify(VMWARE_HYPERVISOR_HB |	\
++					   VMWARE_HYPERVISOR_OUT)	\
++							", %%dx; "	\
+ 		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
+ 
+ /*
+- * The high bandwidth in call. The low word of edx is presumed to have the
+- * HB bit set.
++ * The high bandwidth in call.
+  */
+ #define VMWARE_HYPERCALL_HB_IN						\
+-	ALTERNATIVE_2("movw $" __stringify(VMWARE_HYPERVISOR_PORT_HB) ", %%dx; " \
+-		      "rep insb",					\
++	ALTERNATIVE_3("callq vmw_hypercall_hb_in_slowpath",		\
++		      "movw $" __stringify(VMWARE_HYPERVISOR_PORT_HB)	\
++							", %%dx; "	\
++		      "cld; rep insb", X86_FEATURE_HYPERVISOR,		\
++		      "movw $" __stringify(VMWARE_HYPERVISOR_HB)	\
++							", %%dx; "	\
+ 		      "vmcall", X86_FEATURE_VMCALL,			\
++		      "movw $" __stringify(VMWARE_HYPERVISOR_HB)	\
++							", %%dx; "	\
+ 		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
+ #endif
+diff --git a/arch/x86/kernel/cpu/Makefile b/arch/x86/kernel/cpu/Makefile
+index 320769b..06aff93 100644
+--- a/arch/x86/kernel/cpu/Makefile
++++ b/arch/x86/kernel/cpu/Makefile
+@@ -45,7 +45,7 @@ obj-$(CONFIG_MICROCODE)			+= microcode/
+ 
+ obj-$(CONFIG_X86_LOCAL_APIC)		+= perfctr-watchdog.o
+ 
+-obj-$(CONFIG_HYPERVISOR_GUEST)		+= vmware.o hypervisor.o mshyperv.o
++obj-$(CONFIG_HYPERVISOR_GUEST)		+= vmware.o vmw_hc.o hypervisor.o mshyperv.o
+ 
+ ifdef CONFIG_X86_FEATURE_NAMES
+ quiet_cmd_mkcapflags = MKCAP   $@
+diff --git a/arch/x86/kernel/cpu/vmw_hc.S b/arch/x86/kernel/cpu/vmw_hc.S
+new file mode 100644
+index 0000000..d8d1ed0
+--- /dev/null
++++ b/arch/x86/kernel/cpu/vmw_hc.S
+@@ -0,0 +1,60 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++
++#include <linux/linkage.h>
++#include <asm/export.h>
++#include <asm/vmware.h>
++
++SYM_CODE_START(vmw_hypercall_slowpath)
++	testb	$CPUID_VMWARE_FEATURES_ECX_VMMCALL, vmware_hypercall_mode(%rip)
++	jnz	.Lvmw_vmmcall
++	testb	$CPUID_VMWARE_FEATURES_ECX_VMCALL, vmware_hypercall_mode(%rip)
++	jnz	.Lvmw_vmcall
++	movw	$VMWARE_HYPERVISOR_PORT, %dx;
++	inl	(%dx), %eax
++	retq
++.Lvmw_vmcall:
++	vmcall
++	retq
++.Lvmw_vmmcall:
++	vmmcall
++	retq
++SYM_CODE_END(vmw_hypercall_slowpath)
++EXPORT_SYMBOL(vmw_hypercall_slowpath)
++
++SYM_CODE_START(vmw_hypercall_hb_out_slowpath)
++	movw	$(VMWARE_HYPERVISOR_HB | VMWARE_HYPERVISOR_OUT), %dx
++	testb	$CPUID_VMWARE_FEATURES_ECX_VMMCALL, vmware_hypercall_mode(%rip)
++	jnz	.Lvmw_vmmcallo
++	testb	$CPUID_VMWARE_FEATURES_ECX_VMCALL, vmware_hypercall_mode(%rip)
++	jnz	.Lvmw_vmcallo
++	movw	$VMWARE_HYPERVISOR_PORT_HB, %dx
++	cld
++	rep outsb
++	retq
++.Lvmw_vmcallo:
++	vmcall
++	retq
++.Lvmw_vmmcallo:
++	vmmcall
++	retq
++SYM_CODE_END(vmw_hypercall_hb_out_slowpath)
++EXPORT_SYMBOL(vmw_hypercall_hb_out_slowpath)
++
++SYM_CODE_START(vmw_hypercall_hb_in_slowpath)
++	movw	$VMWARE_HYPERVISOR_HB, %dx
++	testb	$CPUID_VMWARE_FEATURES_ECX_VMMCALL, vmware_hypercall_mode(%rip)
++	jnz	.Lvmw_vmmcalli
++	testb	$CPUID_VMWARE_FEATURES_ECX_VMCALL, vmware_hypercall_mode(%rip)
++	jnz	.Lvmw_vmcalli
++	movw	$VMWARE_HYPERVISOR_PORT_HB, %dx
++	cld
++	rep insb
++	retq
++.Lvmw_vmcalli:
++	vmcall
++	retq
++.Lvmw_vmmcalli:
++	vmmcall
++	retq
++SYM_CODE_END(vmw_hypercall_hb_in_slowpath)
++EXPORT_SYMBOL(vmw_hypercall_hb_in_slowpath)
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index c96b3f7..d24119a 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -37,11 +37,6 @@
+ #undef pr_fmt
+ #define pr_fmt(fmt)	"vmware: " fmt
+ 
+-#define CPUID_VMWARE_INFO_LEAF               0x40000000
+-#define CPUID_VMWARE_FEATURES_LEAF           0x40000010
+-#define CPUID_VMWARE_FEATURES_ECX_VMMCALL    BIT(0)
+-#define CPUID_VMWARE_FEATURES_ECX_VMCALL     BIT(1)
+-
+ #define VMWARE_HYPERVISOR_MAGIC	0x564D5868
+ 
+ #define VMWARE_CMD_GETVERSION    10
+@@ -54,44 +49,22 @@
+ #define STEALCLOCK_DISABLED           0
+ #define STEALCLOCK_ENABLED            1
+ 
+-#define VMWARE_PORT(cmd, eax, ebx, ecx, edx)				\
+-	__asm__("inl (%%dx), %%eax" :					\
+-		"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :		\
+-		"a"(VMWARE_HYPERVISOR_MAGIC),				\
+-		"c"(VMWARE_CMD_##cmd),					\
+-		"d"(VMWARE_HYPERVISOR_PORT), "b"(UINT_MAX) :		\
+-		"memory")
+-
+-#define VMWARE_VMCALL(cmd, eax, ebx, ecx, edx)				\
+-	__asm__("vmcall" :						\
++#define VMWARE_CMD(cmd, eax, ebx, ecx, edx)				\
++	__asm__(VMWARE_HYPERCALL :					\
+ 		"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :		\
+ 		"a"(VMWARE_HYPERVISOR_MAGIC),				\
+ 		"c"(VMWARE_CMD_##cmd),					\
+ 		"d"(0), "b"(UINT_MAX) :					\
+ 		"memory")
+ 
+-#define VMWARE_VMMCALL(cmd, eax, ebx, ecx, edx)                         \
+-	__asm__("vmmcall" :						\
+-		"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :		\
++#define VMWARE_CMD_6(cmd, eax, ebx, ecx, edx, esi, edi)		\
++	__asm__(VMWARE_HYPERCALL :				        \
++		"=a"(eax), "=c"(ecx), "+d"(edx), "+b"(ebx),		\
++					"+S"(esi), "+D"(edi) :		\
+ 		"a"(VMWARE_HYPERVISOR_MAGIC),				\
+-		"c"(VMWARE_CMD_##cmd),					\
+-		"d"(0), "b"(UINT_MAX) :					\
++		"c"(VMWARE_CMD_##cmd) :					\
+ 		"memory")
+ 
+-#define VMWARE_CMD(cmd, eax, ebx, ecx, edx) do {		\
+-	switch (vmware_hypercall_mode) {			\
+-	case CPUID_VMWARE_FEATURES_ECX_VMCALL:			\
+-		VMWARE_VMCALL(cmd, eax, ebx, ecx, edx);		\
+-		break;						\
+-	case CPUID_VMWARE_FEATURES_ECX_VMMCALL:			\
+-		VMWARE_VMMCALL(cmd, eax, ebx, ecx, edx);	\
+-		break;						\
+-	default:						\
+-		VMWARE_PORT(cmd, eax, ebx, ecx, edx);		\
+-		break;						\
+-	}							\
+-	} while (0)
+-
+ struct vmware_steal_time {
+ 	union {
+ 		uint64_t clock;	/* stolen time counter in units of vtsc */
+@@ -104,8 +77,30 @@ struct vmware_steal_time {
+ 	uint64_t reserved[7];
+ };
+ 
++#define VMWARE_HB_OUT(cmd, eax, ebx, ecx, edx, esi, edi, ebp)		\
++	__asm__("pushq %%rbp\n\t"					\
++		"movl %[extra], %%ebp\n\t"				\
++		VMWARE_HYPERCALL_HB_OUT					\
++		"popq %%rbp\n\t" :					\
++		"=a"(eax), "+c"(ecx), "+d"(edx), "=b"(ebx) :		\
++		"a"(VMWARE_HYPERVISOR_MAGIC),				\
++		"b"(VMWARE_HB_CMD_##cmd),				\
++		"S"(esi), "D"(edi), [extra] "r"(ebp) :			\
++		"memory")
++
++#define VMWARE_HB_IN(cmd, eax, ebx, ecx, edx, esi, edi, ebp)		\
++	__asm__("pushq %%rbp\n\t"					\
++		"movl %[extra], %%ebp\n\t"				\
++		VMWARE_HYPERCALL_HB_IN					\
++		"popq %%rbp\n\t" :					\
++		"=a"(eax), "+c"(ecx), "+d"(edx), "=b"(ebx) :		\
++		"a"(VMWARE_HYPERVISOR_MAGIC),				\
++		"b"(VMWARE_HB_CMD_##cmd),				\
++		"S"(esi), "D"(edi), [extra] "r"(ebp) :			\
++		"memory")
++
+ static unsigned long vmware_tsc_khz __ro_after_init;
+-static u8 vmware_hypercall_mode     __ro_after_init;
++u8 vmware_hypercall_mode     __ro_after_init;
+ 
+ static inline int __vmware_platform(void)
+ {
+@@ -369,6 +364,7 @@ static void __init vmware_set_capabilities(void)
+ {
+ 	setup_force_cpu_cap(X86_FEATURE_CONSTANT_TSC);
+ 	setup_force_cpu_cap(X86_FEATURE_TSC_RELIABLE);
++	setup_force_cpu_cap(X86_FEATURE_HYPERVISOR);
+ 	if (vmware_hypercall_mode == CPUID_VMWARE_FEATURES_ECX_VMCALL)
+ 		setup_force_cpu_cap(X86_FEATURE_VMCALL);
+ 	else if (vmware_hypercall_mode == CPUID_VMWARE_FEATURES_ECX_VMMCALL)
+-- 
+2.7.4
+

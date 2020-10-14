@@ -1,0 +1,28 @@
+From ded4c74667c363e06935805536628c8f76d677ae Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Wed, 2 Sep 2020 05:43:02 -0700
+Subject: [PATCH 81/82] x86/sev-es: Disable use of WP via PAT for
+ __sme_early_enc_dec
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ arch/x86/mm/mem_encrypt.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index 5cec395..70dde21 100644
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -79,8 +79,8 @@ static void __init __sme_early_enc_dec(resource_size_t paddr,
+ 		 * Create mappings for the current and desired format of
+ 		 * the memory. Use a write-protected mapping for the source.
+ 		 */
+-		src = enc ? early_memremap_decrypted_wp(paddr, len) :
+-			    early_memremap_encrypted_wp(paddr, len);
++		src = enc ? early_memremap_decrypted(paddr, len) :
++			    early_memremap_encrypted(paddr, len);
+ 
+ 		dst = enc ? early_memremap_encrypted(paddr, len) :
+ 			    early_memremap_decrypted(paddr, len);
+-- 
+2.7.4

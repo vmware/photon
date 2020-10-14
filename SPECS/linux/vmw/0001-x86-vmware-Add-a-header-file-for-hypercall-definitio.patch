@@ -1,0 +1,165 @@
+From b4dd4f6e3648dfd66576515f2222d885a9a765c0 Mon Sep 17 00:00:00 2001
+From: Thomas Hellstrom <thellstrom@vmware.com>
+Date: Wed, 28 Aug 2019 10:03:51 +0200
+Subject: [PATCH] x86/vmware: Add a header file for hypercall definitions
+
+commit b4dd4f6e3648dfd66576515f2222d885a9a765c0 upstream.
+
+The new header is intended to be used by drivers using the backdoor.
+Follow the KVM example using alternatives self-patching to choose
+between vmcall, vmmcall and io instructions.
+
+Also define two new CPU feature flags to indicate hypervisor support
+for vmcall- and vmmcall instructions. The new XF86_FEATURE_VMW_VMMCALL
+flag is needed because using XF86_FEATURE_VMMCALL might break QEMU/KVM
+setups using the vmmouse driver. They rely on XF86_FEATURE_VMMCALL
+on AMD to get the kvm_hypercall() right. But they do not yet implement
+vmmcall for the VMware hypercall used by the vmmouse driver.
+
+ [ bp: reflow hypercall %edx usage explanation comment. ]
+
+Signed-off-by: Thomas Hellstrom <thellstrom@vmware.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Doug Covelli <dcovelli@vmware.com>
+Cc: Aaron Lewis <aaronlewis@google.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Fenghua Yu <fenghua.yu@intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: linux-graphics-maintainer@vmware.com
+Cc: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc: Robert Hoo <robert.hu@linux.intel.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: virtualization@lists.linux-foundation.org
+Cc: <pv-drivers@vmware.com>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190828080353.12658-3-thomas_os@shipmail.org
+---
+ MAINTAINERS                        |  1 +
+ arch/x86/include/asm/cpufeatures.h |  2 ++
+ arch/x86/include/asm/vmware.h      | 53 ++++++++++++++++++++++++++++++++++++++
+ arch/x86/kernel/cpu/vmware.c       |  6 ++++-
+ 4 files changed, 61 insertions(+), 1 deletion(-)
+ create mode 100644 arch/x86/include/asm/vmware.h
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 9cbcf16..47efc1b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17206,6 +17206,7 @@ M:	"VMware, Inc." <pv-drivers@vmware.com>
+ L:	virtualization@lists.linux-foundation.org
+ S:	Supported
+ F:	arch/x86/kernel/cpu/vmware.c
++F:	arch/x86/include/asm/vmware.h
+ 
+ VMWARE PVRDMA DRIVER
+ M:	Adit Ranadive <aditr@vmware.com>
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index e880f24..aaeae2f 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -232,6 +232,8 @@
+ #define X86_FEATURE_VMMCALL		( 8*32+15) /* Prefer VMMCALL to VMCALL */
+ #define X86_FEATURE_XENPV		( 8*32+16) /* "" Xen paravirtual guest */
+ #define X86_FEATURE_EPT_AD		( 8*32+17) /* Intel Extended Page Table access-dirty bit */
++#define X86_FEATURE_VMCALL		( 8*32+18) /* "" Hypervisor supports the VMCALL instruction */
++#define X86_FEATURE_VMW_VMMCALL		( 8*32+19) /* "" VMware prefers VMMCALL hypercall instruction */
+ 
+ /* Intel-defined CPU features, CPUID level 0x00000007:0 (EBX), word 9 */
+ #define X86_FEATURE_FSGSBASE		( 9*32+ 0) /* RDFSBASE, WRFSBASE, RDGSBASE, WRGSBASE instructions*/
+diff --git a/arch/x86/include/asm/vmware.h b/arch/x86/include/asm/vmware.h
+new file mode 100644
+index 0000000..e00c9e8
+--- /dev/null
++++ b/arch/x86/include/asm/vmware.h
+@@ -0,0 +1,53 @@
++/* SPDX-License-Identifier: GPL-2.0 or MIT */
++#ifndef _ASM_X86_VMWARE_H
++#define _ASM_X86_VMWARE_H
++
++#include <asm/cpufeatures.h>
++#include <asm/alternative.h>
++
++/*
++ * The hypercall definitions differ in the low word of the %edx argument
++ * in the following way: the old port base interface uses the port
++ * number to distinguish between high- and low bandwidth versions.
++ *
++ * The new vmcall interface instead uses a set of flags to select
++ * bandwidth mode and transfer direction. The flags should be loaded
++ * into %dx by any user and are automatically replaced by the port
++ * number if the VMWARE_HYPERVISOR_PORT method is used.
++ *
++ * In short, new driver code should strictly use the new definition of
++ * %dx content.
++ */
++
++/* Old port-based version */
++#define VMWARE_HYPERVISOR_PORT    "0x5658"
++#define VMWARE_HYPERVISOR_PORT_HB "0x5659"
++
++/* Current vmcall / vmmcall version */
++#define VMWARE_HYPERVISOR_HB   BIT(0)
++#define VMWARE_HYPERVISOR_OUT  BIT(1)
++
++/* The low bandwidth call. The low word of edx is presumed clear. */
++#define VMWARE_HYPERCALL						\
++	ALTERNATIVE_2("movw $" VMWARE_HYPERVISOR_PORT ", %%dx; inl (%%dx)", \
++		      "vmcall", X86_FEATURE_VMCALL,			\
++		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
++
++/*
++ * The high bandwidth out call. The low word of edx is presumed to have the
++ * HB and OUT bits set.
++ */
++#define VMWARE_HYPERCALL_HB_OUT						\
++	ALTERNATIVE_2("movw $" VMWARE_HYPERVISOR_PORT_HB ", %%dx; rep outsb", \
++		      "vmcall", X86_FEATURE_VMCALL,			\
++		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
++
++/*
++ * The high bandwidth in call. The low word of edx is presumed to have the
++ * HB bit set.
++ */
++#define VMWARE_HYPERCALL_HB_IN						\
++	ALTERNATIVE_2("movw $" VMWARE_HYPERVISOR_PORT_HB ", %%dx; rep insb", \
++		      "vmcall", X86_FEATURE_VMCALL,			\
++		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
++#endif
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 757dded..9735139 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -30,6 +30,7 @@
+ #include <asm/hypervisor.h>
+ #include <asm/timer.h>
+ #include <asm/apic.h>
++#include <asm/vmware.h>
+ 
+ #undef pr_fmt
+ #define pr_fmt(fmt)	"vmware: " fmt
+@@ -40,7 +41,6 @@
+ #define CPUID_VMWARE_FEATURES_ECX_VMCALL     BIT(1)
+ 
+ #define VMWARE_HYPERVISOR_MAGIC	0x564D5868
+-#define VMWARE_HYPERVISOR_PORT	0x5658
+ 
+ #define VMWARE_CMD_GETVERSION    10
+ #define VMWARE_CMD_GETHZ         45
+@@ -164,6 +164,10 @@ static void __init vmware_set_capabilities(void)
+ {
+ 	setup_force_cpu_cap(X86_FEATURE_CONSTANT_TSC);
+ 	setup_force_cpu_cap(X86_FEATURE_TSC_RELIABLE);
++	if (vmware_hypercall_mode == CPUID_VMWARE_FEATURES_ECX_VMCALL)
++		setup_force_cpu_cap(X86_FEATURE_VMCALL);
++	else if (vmware_hypercall_mode == CPUID_VMWARE_FEATURES_ECX_VMMCALL)
++		setup_force_cpu_cap(X86_FEATURE_VMW_VMMCALL);
+ }
+ 
+ static void __init vmware_platform_setup(void)
+-- 
+2.7.4
+

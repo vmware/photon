@@ -1,0 +1,51 @@
+From 5416b1f7e7d3bc59d76c5e93c05d5873963ba623 Mon Sep 17 00:00:00 2001
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Date: Wed, 10 Jun 2020 18:21:57 +0530
+Subject: [PATCH 60/75] x86-sev-es-Handle-MWAIT-MWAITX-Events
+
+x86/sev-es: Handle MWAIT/MWAITX Events
+
+Implement a handler for #VC exceptions caused by MWAIT and MWAITX
+instructions.
+
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+[ jroedel@suse.de: Adapt to #VC handling infrastructure ]
+Co-developed-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/kernel/sev-es.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/arch/x86/kernel/sev-es.c b/arch/x86/kernel/sev-es.c
+index 1a96171..d5d4804 100644
+--- a/arch/x86/kernel/sev-es.c
++++ b/arch/x86/kernel/sev-es.c
+@@ -840,6 +840,15 @@ static enum es_result vc_handle_monitor(struct ghcb *ghcb,
+ 	return sev_es_ghcb_hv_call(ghcb, ctxt, SVM_EXIT_MONITOR, 0, 0);
+ }
+ 
++static enum es_result vc_handle_mwait(struct ghcb *ghcb,
++				      struct es_em_ctxt *ctxt)
++{
++	ghcb_set_rax(ghcb, ctxt->regs->ax);
++	ghcb_set_rcx(ghcb, ctxt->regs->cx);
++
++	return sev_es_ghcb_hv_call(ghcb, ctxt, SVM_EXIT_MWAIT, 0, 0);
++}
++
+ static enum es_result vc_handle_exitcode(struct es_em_ctxt *ctxt,
+ 					 struct ghcb *ghcb,
+ 					 unsigned long exit_code)
+@@ -879,6 +888,9 @@ static enum es_result vc_handle_exitcode(struct es_em_ctxt *ctxt,
+ 	case SVM_EXIT_MONITOR:
+ 		result = vc_handle_monitor(ghcb, ctxt);
+ 		break;
++	case SVM_EXIT_MWAIT:
++		result = vc_handle_mwait(ghcb, ctxt);
++		break;
+ 	case SVM_EXIT_NPF:
+ 		result = vc_handle_mmio(ghcb, ctxt);
+ 		break;
+-- 
+2.7.4
+

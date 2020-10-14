@@ -1,0 +1,62 @@
+From 646ccb8c76fad337bcdd8e67190388b853352290 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:54 +0530
+Subject: [PATCH 49/75] x86-sev-es-Handle-instruction-fetches-from-user-spac
+
+x86/sev-es: Handle instruction fetches from user-space
+When a #VC exception is triggered by user-space the instruction decoder
+needs to read the instruction bytes from user addresses.  Enhance
+vc_decode_insn() to safely fetch kernel and user instructions.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/kernel/sev-es.c | 31 ++++++++++++++++++++++---------
+ 1 file changed, 22 insertions(+), 9 deletions(-)
+
+diff --git a/arch/x86/kernel/sev-es.c b/arch/x86/kernel/sev-es.c
+index 85027fb..c2223c2 100644
+--- a/arch/x86/kernel/sev-es.c
++++ b/arch/x86/kernel/sev-es.c
+@@ -165,17 +165,30 @@ static enum es_result vc_decode_insn(struct es_em_ctxt *ctxt)
+ 	enum es_result ret;
+ 	int res;
+ 
+-	res = vc_fetch_insn_kernel(ctxt, buffer);
+-	if (unlikely(res == -EFAULT)) {
+-		ctxt->fi.vector     = X86_TRAP_PF;
+-		ctxt->fi.error_code = 0;
+-		ctxt->fi.cr2        = ctxt->regs->ip;
+-		return ES_EXCEPTION;
++	if (!user_mode(ctxt->regs)) {
++		res = vc_fetch_insn_kernel(ctxt, buffer);
++		if (unlikely(res == -EFAULT)) {
++			ctxt->fi.vector     = X86_TRAP_PF;
++			ctxt->fi.error_code = 0;
++			ctxt->fi.cr2        = ctxt->regs->ip;
++			return ES_EXCEPTION;
++		}
++
++		insn_init(&ctxt->insn, buffer, MAX_INSN_SIZE - res, 1);
++		insn_get_length(&ctxt->insn);
++	} else {
++		res = insn_fetch_from_user(ctxt->regs, buffer);
++		if (res == 0) {
++			ctxt->fi.vector     = X86_TRAP_PF;
++			ctxt->fi.cr2        = ctxt->regs->ip;
++			ctxt->fi.error_code = X86_PF_INSTR | X86_PF_USER;
++			return ES_EXCEPTION;
++		}
++
++		if (!insn_decode(ctxt->regs, &ctxt->insn, buffer, res))
++			return ES_DECODE_FAILED;
+ 	}
+ 
+-	insn_init(&ctxt->insn, buffer, MAX_INSN_SIZE - res, 1);
+-	insn_get_length(&ctxt->insn);
+-
+ 	ret = ctxt->insn.immediate.got ? ES_OK : ES_DECODE_FAILED;
+ 
+ 	return ret;
+-- 
+2.7.4
+

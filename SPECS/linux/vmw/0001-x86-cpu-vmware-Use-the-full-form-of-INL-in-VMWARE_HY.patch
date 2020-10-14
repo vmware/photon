@@ -1,0 +1,51 @@
+From db633a4e0e6eda69b6065e3e106f9ea13a0676c3 Mon Sep 17 00:00:00 2001
+From: Thomas Hellstrom <thellstrom@vmware.com>
+Date: Mon, 21 Oct 2019 19:24:02 +0200
+Subject: [PATCH] x86/cpu/vmware: Use the full form of INL in VMWARE_HYPERCALL,
+ for clang/llvm
+
+commit db633a4e0e6eda69b6065e3e106f9ea13a0676c3 upstream.
+
+LLVM's assembler doesn't accept the short form INL instruction:
+
+  inl (%%dx)
+
+but instead insists on the output register to be explicitly specified.
+
+This was previously fixed for the VMWARE_PORT macro. Fix it also for
+the VMWARE_HYPERCALL macro.
+
+Suggested-by: Sami Tolvanen <samitolvanen@google.com>
+Signed-off-by: Thomas Hellstrom <thellstrom@vmware.com>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: clang-built-linux@googlegroups.com
+Fixes: b4dd4f6e3648 ("Add a header file for hypercall definitions")
+Link: https://lkml.kernel.org/r/20191021172403.3085-2-thomas_os@shipmail.org
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+---
+ arch/x86/include/asm/vmware.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/vmware.h b/arch/x86/include/asm/vmware.h
+index e00c9e8..3caac90 100644
+--- a/arch/x86/include/asm/vmware.h
++++ b/arch/x86/include/asm/vmware.h
+@@ -29,7 +29,8 @@
+ 
+ /* The low bandwidth call. The low word of edx is presumed clear. */
+ #define VMWARE_HYPERCALL						\
+-	ALTERNATIVE_2("movw $" VMWARE_HYPERVISOR_PORT ", %%dx; inl (%%dx)", \
++	ALTERNATIVE_2("movw $" VMWARE_HYPERVISOR_PORT ", %%dx; "	\
++		      "inl (%%dx), %%eax",				\
+ 		      "vmcall", X86_FEATURE_VMCALL,			\
+ 		      "vmmcall", X86_FEATURE_VMW_VMMCALL)
+ 
+-- 
+2.7.4
+

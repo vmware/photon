@@ -1,0 +1,43 @@
+From 4fb663d854de308fce5d42c4729d68d8b52d5ebc Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:46 +0530
+Subject: [PATCH 21/75] x86-boot-compressed-64-Check-return-value-of-kernel_
+
+x86/boot/compressed/64: Check return value of kernel_ident_mapping_init()
+
+The function can fail to create an identity mapping, check for that
+and bail out if it happens.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/boot/compressed/ident_map_64.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/ident_map_64.c b/arch/x86/boot/compressed/ident_map_64.c
+index 6ee089f..5d8b0bf 100644
+--- a/arch/x86/boot/compressed/ident_map_64.c
++++ b/arch/x86/boot/compressed/ident_map_64.c
+@@ -93,6 +93,8 @@ static struct x86_mapping_info mapping_info;
+  */
+ static void add_identity_map(unsigned long start, unsigned long end)
+ {
++	int ret;
++
+ 	/* Align boundary to 2M. */
+ 	start = round_down(start, PMD_SIZE);
+ 	end = round_up(end, PMD_SIZE);
+@@ -100,8 +102,9 @@ static void add_identity_map(unsigned long start, unsigned long end)
+ 		return;
+ 
+ 	/* Build the mapping. */
+-	kernel_ident_mapping_init(&mapping_info, (pgd_t *)top_level_pgt,
+-				  start, end);
++	ret = kernel_ident_mapping_init(&mapping_info, (pgd_t *)top_level_pgt, start, end);
++	if (ret)
++		error("Error: kernel_ident_mapping_init() failed\n");
+ }
+ 
+ /* Locates and clears a region for a new top level page table. */
+-- 
+2.7.4
+

@@ -1,0 +1,44 @@
+From 9a7b9ed6fbef302ea2e534d21b362a002f104242 Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Tue, 2 Jun 2020 20:02:06 -0700
+Subject: [PATCH 05/89] x86/vmware: Fix steal time clock under SEV
+
+STA shared memory should be set to decrypted if SEV is active.
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ arch/x86/kernel/cpu/vmware.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 532165d..6fe545e 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -295,9 +295,24 @@ static struct notifier_block vmware_pv_reboot_nb = {
+ 	.notifier_call = vmware_pv_reboot_notify,
+ };
+ 
++static inline void sev_map_percpu_data(void)
++{
++	int cpu;
++
++	if (!sev_active())
++		return;
++
++	for_each_possible_cpu(cpu) {
++		early_set_memory_decrypted(
++			(unsigned long)&per_cpu(steal_time, cpu),
++			sizeof(steal_time));
++	}
++}
++
+ #ifdef CONFIG_SMP
+ static void __init vmware_smp_prepare_boot_cpu(void)
+ {
++	sev_map_percpu_data();
+ 	vmware_guest_cpu_init();
+ 	native_smp_prepare_boot_cpu();
+ }
+-- 
+2.7.4
+

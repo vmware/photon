@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.154
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -40,17 +40,6 @@ Patch10:        9p-file-attributes-caching-support.patch
 # -esx
 Patch11:        fs-9p-support-for-local-file-lock.patch
 Patch12:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
-Patch13:        01-clear-linux.patch
-Patch14:        02-pci-probe.patch
-Patch15:        03-poweroff.patch
-Patch16:        04-quiet-boot.patch
-Patch17:        05-pv-ops-clocksource.patch
-Patch18:        06-pv-ops-boot_clock.patch
-Patch19:        07-vmware-only.patch
-Patch20:        initramfs-support-for-page-aligned-format-newca.patch
-Patch21:        enabling-configuring-options-for-geneve-device.patch
-Patch22:        initramfs-multiple-image-extraction-support.patch
-Patch23:        halt-on-panic.patch
 
 Patch30:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 
@@ -139,17 +128,35 @@ Patch251:        0001-fs-9p-add-ext9p-alias-and-implement-show_devname-for.patch
 Patch252:        0001-fs-9p-fix-dirty-pages-writeback-in-v9fs_evict_inode.patch
 
 # Upgrade vmxnet3 driver to version 4
-Patch301:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
-Patch302:        0001-vmxnet3-prepare-for-version-4-changes.patch
-Patch303:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
-Patch304:        0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
-Patch305:        0004-vmxnet3-update-to-version-4.patch
-Patch306:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
-Patch307:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
-Patch308:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
-Patch309:        0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
+Patch261:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
+Patch262:        0001-vmxnet3-prepare-for-version-4-changes.patch
+Patch263:        0002-vmxnet3-add-support-to-get-set-rx-flow-hash.patch
+Patch264:        0003-vmxnet3-add-geneve-and-vxlan-tunnel-offload-support.patch
+Patch265:        0004-vmxnet3-update-to-version-4.patch
+Patch266:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
+Patch267:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
+Patch268:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
+Patch269:        0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
+# VMW:
+Patch281:        0001-x86-vmware-Update-platform-detection-code-for-VMCALL.patch
+Patch282:        0001-x86-vmware-Add-a-header-file-for-hypercall-definitio.patch
+Patch283:        0001-x86-cpu-vmware-Use-the-full-form-of-INL-in-VMWARE_PO.patch
+Patch284:        0001-x86-cpu-vmware-Use-the-full-form-of-INL-in-VMWARE_HY.patch
+Patch285:        0001-x86-cpu-vmware-Fix-platform-detection-VMWARE_PORT-ma.patch
+Patch286:        0001-x86-vmware-Steal-time-accounting-support.patch
+Patch287:        0001-x86-alternatives-Add-an-ALTERNATIVE_3-macro.patch
+Patch288:        0001-x86-vmware-Use-Efficient-and-Corrent-ALTERNATIVEs-fo.patch
+Patch289:        0001-x86-vmware-Log-kmsg-dump-on-panic.patch
+Patch290:        0006-x86-vmware-Fix-steal-time-clock-under-SEV.patch
 
-%ifarch x86_64
+Patch291:        0001-x86-insn-eval-Add-support-for-64-bit-kernel-mode.patch
+Patch292:        0001-drm-vmwgfx-Update-the-backdoor-call-with-support-for.patch
+
+# vmw: gfx
+Patch301:        0001-drm-vmwgfx-Don-t-use-the-HB-port-if-memory-encryptio.patch
+Patch302:        0002-drm-vmwgfx-Fix-the-refuse_dma-mode-when-using-guest-.patch
+Patch303:        0003-drm-vmwgfx-Refuse-DMA-operation-when-SEV-encryption-.patch
+
 # SEV-ES prerequisite: x86/efi,boot: GDT handling cleanup/fixes
 Patch311:        0001-x86-boot-Save-several-bytes-in-decompressor.patch
 Patch312:        0002-x86-boot-Remove-KEEP_SEGMENTS-support.patch
@@ -160,11 +167,6 @@ Patch316:        0006-efi-x86-Remove-GDT-setup-from-efi_main.patch
 Patch317:        0007-x86-boot-GDT-limit-value-should-be-size-1.patch
 Patch318:        0008-x86-boot-Micro-optimize-GDT-loading-instructions.patch
 Patch319:        0009-x86-boot-compressed-Fix-reloading-of-GDTR-post-relocation.patch
-
-# vmwgfx patches for sev-es
-Patch321:        0001-drm-vmwgfx-Don-t-use-the-HB-port-if-memory-encryptio.patch
-Patch322:        0002-drm-vmwgfx-Fix-the-refuse_dma-mode-when-using-guest-.patch
-Patch323:        0003-drm-vmwgfx-Refuse-DMA-operation-when-SEV-encryption-.patch
 
 # SEV-ES prerequisite: x86: Add guard pages to exception and interrupt stacks
 Patch331:        0001-x86-dumpstack-Fix-off-by-one-errors-in-stack-identif.patch
@@ -200,7 +202,114 @@ Patch360:        0030-x86-irq-64-Remove-stack-overflow-debug-code.patch
 
 Patch371:        0001-x86-ioremap-Add-an-ioremap_encrypted-helper.patch
 Patch372:        0001-linkage-Introduce-new-macros-for-assembler-symbols.patch
-%endif
+
+# vmw_pvscsi
+Patch381:        0001-scsi-vmw_pvscsi-switch-to-generic-DMA-API.patch
+Patch382:        0002-scsi-vmw_pvscsi-Fix-swiotlb-operation.patch
+Patch383:        0003-scsi-vmw_pvscsi-Silence-dma-mapping-errors.patch
+Patch384:        0004-scsi-vmw_pvscsi-Avoid-repeated-dma-mapping-and-unmapping-of-sg-list-memory.patch
+Patch385:        0005-scsi-vmw_pvscsi-Reduce-the-ring-size-when-SEV-is-active.patch
+Patch386:        0006-scsi-vmw_pvscsi-Fix-uninitialized-sense-buffer-with-swiotlb.patch
+
+# SEV-ES V3
+Patch401:        0001-KVM-SVM-Add-GHCB-definitions.patch
+Patch402:        0002-KVM-SVM-Add-GHCB-Accessor-functions.patch
+Patch403:        0003-KVM-SVM-Use-__packed-shorthand.patch
+Patch404:        0004-x86-cpufeatures-Add-SEV-ES-CPU-feature.patch
+Patch405:        0005-x86-traps-Move-some-definitions-to-asm-trap_defs.h.patch
+Patch406:        0006-x86-insn-Make-inat-tables.c-suitable-for-pre-decompr.patch
+Patch407:        0007-x86-umip-Factor-out-instruction-fetch.patch
+Patch408:        0008-x86-umip-Factor-out-instruction-decoding.patch
+Patch409:        0009-x86-insn-Add-insn_get_modrm_reg_off.patch
+Patch410:        0010-x86-insn-Add-insn_rep_prefix-helper.patch
+Patch411:        0011-x86-boot-compressed-64-Disable-red-zone-usage.patch
+Patch412:        0012-x86-boot-compressed-64-Switch-to-__KERNEL_CS-after-G.patch
+Patch413:        0013-x86-boot-compressed-64-Add-IDT-Infrastructure.patch
+Patch414:        0014-x86-boot-compressed-64-Rename-kaslr_64.c-to-ident_ma.patch
+Patch415:        0015-x86-boot-compressed-64-Add-page-fault-handler.patch
+Patch416:        0016-x86-boot-compressed-64-Always-switch-to-own-page-tab.patch
+Patch417:        0017-x86-boot-compressed-64-Don-t-pre-map-memory-in-KASLR.patch
+Patch418:        0018-x86-boot-compressed-64-Change-add_identity_map-to-ta.patch
+Patch419:        0019-x86-boot-compressed-64-Add-VC-handler.patch
+Patch420:        0020-x86-boot-compressed-64-Call-set_sev_encryption_mask.patch
+Patch421:        0021-x86-boot-compressed-64-Check-return-value-of-kernel_.patch
+Patch422:        0022-x86-boot-compressed-64-Add-set_page_en-decrypted-hel.patch
+Patch423:        0023-x86-boot-compressed-64-Setup-GHCB-Based-VC-Exception.patch
+Patch424:        0024-x86-boot-compressed-64-Unmap-GHCB-page-before-bootin.patch
+Patch425:        0025-x86-sev-es-Add-support-for-handling-IOIO-exceptions.patch
+Patch426:        0026-x86-fpu-Move-xgetbv-xsetbv-into-separate-header.patch
+Patch427:        0027-x86-sev-es-Add-CPUID-handling-to-VC-handler.patch
+Patch428:        0028-x86-idt-Move-IDT-to-data-segment.patch
+Patch429:        0029-x86-idt-Split-idt_data-setup-out-of-set_intr_gate.patch
+Patch430:        0030-x86-idt-Move-two-function-from-k-idt.c-to-i-a-desc.h.patch
+Patch431:        0031-x86-head-64-Install-boot-GDT.patch
+Patch432:        0032-x86-head-64-Reload-GDT-after-switch-to-virtual-addre.patch
+Patch433:        0033-x86-head-64-Load-segment-registers-earlier.patch
+Patch434:        0034-x86-head-64-Switch-to-initial-stack-earlier.patch
+Patch435:        0035-x86-head-64-Build-k-head64.c-with-fno-stack-protecto.patch
+Patch436:        0036-x86-head-64-Load-IDT-earlier.patch
+Patch437:        0037-x86-head-64-Move-early-exception-dispatch-to-C-code.patch
+Patch438:        0038-x86-sev-es-Add-SEV-ES-Feature-Detection.patch
+Patch439:        0039-x86-sev-es-Print-SEV-ES-info-into-kernel-log.patch
+Patch440:        0040-x86-sev-es-Compile-early-handler-code-into-kernel-im.patch
+Patch441:        0041-x86-sev-es-Setup-early-VC-handler.patch
+Patch442:        0042-x86-sev-es-Setup-GHCB-based-boot-VC-handler.patch
+Patch443:        0043-x86-sev-es-Setup-per-cpu-GHCBs-for-the-runtime-handl.patch
+Patch444:        0044-x86-sev-es-Allocate-and-Map-IST-stacks-for-VC-handle.patch
+Patch445:        0045-x86-dumpstack-64-Handle-VC-exception-stacks.patch
+Patch446:        0046-x86-sev-es-Shift-VC-IST-Stack-in-nmi_enter-nmi_exit.patch
+Patch447:        0047-x86-sev-es-Add-Runtime-VC-Exception-Handler.patch
+Patch448:        0048-x86-sev-es-Wire-up-existing-VC-exit-code-handlers.patch
+Patch449:        0049-x86-sev-es-Handle-instruction-fetches-from-user-spac.patch
+Patch450:        0050-x86-sev-es-Do-not-crash-on-VC-exceptions-from-user-s.patch
+Patch451:        0051-x86-sev-es-Handle-MMIO-events.patch
+Patch452:        0052-x86-sev-es-Handle-MMIO-String-Instructions.patch
+Patch453:        0053-x86-sev-es-Handle-MSR-events.patch
+Patch454:        0054-x86-sev-es-Handle-DR7-read-write-events.patch
+Patch455:        0055-x86-sev-es-Handle-WBINVD-Events.patch
+Patch456:        0056-x86-sev-es-Handle-RDTSC-P-Events.patch
+Patch457:        0057-x86-sev-es-Handle-RDPMC-Events.patch
+Patch458:        0058-x86-sev-es-Handle-INVD-Events.patch
+Patch459:        0059-x86-sev-es-Handle-MONITOR-MONITORX-Events.patch
+Patch460:        0060-x86-sev-es-Handle-MWAIT-MWAITX-Events.patch
+Patch461:        0061-x86-sev-es-Handle-VMMCALL-Events.patch
+Patch462:        0062-x86-sev-es-Handle-AC-Events.patch
+Patch463:        0063-x86-sev-es-Handle-DB-Events.patch
+Patch464:        0064-x86-sev-es-Cache-CPUID-results-for-improved-performa.patch
+Patch465:        0065-x86-paravirt-Allow-hypervisor-specific-VMMCALL-handl.patch
+Patch466:        0066-x86-kvm-Add-KVM-specific-VMMCALL-handling-under-SEV.patch
+Patch467:        0067-x86-vmware-Add-VMware-specific-handling-for-VMMCALL.patch
+Patch468:        0068-x86-realmode-Add-SEV-ES-specific-trampoline-entry-po.patch
+Patch469:        0069-x86-realmode-Setup-AP-jump-table.patch
+Patch470:        0070-x86-head-64-Setup-TSS-early-for-secondary-CPUs.patch
+Patch471:        0071-x86-head-64-Don-t-call-verify_cpu-on-starting-APs.patch
+Patch472:        0072-x86-head-64-Rename-start_cpu0.patch
+Patch473:        0073-x86-sev-es-Support-CPU-offline-online.patch
+Patch474:        0074-x86-sev-es-Handle-NMI-State.patch
+Patch475:        0075-x86-efi-Add-GHCB-mappings-when-SEV-ES-is-active.patch
+Patch476:        0001-x86-sev-es-Fix-crash-in-early_set_memory_enc_dec.patch
+Patch477:        0001-x86-sev-es-Fix-attempt-to-move-org-backwards-error.patch
+Patch478:        0001-swiotlb-Adjust-SWIOTBL-bounce-buffer-size-for-SEV-gu.patch
+
+Patch480:        0001-x86-traps-Split-trap-numbers-out-in-a-separate-heade.patch
+Patch481:        0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
+Patch482:        0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
+Patch483:        0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
+Patch484:        0082-x86-sev-es-load-idt-before-entering-long-mode-to-han.patch
+
+# esx
+Patch501:        01-clear-linux.patch
+Patch502:        02-pci-probe.patch
+Patch503:        03-poweroff.patch
+Patch504:        04-quiet-boot.patch
+Patch505:        05-pv-ops-clocksource.patch
+Patch506:        06-pv-ops-boot_clock.patch
+Patch507:        07-vmware-only.patch
+Patch508:        initramfs-support-for-page-aligned-format-newca.patch
+Patch509:        enabling-configuring-options-for-geneve-device.patch
+Patch510:        initramfs-multiple-image-extraction-support.patch
+Patch511:        halt-on-panic.patch
+
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -255,29 +364,16 @@ This Linux package contains hmac sha generator kernel module.
 %prep
 %setup -q -n linux-%{version}
 %setup -D -b 5 -n linux-%{version}
-%patch0 -p1
 %patch1 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
-%patch6 -p1
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
-%patch21 -p1
-%patch22 -p1
-%patch23 -p1
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
@@ -332,16 +428,32 @@ This Linux package contains hmac sha generator kernel module.
 %patch251 -p1
 %patch252 -p1
 
+%patch261 -p1
+%patch262 -p1
+%patch263 -p1
+%patch264 -p1
+%patch265 -p1
+%patch266 -p1
+%patch267 -p1
+%patch268 -p1
+%patch269 -p1
+
+%patch281 -p1
+%patch282 -p1
+%patch283 -p1
+%patch284 -p1
+%patch285 -p1
+%patch286 -p1
+%patch287 -p1
+%patch288 -p1
+%patch289 -p1
+%patch290 -p1
+%patch291 -p1
+%patch292 -p1
+
 %patch301 -p1
 %patch302 -p1
 %patch303 -p1
-%patch304 -p1
-%patch305 -p1
-%patch306 -p1
-%patch307 -p1
-%patch308 -p1
-%patch309 -p1
-%ifarch x86_64
 %patch311 -p1
 %patch312 -p1
 %patch313 -p1
@@ -351,12 +463,10 @@ This Linux package contains hmac sha generator kernel module.
 %patch317 -p1
 %patch318 -p1
 %patch319 -p1
-%patch321 -p1
-%patch322 -p1
-%patch323 -p1
 
 %patch331 -p1
 %patch332 -p1
+
 %patch333 -p1
 %patch334 -p1
 %patch335 -p1
@@ -388,7 +498,109 @@ This Linux package contains hmac sha generator kernel module.
 
 %patch371 -p1
 %patch372 -p1
-%endif
+%patch381 -p1
+%patch382 -p1
+%patch383 -p1
+%patch384 -p1
+%patch385 -p1
+%patch386 -p1
+
+%patch401 -p1
+%patch402 -p1
+%patch403 -p1
+%patch404 -p1
+%patch405 -p1
+%patch406 -p1
+%patch407 -p1
+%patch408 -p1
+%patch409 -p1
+%patch410 -p1
+%patch411 -p1
+%patch412 -p1
+%patch413 -p1
+%patch414 -p1
+%patch415 -p1
+
+%patch416 -p1
+%patch417 -p1
+%patch418 -p1
+%patch419 -p1
+%patch420 -p1
+%patch421 -p1
+%patch422 -p1
+%patch423 -p1
+%patch424 -p1
+%patch425 -p1
+%patch426 -p1
+%patch427 -p1
+%patch428 -p1
+%patch429 -p1
+%patch430 -p1
+%patch431 -p1
+%patch432 -p1
+%patch433 -p1
+%patch434 -p1
+%patch435 -p1
+%patch436 -p1
+%patch437 -p1
+%patch438 -p1
+%patch439 -p1
+%patch440 -p1
+%patch441 -p1
+%patch442 -p1
+%patch443 -p1
+%patch444 -p1
+%patch445 -p1
+%patch446 -p1
+%patch447 -p1
+%patch448 -p1
+%patch449 -p1
+%patch450 -p1
+%patch451 -p1
+%patch452 -p1
+%patch453 -p1
+%patch454 -p1
+%patch455 -p1
+%patch456 -p1
+%patch457 -p1
+%patch458 -p1
+%patch459 -p1
+%patch460 -p1
+%patch461 -p1
+%patch462 -p1
+%patch463 -p1
+%patch465 -p1
+%patch466 -p1
+%patch467 -p1
+%patch468 -p1
+%patch469 -p1
+%patch470 -p1
+%patch471 -p1
+%patch472 -p1
+%patch473 -p1
+%patch474 -p1
+%patch475 -p1
+%patch476 -p1
+%patch477 -p1
+%patch478 -p1
+
+%patch480 -p1
+%patch482 -p1
+%patch483 -p1
+%patch484 -p1
+
+# esx
+%patch501 -p1
+%patch502 -p1
+%patch503 -p1
+%patch504 -p1
+%patch505 -p1
+%patch506 -p1
+%patch507 -p1
+%patch508 -p1
+%patch509 -p1
+%patch510 -p1
+%patch511 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -519,6 +731,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Nov 03 2020 Ajay Kaher <akaher@vmware.com> 4.19.154-3
+-   Adding sev-es: patch set v3
 *   Tue Nov 03 2020 Ajay Kaher <akaher@vmware.com> 4.19.154-2
 -   Adding following patch series required for sev-es:
 -   x86/efi,boot: GDT handling cleanup/fixes

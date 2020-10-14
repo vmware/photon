@@ -1,0 +1,123 @@
+From 2606532d32b5ad5c62bff7924fb08fb70303501a Mon Sep 17 00:00:00 2001
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Date: Wed, 10 Jun 2020 18:22:01 +0530
+Subject: [PATCH 75/75] x86-efi-Add-GHCB-mappings-when-SEV-ES-is-active
+
+x86/efi: Add GHCB mappings when SEV-ES is active
+Calling down to EFI runtime services can result in the firmware performing
+VMGEXIT calls. The firmware is likely to use the GHCB of the OS (e.g., for
+setting EFI variables), so each GHCB in the system needs to be identity
+mapped in the EFI page tables, as unencrypted, to avoid page faults.
+
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+[ jroedel@suse.de: Moved GHCB mapping loop to sev-es.c ]
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/boot/compressed/sev-es.c |  1 +
+ arch/x86/include/asm/sev-es.h     |  5 +++++
+ arch/x86/kernel/sev-es.c          | 25 +++++++++++++++++++++++++
+ arch/x86/platform/efi/efi_64.c    | 10 ++++++++++
+ 4 files changed, 41 insertions(+)
+
+diff --git a/arch/x86/boot/compressed/sev-es.c b/arch/x86/boot/compressed/sev-es.c
+index 12a5d91..30b2ceb 100644
+--- a/arch/x86/boot/compressed/sev-es.c
++++ b/arch/x86/boot/compressed/sev-es.c
+@@ -12,6 +12,7 @@
+  */
+ #include "misc.h"
+ 
++#include <asm/pgtable_types.h>
+ #include <asm/sev-es.h>
+ #include <asm/trap_defs.h>
+ #include <asm/msr-index.h>
+diff --git a/arch/x86/include/asm/sev-es.h b/arch/x86/include/asm/sev-es.h
+index a242d16..ce9a197 100644
+--- a/arch/x86/include/asm/sev-es.h
++++ b/arch/x86/include/asm/sev-es.h
+@@ -87,6 +87,7 @@ void sev_es_nmi_enter(void);
+ void sev_es_nmi_exit(void);
+ int sev_es_setup_ap_jump_table(struct real_mode_header *rmh);
+ void sev_es_nmi_complete(void);
++int __init sev_es_efi_map_ghcbs(pgd_t *pgd);
+ #else /* CONFIG_AMD_MEM_ENCRYPT */
+ static inline const char *vc_stack_name(enum stack_type type)
+ {
+@@ -97,6 +98,10 @@ static inline int sev_es_setup_ap_jump_table(struct real_mode_header *rmh)
+ 	return 0;
+ }
+ static inline void sev_es_nmi_complete(void) { }
++static inline int sev_es_efi_map_ghcbs(pgd_t *pgd)
++{
++	return 0;
++}
+ #endif /* CONFIG_AMD_MEM_ENCRYPT*/
+ 
+ #endif
+diff --git a/arch/x86/kernel/sev-es.c b/arch/x86/kernel/sev-es.c
+index eef6e21..3b62714 100644
+--- a/arch/x86/kernel/sev-es.c
++++ b/arch/x86/kernel/sev-es.c
+@@ -422,6 +422,31 @@ int sev_es_setup_ap_jump_table(struct real_mode_header *rmh)
+ 	return 0;
+ }
+ 
++int __init sev_es_efi_map_ghcbs(pgd_t *pgd)
++{
++	struct sev_es_runtime_data *data;
++	unsigned long address, pflags;
++	int cpu;
++	u64 pfn;
++
++	if (!sev_es_active())
++		return 0;
++
++	pflags = _PAGE_NX | _PAGE_RW;
++
++	for_each_possible_cpu(cpu) {
++		data = per_cpu(runtime_data, cpu);
++
++		address = __pa(&data->ghcb_page);
++		pfn = address >> PAGE_SHIFT;
++
++		if (kernel_map_pages_in_pgd(pgd, pfn, address, 1, pflags))
++			return 1;
++	}
++
++	return 0;
++}
++
+ static enum es_result vc_handle_msr(struct ghcb *ghcb, struct es_em_ctxt *ctxt)
+ {
+ 	struct pt_regs *regs = ctxt->regs;
+diff --git a/arch/x86/platform/efi/efi_64.c b/arch/x86/platform/efi/efi_64.c
+index c54b5a5..428e81e 100755
+--- a/arch/x86/platform/efi/efi_64.c
++++ b/arch/x86/platform/efi/efi_64.c
+@@ -48,6 +48,7 @@
+ #include <asm/realmode.h>
+ #include <asm/time.h>
+ #include <asm/pgalloc.h>
++#include <asm/sev-es.h>
+ 
+ /*
+  * We allocate runtime services regions top-down, starting from -4G, i.e.
+@@ -380,6 +381,15 @@ int __init efi_setup_page_tables(unsigned long pa_memmap, unsigned num_pages)
+ 	}
+ 
+ 	/*
++	 * When SEV-ES is active, the GHCB as set by the kernel will be used
++	 * by firmware. Create a 1:1 unencrypted mapping for each GHCB.
++	 */
++	if (sev_es_efi_map_ghcbs(pgd)) {
++		pr_err("Failed to create 1:1 mapping for the GHCBs!\n");
++		return 1;
++	}
++
++	/*
+ 	 * When making calls to the firmware everything needs to be 1:1
+ 	 * mapped and addressable with 32-bit pointers. Map the kernel
+ 	 * text and allocate a new stack because we can't rely on the
+-- 
+2.7.4
+

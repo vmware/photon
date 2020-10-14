@@ -1,0 +1,41 @@
+From 36c89518b7019ceaf90f2e568339c05becc31d5c Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Mon, 27 Apr 2020 16:51:35 +0200
+Subject: [PATCH 12/75] x86/boot/compressed/64: Switch to __KERNEL_CS after GDT
+ is loaded
+
+When the pre-decompression code loads its first GDT in startup_64, it is
+still running on the CS value of the previous GDT. In the case of SEV-ES
+this is the EFI GDT.
+
+To make exception handling work (especially IRET) the CPU needs to
+switch to a CS value in the current GDT, so jump to __KERNEL_CS after
+the first GDT is loaded.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/boot/compressed/head_64.S | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index 4f7e6b8..6b11060 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -393,6 +393,14 @@ SYM_CODE_START(startup_64)
+ 	addq	%rax, 2(%rax)
+ 	lgdt	(%rax)
+ 
++	/* Reload CS so IRET returns to a CS actually in the GDT */
++	pushq	$__KERNEL_CS
++	leaq	.Lon_kernel_cs(%rip), %rax
++	pushq	%rax
++	lretq
++
++.Lon_kernel_cs:
++
+ 	/*
+ 	 * paging_prepare() sets up the trampoline and checks if we need to
+ 	 * enable 5-level paging.
+-- 
+2.7.4
+

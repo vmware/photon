@@ -1,0 +1,67 @@
+From 770e9e991653b63fd594e54b3be6b6fb155a4f03 Mon Sep 17 00:00:00 2001
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Date: Wed, 10 Jun 2020 18:21:55 +0530
+Subject: [PATCH 53/75] x86-sev-es-Handle-MSR-events
+
+x86/sev-es: Handle MSR events
+
+Implement a handler for #VC exceptions caused by RDMSR/WRMSR
+instructions.
+
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+[ jroedel@suse.de: Adapt to #VC handling infrastructure ]
+Co-developed-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/kernel/sev-es.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/arch/x86/kernel/sev-es.c b/arch/x86/kernel/sev-es.c
+index 84958a8..e43bba4 100644
+--- a/arch/x86/kernel/sev-es.c
++++ b/arch/x86/kernel/sev-es.c
+@@ -316,6 +316,31 @@ static phys_addr_t vc_slow_virt_to_phys(struct ghcb *ghcb, unsigned long vaddr)
+ /* Include code shared with pre-decompression boot stage */
+ #include "sev-es-shared.c"
+ 
++static enum es_result vc_handle_msr(struct ghcb *ghcb, struct es_em_ctxt *ctxt)
++{
++	struct pt_regs *regs = ctxt->regs;
++	enum es_result ret;
++	u64 exit_info_1;
++
++	exit_info_1 = (ctxt->insn.opcode.bytes[1] == 0x30) ? 1 : 0;
++
++	ghcb_set_rcx(ghcb, regs->cx);
++	if (exit_info_1) {
++		ghcb_set_rax(ghcb, regs->ax);
++		ghcb_set_rdx(ghcb, regs->dx);
++		exit_info_1 = 1;
++	}
++
++	ret = sev_es_ghcb_hv_call(ghcb, ctxt, SVM_EXIT_MSR, exit_info_1, 0);
++
++	if ((ret == ES_OK) && (!exit_info_1)) {
++		regs->ax = ghcb->save.rax;
++		regs->dx = ghcb->save.rdx;
++	}
++
++	return ret;
++}
++
+ /*
+  * This function runs on the first #VC exception after the kernel
+  * switched to virtual addresses.
+@@ -708,6 +733,9 @@ static enum es_result vc_handle_exitcode(struct es_em_ctxt *ctxt,
+ 	case SVM_EXIT_IOIO:
+ 		result = vc_handle_ioio(ghcb, ctxt);
+ 		break;
++	case SVM_EXIT_MSR:
++		result = vc_handle_msr(ghcb, ctxt);
++		break;
+ 	case SVM_EXIT_NPF:
+ 		result = vc_handle_mmio(ghcb, ctxt);
+ 		break;
+-- 
+2.7.4
+

@@ -1,0 +1,36 @@
+From e90b70f8d63231c16e8951432ca61ee32e52b08d Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:49 +0530
+Subject: [PATCH 32/75] x86-head-64-Reload-GDT-after-switch-to-virtual-addre
+
+x86/head/64: Reload GDT after switch to virtual addresses
+
+Reload the GDT after switching to virtual addresses to make sure it will
+not go away when the lower mappings are removed. This will also reload
+the GDT for booting APs, which will need a working GDT too to handle #VC
+exceptions.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/kernel/head_64.S | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index 2264ae5..418031b 100755
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -164,6 +164,11 @@ ENTRY(secondary_startup_64)
+ 1:
+ 	UNWIND_HINT_EMPTY
+ 
++	/* Setup boot GDT descriptor and load boot GDT */
++	leaq	boot_gdt(%rip), %rax
++	movq	%rax, boot_gdt_base(%rip)
++	lgdt	boot_gdt_descr(%rip)
++
+ 	/* Check if nx is implemented */
+ 	movl	$0x80000001, %eax
+ 	cpuid
+-- 
+2.7.4
+

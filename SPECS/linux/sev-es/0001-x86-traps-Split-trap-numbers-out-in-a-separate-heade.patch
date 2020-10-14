@@ -1,0 +1,100 @@
+From 7db7d1f59dc7ec862078a0f9b23a62f9582bbb78 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sat, 19 Sep 2020 22:33:34 +0530
+Subject: [PATCH] x86/traps: Split trap numbers out in a separate header
+
+commit 877f183f83cc33b1b09313b9c18ab7ee5abda44f upstream.
+
+So they can be used in ASM code. For this it is also necessary to convert
+them to defines. Will be used for the rework of the entry code.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Andy Lutomirski <luto@kernel.org>
+Reviewed-by: Alexandre Chartre <alexandre.chartre@oracle.com>
+Acked-by: Peter Zijlstra <peterz@infradead.org>
+[Ajay: Re-generated this patch for v4.19.y]
+Link: https://lkml.kernel.org/r/20200505134903.731004084@linutronix.de
+---
+ arch/x86/include/asm/trap_defs.h | 26 +-------------------------
+ arch/x86/include/asm/trapnr.h    | 32 ++++++++++++++++++++++++++++++++
+ 2 files changed, 33 insertions(+), 25 deletions(-)
+ create mode 100644 arch/x86/include/asm/trapnr.h
+
+diff --git a/arch/x86/include/asm/trap_defs.h b/arch/x86/include/asm/trap_defs.h
+index af45d65..5ceee57 100644
+--- a/arch/x86/include/asm/trap_defs.h
++++ b/arch/x86/include/asm/trap_defs.h
+@@ -2,31 +2,7 @@
+ #ifndef _ASM_X86_TRAP_DEFS_H
+ #define _ASM_X86_TRAP_DEFS_H
+ 
+-/* Interrupts/Exceptions */
+-enum {
+-	X86_TRAP_DE = 0,	/*  0, Divide-by-zero */
+-	X86_TRAP_DB,		/*  1, Debug */
+-	X86_TRAP_NMI,		/*  2, Non-maskable Interrupt */
+-	X86_TRAP_BP,		/*  3, Breakpoint */
+-	X86_TRAP_OF,		/*  4, Overflow */
+-	X86_TRAP_BR,		/*  5, Bound Range Exceeded */
+-	X86_TRAP_UD,		/*  6, Invalid Opcode */
+-	X86_TRAP_NM,		/*  7, Device Not Available */
+-	X86_TRAP_DF,		/*  8, Double Fault */
+-	X86_TRAP_OLD_MF,	/*  9, Coprocessor Segment Overrun */
+-	X86_TRAP_TS,		/* 10, Invalid TSS */
+-	X86_TRAP_NP,		/* 11, Segment Not Present */
+-	X86_TRAP_SS,		/* 12, Stack Segment Fault */
+-	X86_TRAP_GP,		/* 13, General Protection Fault */
+-	X86_TRAP_PF,		/* 14, Page Fault */
+-	X86_TRAP_SPURIOUS,	/* 15, Spurious Interrupt */
+-	X86_TRAP_MF,		/* 16, x87 Floating-Point Exception */
+-	X86_TRAP_AC,		/* 17, Alignment Check */
+-	X86_TRAP_MC,		/* 18, Machine Check */
+-	X86_TRAP_XF,		/* 19, SIMD Floating-Point Exception */
+-	X86_TRAP_VC = 29,	/* 29, VMM Communication Exception */
+-	X86_TRAP_IRET = 32,	/* 32, IRET Exception */
+-};
++#include <asm/trapnr.h>
+ 
+ /*
+  * Page fault error code bits:
+diff --git a/arch/x86/include/asm/trapnr.h b/arch/x86/include/asm/trapnr.h
+new file mode 100644
+index 0000000..39f3465
+--- /dev/null
++++ b/arch/x86/include/asm/trapnr.h
+@@ -0,0 +1,32 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _ASM_X86_TRAPNR_H
++#define _ASM_X86_TRAPNR_H
++
++/* Interrupts/Exceptions */
++
++#define X86_TRAP_DE              0      /* Divide-by-zero */
++#define X86_TRAP_DB              1      /* Debug */
++#define X86_TRAP_NMI             2      /* Non-maskable Interrupt */
++#define X86_TRAP_BP              3      /* Breakpoint */
++#define X86_TRAP_OF              4      /* Overflow */
++#define X86_TRAP_BR              5      /* Bound Range Exceeded */
++#define X86_TRAP_UD              6      /* Invalid Opcode */
++#define X86_TRAP_NM              7      /* Device Not Available */
++#define X86_TRAP_DF              8      /* Double Fault */
++#define X86_TRAP_OLD_MF          9      /* Coprocessor Segment Overrun */
++#define X86_TRAP_TS             10      /* Invalid TSS */
++#define X86_TRAP_NP             11      /* Segment Not Present */
++#define X86_TRAP_SS             12      /* Stack Segment Fault */
++#define X86_TRAP_GP             13      /* General Protection Fault */
++#define X86_TRAP_PF             14      /* Page Fault */
++#define X86_TRAP_SPURIOUS       15      /* Spurious Interrupt */
++#define X86_TRAP_MF             16      /* x87 Floating-Point Exception */
++#define X86_TRAP_AC             17      /* Alignment Check */
++#define X86_TRAP_MC             18      /* Machine Check */
++#define X86_TRAP_XF             19      /* SIMD Floating-Point Exception */
++#define X86_TRAP_VE             20      /* Virtualization Exception */
++#define X86_TRAP_CP             21      /* Control Protection Exception */
++#define X86_TRAP_VC             29      /* VC Exception */
++#define X86_TRAP_IRET           32      /* IRET Exception */
++
++#endif
+-- 
+2.7.4
+

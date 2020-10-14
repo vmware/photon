@@ -1,0 +1,135 @@
+From 407167eeea9875b3336ffbdd10d064a71263f4de Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Fri, 5 Jun 2020 14:00:51 +0530
+Subject: [PATCH 2/2] x86/exceptions: Disconnect IST index and stack order
+
+The entry order of the TSS.IST array and the order of the stack
+storage/mapping are not required to be the same.
+
+With the upcoming split of the debug stack this is going to fall apart as
+the number of TSS.IST array entries stays the same while the actual stacks
+are increasing.
+
+Make them separate so that code like dumpstack can just utilize the mapping
+order. The IST index is solely required for the actual TSS.IST array
+initialization.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Baoquan He <bhe@redhat.com>
+Cc: "Chang S. Bae" <chang.seok.bae@intel.com>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Dou Liyang <douly.fnst@cn.fujitsu.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jann Horn <jannh@google.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Nicolai Stange <nstange@suse.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Qian Cai <cai@lca.pw>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20190414160145.241588113@linutronix.de
+---
+ arch/x86/entry/entry_64.S             |  2 +-
+ arch/x86/include/asm/cpu_entry_area.h | 11 +++++++++++
+ arch/x86/include/asm/page_64_types.h  |  9 ++++-----
+ arch/x86/include/asm/stacktrace.h     |  2 ++
+ arch/x86/kernel/idt.c                 |  8 ++++----
+ 5 files changed, 22 insertions(+), 10 deletions(-)
+
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index 0cda541..b812794 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -1192,7 +1192,7 @@ apicinterrupt3 HYPERV_STIMER0_VECTOR \
+ 	hv_stimer0_callback_vector hv_stimer0_vector_handler
+ #endif /* CONFIG_HYPERV */
+ 
+-idtentry debug			do_debug		has_error_code=0	paranoid=1 shift_ist=ESTACK_DB
++idtentry debug			do_debug		has_error_code=0	paranoid=1 shift_ist=IST_INDEX_DB
+ idtentry int3			do_int3			has_error_code=0	create_gap=1
+ idtentry stack_segment		do_stack_segment	has_error_code=1
+ 
+diff --git a/arch/x86/include/asm/cpu_entry_area.h b/arch/x86/include/asm/cpu_entry_area.h
+index 4a7884b..f783d5e 100644
+--- a/arch/x86/include/asm/cpu_entry_area.h
++++ b/arch/x86/include/asm/cpu_entry_area.h
+@@ -8,6 +8,17 @@
+ #include <asm/intel_ds.h>
+ 
+ /*
++ * The exception stack ordering in [cea_]exception_stacks
++ */
++enum exception_stack_ordering {
++	ESTACK_DF,
++	ESTACK_NMI,
++	ESTACK_DB,
++	ESTACK_MCE,
++	N_EXCEPTION_STACKS
++};
++
++/*
+  * cpu_entry_area is a percpu region that contains things needed by the CPU
+  * and early entry/exit code.  Real types aren't used for all fields here
+  * to avoid circular header dependencies.
+diff --git a/arch/x86/include/asm/page_64_types.h b/arch/x86/include/asm/page_64_types.h
+index 78b3a3a..95f0a65 100644
+--- a/arch/x86/include/asm/page_64_types.h
++++ b/arch/x86/include/asm/page_64_types.h
+@@ -32,11 +32,10 @@
+ /*
+  * The index for the tss.ist[] array. The hardware limit is 7 entries.
+  */
+-#define	ESTACK_DF		0
+-#define	ESTACK_NMI		1
+-#define	ESTACK_DB		2
+-#define	ESTACK_MCE		3
+-#define	N_EXCEPTION_STACKS	4
++#define	IST_INDEX_DF		0
++#define	IST_INDEX_NMI		1
++#define	IST_INDEX_DB		2
++#define	IST_INDEX_MCE		3
+ 
+ /*
+  * Set __PAGE_OFFSET to the most negative possible address +
+diff --git a/arch/x86/include/asm/stacktrace.h b/arch/x86/include/asm/stacktrace.h
+index f335aad..d6d758a 100644
+--- a/arch/x86/include/asm/stacktrace.h
++++ b/arch/x86/include/asm/stacktrace.h
+@@ -9,6 +9,8 @@
+ 
+ #include <linux/uaccess.h>
+ #include <linux/ptrace.h>
++
++#include <asm/cpu_entry_area.h>
+ #include <asm/switch_to.h>
+ 
+ enum stack_type {
+diff --git a/arch/x86/kernel/idt.c b/arch/x86/kernel/idt.c
+index 8b8ca8c..474b07f 100644
+--- a/arch/x86/kernel/idt.c
++++ b/arch/x86/kernel/idt.c
+@@ -187,11 +187,11 @@ gate_desc debug_idt_table[IDT_ENTRIES] __page_aligned_bss;
+  * cpu_init() when the TSS has been initialized.
+  */
+ static const __initconst struct idt_data ist_idts[] = {
+-	ISTG(X86_TRAP_DB,	debug,		ESTACK_DB),
+-	ISTG(X86_TRAP_NMI,	nmi,		ESTACK_NMI),
+-	ISTG(X86_TRAP_DF,	double_fault,	ESTACK_DF),
++	ISTG(X86_TRAP_DB,	debug,		IST_INDEX_DB),
++	ISTG(X86_TRAP_NMI,	nmi,		IST_INDEX_NMI),
++	ISTG(X86_TRAP_DF,	double_fault,	IST_INDEX_DF),
+ #ifdef CONFIG_X86_MCE
+-	ISTG(X86_TRAP_MC,	&machine_check,	ESTACK_MCE),
++	ISTG(X86_TRAP_MC,	&machine_check,	IST_INDEX_MCE),
+ #endif
+ };
+ 
+-- 
+2.7.4
+

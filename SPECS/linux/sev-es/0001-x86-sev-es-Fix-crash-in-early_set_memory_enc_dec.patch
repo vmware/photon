@@ -1,0 +1,45 @@
+From 94bbb3b9533ad9b30946c75556ea4783575f2bd7 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Fri, 10 Jul 2020 13:58:15 +0530
+Subject: [PATCH] x86/sev-es: Fix crash in early_set_memory_enc_dec
+
+use alloc_bootmem() instead of memblock_alloc() to fix
+following crash:
+[0.474673]  dump_stack+0x6d/0x95
+[0.475984]  panic+0xd0/0x239
+[0.477148]  ? early_set_memory_enc_dec+0x128/0x140
+[0.479083]  sev_es_init_vc_handling+0xb5/0x1d8
+[0.480857]  ? cpumask_next+0x1b/0x20
+[0.482296]  trap_init+0xe/0x76
+[0.483529]  start_kernel+0x29b/0x516
+[0.485012]  x86_64_start_reservations+0x32/0x34
+[0.486815]  x86_64_start_kernel+0x74/0x77
+[0.488437]  secondary_startup_64_no_verify+0xc0/0xcb
+---
+ arch/x86/kernel/sev-es.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/sev-es.c b/arch/x86/kernel/sev-es.c
+index cc4102c..a36daba 100644
+--- a/arch/x86/kernel/sev-es.c
++++ b/arch/x86/kernel/sev-es.c
+@@ -19,6 +19,7 @@
+ #include <linux/memblock.h>
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
++#include <linux/bootmem.h>
+ 
+ #include <generated/asm-offsets.h>
+ #include <asm/cpu_entry_area.h>
+@@ -540,7 +541,7 @@ static void __init sev_es_alloc_runtime_data(int cpu)
+ {
+ 	struct sev_es_runtime_data *data;
+ 
+-	data = memblock_alloc(sizeof(*data), PAGE_SIZE);
++	data = alloc_bootmem(sizeof(*data));
+ 	if (!data)
+ 		panic("Can't allocate SEV-ES runtime data");
+ 
+-- 
+2.7.4
+

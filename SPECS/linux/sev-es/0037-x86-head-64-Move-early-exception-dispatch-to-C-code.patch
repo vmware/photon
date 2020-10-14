@@ -1,0 +1,121 @@
+From e093e3bab2e1590268b0b1a76c1530fcac9b9d88 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:50 +0530
+Subject: [PATCH 37/75] x86-head-64-Move-early-exception-dispatch-to-C-code
+
+x86/head/64: Move early exception dispatch to C code
+
+Move the assembly coded dispatch between page-faults and all other
+exceptions to C code to make it easier to maintain and extend.
+
+Also change the return-type of early_make_pgtable() to bool and make it
+static.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/include/asm/pgtable.h |  2 +-
+ arch/x86/kernel/head64.c       | 19 +++++++++++++++----
+ arch/x86/kernel/head_64.S      | 13 ++-----------
+ 3 files changed, 18 insertions(+), 16 deletions(-)
+
+diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
+index 2a9c12f..07e4bb5 100755
+--- a/arch/x86/include/asm/pgtable.h
++++ b/arch/x86/include/asm/pgtable.h
+@@ -25,7 +25,7 @@
+ #include <asm/x86_init.h>
+ 
+ extern pgd_t early_top_pgt[PTRS_PER_PGD];
+-int __init __early_make_pgtable(unsigned long address, pmdval_t pmd);
++bool __init __early_make_pgtable(unsigned long address, pmdval_t pmd);
+ 
+ void ptdump_walk_pgd_level(struct seq_file *m, pgd_t *pgd);
+ void ptdump_walk_pgd_level_debugfs(struct seq_file *m, pgd_t *pgd, bool user);
+diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
+index 396308f..239e134 100755
+--- a/arch/x86/kernel/head64.c
++++ b/arch/x86/kernel/head64.c
+@@ -36,6 +36,8 @@
+ #include <asm/microcode.h>
+ #include <asm/kasan.h>
+ #include <asm/fixmap.h>
++#include <asm/extable.h>
++#include <asm/trap_defs.h>
+ 
+ /*
+  * Manage page tables very early on.
+@@ -297,7 +299,7 @@ static void __init reset_early_page_tables(void)
+ }
+ 
+ /* Create a new PMD entry */
+-int __init __early_make_pgtable(unsigned long address, pmdval_t pmd)
++bool __init __early_make_pgtable(unsigned long address, pmdval_t pmd)
+ {
+ 	unsigned long physaddr = address - __PAGE_OFFSET;
+ 	pgdval_t pgd, *pgd_p;
+@@ -307,7 +309,7 @@ int __init __early_make_pgtable(unsigned long address, pmdval_t pmd)
+ 
+ 	/* Invalid address or early pgt is done ?  */
+ 	if (physaddr >= MAXMEM || read_cr3_pa() != __pa_nodebug(early_top_pgt))
+-		return -1;
++		return false;
+ 
+ again:
+ 	pgd_p = &early_top_pgt[pgd_index(address)].pgd;
+@@ -364,10 +366,10 @@ int __init __early_make_pgtable(unsigned long address, pmdval_t pmd)
+ 	}
+ 	pmd_p[pmd_index(address)] = pmd;
+ 
+-	return 0;
++	return true;
+ }
+ 
+-int __init early_make_pgtable(unsigned long address)
++static bool __init early_make_pgtable(unsigned long address)
+ {
+ 	unsigned long physaddr = address - __PAGE_OFFSET;
+ 	pmdval_t pmd;
+@@ -377,6 +379,15 @@ int __init early_make_pgtable(unsigned long address)
+ 	return __early_make_pgtable(address, pmd);
+ }
+ 
++void __init do_early_exception(struct pt_regs *regs, int trapnr)
++{
++	if (trapnr == X86_TRAP_PF &&
++	    early_make_pgtable(native_read_cr2()))
++		return;
++
++	early_fixup_exception(regs, trapnr);
++}
++
+ /* Don't add a printk in there. printk relies on the PDA which is not initialized 
+    yet. */
+ static void __init clear_bss(void)
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index e0f8f8a..9c19739 100755
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -366,18 +366,9 @@ early_idt_handler_common:
+ 	pushq %r15				/* pt_regs->r15 */
+ 	UNWIND_HINT_REGS
+ 
+-	cmpq $14,%rsi		/* Page fault? */
+-	jnz 10f
+-	GET_CR2_INTO(%rdi)	/* Can clobber any volatile register if pv */
+-	call early_make_pgtable
+-	andl %eax,%eax
+-	jz 20f			/* All good */
+-
+-10:
+ 	movq %rsp,%rdi		/* RDI = pt_regs; RSI is already trapnr */
+-	call early_fixup_exception
+-
+-20:
++	call do_early_exception
++	
+ 	decl early_recursion_flag(%rip)
+ 	jmp restore_regs_and_return_to_kernel
+ END(early_idt_handler_common)
+-- 
+2.7.4
+

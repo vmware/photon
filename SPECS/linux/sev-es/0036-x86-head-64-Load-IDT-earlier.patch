@@ -1,0 +1,76 @@
+From 36640c0c31a600de2ae9e4d48423aa9e38cd3cf7 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:50 +0530
+Subject: [PATCH 36/75] x86-head-64-Load-IDT-earlier
+
+x86/head/64: Load IDT earlier
+Load the IDT right after switching to virtual addresses in head_64.S
+so that the kernel can handle #VC exceptions.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/kernel/head64.c  | 15 +++++++++++++++
+ arch/x86/kernel/head_64.S | 17 +++++++++++++++++
+ 2 files changed, 32 insertions(+)
+
+diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
+index 88dc38b..396308f 100755
+--- a/arch/x86/kernel/head64.c
++++ b/arch/x86/kernel/head64.c
+@@ -489,3 +489,18 @@ void __init x86_64_start_reservations(char *real_mode_data)
+ 
+ 	start_kernel();
+ }
++
++void __head early_idt_setup_early_handler(unsigned long physaddr)
++{
++	gate_desc *idt = fixup_pointer(idt_table, physaddr);
++	int i;
++
++	for (i = 0; i < NUM_EXCEPTION_VECTORS; i++) {
++		struct idt_data data;
++		gate_desc desc;
++
++		init_idt_data(&data, i, early_idt_handler_array[i]);
++		idt_init_desc(&desc, &data);
++		native_write_idt_entry(idt, i, &desc);
++	}
++}
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index cdcf7ec..e0f8f8a 100755
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -107,6 +107,20 @@ startup_64:
+ 	leaq	_text(%rip), %rdi
+ 	pushq	%rsi
+ 	call	__startup_64
++	/* Save return value */
++	pushq	%rax
++
++	/*
++	 * Load IDT with early handlers - needed for SEV-ES
++	 * Do this here because this must only happen on the boot CPU
++	 * and the code below is shared with secondary CPU bringup.
++	 */
++	leaq	_text(%rip), %rdi
++	call	early_idt_setup_early_handler
++
++	/* Restore __startup_64 return value*/
++	popq	%rax
++	/* Restore pointer to real_mode_data */
+ 	popq	%rsi
+ 
+ 	/* Form the CR3 value being sure to include the CR3 modifier */
+@@ -201,6 +215,9 @@ ENTRY(secondary_startup_64)
+ 	 */
+ 	movq initial_stack(%rip), %rsp
+ 
++	/* Load IDT */
++	lidt	idt_descr(%rip)
++
+ 	/* Check if nx is implemented */
+ 	movl	$0x80000001, %eax
+ 	cpuid
+-- 
+2.7.4
+

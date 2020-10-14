@@ -1,0 +1,64 @@
+From f4652752a428f65936a7da5884095ef43a3cac18 Mon Sep 17 00:00:00 2001
+From: Thomas Hellstrom <thellstrom@vmware.com>
+Date: Tue, 3 Dec 2019 20:30:51 +0100
+Subject: [PATCH] scsi: vmw_pvscsi: Fix swiotlb operation
+
+commit f4652752a428f65936a7da5884095ef43a3cac18 upstream.
+
+With swiotlb, the first byte of the sense buffer may in some cases be
+uninitialized since we use DMA_FROM_DEVICE, and the device incorrectly
+doesn't clear it. In those cases, clear it after DMA unmapping.
+
+Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
+Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
+Link: https://lore.kernel.org/r/20191203193052.7583-1-thomas_os@shipmail.org
+Suggested-by: Vishal Bhakta <vbhakta@vmware.com>
+Acked-by: Jim Gill <jgill@vmware.com>
+Signed-off-by: Thomas Hellstrom <thellstrom@vmware.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+---
+ drivers/scsi/vmw_pvscsi.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/drivers/scsi/vmw_pvscsi.c b/drivers/scsi/vmw_pvscsi.c
+index 7000881..8a09d18 100644
+--- a/drivers/scsi/vmw_pvscsi.c
++++ b/drivers/scsi/vmw_pvscsi.c
+@@ -402,6 +402,17 @@ static int pvscsi_map_buffers(struct pvscsi_adapter *adapter,
+ 	return 0;
+ }
+ 
++/*
++ * The device incorrectly doesn't clear the first byte of the sense
++ * buffer in some cases. We have to do it ourselves.
++ * Otherwise we run into trouble when SWIOTLB is forced.
++ */
++static void pvscsi_patch_sense(struct scsi_cmnd *cmd)
++{
++	if (cmd->sense_buffer)
++		cmd->sense_buffer[0] = 0;
++}
++
+ static void pvscsi_unmap_buffers(const struct pvscsi_adapter *adapter,
+ 				 struct pvscsi_ctx *ctx)
+ {
+@@ -544,6 +555,8 @@ static void pvscsi_complete_request(struct pvscsi_adapter *adapter,
+ 	cmd = ctx->cmd;
+ 	abort_cmp = ctx->abort_cmp;
+ 	pvscsi_unmap_buffers(adapter, ctx);
++	if (sdstat != SAM_STAT_CHECK_CONDITION)
++		pvscsi_patch_sense(cmd);
+ 	pvscsi_release_context(adapter, ctx);
+ 	if (abort_cmp) {
+ 		/*
+@@ -873,6 +886,7 @@ static void pvscsi_reset_all(struct pvscsi_adapter *adapter)
+ 			scmd_printk(KERN_ERR, cmd,
+ 				    "Forced reset on cmd %p\n", cmd);
+ 			pvscsi_unmap_buffers(adapter, ctx);
++			pvscsi_patch_sense(cmd);
+ 			pvscsi_release_context(adapter, ctx);
+ 			cmd->result = (DID_RESET << 16);
+ 			cmd->scsi_done(cmd);
+-- 
+2.7.4
+

@@ -1,0 +1,153 @@
+From 7be4412721aee25e35583a20a896085dc6b99c3e Mon Sep 17 00:00:00 2001
+From: Jann Horn <jannh@google.com>
+Date: Thu, 19 Dec 2019 00:11:47 +0100
+Subject: [PATCH] x86/insn-eval: Add support for 64-bit kernel mode
+
+To support evaluating 64-bit kernel mode instructions:
+
+* Replace existing checks for user_64bit_mode() with a new helper that
+checks whether code is being executed in either 64-bit kernel mode or
+64-bit user mode.
+
+* Select the GS base depending on whether the instruction is being
+evaluated in kernel mode.
+
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Alexander Potapenko <glider@google.com>
+Cc: Andrey Konovalov <andreyknvl@google.com>
+Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: kasan-dev@googlegroups.com
+Cc: Oleg Nesterov <oleg@redhat.com>
+Cc: Sean Christopherson <sean.j.christopherson@intel.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: x86-ml <x86@kernel.org>
+Link: https://lkml.kernel.org/r/20191218231150.12139-1-jannh@google.com
+---
+ arch/x86/include/asm/ptrace.h | 13 +++++++++++++
+ arch/x86/lib/insn-eval.c      | 26 +++++++++++++++-----------
+ 2 files changed, 28 insertions(+), 11 deletions(-)
+
+diff --git a/arch/x86/include/asm/ptrace.h b/arch/x86/include/asm/ptrace.h
+index 5057a8e..ac45b06 100644
+--- a/arch/x86/include/asm/ptrace.h
++++ b/arch/x86/include/asm/ptrace.h
+@@ -159,6 +159,19 @@ static inline bool user_64bit_mode(struct pt_regs *regs)
+ #endif
+ }
+ 
++/*
++ * Determine whether the register set came from any context that is running in
++ * 64-bit mode.
++ */
++static inline bool any_64bit_mode(struct pt_regs *regs)
++{
++#ifdef CONFIG_X86_64
++	return !user_mode(regs) || user_64bit_mode(regs);
++#else
++	return false;
++#endif
++}
++
+ #ifdef CONFIG_X86_64
+ #define current_user_stack_pointer()	current_pt_regs()->sp
+ #define compat_user_stack_pointer()	current_pt_regs()->sp
+diff --git a/arch/x86/lib/insn-eval.c b/arch/x86/lib/insn-eval.c
+index 306c3a0..31600d8 100644
+--- a/arch/x86/lib/insn-eval.c
++++ b/arch/x86/lib/insn-eval.c
+@@ -155,7 +155,7 @@ static bool check_seg_overrides(struct insn *insn, int regoff)
+  */
+ static int resolve_default_seg(struct insn *insn, struct pt_regs *regs, int off)
+ {
+-	if (user_64bit_mode(regs))
++	if (any_64bit_mode(regs))
+ 		return INAT_SEG_REG_IGNORE;
+ 	/*
+ 	 * Resolve the default segment register as described in Section 3.7.4
+@@ -266,7 +266,7 @@ static int resolve_seg_reg(struct insn *insn, struct pt_regs *regs, int regoff)
+ 	 * which may be invalid at this point.
+ 	 */
+ 	if (regoff == offsetof(struct pt_regs, ip)) {
+-		if (user_64bit_mode(regs))
++		if (any_64bit_mode(regs))
+ 			return INAT_SEG_REG_IGNORE;
+ 		else
+ 			return INAT_SEG_REG_CS;
+@@ -289,7 +289,7 @@ static int resolve_seg_reg(struct insn *insn, struct pt_regs *regs, int regoff)
+ 	 * In long mode, segment override prefixes are ignored, except for
+ 	 * overrides for FS and GS.
+ 	 */
+-	if (user_64bit_mode(regs)) {
++	if (any_64bit_mode(regs)) {
+ 		if (idx != INAT_SEG_REG_FS &&
+ 		    idx != INAT_SEG_REG_GS)
+ 			idx = INAT_SEG_REG_IGNORE;
+@@ -646,23 +646,27 @@ unsigned long insn_get_seg_base(struct pt_regs *regs, int seg_reg_idx)
+ 		 */
+ 		return (unsigned long)(sel << 4);
+ 
+-	if (user_64bit_mode(regs)) {
++	if (any_64bit_mode(regs)) {
+ 		/*
+ 		 * Only FS or GS will have a base address, the rest of
+ 		 * the segments' bases are forced to 0.
+ 		 */
+ 		unsigned long base;
+ 
+-		if (seg_reg_idx == INAT_SEG_REG_FS)
++		if (seg_reg_idx == INAT_SEG_REG_FS) {
+ 			rdmsrl(MSR_FS_BASE, base);
+-		else if (seg_reg_idx == INAT_SEG_REG_GS)
++		} else if (seg_reg_idx == INAT_SEG_REG_GS) {
+ 			/*
+ 			 * swapgs was called at the kernel entry point. Thus,
+ 			 * MSR_KERNEL_GS_BASE will have the user-space GS base.
+ 			 */
+-			rdmsrl(MSR_KERNEL_GS_BASE, base);
+-		else
++			if (user_mode(regs))
++				rdmsrl(MSR_KERNEL_GS_BASE, base);
++			else
++				rdmsrl(MSR_GS_BASE, base);
++		} else {
+ 			base = 0;
++		}
+ 		return base;
+ 	}
+ 
+@@ -703,7 +707,7 @@ static unsigned long get_seg_limit(struct pt_regs *regs, int seg_reg_idx)
+ 	if (sel < 0)
+ 		return 0;
+ 
+-	if (user_64bit_mode(regs) || v8086_mode(regs))
++	if (any_64bit_mode(regs) || v8086_mode(regs))
+ 		return -1L;
+ 
+ 	if (!sel)
+@@ -948,7 +952,7 @@ static int get_eff_addr_modrm(struct insn *insn, struct pt_regs *regs,
+ 	 * following instruction.
+ 	 */
+ 	if (*regoff == -EDOM) {
+-		if (user_64bit_mode(regs))
++		if (any_64bit_mode(regs))
+ 			tmp = regs->ip + insn->length;
+ 		else
+ 			tmp = 0;
+@@ -1250,7 +1254,7 @@ static void __user *get_addr_ref_32(struct insn *insn, struct pt_regs *regs)
+ 	 * After computed, the effective address is treated as an unsigned
+ 	 * quantity.
+ 	 */
+-	if (!user_64bit_mode(regs) && ((unsigned int)eff_addr > seg_limit))
++	if (!any_64bit_mode(regs) && ((unsigned int)eff_addr > seg_limit))
+ 		goto out;
+ 
+ 	/*
+-- 
+2.7.4
+

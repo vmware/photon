@@ -1,0 +1,56 @@
+From 003dab1dbc3608294bf3d422886c19c1d4fd5347 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 10 Jun 2020 18:21:42 +0530
+Subject: [PATCH 11/75] x86-boot-compressed-64-Disable-red-zone-usage
+
+The x86-64 ABI defines a red-zone on the stack:
+
+  The 128-byte area beyond the location pointed to by %rsp is considered
+  to be reserved and shall not be modified by signal or interrupt
+  handlers. Therefore, functions may use this area for temporary data
+  that is not needed across function calls. In particular, leaf
+  functions may use this area for their entire stack frame, rather than
+  adjusting the stack pointer in the prologue and epilogue. This area is
+  known as the red zone.
+
+This is not compatible with exception handling, because the IRET frame
+written by the hardware at the stack pointer and the functions to handle
+the exception will overwrite the temporary variables of the interrupted
+function, causing undefined behavior. So disable red-zones for the
+pre-decompression boot code.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/x86/boot/Makefile            | 2 +-
+ arch/x86/boot/compressed/Makefile | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/boot/Makefile b/arch/x86/boot/Makefile
+index e2839b5..5ff3656 100755
+--- a/arch/x86/boot/Makefile
++++ b/arch/x86/boot/Makefile
+@@ -65,7 +65,7 @@ clean-files += cpustr.h
+ 
+ # ---------------------------------------------------------------------------
+ 
+-KBUILD_CFLAGS	:= $(REALMODE_CFLAGS) -D_SETUP
++KBUILD_CFLAGS	:= $(REALMODE_CFLAGS) -D_SETUP -mno-red-zone
+ KBUILD_AFLAGS	:= $(KBUILD_CFLAGS) -D__ASSEMBLY__
+ GCOV_PROFILE := n
+ UBSAN_SANITIZE := n
+diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
+index 466f66c..9cc498c 100755
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -30,7 +30,7 @@ KBUILD_CFLAGS := -m$(BITS) -O2
+ KBUILD_CFLAGS += -fno-strict-aliasing $(call cc-option, -fPIE, -fPIC)
+ KBUILD_CFLAGS += -DDISABLE_BRANCH_PROFILING
+ cflags-$(CONFIG_X86_32) := -march=i386
+-cflags-$(CONFIG_X86_64) := -mcmodel=small
++cflags-$(CONFIG_X86_64) := -mcmodel=small -mno-red-zone
+ KBUILD_CFLAGS += $(cflags-y)
+ KBUILD_CFLAGS += -mno-mmx -mno-sse
+ KBUILD_CFLAGS += $(call cc-option,-ffreestanding)
+-- 
+2.7.4
+
