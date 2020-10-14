@@ -1,7 +1,7 @@
 Summary:	Utilities for internationalization and localization
 Name:		gettext
 Version:	0.19.8.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/gettext
 Group:		Applications/System
@@ -10,7 +10,7 @@ Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
 %define sha1 gettext=e0fe90ede22f7f16bbde7bdea791a835f2773fc9
 Patch0:         gettext-0.19.8.1-CVE-2018-18751.patch
-
+Patch1:		libcroco-CVE-2020-12825.patch
 %description
 These allow programs to be compiled with NLS
 (Native Language Support), enabling them to output
@@ -19,6 +19,7 @@ messages in the user's native language.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 %configure \
@@ -56,6 +57,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+*	Tue Oct 13 2020 Siju Maliakkal <smaliakkal@vmware.com> 0.19.8.1-4
+-	Fix CVE-2020-12825 in blundled libcroco source
 *       Thu Jun 18 2020 Ashwin H <ashwinh@vmware.com> 0.19.8.1-3
 -       Fix CVE-2018-18751
 *       Mon Sep 09 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 0.19.8.1-2
