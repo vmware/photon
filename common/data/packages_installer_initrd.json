@@ -46,7 +46,6 @@
         "rpm",
         "gptfdisk",
         "tar",
-        "hawkey",
         "python3",
         "python3-libs",
         "pcre",
