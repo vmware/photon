@@ -3,7 +3,7 @@
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python3-pyinstaller
 Version:        4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller
 License:        GPLv2+
 Group:          Development/Languages/Python
@@ -26,6 +26,8 @@ Requires:       python3-libs
 Requires:       zlib
 Requires:       python3-setuptools
 Requires:       python3-xml
+Requires:       python3-pyinstaller-hooks-contrib
+Requires:       python3-altgraph
 
 %description
 PyInstaller bundles a Python application and all its dependencies into a single package. The user can run the packaged app without installing a Python interpreter or any modules.
@@ -67,6 +69,8 @@ python3 setup.py install --single-version-externally-managed -O1 --root=%{buildr
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+*   Wed Oct 14 2020 Piyush Gupta <gpiyush@vmware.com> 4.0-3
+-   Added Requires pyinstaller-hooks-contrib and altgraph
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.0-2
 -   openssl 1.1.1
 *   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0-1
