@@ -2,15 +2,15 @@
 
 Summary:        Python NTP library
 Name:           python3-ntplib
-Version:        0.3.3
-Release:        3%{?dist}
+Version:        0.3.4
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/ntplib/
 Source0:        ntplib-%{version}.tar.gz
-%define         sha1 ntplib=403ac0cc01398bacdf608d4aa35e74e36f5ad64d
+%define         sha1 ntplib=08c3591bf257d893f455b833064e8be1889ec8bf
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -46,6 +46,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Oct 14 2020 Tapas Kundu <tkundu@vmware.com> 0.3.4-1
+-   Update to 0.3.4
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 0.3.3-3
 -   Mass removal python2
 *   Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 0.3.3-2
