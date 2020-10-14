@@ -1,6 +1,6 @@
 Name:    binutils-aarch64-linux-gnu
 Summary: Cross Binutils for Aarch64
-Version: 2.31.1
+Version: 2.35
 Release: 1%{?dist}
 License: GPLv2+
 URL:     http://www.gnu.org/software/binutils
@@ -8,7 +8,7 @@ Group:   System Environment/Base
 Vendor:  VMware, Inc.
 Distribution: Photon
 Source0: https://ftp.gnu.org/gnu/binutils/binutils-%{version}.tar.xz
-%define sha1 binutils=3b031410897fe224412f3a6a1b052402d2fbcc6a
+%define sha1 binutils=6bdd090ce268b6d6c3442516021c4e4b5019e303
 BuildArch: x86_64
 
 %define target_arch aarch64-unknown-linux-gnu
@@ -46,11 +46,13 @@ rm -rf %{buildroot}%{_datadir}/locale
 %{_prefix}/%{target_arch}/*
 
 %changelog
-* Fri Nov 02 2018 Alexey Makhalov <amakhalov@vmware.com> 2.31.1-1
-- Cloned from cross-aarch64-tools.spec
-* Thu Nov 1 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-3
-- Updated versions of cross toolchain components
-* Mon Oct 22 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-2
-- Replace _sysroot definition with sysroot
-* Fri Oct 19 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0
-- Initial build. First version
+*   Fri Oct 16 2020 Ajay Kaher <akaher@vmware.com> 2.35-1
+-   Update binutils to 2.35
+*   Fri Nov 02 2018 Alexey Makhalov <amakhalov@vmware.com> 2.31.1-1
+-   Cloned from cross-aarch64-tools.spec
+*   Thu Nov 1 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-3
+-   Updated versions of cross toolchain components
+*   Mon Oct 22 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-2
+-   Replace _sysroot definition with sysroot
+*   Fri Oct 19 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0
+-   Initial build. First version
