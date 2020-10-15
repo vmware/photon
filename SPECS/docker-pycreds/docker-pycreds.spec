@@ -1,16 +1,16 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           docker-pycreds3
-Version:        0.3.0
-Release:        2%{?dist}
+Version:        0.4.0
+Release:        1%{?dist}
 Summary:        Python API for docker credentials store
 License:        ASL2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            https://pypi.python.org/packages/95/2e/3c99b8707a397153bc78870eb140c580628d7897276960da25d8a83c4719/docker-pycreds-%{version}.tar.gz
+Url:            https://files.pythonhosted.org/packages/c5/e6/d1f6c00b7221e2d7c4b470132c931325c8b22c51ca62417e300f5ce16009/docker-pycreds-%{version}.tar.gz
 Source0:        docker-pycreds-%{version}.tar.gz
-%define sha1    docker-pycreds=f6f9d96037a3befc7b5647f9bc09882bc130e52d
+%define sha1    docker-pycreds=36a0e5d70f0a237e2bbd3f87dbd3e60a4e486d53
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -37,6 +37,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Oct 15 2020 Ashwin H <ashwinh@vmware.com> 0.4.0-1
+-   Upgrade to 0.4.0 release.
 *   Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 0.3.0-2
 =   Mass removal python2
 *   Tue Sep 04 2018 Tapas Kundu <tkundu@vmware.com> 0.3.0-1

@@ -1,8 +1,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           docker-py3
-Version:        3.5.0
-Release:        2%{?dist}
+Version:        4.3.1
+Release:        1%{?dist}
 Summary:        Python API for docker
 License:        ASL2.0
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/docker/docker-py
 Source0:        docker-py-%{version}.tar.gz
-%define sha1    docker-py=d742bfa49b86502150a9cffe2e066a39eb8ab778
+%define sha1    docker-py=eed3cb687f8103dd8679c672e64251b7b3bfd337
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -36,7 +36,7 @@ Python API for docker
 
 
 %prep
-%setup -n docker-py-%{version}
+%setup -n docker-py-%{version}-release
 
 %build
 python3 setup.py build
@@ -49,6 +49,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Oct 15 2020 Ashwin H <ashwinh@vmware.com> 4.3.1-1
+-   Upgrade to 4.3.1 release.
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 3.5.0-2
 -   Mass removal python2
 *   Tue Sep 04 2018 Tapas Kundu <tkundu@vmware.com> 3.5.0-1
