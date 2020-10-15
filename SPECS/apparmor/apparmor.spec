@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           apparmor
 Version:        3.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -194,9 +194,9 @@ make %{?_smp_mflags}
 %check
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 pyflakes
-export PYTHONPATH=/usr/lib/python3.8/site-packages
+export PYTHONPATH=/usr/lib/python3.9/site-packages
 export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=3.8
+export PYTHON_VERSION=3.9
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 cd ./libraries/libapparmor
@@ -207,9 +207,9 @@ cd ../utils
 make check
 
 %install
-export PYTHONPATH=/usr/lib/python3.8/site-packages
+export PYTHONPATH=/usr/lib/python3.9/site-packages
 export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=3.8
+export PYTHON_VERSION=3.9
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 cd libraries/libapparmor
@@ -352,6 +352,8 @@ make DESTDIR=%{buildroot} install
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+*   Fri Nov 06 2020 Tapas Kundu <tkundu@vmware.com> 3.0.0-3
+-   Build with python 3.9
 *   Fri Oct 23 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.0.0-2
 -   Fix build failure in apparmor on linux 5.9-rc7
 *   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.0-1

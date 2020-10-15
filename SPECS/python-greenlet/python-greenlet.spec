@@ -3,7 +3,7 @@
 Summary:        Lightweight in-process concurrent programming
 Name:           python3-greenlet
 Version:        0.4.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -42,9 +42,11 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
-/usr/include/python3.8/greenlet/greenlet.h
+/usr/include/python3.9/greenlet/greenlet.h
 
 %changelog
+*   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 0.4.17-2
+-   Use python3.9
 *   Tue Sep 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.4.17-1
 -   Automatic Version Bump
 *   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 0.4.16-2

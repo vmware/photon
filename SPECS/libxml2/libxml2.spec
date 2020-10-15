@@ -3,7 +3,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -13,6 +13,7 @@ Source0:        ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
 %define sha1    libxml2=db6592ec9ca9708c4e71bf6bfd907bbb5cd40644
 Patch0:         CVE-2020-7595.patch
 Patch1:         CVE-2020-24977.patch
+Patch2:         fix_build_with_python3.9.patch
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
@@ -41,6 +42,7 @@ Static libraries and header files for the support library for libxml
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 %configure \
@@ -91,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
 %changelog
+*   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 2.9.10-4
+-   Fix build with python 3.9
 *   Tue Sep 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.10-3
 -   Fix for CVE-2020-24977(Fix Buffer Overflow vulnerability)
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.9.10-2

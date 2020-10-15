@@ -1,8 +1,8 @@
-%define python3_sitelib /usr/lib/python3.8/site-packages
+%define python3_sitelib /usr/lib/python3.9/site-packages
 
 Name:           cloud-init
 Version:        20.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -156,6 +156,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Fri Nov 06 2020 Tapas Kundu <tkundu@vmware.com> 20.3-3
+-   Updated using python 3.9 lib
 *   Mon Oct 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.3-2
 -   Fixed subp import in photon.py
 -   Fixed creating `[Route]` entries while creating network files

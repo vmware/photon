@@ -13,7 +13,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.9.0
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -53,6 +53,8 @@ Patch4:	        9p-trans_fd-extend-port-variable-to-u32.patch
 Patch5:         vsock-delay-detach-of-QP-with-outgoing-data-59.patch
 # RDRAND-based RNG driver to enhance the kernel's entropy pool:
 Patch6:         hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+# Fix perf python script with python 3.9
+Patch7:         fix-perf-script-with-python3.9.patch
 
 # ttyXRUSB support
 Patch10:	usb-acm-exclude-exar-usb-serial-ports-nxt.patch
@@ -288,6 +290,7 @@ Python programming language to use the interface to manipulate perf events.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 %patch10 -p1
 %patch11 -p1
@@ -684,6 +687,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Nov 11 2020 Tapas Kundu <tkundu@vmware.com> 5.9.0-6
+-   Fix perf python script for compatibility with python 3.9
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-5
 -   Fix CVE-2020-8694
 *   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-4

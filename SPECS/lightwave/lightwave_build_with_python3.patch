@@ -5,7 +5,7 @@
      ],
      [
 -        PYTHON_INCLUDES="-I$PYTHON_BASE_PATH/include/python2.7"
-+        PYTHON_INCLUDES="-I$PYTHON_BASE_PATH/include/python3.8"
++        PYTHON_INCLUDES="-I$PYTHON_BASE_PATH/include/python3.9"
      ])
  
  AC_ARG_WITH([python-libs],

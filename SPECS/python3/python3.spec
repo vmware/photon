@@ -1,6 +1,6 @@
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.8.6
+Version:        3.9.0
 Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
@@ -8,7 +8,7 @@ Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=6ee446eaacf901a3305565bd6569e2de135168e3
+%define sha1    Python=ff1fc8c37d5d4b09ec3bf0d84f3e5b97745c6704
 Source1:        macros.python
 Patch0:         cgi3.patch
 BuildRequires:  pkg-config >= 0.28
@@ -214,57 +214,56 @@ rm -rf %{buildroot}/*
 %doc LICENSE README.rst
 %{_bindir}/pydoc*
 %{_bindir}/python3
-%{_bindir}/python3.8
+%{_bindir}/python3.9
 %{_mandir}/*/*
 
-%dir %{_libdir}/python3.8
-%{_libdir}/python3.8/site-packages/README.txt
+%dir %{_libdir}/python3.9
+%{_libdir}/python3.9/site-packages/README.txt
 
 %{_libdir}/libpython3.so
-%{_libdir}/libpython3.8.so.1.0
+%{_libdir}/libpython3.9.so.1.0
 
-%exclude %{_libdir}/python3.8/ctypes/test
-%exclude %{_libdir}/python3.8/distutils/tests
-%exclude %{_libdir}/python3.8/sqlite3/test
-%exclude %{_libdir}/python3.8/idlelib/idle_test
-%exclude %{_libdir}/python3.8/test
-%exclude %{_libdir}/python3.8/lib-dynload/_ctypes_test.*.so
+%exclude %{_libdir}/python3.9/ctypes/test
+%exclude %{_libdir}/python3.9/distutils/tests
+%exclude %{_libdir}/python3.9/sqlite3/test
+%exclude %{_libdir}/python3.9/idlelib/idle_test
+%exclude %{_libdir}/python3.9/test
+%exclude %{_libdir}/python3.9/lib-dynload/_ctypes_test.*.so
 
 %files libs
 %defattr(-,root,root)
 %doc LICENSE README.rst
-%{_libdir}/python3.8
-%exclude %{_libdir}/python3.8/lib2to3
-%exclude %{_libdir}/python3.8/site-packages/
-%exclude %{_libdir}/python3.8/ctypes/test
-%exclude %{_libdir}/python3.8/distutils/tests
-%exclude %{_libdir}/python3.8/sqlite3/test
-%exclude %{_libdir}/python3.8/idlelib/idle_test
-%exclude %{_libdir}/python3.8/test
-%exclude %{_libdir}/python3.8/lib-dynload/_ctypes_test.*.so
-%exclude %{_libdir}/python3.8/xml
-%exclude %{_libdir}/python3.8/lib-dynload/pyexpat*.so
-%exclude %{_libdir}/python3.8/curses
-%exclude %{_libdir}/python3.8/lib-dynload/_curses*.so
-%exclude %{_libdir}/python3.8/distutils/command/wininst-*.exe
+%{_libdir}/python3.9
+%exclude %{_libdir}/python3.9/lib2to3
+%exclude %{_libdir}/python3.9/site-packages/
+%exclude %{_libdir}/python3.9/ctypes/test
+%exclude %{_libdir}/python3.9/distutils/tests
+%exclude %{_libdir}/python3.9/sqlite3/test
+%exclude %{_libdir}/python3.9/idlelib/idle_test
+%exclude %{_libdir}/python3.9/test
+%exclude %{_libdir}/python3.9/lib-dynload/_ctypes_test.*.so
+%exclude %{_libdir}/python3.9/xml
+%exclude %{_libdir}/python3.9/lib-dynload/pyexpat*.so
+%exclude %{_libdir}/python3.9/curses
+%exclude %{_libdir}/python3.9/lib-dynload/_curses*.so
 
 %files  xml
-%{_libdir}/python3.8/xml/*
-%{_libdir}/python3.8/lib-dynload/pyexpat*.so
+%{_libdir}/python3.9/xml/*
+%{_libdir}/python3.9/lib-dynload/pyexpat*.so
 
 %files  curses
-%{_libdir}/python3.8/curses/*
-%{_libdir}/python3.8/lib-dynload/_curses*.so
+%{_libdir}/python3.9/curses/*
+%{_libdir}/python3.9/lib-dynload/_curses*.so
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/libpython3.8.so
-%{_libdir}/pkgconfig/python-3.8.pc
+%{_libdir}/libpython3.9.so
+%{_libdir}/pkgconfig/python-3.9.pc
 %{_libdir}/pkgconfig/python3.pc
 %{_bindir}/python3-config
-%{_bindir}/python3.8-config
-%{_libdir}/pkgconfig/python-3.8-embed.pc
+%{_bindir}/python3.9-config
+%{_libdir}/pkgconfig/python-3.9-embed.pc
 %{_libdir}/pkgconfig/python3-embed.pc
 
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
@@ -274,30 +273,31 @@ rm -rf %{buildroot}/*
 %files tools
 %defattr(-,root,root,755)
 %doc Tools/README
-%{_libdir}/python3.8/lib2to3
-%{_bindir}/2to3-3.8
+%{_libdir}/python3.9/lib2to3
+%{_bindir}/2to3-3.9
 %exclude %{_bindir}/idle*
 
 %files pip
 %defattr(-,root,root,755)
-%{_libdir}/python3.8/site-packages/pip/*
-%{_libdir}/python3.8/site-packages/pip-20.2.1.dist-info/*
+%{_libdir}/python3.9/site-packages/pip/*
 %{_bindir}/pip*
 
 %files setuptools
 %defattr(-,root,root,755)
-%{_libdir}/python3.8/site-packages/pkg_resources/*
-%{_libdir}/python3.8/site-packages/setuptools/*
-%{_libdir}/python3.8/site-packages/setuptools-49.2.1.dist-info/*
-%{_bindir}/easy_install-3.8
+%{_libdir}/python3.9/site-packages/pkg_resources/*
+%{_libdir}/python3.9/site-packages/setuptools/*
+%{_libdir}/python3.9/site-packages/setuptools-49.2.1.dist-info/*
+%{_bindir}/easy_install-3.9
 
 %files test
-%{_libdir}/python3.8/test/*
+%{_libdir}/python3.9/test/*
 
 %files macros
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+*   Tue Oct 13 2020 Taoas Kundu <tkundu@vmware.com> 3.9.0-1
+-   Update to 3.9.0
 *   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.6-1
 -   Automatic Version Bump
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.8.5-4

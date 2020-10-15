@@ -1,0 +1,11 @@
+--- a/setup.py	2020-11-06 18:00:20.559994152 +0530
++++ b/setup.py	2020-11-06 18:00:33.736394433 +0530
+@@ -106,7 +106,7 @@ ext_py_mods = [Extension('setools.policy
+                          libraries=['selinux', 'sepol'],
+                          library_dirs=lib_dirs,
+                          define_macros=macros,
+-                         extra_compile_args=['-Werror', '-Wextra',
++                         extra_compile_args=['-Wextra',
+                                              '-Waggregate-return',
+                                              '-Wfloat-equal',
+                                              '-Wformat', '-Wformat=2',
