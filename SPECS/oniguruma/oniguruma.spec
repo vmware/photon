@@ -1,6 +1,6 @@
 Name:           oniguruma
 Version:        6.9.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Summary:        Regular expressions library
 Group:          System Environment/Libraries
@@ -13,6 +13,7 @@ Patch0:         oniguruma-CVE-2019-19012.patch
 Patch1:         oniguruma-CVE-2019-19203.patch
 Patch2:         oniguruma-CVE-2019-19204.patch
 Patch3:         oniguruma-CVE-2019-19246.patch
+Patch4:         oniguruma-CVE-2020-26159.patch
 
 %description
 Oniguruma is a regular expressions library.
@@ -34,6 +35,7 @@ Development files for libonig
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 %configure                    \
@@ -72,6 +74,8 @@ make  check
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu Oct 15 2020 Dweep Advani <dadvani@vmware.com> 6.9.3-3
+- Patch for CVE-2020-26159
 * Fri Dec 13 2019 Dweep Advani <dadvani@vmware.com> 6.9.3-2
 - Fixing CVE-2019-19012, CVE-2019-1920[34] and CVE-2019-19246
 * Wed Sep 18 2019 Dweep Advani <dadvani@vmware.com> 6.9.3-1
