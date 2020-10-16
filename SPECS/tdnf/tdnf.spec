@@ -4,8 +4,8 @@
 #
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        2.1.1
-Release:        3%{?dist}
+Version:        2.1.2
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -15,6 +15,7 @@ Requires:       rpm-libs
 Requires:       curl
 Requires:       tdnf-cli-libs = %{version}-%{release}
 Requires:       libsolv
+Requires:       libmetalink
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
 BuildRequires:  openssl-devel
@@ -33,15 +34,12 @@ BuildRequires:  libxml2
 Obsoletes:      yum
 Provides:       yum
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    tdnf=643e0dd1bf62b7b7261fdbf292d6e3db45b9d015
+%define sha1    tdnf=81140cee3d979a69273384d9e36086bd6c62a6b9
 Source1:        cache-updateinfo
 Source2:        cache-updateinfo.service
 Source3:        cache-updateinfo.timer
 Source4:        updateinfo.sh
 Source5:        tdnfrepogpgcheck.conf
-Patch0:         tdnf_fix_project_version.patch
-Patch1:         Fix-unhandled-error-code-message.patch
-Patch2:         Report-missing-providers-when-achieving-goal.patch
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
@@ -82,9 +80,6 @@ python bindings for tdnf
 
 %prep
 %setup -qn %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 mkdir build && cd build
@@ -222,6 +217,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{python3_sitelib}/*
 
 %changelog
+*   Fri Oct 16 2020 Keerthana K <keerthanak@vmware.com> 2.1.2-1
+-   Update to 2.1.2
 *   Tue Aug 11 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 2.1.1-3
 -   Cherry-pick some critical fixes from vmware/tdnf:dev
 *   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 2.1.1-2
