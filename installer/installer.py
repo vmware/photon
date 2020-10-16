@@ -171,7 +171,10 @@ class Installer(object):
                 plf = os.path.join(os.path.dirname(__file__), plf)
             json_wrapper_package_list = JsonWrapper(plf)
             package_list_json = json_wrapper_package_list.read()
-            packages.extend(package_list_json["packages"])
+            if "packages_" + install_config['arch'] in package_list_json:
+                packages.extend(package_list_json["packages"] + package_list_json["packages_"+install_config['arch']])
+            else:
+                packages.extend(package_list_json["packages"])
 
         if 'additional_packages' in install_config:
             packages.extend(install_config['additional_packages'])

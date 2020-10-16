@@ -9,7 +9,6 @@
                  "git",
                  "tar",
                  "grub2",
-                 "grub2-pc",
                  "grub2-efi",
                  "less",
                  "device-mapper",
@@ -21,5 +20,6 @@
                  "texinfo",
                  "wget",
                  "sudo"
-                 ]
+                 ],
+    "packages_x86_64":["grub2-pc"]
 }

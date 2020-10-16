@@ -35,7 +35,13 @@ class PackageSelector(object):
             json_wrapper_package_list = JsonWrapper(os.path.join(output_data_path,
                                                 option['packagelist_file']))
             package_list_json = json_wrapper_package_list.read()
+
+            import platform
+            platform_packages = "packages_" + platform.machine()
+            if platform_packages in package_list_json:
+                return package_list_json["packages"] + package_list_json[platform_packages]
             return package_list_json["packages"]
+
         elif 'packages' in option:
             return option["packages"]
         else:

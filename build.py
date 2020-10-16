@@ -798,7 +798,7 @@ class BuildImage:
             rpmBuildTarget.packages_rt()
         else:
             rpmBuildTarget.packages_minimal()
-        if self.img_name == "rt-iso" or "minimal-iso" and not check_prerequesite["packages-initrd"]:
+        if self.img_name in ["rt-iso", "minimal-iso"] and not check_prerequesite["packages-initrd"]:
             rpmBuildTarget.packages_initrd()
         if not check_prerequesite["create-repo"]:
             RpmBuildTarget.create_repo()
