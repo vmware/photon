@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.64.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -100,6 +100,8 @@ make  check
 %defattr(-,root,root)
 
 %changelog
+*   Fri Oct 16 2020 Ashwin H <ashwinh@vmware.com> 2.64.0-3
+-   Bump up to use new icu lib.
 *   Fri Dec 07 2018 Keerthana <keerthanak@vmware.com> 2.64.0-2
 -   Fix Make check failures.
 *   Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 2.64.0-1

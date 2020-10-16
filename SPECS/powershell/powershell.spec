@@ -1,7 +1,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -97,6 +97,8 @@ fi
     %{_docdir}/*
 
 %changelog
+*   Fri Oct 16 2020 Ashwin H <ashwinh@vmware.com> 7.0.3-2
+-   Bump up to use new icu lib.
 *   Sun Oct 11 2020 Shreyas B <shreyasb@vmware.com> 7.0.3-1
 -   Upgrade powershell & powershell-linux to 7.0.3 to address CVE-2020-1108
 *   Fri Aug 07 2020 Shreyas B <shreyasb@vmware.com> 7.0.0-2

@@ -2,7 +2,7 @@
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
 Version:        3.1.201
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -34,6 +34,8 @@ cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/dotnet-sdk-%{version
     %{_docdir}/*
 
 %changelog
+*   Fri Oct 16 2020 Ashwin H <ashwinh@vmware.com> 3.1.201-2
+-   Bump up to use new icu lib.
 *   Sat Apr 11 2020 Shreyas B. <shreyasb@vmware.com> 3.1.201-1
 -   upgrade to version 3.1.201
 *   Thu Nov 07 2019 Shreyas B. <shreyasb@vmware.com> 2.1.509-1

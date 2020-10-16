@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2019.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -164,6 +164,8 @@ rm -rf %{buildroot}/lib
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+*   Fri Oct 16 2020 Ashwin H <ashwinh@vmware.com> 2019.2-4
+-   Bump up to use new icu lib.
 *   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2019.2-3
 -   Added for ARM Build
 *   Fri Sep 13 2019 Ankit Jain <ankitja@vmware.com> 2019.2-2
