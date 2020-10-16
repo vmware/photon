@@ -5,6 +5,7 @@ from readmultext import ReadMulText
 from confirmwindow import ConfirmWindow
 from actionresult import ActionResult
 from device import Device
+from installer import BIOSSIZE,ESPSIZE
 
 class CustomPartition(object):
     def __init__(self, maxy, maxx, install_config):
@@ -30,8 +31,10 @@ class CustomPartition(object):
 
         self.disk_size = []
         self.disk_to_index = {}
+        # Subtract BIOS&ESP SIZE from the disk_size since this much is hardcoded for bios
+        # and efi partition in installer.py
         for index, device in enumerate(self.devices):
-            self.disk_size.append((device.path, int(device.size) / 1048576))
+            self.disk_size.append((device.path, int(device.size) / 1048576 - (BIOSSIZE + ESPSIZE + 2)))
             self.disk_to_index[device.path] = index
 
         self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx,
@@ -218,7 +221,7 @@ class CustomPartition(object):
             self.cp_config[str(i)+'partition_info'+str(3)] = ''
         del self.disk_size[:]
         for index, device in enumerate(self.devices):
-            self.disk_size.append((device.path, int(device.size) / 1048576))
+            self.disk_size.append((device.path, int(device.size) / 1048576 - (BIOSSIZE + ESPSIZE + 2)))
         del self.path_checker[:]
         self.has_slash = False
         self.has_remain = False
