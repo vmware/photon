@@ -25,6 +25,9 @@ from actionresult import ActionResult
 from networkmanager import NetworkManager
 from enum import Enum
 
+BIOSSIZE = 4
+ESPSIZE = 10
+
 class PartitionType(Enum):
     SWAP = 1
     LINUX = 2
@@ -1141,12 +1144,12 @@ class Installer(object):
 
         # Insert efi special partition
         if not esp_found and (bootmode == 'dualboot' or bootmode == 'efi'):
-            efi_partition = { 'size': 10, 'filesystem': 'vfat', 'mountpoint': '/boot/efi' }
+            efi_partition = { 'size': ESPSIZE, 'filesystem': 'vfat', 'mountpoint': '/boot/efi' }
             self.install_config['partitions'].insert(0, efi_partition)
 
         # Insert bios partition last to be very first
         if not bios_found and (bootmode == 'dualboot' or bootmode == 'bios'):
-            bios_partition = { 'size': 4, 'filesystem': 'bios' }
+            bios_partition = { 'size': BIOSSIZE, 'filesystem': 'bios' }
             self.install_config['partitions'].insert(0, bios_partition)
 
     def _partition_disk(self):
