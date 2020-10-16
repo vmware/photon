@@ -1,22 +1,23 @@
-Summary:	Apache Ant
-Name:		apache-ant
-Version:	1.10.8
-Release:	1%{?dist}
-License:	Apache
-URL:		http://ant.apache.org
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:        Apache Ant
+Name:           apache-ant
+Version:        1.10.8
+Release:        2%{?dist}
+License:        Apache
+URL:            http://ant.apache.org
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
-Source0:	http://apache.mirrors.lucidnetworks.net/ant/source/%{name}-%{version}-src.tar.gz
+Source0:        http://apache.mirrors.lucidnetworks.net/ant/source/%{name}-%{version}-src.tar.gz
 %define sha1 apache-ant=74027a785d96715f61619b0a4d9296517bba3aa5
-Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
+Source1:        http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
-Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
+Source2:        http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
 %define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
-Requires:      openjre8
-BuildRequires: openjre8
-BuildRequires: openjdk8
+Patch0:         apache-ant-CVE-2020-11979.patch
+Requires:       openjre8
+BuildRequires:  openjre8
+BuildRequires:  openjdk8
 %define _prefix /var/opt/%{name}
 %define _bindir %{_prefix}/bin
 %define _libdir %{_prefix}/lib
@@ -36,6 +37,7 @@ Ant.
 
 %prep
 %setup -q
+%patch0 -p1
 tar xf %{SOURCE1} --no-same-owner
 tar xf %{SOURCE2} --no-same-owner
 
@@ -122,6 +124,8 @@ bootstrap/bin/ant -v run-tests
 %{_bindir}/runant.pl
 
 %changelog
+*   Fri Oct 16 2020 Dweep Advani <dadvani@vmware.com> 1.10.8-2
+-   Patched for CVE-2020-11979
 *   Wed May 27 2020 Ankit Jain <ankitja@vmware.com> 1.10.8-1
 -   Updated to 1.10.8 to fix CVE-2020-1945
 *   Fri Apr 24 2020 Ankit Jain <ankitja@vmware.com> 1.10.5-5
@@ -166,4 +170,4 @@ bootstrap/bin/ant -v run-tests
 *   Wed Aug 12 2015 Sriram Nambakam <snambakam@vmware.com> 1.9.4
 -   Added maven ant tasks
 *   Fri May 22 2015 Sriram Nambakam <snambakam@vmware.com> 1.9.4
--   Initial build.	First version
+-   Initial build. First version
