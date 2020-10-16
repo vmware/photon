@@ -1,0 +1,157 @@
+From 76b4c9170ce60cbb4d4ca940370cbf9f1a33e6a7 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Fri, 16 Oct 2020 18:21:59 +0530
+Subject: [PATCH] fixed <sys/sysctl.h> includes & sysctl() api calls
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ .../agent/src/os/bsd/MacosxDebuggerLocal.m    |  1 -
+ hotspot/src/os/bsd/vm/os_bsd.cpp              | 23 ++++++++++++++++++-
+ hotspot/src/os_cpu/bsd_x86/vm/os_bsd_x86.cpp  |  1 -
+ .../native/java/net/PlainDatagramSocketImpl.c |  1 -
+ .../solaris/native/java/net/PlainSocketImpl.c |  1 -
+ .../sun/management/OperatingSystemImpl.c      | 16 +++++++++++--
+ jdk/src/solaris/native/sun/net/portconfig.c   |  4 ----
+ 7 files changed, 36 insertions(+), 11 deletions(-)
+
+diff --git a/hotspot/agent/src/os/bsd/MacosxDebuggerLocal.m b/hotspot/agent/src/os/bsd/MacosxDebuggerLocal.m
+index adc10f31..be601298 100644
+--- a/hotspot/agent/src/os/bsd/MacosxDebuggerLocal.m
++++ b/hotspot/agent/src/os/bsd/MacosxDebuggerLocal.m
+@@ -30,7 +30,6 @@
+ 
+ #import <mach/mach.h>
+ #import <mach/mach_types.h>
+-#import <sys/sysctl.h>
+ #import <stdio.h>
+ #import <stdarg.h>
+ #import <stdlib.h>
+diff --git a/hotspot/src/os/bsd/vm/os_bsd.cpp b/hotspot/src/os/bsd/vm/os_bsd.cpp
+index fb811915..831b9af8 100644
+--- a/hotspot/src/os/bsd/vm/os_bsd.cpp
++++ b/hotspot/src/os/bsd/vm/os_bsd.cpp
+@@ -92,7 +92,9 @@
+ # include <fcntl.h>
+ # include <string.h>
+ # include <sys/param.h>
+-# include <sys/sysctl.h>
++# include <sys/syscall.h>
++#include <unistd.h>
++#include <linux/sysctl.h>
+ # include <sys/ipc.h>
+ # include <sys/shm.h>
+ #ifndef __APPLE__
+@@ -246,6 +248,25 @@ static char cpu_arch[] = "sparc";
+ #define COMPILER_VARIANT "client"
+ #endif
+ 
++static int sysctl(int *name,
++		int nlen,
++		void *oldval,
++		size_t *oldlenp,
++		void *newval,
++		size_t newlen)
++{
++	struct __sysctl_args args =
++	{
++		.name = name,
++		.nlen = nlen,
++		.oldval = oldval,
++		.oldlenp = oldlenp,
++		.newval = newval,
++		.newlen = newlen
++	};
++
++	return syscall(SYS__sysctl, &args);
++}
+ 
+ void os::Bsd::initialize_system_info() {
+   int mib[2];
+diff --git a/hotspot/src/os_cpu/bsd_x86/vm/os_bsd_x86.cpp b/hotspot/src/os_cpu/bsd_x86/vm/os_bsd_x86.cpp
+index 50051d7c..7b2b8956 100644
+--- a/hotspot/src/os_cpu/bsd_x86/vm/os_bsd_x86.cpp
++++ b/hotspot/src/os_cpu/bsd_x86/vm/os_bsd_x86.cpp
+@@ -83,7 +83,6 @@
+ #if defined(__APPLE__)
+ # include <errno.h>
+ # include <sys/types.h>
+-# include <sys/sysctl.h>
+ # define DEFAULT_MAIN_THREAD_STACK_PAGES 2048
+ # define OS_X_10_9_0_KERNEL_MAJOR_VERSION 13
+ #endif
+diff --git a/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c b/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c
+index a53c2893..af3b0301 100644
+--- a/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c
++++ b/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c
+@@ -41,7 +41,6 @@
+ #endif
+ #ifdef __linux__
+ #include <unistd.h>
+-#include <sys/sysctl.h>
+ #include <sys/utsname.h>
+ #include <netinet/ip.h>
+ 
+diff --git a/jdk/src/solaris/native/java/net/PlainSocketImpl.c b/jdk/src/solaris/native/java/net/PlainSocketImpl.c
+index 71cbdf8c..373c5e36 100644
+--- a/jdk/src/solaris/native/java/net/PlainSocketImpl.c
++++ b/jdk/src/solaris/native/java/net/PlainSocketImpl.c
+@@ -43,7 +43,6 @@
+ #endif
+ #ifdef __linux__
+ #include <unistd.h>
+-#include <sys/sysctl.h>
+ #endif
+ 
+ #include "jvm.h"
+diff --git a/jdk/src/solaris/native/sun/management/OperatingSystemImpl.c b/jdk/src/solaris/native/sun/management/OperatingSystemImpl.c
+index aa21f019..4a9b2e2c 100644
+--- a/jdk/src/solaris/native/sun/management/OperatingSystemImpl.c
++++ b/jdk/src/solaris/native/sun/management/OperatingSystemImpl.c
+@@ -33,7 +33,9 @@
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #if defined(_ALLBSD_SOURCE)
+-#include <sys/sysctl.h>
++#include <unistd.h>
++#include <linux/sysctl.h>
++#include <sys/syscall.h>
+ #ifdef __APPLE__
+ #include <sys/param.h>
+ #include <sys/mount.h>
+@@ -354,7 +356,17 @@ Java_sun_management_OperatingSystemImpl_getTotalPhysicalMemorySize
+     mib[0] = CTL_HW;
+     mib[1] = HW_MEMSIZE;
+     rlen = sizeof(result);
+-    if (sysctl(mib, 2, &result, &rlen, NULL, 0) != 0) {
++    struct __sysctl_args args =
++    {
++	    .name = mib,
++	    .nlen = 2,
++	    .oldval = &result,
++	    .oldlenp = &rlen,
++	    .newval = NULL,
++	    .newlen = 0
++    };
++
++    if (syscall(SYS__sysctl, &args)) {
+         throw_internal_error(env, "sysctl failed");
+         return -1;
+     }
+diff --git a/jdk/src/solaris/native/sun/net/portconfig.c b/jdk/src/solaris/native/sun/net/portconfig.c
+index 56730f0f..02c4f608 100644
+--- a/jdk/src/solaris/native/sun/net/portconfig.c
++++ b/jdk/src/solaris/native/sun/net/portconfig.c
+@@ -28,10 +28,6 @@
+ #include <unistd.h>
+ #include <errno.h>
+ 
+-#if defined(_ALLBSD_SOURCE)
+-#include <sys/sysctl.h>
+-#endif
+-
+ #include "jni.h"
+ #include "net_util.h"
+ #include "sun_net_PortConfig.h"
+-- 
+2.17.1
+

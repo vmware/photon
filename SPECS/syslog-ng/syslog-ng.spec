@@ -2,7 +2,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        3.29.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -86,7 +86,7 @@ autoreconf -i
     PYTHON=/bin/python3 \
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
 GCCVERSION=$(gcc --version | grep ^gcc | sed 's/^.* //g')
-/usr/libexec/gcc/x86_64-unknown-linux-gnu/$GCCVERSION/install-tools/mkheaders
+$(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
 make %{?_smp_mflags}
 
 %install
@@ -163,6 +163,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Fri Oct 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.29.1-3
+-   Fix GCC path issue
 *   Wed Sep 09 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.29.1-2
 -   Openssl 1.1.1 Compatibility
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.29.1-1

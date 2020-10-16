@@ -1,6 +1,6 @@
 Name:           bpftrace
 Version:        0.11.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        High-level tracing language for Linux eBPF
 License:        ASL 2.0
 Vendor:         VMware, Inc.
@@ -18,8 +18,9 @@ BuildRequires:  elfutils-libelf-devel
 BuildRequires:  zlib-devel
 BuildRequires:  llvm-devel
 BuildRequires:  clang-devel
-BuildRequires:  bcc-devel
-BuildRequires:  git
+BuildRequires:  bcc-devel >= 0.11.0-2
+BuildRequires:  libbpf-devel
+BuildRequires:  binutils-devel
 
 Requires:       bcc
 Requires:       bcc-tools
@@ -38,19 +39,22 @@ capabilities: kernel dynamic tracing (kprobes), user-level dynamic tracing
 and predecessor tracers such as DTrace and SystemTap
 
 %prep
-%setup -n %{name}-%{version}
+%autosetup -p1
 
 %build
 %cmake . \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -DSYSTEM_BCC_LIBRARY:BOOL=ON      \
-        -DENABLE_TESTS:BOOL=OFF           \
-        -DBUILD_SHARED_LIBS:BOOL=OFF      \
+        -DBUILD_TESTING:BOOL=OFF \
+        -DBUILD_SHARED_LIBS:BOOL=OFF \
+        -DENABLE_TESTS:BOOL=OFF \
         -DBUILD_DEPS=OFF
-make %{?_smp_mflags}
+%make_build
 
 %install
 %make_install
+
+find %{buildroot}%{_datadir}/%{name}/tools -type f -exec \
+  sed -i -e '1s=^#!/usr/bin/env %{name}\([0-9.]\+\)\?$=#!%{_bindir}/%{name}=' {} \;
 
 %files
 %doc README.md CONTRIBUTING-TOOLS.md
@@ -58,11 +62,15 @@ make %{?_smp_mflags}
 %license LICENSE
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/tools
+%dir %{_datadir}/%{name}/tools/doc
 %{_bindir}/%{name}
 %{_mandir}/man8/*
-%attr(0755,-,-) %{_datadir}/%{name}/tools/*
+%attr(0755,-,-) %{_datadir}/%{name}/tools/*.bt
+%{_datadir}/%{name}/tools/doc/*.txt
 
 %changelog
+* Sat Oct 17 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.11.1-2
+- Fix aarch64 build errors
 * Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 0.11.1-1
 - Automatic Version Bump
 * Wed Sep 09 2020 Susant Sahani <ssahani@vmware.com>  0.11.0-1

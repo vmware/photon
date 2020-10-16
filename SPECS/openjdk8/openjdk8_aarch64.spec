@@ -1,23 +1,24 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
 %define _jdk_update 181
-%define _jdk_build 13
+%define _jdk_build 15
 %define _repo_ver aarch64-jdk8u%{_jdk_update}-b%{_jdk_build}
 %define _url_src https://github.com/AdoptOpenJDK/openjdk-aarch64-jdk8u/
 
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	1.8.0.181
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		http://hg.openjdk.java.net/aarch64-port/jdk8u/
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	%{_url_src}/archive/%{_repo_ver}.tar.gz
-%define sha1 %{_repo_ver}=058c0328698dcec3eb584d216c81a9ca47b87ecd
+%define sha1 %{_repo_ver}=079a6f09987a91c9e8fbf285e50bb3cbd069a3f6
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
+Patch2:		sysctl-fix.patch
 BuildArch:      aarch64
 BuildRequires:  pcre-devel
 BuildRequires:	which
@@ -75,6 +76,7 @@ This package provides the runtime library class sources.
 %setup -qn openjdk-aarch64-jdk8u-%{_repo_ver}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 rm jdk/src/solaris/native/sun/awt/CUPSfuncs.c
 sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeScaler.c
 sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJDK_TARGET_OS := linux\n&/' jdk/make/lib/Awt2dLibraries.gmk
@@ -88,7 +90,7 @@ sh configure \
 	--disable-headful \
 	--with-cacerts-file=%{bootstrapjdk}/jre/lib/security/cacerts \
 	--with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
-	--with-extra-cflags="-std=gnu++98 -fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
+	--with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
 	--with-freetype-include=/usr/include/freetype2 \
 	--with-freetype-lib=/usr/lib \
 	--with-stdc++lib=dynamic
@@ -244,6 +246,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Thu Oct 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0.181-2
+-   Fixed sysctl includes
+-   Updated jdk build to 15
 *   Thu Mar 21 2019 Ajay Kaher <akaher@vmware.com> 1.8.0.181-1
 -   Update to version 1.8.0.181
 *   Mon Oct 29 2018 Ajay Kaher <akaher@vmware.com> 1.8.0.151-3

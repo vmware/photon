@@ -1,31 +1,35 @@
-if [[ $# -eq 0 ]] ; then
+#!/bin/bash
+
+set -x
+
+if [ $# -ne 2 ]; then
     echo 'Usage: generate_source_tarball.sh <Mercurial-Tag-Name> <openjdk version>'
     echo 'Example: generate_source_tarball.sh jdk8u152-b16 1.8.0.152'
     echo 'visit http://hg.openjdk.java.net/jdk8u/jdk8u/tags to use the appropriate tag name.'
-    exit 0
+    exit 1
 fi
-rm -rf openjdk-$2
-hg clone http://hg.openjdk.java.net/jdk8u/jdk8u -u $1 openjdk-$2
-cd openjdk-$2
-hg clone http://hg.openjdk.java.net/jdk8u/jdk8u/corba/ -u $1
-hg clone http://hg.openjdk.java.net/jdk8u/jdk8u/hotspot/ -u $1
-hg clone http://hg.openjdk.java.net/jdk8u/jdk8u/jaxp/ -u $1
-hg clone http://hg.openjdk.java.net/jdk8u/jdk8u/jaxws/ -u $1
-hg clone http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/ -u $1
-hg clone http://hg.openjdk.java.net/jdk8u/jdk8u/langtools/ -u $1
-hg clone http://hg.openjdk.java.net/jdk8u/jdk8u/nashorn/ -u $1
 
-rm -r .hg
-rm -r corba/.hg
-rm -r hotspot/.hg 
-rm -r jaxp/.hg
-rm -r jaxws/.hg
-rm -r jdk/.hg
-rm -r langtools/.hg
-rm -r nashorn/.hg
+if [[ "$1" = *aarch64* ]]; then
+  url="http://hg.openjdk.java.net/aarch64-port/jdk8u"
+  tarball_name="$1.tar.gz"
+  clone_dir="openjdk-aarch64-jdk8u-$1"
+else
+  url="http://hg.openjdk.java.net/jdk8u/jdk8u/"
+  tarball_name="openjdk-$2.tar.gz"
+  clone_dir="openjdk-$2"
+fi
+
+rm -rf "${clone_dir}" && mkdir -p "${clone_dir}"
+hg clone "${url}" -u $1 "${clone_dir}"
+cd "${clone_dir}"
+
+for i in corba hotspot jaxp jaxws jdk langtools nashorn; do
+  hg clone "${url}/${i}" -u $1
+  rm -rf .hg "${i}/.hg"
+done
+
 cd ..
 
-tar -cvzf openjdk-$2.tar.gz openjdk-$2
-chmod 644 openjdk-$2.tar.gz
+tar -czf "${tarball_name}" "${clone_dir}" && chmod 644 "${tarball_name}"
 
-echo 'source tarball openjdk-$2.tar.gz successfully created!' 
+echo "source tarball ${tarball_name} successfully created!"

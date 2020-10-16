@@ -1,12 +1,13 @@
 Summary:        GNU Emacs text editor
 Name:           emacs
 Version:        27.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and CC0-1.0
 URL:            http://www.gnu.org/software/emacs/
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        %{name}-%{version}.tar.xz
 %define sha1    emacs=d1b6b9efa666614c5628dda9ea78628796a73f7f
 
@@ -26,7 +27,7 @@ without leaving the editor.
 %autosetup
 
 %build
-./configure --prefix=/usr            \
+%configure --prefix=/usr            \
             --localstatedir=/var     \
             --without-xpm            \
             --without-jpeg           \
@@ -58,21 +59,23 @@ rm %{buildroot}%{_datadir}/applications/emacs.desktop
 %defattr(-,root,root)
 %{_bindir}/ebrowse
 %{_bindir}/emacs
-%{_bindir}/emacs-27.1
+%{_bindir}/emacs-%{version}
 %{_bindir}/emacsclient
 %{_bindir}/etags
 %{_includedir}/emacs-module.h
 %{_libdir}/systemd/user/emacs.service
-%{_libexecdir}/emacs/27.1/x86_64-pc-linux-gnu/emacs.pdmp
-%{_libexecdir}/emacs/27.1/x86_64-pc-linux-gnu/hexl
-%{_libexecdir}/emacs/27.1/x86_64-pc-linux-gnu/movemail
-%{_libexecdir}/emacs/27.1/x86_64-pc-linux-gnu/rcs2log
-%{_datadir}/emacs/27.1/etc/*
-%{_datadir}/emacs/27.1/lisp/*
-%{_datadir}/emacs/27.1/site-lisp/subdirs.el
+%{_libexecdir}/emacs/%{version}/%{_arch}-unknown-linux-gnu/emacs.pdmp
+%{_libexecdir}/emacs/%{version}/%{_arch}-unknown-linux-gnu/hexl
+%{_libexecdir}/emacs/%{version}/%{_arch}-unknown-linux-gnu/movemail
+%{_libexecdir}/emacs/%{version}/%{_arch}-unknown-linux-gnu/rcs2log
+%{_datadir}/emacs/%{version}/etc/*
+%{_datadir}/emacs/%{version}/lisp/*
+%{_datadir}/emacs/%{version}/site-lisp/subdirs.el
 %{_datadir}/emacs/site-lisp/subdirs.el
 %{_datadir}/metainfo/emacs.appdata.xml
 
 %changelog
+*  Fri Oct 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 27.1-2
+-  Fix aarch64 build error
 *  Tue Oct 06 2020 Susant Sahani <ssahani@vmware.com>  27.1-1
 -  Initial rpm release.

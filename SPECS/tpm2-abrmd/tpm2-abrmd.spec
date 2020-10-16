@@ -3,7 +3,7 @@ Name:           tpm2-abrmd
 Version:        2.3.3
 Release:        1%{?dist}
 License:        BSD 2-Clause
-URL:            https://github.com/tpm2-software/tpm2-tools
+URL:            https://github.com/tpm2-software/tpm2-abrmd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -11,6 +11,7 @@ Source0:        %{name}-%{version}.tar.gz
 %define sha1    tpm2=fb6e3565ea65813e30dee0b50b9c20b36973182f
 BuildRequires:	which dbus-devel glib-devel tpm2-tss-devel
 Requires:       dbus glib tpm2-tss
+
 %description
 TPM2 Access Broker & Resource Management Daemon implementing the TCG spec
 

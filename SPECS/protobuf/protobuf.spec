@@ -3,7 +3,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.13.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -29,7 +29,8 @@ BuildRequires:  openjdk8 >= 1.8.0.45
 BuildRequires:  apache-maven >= 3.3.3
 
 %description
-Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data. You can find protobuf's documentation on the Google Developers site.
+Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data.
+You can find protobuf's documentation on the Google Developers site.
 
 %package        devel
 Summary:        Development files for protobuf
@@ -47,7 +48,6 @@ Requires:       protobuf = %{version}-%{release}
 
 %description    static
 The protobuf-static package contains static protobuf libraries.
-
 
 %package        python3
 Summary:        protobuf python3 lib
@@ -69,6 +69,14 @@ This contains protobuf java package.
 
 %prep
 %setup
+
+# This test is incredibly slow on arm
+# https://github.com/google/protobuf/issues/2389
+%if "%{_arch}" == "aarch64"
+rm -f java/core/src/test/java/com/google/protobuf/IsValidUtf8Test.java
+rm -f java/core/src/test/java/com/google/protobuf/DecodeUtf8Test.java
+%endif
+
 autoreconf -iv
 
 %build
@@ -120,7 +128,6 @@ popd
 %{_libdir}/libprotobuf.a
 %{_libdir}/libprotoc.a
 
-
 %files python3
 %{python3_sitelib}/*
 
@@ -128,6 +135,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Fri Oct 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.13.0-2
+-   Disabled few slow tests on aarch64
 *   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 3.13.0-1
 -   Automatic Version Bump
 *   Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.12.3-1

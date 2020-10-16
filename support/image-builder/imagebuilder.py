@@ -120,7 +120,7 @@ def createIso(options):
             create_additional_file_list_to_copy_in_iso(
                 os.path.abspath(options.stage_path), options.package_list_file))
 
-        initrd_pkg_list_file = os.path.join(os.path.dirname(options.package_list_file), 'packages_installer_initrd.json')
+        initrd_pkg_list_file = os.path.join(options.generated_data_path, 'packages_installer_initrd_expanded.json')
         initrd_pkgs = " ".join(Utils.jsonread(initrd_pkg_list_file)["packages"])
 
         retval = subprocess.call([script_directory + '/iso/mk-install-iso.sh',

@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.46
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -75,7 +75,7 @@ The httpd-tools of httpd.
             --enable-layout=RPM
 
 GCCVERSION=$(gcc --version | grep ^gcc | sed 's/^.* //g')
-/usr/libexec/gcc/x86_64-unknown-linux-gnu/$GCCVERSION/install-tools/mkheaders
+$(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
 
 make %{?_smp_mflags}
 
@@ -191,6 +191,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Fri Oct 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.4.46-4
+-   Fix GCC path issue
 *   Mon Oct 05 2020 Dweep Advani <dadvani@vmware.com> 2.4.46-3
 -   Create /var/run/httpd temp folder through systemd-tmpfiles
 *   Tue Sep 01 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.46-2
