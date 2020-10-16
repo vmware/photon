@@ -2,17 +2,17 @@
 %define __os_install_post %{nil}
 Summary:        Containerd
 Name:           containerd
-Version:        1.2.10
-Release:        3%{?dist}
+Version:        1.2.14
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha1 containerd=711c6bf96ab9b6a13a641643b4c96b3b8261ffb0
+%define sha1 containerd=8775937491b58cf01963dc209f7dbc8a07371750
 # Must be in sync with package version
-%define CONTAINERD_GITCOMMIT b34a5c8af56e510852c35414db4c1f4fa6172339
+%define CONTAINERD_GITCOMMIT f8777f13022dd16c2a339d621bb55465fe603b19
 
 Source1:        containerd.service
 Source2:        containerd-config.toml
@@ -108,6 +108,8 @@ make integration
 %{_mandir}/man5/*
 
 %changelog
+*   Fri Oct 16 2020 Ashwin H <ashwinh@vmware.com> 1.2.14-1
+-   Update to 1.2.14 to fix CVE-2020-15157
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.2.10-3
 -   Bump up version to compile with go 1.13.5-2
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.2.10-2
